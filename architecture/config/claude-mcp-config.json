@@ -1,0 +1,37 @@
+{
+  "mcpServers": {
+    "pinecone": {
+      "command": "npx",
+      "args": ["tsx", "architecture/mcp-servers/pinecone-mcp.ts"],
+      "env": {
+        "PINECONE_API_KEY": "${PINECONE_API_KEY}",
+        "PINECONE_HOST": "https://n8nultimate-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
+      }
+    },
+    "neo4j": {
+      "command": "npx",
+      "args": ["tsx", "architecture/mcp-servers/neo4j-mcp.ts"],
+      "env": {
+        "NEO4J_URI": "https://a9a062c3.databases.neo4j.io",
+        "NEO4J_DATABASE": "neo4j",
+        "NEO4J_USER": "${NEO4J_USER}",
+        "NEO4J_PASSWORD": "${NEO4J_PASSWORD}"
+      }
+    },
+    "supabase": {
+      "command": "npx",
+      "args": ["tsx", "architecture/mcp-servers/supabase-mcp.ts"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgresql://postgres:${SUPABASE_PASSWORD}@db.ayqviqmxifzmhphiqfmj.supabase.co:5432/postgres"
+      }
+    },
+    "n8n-enhanced": {
+      "command": "npx",
+      "args": ["tsx", "architecture/mcp-servers/n8n-enhanced-mcp.ts"],
+      "env": {
+        "N8N_HOST": "https://amoret.app.n8n.cloud",
+        "N8N_API_KEY": "${N8N_API_KEY}"
+      }
+    }
+  }
+}

@@ -1,0 +1,66 @@
+# ORCHESTRATOR MASTER
+# Modèle: Haiku (faible coût, coordination simple)
+
+name: orchestrator-master
+model: haiku
+version: "1.0"
+
+description: |
+  Agent coordinateur qui gère le séquencement des sous-agents.
+  Ne fait pas d'analyse complexe, uniquement de la coordination.
+
+system_prompt: |
+  Tu es l'orchestrateur du pipeline d'amélioration des workflows n8n.
+
+  TON ROLE:
+  - Lancer les agents dans l'ordre défini
+  - Collecter leurs résultats
+  - Gérer les erreurs et reprises
+  - Produire le rapport final
+
+  SÉQUENCE À SUIVRE:
+  1. workflow-analyzer → analysis-report.json
+  2. db-reader → db-inventory.json
+  3. patch-writer → patches/*.json
+  4. patch-applier → workflows modifiés
+  5. n8n-tester → test-results.json
+
+  RÈGLES:
+  - Ne jamais sauter d'étape
+  - Si un agent échoue, tenter 3 reprises
+  - Loguer chaque étape
+  - Ne pas modifier les outputs des agents
+
+execution:
+  max_retries: 3
+  timeout_per_agent: 300
+  parallel_allowed: false
+
+agents_sequence:
+  - name: workflow-analyzer
+    required: true
+    output: analysis-report.json
+
+  - name: db-reader
+    required: true
+    output: db-inventory.json
+    can_run_parallel_with: workflow-analyzer
+
+  - name: patch-writer
+    required: true
+    depends_on: [workflow-analyzer, db-reader]
+    output: patches/
+
+  - name: patch-applier
+    required: true
+    depends_on: [patch-writer]
+    output: modified-workflows/
+
+  - name: n8n-tester
+    required: true
+    depends_on: [patch-applier]
+    output: test-results.json
+
+outputs:
+  - final-report.md
+  - execution-log.json
