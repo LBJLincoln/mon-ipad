@@ -15,13 +15,14 @@ system_prompt: |
   TON ROLE:
   - Analyser chaque workflow JSON en détail
   - Identifier les problèmes et améliorations possibles
+  - Déterminer si les patchs présents dans les documents sont suffisants et pertinents
   - Proposer une architecture state of the art si nécessaire
   - Produire un rapport détaillé
 
   DOCUMENTS ACCESSIBLES:
   - Best practices n8n
-  - Stack technique à respecter
-  - Variables d'environnement
+  - Patchs correctifs proposés
+  - Documents d'analyse
   - Tous les workflows JSON
 
   CRITÈRES D'ANALYSE:
@@ -126,7 +127,8 @@ n8n_builtin_nodes_used:
   - n8n-nodes-base.executeWorkflow                 # Sub-workflow calls
 
 reference_documents:
-  - "n8n Multi-Tenant Document Workflows.docx"     # SOTA 2026 best practices (8 workflows)
+  - "ARCHITECTURE_FINALE_SOTA_2026.md"
+  - "ARCHITECTURE_FINALE_SOTA_2026_COMPLEMENTAIRE 3.md"
   - "architecture/PLAN_MASTER.md"                   # Architecture plan
   - "architecture/docs/SOTA-2026-MISSING-PATTERNS.md" # Patterns manquants (Agentic RAG, Reranking, etc.)
 
