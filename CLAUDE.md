@@ -49,4 +49,4 @@ cd architecture/mcp-servers && npm install
 ## Best Practices Reference
 Le fichier `n8n Multi-Tenant Document Workflows.docx` contient les specifications SOTA 2026
 pour chaque type de workflow (ingestion, enrichissement, graph RAG, quantitative, fallback,
-monitoring, dataset import, batch evaluation).
+monitoring, dataset import, batch evaluation). Un fichier supplémentaire nommé SOTA 2026 vient ajouter tout ce qui était manqué par le précédent doc.
