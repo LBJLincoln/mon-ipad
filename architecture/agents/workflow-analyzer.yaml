@@ -76,11 +76,66 @@ system_prompt: |
   }
   ```
 
-skills_to_download:
-  - n8n-workflow-best-practices
-  - json-schema-validation
-  - rag-architecture-patterns
-  - llm-workflow-optimization
+n8n_community_nodes_required:
+  # Packages npm a installer via Settings > Community Nodes
+  # -- Vector / Graph --
+  - n8n-nodes-neo4j               # Neo4j vector store + Cypher queries (by Kurea, v0.2.2)
+  - n8n-nodes-neo4j-extended      # Extended Neo4j: vector search, graph ops, AI tools
+  # -- Storage --
+  - "@winth03/n8n-nodes-minio"    # MinIO/S3 compatible high-perf storage
+  # -- Document Processing --
+  - n8n-nodes-docxtemplater       # Word document templating (DOCX/PPTX/XLSX)
+  - n8n-docx-converter            # DOCX text extraction for RAG ingestion
+  - n8n-nodes-pdf-page-extract    # Per-page PDF extraction
+  # -- Redis Enhanced --
+  - "@codingfrog/n8n-nodes-redis-enhanced"  # 35+ Redis ops: TTL, pub/sub, Lua, sets
+  - n8n-redis-anyway              # Cache with expiration + conditional routing
+  # -- MCP --
+  - n8n-nodes-mcp                 # MCP client for external tool servers
+
+n8n_builtin_nodes_used:
+  # Nodes LangChain integres dans n8n 1.x+ (70+ AI nodes)
+  # -- AI / Agents --
+  - "@n8n/n8n-nodes-langchain.chatTrigger"         # Chat interface
+  - "@n8n/n8n-nodes-langchain.agent"               # AI Agent (ReAct) orchestration
+  - "@n8n/n8n-nodes-langchain.chainLlm"            # Basic LLM Chain
+  - "@n8n/n8n-nodes-langchain.toolWorkflow"        # Sub-workflow as Agent Tool
+  # -- LLM Providers --
+  - "@n8n/n8n-nodes-langchain.lmChatAnthropic"     # Claude 3/3.5/4 integration
+  - "@n8n/n8n-nodes-langchain.lmChatOpenAi"        # OpenAI GPT-4o/o1/o3 integration
+  - "@n8n/n8n-nodes-langchain.lmChatGoogleGemini"  # Google Gemini 2.0
+  - "@n8n/n8n-nodes-langchain.lmChatOllama"        # Local LLMs via Ollama
+  # -- Embeddings --
+  - "@n8n/n8n-nodes-langchain.embeddingsOpenAi"    # text-embedding-3-small/large
+  - "@n8n/n8n-nodes-langchain.embeddingsCohere"    # Cohere embed models
+  - "@n8n/n8n-nodes-langchain.embeddingsOllama"    # Local embeddings
+  # -- Vector Stores --
+  - "@n8n/n8n-nodes-langchain.vectorStorePinecone" # Pinecone vector store
+  - "@n8n/n8n-nodes-langchain.vectorStoreSupabase" # Supabase/pgvector
+  - "@n8n/n8n-nodes-langchain.vectorStoreRedis"    # Redis vector store
+  # -- Memory --
+  - "@n8n/n8n-nodes-langchain.memoryRedis"         # Redis chat memory
+  - "@n8n/n8n-nodes-langchain.memoryPostgres"      # Postgres chat memory
+  # -- Infrastructure --
+  - n8n-nodes-base.redis                           # Redis caching/locks
+  - n8n-nodes-base.postgres                        # Supabase/PostgreSQL
+  - n8n-nodes-base.awsS3                           # AWS S3 storage
+  - n8n-nodes-base.s3                              # S3-compatible storage
+  - n8n-nodes-base.httpRequest                     # HTTP/REST calls
+  - n8n-nodes-base.code                            # JavaScript/Python code
+  - n8n-nodes-base.executeWorkflow                 # Sub-workflow calls
+
+reference_documents:
+  - "n8n Multi-Tenant Document Workflows.docx"     # SOTA 2026 best practices (8 workflows)
+  - "architecture/PLAN_MASTER.md"                   # Architecture plan
+  - "architecture/docs/SOTA-2026-MISSING-PATTERNS.md" # Patterns manquants (Agentic RAG, Reranking, etc.)
+
+security_advisory:
+  # CVE-2026-21858 (CVSS 10.0) "Ni8mare" - affecte n8n < v1.65.0
+  # Exploite Content-Type confusion pour extraction de secrets sans authentification
+  # CORRIGE dans n8n v1.121.0 (18 Nov 2025)
+  # ACTION: Verifier que l'instance n8n est >= v1.121.0
+  min_n8n_version: "1.121.0"
 
 mcp_access:
   - read: github

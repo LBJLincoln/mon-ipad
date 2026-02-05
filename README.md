@@ -6,21 +6,25 @@ Système multi-agents pour l'amélioration automatisée des workflows n8n RAG.
 
 ```
 .
+├── CLAUDE.md                    # Config Claude Code projet
 ├── architecture/
 │   ├── PLAN_MASTER.md          # Plan d'architecture complet
-│   ├── agents/                  # Définitions des agents
+│   ├── agents/                  # Definitions des agents
 │   │   ├── orchestrator.yaml
 │   │   ├── workflow-analyzer.yaml
 │   │   ├── db-reader.yaml
 │   │   ├── patch-writer.yaml
 │   │   ├── patch-applier.yaml
 │   │   └── n8n-tester.yaml
+│   ├── runner/                  # Runner Claude Code
+│   │   └── run-agent.mjs       # Lance les agents via claude CLI
 │   ├── mcp-servers/            # Serveurs MCP
 │   │   ├── pinecone-mcp.ts
 │   │   ├── neo4j-mcp.ts
 │   │   ├── supabase-mcp.ts
 │   │   ├── n8n-enhanced-mcp.ts
-│   │   └── package.json
+│   │   ├── package.json
+│   │   └── tsconfig.json
 │   ├── config/                 # Configuration
 │   │   ├── agents-config.yaml
 │   │   ├── claude-mcp-config.json
@@ -68,8 +72,17 @@ cp ../config/.env.example ../.env
 ## Usage
 
 ```bash
-# Avec Claude Code
+# Mode interactif avec Claude Code + MCP servers
 claude --mcp-config architecture/config/claude-mcp-config.json
+
+# Lancer un agent specifique via le runner
+node architecture/runner/run-agent.mjs workflow-analyzer --verbose
+
+# Lancer le pipeline complet (tous les agents en sequence)
+node architecture/runner/run-agent.mjs all --verbose
+
+# Dry-run pour voir ce qui serait execute
+node architecture/runner/run-agent.mjs all --dry-run
 ```
 
 ## Documentation

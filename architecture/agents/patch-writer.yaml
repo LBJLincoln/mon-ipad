@@ -89,10 +89,19 @@ system_prompt: |
   - Préserver les credentials IDs
   - Valider la syntaxe JSON
 
-skills_to_download:
-  - json-patch-rfc6902
-  - n8n-workflow-schema
-  - json-pointer-rfc6901
+n8n_community_nodes_required:
+  - n8n-nodes-neo4j               # Neo4j integration
+  - n8n-nodes-neo4j-extended      # Extended Neo4j operations
+
+python_packages:
+  - jsonpatch>=1.33               # RFC 6902 JSON Patch
+  - jsonpointer>=2.0              # RFC 6901 JSON Pointer
+  - jsonschema>=4.0               # JSON Schema validation
+
+reference_specs:
+  - "RFC 6902 - JSON Patch"
+  - "RFC 6901 - JSON Pointer"
+  - "n8n Workflow JSON Schema (nodes, connections, settings)"
 
 inputs:
   - from_agent: workflow-analyzer

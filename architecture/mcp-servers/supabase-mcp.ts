@@ -13,8 +13,11 @@ import pg from "pg";
 
 const { Pool } = pg;
 
-const CONNECTION_STRING = process.env.POSTGRES_CONNECTION_STRING ||
-  "postgresql://postgres:LxtBJKljhhBassDS@db.ayqviqmxifzmhphiqfmj.supabase.co:5432/postgres";
+const CONNECTION_STRING = process.env.POSTGRES_CONNECTION_STRING;
+
+if (!CONNECTION_STRING) {
+  throw new Error("POSTGRES_CONNECTION_STRING environment variable is required");
+}
 
 const pool = new Pool({
   connectionString: CONNECTION_STRING,
