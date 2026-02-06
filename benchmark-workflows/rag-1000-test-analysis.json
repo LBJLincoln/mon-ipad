@@ -1,5 +1,12 @@
 {
-  "title": "RAG Routing Analysis — Phase 1",
+  "title": "RAG Routing Analysis — Graph + Quantitative — 1000 Questions",
+  "generated_at": "2026-02-06T16:57:15.638572",
+  "total_questions": 900,
+  "deduplication": {
+    "existing_hashes_loaded": 7818,
+    "new_hashes_generated": 900,
+    "method": "MD5 hash of lowercased question text"
+  },
   "phases": [
     {
       "total": 500,
@@ -105,6 +112,371 @@
       "ambiguous_rate": "53.8%",
       "phase": "phase1",
       "timestamp": "2026-02-06T16:57:02.518483"
+    },
+    {
+      "total": 900,
+      "graph_questions": 400,
+      "quantitative_questions": 500,
+      "correct_routing": 449,
+      "incorrect_routing": 13,
+      "ambiguous_routing": 438,
+      "by_dataset": {
+        "musique": {
+          "total": 200,
+          "correct": 26,
+          "incorrect": 5,
+          "ambiguous": 169,
+          "rag_target": "graph",
+          "correct_rate": "13.0%"
+        },
+        "2wikimultihopqa": {
+          "total": 200,
+          "correct": 45,
+          "incorrect": 7,
+          "ambiguous": 148,
+          "rag_target": "graph",
+          "correct_rate": "22.5%"
+        },
+        "finqa": {
+          "total": 200,
+          "correct": 163,
+          "incorrect": 0,
+          "ambiguous": 37,
+          "rag_target": "quantitative",
+          "correct_rate": "81.5%"
+        },
+        "tatqa": {
+          "total": 150,
+          "correct": 99,
+          "incorrect": 0,
+          "ambiguous": 51,
+          "rag_target": "quantitative",
+          "correct_rate": "66.0%"
+        },
+        "convfinqa": {
+          "total": 100,
+          "correct": 90,
+          "incorrect": 0,
+          "ambiguous": 10,
+          "rag_target": "quantitative",
+          "correct_rate": "90.0%"
+        },
+        "wikitablequestions": {
+          "total": 50,
+          "correct": 26,
+          "incorrect": 1,
+          "ambiguous": 23,
+          "rag_target": "quantitative",
+          "correct_rate": "52.0%"
+        }
+      },
+      "by_rag_type": {
+        "graph": {
+          "total": 400,
+          "correct": 71,
+          "incorrect": 12,
+          "ambiguous": 317,
+          "correct_rate": "17.8%",
+          "incorrect_rate": "3.0%",
+          "ambiguous_rate": "79.2%"
+        },
+        "quantitative": {
+          "total": 500,
+          "correct": 378,
+          "incorrect": 1,
+          "ambiguous": 121,
+          "correct_rate": "75.6%",
+          "incorrect_rate": "0.2%",
+          "ambiguous_rate": "24.2%"
+        }
+      },
+      "sample_misrouted": [
+        {
+          "question": "What was the average per capita GVA in 2013 of the country which created Burma's academic system?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "According to the agency that published U.S. and World Population Clock, what is the total area in square miles?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "According to the agency that considers if Los Angeles County is to be a separate metropolitan area, what is the total area in square miles?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "According to the organization that creates census county division, what is the total area in square miles?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "According to the developer of Topologically Integrated Geographic Encoding and Referencing, what is the total area of Atlantic City in square miles?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "Which film was released more recently, Lo Zappatore or Placer Sangriento?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "2wikimultihopqa"
+        },
+        {
+          "question": "Where was the place of death of Lambert I, Count Of Louvain's father?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "2wikimultihopqa"
+        },
+        {
+          "question": "Where was the director of film Highway Dragnet born?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "2wikimultihopqa"
+        },
+        {
+          "question": "Who is the maternal grandfather of Amadeus Vii, Count Of Savoy?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "2wikimultihopqa"
+        },
+        {
+          "question": "Which song was released more recently, Go Ahead And Break My Heart or Knee Deep In My Heart?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "2wikimultihopqa"
+        },
+        {
+          "question": "Who is William Ii, Count Of Flanders's paternal grandmother?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "2wikimultihopqa"
+        },
+        {
+          "question": "Where was the place of death of Alessandro Vitelli's father?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "2wikimultihopqa"
+        },
+        {
+          "question": "natalia varnakova is the same height as which other contestant(s)?",
+          "expected": "quantitative",
+          "predicted": "graph",
+          "dataset": "wikitablequestions"
+        }
+      ],
+      "correct_rate": "49.9%",
+      "incorrect_rate": "1.4%",
+      "ambiguous_rate": "48.7%",
+      "phase": "final",
+      "timestamp": "2026-02-06T16:57:15.581171"
     }
-  ]
+  ],
+  "final_summary": {
+    "total": 900,
+    "graph_questions": 400,
+    "quantitative_questions": 500,
+    "correct_routing": 449,
+    "correct_rate": "49.9%",
+    "incorrect_routing": 13,
+    "incorrect_rate": "1.4%",
+    "ambiguous_routing": 438,
+    "ambiguous_rate": "48.7%"
+  },
+  "by_rag_type": {
+    "graph": {
+      "total": 400,
+      "correct": 71,
+      "incorrect": 12,
+      "ambiguous": 317,
+      "correct_rate": "17.8%",
+      "incorrect_rate": "3.0%",
+      "ambiguous_rate": "79.2%"
+    },
+    "quantitative": {
+      "total": 500,
+      "correct": 378,
+      "incorrect": 1,
+      "ambiguous": 121,
+      "correct_rate": "75.6%",
+      "incorrect_rate": "0.2%",
+      "ambiguous_rate": "24.2%"
+    }
+  },
+  "by_dataset": {
+    "musique": {
+      "total": 200,
+      "correct": 26,
+      "incorrect": 5,
+      "ambiguous": 169,
+      "rag_target": "graph",
+      "correct_rate": "13.0%"
+    },
+    "2wikimultihopqa": {
+      "total": 200,
+      "correct": 45,
+      "incorrect": 7,
+      "ambiguous": 148,
+      "rag_target": "graph",
+      "correct_rate": "22.5%"
+    },
+    "finqa": {
+      "total": 200,
+      "correct": 163,
+      "incorrect": 0,
+      "ambiguous": 37,
+      "rag_target": "quantitative",
+      "correct_rate": "81.5%"
+    },
+    "tatqa": {
+      "total": 150,
+      "correct": 99,
+      "incorrect": 0,
+      "ambiguous": 51,
+      "rag_target": "quantitative",
+      "correct_rate": "66.0%"
+    },
+    "convfinqa": {
+      "total": 100,
+      "correct": 90,
+      "incorrect": 0,
+      "ambiguous": 10,
+      "rag_target": "quantitative",
+      "correct_rate": "90.0%"
+    },
+    "wikitablequestions": {
+      "total": 50,
+      "correct": 26,
+      "incorrect": 1,
+      "ambiguous": 23,
+      "rag_target": "quantitative",
+      "correct_rate": "52.0%"
+    }
+  },
+  "sample_misrouted": [
+    {
+      "question": "What was the average per capita GVA in 2013 of the country which created Burma's academic system?",
+      "expected": "graph",
+      "predicted": "quantitative",
+      "dataset": "musique"
+    },
+    {
+      "question": "According to the agency that published U.S. and World Population Clock, what is the total area in square miles?",
+      "expected": "graph",
+      "predicted": "quantitative",
+      "dataset": "musique"
+    },
+    {
+      "question": "According to the agency that considers if Los Angeles County is to be a separate metropolitan area, what is the total area in square miles?",
+      "expected": "graph",
+      "predicted": "quantitative",
+      "dataset": "musique"
+    },
+    {
+      "question": "According to the organization that creates census county division, what is the total area in square miles?",
+      "expected": "graph",
+      "predicted": "quantitative",
+      "dataset": "musique"
+    },
+    {
+      "question": "According to the developer of Topologically Integrated Geographic Encoding and Referencing, what is the total area of Atlantic City in square miles?",
+      "expected": "graph",
+      "predicted": "quantitative",
+      "dataset": "musique"
+    },
+    {
+      "question": "Which film was released more recently, Lo Zappatore or Placer Sangriento?",
+      "expected": "graph",
+      "predicted": "quantitative",
+      "dataset": "2wikimultihopqa"
+    },
+    {
+      "question": "Where was the place of death of Lambert I, Count Of Louvain's father?",
+      "expected": "graph",
+      "predicted": "quantitative",
+      "dataset": "2wikimultihopqa"
+    },
+    {
+      "question": "Where was the director of film Highway Dragnet born?",
+      "expected": "graph",
+      "predicted": "quantitative",
+      "dataset": "2wikimultihopqa"
+    },
+    {
+      "question": "Who is the maternal grandfather of Amadeus Vii, Count Of Savoy?",
+      "expected": "graph",
+      "predicted": "quantitative",
+      "dataset": "2wikimultihopqa"
+    },
+    {
+      "question": "Which song was released more recently, Go Ahead And Break My Heart or Knee Deep In My Heart?",
+      "expected": "graph",
+      "predicted": "quantitative",
+      "dataset": "2wikimultihopqa"
+    },
+    {
+      "question": "Who is William Ii, Count Of Flanders's paternal grandmother?",
+      "expected": "graph",
+      "predicted": "quantitative",
+      "dataset": "2wikimultihopqa"
+    },
+    {
+      "question": "Where was the place of death of Alessandro Vitelli's father?",
+      "expected": "graph",
+      "predicted": "quantitative",
+      "dataset": "2wikimultihopqa"
+    },
+    {
+      "question": "natalia varnakova is the same height as which other contestant(s)?",
+      "expected": "quantitative",
+      "predicted": "graph",
+      "dataset": "wikitablequestions"
+    }
+  ],
+  "datasets_used": {
+    "graph_rag": [
+      {
+        "name": "musique",
+        "source": "bdsaglam/musique",
+        "type": "Compositional multi-hop reasoning (2-4 hops)"
+      },
+      {
+        "name": "2wikimultihopqa",
+        "source": "framolfese/2WikiMultihopQA",
+        "type": "Cross-document reasoning between Wikipedia articles"
+      },
+      {
+        "name": "frames",
+        "source": "google/frames-benchmark",
+        "type": "Google FRAMES multi-hop RAG benchmark"
+      }
+    ],
+    "quantitative_rag": [
+      {
+        "name": "finqa",
+        "source": "dreamerdeo/finqa",
+        "type": "Financial reasoning with tables and calculations"
+      },
+      {
+        "name": "tatqa",
+        "source": "galileo-ai/ragbench",
+        "type": "Hybrid table-and-text QA requiring arithmetic reasoning (via RAGBench)"
+      },
+      {
+        "name": "convfinqa",
+        "source": "MehdiHosseiniMoghadam/ConvFinQA",
+        "type": "Conversational financial QA with multi-turn numerical reasoning"
+      },
+      {
+        "name": "wikitablequestions",
+        "source": "TableSenseAI/WikiTableQuestions",
+        "type": "Table-based QA requiring SQL-like reasoning"
+      }
+    ]
+  }
 }
