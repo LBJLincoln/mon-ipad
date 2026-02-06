@@ -1,7 +1,7 @@
 {
   "suite": "MULTI-RAG FULL BENCHMARK",
   "started_at": "2026-02-06T15:11:22.943759",
-  "updated_at": "2026-02-06T15:11:56.983804",
+  "updated_at": "2026-02-06T15:11:58.934621",
   "config": {
     "test_type": "e2e",
     "batch_size": 100,
@@ -26,13 +26,13 @@
     "total_qa_pairs": 7824
   },
   "summary": {
-    "total_completed": 12472,
+    "total_completed": 13972,
     "total_successes": 3000,
-    "total_errors": 9472,
+    "total_errors": 10972,
     "total_expected": 23472,
-    "progress_pct": "53.1%",
-    "elapsed_seconds": 34,
-    "error_rate": "75.95%"
+    "progress_pct": "59.5%",
+    "elapsed_seconds": 35,
+    "error_rate": "78.53%"
   },
   "results": [
     {
@@ -206,7 +206,29 @@
       "response_data": null,
       "latency_s": 3.4,
       "timestamp": "2026-02-06T15:11:56.983004"
+    },
+    {
+      "dataset": "pubmedqa",
+      "rag_type": "quantitative",
+      "items": 500,
+      "test_type": "e2e",
+      "status": "error",
+      "error": "HTTP 403: Forbidden",
+      "response_data": null,
+      "latency_s": 3.4,
+      "timestamp": "2026-02-06T15:11:58.224259"
+    },
+    {
+      "dataset": "triviaqa",
+      "rag_type": "standard",
+      "items": 1000,
+      "test_type": "e2e",
+      "status": "error",
+      "error": "HTTP 403: Forbidden",
+      "response_data": null,
+      "latency_s": 3.4,
+      "timestamp": "2026-02-06T15:11:58.933681"
     }
   ],
-  "all_runs_count": 14
+  "all_runs_count": 16
 }
