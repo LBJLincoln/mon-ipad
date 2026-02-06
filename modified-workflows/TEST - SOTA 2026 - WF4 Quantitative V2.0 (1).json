@@ -34,11 +34,12 @@
           "name": "Supabase PostgreSQL"
         }
       },
+      "alwaysOutputData": true,
       "onError": "continueErrorOutput"
     },
     {
       "parameters": {
-        "jsCode": "// Build schema context for LLM\nconst inputData = $input.all();\nif (!inputData || inputData.length === 0) {\n  return {\n    ...$node['Init & ACL'].json,\n    schema_context: \"Aucune table trouvée dans le schéma public.\",\n    available_tables: []\n  };\n}\n\nconst schemaData = inputData.map(i => i.json);\nconst tables = {};\n\nschemaData.forEach(col => {\n  if (!tables[col.table_name]) tables[col.table_name] = [];\n  tables[col.table_name].push(`${col.column_name} ${col.data_type}${col.is_nullable === 'NO' ? ' NOT NULL' : ''}`);\n});\n\nconst schemaContext = Object.entries(tables)\n  .map(([table, columns]) => `Table: ${table}\\nColumns: ${columns.join(', ')}`)\n  .join('\\n\\n');\n\nconst initData = $node['Init & ACL'].json;\n\nreturn {\n  ...initData,\n  schema_context: schemaContext,\n  available_tables: Object.keys(tables)\n};"
+        "jsCode": "// Build schema context for LLM\n// FIX: Handle error items from Schema Introspection (onError: continueErrorOutput)\n// and passthrough items from alwaysOutputData when 0 schema rows are returned.\nconst inputData = $input.all();\nconst initData = $node['Init & ACL'].json;\n\n// Detect error items (from continueErrorOutput) or passthrough (from alwaysOutputData)\n// Error items have 'error' or 'message' fields; passthrough items have Init & ACL fields\nconst firstItem = inputData.length > 0 ? inputData[0].json : null;\nconst isError = firstItem && (firstItem.error !== undefined || firstItem.message !== undefined);\nconst isPassthrough = firstItem && (firstItem.trace_id !== undefined || firstItem.query !== undefined) && !firstItem.table_name;\nconst hasNoData = !inputData || inputData.length === 0 || isError || isPassthrough;\n\nif (hasNoData) {\n  const reason = isError \n    ? `Erreur de connexion a la base: ${firstItem.error || firstItem.message || 'inconnue'}` \n    : 'Aucune table trouvee dans le schema public.';\n  return {\n    ...initData,\n    schema_context: reason,\n    available_tables: [],\n    _schema_error: isError ? true : false\n  };\n}\n\nconst schemaData = inputData.map(i => i.json);\nconst tables = {};\n\nschemaData.forEach(col => {\n  // Skip items that don't have expected schema columns\n  if (!col.table_name || !col.column_name) return;\n  if (!tables[col.table_name]) tables[col.table_name] = [];\n  tables[col.table_name].push(`${col.column_name} ${col.data_type}${col.is_nullable === 'NO' ? ' NOT NULL' : ''}`);\n});\n\nif (Object.keys(tables).length === 0) {\n  return {\n    ...initData,\n    schema_context: 'Aucune table valide trouvee dans le schema public.',\n    available_tables: []\n  };\n}\n\nconst schemaContext = Object.entries(tables)\n  .map(([table, columns]) => `Table: ${table}\\nColumns: ${columns.join(', ')}`)\n  .join('\\n\\n');\n\nreturn {\n  ...initData,\n  schema_context: schemaContext,\n  available_tables: Object.keys(tables)\n};"
       },
       "id": "f52905d6-700c-45b2-8265-4501a7c08482",
       "name": "Schema Context Builder",
@@ -114,11 +115,12 @@
           "name": "Supabase PostgreSQL"
         }
       },
+      "alwaysOutputData": true,
       "onError": "continueErrorOutput"
     },
     {
       "parameters": {
-        "jsCode": "// Prepare data for interpretation\nconst validatorData = $node['SQL Validator (Shield #1)'].json;\nconst sqlResults = $input.all().map(i => i.json);\n\nif (sqlResults.length === 0) {\n  return {\n    ...validatorData,\n    sql_results: [],\n    result_count: 0,\n    has_results: false\n  };\n}\n\nreturn {\n  ...validatorData,\n  sql_results: sqlResults,\n  result_count: sqlResults.length,\n  has_results: true,\n  result_preview: JSON.stringify(sqlResults.slice(0, 5), null, 2)\n};"
+        "jsCode": "// Prepare data for interpretation\n// FIX: Handle alwaysOutputData passthrough from SQL Executor\n// When Postgres returns 0 rows, alwaysOutputData sends the INPUT data\n// (from SQL Validator) as passthrough instead of actual SQL results.\n// We detect this by checking for validator-specific fields.\nconst validatorData = $node['SQL Validator (Shield #1)'].json;\nconst inputItems = $input.all();\nconst rawResults = inputItems.map(i => i.json);\n\n// Detect passthrough: if the item has validated_sql or validation_status,\n// it's the validator's data echoed by alwaysOutputData, not SQL rows\nconst isPassthrough = rawResults.length > 0 && (\n  rawResults[0].validated_sql !== undefined ||\n  rawResults[0].validation_status !== undefined ||\n  rawResults[0].validation_timestamp !== undefined\n);\n\nconst sqlResults = isPassthrough ? [] : rawResults;\n\nif (sqlResults.length === 0) {\n  return {\n    ...validatorData,\n    sql_results: [],\n    result_count: 0,\n    has_results: false,\n    result_preview: 'Aucun resultat retourne par la requete SQL.'\n  };\n}\n\nreturn {\n  ...validatorData,\n  sql_results: sqlResults,\n  result_count: sqlResults.length,\n  has_results: true,\n  result_preview: JSON.stringify(sqlResults.slice(0, 5), null, 2)\n};"
       },
       "id": "47637bf5-d3c9-4a67-9864-3b5a547ca262",
       "name": "Result Aggregator",
@@ -421,6 +423,13 @@
     },
     "Schema Introspection": {
       "main": [
+        [
+          {
+            "node": "Schema Context Builder",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Schema Context Builder",
