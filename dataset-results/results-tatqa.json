@@ -22,7 +22,18 @@
     "pinecone_status": "error",
     "pinecone_total_vectors": 0,
     "verified_at": "2026-02-06T20:23:41.513404",
-    "data_ready": false
+    "data_ready": false,
+    "ingestion_status": "failed",
+    "ingestion_error": "unknown",
+    "ingestion_run_id": "",
+    "items_ingested": 0,
+    "ingested_at": "2026-02-06T20:54:15.674945",
+    "supabase_ready": false,
+    "pinecone_ready": false,
+    "neo4j_ready": false,
+    "exec_id": "9922",
+    "ingestion_method": "BENCHMARK - Dataset Ingestion Pipeline",
+    "pages_ingested": 0
   },
   "questions": [
     {
@@ -339,8 +350,8 @@
     },
     {
       "id": "quantitative-tatqa-26",
-      "question": "What was the percentage change in Earnings (loss) per share—basic between 2018 and 2019?",
-      "expected_answer": "To calculate the percentage change in Earnings (loss) per share—basic between 2018 and 2019, we need to compare the values for these two years:\n\n- Earnings (loss) per share—basic for 2018: $(0.40)\n- Earnings (loss) per share—basic for 2019: $(1.11)\n\nFirst, we calculate the difference between the two values:\n$(1.11) - $(0.40) = $(0.71)\n\nNext, we calculate the percentage change using the formula:\nPercentage Change = (|New Value - Old Value| / |Old Value|) * 100\n\nPercentage Change = (0.71 / 0.40) * 100 ≈ 177.5%\n\nTherefore, the percentage change in Earnings (loss) per share—basic between 2018 and 2019 was approximately 177.5%.",
+      "question": "What was the percentage change in Earnings (loss) per share\u2014basic between 2018 and 2019?",
+      "expected_answer": "To calculate the percentage change in Earnings (loss) per share\u2014basic between 2018 and 2019, we need to compare the values for these two years:\n\n- Earnings (loss) per share\u2014basic for 2018: $(0.40)\n- Earnings (loss) per share\u2014basic for 2019: $(1.11)\n\nFirst, we calculate the difference between the two values:\n$(1.11) - $(0.40) = $(0.71)\n\nNext, we calculate the percentage change using the formula:\nPercentage Change = (|New Value - Old Value| / |Old Value|) * 100\n\nPercentage Change = (0.71 / 0.40) * 100 \u2248 177.5%\n\nTherefore, the percentage change in Earnings (loss) per share\u2014basic between 2018 and 2019 was approximately 177.5%.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -580,7 +591,7 @@
     {
       "id": "quantitative-tatqa-46",
       "question": "What was the percentage change in Net profit/(loss) for the year excluding impairment in 2019 from 2018?",
-      "expected_answer": "The Net profit/(loss) for the year excluding impairment was 46.0 in 2018 and 166.0 in 2019. To calculate the percentage change:\n\nPercentage Change = [(New Value - Old Value) / Old Value] * 100\n                   = [(166.0 - 46.0) / 46.0] * 100\n                   = (120.0 / 46.0) * 100\n                   ≈ 260.87%\n\nTherefore, the percentage change in Net profit/(loss) for the year excluding impairment from 2018 to 2019 was approximately 260.87%.",
+      "expected_answer": "The Net profit/(loss) for the year excluding impairment was 46.0 in 2018 and 166.0 in 2019. To calculate the percentage change:\n\nPercentage Change = [(New Value - Old Value) / Old Value] * 100\n                   = [(166.0 - 46.0) / 46.0] * 100\n                   = (120.0 / 46.0) * 100\n                   \u2248 260.87%\n\nTherefore, the percentage change in Net profit/(loss) for the year excluding impairment from 2018 to 2019 was approximately 260.87%.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -700,7 +711,7 @@
     {
       "id": "quantitative-tatqa-6",
       "question": "What is the Share Incentive Plan ('SIP')?",
-      "expected_answer": "The Share Incentive Plan (‘SIP’) established in 2015 by the Group awarded eligible employees free shares (or nil-cost options in the case of employees in Ireland) valued at £3,600 each based on the share price at the time of the Company’s admission to the Stock Exchange in March 2015. The SIP shareholders are entitled to dividends over a three-year service period (‘Vesting Period’), and there are no performance conditions applicable to the vesting of SIP shares. The fair value of the SIP awards at the grant date was measured to be £2.72 using the Black-Scholes model, and the resulting share-based payments charge is being spread evenly over the Vesting Period.",
+      "expected_answer": "The Share Incentive Plan (\u2018SIP\u2019) established in 2015 by the Group awarded eligible employees free shares (or nil-cost options in the case of employees in Ireland) valued at \u00a33,600 each based on the share price at the time of the Company\u2019s admission to the Stock Exchange in March 2015. The SIP shareholders are entitled to dividends over a three-year service period (\u2018Vesting Period\u2019), and there are no performance conditions applicable to the vesting of SIP shares. The fair value of the SIP awards at the grant date was measured to be \u00a32.72 using the Black-Scholes model, and the resulting share-based payments charge is being spread evenly over the Vesting Period.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -748,7 +759,7 @@
     {
       "id": "quantitative-tatqa-10",
       "question": "What is the percentage change between Accounts Payable to Supplier A from 2018 to 2019?",
-      "expected_answer": "The percentage change between Accounts Payable to Supplier A from 2018 to 2019 can be calculated using the following formula:\n\nPercentage Change = ((New Value - Old Value) / Old Value) * 100\n\nIn this case:\nOld Value (2018) = 33%\nNew Value (2019) = 40%\n\nPercentage Change = ((40% - 33%) / 33%) * 100\nPercentage Change = (7 / 33) * 100\nPercentage Change ≈ 21.21%\n\nTherefore, the percentage change between Accounts Payable to Supplier A from 2018 to 2019 is approximately 21.21%.",
+      "expected_answer": "The percentage change between Accounts Payable to Supplier A from 2018 to 2019 can be calculated using the following formula:\n\nPercentage Change = ((New Value - Old Value) / Old Value) * 100\n\nIn this case:\nOld Value (2018) = 33%\nNew Value (2019) = 40%\n\nPercentage Change = ((40% - 33%) / 33%) * 100\nPercentage Change = (7 / 33) * 100\nPercentage Change \u2248 21.21%\n\nTherefore, the percentage change between Accounts Payable to Supplier A from 2018 to 2019 is approximately 21.21%.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -1084,7 +1095,7 @@
     {
       "id": "quantitative-tatqa-38",
       "question": "What was the percentage change in PSP payments for the Group in 2019 from 2018?",
-      "expected_answer": "To calculate the percentage change in PSP payments for the Group in 2019 from 2018, we first need to find the PSP payments for both years.\n\n- PSP payments in 2018 for the Group: £1.8m\n- PSP payments in 2019 for the Group: £2.1m\n\nNext, we calculate the percentage change using the formula:\n\nPercentage Change = ((PSP payments in 2019 - PSP payments in 2018) / PSP payments in 2018) x 100\n\nTherefore, the percentage change in PSP payments for the Group in 2019 from 2018 is:\n\n((2.1 - 1.8) / 1.8) x 100 = (0.3 / 1.8) x 100 ≈ 16.67%\n\nSo, the percentage change in PSP payments for the Group in 2019 from 2018 is approximately 16.67%.",
+      "expected_answer": "To calculate the percentage change in PSP payments for the Group in 2019 from 2018, we first need to find the PSP payments for both years.\n\n- PSP payments in 2018 for the Group: \u00a31.8m\n- PSP payments in 2019 for the Group: \u00a32.1m\n\nNext, we calculate the percentage change using the formula:\n\nPercentage Change = ((PSP payments in 2019 - PSP payments in 2018) / PSP payments in 2018) x 100\n\nTherefore, the percentage change in PSP payments for the Group in 2019 from 2018 is:\n\n((2.1 - 1.8) / 1.8) x 100 = (0.3 / 1.8) x 100 \u2248 16.67%\n\nSo, the percentage change in PSP payments for the Group in 2019 from 2018 is approximately 16.67%.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -1156,7 +1167,7 @@
     {
       "id": "quantitative-tatqa-44",
       "question": "What was the change in PSP payments for the Group in 2019 from 2018?",
-      "expected_answer": "The change in PSP payments for the Group in 2019 from 2018 was an increase of £0.3m. In 2018, the PSP payments for the Group were £1.8m, and in 2019 they increased to £2.1m.",
+      "expected_answer": "The change in PSP payments for the Group in 2019 from 2018 was an increase of \u00a30.3m. In 2018, the PSP payments for the Group were \u00a31.8m, and in 2019 they increased to \u00a32.1m.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -1300,7 +1311,7 @@
     {
       "id": "quantitative-tatqa-56",
       "question": "What was the percentage change in adjusted EBITDA between 2018 and 2019?",
-      "expected_answer": "To calculate the percentage change in Adjusted EBITDA between 2018 and 2019, we first need to find the difference in Adjusted EBITDA between the two years.\n\nAdjusted EBITDA in 2019: $108,307\nAdjusted EBITDA in 2018: $93,081\n\nDifference: $108,307 - $93,081 = $15,226\n\nNext, we calculate the percentage change:\n\nPercentage change = (Difference / Adjusted EBITDA in 2018) x 100\nPercentage change = ($15,226 / $93,081) x 100\nPercentage change ≈ 16.35%\n\nTherefore, the percentage change in Adjusted EBITDA between 2018 and 2019 is approximately 16.35%.",
+      "expected_answer": "To calculate the percentage change in Adjusted EBITDA between 2018 and 2019, we first need to find the difference in Adjusted EBITDA between the two years.\n\nAdjusted EBITDA in 2019: $108,307\nAdjusted EBITDA in 2018: $93,081\n\nDifference: $108,307 - $93,081 = $15,226\n\nNext, we calculate the percentage change:\n\nPercentage change = (Difference / Adjusted EBITDA in 2018) x 100\nPercentage change = ($15,226 / $93,081) x 100\nPercentage change \u2248 16.35%\n\nTherefore, the percentage change in Adjusted EBITDA between 2018 and 2019 is approximately 16.35%.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -1408,7 +1419,7 @@
     {
       "id": "quantitative-tatqa-65",
       "question": "How does the company calculate the volatility of the derivatives?",
-      "expected_answer": "The company calculates the expected volatility of the derivatives based on the corresponding volatility of the Company’s peer group stock price for a period consistent with the warrants’ expected term.",
+      "expected_answer": "The company calculates the expected volatility of the derivatives based on the corresponding volatility of the Company\u2019s peer group stock price for a period consistent with the warrants\u2019 expected term.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -1552,7 +1563,7 @@
     {
       "id": "quantitative-tatqa-77",
       "question": "In which year was Operating profit larger?",
-      "expected_answer": "Operating profit was larger in the year ended 31 March 2019, with a value of £243.7m compared to £221.3m in the restated year ended 31 March 2018.",
+      "expected_answer": "Operating profit was larger in the year ended 31 March 2019, with a value of \u00a3243.7m compared to \u00a3221.3m in the restated year ended 31 March 2018.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -1564,7 +1575,7 @@
     {
       "id": "quantitative-tatqa-78",
       "question": "What is the percentage change in the cash flows from operating activities from 2018 to 2019?",
-      "expected_answer": "The cash flows from operating activities decreased by £91.5 million from 2018 to 2019. To calculate the percentage change, you can use the following formula:\n\nPercentage Change = ((Final Value - Initial Value) / Initial Value) x 100\n\nIn this case:\n\nPercentage Change = ((£11.1 million - £102.6 million) / £102.6 million) x 100\nPercentage Change = (£-91.5 million / £102.6 million) x 100\nPercentage Change ≈ -89.36%\n\nTherefore, the percentage change in the cash flows from operating activities from 2018 to 2019 is approximately -89.36%.",
+      "expected_answer": "The cash flows from operating activities decreased by \u00a391.5 million from 2018 to 2019. To calculate the percentage change, you can use the following formula:\n\nPercentage Change = ((Final Value - Initial Value) / Initial Value) x 100\n\nIn this case:\n\nPercentage Change = ((\u00a311.1 million - \u00a3102.6 million) / \u00a3102.6 million) x 100\nPercentage Change = (\u00a3-91.5 million / \u00a3102.6 million) x 100\nPercentage Change \u2248 -89.36%\n\nTherefore, the percentage change in the cash flows from operating activities from 2018 to 2019 is approximately -89.36%.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -1648,7 +1659,7 @@
     {
       "id": "quantitative-tatqa-85",
       "question": "What was the percentage change in deferred value in 2019 from 2018?",
-      "expected_answer": "To calculate the percentage change in deferred value in 2019 from 2018, we need to find the difference between the total deferred value in 2019 and 2018, and then calculate the percentage change.\n\nTotal deferred value in 2019 = $115.0M\nTotal deferred value in 2018 = $120.7M\n\nDifference = $115.0M - $120.7M = -$5.7M\n\nPercentage change = (Difference / Total deferred value in 2018) * 100\nPercentage change = (-5.7 / 120.7) * 100\nPercentage change ≈ -4.72%\n\nTherefore, the percentage change in deferred value in 2019 from 2018 was approximately -4.72%. This indicates a decrease in deferred value from 2018 to 2019.",
+      "expected_answer": "To calculate the percentage change in deferred value in 2019 from 2018, we need to find the difference between the total deferred value in 2019 and 2018, and then calculate the percentage change.\n\nTotal deferred value in 2019 = $115.0M\nTotal deferred value in 2018 = $120.7M\n\nDifference = $115.0M - $120.7M = -$5.7M\n\nPercentage change = (Difference / Total deferred value in 2018) * 100\nPercentage change = (-5.7 / 120.7) * 100\nPercentage change \u2248 -4.72%\n\nTherefore, the percentage change in deferred value in 2019 from 2018 was approximately -4.72%. This indicates a decrease in deferred value from 2018 to 2019.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -1672,7 +1683,7 @@
     {
       "id": "quantitative-tatqa-87",
       "question": "What is the percentage change of devices sold from 2018 to 2019?",
-      "expected_answer": "To calculate the percentage change of devices sold from 2018 to 2019, we first need to find the difference in the number of devices sold between the two years.\n\nDevices sold in 2018: 13,939\nDevices sold in 2019: 15,988\n\nDifference = 15,988 - 13,939 = 2,049\n\nNext, we calculate the percentage change using the following formula:\n\nPercentage Change = (Difference / Devices sold in 2018) * 100\n\nPercentage Change = (2,049 / 13,939) * 100 ≈ 14.7%\n\nTherefore, the percentage change of devices sold from 2018 to 2019 is approximately 14.7%.",
+      "expected_answer": "To calculate the percentage change of devices sold from 2018 to 2019, we first need to find the difference in the number of devices sold between the two years.\n\nDevices sold in 2018: 13,939\nDevices sold in 2019: 15,988\n\nDifference = 15,988 - 13,939 = 2,049\n\nNext, we calculate the percentage change using the following formula:\n\nPercentage Change = (Difference / Devices sold in 2018) * 100\n\nPercentage Change = (2,049 / 13,939) * 100 \u2248 14.7%\n\nTherefore, the percentage change of devices sold from 2018 to 2019 is approximately 14.7%.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -1684,7 +1695,7 @@
     {
       "id": "quantitative-tatqa-88",
       "question": "What is the percentage change in the software license revenue from 2018 to 2019?",
-      "expected_answer": "To calculate the percentage change in software license revenue from 2018 to 2019, we need to use the following formula:\n\nPercentage Change = ((Final Value - Initial Value) / Initial Value) * 100\n\nIn this case:\nInitial Value (2018) = $64,420,000\nFinal Value (2019) = $82,575,000\n\nPercentage Change = (($82,575,000 - $64,420,000) / $64,420,000) * 100\nPercentage Change = ($18,155,000 / $64,420,000) * 100\nPercentage Change = 0.2819 * 100\nPercentage Change ≈ 28.19%\n\nTherefore, the percentage change in software license revenue from 2018 to 2019 is approximately 28.19%.",
+      "expected_answer": "To calculate the percentage change in software license revenue from 2018 to 2019, we need to use the following formula:\n\nPercentage Change = ((Final Value - Initial Value) / Initial Value) * 100\n\nIn this case:\nInitial Value (2018) = $64,420,000\nFinal Value (2019) = $82,575,000\n\nPercentage Change = (($82,575,000 - $64,420,000) / $64,420,000) * 100\nPercentage Change = ($18,155,000 / $64,420,000) * 100\nPercentage Change = 0.2819 * 100\nPercentage Change \u2248 28.19%\n\nTherefore, the percentage change in software license revenue from 2018 to 2019 is approximately 28.19%.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -1756,7 +1767,7 @@
     {
       "id": "quantitative-tatqa-94",
       "question": "What is the US$ value for 2019 translated for?",
-      "expected_answer": "The US$ value for 2019 is translated for the convenience of the reader from euro into U.S. dollars at the Noon Buying Rate for converting euro into U.S. dollars on February 7, 2020, of US$1.0950 per €1.00.",
+      "expected_answer": "The US$ value for 2019 is translated for the convenience of the reader from euro into U.S. dollars at the Noon Buying Rate for converting euro into U.S. dollars on February 7, 2020, of US$1.0950 per \u20ac1.00.",
       "actual_answer": null,
       "f1_score": null,
       "latency_ms": null,
@@ -1825,5 +1836,6 @@
       "tested_at": null,
       "rag_response_raw": null
     }
-  ]
+  ],
+  "last_updated": "2026-02-06T20:54:15.674952"
 }
