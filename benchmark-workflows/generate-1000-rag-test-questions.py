@@ -761,6 +761,17 @@ if __name__ == "__main__":
         save_progress("phase2_graph", len(all_questions), all_questions)
         time.sleep(1)
 
+    # Fill gap: if frames was fully deduplicated, get more from 2wiki
+    graph_count_now = sum(1 for q in all_questions if q["rag_target"] == "graph")
+    if graph_count_now < 500:
+        gap = 500 - graph_count_now
+        print(f"\n  [FILL] Need {gap} more graph questions, fetching from 2wikimultihopqa...")
+        ds_copy = dict(GRAPH_RAG_DATASETS[1])
+        ds_copy["target_count"] = gap
+        questions = extract_questions(ds_copy, existing_hashes, generated_hashes)
+        all_questions.extend(questions)
+        save_progress("phase2_graph_fill", len(all_questions), all_questions)
+
     # Quantitative RAG Phase 2: rest of tatqa (100) + convfinqa (100) + wikitable (50)
     for ds in QUANTITATIVE_RAG_DATASETS[1:]:
         ds_copy = dict(ds)
