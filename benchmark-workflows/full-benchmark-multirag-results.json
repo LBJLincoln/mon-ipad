@@ -1,7 +1,7 @@
 {
   "suite": "MULTI-RAG FULL BENCHMARK (Graph + Quantitative)",
   "started_at": "2026-02-06T15:14:13.445537",
-  "updated_at": "2026-02-06T15:14:39.646595",
+  "updated_at": "2026-02-06T15:14:49.054400",
   "config": {
     "test_type": "e2e",
     "batch_size": 100,
@@ -26,12 +26,12 @@
     "note": "Standard RAG already tested (7824 questions in previous session)"
   },
   "summary": {
-    "total_completed": 6148,
-    "total_successes": 6148,
+    "total_completed": 7648,
+    "total_successes": 7648,
     "total_errors": 0,
     "total_expected": 15648,
-    "progress_pct": "39.3%",
-    "elapsed_seconds": 26,
+    "progress_pct": "48.9%",
+    "elapsed_seconds": 35,
     "error_rate": "0.00%"
   },
   "results": [
@@ -153,6 +153,40 @@
       },
       "latency_s": 1.5,
       "timestamp": "2026-02-06T15:14:39.644811"
+    },
+    {
+      "dataset": "pubmedqa",
+      "rag_type": "graph",
+      "items": 500,
+      "test_type": "e2e",
+      "status": "success",
+      "error": null,
+      "response_data": {
+        "run_id": "test-e2e-pubmedqa-1770390879920-oszu20",
+        "test_type": "e2e",
+        "rag_target": "graph",
+        "total_items": 500,
+        "status": "completed"
+      },
+      "latency_s": 1.6,
+      "timestamp": "2026-02-06T15:14:41.002677"
+    },
+    {
+      "dataset": "triviaqa",
+      "rag_type": "quantitative",
+      "items": 1000,
+      "test_type": "e2e",
+      "status": "success",
+      "error": null,
+      "response_data": {
+        "run_id": "test-e2e-triviaqa-1770390886314-jpemrf",
+        "test_type": "e2e",
+        "rag_target": "quantitative",
+        "total_items": 1000,
+        "status": "completed"
+      },
+      "latency_s": 3.1,
+      "timestamp": "2026-02-06T15:14:49.053658"
     }
   ]
 }
