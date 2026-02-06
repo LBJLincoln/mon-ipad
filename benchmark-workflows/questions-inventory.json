@@ -1,0 +1,177 @@
+{
+  "generated_at": "2026-02-06T18:30:00Z",
+  "title": "Complete Questions Inventory — Status Report",
+
+  "summary": {
+    "total_questions_available": 29053,
+    "total_questions_sent": 41731,
+    "total_valid_responses": 89,
+    "valid_response_rate": "0.2%",
+    "graph_quant_1000_status": "NEVER_SENT",
+    "main_blocker": "Graph RAG returns raw community summaries instead of answers"
+  },
+
+  "datasets_in_supabase": {
+    "total": 28283,
+    "with_answer": 69,
+    "with_error": 28134,
+    "datasets": [
+      {"name": "asqa", "total": 2750, "answered": 0, "errored": 2750, "remaining": 2750},
+      {"name": "finqa", "total": 2830, "answered": 0, "errored": 2830, "remaining": 2830},
+      {"name": "frames", "total": 1943, "answered": 0, "errored": 1943, "remaining": 1943},
+      {"name": "hotpotqa", "total": 3320, "answered": 0, "errored": 3320, "remaining": 3320},
+      {"name": "msmarco", "total": 5250, "answered": 0, "errored": 5250, "remaining": 5250},
+      {"name": "narrativeqa", "total": 2750, "answered": 0, "errored": 2750, "remaining": 2750},
+      {"name": "popqa", "total": 2250, "answered": 0, "errored": 2250, "remaining": 2250},
+      {"name": "pubmedqa", "total": 1340, "answered": 0, "errored": 1340, "remaining": 1340},
+      {"name": "squad_v2", "total": 2600, "answered": 69, "errored": 2451, "remaining": 2531},
+      {"name": "triviaqa", "total": 3250, "answered": 0, "errored": 3250, "remaining": 3250}
+    ]
+  },
+
+  "graph_quant_1000_questions": {
+    "file": "rag-1000-test-questions.json",
+    "total": 1000,
+    "status": "NEVER_SENT_TO_N8N",
+    "graph_questions": {
+      "total": 500,
+      "by_dataset": {
+        "musique": 200,
+        "2wikimultihopqa": 300
+      },
+      "hf_sources": [
+        "bdsaglam/musique",
+        "framolfese/2WikiMultihopQA"
+      ]
+    },
+    "quantitative_questions": {
+      "total": 500,
+      "by_dataset": {
+        "finqa": 200,
+        "tatqa": 150,
+        "convfinqa": 100,
+        "wikitablequestions": 50
+      },
+      "hf_sources": [
+        "dreamerdeo/finqa",
+        "galileo-ai/ragbench",
+        "MehdiHosseiniMoghadam/ConvFinQA",
+        "TableSenseAI/WikiTableQuestions"
+      ]
+    }
+  },
+
+  "quality_assessment": {
+    "standard_rag": {
+      "status": "FUNCTIONAL_BUT_IMPERFECT",
+      "issues": [
+        "Responds in French instead of English for some questions",
+        "Overly verbose responses (paragraphs instead of concise answers)",
+        "accuracy=0 due to exact-match evaluation (should use F1)",
+        "Adds unrequested citations like [1], [3]"
+      ],
+      "sample_accuracy_manual": "~70% (correct answer present in verbose response)"
+    },
+    "graph_rag": {
+      "status": "CATASTROPHIC",
+      "issues": [
+        "Returns raw Neo4j community summaries instead of LLM-generated answers",
+        "Responses are concatenated fragments separated by ' | '",
+        "Contains completely irrelevant content (e.g., 'Machine learning uses neural networks' for a Normandy question)",
+        "No multi-hop reasoning — just community summary retrieval",
+        "Answer extraction reads community summaries instead of LLM response"
+      ],
+      "sample_accuracy_manual": "~5% (occasionally correct info is embedded in garbage)"
+    },
+    "quantitative_rag": {
+      "status": "UNTESTED_ON_CORRECT_DATASETS",
+      "issues": [
+        "Returns empty string for non-financial questions (by design)",
+        "Never tested with finqa/tatqa/convfinqa — the datasets it needs",
+        "Text-to-SQL pipeline works but needs proper tabular data"
+      ],
+      "sample_accuracy_manual": "UNKNOWN — needs finqa dataset testing"
+    }
+  },
+
+  "routing_analysis": {
+    "graph_correct_rate": "21.6%",
+    "graph_incorrect_rate": "5.6%",
+    "graph_ambiguous_rate": "72.8%",
+    "quantitative_correct_rate": "75.6%",
+    "quantitative_incorrect_rate": "0.2%",
+    "quantitative_ambiguous_rate": "24.2%",
+    "worst_datasets": [
+      {"name": "musique", "type": "graph", "correct_rate": "18.5%"},
+      {"name": "2wikimultihopqa", "type": "graph", "correct_rate": "23.7%"}
+    ],
+    "best_datasets": [
+      {"name": "convfinqa", "type": "quantitative", "correct_rate": "87.0%"},
+      {"name": "finqa", "type": "quantitative", "correct_rate": "83.5%"}
+    ]
+  },
+
+  "remaining_work": {
+    "priority_1_fix_graph_rag": {
+      "description": "Fix Graph RAG answer extraction — currently returns community summaries",
+      "blocking": true,
+      "files_to_fix": [
+        "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED (1).json",
+        "WF-Benchmark-RAG-Tester.json"
+      ]
+    },
+    "priority_2_run_1000_questions": {
+      "description": "Send the 1000 Graph+Quantitative questions to n8n",
+      "file": "rag-1000-test-questions.json",
+      "total": 1000,
+      "approach": "Batch of 100 with evaluation every 100, git push every 1000"
+    },
+    "priority_3_rerun_28k": {
+      "description": "Re-run all 28,053 questions from Supabase with corrected workflows",
+      "total": 28053,
+      "approach": "Purge errors first, then re-run in batches of 100"
+    }
+  },
+
+  "fixes_already_applied": [
+    "fetch() → this.helpers.httpRequest()",
+    "RAG endpoint URLs corrected",
+    "responseMode: responseNode for Graph/Quant webhooks",
+    "batch_size reduced to 2 for Code node timeout",
+    "Multi-format answer extraction added",
+    "JS truthy bug fixed ([] → .length check)"
+  ],
+
+  "fixes_still_needed": [
+    {
+      "id": "A",
+      "issue": "Graph RAG returns raw community summaries",
+      "impact": "CRITICAL — all graph responses are garbage",
+      "fix": "Fix answer extraction in Graph RAG workflow to use LLM response, not community summaries"
+    },
+    {
+      "id": "B",
+      "issue": "Responses in French for English questions",
+      "impact": "HIGH — breaks automated evaluation",
+      "fix": "Add language detection or force English response in RAG prompt"
+    },
+    {
+      "id": "C",
+      "issue": "Evaluation uses exact match instead of F1",
+      "impact": "HIGH — accuracy always 0 even for correct answers",
+      "fix": "Implement token-level F1 score and fuzzy matching"
+    },
+    {
+      "id": "D",
+      "issue": "Graph routing 73% ambiguous",
+      "impact": "MEDIUM — questions may go to wrong pipeline",
+      "fix": "Improve orchestrator routing prompt for multi-hop questions"
+    },
+    {
+      "id": "E",
+      "issue": "Quantitative RAG returns empty for non-financial data",
+      "impact": "LOW — by design, just filter questions before sending",
+      "fix": "Pre-filter questions by dataset type before routing"
+    }
+  ]
+}
