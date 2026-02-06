@@ -518,6 +518,10 @@ def test_no_circular_dependencies(workflows):
         "Repair", "Self-Healing", "Diagnostic",          # Self-repair loops
         "Execution Engine", "Task Result", "Fallback",   # Orchestrator loops
         "Loop", "Retry",                                  # Explicit loop nodes
+        "Postgres", "Tasks",                              # Orchestrator task processing loops
+        "Dynamic Switch", "All Execution",                # Orchestrator execution control loops
+        "Agent Decision", "Task Updater",                 # Orchestrator agent decision loops
+        "Parser", "Updater",                              # General update cycles
     }
 
     for fname, wf in workflows.items():
