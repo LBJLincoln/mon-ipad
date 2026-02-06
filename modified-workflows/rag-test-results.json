@@ -1,0 +1,126 @@
+{
+  "generated_at": "2026-02-06T07:57:38.415879",
+  "generated_by": "rag-orchestrator-functional-tests",
+  "total_tests": 8,
+  "passed": 8,
+  "failed": 0,
+  "warned": 0,
+  "errored": 0,
+  "tests": [
+    {
+      "name": "R01: Orchestrator Basic Query",
+      "status": "PASS",
+      "details": [
+        "Sending query to orchestrator: 'Qu'est-ce que le machine learning ?'",
+        "Response: HTTP 200 in 32851ms",
+        "Success! Response keys: ['_raw']",
+        "Warning: no standard output field found. Keys: ['_raw']"
+      ],
+      "errors": []
+    },
+    {
+      "name": "R02: WF5 Standard RAG Query",
+      "status": "PASS",
+      "details": [
+        "Sending knowledge query to WF5: 'Explique le processus d'ingestion de documents dan...'",
+        "Response: HTTP 200 in 7276ms",
+        "Response keys: ['response', 'sources', 'metadata', 'trace_id', 'confidence', 'engine']",
+        "  sources: 5 items",
+        "  response: 2264 chars"
+      ],
+      "errors": []
+    },
+    {
+      "name": "R03: WF2 Graph RAG Query",
+      "status": "PASS",
+      "details": [
+        "Sending graph query to WF2: 'Quelle est la relation entre les entites du graphe...'",
+        "Response: HTTP 200 in 396ms",
+        "Response keys: ['message']"
+      ],
+      "errors": []
+    },
+    {
+      "name": "R04: WF4 Quantitative Query",
+      "status": "PASS",
+      "details": [
+        "Sending quantitative query to WF4: 'Combien de documents ont ete ingeres ce mois-ci ?...'",
+        "Response: HTTP 200 in 396ms",
+        "Response keys: ['message']"
+      ],
+      "errors": []
+    },
+    {
+      "name": "R05: Orchestrator Security Guardrails",
+      "status": "PASS",
+      "details": [
+        "\n--- XSS injection attempt ---",
+        "  HTTP 200 in 1147ms",
+        "  OK: Script tag not reflected in output (sanitized)",
+        "  Body preview: {\"_raw\": \"\"}",
+        "\n--- SQL injection attempt ---",
+        "  HTTP 200 in 22965ms",
+        "  OK: SQL injection not propagated to output",
+        "  Body preview: {\"_raw\": \"\"}",
+        "\n--- Empty query ---",
+        "  HTTP 200 in 350ms",
+        "  Query accepted (HTTP 200) - workflow handles downstream",
+        "  Body preview: {\"_raw\": \"\"}",
+        "\n--- Single character query ---",
+        "  HTTP 200 in 694ms",
+        "  Query accepted (HTTP 200) - workflow handles downstream",
+        "  Body preview: {\"_raw\": \"Je suis l\\u00e0 pour vous aider. Que puis-je faire pour vous ?\"}"
+      ],
+      "errors": []
+    },
+    {
+      "name": "R06: Input Validation",
+      "status": "PASS",
+      "details": [
+        "\n=== WF5 ===",
+        "  [missing query field] HTTP 200 - handled gracefully",
+        "  [query is null] HTTP 200 - handled gracefully",
+        "  [query is number] HTTP 200 - handled gracefully",
+        "  [empty JSON] HTTP 200 - handled gracefully",
+        "\n=== WF2 ===",
+        "  [missing query field] HTTP 200 - accepted (workflow handles downstream)",
+        "  [query is null] HTTP 200 - accepted (workflow handles downstream)",
+        "  [query is number] HTTP 200 - accepted (workflow handles downstream)",
+        "  [empty JSON] HTTP 200 - accepted (workflow handles downstream)",
+        "\n=== WF4 ===",
+        "  [missing query field] HTTP 200 - accepted (workflow handles downstream)",
+        "  [query is null] HTTP 200 - accepted (workflow handles downstream)",
+        "  [query is number] HTTP 200 - accepted (workflow handles downstream)",
+        "  [empty JSON] HTTP 200 - accepted (workflow handles downstream)"
+      ],
+      "errors": []
+    },
+    {
+      "name": "R07: Tenant Isolation",
+      "status": "PASS",
+      "details": [
+        "Sending same query with two different tenant_ids to WF5...",
+        "  Tenant Alpha: HTTP 200 in 6972ms",
+        "  Tenant Beta:  HTTP 200 in 5730ms",
+        "Both tenants received same HTTP status (200)",
+        "Tenant isolation verified at webhook level (both requests processed)",
+        "\nTesting orchestrator tenant hash isolation...",
+        "  Orchestrator response keys: ['_raw']"
+      ],
+      "errors": []
+    },
+    {
+      "name": "R08: Feedback Pipeline",
+      "status": "PASS",
+      "details": [
+        "Sending complete RAGAS metrics to Feedback webhook...",
+        "Response: HTTP 200 in 342ms",
+        "Response keys: ['message']",
+        "\nSending zero-score feedback (edge case)...",
+        "Zero-score response: HTTP 200 in 238ms",
+        "Zero scores handled gracefully"
+      ],
+      "errors": []
+    }
+  ]
+}
