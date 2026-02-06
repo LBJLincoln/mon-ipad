@@ -1,0 +1,606 @@
+{
+  "workflow_file": "TEST - SOTA 2026 - Feedback V3.1.json",
+  "workflow_name": "TEST - SOTA 2026 - Feedback V3.1",
+  "workflow_id": "iVsj6dq8UpX5Dk7c",
+  "generated_at": "2026-02-05T00:00:00.000Z",
+  "generated_by": "patch-writer-agent",
+  "patch_version": "1.0.0",
+  "patches": [
+    {
+      "op": "add",
+      "path": "/connections/Webhook Feedback/main/0/-",
+      "value": {
+        "node": "Implicit Feedback Analyzer",
+        "type": "main",
+        "index": 0
+      },
+      "metadata": {
+        "reason": "Implicit Feedback Analyzer [8] is disconnected from the main flow. Webhook must fan out to both Metrics Aggregator (explicit feedback path) and Implicit Feedback Analyzer (implicit feedback / RLHF path) so every incoming feedback event is analysed on both branches in parallel.",
+        "issue_ref": "ISSUE-FBK-01",
+        "severity": "P0",
+        "node_name": "Webhook Feedback",
+        "target_node": "Implicit Feedback Analyzer"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/connections/LLM Feedback Analyzer V3.1 (RAGAS)/main",
+      "value": [
+        [
+          {
+            "node": "Notify Team V3.1 (Enhanced Slack)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Breaker Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "metadata": {
+        "reason": "Two fixes combined: (1) ISSUE-FBK-02: Auto-Repair Limiter was on main[1] (error output) of LLM Feedback Analyzer which is an httpRequest node without onError:continueErrorOutput, meaning main[1] never fires. Both downstream nodes must be on main[0]. (2) ISSUE-FBK-08: Loop Breaker Check must execute BEFORE Auto-Repair Limiter because the limiter references $node['Loop Breaker Check'].json.repair_count which would be undefined if Loop Breaker has not run yet. So we connect LLM Analyzer main[0] -> [Notify Team, Loop Breaker Check].",
+        "issue_ref": "ISSUE-FBK-02, ISSUE-FBK-08",
+        "severity": "P0",
+        "node_name": "LLM Feedback Analyzer V3.1 (RAGAS)",
+        "before": [
+          [{"node": "Notify Team V3.1 (Enhanced Slack)", "type": "main", "index": 0}],
+          [{"node": "Auto-Repair Limiter", "type": "main", "index": 0}]
+        ]
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/connections/Loop Breaker Check/main",
+      "value": [
+        [
+          {
+            "node": "Auto-Repair Limiter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "metadata": {
+        "reason": "Swap execution order: Loop Breaker Check now feeds into Auto-Repair Limiter (was the reverse). This ensures repair_count is available when Auto-Repair Limiter evaluates whether to proceed.",
+        "issue_ref": "ISSUE-FBK-08",
+        "severity": "P2",
+        "node_name": "Loop Breaker Check",
+        "before": [
+          [{"node": "Is Repair Needed?", "type": "main", "index": 0}]
+        ]
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/connections/Auto-Repair Limiter/main",
+      "value": [
+        [
+          {
+            "node": "Is Repair Needed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "metadata": {
+        "reason": "Complete the swap: Auto-Repair Limiter now outputs to Is Repair Needed? (previously it connected to Loop Breaker Check). New chain: Loop Breaker Check -> Auto-Repair Limiter -> Is Repair Needed? -> Trigger WF4.",
+        "issue_ref": "ISSUE-FBK-08",
+        "severity": "P2",
+        "node_name": "Auto-Repair Limiter",
+        "before": [
+          [{"node": "Loop Breaker Check", "type": "main", "index": 0}]
+        ]
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/10/position",
+      "value": [240, 464],
+      "metadata": {
+        "reason": "Reposition Loop Breaker Check to fit new execution order. Moves from position [464,560] to [240,464] (the former Auto-Repair Limiter slot) so the visual layout matches the data flow.",
+        "issue_ref": "ISSUE-FBK-08",
+        "severity": "P2",
+        "node_name": "Loop Breaker Check",
+        "before": [464, 560]
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/5/position",
+      "value": [464, 464],
+      "metadata": {
+        "reason": "Reposition Auto-Repair Limiter to follow Loop Breaker Check visually. Moves from [240,464] to [464,464].",
+        "issue_ref": "ISSUE-FBK-08",
+        "severity": "P2",
+        "node_name": "Auto-Repair Limiter",
+        "before": [240, 464]
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/6/position",
+      "value": [688, 464],
+      "metadata": {
+        "reason": "Shift Is Repair Needed? rightward to accommodate the swapped nodes. Moves from [464,464] to [688,464].",
+        "issue_ref": "ISSUE-FBK-08",
+        "severity": "P2",
+        "node_name": "Is Repair Needed?",
+        "before": [464, 464]
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/7/position",
+      "value": [912, 464],
+      "metadata": {
+        "reason": "Shift Trigger WF4 rightward to maintain spacing. Moves from [688,464] to [912,464].",
+        "issue_ref": "ISSUE-FBK-08",
+        "severity": "P2",
+        "node_name": "Trigger WF4 - Deep Re-Indexing",
+        "before": [688, 464]
+      }
+    },
+    {
+      "op": "add",
+      "path": "/nodes/-",
+      "value": {
+        "parameters": {
+          "content": "# WARNING - ISSUE-FBK-06 (P1): Missing Alert Filter\n\nSlack notifications currently fire on EVERY feedback event regardless of alert_level.\n\nTODO (next iteration):\n1. Add an IF node BEFORE Notify Team V3.1 (Enhanced Slack)\n2. Condition: alert_level equals 'CRITICAL' OR alert_level equals 'WARNING'\n3. Suppress 'OK' level notifications to avoid Slack spam\n4. Consider adding rate-limiting (max 1 alert per doc_id per hour)\n\nSeverity: P1 - Important but workflow still functional",
+          "height": 300,
+          "width": 340,
+          "color": 5
+        },
+        "id": "fbk06-slack-filter-note",
+        "name": "TODO: Slack Alert Filter",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [240, -60]
+      },
+      "metadata": {
+        "reason": "Document the need for an IF filter node before Slack notification. Currently every feedback event triggers a Slack message regardless of severity, which causes alert fatigue. A future patch should add an IF node checking alert_level before routing to Slack.",
+        "issue_ref": "ISSUE-FBK-06",
+        "severity": "P1",
+        "node_name": "Notify Team V3.1 (Enhanced Slack)",
+        "action": "documentation_only"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/1/parameters/jsCode",
+      "value": "// V3.1: Enhanced Metrics Aggregator with Drift Detection + SOTA 2026 Answer Completeness\nconst body = $node['Webhook Feedback'].json.body || {};\n\n// Validate scores\nconst validateScore = (val) => {\n  const num = parseFloat(val);\n  if (isNaN(num)) return 0;\n  return Math.max(0, Math.min(1, num));\n};\n\n// === CORE METRICS ===\nconst retrievalScore = validateScore(body.retrieval_score);\nconst validationScore = validateScore(body.validation_score);\nconst docId = String(body.source_file || 'unknown').substring(0, 200);\nconst query = String(body.query || '').substring(0, 500);\nconst responseTime = parseInt(body.response_time_ms) || 0;\nconst sourcesCount = parseInt(body.sources_count) || 0;\n\nconst gap = Math.abs(validationScore - retrievalScore);\n\n// === V3.1: RAGAS-STYLE METRICS ===\nconst faithfulness = validateScore(body.faithfulness || validationScore);\nconst answerRelevance = validateScore(body.answer_relevance || retrievalScore);\nconst contextRelevance = validateScore(body.context_relevance || retrievalScore);\nconst contextPrecision = validateScore(body.context_precision || 0.5);\n\n// === SOTA 2026 F01: ANSWER COMPLETENESS ===\nconst rawCompleteness = validateScore(body.answer_completeness || 0);\n// Heuristic fallback: estimate from source coverage * faithfulness\nconst expectedSources = Math.max(1, parseInt(body.expected_sources) || 3);\nconst sourceCoverage = Math.min(1, sourcesCount / expectedSources);\nconst answerCompleteness = rawCompleteness > 0\n  ? rawCompleteness\n  : Math.round(Math.min(1, sourceCoverage * faithfulness * 1.1) * 1000) / 1000;\n\n// Combined RAGAS score (5 dimensions including answer completeness)\nconst ragasScore = (faithfulness + answerRelevance + contextRelevance + contextPrecision + answerCompleteness) / 5;\n\n// === V3.1: DRIFT DETECTION ===\n// Get historical baseline from static data\nconst staticData = $getWorkflowStaticData('global');\nif (!staticData.metrics) {\n  staticData.metrics = {\n    avgGap: 0.15,\n    avgRagas: 0.75,\n    avgResponseTime: 2000,\n    avgCompleteness: 0.7,\n    queryCount24h: 100,\n    knownTopics: [],\n    lastUpdated: null\n  };\n}\n\nconst baseline = staticData.metrics;\nconst driftSignals = [];\n\n// Performance drift\nconst performanceDrift = ragasScore - baseline.avgRagas;\nif (performanceDrift < -0.1) {\n  driftSignals.push({\n    type: 'PERFORMANCE_DRIFT',\n    severity: performanceDrift < -0.2 ? 'HIGH' : 'MEDIUM',\n    detail: `RAGAS score dropped: ${ragasScore.toFixed(2)} vs baseline ${baseline.avgRagas.toFixed(2)}`\n  });\n}\n\n// Gap drift\nconst gapDrift = gap - baseline.avgGap;\nif (gapDrift > 0.1) {\n  driftSignals.push({\n    type: 'GAP_DRIFT',\n    severity: gapDrift > 0.2 ? 'HIGH' : 'MEDIUM',\n    detail: `Gap increased: ${gap.toFixed(2)} vs baseline ${baseline.avgGap.toFixed(2)}`\n  });\n}\n\n// Latency drift\nif (responseTime > baseline.avgResponseTime * 2) {\n  driftSignals.push({\n    type: 'LATENCY_DRIFT',\n    severity: responseTime > baseline.avgResponseTime * 3 ? 'HIGH' : 'MEDIUM',\n    detail: `Response time: ${responseTime}ms vs baseline ${baseline.avgResponseTime}ms`\n  });\n}\n\n// SOTA 2026 F01: Completeness drift\nconst completenessDrift = answerCompleteness - (baseline.avgCompleteness || 0.7);\nif (completenessDrift < -0.15) {\n  driftSignals.push({\n    type: 'COMPLETENESS_DRIFT',\n    severity: completenessDrift < -0.25 ? 'HIGH' : 'MEDIUM',\n    detail: `Answer completeness dropped: ${answerCompleteness.toFixed(2)} vs baseline ${(baseline.avgCompleteness || 0.7).toFixed(2)}`\n  });\n}\n\n// Topic drift (detect new topics)\nconst queryTopics = query.toLowerCase().split(' ').filter(w => w.length > 4);\nconst newTopics = queryTopics.filter(t => !baseline.knownTopics.includes(t));\nif (newTopics.length > 3) {\n  driftSignals.push({\n    type: 'TOPIC_DRIFT',\n    severity: 'LOW',\n    detail: `Potential new topics detected: ${newTopics.slice(0, 5).join(', ')}`\n  });\n}\n\n// === ALERTS ===\nconst alerts = [];\nif (validationScore > 0.8 && retrievalScore < 0.5) {\n  alerts.push('ALERT_PRECISION: Major correction on business data');\n}\nif (gap > 0.4) {\n  alerts.push('ALERT_GAP: Critical confidence gap detected');\n}\nif (ragasScore < 0.5) {\n  alerts.push('ALERT_QUALITY: Low RAGAS score');\n}\nif (answerCompleteness < 0.3) {\n  alerts.push('ALERT_COMPLETENESS: Answer severely incomplete');\n}\n\n// Combine drift signals into alerts\nfor (const drift of driftSignals) {\n  if (drift.severity === 'HIGH') {\n    alerts.push(`DRIFT_${drift.type}: ${drift.detail}`);\n  }\n}\n\n// Determine alert level\nlet alertLevel = 'OK';\nif (driftSignals.some(d => d.severity === 'HIGH') || alerts.length > 2) {\n  alertLevel = 'CRITICAL';\n} else if (driftSignals.length > 0 || alerts.length > 0) {\n  alertLevel = 'WARNING';\n}\n\n// === UPDATE BASELINE (rolling average) ===\nconst alpha = 0.1; // Smoothing factor\nstaticData.metrics.avgGap = alpha * gap + (1 - alpha) * baseline.avgGap;\nstaticData.metrics.avgRagas = alpha * ragasScore + (1 - alpha) * baseline.avgRagas;\nstaticData.metrics.avgResponseTime = alpha * responseTime + (1 - alpha) * baseline.avgResponseTime;\nstaticData.metrics.avgCompleteness = alpha * answerCompleteness + (1 - alpha) * (baseline.avgCompleteness || 0.7);\nstaticData.metrics.lastUpdated = new Date().toISOString();\n\n// Add new topics to known topics (keep last 1000)\nstaticData.metrics.knownTopics = [...new Set([...baseline.knownTopics, ...queryTopics])].slice(-1000);\n\nreturn {\n  // Core metrics\n  gap_score: Math.round(gap * 1000) / 1000,\n  retrieval_reliability: retrievalScore,\n  validation_feedback: validationScore,\n  doc_id: docId,\n  query: query,\n  response_time_ms: responseTime,\n  sources_count: sourcesCount,\n  \n  // V3.1 + SOTA 2026: RAGAS metrics with answer completeness\n  ragas: {\n    faithfulness: faithfulness,\n    answer_relevance: answerRelevance,\n    context_relevance: contextRelevance,\n    context_precision: contextPrecision,\n    answer_completeness: answerCompleteness,\n    overall: Math.round(ragasScore * 1000) / 1000\n  },\n  \n  // V3.1: Drift detection\n  drift: {\n    signals: driftSignals,\n    signal_count: driftSignals.length,\n    has_high_severity: driftSignals.some(d => d.severity === 'HIGH')\n  },\n  \n  // Alerts\n  alerts: alerts,\n  alert_level: alertLevel,\n  needs_fix: gap > 0.3 || alertLevel === 'CRITICAL',\n  \n  // Timestamps\n  timestamp: new Date().toISOString()\n};",
+      "metadata": {
+        "reason": "SOTA 2026 F01: Add Answer Completeness as the 5th RAGAS dimension. When body.answer_completeness is provided, use it directly. Otherwise, estimate from source coverage (sourcesCount/expectedSources) multiplied by faithfulness. Also adds COMPLETENESS_DRIFT detection and ALERT_COMPLETENESS alert. The combined RAGAS score now divides by 5 instead of 4. Baseline tracking updated to include avgCompleteness.",
+        "issue_ref": "SOTA-F01",
+        "severity": "SOTA",
+        "node_name": "Metrics Aggregator V3.1 (Drift Detection)",
+        "changes": [
+          "Added answerCompleteness variable with heuristic fallback",
+          "RAGAS overall score now averages 5 metrics instead of 4",
+          "Added COMPLETENESS_DRIFT signal detection (threshold: -0.15)",
+          "Added ALERT_COMPLETENESS alert (threshold: < 0.3)",
+          "Baseline staticData.metrics now tracks avgCompleteness",
+          "Output ragas object includes answer_completeness field"
+        ]
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/5/parameters/jsCode",
+      "value": "// Shield #10: Auto-Repair Loop Breaker + SOTA 2026 Auto-Action on Drift\nconst metricsData = $node['Metrics Aggregator V3.1 (Drift Detection)'].json;\nconst loopCheck = $node['Loop Breaker Check']?.json || {};\nconst gapScore = metricsData.gap_score;\nconst docId = metricsData.doc_id;\nconst repairCount = parseInt(loopCheck.repair_count || 0);\nconst driftSignals = metricsData.drift?.signals || [];\nconst hasHighDrift = metricsData.drift?.has_high_severity || false;\n\nconst MAX_REPAIRS_24H = 3;\nconst COOLDOWN_7D = 7 * 24 * 3600 * 1000;\n\n// === LOOP BREAKER: Check repair limit first ===\nif (repairCount >= MAX_REPAIRS_24H) {\n  return {\n    action: 'ESCALATE',\n    file: docId,\n    reason: `Max repairs (${MAX_REPAIRS_24H}) reached in 24h - escalating to data-team`,\n    gap_score: gapScore,\n    repair_count: repairCount,\n    cooldown_until: new Date(Date.now() + COOLDOWN_7D).toISOString(),\n    drift_signals: driftSignals\n  };\n}\n\n// === SOTA 2026 F02: Auto-Action on Drift ===\nconst driftActions = [];\nfor (const signal of driftSignals) {\n  switch (signal.type) {\n    case 'PERFORMANCE_DRIFT':\n      driftActions.push({\n        type: signal.severity === 'HIGH' ? 'RE_INDEX' : 'RECOMPUTE_EMBEDDINGS',\n        strategy: signal.severity === 'HIGH' ? 'hi_res' : 'fast',\n        reason: `Performance drift ${signal.severity}: ${signal.detail}`\n      });\n      break;\n    case 'GAP_DRIFT':\n      driftActions.push({\n        type: 'RE_INDEX',\n        strategy: 'semantic_chunking',\n        reason: `Gap drift detected: ${signal.detail}`\n      });\n      break;\n    case 'COMPLETENESS_DRIFT':\n      driftActions.push({\n        type: 'RE_INDEX',\n        strategy: 'hi_res',\n        reason: `Completeness drift: ${signal.detail}`\n      });\n      break;\n    case 'LATENCY_DRIFT':\n      driftActions.push({\n        type: 'OPTIMIZE_INDEX',\n        strategy: 'rebalance',\n        reason: `Latency drift: ${signal.detail}`\n      });\n      break;\n    case 'TOPIC_DRIFT':\n      driftActions.push({\n        type: 'EXPAND_CORPUS',\n        strategy: 'auto_discover',\n        reason: `New topics detected: ${signal.detail}`\n      });\n      break;\n  }\n}\n\n// Determine primary action from HIGH drift signals\nif (hasHighDrift && driftActions.length > 0) {\n  const primaryAction = driftActions.find(a => a.type === 'RE_INDEX') || driftActions[0];\n  return {\n    action: primaryAction.type,\n    file: docId,\n    strategy: primaryAction.strategy || 'auto',\n    reason: primaryAction.reason,\n    gap_score: gapScore,\n    repair_count: repairCount,\n    drift_actions: driftActions,\n    auto_triggered: true\n  };\n}\n\n// === Legacy gap-based trigger ===\nif (gapScore > 0.3 && docId && docId !== 'unknown') {\n  return {\n    action: 'RE_INDEX',\n    file: docId,\n    strategy: 'hi_res',\n    reason: `Gap de confiance > 0.3 - Declenchement re-indexation WF4 (attempt ${repairCount + 1}/${MAX_REPAIRS_24H})`,\n    gap_score: gapScore,\n    repair_count: repairCount,\n    drift_actions: driftActions,\n    auto_triggered: false\n  };\n}\n\nreturn {\n  action: 'NONE',\n  reason: 'No action required',\n  gap_score: gapScore,\n  drift_actions: driftActions,\n  drift_count: driftSignals.length\n};",
+      "metadata": {
+        "reason": "SOTA 2026 F02: Auto-Action on Drift. The Auto-Repair Limiter now maps each drift signal type to a specific remediation action: PERFORMANCE_DRIFT->RE_INDEX or RECOMPUTE_EMBEDDINGS (based on severity), GAP_DRIFT->RE_INDEX with semantic_chunking, COMPLETENESS_DRIFT->RE_INDEX with hi_res, LATENCY_DRIFT->OPTIMIZE_INDEX, TOPIC_DRIFT->EXPAND_CORPUS. When HIGH severity drift is detected, the primary action (preferring RE_INDEX) is returned with auto_triggered=true. Falls back to legacy gap-based trigger if no high-severity drift. All responses now include drift_actions array for downstream auditability.",
+        "issue_ref": "SOTA-F02",
+        "severity": "SOTA",
+        "node_name": "Auto-Repair Limiter",
+        "changes": [
+          "Added drift signal consumption from Metrics Aggregator",
+          "Maps 5 drift types to specific remediation actions",
+          "Graduated response: HIGH drift triggers automatic action, MEDIUM/LOW logged only",
+          "Primary action selection prefers RE_INDEX when multiple drift types present",
+          "All return paths now include drift_actions array",
+          "Added auto_triggered boolean to distinguish drift-based vs gap-based triggers"
+        ]
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/6/parameters/conditions",
+      "value": {
+        "options": {
+          "caseSensitive": true
+        },
+        "combinator": "and",
+        "conditions": [
+          {
+            "id": "not-none",
+            "leftValue": "={{ $json.action }}",
+            "rightValue": "NONE",
+            "operator": {
+              "type": "string",
+              "operation": "notEquals"
+            }
+          },
+          {
+            "id": "not-escalate",
+            "leftValue": "={{ $json.action }}",
+            "rightValue": "ESCALATE",
+            "operator": {
+              "type": "string",
+              "operation": "notEquals"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "reason": "Update Is Repair Needed? IF condition to handle new SOTA 2026 drift action types (RE_INDEX, RECOMPUTE_EMBEDDINGS, OPTIMIZE_INDEX, EXPAND_CORPUS). Old condition only matched action===RE_INDEX, dropping other actionable types. New condition: action!==NONE AND action!==ESCALATE routes all actionable drift responses to WF4 trigger.",
+        "issue_ref": "SOTA-F02",
+        "severity": "SOTA",
+        "node_name": "Is Repair Needed?",
+        "before": {
+          "conditions": [
+            {
+              "id": "repair-needed",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "RE_INDEX",
+              "operator": {"type": "string", "operation": "equals"}
+            }
+          ]
+        }
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/7/parameters/jsonBody",
+      "value": "={\n  \"action\": \"{{ $json.action }}\",\n  \"document_id\": \"{{ $json.file }}\",\n  \"strategy\": \"{{ $json.strategy }}\",\n  \"priority\": \"high\",\n  \"reason\": \"{{ $json.reason }}\",\n  \"auto_triggered\": {{ $json.auto_triggered || false }},\n  \"drift_actions\": {{ JSON.stringify($json.drift_actions || []) }}\n}",
+      "metadata": {
+        "reason": "Update Trigger WF4 to pass through the dynamic action type from Auto-Repair Limiter instead of hardcoded RE_INDEX. Also forwards strategy, auto_triggered flag, and drift_actions array so the downstream ingestion workflow can adapt its behavior to the specific drift type.",
+        "issue_ref": "SOTA-F02",
+        "severity": "SOTA",
+        "node_name": "Trigger WF4 - Deep Re-Indexing",
+        "before": "={\n  \"action\": \"RE_INDEX\",\n  \"document_id\": \"{{ $json.file }}\",\n  \"strategy\": \"{{ $json.strategy }}\",\n  \"priority\": \"high\",\n  \"reason\": \"{{ $json.reason }}\"\n}"
+      }
+    }
+  ],
+  "rollback_patches": [
+    {
+      "op": "replace",
+      "path": "/connections/Webhook Feedback/main/0",
+      "value": [
+        {
+          "node": "Metrics Aggregator V3.1 (Drift Detection)",
+          "type": "main",
+          "index": 0
+        }
+      ],
+      "metadata": {"rollback_for": "ISSUE-FBK-01"}
+    },
+    {
+      "op": "replace",
+      "path": "/connections/LLM Feedback Analyzer V3.1 (RAGAS)/main",
+      "value": [
+        [
+          {
+            "node": "Notify Team V3.1 (Enhanced Slack)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Auto-Repair Limiter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "metadata": {"rollback_for": "ISSUE-FBK-02, ISSUE-FBK-08"}
+    },
+    {
+      "op": "replace",
+      "path": "/connections/Auto-Repair Limiter/main",
+      "value": [
+        [
+          {
+            "node": "Loop Breaker Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "metadata": {"rollback_for": "ISSUE-FBK-08"}
+    },
+    {
+      "op": "replace",
+      "path": "/connections/Loop Breaker Check/main",
+      "value": [
+        [
+          {
+            "node": "Is Repair Needed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "metadata": {"rollback_for": "ISSUE-FBK-08"}
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/10/position",
+      "value": [464, 560],
+      "metadata": {"rollback_for": "ISSUE-FBK-08"}
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/5/position",
+      "value": [240, 464],
+      "metadata": {"rollback_for": "ISSUE-FBK-08"}
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/6/position",
+      "value": [464, 464],
+      "metadata": {"rollback_for": "ISSUE-FBK-08"}
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/7/position",
+      "value": [688, 464],
+      "metadata": {"rollback_for": "ISSUE-FBK-08"}
+    },
+    {
+      "op": "remove",
+      "path": "/nodes/12",
+      "metadata": {"rollback_for": "ISSUE-FBK-06", "note": "Remove added sticky note (appended as node index 12)"}
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/1/parameters/jsCode",
+      "value": "// V3.1: Enhanced Metrics Aggregator with Drift Detection\nconst body = $node['Webhook Feedback'].json.body || {};\n\n// Validate scores\nconst validateScore = (val) => {\n  const num = parseFloat(val);\n  if (isNaN(num)) return 0;\n  return Math.max(0, Math.min(1, num));\n};\n\n// === CORE METRICS ===\nconst retrievalScore = validateScore(body.retrieval_score);\nconst validationScore = validateScore(body.validation_score);\nconst docId = String(body.source_file || 'unknown').substring(0, 200);\nconst query = String(body.query || '').substring(0, 500);\nconst responseTime = parseInt(body.response_time_ms) || 0;\nconst sourcesCount = parseInt(body.sources_count) || 0;\n\nconst gap = Math.abs(validationScore - retrievalScore);\n\n// === V3.1: RAGAS-STYLE METRICS ===\nconst faithfulness = validateScore(body.faithfulness || validationScore);\nconst answerRelevance = validateScore(body.answer_relevance || retrievalScore);\nconst contextRelevance = validateScore(body.context_relevance || retrievalScore);\nconst contextPrecision = validateScore(body.context_precision || 0.5);\n\n// Combined RAGAS score\nconst ragasScore = (faithfulness + answerRelevance + contextRelevance + contextPrecision) / 4;\n\n// === V3.1: DRIFT DETECTION ===\n// Get historical baseline from static data\nconst staticData = $getWorkflowStaticData('global');\nif (!staticData.metrics) {\n  staticData.metrics = {\n    avgGap: 0.15,\n    avgRagas: 0.75,\n    avgResponseTime: 2000,\n    queryCount24h: 100,\n    knownTopics: [],\n    lastUpdated: null\n  };\n}\n\nconst baseline = staticData.metrics;\nconst driftSignals = [];\n\n// Performance drift\nconst performanceDrift = ragasScore - baseline.avgRagas;\nif (performanceDrift < -0.1) {\n  driftSignals.push({\n    type: 'PERFORMANCE_DRIFT',\n    severity: performanceDrift < -0.2 ? 'HIGH' : 'MEDIUM',\n    detail: `RAGAS score dropped: ${ragasScore.toFixed(2)} vs baseline ${baseline.avgRagas.toFixed(2)}`\n  });\n}\n\n// Gap drift\nconst gapDrift = gap - baseline.avgGap;\nif (gapDrift > 0.1) {\n  driftSignals.push({\n    type: 'GAP_DRIFT',\n    severity: gapDrift > 0.2 ? 'HIGH' : 'MEDIUM',\n    detail: `Gap increased: ${gap.toFixed(2)} vs baseline ${baseline.avgGap.toFixed(2)}`\n  });\n}\n\n// Latency drift\nif (responseTime > baseline.avgResponseTime * 2) {\n  driftSignals.push({\n    type: 'LATENCY_DRIFT',\n    severity: responseTime > baseline.avgResponseTime * 3 ? 'HIGH' : 'MEDIUM',\n    detail: `Response time: ${responseTime}ms vs baseline ${baseline.avgResponseTime}ms`\n  });\n}\n\n// Topic drift (detect new topics)\nconst queryTopics = query.toLowerCase().split(' ').filter(w => w.length > 4);\nconst newTopics = queryTopics.filter(t => !baseline.knownTopics.includes(t));\nif (newTopics.length > 3) {\n  driftSignals.push({\n    type: 'TOPIC_DRIFT',\n    severity: 'LOW',\n    detail: `Potential new topics detected: ${newTopics.slice(0, 5).join(', ')}`\n  });\n}\n\n// === ALERTS ===\nconst alerts = [];\nif (validationScore > 0.8 && retrievalScore < 0.5) {\n  alerts.push('ALERT_PRECISION: Major correction on business data');\n}\nif (gap > 0.4) {\n  alerts.push('ALERT_GAP: Critical confidence gap detected');\n}\nif (ragasScore < 0.5) {\n  alerts.push('ALERT_QUALITY: Low RAGAS score');\n}\n\n// Combine drift signals into alerts\nfor (const drift of driftSignals) {\n  if (drift.severity === 'HIGH') {\n    alerts.push(`DRIFT_${drift.type}: ${drift.detail}`);\n  }\n}\n\n// Determine alert level\nlet alertLevel = 'OK';\nif (driftSignals.some(d => d.severity === 'HIGH') || alerts.length > 2) {\n  alertLevel = 'CRITICAL';\n} else if (driftSignals.length > 0 || alerts.length > 0) {\n  alertLevel = 'WARNING';\n}\n\n// === UPDATE BASELINE (rolling average) ===\nconst alpha = 0.1; // Smoothing factor\nstaticData.metrics.avgGap = alpha * gap + (1 - alpha) * baseline.avgGap;\nstaticData.metrics.avgRagas = alpha * ragasScore + (1 - alpha) * baseline.avgRagas;\nstaticData.metrics.avgResponseTime = alpha * responseTime + (1 - alpha) * baseline.avgResponseTime;\nstaticData.metrics.lastUpdated = new Date().toISOString();\n\n// Add new topics to known topics (keep last 1000)\nstaticData.metrics.knownTopics = [...new Set([...baseline.knownTopics, ...queryTopics])].slice(-1000);\n\nreturn {\n  // Core metrics\n  gap_score: Math.round(gap * 1000) / 1000,\n  retrieval_reliability: retrievalScore,\n  validation_feedback: validationScore,\n  doc_id: docId,\n  query: query,\n  response_time_ms: responseTime,\n  sources_count: sourcesCount,\n  \n  // V3.1: RAGAS metrics\n  ragas: {\n    faithfulness: faithfulness,\n    answer_relevance: answerRelevance,\n    context_relevance: contextRelevance,\n    context_precision: contextPrecision,\n    overall: Math.round(ragasScore * 1000) / 1000\n  },\n  \n  // V3.1: Drift detection\n  drift: {\n    signals: driftSignals,\n    signal_count: driftSignals.length,\n    has_high_severity: driftSignals.some(d => d.severity === 'HIGH')\n  },\n  \n  // Alerts\n  alerts: alerts,\n  alert_level: alertLevel,\n  needs_fix: gap > 0.3 || alertLevel === 'CRITICAL',\n  \n  // Timestamps\n  timestamp: new Date().toISOString()\n};",
+      "metadata": {"rollback_for": "SOTA-F01"}
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/5/parameters/jsCode",
+      "value": "// Shield #10: Auto-Repair Loop Breaker - ENHANCED\nconst metricsData = $node['Metrics Aggregator V3.1 (Drift Detection)'].json;\nconst loopCheck = $node['Loop Breaker Check']?.json || {};\nconst gapScore = metricsData.gap_score;\nconst docId = metricsData.doc_id;\nconst repairCount = parseInt(loopCheck.repair_count || 0);\n\nconst MAX_REPAIRS_24H = 3;\nconst COOLDOWN_7D = 7 * 24 * 3600 * 1000;\n\nif (repairCount >= MAX_REPAIRS_24H) {\n  return {\n    action: 'ESCALATE',\n    file: docId,\n    reason: `Max repairs (${MAX_REPAIRS_24H}) reached in 24h - escalating to data-team`,\n    gap_score: gapScore,\n    repair_count: repairCount,\n    cooldown_until: new Date(Date.now() + COOLDOWN_7D).toISOString()\n  };\n}\n\nif (gapScore > 0.3 && docId && docId !== 'unknown') {\n  return {\n    action: 'RE_INDEX',\n    file: docId,\n    strategy: 'hi_res',\n    reason: `Gap de confiance > 0.3 - Declenchement re-indexation WF4 (attempt ${repairCount + 1}/${MAX_REPAIRS_24H})`,\n    gap_score: gapScore,\n    repair_count: repairCount\n  };\n} else {\n  return { action: 'NONE', reason: 'No action required' };\n}",
+      "metadata": {"rollback_for": "SOTA-F02"}
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/6/parameters/conditions",
+      "value": {
+        "options": {
+          "caseSensitive": true
+        },
+        "conditions": [
+          {
+            "id": "repair-needed",
+            "leftValue": "={{ $json.action }}",
+            "rightValue": "RE_INDEX",
+            "operator": {
+              "type": "string",
+              "operation": "equals"
+            }
+          }
+        ]
+      },
+      "metadata": {"rollback_for": "SOTA-F02"}
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/7/parameters/jsonBody",
+      "value": "={\n  \"action\": \"RE_INDEX\",\n  \"document_id\": \"{{ $json.file }}\",\n  \"strategy\": \"{{ $json.strategy }}\",\n  \"priority\": \"high\",\n  \"reason\": \"{{ $json.reason }}\"\n}",
+      "metadata": {"rollback_for": "SOTA-F02"}
+    }
+  ],
+  "deployment_notes": "## Deployment Order\n\nPatches MUST be applied in the order listed. The first 4 patches handle connection rewiring and are interdependent.\n\n### Critical Changes\n1. **FBK-01 (P0)**: Reconnects Implicit Feedback Analyzer to Webhook. This enables the RLHF data collection path that was silently broken.\n2. **FBK-02 + FBK-08 (P0/P2)**: Fixes the LLM Analyzer multi-output bug AND swaps Loop Breaker/Auto-Repair execution order. These are combined because both affect the same connection paths. The net effect: both Notify Team and Loop Breaker Check now receive data from LLM Analyzer's main[0] output, and the repair chain becomes Loop Breaker Check -> Auto-Repair Limiter -> Is Repair Needed?.\n3. **FBK-06 (P1)**: Documentation only - adds a sticky note flagging the need for a Slack alert filter. No functional change.\n\n### SOTA 2026 Enhancements\n4. **F01**: Adds Answer Completeness as the 5th RAGAS dimension. Backward-compatible: if body.answer_completeness is not provided, a heuristic estimate is used.\n5. **F02**: Auto-Repair Limiter now maps drift signals to specific remediation actions (RE_INDEX, RECOMPUTE_EMBEDDINGS, OPTIMIZE_INDEX, EXPAND_CORPUS). The Is Repair Needed? IF condition and Trigger WF4 payload are updated to support dynamic action types.\n\n### Pre-deployment Checklist\n- [ ] Backup current workflow JSON\n- [ ] Verify Supabase repair_history table exists (for Loop Breaker Check)\n- [ ] Verify Supabase rlhf_training_data table exists (for Store RLHF Data)\n- [ ] Test webhook endpoint responds to POST\n- [ ] Verify WF4 ingestion webhook accepts new action types (OPTIMIZE_INDEX, EXPAND_CORPUS, RECOMPUTE_EMBEDDINGS)",
+  "test_cases": [
+    {
+      "id": "TC-FBK01-01",
+      "description": "Verify Webhook fans out to both Metrics Aggregator and Implicit Feedback Analyzer",
+      "issue_ref": "ISSUE-FBK-01",
+      "input": {
+        "method": "POST",
+        "path": "/webhook/rag-v5-feedback",
+        "body": {
+          "retrieval_score": 0.8,
+          "validation_score": 0.85,
+          "source_file": "test-doc.pdf",
+          "query": "test query",
+          "conversation_id": "conv-001",
+          "response": "test response"
+        }
+      },
+      "expected": {
+        "metrics_aggregator_triggered": true,
+        "implicit_feedback_analyzer_triggered": true,
+        "store_rlhf_data_receives_data": true
+      }
+    },
+    {
+      "id": "TC-FBK02-01",
+      "description": "Verify both Notify Team and Loop Breaker Check fire from LLM Analyzer main[0]",
+      "issue_ref": "ISSUE-FBK-02",
+      "input": {
+        "method": "POST",
+        "path": "/webhook/rag-v5-feedback",
+        "body": {
+          "retrieval_score": 0.3,
+          "validation_score": 0.9,
+          "source_file": "gap-doc.pdf",
+          "query": "gap test"
+        }
+      },
+      "expected": {
+        "notify_team_triggered": true,
+        "loop_breaker_check_triggered": true,
+        "auto_repair_limiter_triggered": true,
+        "alert_level": "WARNING"
+      }
+    },
+    {
+      "id": "TC-FBK08-01",
+      "description": "Verify Loop Breaker Check runs BEFORE Auto-Repair Limiter so repair_count is available",
+      "issue_ref": "ISSUE-FBK-08",
+      "input": {
+        "method": "POST",
+        "path": "/webhook/rag-v5-feedback",
+        "body": {
+          "retrieval_score": 0.2,
+          "validation_score": 0.9,
+          "source_file": "already-repaired-3x.pdf",
+          "query": "loop test"
+        }
+      },
+      "precondition": "repair_history table has 3 entries for already-repaired-3x.pdf in last 24h",
+      "expected": {
+        "auto_repair_limiter_action": "ESCALATE",
+        "repair_count": 3,
+        "is_repair_needed_false_branch": true,
+        "trigger_wf4_NOT_called": true
+      }
+    },
+    {
+      "id": "TC-F01-01",
+      "description": "Verify Answer Completeness metric is computed and included in RAGAS score",
+      "issue_ref": "SOTA-F01",
+      "input": {
+        "method": "POST",
+        "path": "/webhook/rag-v5-feedback",
+        "body": {
+          "retrieval_score": 0.7,
+          "validation_score": 0.8,
+          "source_file": "completeness-test.pdf",
+          "query": "test completeness",
+          "answer_completeness": 0.9,
+          "sources_count": 4
+        }
+      },
+      "expected": {
+        "ragas_answer_completeness": 0.9,
+        "ragas_overall_includes_completeness": true,
+        "ragas_overall_denominator": 5
+      }
+    },
+    {
+      "id": "TC-F01-02",
+      "description": "Verify Answer Completeness heuristic fallback when not provided",
+      "issue_ref": "SOTA-F01",
+      "input": {
+        "method": "POST",
+        "path": "/webhook/rag-v5-feedback",
+        "body": {
+          "retrieval_score": 0.8,
+          "validation_score": 0.85,
+          "source_file": "heuristic-test.pdf",
+          "query": "test heuristic fallback",
+          "sources_count": 3,
+          "expected_sources": 3
+        }
+      },
+      "expected": {
+        "ragas_answer_completeness_gt_0": true,
+        "ragas_answer_completeness_derived_from": "sourceCoverage * faithfulness * 1.1"
+      }
+    },
+    {
+      "id": "TC-F01-03",
+      "description": "Verify COMPLETENESS_DRIFT detection when completeness drops significantly",
+      "issue_ref": "SOTA-F01",
+      "precondition": "Baseline avgCompleteness = 0.7 (default)",
+      "input": {
+        "method": "POST",
+        "path": "/webhook/rag-v5-feedback",
+        "body": {
+          "retrieval_score": 0.8,
+          "validation_score": 0.8,
+          "source_file": "drift-test.pdf",
+          "query": "test completeness drift",
+          "answer_completeness": 0.4,
+          "sources_count": 1
+        }
+      },
+      "expected": {
+        "drift_signal_type": "COMPLETENESS_DRIFT",
+        "drift_signal_severity": "HIGH",
+        "alert_includes_completeness": true
+      }
+    },
+    {
+      "id": "TC-F02-01",
+      "description": "Verify HIGH PERFORMANCE_DRIFT triggers automatic RE_INDEX action",
+      "issue_ref": "SOTA-F02",
+      "precondition": "Baseline avgRagas = 0.75, repairCount = 0",
+      "input": {
+        "method": "POST",
+        "path": "/webhook/rag-v5-feedback",
+        "body": {
+          "retrieval_score": 0.2,
+          "validation_score": 0.3,
+          "source_file": "perf-drift.pdf",
+          "query": "performance drift test",
+          "faithfulness": 0.2,
+          "answer_relevance": 0.3,
+          "context_relevance": 0.2,
+          "context_precision": 0.3,
+          "answer_completeness": 0.2
+        }
+      },
+      "expected": {
+        "auto_repair_action": "RE_INDEX",
+        "auto_triggered": true,
+        "strategy": "hi_res",
+        "is_repair_needed_true_branch": true,
+        "trigger_wf4_action": "RE_INDEX"
+      }
+    },
+    {
+      "id": "TC-F02-02",
+      "description": "Verify LATENCY_DRIFT maps to OPTIMIZE_INDEX action and passes through IF node",
+      "issue_ref": "SOTA-F02",
+      "precondition": "Baseline avgResponseTime = 2000ms, no other drift, gap < 0.3, repairCount = 0",
+      "input": {
+        "method": "POST",
+        "path": "/webhook/rag-v5-feedback",
+        "body": {
+          "retrieval_score": 0.8,
+          "validation_score": 0.8,
+          "source_file": "latency-drift.pdf",
+          "query": "latency drift test",
+          "response_time_ms": 7000
+        }
+      },
+      "expected": {
+        "drift_signal_type": "LATENCY_DRIFT",
+        "drift_signal_severity": "HIGH",
+        "auto_repair_action": "OPTIMIZE_INDEX",
+        "auto_triggered": true,
+        "is_repair_needed_true_branch": true,
+        "trigger_wf4_action": "OPTIMIZE_INDEX"
+      }
+    },
+    {
+      "id": "TC-F02-03",
+      "description": "Verify ESCALATE blocks WF4 trigger even with drift signals",
+      "issue_ref": "SOTA-F02",
+      "precondition": "repairCount = 3 for doc",
+      "input": {
+        "method": "POST",
+        "path": "/webhook/rag-v5-feedback",
+        "body": {
+          "retrieval_score": 0.1,
+          "validation_score": 0.9,
+          "source_file": "escalation-test.pdf",
+          "query": "escalation test",
+          "faithfulness": 0.1
+        }
+      },
+      "expected": {
+        "auto_repair_action": "ESCALATE",
+        "is_repair_needed_false_branch": true,
+        "trigger_wf4_NOT_called": true
+      }
+    }
+  ]
+}

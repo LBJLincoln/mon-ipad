@@ -1,0 +1,615 @@
+{
+  "workflow_file": "TEST - SOTA 2026 - Ingestion V3.1.json",
+  "workflow_name": "TEST - SOTA 2026 - Ingestion V3.1",
+  "workflow_id": "nh1D4Up0wBZhuQbp",
+  "version": "1.0.0",
+  "generated_at": "2026-02-05",
+  "generated_by": "patch-writer-agent",
+  "patches": [
+    {
+      "id": "PATCH-ING-001",
+      "issue_ref": "ISSUE-ING-03",
+      "sota_ref": "P03",
+      "severity": "P0",
+      "node_name": "Generate Embeddings V3.1 (Contextual)",
+      "node_index": 13,
+      "reason": "Fix triple-nested template bug in EMBEDDING_MODEL variable. The current jsonBody contains '{{ $vars.EMBEDDING_MODEL || '{{ $vars.EMBEDDING_MODEL || '{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}' }}' }}' which causes n8n expression evaluation to fail or produce incorrect model names. Also aligns with SOTA P03 to make embedding model fully configurable via env vars.",
+      "operations": [
+        {
+          "op": "replace",
+          "path": "/nodes/13/parameters/jsonBody",
+          "value": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify(($json.chunks || []).slice(0, 100).map(c => c.contextual_content || c.content)) }}\n}"
+        }
+      ]
+    },
+    {
+      "id": "PATCH-ING-002",
+      "issue_ref": "ISSUE-ING-03",
+      "sota_ref": "P03",
+      "severity": "P0",
+      "node_name": "Generate Embeddings V3.1 (Contextual)",
+      "node_index": 13,
+      "reason": "Add retryOnFail to the embedding HTTP request node. Embedding API calls can transiently fail due to rate limits or network issues. Retrying prevents pipeline failure on transient errors.",
+      "operations": [
+        {
+          "op": "add",
+          "path": "/nodes/13/retryOnFail",
+          "value": true
+        },
+        {
+          "op": "add",
+          "path": "/nodes/13/maxTries",
+          "value": 3
+        },
+        {
+          "op": "add",
+          "path": "/nodes/13/waitBetweenTries",
+          "value": 2000
+        }
+      ]
+    },
+    {
+      "id": "PATCH-ING-003",
+      "issue_ref": "ISSUE-ING-08",
+      "severity": "P1",
+      "node_name": "Redis: Acquire Lock",
+      "node_index": 2,
+      "reason": "Redis SET without TTL creates permanent locks. If the workflow crashes or times out between lock acquisition and release, the lock key persists indefinitely in Redis, permanently blocking re-ingestion of that document. Adding expire=true with ttl=3600 (1 hour) ensures orphaned locks are automatically cleaned up.",
+      "operations": [
+        {
+          "op": "add",
+          "path": "/nodes/2/parameters/expire",
+          "value": true
+        },
+        {
+          "op": "add",
+          "path": "/nodes/2/parameters/ttl",
+          "value": 3600
+        }
+      ]
+    },
+    {
+      "id": "PATCH-ING-004",
+      "issue_ref": "ISSUE-ING-09",
+      "severity": "P1",
+      "node_name": "Semantic Chunker V3.1 (Adaptive)",
+      "node_index": 8,
+      "reason": "LLM HTTP request nodes have no retry configuration. LLM API calls (DeepSeek, OpenAI) frequently experience transient 429/500/503 errors. Without retryOnFail, a single transient failure aborts the entire ingestion pipeline. Adding 3 retries with 2s backoff provides resilience against rate limits and temporary outages.",
+      "operations": [
+        {
+          "op": "add",
+          "path": "/nodes/8/retryOnFail",
+          "value": true
+        },
+        {
+          "op": "add",
+          "path": "/nodes/8/maxTries",
+          "value": 3
+        },
+        {
+          "op": "add",
+          "path": "/nodes/8/waitBetweenTries",
+          "value": 2000
+        }
+      ]
+    },
+    {
+      "id": "PATCH-ING-005",
+      "issue_ref": "ISSUE-ING-09",
+      "severity": "P1",
+      "node_name": "Q&A Generator",
+      "node_index": 11,
+      "reason": "Q&A Generator LLM HTTP request has no retry configuration. Same rationale as PATCH-ING-004: transient LLM API failures abort the pipeline. Adding retryOnFail with 3 retries and 2s backoff.",
+      "operations": [
+        {
+          "op": "add",
+          "path": "/nodes/11/retryOnFail",
+          "value": true
+        },
+        {
+          "op": "add",
+          "path": "/nodes/11/maxTries",
+          "value": 3
+        },
+        {
+          "op": "add",
+          "path": "/nodes/11/waitBetweenTries",
+          "value": 2000
+        }
+      ]
+    },
+    {
+      "id": "PATCH-ING-006",
+      "issue_ref": "SOTA-P04",
+      "severity": "P1",
+      "node_name": "Chunk Enricher V3.1 (Contextual)",
+      "node_index": 9,
+      "reason": "Replace Chunk Enricher V3.1 jsCode with V4 version that includes: (1) RecursiveCharacterTextSplitter fallback when LLM chunking fails or returns invalid chunks, (2) Chunk validation with MIN_CHUNK_SIZE=50 and MAX_CHUNK_SIZE=3000, (3) Post-validation that splits oversized chunks and merges undersized ones, (4) Passes full_document_text downstream for future Contextual Retrieval (P01). The current node uses a static substring(0, 500) prefix which is ineffective for contextual retrieval. Reference: Anthropic Contextual Retrieval, Sept 2024.",
+      "operations": [
+        {
+          "op": "replace",
+          "path": "/nodes/9/name",
+          "value": "Chunk Validator & Enricher V4"
+        },
+        {
+          "op": "replace",
+          "path": "/nodes/9/notes",
+          "value": "PATCH P04: Chunk validation + RecursiveCharacterTextSplitter fallback + V4 enrichment"
+        },
+        {
+          "op": "replace",
+          "path": "/nodes/9/parameters/jsCode",
+          "value": "// PATCH P04: Chunk Validator & Fallback\n// Includes RecursiveCharacterTextSplitter fallback and chunk validation\n// Impact: Prevents empty/invalid chunks from reaching downstream nodes\n// Reference: ARCHITECTURE_FINALE_SOTA_2026.md section 3.5\n\nconst crypto = require('crypto');\nconst mimeData = $node['MIME Type Detector'].json;\nconst piiData = $node['PII Fortress'].json;\nconst fullContent = piiData.processed_content || '';\n\nlet chunksData;\ntry {\n  chunksData = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n} catch (e) {\n  chunksData = null;\n}\n\nlet chunks = chunksData?.chunks || [];\n\n// === VALIDATION ===\nconst MIN_CHUNK_SIZE = 50;    // Minimum characters per chunk\nconst MAX_CHUNK_SIZE = 3000;  // Maximum characters per chunk\n\nconst isValid = chunks.length > 0 && chunks.every(c =>\n  c.content &&\n  c.content.length >= MIN_CHUNK_SIZE &&\n  c.content.length <= MAX_CHUNK_SIZE * 2\n);\n\n// === FALLBACK: RecursiveCharacterTextSplitter ===\nif (!isValid || chunks.length === 0) {\n  console.warn('LLM chunking failed or invalid, falling back to recursive splitter');\n\n  const CHUNK_SIZE = 800;\n  const OVERLAP = 200;\n  const SEPARATORS = ['\\n\\n', '\\n', '. ', '! ', '? ', '; ', ', ', ' '];\n\n  function recursiveSplit(text, separators, chunkSize, overlap) {\n    if (text.length <= chunkSize) return [text];\n\n    const results = [];\n    let currentSep = separators[0] || ' ';\n\n    for (const sep of separators) {\n      if (text.includes(sep)) {\n        currentSep = sep;\n        break;\n      }\n    }\n\n    const parts = text.split(currentSep);\n    let currentChunk = '';\n\n    for (const part of parts) {\n      const candidate = currentChunk ? currentChunk + currentSep + part : part;\n\n      if (candidate.length > chunkSize && currentChunk) {\n        results.push(currentChunk.trim());\n        const overlapText = currentChunk.substring(Math.max(0, currentChunk.length - overlap));\n        currentChunk = overlapText + currentSep + part;\n      } else {\n        currentChunk = candidate;\n      }\n    }\n\n    if (currentChunk.trim()) {\n      results.push(currentChunk.trim());\n    }\n\n    return results;\n  }\n\n  const splitTexts = recursiveSplit(fullContent, SEPARATORS, CHUNK_SIZE, OVERLAP);\n  chunks = splitTexts.map((text, idx) => ({\n    content: text,\n    topic: 'auto-split',\n    start_index: fullContent.indexOf(text)\n  }));\n}\n\n// === POST-VALIDATION: split oversized, merge undersized ===\nconst validatedChunks = [];\nfor (const chunk of chunks) {\n  if (chunk.content.length > MAX_CHUNK_SIZE) {\n    // Split oversized chunk at nearest sentence boundary\n    const mid = chunk.content.lastIndexOf('. ', Math.floor(chunk.content.length / 2));\n    const splitPoint = mid > 0 ? mid + 2 : Math.floor(chunk.content.length / 2);\n    validatedChunks.push({ ...chunk, content: chunk.content.substring(0, splitPoint) });\n    validatedChunks.push({ ...chunk, content: chunk.content.substring(splitPoint), topic: chunk.topic + ' (cont.)' });\n  } else if (chunk.content.length < MIN_CHUNK_SIZE && validatedChunks.length > 0) {\n    // Merge undersized chunk with previous\n    const prev = validatedChunks[validatedChunks.length - 1];\n    prev.content += '\\n' + chunk.content;\n  } else {\n    validatedChunks.push(chunk);\n  }\n}\n\n// === ENRICH CHUNKS ===\nconst parentId = crypto.createHash('sha256').update(mimeData.objectKey).digest('hex').substring(0, 32);\nconst documentTitle = mimeData.objectKey.split('/').pop().replace(/\\.[^/.]+$/, '');\nconst documentType = mimeData.mime_type || 'UNKNOWN';\n\n// Detect document sections/structure\nconst sections = [];\nconst sectionRegex = /^(#{1,3}\\s+|\\d+\\.\\s+|[A-Z][A-Z\\s]+:)/gm;\nlet match;\nwhile ((match = sectionRegex.exec(fullContent)) !== null) {\n  sections.push({ index: match.index, header: match[0].trim() });\n}\n\nconst enrichedChunks = validatedChunks.map((chunk, idx) => {\n  const chunkId = `${parentId}-chunk-${idx}`;\n\n  let currentSection = 'Introduction';\n  for (const section of sections) {\n    if (section.index <= (chunk.start_index || 0)) {\n      currentSection = section.header;\n    } else break;\n  }\n\n  return {\n    id: chunkId,\n    content: chunk.content,\n    contextual_content: chunk.content,  // Will be enriched by P01 Contextual Retrieval\n    contextual_prefix: '',               // Will be enriched by P01 Contextual Retrieval\n    topic: chunk.topic,\n    section: currentSection,\n    parent_id: parentId,\n    parent_filename: mimeData.objectKey,\n    document_title: documentTitle,\n    document_type: documentType,\n    quality_score: mimeData.quality_score,\n    version: 1,\n    is_obsolete: false,\n    chunk_method: isValid ? mimeData.chunking_method : 'recursive_fallback',\n    chunk_index: idx,\n    total_chunks: validatedChunks.length,\n    tenant_id: mimeData.tenant_id,\n    trace_id: mimeData.traceId,\n    pii_count: piiData.pii_count || 0,\n    created_at: new Date().toISOString()\n  };\n});\n\nreturn {\n  chunks: enrichedChunks,\n  full_document_text: fullContent,  // Passed to P01 for contextual retrieval\n  parent_id: parentId,\n  parent_filename: mimeData.objectKey,\n  document_title: documentTitle,\n  total_chunks: enrichedChunks.length,\n  trace_id: mimeData.traceId,\n  tenant_id: mimeData.tenant_id,\n  lock_key: mimeData.lockKey,\n  lock_value: mimeData.lockValue,\n  chunking_method: isValid ? 'llm_semantic' : 'recursive_fallback',\n  sections_detected: sections.length\n};"
+        }
+      ]
+    }
+  ],
+  "rollback_patches": [
+    {
+      "id": "ROLLBACK-ING-001",
+      "reverts": "PATCH-ING-001",
+      "description": "Restore original triple-nested template in Generate Embeddings jsonBody",
+      "operations": [
+        {
+          "op": "replace",
+          "path": "/nodes/13/parameters/jsonBody",
+          "value": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || '{{ $vars.EMBEDDING_MODEL || '{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}' }}' }}\",\n  \"input\": {{ JSON.stringify(($json.chunks || []).slice(0, 100).map(c => c.contextual_content || c.content)) }}\n}"
+        }
+      ]
+    },
+    {
+      "id": "ROLLBACK-ING-002",
+      "reverts": "PATCH-ING-002",
+      "description": "Remove retryOnFail from Generate Embeddings node",
+      "operations": [
+        {
+          "op": "remove",
+          "path": "/nodes/13/retryOnFail"
+        },
+        {
+          "op": "remove",
+          "path": "/nodes/13/maxTries"
+        },
+        {
+          "op": "remove",
+          "path": "/nodes/13/waitBetweenTries"
+        }
+      ]
+    },
+    {
+      "id": "ROLLBACK-ING-003",
+      "reverts": "PATCH-ING-003",
+      "description": "Remove TTL from Redis lock node",
+      "operations": [
+        {
+          "op": "remove",
+          "path": "/nodes/2/parameters/expire"
+        },
+        {
+          "op": "remove",
+          "path": "/nodes/2/parameters/ttl"
+        }
+      ]
+    },
+    {
+      "id": "ROLLBACK-ING-004",
+      "reverts": "PATCH-ING-004",
+      "description": "Remove retryOnFail from Semantic Chunker node",
+      "operations": [
+        {
+          "op": "remove",
+          "path": "/nodes/8/retryOnFail"
+        },
+        {
+          "op": "remove",
+          "path": "/nodes/8/maxTries"
+        },
+        {
+          "op": "remove",
+          "path": "/nodes/8/waitBetweenTries"
+        }
+      ]
+    },
+    {
+      "id": "ROLLBACK-ING-005",
+      "reverts": "PATCH-ING-005",
+      "description": "Remove retryOnFail from Q&A Generator node",
+      "operations": [
+        {
+          "op": "remove",
+          "path": "/nodes/11/retryOnFail"
+        },
+        {
+          "op": "remove",
+          "path": "/nodes/11/maxTries"
+        },
+        {
+          "op": "remove",
+          "path": "/nodes/11/waitBetweenTries"
+        }
+      ]
+    },
+    {
+      "id": "ROLLBACK-ING-006",
+      "reverts": "PATCH-ING-006",
+      "description": "Restore original Chunk Enricher V3.1 name, notes, and jsCode",
+      "operations": [
+        {
+          "op": "replace",
+          "path": "/nodes/9/name",
+          "value": "Chunk Enricher V3.1 (Contextual)"
+        },
+        {
+          "op": "replace",
+          "path": "/nodes/9/notes",
+          "value": "PATCH 5.3: Metadata enrichment"
+        },
+        {
+          "op": "replace",
+          "path": "/nodes/9/parameters/jsCode",
+          "value": "\n// ============================================================\n// ⚠️ UPGRADE CRITIQUE: Contextual Retrieval (Anthropic 2024)\n// ============================================================\n// ACTUEL: context = content.substring(0, 500)  ❌ INEFFICACE\n// \n// RECOMMANDÉ: Pour CHAQUE chunk, appeler un LLM:\n// const contextPrompt = `\n// <document>${WHOLE_DOCUMENT}</document>\n// <chunk>${CHUNK_CONTENT}</chunk>\n// Situe ce chunk dans le contexte du document en 1-2 phrases.\n// `;\n// chunk.contextual_header = await callLLM(contextPrompt);\n//\n// IMPACT: -35% échecs retrieval (Anthropic research Sept 2024)\n// COÛT: ~$0.04 par document avec DeepSeek-V3\n// ============================================================\n\n\n// ⚠️ UPGRADE NEEDED: Vrai Contextual Retrieval (Anthropic)\n// Au lieu de: const context = content.substring(0, 500);\n// Utiliser un appel LLM pour générer le contexte de chaque chunk:\n// \n// const contextPrompt = `\n// <document>${WHOLE_DOCUMENT}</document>\n// <chunk>${CHUNK_CONTENT}</chunk>\n// Give a short context to situate this chunk within the document.\n// `;\n// const contextResponse = await callLLM(contextPrompt);\n// chunk.contextual_header = contextResponse;\n//\n// Impact: -35% échecs retrieval (Anthropic research)\n// PATCH 3.1: Contextual Chunk Enricher\n// Research: Anthropic's Contextual Retrieval (+26% recall)\n// Pattern: Chaque chunk contient son contexte document\n\nconst crypto = require('crypto');\nconst mimeData = $node['MIME Type Detector'].json;\nconst piiData = $node['PII Fortress'].json;\n\nlet chunksData;\ntry {\n  chunksData = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n} catch (e) {\n  chunksData = { chunks: [{ content: piiData.processed_content, topic: 'general', start_index: 0 }] };\n}\n\nconst chunks = chunksData.chunks || [];\nconst parentId = crypto.createHash('sha256').update(mimeData.objectKey).digest('hex').substring(0, 32);\n\n// === V3.1: Generate Document Summary for Context ===\nconst fullContent = piiData.processed_content || '';\nconst documentTitle = mimeData.objectKey.split('/').pop().replace(/\\.[^/.]+$/, '');\nconst documentType = mimeData.mime_type || 'UNKNOWN';\n\n// Extract first meaningful section as summary (up to 500 chars)\nconst summaryContext = fullContent\n  .substring(0, 500)\n  .replace(/\\n+/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\n// Detect document sections/structure\nconst sections = [];\nconst sectionRegex = /^(#{1,3}\\s+|\\d+\\.\\s+|[A-Z][A-Z\\s]+:)/gm;\nlet match;\nwhile ((match = sectionRegex.exec(fullContent)) !== null) {\n  sections.push({ index: match.index, header: match[0].trim() });\n}\n\n// === V3.1: Contextual Prefix Generation ===\nconst enrichedChunks = chunks.map((chunk, idx) => {\n  const chunkId = `${parentId}-chunk-${idx}`;\n  \n  // Find which section this chunk belongs to\n  let currentSection = 'Introduction';\n  for (const section of sections) {\n    if (section.index <= chunk.start_index) {\n      currentSection = section.header;\n    } else {\n      break;\n    }\n  }\n  \n  // === CONTEXTUAL PREFIX (Anthropic Pattern) ===\n  const contextualPrefix = `[Document: ${documentTitle} | Type: ${documentType} | Section: ${currentSection}]`;\n  \n  // Combined text for embedding (includes context)\n  const contextualContent = `${contextualPrefix}\\n${chunk.content}`;\n  \n  return {\n    id: chunkId,\n    \n    // Original content (for display)\n    content: chunk.content,\n    \n    // V3.1: Contextual content (for embedding)\n    contextual_content: contextualContent,\n    contextual_prefix: contextualPrefix,\n    \n    topic: chunk.topic,\n    section: currentSection,\n    \n    // Metadata\n    parent_id: parentId,\n    parent_filename: mimeData.objectKey,\n    document_title: documentTitle,\n    document_type: documentType,\n    summary_context: summaryContext,\n    \n    // Quality & versioning\n    quality_score: mimeData.quality_score,\n    version: 1,\n    is_obsolete: false,\n    chunk_method: mimeData.chunking_method,\n    chunk_index: idx,\n    total_chunks: chunks.length,\n    \n    // Context\n    tenant_id: mimeData.tenant_id,\n    trace_id: mimeData.traceId,\n    pii_count: piiData.pii_count || 0,\n    created_at: new Date().toISOString()\n  };\n});\n\nreturn {\n  chunks: enrichedChunks,\n  parent_id: parentId,\n  parent_filename: mimeData.objectKey,\n  document_title: documentTitle,\n  total_chunks: enrichedChunks.length,\n  trace_id: mimeData.traceId,\n  tenant_id: mimeData.tenant_id,\n  lock_key: mimeData.lockKey,\n  lock_value: mimeData.lockValue,\n  \n  // V3.1: Metadata for downstream\n  contextual_chunking_enabled: true,\n  sections_detected: sections.length\n};"
+        }
+      ]
+    }
+  ],
+  "new_nodes_to_add": [
+    {
+      "id": "NEW-NODE-P01-PREP",
+      "sota_ref": "P01",
+      "severity": "P0",
+      "reason": "Contextual Retrieval (Anthropic Pattern, Sept 2024). For EACH chunk, call an LLM with the full document + chunk to generate 1-2 contextual sentences. Impact: -35% retrieval failures (dense), -49% with BM25, -67% with reranking. Cost: ~$0.04/document with DeepSeek-V3. Requires SplitInBatches restructure.",
+      "insert_after_node": "Chunk Validator & Enricher V4",
+      "insert_before_node": "Q&A Generator",
+      "nodes": [
+        {
+          "parameters": {
+            "jsCode": "// P01: Prepare Contextual Prompts\n// Splits chunks into individual items for SplitInBatches processing\n\nconst chunks = $json.chunks || [];\nconst fullDocument = $json.full_document_text || '';\nconst documentTitle = $json.document_title || '';\n\nconst API_URL = '{{ $vars.CONTEXTUAL_RETRIEVAL_API_URL || \"https://api.deepseek.com/v1/chat/completions\" }}';\nconst MODEL = '{{ $vars.CONTEXTUAL_RETRIEVAL_MODEL || \"deepseek-chat\" }}';\n\nconst MAX_DOC_CHARS = 60000;\nlet docContext = fullDocument;\nif (docContext.length > MAX_DOC_CHARS) {\n  const half = Math.floor(MAX_DOC_CHARS / 2);\n  docContext = docContext.substring(0, half) + '\\n[...]\\n' + docContext.substring(docContext.length - half);\n}\n\nconst items = chunks.map((chunk, idx) => ({\n  json: {\n    ...chunk,\n    _contextual_prompt: JSON.stringify({\n      model: MODEL,\n      messages: [\n        {\n          role: 'system',\n          content: 'Tu recois un document complet et un chunk. Genere 1-2 phrases qui situent ce chunk dans le contexte du document. Reponds UNIQUEMENT avec les phrases de contexte.'\n        },\n        {\n          role: 'user',\n          content: `<document>\\n${docContext}\\n</document>\\n<chunk>\\n${chunk.content}\\n</chunk>\\nSitue ce chunk dans le contexte du document \"${documentTitle}\".`\n        }\n      ],\n      temperature: 0.0,\n      max_tokens: 200\n    }),\n    _chunk_index: idx,\n    _parent_data: {\n      parent_id: $json.parent_id,\n      parent_filename: $json.parent_filename,\n      document_title: $json.document_title,\n      total_chunks: chunks.length,\n      trace_id: $json.trace_id,\n      tenant_id: $json.tenant_id,\n      lock_key: $json.lock_key,\n      lock_value: $json.lock_value\n    }\n  }\n}));\n\nreturn items;"
+          },
+          "id": "contextual-retrieval-prep",
+          "name": "Prepare Contextual Prompts",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [-1400, 112]
+        },
+        {
+          "parameters": {
+            "batchSize": 5,
+            "options": {}
+          },
+          "id": "contextual-retrieval-split",
+          "name": "Split Chunks for Context",
+          "type": "n8n-nodes-base.splitInBatches",
+          "typeVersion": 3,
+          "position": [-1350, 112]
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "={{ $vars.CONTEXTUAL_RETRIEVAL_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={{ $json._contextual_prompt }}",
+            "options": {
+              "timeout": 30000
+            }
+          },
+          "id": "contextual-retrieval-llm",
+          "name": "Contextual LLM Call",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.3,
+          "position": [-1300, 112],
+          "retryOnFail": true,
+          "maxTries": 3,
+          "waitBetweenTries": 1500,
+          "credentials": {
+            "httpHeaderAuth": {
+              "id": "CREDENTIAL_ID_DEEPSEEK",
+              "name": "DeepSeek API Key"
+            }
+          },
+          "notes": "P01: Per-chunk contextual retrieval LLM call"
+        },
+        {
+          "parameters": {
+            "jsCode": "// P01: Aggregate Contextual Chunks\n// Collects all contextually-enriched chunks back together\n\nconst allItems = $input.all();\nconst enrichedChunks = [];\nlet parentData = null;\n\nfor (const item of allItems) {\n  const chunk = item.json;\n  const contextualHeader = chunk.choices?.[0]?.message?.content?.trim() || '';\n\n  // Recover original chunk data\n  const originalChunk = {\n    id: chunk.id || chunk._chunk_id,\n    content: chunk.content || chunk._original_content,\n    topic: chunk.topic,\n    section: chunk.section,\n    parent_id: chunk.parent_id,\n    parent_filename: chunk.parent_filename,\n    document_title: chunk.document_title,\n    document_type: chunk.document_type,\n    quality_score: chunk.quality_score,\n    version: chunk.version,\n    is_obsolete: chunk.is_obsolete,\n    chunk_method: chunk.chunk_method,\n    chunk_index: chunk._chunk_index || chunk.chunk_index,\n    total_chunks: chunk.total_chunks,\n    tenant_id: chunk.tenant_id,\n    trace_id: chunk.trace_id,\n    pii_count: chunk.pii_count,\n    created_at: chunk.created_at\n  };\n\n  // Apply contextual header\n  originalChunk.contextual_header = contextualHeader;\n  originalChunk.contextual_content = contextualHeader\n    ? `${contextualHeader}\\n\\n${originalChunk.content}`\n    : originalChunk.content;\n  originalChunk.contextual_prefix = contextualHeader;\n  originalChunk.contextual_retrieval_applied = !!contextualHeader;\n\n  enrichedChunks.push(originalChunk);\n\n  if (!parentData && chunk._parent_data) {\n    parentData = chunk._parent_data;\n  }\n}\n\nconst successCount = enrichedChunks.filter(c => c.contextual_retrieval_applied).length;\n\nreturn {\n  chunks: enrichedChunks,\n  parent_id: parentData?.parent_id,\n  parent_filename: parentData?.parent_filename,\n  document_title: parentData?.document_title,\n  total_chunks: enrichedChunks.length,\n  trace_id: parentData?.trace_id,\n  tenant_id: parentData?.tenant_id,\n  lock_key: parentData?.lock_key,\n  lock_value: parentData?.lock_value,\n  contextual_retrieval_stats: {\n    total: enrichedChunks.length,\n    success: successCount,\n    failed: enrichedChunks.length - successCount\n  }\n};"
+          },
+          "id": "contextual-retrieval-agg",
+          "name": "Aggregate Contextual Chunks",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [-1250, 112],
+          "notes": "P01: Reassembles contextually-enriched chunks"
+        }
+      ],
+      "connections": {
+        "Chunk Validator & Enricher V4": {
+          "main": [[{"node": "Prepare Contextual Prompts", "type": "main", "index": 0}]]
+        },
+        "Prepare Contextual Prompts": {
+          "main": [[{"node": "Split Chunks for Context", "type": "main", "index": 0}]]
+        },
+        "Split Chunks for Context": {
+          "main": [
+            [{"node": "Contextual LLM Call", "type": "main", "index": 0}],
+            [{"node": "Aggregate Contextual Chunks", "type": "main", "index": 0}]
+          ]
+        },
+        "Contextual LLM Call": {
+          "main": [[{"node": "Split Chunks for Context", "type": "main", "index": 0}]]
+        },
+        "Aggregate Contextual Chunks": {
+          "main": [[{"node": "Version Manager", "type": "main", "index": 0}]]
+        }
+      }
+    },
+    {
+      "id": "NEW-NODE-P02-BM25",
+      "sota_ref": "P02",
+      "severity": "P0",
+      "reason": "BM25 Sparse Vector Generator for Pinecone Hybrid Search. Impact: +30-50% recall combined with dense embeddings. Implements client-side BM25 scoring with hashed sparse vectors compatible with Pinecone hybrid index. Reference: ARCHITECTURE_FINALE_SOTA_2026.md section 3.3.",
+      "insert_after_node": "Generate Embeddings V3.1 (Contextual)",
+      "insert_before_node": "Prepare Vectors V3.1 (Contextual)",
+      "nodes": [
+        {
+          "parameters": {
+            "jsCode": "// PATCH P02: BM25 Sparse Vector Generator for Pinecone Hybrid Search\n// Impact: +30-50% recall combined with dense embeddings\n// Uses client-side BM25 scoring with hashed sparse vectors\n\nconst chunks = $json.chunks || [];\n\n// === BM25 PARAMETERS ===\nconst K1 = 1.2;\nconst B = 0.75;\n\n// === Tokenizer (FR+EN) ===\nconst STOP_WORDS = new Set([\n  'le', 'la', 'les', 'un', 'une', 'des', 'de', 'du', 'au', 'aux',\n  'et', 'ou', 'mais', 'donc', 'car', 'ni', 'que', 'qui', 'quoi',\n  'ce', 'cette', 'ces', 'mon', 'ton', 'son', 'ma', 'ta', 'sa',\n  'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to',\n  'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be',\n  'it', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she',\n  'nous', 'vous', 'ils', 'elles', 'je', 'tu', 'il', 'elle',\n  'est', 'sont', 'a', 'ont', 'pas', 'ne', 'plus', 'comme'\n]);\n\nfunction tokenize(text) {\n  return text\n    .toLowerCase()\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n    .replace(/[^a-z0-9\\s]/g, ' ')\n    .split(/\\s+/)\n    .filter(t => t.length > 2 && !STOP_WORDS.has(t));\n}\n\nfunction hashToken(token) {\n  let hash = 0;\n  for (let i = 0; i < token.length; i++) {\n    const char = token.charCodeAt(i);\n    hash = ((hash << 5) - hash) + char;\n    hash = hash & hash;\n  }\n  return Math.abs(hash) % 100000;\n}\n\n// === Document Frequencies ===\nconst allTokenSets = chunks.map(chunk => {\n  const text = chunk.contextual_content || chunk.content;\n  return new Set(tokenize(text));\n});\n\nconst df = {};\nfor (const tokenSet of allTokenSets) {\n  for (const token of tokenSet) {\n    df[token] = (df[token] || 0) + 1;\n  }\n}\n\nconst N = chunks.length;\nconst avgDl = chunks.reduce((sum, c) => {\n  return sum + tokenize(c.contextual_content || c.content).length;\n}, 0) / Math.max(N, 1);\n\n// === BM25 Sparse Vectors ===\nconst sparseVectors = chunks.map((chunk) => {\n  const text = chunk.contextual_content || chunk.content;\n  const tokens = tokenize(text);\n  const dl = tokens.length;\n\n  const tf = {};\n  for (const token of tokens) {\n    tf[token] = (tf[token] || 0) + 1;\n  }\n\n  const indices = [];\n  const values = [];\n\n  for (const [term, freq] of Object.entries(tf)) {\n    const idf = Math.log((N - (df[term] || 0) + 0.5) / ((df[term] || 0) + 0.5) + 1);\n    const tfNorm = (freq * (K1 + 1)) / (freq + K1 * (1 - B + B * (dl / avgDl)));\n    const score = idf * tfNorm;\n\n    if (score > 0) {\n      indices.push(hashToken(term));\n      values.push(Math.round(score * 1000) / 1000);\n    }\n  }\n\n  return { indices, values };\n});\n\nconst enrichedChunks = chunks.map((chunk, idx) => ({\n  ...chunk,\n  sparse_values: sparseVectors[idx],\n  bm25_token_count: tokenize(chunk.contextual_content || chunk.content).length\n}));\n\nreturn {\n  ...$json,\n  chunks: enrichedChunks,\n  bm25_stats: {\n    vocabulary_size: Object.keys(df).length,\n    avg_doc_length: Math.round(avgDl),\n    total_chunks: N\n  }\n};"
+          },
+          "id": "bm25-sparse-gen",
+          "name": "BM25 Sparse Vector Generator",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [-376, 112],
+          "notes": "PATCH P02: BM25 sparse vectors for Pinecone hybrid search"
+        }
+      ],
+      "connections": {
+        "Generate Embeddings V3.1 (Contextual)": {
+          "main": [[{"node": "BM25 Sparse Vector Generator", "type": "main", "index": 0}]]
+        },
+        "BM25 Sparse Vector Generator": {
+          "main": [[{"node": "Prepare Vectors V3.1 (Contextual)", "type": "main", "index": 0}]]
+        }
+      }
+    }
+  ],
+  "connection_changes": [
+    {
+      "id": "CONN-001",
+      "description": "Disconnect Chunk Enricher (now Chunk Validator & Enricher V4) from Version Manager and connect to P01 Contextual Retrieval chain instead",
+      "remove": {
+        "source": "Chunk Validator & Enricher V4",
+        "target": "Version Manager"
+      },
+      "add": {
+        "source": "Chunk Validator & Enricher V4",
+        "target": "Prepare Contextual Prompts"
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "path": "/connections/Chunk Enricher V3.1 (Contextual)",
+          "value": {
+            "main": [[{"node": "Prepare Contextual Prompts", "type": "main", "index": 0}]]
+          }
+        }
+      ],
+      "note": "The connection key in the JSON must match the NEW node name after PATCH-ING-006 renames it. Since n8n connections are keyed by node name, the Patch Applier must update the connection key from 'Chunk Enricher V3.1 (Contextual)' to 'Chunk Validator & Enricher V4' and then set the target."
+    },
+    {
+      "id": "CONN-002",
+      "description": "Insert P01 Contextual Retrieval chain connections (SplitInBatches loop)",
+      "operations_description": "Add connections for: Prepare Contextual Prompts -> Split Chunks for Context -> [Contextual LLM Call (loop back) | Aggregate Contextual Chunks] -> Version Manager",
+      "note": "See new_nodes_to_add[0].connections for the full connection map"
+    },
+    {
+      "id": "CONN-003",
+      "description": "Insert BM25 Sparse Vector Generator between Generate Embeddings and Prepare Vectors",
+      "remove": {
+        "source": "Generate Embeddings V3.1 (Contextual)",
+        "target": "Prepare Vectors V3.1 (Contextual)"
+      },
+      "add_chain": [
+        {"source": "Generate Embeddings V3.1 (Contextual)", "target": "BM25 Sparse Vector Generator"},
+        {"source": "BM25 Sparse Vector Generator", "target": "Prepare Vectors V3.1 (Contextual)"}
+      ],
+      "operations": [
+        {
+          "op": "replace",
+          "path": "/connections/Generate Embeddings V3.1 (Contextual)",
+          "value": {
+            "main": [[{"node": "BM25 Sparse Vector Generator", "type": "main", "index": 0}]]
+          }
+        },
+        {
+          "op": "add",
+          "path": "/connections/BM25 Sparse Vector Generator",
+          "value": {
+            "main": [[{"node": "Prepare Vectors V3.1 (Contextual)", "type": "main", "index": 0}]]
+          }
+        }
+      ]
+    },
+    {
+      "id": "CONN-004",
+      "issue_ref": "ISSUE-ING-14",
+      "severity": "P2",
+      "description": "Error Handler [21] is disconnected from all nodes. It should be connected via errorTrigger to handle workflow-level errors. In n8n, the errorTrigger node automatically captures errors from the workflow error settings, but the workflow must have error handling configured in settings.errorWorkflow or the node must be connected to error outputs.",
+      "note": "DOCUMENT ONLY - Error Handler connection requires careful handling. The Error Handler (errorTrigger) node captures workflow-level errors automatically when configured in workflow settings. Verify that the workflow settings include this node as the error handler."
+    }
+  ],
+  "documented_issues_no_patch": [
+    {
+      "id": "DOC-ING-001",
+      "issue_ref": "ISSUE-ING-06",
+      "severity": "P1",
+      "node_names": ["Semantic Chunker V3.1 (Adaptive)", "Q&A Generator"],
+      "node_indices": [8, 11],
+      "description": "Credential naming mismatch: Both Semantic Chunker [8] and Q&A Generator [11] use credential 'Pinecone API Key' (id: 3DEiHDwB09D65919) which is labeled as a Pinecone credential but is being used for LLM API calls (DeepSeek/OpenAI chat completions). This works if the Pinecone credential happens to contain the correct LLM API key in its httpHeaderAuth configuration, but is confusing and error-prone. Credential IDs are environment-specific and should not be patched via JSON patches.",
+      "recommendation": "Create a dedicated httpHeaderAuth credential named 'DeepSeek API Key' or 'LLM API Key' in the n8n UI and update nodes [8] and [11] to reference it. Alternatively, if using OpenRouter, create an 'OpenRouter API Key' credential."
+    },
+    {
+      "id": "DOC-ING-002",
+      "issue_ref": "ISSUE-ING-10",
+      "severity": "P2",
+      "node_name": "OCR Extraction",
+      "node_index": 6,
+      "description": "OCR Extraction node [6] has 'onError: continueErrorOutput' configured, meaning it has a second output for errors. However, no node is connected to this error output (output index 1). If OCR fails, the error item is produced on the second output but is silently dropped because nothing is connected to receive it. The workflow continues on the success path with no data.",
+      "recommendation": "Connect the error output (index 1) of OCR Extraction to a fallback node that either: (a) returns an error response, (b) attempts alternative extraction, or (c) logs the error and continues with empty content. Simplest fix: connect error output to 'Prepare Lock Release' to ensure the lock is always released even on OCR failure."
+    },
+    {
+      "id": "DOC-ING-003",
+      "issue_ref": "ISSUE-ING-14",
+      "severity": "P2",
+      "node_name": "Error Handler",
+      "node_index": 21,
+      "description": "Error Handler node [21] (errorTrigger type) is present in the workflow but has no connections. It sits at position [-3552, 512] isolated from the main flow. The errorTrigger node type is designed to capture workflow-level errors, but it needs to be either: (a) configured in workflow settings as the error handler, or (b) connected to error outputs of critical nodes.",
+      "recommendation": "Connect Error Handler to a notification or logging chain. Add nodes after Error Handler to: send Slack/email alerts, log to Postgres, and ensure Redis lock is released on unhandled errors."
+    },
+    {
+      "id": "DOC-ING-004",
+      "sota_ref": "P05",
+      "severity": "P1",
+      "node_name": "Q&A Generator",
+      "node_index": 11,
+      "description": "SOTA P05 recommends restructuring Q&A Generator to process EACH chunk individually rather than batching 5 chunks together. Current implementation sends only the first 5 chunks ($json.chunks?.slice(0, 5)) to the LLM, meaning documents with more than 5 chunks get incomplete Q&A coverage. The fix requires a SplitInBatches restructure similar to P01 Contextual Retrieval, which is a structural change beyond simple property patching.",
+      "recommendation": "Implement a SplitInBatches loop: Q&A Split (batchSize=5) -> Q&A Generator HTTP (per chunk) -> loop back -> Q&A Aggregator. Modify the Q&A Generator jsonBody to process a single chunk content ($json.content.substring(0, 1500)) instead of an array. Modify Q&A Enricher to aggregate per-chunk results."
+    }
+  ],
+  "deployment_notes": "DEPLOYMENT CHECKLIST FOR INGESTION V3.1 PATCHES\n\n== PRE-DEPLOYMENT ==\n1. BACKUP: Create a backup of the current workflow JSON before applying any patches\n2. CREDENTIALS: Verify that credential ID '3DEiHDwB09D65919' (labeled 'Pinecone API Key') actually contains a valid LLM API key for DeepSeek/OpenAI (see DOC-ING-001)\n3. ENVIRONMENT VARIABLES: Ensure the following n8n variables are configured:\n   - EMBEDDING_MODEL (default: text-embedding-3-small, recommended: Qwen3-Embedding-8B)\n   - EMBEDDING_API_URL (default: https://api.openai.com/v1/embeddings)\n   - LLM_API_URL (default: https://api.openai.com/v1/chat/completions)\n   - CHUNKING_MODEL (default: deepseek-chat)\n   - QA_MODEL (default: deepseek-chat)\n4. REDIS: Verify Redis connection supports SET with EX option (Upstash supports this)\n\n== PATCH APPLICATION ORDER ==\nApply patches in this exact order (P0 first, then P1):\n1. PATCH-ING-001 (P0) - Fix triple-nested template in Generate Embeddings\n2. PATCH-ING-002 (P0) - Add retry to Generate Embeddings\n3. PATCH-ING-003 (P1) - Add TTL to Redis lock\n4. PATCH-ING-004 (P1) - Add retry to Semantic Chunker\n5. PATCH-ING-005 (P1) - Add retry to Q&A Generator\n6. PATCH-ING-006 (P1) - Replace Chunk Enricher with V4 (validation + fallback)\n\n== NEW NODES (FUTURE DEPLOYMENT) ==\nThe following require manual addition in n8n or a dedicated node-insertion patcher:\n- P01: Contextual Retrieval (4 nodes + SplitInBatches loop)\n- P02: BM25 Sparse Vector Generator (1 node + connection rewiring)\n- P05: Q&A Generator restructure (needs SplitInBatches)\n\n== POST-DEPLOYMENT ==\n1. TEST: Run the workflow with a small test document (PDF, <10 pages)\n2. VERIFY: Check that:\n   - Embedding model resolves to the expected value (not triple-nested)\n   - Redis lock has TTL (check with Redis CLI: TTL <lock_key>)\n   - Chunks are validated (no empty/oversized chunks in Pinecone)\n   - LLM nodes retry on transient failures\n3. MONITOR: Watch the first 5 executions for any regressions\n4. ROLLBACK: If issues arise, apply rollback_patches in reverse order\n\n== CREDENTIAL WARNING ==\nNodes [8] Semantic Chunker and [11] Q&A Generator use a credential named 'Pinecone API Key' for LLM API calls. This is a naming mismatch (ISSUE-ING-06). The credential works but should be renamed or replaced with a dedicated LLM credential for clarity.",
+  "test_cases": [
+    {
+      "id": "TC-001",
+      "patch_ref": "PATCH-ING-001",
+      "description": "Verify embedding model template resolves correctly",
+      "type": "expression_evaluation",
+      "steps": [
+        "1. Set n8n variable EMBEDDING_MODEL to 'text-embedding-3-large'",
+        "2. Run workflow with a test document",
+        "3. Inspect the HTTP request body sent by node [13] Generate Embeddings",
+        "4. Verify the 'model' field is exactly 'text-embedding-3-large' (not nested templates)"
+      ],
+      "expected": "The model field in the request body should be the value of $vars.EMBEDDING_MODEL or 'text-embedding-3-small' if the variable is unset. No nested {{ }} templates should appear.",
+      "severity": "P0"
+    },
+    {
+      "id": "TC-002",
+      "patch_ref": "PATCH-ING-001",
+      "description": "Verify default embedding model when variable is unset",
+      "type": "expression_evaluation",
+      "steps": [
+        "1. Ensure n8n variable EMBEDDING_MODEL is NOT set",
+        "2. Run workflow with a test document",
+        "3. Inspect the HTTP request body sent by node [13]"
+      ],
+      "expected": "The model field should be exactly 'text-embedding-3-small'",
+      "severity": "P0"
+    },
+    {
+      "id": "TC-003",
+      "patch_ref": "PATCH-ING-003",
+      "description": "Verify Redis lock has TTL after acquisition",
+      "type": "redis_verification",
+      "steps": [
+        "1. Run workflow with a test document",
+        "2. Immediately after Redis: Acquire Lock executes, check TTL with: redis-cli TTL lock:ingestion:<hash>",
+        "3. Verify TTL is approximately 3600 seconds"
+      ],
+      "expected": "TTL should return a value between 3590 and 3600 (approximately 1 hour)",
+      "severity": "P1"
+    },
+    {
+      "id": "TC-004",
+      "patch_ref": "PATCH-ING-003",
+      "description": "Verify orphaned lock auto-expires",
+      "type": "redis_verification",
+      "steps": [
+        "1. Manually SET a test lock key with the same pattern: SET lock:ingestion:test-hash test-worker",
+        "2. Verify it persists indefinitely (old behavior)",
+        "3. After applying patch, SET another key through the workflow",
+        "4. Wait or use redis-cli DEBUG SLEEP to verify auto-expiry"
+      ],
+      "expected": "Lock keys created through the patched workflow should auto-expire after 3600 seconds",
+      "severity": "P1"
+    },
+    {
+      "id": "TC-005",
+      "patch_ref": "PATCH-ING-004",
+      "description": "Verify Semantic Chunker retries on transient LLM failure",
+      "type": "retry_verification",
+      "steps": [
+        "1. Configure LLM_API_URL to point to a mock server that returns 503 on first 2 calls, then 200",
+        "2. Run workflow with a test document",
+        "3. Check execution log for retry attempts on node [8]"
+      ],
+      "expected": "Node [8] should retry up to 3 times with 2000ms wait between tries. Execution should succeed on the third attempt.",
+      "severity": "P1"
+    },
+    {
+      "id": "TC-006",
+      "patch_ref": "PATCH-ING-006",
+      "description": "Verify RecursiveCharacterTextSplitter fallback activates on LLM chunking failure",
+      "type": "functional",
+      "steps": [
+        "1. Configure CHUNKING_MODEL to an invalid model name to force LLM error",
+        "2. Run workflow with a test document containing at least 1000 characters",
+        "3. Inspect output of node [9] Chunk Validator & Enricher V4"
+      ],
+      "expected": "Node [9] should fall back to recursive splitting. Output should contain: chunks with valid content (50-3000 chars each), chunk_method='recursive_fallback' in each chunk, chunking_method='recursive_fallback' in the return object.",
+      "severity": "P1"
+    },
+    {
+      "id": "TC-007",
+      "patch_ref": "PATCH-ING-006",
+      "description": "Verify chunk validation rejects empty/oversized chunks from LLM",
+      "type": "functional",
+      "steps": [
+        "1. Mock the Semantic Chunker response to return chunks with: one empty chunk (content=''), one oversized chunk (>6000 chars), one valid chunk (500 chars)",
+        "2. Run through node [9] Chunk Validator & Enricher V4"
+      ],
+      "expected": "Validation should fail (isValid=false), triggering RecursiveCharacterTextSplitter fallback. All output chunks should be between 50 and 3000 characters.",
+      "severity": "P1"
+    },
+    {
+      "id": "TC-008",
+      "patch_ref": "PATCH-ING-006",
+      "description": "Verify V4 enricher passes full_document_text for P01 compatibility",
+      "type": "functional",
+      "steps": [
+        "1. Run workflow with a test document",
+        "2. Inspect output of node [9] Chunk Validator & Enricher V4"
+      ],
+      "expected": "Output should include full_document_text field containing the complete processed content from PII Fortress. This field is required by the future P01 Contextual Retrieval nodes.",
+      "severity": "P1"
+    },
+    {
+      "id": "TC-009",
+      "description": "End-to-end ingestion pipeline smoke test",
+      "type": "e2e",
+      "steps": [
+        "1. Send a POST request to the webhook with a valid S3 event payload",
+        "2. Monitor all node executions",
+        "3. Verify vectors are upserted to Pinecone",
+        "4. Verify metadata is stored in Postgres",
+        "5. Verify Redis lock is released",
+        "6. Verify OTEL trace is exported"
+      ],
+      "expected": "Complete pipeline execution without errors. All nodes should complete successfully. Redis lock should be released (key should not exist after completion).",
+      "severity": "P0"
+    },
+    {
+      "id": "TC-010",
+      "description": "Verify rollback patches restore original state",
+      "type": "rollback",
+      "steps": [
+        "1. Apply all patches (PATCH-ING-001 through PATCH-ING-006)",
+        "2. Verify patched behavior (TC-001 through TC-008)",
+        "3. Apply rollback patches in reverse order (ROLLBACK-ING-006 through ROLLBACK-ING-001)",
+        "4. Compare workflow JSON with original backup"
+      ],
+      "expected": "After rollback, the workflow JSON should be identical to the original (before any patches were applied). All node names, jsCode, and parameters should match the V3.1 original.",
+      "severity": "P0"
+    }
+  ]
+}
