@@ -4,8 +4,9 @@ Master script: Populate all 3 databases for the RAG benchmark.
 
 Execution order (following blocker priority):
 1. B3: Create financial tables in Supabase + seed data
-2. B2: Replace pseudo-vectors with real embeddings in Pinecone
-3. B1: Populate Neo4j with entity graph for Graph RAG
+2. B3b: Create community_summaries table for Graph RAG
+3. B2: Replace pseudo-vectors with real embeddings in Pinecone
+4. B1: Populate Neo4j with entity graph for Graph RAG
 
 Prerequisites:
   - Environment variables: SUPABASE_PASSWORD, PINECONE_API_KEY, NEO4J_PASSWORD
@@ -103,6 +104,39 @@ def run_financial_tables():
         return False
 
 
+def run_community_summaries():
+    """B3b: Create community_summaries table for Graph RAG."""
+    print("\n" + "=" * 60)
+    print("B3b: CREATING COMMUNITY SUMMARIES TABLE")
+    print("=" * 60)
+
+    sql_file = os.path.join(SCRIPT_DIR, "community-summaries-migration.sql")
+    if not os.path.exists(sql_file):
+        print(f"  ERROR: SQL file not found: {sql_file}")
+        return False
+
+    result = subprocess.run(
+        ["psql", SUPABASE_CONN, "-f", sql_file],
+        capture_output=True, text=True, timeout=60
+    )
+
+    if result.returncode == 0:
+        print(f"  SUCCESS: Community summaries table created and seeded")
+        for line in result.stdout.split("\n"):
+            if line.strip():
+                print(f"    {line.strip()}")
+        return True
+    else:
+        if result.stderr:
+            errors = [l for l in result.stderr.split("\n") if "ERROR" in l]
+            if errors:
+                print(f"  ERRORS: {chr(10).join(errors[:5])}")
+            else:
+                print(f"  (Only notices/warnings, no fatal errors)")
+                return True
+        return False
+
+
 def run_embeddings():
     """B2: Replace pseudo-vectors with real embeddings."""
     print("\n" + "=" * 60)
@@ -155,7 +189,7 @@ def verify_all():
 
     # Check Supabase financial tables
     print("\n  Supabase Financial Tables:")
-    for table in ["financials", "balance_sheet", "sales_data", "employees", "products"]:
+    for table in ["financials", "balance_sheet", "sales_data", "employees", "products", "community_summaries"]:
         result = subprocess.run(
             ["psql", SUPABASE_CONN, "-t", "-A", "-c",
              f"SELECT COUNT(*) FROM {table} WHERE tenant_id = 'benchmark';"],
@@ -181,7 +215,7 @@ def verify_all():
     try:
         from urllib import request as urllib_request
         req = urllib_request.Request(
-            f"https://n8nultimate-a4mkzmz.svc.aped-4627-b74a.pinecone.io/describe_index_stats",
+            f"{os.environ.get('PINECONE_HOST', 'https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io').rstrip('/')}/describe_index_stats",
             data=b"{}",
             headers={
                 "Api-Key": os.environ.get("PINECONE_API_KEY", ""),
@@ -259,6 +293,12 @@ if __name__ == "__main__":
         results["B3_financial"] = run_financial_tables()
     else:
         print("\n  SKIPPED: Financial tables (--skip-financial)")
+
+    # B3b: Community summaries table
+    if not skip_financial:
+        results["B3b_community_summaries"] = run_community_summaries()
+    else:
+        print("\n  SKIPPED: Community summaries (--skip-financial)")
 
     # B2: Embeddings
     if not skip_embeddings:

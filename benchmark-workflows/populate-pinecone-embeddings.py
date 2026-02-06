@@ -20,7 +20,7 @@ from urllib import request, error, parse
 # Configuration
 # ============================================================
 SUPABASE_CONN = f"postgresql://postgres:{os.environ['SUPABASE_PASSWORD']}@db.ayqviqmxifzmhphiqfmj.supabase.co:5432/postgres"
-PINECONE_HOST = "https://n8nultimate-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
+PINECONE_HOST = os.environ.get("PINECONE_HOST", "https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io").rstrip("/")
 PINECONE_API_KEY = os.environ["PINECONE_API_KEY"]
 
 # Embedding API - use OpenAI directly or via OpenRouter
