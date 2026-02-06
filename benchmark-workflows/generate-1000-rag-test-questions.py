@@ -4,9 +4,10 @@ RAG TEST QUESTION GENERATOR — Graph RAG + Quantitative RAG
 ============================================================
 Generates 1000 test questions from specific datasets (excluding HotPotQA):
   - Graph RAG (500 questions): MuSiQue, 2WikiMultiHopQA, FRAMES
-  - Quantitative RAG (500 questions): FinQA, TAT-QA, WikiTableQuestions
+  - Quantitative RAG (500 questions): FinQA, TAT-QA (via RAGBench), ConvFinQA, WikiTableQuestions
 
-Fetches from HuggingFace Datasets API, formats, and stores locally.
+Uses VERIFIED public HuggingFace dataset paths (no auth token needed).
+Deduplicates against existing benchmark questions (28,053 Q&A pairs).
 Pushes to GitHub every 500 questions.
 Includes RAG routing analysis to verify questions target the correct RAG type.
 """
@@ -30,17 +31,20 @@ OUTPUT_FILE = os.path.join(BASE_DIR, "rag-1000-test-questions.json")
 ANALYSIS_FILE = os.path.join(BASE_DIR, "rag-1000-test-analysis.json")
 PROGRESS_FILE = os.path.join(BASE_DIR, "rag-1000-test-progress.json")
 
-HF_TOKEN = os.environ.get("HF_TOKEN", "")
+# Existing files to check for deduplication
+EXISTING_QA_FILE = os.path.join(BASE_DIR, "benchmark-qa-results-full.json")
+EXISTING_TEST_FILE = os.path.join(BASE_DIR, "rag-1000-test-questions.json")
+EXISTING_DIAG_FILE = os.path.join(BASE_DIR, "diagnostic-30q-results.json")
 
-# ─── Dataset Definitions ────────────────────────────────────────
+# ─── Dataset Definitions (VERIFIED PUBLIC HF PATHS) ─────────────
 
-# Graph RAG datasets (multi-hop reasoning, entity relationships, knowledge graphs)
-# Excluding HotPotQA as specified
+# Graph RAG: multi-hop reasoning, entity relationships, knowledge graphs
+# Excluding HotPotQA as requested
 GRAPH_RAG_DATASETS = [
     {
         "name": "musique",
-        "hf_path": "StonyBrookNLP/musique",
-        "hf_subset": "default",
+        "hf_path": "bdsaglam/musique",
+        "hf_subset": "answerable",
         "category": "multi_hop_qa",
         "split": "validation",
         "target_count": 200,
@@ -49,11 +53,11 @@ GRAPH_RAG_DATASETS = [
         "context_field": "paragraphs",
         "rag_target": "graph",
         "description": "Compositional multi-hop reasoning (2-4 hops)",
-        "why_graph": "Requires traversing multiple entity relationships across documents"
+        "why_graph": "Requires traversing multiple entity relationships across documents",
     },
     {
         "name": "2wikimultihopqa",
-        "hf_path": "scholarly-shadows-syndicate/2wikimultihopqa",
+        "hf_path": "framolfese/2WikiMultihopQA",
         "hf_subset": "default",
         "category": "multi_hop_qa",
         "split": "validation",
@@ -64,7 +68,7 @@ GRAPH_RAG_DATASETS = [
         "supporting_field": "supporting_facts",
         "rag_target": "graph",
         "description": "Cross-document reasoning between Wikipedia articles",
-        "why_graph": "Needs graph traversal between linked Wikipedia entities"
+        "why_graph": "Needs graph traversal between linked Wikipedia entities",
     },
     {
         "name": "frames",
@@ -77,15 +81,15 @@ GRAPH_RAG_DATASETS = [
         "a_field": "Answer",
         "rag_target": "graph",
         "description": "Google FRAMES multi-hop RAG benchmark",
-        "why_graph": "Multi-hop retrieval requiring entity relationship navigation"
+        "why_graph": "Multi-hop retrieval requiring entity relationship navigation",
     },
 ]
 
-# Quantitative RAG datasets (SQL, numerical reasoning, financial tables)
+# Quantitative RAG: SQL, numerical reasoning, financial tables
 QUANTITATIVE_RAG_DATASETS = [
     {
         "name": "finqa",
-        "hf_path": "ibm/finqa",
+        "hf_path": "dreamerdeo/finqa",
         "hf_subset": "default",
         "category": "domain_finance",
         "split": "test",
@@ -94,44 +98,119 @@ QUANTITATIVE_RAG_DATASETS = [
         "a_field": "answer",
         "context_field": "pre_text",
         "table_field": "table",
-        "program_field": "program",
         "rag_target": "quantitative",
         "description": "Financial reasoning with tables and calculations",
-        "why_quantitative": "Requires numerical extraction from financial tables + computation"
+        "why_quantitative": "Requires numerical extraction from financial tables + computation",
     },
     {
         "name": "tatqa",
-        "hf_path": "next-tat-qa",
-        "hf_subset": "default",
+        "hf_path": "galileo-ai/ragbench",
+        "hf_subset": "tatqa",
         "category": "domain_finance",
-        "split": "validation",
-        "target_count": 150,
-        "q_field": "question",
-        "a_field": "answer",
-        "context_field": "text",
-        "table_field": "table",
-        "rag_target": "quantitative",
-        "description": "Hybrid table-and-text QA requiring arithmetic reasoning",
-        "why_quantitative": "Combines table parsing with text understanding for calculations"
-    },
-    {
-        "name": "wikitablequestions",
-        "hf_path": "wikitablequestions",
-        "hf_subset": "default",
-        "category": "table_qa",
         "split": "test",
         "target_count": 150,
         "q_field": "question",
-        "a_field": "answers",
+        "a_field": "response",
+        "context_field": "documents",
+        "rag_target": "quantitative",
+        "description": "Hybrid table-and-text QA requiring arithmetic reasoning (via RAGBench)",
+        "why_quantitative": "Combines table parsing with text understanding for calculations",
+    },
+    {
+        "name": "convfinqa",
+        "hf_path": "MehdiHosseiniMoghadam/ConvFinQA",
+        "hf_subset": "default",
+        "category": "domain_finance",
+        "split": "train",
+        "target_count": 100,
+        "q_field": "question",
+        "a_field": "answer",
+        "context_field": "pre_text",
         "table_field": "table",
         "rag_target": "quantitative",
+        "description": "Conversational financial QA with multi-turn numerical reasoning",
+        "why_quantitative": "Multi-turn financial calculations requiring SQL-like reasoning",
+    },
+    {
+        "name": "wikitablequestions",
+        "hf_path": "TableSenseAI/WikiTableQuestions",
+        "hf_subset": "default",
+        "category": "table_qa",
+        "split": "test",
+        "target_count": 50,
+        "q_field": "utterance",
+        "a_field": "target_value",
+        "rag_target": "quantitative",
         "description": "Table-based QA requiring SQL-like reasoning",
-        "why_quantitative": "Requires structured data queries, aggregation, filtering on tables"
+        "why_quantitative": "Requires structured data queries, aggregation, filtering on tables",
     },
 ]
 
 
+# ─── Deduplication ──────────────────────────────────────────────
+
+def load_existing_questions():
+    """Load all existing questions from benchmark files for deduplication."""
+    existing_hashes = set()
+    existing_count = 0
+
+    # 1. Load from benchmark-qa-results-full.json (28,053 questions)
+    if os.path.exists(EXISTING_QA_FILE):
+        try:
+            with open(EXISTING_QA_FILE, "r") as f:
+                data = json.load(f)
+            results = data.get("results", [])
+            for r in results:
+                q = r.get("question", "")
+                if q:
+                    h = hashlib.md5(q.strip().lower().encode()).hexdigest()
+                    existing_hashes.add(h)
+                    existing_count += 1
+        except Exception as e:
+            print(f"  [DEDUP] Warning: could not load {EXISTING_QA_FILE}: {e}")
+
+    # 2. Load from existing rag-1000-test-questions.json
+    if os.path.exists(EXISTING_TEST_FILE):
+        try:
+            with open(EXISTING_TEST_FILE, "r") as f:
+                data = json.load(f)
+            questions = data.get("questions", [])
+            for q_entry in questions:
+                q = q_entry.get("question", "")
+                if q:
+                    h = hashlib.md5(q.strip().lower().encode()).hexdigest()
+                    existing_hashes.add(h)
+                    existing_count += 1
+        except Exception as e:
+            print(f"  [DEDUP] Warning: could not load {EXISTING_TEST_FILE}: {e}")
+
+    # 3. Load from diagnostic-30q-results.json
+    if os.path.exists(EXISTING_DIAG_FILE):
+        try:
+            with open(EXISTING_DIAG_FILE, "r") as f:
+                data = json.load(f)
+            for rag_result in data.get("results_per_rag", []):
+                for qa in rag_result.get("qa_results", []):
+                    q = qa.get("question", "")
+                    if q:
+                        h = hashlib.md5(q.strip().lower().encode()).hexdigest()
+                        existing_hashes.add(h)
+                        existing_count += 1
+        except Exception as e:
+            print(f"  [DEDUP] Warning: could not load {EXISTING_DIAG_FILE}: {e}")
+
+    print(f"  [DEDUP] Loaded {len(existing_hashes)} unique question hashes from {existing_count} existing Q&A pairs")
+    return existing_hashes
+
+
+def is_duplicate(question_text, existing_hashes):
+    """Check if a question already exists in the benchmark."""
+    h = hashlib.md5(question_text.strip().lower().encode()).hexdigest()
+    return h in existing_hashes
+
+
 # ─── HuggingFace API ────────────────────────────────────────────
+
 def hf_fetch(dataset_path, subset, split, offset=0, length=100):
     """Fetch rows from HuggingFace datasets API."""
     url = (f"https://datasets-server.huggingface.co/rows?"
@@ -139,11 +218,8 @@ def hf_fetch(dataset_path, subset, split, offset=0, length=100):
            f"&config={parse.quote(subset)}"
            f"&split={split}"
            f"&offset={offset}&length={length}")
-    headers = {}
-    if HF_TOKEN:
-        headers["Authorization"] = f"Bearer {HF_TOKEN}"
 
-    req = request.Request(url, headers=headers)
+    req = request.Request(url)
     for attempt in range(4):
         try:
             with request.urlopen(req, timeout=60) as resp:
@@ -196,8 +272,8 @@ def get_field(obj, path, default=None):
 
 # ─── Question Extraction ────────────────────────────────────────
 
-def extract_questions(ds_config):
-    """Fetch and extract questions from a HuggingFace dataset."""
+def extract_questions(ds_config, existing_hashes, generated_hashes):
+    """Fetch and extract questions from a HuggingFace dataset, with deduplication."""
     name = ds_config["name"]
     target = ds_config["target_count"]
     hf_path = ds_config["hf_path"]
@@ -213,32 +289,22 @@ def extract_questions(ds_config):
     questions = []
     offset = 0
     page_size = 100
-    max_fetch = target * 3  # Fetch more to filter bad ones
+    max_fetch = target * 5  # Fetch more to account for dedup filtering
+    duplicates_skipped = 0
     consecutive_failures = 0
 
     while len(questions) < target and offset < max_fetch:
-        remaining = target - len(questions)
-        fetch_size = min(page_size, remaining * 2)
+        fetch_size = min(page_size, (target - len(questions)) * 2)
+        if fetch_size < 10:
+            fetch_size = 100
 
         print(f"    Fetching rows {offset}-{offset+fetch_size}...")
 
         try:
             result = hf_fetch(hf_path, subset, split, offset, fetch_size)
             if result is None:
-                # Try alternative configs
-                alt_configs = _get_alt_configs(name)
-                for alt_subset, alt_split in alt_configs:
-                    print(f"    Trying alternative: {alt_subset}/{alt_split}...")
-                    result = hf_fetch(hf_path, alt_subset, alt_split, offset, fetch_size)
-                    if result and result.get("rows"):
-                        ds_config["hf_subset"] = alt_subset
-                        ds_config["split"] = alt_split
-                        subset = alt_subset
-                        split = alt_split
-                        break
-                if result is None:
-                    print(f"    [ERROR] No data found for {name}")
-                    break
+                print(f"    [ERROR] No data found for {name}")
+                break
 
             rows = result.get("rows", [])
             if not rows:
@@ -264,11 +330,25 @@ def extract_questions(ds_config):
                 if not question_text or len(str(question_text).strip()) < 5:
                     continue
 
+                question_text = str(question_text).strip()
+
+                # Deduplication check
+                q_hash = hashlib.md5(question_text.lower().encode()).hexdigest()
+                if q_hash in existing_hashes or q_hash in generated_hashes:
+                    duplicates_skipped += 1
+                    continue
+
                 # Handle special answer formats
                 if isinstance(answer, dict):
                     answer = answer.get("text", answer.get("value", json.dumps(answer)))
                 if isinstance(answer, list):
-                    answer = answer[0] if answer else ""
+                    if len(answer) > 0:
+                        if isinstance(answer[0], str):
+                            answer = answer[0]
+                        else:
+                            answer = json.dumps(answer)
+                    else:
+                        answer = ""
                 answer = str(answer) if answer else ""
 
                 # Get context
@@ -292,11 +372,6 @@ def extract_questions(ds_config):
                     if isinstance(sf, (dict, list)):
                         supporting_facts = sf
 
-                # Get program/formula for quantitative
-                program = None
-                if ds_config.get("program_field"):
-                    program = get_field(r, ds_config["program_field"])
-
                 # Build metadata
                 metadata = {
                     "hf_path": hf_path,
@@ -306,12 +381,9 @@ def extract_questions(ds_config):
                     "why_this_rag": ds_config.get("why_graph") or ds_config.get("why_quantitative", ""),
                     "dataset_description": ds_config["description"],
                 }
-
                 if table:
                     metadata["has_table"] = True
                     metadata["table_preview"] = str(table)[:500]
-                if program:
-                    metadata["program"] = str(program)[:500]
                 if supporting_facts:
                     metadata["has_supporting_facts"] = True
 
@@ -321,7 +393,7 @@ def extract_questions(ds_config):
                     "category": ds_config["category"],
                     "split": split,
                     "item_index": item_idx,
-                    "question": str(question_text).strip()[:10000],
+                    "question": question_text[:10000],
                     "expected_answer": answer[:10000],
                     "context": str(context)[:20000] if context else None,
                     "table_data": str(table)[:20000] if table else None,
@@ -332,9 +404,10 @@ def extract_questions(ds_config):
                 }
 
                 questions.append(q_entry)
+                generated_hashes.add(q_hash)
 
             offset += len(rows)
-            print(f"    Extracted {len(questions)}/{target} questions so far")
+            print(f"    Extracted {len(questions)}/{target} ({duplicates_skipped} duplicates skipped)")
 
         except Exception as e:
             print(f"    [ERROR] Fetch error at offset {offset}: {e}")
@@ -344,46 +417,12 @@ def extract_questions(ds_config):
             offset += fetch_size
             time.sleep(2)
 
-    print(f"  => {name}: {len(questions)} questions extracted")
+    print(f"  => {name}: {len(questions)} questions extracted ({duplicates_skipped} duplicates skipped)")
     return questions
-
-
-def _get_alt_configs(name):
-    """Return alternative HF config/split pairs to try."""
-    alts = {
-        "musique": [
-            ("default", "train"),
-            ("default", "test"),
-        ],
-        "2wikimultihopqa": [
-            ("default", "train"),
-            ("default", "test"),
-        ],
-        "frames": [
-            ("default", "train"),
-            ("default", "validation"),
-        ],
-        "finqa": [
-            ("default", "validation"),
-            ("default", "train"),
-        ],
-        "tatqa": [
-            ("default", "train"),
-            ("default", "test"),
-            ("TAT-QA", "validation"),
-            ("TAT-QA", "train"),
-        ],
-        "wikitablequestions": [
-            ("default", "validation"),
-            ("default", "train"),
-        ],
-    }
-    return alts.get(name, [])
 
 
 # ─── RAG Routing Analysis ───────────────────────────────────────
 
-# Patterns that indicate a question should go to Graph RAG
 GRAPH_RAG_PATTERNS = [
     r"\b(who|what|which|where)\b.*\b(and|but|while|whereas)\b.*\b(who|what|which|where)\b",
     r"\bboth\b.*\band\b",
@@ -394,12 +433,12 @@ GRAPH_RAG_PATTERNS = [
     r"\bborn in the same\b",
     r"\bthe country where\b",
     r"\bthe (city|person|company|director|author) (of|who|that|where)\b.*\b(the|a)\b",
-    r"\bhow many (hops|steps|links)\b",
-    r"\bchain of\b",
     r"\bwhat is the .* of the .* of\b",
+    r"\bwho .* the .* that .* the\b",
+    r"\bwhere .* the .* who\b",
+    r"\bsame .* as\b",
 ]
 
-# Patterns that indicate a question should go to Quantitative RAG
 QUANTITATIVE_RAG_PATTERNS = [
     r"\bhow much\b",
     r"\bhow many\b",
@@ -418,6 +457,8 @@ QUANTITATIVE_RAG_PATTERNS = [
     r"\bchange\b.*\b(from|between|over)\b.*\b(year|quarter|period)\b",
     r"\bwhat (is|was|were) the\b.*\b(value|amount|number|rate|price|cost)\b",
     r"\bmore|less|greater|fewer\b.*\bthan\b",
+    r"\bgrowth\b",
+    r"\b(sum|count|max|min)\b",
 ]
 
 
@@ -425,21 +466,9 @@ def analyze_rag_routing(question_text, expected_rag):
     """Analyze if a question would be correctly routed to the expected RAG type."""
     q_lower = question_text.lower()
 
-    graph_score = 0
-    graph_matches = []
-    for pattern in GRAPH_RAG_PATTERNS:
-        if re.search(pattern, q_lower):
-            graph_score += 1
-            graph_matches.append(pattern)
+    graph_score = sum(1 for p in GRAPH_RAG_PATTERNS if re.search(p, q_lower))
+    quant_score = sum(1 for p in QUANTITATIVE_RAG_PATTERNS if re.search(p, q_lower))
 
-    quant_score = 0
-    quant_matches = []
-    for pattern in QUANTITATIVE_RAG_PATTERNS:
-        if re.search(pattern, q_lower):
-            quant_score += 1
-            quant_matches.append(pattern)
-
-    # Determine predicted RAG
     if quant_score > graph_score and quant_score >= 2:
         predicted_rag = "quantitative"
     elif graph_score > quant_score and graph_score >= 2:
@@ -449,18 +478,14 @@ def analyze_rag_routing(question_text, expected_rag):
     elif quant_score > 0 and graph_score == 0:
         predicted_rag = "quantitative"
     else:
-        predicted_rag = "standard"  # ambiguous
-
-    correct_routing = predicted_rag == expected_rag
+        predicted_rag = "standard"
 
     return {
         "predicted_rag": predicted_rag,
         "expected_rag": expected_rag,
-        "correct_routing": correct_routing,
+        "correct_routing": predicted_rag == expected_rag,
         "graph_score": graph_score,
         "quant_score": quant_score,
-        "graph_patterns_matched": len(graph_matches),
-        "quant_patterns_matched": len(quant_matches),
     }
 
 
@@ -521,7 +546,6 @@ def analyze_batch(questions):
                     "dataset": ds_name,
                 })
 
-    # Compute rates
     total = max(results["total"], 1)
     results["correct_rate"] = f"{results['correct_routing'] / total * 100:.1f}%"
     results["incorrect_rate"] = f"{results['incorrect_routing'] / total * 100:.1f}%"
@@ -554,14 +578,8 @@ def git_push(message):
             "benchmark-workflows/generate-1000-rag-test-questions.py",
         ]
 
-        subprocess.run(
-            ["git", "add"] + files_to_add,
-            cwd=REPO_DIR, capture_output=True, timeout=30
-        )
-        subprocess.run(
-            ["git", "commit", "-m", message],
-            cwd=REPO_DIR, capture_output=True, timeout=30
-        )
+        subprocess.run(["git", "add"] + files_to_add, cwd=REPO_DIR, capture_output=True, timeout=30)
+        subprocess.run(["git", "commit", "-m", message], cwd=REPO_DIR, capture_output=True, timeout=30)
 
         for retry in range(4):
             result = subprocess.run(
@@ -569,11 +587,10 @@ def git_push(message):
                 cwd=REPO_DIR, capture_output=True, timeout=60, text=True
             )
             if result.returncode == 0:
-                print(f"  [GIT] Push successful: {message}")
+                print(f"  [GIT] Push successful")
                 return True
             wait = 2 ** (retry + 1)
             print(f"  [GIT] Push failed (attempt {retry+1}), retrying in {wait}s...")
-            print(f"         stderr: {result.stderr[:200]}")
             time.sleep(wait)
 
         print(f"  [GIT] Push failed after 4 retries")
@@ -586,14 +603,14 @@ def git_push(message):
 def save_progress(phase, total_generated, all_questions):
     """Save progress file."""
     progress = {
-        "status": "running",
+        "status": "running" if phase != "completed" else "completed",
         "phase": phase,
         "total_generated": total_generated,
         "target": 1000,
         "progress_pct": f"{total_generated / 10:.1f}%",
         "graph_questions": sum(1 for q in all_questions if q["rag_target"] == "graph"),
         "quantitative_questions": sum(1 for q in all_questions if q["rag_target"] == "quantitative"),
-        "datasets_used": list(set(q["dataset_name"] for q in all_questions)),
+        "datasets_used": list(set(q["dataset_name"] for q in all_questions)) if all_questions else [],
         "updated_at": datetime.now().isoformat(),
     }
     with open(PROGRESS_FILE, "w") as f:
@@ -610,6 +627,7 @@ def save_questions(all_questions):
             "graph_questions": sum(1 for q in all_questions if q["rag_target"] == "graph"),
             "quantitative_questions": sum(1 for q in all_questions if q["rag_target"] == "quantitative"),
             "datasets": list(set(q["dataset_name"] for q in all_questions)),
+            "deduplication": "Checked against 28,053 existing benchmark Q&A pairs",
             "note": "Questions from specific datasets (excluding HotPotQA) for Graph and Quantitative RAG testing",
         },
         "questions": all_questions,
@@ -624,181 +642,163 @@ def save_analysis(analysis):
         json.dump(analysis, f, indent=2, ensure_ascii=False)
 
 
+def print_analysis(analysis, label):
+    """Print routing analysis to console."""
+    print(f"\n  === RAG ROUTING ANALYSIS ({label}) ===")
+    print(f"  Total questions: {analysis['total']}")
+    print(f"  Correct routing: {analysis['correct_routing']} ({analysis['correct_rate']})")
+    print(f"  Incorrect routing: {analysis['incorrect_routing']} ({analysis['incorrect_rate']})")
+    print(f"  Ambiguous: {analysis['ambiguous_routing']} ({analysis['ambiguous_rate']})")
+    print(f"  By RAG type:")
+    for rag_type in ["graph", "quantitative"]:
+        rt = analysis["by_rag_type"][rag_type]
+        print(f"    {rag_type}: {rt['total']} questions, {rt['correct_rate']} correct")
+    print(f"  By dataset:")
+    for ds_name, ds_stats in sorted(analysis["by_dataset"].items()):
+        print(f"    {ds_name:25s}: {ds_stats['total']:4d} questions, "
+              f"{ds_stats['correct_rate']} correct, target={ds_stats['rag_target']}")
+    if analysis["sample_misrouted"]:
+        print(f"  Sample misrouted ({len(analysis['sample_misrouted'])}):")
+        for m in analysis["sample_misrouted"][:5]:
+            print(f"    [{m['expected']}->{m['predicted']}] ({m['dataset']}) {m['question'][:80]}...")
+
+
 # ─── Main ────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     start_time = datetime.now()
     all_questions = []
+    generated_hashes = set()
 
     print("=" * 65)
-    print("  RAG TEST QUESTION GENERATOR")
+    print("  RAG TEST QUESTION GENERATOR (v2 — corrected HF paths)")
     print("  Graph RAG (500) + Quantitative RAG (500) = 1000 questions")
     print(f"  Time: {start_time.isoformat()}")
     print("=" * 65)
 
+    # Step 0: Load existing questions for deduplication
+    print("\n  Loading existing questions for deduplication...")
+    existing_hashes = load_existing_questions()
+
     print("\n  Graph RAG datasets (excluding HotPotQA):")
     for ds in GRAPH_RAG_DATASETS:
-        print(f"    - {ds['name']:25s} {ds['target_count']:4d} questions  ({ds['description']})")
+        print(f"    - {ds['name']:25s} {ds['target_count']:4d} questions  ({ds['hf_path']})")
     print(f"\n  Quantitative RAG datasets:")
     for ds in QUANTITATIVE_RAG_DATASETS:
-        print(f"    - {ds['name']:25s} {ds['target_count']:4d} questions  ({ds['description']})")
-    print()
+        print(f"    - {ds['name']:25s} {ds['target_count']:4d} questions  ({ds['hf_path']})")
 
     # ═══════════════════════════════════════════════
-    # PHASE 1: Generate first 500 questions
+    # PHASE 1: First 500 questions (Graph: 250, Quant: 250)
     # ═══════════════════════════════════════════════
     print("\n" + "#" * 65)
     print("  PHASE 1: First 500 questions")
     print("#" * 65)
 
-    # Graph RAG — first half (MuSiQue: 200, part of 2WikiMultiHop: 50)
-    for ds_config in GRAPH_RAG_DATASETS[:2]:
-        # For first phase, take half from first 2 datasets
-        half_target = ds_config["target_count"] // 2
-        ds_copy = dict(ds_config)
-
-        if ds_config["name"] == "musique":
-            ds_copy["target_count"] = 125
-        elif ds_config["name"] == "2wikimultihopqa":
-            ds_copy["target_count"] = 125
-
-        questions = extract_questions(ds_copy)
+    # Graph RAG Phase 1: musique (200) + start of 2wiki (50)
+    for ds in GRAPH_RAG_DATASETS[:2]:
+        ds_copy = dict(ds)
+        if ds["name"] == "musique":
+            ds_copy["target_count"] = 200
+        elif ds["name"] == "2wikimultihopqa":
+            ds_copy["target_count"] = 50
+        questions = extract_questions(ds_copy, existing_hashes, generated_hashes)
         all_questions.extend(questions)
         save_progress("phase1_graph", len(all_questions), all_questions)
         time.sleep(1)
 
-    # Quantitative RAG — first half
-    for ds_config in QUANTITATIVE_RAG_DATASETS[:2]:
-        ds_copy = dict(ds_config)
-        if ds_config["name"] == "finqa":
-            ds_copy["target_count"] = 125
-        elif ds_config["name"] == "tatqa":
-            ds_copy["target_count"] = 125
-
-        questions = extract_questions(ds_copy)
+    # Quantitative RAG Phase 1: finqa (200) + tatqa (50)
+    for ds in QUANTITATIVE_RAG_DATASETS[:2]:
+        ds_copy = dict(ds)
+        if ds["name"] == "finqa":
+            ds_copy["target_count"] = 200
+        elif ds["name"] == "tatqa":
+            ds_copy["target_count"] = 50
+        questions = extract_questions(ds_copy, existing_hashes, generated_hashes)
         all_questions.extend(questions)
         save_progress("phase1_quant", len(all_questions), all_questions)
         time.sleep(1)
 
     # ═══════════════════════════════════════════════
-    # MILESTONE: 500 questions — Push + Analyze
+    # MILESTONE 1: ~500 questions — Analyze + Push
     # ═══════════════════════════════════════════════
+    graph_count = sum(1 for q in all_questions if q["rag_target"] == "graph")
+    quant_count = sum(1 for q in all_questions if q["rag_target"] == "quantitative")
     print(f"\n{'='*65}")
-    print(f"  MILESTONE: {len(all_questions)} questions generated")
-    print(f"  Graph: {sum(1 for q in all_questions if q['rag_target'] == 'graph')}")
-    print(f"  Quantitative: {sum(1 for q in all_questions if q['rag_target'] == 'quantitative')}")
+    print(f"  MILESTONE 1: {len(all_questions)} questions generated")
+    print(f"  Graph: {graph_count} | Quantitative: {quant_count}")
     print(f"{'='*65}")
 
-    # Analyze routing
-    print("\n  Analyzing RAG routing for first batch...")
     analysis_phase1 = analyze_batch(all_questions)
-    analysis_phase1["phase"] = "phase1_500"
+    analysis_phase1["phase"] = "phase1"
     analysis_phase1["timestamp"] = datetime.now().isoformat()
 
-    # Save and push
     save_questions(all_questions)
-    save_analysis({
-        "title": "RAG Routing Analysis — Graph + Quantitative",
-        "phases": [analysis_phase1],
-    })
+    save_analysis({"title": "RAG Routing Analysis — Phase 1", "phases": [analysis_phase1]})
     save_progress("phase1_complete", len(all_questions), all_questions)
+    print_analysis(analysis_phase1, "Phase 1")
 
-    print("\n  === RAG ROUTING ANALYSIS (Phase 1) ===")
-    print(f"  Total questions: {analysis_phase1['total']}")
-    print(f"  Correct routing: {analysis_phase1['correct_rate']}")
-    print(f"  Incorrect routing: {analysis_phase1['incorrect_rate']}")
-    print(f"  Ambiguous: {analysis_phase1['ambiguous_rate']}")
-    print(f"  By RAG type:")
-    for rag_type in ["graph", "quantitative"]:
-        rt = analysis_phase1["by_rag_type"][rag_type]
-        print(f"    {rag_type}: {rt['total']} questions, {rt['correct_rate']} correct")
-    print(f"  By dataset:")
-    for ds_name, ds_stats in analysis_phase1["by_dataset"].items():
-        print(f"    {ds_name}: {ds_stats['total']} questions, {ds_stats['correct_rate']} correct routing")
-
-    if analysis_phase1["sample_misrouted"]:
-        print(f"\n  Sample misrouted questions:")
-        for m in analysis_phase1["sample_misrouted"][:5]:
-            print(f"    [{m['expected']}→{m['predicted']}] {m['question'][:100]}...")
-
-    # Git push first 500
     git_push(
         f"benchmark: {len(all_questions)} RAG test questions (phase 1/2) — "
-        f"graph+quantitative routing analysis"
+        f"graph({graph_count})+quant({quant_count}) — deduplicated"
     )
 
     # ═══════════════════════════════════════════════
-    # PHASE 2: Generate remaining 500 questions
+    # PHASE 2: Remaining ~500 questions
     # ═══════════════════════════════════════════════
     print("\n" + "#" * 65)
     print("  PHASE 2: Remaining 500 questions")
     print("#" * 65)
 
-    # Graph RAG — second half (rest of MuSiQue, 2WikiMultiHop, FRAMES)
-    phase2_graph_configs = [
-        {"base": GRAPH_RAG_DATASETS[0], "target": 75, "offset_start": 125},   # musique remaining
-        {"base": GRAPH_RAG_DATASETS[1], "target": 75, "offset_start": 125},   # 2wiki remaining
-        {"base": GRAPH_RAG_DATASETS[2], "target": 100, "offset_start": 0},    # frames
-    ]
-
-    for cfg in phase2_graph_configs:
-        ds_copy = dict(cfg["base"])
-        ds_copy["target_count"] = cfg["target"]
-        # Adjust offset to avoid duplicates
-        questions = extract_questions(ds_copy)
-        # Filter duplicates
-        existing_ids = set(q["id"] for q in all_questions)
-        new_questions = []
-        for q in questions:
-            q_hash = hashlib.md5(q["question"].encode()).hexdigest()[:12]
-            if q_hash not in [hashlib.md5(eq["question"].encode()).hexdigest()[:12] for eq in all_questions]:
-                new_questions.append(q)
-        all_questions.extend(new_questions[:cfg["target"]])
+    # Graph RAG Phase 2: rest of 2wiki (150) + frames (100)
+    for ds in GRAPH_RAG_DATASETS[1:]:
+        ds_copy = dict(ds)
+        if ds["name"] == "2wikimultihopqa":
+            ds_copy["target_count"] = 150
+        elif ds["name"] == "frames":
+            ds_copy["target_count"] = 100
+        questions = extract_questions(ds_copy, existing_hashes, generated_hashes)
+        all_questions.extend(questions)
         save_progress("phase2_graph", len(all_questions), all_questions)
         time.sleep(1)
 
-    # Quantitative RAG — second half
-    phase2_quant_configs = [
-        {"base": QUANTITATIVE_RAG_DATASETS[0], "target": 75, "offset_start": 125},   # finqa remaining
-        {"base": QUANTITATIVE_RAG_DATASETS[1], "target": 25, "offset_start": 125},    # tatqa remaining
-        {"base": QUANTITATIVE_RAG_DATASETS[2], "target": 150, "offset_start": 0},     # wikitablequestions
-    ]
-
-    for cfg in phase2_quant_configs:
-        ds_copy = dict(cfg["base"])
-        ds_copy["target_count"] = cfg["target"]
-        questions = extract_questions(ds_copy)
-        existing_ids = set(q["id"] for q in all_questions)
-        new_questions = []
-        for q in questions:
-            q_hash = hashlib.md5(q["question"].encode()).hexdigest()[:12]
-            if q_hash not in [hashlib.md5(eq["question"].encode()).hexdigest()[:12] for eq in all_questions]:
-                new_questions.append(q)
-        all_questions.extend(new_questions[:cfg["target"]])
+    # Quantitative RAG Phase 2: rest of tatqa (100) + convfinqa (100) + wikitable (50)
+    for ds in QUANTITATIVE_RAG_DATASETS[1:]:
+        ds_copy = dict(ds)
+        if ds["name"] == "tatqa":
+            ds_copy["target_count"] = 100
+        elif ds["name"] == "convfinqa":
+            ds_copy["target_count"] = 100
+        elif ds["name"] == "wikitablequestions":
+            ds_copy["target_count"] = 50
+        questions = extract_questions(ds_copy, existing_hashes, generated_hashes)
+        all_questions.extend(questions)
         save_progress("phase2_quant", len(all_questions), all_questions)
         time.sleep(1)
 
     # ═══════════════════════════════════════════════
-    # FINAL: Analysis + Push
+    # FINAL: Full Analysis + Push
     # ═══════════════════════════════════════════════
+    graph_count = sum(1 for q in all_questions if q["rag_target"] == "graph")
+    quant_count = sum(1 for q in all_questions if q["rag_target"] == "quantitative")
     print(f"\n{'='*65}")
     print(f"  FINAL: {len(all_questions)} questions generated")
-    print(f"  Graph: {sum(1 for q in all_questions if q['rag_target'] == 'graph')}")
-    print(f"  Quantitative: {sum(1 for q in all_questions if q['rag_target'] == 'quantitative')}")
+    print(f"  Graph: {graph_count} | Quantitative: {quant_count}")
     print(f"{'='*65}")
 
-    # Full analysis
-    print("\n  Running full RAG routing analysis...")
     analysis_final = analyze_batch(all_questions)
-    analysis_final["phase"] = "final_1000"
+    analysis_final["phase"] = "final"
     analysis_final["timestamp"] = datetime.now().isoformat()
 
-    # Save everything
     save_questions(all_questions)
     full_analysis = {
         "title": "RAG Routing Analysis — Graph + Quantitative — 1000 Questions",
         "generated_at": datetime.now().isoformat(),
         "total_questions": len(all_questions),
+        "deduplication": {
+            "existing_hashes_loaded": len(existing_hashes),
+            "new_hashes_generated": len(generated_hashes),
+            "method": "MD5 hash of lowercased question text",
+        },
         "phases": [analysis_phase1, analysis_final],
         "final_summary": {
             "total": analysis_final["total"],
@@ -816,62 +816,31 @@ if __name__ == "__main__":
         "sample_misrouted": analysis_final["sample_misrouted"],
         "datasets_used": {
             "graph_rag": [
-                {"name": "musique", "source": "StonyBrookNLP/musique", "type": "Compositional multi-hop (2-4 hops)"},
-                {"name": "2wikimultihopqa", "source": "scholarly-shadows-syndicate/2wikimultihopqa", "type": "Cross-document Wikipedia reasoning"},
-                {"name": "frames", "source": "google/frames-benchmark", "type": "Google multi-hop RAG benchmark"},
+                {"name": d["name"], "source": d["hf_path"], "type": d["description"]}
+                for d in GRAPH_RAG_DATASETS
             ],
             "quantitative_rag": [
-                {"name": "finqa", "source": "ibm/finqa", "type": "Financial table reasoning + calculations"},
-                {"name": "tatqa", "source": "next-tat-qa", "type": "Hybrid table-and-text arithmetic QA"},
-                {"name": "wikitablequestions", "source": "wikitablequestions", "type": "Table-based SQL-like reasoning"},
+                {"name": d["name"], "source": d["hf_path"], "type": d["description"]}
+                for d in QUANTITATIVE_RAG_DATASETS
             ],
         },
-        "routing_analysis_method": (
-            "Pattern-based regex matching against Graph RAG patterns "
-            "(multi-hop, entity relationships, comparisons) and Quantitative RAG patterns "
-            "(numerical, financial, calculations, aggregations). "
-            "Questions matching neither strongly are classified as 'ambiguous'."
-        ),
     }
     save_analysis(full_analysis)
-
     save_progress("completed", len(all_questions), all_questions)
+    print_analysis(analysis_final, "Final")
 
-    # Print final analysis
-    print("\n  === FINAL RAG ROUTING ANALYSIS ===")
-    print(f"  Total questions: {analysis_final['total']}")
-    print(f"  Correct routing: {analysis_final['correct_routing']} ({analysis_final['correct_rate']})")
-    print(f"  Incorrect routing: {analysis_final['incorrect_routing']} ({analysis_final['incorrect_rate']})")
-    print(f"  Ambiguous: {analysis_final['ambiguous_routing']} ({analysis_final['ambiguous_rate']})")
-    print(f"\n  By RAG type:")
-    for rag_type in ["graph", "quantitative"]:
-        rt = analysis_final["by_rag_type"][rag_type]
-        print(f"    {rag_type}: {rt['total']} questions")
-        print(f"      Correctly routed: {rt['correct']} ({rt['correct_rate']})")
-        print(f"      Incorrectly routed: {rt['incorrect']} ({rt['incorrect_rate']})")
-        print(f"      Ambiguous: {rt['ambiguous']} ({rt['ambiguous_rate']})")
-    print(f"\n  By dataset:")
-    for ds_name, ds_stats in sorted(analysis_final["by_dataset"].items()):
-        print(f"    {ds_name:25s}: {ds_stats['total']:4d} questions, "
-              f"{ds_stats['correct_rate']} correct, target={ds_stats['rag_target']}")
-
-    if analysis_final["sample_misrouted"]:
-        print(f"\n  Sample misrouted questions ({len(analysis_final['sample_misrouted'])}):")
-        for m in analysis_final["sample_misrouted"][:10]:
-            print(f"    [{m['expected']}→{m['predicted']}] ({m['dataset']}) {m['question'][:80]}...")
-
-    # Final git push
     elapsed = (datetime.now() - start_time).total_seconds()
     git_push(
-        f"benchmark: {len(all_questions)} RAG test questions complete — "
-        f"graph({sum(1 for q in all_questions if q['rag_target'] == 'graph')}) + "
-        f"quantitative({sum(1 for q in all_questions if q['rag_target'] == 'quantitative')}) — "
-        f"routing analysis included"
+        f"benchmark: {len(all_questions)} RAG test questions FINAL — "
+        f"graph({graph_count})+quant({quant_count}) — "
+        f"deduplicated vs {len(existing_hashes)} existing"
     )
 
     print(f"\n{'='*65}")
     print(f"  COMPLETE")
-    print(f"  Total questions: {len(all_questions)}")
+    print(f"  Total: {len(all_questions)} questions (target: 1000)")
+    print(f"  Graph RAG: {graph_count} | Quantitative RAG: {quant_count}")
+    print(f"  Dedup: checked against {len(existing_hashes)} existing questions")
     print(f"  Duration: {elapsed:.0f}s ({elapsed/60:.1f}min)")
     print(f"  Output: {OUTPUT_FILE}")
     print(f"  Analysis: {ANALYSIS_FILE}")
