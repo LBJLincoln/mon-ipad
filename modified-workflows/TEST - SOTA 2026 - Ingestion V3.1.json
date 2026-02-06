@@ -278,7 +278,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Add Q&A to chunks metadata\nconst chunkData = $node['Chunk Enricher V3.1 (Contextual)'].json;\nlet qaData;\ntry {\n  qaData = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n} catch (e) {\n  qaData = { questions: [] };\n}\n\nconst questions = qaData.questions || [];\n\n// Add hypothetical questions to each chunk\nconst finalChunks = chunkData.chunks.map((chunk, idx) => ({\n  ...chunk,\n  hypothetical_questions: questions.slice(idx * 3, (idx + 1) * 3)\n}));\n\nreturn {\n  ...chunkData,\n  chunks: finalChunks\n};"
+        "jsCode": "// Add Q&A to chunks metadata\nconst chunkData = $node['Chunk Validator & Enricher V4'].json;\nlet qaData;\ntry {\n  qaData = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n} catch (e) {\n  qaData = { questions: [] };\n}\n\nconst questions = qaData.questions || [];\n\n// Add hypothetical questions to each chunk\nconst finalChunks = chunkData.chunks.map((chunk, idx) => ({\n  ...chunk,\n  hypothetical_questions: questions.slice(idx * 3, (idx + 1) * 3)\n}));\n\nreturn {\n  ...chunkData,\n  chunks: finalChunks\n};"
       },
       "id": "fe943522-76c8-41a6-b0e3-40e579772905",
       "name": "Q&A Enricher",
