@@ -22,15 +22,16 @@ from urllib import request, error, parse
 # ============================================================
 # Configuration
 # ============================================================
-SUPABASE_CONN = f"postgresql://postgres:{os.environ['SUPABASE_PASSWORD']}@db.ayqviqmxifzmhphiqfmj.supabase.co:5432/postgres"
+# Use Supabase Transaction Pooler (IPv4 compatible, port 6543)
+SUPABASE_CONN = f"postgresql://postgres.ayqviqmxifzmhphiqfmj:{os.environ['SUPABASE_PASSWORD']}@aws-1-eu-west-1.pooler.supabase.com:6543/postgres"
 NEO4J_HOST = "38c949a2.databases.neo4j.io"
 NEO4J_USER = os.environ.get("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.environ["NEO4J_PASSWORD"]
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 LLM_MODEL = os.environ.get("LLM_ENTITY_MODEL", "google/gemini-2.5-flash-preview-05-20")
 
-# Neo4j Aura HTTP API
-NEO4J_HTTP_URL = f"https://{NEO4J_HOST}:7473/db/neo4j/tx/commit"
+# Neo4j Aura Query API v2 (port 443, works through firewalls)
+NEO4J_HTTP_URL = f"https://{NEO4J_HOST}/db/neo4j/query/v2"
 NEO4J_AUTH = base64.b64encode(f"{NEO4J_USER}:{NEO4J_PASSWORD}".encode()).decode()
 
 # Entity types expected by WF2 Graph RAG
@@ -47,9 +48,12 @@ VALID_RELATIONSHIP_TYPES = [
 # Neo4j HTTP helpers
 # ============================================================
 
-def neo4j_execute(statements, timeout=30):
-    """Execute Cypher statements via Neo4j HTTP transactional API."""
-    body = json.dumps({"statements": statements}).encode()
+def neo4j_execute_single(cypher, parameters=None, timeout=30):
+    """Execute a single Cypher statement via Neo4j Query API v2."""
+    payload = {"statement": cypher}
+    if parameters:
+        payload["parameters"] = parameters
+    body = json.dumps(payload).encode()
     req = request.Request(
         NEO4J_HTTP_URL,
         data=body,
@@ -77,22 +81,37 @@ def neo4j_execute(statements, timeout=30):
                 return None
 
 
+def neo4j_execute(statements, timeout=30):
+    """Execute multiple Cypher statements sequentially via Query API v2."""
+    last_result = None
+    for stmt in statements:
+        cypher = stmt if isinstance(stmt, str) else stmt.get("statement", "")
+        params = stmt.get("parameters") if isinstance(stmt, dict) else None
+        result = neo4j_execute_single(cypher, params, timeout)
+        if result is None:
+            return None
+        last_result = result
+    return last_result or {"ok": True}
+
+
 def neo4j_setup_constraints():
     """Create indexes and constraints for the entity graph."""
-    statements = [
-        {"statement": "CREATE INDEX entity_name IF NOT EXISTS FOR (n:Entity) ON (n.name)"},
-        {"statement": "CREATE INDEX entity_tenant IF NOT EXISTS FOR (n:Entity) ON (n.tenant_id)"},
-        {"statement": "CREATE INDEX person_name IF NOT EXISTS FOR (n:Person) ON (n.name)"},
-        {"statement": "CREATE INDEX org_name IF NOT EXISTS FOR (n:Organization) ON (n.name)"},
-        {"statement": "CREATE INDEX city_name IF NOT EXISTS FOR (n:City) ON (n.name)"},
-        {"statement": "CREATE INDEX museum_name IF NOT EXISTS FOR (n:Museum) ON (n.name)"},
-        {"statement": "CREATE INDEX tech_name IF NOT EXISTS FOR (n:Technology) ON (n.name)"},
-        {"statement": "CREATE INDEX disease_name IF NOT EXISTS FOR (n:Disease) ON (n.name)"},
+    indexes = [
+        "CREATE INDEX entity_name IF NOT EXISTS FOR (n:Entity) ON (n.name)",
+        "CREATE INDEX entity_tenant IF NOT EXISTS FOR (n:Entity) ON (n.tenant_id)",
+        "CREATE INDEX person_name IF NOT EXISTS FOR (n:Person) ON (n.name)",
+        "CREATE INDEX org_name IF NOT EXISTS FOR (n:Organization) ON (n.name)",
+        "CREATE INDEX city_name IF NOT EXISTS FOR (n:City) ON (n.name)",
+        "CREATE INDEX museum_name IF NOT EXISTS FOR (n:Museum) ON (n.name)",
+        "CREATE INDEX tech_name IF NOT EXISTS FOR (n:Technology) ON (n.name)",
+        "CREATE INDEX disease_name IF NOT EXISTS FOR (n:Disease) ON (n.name)",
     ]
-    result = neo4j_execute(statements, timeout=60)
-    if result:
-        print("  Neo4j indexes created/verified")
-    return result is not None
+    for idx_cypher in indexes:
+        result = neo4j_execute_single(idx_cypher, timeout=60)
+        if result is None:
+            print(f"  WARNING: Failed to create index: {idx_cypher[:50]}...")
+    print("  Neo4j indexes created/verified")
+    return True
 
 
 def neo4j_create_entities(entities, tenant_id="benchmark"):

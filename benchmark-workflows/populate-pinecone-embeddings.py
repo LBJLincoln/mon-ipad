@@ -19,7 +19,8 @@ from urllib import request, error, parse
 # ============================================================
 # Configuration
 # ============================================================
-SUPABASE_CONN = f"postgresql://postgres:{os.environ['SUPABASE_PASSWORD']}@db.ayqviqmxifzmhphiqfmj.supabase.co:5432/postgres"
+# Use Supabase Transaction Pooler (IPv4 compatible, port 6543)
+SUPABASE_CONN = f"postgresql://postgres.ayqviqmxifzmhphiqfmj:{os.environ['SUPABASE_PASSWORD']}@aws-1-eu-west-1.pooler.supabase.com:6543/postgres"
 PINECONE_HOST = os.environ.get("PINECONE_HOST", "https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io").rstrip("/")
 PINECONE_API_KEY = os.environ["PINECONE_API_KEY"]
 
