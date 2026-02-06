@@ -51,8 +51,8 @@
       "position": [-2300, 200],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       }
     },
@@ -68,15 +68,15 @@
       "position": [-2300, 500],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       }
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "=SELECT\n  br.run_id,\n  br.dataset_name,\n  AVG((r.metrics->>'em')::float) FILTER (WHERE r.metrics ? 'em') AS avg_em,\n  AVG((r.metrics->>'f1')::float) FILTER (WHERE r.metrics ? 'f1') AS avg_f1,\n  AVG((r.metrics->>'recall_at_10')::float) FILTER (WHERE r.metrics ? 'recall_at_10') AS avg_recall_10,\n  AVG((r.metrics->>'mrr_at_10')::float) FILTER (WHERE r.metrics ? 'mrr_at_10') AS avg_mrr_10,\n  AVG((r.metrics->>'accuracy')::float) FILTER (WHERE r.metrics ? 'accuracy') AS avg_accuracy,\n  AVG((r.metrics->>'faithfulness')::float) FILTER (WHERE r.metrics ? 'faithfulness') AS avg_faithfulness,\n  AVG((r.metrics->>'hallucination_rate')::float) FILTER (WHERE r.metrics ? 'hallucination_rate') AS avg_hallucination,\n  AVG((r.metrics->>'routing_correctness')::float) FILTER (WHERE r.metrics ? 'routing_correctness') AS avg_routing,\n  AVG(r.latency_ms) AS avg_latency,\n  COUNT(*) AS total_results,\n  COUNT(*) FILTER (WHERE r.error IS NOT NULL) AS error_count\nFROM benchmark_results r\nJOIN benchmark_runs br ON r.run_id = br.run_id\nWHERE br.started_at > NOW() - INTERVAL '{{ $node['Init Monitor Session'].json.lookback_hours }} hours'\nAND br.status IN ('completed', 'partial')\nGROUP BY br.run_id, br.dataset_name\nORDER BY br.run_id DESC;"
+        "query": "=SELECT\n  br.run_id,\n  r.dataset_name,\n  AVG((r.metrics->>'em')::float) FILTER (WHERE r.metrics ? 'em') AS avg_em,\n  AVG((r.metrics->>'f1')::float) FILTER (WHERE r.metrics ? 'f1') AS avg_f1,\n  AVG((r.metrics->>'recall_at_10')::float) FILTER (WHERE r.metrics ? 'recall_at_10') AS avg_recall_10,\n  AVG((r.metrics->>'mrr_at_10')::float) FILTER (WHERE r.metrics ? 'mrr_at_10') AS avg_mrr_10,\n  AVG((r.metrics->>'accuracy')::float) FILTER (WHERE r.metrics ? 'accuracy') AS avg_accuracy,\n  AVG((r.metrics->>'faithfulness')::float) FILTER (WHERE r.metrics ? 'faithfulness') AS avg_faithfulness,\n  AVG((r.metrics->>'hallucination_rate')::float) FILTER (WHERE r.metrics ? 'hallucination_rate') AS avg_hallucination,\n  AVG((r.metrics->>'routing_correctness')::float) FILTER (WHERE r.metrics ? 'routing_correctness') AS avg_routing,\n  AVG(r.latency_ms) AS avg_latency,\n  COUNT(*) AS total_results,\n  COUNT(*) FILTER (WHERE r.error IS NOT NULL) AS error_count\nFROM benchmark_results r\nJOIN benchmark_runs br ON r.run_id = br.run_id\nWHERE br.started_at > NOW() - INTERVAL '{{ $node['Init Monitor Session'].json.lookback_hours }} hours'\nAND br.status IN ('completed', 'partial')\nGROUP BY br.run_id, r.dataset_name\nORDER BY br.run_id DESC;"
       },
       "id": "b4000001-0006-4000-a004-000000000006",
       "name": "Fetch Aggregated Metrics",
@@ -85,14 +85,14 @@
       "position": [-2300, 350],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "// Analyze results: compare to baselines, detect regressions, generate alerts\nconst monitorData = $node['Init Monitor Session'].json;\nconst runs = $node['Fetch Recent Runs'].json || [];\nconst baselines = $node['Fetch Active Baselines'].json || [];\nconst metrics = $node['Fetch Aggregated Metrics'].json || [];\n\nconst regressionThreshold = monitorData.regression_threshold_pct / 100;\n\n// Build baseline lookup\nconst baselineLookup = {};\nif (Array.isArray(baselines)) {\n  for (const b of baselines) {\n    baselineLookup[b.dataset_name] = b;\n  }\n}\n\n// Analyze each run's metrics against baselines\nconst alerts = [];\nconst dashboardData = [];\n\nconst metricsArray = Array.isArray(metrics) ? metrics : [metrics];\n\nfor (const m of metricsArray) {\n  if (!m || !m.dataset_name) continue;\n  \n  const baseline = baselineLookup[m.dataset_name];\n  const entry = {\n    run_id: m.run_id,\n    dataset_name: m.dataset_name,\n    metrics: {\n      em: m.avg_em,\n      f1: m.avg_f1,\n      recall_at_10: m.avg_recall_10,\n      mrr_at_10: m.avg_mrr_10,\n      accuracy: m.avg_accuracy,\n      faithfulness: m.avg_faithfulness,\n      hallucination_rate: m.avg_hallucination,\n      routing_correctness: m.avg_routing\n    },\n    avg_latency: m.avg_latency,\n    total_results: m.total_results,\n    error_count: m.error_count,\n    error_rate: m.total_results > 0 ? m.error_count / m.total_results : 0,\n    baseline_comparison: {},\n    trend: 'stable'\n  };\n\n  // Compare to baseline\n  if (baseline && baseline.metrics) {\n    const bMetrics = typeof baseline.metrics === 'string' ? JSON.parse(baseline.metrics) : baseline.metrics;\n    \n    for (const [key, currentVal] of Object.entries(entry.metrics)) {\n      if (currentVal == null || bMetrics[key] == null) continue;\n      \n      const baselineVal = parseFloat(bMetrics[key]);\n      if (baselineVal === 0) continue;\n      \n      const delta = (currentVal - baselineVal) / baselineVal;\n      entry.baseline_comparison[key] = {\n        baseline: baselineVal,\n        current: currentVal,\n        delta_pct: Math.round(delta * 10000) / 100\n      };\n\n      // Check for regression (metrics that should go UP)\n      const higherIsBetter = !key.includes('hallucination') && !key.includes('error') && !key.includes('fallback');\n      const isRegression = higherIsBetter ? delta < -regressionThreshold : delta > regressionThreshold;\n\n      if (isRegression) {\n        entry.trend = 'degrading';\n        const severity = Math.abs(delta) > regressionThreshold * 2 ? 'critical' : 'warning';\n        alerts.push({\n          alert_type: 'regression',\n          severity: severity,\n          run_id: m.run_id,\n          dataset_name: m.dataset_name,\n          metric_name: key,\n          baseline_value: baselineVal,\n          current_value: currentVal,\n          delta_pct: Math.round(delta * 10000) / 100,\n          threshold: regressionThreshold * 100,\n          message: `${severity.toUpperCase()}: ${m.dataset_name} — ${key} regressed by ${Math.abs(Math.round(delta * 100))}% (baseline: ${(baselineVal * 100).toFixed(1)}%, current: ${(currentVal * 100).toFixed(1)}%)`\n        });\n      } else if (delta > regressionThreshold) {\n        entry.trend = 'improving';\n      }\n    }\n  }\n\n  // Check error rate\n  if (entry.error_rate > 0.10) {\n    alerts.push({\n      alert_type: 'error_spike',\n      severity: entry.error_rate > 0.25 ? 'critical' : 'warning',\n      run_id: m.run_id,\n      dataset_name: m.dataset_name,\n      metric_name: 'error_rate',\n      baseline_value: 0,\n      current_value: entry.error_rate,\n      delta_pct: entry.error_rate * 100,\n      threshold: 10,\n      message: `ERROR SPIKE: ${m.dataset_name} — ${Math.round(entry.error_rate * 100)}% error rate (${m.error_count}/${m.total_results})`\n    });\n  }\n\n  // Check latency\n  if (entry.avg_latency > 10000) {\n    alerts.push({\n      alert_type: 'latency_spike',\n      severity: entry.avg_latency > 30000 ? 'critical' : 'warning',\n      run_id: m.run_id,\n      dataset_name: m.dataset_name,\n      metric_name: 'avg_latency_ms',\n      baseline_value: 5000,\n      current_value: entry.avg_latency,\n      delta_pct: ((entry.avg_latency - 5000) / 5000) * 100,\n      threshold: 10000,\n      message: `LATENCY: ${m.dataset_name} — avg ${Math.round(entry.avg_latency)}ms (threshold: 10000ms)`\n    });\n  }\n\n  dashboardData.push(entry);\n}\n\n// Run summary\nconst runsArray = Array.isArray(runs) ? runs : [runs];\nconst runsSummary = {\n  total_runs: runsArray.filter(r => r.run_id).length,\n  completed: runsArray.filter(r => r.status === 'completed').length,\n  failed: runsArray.filter(r => r.status === 'failed').length,\n  running: runsArray.filter(r => r.status === 'running').length\n};\n\nconsole.log(`[MONITORING] ${dashboardData.length} datasets analyzed, ${alerts.length} alerts generated`);\n\nreturn {\n  monitor_id: monitorData.monitor_id,\n  triggered_by: monitorData.triggered_by,\n  lookback_hours: monitorData.lookback_hours,\n  runs_summary: runsSummary,\n  dashboard_data: dashboardData,\n  alerts: alerts,\n  critical_alerts: alerts.filter(a => a.severity === 'critical').length,\n  warning_alerts: alerts.filter(a => a.severity === 'warning').length,\n  slack_webhook: monitorData.slack_webhook,\n  timestamp: monitorData.timestamp\n};"
+        "jsCode": "// Analyze results: compare to baselines, detect regressions, generate alerts\nconst monitorData = $node['Init Monitor Session'].json;\nconst runs = ($node['Fetch Recent Runs'].all ? $node['Fetch Recent Runs'].all().map(i => i.json) : [$node['Fetch Recent Runs'].json]).filter(Boolean);\nconst baselines = ($node['Fetch Active Baselines'].all ? $node['Fetch Active Baselines'].all().map(i => i.json) : [$node['Fetch Active Baselines'].json]).filter(Boolean);\nconst metrics = ($node['Fetch Aggregated Metrics'].all ? $node['Fetch Aggregated Metrics'].all().map(i => i.json) : [$node['Fetch Aggregated Metrics'].json]).filter(Boolean);\n\nconst regressionThreshold = monitorData.regression_threshold_pct / 100;\n\n// Build baseline lookup\nconst baselineLookup = {};\nif (Array.isArray(baselines)) {\n  for (const b of baselines) {\n    baselineLookup[b.dataset_name] = b;\n  }\n}\n\n// Analyze each run's metrics against baselines\nconst alerts = [];\nconst dashboardData = [];\n\nconst metricsArray = Array.isArray(metrics) ? metrics : [metrics];\n\nfor (const m of metricsArray) {\n  if (!m || !m.dataset_name) continue;\n  \n  const baseline = baselineLookup[m.dataset_name];\n  const entry = {\n    run_id: m.run_id,\n    dataset_name: m.dataset_name,\n    metrics: {\n      em: m.avg_em,\n      f1: m.avg_f1,\n      recall_at_10: m.avg_recall_10,\n      mrr_at_10: m.avg_mrr_10,\n      accuracy: m.avg_accuracy,\n      faithfulness: m.avg_faithfulness,\n      hallucination_rate: m.avg_hallucination,\n      routing_correctness: m.avg_routing\n    },\n    avg_latency: m.avg_latency,\n    total_results: m.total_results,\n    error_count: m.error_count,\n    error_rate: m.total_results > 0 ? m.error_count / m.total_results : 0,\n    baseline_comparison: {},\n    trend: 'stable'\n  };\n\n  // Compare to baseline\n  if (baseline && baseline.metrics) {\n    const bMetrics = typeof baseline.metrics === 'string' ? JSON.parse(baseline.metrics) : baseline.metrics;\n    \n    for (const [key, currentVal] of Object.entries(entry.metrics)) {\n      if (currentVal == null || bMetrics[key] == null) continue;\n      \n      const baselineVal = parseFloat(bMetrics[key]);\n      if (baselineVal === 0) continue;\n      \n      const delta = (currentVal - baselineVal) / baselineVal;\n      entry.baseline_comparison[key] = {\n        baseline: baselineVal,\n        current: currentVal,\n        delta_pct: Math.round(delta * 10000) / 100\n      };\n\n      // Check for regression (metrics that should go UP)\n      const higherIsBetter = !key.includes('hallucination') && !key.includes('error') && !key.includes('fallback');\n      const isRegression = higherIsBetter ? delta < -regressionThreshold : delta > regressionThreshold;\n\n      if (isRegression) {\n        entry.trend = 'degrading';\n        const severity = Math.abs(delta) > regressionThreshold * 2 ? 'critical' : 'warning';\n        alerts.push({\n          alert_type: 'regression',\n          severity: severity,\n          run_id: m.run_id,\n          dataset_name: m.dataset_name,\n          metric_name: key,\n          baseline_value: baselineVal,\n          current_value: currentVal,\n          delta_pct: Math.round(delta * 10000) / 100,\n          threshold: regressionThreshold * 100,\n          message: `${severity.toUpperCase()}: ${m.dataset_name} — ${key} regressed by ${Math.abs(Math.round(delta * 100))}% (baseline: ${(baselineVal * 100).toFixed(1)}%, current: ${(currentVal * 100).toFixed(1)}%)`\n        });\n      } else if (delta > regressionThreshold) {\n        entry.trend = 'improving';\n      }\n    }\n  }\n\n  // Check error rate\n  if (entry.error_rate > 0.10) {\n    alerts.push({\n      alert_type: 'error_spike',\n      severity: entry.error_rate > 0.25 ? 'critical' : 'warning',\n      run_id: m.run_id,\n      dataset_name: m.dataset_name,\n      metric_name: 'error_rate',\n      baseline_value: 0,\n      current_value: entry.error_rate,\n      delta_pct: entry.error_rate * 100,\n      threshold: 10,\n      message: `ERROR SPIKE: ${m.dataset_name} — ${Math.round(entry.error_rate * 100)}% error rate (${m.error_count}/${m.total_results})`\n    });\n  }\n\n  // Check latency\n  if (entry.avg_latency > 10000) {\n    alerts.push({\n      alert_type: 'latency_spike',\n      severity: entry.avg_latency > 30000 ? 'critical' : 'warning',\n      run_id: m.run_id,\n      dataset_name: m.dataset_name,\n      metric_name: 'avg_latency_ms',\n      baseline_value: 5000,\n      current_value: entry.avg_latency,\n      delta_pct: ((entry.avg_latency - 5000) / 5000) * 100,\n      threshold: 10000,\n      message: `LATENCY: ${m.dataset_name} — avg ${Math.round(entry.avg_latency)}ms (threshold: 10000ms)`\n    });\n  }\n\n  dashboardData.push(entry);\n}\n\n// Run summary\nconst runsArray = Array.isArray(runs) ? runs : [runs];\nconst runsSummary = {\n  total_runs: runsArray.filter(r => r.run_id).length,\n  completed: runsArray.filter(r => r.status === 'completed').length,\n  failed: runsArray.filter(r => r.status === 'failed').length,\n  running: runsArray.filter(r => r.status === 'running').length\n};\n\nconsole.log(`[MONITORING] ${dashboardData.length} datasets analyzed, ${alerts.length} alerts generated`);\n\nreturn {\n  monitor_id: monitorData.monitor_id,\n  triggered_by: monitorData.triggered_by,\n  lookback_hours: monitorData.lookback_hours,\n  runs_summary: runsSummary,\n  dashboard_data: dashboardData,\n  alerts: alerts,\n  critical_alerts: alerts.filter(a => a.severity === 'critical').length,\n  warning_alerts: alerts.filter(a => a.severity === 'warning').length,\n  slack_webhook: monitorData.slack_webhook,\n  timestamp: monitorData.timestamp\n};"
       },
       "id": "b4000001-0007-4000-a004-000000000007",
       "name": "Analyze & Detect Regressions",
@@ -122,8 +122,8 @@
       "position": [-1200, 200],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       },
       "onError": "continueErrorOutput"
@@ -150,8 +150,8 @@
       "position": [-1200, 500],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       },
       "onError": "continueErrorOutput"
@@ -395,14 +395,8 @@
     "Monitoring Summary": {
       "main": [
         [
+          { "node": "Respond Dashboard", "type": "main", "index": 0 },
           { "node": "Export Monitor Trace OTEL", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "Export Monitor Trace OTEL": {
-      "main": [
-        [
-          { "node": "Respond Dashboard", "type": "main", "index": 0 }
         ]
       ]
     }

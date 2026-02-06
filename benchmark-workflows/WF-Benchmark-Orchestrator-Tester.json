@@ -37,14 +37,14 @@
       "position": [-2400, 300],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "// Create orchestrator test batches\nconst initData = $node['Init Orchestrator Test'].json;\nconst rows = $json;\n\nif (!Array.isArray(rows) || rows.length === 0) {\n  throw new Error(`NO_DATA: No benchmark items for '${initData.dataset_name}'. Run ingestion first.`);\n}\n\nconst batchSize = initData.batch_size;\nconst batches = [];\n\nfor (let i = 0; i < rows.length; i += batchSize) {\n  const batchItems = rows.slice(i, i + batchSize);\n  batches.push({\n    batch_index: Math.floor(i / batchSize),\n    batch_size: batchItems.length,\n    items: batchItems,\n    run_id: initData.run_id,\n    trace_id: initData.trace_id,\n    test_mode: initData.test_mode,\n    dataset_name: initData.dataset_name,\n    orchestrator_endpoint: initData.orchestrator_endpoint,\n    expected_routing: initData.expected_routing,\n    metrics_to_compute: initData.metrics_to_compute,\n    tenant_id: initData.tenant_id,\n    concurrency: initData.concurrency,\n    timeout_ms: initData.timeout_ms,\n    total_batches: Math.ceil(rows.length / batchSize),\n    total_items: rows.length\n  });\n}\n\nreturn batches.map(b => ({ json: b }));"
+        "jsCode": "// Create orchestrator test batches\nconst initData = $node['Init Orchestrator Test'].json;\nconst rows = $input.all().map(item => item.json);\n\nif (!Array.isArray(rows) || rows.length === 0) {\n  throw new Error(`NO_DATA: No benchmark items for '${initData.dataset_name}'. Run ingestion first.`);\n}\n\nconst batchSize = initData.batch_size;\nconst batches = [];\n\nfor (let i = 0; i < rows.length; i += batchSize) {\n  const batchItems = rows.slice(i, i + batchSize);\n  batches.push({\n    batch_index: Math.floor(i / batchSize),\n    batch_size: batchItems.length,\n    items: batchItems,\n    run_id: initData.run_id,\n    trace_id: initData.trace_id,\n    test_mode: initData.test_mode,\n    dataset_name: initData.dataset_name,\n    orchestrator_endpoint: initData.orchestrator_endpoint,\n    expected_routing: initData.expected_routing,\n    metrics_to_compute: initData.metrics_to_compute,\n    tenant_id: initData.tenant_id,\n    concurrency: initData.concurrency,\n    timeout_ms: initData.timeout_ms,\n    total_batches: Math.ceil(rows.length / batchSize),\n    total_items: rows.length\n  });\n}\n\nreturn batches.map(b => ({ json: b }));"
       },
       "id": "b3000001-0004-4000-a003-000000000004",
       "name": "Create Orchestrator Batches",
@@ -64,8 +64,8 @@
       "position": [-2100, 560],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       }
     },
@@ -122,8 +122,8 @@
       "position": [-600, 300],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       },
       "onError": "continueErrorOutput"
@@ -160,8 +160,8 @@
       "position": [300, 300],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       }
     },
@@ -284,14 +284,8 @@
     "Update Orch Run Status": {
       "main": [
         [
+          { "node": "Respond Orch Success", "type": "main", "index": 0 },
           { "node": "Export Trace OTEL", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "Export Trace OTEL": {
-      "main": [
-        [
-          { "node": "Respond Orch Success", "type": "main", "index": 0 }
         ]
       ]
     }
