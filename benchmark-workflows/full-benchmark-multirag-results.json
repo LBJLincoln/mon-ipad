@@ -1,7 +1,7 @@
 {
   "suite": "MULTI-RAG FULL BENCHMARK",
   "started_at": "2026-02-06T15:11:22.943759",
-  "updated_at": "2026-02-06T15:11:44.305604",
+  "updated_at": "2026-02-06T15:11:46.571496",
   "config": {
     "test_type": "e2e",
     "batch_size": 100,
@@ -26,13 +26,13 @@
     "total_qa_pairs": 7824
   },
   "summary": {
-    "total_completed": 5472,
+    "total_completed": 6472,
     "total_successes": 3000,
-    "total_errors": 2472,
+    "total_errors": 3472,
     "total_expected": 23472,
-    "progress_pct": "23.3%",
-    "elapsed_seconds": 21,
-    "error_rate": "45.18%"
+    "progress_pct": "27.6%",
+    "elapsed_seconds": 23,
+    "error_rate": "53.65%"
   },
   "results": [
     {
@@ -118,7 +118,18 @@
       "response_data": null,
       "latency_s": 3.6,
       "timestamp": "2026-02-06T15:11:44.264407"
+    },
+    {
+      "dataset": "squad_v2",
+      "rag_type": "standard",
+      "items": 1000,
+      "test_type": "e2e",
+      "status": "error",
+      "error": "HTTP 403: Forbidden",
+      "response_data": null,
+      "latency_s": 3.5,
+      "timestamp": "2026-02-06T15:11:46.570414"
     }
   ],
-  "all_runs_count": 6
+  "all_runs_count": 7
 }
