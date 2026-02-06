@@ -37,14 +37,14 @@
       "position": [-2400, 300],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "// Validate fetched data and create test batches\nconst initData = $node['Init Test Session'].json;\nconst rows = $json;\n\nif (!Array.isArray(rows) || rows.length === 0) {\n  throw new Error(`NO_DATA: No benchmark items found for dataset '${initData.dataset_name}'. Run ingestion first.`);\n}\n\nconst batchSize = initData.batch_size;\nconst batches = [];\n\nfor (let i = 0; i < rows.length; i += batchSize) {\n  const batchItems = rows.slice(i, i + batchSize);\n  batches.push({\n    batch_index: Math.floor(i / batchSize),\n    batch_size: batchItems.length,\n    items: batchItems,\n    run_id: initData.run_id,\n    trace_id: initData.trace_id,\n    test_type: initData.test_type,\n    dataset_name: initData.dataset_name,\n    rag_endpoint: initData.rag_endpoint,\n    rag_target: initData.rag_target,\n    metrics_to_compute: initData.metrics_to_compute,\n    tenant_id: initData.tenant_id,\n    total_batches: Math.ceil(rows.length / batchSize),\n    total_items: rows.length\n  });\n}\n\nconsole.log(`[BENCHMARK TEST] ${initData.dataset_name}: ${rows.length} items in ${batches.length} batches of ${batchSize}`);\n\nreturn batches.map(b => ({ json: b }));"
+        "jsCode": "// Validate fetched data and create test batches\nconst initData = $node['Init Test Session'].json;\nconst rows = $input.all().map(item => item.json);\n\nif (!Array.isArray(rows) || rows.length === 0) {\n  throw new Error(`NO_DATA: No benchmark items found for dataset '${initData.dataset_name}'. Run ingestion first.`);\n}\n\nconst batchSize = initData.batch_size;\nconst batches = [];\n\nfor (let i = 0; i < rows.length; i += batchSize) {\n  const batchItems = rows.slice(i, i + batchSize);\n  batches.push({\n    batch_index: Math.floor(i / batchSize),\n    batch_size: batchItems.length,\n    items: batchItems,\n    run_id: initData.run_id,\n    trace_id: initData.trace_id,\n    test_type: initData.test_type,\n    dataset_name: initData.dataset_name,\n    rag_endpoint: initData.rag_endpoint,\n    rag_target: initData.rag_target,\n    metrics_to_compute: initData.metrics_to_compute,\n    tenant_id: initData.tenant_id,\n    total_batches: Math.ceil(rows.length / batchSize),\n    total_items: rows.length\n  });\n}\n\nconsole.log(`[BENCHMARK TEST] ${initData.dataset_name}: ${rows.length} items in ${batches.length} batches of ${batchSize}`);\n\nreturn batches.map(b => ({ json: b }));"
       },
       "id": "b2000001-0004-4000-a002-000000000004",
       "name": "Create Test Batches",
@@ -64,8 +64,8 @@
       "position": [-2100, 560],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       }
     },
@@ -122,15 +122,15 @@
       "position": [-600, 300],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       },
       "onError": "continueErrorOutput"
     },
     {
       "parameters": {
-        "jsCode": "// Log batch progress\nconst batch = $json;\nconst batchIdx = batch.batch_index;\nconst totalBatches = batch.total_batches;\nconst pct = Math.round(((batchIdx + 1) / totalBatches) * 100);\n\n// Compute batch-level aggregate metrics\nconst results = batch.results;\nconst metricKeys = Object.keys(results[0]?.metrics || {});\nconst batchMetrics = {};\nfor (const key of metricKeys) {\n  const vals = results.map(r => r.metrics[key]).filter(v => v !== undefined && v !== null);\n  batchMetrics[key] = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;\n}\n\nconst avgLatency = results.reduce((sum, r) => sum + (r.latency_ms || 0), 0) / results.length;\nconst errorCount = results.filter(r => r.error).length;\n\nconsole.log(`[BENCHMARK TEST] ${batch.dataset_name} — Batch ${batchIdx + 1}/${totalBatches} (${pct}%)`);\nconsole.log(`  Avg Latency: ${Math.round(avgLatency)}ms | Errors: ${errorCount}`);\nfor (const [k, v] of Object.entries(batchMetrics)) {\n  console.log(`  ${k}: ${(v * 100).toFixed(1)}%`);\n}\n\nreturn {\n  batch_index: batchIdx,\n  total_batches: totalBatches,\n  progress_pct: pct,\n  batch_metrics: batchMetrics,\n  avg_latency_ms: avgLatency,\n  error_count: errorCount,\n  run_id: batch.run_id,\n  dataset_name: batch.dataset_name\n};"
+        "jsCode": "// Log batch progress\nconst batch = $json;\nconst batchIdx = batch.batch_index || 0;\nconst totalBatches = batch.total_batches || 1;\nconst pct = Math.round(((batchIdx + 1) / totalBatches) * 100);\n\n// Compute batch-level aggregate metrics\nconst results = batch.results || batch.batch_results || [];\nconst metricKeys = results.length > 0 ? Object.keys(results[0]?.metrics || {}) : [];\nconst batchMetrics = {};\nfor (const key of metricKeys) {\n  const vals = results.map(r => r.metrics[key]).filter(v => v !== undefined && v !== null);\n  batchMetrics[key] = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;\n}\n\nconst avgLatency = results.length > 0 ? results.reduce((sum, r) => sum + (r.latency_ms || 0), 0) / results.length : 0;\nconst errorCount = results.filter(r => r.error).length;\n\nconsole.log(`[BENCHMARK TEST] ${batch.dataset_name} — Batch ${batchIdx + 1}/${totalBatches} (${pct}%)`);\nconsole.log(`  Avg Latency: ${Math.round(avgLatency)}ms | Errors: ${errorCount}`);\nfor (const [k, v] of Object.entries(batchMetrics)) {\n  console.log(`  ${k}: ${(v * 100).toFixed(1)}%`);\n}\n\nreturn {\n  batch_index: batchIdx,\n  total_batches: totalBatches,\n  progress_pct: pct,\n  batch_metrics: batchMetrics,\n  avg_latency_ms: avgLatency,\n  error_count: errorCount,\n  run_id: batch.run_id,\n  dataset_name: batch.dataset_name\n};"
       },
       "id": "b2000001-0011-4000-a002-000000000011",
       "name": "Batch Progress Logger",
@@ -160,8 +160,8 @@
       "position": [300, 300],
       "credentials": {
         "postgres": {
-          "id": "supabase-benchmark",
-          "name": "Supabase Benchmark"
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
         }
       }
     },
@@ -301,14 +301,8 @@
     "Check Thresholds": {
       "main": [
         [
+          { "node": "Respond Success", "type": "main", "index": 0 },
           { "node": "Export Trace OTEL", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "Export Trace OTEL": {
-      "main": [
-        [
-          { "node": "Respond Success", "type": "main", "index": 0 }
         ]
       ]
     }
