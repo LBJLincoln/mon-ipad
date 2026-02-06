@@ -1,0 +1,193 @@
+{
+  "generated_at": "2026-02-06T07:14:39.330981",
+  "generated_by": "n8n-robustness-test-suite",
+  "target": "https://amoret.app.n8n.cloud",
+  "total_tests": 13,
+  "passed": 13,
+  "failed": 0,
+  "warned": 0,
+  "tests": [
+    {
+      "name": "T01: Connection Graph Completeness",
+      "status": "PASS",
+      "details": [
+        "TEST - SOTA 2026 - Ingestion V3.1.json: 28 nodes, 24 sources checked",
+        "TEST - SOTA 2026 - Enrichissement V3.1.json: 29 nodes, 25 sources checked",
+        "V10.1 orchestrator copy (5).json: 65 nodes, 57 sources checked",
+        "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED.json: 21 nodes, 19 sources checked",
+        "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED (1).json: 22 nodes, 20 sources checked",
+        "TEST - SOTA 2026 - Feedback V3.1.json: 13 nodes, 8 sources checked",
+        "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json: 23 nodes, 20 sources checked"
+      ],
+      "errors": []
+    },
+    {
+      "name": "T02: $node[] Reference Integrity",
+      "status": "PASS",
+      "details": [
+        "TEST - SOTA 2026 - Ingestion V3.1.json: 14 refs found, 0 broken",
+        "TEST - SOTA 2026 - Enrichissement V3.1.json: 15 refs found, 0 broken",
+        "V10.1 orchestrator copy (5).json: 84 refs found, 0 broken",
+        "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED.json: 33 refs found, 0 broken",
+        "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED (1).json: 23 refs found, 0 broken",
+        "TEST - SOTA 2026 - Feedback V3.1.json: 20 refs found, 0 broken",
+        "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json: 26 refs found, 0 broken"
+      ],
+      "errors": []
+    },
+    {
+      "name": "T03: No Duplicate Node IDs/Names",
+      "status": "PASS",
+      "details": [
+        "TEST - SOTA 2026 - Ingestion V3.1.json: 28 unique IDs, 28 unique names",
+        "TEST - SOTA 2026 - Enrichissement V3.1.json: 29 unique IDs, 29 unique names",
+        "V10.1 orchestrator copy (5).json: 65 unique IDs, 65 unique names",
+        "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED.json: 21 unique IDs, 21 unique names",
+        "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED (1).json: 22 unique IDs, 22 unique names",
+        "TEST - SOTA 2026 - Feedback V3.1.json: 13 unique IDs, 13 unique names",
+        "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json: 23 unique IDs, 23 unique names"
+      ],
+      "errors": []
+    },
+    {
+      "name": "T04: SQL Injection Protection",
+      "status": "PASS",
+      "details": [
+        "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json SQL Validator: 10/10 patterns blocked",
+        "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json: tenant_id enforcement present",
+        "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json: LIMIT 100 enforcement present"
+      ],
+      "errors": []
+    },
+    {
+      "name": "T05: Tenant Isolation & ACL",
+      "status": "PASS",
+      "details": [
+        "[TEST - SOTA 2026 - Ingestion V3.1.json] 'Init Lock & Trace' extracts tenant_id",
+        "[V10.1 orchestrator copy (5).json] 'Init V8 Security & Analysis' extracts tenant_id",
+        "[V10.1 orchestrator copy (5).json] WARN: Postgres query in 'Postgres: Apply Skips' may lack tenant_id filter",
+        "[V10.1 orchestrator copy (5).json] WARN: Postgres query in 'Postgres: Insert New Tasks' may lack tenant_id filter",
+        "[V10.1 orchestrator copy (5).json] WARN: Postgres query in 'Postgres : Get Current Tasks' may lack tenant_id filter",
+        "[TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED.json] ACL bypass check: CORRECT (=== true)",
+        "[TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED.json] 'Init & ACL Pre-Filter V3.4' extracts tenant_id",
+        "[TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED (1).json] 'OTEL Init' extracts tenant_id",
+        "[TEST - SOTA 2026 - Feedback V3.1.json] WARN: Postgres query in 'Loop Breaker Check' may lack tenant_id filter",
+        "[TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json] 'Init & ACL' extracts tenant_id",
+        "[TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json] WARN: Postgres query in 'Schema Introspection' may lack tenant_id filter"
+      ],
+      "errors": []
+    },
+    {
+      "name": "T06: Cross-Workflow Consistency",
+      "status": "PASS",
+      "details": [
+        "  'Invoke WF5: Standard' -> workflowId: qtBs2Wbi_raU2o_dqfdDC (mode=id)",
+        "    -> Found: 'TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED' (21 nodes)",
+        "  'Invoke WF2: Graph' -> workflowId: 95x2BBAbJlLWZtWEJn6rb (mode=id)",
+        "    -> Found: 'TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED' (22 nodes)",
+        "  'Invoke WF4: Quantitative' -> workflowId: xrzL7TRX9F0UrWks0tdCI (mode=list)",
+        "    -> Found: 'TEST - SOTA 2026 - WF4 Quantitative V2.0' (23 nodes)"
+      ],
+      "errors": []
+    },
+    {
+      "name": "T07: Expression Template Syntax",
+      "status": "PASS",
+      "details": [
+        "TEST - SOTA 2026 - Ingestion V3.1.json: 17 expressions checked",
+        "TEST - SOTA 2026 - Enrichissement V3.1.json: 20 expressions checked",
+        "V10.1 orchestrator copy (5).json: 27 expressions checked",
+        "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED.json: 16 expressions checked",
+        "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED (1).json: 13 expressions checked",
+        "TEST - SOTA 2026 - Feedback V3.1.json: 7 expressions checked",
+        "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json: 9 expressions checked"
+      ],
+      "errors": []
+    },
+    {
+      "name": "T08: Node Type Validity",
+      "status": "PASS",
+      "details": [
+        "TEST - SOTA 2026 - Ingestion V3.1.json: 10 distinct types, 28 total nodes",
+        "TEST - SOTA 2026 - Enrichissement V3.1.json: 8 distinct types, 29 total nodes",
+        "V10.1 orchestrator copy (5).json: 13 distinct types, 65 total nodes",
+        "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED.json: 9 distinct types, 21 total nodes",
+        "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED (1).json: 8 distinct types, 22 total nodes",
+        "TEST - SOTA 2026 - Feedback V3.1.json: 6 distinct types, 13 total nodes",
+        "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json: 9 distinct types, 23 total nodes"
+      ],
+      "errors": []
+    },
+    {
+      "name": "T09: Settings API Compatibility",
+      "status": "PASS",
+      "details": [
+        "TEST - SOTA 2026 - Ingestion V3.1.json: settings clean (['availableInMCP', 'callerPolicy', 'executionOrder'])",
+        "TEST - SOTA 2026 - Enrichissement V3.1.json: settings clean (['availableInMCP', 'callerPolicy', 'executionOrder'])",
+        "V10.1 orchestrator copy (5).json: settings clean (['availableInMCP', 'callerPolicy', 'executionOrder'])",
+        "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED.json: settings clean (['availableInMCP', 'callerPolicy', 'executionOrder'])",
+        "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED (1).json: settings clean (['availableInMCP', 'callerPolicy', 'executionOrder'])",
+        "TEST - SOTA 2026 - Feedback V3.1.json: settings clean (['availableInMCP', 'callerPolicy', 'executionOrder'])",
+        "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json: settings clean (['availableInMCP', 'callerPolicy', 'executionOrder'])"
+      ],
+      "errors": []
+    },
+    {
+      "name": "T10: Idempotent Re-import",
+      "status": "PASS",
+      "details": [
+        "TEST - SOTA 2026 - Ingestion V3.1.json: re-import OK (28 nodes)",
+        "TEST - SOTA 2026 - Enrichissement V3.1.json: re-import OK (29 nodes)",
+        "V10.1 orchestrator copy (5).json: re-import OK (65 nodes)",
+        "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED.json: re-import OK (21 nodes)",
+        "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED (1).json: re-import OK (22 nodes)",
+        "TEST - SOTA 2026 - Feedback V3.1.json: re-import OK (13 nodes)",
+        "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json: re-import OK (23 nodes)"
+      ],
+      "errors": []
+    },
+    {
+      "name": "T11: No Circular Dependencies (DAG)",
+      "status": "PASS",
+      "details": [
+        "TEST - SOTA 2026 - Ingestion V3.1.json: OK (26 nodes, 27 edges, 1 intentional loops)",
+        "TEST - SOTA 2026 - Enrichissement V3.1.json: OK (28 nodes, 30 edges, 1 intentional loops)",
+        "V10.1 orchestrator copy (5).json: OK (64 nodes, 73 edges, 3 intentional loops)",
+        "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED.json: OK (20 nodes, 25 edges)",
+        "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED (1).json: OK (21 nodes, 22 edges)",
+        "TEST - SOTA 2026 - Feedback V3.1.json: OK (11 nodes, 10 edges)",
+        "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json: OK (22 nodes, 22 edges, 1 intentional loops)"
+      ],
+      "errors": []
+    },
+    {
+      "name": "T12: Critical Patch Regression Guard",
+      "status": "PASS",
+      "details": [
+        "Ingestion: Chunk Validator & Enricher V4 present",
+        "Ingestion: Embedding template clean",
+        "WF2 Graph RAG: Shield #9 enabled (OTEL tracing active)",
+        "WF2 Graph RAG: Centrality Scoring node present",
+        "WF2 Graph RAG: Cohere rerank-v3.5 confirmed",
+        "WF4 Quant: Q01 rename confirmed",
+        "WF4 Quant: Q02 rename confirmed",
+        "Feedback: Webhook -> IFA connected"
+      ],
+      "errors": []
+    },
+    {
+      "name": "T13: Node Position Validity",
+      "status": "PASS",
+      "details": [
+        "TEST - SOTA 2026 - Ingestion V3.1.json: 28 positions",
+        "TEST - SOTA 2026 - Enrichissement V3.1.json: 29 positions",
+        "V10.1 orchestrator copy (5).json: 65 positions",
+        "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED.json: 21 positions",
+        "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED (1).json: 22 positions",
+        "TEST - SOTA 2026 - Feedback V3.1.json: 13 positions",
+        "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json: 23 positions"
+      ],
+      "errors": []
+    }
+  ]
+}
