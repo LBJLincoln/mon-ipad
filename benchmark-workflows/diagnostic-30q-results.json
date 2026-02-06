@@ -1,0 +1,510 @@
+{
+  "test": "Diagnostic 30Q \u2014 fetch() fix validation",
+  "started_at": "2026-02-06T16:15:17.718562",
+  "completed_at": "2026-02-06T16:18:31.664779",
+  "total_elapsed_s": 193.9,
+  "config": {
+    "dataset": "squad_v2",
+    "sample_per_rag": 10,
+    "rag_types": [
+      "standard",
+      "graph",
+      "quantitative"
+    ],
+    "test_type": "e2e"
+  },
+  "summary": {
+    "total_qa_results": 30,
+    "with_answers": 20,
+    "with_errors": 0,
+    "fix_validated": true
+  },
+  "results_per_rag": [
+    {
+      "rag_type": "standard",
+      "dataset": "squad_v2",
+      "sample_size": 10,
+      "webhook_status": 200,
+      "webhook_error": null,
+      "webhook_latency_s": 60.8,
+      "timestamp": "2026-02-06T16:16:18.511268",
+      "run_id": "test-e2e-squad_v2-1770394519578-gwrhz2",
+      "qa_results": [
+        {
+          "run_id": "test-e2e-squad_v2-1770394519578-gwrhz2",
+          "dataset_name": "squad_v2",
+          "item_index": 1825,
+          "question": "In what country is Normandy located?",
+          "expected_answer": "{'text': ['France', 'France', 'France', 'France'], 'answer_start': [159, 159, 159, 159]}",
+          "actual_answer": "Normandy is located in northern France [1], [3].",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 5739,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394519578-gwrhz2",
+          "dataset_name": "squad_v2",
+          "item_index": 1826,
+          "question": "When were the Normans in Normandy?",
+          "expected_answer": "{'text': ['10th and 11th centuries', 'in the 10th and 11th centuries', '10th and 11th centuries', '10th and 11th centuries'], 'answer_start': [94, 87, 94, 94]}",
+          "actual_answer": "Les Normands \u00e9taient une population d'origine mixte franque et scandinave qui a donn\u00e9 son nom \u00e0 la Normandie, une r\u00e9gion situ\u00e9e dans le nord de la France [1], [10].\n\nBien que les documents fournis indiquent l'origine des Normands et leur localisation (Normandie, nord de la France) [1], [10], ils ne pr\u00e9cisent pas la p\u00e9riode exacte durant laquelle les Normands \u00e9taient pr\u00e9sents en Normandie. Cependant, le contexte g\u00e9n\u00e9ral mentionne leur r\u00f4le majeur en Europe m\u00e9di\u00e9vale [9] et leur conqu\u00eate de l'Angleterre en 1066 [4], ce qui situe leur pr\u00e9sence significative durant la p\u00e9riode m\u00e9di\u00e9vale [2], [3].",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 6324,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394519578-gwrhz2",
+          "dataset_name": "squad_v2",
+          "item_index": 1827,
+          "question": "From which countries did the Norse originate?",
+          "expected_answer": "{'text': ['Denmark, Iceland and Norway', 'Denmark, Iceland and Norway', 'Denmark, Iceland and Norway', 'Denmark, Iceland and Norway'], 'answer_start': [256, 256, 256, 256]}",
+          "actual_answer": "Les sources fournies indiquent que les Normands avaient des origines franques et scandinaves [1], [2], [4].\n\nLes Normands ont donn\u00e9 leur nom \u00e0 la Normandie, une r\u00e9gion situ\u00e9e dans le nord de la France [2], [3], [9].\n\nPar cons\u00e9quent, les origines scandinaves sugg\u00e8rent une provenance des pays nordiques (Scandinavie) [1], [2], [4].",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 5286,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394519578-gwrhz2",
+          "dataset_name": "squad_v2",
+          "item_index": 1828,
+          "question": "Who was the Norse leader?",
+          "expected_answer": "{'text': ['Rollo', 'Rollo', 'Rollo', 'Rollo'], 'answer_start': [308, 308, 308, 308]}",
+          "actual_answer": "Le contexte documentaire ne nomme pas un unique \"leader\" des **Norse** (Scandinaves). Cependant, il mentionne les **Normands**, qui sont d\u00e9crits comme ayant des origines **scandinaves** et franques [1], [2], [3], [9].\n\nUn leader important associ\u00e9 aux Normands est mentionn\u00e9 : **William the Conqueror** (Guillaume le Conqu\u00e9rant) [7]. Les Normands, sous sa direction, ont conquis l'Angleterre en 1066 [5].",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 5694,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394519578-gwrhz2",
+          "dataset_name": "squad_v2",
+          "item_index": 1829,
+          "question": "What century did the Normans first gain their separate identity?",
+          "expected_answer": "{'text': ['10th century', 'the first half of the 10th century', '10th', '10th'], 'answer_start': [671, 649, 671, 671]}",
+          "actual_answer": "Les Normands ont commenc\u00e9 \u00e0 d\u00e9velopper leur identit\u00e9 distincte au cours du **XIe si\u00e8cle** [4].\n\nBien que leurs origines soient un m\u00e9lange de populations franques et scandinaves [1], [7], leur consolidation en tant que groupe distinct est souvent associ\u00e9e \u00e0 leur \u00e9tablissement en Normandie et \u00e0 des \u00e9v\u00e9nements marquants comme la conqu\u00eate de l'Angleterre en 1066 [4].",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 5418,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394519578-gwrhz2",
+          "dataset_name": "squad_v2",
+          "item_index": 1830,
+          "question": "Who gave their name to Normandy in the 1000's and 1100's",
+          "expected_answer": "{'text': [], 'answer_start': []}",
+          "actual_answer": "Les **Normands** ont donn\u00e9 leur nom \u00e0 la Normandie [1], [5].\n\nLes Normands \u00e9taient une population d'origine mixte franque et scandinave [1], [3], [6].",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 5867,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394519578-gwrhz2",
+          "dataset_name": "squad_v2",
+          "item_index": 1831,
+          "question": "What is France a region of?",
+          "expected_answer": "{'text': [], 'answer_start': []}",
+          "actual_answer": "France is a country in Western Europe [2].",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 4820,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394519578-gwrhz2",
+          "dataset_name": "squad_v2",
+          "item_index": 1832,
+          "question": "Who did King Charles III swear fealty to?",
+          "expected_answer": "{'text': [], 'answer_start': []}",
+          "actual_answer": "King Charles III, as the reigning monarch of the United Kingdom and the other Commonwealth realms, does not swear fealty to another person. He is the sovereign.\n\nHistorically, the monarch of the United Kingdom inherits the throne upon the death or abdication of the previous monarch, which is marked by the proclamation of the new sovereign. The accession is not typically marked by an act of swearing fealty to a superior, as the monarch is the ultimate source of authority within the realm (the Crown) [9].\n\nThe concept of swearing fealty (homage) is usually associated with a vassal swearing loyalty to a feudal lord or monarch. In the modern British constitutional monarchy, the monarch swears an oath to uphold the security of the Church of Scotland and the laws of the land upon their coronation, but this is an oath taken *by* the monarch, not *to* another person [Self-Correction/External Knowledge required for precise detail on the coronation oath].",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 6427,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394519578-gwrhz2",
+          "dataset_name": "squad_v2",
+          "item_index": 1833,
+          "question": "When did the Frankish identity emerge?",
+          "expected_answer": "{'text': [], 'answer_start': []}",
+          "actual_answer": "Le contexte documentaire fourni ne pr\u00e9cise pas la date exacte de l'\u00e9mergence de l'identit\u00e9 franque.\n\nCependant, les documents indiquent que les Francs ont eu une influence sur les Normands, qui sont d\u00e9crits comme \u00e9tant d'origine mixte franque et scandinave [1], [3]. Les Normands ont donn\u00e9 leur nom \u00e0 la Normandie, une r\u00e9gion du nord de la France [3].",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 6016,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394519578-gwrhz2",
+          "dataset_name": "squad_v2",
+          "item_index": 1834,
+          "question": "Who was the duke in the battle of Hastings?",
+          "expected_answer": "{'text': ['William the Conqueror', 'William the Conqueror', 'William the Conqueror'], 'answer_start': [1022, 1022, 1022]}",
+          "actual_answer": "Le duc impliqu\u00e9 dans la bataille de Hastings \u00e9tait Guillaume le Conqu\u00e9rant (William the Conqueror) [4]. Les Normands ont conquis l'Angleterre en 1066 [1].",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 5768,
+          "error": null
+        }
+      ],
+      "webhook_response": {
+        "success": true,
+        "run_id": "test-e2e-squad_v2-1770394519578-gwrhz2",
+        "test_type": "e2e",
+        "dataset": "squad_v2",
+        "rag_target": "standard",
+        "total_items": 10,
+        "duration": "59s",
+        "status": "completed"
+      }
+    },
+    {
+      "rag_type": "graph",
+      "dataset": "squad_v2",
+      "sample_size": 10,
+      "webhook_status": 200,
+      "webhook_error": null,
+      "webhook_latency_s": 87.1,
+      "timestamp": "2026-02-06T16:17:54.068059",
+      "run_id": "test-e2e-squad_v2-1770394587234-yjnz05",
+      "qa_results": [
+        {
+          "run_id": "test-e2e-squad_v2-1770394587234-yjnz05",
+          "dataset_name": "squad_v2",
+          "item_index": 1825,
+          "question": "In what country is Normandy located?",
+          "expected_answer": "{'text': ['France', 'France', 'France', 'France'], 'answer_start': [159, 159, 159, 159]}",
+          "actual_answer": "The Normans were a population of mixed Frankish and Scandinavian origin. They gave their name to Normandy, a region in northern France. | Normans Frankish Scandinavian Normandy France medieval Europe political military cultural. | Machine learning uses neural networks. The Normans gave name to Normandy.",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 10181,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394587234-yjnz05",
+          "dataset_name": "squad_v2",
+          "item_index": 1826,
+          "question": "When were the Normans in Normandy?",
+          "expected_answer": "{'text': ['10th and 11th centuries', 'in the 10th and 11th centuries', '10th and 11th centuries', '10th and 11th centuries'], 'answer_start': [94, 87, 94, 94]}",
+          "actual_answer": "The Normans were a population of mixed Frankish and Scandinavian origin. They gave their name to Normandy, a region in northern France. | Normans Frankish Scandinavian Normandy France medieval Europe political military cultural. | Normans medieval European influence. Frankish Scandinavian origins.",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 8481,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394587234-yjnz05",
+          "dataset_name": "squad_v2",
+          "item_index": 1827,
+          "question": "From which countries did the Norse originate?",
+          "expected_answer": "{'text': ['Denmark, Iceland and Norway', 'Denmark, Iceland and Norway', 'Denmark, Iceland and Norway', 'Denmark, Iceland and Norway'], 'answer_start': [256, 256, 256, 256]}",
+          "actual_answer": "Normans medieval European influence. Frankish Scandinavian origins. | The Normans were a population of mixed Frankish and Scandinavian origin. They gave their name to Normandy, a region in northern France. | Normans Frankish Scandinavian Normandy France medieval Europe political military cultural.",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 8127,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394587234-yjnz05",
+          "dataset_name": "squad_v2",
+          "item_index": 1828,
+          "question": "Who was the Norse leader?",
+          "expected_answer": "{'text': ['Rollo', 'Rollo', 'Rollo', 'Rollo'], 'answer_start': [308, 308, 308, 308]}",
+          "actual_answer": "Normans medieval European influence. Frankish Scandinavian origins. | Normans Frankish Scandinavian Normandy France medieval Europe political military cultural. | The Normans were a population of mixed Frankish and Scandinavian origin. They gave their name to Normandy, a region in northern France.",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 8545,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394587234-yjnz05",
+          "dataset_name": "squad_v2",
+          "item_index": 1829,
+          "question": "What century did the Normans first gain their separate identity?",
+          "expected_answer": "{'text': ['10th century', 'the first half of the 10th century', '10th', '10th'], 'answer_start': [671, 649, 671, 671]}",
+          "actual_answer": "The Normans were a population of mixed Frankish and Scandinavian origin. They gave their name to Normandy, a region in northern France. | Normans medieval European influence. Frankish Scandinavian origins. | Normans Frankish Scandinavian Normandy France medieval Europe political military cultural.",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 8121,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394587234-yjnz05",
+          "dataset_name": "squad_v2",
+          "item_index": 1830,
+          "question": "Who gave their name to Normandy in the 1000's and 1100's",
+          "expected_answer": "{'text': [], 'answer_start': []}",
+          "actual_answer": "The Normans were a population of mixed Frankish and Scandinavian origin. They gave their name to Normandy, a region in northern France. | Normans Frankish Scandinavian Normandy France medieval Europe political military cultural. | Normans medieval European influence. Frankish Scandinavian origins.",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 8029,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394587234-yjnz05",
+          "dataset_name": "squad_v2",
+          "item_index": 1831,
+          "question": "What is France a region of?",
+          "expected_answer": "{'text': [], 'answer_start': []}",
+          "actual_answer": "Question: What is the capital of France?\nAnswer: Paris | WikiHop Query: capital :: France\nAnswer: Paris\nSupporting facts: France is a country in Western Europe | Paris is the capital and largest city | Table: European Population: Germany: 83M, France: 67M, Italy: 60M, Spain: 47M\nStatement: France has the largest population among the listed countries.\nVerdict: refuted",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 8360,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394587234-yjnz05",
+          "dataset_name": "squad_v2",
+          "item_index": 1832,
+          "question": "Who did King Charles III swear fealty to?",
+          "expected_answer": "{'text': [], 'answer_start': []}",
+          "actual_answer": "Multi-hop Question: Who was the monarch when the building housing the Mona Lisa was built?\nAnswer: Francis I of France\nReasoning chain: Mona Lisa is in the Louvre \u2192 Louvre was built as fortress/palace \u2192 Francis I converted it to royal residence | WikiHop Query: currency :: United Kingdom\nAnswer: Pound sterling\nSupporting facts: UK is an island country in Europe | Official currency is the pound sterling (GBP) | WikiHop Query: head of government :: Germany\nAnswer: Olaf Scholz (as of 2021)\nSupporting facts: Germany is a federal republic | Chancellor serves as head of government",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 8329,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394587234-yjnz05",
+          "dataset_name": "squad_v2",
+          "item_index": 1833,
+          "question": "When did the Frankish identity emerge?",
+          "expected_answer": "{'text': [], 'answer_start': []}",
+          "actual_answer": "Normans medieval European influence. Frankish Scandinavian origins. | Normans Frankish Scandinavian Normandy France medieval Europe political military cultural. | The Normans were a population of mixed Frankish and Scandinavian origin. They gave their name to Normandy, a region in northern France.",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 9010,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394587234-yjnz05",
+          "dataset_name": "squad_v2",
+          "item_index": 1834,
+          "question": "Who was the duke in the battle of Hastings?",
+          "expected_answer": "{'text': ['William the Conqueror', 'William the Conqueror', 'William the Conqueror'], 'answer_start': [1022, 1022, 1022]}",
+          "actual_answer": "Eiffel Tower Paris landmark. Normans conquered England 1066. | The Normans were a population of mixed Frankish and Scandinavian origin. They gave their name to Normandy, a region in northern France. | Normans Frankish Scandinavian Normandy France medieval Europe political military cultural.",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 8134,
+          "error": null
+        }
+      ],
+      "webhook_response": {
+        "success": true,
+        "run_id": "test-e2e-squad_v2-1770394587234-yjnz05",
+        "test_type": "e2e",
+        "dataset": "squad_v2",
+        "rag_target": "graph",
+        "total_items": 10,
+        "duration": "87s",
+        "status": "completed"
+      }
+    },
+    {
+      "rag_type": "quantitative",
+      "dataset": "squad_v2",
+      "sample_size": 10,
+      "webhook_status": 200,
+      "webhook_error": null,
+      "webhook_latency_s": 25.7,
+      "timestamp": "2026-02-06T16:18:28.265756",
+      "run_id": "test-e2e-squad_v2-1770394682922-c8x6yi",
+      "qa_results": [
+        {
+          "run_id": "test-e2e-squad_v2-1770394682922-c8x6yi",
+          "dataset_name": "squad_v2",
+          "item_index": 1825,
+          "question": "In what country is Normandy located?",
+          "expected_answer": "{'text': ['France', 'France', 'France', 'France'], 'answer_start': [159, 159, 159, 159]}",
+          "actual_answer": "",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 1798,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394682922-c8x6yi",
+          "dataset_name": "squad_v2",
+          "item_index": 1826,
+          "question": "When were the Normans in Normandy?",
+          "expected_answer": "{'text': ['10th and 11th centuries', 'in the 10th and 11th centuries', '10th and 11th centuries', '10th and 11th centuries'], 'answer_start': [94, 87, 94, 94]}",
+          "actual_answer": "",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 2319,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394682922-c8x6yi",
+          "dataset_name": "squad_v2",
+          "item_index": 1827,
+          "question": "From which countries did the Norse originate?",
+          "expected_answer": "{'text': ['Denmark, Iceland and Norway', 'Denmark, Iceland and Norway', 'Denmark, Iceland and Norway', 'Denmark, Iceland and Norway'], 'answer_start': [256, 256, 256, 256]}",
+          "actual_answer": "",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 2624,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394682922-c8x6yi",
+          "dataset_name": "squad_v2",
+          "item_index": 1828,
+          "question": "Who was the Norse leader?",
+          "expected_answer": "{'text': ['Rollo', 'Rollo', 'Rollo', 'Rollo'], 'answer_start': [308, 308, 308, 308]}",
+          "actual_answer": "",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 2223,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394682922-c8x6yi",
+          "dataset_name": "squad_v2",
+          "item_index": 1829,
+          "question": "What century did the Normans first gain their separate identity?",
+          "expected_answer": "{'text': ['10th century', 'the first half of the 10th century', '10th', '10th'], 'answer_start': [671, 649, 671, 671]}",
+          "actual_answer": "",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 3730,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394682922-c8x6yi",
+          "dataset_name": "squad_v2",
+          "item_index": 1830,
+          "question": "Who gave their name to Normandy in the 1000's and 1100's",
+          "expected_answer": "{'text': [], 'answer_start': []}",
+          "actual_answer": "",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 2497,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394682922-c8x6yi",
+          "dataset_name": "squad_v2",
+          "item_index": 1831,
+          "question": "What is France a region of?",
+          "expected_answer": "{'text': [], 'answer_start': []}",
+          "actual_answer": "",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 2290,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394682922-c8x6yi",
+          "dataset_name": "squad_v2",
+          "item_index": 1832,
+          "question": "Who did King Charles III swear fealty to?",
+          "expected_answer": "{'text': [], 'answer_start': []}",
+          "actual_answer": "",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 2498,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394682922-c8x6yi",
+          "dataset_name": "squad_v2",
+          "item_index": 1833,
+          "question": "When did the Frankish identity emerge?",
+          "expected_answer": "{'text': [], 'answer_start': []}",
+          "actual_answer": "",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 2714,
+          "error": null
+        },
+        {
+          "run_id": "test-e2e-squad_v2-1770394682922-c8x6yi",
+          "dataset_name": "squad_v2",
+          "item_index": 1834,
+          "question": "Who was the duke in the battle of Hastings?",
+          "expected_answer": "{'text': ['William the Conqueror', 'William the Conqueror', 'William the Conqueror'], 'answer_start': [1022, 1022, 1022]}",
+          "actual_answer": "",
+          "metrics": {
+            "accuracy": 0,
+            "retrieval_precision": 0
+          },
+          "latency_ms": 2233,
+          "error": null
+        }
+      ],
+      "webhook_response": {
+        "success": true,
+        "run_id": "test-e2e-squad_v2-1770394682922-c8x6yi",
+        "test_type": "e2e",
+        "dataset": "squad_v2",
+        "rag_target": "quantitative",
+        "total_items": 10,
+        "duration": "25s",
+        "status": "completed"
+      }
+    }
+  ]
+}
