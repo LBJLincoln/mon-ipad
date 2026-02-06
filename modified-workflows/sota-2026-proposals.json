@@ -1,0 +1,136 @@
+{
+  "generated_at": "2026-02-06T09:15:16.623256",
+  "proposals": [
+    {
+      "id": "SOTA-P1",
+      "title": "Speculative RAG (Draft-then-Verify)",
+      "priority": "P0 - CRITICAL",
+      "impact": "Latency -40%, Cost -30%",
+      "description": "Use a fast model (Haiku/DeepSeek) to generate a draft response, then verify with a powerful model (Opus/Sonnet) only if needed. For simple queries (~60% of traffic), the draft is sufficient, eliminating the expensive verification step.",
+      "implementation": "1. Add 'Speculative Draft' Code node after intent parsing\n2. Fast LLM generates draft (Haiku, <500ms)\n3. Confidence scorer evaluates draft quality\n4. If confidence > 0.85: return draft directly\n5. If confidence < 0.85: route to full RAG pipeline",
+      "expected_gains": {
+        "p50_reduction_ms": 2000,
+        "p95_reduction_ms": 3000,
+        "cost_reduction_pct": 30
+      }
+    },
+    {
+      "id": "SOTA-P2",
+      "title": "Semantic Cache (Embedding-based Deduplication)",
+      "priority": "P0 - CRITICAL",
+      "impact": "Latency -60% for repeated/similar queries",
+      "description": "Cache not just exact queries but semantically similar ones. Use embedding similarity (cosine > 0.95) to detect near-duplicate queries and serve cached responses. Redis with vector extension or Pinecone as cache.",
+      "implementation": "1. Before routing: embed query, search cache (cosine similarity)\n2. If cache hit (sim > 0.95): return cached response + 'from_cache' flag\n3. If miss: execute full pipeline, cache result with TTL=1h\n4. Cache key: tenant_id + embedding hash\n5. Invalidation: on document update/delete events",
+      "expected_gains": {
+        "cache_hit_rate_pct": 35,
+        "p50_for_cache_hits_ms": 200,
+        "overall_p50_reduction_pct": 25
+      }
+    },
+    {
+      "id": "SOTA-P3",
+      "title": "Parallel Sub-Workflow Execution in Orchestrator",
+      "priority": "P0 - CRITICAL",
+      "impact": "Latency -50% for multi-agent queries",
+      "description": "Currently the orchestrator executes sub-workflows sequentially. For queries requiring multiple engines (Standard + Graph + Quantitative), execute all sub-workflows in parallel and merge results.",
+      "implementation": "1. After intent parsing, identify required engines\n2. Use n8n's 'Execute Workflow' nodes in parallel branches\n3. Merge node collects all results\n4. Response Builder merges with RRF (Reciprocal Rank Fusion)\n5. Timeout: 15s per sub-workflow, return partial results if timeout",
+      "expected_gains": {
+        "multi_agent_p50_reduction_pct": 50,
+        "multi_agent_p95_reduction_ms": 8000
+      }
+    },
+    {
+      "id": "SOTA-P4",
+      "title": "Streaming Response (TTFB Optimization)",
+      "priority": "P1 - HIGH",
+      "impact": "TTFB (Time to First Byte) -70%",
+      "description": "Instead of waiting for the full pipeline to complete, stream partial results. Send retrieval results immediately, then stream the LLM generation token by token.",
+      "implementation": "1. Webhook response mode: 'stream' (SSE - Server-Sent Events)\n2. Phase 1 (< 1s): Send retrieval status + source count\n3. Phase 2 (< 2s): Send reranked sources metadata\n4. Phase 3 (streaming): Stream LLM generation tokens\n5. Phase 4: Final metadata (confidence, trace_id)",
+      "expected_gains": {
+        "ttfb_ms": 500,
+        "perceived_latency_reduction_pct": 70
+      }
+    },
+    {
+      "id": "SOTA-P5",
+      "title": "Adaptive Model Routing (Cost/Latency Optimizer)",
+      "priority": "P1 - HIGH",
+      "impact": "Cost -45%, Latency -30% average",
+      "description": "Route queries to different LLM models based on complexity. Simple factual queries -> Haiku (fast, cheap). Complex reasoning -> Sonnet. Critical multi-hop -> Opus. Use a lightweight classifier to determine complexity.",
+      "implementation": "1. Complexity classifier (regex + token count + entity detection)\n2. Simple (< 20 tokens, no entities): Haiku ($0.25/M)\n3. Medium (entities, comparison): Sonnet ($3/M)\n4. Complex (multi-hop, reasoning): Opus ($15/M)\n5. Track accuracy per tier, auto-escalate if confidence < 0.7",
+      "expected_gains": {
+        "cost_reduction_pct": 45,
+        "simple_query_latency_ms": 800,
+        "complex_query_improvement_pct": 15
+      }
+    },
+    {
+      "id": "SOTA-P6",
+      "title": "Enhanced Contextual Retrieval with Late Chunking",
+      "priority": "P1 - HIGH",
+      "impact": "Retrieval precision +49%",
+      "description": "Combine Anthropic's Contextual Retrieval (adding parent document context to each chunk before embedding) with Late Chunking (embedding full document then extracting chunk representations). This produces embeddings that capture both local chunk semantics and global document context.",
+      "implementation": "1. Ingestion pipeline: pass full document to jina-embeddings-v3\n2. Extract per-chunk embeddings from the full-document pass\n3. Add contextual prefix (2-3 sentences from LLM) to each chunk\n4. Store both late-chunked and contextual embeddings in Pinecone\n5. At query time: search both embedding types, merge with RRF",
+      "expected_gains": {
+        "retrieval_precision_improvement_pct": 49,
+        "mrr_improvement_pct": 35,
+        "ingestion_latency_increase_pct": 20
+      }
+    },
+    {
+      "id": "SOTA-P7",
+      "title": "Self-RAG with Corrective Retrieval (CRAG)",
+      "priority": "P1 - HIGH",
+      "impact": "Answer quality +20%, Hallucination -40%",
+      "description": "After generating a response, the system evaluates its own answer. If the self-evaluation score is below threshold, it re-retrieves with an expanded/reformulated query and re-generates. Maximum 2 retry loops.",
+      "implementation": "1. After LLM generation: self-evaluate (is answer grounded in sources?)\n2. Score < 0.7: reformulate query (add context from first attempt)\n3. Re-retrieve with expanded query (topK * 1.5)\n4. Re-generate with enriched context\n5. Max 2 retries, then return best attempt with confidence warning",
+      "expected_gains": {
+        "answer_quality_improvement_pct": 20,
+        "hallucination_reduction_pct": 40,
+        "latency_increase_for_retries_ms": 3000
+      }
+    },
+    {
+      "id": "SOTA-P8",
+      "title": "ColBERT/ColPali Late Interaction Reranking",
+      "priority": "P2 - MEDIUM",
+      "impact": "Reranking precision +15%, Latency neutral",
+      "description": "Replace or complement Cohere reranking with ColBERT late interaction model. ColBERT represents each token individually and uses MaxSim for matching, providing more granular relevance scoring than cross-encoders.",
+      "implementation": "1. Deploy ColBERT-v2 or ColPali via RAGatouille API\n2. After initial Pinecone retrieval (top-50)\n3. ColBERT reranks to top-10 (token-level MaxSim)\n4. Optional: ensemble with Cohere rerank (weighted average)\n5. A/B test: ColBERT-only vs ensemble vs Cohere-only",
+      "expected_gains": {
+        "reranking_precision_improvement_pct": 15,
+        "reranking_latency_ms": 100,
+        "ndcg_improvement_pct": 12
+      }
+    },
+    {
+      "id": "SOTA-P9",
+      "title": "Pre-computed Query Plans & Intent Cache",
+      "priority": "P2 - MEDIUM",
+      "impact": "Orchestrator P50 -2000ms",
+      "description": "Cache the orchestrator's intent classification and execution plan. For common query patterns, skip the planning phase entirely and jump directly to execution with a pre-computed plan.",
+      "implementation": "1. Hash query pattern (remove entities, keep structure)\n2. Cache: pattern -> {intent, engines, plan}\n3. On match: skip Intent Parser + Planner nodes\n4. Direct execution with cached plan\n5. TTL: 24h, invalidation: on workflow update",
+      "expected_gains": {
+        "planning_phase_skip_pct": 40,
+        "orchestrator_p50_reduction_ms": 2000
+      }
+    },
+    {
+      "id": "SOTA-P10",
+      "title": "Full OTEL Distributed Tracing with Latency Breakdown",
+      "priority": "P1 - HIGH",
+      "impact": "Observability +100%, Debug latency issues",
+      "description": "Current OTEL tracing is partial. Implement full distributed tracing across all workflows with span-level latency breakdown: retrieval_ms, reranking_ms, generation_ms, total_ms per stage.",
+      "implementation": "1. Each workflow emits spans: init, retrieval, rerank, generate, format\n2. Orchestrator creates parent trace, sub-workflows create child spans\n3. Export to Jaeger/Tempo for visualization\n4. Auto-alert: if any span > 2x historical P95\n5. Dashboard: real-time latency heatmap per stage",
+      "expected_gains": {
+        "debug_time_reduction_pct": 80,
+        "latency_regression_detection_hours": 0.5
+      }
+    }
+  ],
+  "test_context": {
+    "total_tests": 8,
+    "passed": 3,
+    "failed": 1
+  }
+}
