@@ -1,407 +1,644 @@
 {
   "title": "RAG Routing Analysis — Graph + Quantitative — 1000 Questions",
-  "generated_at": "2026-02-06T16:37:36.106928",
-  "total_questions": 100,
+  "generated_at": "2026-02-06T16:58:22.457364",
+  "total_questions": 1000,
+  "deduplication": {
+    "existing_hashes_loaded": 8718,
+    "new_hashes_generated": 1000,
+    "method": "MD5 hash of lowercased question text"
+  },
   "phases": [
     {
-      "total": 0,
-      "graph_questions": 0,
-      "quantitative_questions": 0,
-      "correct_routing": 0,
-      "incorrect_routing": 0,
-      "ambiguous_routing": 0,
-      "by_dataset": {},
-      "by_rag_type": {
-        "graph": {
-          "total": 0,
-          "correct": 0,
-          "incorrect": 0,
-          "ambiguous": 0,
-          "correct_rate": "0.0%",
-          "incorrect_rate": "0.0%",
-          "ambiguous_rate": "0.0%"
-        },
-        "quantitative": {
-          "total": 0,
-          "correct": 0,
-          "incorrect": 0,
-          "ambiguous": 0,
-          "correct_rate": "0.0%",
-          "incorrect_rate": "0.0%",
-          "ambiguous_rate": "0.0%"
-        }
-      },
-      "sample_misrouted": [],
-      "correct_rate": "0.0%",
-      "incorrect_rate": "0.0%",
-      "ambiguous_rate": "0.0%",
-      "phase": "phase1_500",
-      "timestamp": "2026-02-06T16:36:04.204720"
-    },
-    {
-      "total": 100,
-      "graph_questions": 100,
-      "quantitative_questions": 0,
-      "correct_routing": 16,
-      "incorrect_routing": 23,
-      "ambiguous_routing": 61,
+      "total": 500,
+      "graph_questions": 250,
+      "quantitative_questions": 250,
+      "correct_routing": 249,
+      "incorrect_routing": 19,
+      "ambiguous_routing": 232,
       "by_dataset": {
-        "frames": {
-          "total": 100,
-          "correct": 16,
-          "incorrect": 23,
-          "ambiguous": 61,
+        "musique": {
+          "total": 200,
+          "correct": 37,
+          "incorrect": 16,
+          "ambiguous": 147,
           "rag_target": "graph",
-          "correct_rate": "16.0%"
+          "correct_rate": "18.5%"
+        },
+        "2wikimultihopqa": {
+          "total": 50,
+          "correct": 13,
+          "incorrect": 2,
+          "ambiguous": 35,
+          "rag_target": "graph",
+          "correct_rate": "26.0%"
+        },
+        "finqa": {
+          "total": 200,
+          "correct": 167,
+          "incorrect": 1,
+          "ambiguous": 32,
+          "rag_target": "quantitative",
+          "correct_rate": "83.5%"
+        },
+        "tatqa": {
+          "total": 50,
+          "correct": 32,
+          "incorrect": 0,
+          "ambiguous": 18,
+          "rag_target": "quantitative",
+          "correct_rate": "64.0%"
         }
       },
       "by_rag_type": {
         "graph": {
-          "total": 100,
-          "correct": 16,
-          "incorrect": 23,
-          "ambiguous": 61,
-          "correct_rate": "16.0%",
-          "incorrect_rate": "23.0%",
-          "ambiguous_rate": "61.0%"
+          "total": 250,
+          "correct": 50,
+          "incorrect": 18,
+          "ambiguous": 182,
+          "correct_rate": "20.0%",
+          "incorrect_rate": "7.2%",
+          "ambiguous_rate": "72.8%"
         },
         "quantitative": {
-          "total": 0,
-          "correct": 0,
-          "incorrect": 0,
-          "ambiguous": 0,
-          "correct_rate": "0.0%",
-          "incorrect_rate": "0.0%",
-          "ambiguous_rate": "0.0%"
+          "total": 250,
+          "correct": 199,
+          "incorrect": 1,
+          "ambiguous": 50,
+          "correct_rate": "79.6%",
+          "incorrect_rate": "0.4%",
+          "ambiguous_rate": "20.0%"
         }
       },
       "sample_misrouted": [
         {
-          "question": "How many years earlier would Punxsutawney Phil have to be canonically alive to have made a Groundhog Day prediction in the same state as the US capitol?",
+          "question": "What administrative territorial entity does Heinrich Gross's birth place located?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "As of Aug 3, 2024, the artist who released the album \"Father of Asahd\" went to the same high school as an Olympic diver. How many Olympic teams did this diver participate on?",
+          "question": "Who did Hay work for after being hired by his other notable influence regarding resource distribution other than Max Weber?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "A general motors vehicle is named after the largest ward in the country of Monaco.  How many people had walked on the moon as of the first model year of the vehicle? Note: the model year is not the sa",
+          "question": "Who led the military expedition to where now Min dialects are spoken on border with Zhejiang?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "An Australian artist, born the same year as artist Janet Cumbrae Stewart and fellow member of the Melbourne Society of Women Painters and Sculptors, had her painting featured on the cover of Women's W",
+          "question": "How many games in a season of the league in which Barcelona won titles in 1948 and 1949?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "Which football player got 15 or more assists in La Liga during the 2010-2011 season and also played for Arsenal at one point in his career?",
+          "question": "How many games does the team play that had the most champion league wins between 1992 and 2013?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "On March 7th, 2012, the director James Cameron explored a very deep underseas trench.  As of August 3, 2024, how many times would the tallest building in San Francisco fit end to end from the bottom o",
+          "question": "How many games are in a season for the league that had the most Champions League wins between 1992 and 2013?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "How many years after the founding of the 50th most populous US city, based on 2023 estimate population data, did Frank Fox receive UK Patent (1344259)?",
+          "question": "How many games do team in the league where Barcelona won titles in 1948 and 1949 play?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "According to the 1990 United States census, what was the total population of the cities in Oklahoma that had at least 100,000 residents according to the 2020 United States census?",
+          "question": "who did the performer of Sings America play on young and restless?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "Using the Pruett rule, out of all of the blue moons that occurred between the beginning of World War I and the end of World War II, how many of them occurred on the 31st of the month?",
+          "question": "Who did the performer from Night Rocker play on Young and Restless?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "As of 2023, how many more employees does the company alphabetically first by ticker symbol in the S&P500 have than the company alphabetically 2nd to last by ticker symbol in the S&P500?",
+          "question": "Who did the performer of Night Rocker play on Young and Restless?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "How many letters long is the title of the first movie composed by the composer of the first American Godzilla movie?",
+          "question": "Who did the actor who played Michael Knight play on Young and Restless?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "How many Pokemon World Championships occurred in the contiguous United States during the presidency of Barack Obama?",
+          "question": "What is the name of the game reserve in the country where hunters spend 50 to 100 times more than the average ecotourist?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "This individual won a Best Director Award at the 33rd Japan Academy Prize ceremony and is known for having directed a film that briefly surpassed the Godfather as the highest-grossing film in Japan fo",
+          "question": "How many episodes are in season 5 of the series with The Bag or the Bat?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "How many films had the actress who played Trudi Frazer in \"Once Upon a Time in Hollywood\" acted in before?",
+          "question": "How many episodes are in season 5 of the series The Bag or the Bat is part of?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "Which player scored more than 15 goals in Eredevisie during the 21-22 season and had previously played for Auxerre?",
+          "question": "How many campuses are there in the institution that Desert Studies Center is a part of?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "By how many years does the inception of the party to which former Finnish MP Lea Rakel Hiltunen last belonged predate the foundation of the Parliament of Finland itself?",
+          "question": "What was the percentage the Dow Jones fell during the time the first cake mix come out?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "According to the 2011 census, what is total population of the cities of the birthplaces of author Clive Barker, Prince William, and Sir Malcolm Stanley Bradbury? Round to the nearest 100,000.",
+          "question": "Which film was released more recently, Toolbox Murders or I Met You In Naples?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "2wikimultihopqa"
         },
         {
-          "question": "Which of the bridges in Halifax, Nova Scotia is longer, and by how much? The MacKay, or the MacDonald?",
+          "question": "Which film was released more recently, Gaza Ghetto or Kull The Conqueror?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "2wikimultihopqa"
         },
         {
-          "question": "As of August 1, 2024, are there any cities in England that are more populated than Philadelphia, and which cities are they?",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "What is the average distance for the left field line in MLB stadiums with a retractable roof as of August 2024? Round to the nearest whole number.",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
+          "question": "what is the percent of both the main line and branch line routes that are owned by the company",
+          "expected": "quantitative",
+          "predicted": "graph",
+          "dataset": "finqa"
         }
       ],
-      "correct_rate": "16.0%",
-      "incorrect_rate": "23.0%",
-      "ambiguous_rate": "61.0%",
-      "phase": "final_1000",
-      "timestamp": "2026-02-06T16:37:36.101842"
+      "correct_rate": "49.8%",
+      "incorrect_rate": "3.8%",
+      "ambiguous_rate": "46.4%",
+      "phase": "phase1",
+      "timestamp": "2026-02-06T16:58:05.237056"
+    },
+    {
+      "total": 1000,
+      "graph_questions": 500,
+      "quantitative_questions": 500,
+      "correct_routing": 486,
+      "incorrect_routing": 29,
+      "ambiguous_routing": 485,
+      "by_dataset": {
+        "musique": {
+          "total": 200,
+          "correct": 37,
+          "incorrect": 16,
+          "ambiguous": 147,
+          "rag_target": "graph",
+          "correct_rate": "18.5%"
+        },
+        "2wikimultihopqa": {
+          "total": 300,
+          "correct": 71,
+          "incorrect": 12,
+          "ambiguous": 217,
+          "rag_target": "graph",
+          "correct_rate": "23.7%"
+        },
+        "finqa": {
+          "total": 200,
+          "correct": 167,
+          "incorrect": 1,
+          "ambiguous": 32,
+          "rag_target": "quantitative",
+          "correct_rate": "83.5%"
+        },
+        "tatqa": {
+          "total": 150,
+          "correct": 99,
+          "incorrect": 0,
+          "ambiguous": 51,
+          "rag_target": "quantitative",
+          "correct_rate": "66.0%"
+        },
+        "convfinqa": {
+          "total": 100,
+          "correct": 87,
+          "incorrect": 0,
+          "ambiguous": 13,
+          "rag_target": "quantitative",
+          "correct_rate": "87.0%"
+        },
+        "wikitablequestions": {
+          "total": 50,
+          "correct": 25,
+          "incorrect": 0,
+          "ambiguous": 25,
+          "rag_target": "quantitative",
+          "correct_rate": "50.0%"
+        }
+      },
+      "by_rag_type": {
+        "graph": {
+          "total": 500,
+          "correct": 108,
+          "incorrect": 28,
+          "ambiguous": 364,
+          "correct_rate": "21.6%",
+          "incorrect_rate": "5.6%",
+          "ambiguous_rate": "72.8%"
+        },
+        "quantitative": {
+          "total": 500,
+          "correct": 378,
+          "incorrect": 1,
+          "ambiguous": 121,
+          "correct_rate": "75.6%",
+          "incorrect_rate": "0.2%",
+          "ambiguous_rate": "24.2%"
+        }
+      },
+      "sample_misrouted": [
+        {
+          "question": "What administrative territorial entity does Heinrich Gross's birth place located?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "Who did Hay work for after being hired by his other notable influence regarding resource distribution other than Max Weber?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "Who led the military expedition to where now Min dialects are spoken on border with Zhejiang?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "How many games in a season of the league in which Barcelona won titles in 1948 and 1949?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "How many games does the team play that had the most champion league wins between 1992 and 2013?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "How many games are in a season for the league that had the most Champions League wins between 1992 and 2013?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "How many games do team in the league where Barcelona won titles in 1948 and 1949 play?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "who did the performer of Sings America play on young and restless?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "Who did the performer from Night Rocker play on Young and Restless?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "Who did the performer of Night Rocker play on Young and Restless?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "Who did the actor who played Michael Knight play on Young and Restless?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "What is the name of the game reserve in the country where hunters spend 50 to 100 times more than the average ecotourist?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "How many episodes are in season 5 of the series with The Bag or the Bat?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "How many episodes are in season 5 of the series The Bag or the Bat is part of?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "How many campuses are there in the institution that Desert Studies Center is a part of?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "What was the percentage the Dow Jones fell during the time the first cake mix come out?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "musique"
+        },
+        {
+          "question": "Which film was released more recently, Toolbox Murders or I Met You In Naples?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "2wikimultihopqa"
+        },
+        {
+          "question": "Which film was released more recently, Gaza Ghetto or Kull The Conqueror?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "2wikimultihopqa"
+        },
+        {
+          "question": "what is the percent of both the main line and branch line routes that are owned by the company",
+          "expected": "quantitative",
+          "predicted": "graph",
+          "dataset": "finqa"
+        },
+        {
+          "question": "Who is the paternal grandmother of Louis, Count Of Verdun?",
+          "expected": "graph",
+          "predicted": "quantitative",
+          "dataset": "2wikimultihopqa"
+        }
+      ],
+      "correct_rate": "48.6%",
+      "incorrect_rate": "2.9%",
+      "ambiguous_rate": "48.5%",
+      "phase": "final",
+      "timestamp": "2026-02-06T16:58:22.394096"
     }
   ],
   "final_summary": {
-    "total": 100,
-    "graph_questions": 100,
-    "quantitative_questions": 0,
-    "correct_routing": 16,
-    "correct_rate": "16.0%",
-    "incorrect_routing": 23,
-    "incorrect_rate": "23.0%",
-    "ambiguous_routing": 61,
-    "ambiguous_rate": "61.0%"
+    "total": 1000,
+    "graph_questions": 500,
+    "quantitative_questions": 500,
+    "correct_routing": 486,
+    "correct_rate": "48.6%",
+    "incorrect_routing": 29,
+    "incorrect_rate": "2.9%",
+    "ambiguous_routing": 485,
+    "ambiguous_rate": "48.5%"
   },
   "by_rag_type": {
     "graph": {
-      "total": 100,
-      "correct": 16,
-      "incorrect": 23,
-      "ambiguous": 61,
-      "correct_rate": "16.0%",
-      "incorrect_rate": "23.0%",
-      "ambiguous_rate": "61.0%"
+      "total": 500,
+      "correct": 108,
+      "incorrect": 28,
+      "ambiguous": 364,
+      "correct_rate": "21.6%",
+      "incorrect_rate": "5.6%",
+      "ambiguous_rate": "72.8%"
     },
     "quantitative": {
-      "total": 0,
-      "correct": 0,
-      "incorrect": 0,
-      "ambiguous": 0,
-      "correct_rate": "0.0%",
-      "incorrect_rate": "0.0%",
-      "ambiguous_rate": "0.0%"
+      "total": 500,
+      "correct": 378,
+      "incorrect": 1,
+      "ambiguous": 121,
+      "correct_rate": "75.6%",
+      "incorrect_rate": "0.2%",
+      "ambiguous_rate": "24.2%"
     }
   },
   "by_dataset": {
-    "frames": {
-      "total": 100,
-      "correct": 16,
-      "incorrect": 23,
-      "ambiguous": 61,
+    "musique": {
+      "total": 200,
+      "correct": 37,
+      "incorrect": 16,
+      "ambiguous": 147,
       "rag_target": "graph",
-      "correct_rate": "16.0%"
+      "correct_rate": "18.5%"
+    },
+    "2wikimultihopqa": {
+      "total": 300,
+      "correct": 71,
+      "incorrect": 12,
+      "ambiguous": 217,
+      "rag_target": "graph",
+      "correct_rate": "23.7%"
+    },
+    "finqa": {
+      "total": 200,
+      "correct": 167,
+      "incorrect": 1,
+      "ambiguous": 32,
+      "rag_target": "quantitative",
+      "correct_rate": "83.5%"
+    },
+    "tatqa": {
+      "total": 150,
+      "correct": 99,
+      "incorrect": 0,
+      "ambiguous": 51,
+      "rag_target": "quantitative",
+      "correct_rate": "66.0%"
+    },
+    "convfinqa": {
+      "total": 100,
+      "correct": 87,
+      "incorrect": 0,
+      "ambiguous": 13,
+      "rag_target": "quantitative",
+      "correct_rate": "87.0%"
+    },
+    "wikitablequestions": {
+      "total": 50,
+      "correct": 25,
+      "incorrect": 0,
+      "ambiguous": 25,
+      "rag_target": "quantitative",
+      "correct_rate": "50.0%"
     }
   },
   "sample_misrouted": [
     {
-      "question": "How many years earlier would Punxsutawney Phil have to be canonically alive to have made a Groundhog Day prediction in the same state as the US capitol?",
+      "question": "What administrative territorial entity does Heinrich Gross's birth place located?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "As of Aug 3, 2024, the artist who released the album \"Father of Asahd\" went to the same high school as an Olympic diver. How many Olympic teams did this diver participate on?",
+      "question": "Who did Hay work for after being hired by his other notable influence regarding resource distribution other than Max Weber?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "A general motors vehicle is named after the largest ward in the country of Monaco.  How many people had walked on the moon as of the first model year of the vehicle? Note: the model year is not the sa",
+      "question": "Who led the military expedition to where now Min dialects are spoken on border with Zhejiang?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "An Australian artist, born the same year as artist Janet Cumbrae Stewart and fellow member of the Melbourne Society of Women Painters and Sculptors, had her painting featured on the cover of Women's W",
+      "question": "How many games in a season of the league in which Barcelona won titles in 1948 and 1949?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "Which football player got 15 or more assists in La Liga during the 2010-2011 season and also played for Arsenal at one point in his career?",
+      "question": "How many games does the team play that had the most champion league wins between 1992 and 2013?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "On March 7th, 2012, the director James Cameron explored a very deep underseas trench.  As of August 3, 2024, how many times would the tallest building in San Francisco fit end to end from the bottom o",
+      "question": "How many games are in a season for the league that had the most Champions League wins between 1992 and 2013?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "How many years after the founding of the 50th most populous US city, based on 2023 estimate population data, did Frank Fox receive UK Patent (1344259)?",
+      "question": "How many games do team in the league where Barcelona won titles in 1948 and 1949 play?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "According to the 1990 United States census, what was the total population of the cities in Oklahoma that had at least 100,000 residents according to the 2020 United States census?",
+      "question": "who did the performer of Sings America play on young and restless?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "Using the Pruett rule, out of all of the blue moons that occurred between the beginning of World War I and the end of World War II, how many of them occurred on the 31st of the month?",
+      "question": "Who did the performer from Night Rocker play on Young and Restless?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "As of 2023, how many more employees does the company alphabetically first by ticker symbol in the S&P500 have than the company alphabetically 2nd to last by ticker symbol in the S&P500?",
+      "question": "Who did the performer of Night Rocker play on Young and Restless?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "How many letters long is the title of the first movie composed by the composer of the first American Godzilla movie?",
+      "question": "Who did the actor who played Michael Knight play on Young and Restless?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "How many Pokemon World Championships occurred in the contiguous United States during the presidency of Barack Obama?",
+      "question": "What is the name of the game reserve in the country where hunters spend 50 to 100 times more than the average ecotourist?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "This individual won a Best Director Award at the 33rd Japan Academy Prize ceremony and is known for having directed a film that briefly surpassed the Godfather as the highest-grossing film in Japan fo",
+      "question": "How many episodes are in season 5 of the series with The Bag or the Bat?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "How many films had the actress who played Trudi Frazer in \"Once Upon a Time in Hollywood\" acted in before?",
+      "question": "How many episodes are in season 5 of the series The Bag or the Bat is part of?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "Which player scored more than 15 goals in Eredevisie during the 21-22 season and had previously played for Auxerre?",
+      "question": "How many campuses are there in the institution that Desert Studies Center is a part of?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "By how many years does the inception of the party to which former Finnish MP Lea Rakel Hiltunen last belonged predate the foundation of the Parliament of Finland itself?",
+      "question": "What was the percentage the Dow Jones fell during the time the first cake mix come out?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "musique"
     },
     {
-      "question": "According to the 2011 census, what is total population of the cities of the birthplaces of author Clive Barker, Prince William, and Sir Malcolm Stanley Bradbury? Round to the nearest 100,000.",
+      "question": "Which film was released more recently, Toolbox Murders or I Met You In Naples?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "2wikimultihopqa"
     },
     {
-      "question": "Which of the bridges in Halifax, Nova Scotia is longer, and by how much? The MacKay, or the MacDonald?",
+      "question": "Which film was released more recently, Gaza Ghetto or Kull The Conqueror?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "2wikimultihopqa"
     },
     {
-      "question": "As of August 1, 2024, are there any cities in England that are more populated than Philadelphia, and which cities are they?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
+      "question": "what is the percent of both the main line and branch line routes that are owned by the company",
+      "expected": "quantitative",
+      "predicted": "graph",
+      "dataset": "finqa"
     },
     {
-      "question": "What is the average distance for the left field line in MLB stadiums with a retractable roof as of August 2024? Round to the nearest whole number.",
+      "question": "Who is the paternal grandmother of Louis, Count Of Verdun?",
       "expected": "graph",
       "predicted": "quantitative",
-      "dataset": "frames"
+      "dataset": "2wikimultihopqa"
     }
   ],
   "datasets_used": {
     "graph_rag": [
       {
         "name": "musique",
-        "source": "StonyBrookNLP/musique",
-        "type": "Compositional multi-hop (2-4 hops)"
+        "source": "bdsaglam/musique",
+        "type": "Compositional multi-hop reasoning (2-4 hops)"
       },
       {
         "name": "2wikimultihopqa",
-        "source": "scholarly-shadows-syndicate/2wikimultihopqa",
-        "type": "Cross-document Wikipedia reasoning"
+        "source": "framolfese/2WikiMultihopQA",
+        "type": "Cross-document reasoning between Wikipedia articles"
       },
       {
         "name": "frames",
         "source": "google/frames-benchmark",
-        "type": "Google multi-hop RAG benchmark"
+        "type": "Google FRAMES multi-hop RAG benchmark"
       }
     ],
     "quantitative_rag": [
       {
         "name": "finqa",
-        "source": "ibm/finqa",
-        "type": "Financial table reasoning + calculations"
+        "source": "dreamerdeo/finqa",
+        "type": "Financial reasoning with tables and calculations"
       },
       {
         "name": "tatqa",
-        "source": "next-tat-qa",
-        "type": "Hybrid table-and-text arithmetic QA"
+        "source": "galileo-ai/ragbench",
+        "type": "Hybrid table-and-text QA requiring arithmetic reasoning (via RAGBench)"
+      },
+      {
+        "name": "convfinqa",
+        "source": "MehdiHosseiniMoghadam/ConvFinQA",
+        "type": "Conversational financial QA with multi-turn numerical reasoning"
       },
       {
         "name": "wikitablequestions",
-        "source": "wikitablequestions",
-        "type": "Table-based SQL-like reasoning"
+        "source": "TableSenseAI/WikiTableQuestions",
+        "type": "Table-based QA requiring SQL-like reasoning"
       }
     ]
-  },
-  "routing_analysis_method": "Pattern-based regex matching against Graph RAG patterns (multi-hop, entity relationships, comparisons) and Quantitative RAG patterns (numerical, financial, calculations, aggregations). Questions matching neither strongly are classified as 'ambiguous'."
+  }
 }
