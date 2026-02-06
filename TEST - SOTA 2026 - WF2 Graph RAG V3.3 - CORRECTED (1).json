@@ -22,7 +22,7 @@
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu generes un document hypothetique qui repondrait parfaitement a la question. Ce document sera utilise pour la recherche semantique. Format: texte dense, factuel, 200-300 mots. Extrais aussi les entites cles en JSON: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": string}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 800,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer the question. This document will be used for semantic search. Format: dense, factual text, 200-300 words. Also extract key entities as JSON: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": string}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 800,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
         "options": {
           "timeout": 25000
         }
