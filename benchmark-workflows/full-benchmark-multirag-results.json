@@ -1,7 +1,7 @@
 {
   "suite": "MULTI-RAG FULL BENCHMARK",
   "started_at": "2026-02-06T15:11:22.943759",
-  "updated_at": "2026-02-06T15:12:04.286661",
+  "updated_at": "2026-02-06T15:12:05.655378",
   "config": {
     "test_type": "e2e",
     "batch_size": 100,
@@ -26,13 +26,13 @@
     "total_qa_pairs": 7824
   },
   "summary": {
-    "total_completed": 15472,
-    "total_successes": 3500,
+    "total_completed": 16972,
+    "total_successes": 5000,
     "total_errors": 11972,
     "total_expected": 23472,
-    "progress_pct": "65.9%",
-    "elapsed_seconds": 41,
-    "error_rate": "77.38%"
+    "progress_pct": "72.3%",
+    "elapsed_seconds": 42,
+    "error_rate": "70.54%"
   },
   "results": [
     {
@@ -256,7 +256,41 @@
       },
       "latency_s": 4.4,
       "timestamp": "2026-02-06T15:12:04.285906"
+    },
+    {
+      "dataset": "finqa",
+      "rag_type": "graph",
+      "items": 500,
+      "test_type": "e2e",
+      "status": "success",
+      "error": null,
+      "response_data": {
+        "run_id": "test-e2e-finqa-1770390722944-0f2zr9",
+        "test_type": "e2e",
+        "rag_target": "graph",
+        "total_items": 500,
+        "status": "completed"
+      },
+      "latency_s": 2.1,
+      "timestamp": "2026-02-06T15:12:04.665356"
+    },
+    {
+      "dataset": "triviaqa",
+      "rag_type": "quantitative",
+      "items": 1000,
+      "test_type": "e2e",
+      "status": "success",
+      "error": null,
+      "response_data": {
+        "run_id": "test-e2e-triviaqa-1770390722456-d3qtvq",
+        "test_type": "e2e",
+        "rag_target": "quantitative",
+        "total_items": 1000,
+        "status": "completed"
+      },
+      "latency_s": 7.4,
+      "timestamp": "2026-02-06T15:12:05.654355"
     }
   ],
-  "all_runs_count": 18
+  "all_runs_count": 20
 }
