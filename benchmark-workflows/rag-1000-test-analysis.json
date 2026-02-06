@@ -1,407 +1,110 @@
 {
-  "title": "RAG Routing Analysis — Graph + Quantitative — 1000 Questions",
-  "generated_at": "2026-02-06T16:37:36.106928",
-  "total_questions": 100,
+  "title": "RAG Routing Analysis — Phase 1",
   "phases": [
     {
-      "total": 0,
-      "graph_questions": 0,
-      "quantitative_questions": 0,
-      "correct_routing": 0,
-      "incorrect_routing": 0,
-      "ambiguous_routing": 0,
-      "by_dataset": {},
-      "by_rag_type": {
-        "graph": {
-          "total": 0,
-          "correct": 0,
-          "incorrect": 0,
-          "ambiguous": 0,
-          "correct_rate": "0.0%",
-          "incorrect_rate": "0.0%",
-          "ambiguous_rate": "0.0%"
-        },
-        "quantitative": {
-          "total": 0,
-          "correct": 0,
-          "incorrect": 0,
-          "ambiguous": 0,
-          "correct_rate": "0.0%",
-          "incorrect_rate": "0.0%",
-          "ambiguous_rate": "0.0%"
-        }
-      },
-      "sample_misrouted": [],
-      "correct_rate": "0.0%",
-      "incorrect_rate": "0.0%",
-      "ambiguous_rate": "0.0%",
-      "phase": "phase1_500",
-      "timestamp": "2026-02-06T16:36:04.204720"
-    },
-    {
-      "total": 100,
-      "graph_questions": 100,
-      "quantitative_questions": 0,
-      "correct_routing": 16,
-      "incorrect_routing": 23,
-      "ambiguous_routing": 61,
+      "total": 500,
+      "graph_questions": 250,
+      "quantitative_questions": 250,
+      "correct_routing": 225,
+      "incorrect_routing": 6,
+      "ambiguous_routing": 269,
       "by_dataset": {
-        "frames": {
-          "total": 100,
-          "correct": 16,
-          "incorrect": 23,
-          "ambiguous": 61,
+        "musique": {
+          "total": 200,
+          "correct": 26,
+          "incorrect": 5,
+          "ambiguous": 169,
           "rag_target": "graph",
-          "correct_rate": "16.0%"
+          "correct_rate": "13.0%"
+        },
+        "2wikimultihopqa": {
+          "total": 50,
+          "correct": 7,
+          "incorrect": 1,
+          "ambiguous": 42,
+          "rag_target": "graph",
+          "correct_rate": "14.0%"
+        },
+        "finqa": {
+          "total": 200,
+          "correct": 163,
+          "incorrect": 0,
+          "ambiguous": 37,
+          "rag_target": "quantitative",
+          "correct_rate": "81.5%"
+        },
+        "tatqa": {
+          "total": 50,
+          "correct": 29,
+          "incorrect": 0,
+          "ambiguous": 21,
+          "rag_target": "quantitative",
+          "correct_rate": "58.0%"
         }
       },
       "by_rag_type": {
         "graph": {
-          "total": 100,
-          "correct": 16,
-          "incorrect": 23,
-          "ambiguous": 61,
-          "correct_rate": "16.0%",
-          "incorrect_rate": "23.0%",
-          "ambiguous_rate": "61.0%"
+          "total": 250,
+          "correct": 33,
+          "incorrect": 6,
+          "ambiguous": 211,
+          "correct_rate": "13.2%",
+          "incorrect_rate": "2.4%",
+          "ambiguous_rate": "84.4%"
         },
         "quantitative": {
-          "total": 0,
-          "correct": 0,
+          "total": 250,
+          "correct": 192,
           "incorrect": 0,
-          "ambiguous": 0,
-          "correct_rate": "0.0%",
+          "ambiguous": 58,
+          "correct_rate": "76.8%",
           "incorrect_rate": "0.0%",
-          "ambiguous_rate": "0.0%"
+          "ambiguous_rate": "23.2%"
         }
       },
       "sample_misrouted": [
         {
-          "question": "How many years earlier would Punxsutawney Phil have to be canonically alive to have made a Groundhog Day prediction in the same state as the US capitol?",
+          "question": "What was the average per capita GVA in 2013 of the country which created Burma's academic system?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "As of Aug 3, 2024, the artist who released the album \"Father of Asahd\" went to the same high school as an Olympic diver. How many Olympic teams did this diver participate on?",
+          "question": "According to the agency that published U.S. and World Population Clock, what is the total area in square miles?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "A general motors vehicle is named after the largest ward in the country of Monaco.  How many people had walked on the moon as of the first model year of the vehicle? Note: the model year is not the sa",
+          "question": "According to the agency that considers if Los Angeles County is to be a separate metropolitan area, what is the total area in square miles?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "An Australian artist, born the same year as artist Janet Cumbrae Stewart and fellow member of the Melbourne Society of Women Painters and Sculptors, had her painting featured on the cover of Women's W",
+          "question": "According to the organization that creates census county division, what is the total area in square miles?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "Which football player got 15 or more assists in La Liga during the 2010-2011 season and also played for Arsenal at one point in his career?",
+          "question": "According to the developer of Topologically Integrated Geographic Encoding and Referencing, what is the total area of Atlantic City in square miles?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "musique"
         },
         {
-          "question": "On March 7th, 2012, the director James Cameron explored a very deep underseas trench.  As of August 3, 2024, how many times would the tallest building in San Francisco fit end to end from the bottom o",
+          "question": "Which film was released more recently, Lo Zappatore or Placer Sangriento?",
           "expected": "graph",
           "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "How many years after the founding of the 50th most populous US city, based on 2023 estimate population data, did Frank Fox receive UK Patent (1344259)?",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "According to the 1990 United States census, what was the total population of the cities in Oklahoma that had at least 100,000 residents according to the 2020 United States census?",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "Using the Pruett rule, out of all of the blue moons that occurred between the beginning of World War I and the end of World War II, how many of them occurred on the 31st of the month?",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "As of 2023, how many more employees does the company alphabetically first by ticker symbol in the S&P500 have than the company alphabetically 2nd to last by ticker symbol in the S&P500?",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "How many letters long is the title of the first movie composed by the composer of the first American Godzilla movie?",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "How many Pokemon World Championships occurred in the contiguous United States during the presidency of Barack Obama?",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "This individual won a Best Director Award at the 33rd Japan Academy Prize ceremony and is known for having directed a film that briefly surpassed the Godfather as the highest-grossing film in Japan fo",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "How many films had the actress who played Trudi Frazer in \"Once Upon a Time in Hollywood\" acted in before?",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "Which player scored more than 15 goals in Eredevisie during the 21-22 season and had previously played for Auxerre?",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "By how many years does the inception of the party to which former Finnish MP Lea Rakel Hiltunen last belonged predate the foundation of the Parliament of Finland itself?",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "According to the 2011 census, what is total population of the cities of the birthplaces of author Clive Barker, Prince William, and Sir Malcolm Stanley Bradbury? Round to the nearest 100,000.",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "Which of the bridges in Halifax, Nova Scotia is longer, and by how much? The MacKay, or the MacDonald?",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "As of August 1, 2024, are there any cities in England that are more populated than Philadelphia, and which cities are they?",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
-        },
-        {
-          "question": "What is the average distance for the left field line in MLB stadiums with a retractable roof as of August 2024? Round to the nearest whole number.",
-          "expected": "graph",
-          "predicted": "quantitative",
-          "dataset": "frames"
+          "dataset": "2wikimultihopqa"
         }
       ],
-      "correct_rate": "16.0%",
-      "incorrect_rate": "23.0%",
-      "ambiguous_rate": "61.0%",
-      "phase": "final_1000",
-      "timestamp": "2026-02-06T16:37:36.101842"
+      "correct_rate": "45.0%",
+      "incorrect_rate": "1.2%",
+      "ambiguous_rate": "53.8%",
+      "phase": "phase1",
+      "timestamp": "2026-02-06T16:57:02.518483"
     }
-  ],
-  "final_summary": {
-    "total": 100,
-    "graph_questions": 100,
-    "quantitative_questions": 0,
-    "correct_routing": 16,
-    "correct_rate": "16.0%",
-    "incorrect_routing": 23,
-    "incorrect_rate": "23.0%",
-    "ambiguous_routing": 61,
-    "ambiguous_rate": "61.0%"
-  },
-  "by_rag_type": {
-    "graph": {
-      "total": 100,
-      "correct": 16,
-      "incorrect": 23,
-      "ambiguous": 61,
-      "correct_rate": "16.0%",
-      "incorrect_rate": "23.0%",
-      "ambiguous_rate": "61.0%"
-    },
-    "quantitative": {
-      "total": 0,
-      "correct": 0,
-      "incorrect": 0,
-      "ambiguous": 0,
-      "correct_rate": "0.0%",
-      "incorrect_rate": "0.0%",
-      "ambiguous_rate": "0.0%"
-    }
-  },
-  "by_dataset": {
-    "frames": {
-      "total": 100,
-      "correct": 16,
-      "incorrect": 23,
-      "ambiguous": 61,
-      "rag_target": "graph",
-      "correct_rate": "16.0%"
-    }
-  },
-  "sample_misrouted": [
-    {
-      "question": "How many years earlier would Punxsutawney Phil have to be canonically alive to have made a Groundhog Day prediction in the same state as the US capitol?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "As of Aug 3, 2024, the artist who released the album \"Father of Asahd\" went to the same high school as an Olympic diver. How many Olympic teams did this diver participate on?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "A general motors vehicle is named after the largest ward in the country of Monaco.  How many people had walked on the moon as of the first model year of the vehicle? Note: the model year is not the sa",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "An Australian artist, born the same year as artist Janet Cumbrae Stewart and fellow member of the Melbourne Society of Women Painters and Sculptors, had her painting featured on the cover of Women's W",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "Which football player got 15 or more assists in La Liga during the 2010-2011 season and also played for Arsenal at one point in his career?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "On March 7th, 2012, the director James Cameron explored a very deep underseas trench.  As of August 3, 2024, how many times would the tallest building in San Francisco fit end to end from the bottom o",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "How many years after the founding of the 50th most populous US city, based on 2023 estimate population data, did Frank Fox receive UK Patent (1344259)?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "According to the 1990 United States census, what was the total population of the cities in Oklahoma that had at least 100,000 residents according to the 2020 United States census?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "Using the Pruett rule, out of all of the blue moons that occurred between the beginning of World War I and the end of World War II, how many of them occurred on the 31st of the month?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "As of 2023, how many more employees does the company alphabetically first by ticker symbol in the S&P500 have than the company alphabetically 2nd to last by ticker symbol in the S&P500?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "How many letters long is the title of the first movie composed by the composer of the first American Godzilla movie?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "How many Pokemon World Championships occurred in the contiguous United States during the presidency of Barack Obama?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "This individual won a Best Director Award at the 33rd Japan Academy Prize ceremony and is known for having directed a film that briefly surpassed the Godfather as the highest-grossing film in Japan fo",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "How many films had the actress who played Trudi Frazer in \"Once Upon a Time in Hollywood\" acted in before?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "Which player scored more than 15 goals in Eredevisie during the 21-22 season and had previously played for Auxerre?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "By how many years does the inception of the party to which former Finnish MP Lea Rakel Hiltunen last belonged predate the foundation of the Parliament of Finland itself?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "According to the 2011 census, what is total population of the cities of the birthplaces of author Clive Barker, Prince William, and Sir Malcolm Stanley Bradbury? Round to the nearest 100,000.",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "Which of the bridges in Halifax, Nova Scotia is longer, and by how much? The MacKay, or the MacDonald?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "As of August 1, 2024, are there any cities in England that are more populated than Philadelphia, and which cities are they?",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    },
-    {
-      "question": "What is the average distance for the left field line in MLB stadiums with a retractable roof as of August 2024? Round to the nearest whole number.",
-      "expected": "graph",
-      "predicted": "quantitative",
-      "dataset": "frames"
-    }
-  ],
-  "datasets_used": {
-    "graph_rag": [
-      {
-        "name": "musique",
-        "source": "StonyBrookNLP/musique",
-        "type": "Compositional multi-hop (2-4 hops)"
-      },
-      {
-        "name": "2wikimultihopqa",
-        "source": "scholarly-shadows-syndicate/2wikimultihopqa",
-        "type": "Cross-document Wikipedia reasoning"
-      },
-      {
-        "name": "frames",
-        "source": "google/frames-benchmark",
-        "type": "Google multi-hop RAG benchmark"
-      }
-    ],
-    "quantitative_rag": [
-      {
-        "name": "finqa",
-        "source": "ibm/finqa",
-        "type": "Financial table reasoning + calculations"
-      },
-      {
-        "name": "tatqa",
-        "source": "next-tat-qa",
-        "type": "Hybrid table-and-text arithmetic QA"
-      },
-      {
-        "name": "wikitablequestions",
-        "source": "wikitablequestions",
-        "type": "Table-based SQL-like reasoning"
-      }
-    ]
-  },
-  "routing_analysis_method": "Pattern-based regex matching against Graph RAG patterns (multi-hop, entity relationships, comparisons) and Quantitative RAG patterns (numerical, financial, calculations, aggregations). Questions matching neither strongly are classified as 'ambiguous'."
+  ]
 }
