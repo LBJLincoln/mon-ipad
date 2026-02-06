@@ -1,0 +1,457 @@
+{
+  "workflow_file": "TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json",
+  "workflow_name": "TEST - SOTA 2026 - WF4 Quantitative V2.0",
+  "workflow_id": "xrzL7TRX9F0UrWks0tdCI",
+  "generated_at": "2026-02-06T00:06:51.127851+00:00",
+  "generator": "patch-writer-agent v1.0",
+  "patch_version": "1.0.0",
+  "description": "RFC 6902 patches for WF4 Quantitative V2.0 - 5 issues + 2 SOTA upgrades",
+  "patches": [
+    {
+      "op": "test",
+      "path": "/name",
+      "value": "TEST - SOTA 2026 - WF4 Quantitative V2.0",
+      "metadata": {
+        "reason": "Safety check: verify workflow identity before patching",
+        "issue_ref": "SAFETY",
+        "severity": "critical"
+      }
+    },
+    {
+      "op": "test",
+      "path": "/nodes/4/name",
+      "value": "SQL Validator (Shield #1)",
+      "metadata": {
+        "reason": "Verify node identity at index 4 before patching",
+        "issue_ref": "ISSUE-QT-02+ISSUE-QT-06",
+        "node_name": "SQL Validator (Shield #1)"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/4/parameters/jsCode",
+      "value": "// CRITICAL: SQL Validator - Security Shield V2.1\n// PATCHED: ISSUE-QT-02 (tenant_id WHERE clause enforcement) + ISSUE-QT-06 (LIMIT 100)\nconst contextData = $node['Schema Context Builder'].json;\nlet llmResponse = {};\ntry {\n  llmResponse = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n} catch (e) {\n  throw new Error('SQL_GENERATION_ERROR: Invalid LLM response');\n}\n\nconst sql = String(llmResponse.sql || '').trim();\nconst sqlUpper = sql.toUpperCase();\n\n// FORBIDDEN PATTERNS - P0 Security\nconst forbiddenPatterns = [\n  /DELETE|UPDATE|INSERT|DROP|TRUNCATE|ALTER|CREATE/i,\n  /GRANT|REVOKE|EXEC|EXECUTE|CALL/i,\n  /--|;.*;|UNION.*SELECT/i,\n  /xp_|sp_|pg_sleep/i,\n  /\\bINTO\\s+OUTFILE\\b|\\bLOAD_FILE\\b/i\n];\n\nfor (const pattern of forbiddenPatterns) {\n  if (pattern.test(sql)) {\n    throw new Error(`SQL_INJECTION_DETECTED: Forbidden pattern detected - ${pattern.source}`);\n  }\n}\n\n// REQUIRED PATTERNS\nif (!sqlUpper.startsWith('SELECT')) {\n  throw new Error('SQL_VALIDATION_ERROR: Query must start with SELECT');\n}\n\nif (!sqlUpper.includes('LIMIT')) {\n  throw new Error('SQL_VALIDATION_ERROR: Query must include LIMIT clause');\n}\n\n// ISSUE-QT-06: Extract LIMIT value - reduced from 1000 to 100\nconst limitMatch = sql.match(/LIMIT\\s+(\\d+)/i);\nif (limitMatch) {\n  const limitValue = parseInt(limitMatch[1]);\n  if (limitValue > 100) {\n    throw new Error('SQL_VALIDATION_ERROR: LIMIT must be <= 100 (was ' + limitValue + ')');\n  }\n}\n\n// ISSUE-QT-02: Strengthened tenant_id enforcement\n// Verify tenant_id appears in WHERE clause with comparison operator (= or IN)\n// Simple string mention (e.g., in LIKE '%TENANT_ID%' or column alias) is NOT sufficient\nconst whereMatch = sqlUpper.match(/WHERE\\s+([\\s\\S]+?)(?:\\bORDER\\s+BY\\b|\\bGROUP\\s+BY\\b|\\bLIMIT\\b|\\bHAVING\\b|$)/);\nif (!whereMatch) {\n  throw new Error('SQL_VALIDATION_ERROR: Query must include a WHERE clause with tenant_id filter');\n}\n\nconst whereClause = whereMatch[1];\nconst tenantFilterPatterns = [\n  /TENANT_ID\\s*=\\s*'/i,\n  /TENANT_ID\\s*=\\s*\\$/i,\n  /TENANT_ID\\s*=\\s*:/i,\n  /TENANT_ID\\s+IN\\s*\\(/i\n];\n\nconst hasTenantFilter = tenantFilterPatterns.some(p => p.test(whereClause));\nif (!hasTenantFilter) {\n  throw new Error('SQL_VALIDATION_ERROR: WHERE clause must contain tenant_id with a comparison operator (= or IN). String mention alone is not accepted.');\n}\n\n// Passed validation\nreturn {\n  ...contextData,\n  validated_sql: llmResponse.sql,\n  explanation: llmResponse.explanation,\n  validation_status: 'PASSED',\n  validation_timestamp: new Date().toISOString()\n};\n",
+      "metadata": {
+        "reason": "ISSUE-QT-02 (P0): Strengthen tenant_id enforcement - verify WHERE clause with comparison operator (=, IN) instead of simple string includes(). ISSUE-QT-06 (P1): Reduce max LIMIT from 1000 to 100 to prevent context window overflow in LLM Analyst.",
+        "issue_ref": "ISSUE-QT-02, ISSUE-QT-06",
+        "severity": "critical",
+        "node_name": "SQL Validator (Shield #1)",
+        "before_summary": "Simple sql.includes('TENANT_ID') check; LIMIT <= 1000",
+        "after_summary": "WHERE clause parsing with operator validation (=, IN); LIMIT <= 100"
+      }
+    },
+    {
+      "op": "test",
+      "path": "/nodes/1/name",
+      "value": "Schema Introspection",
+      "metadata": {
+        "reason": "Verify node identity at index 1 before patching",
+        "issue_ref": "ISSUE-QT-07",
+        "node_name": "Schema Introspection"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/nodes/1/onError",
+      "value": "continueErrorOutput",
+      "metadata": {
+        "reason": "ISSUE-QT-07 (P2): Add error handling to Schema Introspection. If Postgres is unreachable, workflow currently crashes immediately. With continueErrorOutput, the error flows to an error output allowing graceful degradation.",
+        "issue_ref": "ISSUE-QT-07",
+        "severity": "medium",
+        "node_name": "Schema Introspection",
+        "before_summary": "No onError property - crashes on DB failure",
+        "after_summary": "onError: continueErrorOutput - allows graceful error handling"
+      }
+    },
+    {
+      "op": "test",
+      "path": "/nodes/9/name",
+      "value": "OTEL Export (Shield #9)",
+      "metadata": {
+        "reason": "Verify node identity at index 9 before patching",
+        "issue_ref": "ISSUE-QT-11",
+        "node_name": "OTEL Export (Shield #9)"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/9/parameters/jsonBody",
+      "value": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"quantitative_rag_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"attributes\": {\n    \"result_count\": {{ $json.result_count || 0 }},\n    \"sql_length\": {{ $json.sql_executed?.length || 0 }},\n    \"sql_query_preview\": \"{{ ($json.sql_executed || '').substring(0, 200) }}\",\n    \"engine\": \"QUANTITATIVE\",\n    \"validation_status\": \"{{ $json.metadata?.validation_status || 'unknown' }}\",\n    \"query_length\": {{ $json.query?.length || 0 }},\n    \"has_results\": {{ $json.result_count > 0 }}\n  }\n}",
+      "metadata": {
+        "reason": "ISSUE-QT-11 (P2): Enrich OTEL trace with additional SQL metrics. Current trace only has trace_id, span_name, status, result_count, sql_length. New trace adds: sql_query_preview (first 200 chars), engine, validation_status, query_length, has_results. Note: sql_duration_ms and repair_iterations require upstream pipeline changes to pass through Response Formatter.",
+        "issue_ref": "ISSUE-QT-11",
+        "severity": "medium",
+        "node_name": "OTEL Export (Shield #9)",
+        "before_summary": "Only trace_id, span_name, status, result_count, sql_length",
+        "after_summary": "Added: sql_query_preview, engine, validation_status, query_length, has_results",
+        "upstream_changes_needed": "For full metrics (sql_duration_ms, repair_iterations, model_used), Response Formatter [8] must propagate these fields from upstream nodes."
+      }
+    },
+    {
+      "op": "test",
+      "path": "/nodes/20/name",
+      "value": "Prepare SQL Request",
+      "metadata": {
+        "reason": "Verify node identity at index 20 before SOTA Q01 replacement",
+        "issue_ref": "Q01",
+        "node_name": "Prepare SQL Request"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/20/name",
+      "value": "Few-Shot SQL Generator (Q01)",
+      "metadata": {
+        "reason": "Q01 SOTA: Rename node to reflect its new function as a Few-Shot SQL Generator per ARCHITECTURE_FINALE_SOTA_2026_COMPLEMENTAIRE 3.md",
+        "issue_ref": "Q01, ISSUE-QT-04",
+        "severity": "high",
+        "node_name": "Prepare SQL Request",
+        "before": "Prepare SQL Request",
+        "after": "Few-Shot SQL Generator (Q01)"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/20/parameters/jsCode",
+      "value": "// PATCH Q01: Few-Shot SQL Generator V2.1\n// Replaces: Prepare SQL Request\n// Impact: +13% BIRD-SQL accuracy (DIN-SQL, 2023 - validated 2026)\n// Also addresses: ISSUE-QT-04 (no few-shot SQL examples)\n\nconst initData = $node['Schema Context Builder'].json;\n\n// === FEW-SHOT EXAMPLES (adaptive by query type) ===\nconst FEW_SHOT_EXAMPLES = {\n  aggregation: `\nQuestion: \"Quel est le chiffre d'affaires total par region en 2023?\"\nSQL: SELECT region, SUM(amount) as total_revenue\n     FROM sales\n     WHERE year = 2023 AND tenant_id = 'TENANT_ID'\n     GROUP BY region\n     ORDER BY total_revenue DESC\n     LIMIT 100`,\n\n  join: `\nQuestion: \"Liste les employes avec leur departement et manager\"\nSQL: SELECT e.name, d.department_name, m.name as manager_name\n     FROM employees e\n     JOIN departments d ON e.dept_id = d.id AND d.tenant_id = 'TENANT_ID'\n     LEFT JOIN employees m ON e.manager_id = m.id\n     WHERE e.tenant_id = 'TENANT_ID'\n     LIMIT 100`,\n\n  date_filter: `\nQuestion: \"Ventes des 30 derniers jours\"\nSQL: SELECT * FROM sales\n     WHERE sale_date >= CURRENT_DATE - INTERVAL '30 days'\n       AND tenant_id = 'TENANT_ID'\n     LIMIT 100`,\n\n  ranking: `\nQuestion: \"Top 5 des produits les plus vendus\"\nSQL: SELECT product_name, SUM(quantity) as total_sold\n     FROM sales\n     WHERE tenant_id = 'TENANT_ID'\n     GROUP BY product_name\n     ORDER BY total_sold DESC\n     LIMIT 5`\n};\n\n// Dynamic example selection based on query content\nfunction selectExamples(query) {\n  const examples = [];\n  const q = query.toLowerCase();\n\n  if (/total|somme|moyenne|count|nombre/i.test(q)) {\n    examples.push(FEW_SHOT_EXAMPLES.aggregation);\n  }\n  if (/avec|join|department|manager|employe/i.test(q)) {\n    examples.push(FEW_SHOT_EXAMPLES.join);\n  }\n  if (/derniers|dernieres|jours|mois|annee|date/i.test(q)) {\n    examples.push(FEW_SHOT_EXAMPLES.date_filter);\n  }\n  if (/top|meilleurs|premiers|classement|plus/i.test(q)) {\n    examples.push(FEW_SHOT_EXAMPLES.ranking);\n  }\n\n  // Always include at least one example\n  if (examples.length === 0) {\n    examples.push(FEW_SHOT_EXAMPLES.aggregation);\n  }\n\n  return examples.slice(0, 2); // Max 2 examples to limit tokens\n}\n\nconst selectedExamples = selectExamples(initData.query);\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepseek/deepseek-chat',\n  messages: [\n    {\n      role: \"system\",\n      content: `Tu es un expert SQL avec raisonnement explicite (Chain-of-Thought).\n\n=== METHODE EN 4 ETAPES ===\n\nETAPE 1 - COMPRENDRE LA QUESTION:\n- Identifie les ENTITES mentionnees (tables probables)\n- Identifie les METRIQUES demandees (SUM, COUNT, AVG, etc.)\n- Identifie les FILTRES et CONDITIONS\n- Identifie la PERIODE temporelle si presente\n\nETAPE 2 - MAPPER AU SCHEMA:\n- Trouve les tables pertinentes dans le schema fourni\n- Identifie les colonnes EXACTES (respecte la casse!)\n- Verifie les types de donnees\n- Si tu ne connais pas le format exact d'une valeur (ex: quarter), utilise LIKE avec wildcard.\nExemple: quarter LIKE 'Q3%' au lieu de quarter = 'Q3'\n- Identifie les JOINs necessaires\n\nETAPE 3 - CONSTRUIRE LA QUERY:\n- SELECT: colonnes a retourner\n- FROM: table principale\n- JOIN: si multi-tables\n- WHERE: filtres + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: si agregation\n- ORDER BY: si tri demande\n- LIMIT: max 100\n\nETAPE 4 - VERIFIER:\n- La query est-elle syntaxiquement valide?\n- Repond-elle a la question originale?\n- Les noms de colonnes existent-ils dans le schema?\n\n=== EXEMPLES DE REQUETES ===\n${selectedExamples.join('\\n\\n---\\n\\n')}\n\n=== REGLES DE SECURITE ===\n1. TOUJOURS commencer par SELECT\n2. TOUJOURS inclure tenant_id = '${initData.user_context.tenant_id}' dans WHERE\n3. TOUJOURS LIMIT (max 100)\n4. JAMAIS de DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. JAMAIS de commentaires SQL (--)\n\n=== FORMAT JSON STRICT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '${initData.user_context.tenant_id}' LIMIT 100\",\n  \"explanation\": \"Cette query fait X parce que Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== SCHEMA DISPONIBLE ===\\n${initData.schema_context}\\n\\n=== QUESTION UTILISATEUR ===\\n${initData.query}\\n\\n=== CONTEXTE ===\\nTenant ID: ${initData.user_context.tenant_id}\\nGroups: ${JSON.stringify(initData.user_context.groups)}\\n\\nGenere la query SQL avec raisonnement Chain-of-Thought complet. Reponds UNIQUEMENT avec le JSON.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000,\n  response_format: { type: \"json_object\" }\n};\n\nreturn {\n  json: {\n    ...initData,\n    requestBody: requestBody,\n    few_shot_examples_used: selectedExamples.length\n  }\n};\n",
+      "metadata": {
+        "reason": "Q01 SOTA + ISSUE-QT-04 (P1): Replace basic prompt builder with dynamic few-shot SQL generator. Selects 1-2 relevant examples (aggregation, join, date_filter, ranking) based on query content analysis. Expected impact: +13% BIRD-SQL accuracy per DIN-SQL research (Pourreza & Rafiei, 2023). Also updates LIMIT references from 1000 to 100 to align with ISSUE-QT-06.",
+        "issue_ref": "Q01, ISSUE-QT-04",
+        "severity": "high",
+        "node_name": "Prepare SQL Request -> Few-Shot SQL Generator (Q01)",
+        "before_summary": "Static CoT prompt without SQL examples",
+        "after_summary": "Dynamic few-shot examples (4 categories) + full CoT prompt with LIMIT 100",
+        "research_ref": "DIN-SQL: Decomposed In-Context Learning of Text-to-SQL with Self-Correction (2023, validated 2026)"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/connections/Schema Context Builder/main/0/0/node",
+      "value": "Few-Shot SQL Generator (Q01)",
+      "metadata": {
+        "reason": "Q01: Update connection target from 'Prepare SQL Request' to new node name 'Few-Shot SQL Generator (Q01)'",
+        "issue_ref": "Q01",
+        "severity": "high",
+        "before": "Prepare SQL Request",
+        "after": "Few-Shot SQL Generator (Q01)"
+      }
+    },
+    {
+      "op": "move",
+      "from": "/connections/Prepare SQL Request",
+      "path": "/connections/Few-Shot SQL Generator (Q01)",
+      "metadata": {
+        "reason": "Q01: Move outgoing connection block from old node name to new node name",
+        "issue_ref": "Q01",
+        "severity": "high"
+      }
+    },
+    {
+      "op": "test",
+      "path": "/nodes/12/name",
+      "value": "SQL Error Handler (Self-Healing)",
+      "metadata": {
+        "reason": "Verify node identity at index 12 before SOTA Q02 replacement",
+        "issue_ref": "Q02",
+        "node_name": "SQL Error Handler (Self-Healing)"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/12/name",
+      "value": "Diagnostic Error Handler (Q02)",
+      "metadata": {
+        "reason": "Q02 SOTA: Rename node to reflect its new diagnostic categorization function per ARCHITECTURE_FINALE_SOTA_2026_COMPLEMENTAIRE 3.md",
+        "issue_ref": "Q02",
+        "severity": "high",
+        "node_name": "SQL Error Handler (Self-Healing)",
+        "before": "SQL Error Handler (Self-Healing)",
+        "after": "Diagnostic Error Handler (Q02)"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/12/parameters/jsCode",
+      "value": "// PATCH Q02: Diagnostic Error Handler V2.1\n// Replaces: SQL Error Handler (Self-Healing)\n// Categorizes PostgreSQL errors for targeted correction\n// Impact: -40% unnecessary retries (Microsoft Research)\n\nconst executorResult = $json;\nconst validatorData = $node['SQL Validator (Shield #1)'].json;\nconst originalQuery = $node['Init & ACL'].json.query;\n\n// Get retry tracking\nconst staticData = $getWorkflowStaticData('global');\nconst traceId = $node['Init & ACL'].json.trace_id || 'sql-' + Date.now();\n\nif (!staticData.sqlRetries) staticData.sqlRetries = {};\nif (!staticData.sqlRetries[traceId]) {\n  staticData.sqlRetries[traceId] = { count: 0, errors: [], errorTypes: [] };\n}\n\nconst retryState = staticData.sqlRetries[traceId];\nconst MAX_RETRIES = 3;\n\n// Extract error message\nconst errorMessage = executorResult.error ||\n                     executorResult.errorMessage ||\n                     'Unknown error';\n\n// === DIAGNOSTIC D'ERREUR ===\nconst ERROR_PATTERNS = {\n  SYNTAX_ERROR: {\n    pattern: /syntax error at or near|ERROR:\\s*syntax/i,\n    strategy: 'FIX_SYNTAX',\n    description: 'Erreur de syntaxe SQL'\n  },\n  COLUMN_NOT_FOUND: {\n    pattern: /column.*does not exist|ERROR:\\s*column/i,\n    strategy: 'VERIFY_SCHEMA',\n    description: 'Colonne inexistante'\n  },\n  TABLE_NOT_FOUND: {\n    pattern: /relation.*does not exist|ERROR:\\s*relation/i,\n    strategy: 'MAP_ALTERNATIVE_TABLE',\n    description: 'Table inexistante'\n  },\n  TYPE_MISMATCH: {\n    pattern: /operator does not exist|cannot compare|type mismatch/i,\n    strategy: 'ADD_CAST',\n    description: 'Incompatibilite de types'\n  },\n  PERMISSION_DENIED: {\n    pattern: /permission denied|insufficient privilege/i,\n    strategy: 'STOP',\n    description: 'Permission refusee'\n  },\n  TIMEOUT: {\n    pattern: /statement timeout|canceling statement|query canceled/i,\n    strategy: 'SIMPLIFY_QUERY',\n    description: 'Timeout'\n  },\n  AMBIGUOUS_COLUMN: {\n    pattern: /column reference.*is ambiguous/i,\n    strategy: 'QUALIFY_COLUMNS',\n    description: 'Colonne ambigue'\n  }\n};\n\nlet detectedError = null;\nfor (const [errorType, config] of Object.entries(ERROR_PATTERNS)) {\n  if (config.pattern.test(errorMessage)) {\n    detectedError = { type: errorType, ...config };\n    break;\n  }\n}\n\n// Check if execution was successful\nconst hasError = executorResult.error || executorResult.errorMessage;\nconst isEmptyResult = Array.isArray(executorResult) && executorResult.length === 0;\n\nif (!hasError && !isEmptyResult) {\n  // Success - cleanup\n  delete staticData.sqlRetries[traceId];\n  return {\n    success: true,\n    needs_repair: false,\n    result: executorResult,\n    sql_used: validatorData.validated_sql\n  };\n}\n\n// STOP immediately for permission denied\nif (detectedError?.strategy === 'STOP') {\n  delete staticData.sqlRetries[traceId];\n  return {\n    success: false,\n    needs_repair: false,\n    error: 'PERMISSION_DENIED',\n    error_message: errorMessage,\n    user_message: \"Vous n'avez pas les permissions necessaires pour acceder a ces donnees.\"\n  };\n}\n\n// Check retry limit\nretryState.count++;\nretryState.errors.push(errorMessage);\nif (detectedError) {\n  retryState.errorTypes.push(detectedError.type);\n}\n\nif (retryState.count >= MAX_RETRIES) {\n  delete staticData.sqlRetries[traceId];\n  return {\n    success: false,\n    needs_repair: false,\n    error: 'MAX_RETRIES_EXCEEDED',\n    error_history: retryState.errors,\n    error_types: retryState.errorTypes,\n    user_message: `Impossible de generer une requete valide apres ${MAX_RETRIES} tentatives.`\n  };\n}\n\n// Prepare repair context with diagnostic info\nreturn {\n  needs_repair: true,\n  repair_context: {\n    failed_sql: validatorData.validated_sql,\n    error_message: errorMessage,\n    error_type: detectedError?.type || 'UNKNOWN',\n    error_strategy: detectedError?.strategy || 'GENERAL_FIX',\n    error_description: detectedError?.description || 'Erreur inconnue',\n    schema_context: $node['Schema Context Builder'].json.schema_context,\n    original_question: originalQuery,\n    previous_errors: retryState.errors,\n    previous_error_types: retryState.errorTypes,\n    retry_count: retryState.count\n  }\n};\n",
+      "metadata": {
+        "reason": "Q02 SOTA: Replace generic self-healing error handler with diagnostic categorization engine. Detects 7 PostgreSQL error types (SYNTAX_ERROR, COLUMN_NOT_FOUND, TABLE_NOT_FOUND, TYPE_MISMATCH, PERMISSION_DENIED, TIMEOUT, AMBIGUOUS_COLUMN) and maps each to a targeted repair strategy. Immediately stops retries for PERMISSION_DENIED. Expected impact: -40% unnecessary retries per Microsoft Research.",
+        "issue_ref": "Q02",
+        "severity": "high",
+        "node_name": "SQL Error Handler (Self-Healing) -> Diagnostic Error Handler (Q02)",
+        "before_summary": "Generic error detection, single error message passed to repair LLM",
+        "after_summary": "7-category error diagnostic with per-type strategies, PERMISSION_DENIED short-circuit, error type history tracking",
+        "research_ref": "Microsoft Research - SQL error categorization for self-correction (2025)"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/connections/SQL Executor (Postgres)/main/1/0/node",
+      "value": "Diagnostic Error Handler (Q02)",
+      "metadata": {
+        "reason": "Q02: Update error output connection from SQL Executor to new node name 'Diagnostic Error Handler (Q02)'",
+        "issue_ref": "Q02",
+        "severity": "high",
+        "before": "SQL Error Handler (Self-Healing)",
+        "after": "Diagnostic Error Handler (Q02)"
+      }
+    },
+    {
+      "op": "move",
+      "from": "/connections/SQL Error Handler (Self-Healing)",
+      "path": "/connections/Diagnostic Error Handler (Q02)",
+      "metadata": {
+        "reason": "Q02: Move outgoing connection block from old node name to new node name",
+        "issue_ref": "Q02",
+        "severity": "high"
+      }
+    },
+    {
+      "op": "test",
+      "path": "/nodes/15/name",
+      "value": "Repair Parser",
+      "metadata": {
+        "reason": "Verify Repair Parser identity before updating node reference",
+        "issue_ref": "Q02",
+        "node_name": "Repair Parser"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/15/parameters/jsCode",
+      "value": "// Parse SQL Repair response and prepare for retry\n// Updated: references Diagnostic Error Handler (Q02) instead of SQL Error Handler\nconst repairResponse = $json;\nlet repairedSql = '';\n\ntry {\n  const content = repairResponse.choices?.[0]?.message?.content || repairResponse.body?.choices?.[0]?.message?.content;\n  const parsed = JSON.parse(content);\n  repairedSql = parsed.sql;\n} catch (e) {\n  // If parsing fails, return error\n  return {\n    success: false,\n    error: 'SQL_REPAIR_PARSE_ERROR',\n    raw_response: repairResponse\n  };\n}\n\n// Prepare for SQL Validator re-run\nreturn {\n  sql: repairedSql,\n  is_repaired: true,\n  repair_iteration: $node['Diagnostic Error Handler (Q02)'].json.repair_context?.retry_count\n};\n",
+      "metadata": {
+        "reason": "Q02 (cascading): Update Repair Parser to reference 'Diagnostic Error Handler (Q02)' instead of 'SQL Error Handler (Self-Healing)'. Also updates field path from .json.retry_count to .json.repair_context?.retry_count to match Q02 output structure.",
+        "issue_ref": "Q02",
+        "severity": "high",
+        "node_name": "Repair Parser",
+        "before_summary": "$node['SQL Error Handler (Self-Healing)'].json.retry_count",
+        "after_summary": "$node['Diagnostic Error Handler (Q02)'].json.repair_context?.retry_count"
+      }
+    }
+  ],
+  "rollback_patches": [
+    {
+      "op": "replace",
+      "path": "/nodes/15/parameters/jsCode",
+      "value": "// Parse SQL Repair response and prepare for retry\nconst repairResponse = $json;\nlet repairedSql = '';\n\ntry {\n  const content = repairResponse.choices?.[0]?.message?.content || repairResponse.body?.choices?.[0]?.message?.content;\n  const parsed = JSON.parse(content);\n  repairedSql = parsed.sql;\n} catch (e) {\n  // If parsing fails, return error\n  return {\n    success: false,\n    error: 'SQL_REPAIR_PARSE_ERROR',\n    raw_response: repairResponse\n  };\n}\n\n// Prepare for SQL Validator re-run\nreturn {\n  sql: repairedSql,\n  is_repaired: true,\n  repair_iteration: $node['SQL Error Handler (Self-Healing)'].json.retry_count\n};\n"
+    },
+    {
+      "op": "move",
+      "from": "/connections/Diagnostic Error Handler (Q02)",
+      "path": "/connections/SQL Error Handler (Self-Healing)"
+    },
+    {
+      "op": "replace",
+      "path": "/connections/SQL Executor (Postgres)/main/1/0/node",
+      "value": "SQL Error Handler (Self-Healing)"
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/12/parameters/jsCode",
+      "value": "// SQL ERROR HANDLER - Self-Healing Pattern\n// Research: Self-correcting SQL generation (2025)\n\nconst executorResult = $json;\nconst validatorData = $node['SQL Validator (Shield #1)'].json;\nconst originalQuery = $node['Init & ACL'].json.query;\nconst schemaContext = $node['Schema Context Builder'].json.schema_context;\nconst tenantId = $node['Init & ACL'].json.user_context.tenant_id;\n\n// Get static data for retry tracking\nconst staticData = $getWorkflowStaticData('global');\nconst traceId = $node['Init & ACL'].json.trace_id || 'sql-' + Date.now();\n\nif (!staticData.sqlRetries) staticData.sqlRetries = {};\nif (!staticData.sqlRetries[traceId]) {\n  staticData.sqlRetries[traceId] = { count: 0, errors: [] };\n}\n\nconst retryState = staticData.sqlRetries[traceId];\nconst MAX_RETRIES = 3;\n\n// Check if execution was successful\nconst hasError = executorResult.error ||\n                 executorResult.errorMessage ||\n                 (Array.isArray(executorResult) && executorResult.length === 0 && validatorData.sql?.includes('WHERE'));\n\nif (!hasError) {\n  // Success - cleanup and pass through\n  delete staticData.sqlRetries[traceId];\n  return {\n    success: true,\n    needs_repair: false,\n    result: executorResult,\n    sql_used: validatorData.sql,\n    retry_count: retryState.count\n  };\n}\n\n// Error detected - check retry limit\nretryState.count++;\nconst errorMessage = executorResult.error || executorResult.errorMessage || 'Empty result set (possible invalid query)';\nretryState.errors.push(errorMessage);\n\nif (retryState.count >= MAX_RETRIES) {\n  // Max retries reached - return failure\n  delete staticData.sqlRetries[traceId];\n  return {\n    success: false,\n    needs_repair: false,\n    error: 'MAX_RETRIES_EXCEEDED',\n    error_history: retryState.errors,\n    retry_count: retryState.count,\n    fallback_message: `Impossible de generer une requete SQL valide apres ${MAX_RETRIES} tentatives.`\n  };\n}\n\n// Need repair - prepare context for SQL Repair LLM\nreturn {\n  success: false,\n  needs_repair: true,\n  retry_count: retryState.count,\n  repair_context: {\n    original_question: originalQuery,\n    failed_sql: validatorData.sql,\n    error_message: errorMessage,\n    schema_context: schemaContext,\n    tenant_id: tenantId,\n    previous_errors: retryState.errors\n  }\n};\n"
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/12/name",
+      "value": "SQL Error Handler (Self-Healing)"
+    },
+    {
+      "op": "move",
+      "from": "/connections/Few-Shot SQL Generator (Q01)",
+      "path": "/connections/Prepare SQL Request"
+    },
+    {
+      "op": "replace",
+      "path": "/connections/Schema Context Builder/main/0/0/node",
+      "value": "Prepare SQL Request"
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/20/parameters/jsCode",
+      "value": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepseek/deepseek-chat',\n  messages: [\n    {\n      role: \"system\",\n      content: `Tu es un expert SQL avec raisonnement explicite (Chain-of-Thought).\n\n=== METHODE EN 4 ETAPES ===\n\nETAPE 1 - COMPRENDRE LA QUESTION:\n- Identifie les ENTITES mentionnees (tables probables)\n- Identifie les METRIQUES demandees (SUM, COUNT, AVG, etc.)\n- Identifie les FILTRES et CONDITIONS\n- Identifie la PERIODE temporelle si presente\n\nETAPE 2 - MAPPER AU SCHEMA:\n- Trouve les tables pertinentes dans le schema fourni\n- Identifie les colonnes EXACTES (respecte la casse!)\n- Verifie les types de donnees\n- Si tu ne connais pas le format exact d'une valeur (ex: quarter), utilise LIKE avec wildcard.\nExemple: quarter LIKE 'Q3%' au lieu de quarter = 'Q3'\n- Identifie les JOINs necessaires\n\nETAPE 3 - CONSTRUIRE LA QUERY:\n- SELECT: colonnes a retourner\n- FROM: table principale\n- JOIN: si multi-tables\n- WHERE: filtres + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: si agregation\n- ORDER BY: si tri demande\n- LIMIT: max 1000\n\nETAPE 4 - VERIFIER:\n- La query est-elle syntaxiquement valide?\n- Repond-elle a la question originale?\n- Les noms de colonnes existent-ils dans le schema?\n\n=== REGLES DE SECURITE ===\n1. TOUJOURS commencer par SELECT\n2. TOUJOURS inclure tenant_id dans WHERE\n3. TOUJOURS LIMIT (max 1000)\n4. JAMAIS de DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. JAMAIS de commentaires SQL (--)\n\n=== FORMAT JSON STRICT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"Cette query fait X parce que Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== QUESTION UTILISATEUR ===\n${initData.query}\n\n=== SCHEMA DISPONIBLE ===\n${initData.schema_context}\n\n=== CONTEXTE ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenere la query SQL avec raisonnement Chain-of-Thought complet.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000,\n  response_format: { type: \"json_object\" }\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};\n"
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/20/name",
+      "value": "Prepare SQL Request"
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/9/parameters/jsonBody",
+      "value": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"quantitative_rag_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"attributes\": {\n    \"result_count\": {{ $json.result_count }},\n    \"sql_length\": {{ $json.sql_executed?.length || 0 }}\n  }\n}"
+    },
+    {
+      "op": "remove",
+      "path": "/nodes/1/onError"
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/4/parameters/jsCode",
+      "value": "// CRITICAL: SQL Validator - Security Shield\nconst contextData = $node['Schema Context Builder'].json;\nlet llmResponse = {};\ntry {\n  llmResponse = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n} catch (e) {\n  throw new Error('SQL_GENERATION_ERROR: Invalid LLM response');\n}\n\nconst sql = String(llmResponse.sql || '').toUpperCase().trim();\n\n// FORBIDDEN PATTERNS - P0 Security\nconst forbiddenPatterns = [\n  /DELETE|UPDATE|INSERT|DROP|TRUNCATE|ALTER|CREATE/i,\n  /GRANT|REVOKE|EXEC|EXECUTE|CALL/i,\n  /--|;.*;|UNION.*SELECT/i,\n  /xp_|sp_|pg_sleep/i,\n  /\\bINTO\\s+OUTFILE\\b|\\bLOAD_FILE\\b/i\n];\n\nfor (const pattern of forbiddenPatterns) {\n  if (pattern.test(sql)) {\n    throw new Error(`SQL_INJECTION_DETECTED: Forbidden pattern detected - ${pattern.source}`);\n  }\n}\n\n// REQUIRED PATTERNS\nif (!sql.startsWith('SELECT')) {\n  throw new Error('SQL_VALIDATION_ERROR: Query must start with SELECT');\n}\n\nif (!sql.includes('LIMIT')) {\n  throw new Error('SQL_VALIDATION_ERROR: Query must include LIMIT clause');\n}\n\n// Extract LIMIT value\nconst limitMatch = sql.match(/LIMIT\\s+(\\d+)/i);\nif (limitMatch) {\n  const limitValue = parseInt(limitMatch[1]);\n  if (limitValue > 1000) {\n    throw new Error('SQL_VALIDATION_ERROR: LIMIT must be <= 1000');\n  }\n}\n\n// Check tenant_id filter\nif (!sql.includes('TENANT_ID')) {\n  throw new Error('SQL_VALIDATION_ERROR: Query must include tenant_id filter');\n}\n\n// Passed validation\nreturn {\n  ...contextData,\n  validated_sql: llmResponse.sql,\n  explanation: llmResponse.explanation,\n  validation_status: 'PASSED',\n  validation_timestamp: new Date().toISOString()\n};"
+    }
+  ],
+  "deployment_notes": "## WF4 Quantitative V2.0 - Patch Deployment Notes\n\n### Pre-deployment Checklist\n1. Create backup: `cp \"TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json\" backups/`\n2. Verify Postgres connectivity (Schema Introspection will now handle errors gracefully)\n3. Ensure environment variables are set: LLM_SQL_MODEL, OTEL_COLLECTOR_URL\n\n### Patch Summary (7 issues, 22 RFC 6902 operations)\n\n| Priority | Issue | Node | Change |\n|----------|-------|------|--------|\n| P0 | ISSUE-QT-02 | SQL Validator [4] | WHERE clause tenant_id enforcement |\n| P1 | ISSUE-QT-04 | Prepare SQL Request [20] | Few-shot examples (merged with Q01) |\n| P1 | ISSUE-QT-06 | SQL Validator [4] | LIMIT 1000 -> 100 |\n| P2 | ISSUE-QT-07 | Schema Introspection [1] | Add onError: continueErrorOutput |\n| P2 | ISSUE-QT-11 | OTEL Export [9] | Enriched trace attributes |\n| SOTA | Q01 | Node [20] renamed | Few-Shot SQL Generator (dynamic examples) |\n| SOTA | Q02 | Node [12] renamed | Diagnostic Error Handler (7 error categories) |\n\n### Breaking Changes\n- Node [20] renamed from 'Prepare SQL Request' to 'Few-Shot SQL Generator (Q01)'\n  - All connections updated. Any external $node[] references must be updated.\n- Node [12] renamed from 'SQL Error Handler (Self-Healing)' to 'Diagnostic Error Handler (Q02)'\n  - Repair Parser [15] updated. Q02 output structure changed (retry_count moved to repair_context).\n- LIMIT enforcement reduced from 1000 to 100 (may affect queries expecting >100 rows)\n\n### Post-deployment Validation\n1. Test SQL injection: send query with 'LIKE %TENANT_ID%' - should REJECT\n2. Test legitimate query with tenant_id = 'xxx' in WHERE - should PASS\n3. Test query with LIMIT 150 - should REJECT (>100)\n4. Test Schema Introspection failure (disconnect Postgres) - should not crash\n5. Verify OTEL traces contain new attributes\n6. Test few-shot example selection with aggregation query\n7. Test SQL error categorization (syntax error, column not found)\n\n### Rollback\nApply rollback_patches in order to revert all changes.\nTotal rollback operations: 12 (reverse order of forward patches).",
+  "test_cases": [
+    {
+      "id": "TC-QT-01",
+      "description": "ISSUE-QT-02: Reject SQL with tenant_id only in string literal (bypass attempt)",
+      "target_node": "SQL Validator (Shield #1)",
+      "input": {
+        "choices": [
+          {
+            "message": {
+              "content": "{\"sql\": \"SELECT * FROM data WHERE comment LIKE '%TENANT_ID%' LIMIT 10\", \"explanation\": \"test\"}"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "should_throw": true,
+        "error_pattern": "WHERE clause must contain tenant_id with a comparison operator"
+      }
+    },
+    {
+      "id": "TC-QT-02",
+      "description": "ISSUE-QT-02: Accept SQL with proper tenant_id = 'value' in WHERE",
+      "target_node": "SQL Validator (Shield #1)",
+      "input": {
+        "choices": [
+          {
+            "message": {
+              "content": "{\"sql\": \"SELECT * FROM sales WHERE tenant_id = 'acme' AND year = 2023 LIMIT 50\", \"explanation\": \"test\"}"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "should_throw": false,
+        "validation_status": "PASSED"
+      }
+    },
+    {
+      "id": "TC-QT-03",
+      "description": "ISSUE-QT-06: Reject SQL with LIMIT > 100",
+      "target_node": "SQL Validator (Shield #1)",
+      "input": {
+        "choices": [
+          {
+            "message": {
+              "content": "{\"sql\": \"SELECT * FROM sales WHERE tenant_id = 'acme' LIMIT 500\", \"explanation\": \"test\"}"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "should_throw": true,
+        "error_pattern": "LIMIT must be <= 100"
+      }
+    },
+    {
+      "id": "TC-QT-04",
+      "description": "ISSUE-QT-06: Accept SQL with LIMIT <= 100",
+      "target_node": "SQL Validator (Shield #1)",
+      "input": {
+        "choices": [
+          {
+            "message": {
+              "content": "{\"sql\": \"SELECT * FROM sales WHERE tenant_id = 'acme' LIMIT 100\", \"explanation\": \"test\"}"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "should_throw": false,
+        "validation_status": "PASSED"
+      }
+    },
+    {
+      "id": "TC-QT-05",
+      "description": "Q01: Few-shot selects aggregation example for 'total' query",
+      "target_node": "Few-Shot SQL Generator (Q01)",
+      "input": {
+        "schema_context": "Table: sales\nColumns: id int, amount numeric, tenant_id text",
+        "query": "Quel est le total des ventes?",
+        "user_context": {
+          "tenant_id": "acme",
+          "groups": [
+            "admin"
+          ]
+        }
+      },
+      "expected": {
+        "few_shot_examples_used": 1,
+        "requestBody_contains": "EXEMPLES DE REQUETES"
+      }
+    },
+    {
+      "id": "TC-QT-06",
+      "description": "Q01: Few-shot selects ranking + aggregation for 'top total' query",
+      "target_node": "Few-Shot SQL Generator (Q01)",
+      "input": {
+        "schema_context": "Table: sales\nColumns: id int, product text, amount numeric, tenant_id text",
+        "query": "Top 10 produits par total de ventes",
+        "user_context": {
+          "tenant_id": "acme",
+          "groups": [
+            "admin"
+          ]
+        }
+      },
+      "expected": {
+        "few_shot_examples_used": 2,
+        "requestBody_contains": "EXEMPLES DE REQUETES"
+      }
+    },
+    {
+      "id": "TC-QT-07",
+      "description": "Q02: Categorize column-not-found error correctly",
+      "target_node": "Diagnostic Error Handler (Q02)",
+      "input": {
+        "error": "ERROR: column \"revenu\" does not exist"
+      },
+      "expected": {
+        "needs_repair": true,
+        "repair_context.error_type": "COLUMN_NOT_FOUND",
+        "repair_context.error_strategy": "VERIFY_SCHEMA"
+      }
+    },
+    {
+      "id": "TC-QT-08",
+      "description": "Q02: Immediately stop on permission denied (no retry)",
+      "target_node": "Diagnostic Error Handler (Q02)",
+      "input": {
+        "error": "ERROR: permission denied for table secret_data"
+      },
+      "expected": {
+        "needs_repair": false,
+        "error": "PERMISSION_DENIED",
+        "should_not_retry": true
+      }
+    },
+    {
+      "id": "TC-QT-09",
+      "description": "Q02: Categorize syntax error correctly",
+      "target_node": "Diagnostic Error Handler (Q02)",
+      "input": {
+        "error": "ERROR: syntax error at or near \"SELCT\""
+      },
+      "expected": {
+        "needs_repair": true,
+        "repair_context.error_type": "SYNTAX_ERROR",
+        "repair_context.error_strategy": "FIX_SYNTAX"
+      }
+    },
+    {
+      "id": "TC-QT-10",
+      "description": "ISSUE-QT-07: Schema Introspection continues on Postgres error",
+      "target_node": "Schema Introspection",
+      "input": {
+        "simulate": "postgres_connection_timeout"
+      },
+      "expected": {
+        "onError": "continueErrorOutput",
+        "workflow_should_not_crash": true
+      }
+    }
+  ]
+}

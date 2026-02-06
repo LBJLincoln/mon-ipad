@@ -1,0 +1,847 @@
+{
+  "workflow_file": "TEST - SOTA 2026 - Enrichissement V3.1.json",
+  "workflow_name": "TEST - SOTA 2026 - Enrichissement V3.1",
+  "workflow_id": "ORa01sX4xI0iRCJ8",
+  "version": "3.1.1",
+  "generated_at": "2026-02-05",
+  "generated_by": "patch-writer-agent",
+  "patches": [
+    {
+      "op": "replace",
+      "path": "/nodes/8/parameters/jsonBody",
+      "value": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json).substring(0, 30000) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+      "metadata": {
+        "issue_ref": "ISSUE-ENR-01",
+        "severity": "P0",
+        "reason": "Entity extraction truncated at 6000 chars causes loss of critical content on large documents. Increasing to 30000 chars and max_tokens to 4096 for proportional output capacity.",
+        "node_name": "AI Entity Enrichment V3.1 (Enhanced)",
+        "node_index": 8,
+        "changes": [
+          "substring(0, 6000) -> substring(0, 30000)",
+          "max_tokens: 2000 -> 4096"
+        ]
+      }
+    },
+    {
+      "op": "add",
+      "path": "/nodes/2/parameters/expire",
+      "value": true,
+      "metadata": {
+        "issue_ref": "ISSUE-ENR-05",
+        "severity": "P1",
+        "reason": "Redis SET without TTL risks permanent deadlock if worker crashes mid-enrichment. Adding EX 7200 ensures auto-release.",
+        "node_name": "Redis: Acquire Lock",
+        "node_index": 2
+      }
+    },
+    {
+      "op": "add",
+      "path": "/nodes/2/parameters/ttl",
+      "value": 7200,
+      "metadata": {
+        "issue_ref": "ISSUE-ENR-05",
+        "severity": "P1",
+        "reason": "TTL of 7200 seconds (2 hours) matches maximum expected enrichment duration.",
+        "node_name": "Redis: Acquire Lock",
+        "node_index": 2
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/connections/Relationship Mapper V3.1 (Entity Linking)/main",
+      "value": [
+        [
+          {
+            "node": "Upsert Vectors Pinecone",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Store Metadata Postgres",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Graph Neo4j",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "metadata": {
+        "issue_ref": "ISSUE-ENR-07",
+        "severity": "P1",
+        "reason": "Code node (n8n-nodes-base.code) only has 1 output (main[0]), but connections define main[1] and main[2]. This breaks routing: Store Metadata Postgres and Update Graph Neo4j never receive data. Fix: route all 3 downstream stores from main[0].",
+        "node_name": "Relationship Mapper V3.1 (Entity Linking)",
+        "node_index": 9,
+        "before": {
+          "description": "3 separate outputs: main[0]->Pinecone, main[1]->Postgres, main[2]->Neo4j",
+          "main_outputs": 3
+        },
+        "after": {
+          "description": "1 output main[0] with 3 parallel connections: Pinecone, Postgres, Neo4j",
+          "main_outputs": 1
+        }
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/7/parameters/jsCode",
+      "value": "// Normalize & Merge with Hash Deduplication - HARDENED\nconst crypto = require('crypto');\nconst internal = $items('Fetch Internal Use Cases') || [];\nconst external = $items('Fetch External Data Sources') || [];\n\nconst seen = new Set();\nconst merged = [...internal, ...external]\n  .filter(item => {\n    if (!item.json) return false;\n    const content = JSON.stringify(item.json);\n    const hash = crypto.createHash('sha256').update(content).digest('hex');\n    if (seen.has(hash)) return false;\n    seen.add(hash);\n    return true;\n  })\n  .map(item => ({\n    json: {\n      ...item.json,\n      enriched: false,\n      source_sync_date: new Date().toISOString(),\n      dedup_hash: crypto.createHash('sha256').update(JSON.stringify(item.json)).digest('hex')\n    }\n  }));\n\nconsole.log(`Deduplication: ${internal.length + external.length} -> ${merged.length}`);\nreturn merged;",
+      "metadata": {
+        "issue_ref": "ISSUE-ENR-10",
+        "severity": "P2",
+        "reason": "MD5 is cryptographically weak and collision-prone for deduplication hashing. SHA-256 provides collision resistance suitable for content-addressable dedup.",
+        "node_name": "Normalize & Merge",
+        "node_index": 7,
+        "changes": [
+          "crypto.createHash('md5') -> crypto.createHash('sha256') (2 occurrences: dedup filter + dedup_hash field)"
+        ]
+      }
+    },
+    {
+      "op": "add",
+      "path": "/nodes/8/retryOnFail",
+      "value": true,
+      "metadata": {
+        "issue_ref": "ISSUE-ENR-13",
+        "severity": "P2",
+        "reason": "LLM API calls are subject to transient failures (rate limits, timeouts, 5xx). Without retry, a single API hiccup drops the entire enrichment batch.",
+        "node_name": "AI Entity Enrichment V3.1 (Enhanced)",
+        "node_index": 8
+      }
+    },
+    {
+      "op": "add",
+      "path": "/nodes/8/maxTries",
+      "value": 3,
+      "metadata": {
+        "issue_ref": "ISSUE-ENR-13",
+        "severity": "P2",
+        "reason": "3 retries balances resilience vs. API cost/time. Combined with 2s wait, total max delay is ~6s per item.",
+        "node_name": "AI Entity Enrichment V3.1 (Enhanced)",
+        "node_index": 8
+      }
+    },
+    {
+      "op": "add",
+      "path": "/nodes/8/waitBetweenTries",
+      "value": 2000,
+      "metadata": {
+        "issue_ref": "ISSUE-ENR-13",
+        "severity": "P2",
+        "reason": "2-second backoff allows transient rate-limit or network errors to clear before retry.",
+        "node_name": "AI Entity Enrichment V3.1 (Enhanced)",
+        "node_index": 8
+      }
+    }
+  ],
+  "rollback_patches": [
+    {
+      "op": "replace",
+      "path": "/nodes/8/parameters/jsonBody",
+      "value": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json).substring(0, 6000) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 2000\n}",
+      "metadata": {
+        "rollback_for": "ISSUE-ENR-01",
+        "restores": "substring(0, 6000) and max_tokens: 2000"
+      }
+    },
+    {
+      "op": "remove",
+      "path": "/nodes/2/parameters/expire",
+      "metadata": {
+        "rollback_for": "ISSUE-ENR-05"
+      }
+    },
+    {
+      "op": "remove",
+      "path": "/nodes/2/parameters/ttl",
+      "metadata": {
+        "rollback_for": "ISSUE-ENR-05"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/connections/Relationship Mapper V3.1 (Entity Linking)/main",
+      "value": [
+        [
+          {
+            "node": "Upsert Vectors Pinecone",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Store Metadata Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Graph Neo4j",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "metadata": {
+        "rollback_for": "ISSUE-ENR-07",
+        "restores": "original main[0], main[1], main[2] routing"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/7/parameters/jsCode",
+      "value": "// Normalize & Merge with Hash Deduplication - HARDENED\nconst crypto = require('crypto');\nconst internal = $items('Fetch Internal Use Cases') || [];\nconst external = $items('Fetch External Data Sources') || [];\n\nconst seen = new Set();\nconst merged = [...internal, ...external]\n  .filter(item => {\n    if (!item.json) return false;\n    const content = JSON.stringify(item.json);\n    const hash = crypto.createHash('md5').update(content).digest('hex');\n    if (seen.has(hash)) return false;\n    seen.add(hash);\n    return true;\n  })\n  .map(item => ({\n    json: {\n      ...item.json,\n      enriched: false,\n      source_sync_date: new Date().toISOString(),\n      dedup_hash: crypto.createHash('md5').update(JSON.stringify(item.json)).digest('hex')\n    }\n  }));\n\nconsole.log(`Deduplication: ${internal.length + external.length} -> ${merged.length}`);\nreturn merged;",
+      "metadata": {
+        "rollback_for": "ISSUE-ENR-10",
+        "restores": "md5 hashing"
+      }
+    },
+    {
+      "op": "remove",
+      "path": "/nodes/8/retryOnFail",
+      "metadata": {
+        "rollback_for": "ISSUE-ENR-13"
+      }
+    },
+    {
+      "op": "remove",
+      "path": "/nodes/8/maxTries",
+      "metadata": {
+        "rollback_for": "ISSUE-ENR-13"
+      }
+    },
+    {
+      "op": "remove",
+      "path": "/nodes/8/waitBetweenTries",
+      "metadata": {
+        "rollback_for": "ISSUE-ENR-13"
+      }
+    }
+  ],
+  "new_nodes_to_add": [
+    {
+      "sota_ref": "P06",
+      "title": "Chunk-level Entity Extraction",
+      "description": "Replace single monolithic entity extraction (node [8]) with a chunked pipeline: split documents into ~4000-char overlapping chunks, extract entities per chunk via SplitInBatches loop, then aggregate results. Prevents truncation on large documents and improves recall.",
+      "replaces_node_index": 8,
+      "replaces_node_name": "AI Entity Enrichment V3.1 (Enhanced)",
+      "nodes": [
+        {
+          "id": "p06-chunk-documents",
+          "name": "Chunk Documents for Entity Extraction",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            1296,
+            500
+          ],
+          "parameters": {
+            "jsCode": "// P06 SOTA 2026: Chunk-level Entity Extraction\n// Split documents into overlapping chunks for thorough entity extraction\nconst crypto = require('crypto');\nconst items = $input.all();\nconst CHUNK_SIZE = 4000;\nconst CHUNK_OVERLAP = 200;\nconst chunks = [];\n\nfor (const item of items) {\n  const content = JSON.stringify(item.json);\n  const sourceId = item.json.dedup_hash || crypto.createHash('sha256').update(content).digest('hex').substring(0, 16);\n\n  if (content.length <= CHUNK_SIZE) {\n    chunks.push({\n      json: {\n        _chunk_index: 0,\n        _chunk_total: 1,\n        _chunk_content: content,\n        _source_id: sourceId,\n        _original: item.json\n      }\n    });\n  } else {\n    let start = 0;\n    let chunkIdx = 0;\n    const totalChunks = Math.ceil((content.length - CHUNK_OVERLAP) / (CHUNK_SIZE - CHUNK_OVERLAP));\n    while (start < content.length) {\n      const end = Math.min(start + CHUNK_SIZE, content.length);\n      chunks.push({\n        json: {\n          _chunk_index: chunkIdx,\n          _chunk_total: totalChunks,\n          _chunk_content: content.substring(start, end),\n          _source_id: sourceId,\n          _original: item.json\n        }\n      });\n      start += CHUNK_SIZE - CHUNK_OVERLAP;\n      chunkIdx++;\n    }\n  }\n}\n\nconsole.log('P06: Split ' + items.length + ' documents into ' + chunks.length + ' chunks');\nreturn chunks;"
+          }
+        },
+        {
+          "id": "p06-split-batches-entity",
+          "name": "SplitInBatches - Entity Chunks",
+          "type": "n8n-nodes-base.splitInBatches",
+          "typeVersion": 3,
+          "position": [
+            1296,
+            660
+          ],
+          "parameters": {
+            "batchSize": 5,
+            "options": {}
+          }
+        },
+        {
+          "id": "p06-extract-entities-per-chunk",
+          "name": "Extract Entities Per Chunk",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.3,
+          "position": [
+            1296,
+            820
+          ],
+          "retryOnFail": true,
+          "maxTries": 3,
+          "waitBetweenTries": 2000,
+          "credentials": {
+            "httpHeaderAuth": {
+              "id": "LLM_API_CREDENTIAL_ID",
+              "name": "OpenAI API Key"
+            }
+          },
+          "parameters": {
+            "method": "POST",
+            "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json._chunk_content }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+            "options": {
+              "timeout": 30000
+            }
+          }
+        },
+        {
+          "id": "p06-aggregate-entity-results",
+          "name": "Aggregate Entity Results",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            1296,
+            980
+          ],
+          "parameters": {
+            "jsCode": "// P06: Aggregate entity extraction results from all chunks\nconst allItems = $input.all();\nconst bySource = {};\n\nfor (const item of allItems) {\n  const data = item.json;\n  const sourceId = data._source_id || 'unknown';\n\n  if (!bySource[sourceId]) {\n    bySource[sourceId] = {\n      entities: [],\n      relationships: [],\n      hypothetical_questions: [],\n      key_facts: [],\n      _original: data._original\n    };\n  }\n\n  let extracted = {};\n  try {\n    extracted = JSON.parse(data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : '{}');\n  } catch (e) {\n    continue;\n  }\n\n  bySource[sourceId].entities.push(...(extracted.entities || []));\n  bySource[sourceId].relationships.push(...(extracted.relationships || []));\n  bySource[sourceId].hypothetical_questions.push(...(extracted.hypothetical_questions || []));\n  bySource[sourceId].key_facts.push(...(extracted.key_facts || []));\n}\n\nconst results = Object.entries(bySource).map(function([sourceId, data]) {\n  return {\n    json: {\n      _source_id: sourceId,\n      _original: data._original,\n      choices: [{\n        message: {\n          content: JSON.stringify({\n            entities: data.entities,\n            relationships: data.relationships,\n            hypothetical_questions: [...new Set(data.hypothetical_questions)].slice(0, 5),\n            key_facts: [...new Set(data.key_facts)]\n          })\n        }\n      }]\n    }\n  };\n});\n\nconsole.log('P06: Aggregated from ' + allItems.length + ' chunks into ' + results.length + ' source groups');\nreturn results;"
+          }
+        }
+      ],
+      "connections": {
+        "Normalize & Merge": {
+          "main": [
+            [
+              {
+                "node": "Chunk Documents for Entity Extraction",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Chunk Documents for Entity Extraction": {
+          "main": [
+            [
+              {
+                "node": "SplitInBatches - Entity Chunks",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "SplitInBatches - Entity Chunks": {
+          "main": [
+            [
+              {
+                "node": "Extract Entities Per Chunk",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Extract Entities Per Chunk": {
+          "main": [
+            [
+              {
+                "node": "SplitInBatches - Entity Chunks",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "notes": "SplitInBatches loop: main[0] outputs current batch -> Extract Entities Per Chunk -> loops back to SplitInBatches. When all batches processed, connect SplitInBatches done output to Aggregate Entity Results. The exact done-output index depends on n8n SplitInBatches version (v3: check docs). After aggregation, connect to P07 Global Entity Resolution or directly to Relationship Mapper."
+    },
+    {
+      "sota_ref": "P07",
+      "title": "Global Entity Resolution",
+      "description": "Cross-document entity deduplication. After aggregating chunk-level extractions, this node normalizes entity names, merges aliases, and deduplicates relationships across all sources. Ensures the knowledge graph has canonical entity nodes rather than duplicates.",
+      "insert_after_node": "Aggregate Entity Results",
+      "insert_before_node": "Relationship Mapper V3.1 (Entity Linking)",
+      "nodes": [
+        {
+          "id": "p07-global-entity-resolution",
+          "name": "Global Entity Resolution",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            1360,
+            1040
+          ],
+          "parameters": {
+            "jsCode": "// P07 SOTA 2026: Global Entity Resolution\n// Cross-document entity deduplication via normalization and alias merging\nconst crypto = require('crypto');\nconst items = $input.all();\nconst allEntities = [];\nconst allRelationships = [];\n\nfor (const item of items) {\n  let extracted = {};\n  try {\n    const content = item.json.choices && item.json.choices[0] && item.json.choices[0].message\n      ? item.json.choices[0].message.content : '{}';\n    extracted = JSON.parse(content);\n  } catch (e) { continue; }\n  allEntities.push(...(extracted.entities || []));\n  allRelationships.push(...(extracted.relationships || []));\n}\n\nconst normalize = (name) => name.trim().replace(/\\s+/g, ' ').toUpperCase();\nconst entityIndex = new Map();\nconst resolved = [];\n\nfor (const entity of allEntities) {\n  const norm = normalize(entity.name);\n  const key = norm + '::' + entity.type;\n\n  if (entityIndex.has(key)) {\n    const existing = entityIndex.get(key);\n    if (entity.aliases) {\n      existing.aliases = [...new Set([...(existing.aliases || []), ...entity.aliases])];\n    }\n    if (entity.context && !(existing.context || '').includes(entity.context)) {\n      existing.context = (existing.context || '') + '; ' + entity.context;\n    }\n  } else {\n    const resolvedEntity = {\n      name: entity.name,\n      type: entity.type,\n      aliases: entity.aliases || [],\n      context: entity.context || '',\n      _resolved_id: crypto.createHash('sha256').update(key).digest('hex').substring(0, 16)\n    };\n    entityIndex.set(key, resolvedEntity);\n    resolved.push(resolvedEntity);\n    if (entity.aliases) {\n      for (const alias of entity.aliases) {\n        entityIndex.set(normalize(alias) + '::' + entity.type, resolvedEntity);\n      }\n    }\n  }\n}\n\nconst relSet = new Set();\nconst resolvedRels = allRelationships.filter(function(rel) {\n  const key = normalize(rel.source) + '::' + rel.type + '::' + normalize(rel.target);\n  if (relSet.has(key)) return false;\n  relSet.add(key);\n  return true;\n});\n\nconsole.log('P07: Resolved ' + allEntities.length + ' entities -> ' + resolved.length + ' unique');\nreturn {\n  json: {\n    choices: [{\n      message: {\n        content: JSON.stringify({\n          entities: resolved,\n          relationships: resolvedRels,\n          hypothetical_questions: [],\n          key_facts: [],\n          _resolution_stats: {\n            entities_before: allEntities.length,\n            entities_after: resolved.length,\n            relationships_before: allRelationships.length,\n            relationships_after: resolvedRels.length\n          }\n        })\n      }\n    }]\n  }\n};"
+          }
+        }
+      ],
+      "connections": {
+        "Aggregate Entity Results": {
+          "main": [
+            [
+              {
+                "node": "Global Entity Resolution",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Global Entity Resolution": {
+          "main": [
+            [
+              {
+                "node": "Relationship Mapper V3.1 (Entity Linking)",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "notes": "This node outputs in the same format as the original AI Entity Enrichment node (choices[0].message.content JSON), so the existing Relationship Mapper code works without modification."
+    },
+    {
+      "sota_ref": "P08",
+      "title": "Community Summary Generator",
+      "description": "After community detection runs (Louvain algorithm), fetch the detected communities from Neo4j and generate natural-language summaries using an LLM. These summaries enable community-level RAG retrieval.",
+      "insert_after_node": "Community Detection Trigger (Async)",
+      "nodes": [
+        {
+          "id": "p08-fetch-community-assignments",
+          "name": "Fetch Community Assignments",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.3,
+          "position": [
+            2000,
+            200
+          ],
+          "credentials": {
+            "httpBasicAuth": {
+              "id": "n4K6ZIj6aa0dsiGN",
+              "name": "Neo4j Aura"
+            }
+          },
+          "onError": "continueErrorOutput",
+          "parameters": {
+            "method": "POST",
+            "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpBasicAuth",
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "{\n  \"statements\": [{\n    \"statement\": \"MATCH (e:Entity)-[:BELONGS_TO]->(c:Community) WHERE c.algorithm = 'louvain' RETURN c.id as community_id, c.label as community_label, collect({name: e.name, type: e.type}) as members ORDER BY size(members) DESC LIMIT 50\"\n  }]\n}",
+            "options": {
+              "timeout": 15000
+            }
+          }
+        },
+        {
+          "id": "p08-generate-community-summaries",
+          "name": "Generate Community Summaries",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.3,
+          "position": [
+            2200,
+            200
+          ],
+          "retryOnFail": true,
+          "maxTries": 3,
+          "waitBetweenTries": 2000,
+          "credentials": {
+            "httpHeaderAuth": {
+              "id": "LLM_API_CREDENTIAL_ID",
+              "name": "OpenAI API Key"
+            }
+          },
+          "parameters": {
+            "method": "POST",
+            "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en analyse de communautes dans un graphe de connaissances.\\nPour chaque communaute, genere:\\n1. Un titre descriptif (max 10 mots)\\n2. Un resume de 2-3 phrases expliquant le theme commun\\n3. Les entites cles (max 5)\\n4. Les relations dominantes\\n\\nFormat JSON:\\n{\\n  \\\"title\\\": string,\\n  \\\"summary\\\": string,\\n  \\\"key_entities\\\": [string],\\n  \\\"dominant_relations\\\": [string],\\n  \\\"importance_score\\\": 0.0-1.0\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 2000\n}",
+            "options": {
+              "timeout": 30000
+            }
+          }
+        }
+      ],
+      "connections": {
+        "Community Detection Trigger (Async)": {
+          "main": [
+            [
+              {
+                "node": "Prepare Lock Release",
+                "type": "main",
+                "index": 0
+              },
+              {
+                "node": "Fetch Community Assignments",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Fetch Community Assignments": {
+          "main": [
+            [
+              {
+                "node": "Generate Community Summaries",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "notes": "Community Detection Trigger now fans out to both Prepare Lock Release (existing path) and Fetch Community Assignments (new P08 path). The P08/P09 branch runs in parallel with the lock-release path. If community detection is async and results are not immediately available, consider adding a Wait node (e.g., 30s delay) before Fetch Community Assignments."
+    },
+    {
+      "sota_ref": "P09",
+      "title": "Store Community Summaries",
+      "description": "Persist generated community summaries to both Neo4j (as Community nodes with summary properties) and Postgres (community_summaries table for metadata/search). Enables community-level retrieval in downstream RAG queries.",
+      "insert_after_node": "Generate Community Summaries",
+      "nodes": [
+        {
+          "id": "p09-store-community-summaries-neo4j",
+          "name": "Store Community Summaries Neo4j",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.3,
+          "position": [
+            2400,
+            100
+          ],
+          "credentials": {
+            "httpBasicAuth": {
+              "id": "n4K6ZIj6aa0dsiGN",
+              "name": "Neo4j Aura"
+            }
+          },
+          "onError": "continueErrorOutput",
+          "parameters": {
+            "method": "POST",
+            "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpBasicAuth",
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "{\n  \"statements\": [{\n    \"statement\": \"MERGE (c:Community {id: $community_id}) SET c.title = $title, c.summary = $summary, c.key_entities = $key_entities, c.importance_score = $importance_score, c.updated_at = datetime()\",\n    \"parameters\": {\n      \"community_id\": \"{{ $json.community_id }}\",\n      \"title\": \"{{ $json.title }}\",\n      \"summary\": \"{{ $json.summary }}\",\n      \"key_entities\": {{ JSON.stringify($json.key_entities || []) }},\n      \"importance_score\": {{ $json.importance_score || 0.5 }}\n    }\n  }]\n}",
+            "options": {
+              "timeout": 15000
+            }
+          }
+        },
+        {
+          "id": "p09-store-community-summaries-postgres",
+          "name": "Store Community Summaries Postgres",
+          "type": "n8n-nodes-base.postgres",
+          "typeVersion": 2.4,
+          "position": [
+            2400,
+            300
+          ],
+          "credentials": {
+            "postgres": {
+              "id": "zEr7jPswZNv6lWKu",
+              "name": "Supabase PostgreSQL"
+            }
+          },
+          "onError": "continueErrorOutput",
+          "parameters": {
+            "operation": "upsert",
+            "schema": "public",
+            "table": "community_summaries",
+            "columns": {
+              "mappingMode": "defineBelow",
+              "value": {},
+              "matchingColumns": [
+                "community_id"
+              ],
+              "schema": [
+                {
+                  "id": "community_id",
+                  "displayName": "community_id",
+                  "match": true,
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "id": "title",
+                  "displayName": "title",
+                  "match": false,
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "id": "summary",
+                  "displayName": "summary",
+                  "match": false,
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "id": "key_entities",
+                  "displayName": "key_entities",
+                  "match": false,
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "id": "importance_score",
+                  "displayName": "importance_score",
+                  "match": false,
+                  "required": false,
+                  "type": "number"
+                },
+                {
+                  "id": "updated_at",
+                  "displayName": "updated_at",
+                  "match": false,
+                  "required": false,
+                  "type": "dateTime"
+                }
+              ]
+            },
+            "options": {}
+          }
+        }
+      ],
+      "connections": {
+        "Generate Community Summaries": {
+          "main": [
+            [
+              {
+                "node": "Store Community Summaries Neo4j",
+                "type": "main",
+                "index": 0
+              },
+              {
+                "node": "Store Community Summaries Postgres",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "notes": "Both stores run in parallel from Generate Community Summaries output. Requires community_summaries table in Postgres: CREATE TABLE IF NOT EXISTS community_summaries (community_id TEXT PRIMARY KEY, title TEXT, summary TEXT, key_entities JSONB, importance_score FLOAT, updated_at TIMESTAMPTZ DEFAULT NOW());"
+    }
+  ],
+  "connection_changes": [
+    {
+      "ref": "ISSUE-ENR-07",
+      "type": "fix",
+      "description": "Collapse Relationship Mapper outputs from 3 (main[0], main[1], main[2]) to 1 (main[0]) with 3 parallel downstream connections. Code nodes only support single output.",
+      "source_node": "Relationship Mapper V3.1 (Entity Linking)",
+      "affected_targets": [
+        "Upsert Vectors Pinecone",
+        "Store Metadata Postgres",
+        "Update Graph Neo4j"
+      ],
+      "applied_in_patches": true
+    },
+    {
+      "ref": "P06",
+      "type": "sota_rewire",
+      "description": "Replace direct connection Normalize & Merge -> AI Entity Enrichment V3.1 with chunked pipeline: Normalize & Merge -> Chunk Documents -> SplitInBatches <-> Extract Entities Per Chunk (loop) -> Aggregate Entity Results",
+      "removes_connection": {
+        "from": "Normalize & Merge",
+        "to": "AI Entity Enrichment V3.1 (Enhanced)"
+      },
+      "adds_connections": [
+        {
+          "from": "Normalize & Merge",
+          "to": "Chunk Documents for Entity Extraction"
+        },
+        {
+          "from": "Chunk Documents for Entity Extraction",
+          "to": "SplitInBatches - Entity Chunks"
+        },
+        {
+          "from": "SplitInBatches - Entity Chunks",
+          "to": "Extract Entities Per Chunk",
+          "note": "batch output"
+        },
+        {
+          "from": "Extract Entities Per Chunk",
+          "to": "SplitInBatches - Entity Chunks",
+          "note": "loop back"
+        },
+        {
+          "from": "SplitInBatches - Entity Chunks",
+          "to": "Aggregate Entity Results",
+          "note": "done output"
+        }
+      ],
+      "applied_in_patches": false,
+      "applied_in_new_nodes": true
+    },
+    {
+      "ref": "P07",
+      "type": "sota_insert",
+      "description": "Insert Global Entity Resolution between Aggregate Entity Results and Relationship Mapper V3.1",
+      "removes_connection": {
+        "from": "AI Entity Enrichment V3.1 (Enhanced)",
+        "to": "Relationship Mapper V3.1 (Entity Linking)"
+      },
+      "adds_connections": [
+        {
+          "from": "Aggregate Entity Results",
+          "to": "Global Entity Resolution"
+        },
+        {
+          "from": "Global Entity Resolution",
+          "to": "Relationship Mapper V3.1 (Entity Linking)"
+        }
+      ],
+      "applied_in_patches": false,
+      "applied_in_new_nodes": true
+    },
+    {
+      "ref": "P08",
+      "type": "sota_branch",
+      "description": "Add parallel branch from Community Detection Trigger to Fetch Community Assignments (alongside existing path to Prepare Lock Release)",
+      "modifies_connection": {
+        "from": "Community Detection Trigger (Async)",
+        "adds_target": "Fetch Community Assignments"
+      },
+      "applied_in_patches": false,
+      "applied_in_new_nodes": true
+    },
+    {
+      "ref": "P09",
+      "type": "sota_chain",
+      "description": "Chain community summary storage after generation: Generate Community Summaries -> [Store Neo4j, Store Postgres] in parallel",
+      "adds_connections": [
+        {
+          "from": "Generate Community Summaries",
+          "to": "Store Community Summaries Neo4j"
+        },
+        {
+          "from": "Generate Community Summaries",
+          "to": "Store Community Summaries Postgres"
+        }
+      ],
+      "applied_in_patches": false,
+      "applied_in_new_nodes": true
+    }
+  ],
+  "deployment_notes": "PATCH APPLICATION ORDER: Apply RFC 6902 patches first (patches array), then add new SOTA nodes (new_nodes_to_add). The patches array is compatible with Python jsonpatch library.\n\nISSUE-ENR-01 (P0): After applying, verify that the API provider supports 30000-char inputs. DeepSeek chat model context is 64k tokens, so 30000 chars (~7500 tokens) is well within limits. The max_tokens increase to 4096 ensures output is not truncated for large entity lists.\n\nISSUE-ENR-05 (P1): The n8n Redis node v1 expire/ttl parameters correspond to SET ... EX <seconds>. Verify in n8n UI that the expire toggle appears after patching. If the n8n Redis node version does not support expire/ttl parameters natively, an alternative is to add a separate Redis EXPIRE command node after the SET.\n\nISSUE-ENR-07 (P1): CRITICAL FIX - Without this patch, Store Metadata Postgres and Update Graph Neo4j NEVER execute because code nodes only output on main[0]. This means enrichment metadata is lost and the knowledge graph is never updated.\n\nISSUE-ENR-10 (P2): SHA-256 produces 64-char hex digests vs MD5's 32-char. Verify that downstream consumers (Pinecone metadata, Postgres columns) can handle the longer hash. The dedup_hash column in Postgres may need ALTER TABLE if constrained to 32 chars.\n\nISSUE-ENR-13 (P2): retryOnFail/maxTries/waitBetweenTries are n8n node-level settings (not inside parameters). The patch adds them at the node root level.\n\nSOTA P06: When applying the chunked extraction pipeline, the original node [8] (AI Entity Enrichment V3.1) should be REMOVED from the nodes array and its connections replaced with the new pipeline. The SplitInBatches loop requires careful connection wiring - refer to n8n docs for SplitInBatches v3 loop pattern.\n\nSOTA P07: The Global Entity Resolution node outputs in the same format (choices[0].message.content) as the original extraction node, ensuring backward compatibility with the existing Relationship Mapper.\n\nSOTA P08/P09: Requires community_summaries table in Postgres. Run migration: CREATE TABLE IF NOT EXISTS public.community_summaries (community_id TEXT PRIMARY KEY, title TEXT, summary TEXT, key_entities JSONB, importance_score FLOAT, updated_at TIMESTAMPTZ DEFAULT NOW());\n\nNOTA BENE: Node [9] Relationship Mapper also uses crypto.createHash('md5') for entity IDs. Consider a follow-up patch to align it with SHA-256 for consistency with the Normalize & Merge fix (ISSUE-ENR-10).",
+  "test_cases": [
+    {
+      "id": "TC-ENR-01",
+      "issue_ref": "ISSUE-ENR-01",
+      "description": "Verify entity extraction processes documents longer than 6000 chars without truncation",
+      "precondition": "Input document with JSON.stringify length > 10000 chars",
+      "steps": [
+        "Send a document with ~15000 chars of content through the enrichment pipeline",
+        "Inspect the HTTP request body sent to the LLM API",
+        "Verify the user content field contains up to 30000 chars (not truncated at 6000)",
+        "Verify the response contains entities from content beyond the 6000-char boundary"
+      ],
+      "expected": "LLM request body contains full content (up to 30000 chars). Response includes entities from all parts of the document. max_tokens=4096 in request.",
+      "severity": "P0"
+    },
+    {
+      "id": "TC-ENR-05",
+      "issue_ref": "ISSUE-ENR-05",
+      "description": "Verify Redis lock has TTL and auto-expires",
+      "precondition": "Redis instance accessible, no existing lock",
+      "steps": [
+        "Trigger enrichment workflow",
+        "Verify Redis SET includes EX 7200 parameter",
+        "Check Redis TTL on the lock key (should show remaining seconds <= 7200)",
+        "Wait for TTL expiry or manually check PTTL command"
+      ],
+      "expected": "Redis lock key has TTL of 7200 seconds. After TTL expires, key is automatically deleted. No permanent deadlock possible.",
+      "severity": "P1"
+    },
+    {
+      "id": "TC-ENR-07",
+      "issue_ref": "ISSUE-ENR-07",
+      "description": "Verify all 3 downstream stores receive data from Relationship Mapper",
+      "precondition": "Enrichment pipeline processes at least 1 document successfully",
+      "steps": [
+        "Run enrichment workflow with test document",
+        "Check execution log for Upsert Vectors Pinecone - should show execution",
+        "Check execution log for Store Metadata Postgres - should show execution",
+        "Check execution log for Update Graph Neo4j - should show execution",
+        "Verify all 3 nodes received the same input data from Relationship Mapper"
+      ],
+      "expected": "All 3 store nodes execute and receive data. Previously, only Upsert Vectors Pinecone (main[0]) would execute; Store Metadata Postgres (main[1]) and Update Graph Neo4j (main[2]) were unreachable.",
+      "severity": "P1"
+    },
+    {
+      "id": "TC-ENR-10",
+      "issue_ref": "ISSUE-ENR-10",
+      "description": "Verify SHA-256 is used for deduplication hashing",
+      "precondition": "Multiple documents including duplicates",
+      "steps": [
+        "Send 5 documents through Normalize & Merge, including 2 exact duplicates",
+        "Inspect output items' dedup_hash field",
+        "Verify hash is 64 chars (SHA-256) not 32 chars (MD5)",
+        "Verify deduplication works correctly (duplicates removed)"
+      ],
+      "expected": "dedup_hash fields are 64-char hex strings (SHA-256). Duplicate documents are correctly filtered. Output count = input count - duplicate count.",
+      "severity": "P2"
+    },
+    {
+      "id": "TC-ENR-13",
+      "issue_ref": "ISSUE-ENR-13",
+      "description": "Verify LLM call retries on transient failure",
+      "precondition": "LLM API endpoint that can simulate 429/500 errors",
+      "steps": [
+        "Configure LLM API to return 429 on first call, 200 on second",
+        "Run enrichment pipeline",
+        "Check execution log for retry attempts",
+        "Verify final result is successful after retry"
+      ],
+      "expected": "Node retries up to 3 times with 2-second intervals. Transient 429/500 errors are recovered. Pipeline completes successfully after retry.",
+      "severity": "P2"
+    },
+    {
+      "id": "TC-SOTA-P06",
+      "issue_ref": "P06",
+      "description": "Verify chunk-level entity extraction processes large documents in chunks",
+      "precondition": "Document with >8000 chars of rich entity content",
+      "steps": [
+        "Send a large document through the chunked pipeline",
+        "Verify Chunk Documents splits it into multiple chunks (~4000 chars each with 200 overlap)",
+        "Verify SplitInBatches processes chunks in batches of 5",
+        "Verify each chunk gets its own LLM extraction call",
+        "Verify Aggregate Entity Results merges all chunk results by source_id",
+        "Compare entity count with non-chunked extraction: chunked should find more entities"
+      ],
+      "expected": "Large document is split into N chunks. Each chunk produces entities. Aggregated result contains entities from all chunks. Entity recall is higher than single-call extraction.",
+      "severity": "SOTA"
+    },
+    {
+      "id": "TC-SOTA-P07",
+      "issue_ref": "P07",
+      "description": "Verify global entity resolution deduplicates across chunks",
+      "precondition": "Multiple chunks mentioning the same entity with different spellings/aliases",
+      "steps": [
+        "Process document where 'IBM' appears in chunk 1 and 'International Business Machines' in chunk 2",
+        "Verify Global Entity Resolution merges them into one canonical entity",
+        "Check that aliases are preserved",
+        "Verify _resolution_stats shows reduction in entity count"
+      ],
+      "expected": "Entities with matching normalized names or aliases are merged. Resolution stats show entities_before > entities_after. Relationship deduplication also applied.",
+      "severity": "SOTA"
+    },
+    {
+      "id": "TC-SOTA-P08-P09",
+      "issue_ref": "P08/P09",
+      "description": "Verify community summaries are generated and stored",
+      "precondition": "Neo4j has community assignments from Louvain algorithm",
+      "steps": [
+        "Run enrichment pipeline after community detection",
+        "Verify Fetch Community Assignments returns community data from Neo4j",
+        "Verify Generate Community Summaries calls LLM and produces summary JSON",
+        "Verify Store Community Summaries Neo4j creates/updates Community nodes",
+        "Verify Store Community Summaries Postgres inserts into community_summaries table"
+      ],
+      "expected": "Communities have title, summary, key_entities, importance_score. Data persisted in both Neo4j and Postgres. Community summaries available for downstream RAG retrieval.",
+      "severity": "SOTA"
+    }
+  ]
+}
