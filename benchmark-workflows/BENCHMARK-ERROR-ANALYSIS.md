@@ -2,110 +2,118 @@
 
 ## Executive Summary
 
-**100% of benchmark results failed** with the same error: `fetch is not defined`
+**100% of benchmark results failed** with the same root error: `fetch is not defined`
 
 - Total results: 28,053
 - With actual answer: 0 (0%)
 - With error: 28,053 (100%)
-- Error: `fetch is not defined` — every single entry
 
-## Root Cause
+After investigation, **4 distinct problems** were identified and fixed:
 
-The **"Execute RAG Queries"** node in `WF-Benchmark-RAG-Tester.json` uses JavaScript `fetch()` to call RAG workflow endpoints:
+| # | Problem | Fix | Status |
+|---|---------|-----|--------|
+| 1 | `fetch()` not available in n8n Code node sandbox | Replaced with `this.helpers.httpRequest()` | FIXED |
+| 2 | RAG endpoint URLs were wrong (`/rag-v6-*` vs actual paths) | Updated to real webhook paths | FIXED |
+| 3 | Graph/Quant RAG webhooks returned immediately (no answer) | Added `respondToWebhook` nodes, set `responseMode: responseNode` | FIXED |
+| 4 | n8n Code node 60s timeout with batch_size=10 | Reduced batch_size to 2 | FIXED |
+| 5 | Graph RAG response format not handled (nested dict) | Added multi-format answer extraction | FIXED |
+| 6 | JS truthy bug: `[].length` check instead of `[] || fallback` | Fixed array emptiness checks | FIXED |
+
+## Diagnostic Test Results (30 questions)
+
+After all fixes:
+
+| RAG Type | Questions | With Answers | Errors | Status |
+|----------|-----------|-------------|--------|--------|
+| Standard | 10 | 10 (100%) | 0 | WORKING |
+| Graph | 10 | 10 (100%) | 0 | WORKING |
+| Quantitative | 10 | 0 (0%) | 0 | BY DESIGN* |
+
+*Quantitative RAG is a Text-to-SQL system. It correctly rejects general knowledge questions (squad_v2). It needs financial/tabular data questions (finqa dataset) to produce answers.
+
+## Root Cause #1: `fetch is not defined`
+
+The **"Execute RAG Queries"** node in `WF-Benchmark-RAG-Tester.json` used JavaScript `fetch()`:
 
 ```javascript
-// Line causing the error (Execute RAG Queries node)
-const response = await fetch(endpoint, {
-  method: 'POST',
-  headers: { ... },
-  body: JSON.stringify({ query: item.question, ... })
-});
+// BROKEN: fetch() is NOT available in n8n Code node sandbox
+const response = await fetch(endpoint, { method: 'POST', ... });
 ```
 
-**Problem**: n8n's Code node runs in a **sandboxed VM2 environment** that does NOT expose the global `fetch()` API. This is a known n8n limitation — Code nodes cannot make HTTP requests via `fetch()`, `XMLHttpRequest`, or `require('http')`.
+n8n's Code node runs in a **sandboxed VM** that does NOT expose `fetch()`, `XMLHttpRequest`, or `require('http')`.
 
-## Available Alternatives in n8n Code Nodes
-
-| Method | Available | Notes |
-|--------|-----------|-------|
-| `fetch()` | NO | Not in sandbox |
-| `require('http')` | NO | No require in sandbox |
-| `axios` | NO | Not bundled |
-| `$http.request()` | **YES** | n8n built-in helper, available in Code nodes |
-| HTTP Request node | **YES** | Native n8n node, most reliable |
-
-## Fix Strategy
-
-### Option A: Replace `fetch()` with `$http.request()` in the Code node (Minimal change)
-
-Replace the fetch call with n8n's built-in `$http.request()`:
+**Fix**: Replaced with `this.helpers.httpRequest()`:
 
 ```javascript
-const response = await this.helpers.httpRequest({
+// FIXED: uses n8n's built-in HTTP helper
+const data = await this.helpers.httpRequest({
   method: 'POST',
   url: endpoint,
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${$vars.N8N_API_KEY || ''}`
-  },
-  body: {
-    query: item.question,
-    tenant_id: batch.tenant_id,
-    namespace: `benchmark-${batch.dataset_name}`,
-    top_k: 10,
-    include_sources: true,
-    benchmark_mode: true
-  },
+  body: { query: item.question, ... },
   timeout: 30000,
-  returnFullResponse: false
+  json: true
 });
 ```
 
-### Option B: Split the workflow — add HTTP Request node (Recommended)
+## Root Cause #2: Wrong RAG Endpoint URLs
 
-Replace the single "Execute RAG Queries" Code node with:
-1. **"Prepare RAG Request"** (Code node) — builds the request payload per item
-2. **"Call RAG Endpoint"** (HTTP Request node) — makes the actual HTTP call
-3. **"Collect RAG Response"** (Code node) — parses response and adds to results
+The benchmark tester's `Init Test Session` mapped RAG types to non-existent endpoints:
 
-This is more robust because the HTTP Request node handles retries, timeouts, and auth natively.
+| RAG Type | Was (404) | Should Be |
+|----------|-----------|-----------|
+| standard | `/webhook/rag-v6-query` | `/webhook/rag-multi-index-v3` |
+| graph | `/webhook/rag-v6-graph-query` | `/webhook/ff622742-6d71-4e91-af71-b5c666088717` |
+| quantitative | `/webhook/rag-v6-quantitative-query` | `/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9` |
 
-## Affected Workflows
+## Root Cause #3: Graph/Quant Webhooks Returned Immediately
 
-| Workflow | Node | Uses fetch() | Fix needed |
-|----------|------|-------------|------------|
-| WF-Benchmark-RAG-Tester.json | Execute RAG Queries | YES | **YES** |
-| WF-Benchmark-Orchestrator-Tester.json | Execute Orchestrator Queries | YES | YES |
-| All other workflows | — | No | No |
+The Graph RAG and Quantitative RAG workflows had their webhook in `onReceived` mode (default), which returns `{"message": "Workflow was started"}` immediately without waiting for the workflow to complete.
 
-## Error Distribution by RAG Type
+**Fix**: Set `responseMode: responseNode` and added `respondToWebhook` nodes after Response Formatter.
 
-| RAG Type | Results | Errors |
-|----------|---------|--------|
-| standard | 5,395 | 5,395 |
-| graph | 10,539 | 10,539 |
-| quantitative | 11,584 | 11,584 |
-| unknown | 535 | 535 |
+## Root Cause #4: Code Node Timeout
 
-## Error Distribution by Dataset
+n8n Code nodes have a 60-second execution timeout. Processing 10 questions sequentially (each taking 6-15 seconds) exceeded this limit.
 
-| Dataset | Results | All errors |
-|---------|---------|-----------|
-| hotpotqa | 3,320 | 3,320 |
-| msmarco | 5,250 | 5,250 |
-| triviaqa | 3,250 | 3,250 |
-| asqa | 2,750 | 2,750 |
-| finqa | 2,830 | 2,830 |
-| narrativeqa | 2,750 | 2,750 |
-| popqa | 2,250 | 2,250 |
-| squad_v2 | 2,370 | 2,370 |
-| pubmedqa | 1,340 | 1,340 |
-| frames | 1,943 | 1,943 |
+**Fix**: Reduced batch_size from 10 to 2.
 
-## Next Steps
+## Root Cause #5: Response Format Mismatch
 
-1. Apply the fix to `WF-Benchmark-RAG-Tester.json` (replace fetch with $http.request)
-2. Apply the same fix to `WF-Benchmark-Orchestrator-Tester.json`
-3. Deploy corrected workflows to n8n cloud
-4. Run validation test (10 questions per RAG type = 30 questions)
-5. If successful, re-run full benchmark
+Each RAG type returns a different response format:
+
+| RAG Type | Response Format |
+|----------|----------------|
+| Standard | `{ response: "string answer", sources: [...] }` |
+| Graph | `[{ status, response: { budgeted_context: { vector: [...] } } }]` |
+| Quantitative | `[{ answer, interpretation, sql_result }]` |
+
+**Fix**: Added multi-format answer extraction logic that handles all three formats.
+
+## Root Cause #6: JavaScript Truthy Bug
+
+```javascript
+// BUG: empty array [] is truthy in JS!
+const docs = ctx.reranked || ctx.vector || ctx.graph || [];
+// Always returns ctx.reranked even when it's []
+
+// FIX: check .length explicitly
+const docs = reranked.length ? reranked : (vector.length ? vector : graph);
+```
+
+## Files Modified
+
+| File | Change |
+|------|--------|
+| `WF-Benchmark-RAG-Tester.json` | fetch->httpRequest, endpoint URLs, answer extraction |
+| `WF-Benchmark-Orchestrator-Tester.json` | fetch->httpRequest |
+| `run-diagnostic-30q.py` | New diagnostic test script |
+| Graph RAG workflow (on n8n) | Added respondToWebhook, OTEL error handling |
+| Quantitative RAG workflow (on n8n) | Added respondToWebhook, SQL error handling |
+
+## Re-running the Full Benchmark
+
+To re-run with the fixes:
+1. Workflows already deployed to n8n cloud
+2. Use `batch_size=2` to avoid Code node timeouts
+3. Quantitative RAG should use `finqa` dataset for meaningful results
+4. Standard/Graph RAG work with all datasets

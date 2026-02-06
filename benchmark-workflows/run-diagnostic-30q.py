@@ -26,8 +26,11 @@ OUTPUT_FILE = os.path.join(BASE_DIR, "diagnostic-30q-results.json")
 RAG_TYPES = ["standard", "graph", "quantitative"]
 DATASET = "squad_v2"
 SAMPLE_SIZE = 10
+# batch_size must be small enough that the n8n Code node doesn't timeout (60s limit)
+# Standard RAG: ~6s/query, Graph RAG: ~10-15s/query -> max 2-3 per batch
+BATCH_SIZE = 2
 TEST_TYPE = "e2e"
-TIMEOUT = 120
+TIMEOUT = 300  # Longer timeout since n8n processes in batches sequentially
 
 
 def webhook_call(payload, timeout=120):
@@ -122,7 +125,7 @@ if __name__ == "__main__":
             "test_type": TEST_TYPE,
             "rag_target": rag_type,
             "sample_size": SAMPLE_SIZE,
-            "batch_size": SAMPLE_SIZE,
+            "batch_size": BATCH_SIZE,
             "tenant_id": "benchmark",
         }
 
