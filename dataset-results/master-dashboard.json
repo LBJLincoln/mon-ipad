@@ -1,5 +1,5 @@
 {
-  "title": "RAG Testing — Master Analysis Dashboard",
+  "title": "RAG Testing \u2014 Master Analysis Dashboard",
   "generated_at": "2026-02-06T21:20:17.403176",
   "overview": {
     "total_datasets": 16,
@@ -559,6 +559,191 @@
       "answer_rate": "0%",
       "status": "NOT_STARTED",
       "data_ready": false
+    }
+  ],
+  "last_updated": "2026-02-06T22:49:43.835990",
+  "total_datasets": 16,
+  "total_questions": 29853,
+  "infrastructure": {
+    "supabase": {
+      "status": "populated",
+      "total_items": 9472,
+      "datasets_ready": 11
+    },
+    "pinecone": {
+      "status": "populated",
+      "total_vectors": 9772,
+      "index": "sota-rag-a4mkzmz",
+      "embedding_model": "openai/text-embedding-3-small",
+      "dimension": 1536,
+      "datasets_ready": 11
+    },
+    "neo4j": {
+      "status": "not_configured",
+      "note": "NEO4J_USER/NEO4J_PASSWORD not set in n8n variables. Graph RAG datasets (musique, 2wikimultihopqa) also gated on HuggingFace.",
+      "datasets_ready": 0
+    }
+  },
+  "datasets_summary": [
+    {
+      "name": "2wikimultihopqa",
+      "questions": 300,
+      "supabase_items": 0,
+      "supabase_ready": false,
+      "pinecone_vectors": 0,
+      "pinecone_ready": false,
+      "neo4j_ready": false,
+      "rag_target": "graph"
+    },
+    {
+      "name": "asqa",
+      "questions": 2750,
+      "supabase_items": 948,
+      "supabase_ready": true,
+      "pinecone_vectors": 948,
+      "pinecone_ready": true,
+      "neo4j_ready": false,
+      "rag_target": "standard"
+    },
+    {
+      "name": "convfinqa",
+      "questions": 100,
+      "supabase_items": 0,
+      "supabase_ready": false,
+      "pinecone_vectors": 0,
+      "pinecone_ready": false,
+      "neo4j_ready": false,
+      "rag_target": "quantitative"
+    },
+    {
+      "name": "finqa",
+      "questions": 2830,
+      "supabase_items": 500,
+      "supabase_ready": true,
+      "pinecone_vectors": 500,
+      "pinecone_ready": true,
+      "neo4j_ready": false,
+      "rag_target": "standard"
+    },
+    {
+      "name": "frames",
+      "questions": 1943,
+      "supabase_items": 824,
+      "supabase_ready": true,
+      "pinecone_vectors": 824,
+      "pinecone_ready": true,
+      "neo4j_ready": false,
+      "rag_target": "standard"
+    },
+    {
+      "name": "hotpotqa",
+      "questions": 3320,
+      "supabase_items": 1000,
+      "supabase_ready": true,
+      "pinecone_vectors": 1000,
+      "pinecone_ready": true,
+      "neo4j_ready": false,
+      "rag_target": "standard"
+    },
+    {
+      "name": "msmarco",
+      "questions": 5250,
+      "supabase_items": 1000,
+      "supabase_ready": true,
+      "pinecone_vectors": 1000,
+      "pinecone_ready": true,
+      "neo4j_ready": false,
+      "rag_target": "standard"
+    },
+    {
+      "name": "musique",
+      "questions": 200,
+      "supabase_items": 0,
+      "supabase_ready": false,
+      "pinecone_vectors": 0,
+      "pinecone_ready": false,
+      "neo4j_ready": false,
+      "rag_target": "graph"
+    },
+    {
+      "name": "narrativeqa",
+      "questions": 2750,
+      "supabase_items": 700,
+      "supabase_ready": true,
+      "pinecone_vectors": 1000,
+      "pinecone_ready": true,
+      "neo4j_ready": false,
+      "rag_target": "standard"
+    },
+    {
+      "name": "natural_questions",
+      "questions": 1000,
+      "supabase_items": 1000,
+      "supabase_ready": true,
+      "pinecone_vectors": 1000,
+      "pinecone_ready": true,
+      "neo4j_ready": false,
+      "rag_target": "standard"
+    },
+    {
+      "name": "popqa",
+      "questions": 2250,
+      "supabase_items": 1000,
+      "supabase_ready": true,
+      "pinecone_vectors": 1000,
+      "pinecone_ready": true,
+      "neo4j_ready": false,
+      "rag_target": "standard"
+    },
+    {
+      "name": "pubmedqa",
+      "questions": 1340,
+      "supabase_items": 500,
+      "supabase_ready": true,
+      "pinecone_vectors": 500,
+      "pinecone_ready": true,
+      "neo4j_ready": false,
+      "rag_target": "standard"
+    },
+    {
+      "name": "squad_v2",
+      "questions": 2370,
+      "supabase_items": 1000,
+      "supabase_ready": true,
+      "pinecone_vectors": 1000,
+      "pinecone_ready": true,
+      "neo4j_ready": false,
+      "rag_target": "standard"
+    },
+    {
+      "name": "tatqa",
+      "questions": 150,
+      "supabase_items": 0,
+      "supabase_ready": false,
+      "pinecone_vectors": 0,
+      "pinecone_ready": false,
+      "neo4j_ready": false,
+      "rag_target": "quantitative"
+    },
+    {
+      "name": "triviaqa",
+      "questions": 3250,
+      "supabase_items": 1000,
+      "supabase_ready": true,
+      "pinecone_vectors": 1000,
+      "pinecone_ready": true,
+      "neo4j_ready": false,
+      "rag_target": "standard"
+    },
+    {
+      "name": "wikitablequestions",
+      "questions": 50,
+      "supabase_items": 0,
+      "supabase_ready": false,
+      "pinecone_vectors": 0,
+      "pinecone_ready": false,
+      "neo4j_ready": false,
+      "rag_target": "quantitative"
     }
   ]
 }
