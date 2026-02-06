@@ -1,13 +1,12 @@
 {
-  "suite": "MULTI-RAG FULL BENCHMARK",
-  "started_at": "2026-02-06T15:11:22.943759",
-  "updated_at": "2026-02-06T15:12:16.239856",
+  "suite": "MULTI-RAG FULL BENCHMARK (Graph + Quantitative)",
+  "started_at": "2026-02-06T15:14:13.445537",
+  "updated_at": "2026-02-06T15:14:17.285238",
   "config": {
     "test_type": "e2e",
     "batch_size": 100,
-    "workers": 3,
+    "workers": 2,
     "rag_types": [
-      "standard",
       "graph",
       "quantitative"
     ],
@@ -23,444 +22,52 @@
       "narrativeqa",
       "asqa"
     ],
-    "total_qa_pairs": 7824
+    "total_qa_pairs": 7824,
+    "note": "Standard RAG already tested (7824 questions in previous session)"
   },
   "summary": {
-    "total_completed": 23472,
-    "total_successes": 11500,
-    "total_errors": 11972,
-    "total_expected": 23472,
-    "progress_pct": "100.0%",
-    "elapsed_seconds": 53,
-    "error_rate": "51.01%"
+    "total_completed": 1648,
+    "total_successes": 1648,
+    "total_errors": 0,
+    "total_expected": 15648,
+    "progress_pct": "10.5%",
+    "elapsed_seconds": 3,
+    "error_rate": "0.00%"
   },
   "results": [
     {
-      "dataset": "hotpotqa",
-      "rag_type": "graph",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-hotpotqa-1770390685075-v4a0cx",
-        "test_type": "e2e",
-        "rag_target": "graph",
-        "total_items": 1000,
-        "status": "completed"
-      },
-      "latency_s": 14.3,
-      "timestamp": "2026-02-06T15:11:37.216253"
-    },
-    {
-      "dataset": "hotpotqa",
+      "dataset": "frames",
       "rag_type": "quantitative",
-      "items": 1000,
+      "items": 824,
       "test_type": "e2e",
       "status": "success",
       "error": null,
       "response_data": {
-        "run_id": "test-e2e-hotpotqa-1770390685073-6qn8i4",
+        "run_id": "test-e2e-frames-1770390855471-mqoupg",
         "test_type": "e2e",
         "rag_target": "quantitative",
-        "total_items": 1000,
+        "total_items": 824,
         "status": "completed"
       },
-      "latency_s": 14.9,
-      "timestamp": "2026-02-06T15:11:37.804488"
-    },
-    {
-      "dataset": "hotpotqa",
-      "rag_type": "standard",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-hotpotqa-1770390685078-tdqwol",
-        "test_type": "e2e",
-        "rag_target": "standard",
-        "total_items": 1000,
-        "status": "completed"
-      },
-      "latency_s": 14.9,
-      "timestamp": "2026-02-06T15:11:37.813975"
+      "latency_s": 3.8,
+      "timestamp": "2026-02-06T15:14:17.220590"
     },
     {
       "dataset": "frames",
       "rag_type": "graph",
       "items": 824,
       "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.6,
-      "timestamp": "2026-02-06T15:11:43.064796"
-    },
-    {
-      "dataset": "frames",
-      "rag_type": "standard",
-      "items": 824,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 4.8,
-      "timestamp": "2026-02-06T15:11:43.124301"
-    },
-    {
-      "dataset": "frames",
-      "rag_type": "quantitative",
-      "items": 824,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.6,
-      "timestamp": "2026-02-06T15:11:44.264407"
-    },
-    {
-      "dataset": "squad_v2",
-      "rag_type": "standard",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.5,
-      "timestamp": "2026-02-06T15:11:46.570414"
-    },
-    {
-      "dataset": "squad_v2",
-      "rag_type": "graph",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.4,
-      "timestamp": "2026-02-06T15:11:47.730684"
-    },
-    {
-      "dataset": "squad_v2",
-      "rag_type": "quantitative",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.4,
-      "timestamp": "2026-02-06T15:11:48.812530"
-    },
-    {
-      "dataset": "popqa",
-      "rag_type": "standard",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.4,
-      "timestamp": "2026-02-06T15:11:51.040947"
-    },
-    {
-      "dataset": "popqa",
-      "rag_type": "graph",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.4,
-      "timestamp": "2026-02-06T15:11:52.400612"
-    },
-    {
-      "dataset": "popqa",
-      "rag_type": "quantitative",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.4,
-      "timestamp": "2026-02-06T15:11:53.549111"
-    },
-    {
-      "dataset": "pubmedqa",
-      "rag_type": "standard",
-      "items": 500,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.4,
-      "timestamp": "2026-02-06T15:11:55.544140"
-    },
-    {
-      "dataset": "pubmedqa",
-      "rag_type": "graph",
-      "items": 500,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.4,
-      "timestamp": "2026-02-06T15:11:56.983004"
-    },
-    {
-      "dataset": "pubmedqa",
-      "rag_type": "quantitative",
-      "items": 500,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.4,
-      "timestamp": "2026-02-06T15:11:58.224259"
-    },
-    {
-      "dataset": "triviaqa",
-      "rag_type": "standard",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.4,
-      "timestamp": "2026-02-06T15:11:58.933681"
-    },
-    {
-      "dataset": "triviaqa",
-      "rag_type": "graph",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "error",
-      "error": "HTTP 403: Forbidden",
-      "response_data": null,
-      "latency_s": 3.4,
-      "timestamp": "2026-02-06T15:12:01.456820"
-    },
-    {
-      "dataset": "finqa",
-      "rag_type": "standard",
-      "items": 500,
-      "test_type": "e2e",
       "status": "success",
       "error": null,
       "response_data": {
-        "run_id": "test-e2e-finqa-1770390722459-cwvawu",
-        "test_type": "e2e",
-        "rag_target": "standard",
-        "total_items": 500,
-        "status": "completed"
-      },
-      "latency_s": 4.4,
-      "timestamp": "2026-02-06T15:12:04.285906"
-    },
-    {
-      "dataset": "finqa",
-      "rag_type": "graph",
-      "items": 500,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-finqa-1770390722944-0f2zr9",
+        "run_id": "test-e2e-frames-1770390855474-ojp9pn",
         "test_type": "e2e",
         "rag_target": "graph",
-        "total_items": 500,
+        "total_items": 824,
         "status": "completed"
       },
-      "latency_s": 2.1,
-      "timestamp": "2026-02-06T15:12:04.665356"
-    },
-    {
-      "dataset": "triviaqa",
-      "rag_type": "quantitative",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-triviaqa-1770390722456-d3qtvq",
-        "test_type": "e2e",
-        "rag_target": "quantitative",
-        "total_items": 1000,
-        "status": "completed"
-      },
-      "latency_s": 7.4,
-      "timestamp": "2026-02-06T15:12:05.654355"
-    },
-    {
-      "dataset": "finqa",
-      "rag_type": "quantitative",
-      "items": 500,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-finqa-1770390726029-b3drwg",
-        "test_type": "e2e",
-        "rag_target": "quantitative",
-        "total_items": 500,
-        "status": "completed"
-      },
-      "latency_s": 1.5,
-      "timestamp": "2026-02-06T15:12:06.924081"
-    },
-    {
-      "dataset": "msmarco",
-      "rag_type": "standard",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-msmarco-1770390725973-245pgl",
-        "test_type": "e2e",
-        "rag_target": "standard",
-        "total_items": 1000,
-        "status": "completed"
-      },
-      "latency_s": 2.1,
-      "timestamp": "2026-02-06T15:12:07.465379"
-    },
-    {
-      "dataset": "msmarco",
-      "rag_type": "graph",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-msmarco-1770390727097-g6165i",
-        "test_type": "e2e",
-        "rag_target": "graph",
-        "total_items": 1000,
-        "status": "completed"
-      },
-      "latency_s": 1.6,
-      "timestamp": "2026-02-06T15:12:08.411745"
-    },
-    {
-      "dataset": "msmarco",
-      "rag_type": "quantitative",
-      "items": 1000,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-msmarco-1770390728422-lbclc2",
-        "test_type": "e2e",
-        "rag_target": "quantitative",
-        "total_items": 1000,
-        "status": "completed"
-      },
-      "latency_s": 1.4,
-      "timestamp": "2026-02-06T15:12:09.492136"
-    },
-    {
-      "dataset": "narrativeqa",
-      "rag_type": "standard",
-      "items": 500,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-narrativeqa-1770390729685-som170",
-        "test_type": "e2e",
-        "rag_target": "standard",
-        "total_items": 500,
-        "status": "completed"
-      },
-      "latency_s": 1.1,
-      "timestamp": "2026-02-06T15:12:10.409191"
-    },
-    {
-      "dataset": "narrativeqa",
-      "rag_type": "graph",
-      "items": 500,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-narrativeqa-1770390730666-8q8uuj",
-        "test_type": "e2e",
-        "rag_target": "graph",
-        "total_items": 500,
-        "status": "completed"
-      },
-      "latency_s": 0.9,
-      "timestamp": "2026-02-06T15:12:11.360981"
-    },
-    {
-      "dataset": "narrativeqa",
-      "rag_type": "quantitative",
-      "items": 500,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-narrativeqa-1770390731944-944pjg",
-        "test_type": "e2e",
-        "rag_target": "quantitative",
-        "total_items": 500,
-        "status": "completed"
-      },
-      "latency_s": 1.4,
-      "timestamp": "2026-02-06T15:12:13.008184"
-    },
-    {
-      "dataset": "asqa",
-      "rag_type": "standard",
-      "items": 500,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-asqa-1770390731886-p34cxd",
-        "test_type": "e2e",
-        "rag_target": "standard",
-        "total_items": 500,
-        "status": "completed"
-      },
-      "latency_s": 1.9,
-      "timestamp": "2026-02-06T15:12:13.560003"
-    },
-    {
-      "dataset": "asqa",
-      "rag_type": "graph",
-      "items": 500,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-asqa-1770390732965-uumb2q",
-        "test_type": "e2e",
-        "rag_target": "graph",
-        "total_items": 500,
-        "status": "completed"
-      },
-      "latency_s": 2.3,
-      "timestamp": "2026-02-06T15:12:15.029643"
-    },
-    {
-      "dataset": "asqa",
-      "rag_type": "quantitative",
-      "items": 500,
-      "test_type": "e2e",
-      "status": "success",
-      "error": null,
-      "response_data": {
-        "run_id": "test-e2e-asqa-1770390733501-qewek9",
-        "test_type": "e2e",
-        "rag_target": "quantitative",
-        "total_items": 500,
-        "status": "completed"
-      },
-      "latency_s": 2.2,
-      "timestamp": "2026-02-06T15:12:15.186922"
+      "latency_s": 3.8,
+      "timestamp": "2026-02-06T15:14:17.284420"
     }
-  ],
-  "all_runs_count": 30
+  ]
 }
