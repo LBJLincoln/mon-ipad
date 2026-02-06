@@ -1,0 +1,42 @@
+{
+  "title": "Data Presence Verification Report",
+  "generated_at": "2026-02-06T20:23:41.532858",
+  "neo4j": {
+    "status": "error",
+    "labels": [],
+    "node_counts": {},
+    "relationship_types": [],
+    "tenant_data": {},
+    "graph_data_ready": false,
+    "details": {},
+    "error": "Failed to DNS resolve address 38c949a2.databases.neo4j.io:7687: [Errno -3] Temporary failure in name resolution"
+  },
+  "pinecone": {
+    "status": "error",
+    "index_stats": {},
+    "namespaces": {},
+    "total_vectors": 0,
+    "vector_data_ready": false,
+    "details": {},
+    "error": "HTTPSConnectionPool(host='sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io', port=443): Max retries exceeded with url: /describe_index_stats (Caused by NameResolutionError(\"HTTPSConnection(host='sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io', port=443): Failed to resolve 'sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io' ([Errno -3] Temporary failure in name resolution)\"))"
+  },
+  "supabase": {
+    "status": "error",
+    "tables": {},
+    "benchmark_questions": {},
+    "benchmark_results": {},
+    "tabular_data_ready": false,
+    "details": {},
+    "error": "could not translate host name \"db.ayqviqmxifzmhphiqfmj.supabase.co\" to address: Temporary failure in name resolution\n"
+  },
+  "overall_readiness": {
+    "graph_rag_ready": false,
+    "quantitative_rag_ready": false,
+    "vector_search_ready": false
+  },
+  "recommendations": [
+    "CRITICAL: Neo4j does not have graph data for benchmark questions. Run the ingestion workflow to load musique and 2wikimultihopqa entities.",
+    "CRITICAL: Supabase does not have tabular data for quantitative questions. Ingest finqa, tatqa, convfinqa, wikitablequestions table data.",
+    "CRITICAL: Pinecone does not have sufficient vector embeddings. Run the embedding pipeline for all benchmark datasets."
+  ]
+}
