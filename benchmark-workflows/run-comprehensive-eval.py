@@ -45,8 +45,11 @@ def load_questions():
     # Standard + Orchestrator from benchmark-standard-orchestrator-questions.json
     std_orch_path = os.path.join(BASE_DIR, "benchmark-standard-orchestrator-questions.json")
     with open(std_orch_path) as f:
-        std_orch_data = json.load(f)
+        raw = json.load(f)
+    std_orch_data = raw.get("questions", raw) if isinstance(raw, dict) else raw
     for q in std_orch_data:
+        if not isinstance(q, dict):
+            continue
         target = q.get("rag_target", "")
         if target == "standard":
             questions["standard"].append({
@@ -67,8 +70,11 @@ def load_questions():
     # Graph + Quantitative from benchmark-50x2-questions.json
     gq_path = os.path.join(BASE_DIR, "benchmark-50x2-questions.json")
     with open(gq_path) as f:
-        gq_data = json.load(f)
+        raw2 = json.load(f)
+    gq_data = raw2.get("questions", raw2) if isinstance(raw2, dict) else raw2
     for q in gq_data:
+        if not isinstance(q, dict):
+            continue
         target = q.get("rag_target", "")
         if target == "graph":
             questions["graph"].append({
