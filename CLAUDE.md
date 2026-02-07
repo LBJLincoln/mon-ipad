@@ -271,14 +271,24 @@ python run-comprehensive-eval.py --include-1000 --types standard,graph,quantitat
 - `TEST - SOTA 2026 - WF*.json` — Individual RAG pipeline workflows
 - `TEST - SOTA 2026 - Ingestion V3.1.json` — Document ingestion workflow
 
-### docs/ (GitHub Pages Dashboard)
-- `index.html` — Interactive dashboard (tabbed views, Chart.js, cross-analysis, cost tracking)
-- `data.json` — Live data feed (pipeline stats, DB coverage, question results, history)
+### docs/ (GitHub Pages Dashboard — 9 tabs)
+- `index.html` — Interactive dashboard: Overview, Pipelines, Questions Explorer, Costs, Cross-Analysis, Knowledge Graph, **Workflow Evolution**, **DB Monitor**, **Execution Logs**
+- `data.json` — Live data feed: pipeline stats, DB coverage, questions, history, **workflow_changes**, **db_snapshots**, **execution_logs**
 - `tested-questions.json` — Dedup manifest: all tested question IDs with timestamps
 
+### logs/ (Structured Execution Traces)
+- `executions/exec-*.jsonl` — Per-session JSONL logs (one JSON line per question, full input/output/pipeline details)
+- `errors/err-*.json` — Isolated error traces with full payloads, input, partial response, pipeline context
+- `db-snapshots/snap-*.json` — Periodic database state snapshots (Pinecone, Neo4j, Supabase)
+- `README.md` — Schema documentation for all log formats
+
 ### benchmark-workflows/
-- `run-comprehensive-eval.py` — **Main eval script**: tests all 4 pipelines, feeds dashboard live
-- `live-results-writer.py` — Module: records results to `docs/data.json` in real-time
+- `run-comprehensive-eval.py` — **Main eval script**: tests all 4 pipelines, feeds dashboard live, writes execution logs, takes DB snapshots pre/post eval
+- `live-results-writer.py` — Module: records results to `docs/data.json` + structured logs in `logs/`
+  - New: `record_execution()` — detailed per-question trace with raw response, pipeline details
+  - New: `snapshot_databases()` — takes and stores DB state snapshots
+  - New: `record_workflow_change()` — logs workflow modifications for evolution timeline
+- `n8n-github-logging-patches.md` — **Concrete n8n workflow modifications** for pushing errors/logs to GitHub directly from workflows
 - `deploy-corrected-workflows.py` — Deploys workflow JSON to n8n cloud via REST API
 - `populate-all-databases.py` — Master DB population (Supabase + Pinecone + Neo4j)
 - `populate-neo4j-entities.py` — Neo4j entity graph builder (110 entities, 151 relationships)
@@ -299,9 +309,48 @@ export OPENROUTER_API_KEY="..."       # LLM API (for embeddings + eval)
 # Optional: export OPENAI_API_KEY="..." # Direct OpenAI (preferred for embeddings)
 ```
 
+## Logging & Monitoring Architecture
+
+### Data Flow
+```
+n8n Workflow → HTTP Response → run-comprehensive-eval.py
+                                   ↓
+                              live-results-writer.py
+                                   ↓ (parallel writes)
+                   ┌───────────────┼──────────────┐
+                   ↓               ↓              ↓
+           docs/data.json   logs/executions/  logs/errors/
+           (dashboard)      (JSONL traces)    (error files)
+                   ↓
+           docs/index.html (9-tab dashboard, auto-refresh 5s)
+```
+
+### Error Classification
+Errors are automatically classified into types for analytics:
+- `TIMEOUT` — n8n execution or HTTP timeout (>25s or "timed out" in error)
+- `NETWORK` — Connection failures (urlopen error, connection refused)
+- `SERVER_ERROR` — HTTP 5xx responses from n8n
+- `RATE_LIMIT` — HTTP 429 responses
+- `EMPTY_RESPONSE` — HTTP 200 with empty body
+- `ENTITY_MISS` — Graph RAG entity extraction failure
+- `SQL_ERROR` — Quantitative SQL generation/execution error
+- `UNKNOWN` — Unclassified errors
+
+### n8n → GitHub Direct Logging (Proposed)
+See `benchmark-workflows/n8n-github-logging-patches.md` for concrete workflow patches:
+- Each workflow gets a GitHub Logger node (HTTP Request to GitHub Contents API)
+- Fires on error paths: creates error trace files in `logs/errors/`
+- Graph RAG: logs entity extraction misses + Neo4j traversal results
+- Quantitative: logs SQL validation failures + self-healing attempts
+- Orchestrator: logs sub-pipeline timeouts + routing decisions
+- Alternative: GitHub Actions `repository_dispatch` for cleaner git handling
+
 ## Conventions
 - Workflow JSON must NOT be modified directly — use deploy script with patches
 - All credentials via environment variables only — never commit secrets
 - Dashboard updates happen automatically via `live-results-writer.py`
 - Every eval run records tested question IDs to prevent duplicate testing
 - Workflow improvements are proposed ONLY when eval data shows clear need
+- Every eval run takes pre/post DB snapshots automatically
+- Error traces are written as individual JSON files for easy inspection
+- Execution logs use JSONL format (one JSON per line) for streaming analysis

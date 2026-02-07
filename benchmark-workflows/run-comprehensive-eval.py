@@ -166,14 +166,15 @@ def load_questions(include_1000=False):
 # ============================================================
 
 def call_rag(endpoint, question, tenant_id="benchmark", timeout=60):
-    """Call a RAG endpoint with retry logic."""
-    body = json.dumps({
+    """Call a RAG endpoint with retry logic. Returns enriched response with raw data."""
+    input_payload = {
         "query": question,
         "tenant_id": tenant_id,
         "top_k": 10,
         "include_sources": True,
         "benchmark_mode": True
-    }).encode()
+    }
+    body = json.dumps(input_payload).encode()
     headers = {"Content-Type": "application/json"}
 
     for attempt in range(4):
@@ -183,12 +184,20 @@ def call_rag(endpoint, question, tenant_id="benchmark", timeout=60):
             with request.urlopen(req, timeout=timeout) as resp:
                 raw = resp.read().decode()
                 latency = int((time.time() - start) * 1000)
+                http_status = resp.status
                 if raw and raw.strip():
                     data = json.loads(raw)
                     if isinstance(data, list):
                         data = data[0] if data else {}
-                    return {"data": data, "latency_ms": latency, "error": None}
-                return {"data": None, "latency_ms": latency, "error": "Empty response (HTTP 200)"}
+                    return {"data": data, "latency_ms": latency, "error": None,
+                            "http_status": http_status, "response_size": len(raw),
+                            "input_payload": input_payload, "raw_response": data,
+                            "attempts": attempt + 1}
+                return {"data": None, "latency_ms": latency,
+                        "error": "Empty response (HTTP 200)",
+                        "http_status": http_status, "response_size": 0,
+                        "input_payload": input_payload, "raw_response": None,
+                        "attempts": attempt + 1}
         except error.HTTPError as e:
             err_body = ""
             try:
@@ -198,14 +207,24 @@ def call_rag(endpoint, question, tenant_id="benchmark", timeout=60):
             if (e.code == 403 or e.code >= 500) and attempt < 3:
                 time.sleep(2 ** (attempt + 1))
                 continue
-            return {"data": None, "latency_ms": 0, "error": f"HTTP {e.code}: {err_body}"}
+            return {"data": None, "latency_ms": 0,
+                    "error": f"HTTP {e.code}: {err_body}",
+                    "http_status": e.code, "response_size": 0,
+                    "input_payload": input_payload, "raw_response": None,
+                    "attempts": attempt + 1}
         except Exception as e:
             if attempt < 3:
                 time.sleep(2 ** (attempt + 1))
                 continue
-            return {"data": None, "latency_ms": 0, "error": str(e)}
+            return {"data": None, "latency_ms": 0, "error": str(e),
+                    "http_status": None, "response_size": 0,
+                    "input_payload": input_payload, "raw_response": None,
+                    "attempts": attempt + 1}
 
-    return {"data": None, "latency_ms": 0, "error": "Max retries exceeded"}
+    return {"data": None, "latency_ms": 0, "error": "Max retries exceeded",
+            "http_status": None, "response_size": 0,
+            "input_payload": input_payload, "raw_response": None,
+            "attempts": 4}
 
 
 def extract_answer(data):
@@ -231,6 +250,38 @@ def extract_answer(data):
         except:
             pass
     return str(data)[:500]
+
+
+def extract_pipeline_details(data, rag_type):
+    """Extract pipeline-specific execution details from the raw response."""
+    if not data or not isinstance(data, dict):
+        return {}
+    details = {}
+    if rag_type == "graph":
+        details["entities_extracted"] = data.get("entities", [])
+        details["neo4j_paths_found"] = len(data.get("sources", []))
+        details["traversal_depth"] = data.get("traversal_depth_used", 0)
+        details["community_summaries_matched"] = data.get("community_matches", 0)
+        if "source_counts" in data:
+            details["source_counts"] = data["source_counts"]
+    elif rag_type == "standard":
+        details["topK"] = data.get("topK", data.get("top_k"))
+        details["pinecone_results_count"] = len(data.get("sources", []))
+        details["embedding_model"] = data.get("embedding_model")
+        details["complexity"] = data.get("complexity")
+    elif rag_type == "quantitative":
+        details["sql_generated"] = data.get("sql_executed", "")
+        details["sql_validation_status"] = data.get("metadata", {}).get("validation_status")
+        details["result_count"] = data.get("result_count", 0)
+        details["null_aggregation"] = data.get("null_aggregation", False)
+        details["raw_results_preview"] = str(data.get("raw_results", []))[:200]
+    elif rag_type == "orchestrator":
+        details["sub_pipelines_invoked"] = data.get("engines_used", [])
+        details["routing_decision"] = data.get("routing", data.get("intent"))
+        details["confidence"] = data.get("confidence")
+        if "perf" in data:
+            details["perf"] = data["perf"]
+    return details
 
 
 def compute_f1(prediction, reference):
@@ -343,9 +394,11 @@ def run_eval(questions_by_type, tested_ids_by_type, max_per_type=None):
                 answer = ""
                 evaluation = {"correct": False, "method": "NO_ANSWER", "f1": 0.0,
                               "detail": resp["error"]}
+                pipeline_details = {}
             else:
                 answer = extract_answer(resp["data"])
                 evaluation = evaluate_answer(answer, q["expected"])
+                pipeline_details = extract_pipeline_details(resp["data"], rag_type)
 
             is_correct = evaluation.get("correct", False)
             f1_val = evaluation.get("f1", compute_f1(answer, q["expected"]))
@@ -375,6 +428,26 @@ def run_eval(questions_by_type, tested_ids_by_type, max_per_type=None):
                 expected=q["expected"],
                 answer=answer,
                 match_type=evaluation.get("method", "")
+            )
+
+            # Record detailed execution trace (for logs + error files)
+            writer.record_execution(
+                rag_type=rag_type,
+                question_id=qid,
+                question_text=q["question"],
+                expected=q["expected"],
+                input_payload=resp.get("input_payload"),
+                raw_response=resp.get("raw_response"),
+                extracted_answer=answer,
+                correct=is_correct,
+                f1=f1_val,
+                match_type=evaluation.get("method", ""),
+                latency_ms=resp["latency_ms"],
+                http_status=resp.get("http_status"),
+                response_size=resp.get("response_size", 0),
+                error=resp["error"],
+                cost_usd=0,
+                pipeline_details=pipeline_details
             )
 
             # Track as tested
@@ -442,8 +515,22 @@ def main():
         total_already = sum(len(v) for v in tested_ids.values())
         print(f"  Dedup: {total_already} questions already tested (will be skipped)")
 
+    # Snapshot databases before eval
+    print("\n  Taking pre-evaluation DB snapshot...")
+    try:
+        writer.snapshot_databases(trigger="pre-eval")
+    except Exception as e:
+        print(f"  DB snapshot failed (non-fatal): {e}")
+
     # Run evaluation
     totals = run_eval(questions, tested_ids, max_per_type=args.max)
+
+    # Snapshot databases after eval
+    print("\n  Taking post-evaluation DB snapshot...")
+    try:
+        writer.snapshot_databases(trigger="post-eval")
+    except Exception as e:
+        print(f"  DB snapshot failed (non-fatal): {e}")
 
     # Finish
     elapsed = int((datetime.now() - start_time).total_seconds())
@@ -460,7 +547,7 @@ def main():
         print(f"  Dashboard updated: docs/data.json")
 
     if args.push:
-        print("  Pushing to GitHub...")
+        print("  Pushing to GitHub (data + logs)...")
         writer.git_push(f"eval: {totals['tested']}q tested, "
                         f"{totals['correct']} correct ({elapsed}s)")
 
