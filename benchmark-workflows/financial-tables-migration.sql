@@ -335,59 +335,6 @@ FROM
 
 INSERT INTO employees (tenant_id, company_id, employee_id, name, department, title, hire_date, salary, bonus, stock_options, region, status)
 SELECT
-    'benchmark',
-    c.company_id,
-    c.company_id || '-EMP-' || LPAD(n::text, 3, '0'),
-    names.name,
-    dept.department,
-    dept.title,
-    ('2018-01-01'::date + (random() * 2000)::int),
-    dept.base_salary * (0.8 + random() * 0.4),
-    dept.base_salary * (0.05 + random() * 0.15),
-    (random() * dept.options_mult)::int,
-    r.region,
-    CASE WHEN random() > 0.05 THEN 'active' ELSE 'inactive' END
-FROM
-    (VALUES ('techvision'), ('greenenergy'), ('healthplus')) AS c(company_id),
-    generate_series(1, 50) AS n,
-    (VALUES
-        ('Engineering', 'Software Engineer', 145000, 500),
-        ('Engineering', 'Senior Engineer', 185000, 800),
-        ('Engineering', 'Tech Lead', 210000, 1200),
-        ('Sales', 'Account Executive', 95000, 200),
-        ('Sales', 'Sales Director', 160000, 600),
-        ('Marketing', 'Marketing Manager', 120000, 300),
-        ('Marketing', 'Content Strategist', 90000, 150),
-        ('Finance', 'Financial Analyst', 110000, 250),
-        ('Finance', 'Controller', 155000, 500),
-        ('Operations', 'Operations Manager', 125000, 350),
-        ('HR', 'HR Business Partner', 105000, 200),
-        ('Product', 'Product Manager', 150000, 600),
-        ('Product', 'UX Designer', 115000, 300),
-        ('Research', 'Research Scientist', 165000, 700),
-        ('Research', 'Lab Director', 195000, 1000)
-    ) AS dept(department, title, base_salary, options_mult),
-    (VALUES ('North America'), ('Europe'), ('Asia Pacific'), ('Latin America')) AS r(region),
-    (VALUES
-        ('James Chen'),('Sarah Johnson'),('Michael Brown'),('Emily Davis'),('David Wilson'),
-        ('Maria Garcia'),('Robert Lee'),('Jennifer Taylor'),('William Anderson'),('Lisa Thomas'),
-        ('Daniel Martinez'),('Amanda White'),('Christopher Harris'),('Jessica Clark'),('Matthew Lewis'),
-        ('Ashley Robinson'),('Joshua Walker'),('Stephanie Hall'),('Andrew Allen'),('Nicole Young'),
-        ('Ryan King'),('Megan Wright'),('Brandon Scott'),('Rachel Green'),('Kevin Adams'),
-        ('Lauren Nelson'),('Justin Baker'),('Samantha Hill'),('Tyler Rivera'),('Hannah Campbell'),
-        ('Nathan Mitchell'),('Kayla Roberts'),('Jacob Carter'),('Olivia Phillips'),('Zachary Evans'),
-        ('Abigail Turner'),('Ethan Collins'),('Madison Stewart'),('Dylan Morris'),('Victoria Murphy'),
-        ('Aaron Cook'),('Brittany Rogers'),('Luke Reed'),('Morgan Bailey'),('Caleb Cooper'),
-        ('Paige Richardson'),('Owen Cox'),('Sierra Howard'),('Ian Ward'),('Haley Brooks')
-    ) AS names(name)
-WHERE n <= 50
-  AND ((n - 1) % 15) + 1 = (ROW_NUMBER() OVER (PARTITION BY c.company_id ORDER BY n)) % 15 + 1
-LIMIT 150
-ON CONFLICT (tenant_id, company_id, employee_id) DO NOTHING;
-
--- Simpler employee insertion as fallback
-INSERT INTO employees (tenant_id, company_id, employee_id, name, department, title, hire_date, salary, bonus, stock_options, region, status)
-SELECT
     'benchmark', co.cid,
     co.cid || '-EMP-' || LPAD(s.n::text, 3, '0'),
     (ARRAY['James Chen','Sarah Johnson','Michael Brown','Emily Davis','David Wilson',
