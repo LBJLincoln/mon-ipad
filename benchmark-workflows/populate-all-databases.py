@@ -29,6 +29,17 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SUPABASE_CONN = f"postgresql://postgres.ayqviqmxifzmhphiqfmj:{os.environ.get('SUPABASE_PASSWORD', '')}@aws-1-eu-west-1.pooler.supabase.com:6543/postgres"
 
 
+def _has_psql_errors(stderr_text):
+    """Check if psql stderr contains real errors (not just NOTICEs)."""
+    if not stderr_text:
+        return False
+    for line in stderr_text.split("\n"):
+        lower = line.lower()
+        if any(kw in lower for kw in ["error:", "fatal:", "password authentication failed", "connection refused", "could not connect", "network is unreachable"]):
+            return True
+    return False
+
+
 def check_prerequisites():
     """Check that all required env vars and tools are available."""
     print("=" * 60)
@@ -67,6 +78,20 @@ def check_prerequisites():
         print("  Set environment variables and retry.")
         return False
 
+    # Test Supabase connection
+    print("\n  Testing Supabase connection...")
+    result = subprocess.run(
+        ["psql", SUPABASE_CONN, "-t", "-A", "-c", "SELECT 1;"],
+        capture_output=True, text=True, timeout=15
+    )
+    if result.returncode == 0 and result.stdout.strip() == "1":
+        print(f"  OK: Supabase connection successful")
+    else:
+        stderr_msg = result.stderr.strip()[:200] if result.stderr else "no output"
+        print(f"  FATAL: Supabase connection failed: {stderr_msg}")
+        print(f"  Check SUPABASE_PASSWORD is correct.")
+        return False
+
     return True
 
 
@@ -86,23 +111,25 @@ def run_financial_tables():
         capture_output=True, text=True, timeout=120
     )
 
+    if _has_psql_errors(result.stderr):
+        print(f"  FAILED: Supabase errors detected")
+        for line in result.stderr.strip().split("\n")[:10]:
+            if line.strip():
+                print(f"    {line.strip()}")
+        return False
+
     if result.returncode == 0:
         print(f"  SUCCESS: Financial tables created and seeded")
-        # Print the verification counts
         for line in result.stdout.split("\n"):
             if line.strip():
                 print(f"    {line.strip()}")
         return True
     else:
-        print(f"  OUTPUT: {result.stdout[:1000]}")
+        print(f"  FAILED (return code {result.returncode})")
+        if result.stdout:
+            print(f"  OUTPUT: {result.stdout[:500]}")
         if result.stderr:
-            # Filter out NOTICEs which are informational
-            errors = [l for l in result.stderr.split("\n") if "ERROR" in l]
-            if errors:
-                print(f"  ERRORS: {chr(10).join(errors[:5])}")
-            else:
-                print(f"  (Only notices/warnings, no fatal errors)")
-                return True
+            print(f"  STDERR: {result.stderr[:500]}")
         return False
 
 
@@ -122,6 +149,13 @@ def run_community_summaries():
         capture_output=True, text=True, timeout=60
     )
 
+    if _has_psql_errors(result.stderr):
+        print(f"  FAILED: Supabase errors detected")
+        for line in result.stderr.strip().split("\n")[:10]:
+            if line.strip():
+                print(f"    {line.strip()}")
+        return False
+
     if result.returncode == 0:
         print(f"  SUCCESS: Community summaries table created and seeded")
         for line in result.stdout.split("\n"):
@@ -129,13 +163,11 @@ def run_community_summaries():
                 print(f"    {line.strip()}")
         return True
     else:
+        print(f"  FAILED (return code {result.returncode})")
+        if result.stdout:
+            print(f"  OUTPUT: {result.stdout[:500]}")
         if result.stderr:
-            errors = [l for l in result.stderr.split("\n") if "ERROR" in l]
-            if errors:
-                print(f"  ERRORS: {chr(10).join(errors[:5])}")
-            else:
-                print(f"  (Only notices/warnings, no fatal errors)")
-                return True
+            print(f"  STDERR: {result.stderr[:500]}")
         return False
 
 
@@ -240,12 +272,6 @@ def verify_all():
         neo4j_auth = base64.b64encode(
             f"{os.environ.get('NEO4J_USER', 'neo4j')}:{os.environ.get('NEO4J_PASSWORD', '')}".encode()
         ).decode()
-        body = json.dumps({
-            "statements": [
-                {"statement": "MATCH (n) RETURN labels(n)[0] as label, count(*) as cnt ORDER BY cnt DESC LIMIT 10"},
-                {"statement": "MATCH ()-[r]->() RETURN type(r) as rel, count(*) as cnt ORDER BY cnt DESC LIMIT 10"}
-            ]
-        }).encode()
         req = urllib_request.Request(
             # Neo4j Aura Query API v2 (port 443, works through firewalls)
             "https://38c949a2.databases.neo4j.io/db/neo4j/query/v2",
