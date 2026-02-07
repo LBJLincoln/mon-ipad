@@ -24,7 +24,9 @@ import time
 from datetime import datetime
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-SUPABASE_CONN = f"postgresql://postgres:{os.environ.get('SUPABASE_PASSWORD', '')}@db.ayqviqmxifzmhphiqfmj.supabase.co:5432/postgres"
+# Use Supabase Transaction Pooler (IPv4 compatible, port 6543)
+# Direct connection (db.xxx.supabase.co:5432) is IPv6-only and blocked by most cloud shells
+SUPABASE_CONN = f"postgresql://postgres.ayqviqmxifzmhphiqfmj:{os.environ.get('SUPABASE_PASSWORD', '')}@aws-1-eu-west-1.pooler.supabase.com:6543/postgres"
 
 
 def check_prerequisites():
@@ -245,28 +247,28 @@ def verify_all():
             ]
         }).encode()
         req = urllib_request.Request(
-            "https://38c949a2.databases.neo4j.io:7473/db/neo4j/tx/commit",
-            data=body,
+            # Neo4j Aura Query API v2 (port 443, works through firewalls)
+            "https://38c949a2.databases.neo4j.io/db/neo4j/query/v2",
+            data=json.dumps({
+                "statement": "MATCH (n) RETURN labels(n)[0] as label, count(*) as cnt ORDER BY cnt DESC LIMIT 10"
+            }).encode(),
             headers={
                 "Authorization": f"Basic {neo4j_auth}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Accept": "application/json"
             },
             method="POST"
         )
         with urllib_request.urlopen(req, timeout=15) as resp:
             result = json.loads(resp.read())
-            if result.get("results"):
+            data = result.get("data", {})
+            rows = data.get("values", [])
+            if rows:
                 print("    Node labels:")
-                for row in result["results"][0].get("data", []):
-                    vals = row.get("row", [])
-                    if vals:
-                        print(f"      {vals[0]}: {vals[1]}")
-                if len(result["results"]) > 1:
-                    print("    Relationship types:")
-                    for row in result["results"][1].get("data", []):
-                        vals = row.get("row", [])
-                        if vals:
-                            print(f"      {vals[0]}: {vals[1]}")
+                for row in rows:
+                    print(f"      {row[0]}: {row[1]}")
+            else:
+                print("    No nodes found")
     except Exception as e:
         print(f"    Neo4j check failed: {e}")
 
