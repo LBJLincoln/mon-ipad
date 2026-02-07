@@ -1,0 +1,663 @@
+{
+  "metadata": {
+    "title": "Benchmark 50×2 — Standard RAG + Orchestrator Evaluation",
+    "generated_at": "2026-02-07",
+    "total_questions": 100,
+    "standard_questions": 50,
+    "orchestrator_questions": 50,
+    "note": "Standard RAG: Pinecone vector search from ingested datasets. Orchestrator: routing + multi-engine queries."
+  },
+  "questions": [
+    {
+      "id": "std-01", "rag_target": "standard",
+      "question": "In what country is Normandy located?",
+      "expected_answer": "France",
+      "category": "factual", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-02", "rag_target": "standard",
+      "question": "When was the first season of SpongeBob SquarePants aired?",
+      "expected_answer": "May 1, 1999",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-03", "rag_target": "standard",
+      "question": "What is the capital of Japan?",
+      "expected_answer": "Tokyo",
+      "category": "factual", "namespace": "benchmark-popqa"
+    },
+    {
+      "id": "std-04", "rag_target": "standard",
+      "question": "Who wrote Romeo and Juliet?",
+      "expected_answer": "William Shakespeare",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-05", "rag_target": "standard",
+      "question": "What is penicillin?",
+      "expected_answer": "An antibiotic discovered by Alexander Fleming",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-06", "rag_target": "standard",
+      "question": "What is the theory of relativity?",
+      "expected_answer": "Einstein's theory describing gravity and spacetime",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-07", "rag_target": "standard",
+      "question": "What is the largest ocean on Earth?",
+      "expected_answer": "Pacific Ocean",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-08", "rag_target": "standard",
+      "question": "Who painted the Mona Lisa?",
+      "expected_answer": "Leonardo da Vinci",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-09", "rag_target": "standard",
+      "question": "What is photosynthesis?",
+      "expected_answer": "Process by which plants convert light energy into chemical energy",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-10", "rag_target": "standard",
+      "question": "What is the speed of light?",
+      "expected_answer": "approximately 299,792 kilometers per second",
+      "category": "factual", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-11", "rag_target": "standard",
+      "question": "Who discovered gravity?",
+      "expected_answer": "Isaac Newton",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-12", "rag_target": "standard",
+      "question": "What is DNA?",
+      "expected_answer": "Deoxyribonucleic acid, molecule carrying genetic instructions",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-13", "rag_target": "standard",
+      "question": "When did World War II end?",
+      "expected_answer": "1945",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-14", "rag_target": "standard",
+      "question": "What is the chemical formula for water?",
+      "expected_answer": "H2O",
+      "category": "factual", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-15", "rag_target": "standard",
+      "question": "Who was the first person to walk on the moon?",
+      "expected_answer": "Neil Armstrong",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-16", "rag_target": "standard",
+      "question": "What is the Great Wall of China?",
+      "expected_answer": "Ancient series of walls and fortifications in China",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-17", "rag_target": "standard",
+      "question": "What is the currency of the United Kingdom?",
+      "expected_answer": "Pound sterling",
+      "category": "factual", "namespace": "benchmark-popqa"
+    },
+    {
+      "id": "std-18", "rag_target": "standard",
+      "question": "What is machine learning?",
+      "expected_answer": "A subset of artificial intelligence where systems learn from data",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-19", "rag_target": "standard",
+      "question": "Who is the author of Harry Potter?",
+      "expected_answer": "J.K. Rowling",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-20", "rag_target": "standard",
+      "question": "What causes earthquakes?",
+      "expected_answer": "Movement of tectonic plates",
+      "category": "explanation", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-21", "rag_target": "standard",
+      "question": "What is the Amazon rainforest?",
+      "expected_answer": "The largest tropical rainforest in the world, located in South America",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-22", "rag_target": "standard",
+      "question": "Who invented the telephone?",
+      "expected_answer": "Alexander Graham Bell",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-23", "rag_target": "standard",
+      "question": "What is the Pythagorean theorem?",
+      "expected_answer": "a² + b² = c², relationship between sides of a right triangle",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-24", "rag_target": "standard",
+      "question": "What is the European Union?",
+      "expected_answer": "Political and economic union of European countries",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-25", "rag_target": "standard",
+      "question": "Who was Cleopatra?",
+      "expected_answer": "Last active ruler of the Ptolemaic Kingdom of Egypt",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-26", "rag_target": "standard",
+      "question": "What is a black hole?",
+      "expected_answer": "Region of spacetime where gravity is so strong nothing can escape",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-27", "rag_target": "standard",
+      "question": "What is the Sahara Desert?",
+      "expected_answer": "Largest hot desert in the world, located in Africa",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-28", "rag_target": "standard",
+      "question": "Who composed the Four Seasons?",
+      "expected_answer": "Antonio Vivaldi",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-29", "rag_target": "standard",
+      "question": "What is the boiling point of water?",
+      "expected_answer": "100 degrees Celsius",
+      "category": "factual", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-30", "rag_target": "standard",
+      "question": "What is the United Nations?",
+      "expected_answer": "International organization for cooperation among sovereign states",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-31", "rag_target": "standard",
+      "question": "What is the Hubble Space Telescope?",
+      "expected_answer": "Space telescope launched by NASA in 1990",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-32", "rag_target": "standard",
+      "question": "Who was Galileo Galilei?",
+      "expected_answer": "Italian astronomer and physicist, father of modern observational astronomy",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-33", "rag_target": "standard",
+      "question": "What is the human genome?",
+      "expected_answer": "Complete set of nucleic acid sequences for humans",
+      "category": "definition", "namespace": "benchmark-pubmedqa"
+    },
+    {
+      "id": "std-34", "rag_target": "standard",
+      "question": "What is blockchain technology?",
+      "expected_answer": "Distributed ledger technology for secure, transparent transactions",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-35", "rag_target": "standard",
+      "question": "Who was Napoleon Bonaparte?",
+      "expected_answer": "French military leader and Emperor",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-36", "rag_target": "standard",
+      "question": "What is the International Space Station?",
+      "expected_answer": "Modular space station in low Earth orbit, international partnership",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-37", "rag_target": "standard",
+      "question": "What is climate change?",
+      "expected_answer": "Long-term shift in global temperatures and weather patterns",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-38", "rag_target": "standard",
+      "question": "Who discovered penicillin?",
+      "expected_answer": "Alexander Fleming",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-39", "rag_target": "standard",
+      "question": "What is the Rosetta Stone?",
+      "expected_answer": "Ancient Egyptian artifact with text in three scripts",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-40", "rag_target": "standard",
+      "question": "What is GDP?",
+      "expected_answer": "Gross Domestic Product, total value of goods and services produced",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-41", "rag_target": "standard",
+      "question": "Who was Mahatma Gandhi?",
+      "expected_answer": "Leader of the Indian independence movement, advocate of nonviolent resistance",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-42", "rag_target": "standard",
+      "question": "What is a tsunami?",
+      "expected_answer": "Series of ocean waves caused by underwater earthquakes or volcanic eruptions",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-43", "rag_target": "standard",
+      "question": "What is CRISPR?",
+      "expected_answer": "Gene editing technology for modifying DNA sequences",
+      "category": "definition", "namespace": "benchmark-pubmedqa"
+    },
+    {
+      "id": "std-44", "rag_target": "standard",
+      "question": "Who was Marie Antoinette?",
+      "expected_answer": "Queen of France, wife of Louis XVI, executed during the French Revolution",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-45", "rag_target": "standard",
+      "question": "What is the ozone layer?",
+      "expected_answer": "Layer of ozone in the stratosphere that absorbs ultraviolet radiation",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-46", "rag_target": "standard",
+      "question": "What are antibiotics?",
+      "expected_answer": "Medicines that fight bacterial infections",
+      "category": "definition", "namespace": "benchmark-pubmedqa"
+    },
+    {
+      "id": "std-47", "rag_target": "standard",
+      "question": "Who built the pyramids of Giza?",
+      "expected_answer": "Ancient Egyptians",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+    {
+      "id": "std-48", "rag_target": "standard",
+      "question": "What is the function of the heart?",
+      "expected_answer": "Pump blood throughout the body",
+      "category": "definition", "namespace": "benchmark-pubmedqa"
+    },
+    {
+      "id": "std-49", "rag_target": "standard",
+      "question": "What is the Renaissance?",
+      "expected_answer": "Cultural movement in Europe from the 14th to 17th century",
+      "category": "definition", "namespace": "benchmark-squad_v2"
+    },
+    {
+      "id": "std-50", "rag_target": "standard",
+      "question": "Who was Albert Einstein?",
+      "expected_answer": "Theoretical physicist who developed the theory of relativity",
+      "category": "factual", "namespace": "benchmark-triviaqa"
+    },
+
+    {
+      "id": "orch-01", "rag_target": "orchestrator",
+      "question": "What was TechVision Inc's revenue in 2023 and who created the Theory of Relativity?",
+      "expected_answer": "TechVision Inc revenue $6.745B in 2023; Albert Einstein created Theory of Relativity",
+      "expected_routing": ["quantitative", "graph"],
+      "category": "multi_engine"
+    },
+    {
+      "id": "orch-02", "rag_target": "orchestrator",
+      "question": "Who discovered penicillin?",
+      "expected_answer": "Alexander Fleming",
+      "expected_routing": ["standard"],
+      "category": "simple_routing"
+    },
+    {
+      "id": "orch-03", "rag_target": "orchestrator",
+      "question": "What is the relationship between Marie Curie and the Nobel Prize?",
+      "expected_answer": "Marie Curie won Nobel Prizes in Physics and Chemistry",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-04", "rag_target": "orchestrator",
+      "question": "How much revenue did GreenEnergy Corp generate in Q4 2023?",
+      "expected_answer": "1021500000",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-05", "rag_target": "orchestrator",
+      "question": "Which scientists are connected to the University of Cambridge and what is the total employee count at TechVision?",
+      "expected_answer": "Newton, Darwin, Turing studied at Cambridge; TechVision has ~47 active employees",
+      "expected_routing": ["graph", "quantitative"],
+      "category": "multi_engine"
+    },
+    {
+      "id": "orch-06", "rag_target": "orchestrator",
+      "question": "What is the capital of France?",
+      "expected_answer": "Paris",
+      "expected_routing": ["standard"],
+      "category": "simple_routing"
+    },
+    {
+      "id": "orch-07", "rag_target": "orchestrator",
+      "question": "What was the gross profit margin of HealthPlus Labs in 2023?",
+      "expected_answer": "52%",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-08", "rag_target": "orchestrator",
+      "question": "Who created Artificial Intelligence as a field and which companies use it?",
+      "expected_answer": "Alan Turing, used by Apple, Google, Microsoft",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-09", "rag_target": "orchestrator",
+      "question": "What is machine learning?",
+      "expected_answer": "A subset of AI where systems learn from data",
+      "expected_routing": ["standard"],
+      "category": "simple_routing"
+    },
+    {
+      "id": "orch-10", "rag_target": "orchestrator",
+      "question": "Compare the R&D spending of the three companies in 2023 and explain which museums are in Paris",
+      "expected_answer": "TechVision $1.349B, GreenEnergy $365M, HealthPlus $288M; Louvre Museum is in Paris",
+      "expected_routing": ["quantitative", "graph"],
+      "category": "multi_engine"
+    },
+    {
+      "id": "orch-11", "rag_target": "orchestrator",
+      "question": "What was the net income of TechVision Inc in fiscal year 2022?",
+      "expected_answer": "1337550000",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-12", "rag_target": "orchestrator",
+      "question": "Which film directors worked in London?",
+      "expected_answer": "Alfred Hitchcock, Stanley Kubrick",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-13", "rag_target": "orchestrator",
+      "question": "What does NASA study and how much cash does GreenEnergy Corp have?",
+      "expected_answer": "NASA uses Nuclear Energy; GreenEnergy Corp had $900M cash at end 2023",
+      "expected_routing": ["graph", "quantitative"],
+      "category": "multi_engine"
+    },
+    {
+      "id": "orch-14", "rag_target": "orchestrator",
+      "question": "What is the boiling point of water?",
+      "expected_answer": "100 degrees Celsius",
+      "expected_routing": ["standard"],
+      "category": "simple_routing"
+    },
+    {
+      "id": "orch-15", "rag_target": "orchestrator",
+      "question": "What was the operating income for all companies in Q1 2023?",
+      "expected_answer": "TechVision $465.9M, GreenEnergy $184.7M, HealthPlus $48.2M",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-16", "rag_target": "orchestrator",
+      "question": "What is the connection between the World Health Organization and the United Nations?",
+      "expected_answer": "WHO is a subset of the United Nations",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-17", "rag_target": "orchestrator",
+      "question": "Who was Winston Churchill?",
+      "expected_answer": "British Prime Minister during World War II",
+      "expected_routing": ["standard"],
+      "category": "simple_routing"
+    },
+    {
+      "id": "orch-18", "rag_target": "orchestrator",
+      "question": "What products does TechVision sell in the AI/ML category and what is their revenue trend?",
+      "expected_answer": "VisionAI Platform and VisionAI Edge; Revenue grew from $4.25B to $6.745B (2020-2023)",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-19", "rag_target": "orchestrator",
+      "question": "Which Nobel Prize winners are in the knowledge graph and what was their contribution?",
+      "expected_answer": "Einstein (Relativity), Curie (radioactivity), Mandela (anti-apartheid)",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-20", "rag_target": "orchestrator",
+      "question": "What is the total debt of HealthPlus Labs and who is connected to the city of Princeton?",
+      "expected_answer": "HealthPlus total debt ~$140M (ST+LT 2023); Einstein connected to Princeton",
+      "expected_routing": ["quantitative", "graph"],
+      "category": "multi_engine"
+    },
+    {
+      "id": "orch-21", "rag_target": "orchestrator",
+      "question": "List the products sold by GreenEnergy Corp",
+      "expected_answer": "SolarMax 400W, SolarMax 600W, WindTurbo 5kW, PowerVault 10kWh, PowerVault 20kWh, GridManager Pro",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-22", "rag_target": "orchestrator",
+      "question": "What technology preceded the Internet?",
+      "expected_answer": "Electricity, Telephone, Steam Engine",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-23", "rag_target": "orchestrator",
+      "question": "What is DNA and what role does it play in genetics?",
+      "expected_answer": "Deoxyribonucleic acid carries genetic instructions for development",
+      "expected_routing": ["standard"],
+      "category": "simple_routing"
+    },
+    {
+      "id": "orch-24", "rag_target": "orchestrator",
+      "question": "What was the EPS difference between TechVision Inc and GreenEnergy Corp in 2023?",
+      "expected_answer": "TechVision basic EPS $16.17 vs GreenEnergy $13.29",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-25", "rag_target": "orchestrator",
+      "question": "Where is CERN located and what does it study?",
+      "expected_answer": "CERN is connected to Zurich, studies Nuclear Energy",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-26", "rag_target": "orchestrator",
+      "question": "What diseases does vaccination protect against and how many medical employees does HealthPlus have?",
+      "expected_answer": "Vaccination protects against Influenza and COVID-19; HealthPlus has employees in various departments",
+      "expected_routing": ["graph", "quantitative"],
+      "category": "multi_engine"
+    },
+    {
+      "id": "orch-27", "rag_target": "orchestrator",
+      "question": "What is the ozone layer?",
+      "expected_answer": "Layer in stratosphere that absorbs UV radiation",
+      "expected_routing": ["standard"],
+      "category": "simple_routing"
+    },
+    {
+      "id": "orch-28", "rag_target": "orchestrator",
+      "question": "Which company had the highest revenue growth between 2020 and 2023?",
+      "expected_answer": "HealthPlus Labs with 260% growth",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-29", "rag_target": "orchestrator",
+      "question": "What is the path from Alan Turing to Google through the knowledge graph?",
+      "expected_answer": "Turing → AI → Google, or Turing → Cambridge → Stanford → Google",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-30", "rag_target": "orchestrator",
+      "question": "Explain what is photosynthesis and what is its chemical equation",
+      "expected_answer": "Process converting light to chemical energy, 6CO2 + 6H2O → C6H12O6 + 6O2",
+      "expected_routing": ["standard"],
+      "category": "simple_routing"
+    },
+    {
+      "id": "orch-31", "rag_target": "orchestrator",
+      "question": "What was the total assets growth of TechVision from 2020 to 2023 and who are the key scientists in the graph?",
+      "expected_answer": "Assets grew from $5.4B to $7.924B; Key scientists: Einstein, Curie, Newton, Darwin, Turing, Fleming",
+      "expected_routing": ["quantitative", "graph"],
+      "category": "multi_engine"
+    },
+    {
+      "id": "orch-32", "rag_target": "orchestrator",
+      "question": "What are HealthPlus Labs' quarterly revenues for 2023?",
+      "expected_answer": "Q1 $253.4M, Q2 $276.5M, Q3 $299.5M, Q4 $322.6M",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-33", "rag_target": "orchestrator",
+      "question": "Which artists worked in Paris according to the knowledge graph?",
+      "expected_answer": "Pablo Picasso, Vincent van Gogh",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-34", "rag_target": "orchestrator",
+      "question": "Who was Nikola Tesla and what was his rivalry with Edison?",
+      "expected_answer": "Tesla was an inventor, both connected to Electricity in New York City",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-35", "rag_target": "orchestrator",
+      "question": "What is the average salary across all departments at GreenEnergy?",
+      "expected_answer": "Average salary calculation across departments",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-36", "rag_target": "orchestrator",
+      "question": "What is the Pythagorean theorem and who invented it?",
+      "expected_answer": "a² + b² = c², attributed to Pythagoras",
+      "expected_routing": ["standard"],
+      "category": "simple_routing"
+    },
+    {
+      "id": "orch-37", "rag_target": "orchestrator",
+      "question": "What was TechVision's interest income in 2023 and where was the World Wide Web created?",
+      "expected_answer": "Interest income $45M; WWW created at CERN",
+      "expected_routing": ["quantitative", "graph"],
+      "category": "multi_engine"
+    },
+    {
+      "id": "orch-38", "rag_target": "orchestrator",
+      "question": "What is the balance sheet total liabilities for all companies at end of 2023?",
+      "expected_answer": "TechVision $1.775B, GreenEnergy $1.184B, HealthPlus $320M",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-39", "rag_target": "orchestrator",
+      "question": "Which universities study Artificial Intelligence?",
+      "expected_answer": "MIT, Stanford University",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-40", "rag_target": "orchestrator",
+      "question": "What is quantum computing?",
+      "expected_answer": "Computing using quantum mechanical phenomena like superposition and entanglement",
+      "expected_routing": ["standard"],
+      "category": "simple_routing"
+    },
+    {
+      "id": "orch-41", "rag_target": "orchestrator",
+      "question": "How does HealthPlus Labs' operating income compare to its R&D spending in 2023?",
+      "expected_answer": "Operating income $218.8M, R&D $288M - R&D exceeds operating income",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-42", "rag_target": "orchestrator",
+      "question": "What is the connection between Louis Pasteur and disease prevention?",
+      "expected_answer": "Pasteur created vaccination which protects against Influenza and COVID-19",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-43", "rag_target": "orchestrator",
+      "question": "List the top 3 companies by stockholders equity at end of 2023 and explain who Einstein was connected to",
+      "expected_answer": "TechVision $6.149B, GreenEnergy $3.276B, HealthPlus $795M; Einstein connected to Princeton, Nobel Foundation, Theory of Relativity",
+      "expected_routing": ["quantitative", "graph"],
+      "category": "multi_engine"
+    },
+    {
+      "id": "orch-44", "rag_target": "orchestrator",
+      "question": "What is CRISPR technology used for?",
+      "expected_answer": "Gene editing and modification of DNA sequences",
+      "expected_routing": ["standard"],
+      "category": "simple_routing"
+    },
+    {
+      "id": "orch-45", "rag_target": "orchestrator",
+      "question": "What was GreenEnergy Corp's cost of goods sold in 2022?",
+      "expected_answer": "1544400000",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-46", "rag_target": "orchestrator",
+      "question": "What museums are connected to Washington D.C. in the knowledge graph?",
+      "expected_answer": "Smithsonian Institution",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    },
+    {
+      "id": "orch-47", "rag_target": "orchestrator",
+      "question": "What is the French Revolution?",
+      "expected_answer": "Period of political and social upheaval in France starting in 1789",
+      "expected_routing": ["standard"],
+      "category": "simple_routing"
+    },
+    {
+      "id": "orch-48", "rag_target": "orchestrator",
+      "question": "What products does HealthPlus sell and who is connected to the Nobel Foundation?",
+      "expected_answer": "GenomeScan, ImmunoBoost, NeuroShield, MedAssist AI, PatientHub; Einstein, Curie, Mandela connected to Nobel Foundation",
+      "expected_routing": ["quantitative", "graph"],
+      "category": "multi_engine"
+    },
+    {
+      "id": "orch-49", "rag_target": "orchestrator",
+      "question": "What is the retained earnings for GreenEnergy Corp at end of 2023?",
+      "expected_answer": "2776000000",
+      "expected_routing": ["quantitative"],
+      "category": "quant_routing"
+    },
+    {
+      "id": "orch-50", "rag_target": "orchestrator",
+      "question": "Describe the relationship chain from Alexander Fleming to COVID-19 in the knowledge graph",
+      "expected_answer": "Fleming → Penicillin → Tuberculosis; parallel: Vaccination → COVID-19, both via medical connections",
+      "expected_routing": ["graph"],
+      "category": "graph_routing"
+    }
+  ]
+}
