@@ -145,6 +145,29 @@ canvas{width:100%!important;height:100%!important}
 /* TOOLTIP */
 .tooltip{position:absolute;background:var(--s3);border:1px solid var(--bd);border-radius:6px;padding:8px 12px;font-size:.78em;z-index:200;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:300px}
 
+/* TIMELINE */
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--bd)}
+.tl-item{position:relative;padding:12px 0 16px;border-bottom:1px solid rgba(42,48,64,.3)}
+.tl-item:last-child{border-bottom:none}
+.tl-dot{position:absolute;left:-24px;top:16px;width:12px;height:12px;border-radius:50%;border:2px solid var(--bd);background:var(--s1)}
+.tl-dot.tl-bugfix{border-color:var(--rd);background:rgba(239,68,68,.2)}
+.tl-dot.tl-enrichment{border-color:var(--pp);background:rgba(168,85,247,.2)}
+.tl-dot.tl-optimization{border-color:var(--gn);background:rgba(34,197,94,.2)}
+.tl-dot.tl-feature{border-color:var(--ac);background:rgba(59,130,246,.2)}
+.tl-dot.tl-modification{border-color:var(--yl);background:rgba(234,179,8,.2)}
+.tl-time{font-size:.7em;color:var(--tx3);font-family:'JetBrains Mono',monospace}
+.tl-desc{margin-top:4px;font-size:.85em;line-height:1.5}
+.tl-files{margin-top:4px;font-size:.72em;color:var(--tx3)}
+.tl-tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:.65em;font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-right:4px}
+
+/* EXEC LOG FEED */
+.exec-feed{max-height:600px;overflow-y:auto}
+.exec-row{padding:8px 12px;border-bottom:1px solid rgba(42,48,64,.4);display:grid;grid-template-columns:140px 70px 70px 1fr 80px 70px 70px;align-items:center;gap:6px;font-size:.82em;transition:background .15s}
+.exec-row:hover{background:rgba(59,130,246,.04)}
+.exec-row.exec-error{border-left:3px solid var(--rd)}
+.exec-hdr{position:sticky;top:0;background:var(--s2);z-index:1;font-weight:500;color:var(--tx2);text-transform:uppercase;font-size:.72em;letter-spacing:.04em}
+
 /* FOOTER */
 .footer{text-align:center;color:var(--tx3);font-size:.72em;padding:24px;border-top:1px solid var(--bd);margin-top:32px}
 </style>
@@ -172,6 +195,9 @@ canvas{width:100%!important;height:100%!important}
   <div class="tab" data-tab="costs">Costs & Resources</div>
   <div class="tab" data-tab="cross">Cross-Analysis</div>
   <div class="tab" data-tab="graph">Knowledge Graph</div>
+  <div class="tab" data-tab="evolution">Workflow Evolution</div>
+  <div class="tab" data-tab="dbmonitor">DB Monitor</div>
+  <div class="tab" data-tab="execlogs">Execution Logs</div>
 </div>
 
 <!-- ============================================================ -->
@@ -366,6 +392,105 @@ canvas{width:100%!important;height:100%!important}
   <div class="grid g3" id="community-cards"></div>
 </div>
 
+<!-- ============================================================ -->
+<!-- TAB: WORKFLOW EVOLUTION -->
+<!-- ============================================================ -->
+<div class="tab-panel" id="panel-evolution">
+  <div class="section-hdr"><h2><span class="icon">&#9881;</span> Workflow Modification Timeline</h2></div>
+  <div class="grid g3" id="evo-kpis"></div>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card accent-blue">
+      <div class="lbl">Changes Timeline</div>
+      <div class="timeline" id="evo-timeline" style="margin-top:12px;max-height:500px;overflow-y:auto"></div>
+    </div>
+    <div class="card accent-purple">
+      <div class="lbl">Impact: Accuracy Before vs After</div>
+      <div class="chart-wrap chart-lg"><canvas id="chart-evo-impact"></canvas></div>
+    </div>
+  </div>
+  <div class="section-hdr"><h2><span class="icon">&#9776;</span> Changes by Type</h2></div>
+  <div class="grid g2">
+    <div class="card accent-cyan">
+      <div class="lbl">Change Types Distribution</div>
+      <div class="chart-wrap chart-md"><canvas id="chart-evo-types"></canvas></div>
+    </div>
+    <div class="card accent-green">
+      <div class="lbl">Affected Pipelines</div>
+      <div class="chart-wrap chart-md"><canvas id="chart-evo-pipes"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB: DB MONITOR -->
+<!-- ============================================================ -->
+<div class="tab-panel" id="panel-dbmonitor">
+  <div class="section-hdr"><h2><span class="icon">&#9707;</span> Database Snapshot History</h2></div>
+  <div class="grid g3" id="dbmon-current"></div>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card accent-purple">
+      <div class="lbl">Neo4j: Nodes & Relationships Over Time</div>
+      <div class="chart-wrap chart-md"><canvas id="chart-neo4j-history"></canvas></div>
+    </div>
+    <div class="card accent-blue">
+      <div class="lbl">Pinecone: Vector Count Over Time</div>
+      <div class="chart-wrap chart-md"><canvas id="chart-pinecone-history"></canvas></div>
+    </div>
+  </div>
+  <div class="section-hdr"><h2><span class="icon">&#9776;</span> All Snapshots</h2></div>
+  <div class="tbl-wrap"><table id="snapshot-table">
+    <thead><tr>
+      <th>Snapshot ID</th><th>Trigger</th><th>Timestamp</th>
+      <th>Pinecone</th><th>Neo4j Nodes</th><th>Neo4j Rels</th><th>Supabase</th>
+    </tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <div class="section-hdr" style="margin-top:24px"><h2><span class="icon">&#9670;</span> Current Database Detail</h2></div>
+  <div class="grid g3" id="dbmon-detail"></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB: EXECUTION LOGS -->
+<!-- ============================================================ -->
+<div class="tab-panel" id="panel-execlogs">
+  <div class="section-hdr">
+    <h2><span class="icon">&#9776;</span> Execution Traces <span id="exec-count" class="tag t-in" style="margin-left:6px">0</span></h2>
+  </div>
+  <div class="filters" id="exec-filters">
+    <select id="exec-filter-type">
+      <option value="">All Pipelines</option>
+      <option value="standard">Standard</option>
+      <option value="graph">Graph</option>
+      <option value="quantitative">Quantitative</option>
+      <option value="orchestrator">Orchestrator</option>
+    </select>
+    <select id="exec-filter-error">
+      <option value="">All Results</option>
+      <option value="errors">Errors Only</option>
+      <option value="success">Success Only</option>
+    </select>
+    <input type="text" id="exec-filter-search" placeholder="Search question ID or error...">
+  </div>
+  <div class="grid g4" id="exec-kpis" style="margin-bottom:12px"></div>
+  <div class="tbl-wrap">
+    <div class="exec-row exec-hdr">
+      <div>Timestamp</div><div>Pipeline</div><div>Q-ID</div><div>Answer Preview</div><div>Error</div><div>Latency</div><div>Status</div>
+    </div>
+    <div class="exec-feed" id="exec-feed"></div>
+  </div>
+  <div class="section-hdr" style="margin-top:16px"><h2><span class="icon">&#9888;</span> Error Type Breakdown</h2></div>
+  <div class="grid g2">
+    <div class="card accent-red">
+      <div class="lbl">Error Types Distribution</div>
+      <div class="chart-wrap chart-md"><canvas id="chart-exec-errors"></canvas></div>
+    </div>
+    <div class="card accent-yellow">
+      <div class="lbl">Error Rate Over Time</div>
+      <div class="chart-wrap chart-md"><canvas id="chart-exec-timeline"></canvas></div>
+    </div>
+  </div>
+</div>
+
 <div class="footer">
   RAG Benchmark Dashboard — SOTA 2026 | <code>docs/data.json</code> |
   Auto-refresh <span id="footer-timer">5s</span> |
@@ -445,6 +570,9 @@ function render() {
   if (activeTab === 'costs') renderCosts();
   if (activeTab === 'cross') renderCross();
   if (activeTab === 'graph') renderGraph();
+  if (activeTab === 'evolution') renderEvolution();
+  if (activeTab === 'dbmonitor') renderDBMonitor();
+  if (activeTab === 'execlogs') renderExecLogs();
 }
 
 // ============================================================
@@ -914,6 +1042,292 @@ function renderGraph() {
     <div class="bar" style="margin-top:6px"><div class="fill-pp" style="width:${c.score*100}%"></div></div></div>
   `).join('');
 }
+
+// ============================================================
+// WORKFLOW EVOLUTION TAB
+// ============================================================
+function renderEvolution() {
+  const changes = DATA.workflow_changes || [];
+  if (!changes.length) {
+    byId('evo-timeline').innerHTML = '<div style="color:var(--tx3);padding:20px">No workflow changes recorded yet.</div>';
+    return;
+  }
+
+  const typeColors = {bugfix:'var(--rd)',enrichment:'var(--pp)',optimization:'var(--gn)',feature:'var(--ac)',modification:'var(--yl)'};
+  const typeCounts = {};
+  const pipeCounts = {};
+  changes.forEach(c => {
+    typeCounts[c.change_type] = (typeCounts[c.change_type]||0)+1;
+    (c.affected_pipelines||[]).forEach(p => { pipeCounts[p] = (pipeCounts[p]||0)+1; });
+  });
+
+  // KPIs
+  byId('evo-kpis').innerHTML = `
+    <div class="card accent-blue"><div class="lbl">Total Changes</div><div class="val" style="color:var(--ac)">${changes.length}</div><div class="sub">since project start</div></div>
+    <div class="card accent-red"><div class="lbl">Bug Fixes</div><div class="val" style="color:var(--rd)">${typeCounts.bugfix||0}</div></div>
+    <div class="card accent-purple"><div class="lbl">Enrichments</div><div class="val" style="color:var(--pp)">${typeCounts.enrichment||0}</div></div>
+  `;
+
+  // Timeline
+  byId('evo-timeline').innerHTML = changes.slice().reverse().map(c => {
+    const time = new Date(c.timestamp).toLocaleString();
+    const files = (c.files_changed||[]).join(', ');
+    const pipes = (c.affected_pipelines||[]).map(p => `<span class="pipe-badge ${pipeClass(p)}" style="font-size:.6em">${PIPE_LABELS[p]||p}</span>`).join(' ');
+    const typeStyle = `background:${typeColors[c.change_type]||'var(--bd)'}22;color:${typeColors[c.change_type]||'var(--tx2)'}`;
+    return `<div class="tl-item">
+      <div class="tl-dot tl-${c.change_type}"></div>
+      <div class="tl-time">${time}</div>
+      <div style="margin-top:2px">
+        <span class="tl-tag" style="${typeStyle}">${c.change_type}</span>
+        ${pipes}
+      </div>
+      <div class="tl-desc">${c.description}</div>
+      ${files?`<div class="tl-files">Files: ${files}</div>`:''}
+      ${c.before_metrics||c.after_metrics?`<div style="margin-top:6px;font-size:.75em;display:flex;gap:12px">
+        ${c.before_metrics?Object.entries(c.before_metrics).map(([p,m])=>`<span style="color:var(--tx3)">Before ${p}: ${m.accuracy!=null?m.accuracy+'%':'?'}</span>`).join(' '):''}
+        ${c.after_metrics?Object.entries(c.after_metrics).map(([p,m])=>`<span style="color:var(--gn)">After ${p}: ${m.accuracy!=null?m.accuracy+'%':'pending'}</span>`).join(' '):''}
+      </div>`:''}
+    </div>`;
+  }).join('');
+
+  // Impact chart
+  destroyChart('evoImpact');
+  const withMetrics = changes.filter(c=>c.before_metrics||c.after_metrics);
+  if (withMetrics.length) {
+    const labels = withMetrics.map(c=>c.change_type+' '+new Date(c.timestamp).toLocaleDateString());
+    const beforeData = withMetrics.map(c=>{
+      if (!c.before_metrics) return null;
+      const vals = Object.values(c.before_metrics).filter(m=>m.accuracy!=null).map(m=>m.accuracy);
+      return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+    });
+    const afterData = withMetrics.map(c=>{
+      if (!c.after_metrics) return null;
+      const vals = Object.values(c.after_metrics).filter(m=>m.accuracy!=null).map(m=>m.accuracy);
+      return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+    });
+    const opts = chartDefaults();
+    opts.scales.y.min = 0; opts.scales.y.max = 100;
+    charts.evoImpact = new Chart(byId('chart-evo-impact'), {
+      type:'bar', data:{labels,datasets:[
+        {label:'Before',data:beforeData,backgroundColor:'var(--rd)',borderRadius:4},
+        {label:'After',data:afterData,backgroundColor:'var(--gn)',borderRadius:4}
+      ]}, options:opts
+    });
+  }
+
+  // Change types doughnut
+  destroyChart('evoTypes');
+  charts.evoTypes = new Chart(byId('chart-evo-types'), {
+    type:'doughnut', data:{
+      labels:Object.keys(typeCounts),
+      datasets:[{data:Object.values(typeCounts),backgroundColor:Object.keys(typeCounts).map(t=>typeColors[t]||'#666'),borderWidth:0}]
+    }, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8896a8',boxWidth:10}}}}
+  });
+
+  // Affected pipelines bar
+  destroyChart('evoPipes');
+  charts.evoPipes = new Chart(byId('chart-evo-pipes'), {
+    type:'bar', data:{
+      labels:Object.keys(pipeCounts).map(k=>PIPE_LABELS[k]||k),
+      datasets:[{label:'Changes',data:Object.values(pipeCounts),backgroundColor:Object.keys(pipeCounts).map(k=>PIPE_COLORS[k]||'#666'),borderRadius:4}]
+    }, options:chartDefaults()
+  });
+}
+
+// ============================================================
+// DB MONITOR TAB
+// ============================================================
+function renderDBMonitor() {
+  const snaps = DATA.db_snapshots || [];
+  const db = DATA.databases || {};
+
+  // Current state cards
+  byId('dbmon-current').innerHTML = `
+    <div class="card accent-blue"><div class="lbl">Pinecone Vectors</div><div class="val" style="color:var(--ac)">${(db.pinecone?.total_vectors||0).toLocaleString()}</div><div class="sub">${Object.keys(db.pinecone?.namespaces||{}).length} namespaces</div></div>
+    <div class="card accent-purple"><div class="lbl">Neo4j Entities</div><div class="val" style="color:var(--pp)">${db.neo4j?.total_nodes||0}</div><div class="sub">${db.neo4j?.total_relationships||0} relationships</div></div>
+    <div class="card accent-green"><div class="lbl">Supabase Rows</div><div class="val" style="color:var(--gn)">${db.supabase?.total_rows||0}</div><div class="sub">${Object.keys(db.supabase?.tables||{}).length} tables, ${(db.supabase?.companies||[]).length} companies</div></div>
+  `;
+
+  // Snapshot history table
+  const tbody = document.querySelector('#snapshot-table tbody');
+  tbody.innerHTML = snaps.slice().reverse().map(s => {
+    const triggerClass = s.trigger==='enrichment'?'t-pp':s.trigger==='post-eval'?'t-ok':s.trigger==='pre-eval'?'t-in':'t-cy';
+    return `<tr>
+      <td class="mono" style="font-size:.78em">${s.snapshot_id}</td>
+      <td><span class="tag ${triggerClass}">${s.trigger}</span></td>
+      <td class="mono" style="font-size:.78em">${new Date(s.timestamp).toLocaleString()}</td>
+      <td class="mono">${(s.pinecone_vectors||0).toLocaleString()}</td>
+      <td class="mono">${s.neo4j_nodes||0}</td>
+      <td class="mono">${s.neo4j_relationships||0}</td>
+      <td class="mono">${s.supabase_rows||0}</td>
+    </tr>`;
+  }).join('');
+
+  // Neo4j history chart
+  if (snaps.length > 1) {
+    destroyChart('neo4jHistory');
+    const opts = chartDefaults();
+    charts.neo4jHistory = new Chart(byId('chart-neo4j-history'), {
+      type:'line', data:{
+        labels:snaps.map(s=>new Date(s.timestamp).toLocaleDateString()+' '+new Date(s.timestamp).toLocaleTimeString().slice(0,5)),
+        datasets:[
+          {label:'Nodes',data:snaps.map(s=>s.neo4j_nodes||0),borderColor:'var(--pp)',backgroundColor:'rgba(168,85,247,.1)',tension:.3,fill:true},
+          {label:'Relationships',data:snaps.map(s=>s.neo4j_relationships||0),borderColor:'var(--cy)',backgroundColor:'rgba(6,182,212,.1)',tension:.3,fill:true}
+        ]
+      }, options:opts
+    });
+
+    destroyChart('pineconeHistory');
+    charts.pineconeHistory = new Chart(byId('chart-pinecone-history'), {
+      type:'line', data:{
+        labels:snaps.map(s=>new Date(s.timestamp).toLocaleDateString()+' '+new Date(s.timestamp).toLocaleTimeString().slice(0,5)),
+        datasets:[
+          {label:'Vectors',data:snaps.map(s=>s.pinecone_vectors||0),borderColor:'var(--ac)',backgroundColor:'rgba(59,130,246,.1)',tension:.3,fill:true}
+        ]
+      }, options:opts
+    });
+  }
+
+  // Detailed DB breakdown
+  byId('dbmon-detail').innerHTML = `
+    <div class="card">
+      <div class="lbl">Pinecone Namespaces</div>
+      <div style="margin-top:8px;font-size:.82em;max-height:200px;overflow-y:auto">
+        ${Object.entries(db.pinecone?.namespaces||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(42,48,64,.3)">
+            <span>${k||'(default)'}</span>
+            <span class="mono">${v.toLocaleString()}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="lbl">Neo4j Entity Types</div>
+      <div style="margin-top:8px;font-size:.82em;max-height:200px;overflow-y:auto">
+        ${Object.entries(db.neo4j?.labels||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(42,48,64,.3)">
+            <span>${k}</span>
+            <div class="bar" style="width:80px;margin:0 8px"><div class="fill-pp" style="width:${v/(db.neo4j?.total_nodes||1)*100}%"></div></div>
+            <span class="mono">${v}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="lbl">Supabase Tables</div>
+      <div style="margin-top:8px;font-size:.82em">
+        ${Object.entries(db.supabase?.tables||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(42,48,64,.3)">
+            <span>${k}</span>
+            <div class="bar" style="width:80px;margin:0 8px"><div class="fill-gn" style="width:${v/(db.supabase?.total_rows||1)*100}%"></div></div>
+            <span class="mono">${v}</span>
+          </div>
+        `).join('')}
+        ${db.supabase?.companies?`<div style="margin-top:8px;color:var(--tx3);font-size:.78em">Companies: ${db.supabase.companies.join(', ')}</div>`:''}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// EXECUTION LOGS TAB
+// ============================================================
+function renderExecLogs() {
+  const logs = DATA.execution_logs || [];
+  const typeF = byId('exec-filter-type').value;
+  const errorF = byId('exec-filter-error').value;
+  const searchF = byId('exec-filter-search').value.toLowerCase();
+
+  let filtered = logs;
+  if (typeF) filtered = filtered.filter(l=>l.rag_type===typeF);
+  if (errorF==='errors') filtered = filtered.filter(l=>l.error_type);
+  else if (errorF==='success') filtered = filtered.filter(l=>!l.error_type);
+  if (searchF) filtered = filtered.filter(l=>(l.question_id||'').toLowerCase().includes(searchF)||(l.error_preview||'').toLowerCase().includes(searchF));
+
+  byId('exec-count').textContent = filtered.length;
+
+  // KPIs
+  const totalErrors = filtered.filter(l=>l.error_type).length;
+  const errorRate = filtered.length?totalErrors/filtered.length:0;
+  const errorTypes = {};
+  filtered.forEach(l=>{if(l.error_type)errorTypes[l.error_type]=(errorTypes[l.error_type]||0)+1});
+  const topError = Object.entries(errorTypes).sort((a,b)=>b[1]-a[1])[0];
+  const avgLat = filtered.filter(l=>l.latency_ms).length?filtered.filter(l=>l.latency_ms).reduce((s,l)=>s+l.latency_ms,0)/filtered.filter(l=>l.latency_ms).length:0;
+
+  byId('exec-kpis').innerHTML = `
+    <div class="card accent-blue"><div class="lbl">Traced Executions</div><div class="val">${filtered.length}</div></div>
+    <div class="card accent-red"><div class="lbl">Error Rate</div><div class="val" style="color:${errorRate>.1?'var(--rd)':'var(--gn)'}">${(errorRate*100).toFixed(1)}%</div><div class="sub">${totalErrors} errors</div></div>
+    <div class="card accent-yellow"><div class="lbl">Top Error Type</div><div class="val" style="font-size:1.2em">${topError?topError[0]:'None'}</div><div class="sub">${topError?topError[1]+' occurrences':'—'}</div></div>
+    <div class="card accent-cyan"><div class="lbl">Avg Latency</div><div class="val mono">${fmtMs(avgLat)}</div></div>
+  `;
+
+  // Feed
+  const feed = byId('exec-feed');
+  feed.innerHTML = filtered.slice().reverse().slice(0,200).map(l => {
+    const isErr = !!l.error_type;
+    const st = isErr?`<span class="tag t-er">${l.error_type}</span>`:l.correct?'<span class="tag t-ok">OK</span>':'<span class="tag t-wr">FAIL</span>';
+    const time = l.timestamp?new Date(l.timestamp).toLocaleString():'—';
+    const details = l.pipeline_details_summary;
+    let detailStr = '';
+    if (details) {
+      if (details.entities) detailStr += `Entities: [${details.entities.join(', ')}] `;
+      if (details.neo4j_paths!=null) detailStr += `Paths: ${details.neo4j_paths} `;
+      if (details.sql) detailStr += `SQL: ${details.sql.slice(0,60)}... `;
+      if (details.sub_pipelines) detailStr += `Sub: [${details.sub_pipelines.join(',')}] `;
+    }
+    return `<div class="exec-row${isErr?' exec-error':''}" onclick="this.nextElementSibling?.classList.toggle('open')" style="cursor:pointer">
+      <div class="mono" style="font-size:.72em">${time.slice(0,17)}</div>
+      <div><span class="pipe-badge ${pipeClass(l.rag_type)}">${(l.rag_type||'?').slice(0,5).toUpperCase()}</span></div>
+      <div class="mono" style="font-size:.78em">${l.question_id||'?'}</div>
+      <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx2)">${l.answer_preview||'—'}</div>
+      <div style="font-size:.72em;color:${isErr?'var(--rd)':'var(--tx3)'}">${l.error_type||'—'}</div>
+      <div class="mono">${l.latency_ms?(l.latency_ms/1000).toFixed(1)+'s':'—'}</div>
+      <div>${st}</div>
+    </div>
+    <div class="feed-detail">
+      ${l.error_preview?`<div style="color:var(--rd);margin-bottom:6px"><strong>Error:</strong> ${l.error_preview}</div>`:''}
+      ${detailStr?`<div style="color:var(--tx2);font-size:.8em">${detailStr}</div>`:''}
+      ${l.confidence!=null?`<div style="color:var(--tx3);font-size:.78em;margin-top:4px">Confidence: ${l.confidence}</div>`:''}
+    </div>`;
+  }).join('');
+
+  // Error types chart
+  destroyChart('execErrors');
+  if (Object.keys(errorTypes).length) {
+    const errColors = {TIMEOUT:'var(--rd)',NETWORK:'var(--or)',SERVER_ERROR:'var(--pk)',RATE_LIMIT:'var(--yl)',CLIENT_ERROR:'var(--pp)',EMPTY_RESPONSE:'var(--cy)',ENTITY_MISS:'var(--ac)',SQL_ERROR:'var(--gn)',UNKNOWN:'var(--tx3)'};
+    charts.execErrors = new Chart(byId('chart-exec-errors'), {
+      type:'doughnut', data:{
+        labels:Object.keys(errorTypes),
+        datasets:[{data:Object.values(errorTypes),backgroundColor:Object.keys(errorTypes).map(t=>errColors[t]||'#666'),borderWidth:0}]
+      }, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8896a8',boxWidth:10}}}}
+    });
+  }
+
+  // Error rate over time (grouped by batch of 10)
+  destroyChart('execTimeline');
+  if (filtered.length > 5) {
+    const batchSize = Math.max(1, Math.floor(filtered.length / 20));
+    const batches = [];
+    for (let i=0; i<filtered.length; i+=batchSize) {
+      const batch = filtered.slice(i, i+batchSize);
+      const errors = batch.filter(l=>l.error_type).length;
+      batches.push({label: `${i+1}-${Math.min(i+batchSize,filtered.length)}`, rate: errors/batch.length*100});
+    }
+    const opts = chartDefaults();
+    opts.scales.y.min = 0; opts.scales.y.max = 100;
+    opts.scales.y.title = {display:true,text:'Error Rate %',color:'#5a6578'};
+    charts.execTimeline = new Chart(byId('chart-exec-timeline'), {
+      type:'line', data:{
+        labels:batches.map(b=>b.label),
+        datasets:[{label:'Error Rate %',data:batches.map(b=>b.rate),borderColor:'var(--rd)',backgroundColor:'rgba(239,68,68,.1)',tension:.3,fill:true}]
+      }, options:opts
+    });
+  }
+}
+
+// Exec log filters
+['exec-filter-type','exec-filter-error'].forEach(id => byId(id)?.addEventListener('change', () => activeTab==='execlogs'&&renderExecLogs()));
+byId('exec-filter-search')?.addEventListener('input', () => activeTab==='execlogs'&&renderExecLogs());
 
 // ============================================================
 // CSV EXPORT

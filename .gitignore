@@ -19,9 +19,13 @@ backups/
 final-workflows/
 # patches/ - tracked for patch-writer agent output
 
-# Logs
+# Logs (generic)
 *.log
-logs/
+
+# Structured logs - tracked for monitoring
+# logs/ directory is tracked (execution traces, error files, DB snapshots)
+# Only ignore large/generated JSONL execution logs
+logs/executions/*.jsonl
 
 # OS
 .DS_Store

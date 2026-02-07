@@ -72,6 +72,35 @@
       ]
     }
   },
+  "db_snapshots": [
+    {
+      "snapshot_id": "snap-initial",
+      "timestamp": "2026-02-07T08:00:00Z",
+      "trigger": "initial-setup",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 90,
+      "neo4j_relationships": 80,
+      "supabase_rows": 88
+    },
+    {
+      "snapshot_id": "snap-post-enrichment-1",
+      "timestamp": "2026-02-07T11:30:00Z",
+      "trigger": "enrichment",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 110,
+      "neo4j_relationships": 151,
+      "supabase_rows": 88
+    },
+    {
+      "snapshot_id": "snap-baseline-eval",
+      "timestamp": "2026-02-07T12:58:00Z",
+      "trigger": "post-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 145,
+      "neo4j_relationships": 98,
+      "supabase_rows": 88
+    }
+  ],
   "pipelines": {
     "standard": {
       "total_questions": 50,
@@ -121,5 +150,44 @@
       "orchestrator": 48.0,
       "total_tested": 200
     }
-  ]
+  ],
+  "workflow_changes": [
+    {
+      "timestamp": "2026-02-07T09:00:00Z",
+      "description": "Orchestrator bug fixes: If1 dead-end branch connected, Return Response V8 fixed, invalid settings removed",
+      "change_type": "bugfix",
+      "files_changed": ["V10.1 orchestrator copy (5).json"],
+      "affected_pipelines": ["orchestrator"],
+      "before_metrics": {"orchestrator": {"accuracy": null, "errors": null, "latency": null}},
+      "after_metrics": {"orchestrator": {"accuracy": 48.0, "errors": 16, "latency": 10908}}
+    },
+    {
+      "timestamp": "2026-02-07T11:30:00Z",
+      "description": "Knowledge graph enrichment: +20 new entities, +71 new relationships. Critical path fixes for Fleming->COVID-19, Einstein->Cambridge. WHO direct disease links added.",
+      "change_type": "enrichment",
+      "files_changed": ["benchmark-workflows/populate-neo4j-entities.py", "benchmark-workflows/community-summaries-migration.sql"],
+      "affected_pipelines": ["graph", "orchestrator"],
+      "before_metrics": {"graph": {"accuracy": 50.0, "errors": 2, "latency": 4385}},
+      "after_metrics": null
+    },
+    {
+      "timestamp": "2026-02-07T13:00:00Z",
+      "description": "Comprehensive analysis roadmap in CLAUDE.md + interactive 6-tab monitoring dashboard with cost tracking and cross-analysis",
+      "change_type": "feature",
+      "files_changed": ["CLAUDE.md", "docs/index.html"],
+      "affected_pipelines": [],
+      "before_metrics": null,
+      "after_metrics": null
+    },
+    {
+      "timestamp": "2026-02-07T14:00:00Z",
+      "description": "Structured logging infrastructure: execution JSONL logs, error traces, DB snapshots, workflow evolution tracking. New logs/ directory with per-question detailed traces.",
+      "change_type": "feature",
+      "files_changed": ["benchmark-workflows/live-results-writer.py", "benchmark-workflows/run-comprehensive-eval.py", "docs/data.json", "docs/index.html", "logs/"],
+      "affected_pipelines": ["standard", "graph", "quantitative", "orchestrator"],
+      "before_metrics": null,
+      "after_metrics": null
+    }
+  ],
+  "execution_logs": []
 }
