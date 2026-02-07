@@ -405,7 +405,7 @@
     {
       "parameters": {
         "respondWith": "text",
-        "responseBody": "={{ $json.chat_message }}",
+        "responseBody": "={{ $('Response Builder V9').item.json.chat_message }}",
         "options": {}
       },
       "id": "55f180e4-5489-47b0-97fe-de50a127cc48",
@@ -420,7 +420,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\n  \"success\": true,\n  \"response\": {{ $json.final_response ? JSON.stringify($json.final_response) : '\"\"' }},\n  \"confidence\": {{ $json.confidence || 0 }},\n  \"trace_id\": {{ $json.trace_id ? JSON.stringify($json.trace_id) : '\"\"' }},\n  \"version\": \"V8.0-CoT\",\n  \"perf\": {{ $json.perf ? JSON.stringify($json.perf) : '{}' }},\n  \"reasoning_path\": {{ $json.reasoning_path ? JSON.stringify($json.reasoning_path) : '{}' }}\n}",
+        "responseBody": "={\n  \"success\": true,\n  \"response\": {{ $('Response Builder V9').item.json.final_response ? JSON.stringify($('Response Builder V9').item.json.final_response) : '\"\"' }},\n  \"confidence\": {{ $('Response Builder V9').item.json.confidence || 0 }},\n  \"trace_id\": {{ $('Response Builder V9').item.json.trace_id ? JSON.stringify($('Response Builder V9').item.json.trace_id) : '\"\"' }},\n  \"version\": \"V8.0-CoT\",\n  \"perf\": {{ $('Response Builder V9').item.json.perf ? JSON.stringify($('Response Builder V9').item.json.perf) : '{}' }},\n  \"reasoning_path\": {{ $('Response Builder V9').item.json.reasoning_path ? JSON.stringify($('Response Builder V9').item.json.reasoning_path) : '{}' }}\n}",
         "options": {}
       },
       "id": "906694a2-098b-480b-9705-8c9f6fa397f3",
@@ -2254,15 +2254,19 @@
             "index": 0
           }
         ],
-        []
+        [
+          {
+            "node": "Postgres : Get Current Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": true,
-    "timeSavedMode": "fixed",
     "callerPolicy": "workflowsFromSameOwner"
   },
   "versionId": "061d6225-8240-45bf-9cc4-845ab1ad521e",
