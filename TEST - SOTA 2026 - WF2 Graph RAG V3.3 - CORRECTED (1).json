@@ -289,7 +289,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "ff622742-6d71-4e91-af71-b5c666088717",
-        "responseMode": "lastNode",
+        "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
@@ -420,6 +420,21 @@
       "typeVersion": 2,
       "position": [
         2280,
+        6304
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "r1s2t3u4-respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        2480,
         6304
       ]
     }
@@ -666,6 +681,11 @@
     "Answer Formatter": {
       "main": [
         [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          },
           {
             "node": "Shield #9: Export Trace",
             "type": "main",
