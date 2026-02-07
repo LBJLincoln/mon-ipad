@@ -11,6 +11,9 @@
 -- and Graph RAG misses community context.
 -- ============================================================
 
+-- Drop existing table to ensure correct schema (re-runnable)
+DROP TABLE IF EXISTS community_summaries CASCADE;
+
 CREATE TABLE IF NOT EXISTS community_summaries (
     id BIGSERIAL PRIMARY KEY,
     tenant_id TEXT NOT NULL DEFAULT 'benchmark',

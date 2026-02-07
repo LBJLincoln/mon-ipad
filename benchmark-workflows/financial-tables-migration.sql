@@ -4,6 +4,13 @@
 -- All tables include tenant_id for multi-tenancy
 -- ============================================================
 
+-- Drop existing tables to ensure correct schema (re-runnable)
+DROP TABLE IF EXISTS sales_data CASCADE;
+DROP TABLE IF EXISTS employees CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
+DROP TABLE IF EXISTS balance_sheet CASCADE;
+DROP TABLE IF EXISTS financials CASCADE;
+
 -- 1. Income Statement / Financials
 CREATE TABLE IF NOT EXISTS financials (
     id BIGSERIAL PRIMARY KEY,
