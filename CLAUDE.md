@@ -7,7 +7,10 @@ The system evaluates each pipeline's accuracy, latency, and cost, then proposes 
 workflow structure improvements ONLY when data shows a clear need (e.g. accuracy plateau,
 high error rate, routing failures).
 
-**Current phase: Evaluation & Iterative Improvement**
+**Current phase: Phase 1 — Baseline (200q, iterative improvement loop)**
+
+See `benchmark-workflows/evaluation-plan.md` for the full 5-phase strategy:
+Phase 1 (200q) → Phase 2 (1,000q) → Phase 3 (~10Kq) → Phase 4 (~100Kq) → Phase 5 (1M+q)
 
 ---
 
@@ -271,9 +274,9 @@ python run-comprehensive-eval.py --include-1000 --types standard,graph,quantitat
 - `TEST - SOTA 2026 - WF*.json` — Individual RAG pipeline workflows
 - `TEST - SOTA 2026 - Ingestion V3.1.json` — Document ingestion workflow
 
-### docs/ (GitHub Pages Dashboard — 9 tabs)
-- `index.html` — Interactive dashboard: Overview, Pipelines, Questions Explorer, Costs, Cross-Analysis, Knowledge Graph, **Workflow Evolution**, **DB Monitor**, **Execution Logs**
-- `data.json` — Live data feed: pipeline stats, DB coverage, questions, history, **workflow_changes**, **db_snapshots**, **execution_logs**
+### docs/ (GitHub Pages Dashboard — 10 tabs)
+- `index.html` — Interactive dashboard: Overview, Pipelines, Questions Explorer, Costs, Cross-Analysis, Knowledge Graph, Workflow Evolution, DB Monitor, **Phases**, Execution Logs
+- `data.json` — Live data feed: pipeline stats, DB coverage, questions, history, workflow_changes, db_snapshots, execution_logs, **evaluation_phases**, **current_phase**
 - `tested-questions.json` — Dedup manifest: all tested question IDs with timestamps
 
 ### logs/ (Structured Execution Traces)
@@ -288,6 +291,7 @@ python run-comprehensive-eval.py --include-1000 --types standard,graph,quantitat
   - New: `record_execution()` — detailed per-question trace with raw response, pipeline details
   - New: `snapshot_databases()` — takes and stores DB state snapshots
   - New: `record_workflow_change()` — logs workflow modifications for evolution timeline
+- `evaluation-plan.md` — **5-phase incremental evaluation strategy**: DB readiness checks, gate criteria, scaling projections (200q → 1M+q)
 - `n8n-github-logging-patches.md` — **Concrete n8n workflow modifications** for pushing errors/logs to GitHub directly from workflows
 - `deploy-corrected-workflows.py` — Deploys workflow JSON to n8n cloud via REST API
 - `populate-all-databases.py` — Master DB population (Supabase + Pinecone + Neo4j)
