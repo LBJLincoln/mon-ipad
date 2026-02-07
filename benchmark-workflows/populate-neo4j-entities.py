@@ -28,7 +28,7 @@ NEO4J_HOST = "38c949a2.databases.neo4j.io"
 NEO4J_USER = os.environ.get("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.environ["NEO4J_PASSWORD"]
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-LLM_MODEL = os.environ.get("LLM_ENTITY_MODEL", "google/gemini-2.5-flash-preview-05-20")
+LLM_MODEL = os.environ.get("LLM_ENTITY_MODEL", "google/gemini-2.0-flash-001")
 
 # Neo4j Aura Query API v2 (port 443, works through firewalls)
 NEO4J_HTTP_URL = f"https://{NEO4J_HOST}/db/neo4j/query/v2"
@@ -224,7 +224,6 @@ Return ONLY valid JSON, no explanation."""
         ],
         "temperature": 0.1,
         "max_tokens": 2000,
-        "response_format": {"type": "json_object"}
     }).encode()
 
     req = request.Request(
@@ -243,7 +242,13 @@ Return ONLY valid JSON, no explanation."""
         with request.urlopen(req, timeout=30) as resp:
             result = json.loads(resp.read())
             content = result["choices"][0]["message"]["content"]
-            # Parse JSON from response
+            # Strip markdown code blocks if present
+            content = content.strip()
+            if content.startswith("```"):
+                content = content.split("\n", 1)[1] if "\n" in content else content[3:]
+                if content.endswith("```"):
+                    content = content[:-3]
+                content = content.strip()
             data = json.loads(content)
             entities = data.get("entities", [])
             relationships = data.get("relationships", [])
