@@ -227,6 +227,45 @@
         "before_summary": "$node['SQL Error Handler (Self-Healing)'].json.retry_count",
         "after_summary": "$node['Diagnostic Error Handler (Q02)'].json.repair_context?.retry_count"
       }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/20/parameters/jsCode",
+      "value": "ISSUE-QT-13: ILIKE entity name matching added to Few-Shot SQL Generator prompt and examples",
+      "metadata": {
+        "reason": "ISSUE-QT-13 (P0): Text-to-SQL generates exact company_name = 'TechVision' when DB has 'TechVision Inc'. SUM(revenue) returns null (false match). Fix: add ILIKE '%term%' guidance to prompt + new entity_name few-shot example + dynamic example selector for company queries.",
+        "issue_ref": "ISSUE-QT-13",
+        "severity": "critical",
+        "node_name": "Few-Shot SQL Generator (Q01)",
+        "before_summary": "No guidance on entity name matching - LLM uses exact = match",
+        "after_summary": "ILIKE '%term%' instruction in ETAPE 2, new entity_name few-shot example, dynamic selector for company/revenue queries"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/6/parameters/jsCode",
+      "value": "ISSUE-QT-14: Null aggregation detection added to Result Aggregator",
+      "metadata": {
+        "reason": "ISSUE-QT-14 (P0): When SUM/AVG/COUNT returns null due to no matching rows (e.g., wrong company_name filter), Result Aggregator marks has_results=true and validation passes. This is a false positive. Fix: detect when all aggregation values are null in result rows, set has_results=false, null_aggregation=true, result_count=0.",
+        "issue_ref": "ISSUE-QT-14",
+        "severity": "critical",
+        "node_name": "Result Aggregator",
+        "before_summary": "No null aggregation detection - {sum: null} counted as valid result",
+        "after_summary": "Detects all-null aggregation rows, sets null_aggregation flag, has_results=false"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/nodes/8/parameters/jsCode",
+      "value": "ISSUE-QT-14: Response Formatter updated to handle null_aggregation status",
+      "metadata": {
+        "reason": "ISSUE-QT-14 (cascading): Response Formatter now checks null_aggregation flag from Result Aggregator. Returns status='NULL_RESULT' instead of 'SUCCESS', sets validation_status='NULL_AGGREGATION'.",
+        "issue_ref": "ISSUE-QT-14",
+        "severity": "critical",
+        "node_name": "Response Formatter",
+        "before_summary": "Always returns SUCCESS when validation_status=PASSED",
+        "after_summary": "Returns NULL_RESULT when null_aggregation=true, with NULL_AGGREGATION validation status"
+      }
     }
   ],
   "rollback_patches": [
@@ -290,7 +329,7 @@
       "value": "// CRITICAL: SQL Validator - Security Shield\nconst contextData = $node['Schema Context Builder'].json;\nlet llmResponse = {};\ntry {\n  llmResponse = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n} catch (e) {\n  throw new Error('SQL_GENERATION_ERROR: Invalid LLM response');\n}\n\nconst sql = String(llmResponse.sql || '').toUpperCase().trim();\n\n// FORBIDDEN PATTERNS - P0 Security\nconst forbiddenPatterns = [\n  /DELETE|UPDATE|INSERT|DROP|TRUNCATE|ALTER|CREATE/i,\n  /GRANT|REVOKE|EXEC|EXECUTE|CALL/i,\n  /--|;.*;|UNION.*SELECT/i,\n  /xp_|sp_|pg_sleep/i,\n  /\\bINTO\\s+OUTFILE\\b|\\bLOAD_FILE\\b/i\n];\n\nfor (const pattern of forbiddenPatterns) {\n  if (pattern.test(sql)) {\n    throw new Error(`SQL_INJECTION_DETECTED: Forbidden pattern detected - ${pattern.source}`);\n  }\n}\n\n// REQUIRED PATTERNS\nif (!sql.startsWith('SELECT')) {\n  throw new Error('SQL_VALIDATION_ERROR: Query must start with SELECT');\n}\n\nif (!sql.includes('LIMIT')) {\n  throw new Error('SQL_VALIDATION_ERROR: Query must include LIMIT clause');\n}\n\n// Extract LIMIT value\nconst limitMatch = sql.match(/LIMIT\\s+(\\d+)/i);\nif (limitMatch) {\n  const limitValue = parseInt(limitMatch[1]);\n  if (limitValue > 1000) {\n    throw new Error('SQL_VALIDATION_ERROR: LIMIT must be <= 1000');\n  }\n}\n\n// Check tenant_id filter\nif (!sql.includes('TENANT_ID')) {\n  throw new Error('SQL_VALIDATION_ERROR: Query must include tenant_id filter');\n}\n\n// Passed validation\nreturn {\n  ...contextData,\n  validated_sql: llmResponse.sql,\n  explanation: llmResponse.explanation,\n  validation_status: 'PASSED',\n  validation_timestamp: new Date().toISOString()\n};"
     }
   ],
-  "deployment_notes": "## WF4 Quantitative V2.0 - Patch Deployment Notes\n\n### Pre-deployment Checklist\n1. Create backup: `cp \"TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json\" backups/`\n2. Verify Postgres connectivity (Schema Introspection will now handle errors gracefully)\n3. Ensure environment variables are set: LLM_SQL_MODEL, OTEL_COLLECTOR_URL\n\n### Patch Summary (7 issues, 22 RFC 6902 operations)\n\n| Priority | Issue | Node | Change |\n|----------|-------|------|--------|\n| P0 | ISSUE-QT-02 | SQL Validator [4] | WHERE clause tenant_id enforcement |\n| P1 | ISSUE-QT-04 | Prepare SQL Request [20] | Few-shot examples (merged with Q01) |\n| P1 | ISSUE-QT-06 | SQL Validator [4] | LIMIT 1000 -> 100 |\n| P2 | ISSUE-QT-07 | Schema Introspection [1] | Add onError: continueErrorOutput |\n| P2 | ISSUE-QT-11 | OTEL Export [9] | Enriched trace attributes |\n| SOTA | Q01 | Node [20] renamed | Few-Shot SQL Generator (dynamic examples) |\n| SOTA | Q02 | Node [12] renamed | Diagnostic Error Handler (7 error categories) |\n\n### Breaking Changes\n- Node [20] renamed from 'Prepare SQL Request' to 'Few-Shot SQL Generator (Q01)'\n  - All connections updated. Any external $node[] references must be updated.\n- Node [12] renamed from 'SQL Error Handler (Self-Healing)' to 'Diagnostic Error Handler (Q02)'\n  - Repair Parser [15] updated. Q02 output structure changed (retry_count moved to repair_context).\n- LIMIT enforcement reduced from 1000 to 100 (may affect queries expecting >100 rows)\n\n### Post-deployment Validation\n1. Test SQL injection: send query with 'LIKE %TENANT_ID%' - should REJECT\n2. Test legitimate query with tenant_id = 'xxx' in WHERE - should PASS\n3. Test query with LIMIT 150 - should REJECT (>100)\n4. Test Schema Introspection failure (disconnect Postgres) - should not crash\n5. Verify OTEL traces contain new attributes\n6. Test few-shot example selection with aggregation query\n7. Test SQL error categorization (syntax error, column not found)\n\n### Rollback\nApply rollback_patches in order to revert all changes.\nTotal rollback operations: 12 (reverse order of forward patches).",
+  "deployment_notes": "## WF4 Quantitative V2.0 - Patch Deployment Notes\n\n### Pre-deployment Checklist\n1. Create backup: `cp \"TEST - SOTA 2026 - WF4 Quantitative V2.0 (1).json\" backups/`\n2. Verify Postgres connectivity (Schema Introspection will now handle errors gracefully)\n3. Ensure environment variables are set: LLM_SQL_MODEL, OTEL_COLLECTOR_URL\n\n### Patch Summary (9 issues, 25 RFC 6902 operations)\n\n| Priority | Issue | Node | Change |\n|----------|-------|------|--------|\n| P0 | ISSUE-QT-02 | SQL Validator [4] | WHERE clause tenant_id enforcement |\n| P0 | ISSUE-QT-13 | Few-Shot SQL Generator [20] | ILIKE entity name matching |\n| P0 | ISSUE-QT-14 | Result Aggregator [6] + Response Formatter [8] | Null aggregation detection |\n| P1 | ISSUE-QT-04 | Prepare SQL Request [20] | Few-shot examples (merged with Q01) |\n| P1 | ISSUE-QT-06 | SQL Validator [4] | LIMIT 1000 -> 100 |\n| P2 | ISSUE-QT-07 | Schema Introspection [1] | Add onError: continueErrorOutput |\n| P2 | ISSUE-QT-11 | OTEL Export [9] | Enriched trace attributes |\n| SOTA | Q01 | Node [20] renamed | Few-Shot SQL Generator (dynamic examples) |\n| SOTA | Q02 | Node [12] renamed | Diagnostic Error Handler (7 error categories) |\n\n### Breaking Changes\n- Node [20] renamed from 'Prepare SQL Request' to 'Few-Shot SQL Generator (Q01)'\n  - All connections updated. Any external $node[] references must be updated.\n- Node [12] renamed from 'SQL Error Handler (Self-Healing)' to 'Diagnostic Error Handler (Q02)'\n  - Repair Parser [15] updated. Q02 output structure changed (retry_count moved to repair_context).\n- LIMIT enforcement reduced from 1000 to 100 (may affect queries expecting >100 rows)\n\n### Post-deployment Validation\n1. Test SQL injection: send query with 'LIKE %TENANT_ID%' - should REJECT\n2. Test legitimate query with tenant_id = 'xxx' in WHERE - should PASS\n3. Test query with LIMIT 150 - should REJECT (>100)\n4. Test Schema Introspection failure (disconnect Postgres) - should not crash\n5. Verify OTEL traces contain new attributes\n6. Test few-shot example selection with aggregation query\n7. Test SQL error categorization (syntax error, column not found)\n\n### Rollback\nApply rollback_patches in order to revert all changes.\nTotal rollback operations: 12 (reverse order of forward patches).",
   "test_cases": [
     {
       "id": "TC-QT-01",
@@ -451,6 +490,65 @@
       "expected": {
         "onError": "continueErrorOutput",
         "workflow_should_not_crash": true
+      }
+    },
+    {
+      "id": "TC-QT-11",
+      "description": "ISSUE-QT-13: SQL Generator uses ILIKE for company_name instead of exact match",
+      "target_node": "Few-Shot SQL Generator (Q01)",
+      "input": {
+        "schema_context": "Table: financials\nColumns: id bigint, tenant_id text, company_id text, company_name text, fiscal_year int, period text, revenue numeric",
+        "query": "Quel est le revenue de TechVision pour FY 2023?",
+        "user_context": { "tenant_id": "benchmark", "groups": ["admin"] }
+      },
+      "expected": {
+        "prompt_contains": "ILIKE",
+        "prompt_contains_2": "entity_name",
+        "generated_sql_should_use": "ILIKE '%TechVision%'",
+        "generated_sql_should_not_use": "company_name = 'TechVision'"
+      }
+    },
+    {
+      "id": "TC-QT-12",
+      "description": "ISSUE-QT-14: Result Aggregator detects null SUM as false positive",
+      "target_node": "Result Aggregator",
+      "input": {
+        "sql_result": [{ "sum": null }],
+        "validated_sql": "SELECT SUM(revenue) FROM financials WHERE company_name = 'TechVision' AND tenant_id = 'benchmark' LIMIT 100"
+      },
+      "expected": {
+        "has_results": false,
+        "null_aggregation": true,
+        "result_count": 0
+      }
+    },
+    {
+      "id": "TC-QT-13",
+      "description": "ISSUE-QT-14: Result Aggregator passes valid SUM through normally",
+      "target_node": "Result Aggregator",
+      "input": {
+        "sql_result": [{ "sum": 6745000000 }],
+        "validated_sql": "SELECT SUM(revenue) FROM financials WHERE company_name ILIKE '%TechVision%' AND tenant_id = 'benchmark' LIMIT 100"
+      },
+      "expected": {
+        "has_results": true,
+        "null_aggregation": false,
+        "result_count": 1
+      }
+    },
+    {
+      "id": "TC-QT-14",
+      "description": "ISSUE-QT-14: Response Formatter returns NULL_RESULT status on null aggregation",
+      "target_node": "Response Formatter",
+      "input": {
+        "null_aggregation": true,
+        "has_results": false,
+        "result_count": 0,
+        "validation_status": "PASSED"
+      },
+      "expected": {
+        "status": "NULL_RESULT",
+        "metadata.validation_status": "NULL_AGGREGATION"
       }
     }
   ]
