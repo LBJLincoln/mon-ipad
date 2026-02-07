@@ -414,18 +414,27 @@ def parse_context_docs(context):
 # ============================================================
 
 def populate_from_contexts():
-    """Main: extract entities from all multi-hop question contexts and load into Neo4j."""
+    """Main: extract entities from all multi-hop question contexts and load into Neo4j.
+
+    Uses fast heuristic extraction by default (no LLM calls).
+    Pass --llm flag to use LLM extraction (slow, 1000 API calls).
+    """
+    use_llm = "--llm" in sys.argv
     print("=" * 60)
     print("NEO4J ENTITY GRAPH POPULATION")
     print(f"Time: {datetime.now().isoformat()}")
+    print(f"Mode: {'LLM extraction' if use_llm else 'Heuristic (fast)'}")
     print("=" * 60)
 
-    # Setup constraints
+    # Step 1: Always load curated entities first (covers benchmark-50x2 questions)
     print("\n1. Setting up Neo4j indexes...")
     neo4j_setup_constraints()
 
-    # Fetch questions with context from Supabase
-    print("\n2. Fetching multi-hop questions from Supabase...")
+    print("\n2. Loading curated entities (for benchmark-50x2 graph questions)...")
+    populate_from_known_entities()
+
+    # Step 2: Fetch HF question contexts from Supabase and extract more entities
+    print("\n3. Fetching multi-hop questions from Supabase...")
     all_questions = []
     offset = 0
     batch_size = 500
@@ -443,60 +452,55 @@ def populate_from_contexts():
     print(f"   Total questions with context: {len(all_questions)}")
 
     if not all_questions:
-        print("\n  WARNING: No questions with context found in Supabase.")
-        print("  Falling back to generating entities from known datasets...")
-        populate_from_known_entities()
-        return
+        print("   No HF questions in Supabase yet — curated entities only.")
+        print("   Run push-all-datasets.py first, then re-run this script.")
+    else:
+        # Extract entities from HF context docs (heuristic = fast, no API calls)
+        print(f"\n4. Extracting entities from {len(all_questions)} HF questions...")
+        all_entities = []
+        all_relationships = []
+        seen_names = set()
 
-    # Extract entities and create graph
-    print(f"\n3. Extracting entities and creating graph...")
-    total_entities = 0
-    total_relationships = 0
-    all_entity_names = set()
+        for i, q in enumerate(all_questions):
+            if i % 200 == 0:
+                print(f"   Processing {i+1}/{len(all_questions)}...")
 
-    for i, q in enumerate(all_questions):
-        if i % 50 == 0:
-            print(f"   Processing question {i+1}/{len(all_questions)}...")
+            docs = parse_context_docs(q["context"])
+            if not docs:
+                continue
 
-        # Parse context documents
-        docs = parse_context_docs(q["context"])
-        if not docs:
-            continue
+            if use_llm:
+                extracted = extract_entities_llm(q["question"], docs)
+            else:
+                extracted = extract_entities_heuristic(q["question"], docs)
 
-        # Extract entities
-        extracted = extract_entities_llm(q["question"], docs)
+            for e in extracted.get("entities", []):
+                if e["name"] not in seen_names:
+                    all_entities.append(e)
+                    seen_names.add(e["name"])
+            all_relationships.extend(extracted.get("relationships", []))
 
-        entities = extracted.get("entities", [])
-        relationships = extracted.get("relationships", [])
+        print(f"   Extracted {len(all_entities)} unique entities, {len(all_relationships)} relationships")
 
-        if entities:
-            count = neo4j_create_entities(entities)
-            total_entities += count
-            for e in entities:
-                all_entity_names.add(e["name"])
-
-        if relationships:
-            count = neo4j_create_relationships(relationships)
-            total_relationships += count
-
-        # Rate limit for LLM calls
-        if OPENROUTER_API_KEY and i % 10 == 9:
-            time.sleep(0.5)
-
-    print(f"\n   Entities created: {total_entities}")
-    print(f"   Relationships created: {total_relationships}")
-    print(f"   Unique entity names: {len(all_entity_names)}")
+        # Batch write to Neo4j
+        print(f"\n5. Writing to Neo4j...")
+        entity_count = neo4j_create_entities(all_entities)
+        print(f"   Created {entity_count} entity nodes")
+        rel_count = neo4j_create_relationships(all_relationships)
+        print(f"   Created {rel_count} relationships")
 
     # Verify
-    print("\n4. Verifying Neo4j graph...")
-    verify = neo4j_execute([
-        {"statement": "MATCH (n:Entity) RETURN labels(n) as labels, count(*) as cnt"},
-        {"statement": "MATCH ()-[r]->() RETURN type(r) as rel_type, count(*) as cnt ORDER BY cnt DESC LIMIT 15"}
-    ])
-    if verify and verify.get("results"):
-        for r in verify["results"]:
-            for row in r.get("data", []):
-                print(f"   {row.get('row', row)}")
+    print(f"\n6. Verifying Neo4j graph...")
+    result = neo4j_execute_single(
+        "MATCH (n:Entity) RETURN count(n) as nodes"
+    )
+    if result and result.get("data"):
+        print(f"   Total nodes: {result['data']}")
+    result2 = neo4j_execute_single(
+        "MATCH ()-[r]->() RETURN count(r) as rels"
+    )
+    if result2 and result2.get("data"):
+        print(f"   Total relationships: {result2['data']}")
 
     print(f"\n{'='*60}")
     print("NEO4J POPULATION COMPLETE")
