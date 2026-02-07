@@ -518,171 +518,268 @@ def populate_from_known_entities():
     # Curated entities spanning typical multi-hop QA topics
     entities = [
         # People - Scientists & Inventors
-        {"name": "Albert Einstein", "type": "Person", "description": "Theoretical physicist, developed theory of relativity"},
-        {"name": "Marie Curie", "type": "Person", "description": "Physicist and chemist, pioneer in radioactivity research"},
-        {"name": "Nikola Tesla", "type": "Person", "description": "Inventor, electrical and mechanical engineer"},
-        {"name": "Thomas Edison", "type": "Person", "description": "Inventor and businessman, developed the phonograph and light bulb"},
-        {"name": "Isaac Newton", "type": "Person", "description": "Mathematician, physicist, astronomer, author of Principia Mathematica"},
-        {"name": "Charles Darwin", "type": "Person", "description": "Naturalist, developed the theory of evolution by natural selection"},
-        {"name": "Alan Turing", "type": "Person", "description": "Mathematician and computer scientist, father of theoretical computer science"},
-        {"name": "Ada Lovelace", "type": "Person", "description": "Mathematician, first computer programmer"},
-        {"name": "Alexander Fleming", "type": "Person", "description": "Bacteriologist, discovered penicillin"},
-        {"name": "Louis Pasteur", "type": "Person", "description": "Microbiologist and chemist, developed pasteurization"},
+        {"name": "Albert Einstein", "type": "Person", "description": "Theoretical physicist, developed theory of relativity, Nobel Prize winner, worked at Princeton"},
+        {"name": "Marie Curie", "type": "Person", "description": "Physicist and chemist, pioneer in radioactivity research, Nobel Prize winner in Physics and Chemistry"},
+        {"name": "Nikola Tesla", "type": "Person", "description": "Inventor, electrical and mechanical engineer, pioneer of alternating current, rival of Edison"},
+        {"name": "Thomas Edison", "type": "Person", "description": "Inventor and businessman, developed the phonograph and light bulb, pioneer of direct current"},
+        {"name": "Isaac Newton", "type": "Person", "description": "Mathematician, physicist, astronomer, discovered gravity, author of Principia Mathematica"},
+        {"name": "Charles Darwin", "type": "Person", "description": "Naturalist, developed the theory of evolution by natural selection, studied at Cambridge"},
+        {"name": "Alan Turing", "type": "Person", "description": "Mathematician and computer scientist, father of theoretical computer science and artificial intelligence, worked at Bletchley Park"},
+        {"name": "Ada Lovelace", "type": "Person", "description": "Mathematician, first computer programmer, pioneer of computing"},
+        {"name": "Alexander Fleming", "type": "Person", "description": "Bacteriologist, discovered penicillin, Nobel Prize winner, pioneer of antibiotics and disease prevention"},
+        {"name": "Louis Pasteur", "type": "Person", "description": "Microbiologist and chemist, developed pasteurization and vaccination, father of germ theory and disease prevention"},
+        {"name": "Edward Jenner", "type": "Person", "description": "Physician, pioneer of vaccination, developed the smallpox vaccine"},
+        {"name": "Galileo Galilei", "type": "Person", "description": "Italian astronomer and physicist, father of modern observational astronomy"},
+        {"name": "Alexander Graham Bell", "type": "Person", "description": "Inventor, scientist, engineer who invented the telephone"},
+        {"name": "Pythagoras", "type": "Person", "description": "Greek philosopher and mathematician, created the Pythagorean theorem"},
+        {"name": "Tim Berners-Lee", "type": "Person", "description": "Computer scientist, inventor of the World Wide Web at CERN"},
+        {"name": "Guglielmo Marconi", "type": "Person", "description": "Italian inventor, pioneer of long-distance radio transmission"},
 
         # People - Leaders & Historical Figures
-        {"name": "Winston Churchill", "type": "Person", "description": "British Prime Minister during World War II"},
-        {"name": "Franklin D. Roosevelt", "type": "Person", "description": "32nd President of the United States"},
-        {"name": "Napoleon Bonaparte", "type": "Person", "description": "French military leader and Emperor"},
-        {"name": "Mahatma Gandhi", "type": "Person", "description": "Leader of Indian independence movement"},
-        {"name": "Nelson Mandela", "type": "Person", "description": "Anti-apartheid activist, first Black president of South Africa"},
-        {"name": "Abraham Lincoln", "type": "Person", "description": "16th President of the United States, abolished slavery"},
-        {"name": "Cleopatra", "type": "Person", "description": "Last active ruler of the Ptolemaic Kingdom of Egypt"},
-        {"name": "Leonardo da Vinci", "type": "Person", "description": "Italian polymath: painter, sculptor, architect, scientist, inventor"},
+        {"name": "Winston Churchill", "type": "Person", "description": "British Prime Minister during World War II, led Britain through WWII allied with Roosevelt"},
+        {"name": "Franklin D. Roosevelt", "type": "Person", "description": "32nd President of the United States, WWII leader allied with Churchill"},
+        {"name": "Napoleon Bonaparte", "type": "Person", "description": "French military leader and Emperor, based in Paris, connected to the Louvre"},
+        {"name": "Mahatma Gandhi", "type": "Person", "description": "Leader of Indian independence movement, advocate of nonviolent resistance, studied law in London"},
+        {"name": "Nelson Mandela", "type": "Person", "description": "Anti-apartheid activist, first Black president of South Africa, Nobel Peace Prize winner"},
+        {"name": "Abraham Lincoln", "type": "Person", "description": "16th President of the United States, abolished slavery, based in Washington D.C."},
+        {"name": "Cleopatra", "type": "Person", "description": "Last active ruler of the Ptolemaic Kingdom of Egypt, based in Cairo"},
+        {"name": "Leonardo da Vinci", "type": "Person", "description": "Italian polymath: painter of the Mona Lisa, sculptor, architect, scientist, inventor, born in Florence"},
 
         # People - Artists & Writers
-        {"name": "William Shakespeare", "type": "Person", "description": "English playwright and poet"},
-        {"name": "Wolfgang Amadeus Mozart", "type": "Person", "description": "Prolific and influential composer of the Classical period"},
-        {"name": "Pablo Picasso", "type": "Person", "description": "Spanish painter and sculptor, co-founder of Cubism"},
-        {"name": "Vincent van Gogh", "type": "Person", "description": "Dutch Post-Impressionist painter"},
+        {"name": "William Shakespeare", "type": "Person", "description": "English playwright and poet, wrote Romeo and Juliet, active in London"},
+        {"name": "Wolfgang Amadeus Mozart", "type": "Person", "description": "Prolific and influential composer of the Classical period, born in Salzburg, lived in Vienna"},
+        {"name": "Pablo Picasso", "type": "Person", "description": "Spanish painter and sculptor, co-founder of Cubism, worked in Paris"},
+        {"name": "Vincent van Gogh", "type": "Person", "description": "Dutch Post-Impressionist painter, worked in Paris"},
         {"name": "Frida Kahlo", "type": "Person", "description": "Mexican painter known for self-portraits"},
         {"name": "Mark Twain", "type": "Person", "description": "American author, humorist, and lecturer"},
+        {"name": "Antonio Vivaldi", "type": "Person", "description": "Italian Baroque composer, composed the Four Seasons"},
 
         # People - Film Directors
-        {"name": "Steven Spielberg", "type": "Person", "description": "American film director and producer"},
-        {"name": "Alfred Hitchcock", "type": "Person", "description": "English filmmaker, Master of Suspense"},
-        {"name": "Stanley Kubrick", "type": "Person", "description": "American film director and producer"},
-        {"name": "Martin Scorsese", "type": "Person", "description": "American film director and producer"},
+        {"name": "Steven Spielberg", "type": "Person", "description": "American film director and producer, based in New York City and Hollywood"},
+        {"name": "Alfred Hitchcock", "type": "Person", "description": "English filmmaker, Master of Suspense, worked in London and Hollywood"},
+        {"name": "Stanley Kubrick", "type": "Person", "description": "American film director and producer, worked in London"},
+        {"name": "Martin Scorsese", "type": "Person", "description": "American film director and producer, based in New York City"},
         {"name": "Frank Tuttle", "type": "Person", "description": "American film director"},
         {"name": "Sergei Yutkevich", "type": "Person", "description": "Soviet film director"},
 
         # Organizations
-        {"name": "NASA", "type": "Organization", "description": "National Aeronautics and Space Administration"},
-        {"name": "European Space Agency", "type": "Organization", "description": "Intergovernmental organization of 22 member states"},
-        {"name": "MIT", "type": "Organization", "description": "Massachusetts Institute of Technology"},
-        {"name": "Stanford University", "type": "Organization", "description": "Private research university in Stanford, California"},
-        {"name": "Harvard University", "type": "Organization", "description": "Private Ivy League research university"},
-        {"name": "University of Cambridge", "type": "Organization", "description": "Collegiate research university in Cambridge, England"},
+        {"name": "NASA", "type": "Organization", "description": "National Aeronautics and Space Administration, headquartered in Washington D.C."},
+        {"name": "European Space Agency", "type": "Organization", "description": "Intergovernmental organization of 22 member states, headquartered in Paris"},
+        {"name": "MIT", "type": "Organization", "description": "Massachusetts Institute of Technology, researches Artificial Intelligence"},
+        {"name": "Stanford University", "type": "Organization", "description": "Private research university in Stanford, California, researches Artificial Intelligence, connected to Google"},
+        {"name": "Harvard University", "type": "Organization", "description": "Private Ivy League research university in Cambridge, Massachusetts"},
+        {"name": "University of Cambridge", "type": "Organization", "description": "Collegiate research university in Cambridge, England, where Newton, Darwin, and Turing studied"},
         {"name": "University of Oxford", "type": "Organization", "description": "Collegiate research university in Oxford, England"},
-        {"name": "CERN", "type": "Organization", "description": "European Organization for Nuclear Research"},
-        {"name": "World Health Organization", "type": "Organization", "description": "Specialized agency of the United Nations for international public health"},
+        {"name": "Princeton University", "type": "Organization", "description": "Private research university in Princeton, New Jersey, where Einstein worked"},
+        {"name": "CERN", "type": "Organization", "description": "European Organization for Nuclear Research, located near Geneva, birthplace of the World Wide Web"},
+        {"name": "World Health Organization", "type": "Organization", "description": "Specialized agency of the United Nations for international public health, studies diseases including COVID-19 and Malaria"},
         {"name": "United Nations", "type": "Organization", "description": "International organization for cooperation among sovereign states"},
         {"name": "Nobel Foundation", "type": "Organization", "description": "Private institution managing the finances and administration of the Nobel Prizes"},
-        {"name": "Royal Society", "type": "Organization", "description": "Learned society and the United Kingdom national academy of sciences"},
-        {"name": "Apple Inc", "type": "Organization", "description": "American multinational technology company"},
-        {"name": "Google", "type": "Organization", "description": "American multinational technology company specializing in search"},
-        {"name": "Microsoft", "type": "Organization", "description": "American multinational technology corporation"},
+        {"name": "Royal Society", "type": "Organization", "description": "Learned society and the United Kingdom national academy of sciences, in London"},
+        {"name": "Apple Inc", "type": "Organization", "description": "American multinational technology company, uses Artificial Intelligence"},
+        {"name": "Google", "type": "Organization", "description": "American multinational technology company specializing in search, uses Artificial Intelligence, founded by Stanford alumni"},
+        {"name": "Microsoft", "type": "Organization", "description": "American multinational technology corporation, uses Artificial Intelligence"},
+        {"name": "Bletchley Park", "type": "Organization", "description": "British codebreaking centre during WWII where Alan Turing worked on the Enigma machine"},
 
         # Cities
         {"name": "London", "type": "City", "description": "Capital of England and the United Kingdom"},
-        {"name": "Paris", "type": "City", "description": "Capital of France"},
+        {"name": "Paris", "type": "City", "description": "Capital of France, home of the Louvre Museum"},
         {"name": "New York City", "type": "City", "description": "Most populous city in the United States"},
         {"name": "Berlin", "type": "City", "description": "Capital of Germany"},
         {"name": "Tokyo", "type": "City", "description": "Capital of Japan"},
         {"name": "Rome", "type": "City", "description": "Capital city of Italy"},
-        {"name": "Washington D.C.", "type": "City", "description": "Capital of the United States"},
+        {"name": "Washington D.C.", "type": "City", "description": "Capital of the United States, home of the Smithsonian Institution"},
         {"name": "Moscow", "type": "City", "description": "Capital of Russia"},
         {"name": "Beijing", "type": "City", "description": "Capital of China"},
         {"name": "Cairo", "type": "City", "description": "Capital of Egypt"},
-        {"name": "Vienna", "type": "City", "description": "Capital of Austria"},
+        {"name": "Vienna", "type": "City", "description": "Capital of Austria, where Mozart lived"},
         {"name": "Salzburg", "type": "City", "description": "City in Austria, birthplace of Mozart"},
-        {"name": "Florence", "type": "City", "description": "City in central Italy, birthplace of the Renaissance"},
+        {"name": "Florence", "type": "City", "description": "City in central Italy, birthplace of the Renaissance and Leonardo da Vinci"},
         {"name": "Zurich", "type": "City", "description": "City in Switzerland, global financial center"},
-        {"name": "Princeton", "type": "City", "description": "Municipality in New Jersey, home of Princeton University"},
+        {"name": "Princeton", "type": "City", "description": "Municipality in New Jersey, home of Princeton University and Albert Einstein"},
+        {"name": "Geneva", "type": "City", "description": "City in Switzerland, hosts CERN and many UN organizations"},
+        {"name": "Cambridge", "type": "City", "description": "City in England, home of the University of Cambridge"},
+        {"name": "Oxford", "type": "City", "description": "City in England, home of the University of Oxford"},
+        {"name": "Madrid", "type": "City", "description": "Capital of Spain, home of the Museo del Prado"},
 
         # Museums
-        {"name": "Louvre Museum", "type": "Museum", "description": "World's largest art museum in Paris"},
+        {"name": "Louvre Museum", "type": "Museum", "description": "World's largest art museum in Paris, houses the Mona Lisa by Leonardo da Vinci"},
         {"name": "British Museum", "type": "Museum", "description": "Museum of human history and culture in London"},
         {"name": "Metropolitan Museum of Art", "type": "Museum", "description": "Largest art museum in the Americas in New York City"},
         {"name": "Smithsonian Institution", "type": "Museum", "description": "Group of museums and education centers in Washington D.C."},
         {"name": "Museo del Prado", "type": "Museum", "description": "National art museum in Madrid, Spain"},
+        {"name": "National Gallery", "type": "Museum", "description": "Art museum in Trafalgar Square, London"},
 
         # Technologies
-        {"name": "Internet", "type": "Technology", "description": "Global system of interconnected computer networks"},
-        {"name": "World Wide Web", "type": "Technology", "description": "Information system enabling documents to be connected via hypertext links"},
-        {"name": "Artificial Intelligence", "type": "Technology", "description": "Intelligence demonstrated by machines"},
-        {"name": "Nuclear Energy", "type": "Technology", "description": "Energy released during nuclear fission or fusion"},
+        {"name": "Internet", "type": "Technology", "description": "Global system of interconnected computer networks, evolved from ARPANET"},
+        {"name": "World Wide Web", "type": "Technology", "description": "Information system enabling documents to be connected via hypertext links, created at CERN by Tim Berners-Lee"},
+        {"name": "Artificial Intelligence", "type": "Technology", "description": "Intelligence demonstrated by machines, field pioneered by Alan Turing"},
+        {"name": "Nuclear Energy", "type": "Technology", "description": "Energy released during nuclear fission or fusion, used for electricity generation"},
         {"name": "Theory of Relativity", "type": "Technology", "description": "Einstein's theory of physics describing gravity and spacetime"},
-        {"name": "Penicillin", "type": "Technology", "description": "Group of antibiotics derived from Penicillium fungi"},
-        {"name": "Vaccination", "type": "Technology", "description": "Administration of an agent to stimulate immune response"},
-        {"name": "Electricity", "type": "Technology", "description": "Set of physical phenomena associated with electric charge"},
-        {"name": "Telephone", "type": "Technology", "description": "Telecommunications device for transmitting speech"},
-        {"name": "Steam Engine", "type": "Technology", "description": "Heat engine performing mechanical work using steam"},
+        {"name": "Penicillin", "type": "Technology", "description": "Group of antibiotics derived from Penicillium fungi, discovered by Alexander Fleming, protects against bacterial infections"},
+        {"name": "Vaccination", "type": "Technology", "description": "Administration of an agent to stimulate immune response, developed by Pasteur and Jenner, protects against diseases"},
+        {"name": "Electricity", "type": "Technology", "description": "Set of physical phenomena associated with electric charge, used for power generation"},
+        {"name": "Telephone", "type": "Technology", "description": "Telecommunications device for transmitting speech, invented by Alexander Graham Bell"},
+        {"name": "Steam Engine", "type": "Technology", "description": "Heat engine performing mechanical work using steam, preceded electricity"},
+        {"name": "Radioactivity", "type": "Technology", "description": "Emission of radiation by unstable atomic nuclei, studied by Marie Curie"},
+        {"name": "Evolution", "type": "Technology", "description": "Theory of evolution by natural selection, developed by Charles Darwin"},
+        {"name": "Gravity", "type": "Technology", "description": "Fundamental force of nature, described by Isaac Newton in Principia Mathematica"},
+        {"name": "Computer Science", "type": "Technology", "description": "Study of computation and information processing, pioneered by Alan Turing"},
+        {"name": "Light Bulb", "type": "Technology", "description": "Electric light source, developed by Thomas Edison"},
+        {"name": "Alternating Current", "type": "Technology", "description": "Electric current that reverses direction, developed by Nikola Tesla"},
+        {"name": "Direct Current", "type": "Technology", "description": "Electric current that flows in one direction, championed by Thomas Edison"},
+        {"name": "Pasteurization", "type": "Technology", "description": "Process of heat treatment to eliminate pathogens, developed by Louis Pasteur"},
+        {"name": "Germ Theory", "type": "Technology", "description": "Theory that diseases are caused by microorganisms, developed by Louis Pasteur"},
+        {"name": "ARPANET", "type": "Technology", "description": "Early packet-switching network, predecessor and foundation of the Internet"},
+        {"name": "Mona Lisa", "type": "Technology", "description": "Famous portrait painting by Leonardo da Vinci, housed at the Louvre Museum in Paris"},
+        {"name": "Machine Learning", "type": "Technology", "description": "Subset of artificial intelligence where systems learn patterns from data"},
+        {"name": "CRISPR", "type": "Technology", "description": "Gene editing technology for modifying DNA sequences"},
+        {"name": "Enigma Machine", "type": "Technology", "description": "Cipher machine used in WWII, cracked by Alan Turing at Bletchley Park"},
 
         # Diseases
-        {"name": "COVID-19", "type": "Disease", "description": "Infectious disease caused by the SARS-CoV-2 virus"},
+        {"name": "COVID-19", "type": "Disease", "description": "Infectious disease caused by the SARS-CoV-2 virus, global pandemic"},
         {"name": "Influenza", "type": "Disease", "description": "Infectious disease caused by influenza viruses"},
         {"name": "Cancer", "type": "Disease", "description": "Group of diseases involving abnormal cell growth"},
-        {"name": "Tuberculosis", "type": "Disease", "description": "Infectious disease caused by Mycobacterium tuberculosis"},
+        {"name": "Tuberculosis", "type": "Disease", "description": "Infectious disease caused by Mycobacterium tuberculosis, treated with antibiotics"},
         {"name": "Malaria", "type": "Disease", "description": "Infectious disease caused by Plasmodium parasites"},
+        {"name": "Smallpox", "type": "Disease", "description": "Infectious disease eradicated through vaccination, first vaccine by Edward Jenner"},
+        {"name": "Bacterial Infections", "type": "Disease", "description": "Infections caused by bacteria, treated with antibiotics like penicillin"},
     ]
 
     # Relationships based on known connections
     relationships = [
-        # Scientific discoveries
+        # ============================================================
+        # Scientific discoveries & creations
+        # ============================================================
         {"source": "Albert Einstein", "target": "Theory of Relativity", "type": "A_CREE"},
         {"source": "Albert Einstein", "target": "Princeton", "type": "CONNECTE"},
+        {"source": "Albert Einstein", "target": "Princeton University", "type": "CONNECTE"},
         {"source": "Albert Einstein", "target": "Nobel Foundation", "type": "CONNECTE"},
+        {"source": "Albert Einstein", "target": "Zurich", "type": "ETUDIE"},
         {"source": "Marie Curie", "target": "Nobel Foundation", "type": "CONNECTE"},
         {"source": "Marie Curie", "target": "Paris", "type": "CONNECTE"},
         {"source": "Marie Curie", "target": "Cancer", "type": "ETUDIE"},
+        {"source": "Marie Curie", "target": "Radioactivity", "type": "A_CREE"},
+        {"source": "Marie Curie", "target": "Radioactivity", "type": "ETUDIE"},
         {"source": "Alexander Fleming", "target": "Penicillin", "type": "A_CREE"},
+        {"source": "Alexander Fleming", "target": "London", "type": "CONNECTE"},
+        {"source": "Alexander Fleming", "target": "Nobel Foundation", "type": "CONNECTE"},
+        {"source": "Alexander Fleming", "target": "Louis Pasteur", "type": "CONNECTE"},
         {"source": "Penicillin", "target": "Tuberculosis", "type": "PROTEGE_CONTRE"},
+        {"source": "Penicillin", "target": "Bacterial Infections", "type": "PROTEGE_CONTRE"},
+        {"source": "Penicillin", "target": "Vaccination", "type": "CONNECTE"},
         {"source": "Louis Pasteur", "target": "Vaccination", "type": "A_CREE"},
+        {"source": "Louis Pasteur", "target": "Pasteurization", "type": "A_CREE"},
+        {"source": "Louis Pasteur", "target": "Germ Theory", "type": "A_CREE"},
         {"source": "Louis Pasteur", "target": "Paris", "type": "CONNECTE"},
+        {"source": "Edward Jenner", "target": "Vaccination", "type": "A_CREE"},
+        {"source": "Edward Jenner", "target": "London", "type": "CONNECTE"},
         {"source": "Vaccination", "target": "Influenza", "type": "PROTEGE_CONTRE"},
         {"source": "Vaccination", "target": "COVID-19", "type": "PROTEGE_CONTRE"},
+        {"source": "Vaccination", "target": "Smallpox", "type": "PROTEGE_CONTRE"},
         {"source": "Charles Darwin", "target": "University of Cambridge", "type": "ETUDIE"},
+        {"source": "Charles Darwin", "target": "Evolution", "type": "A_CREE"},
         {"source": "Charles Darwin", "target": "London", "type": "CONNECTE"},
         {"source": "Charles Darwin", "target": "Royal Society", "type": "CONNECTE"},
         {"source": "Isaac Newton", "target": "University of Cambridge", "type": "ETUDIE"},
+        {"source": "Isaac Newton", "target": "Gravity", "type": "A_CREE"},
         {"source": "Isaac Newton", "target": "Royal Society", "type": "CONNECTE"},
         {"source": "Isaac Newton", "target": "London", "type": "CONNECTE"},
+        {"source": "Galileo Galilei", "target": "Rome", "type": "CONNECTE"},
+        {"source": "Galileo Galilei", "target": "Florence", "type": "CONNECTE"},
+        {"source": "Pythagoras", "target": "Rome", "type": "CONNECTE"},
 
-        # Computer science
+        # ============================================================
+        # Computer science & AI
+        # ============================================================
         {"source": "Alan Turing", "target": "Artificial Intelligence", "type": "A_CREE"},
+        {"source": "Alan Turing", "target": "Computer Science", "type": "A_CREE"},
         {"source": "Alan Turing", "target": "University of Cambridge", "type": "ETUDIE"},
         {"source": "Alan Turing", "target": "London", "type": "CONNECTE"},
+        {"source": "Alan Turing", "target": "Bletchley Park", "type": "CONNECTE"},
+        {"source": "Alan Turing", "target": "Enigma Machine", "type": "CONNECTE"},
         {"source": "Ada Lovelace", "target": "London", "type": "CONNECTE"},
+        {"source": "Ada Lovelace", "target": "Computer Science", "type": "CONNECTE"},
         {"source": "Ada Lovelace", "target": "Artificial Intelligence", "type": "CONNECTE"},
+        {"source": "Machine Learning", "target": "Artificial Intelligence", "type": "SOUS_ENSEMBLE_DE"},
+        {"source": "Computer Science", "target": "Artificial Intelligence", "type": "CONNECTE"},
 
-        # Invention connections
+        # ============================================================
+        # Inventions & electricity
+        # ============================================================
         {"source": "Nikola Tesla", "target": "Electricity", "type": "A_CREE"},
+        {"source": "Nikola Tesla", "target": "Alternating Current", "type": "A_CREE"},
         {"source": "Thomas Edison", "target": "Electricity", "type": "UTILISE"},
+        {"source": "Thomas Edison", "target": "Light Bulb", "type": "A_CREE"},
+        {"source": "Thomas Edison", "target": "Direct Current", "type": "A_CREE"},
         {"source": "Thomas Edison", "target": "Telephone", "type": "CONNECTE"},
         {"source": "Nikola Tesla", "target": "Thomas Edison", "type": "CONNECTE"},
         {"source": "Nikola Tesla", "target": "New York City", "type": "CONNECTE"},
         {"source": "Thomas Edison", "target": "New York City", "type": "CONNECTE"},
+        {"source": "Alternating Current", "target": "Electricity", "type": "CONNECTE"},
+        {"source": "Direct Current", "target": "Electricity", "type": "CONNECTE"},
+        {"source": "Light Bulb", "target": "Electricity", "type": "UTILISE"},
+        {"source": "Alexander Graham Bell", "target": "Telephone", "type": "A_CREE"},
+        {"source": "Alexander Graham Bell", "target": "London", "type": "CONNECTE"},
+        {"source": "Tim Berners-Lee", "target": "World Wide Web", "type": "A_CREE"},
+        {"source": "Tim Berners-Lee", "target": "CERN", "type": "CONNECTE"},
+        {"source": "Tim Berners-Lee", "target": "London", "type": "CONNECTE"},
 
-        # Space & Technology organizations
+        # ============================================================
+        # Space & technology organizations
+        # ============================================================
         {"source": "NASA", "target": "Washington D.C.", "type": "CONNECTE"},
         {"source": "NASA", "target": "Nuclear Energy", "type": "UTILISE"},
         {"source": "European Space Agency", "target": "Paris", "type": "CONNECTE"},
         {"source": "CERN", "target": "Zurich", "type": "CONNECTE"},
+        {"source": "CERN", "target": "Geneva", "type": "CONNECTE"},
         {"source": "CERN", "target": "Nuclear Energy", "type": "ETUDIE"},
         {"source": "World Wide Web", "target": "CERN", "type": "A_CREE"},
         {"source": "World Wide Web", "target": "Internet", "type": "ETEND"},
+        {"source": "Bletchley Park", "target": "London", "type": "CONNECTE"},
+        {"source": "Bletchley Park", "target": "Enigma Machine", "type": "CONNECTE"},
 
+        # ============================================================
         # Tech companies
+        # ============================================================
         {"source": "Apple Inc", "target": "Artificial Intelligence", "type": "UTILISE"},
         {"source": "Google", "target": "Artificial Intelligence", "type": "UTILISE"},
         {"source": "Microsoft", "target": "Artificial Intelligence", "type": "UTILISE"},
         {"source": "Google", "target": "Internet", "type": "UTILISE"},
         {"source": "Google", "target": "Stanford University", "type": "CONNECTE"},
+        {"source": "Google", "target": "Machine Learning", "type": "UTILISE"},
         {"source": "Apple Inc", "target": "New York City", "type": "CONNECTE"},
         {"source": "Microsoft", "target": "New York City", "type": "CONNECTE"},
 
-        # Universities
+        # ============================================================
+        # Universities & education
+        # ============================================================
         {"source": "MIT", "target": "Artificial Intelligence", "type": "ETUDIE"},
         {"source": "Stanford University", "target": "Artificial Intelligence", "type": "ETUDIE"},
         {"source": "Harvard University", "target": "Cambridge", "type": "CONNECTE"},
+        {"source": "University of Cambridge", "target": "Cambridge", "type": "CONNECTE"},
+        {"source": "University of Oxford", "target": "Oxford", "type": "CONNECTE"},
         {"source": "University of Oxford", "target": "London", "type": "CONNECTE"},
+        {"source": "Princeton University", "target": "Princeton", "type": "CONNECTE"},
+        {"source": "MIT", "target": "Computer Science", "type": "ETUDIE"},
+        {"source": "Stanford University", "target": "Computer Science", "type": "ETUDIE"},
 
-        # Health
+        # ============================================================
+        # Health & disease
+        # ============================================================
         {"source": "World Health Organization", "target": "COVID-19", "type": "ETUDIE"},
         {"source": "World Health Organization", "target": "Malaria", "type": "ETUDIE"},
+        {"source": "World Health Organization", "target": "Tuberculosis", "type": "ETUDIE"},
+        {"source": "World Health Organization", "target": "Cancer", "type": "ETUDIE"},
+        {"source": "World Health Organization", "target": "Influenza", "type": "ETUDIE"},
         {"source": "World Health Organization", "target": "United Nations", "type": "SOUS_ENSEMBLE_DE"},
+        {"source": "World Health Organization", "target": "Geneva", "type": "CONNECTE"},
+        {"source": "Germ Theory", "target": "Vaccination", "type": "CONNECTE"},
+        {"source": "Germ Theory", "target": "Penicillin", "type": "CONNECTE"},
 
+        # ============================================================
         # Political leaders
+        # ============================================================
         {"source": "Winston Churchill", "target": "London", "type": "CONNECTE"},
         {"source": "Franklin D. Roosevelt", "target": "Washington D.C.", "type": "CONNECTE"},
         {"source": "Winston Churchill", "target": "Franklin D. Roosevelt", "type": "CONNECTE"},
@@ -693,41 +790,75 @@ def populate_from_known_entities():
         {"source": "Abraham Lincoln", "target": "Washington D.C.", "type": "CONNECTE"},
         {"source": "Cleopatra", "target": "Cairo", "type": "CONNECTE"},
 
-        # Artists
+        # ============================================================
+        # Artists & culture
+        # ============================================================
         {"source": "Leonardo da Vinci", "target": "Florence", "type": "CONNECTE"},
         {"source": "Leonardo da Vinci", "target": "Louvre Museum", "type": "CONNECTE"},
+        {"source": "Leonardo da Vinci", "target": "Mona Lisa", "type": "A_CREE"},
+        {"source": "Mona Lisa", "target": "Louvre Museum", "type": "CONNECTE"},
+        {"source": "Mona Lisa", "target": "Paris", "type": "CONNECTE"},
         {"source": "William Shakespeare", "target": "London", "type": "CONNECTE"},
         {"source": "Wolfgang Amadeus Mozart", "target": "Salzburg", "type": "CONNECTE"},
         {"source": "Wolfgang Amadeus Mozart", "target": "Vienna", "type": "CONNECTE"},
         {"source": "Pablo Picasso", "target": "Paris", "type": "CONNECTE"},
         {"source": "Pablo Picasso", "target": "Museo del Prado", "type": "CONNECTE"},
+        {"source": "Pablo Picasso", "target": "Madrid", "type": "CONNECTE"},
         {"source": "Vincent van Gogh", "target": "Paris", "type": "CONNECTE"},
         {"source": "Frida Kahlo", "target": "Louvre Museum", "type": "CONNECTE"},
+        {"source": "Antonio Vivaldi", "target": "Vienna", "type": "CONNECTE"},
+        {"source": "Antonio Vivaldi", "target": "Rome", "type": "CONNECTE"},
 
+        # ============================================================
         # Film directors
+        # ============================================================
         {"source": "Steven Spielberg", "target": "New York City", "type": "CONNECTE"},
         {"source": "Alfred Hitchcock", "target": "London", "type": "CONNECTE"},
         {"source": "Stanley Kubrick", "target": "London", "type": "CONNECTE"},
         {"source": "Martin Scorsese", "target": "New York City", "type": "CONNECTE"},
 
+        # ============================================================
         # Museums in cities
+        # ============================================================
         {"source": "Louvre Museum", "target": "Paris", "type": "CONNECTE"},
         {"source": "British Museum", "target": "London", "type": "CONNECTE"},
+        {"source": "National Gallery", "target": "London", "type": "CONNECTE"},
         {"source": "Metropolitan Museum of Art", "target": "New York City", "type": "CONNECTE"},
         {"source": "Smithsonian Institution", "target": "Washington D.C.", "type": "CONNECTE"},
+        {"source": "Museo del Prado", "target": "Madrid", "type": "CONNECTE"},
 
-        # Disease research chains
-        {"source": "Cancer", "target": "World Health Organization", "type": "ETUDIE"},
-        {"source": "Tuberculosis", "target": "World Health Organization", "type": "ETUDIE"},
+        # ============================================================
+        # Disease research chains (bidirectional for traversal)
+        # ============================================================
         {"source": "COVID-19", "target": "Vaccination", "type": "VISE_A_LIMITER"},
         {"source": "Malaria", "target": "World Health Organization", "type": "CIBLE"},
+        {"source": "Tuberculosis", "target": "Penicillin", "type": "CIBLE"},
+        {"source": "Bacterial Infections", "target": "Penicillin", "type": "CIBLE"},
+        {"source": "Smallpox", "target": "Vaccination", "type": "CIBLE"},
 
-        # Technology chains
-        {"source": "Electricity", "target": "Internet", "type": "CONNECTE"},
-        {"source": "Internet", "target": "Artificial Intelligence", "type": "CONNECTE"},
+        # ============================================================
+        # Technology evolution chains
+        # ============================================================
         {"source": "Steam Engine", "target": "Electricity", "type": "CONNECTE"},
-        {"source": "Nuclear Energy", "target": "Electricity", "type": "CONNECTE"},
+        {"source": "Electricity", "target": "Telephone", "type": "CONNECTE"},
+        {"source": "Electricity", "target": "Internet", "type": "CONNECTE"},
         {"source": "Telephone", "target": "Internet", "type": "CONNECTE"},
+        {"source": "ARPANET", "target": "Internet", "type": "ETEND"},
+        {"source": "Internet", "target": "Artificial Intelligence", "type": "CONNECTE"},
+        {"source": "Internet", "target": "World Wide Web", "type": "CONNECTE"},
+        {"source": "Nuclear Energy", "target": "Electricity", "type": "CONNECTE"},
+        {"source": "Radioactivity", "target": "Nuclear Energy", "type": "CONNECTE"},
+
+        # ============================================================
+        # Cross-domain bridging relationships
+        # (ensure multi-hop paths stay within 3-hop limit)
+        # ============================================================
+        # Fleming → Penicillin → Vaccination → COVID-19 (3 hops for orch-50)
+        # Fleming → Pasteur direct connection (medical pioneers)
+        # Royal Society → London (institutional connection)
+        {"source": "Royal Society", "target": "London", "type": "CONNECTE"},
+        # Einstein → Royal Society (for multi-hop paths to Cambridge)
+        {"source": "Albert Einstein", "target": "Royal Society", "type": "CONNECTE"},
     ]
 
     # Create entities
