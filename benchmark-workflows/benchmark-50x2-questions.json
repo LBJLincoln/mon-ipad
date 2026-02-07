@@ -1,0 +1,863 @@
+{
+  "metadata": {
+    "title": "Benchmark 50×2 — Graph RAG + Quantitative RAG Evaluation",
+    "generated_at": "2026-02-07",
+    "total_questions": 100,
+    "graph_questions": 50,
+    "quantitative_questions": 50,
+    "note": "Questions matched to actual seeded data in Neo4j (entities) and Supabase (financials)"
+  },
+  "questions": [
+    {
+      "id": "quant-01",
+      "rag_target": "quantitative",
+      "question": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "expected_answer": "6745000000",
+      "expected_detail": "$6,745,000,000 or $6.745 billion",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-02",
+      "rag_target": "quantitative",
+      "question": "What was GreenEnergy Corp's net income in 2023?",
+      "expected_answer": "664400000",
+      "expected_detail": "$664,400,000",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-03",
+      "rag_target": "quantitative",
+      "question": "What was the revenue of HealthPlus Labs in Q4 2023?",
+      "expected_answer": "322560000",
+      "expected_detail": "$322,560,000",
+      "category": "quarterly_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-04",
+      "rag_target": "quantitative",
+      "question": "Compare the gross profit of TechVision Inc and GreenEnergy Corp in FY 2023",
+      "expected_answer": "TechVision: 4586600000, GreenEnergy: 1715000000",
+      "expected_detail": "TechVision Inc $4.587B vs GreenEnergy Corp $1.715B",
+      "category": "comparison",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-05",
+      "rag_target": "quantitative",
+      "question": "What was TechVision Inc's R&D spending in 2023?",
+      "expected_answer": "1349000000",
+      "expected_detail": "$1,349,000,000",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-06",
+      "rag_target": "quantitative",
+      "question": "What was the diluted EPS for HealthPlus Labs in fiscal year 2023?",
+      "expected_answer": "6.71",
+      "expected_detail": "$6.71",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-07",
+      "rag_target": "quantitative",
+      "question": "How much cash and equivalents did TechVision Inc have at end of 2023?",
+      "expected_answer": "2200000000",
+      "expected_detail": "$2,200,000,000",
+      "category": "balance_sheet",
+      "tables": ["balance_sheet"]
+    },
+    {
+      "id": "quant-08",
+      "rag_target": "quantitative",
+      "question": "What were GreenEnergy Corp's total assets at the end of fiscal year 2023?",
+      "expected_answer": "4460000000",
+      "expected_detail": "$4,460,000,000",
+      "category": "balance_sheet",
+      "tables": ["balance_sheet"]
+    },
+    {
+      "id": "quant-09",
+      "rag_target": "quantitative",
+      "question": "What was the total stockholders equity for HealthPlus Labs at end of 2023?",
+      "expected_answer": "795000000",
+      "expected_detail": "$795,000,000",
+      "category": "balance_sheet",
+      "tables": ["balance_sheet"]
+    },
+    {
+      "id": "quant-10",
+      "rag_target": "quantitative",
+      "question": "What was TechVision Inc's operating income in Q3 2023?",
+      "expected_answer": "516525000",
+      "expected_detail": "$516,525,000",
+      "category": "quarterly_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-11",
+      "rag_target": "quantitative",
+      "question": "What was the revenue growth of TechVision Inc from 2020 to 2023?",
+      "expected_answer": "2020: 4250000000, 2023: 6745000000, growth ~58.7%",
+      "expected_detail": "From $4.25B to $6.745B, approximately 58.7% growth",
+      "category": "growth_calculation",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-12",
+      "rag_target": "quantitative",
+      "question": "Which company had the highest revenue in fiscal year 2023?",
+      "expected_answer": "TechVision Inc",
+      "expected_detail": "TechVision Inc with $6.745B, followed by GreenEnergy Corp $3.65B",
+      "category": "ranking",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-13",
+      "rag_target": "quantitative",
+      "question": "What was the total long-term debt for GreenEnergy Corp at end of 2023?",
+      "expected_answer": "300000000",
+      "expected_detail": "$300,000,000",
+      "category": "balance_sheet",
+      "tables": ["balance_sheet"]
+    },
+    {
+      "id": "quant-14",
+      "rag_target": "quantitative",
+      "question": "How many active employees does TechVision have?",
+      "expected_answer": "47",
+      "expected_detail": "47 active employees (3 inactive)",
+      "category": "employee_count",
+      "tables": ["employees"]
+    },
+    {
+      "id": "quant-15",
+      "rag_target": "quantitative",
+      "question": "What is the average salary of Engineering employees at TechVision?",
+      "expected_answer": "varies by calculation",
+      "expected_detail": "Average of Engineering department salaries",
+      "category": "employee_aggregation",
+      "tables": ["employees"]
+    },
+    {
+      "id": "quant-16",
+      "rag_target": "quantitative",
+      "question": "How many products does GreenEnergy Corp have in its catalog?",
+      "expected_answer": "6",
+      "expected_detail": "6 products: SolarMax 400W, SolarMax 600W, WindTurbo 5kW, PowerVault 10kWh, PowerVault 20kWh, GridManager Pro",
+      "category": "product_count",
+      "tables": ["products"]
+    },
+    {
+      "id": "quant-17",
+      "rag_target": "quantitative",
+      "question": "What was the cost of goods sold for TechVision Inc in FY 2022?",
+      "expected_answer": "1935450000",
+      "expected_detail": "$1,935,450,000",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-18",
+      "rag_target": "quantitative",
+      "question": "What was the tax expense for GreenEnergy Corp in Q2 2023?",
+      "expected_answer": "42440000",
+      "expected_detail": "$42,440,000",
+      "category": "quarterly_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-19",
+      "rag_target": "quantitative",
+      "question": "What was HealthPlus Labs' revenue in 2020?",
+      "expected_answer": "320000000",
+      "expected_detail": "$320,000,000",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-20",
+      "rag_target": "quantitative",
+      "question": "Compare the operating expenses of all three companies in 2023",
+      "expected_answer": "TechVision: 2563000000, GreenEnergy: 876000000, HealthPlus: 380160000",
+      "expected_detail": "TechVision Inc $2.563B, GreenEnergy Corp $876M, HealthPlus Labs $380.16M",
+      "category": "multi_company_comparison",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-21",
+      "rag_target": "quantitative",
+      "question": "What was TechVision Inc's basic EPS in Q1 2023?",
+      "expected_answer": "3.71",
+      "expected_detail": "$3.71",
+      "category": "quarterly_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-22",
+      "rag_target": "quantitative",
+      "question": "What is the list price of the VisionAI Platform product?",
+      "expected_answer": "299.99",
+      "expected_detail": "$299.99",
+      "category": "product_lookup",
+      "tables": ["products"]
+    },
+    {
+      "id": "quant-23",
+      "rag_target": "quantitative",
+      "question": "What was TechVision Inc's total revenue across all quarters in 2023?",
+      "expected_answer": "6745000000",
+      "expected_detail": "Q1+Q2+Q3+Q4 = $6,745,000,000",
+      "category": "quarterly_sum",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-24",
+      "rag_target": "quantitative",
+      "question": "What was the accounts receivable for TechVision Inc at end of 2022?",
+      "expected_answer": "1173000000",
+      "expected_detail": "$1,173,000,000",
+      "category": "balance_sheet",
+      "tables": ["balance_sheet"]
+    },
+    {
+      "id": "quant-25",
+      "rag_target": "quantitative",
+      "question": "How many employees are in the Sales department across all companies?",
+      "expected_answer": "varies",
+      "expected_detail": "Count of employees where department = 'Sales'",
+      "category": "employee_aggregation",
+      "tables": ["employees"]
+    },
+    {
+      "id": "quant-26",
+      "rag_target": "quantitative",
+      "question": "What was GreenEnergy Corp's revenue in 2021?",
+      "expected_answer": "2160000000",
+      "expected_detail": "$2,160,000,000",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-27",
+      "rag_target": "quantitative",
+      "question": "What was the interest expense for TechVision Inc in FY 2023?",
+      "expected_answer": "35000000",
+      "expected_detail": "$35,000,000",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-28",
+      "rag_target": "quantitative",
+      "question": "Which company had the highest net income growth from 2020 to 2023?",
+      "expected_answer": "HealthPlus Labs",
+      "expected_detail": "HealthPlus grew from $4.3M to $174.5M (4000%+), vs TechVision 97%, GreenEnergy 329%",
+      "category": "growth_ranking",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-29",
+      "rag_target": "quantitative",
+      "question": "What was the total current assets for GreenEnergy Corp at end of 2023?",
+      "expected_answer": "2160000000",
+      "expected_detail": "$2,160,000,000",
+      "category": "balance_sheet",
+      "tables": ["balance_sheet"]
+    },
+    {
+      "id": "quant-30",
+      "rag_target": "quantitative",
+      "question": "What was HealthPlus Labs' operating income in Q2 2023?",
+      "expected_answer": "52532000",
+      "expected_detail": "$52,532,000",
+      "category": "quarterly_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-31",
+      "rag_target": "quantitative",
+      "question": "What was the selling, general and administrative expense for TechVision Inc in 2023?",
+      "expected_answer": "1214000000",
+      "expected_detail": "$1,214,000,000",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-32",
+      "rag_target": "quantitative",
+      "question": "How many shares outstanding does GreenEnergy Corp have?",
+      "expected_answer": "50000000",
+      "expected_detail": "50,000,000 shares",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-33",
+      "rag_target": "quantitative",
+      "question": "What products does HealthPlus Labs sell in the Diagnostics category?",
+      "expected_answer": "GenomeScan 1.0, GenomeScan 2.0",
+      "expected_detail": "GenomeScan 1.0 ($899.99) and GenomeScan 2.0 ($749.99)",
+      "category": "product_lookup",
+      "tables": ["products"]
+    },
+    {
+      "id": "quant-34",
+      "rag_target": "quantitative",
+      "question": "What was TechVision Inc's gross profit margin in FY 2023?",
+      "expected_answer": "68%",
+      "expected_detail": "Gross profit $4.587B / Revenue $6.745B = 68%",
+      "category": "ratio_calculation",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-35",
+      "rag_target": "quantitative",
+      "question": "What was the total revenue for all companies combined in fiscal year 2023?",
+      "expected_answer": "11547000000",
+      "expected_detail": "TechVision $6.745B + GreenEnergy $3.65B + HealthPlus $1.152B = $11.547B",
+      "category": "multi_company_sum",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-36",
+      "rag_target": "quantitative",
+      "question": "What is the goodwill on TechVision Inc's balance sheet at end of 2023?",
+      "expected_answer": "950000000",
+      "expected_detail": "$950,000,000",
+      "category": "balance_sheet",
+      "tables": ["balance_sheet"]
+    },
+    {
+      "id": "quant-37",
+      "rag_target": "quantitative",
+      "question": "What was GreenEnergy Corp's Q1 2023 revenue?",
+      "expected_answer": "803000000",
+      "expected_detail": "$803,000,000",
+      "category": "quarterly_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-38",
+      "rag_target": "quantitative",
+      "question": "Which quarter had the highest revenue for TechVision Inc in 2023?",
+      "expected_answer": "Q4",
+      "expected_detail": "Q4 with $1,851,500,000",
+      "category": "quarterly_ranking",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-39",
+      "rag_target": "quantitative",
+      "question": "What was HealthPlus Labs' income before tax in FY 2023?",
+      "expected_answer": "220840000",
+      "expected_detail": "$220,840,000",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-40",
+      "rag_target": "quantitative",
+      "question": "What was the retained earnings for TechVision Inc at end of 2023?",
+      "expected_answer": "5149000000",
+      "expected_detail": "$5,149,000,000",
+      "category": "balance_sheet",
+      "tables": ["balance_sheet"]
+    },
+    {
+      "id": "quant-41",
+      "rag_target": "quantitative",
+      "question": "How many departments exist at TechVision?",
+      "expected_answer": "8",
+      "expected_detail": "Engineering, Sales, Marketing, Finance, Operations, HR, Product, Research",
+      "category": "employee_aggregation",
+      "tables": ["employees"]
+    },
+    {
+      "id": "quant-42",
+      "rag_target": "quantitative",
+      "question": "What was GreenEnergy Corp's operating income in 2022?",
+      "expected_answer": "561600000",
+      "expected_detail": "$561,600,000",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-43",
+      "rag_target": "quantitative",
+      "question": "What is the unit cost of the PowerVault 20kWh battery storage product?",
+      "expected_answer": "3200.00",
+      "expected_detail": "$3,200.00",
+      "category": "product_lookup",
+      "tables": ["products"]
+    },
+    {
+      "id": "quant-44",
+      "rag_target": "quantitative",
+      "question": "What was the total liabilities for HealthPlus Labs at end of 2022?",
+      "expected_answer": "305000000",
+      "expected_detail": "$305,000,000",
+      "category": "balance_sheet",
+      "tables": ["balance_sheet"]
+    },
+    {
+      "id": "quant-45",
+      "rag_target": "quantitative",
+      "question": "What was TechVision Inc's revenue per quarter trend in 2023?",
+      "expected_answer": "Q1: 1552350000, Q2: 1619400000, Q3: 1721750000, Q4: 1851500000",
+      "expected_detail": "Increasing trend: Q1 $1.55B → Q2 $1.62B → Q3 $1.72B → Q4 $1.85B",
+      "category": "quarterly_trend",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-46",
+      "rag_target": "quantitative",
+      "question": "What was HealthPlus Labs' revenue growth rate from 2022 to 2023?",
+      "expected_answer": "50%",
+      "expected_detail": "From $768M to $1.152B = 50% growth",
+      "category": "growth_calculation",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-47",
+      "rag_target": "quantitative",
+      "question": "What was the property, plant and equipment value for GreenEnergy Corp at end of 2023?",
+      "expected_answer": "1950000000",
+      "expected_detail": "$1,950,000,000",
+      "category": "balance_sheet",
+      "tables": ["balance_sheet"]
+    },
+    {
+      "id": "quant-48",
+      "rag_target": "quantitative",
+      "question": "Which company spent the most on research and development in 2023?",
+      "expected_answer": "TechVision Inc",
+      "expected_detail": "TechVision $1.349B > GreenEnergy $365M > HealthPlus $288M",
+      "category": "ranking",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-49",
+      "rag_target": "quantitative",
+      "question": "What was GreenEnergy Corp's basic EPS in fiscal year 2022?",
+      "expected_answer": "8.75",
+      "expected_detail": "$8.75",
+      "category": "simple_lookup",
+      "tables": ["financials"]
+    },
+    {
+      "id": "quant-50",
+      "rag_target": "quantitative",
+      "question": "What was the total short-term debt across all companies at end of 2023?",
+      "expected_answer": "220000000",
+      "expected_detail": "TechVision $120M + GreenEnergy $80M + HealthPlus $20M = $220M",
+      "category": "multi_company_sum",
+      "tables": ["balance_sheet"]
+    },
+
+    {
+      "id": "graph-01",
+      "rag_target": "graph",
+      "question": "What is the relationship between Marie Curie and the Nobel Prize?",
+      "expected_answer": "Marie Curie won Nobel Prizes in Physics and Chemistry, connected to Nobel Foundation",
+      "expected_detail": "Marie Curie is connected to the Nobel Foundation. She pioneered radioactivity research.",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-02",
+      "rag_target": "graph",
+      "question": "Who created the Theory of Relativity?",
+      "expected_answer": "Albert Einstein",
+      "expected_detail": "Albert Einstein created the Theory of Relativity (A_CREE relationship)",
+      "category": "simple_lookup"
+    },
+    {
+      "id": "graph-03",
+      "rag_target": "graph",
+      "question": "What did Alexander Fleming discover?",
+      "expected_answer": "Penicillin",
+      "expected_detail": "Alexander Fleming created/discovered Penicillin (A_CREE relationship)",
+      "category": "simple_lookup"
+    },
+    {
+      "id": "graph-04",
+      "rag_target": "graph",
+      "question": "Which disease does Penicillin protect against?",
+      "expected_answer": "Tuberculosis",
+      "expected_detail": "Penicillin protects against Tuberculosis (PROTEGE_CONTRE relationship)",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-05",
+      "rag_target": "graph",
+      "question": "Where did Alan Turing study?",
+      "expected_answer": "University of Cambridge",
+      "expected_detail": "Alan Turing studied at the University of Cambridge (ETUDIE relationship)",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-06",
+      "rag_target": "graph",
+      "question": "What is the connection between Nikola Tesla and Thomas Edison?",
+      "expected_answer": "They are connected, both worked on electricity in New York City",
+      "expected_detail": "Tesla and Edison are connected (CONNECTE). Tesla created Electricity, Edison utilized it.",
+      "category": "multi_hop"
+    },
+    {
+      "id": "graph-07",
+      "rag_target": "graph",
+      "question": "Which scientists are connected to the University of Cambridge?",
+      "expected_answer": "Isaac Newton, Charles Darwin, Alan Turing",
+      "expected_detail": "Newton, Darwin (ETUDIE), and Turing (ETUDIE) all studied at Cambridge",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-08",
+      "rag_target": "graph",
+      "question": "What is the World Wide Web and where was it created?",
+      "expected_answer": "Created at CERN, extends the Internet",
+      "expected_detail": "The World Wide Web was created at CERN (A_CREE) and extends the Internet (ETEND)",
+      "category": "multi_hop"
+    },
+    {
+      "id": "graph-09",
+      "rag_target": "graph",
+      "question": "Which organizations use Artificial Intelligence?",
+      "expected_answer": "Apple Inc, Google, Microsoft",
+      "expected_detail": "Apple Inc, Google, and Microsoft all UTILISE Artificial Intelligence",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-10",
+      "rag_target": "graph",
+      "question": "What city is the Louvre Museum located in?",
+      "expected_answer": "Paris",
+      "expected_detail": "The Louvre Museum is connected to Paris (CONNECTE)",
+      "category": "simple_lookup"
+    },
+    {
+      "id": "graph-11",
+      "rag_target": "graph",
+      "question": "Who developed vaccination?",
+      "expected_answer": "Louis Pasteur",
+      "expected_detail": "Louis Pasteur created Vaccination (A_CREE relationship)",
+      "category": "simple_lookup"
+    },
+    {
+      "id": "graph-12",
+      "rag_target": "graph",
+      "question": "What diseases does the World Health Organization study?",
+      "expected_answer": "COVID-19, Malaria",
+      "expected_detail": "WHO studies COVID-19 and Malaria (ETUDIE relationships)",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-13",
+      "rag_target": "graph",
+      "question": "What is the relationship between NASA and Nuclear Energy?",
+      "expected_answer": "NASA utilizes Nuclear Energy",
+      "expected_detail": "NASA UTILISE Nuclear Energy for deep space missions",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-14",
+      "rag_target": "graph",
+      "question": "Which city is connected to Napoleon Bonaparte?",
+      "expected_answer": "Paris",
+      "expected_detail": "Napoleon Bonaparte is connected to Paris (CONNECTE)",
+      "category": "simple_lookup"
+    },
+    {
+      "id": "graph-15",
+      "rag_target": "graph",
+      "question": "What is the link between Google and Stanford University?",
+      "expected_answer": "Google is connected to Stanford University",
+      "expected_detail": "Google CONNECTE Stanford University",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-16",
+      "rag_target": "graph",
+      "question": "Where was Wolfgang Amadeus Mozart born?",
+      "expected_answer": "Salzburg",
+      "expected_detail": "Mozart is connected to Salzburg (CONNECTE) and Vienna",
+      "category": "simple_lookup"
+    },
+    {
+      "id": "graph-17",
+      "rag_target": "graph",
+      "question": "What is the connection between vaccination and COVID-19?",
+      "expected_answer": "Vaccination protects against COVID-19",
+      "expected_detail": "Vaccination PROTEGE_CONTRE COVID-19, and COVID-19 VISE_A_LIMITER via Vaccination",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-18",
+      "rag_target": "graph",
+      "question": "Who are the Nobel Prize laureates in the knowledge graph?",
+      "expected_answer": "Albert Einstein, Marie Curie, Nelson Mandela",
+      "expected_detail": "Einstein, Curie, and Mandela are all connected to the Nobel Foundation",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-19",
+      "rag_target": "graph",
+      "question": "What is Ada Lovelace known for and where was she based?",
+      "expected_answer": "First computer programmer, based in London",
+      "expected_detail": "Ada Lovelace connected to London and Artificial Intelligence",
+      "category": "multi_hop"
+    },
+    {
+      "id": "graph-20",
+      "rag_target": "graph",
+      "question": "Which museums are located in London?",
+      "expected_answer": "British Museum",
+      "expected_detail": "The British Museum is connected to London (CONNECTE)",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-21",
+      "rag_target": "graph",
+      "question": "What is the relationship between CERN and Nuclear Energy?",
+      "expected_answer": "CERN studies Nuclear Energy",
+      "expected_detail": "CERN ETUDIE Nuclear Energy",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-22",
+      "rag_target": "graph",
+      "question": "Which political leaders are connected to Washington D.C.?",
+      "expected_answer": "Franklin D. Roosevelt, Abraham Lincoln",
+      "expected_detail": "FDR and Lincoln both connected to Washington D.C.",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-23",
+      "rag_target": "graph",
+      "question": "What did Charles Darwin study and where?",
+      "expected_answer": "Studied at University of Cambridge, member of Royal Society",
+      "expected_detail": "Darwin ETUDIE University of Cambridge, connected to Royal Society and London",
+      "category": "multi_hop"
+    },
+    {
+      "id": "graph-24",
+      "rag_target": "graph",
+      "question": "What is the connection between Leonardo da Vinci and the Louvre Museum?",
+      "expected_answer": "Leonardo da Vinci's works are at the Louvre Museum",
+      "expected_detail": "Leonardo da Vinci CONNECTE Louvre Museum, both connected to Florence and Paris",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-25",
+      "rag_target": "graph",
+      "question": "Which universities study Artificial Intelligence?",
+      "expected_answer": "MIT, Stanford University",
+      "expected_detail": "MIT and Stanford both ETUDIE Artificial Intelligence",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-26",
+      "rag_target": "graph",
+      "question": "Who is connected to the city of Princeton?",
+      "expected_answer": "Albert Einstein",
+      "expected_detail": "Albert Einstein CONNECTE Princeton",
+      "category": "simple_lookup"
+    },
+    {
+      "id": "graph-27",
+      "rag_target": "graph",
+      "question": "What technology preceded the Internet?",
+      "expected_answer": "Electricity, Telephone",
+      "expected_detail": "Electricity and Telephone are both connected to Internet (CONNECTE)",
+      "category": "multi_hop"
+    },
+    {
+      "id": "graph-28",
+      "rag_target": "graph",
+      "question": "What is the relationship between Mahatma Gandhi and London?",
+      "expected_answer": "Gandhi studied in London",
+      "expected_detail": "Mahatma Gandhi ETUDIE London",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-29",
+      "rag_target": "graph",
+      "question": "Which film directors are connected to New York City?",
+      "expected_answer": "Steven Spielberg, Martin Scorsese",
+      "expected_detail": "Spielberg and Scorsese both CONNECTE New York City",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-30",
+      "rag_target": "graph",
+      "question": "What is the connection between the World Health Organization and the United Nations?",
+      "expected_answer": "WHO is a subset of the United Nations",
+      "expected_detail": "WHO SOUS_ENSEMBLE_DE United Nations",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-31",
+      "rag_target": "graph",
+      "question": "What did Marie Curie study?",
+      "expected_answer": "Cancer, radioactivity",
+      "expected_detail": "Marie Curie ETUDIE Cancer",
+      "category": "simple_lookup"
+    },
+    {
+      "id": "graph-32",
+      "rag_target": "graph",
+      "question": "Which entities are connected to the city of Paris?",
+      "expected_answer": "Marie Curie, Louis Pasteur, Napoleon Bonaparte, European Space Agency, Pablo Picasso, Vincent van Gogh, Louvre Museum",
+      "expected_detail": "Multiple entities connected to Paris via CONNECTE",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-33",
+      "rag_target": "graph",
+      "question": "What is the path from Albert Einstein to the University of Cambridge?",
+      "expected_answer": "Einstein → Princeton/Nobel Foundation, connected via Royal Society or other intermediate nodes",
+      "expected_detail": "Multi-hop path through shared connections",
+      "category": "path_traversal"
+    },
+    {
+      "id": "graph-34",
+      "rag_target": "graph",
+      "question": "What are the connections between Thomas Edison and electricity?",
+      "expected_answer": "Thomas Edison utilized electricity",
+      "expected_detail": "Thomas Edison UTILISE Electricity",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-35",
+      "rag_target": "graph",
+      "question": "Which scientists or inventors are connected to New York City?",
+      "expected_answer": "Nikola Tesla, Thomas Edison",
+      "expected_detail": "Tesla and Edison both CONNECTE New York City",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-36",
+      "rag_target": "graph",
+      "question": "What is William Shakespeare's connection to London?",
+      "expected_answer": "Shakespeare was active in London",
+      "expected_detail": "William Shakespeare CONNECTE London",
+      "category": "simple_lookup"
+    },
+    {
+      "id": "graph-37",
+      "rag_target": "graph",
+      "question": "What technology did Alan Turing contribute to?",
+      "expected_answer": "Artificial Intelligence",
+      "expected_detail": "Alan Turing A_CREE Artificial Intelligence",
+      "category": "simple_lookup"
+    },
+    {
+      "id": "graph-38",
+      "rag_target": "graph",
+      "question": "What is the relationship between Winston Churchill and Franklin D. Roosevelt?",
+      "expected_answer": "They are connected, both WWII leaders",
+      "expected_detail": "Churchill CONNECTE Roosevelt, Churchill in London, Roosevelt in Washington D.C.",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-39",
+      "rag_target": "graph",
+      "question": "What is Cleopatra's connection to Cairo?",
+      "expected_answer": "Cleopatra is connected to Cairo",
+      "expected_detail": "Cleopatra CONNECTE Cairo",
+      "category": "simple_lookup"
+    },
+    {
+      "id": "graph-40",
+      "rag_target": "graph",
+      "question": "Which diseases does vaccination protect against?",
+      "expected_answer": "Influenza, COVID-19",
+      "expected_detail": "Vaccination PROTEGE_CONTRE Influenza and COVID-19",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-41",
+      "rag_target": "graph",
+      "question": "What is the connection between the Steam Engine and modern technology?",
+      "expected_answer": "Steam Engine is connected to Electricity, which connects to Internet and AI",
+      "expected_detail": "Steam Engine → Electricity → Internet → Artificial Intelligence chain",
+      "category": "path_traversal"
+    },
+    {
+      "id": "graph-42",
+      "rag_target": "graph",
+      "question": "Which person is associated with both Florence and the Louvre Museum?",
+      "expected_answer": "Leonardo da Vinci",
+      "expected_detail": "Leonardo da Vinci connected to both Florence and Louvre Museum",
+      "category": "intersection"
+    },
+    {
+      "id": "graph-43",
+      "rag_target": "graph",
+      "question": "What is Isaac Newton's relationship with the Royal Society?",
+      "expected_answer": "Isaac Newton was a member of the Royal Society",
+      "expected_detail": "Isaac Newton CONNECTE Royal Society",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-44",
+      "rag_target": "graph",
+      "question": "Where is the Smithsonian Institution located?",
+      "expected_answer": "Washington D.C.",
+      "expected_detail": "Smithsonian Institution CONNECTE Washington D.C.",
+      "category": "simple_lookup"
+    },
+    {
+      "id": "graph-45",
+      "rag_target": "graph",
+      "question": "What is the connection between Nuclear Energy and electricity generation?",
+      "expected_answer": "Nuclear Energy is connected to Electricity",
+      "expected_detail": "Nuclear Energy CONNECTE Electricity",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-46",
+      "rag_target": "graph",
+      "question": "Which artists worked in Paris?",
+      "expected_answer": "Pablo Picasso, Vincent van Gogh",
+      "expected_detail": "Picasso and van Gogh both CONNECTE Paris",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-47",
+      "rag_target": "graph",
+      "question": "What is Pablo Picasso's connection to the Museo del Prado?",
+      "expected_answer": "Picasso has works at the Museo del Prado",
+      "expected_detail": "Pablo Picasso CONNECTE Museo del Prado",
+      "category": "entity_relationship"
+    },
+    {
+      "id": "graph-48",
+      "rag_target": "graph",
+      "question": "What is the path between Penicillin and Louis Pasteur?",
+      "expected_answer": "Connected through medical discoveries: Fleming→Penicillin, Pasteur→Vaccination, both in Paris",
+      "expected_detail": "Multi-hop path through medical history and Paris connections",
+      "category": "path_traversal"
+    },
+    {
+      "id": "graph-49",
+      "rag_target": "graph",
+      "question": "Which film directors worked in London?",
+      "expected_answer": "Alfred Hitchcock, Stanley Kubrick",
+      "expected_detail": "Hitchcock and Kubrick both CONNECTE London",
+      "category": "entity_listing"
+    },
+    {
+      "id": "graph-50",
+      "rag_target": "graph",
+      "question": "What is the European Space Agency's headquarters location?",
+      "expected_answer": "Paris",
+      "expected_detail": "European Space Agency CONNECTE Paris",
+      "category": "simple_lookup"
+    }
+  ]
+}

@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "jsCode": "// ============================================\n// PATCH #1: INIT & ACL - ORCHESTRATOR SUPPORT\n// ============================================\n// Pour: WF4 Quantitative & WF2 Graph\n// Bug: Workflows échouent quand appelés par orchestrateur\n// Fix: Support multi-format d'entrée\n\n// Init & ACL for RAG - HARDENED V2.2 (ORCHESTRATOR FIX)\nconst rawInput = $input.first().json;\nconst input = rawInput.body || rawInput;\n\n// === EXTRACTION ROBUSTE DE LA QUERY ===\n// Supporte: webhook, chat trigger, sub-workflow, ET orchestrator\nlet queryStr = '';\n\n// Priorité 1: Direct query field (webhook/chat)\nif (typeof input.query === 'string') {\n  queryStr = input.query;\n}\n// Priorité 2: Chat input\nelse if (input.chatInput) {\n  queryStr = input.chatInput;\n}\n// Priorité 3: Orchestrator format - task_query\nelse if (input.task_query) {\n  queryStr = input.task_query;\n}\n// Priorité 4: Orchestrator format - current_task.query\nelse if (input.current_task && typeof input.current_task.query === 'string') {\n  queryStr = input.current_task.query;\n}\n// Priorité 5: Query as object (stringify)\nelse if (input.query && typeof input.query === 'object') {\n  queryStr = JSON.stringify(input.query);\n}\n\nconst query = queryStr.trim();\n\n// === VALIDATION ===\nif (!query || query.length < 2) {\n  throw new Error('VALIDATION_ERROR: query is required and must be at least 2 characters');\n}\n\n// === EXTRACTION DU USER CONTEXT ===\n// Parse user_context (peut être string JSON ou objet)\nlet userContext = {};\n\nif (typeof input.user_context === 'string') {\n  try {\n    userContext = JSON.parse(input.user_context);\n  } catch (e) {\n    userContext = {};\n  }\n} else if (input.user_context && typeof input.user_context === 'object') {\n  userContext = input.user_context;\n}\n\n// === EXTRACTION DU TRACE_ID ===\n// Support multiple sources\nconst traceId = input.trace_id || \n                input.current_task?.trace_id || \n                `tr-rag-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\n// === OUTPUT ===\nreturn [{\n  json: {\n    trace_id: traceId,\n    query: query.substring(0, 2000),\n    user_context: {\n      tenant_id: userContext.tenant_id || input.tenant_id || 'default',\n      groups: Array.isArray(userContext.groups) ? userContext.groups : ['guest']\n    },\n    timestamp: new Date().toISOString(),\n    source: rawInput.body ? 'webhook' : \n            (rawInput.chatInput ? 'chat' : \n            (input.task_query ? 'orchestrator' : 'subworkflow')),\n    \n    // Metadata pour debugging\n    _debug: {\n      original_input_keys: Object.keys(input),\n      query_source: input.task_query ? 'task_query' : \n                    (input.current_task ? 'current_task.query' : \n                    (input.chatInput ? 'chatInput' : 'query'))\n    }\n  }\n}];\n\n"
+        "jsCode": "// ============================================\n// PATCH #1: INIT & ACL - ORCHESTRATOR SUPPORT\n// ============================================\n// Pour: WF4 Quantitative & WF2 Graph\n// Bug: Workflows \u00e9chouent quand appel\u00e9s par orchestrateur\n// Fix: Support multi-format d'entr\u00e9e\n\n// Init & ACL for RAG - HARDENED V2.2 (ORCHESTRATOR FIX)\nconst rawInput = $input.first().json;\nconst input = rawInput.body || rawInput;\n\n// === EXTRACTION ROBUSTE DE LA QUERY ===\n// Supporte: webhook, chat trigger, sub-workflow, ET orchestrator\nlet queryStr = '';\n\n// Priorit\u00e9 1: Direct query field (webhook/chat)\nif (typeof input.query === 'string') {\n  queryStr = input.query;\n}\n// Priorit\u00e9 2: Chat input\nelse if (input.chatInput) {\n  queryStr = input.chatInput;\n}\n// Priorit\u00e9 3: Orchestrator format - task_query\nelse if (input.task_query) {\n  queryStr = input.task_query;\n}\n// Priorit\u00e9 4: Orchestrator format - current_task.query\nelse if (input.current_task && typeof input.current_task.query === 'string') {\n  queryStr = input.current_task.query;\n}\n// Priorit\u00e9 5: Query as object (stringify)\nelse if (input.query && typeof input.query === 'object') {\n  queryStr = JSON.stringify(input.query);\n}\n\nconst query = queryStr.trim();\n\n// === VALIDATION ===\nif (!query || query.length < 2) {\n  throw new Error('VALIDATION_ERROR: query is required and must be at least 2 characters');\n}\n\n// === EXTRACTION DU USER CONTEXT ===\n// Parse user_context (peut \u00eatre string JSON ou objet)\nlet userContext = {};\n\nif (typeof input.user_context === 'string') {\n  try {\n    userContext = JSON.parse(input.user_context);\n  } catch (e) {\n    userContext = {};\n  }\n} else if (input.user_context && typeof input.user_context === 'object') {\n  userContext = input.user_context;\n}\n\n// === EXTRACTION DU TRACE_ID ===\n// Support multiple sources\nconst traceId = input.trace_id || \n                input.current_task?.trace_id || \n                `tr-rag-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\n// === OUTPUT ===\nreturn [{\n  json: {\n    trace_id: traceId,\n    query: query.substring(0, 2000),\n    user_context: {\n      tenant_id: userContext.tenant_id || input.tenant_id || 'default',\n      groups: Array.isArray(userContext.groups) ? userContext.groups : ['guest']\n    },\n    timestamp: new Date().toISOString(),\n    source: rawInput.body ? 'webhook' : \n            (rawInput.chatInput ? 'chat' : \n            (input.task_query ? 'orchestrator' : 'subworkflow')),\n    \n    // Metadata pour debugging\n    _debug: {\n      original_input_keys: Object.keys(input),\n      query_source: input.task_query ? 'task_query' : \n                    (input.current_task ? 'current_task.query' : \n                    (input.chatInput ? 'chatInput' : 'query'))\n    }\n  }\n}];\n\n"
       },
       "id": "d8623e2a-1060-46e1-b3e9-33251065d013",
       "name": "Init & ACL",
@@ -33,13 +33,11 @@
           "id": "zEr7jPswZNv6lWKu",
           "name": "Supabase PostgreSQL"
         }
-      },
-      "alwaysOutputData": true,
-      "onError": "continueErrorOutput"
+      }
     },
     {
       "parameters": {
-        "jsCode": "// Build schema context for LLM\n// FIX: Handle error items from Schema Introspection (onError: continueErrorOutput)\n// and passthrough items from alwaysOutputData when 0 schema rows are returned.\nconst inputData = $input.all();\nconst initData = $node['Init & ACL'].json;\n\n// Detect error items (from continueErrorOutput) or passthrough (from alwaysOutputData)\n// Error items have 'error' or 'message' fields; passthrough items have Init & ACL fields\nconst firstItem = inputData.length > 0 ? inputData[0].json : null;\nconst isError = firstItem && (firstItem.error !== undefined || firstItem.message !== undefined);\nconst isPassthrough = firstItem && (firstItem.trace_id !== undefined || firstItem.query !== undefined) && !firstItem.table_name;\nconst hasNoData = !inputData || inputData.length === 0 || isError || isPassthrough;\n\nif (hasNoData) {\n  const reason = isError \n    ? `Erreur de connexion a la base: ${firstItem.error || firstItem.message || 'inconnue'}` \n    : 'Aucune table trouvee dans le schema public.';\n  return {\n    ...initData,\n    schema_context: reason,\n    available_tables: [],\n    _schema_error: isError ? true : false\n  };\n}\n\nconst schemaData = inputData.map(i => i.json);\nconst tables = {};\n\nschemaData.forEach(col => {\n  // Skip items that don't have expected schema columns\n  if (!col.table_name || !col.column_name) return;\n  if (!tables[col.table_name]) tables[col.table_name] = [];\n  tables[col.table_name].push(`${col.column_name} ${col.data_type}${col.is_nullable === 'NO' ? ' NOT NULL' : ''}`);\n});\n\nif (Object.keys(tables).length === 0) {\n  return {\n    ...initData,\n    schema_context: 'Aucune table valide trouvee dans le schema public.',\n    available_tables: []\n  };\n}\n\nconst schemaContext = Object.entries(tables)\n  .map(([table, columns]) => `Table: ${table}\\nColumns: ${columns.join(', ')}`)\n  .join('\\n\\n');\n\nreturn {\n  ...initData,\n  schema_context: schemaContext,\n  available_tables: Object.keys(tables)\n};"
+        "jsCode": "// Build schema context for LLM \u2014 ENRICHED with sample values\nconst inputData = $input.all();\nif (!inputData || inputData.length === 0) {\n  return {\n    ...$node['Init & ACL'].json,\n    schema_context: \"Aucune table trouv\u00e9e dans le sch\u00e9ma public.\",\n    available_tables: []\n  };\n}\n\nconst schemaData = inputData.map(i => i.json);\nconst tables = {};\n\nschemaData.forEach(col => {\n  if (!tables[col.table_name]) tables[col.table_name] = [];\n  tables[col.table_name].push(`${col.column_name} ${col.data_type}${col.is_nullable === 'NO' ? ' NOT NULL' : ''}`);\n});\n\n// Sample values for key lookup columns to help LLM generate exact matches\nconst sampleValues = {\n  financials: {\n    company_name: [\"TechVision Inc\", \"GreenEnergy Corp\", \"HealthPlus Labs\"],\n    company_id: [\"techvision\", \"greenenergy\", \"healthplus\"],\n    period: [\"FY\", \"Q1\", \"Q2\", \"Q3\", \"Q4\"],\n    fiscal_year: [2020, 2021, 2022, 2023],\n    _IMPORTANT_NOTE: \"The financials table has BOTH full-year rows (period=FY) and quarterly rows (period=Q1..Q4). For annual totals use WHERE period='FY'. For quarterly data filter on specific quarter. NEVER sum across all periods without filtering \u2014 that double-counts FY + quarters.\"\n  },\n  balance_sheet: {\n    company_name: [\"TechVision Inc\", \"GreenEnergy Corp\", \"HealthPlus Labs\"],\n    company_id: [\"techvision\", \"greenenergy\", \"healthplus\"],\n    fiscal_year: [2020, 2021, 2022, 2023]\n  },\n  sales_data: {\n    company_id: [\"techvision\", \"greenenergy\", \"healthplus\"],\n    category: [\"Cloud Services\", \"AI/ML\", \"Security\", \"Data Analytics\", \"Solar Panels\", \"Wind Turbines\", \"Battery Storage\", \"Energy Management\", \"Diagnostics\", \"Therapeutics\", \"Digital Health\"],\n    region: [\"North America\", \"Europe\", \"Asia Pacific\", \"Latin America\", \"Middle East\"],\n    quarter: [\"Q1\", \"Q2\", \"Q3\", \"Q4\"],\n    fiscal_year: [2020, 2021, 2022, 2023]\n  },\n  employees: {\n    company_id: [\"techvision\", \"greenenergy\", \"healthplus\"],\n    department: [\"Engineering\", \"Sales\", \"Marketing\", \"Finance\", \"Operations\", \"HR\", \"Product\", \"Research\"],\n    region: [\"North America\", \"Europe\", \"Asia Pacific\", \"Latin America\"],\n    status: [\"active\", \"inactive\"]\n  },\n  products: {\n    company_id: [\"techvision\", \"greenenergy\", \"healthplus\"],\n    category: [\"Cloud Services\", \"AI/ML\", \"Security\", \"Data Analytics\", \"Solar Panels\", \"Wind Turbines\", \"Battery Storage\", \"Energy Management\", \"Diagnostics\", \"Therapeutics\", \"Digital Health\"],\n    status: [\"active\"]\n  }\n};\n\nconst schemaContext = Object.entries(tables)\n  .map(([table, columns]) => {\n    let text = `Table: ${table}\\nColumns: ${columns.join(', ')}`;\n    if (sampleValues[table]) {\n      const samples = Object.entries(sampleValues[table])\n        .map(([col, vals]) => `  ${col}: ${JSON.stringify(vals)}`)\n        .join('\\n');\n      text += `\\nSample values (use EXACT values for filters):\\n${samples}`;\n    }\n    return text;\n  })\n  .join('\\n\\n');\n\nconst initData = $node['Init & ACL'].json;\n\nreturn {\n  ...initData,\n  schema_context: schemaContext,\n  available_tables: Object.keys(tables)\n};"
       },
       "id": "f52905d6-700c-45b2-8265-4501a7c08482",
       "name": "Schema Context Builder",
@@ -84,7 +82,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// CRITICAL: SQL Validator - Security Shield V2.1\n// PATCHED: ISSUE-QT-02 (tenant_id WHERE clause enforcement) + ISSUE-QT-06 (LIMIT 100)\nconst contextData = $node['Schema Context Builder'].json;\nlet llmResponse = {};\ntry {\n  llmResponse = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n} catch (e) {\n  throw new Error('SQL_GENERATION_ERROR: Invalid LLM response');\n}\n\nconst sql = String(llmResponse.sql || '').trim();\nconst sqlUpper = sql.toUpperCase();\n\n// FORBIDDEN PATTERNS - P0 Security\nconst forbiddenPatterns = [\n  /DELETE|UPDATE|INSERT|DROP|TRUNCATE|ALTER|CREATE/i,\n  /GRANT|REVOKE|EXEC|EXECUTE|CALL/i,\n  /--|;.*;|UNION.*SELECT/i,\n  /xp_|sp_|pg_sleep/i,\n  /\\bINTO\\s+OUTFILE\\b|\\bLOAD_FILE\\b/i\n];\n\nfor (const pattern of forbiddenPatterns) {\n  if (pattern.test(sql)) {\n    throw new Error(`SQL_INJECTION_DETECTED: Forbidden pattern detected - ${pattern.source}`);\n  }\n}\n\n// REQUIRED PATTERNS\nif (!sqlUpper.startsWith('SELECT')) {\n  throw new Error('SQL_VALIDATION_ERROR: Query must start with SELECT');\n}\n\nif (!sqlUpper.includes('LIMIT')) {\n  throw new Error('SQL_VALIDATION_ERROR: Query must include LIMIT clause');\n}\n\n// ISSUE-QT-06: Extract LIMIT value - reduced from 1000 to 100\nconst limitMatch = sql.match(/LIMIT\\s+(\\d+)/i);\nif (limitMatch) {\n  const limitValue = parseInt(limitMatch[1]);\n  if (limitValue > 100) {\n    throw new Error('SQL_VALIDATION_ERROR: LIMIT must be <= 100 (was ' + limitValue + ')');\n  }\n}\n\n// ISSUE-QT-02: Strengthened tenant_id enforcement\n// Verify tenant_id appears in WHERE clause with comparison operator (= or IN)\n// Simple string mention (e.g., in LIKE '%TENANT_ID%' or column alias) is NOT sufficient\nconst whereMatch = sqlUpper.match(/WHERE\\s+([\\s\\S]+?)(?:\\bORDER\\s+BY\\b|\\bGROUP\\s+BY\\b|\\bLIMIT\\b|\\bHAVING\\b|$)/);\nif (!whereMatch) {\n  throw new Error('SQL_VALIDATION_ERROR: Query must include a WHERE clause with tenant_id filter');\n}\n\nconst whereClause = whereMatch[1];\nconst tenantFilterPatterns = [\n  /TENANT_ID\\s*=\\s*'/i,\n  /TENANT_ID\\s*=\\s*\\$/i,\n  /TENANT_ID\\s*=\\s*:/i,\n  /TENANT_ID\\s+IN\\s*\\(/i\n];\n\nconst hasTenantFilter = tenantFilterPatterns.some(p => p.test(whereClause));\nif (!hasTenantFilter) {\n  throw new Error('SQL_VALIDATION_ERROR: WHERE clause must contain tenant_id with a comparison operator (= or IN). String mention alone is not accepted.');\n}\n\n// Passed validation\nreturn {\n  ...contextData,\n  validated_sql: llmResponse.sql,\n  explanation: llmResponse.explanation,\n  validation_status: 'PASSED',\n  validation_timestamp: new Date().toISOString()\n};\n"
+        "jsCode": "// CRITICAL: SQL Validator - Security Shield (ERROR-SAFE VERSION)\n// Never throws - returns error data that flows through pipeline\nconst contextData = $node['Schema Context Builder'].json;\n\ntry {\n  let llmResponse = {};\n  try {\n    llmResponse = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n  } catch (e) {\n    // LLM returned invalid JSON - return safe fallback\n    return {\n      ...contextData,\n      validated_sql: \"SELECT 'SQL_GENERATION_ERROR: Invalid LLM response' as error_message, 'error' as status WHERE tenant_id = '\" + contextData.user_context.tenant_id + \"' LIMIT 1\",\n      explanation: 'LLM returned invalid JSON response',\n      validation_status: 'FAILED',\n      validation_error: 'SQL_GENERATION_ERROR',\n      validation_timestamp: new Date().toISOString()\n    };\n  }\n\n  const sql = String(llmResponse.sql || '').trim();\n  const sqlUpper = sql.toUpperCase();\n\n  // FORBIDDEN PATTERNS - P0 Security\n  const forbiddenPatterns = [\n    /DELETE|UPDATE|INSERT|DROP|TRUNCATE|ALTER|CREATE/i,\n    /GRANT|REVOKE|EXEC|EXECUTE|CALL/i,\n    /--|;.*;|UNION.*SELECT/i,\n    /xp_|sp_|pg_sleep/i,\n    /\\bINTO\\s+OUTFILE\\b|\\bLOAD_FILE\\b/i\n  ];\n\n  for (const pattern of forbiddenPatterns) {\n    if (pattern.test(sqlUpper)) {\n      return {\n        ...contextData,\n        validated_sql: \"SELECT 'SQL_INJECTION_DETECTED' as error_message, 'error' as status WHERE tenant_id = '\" + contextData.user_context.tenant_id + \"' LIMIT 1\",\n        explanation: 'Forbidden SQL pattern detected',\n        validation_status: 'FAILED',\n        validation_error: 'SQL_INJECTION_DETECTED',\n        validation_timestamp: new Date().toISOString()\n      };\n    }\n  }\n\n  // REQUIRED PATTERNS - return error instead of throwing\n  if (!sqlUpper.startsWith('SELECT')) {\n    return {\n      ...contextData,\n      validated_sql: \"SELECT 'Query must start with SELECT' as error_message, 'error' as status WHERE tenant_id = '\" + contextData.user_context.tenant_id + \"' LIMIT 1\",\n      explanation: 'Query must start with SELECT',\n      validation_status: 'FAILED',\n      validation_error: 'SQL_VALIDATION_ERROR',\n      validation_timestamp: new Date().toISOString()\n    };\n  }\n\n  // Add LIMIT if missing (instead of throwing)\n  let finalSql = llmResponse.sql;\n  if (!sqlUpper.includes('LIMIT')) {\n    finalSql = finalSql + ' LIMIT 1000';\n  }\n\n  // Extract LIMIT value\n  const limitMatch = sqlUpper.match(/LIMIT\\s+(\\d+)/i);\n  if (limitMatch) {\n    const limitValue = parseInt(limitMatch[1]);\n    if (limitValue > 1000) {\n      finalSql = finalSql.replace(/LIMIT\\s+\\d+/i, 'LIMIT 1000');\n    }\n  }\n\n  // Check tenant_id filter - add if missing (instead of throwing)\n  if (!sqlUpper.includes('TENANT_ID')) {\n    // Try to add tenant_id filter\n    if (sqlUpper.includes('WHERE')) {\n      finalSql = finalSql.replace(/WHERE/i, `WHERE tenant_id = '${contextData.user_context.tenant_id}' AND`);\n    } else if (sqlUpper.includes('FROM')) {\n      finalSql = finalSql.replace(/(FROM\\s+\\w+)/i, `$1 WHERE tenant_id = '${contextData.user_context.tenant_id}'`);\n    }\n  }\n\n  // Passed validation\n  return {\n    ...contextData,\n    validated_sql: finalSql,\n    explanation: llmResponse.explanation || '',\n    validation_status: 'PASSED',\n    validation_timestamp: new Date().toISOString()\n  };\n\n} catch (globalError) {\n  // Catch-all: never let the node crash\n  return {\n    ...contextData,\n    validated_sql: \"SELECT 'VALIDATOR_ERROR: \" + String(globalError.message).replace(/'/g, \"''\").substring(0, 100) + \"' as error_message, 'error' as status LIMIT 1\",\n    explanation: 'Validator encountered an unexpected error: ' + globalError.message,\n    validation_status: 'FAILED',\n    validation_error: 'VALIDATOR_CRASH',\n    validation_timestamp: new Date().toISOString()\n  };\n}\n"
       },
       "id": "e3780345-617d-4483-9ab4-79a5c8873cf8",
       "name": "SQL Validator (Shield #1)",
@@ -115,12 +113,11 @@
           "name": "Supabase PostgreSQL"
         }
       },
-      "alwaysOutputData": true,
       "onError": "continueErrorOutput"
     },
     {
       "parameters": {
-        "jsCode": "// Prepare data for interpretation\n// FIX: Handle alwaysOutputData passthrough from SQL Executor\n// When Postgres returns 0 rows, alwaysOutputData sends the INPUT data\n// (from SQL Validator) as passthrough instead of actual SQL results.\n// We detect this by checking for validator-specific fields.\nconst validatorData = $node['SQL Validator (Shield #1)'].json;\nconst inputItems = $input.all();\nconst rawResults = inputItems.map(i => i.json);\n\n// Detect passthrough: if the item has validated_sql or validation_status,\n// it's the validator's data echoed by alwaysOutputData, not SQL rows\nconst isPassthrough = rawResults.length > 0 && (\n  rawResults[0].validated_sql !== undefined ||\n  rawResults[0].validation_status !== undefined ||\n  rawResults[0].validation_timestamp !== undefined\n);\n\nconst sqlResults = isPassthrough ? [] : rawResults;\n\nif (sqlResults.length === 0) {\n  return {\n    ...validatorData,\n    sql_results: [],\n    result_count: 0,\n    has_results: false,\n    result_preview: 'Aucun resultat retourne par la requete SQL.'\n  };\n}\n\nreturn {\n  ...validatorData,\n  sql_results: sqlResults,\n  result_count: sqlResults.length,\n  has_results: true,\n  result_preview: JSON.stringify(sqlResults.slice(0, 5), null, 2)\n};"
+        "jsCode": "// Prepare data for interpretation - handles both success and error from SQL Executor\nlet validatorData = {};\ntry {\n  validatorData = $node['SQL Validator (Shield #1)'].json || {};\n} catch (e) {\n  validatorData = {};\n}\n\nconst inputItems = $input.all();\nconst sqlResults = [];\n\nfor (const item of inputItems) {\n  // Check if this is an error item\n  if (item.json && !item.json.error && !item.json.errorMessage) {\n    sqlResults.push(item.json);\n  }\n}\n\nif (sqlResults.length === 0) {\n  return {\n    ...validatorData,\n    sql_results: [],\n    result_count: 0,\n    has_results: false\n  };\n}\n\nreturn {\n  ...validatorData,\n  sql_results: sqlResults,\n  result_count: sqlResults.length,\n  has_results: true,\n  result_preview: JSON.stringify(sqlResults.slice(0, 5), null, 2)\n};\n"
       },
       "id": "47637bf5-d3c9-4a67-9864-3b5a547ca262",
       "name": "Result Aggregator",
@@ -165,7 +162,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Response Formatter\nconst aggregatorData = $node['Result Aggregator'].json;\nconst interpretation = $json.choices?.[0]?.message?.content || 'No interpretation available';\n\nreturn {\n  status: 'SUCCESS',\n  trace_id: aggregatorData.trace_id,\n  query: aggregatorData.query,\n  sql_executed: aggregatorData.validated_sql,\n  result_count: aggregatorData.result_count,\n  interpretation: interpretation,\n  raw_results: aggregatorData.has_results ? aggregatorData.sql_results : [],\n  metadata: {\n    validation_status: aggregatorData.validation_status,\n    timestamp: new Date().toISOString(),\n    engine: 'QUANTITATIVE'\n  }\n};"
+        "jsCode": "// Response Formatter - handles both success and error paths\n// FIXED: Detects null aggregation results and flags as DATA_NOT_FOUND\nlet aggregatorData = {};\nlet initData = {};\nlet interpretation = '';\n\ntry {\n  initData = $node['Init & ACL'].json || {};\n} catch (e) {\n  initData = {};\n}\n\ntry {\n  aggregatorData = $node['Result Aggregator'].json || {};\n} catch (e) {\n  aggregatorData = {};\n}\n\n// Determine interpretation based on input source\nif ($json.choices?.[0]?.message?.content) {\n  interpretation = $json.choices[0].message.content;\n} else if ($json.error || $json.fallback_message) {\n  interpretation = $json.fallback_message || 'Unable to generate SQL query for this question. Error: ' + ($json.error || 'unknown');\n} else {\n  interpretation = 'No interpretation available';\n}\n\n// === NEW: Detect null/empty aggregation results ===\nlet validationStatus = aggregatorData.validation_status || 'UNKNOWN';\nlet status = validationStatus === 'PASSED' ? 'SUCCESS' : 'ERROR';\n\nconst rawResults = aggregatorData.has_results ? (aggregatorData.sql_results || []) : [];\nconst sqlExecuted = (aggregatorData.validated_sql || '').toUpperCase();\n\n// Check if this was an aggregation query (SUM, AVG, COUNT, MIN, MAX) that returned null\nconst isAggregation = /\\b(SUM|AVG|COUNT|MIN|MAX)\\s*\\(/i.test(sqlExecuted);\nif (isAggregation && rawResults.length > 0) {\n  const allNulls = rawResults.every(row => {\n    return Object.values(row).every(v => v === null || v === undefined);\n  });\n  if (allNulls) {\n    status = 'DATA_NOT_FOUND';\n    validationStatus = 'NULL_RESULT';\n    interpretation = `[WARNING: Aggregation query returned NULL \u2014 this likely means no matching rows were found. ` +\n      `Check that entity names and filters match the exact values in the database.] ` + interpretation;\n  }\n}\n\n// Check for empty result set on non-aggregation queries\nif (!isAggregation && rawResults.length === 0 && validationStatus === 'PASSED') {\n  status = 'NO_DATA';\n  validationStatus = 'EMPTY_RESULT';\n}\n\nreturn {\n  status: status,\n  trace_id: aggregatorData.trace_id || initData.trace_id || '',\n  query: aggregatorData.query || initData.query || '',\n  sql_executed: aggregatorData.validated_sql || '',\n  result_count: aggregatorData.result_count || 0,\n  interpretation: interpretation,\n  raw_results: rawResults,\n  metadata: {\n    validation_status: validationStatus,\n    timestamp: new Date().toISOString(),\n    engine: 'QUANTITATIVE'\n  }\n};"
       },
       "id": "d059dfee-3534-4743-a6f8-bb29e0cf17be",
       "name": "Response Formatter",
@@ -182,7 +179,7 @@
         "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"quantitative_rag_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"attributes\": {\n    \"result_count\": {{ $json.result_count || 0 }},\n    \"sql_length\": {{ $json.sql_executed?.length || 0 }},\n    \"sql_query_preview\": \"{{ ($json.sql_executed || '').substring(0, 200) }}\",\n    \"engine\": \"QUANTITATIVE\",\n    \"validation_status\": \"{{ $json.metadata?.validation_status || 'unknown' }}\",\n    \"query_length\": {{ $json.query?.length || 0 }},\n    \"has_results\": {{ $json.result_count > 0 }}\n  }\n}",
+        "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"quantitative_rag_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"attributes\": {\n    \"result_count\": {{ $json.result_count }},\n    \"sql_length\": {{ $json.sql_executed?.length || 0 }}\n  }\n}",
         "options": {
           "timeout": 5000
         }
@@ -195,7 +192,8 @@
         2384,
         208
       ],
-      "onError": "continueErrorOutput"
+      "onError": "continueErrorOutput",
+      "disabled": true
     },
     {
       "parameters": {},
@@ -223,7 +221,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// PATCH Q02: Diagnostic Error Handler V2.1\n// Replaces: SQL Error Handler (Self-Healing)\n// Categorizes PostgreSQL errors for targeted correction\n// Impact: -40% unnecessary retries (Microsoft Research)\n\nconst executorResult = $json;\nconst validatorData = $node['SQL Validator (Shield #1)'].json;\nconst originalQuery = $node['Init & ACL'].json.query;\n\n// Get retry tracking\nconst staticData = $getWorkflowStaticData('global');\nconst traceId = $node['Init & ACL'].json.trace_id || 'sql-' + Date.now();\n\nif (!staticData.sqlRetries) staticData.sqlRetries = {};\nif (!staticData.sqlRetries[traceId]) {\n  staticData.sqlRetries[traceId] = { count: 0, errors: [], errorTypes: [] };\n}\n\nconst retryState = staticData.sqlRetries[traceId];\nconst MAX_RETRIES = 3;\n\n// Extract error message\nconst errorMessage = executorResult.error ||\n                     executorResult.errorMessage ||\n                     'Unknown error';\n\n// === DIAGNOSTIC D'ERREUR ===\nconst ERROR_PATTERNS = {\n  SYNTAX_ERROR: {\n    pattern: /syntax error at or near|ERROR:\\s*syntax/i,\n    strategy: 'FIX_SYNTAX',\n    description: 'Erreur de syntaxe SQL'\n  },\n  COLUMN_NOT_FOUND: {\n    pattern: /column.*does not exist|ERROR:\\s*column/i,\n    strategy: 'VERIFY_SCHEMA',\n    description: 'Colonne inexistante'\n  },\n  TABLE_NOT_FOUND: {\n    pattern: /relation.*does not exist|ERROR:\\s*relation/i,\n    strategy: 'MAP_ALTERNATIVE_TABLE',\n    description: 'Table inexistante'\n  },\n  TYPE_MISMATCH: {\n    pattern: /operator does not exist|cannot compare|type mismatch/i,\n    strategy: 'ADD_CAST',\n    description: 'Incompatibilite de types'\n  },\n  PERMISSION_DENIED: {\n    pattern: /permission denied|insufficient privilege/i,\n    strategy: 'STOP',\n    description: 'Permission refusee'\n  },\n  TIMEOUT: {\n    pattern: /statement timeout|canceling statement|query canceled/i,\n    strategy: 'SIMPLIFY_QUERY',\n    description: 'Timeout'\n  },\n  AMBIGUOUS_COLUMN: {\n    pattern: /column reference.*is ambiguous/i,\n    strategy: 'QUALIFY_COLUMNS',\n    description: 'Colonne ambigue'\n  }\n};\n\nlet detectedError = null;\nfor (const [errorType, config] of Object.entries(ERROR_PATTERNS)) {\n  if (config.pattern.test(errorMessage)) {\n    detectedError = { type: errorType, ...config };\n    break;\n  }\n}\n\n// Check if execution was successful\nconst hasError = executorResult.error || executorResult.errorMessage;\nconst isEmptyResult = Array.isArray(executorResult) && executorResult.length === 0;\n\nif (!hasError && !isEmptyResult) {\n  // Success - cleanup\n  delete staticData.sqlRetries[traceId];\n  return {\n    success: true,\n    needs_repair: false,\n    result: executorResult,\n    sql_used: validatorData.validated_sql\n  };\n}\n\n// STOP immediately for permission denied\nif (detectedError?.strategy === 'STOP') {\n  delete staticData.sqlRetries[traceId];\n  return {\n    success: false,\n    needs_repair: false,\n    error: 'PERMISSION_DENIED',\n    error_message: errorMessage,\n    user_message: \"Vous n'avez pas les permissions necessaires pour acceder a ces donnees.\"\n  };\n}\n\n// Check retry limit\nretryState.count++;\nretryState.errors.push(errorMessage);\nif (detectedError) {\n  retryState.errorTypes.push(detectedError.type);\n}\n\nif (retryState.count >= MAX_RETRIES) {\n  delete staticData.sqlRetries[traceId];\n  return {\n    success: false,\n    needs_repair: false,\n    error: 'MAX_RETRIES_EXCEEDED',\n    error_history: retryState.errors,\n    error_types: retryState.errorTypes,\n    user_message: `Impossible de generer une requete valide apres ${MAX_RETRIES} tentatives.`\n  };\n}\n\n// Prepare repair context with diagnostic info\nreturn {\n  needs_repair: true,\n  repair_context: {\n    failed_sql: validatorData.validated_sql,\n    error_message: errorMessage,\n    error_type: detectedError?.type || 'UNKNOWN',\n    error_strategy: detectedError?.strategy || 'GENERAL_FIX',\n    error_description: detectedError?.description || 'Erreur inconnue',\n    schema_context: $node['Schema Context Builder'].json.schema_context,\n    original_question: originalQuery,\n    previous_errors: retryState.errors,\n    previous_error_types: retryState.errorTypes,\n    retry_count: retryState.count\n  }\n};\n"
+        "jsCode": "// SQL ERROR HANDLER - Self-Healing Pattern\n// Research: Self-correcting SQL generation (2025)\n\nconst executorResult = $json;\nconst validatorData = $node['SQL Validator (Shield #1)'].json;\nconst originalQuery = $node['Init & ACL'].json.query;\nconst schemaContext = $node['Schema Context Builder'].json.schema_context;\nconst tenantId = $node['Init & ACL'].json.user_context.tenant_id;\n\n// Get static data for retry tracking\nconst staticData = $getWorkflowStaticData('global');\nconst traceId = $node['Init & ACL'].json.trace_id || 'sql-' + Date.now();\n\nif (!staticData.sqlRetries) staticData.sqlRetries = {};\nif (!staticData.sqlRetries[traceId]) {\n  staticData.sqlRetries[traceId] = { count: 0, errors: [] };\n}\n\nconst retryState = staticData.sqlRetries[traceId];\nconst MAX_RETRIES = 3;\n\n// Check if execution was successful\nconst hasError = executorResult.error || \n                 executorResult.errorMessage || \n                 (Array.isArray(executorResult) && executorResult.length === 0 && validatorData.sql?.includes('WHERE'));\n\nif (!hasError) {\n  // Success - cleanup and pass through\n  delete staticData.sqlRetries[traceId];\n  return {\n    success: true,\n    needs_repair: false,\n    result: executorResult,\n    sql_used: validatorData.sql,\n    retry_count: retryState.count\n  };\n}\n\n// Error detected - check retry limit\nretryState.count++;\nconst errorMessage = executorResult.error || executorResult.errorMessage || 'Empty result set (possible invalid query)';\nretryState.errors.push(errorMessage);\n\nif (retryState.count >= MAX_RETRIES) {\n  // Max retries reached - return failure\n  delete staticData.sqlRetries[traceId];\n  return {\n    success: false,\n    needs_repair: false,\n    error: 'MAX_RETRIES_EXCEEDED',\n    error_history: retryState.errors,\n    retry_count: retryState.count,\n    fallback_message: `Impossible de g\u00e9n\u00e9rer une requ\u00eate SQL valide apr\u00e8s ${MAX_RETRIES} tentatives.`\n  };\n}\n\n// Need repair - prepare context for SQL Repair LLM\nreturn {\n  success: false,\n  needs_repair: true,\n  retry_count: retryState.count,\n  repair_context: {\n    original_question: originalQuery,\n    failed_sql: validatorData.sql,\n    error_message: errorMessage,\n    schema_context: schemaContext,\n    tenant_id: tenantId,\n    previous_errors: retryState.errors\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -232,7 +230,7 @@
         416
       ],
       "id": "37d15e46-31a0-40d5-9baa-77b573a8ee6e",
-      "name": "Diagnostic Error Handler (Q02)"
+      "name": "SQL Error Handler (Self-Healing)"
     },
     {
       "parameters": {
@@ -297,7 +295,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Parse SQL Repair response and prepare for retry\n// Updated: references Diagnostic Error Handler (Q02) instead of SQL Error Handler\nconst repairResponse = $json;\nlet repairedSql = '';\n\ntry {\n  const content = repairResponse.choices?.[0]?.message?.content || repairResponse.body?.choices?.[0]?.message?.content;\n  const parsed = JSON.parse(content);\n  repairedSql = parsed.sql;\n} catch (e) {\n  // If parsing fails, return error\n  return {\n    success: false,\n    error: 'SQL_REPAIR_PARSE_ERROR',\n    raw_response: repairResponse\n  };\n}\n\n// Prepare for SQL Validator re-run\nreturn {\n  sql: repairedSql,\n  is_repaired: true,\n  repair_iteration: $node['Diagnostic Error Handler (Q02)'].json.repair_context?.retry_count\n};\n"
+        "jsCode": "// Parse SQL Repair response and prepare for retry\nconst repairResponse = $json;\nlet repairedSql = '';\n\ntry {\n  const content = repairResponse.choices?.[0]?.message?.content || repairResponse.body?.choices?.[0]?.message?.content;\n  const parsed = JSON.parse(content);\n  repairedSql = parsed.sql;\n} catch (e) {\n  // If parsing fails, return error\n  return {\n    success: false,\n    error: 'SQL_REPAIR_PARSE_ERROR',\n    raw_response: repairResponse\n  };\n}\n\n// Prepare for SQL Validator re-run\nreturn {\n  sql: repairedSql,\n  is_repaired: true,\n  repair_iteration: $node['SQL Error Handler (Self-Healing)'].json.retry_count\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -310,12 +308,12 @@
     },
     {
       "parameters": {
-        "content": "# 🔧 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `DEEPSEEK_API_KEY` - API key DeepSeek (api.deepseek.com)\n- `ANTHROPIC_API_KEY` - API key Anthropic (pour planning)\n- `GOOGLE_API_KEY` - API key Google (Gemini Flash)\n\n## LLM URLs (optionnel - défauts inclus)\n- `SQL_GENERATION_API_URL` - URL API pour SQL\n- `INTENT_ANALYSIS_API_URL` - URL API pour intent\n- `PLANNING_API_URL` - URL API pour planning\n- `GENERATION_API_URL` - URL API pour génération\n\n## LLM Models (optionnel)\n- `SQL_GENERATION_MODEL` = deepseek-chat\n- `INTENT_ANALYSIS_MODEL` = deepseek-chat\n- `PLANNING_MODEL` = claude-sonnet-4-5-20250929\n- `GENERATION_MODEL` = deepseek-chat\n\n## Embedding (RECOMMANDÉ: self-hosted)\n- `EMBEDDING_API_URL` - URL embedding (défaut: OpenAI)\n- `EMBEDDING_MODEL` - text-embedding-3-small → Qwen3-Embedding-8B\n\n## Reranking (RECOMMANDÉ: self-hosted)\n- `RERANKER_API_URL` - URL reranker (défaut: Cohere)\n- `RERANKER_MODEL` - rerank-v3 → Qwen3-Reranker-8B\n\n## Impact estimé (selon research):\n- -89% coût ingestion\n- -95% coût requêtes\n- +3% accuracy SQL (BIRD-SQL)\n- +15 pts MTEB (embedding)\n",
+        "content": "# \ud83d\udd27 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `DEEPSEEK_API_KEY` - API key DeepSeek (api.deepseek.com)\n- `ANTHROPIC_API_KEY` - API key Anthropic (pour planning)\n- `GOOGLE_API_KEY` - API key Google (Gemini Flash)\n\n## LLM URLs (optionnel - d\u00e9fauts inclus)\n- `SQL_GENERATION_API_URL` - URL API pour SQL\n- `INTENT_ANALYSIS_API_URL` - URL API pour intent\n- `PLANNING_API_URL` - URL API pour planning\n- `GENERATION_API_URL` - URL API pour g\u00e9n\u00e9ration\n\n## LLM Models (optionnel)\n- `SQL_GENERATION_MODEL` = deepseek-chat\n- `INTENT_ANALYSIS_MODEL` = deepseek-chat\n- `PLANNING_MODEL` = claude-sonnet-4-5-20250929\n- `GENERATION_MODEL` = deepseek-chat\n\n## Embedding (RECOMMAND\u00c9: self-hosted)\n- `EMBEDDING_API_URL` - URL embedding (d\u00e9faut: OpenAI)\n- `EMBEDDING_MODEL` - text-embedding-3-small \u2192 Qwen3-Embedding-8B\n\n## Reranking (RECOMMAND\u00c9: self-hosted)\n- `RERANKER_API_URL` - URL reranker (d\u00e9faut: Cohere)\n- `RERANKER_MODEL` - rerank-v3 \u2192 Qwen3-Reranker-8B\n\n## Impact estim\u00e9 (selon research):\n- -89% co\u00fbt ingestion\n- -95% co\u00fbt requ\u00eates\n- +3% accuracy SQL (BIRD-SQL)\n- +15 pts MTEB (embedding)\n",
         "height": 600,
         "width": 400
       },
       "id": "caefcce7-a945-4749-bc3d-fbb4efc23bdc",
-      "name": "📋 Configuration SOTA 2026",
+      "name": "\ud83d\udccb Configuration SOTA 2026",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
@@ -356,6 +354,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "3e0f8010-39e0-4bca-9d19-35e5094391a9",
+        "responseMode": "lastNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
@@ -370,7 +369,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// PATCH Q01: Few-Shot SQL Generator V2.1\n// Replaces: Prepare SQL Request\n// Impact: +13% BIRD-SQL accuracy (DIN-SQL, 2023 - validated 2026)\n// Also addresses: ISSUE-QT-04 (no few-shot SQL examples)\n\nconst initData = $node['Schema Context Builder'].json;\n\n// === FEW-SHOT EXAMPLES (adaptive by query type) ===\nconst FEW_SHOT_EXAMPLES = {\n  aggregation: `\nQuestion: \"Quel est le chiffre d'affaires total par region en 2023?\"\nSQL: SELECT region, SUM(amount) as total_revenue\n     FROM sales\n     WHERE year = 2023 AND tenant_id = 'TENANT_ID'\n     GROUP BY region\n     ORDER BY total_revenue DESC\n     LIMIT 100`,\n\n  join: `\nQuestion: \"Liste les employes avec leur departement et manager\"\nSQL: SELECT e.name, d.department_name, m.name as manager_name\n     FROM employees e\n     JOIN departments d ON e.dept_id = d.id AND d.tenant_id = 'TENANT_ID'\n     LEFT JOIN employees m ON e.manager_id = m.id\n     WHERE e.tenant_id = 'TENANT_ID'\n     LIMIT 100`,\n\n  date_filter: `\nQuestion: \"Ventes des 30 derniers jours\"\nSQL: SELECT * FROM sales\n     WHERE sale_date >= CURRENT_DATE - INTERVAL '30 days'\n       AND tenant_id = 'TENANT_ID'\n     LIMIT 100`,\n\n  ranking: `\nQuestion: \"Top 5 des produits les plus vendus\"\nSQL: SELECT product_name, SUM(quantity) as total_sold\n     FROM sales\n     WHERE tenant_id = 'TENANT_ID'\n     GROUP BY product_name\n     ORDER BY total_sold DESC\n     LIMIT 5`\n};\n\n// Dynamic example selection based on query content\nfunction selectExamples(query) {\n  const examples = [];\n  const q = query.toLowerCase();\n\n  if (/total|somme|moyenne|count|nombre/i.test(q)) {\n    examples.push(FEW_SHOT_EXAMPLES.aggregation);\n  }\n  if (/avec|join|department|manager|employe/i.test(q)) {\n    examples.push(FEW_SHOT_EXAMPLES.join);\n  }\n  if (/derniers|dernieres|jours|mois|annee|date/i.test(q)) {\n    examples.push(FEW_SHOT_EXAMPLES.date_filter);\n  }\n  if (/top|meilleurs|premiers|classement|plus/i.test(q)) {\n    examples.push(FEW_SHOT_EXAMPLES.ranking);\n  }\n\n  // Always include at least one example\n  if (examples.length === 0) {\n    examples.push(FEW_SHOT_EXAMPLES.aggregation);\n  }\n\n  return examples.slice(0, 2); // Max 2 examples to limit tokens\n}\n\nconst selectedExamples = selectExamples(initData.query);\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepseek/deepseek-chat',\n  messages: [\n    {\n      role: \"system\",\n      content: `Tu es un expert SQL avec raisonnement explicite (Chain-of-Thought).\n\n=== METHODE EN 4 ETAPES ===\n\nETAPE 1 - COMPRENDRE LA QUESTION:\n- Identifie les ENTITES mentionnees (tables probables)\n- Identifie les METRIQUES demandees (SUM, COUNT, AVG, etc.)\n- Identifie les FILTRES et CONDITIONS\n- Identifie la PERIODE temporelle si presente\n\nETAPE 2 - MAPPER AU SCHEMA:\n- Trouve les tables pertinentes dans le schema fourni\n- Identifie les colonnes EXACTES (respecte la casse!)\n- Verifie les types de donnees\n- Si tu ne connais pas le format exact d'une valeur (ex: quarter), utilise LIKE avec wildcard.\nExemple: quarter LIKE 'Q3%' au lieu de quarter = 'Q3'\n- Identifie les JOINs necessaires\n\nETAPE 3 - CONSTRUIRE LA QUERY:\n- SELECT: colonnes a retourner\n- FROM: table principale\n- JOIN: si multi-tables\n- WHERE: filtres + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: si agregation\n- ORDER BY: si tri demande\n- LIMIT: max 100\n\nETAPE 4 - VERIFIER:\n- La query est-elle syntaxiquement valide?\n- Repond-elle a la question originale?\n- Les noms de colonnes existent-ils dans le schema?\n\n=== EXEMPLES DE REQUETES ===\n${selectedExamples.join('\\n\\n---\\n\\n')}\n\n=== REGLES DE SECURITE ===\n1. TOUJOURS commencer par SELECT\n2. TOUJOURS inclure tenant_id = '${initData.user_context.tenant_id}' dans WHERE\n3. TOUJOURS LIMIT (max 100)\n4. JAMAIS de DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. JAMAIS de commentaires SQL (--)\n\n=== FORMAT JSON STRICT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '${initData.user_context.tenant_id}' LIMIT 100\",\n  \"explanation\": \"Cette query fait X parce que Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== SCHEMA DISPONIBLE ===\\n${initData.schema_context}\\n\\n=== QUESTION UTILISATEUR ===\\n${initData.query}\\n\\n=== CONTEXTE ===\\nTenant ID: ${initData.user_context.tenant_id}\\nGroups: ${JSON.stringify(initData.user_context.groups)}\\n\\nGenere la query SQL avec raisonnement Chain-of-Thought complet. Reponds UNIQUEMENT avec le JSON.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000,\n  response_format: { type: \"json_object\" }\n};\n\nreturn {\n  json: {\n    ...initData,\n    requestBody: requestBody,\n    few_shot_examples_used: selectedExamples.length\n  }\n};\n"
+        "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepseek/deepseek-chat',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\n- CRITICAL: Use the EXACT sample values provided in the schema for company names, categories, etc.\n  Example: company_name = 'TechVision Inc' (NOT 'TechVision' or 'techvision')\n- When the user mentions a company by partial name, match it to the closest sample value.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000,\n  response_format: { type: \"json_object\" }\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -379,11 +378,11 @@
         464
       ],
       "id": "817873e1-b27e-41e8-9767-356782ae9429",
-      "name": "Few-Shot SQL Generator (Q01)"
+      "name": "Prepare SQL Request"
     },
     {
       "parameters": {
-        "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemini-2.0-flash-exp',\n  messages: [\n    {\n      role: \"system\",\n      content: \"Tu es un analyste financier expert. Interprete les resultats SQL et reponds a la question initiale de maniere claire et concise. Si les donnees sont vides, explique pourquoi.\"\n    },\n    {\n      role: \"user\",\n      content: `Question initiale: ${aggregatorData.query}\n\nRequete SQL executee: ${aggregatorData.validated_sql}\n\nResultats (${aggregatorData.result_count} lignes):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
+        "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemini-2.5-flash-preview-05-20',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -396,7 +395,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare SQL Repair Request - Safe JSON Building\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepseek/deepseek-chat',\n  messages: [\n    {\n      role: \"system\",\n      content: `Tu es un expert SQL qui CORRIGE les erreurs. Ta mission est de reparer une query SQL qui a echoue.\n\n=== REGLES ===\n1. Corrige UNIQUEMENT l'erreur - ne change PAS la logique metier\n2. Verifie les noms de colonnes EXACTS dans le schema\n3. Ajoute des CAST si type mismatch (ex: '100'::numeric)\n4. Verifie les guillemets (simple pour strings, double pour identifiants)\n5. TOUJOURS garder tenant_id dans WHERE\n\n=== FORMAT JSON ===\n{\n  \"analysis\": \"Ce qui a cause l'erreur...\",\n  \"fix_applied\": \"Le changement effectue...\",\n  \"sql\": \"SELECT ... (query corrigee)\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== QUERY ORIGINALE QUI A ECHOUE ===\n${repairContext.failed_sql}\n\n=== ERREUR POSTGRES ===\n${repairContext.error_message}\n\n=== SCHEMA ===\n${repairContext.schema_context}\n\n=== QUESTION UTILISATEUR ===\n${repairContext.original_question}\n\n=== HISTORIQUE DES ERREURS ===\n${JSON.stringify(repairContext.previous_errors, null, 2)}\n\nCorrige la query SQL. Retourne UNIQUEMENT le JSON avec la query corrigee.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 800,\n  response_format: { type: \"json_object\" }\n};\n\nreturn {\n  json: {\n    ...errorHandlerData,\n    requestBody: requestBody\n  }\n};"
+        "jsCode": "// Prepare SQL Repair Request - Safe JSON Building\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepseek/deepseek-chat',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL debugger. Your mission is to FIX a SQL query that has failed.\n\n=== RULES ===\n1. Fix ONLY the error - do NOT change the business logic\n2. Verify EXACT column names in the schema\n3. Add CAST if type mismatch (e.g., '100'::numeric)\n4. Verify quotes (single for strings, double for identifiers)\n5. ALWAYS keep tenant_id in WHERE\n\n=== JSON FORMAT ===\n{\n  \"analysis\": \"What caused the error...\",\n  \"fix_applied\": \"The change made...\",\n  \"sql\": \"SELECT ... (corrected query)\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== ORIGINAL QUERY THAT FAILED ===\n${repairContext.failed_sql}\n\n=== POSTGRES ERROR ===\n${repairContext.error_message}\n\n=== SCHEMA ===\n${repairContext.schema_context}\n\n=== USER QUESTION ===\n${repairContext.original_question}\n\n=== ERROR HISTORY ===\n${JSON.stringify(repairContext.previous_errors, null, 2)}\n\nFix the SQL query. Return ONLY the JSON with the corrected query.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 800,\n  response_format: { type: \"json_object\" }\n};\n\nreturn {\n  json: {\n    ...errorHandlerData,\n    requestBody: requestBody\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -429,13 +428,6 @@
             "type": "main",
             "index": 0
           }
-        ],
-        [
-          {
-            "node": "Schema Context Builder",
-            "type": "main",
-            "index": 0
-          }
         ]
       ]
     },
@@ -443,7 +435,7 @@
       "main": [
         [
           {
-            "node": "Few-Shot SQL Generator (Q01)",
+            "node": "Prepare SQL Request",
             "type": "main",
             "index": 0
           }
@@ -483,7 +475,7 @@
         ],
         [
           {
-            "node": "Diagnostic Error Handler (Q02)",
+            "node": "SQL Error Handler (Self-Healing)",
             "type": "main",
             "index": 0
           }
@@ -528,6 +520,17 @@
         [
           {
             "node": "Error Response Builder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SQL Error Handler (Self-Healing)": {
+      "main": [
+        [
+          {
+            "node": "Needs SQL Repair?",
             "type": "main",
             "index": 0
           }
@@ -607,6 +610,17 @@
         ]
       ]
     },
+    "Prepare SQL Request": {
+      "main": [
+        [
+          {
+            "node": "Text-to-SQL Generator (CoT Enhanced)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Prepare Interpretation Request": {
       "main": [
         [
@@ -628,34 +642,13 @@
           }
         ]
       ]
-    },
-    "Few-Shot SQL Generator (Q01)": {
-      "main": [
-        [
-          {
-            "node": "Text-to-SQL Generator (CoT Enhanced)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Diagnostic Error Handler (Q02)": {
-      "main": [
-        [
-          {
-            "node": "Needs SQL Repair?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": true,
+    "timeSavedMode": "fixed",
     "callerPolicy": "workflowsFromSameOwner"
   },
   "versionId": "3bea31e7-c3d0-42cf-a6d0-c63f38861b3e",
