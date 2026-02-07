@@ -168,6 +168,29 @@ canvas{width:100%!important;height:100%!important}
 .exec-row.exec-error{border-left:3px solid var(--rd)}
 .exec-hdr{position:sticky;top:0;background:var(--s2);z-index:1;font-weight:500;color:var(--tx2);text-transform:uppercase;font-size:.72em;letter-spacing:.04em}
 
+/* PHASE TRACKER */
+.phase-track{display:flex;gap:0;align-items:stretch;margin:12px 0}
+.phase-step{flex:1;position:relative;padding:12px 14px;background:var(--s2);border:1px solid var(--bd);text-align:center;transition:all .3s}
+.phase-step:first-child{border-radius:8px 0 0 8px}
+.phase-step:last-child{border-radius:0 8px 8px 0}
+.phase-step.phase-active{background:rgba(59,130,246,.1);border-color:var(--ac)}
+.phase-step.phase-done{background:rgba(34,197,94,.08);border-color:var(--gn)}
+.phase-step.phase-locked{opacity:.5}
+.phase-step .phase-num{font-size:1.4em;font-weight:700;line-height:1}
+.phase-step .phase-name{font-size:.72em;color:var(--tx2);margin-top:2px}
+.phase-step .phase-q{font-size:.68em;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono',monospace}
+.phase-step .phase-status{font-size:.62em;margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.phase-connector{width:20px;display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:.9em}
+.gate-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.gate-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:.72em;font-weight:500;border:1px solid var(--bd)}
+.gate-chip.gate-pass{border-color:var(--gn);background:rgba(34,197,94,.08);color:var(--gn)}
+.gate-chip.gate-fail{border-color:var(--rd);background:rgba(239,68,68,.08);color:var(--rd)}
+.gate-chip.gate-pending{border-color:var(--tx3);color:var(--tx3)}
+.db-readiness{display:flex;gap:6px;margin-top:6px}
+.db-pill{padding:2px 8px;border-radius:4px;font-size:.68em;font-weight:600}
+.db-ready{background:rgba(34,197,94,.12);color:var(--gn)}
+.db-notready{background:rgba(239,68,68,.12);color:var(--rd)}
+
 /* FOOTER */
 .footer{text-align:center;color:var(--tx3);font-size:.72em;padding:24px;border-top:1px solid var(--bd);margin-top:32px}
 </style>
@@ -197,6 +220,7 @@ canvas{width:100%!important;height:100%!important}
   <div class="tab" data-tab="graph">Knowledge Graph</div>
   <div class="tab" data-tab="evolution">Workflow Evolution</div>
   <div class="tab" data-tab="dbmonitor">DB Monitor</div>
+  <div class="tab" data-tab="phases">Phases</div>
   <div class="tab" data-tab="execlogs">Execution Logs</div>
 </div>
 
@@ -207,6 +231,9 @@ canvas{width:100%!important;height:100%!important}
 
   <!-- KPIs -->
   <div class="grid g5" id="kpi-row"></div>
+
+  <!-- Phase Progress -->
+  <div id="overview-phase-bar" style="margin:8px 0"></div>
 
   <!-- Pipeline Summary Cards -->
   <div class="section-hdr"><h2><span class="icon">&#9672;</span> Pipeline Performance</h2></div>
@@ -450,6 +477,42 @@ canvas{width:100%!important;height:100%!important}
 </div>
 
 <!-- ============================================================ -->
+<!-- TAB: PHASES -->
+<!-- ============================================================ -->
+<div class="tab-panel" id="panel-phases">
+  <div class="section-hdr"><h2><span class="icon">&#9654;</span> Evaluation Phase Tracker</h2></div>
+  <div id="phase-track"></div>
+
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card accent-blue">
+      <div class="lbl">Current Phase: Gate Status</div>
+      <div id="phase-gates" style="margin-top:8px"></div>
+    </div>
+    <div class="card accent-purple">
+      <div class="lbl">DB Readiness for Current & Next Phase</div>
+      <div id="phase-db-readiness" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card accent-green">
+      <div class="lbl">Phase 1 Iteration History</div>
+      <div class="chart-wrap chart-md"><canvas id="chart-phase-iterations"></canvas></div>
+    </div>
+    <div class="card accent-cyan">
+      <div class="lbl">Questions Tested: Scaling Projection</div>
+      <div class="chart-wrap chart-md"><canvas id="chart-phase-scaling"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-hdr"><h2><span class="icon">&#9707;</span> DB Growth Projection by Phase</h2></div>
+  <div class="grid g3" id="phase-db-projection"></div>
+
+  <div class="section-hdr"><h2><span class="icon">&#9881;</span> Phase Details</h2></div>
+  <div id="phase-details"></div>
+</div>
+
+<!-- ============================================================ -->
 <!-- TAB: EXECUTION LOGS -->
 <!-- ============================================================ -->
 <div class="tab-panel" id="panel-execlogs">
@@ -572,6 +635,7 @@ function render() {
   if (activeTab === 'graph') renderGraph();
   if (activeTab === 'evolution') renderEvolution();
   if (activeTab === 'dbmonitor') renderDBMonitor();
+  if (activeTab === 'phases') renderPhases();
   if (activeTab === 'execlogs') renderExecLogs();
 }
 
@@ -595,6 +659,26 @@ function renderOverview() {
     <div class="card accent-yellow"><div class="lbl">Avg Latency</div><div class="val mono">${fmtMs(avgLat)}</div><div class="sub">${avgLat>0?fmt(60000/avgLat,1)+' q/min':'—'}</div></div>
     <div class="card accent-green"><div class="lbl">Total Cost</div><div class="val mono">${fmtCost(totalCost)}</div><div class="sub">${totalTested>0?fmtCost(totalCost/totalTested)+'/q':'—'}</div></div>
   `;
+
+  // Phase progress bar in overview
+  const phases = DATA.evaluation_phases || [];
+  const curPhase = DATA.current_phase || 1;
+  if (phases.length) {
+    byId('overview-phase-bar').innerHTML = `<div class="phase-track">${phases.map((ph,i) => {
+      const isCur = ph.phase === curPhase;
+      const isDone = ph.status === 'completed';
+      const cls = isDone ? 'phase-done' : isCur ? 'phase-active' : 'phase-locked';
+      const statusColor = isDone ? 'var(--gn)' : isCur ? 'var(--ac)' : 'var(--tx3)';
+      const statusText = isDone ? 'COMPLETE' : isCur ? 'ACTIVE' : 'LOCKED';
+      const connector = i < phases.length - 1 ? '<div class="phase-connector">&#8594;</div>' : '';
+      return `<div class="phase-step ${cls}">
+        <div class="phase-num" style="color:${statusColor}">${ph.phase}</div>
+        <div class="phase-name">${ph.name}</div>
+        <div class="phase-q">${(ph.total_questions||0).toLocaleString()}q</div>
+        <div class="phase-status" style="color:${statusColor}">${statusText}</div>
+      </div>${connector}`;
+    }).join('')}</div>`;
+  }
 
   // Pipeline cards
   byId('pipeline-cards').innerHTML = Object.entries(p).map(([name,d]) => {
@@ -1328,6 +1412,193 @@ function renderExecLogs() {
 // Exec log filters
 ['exec-filter-type','exec-filter-error'].forEach(id => byId(id)?.addEventListener('change', () => activeTab==='execlogs'&&renderExecLogs()));
 byId('exec-filter-search')?.addEventListener('input', () => activeTab==='execlogs'&&renderExecLogs());
+
+// ============================================================
+// PHASES TAB
+// ============================================================
+function renderPhases() {
+  const phases = DATA.evaluation_phases || [];
+  const curPhase = DATA.current_phase || 1;
+  const curIter = DATA.phase_iteration || 1;
+  if (!phases.length) {
+    byId('phase-track').innerHTML = '<div style="color:var(--tx3);padding:20px">No phase data. Add evaluation_phases to data.json.</div>';
+    return;
+  }
+
+  // Phase tracker bar
+  byId('phase-track').innerHTML = `<div class="phase-track">${phases.map((ph,i) => {
+    const isCur = ph.phase === curPhase;
+    const isDone = ph.status === 'completed';
+    const cls = isDone ? 'phase-done' : isCur ? 'phase-active' : 'phase-locked';
+    const statusColor = isDone ? 'var(--gn)' : isCur ? 'var(--ac)' : 'var(--tx3)';
+    const statusText = isDone ? 'COMPLETE' : isCur ? `ACTIVE (iter ${curIter})` : 'LOCKED';
+    const connector = i < phases.length - 1 ? '<div class="phase-connector">&#8594;</div>' : '';
+    const gatesPassed = ph.gates ? Object.values(ph.gates).filter(g => g.passed).length : 0;
+    const gatesTotal = ph.gates ? Object.keys(ph.gates).length : 0;
+    return `<div class="phase-step ${cls}">
+      <div class="phase-num" style="color:${statusColor}">${ph.phase}</div>
+      <div class="phase-name">${ph.name}</div>
+      <div class="phase-q">${(ph.total_questions||0).toLocaleString()} questions</div>
+      <div class="phase-status" style="color:${statusColor}">${statusText}</div>
+      ${gatesTotal ? `<div style="font-size:.62em;color:var(--tx3);margin-top:2px">Gates: ${gatesPassed}/${gatesTotal}</div>` : ''}
+    </div>${connector}`;
+  }).join('')}</div>`;
+
+  // Current phase gates
+  const curPhaseData = phases.find(p => p.phase === curPhase);
+  if (curPhaseData && curPhaseData.gates) {
+    byId('phase-gates').innerHTML = `
+      <div style="margin-bottom:12px;font-size:.88em;font-weight:600;color:var(--ac)">Phase ${curPhase}: ${curPhaseData.name}</div>
+      <div class="gate-row">${Object.entries(curPhaseData.gates).map(([key, gate]) => {
+        const cls = gate.passed ? 'gate-pass' : gate.current != null ? 'gate-fail' : 'gate-pending';
+        const icon = gate.passed ? '&#10003;' : gate.current != null ? '&#10007;' : '&#9679;';
+        let label = key.replace(/_/g,' ');
+        let detail = '';
+        if (gate.target != null && gate.current != null) {
+          detail = `${gate.current}% / ${gate.target}%`;
+        } else if (gate.target != null) {
+          detail = `target: ${gate.target}%`;
+        } else if (gate.consecutive_stable_runs != null) {
+          detail = `${gate.consecutive_stable_runs}/${gate.required} stable`;
+        } else if (gate.description) {
+          detail = gate.description;
+        } else if (gate.target_max != null) {
+          detail = `<${gate.target_max}%`;
+        }
+        return `<div class="gate-chip ${cls}"><span>${icon}</span> <span>${label}</span> <span class="mono" style="font-size:.9em">${detail}</span></div>`;
+      }).join('')}</div>
+      ${curPhaseData.iterations && curPhaseData.iterations.length ? `
+        <div style="margin-top:12px;font-size:.78em;color:var(--tx2)">
+          <strong>Latest iteration (${curPhaseData.iterations.length}):</strong>
+          ${curPhaseData.iterations[curPhaseData.iterations.length-1].changes || ''}
+        </div>` : ''}
+    `;
+  }
+
+  // DB readiness for current + next phase
+  const nextPhaseData = phases.find(p => p.phase === curPhase + 1);
+  const dbNames = {pinecone: {label:'Pinecone', color:'var(--ac)'}, neo4j: {label:'Neo4j', color:'var(--pp)'}, supabase: {label:'Supabase', color:'var(--gn)'}};
+  let dbHtml = '';
+  [curPhaseData, nextPhaseData].filter(Boolean).forEach(ph => {
+    dbHtml += `<div style="margin-bottom:14px">
+      <div style="font-size:.82em;font-weight:600;margin-bottom:6px;color:${ph.phase===curPhase?'var(--ac)':'var(--tx3)'}">Phase ${ph.phase}: ${ph.name}</div>
+      <div class="db-readiness">${Object.entries(ph.db_readiness || {}).map(([db, info]) => {
+        const ready = info.ready;
+        const meta = dbNames[db] || {label:db,color:'var(--tx2)'};
+        return `<div class="db-pill ${ready?'db-ready':'db-notready'}">${meta.label} ${ready?'&#10003;':'&#10007;'}</div>`;
+      }).join('')}</div>
+      <div style="font-size:.72em;color:var(--tx3);margin-top:4px">${Object.entries(ph.db_readiness || {}).map(([db, info]) => {
+        if (info.note) return `<div>${dbNames[db]?.label||db}: ${info.note}</div>`;
+        return '';
+      }).join('')}</div>
+    </div>`;
+  });
+  byId('phase-db-readiness').innerHTML = dbHtml;
+
+  // Phase 1 iteration history chart
+  destroyChart('phaseIter');
+  if (curPhaseData && curPhaseData.iterations && curPhaseData.iterations.length) {
+    const iters = curPhaseData.iterations;
+    const opts = chartDefaults();
+    opts.scales.y.min = 0; opts.scales.y.max = 100;
+    const pipes = ['standard','graph','quantitative','orchestrator'];
+    charts.phaseIter = new Chart(byId('chart-phase-iterations'), {
+      type:'line', data:{
+        labels: iters.map((it,i) => `Iter ${it.iteration||i+1}`),
+        datasets: pipes.filter(p => iters.some(it => it[p] != null)).map(p => ({
+          label: PIPE_LABELS[p],
+          data: iters.map(it => it[p] != null ? it[p] : null),
+          borderColor: PIPE_COLORS[p],
+          backgroundColor: PIPE_COLORS[p] + '20',
+          tension: .3,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          fill: false
+        })).concat([{
+          label: 'Overall',
+          data: iters.map(it => it.overall != null ? it.overall : null),
+          borderColor: '#fff',
+          borderDash: [5,3],
+          backgroundColor: 'transparent',
+          tension: .3,
+          pointRadius: 4,
+          fill: false
+        }])
+      }, options: opts
+    });
+  }
+
+  // Scaling projection chart
+  destroyChart('phaseScale');
+  const scaleLabels = phases.map(p => `P${p.phase}: ${p.name}`);
+  const scaleData = phases.map(p => p.total_questions || 0);
+  const scaleOpts = chartDefaults();
+  scaleOpts.scales.y.type = 'logarithmic';
+  scaleOpts.scales.y.title = {display:true,text:'Questions (log scale)',color:'#5a6578'};
+  charts.phaseScale = new Chart(byId('chart-phase-scaling'), {
+    type:'bar', data:{
+      labels: scaleLabels,
+      datasets: [{
+        label:'Questions',
+        data: scaleData,
+        backgroundColor: phases.map(p => p.phase === curPhase ? 'var(--ac)' : p.status === 'completed' ? 'var(--gn)' : 'var(--tx3)'),
+        borderRadius: 4
+      }]
+    }, options: scaleOpts
+  });
+
+  // DB growth projection cards
+  const projections = [
+    {db:'Pinecone Vectors', key:'pinecone', color:'var(--ac)', values: phases.map(p => p.db_readiness?.pinecone?.vectors_available || p.db_readiness?.pinecone?.vectors_needed || 0)},
+    {db:'Neo4j Entities', key:'neo4j', color:'var(--pp)', values: phases.map(p => p.db_readiness?.neo4j?.entities_available || p.db_readiness?.neo4j?.entities_needed || 0)},
+    {db:'Supabase Rows', key:'supabase', color:'var(--gn)', values: phases.map(p => p.db_readiness?.supabase?.rows_available || p.db_readiness?.supabase?.rows_needed || 0)}
+  ];
+  byId('phase-db-projection').innerHTML = projections.map(proj => {
+    const max = Math.max(...proj.values, 1);
+    return `<div class="card">
+      <div class="lbl">${proj.db}</div>
+      <div style="margin-top:8px">${phases.map((ph,i) => {
+        const val = proj.values[i];
+        const needed = ph.db_readiness?.[proj.key]?.vectors_needed || ph.db_readiness?.[proj.key]?.entities_needed || ph.db_readiness?.[proj.key]?.rows_needed || 0;
+        const ready = ph.db_readiness?.[proj.key]?.ready;
+        const barW = Math.max(2, val / max * 100);
+        return `<div style="display:flex;align-items:center;gap:8px;margin:4px 0;font-size:.78em">
+          <span style="width:50px;color:${ph.phase===curPhase?'var(--ac)':'var(--tx3)'}">P${ph.phase}</span>
+          <div class="bar" style="flex:1;height:8px"><div style="height:100%;width:${barW}%;background:${proj.color};border-radius:3px"></div></div>
+          <span class="mono" style="width:60px;text-align:right">${val>=1000?(val/1000).toFixed(0)+'K':val}</span>
+          <span class="db-pill ${ready?'db-ready':'db-notready'}" style="font-size:.6em">${ready?'OK':'NEED'}</span>
+        </div>`;
+      }).join('')}</div>
+    </div>`;
+  }).join('');
+
+  // Phase details (expandable cards)
+  byId('phase-details').innerHTML = phases.map(ph => {
+    const isCur = ph.phase === curPhase;
+    const datasets = (ph.datasets||[]).join(', ');
+    const qPerPipe = ph.questions_per_pipeline ? Object.entries(ph.questions_per_pipeline).map(([k,v]) => `<span class="pipe-badge ${pipeClass(k)}" style="font-size:.62em">${PIPE_LABELS[k]||k}: ${v}</span>`).join(' ') : '';
+    return `<div class="card${isCur?' accent-blue':''}" style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <span style="font-weight:700;font-size:1.1em;color:${isCur?'var(--ac)':'var(--tx)'}">Phase ${ph.phase}: ${ph.name}</span>
+          <span class="tag ${ph.status==='active'?'t-in':ph.status==='completed'?'t-ok':'t-er'}" style="margin-left:8px">${ph.status.toUpperCase()}</span>
+        </div>
+        <span class="mono" style="color:var(--tx2)">${(ph.total_questions||0).toLocaleString()} questions</span>
+      </div>
+      <div style="margin-top:8px">${qPerPipe}</div>
+      ${datasets ? `<div style="margin-top:6px;font-size:.75em;color:var(--tx3)">Datasets: ${datasets}</div>` : ''}
+      ${ph.gates ? `<div class="gate-row" style="margin-top:8px">${Object.entries(ph.gates).map(([key, gate]) => {
+        const cls = gate.passed ? 'gate-pass' : gate.current != null ? 'gate-fail' : 'gate-pending';
+        const icon = gate.passed ? '&#10003;' : gate.current != null ? '&#10007;' : '&#8212;';
+        let detail = '';
+        if (gate.target != null && gate.current != null) detail = `${gate.current}/${gate.target}%`;
+        else if (gate.target != null) detail = `${gate.target}%`;
+        else if (gate.description) detail = gate.description.slice(0,30);
+        return `<div class="gate-chip ${cls}"><span>${icon}</span> ${key.replace(/_/g,' ')} <span class="mono" style="font-size:.85em">${detail}</span></div>`;
+      }).join('')}</div>` : ''}
+    </div>`;
+  }).join('');
+}
 
 // ============================================================
 // CSV EXPORT

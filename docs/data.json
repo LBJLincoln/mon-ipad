@@ -189,5 +189,107 @@
       "after_metrics": null
     }
   ],
-  "execution_logs": []
+  "execution_logs": [],
+  "current_phase": 1,
+  "phase_iteration": 1,
+  "evaluation_phases": [
+    {
+      "phase": 1,
+      "name": "Baseline",
+      "status": "active",
+      "total_questions": 200,
+      "questions_per_pipeline": {"standard": 50, "graph": 50, "quantitative": 50, "orchestrator": 50},
+      "datasets": ["hand-crafted", "curated-HF"],
+      "db_readiness": {
+        "pinecone": {"ready": true, "vectors_needed": 0, "vectors_available": 10411, "note": "All 50 standard questions have matching content"},
+        "neo4j": {"ready": true, "entities_needed": 0, "entities_available": 110, "note": "All 50 graph questions reference seeded entities"},
+        "supabase": {"ready": true, "rows_needed": 0, "rows_available": 88, "note": "All 50 quant questions target existing tables"}
+      },
+      "gates": {
+        "standard": {"target": 85, "current": 78, "passed": false},
+        "graph": {"target": 70, "current": 50, "passed": false},
+        "quantitative": {"target": 85, "current": 80, "passed": false},
+        "orchestrator": {"target": 70, "current": 48, "passed": false},
+        "overall": {"target": 75, "current": 64, "passed": false},
+        "stability": {"consecutive_stable_runs": 0, "required": 3, "passed": false}
+      },
+      "iterations": [
+        {"iteration": 1, "timestamp": "2026-02-07T12:58:00Z", "standard": 78, "graph": 50, "quantitative": 80, "orchestrator": 48, "overall": 64, "changes": "Initial baseline"}
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Expand",
+      "status": "locked",
+      "total_questions": 1000,
+      "questions_per_pipeline": {"graph": 500, "quantitative": 500},
+      "datasets": ["musique", "2wikimultihopqa", "finqa", "tatqa", "convfinqa", "wikitablequestions"],
+      "db_readiness": {
+        "pinecone": {"ready": true, "vectors_needed": 0, "vectors_available": 10411, "note": "Not directly tested in Phase 2"},
+        "neo4j": {"ready": false, "entities_needed": 2500, "entities_available": 110, "note": "Must extract entities from question contexts"},
+        "supabase": {"ready": false, "rows_needed": 10000, "rows_available": 88, "note": "Must parse table_data from questions"}
+      },
+      "gates": {
+        "graph": {"target": 60, "current": null, "passed": false},
+        "quantitative": {"target": 70, "current": null, "passed": false},
+        "no_regression": {"description": "Phase 1 results must not regress", "passed": false}
+      },
+      "iterations": []
+    },
+    {
+      "phase": 3,
+      "name": "Scale",
+      "status": "locked",
+      "total_questions": 11500,
+      "questions_per_pipeline": {"standard": 8500, "graph": 1500, "quantitative": 500, "orchestrator": 1000},
+      "datasets": ["musique", "2wikimultihopqa", "hotpotqa", "finqa", "tatqa", "convfinqa", "wikitablequestions", "frames", "triviaqa", "squad_v2", "popqa", "msmarco", "asqa", "narrativeqa", "pubmedqa", "natural_questions"],
+      "db_readiness": {
+        "pinecone": {"ready": false, "vectors_needed": 5000, "vectors_available": 10411, "note": "Need additional context embeddings"},
+        "neo4j": {"ready": false, "entities_needed": 4000, "entities_available": 110, "note": "Requires Phase 2 + hotpotqa entities"},
+        "supabase": {"ready": false, "rows_needed": 12000, "rows_available": 88, "note": "Extends Phase 2 tables"}
+      },
+      "gates": {
+        "standard": {"target": 75, "current": null, "passed": false},
+        "graph": {"target": 55, "current": null, "passed": false},
+        "quantitative": {"target": 65, "current": null, "passed": false},
+        "orchestrator": {"target": 60, "current": null, "passed": false},
+        "error_rate": {"target_max": 10, "current": null, "passed": false}
+      },
+      "iterations": []
+    },
+    {
+      "phase": 4,
+      "name": "Full HF",
+      "status": "locked",
+      "total_questions": 100000,
+      "questions_per_pipeline": {"standard": 60000, "graph": 15000, "quantitative": 7000, "orchestrator": 18000},
+      "datasets": ["all 16 datasets at 10x sample"],
+      "db_readiness": {
+        "pinecone": {"ready": false, "vectors_needed": 100000, "vectors_available": 10411, "note": "May require paid plan"},
+        "neo4j": {"ready": false, "entities_needed": 15000, "entities_available": 110, "note": "May require Aura Pro"},
+        "supabase": {"ready": false, "rows_needed": 50000, "rows_available": 88, "note": "Within free tier"}
+      },
+      "gates": {
+        "no_regression": {"description": "Maintain Phase 3 accuracy levels", "passed": false}
+      },
+      "iterations": []
+    },
+    {
+      "phase": 5,
+      "name": "Million+",
+      "status": "locked",
+      "total_questions": 2200000,
+      "questions_per_pipeline": {"standard": 1500000, "graph": 300000, "quantitative": 50000, "orchestrator": 350000},
+      "datasets": ["all 16 datasets, full splits"],
+      "db_readiness": {
+        "pinecone": {"ready": false, "vectors_needed": 500000, "vectors_available": 10411, "note": "Requires production infrastructure"},
+        "neo4j": {"ready": false, "entities_needed": 50000, "entities_available": 110, "note": "Requires production infrastructure"},
+        "supabase": {"ready": false, "rows_needed": 200000, "rows_available": 88, "note": "Requires Pro plan"}
+      },
+      "gates": {
+        "sustained_throughput": {"target": 100, "unit": "questions/hour", "current": null, "passed": false}
+      },
+      "iterations": []
+    }
+  ]
 }
