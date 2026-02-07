@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Benchmark — Live Dashboard</title>
+<style>
+:root{--bg:#0d1117;--s1:#161b22;--s2:#1c2129;--bd:#30363d;--tx:#e6edf3;--tx2:#8b949e;--ac:#58a6ff;--gn:#3fb950;--rd:#f85149;--yl:#d29922;--or:#db6d28;--pp:#bc8cff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow-x:hidden}
+.topbar{background:var(--s1);border-bottom:1px solid var(--bd);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar h1{font-size:1.2em;display:flex;align-items:center;gap:8px}
+.topbar .live{background:var(--gn);width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.topbar .meta{color:var(--tx2);font-size:.8em;display:flex;gap:16px}
+.container{max-width:1400px;margin:0 auto;padding:16px 24px}
+.grid{display:grid;gap:12px;margin:12px 0}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:1fr 1fr}
+@media(max-width:900px){.g4,.g3,.g2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:16px}
+.card .lbl{color:var(--tx2);font-size:.75em;text-transform:uppercase;letter-spacing:.5px}
+.card .val{font-size:2.2em;font-weight:700;margin:4px 0;line-height:1}
+.card .sub{color:var(--tx2);font-size:.82em}
+h2{font-size:1.15em;color:var(--ac);margin:20px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--bd)}
+table{width:100%;border-collapse:collapse;font-size:.88em}
+th{background:var(--s2);color:var(--tx2);text-align:left;padding:8px 10px;border-bottom:2px solid var(--bd);font-weight:600;position:sticky;top:0}
+td{padding:7px 10px;border-bottom:1px solid var(--bd)}
+tr:hover{background:rgba(88,166,255,.04)}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72em;font-weight:600}
+.t-ok{background:rgba(63,185,80,.15);color:var(--gn)}
+.t-wr{background:rgba(210,153,34,.15);color:var(--yl)}
+.t-er{background:rgba(248,81,73,.15);color:var(--rd)}
+.t-in{background:rgba(88,166,255,.15);color:var(--ac)}
+.t-pp{background:rgba(188,140,255,.15);color:var(--pp)}
+.bar{height:22px;border-radius:4px;background:var(--bd);overflow:hidden;display:flex}
+.bar>div{height:100%;transition:width .6s ease}
+.bar .fill-gn{background:var(--gn)}
+.bar .fill-yl{background:var(--yl)}
+.bar .fill-rd{background:var(--rd)}
+.bar .fill-ac{background:var(--ac)}
+.mono{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:.85em}
+.alert{border-radius:8px;padding:14px;margin:12px 0}
+.alert-r{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.25)}
+.alert-y{background:rgba(210,153,34,.08);border:1px solid rgba(210,153,34,.25)}
+.chart-wrap{height:180px;position:relative;margin:8px 0}
+canvas{width:100%!important;height:100%!important}
+.feed{max-height:400px;overflow-y:auto;font-size:.85em}
+.feed-item{padding:8px 10px;border-bottom:1px solid var(--bd);display:grid;grid-template-columns:60px 80px 1fr 80px 80px 60px;gap:8px;align-items:center}
+.feed-item:hover{background:rgba(88,166,255,.04)}
+.filters{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap}
+.filters select,.filters input{background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:4px;padding:5px 8px;font-size:.85em}
+.cost-card{display:flex;align-items:baseline;gap:6px}
+.cost-card .currency{font-size:1em;color:var(--tx2)}
+.progress-ring{width:80px;height:80px}
+.footer{text-align:center;color:var(--tx2);font-size:.75em;padding:24px;border-top:1px solid var(--bd);margin-top:32px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1><div class="live" id="live-dot"></div> RAG Benchmark Dashboard</h1>
+  <div class="meta">
+    <span id="status-badge" class="tag t-in">LOADING</span>
+    <span id="last-update">—</span>
+    <span id="refresh-timer">Auto-refresh: 5s</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- KPI ROW -->
+<div class="grid g4" id="kpi-row"></div>
+
+<!-- PIPELINE TABLE -->
+<h2>Pipelines RAG</h2>
+<table id="pipeline-table">
+  <thead><tr>
+    <th>Pipeline</th><th>Progress</th><th>Tested</th><th>Accuracy</th>
+    <th>IC 95%</th><th>Errors</th><th>Avg Latency</th><th>P95</th><th>Cost</th>
+  </tr></thead>
+  <tbody></tbody>
+</table>
+
+<!-- CHARTS ROW -->
+<h2>Historique & Tendances</h2>
+<div class="grid g2">
+  <div class="card">
+    <div class="lbl">Accuracy par pipeline (historique)</div>
+    <div class="chart-wrap"><canvas id="chart-accuracy"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="lbl">Latence moyenne (ms)</div>
+    <div class="chart-wrap"><canvas id="chart-latency"></canvas></div>
+  </div>
+</div>
+
+<!-- DB COVERAGE -->
+<h2>Couverture BDD</h2>
+<div class="grid g3" id="db-cards"></div>
+
+<!-- COSTS -->
+<h2>Couts & Resources</h2>
+<div class="grid g4" id="cost-row"></div>
+
+<!-- ALERTS -->
+<div id="alerts"></div>
+
+<!-- LIVE FEED -->
+<h2>Questions — Fil en direct <span id="feed-count" class="tag t-in">0</span></h2>
+<div class="filters">
+  <select id="filter-type"><option value="">Tous types</option><option value="standard">Standard</option><option value="graph">Graph</option><option value="quantitative">Quantitative</option><option value="orchestrator">Orchestrator</option></select>
+  <select id="filter-status"><option value="">Tous status</option><option value="correct">Correct</option><option value="incorrect">Incorrect</option><option value="error">Erreur</option></select>
+  <input type="text" id="filter-search" placeholder="Rechercher...">
+</div>
+<div class="feed-item" style="font-weight:600;color:var(--tx2)">
+  <div>ID</div><div>Type</div><div>Question</div><div>Score</div><div>Latence</div><div>Status</div>
+</div>
+<div class="feed" id="question-feed"></div>
+
+</div>
+
+<div class="footer">
+  RAG Benchmark Dashboard — SOTA 2026 | Auto-refresh toutes les 5s |
+  Donnees: <code>docs/data.json</code> | Source: <code>benchmark-workflows/</code>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let DATA = null;
+let charts = {};
+let refreshInterval = 5000;
+let lastDataHash = '';
+
+// ============================================================
+// DATA FETCHING
+// ============================================================
+async function fetchData() {
+  try {
+    const resp = await fetch('data.json?t=' + Date.now());
+    if (!resp.ok) throw new Error(resp.status);
+    const json = await resp.json();
+    const hash = JSON.stringify(json.meta);
+    if (hash !== lastDataHash) {
+      lastDataHash = hash;
+      DATA = json;
+      render();
+    }
+    document.getElementById('live-dot').style.background = 'var(--gn)';
+    document.getElementById('status-badge').className = 'tag t-ok';
+    document.getElementById('status-badge').textContent = DATA.meta.status?.toUpperCase() || 'LIVE';
+  } catch (e) {
+    document.getElementById('live-dot').style.background = 'var(--rd)';
+    document.getElementById('status-badge').className = 'tag t-er';
+    document.getElementById('status-badge').textContent = 'OFFLINE';
+  }
+  document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+}
+
+// ============================================================
+// WILSON CI
+// ============================================================
+function wilsonCI(p, n, z=1.96) {
+  if (n === 0) return [0, 0];
+  const d = 1 + z*z/n;
+  const c = (p + z*z/(2*n)) / d;
+  const s = z * Math.sqrt((p*(1-p) + z*z/(4*n)) / n) / d;
+  return [Math.max(0, c-s), Math.min(1, c+s)];
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render() {
+  if (!DATA) return;
+  const m = DATA.meta;
+  const p = DATA.pipelines;
+
+  // KPIs
+  const totalTested = Object.values(p).reduce((s,v) => s + (v.tested||0), 0);
+  const totalCorrect = Object.values(p).reduce((s,v) => s + (v.correct||0), 0);
+  const totalErrors = Object.values(p).reduce((s,v) => s + (v.errors||0), 0);
+  const overallAcc = totalTested > 0 ? (totalCorrect/totalTested*100).toFixed(1) : '—';
+  const totalCost = Object.values(p).reduce((s,v) => s + (v.cost_usd||0), 0) + (m.total_cost_usd||0);
+
+  document.getElementById('kpi-row').innerHTML = `
+    <div class="card"><div class="lbl">Questions testees</div><div class="val" style="color:var(--ac)">${totalTested}</div><div class="sub">sur ${m.total_questions_in_datasets||1200} dans les datasets</div></div>
+    <div class="card"><div class="lbl">Accuracy globale</div><div class="val" style="color:${parseFloat(overallAcc)>=65?'var(--gn)':parseFloat(overallAcc)>=45?'var(--yl)':'var(--rd)'}">${overallAcc}%</div><div class="sub">${totalCorrect} correctes / ${totalErrors} erreurs</div></div>
+    <div class="card"><div class="lbl">Testables (data en BDD)</div><div class="val" style="color:var(--yl)">${m.total_testable||200}</div><div class="sub">${(m.total_testable||200)-totalTested} restantes</div></div>
+    <div class="card"><div class="lbl">Cout total</div><div class="val cost-card"><span class="currency">$</span>${totalCost.toFixed(4)}</div><div class="sub">API calls + embeddings + LLM</div></div>
+  `;
+
+  // Pipeline table
+  const tbody = document.querySelector('#pipeline-table tbody');
+  tbody.innerHTML = '';
+  for (const [name, d] of Object.entries(p)) {
+    const acc = d.tested > 0 ? d.correct/d.tested : 0;
+    const accPct = (acc*100).toFixed(1);
+    const [lo, hi] = wilsonCI(acc, d.tested);
+    const ci = d.tested > 0 ? `${(lo*100).toFixed(1)}%-${(hi*100).toFixed(1)}%` : '—';
+    const margin = d.tested > 0 ? ((hi-lo)/2*100).toFixed(1) : '—';
+    const progPct = d.total_questions > 0 ? (d.tested/d.total_questions*100) : 0;
+    const accColor = acc >= .7 ? 'var(--gn)' : acc >= .5 ? 'var(--yl)' : 'var(--rd)';
+    const errColor = d.errors > 0 ? 'var(--rd)' : '';
+
+    tbody.innerHTML += `<tr>
+      <td><strong>${name.toUpperCase()}</strong></td>
+      <td><div class="bar"><div class="fill-ac" style="width:${progPct}%"></div></div><span class="mono" style="font-size:.75em">${d.tested}/${d.total_questions}</span></td>
+      <td>${d.tested}</td>
+      <td style="color:${accColor};font-weight:700">${accPct}%</td>
+      <td class="mono">${ci}<br><span style="color:var(--tx2);font-size:.8em">&plusmn;${margin}%</span></td>
+      <td style="color:${errColor}">${d.errors}</td>
+      <td class="mono">${d.avg_latency_ms ? (d.avg_latency_ms/1000).toFixed(1)+'s' : '—'}</td>
+      <td class="mono">${d.p95_latency_ms ? (d.p95_latency_ms/1000).toFixed(1)+'s' : '—'}</td>
+      <td class="mono">$${(d.cost_usd||0).toFixed(4)}</td>
+    </tr>`;
+  }
+
+  // DB cards
+  const db = DATA.databases;
+  document.getElementById('db-cards').innerHTML = `
+    <div class="card">
+      <div class="lbl">Pinecone (Vectors)</div>
+      <div class="val" style="color:var(--ac)">${(db.pinecone?.total_vectors||0).toLocaleString()}</div>
+      <div class="sub">${Object.keys(db.pinecone?.namespaces||{}).length} namespaces</div>
+      <div style="margin-top:8px;font-size:.8em;color:var(--tx2)">${Object.entries(db.pinecone?.namespaces||{}).map(([k,v])=>`<div>${k}: ${v}</div>`).join('')}</div>
+    </div>
+    <div class="card">
+      <div class="lbl">Neo4j (Graph)</div>
+      <div class="val" style="color:var(--pp)">${db.neo4j?.total_nodes||0}</div>
+      <div class="sub">${db.neo4j?.total_relationships||0} relations</div>
+      <div style="margin-top:8px;font-size:.8em;color:var(--tx2)">${Object.entries(db.neo4j?.labels||{}).map(([k,v])=>`<div>${k}: ${v}</div>`).join('')}</div>
+    </div>
+    <div class="card">
+      <div class="lbl">Supabase (SQL)</div>
+      <div class="val" style="color:var(--or)">${db.supabase?.total_rows||0}</div>
+      <div class="sub">${Object.keys(db.supabase?.tables||{}).length} tables</div>
+      <div style="margin-top:8px;font-size:.8em;color:var(--tx2)">${Object.entries(db.supabase?.tables||{}).map(([k,v])=>`<div>${k}: ${v}</div>`).join('')}</div>
+    </div>
+  `;
+
+  // Costs
+  const avgLatAll = Object.values(p).filter(v=>v.avg_latency_ms).map(v=>v.avg_latency_ms);
+  const globalAvgLat = avgLatAll.length > 0 ? avgLatAll.reduce((a,b)=>a+b,0)/avgLatAll.length : 0;
+  document.getElementById('cost-row').innerHTML = `
+    <div class="card"><div class="lbl">Cout par question</div><div class="val mono">${totalTested>0?'$'+(totalCost/totalTested).toFixed(5):'—'}</div></div>
+    <div class="card"><div class="lbl">Latence moyenne</div><div class="val mono">${(globalAvgLat/1000).toFixed(1)}s</div></div>
+    <div class="card"><div class="lbl">Questions/min</div><div class="val">${globalAvgLat>0?(60000/globalAvgLat).toFixed(1):'—'}</div></div>
+    <div class="card"><div class="lbl">Temps estimé restant</div><div class="val mono">${globalAvgLat>0?formatDuration(((m.total_testable||200)-totalTested)*globalAvgLat):'—'}</div></div>
+  `;
+
+  // Alerts
+  const alerts = [];
+  const untestable = (m.total_questions_in_datasets||1200) - (m.total_testable||200);
+  if (untestable > 0) alerts.push({type:'r', title:`${untestable} questions sans data en BDD`, msg:'Ingestion HuggingFace necessaire pour musique, 2wiki, tatqa, convfinqa, wikitablequestions'});
+  for (const [name, d] of Object.entries(p)) {
+    if (d.tested > 0) {
+      const [lo, hi] = wilsonCI(d.correct/d.tested, d.tested);
+      if ((hi-lo) > 0.2) alerts.push({type:'y', title:`${name.toUpperCase()}: marge d'erreur >10%`, msg:`IC 95% = ${(lo*100).toFixed(1)}%-${(hi*100).toFixed(1)}%. Augmenter le nombre de questions pour plus de precision.`});
+    }
+    if (d.errors > d.tested * 0.2) alerts.push({type:'r', title:`${name.toUpperCase()}: ${d.errors} erreurs (${(d.errors/d.tested*100).toFixed(0)}%)`, msg:'Timeouts ou erreurs HTTP. Verifier le workflow n8n.'});
+  }
+  document.getElementById('alerts').innerHTML = alerts.map(a => `<div class="alert alert-${a.type}"><strong>${a.title}</strong><br><span style="color:var(--tx2);font-size:.88em">${a.msg}</span></div>`).join('');
+
+  // Question feed
+  renderFeed();
+
+  // Charts
+  renderCharts();
+}
+
+function renderFeed() {
+  const qs = DATA.questions || [];
+  const typeF = document.getElementById('filter-type').value;
+  const statusF = document.getElementById('filter-status').value;
+  const searchF = document.getElementById('filter-search').value.toLowerCase();
+
+  let filtered = qs;
+  if (typeF) filtered = filtered.filter(q => q.rag_type === typeF);
+  if (statusF === 'correct') filtered = filtered.filter(q => q.correct);
+  else if (statusF === 'incorrect') filtered = filtered.filter(q => !q.correct && !q.error);
+  else if (statusF === 'error') filtered = filtered.filter(q => q.error);
+  if (searchF) filtered = filtered.filter(q => (q.question||'').toLowerCase().includes(searchF) || (q.id||'').toLowerCase().includes(searchF));
+
+  document.getElementById('feed-count').textContent = filtered.length;
+
+  const feed = document.getElementById('question-feed');
+  feed.innerHTML = filtered.slice(-200).reverse().map(q => {
+    const statusTag = q.error ? '<span class="tag t-er">ERR</span>' : q.correct ? '<span class="tag t-ok">OK</span>' : '<span class="tag t-wr">FAIL</span>';
+    const typeTag = `<span class="tag t-${q.rag_type==='standard'?'in':q.rag_type==='graph'?'pp':q.rag_type==='quantitative'?'ok':'wr'}">${(q.rag_type||'?').slice(0,5).toUpperCase()}</span>`;
+    return `<div class="feed-item">
+      <div class="mono">${q.id||'?'}</div>
+      <div>${typeTag}</div>
+      <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(q.question||'').replace(/"/g,'&quot;')}">${q.question||'—'}</div>
+      <div class="mono">${q.f1 !== undefined ? 'F1:'+q.f1.toFixed(2) : '—'}</div>
+      <div class="mono">${q.latency_ms ? (q.latency_ms/1000).toFixed(1)+'s' : '—'}</div>
+      <div>${statusTag}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderCharts() {
+  const hist = DATA.history || [];
+  if (hist.length === 0) return;
+
+  const labels = hist.map(h => h.timestamp ? new Date(h.timestamp).toLocaleDateString() : h.event || '?');
+
+  // Accuracy chart
+  const ctxAcc = document.getElementById('chart-accuracy');
+  if (charts.accuracy) charts.accuracy.destroy();
+  charts.accuracy = new Chart(ctxAcc, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {label:'Standard', data:hist.map(h=>h.standard||null), borderColor:'#58a6ff', tension:.3, pointRadius:3},
+        {label:'Graph', data:hist.map(h=>h.graph||null), borderColor:'#bc8cff', tension:.3, pointRadius:3},
+        {label:'Quantitative', data:hist.map(h=>h.quantitative||null), borderColor:'#3fb950', tension:.3, pointRadius:3},
+        {label:'Orchestrator', data:hist.map(h=>h.orchestrator||null), borderColor:'#d29922', tension:.3, pointRadius:3},
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      scales:{y:{min:0,max:100,grid:{color:'#30363d'},ticks:{color:'#8b949e'}},x:{grid:{color:'#30363d'},ticks:{color:'#8b949e'}}},
+      plugins:{legend:{labels:{color:'#e6edf3',boxWidth:12}}}
+    }
+  });
+
+  // Latency chart
+  const pip = DATA.pipelines;
+  const ctxLat = document.getElementById('chart-latency');
+  if (charts.latency) charts.latency.destroy();
+  charts.latency = new Chart(ctxLat, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(pip).map(k=>k.toUpperCase()),
+      datasets: [
+        {label:'Avg', data:Object.values(pip).map(v=>v.avg_latency_ms||0), backgroundColor:'#58a6ff'},
+        {label:'P95', data:Object.values(pip).map(v=>v.p95_latency_ms||0), backgroundColor:'rgba(88,166,255,.3)'},
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      scales:{y:{grid:{color:'#30363d'},ticks:{color:'#8b949e'}},x:{grid:{color:'#30363d'},ticks:{color:'#8b949e'}}},
+      plugins:{legend:{labels:{color:'#e6edf3',boxWidth:12}}}
+    }
+  });
+}
+
+function formatDuration(ms) {
+  if (ms <= 0) return '—';
+  const s = Math.round(ms/1000);
+  if (s < 60) return s + 's';
+  const m = Math.floor(s/60);
+  if (m < 60) return m + 'm ' + (s%60) + 's';
+  const h = Math.floor(m/60);
+  return h + 'h ' + (m%60) + 'm';
+}
+
+// Filters
+document.getElementById('filter-type').addEventListener('change', renderFeed);
+document.getElementById('filter-status').addEventListener('change', renderFeed);
+document.getElementById('filter-search').addEventListener('input', renderFeed);
+
+// Boot
+fetchData();
+setInterval(fetchData, refreshInterval);
+</script>
+</body>
+</html>

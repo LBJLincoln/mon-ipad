@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "generated_at": "2026-02-07T12:58:25.347916Z",
+    "eval_script": "run-comprehensive-eval.py",
+    "status": "baseline",
+    "total_questions_in_datasets": 1200,
+    "total_testable": 200,
+    "total_testable_after_ingestion": 1200,
+    "total_tested": 200,
+    "total_cost_usd": 0,
+    "ingestion_status": "pending_supabase",
+    "ingestion_note": "Neo4j OK (145 nodes), Pinecone OK (10411 vectors). Supabase DNS blocked in current env - need external session for full ingestion."
+  },
+  "databases": {
+    "pinecone": {
+      "total_vectors": 10411,
+      "namespaces": {
+        "": 639,
+        "benchmark-asqa": 948,
+        "benchmark-triviaqa": 1000,
+        "benchmark-natural_questions": 1000,
+        "benchmark-msmarco": 1000,
+        "benchmark-pubmedqa": 500,
+        "benchmark-finqa": 500,
+        "benchmark-narrativeqa": 1000,
+        "benchmark-hotpotqa": 1000,
+        "benchmark-frames": 824,
+        "benchmark-popqa": 1000,
+        "benchmark-squad_v2": 1000
+      }
+    },
+    "neo4j": {
+      "total_nodes": 145,
+      "total_relationships": 98,
+      "labels": {
+        "Person": 41,
+        "Organization": 21,
+        "Technology": 19,
+        "City": 16,
+        "Concept": 12,
+        "Disease": 6,
+        "Museum": 6,
+        "Rate": 4,
+        "Molecule": 3,
+        "Award": 3,
+        "Artwork": 2,
+        "Law": 2,
+        "Country": 2,
+        "Discovery": 2,
+        "Agreement": 1,
+        "Treatment": 1,
+        "Article": 1,
+        "Monument": 1,
+        "Theory": 1,
+        "Element": 1
+      }
+    },
+    "supabase": {
+      "tables": {
+        "financials": 24,
+        "balance_sheet": 12,
+        "sales_data": 16,
+        "products": 18,
+        "employees": 9,
+        "community_summaries": 9
+      },
+      "total_rows": 88,
+      "companies": [
+        "TechVision Inc",
+        "GreenEnergy Corp",
+        "HealthPlus Labs"
+      ]
+    }
+  },
+  "pipelines": {
+    "standard": {
+      "total_questions": 50,
+      "tested": 50,
+      "correct": 39,
+      "errors": 0,
+      "avg_latency_ms": 5496,
+      "p95_latency_ms": 6590,
+      "cost_usd": 0
+    },
+    "graph": {
+      "total_questions": 50,
+      "tested": 50,
+      "correct": 25,
+      "errors": 2,
+      "avg_latency_ms": 4385,
+      "p95_latency_ms": 5252,
+      "cost_usd": 0
+    },
+    "quantitative": {
+      "total_questions": 50,
+      "tested": 50,
+      "correct": 40,
+      "errors": 6,
+      "avg_latency_ms": 2538,
+      "p95_latency_ms": 3717,
+      "cost_usd": 0
+    },
+    "orchestrator": {
+      "total_questions": 50,
+      "tested": 50,
+      "correct": 24,
+      "errors": 16,
+      "avg_latency_ms": 10908,
+      "p95_latency_ms": 23322,
+      "cost_usd": 0
+    }
+  },
+  "questions": [],
+  "history": [
+    {
+      "timestamp": "2026-02-07T10:00:00Z",
+      "event": "baseline",
+      "standard": 78.0,
+      "graph": 50.0,
+      "quantitative": 80.0,
+      "orchestrator": 48.0,
+      "total_tested": 200
+    }
+  ]
+}
