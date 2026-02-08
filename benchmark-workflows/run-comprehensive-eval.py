@@ -484,6 +484,10 @@ def main():
                         help="Ignore dedup, re-test all questions")
     parser.add_argument("--push", action="store_true",
                         help="Git push docs/data.json after completion")
+    parser.add_argument("--label", type=str, default="",
+                        help="Human-readable label for this iteration")
+    parser.add_argument("--description", type=str, default="",
+                        help="Description of what changed before this eval")
     args = parser.parse_args()
 
     start_time = datetime.now()
@@ -495,8 +499,12 @@ def main():
     print(f"  Reset dedup: {args.reset}")
     print("=" * 70)
 
-    # Initialize dashboard
-    writer.init(status="running")
+    # Initialize dashboard with iteration metadata
+    writer.init(
+        status="running",
+        label=args.label or f"Eval {args.types}",
+        description=args.description or f"Types: {args.types}, Max: {args.max}, Reset: {args.reset}",
+    )
 
     # Load questions
     print("\n  Loading questions...")

@@ -1,0 +1,127 @@
+name: Agentic Evaluation Analysis
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to take'
+        default: 'analyze'
+        type: choice
+        options:
+          - analyze
+          - quick-test
+          - full-eval
+      pipelines:
+        description: 'Pipelines to analyze/test (comma-separated)'
+        default: 'standard,graph,quantitative,orchestrator'
+        type: string
+      max_questions:
+        description: 'Max questions per pipeline (for full-eval)'
+        default: '50'
+        type: string
+  # Run after the main eval workflow completes
+  workflow_run:
+    workflows: ["RAG Evaluation Pipeline"]
+    types: [completed]
+
+env:
+  SUPABASE_PASSWORD: ${{ secrets.SUPABASE_PASSWORD }}
+  PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+  PINECONE_HOST: ${{ secrets.PINECONE_HOST }}
+  NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
+  OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+  N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+  N8N_HOST: https://amoret.app.n8n.cloud
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    if: ${{ github.event.inputs.action == 'analyze' || github.event_name == 'workflow_run' }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Analyze latest results
+        id: analysis
+        run: |
+          python3 benchmark-workflows/agentic-analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY
+
+      - name: Create issue if regressions found
+        if: steps.analysis.outputs.has_regressions == 'true'
+        run: |
+          gh issue create \
+            --title "Regression detected in iteration $(cat /tmp/iter_num)" \
+            --body "$(cat /tmp/regression_report.md)" \
+            --label "regression,automated"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  quick-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: ${{ github.event.inputs.action == 'quick-test' }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run quick endpoint tests
+        run: |
+          python3 benchmark-workflows/quick-test.py \
+            --pipelines "${{ inputs.pipelines }}" \
+            --questions 3
+
+      - name: Commit quick test results
+        run: |
+          git config user.name "agentic-eval[bot]"
+          git config user.email "agentic-eval[bot]@users.noreply.github.com"
+          git add docs/data.json
+          git diff --staged --quiet || (git commit -m "quick-test: endpoint smoke test results" && git push)
+
+  full-eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: ${{ github.event.inputs.action == 'full-eval' }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run full evaluation
+        run: |
+          cd benchmark-workflows
+          python run-comprehensive-eval.py \
+            --types "${{ inputs.pipelines }}" \
+            --max "${{ inputs.max_questions }}" \
+            --reset
+
+      - name: Commit results
+        run: |
+          git config user.name "agentic-eval[bot]"
+          git config user.email "agentic-eval[bot]@users.noreply.github.com"
+          git add docs/data.json docs/tested-questions.json logs/
+          git diff --staged --quiet || (git commit -m "eval: full evaluation (${{ inputs.pipelines }})" && git push)
+
+      - name: Run analysis
+        run: |
+          python3 benchmark-workflows/agentic-analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY
