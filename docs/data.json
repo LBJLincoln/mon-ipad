@@ -1,15 +1,16 @@
 {
   "meta": {
-    "generated_at": "2026-02-07T12:58:25.347916Z",
+    "generated_at": "2026-02-08T00:41:42.838951Z",
     "eval_script": "run-comprehensive-eval.py",
-    "status": "baseline",
+    "status": "complete",
     "total_questions_in_datasets": 1200,
     "total_testable": 200,
     "total_testable_after_ingestion": 1200,
-    "total_tested": 200,
+    "total_tested": 260,
     "total_cost_usd": 0,
     "ingestion_status": "pending_supabase",
-    "ingestion_note": "Neo4j OK (145 nodes), Pinecone OK (10411 vectors). Supabase DNS blocked in current env - need external session for full ingestion."
+    "ingestion_note": "Neo4j OK (145 nodes), Pinecone OK (10411 vectors). Supabase DNS blocked in current env - need external session for full ingestion.",
+    "current_session": "2026-02-08T00-23-49"
   },
   "databases": {
     "pinecone": {
@@ -99,47 +100,968 @@
       "neo4j_nodes": 145,
       "neo4j_relationships": 98,
       "supabase_rows": 88
+    },
+    {
+      "snapshot_id": "snap-2026-02-08T00-23-49",
+      "timestamp": "2026-02-08T00:23:49.040589Z",
+      "trigger": "pre-eval",
+      "pinecone_vectors": 0,
+      "neo4j_nodes": 0,
+      "neo4j_relationships": 0,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-08T00-23-49.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-08T00-41-42",
+      "timestamp": "2026-02-08T00:41:42.401598Z",
+      "trigger": "post-eval",
+      "pinecone_vectors": 0,
+      "neo4j_nodes": 0,
+      "neo4j_relationships": 0,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-08T00-41-42.json"
     }
   ],
   "pipelines": {
     "standard": {
       "total_questions": 50,
-      "tested": 50,
-      "correct": 39,
+      "tested": 65,
+      "correct": 53,
       "errors": 0,
-      "avg_latency_ms": 5496,
-      "p95_latency_ms": 6590,
+      "avg_latency_ms": 5235,
+      "p95_latency_ms": 6483,
       "cost_usd": 0
     },
     "graph": {
       "total_questions": 50,
-      "tested": 50,
-      "correct": 25,
-      "errors": 2,
-      "avg_latency_ms": 4385,
-      "p95_latency_ms": 5252,
+      "tested": 65,
+      "correct": 31,
+      "errors": 4,
+      "avg_latency_ms": 4212,
+      "p95_latency_ms": 5616,
       "cost_usd": 0
     },
     "quantitative": {
       "total_questions": 50,
-      "tested": 50,
-      "correct": 40,
-      "errors": 6,
-      "avg_latency_ms": 2538,
-      "p95_latency_ms": 3717,
+      "tested": 65,
+      "correct": 52,
+      "errors": 7,
+      "avg_latency_ms": 3086,
+      "p95_latency_ms": 4374,
       "cost_usd": 0
     },
     "orchestrator": {
       "total_questions": 50,
-      "tested": 50,
-      "correct": 24,
-      "errors": 16,
-      "avg_latency_ms": 10908,
-      "p95_latency_ms": 23322,
+      "tested": 65,
+      "correct": 35,
+      "errors": 19,
+      "avg_latency_ms": 16005,
+      "p95_latency_ms": 37393,
       "cost_usd": 0
     }
   },
-  "questions": [],
+  "questions": [
+    {
+      "id": "std-01",
+      "rag_type": "standard",
+      "question": "In what country is Normandy located?",
+      "expected": "France",
+      "answer": "Normandy is located in northern France [1], [4].",
+      "correct": true,
+      "f1": 0.2222,
+      "latency_ms": 6483,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:23:56.416127Z"
+    },
+    {
+      "id": "std-02",
+      "rag_type": "standard",
+      "question": "When was the first season of SpongeBob SquarePants aired?",
+      "expected": "May 1, 1999",
+      "answer": "Le contexte documentaire fourni ne contient aucune information concernant la date de diffusion de la première saison de *SpongeBob SquarePants* [1], [2], [3], [4], [5], [6], [7], [8], [9], [10].",
+      "correct": true,
+      "f1": 0.0667,
+      "latency_ms": 5309,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:24:01.730099Z"
+    },
+    {
+      "id": "std-03",
+      "rag_type": "standard",
+      "question": "What is the capital of Japan?",
+      "expected": "Tokyo",
+      "answer": "The capital of Japan is Tokyo [1].",
+      "correct": true,
+      "f1": 0.25,
+      "latency_ms": 5132,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:24:06.866682Z"
+    },
+    {
+      "id": "std-04",
+      "rag_type": "standard",
+      "question": "Who wrote Romeo and Juliet?",
+      "expected": "William Shakespeare",
+      "answer": "*Romeo and Juliet* was written by William Shakespeare [1], [2].",
+      "correct": true,
+      "f1": 0.3333,
+      "latency_ms": 4414,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:24:11.285705Z"
+    },
+    {
+      "id": "std-05",
+      "rag_type": "standard",
+      "question": "What is penicillin?",
+      "expected": "An antibiotic discovered by Alexander Fleming",
+      "answer": "Penicillin is a type of antibiotic [3]. Antibiotics function by either killing bacteria (bactericidal) or preventing their growth (bacteriostatic) by targeting specific bacterial processes such as cell wall synthesis, protein production, or DNA replication [3].\n\nPenicillin was discovered by Alexande",
+      "correct": true,
+      "f1": 0.2273,
+      "latency_ms": 6052,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:24:17.342640Z"
+    },
+    {
+      "id": "std-06",
+      "rag_type": "standard",
+      "question": "What is the theory of relativity?",
+      "expected": "Einstein's theory describing gravity and spacetime",
+      "answer": "La théorie de la relativité a été développée par Albert Einstein [1], [2], [4], [7].\n\nCette théorie se compose de deux parties principales :\n1.  La **relativité restreinte** (ou spéciale), développée en 1905 [3], [5].\n2.  La **relativité générale**, développée en 1915 [3].\n\nLa théorie de la relativi",
+      "correct": false,
+      "f1": 0.0345,
+      "latency_ms": 5781,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:24:23.128476Z"
+    },
+    {
+      "id": "std-07",
+      "rag_type": "standard",
+      "question": "What is the largest ocean on Earth?",
+      "expected": "Pacific Ocean",
+      "answer": "The largest ocean on Earth is the Pacific Ocean [1], [2].",
+      "correct": true,
+      "f1": 0.3636,
+      "latency_ms": 4911,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:24:28.044355Z"
+    },
+    {
+      "id": "std-08",
+      "rag_type": "standard",
+      "question": "Who painted the Mona Lisa?",
+      "expected": "Leonardo da Vinci",
+      "answer": "La Joconde (Mona Lisa) a été peinte par Léonard de Vinci (Leonardo da Vinci) [1], [2], [3].",
+      "correct": true,
+      "f1": 0.3158,
+      "latency_ms": 5103,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:24:33.152245Z"
+    },
+    {
+      "id": "std-09",
+      "rag_type": "standard",
+      "question": "What is photosynthesis?",
+      "expected": "Process by which plants convert light energy into chemical energy",
+      "answer": "Photosynthesis is the process by which green plants convert light energy into chemical energy [1]. During this process, plants use chlorophyll in their leaves to absorb sunlight and convert carbon dioxide and water into glucose and oxygen [1]. Photosynthesis is the process by which plants make their",
+      "correct": true,
+      "f1": 0.3529,
+      "latency_ms": 5437,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:24:38.594671Z"
+    },
+    {
+      "id": "std-10",
+      "rag_type": "standard",
+      "question": "What is the speed of light?",
+      "expected": "approximately 299,792 kilometers per second",
+      "answer": "La vitesse de la lumière est de **299 792 458 mètres par seconde** [1], [2].\n\nElle est également approximativement de **299 792 kilomètres par seconde** [3] ou environ **300 000 km par seconde** [4].",
+      "correct": true,
+      "f1": 0.1333,
+      "latency_ms": 5417,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:24:44.016357Z"
+    },
+    {
+      "id": "std-11",
+      "rag_type": "standard",
+      "question": "Who discovered gravity?",
+      "expected": "Isaac Newton",
+      "answer": "La découverte de la gravité est attribuée à **Sir Isaac Newton** [1, 3].\n\nBien que le contexte documentaire ne le mentionne pas directement comme le découvreur de la gravité, il indique que la gravité est la force qui maintient les planètes en orbite autour du Soleil [3], et que Newton est un scient",
+      "correct": true,
+      "f1": 0.0769,
+      "latency_ms": 5187,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:24:49.208853Z"
+    },
+    {
+      "id": "std-12",
+      "rag_type": "standard",
+      "question": "What is DNA?",
+      "expected": "Deoxyribonucleic acid, molecule carrying genetic instructions",
+      "answer": "DNA (Deoxyribonucleic acid) is a molecule whose sequences can be precisely modified using technologies like CRISPR-Cas9 [3]. DNA replication involves unwinding the double helix, after which DNA polymerase adds complementary nucleotides to create identical copies of the original DNA molecule [1].",
+      "correct": true,
+      "f1": 0.1395,
+      "latency_ms": 5083,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:24:54.297642Z"
+    },
+    {
+      "id": "std-13",
+      "rag_type": "standard",
+      "question": "When did World War II end?",
+      "expected": "1945",
+      "answer": "World War II ended in **1945** [1].",
+      "correct": true,
+      "f1": 0.25,
+      "latency_ms": 4362,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:24:58.665399Z"
+    },
+    {
+      "id": "std-14",
+      "rag_type": "standard",
+      "question": "What is the chemical formula for water?",
+      "expected": "H2O",
+      "answer": "The chemical formula for water is $\\text{H}_2\\text{O}$ [1].",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 5042,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:03.712660Z"
+    },
+    {
+      "id": "std-15",
+      "rag_type": "standard",
+      "question": "Who was the first person to walk on the moon?",
+      "expected": "Neil Armstrong",
+      "answer": "La première personne à avoir marché sur la Lune fut Neil Armstrong [1], [2].",
+      "correct": true,
+      "f1": 0.2667,
+      "latency_ms": 4824,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:08.542543Z"
+    },
+    {
+      "id": "graph-01",
+      "rag_type": "graph",
+      "question": "What is the relationship between Marie Curie and the Nobel Prize?",
+      "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry, connected to Nobel Foundation",
+      "answer": "Marie Curie a remporté deux prix Nobel : le prix Nobel de physique en 1903 et le prix Nobel de chimie en 1911. Elle a reçu le prix de physique pour ses recherches sur les radiations et celui de chimie pour la découverte du polonium et du radium. Elle fut également la première femme à gagner un prix ",
+      "correct": true,
+      "f1": 0.125,
+      "latency_ms": 4337,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:12.886107Z"
+    },
+    {
+      "id": "graph-02",
+      "rag_type": "graph",
+      "question": "Who created the Theory of Relativity?",
+      "expected": "Albert Einstein",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 1887,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:14.779050Z"
+    },
+    {
+      "id": "graph-03",
+      "rag_type": "graph",
+      "question": "What did Alexander Fleming discover?",
+      "expected": "Penicillin",
+      "answer": "Alexander Fleming discovered penicillin.",
+      "correct": true,
+      "f1": 0.4,
+      "latency_ms": 4120,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:18.905501Z"
+    },
+    {
+      "id": "graph-04",
+      "rag_type": "graph",
+      "question": "Which disease does Penicillin protect against?",
+      "expected": "Tuberculosis",
+      "answer": "The context does not contain information about which disease penicillin protects against.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4754,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:23.665401Z"
+    },
+    {
+      "id": "graph-05",
+      "rag_type": "graph",
+      "question": "Where did Alan Turing study?",
+      "expected": "University of Cambridge",
+      "answer": "The context does not contain information about where Alan Turing studied.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4014,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:27.684899Z"
+    },
+    {
+      "id": "graph-06",
+      "rag_type": "graph",
+      "question": "What is the connection between Nikola Tesla and Thomas Edison?",
+      "expected": "They are connected, both worked on electricity in New York City",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 2079,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:29.770623Z"
+    },
+    {
+      "id": "graph-07",
+      "rag_type": "graph",
+      "question": "Which scientists are connected to the University of Cambridge?",
+      "expected": "Isaac Newton, Charles Darwin, Alan Turing",
+      "answer": "The provided context does not mention which scientists are connected to the University of Cambridge.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 5616,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:35.392827Z"
+    },
+    {
+      "id": "graph-08",
+      "rag_type": "graph",
+      "question": "What is the World Wide Web and where was it created?",
+      "expected": "Created at CERN, extends the Internet",
+      "answer": "The context does not contain information about what the World Wide Web is or where it was created.",
+      "correct": true,
+      "f1": 0.1739,
+      "latency_ms": 4195,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:39.593947Z"
+    },
+    {
+      "id": "graph-09",
+      "rag_type": "graph",
+      "question": "Which organizations use Artificial Intelligence?",
+      "expected": "Apple Inc, Google, Microsoft",
+      "answer": "The provided context does not specify which organizations use Artificial Intelligence.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 5170,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:44.770518Z"
+    },
+    {
+      "id": "graph-10",
+      "rag_type": "graph",
+      "question": "What city is the Louvre Museum located in?",
+      "expected": "Paris",
+      "answer": "The Louvre Museum is located in Paris.",
+      "correct": true,
+      "f1": 0.25,
+      "latency_ms": 3771,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:48.547581Z"
+    },
+    {
+      "id": "graph-11",
+      "rag_type": "graph",
+      "question": "Who developed vaccination?",
+      "expected": "Louis Pasteur",
+      "answer": "The context does not contain information about who developed vaccination.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4579,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:53.132757Z"
+    },
+    {
+      "id": "graph-12",
+      "rag_type": "graph",
+      "question": "What diseases does the World Health Organization study?",
+      "expected": "COVID-19, Malaria",
+      "answer": "The provided context does not specify which diseases the World Health Organization studies. It only mentions WHO estimates regarding additional deaths due to climate change.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 5497,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:25:58.637215Z"
+    },
+    {
+      "id": "graph-13",
+      "rag_type": "graph",
+      "question": "What is the relationship between NASA and Nuclear Energy?",
+      "expected": "NASA utilizes Nuclear Energy",
+      "answer": "The provided context does not contain information about the relationship between NASA and Nuclear Energy.",
+      "correct": true,
+      "f1": 0.3333,
+      "latency_ms": 4482,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:03.125573Z"
+    },
+    {
+      "id": "graph-14",
+      "rag_type": "graph",
+      "question": "Which city is connected to Napoleon Bonaparte?",
+      "expected": "Paris",
+      "answer": "The context mentions Napoleon Bonaparte in relation to the French Revolution, but it does not explicitly state which city is connected to him.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4391,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:07.523545Z"
+    },
+    {
+      "id": "graph-15",
+      "rag_type": "graph",
+      "question": "What is the link between Google and Stanford University?",
+      "expected": "Google is connected to Stanford University",
+      "answer": "The context does not contain information about the link between Google and Stanford University.",
+      "correct": true,
+      "f1": 0.3158,
+      "latency_ms": 4298,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:11.827802Z"
+    },
+    {
+      "id": "quant-01",
+      "rag_type": "quantitative",
+      "question": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "expected": "6745000000",
+      "answer": "TechVision Inc's total revenue in fiscal year 2023 was **\\$6,745,000,000.00**.",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 3023,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:14.859355Z"
+    },
+    {
+      "id": "quant-02",
+      "rag_type": "quantitative",
+      "question": "What was GreenEnergy Corp's net income in 2023?",
+      "expected": "664400000",
+      "answer": "GreenEnergy Corp's net income in 2023 was **\\$664,400,000.00**.",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 2564,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:17.430683Z"
+    },
+    {
+      "id": "quant-03",
+      "rag_type": "quantitative",
+      "question": "What was the revenue of HealthPlus Labs in Q4 2023?",
+      "expected": "322560000",
+      "answer": "The revenue of HealthPlus Labs in Q4 2023 was **$322,560,000.00**.",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 2847,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:20.285715Z"
+    },
+    {
+      "id": "quant-04",
+      "rag_type": "quantitative",
+      "question": "Compare the gross profit of TechVision Inc and GreenEnergy Corp in FY 2023",
+      "expected": "TechVision: 4586600000, GreenEnergy: 1715000000",
+      "answer": "TechVision Inc. had a significantly higher gross profit than GreenEnergy Corp in FY 2023.\n\n*   **TechVision Inc. Gross Profit (FY 2023):** \\$4,586,600,000.00\n*   **GreenEnergy Corp Gross Profit (FY 2023):** \\$1,715,000,000.00",
+      "correct": true,
+      "f1": 0.16,
+      "latency_ms": 3269,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:23.564554Z"
+    },
+    {
+      "id": "quant-05",
+      "rag_type": "quantitative",
+      "question": "What was TechVision Inc's R&D spending in 2023?",
+      "expected": "1349000000",
+      "answer": "TechVision Inc's R&D spending in 2023 was **\\$1,349,000,000.00**.",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 3199,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:26.771112Z"
+    },
+    {
+      "id": "quant-06",
+      "rag_type": "quantitative",
+      "question": "What was the diluted EPS for HealthPlus Labs in fiscal year 2023?",
+      "expected": "6.71",
+      "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was **6.7100**.",
+      "correct": true,
+      "f1": 0.1333,
+      "latency_ms": 2979,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:29.757434Z"
+    },
+    {
+      "id": "quant-07",
+      "rag_type": "quantitative",
+      "question": "How much cash and equivalents did TechVision Inc have at end of 2023?",
+      "expected": "2200000000",
+      "answer": "TechVision Inc. had **\\$2,200,000,000.00** in cash and equivalents at the end of 2023.",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 3160,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:32.925258Z"
+    },
+    {
+      "id": "quant-08",
+      "rag_type": "quantitative",
+      "question": "What were GreenEnergy Corp's total assets at the end of fiscal year 2023?",
+      "expected": "4460000000",
+      "answer": "GreenEnergy Corp's total assets at the end of fiscal year 2023 were **\\$4,460,000,000.00**.",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 2627,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:35.560336Z"
+    },
+    {
+      "id": "quant-09",
+      "rag_type": "quantitative",
+      "question": "What was the total stockholders equity for HealthPlus Labs at end of 2023?",
+      "expected": "795000000",
+      "answer": "The total stockholders' equity for HealthPlus Labs at the end of 2023 was **\\$795,000,000.00**.",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 3096,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:38.663949Z"
+    },
+    {
+      "id": "quant-10",
+      "rag_type": "quantitative",
+      "question": "What was TechVision Inc's operating income in Q3 2023?",
+      "expected": "516525000",
+      "answer": "TechVision Inc's operating income in Q3 2023 was **\\$516,525,000.00**.",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 2534,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:26:41.206499Z"
+    },
+    {
+      "id": "quant-11",
+      "rag_type": "quantitative",
+      "question": "What was the revenue growth of TechVision Inc from 2020 to 2023?",
+      "expected": "2020: 4250000000, 2023: 6745000000, growth ~58.7%",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error": "HTTP 500: {\"message\":\"Error in workflow\"}",
+      "error_type": "UNKNOWN",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:27:20.868475Z"
+    },
+    {
+      "id": "quant-12",
+      "rag_type": "quantitative",
+      "question": "Which company had the highest revenue in fiscal year 2023?",
+      "expected": "TechVision Inc",
+      "answer": "The company with the highest revenue in fiscal year 2023 was **TechVision Inc**, with a total revenue of **6,745,000,000.00**.",
+      "correct": true,
+      "f1": 0.1905,
+      "latency_ms": 2842,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:27:23.719575Z"
+    },
+    {
+      "id": "quant-13",
+      "rag_type": "quantitative",
+      "question": "What was the total long-term debt for GreenEnergy Corp at end of 2023?",
+      "expected": "300000000",
+      "answer": "The total long-term debt for GreenEnergy Corp at the end of 2023 was **\\$300,000,000.00**.",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 3406,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:27:27.134222Z"
+    },
+    {
+      "id": "quant-14",
+      "rag_type": "quantitative",
+      "question": "How many active employees does TechVision have?",
+      "expected": "47",
+      "answer": "Based on the SQL query results, TechVision has **0** active employees.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3293,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:27:37.348791Z"
+    },
+    {
+      "id": "quant-15",
+      "rag_type": "quantitative",
+      "question": "What is the average salary of Engineering employees at TechVision?",
+      "expected": "varies by calculation",
+      "answer": "The average salary of Engineering employees at TechVision is **172,000.00**.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4374,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:27:41.731464Z"
+    },
+    {
+      "id": "orch-01",
+      "rag_type": "orchestrator",
+      "question": "What was TechVision Inc's revenue in 2023 and who created the Theory of Relativity?",
+      "expected": "TechVision Inc revenue $6.745B in 2023; Albert Einstein created Theory of Relativity",
+      "answer": "TechVision Inc's revenue in 2023 was **\\$6,745,000,000.00**.",
+      "correct": true,
+      "f1": 0.5,
+      "latency_ms": 18507,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:28:00.247298Z"
+    },
+    {
+      "id": "orch-02",
+      "rag_type": "orchestrator",
+      "question": "Who discovered penicillin?",
+      "expected": "Alexander Fleming",
+      "answer": "Alexander Fleming discovered penicillin [1], [2].",
+      "correct": true,
+      "f1": 0.5,
+      "latency_ms": 10359,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:28:10.615604Z"
+    },
+    {
+      "id": "orch-03",
+      "rag_type": "orchestrator",
+      "question": "What is the relationship between Marie Curie and the Nobel Prize?",
+      "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error": "The read operation timed out",
+      "error_type": "TIMEOUT",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:32:24.799445Z"
+    },
+    {
+      "id": "orch-04",
+      "rag_type": "orchestrator",
+      "question": "How much revenue did GreenEnergy Corp generate in Q4 2023?",
+      "expected": "1021500000",
+      "answer": "The revenue generated by GreenEnergy Corp in Q4 2023 was **$1,021,500,000.00**.",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 12898,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:32:37.706066Z"
+    },
+    {
+      "id": "orch-05",
+      "rag_type": "orchestrator",
+      "question": "Which scientists are connected to the University of Cambridge and what is the total employee count at TechVision?",
+      "expected": "Newton, Darwin, Turing studied at Cambridge; TechVision has ~47 active employees",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error": "The read operation timed out",
+      "error_type": "TIMEOUT",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:36:51.899643Z"
+    },
+    {
+      "id": "orch-06",
+      "rag_type": "orchestrator",
+      "question": "What is the capital of France?",
+      "expected": "Paris",
+      "answer": "The capital city of France is Paris [1], [2], [4], [5], [7].",
+      "correct": true,
+      "f1": 0.1538,
+      "latency_ms": 12799,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:37:04.707998Z"
+    },
+    {
+      "id": "orch-07",
+      "rag_type": "orchestrator",
+      "question": "What was the gross profit margin of HealthPlus Labs in 2023?",
+      "expected": "52%",
+      "answer": "The gross profit margin for HealthPlus Labs in 2023 was **51.997%**.",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 11656,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:37:16.373256Z"
+    },
+    {
+      "id": "orch-08",
+      "rag_type": "orchestrator",
+      "question": "Who created Artificial Intelligence as a field and which companies use it?",
+      "expected": "Alan Turing, used by Apple, Google, Microsoft",
+      "answer": "The provided document context does not explicitly state who created Artificial Intelligence as a field.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 22779,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:38:41.200881Z"
+    },
+    {
+      "id": "orch-09",
+      "rag_type": "orchestrator",
+      "question": "What is machine learning?",
+      "expected": "A subset of AI where systems learn from data",
+      "answer": "Machine learning is a subset of artificial intelligence where systems learn from data to improve performance without explicit programming [1], [2]. Algorithms within machine learning identify patterns in data to make predictions or decisions [1].",
+      "correct": true,
+      "f1": 0.4103,
+      "latency_ms": 12522,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:38:53.732567Z"
+    },
+    {
+      "id": "orch-10",
+      "rag_type": "orchestrator",
+      "question": "Compare the R&D spending of the three companies in 2023 and explain which museums are in Paris",
+      "expected": "TechVision $1.349B, GreenEnergy $365M, HealthPlus $288M; Louvre Museum is in Paris",
+      "answer": "The R&D spending for the three companies in 2023 is as follows:\n\n*   **TechVision Inc:** \\$1,349,000,000.00\n*   **GreenEnergy Corp:** \\$365,000,000.00\n*   **HealthPlus Labs:** \\$288,000,000.00\n\n**Comparison:** TechVision Inc had significantly higher R&D spending in 2023 compared to GreenEnergy Corp ",
+      "correct": true,
+      "f1": 0.2791,
+      "latency_ms": 19578,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:39:13.320016Z"
+    },
+    {
+      "id": "orch-11",
+      "rag_type": "orchestrator",
+      "question": "What was the net income of TechVision Inc in fiscal year 2022?",
+      "expected": "1337550000",
+      "answer": "The net income of TechVision Inc for fiscal year 2022 was **$1,337,550,000.00**.",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 9785,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:39:23.114503Z"
+    },
+    {
+      "id": "orch-12",
+      "rag_type": "orchestrator",
+      "question": "Which film directors worked in London?",
+      "expected": "Alfred Hitchcock, Stanley Kubrick",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 37393,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "TIMEOUT",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:41:02.565202Z"
+    },
+    {
+      "id": "orch-13",
+      "rag_type": "orchestrator",
+      "question": "What does NASA study and how much cash does GreenEnergy Corp have?",
+      "expected": "NASA uses Nuclear Energy; GreenEnergy Corp had $900M cash at end 2023",
+      "answer": "The provided document context does not explicitly state what NASA studies, but it contains facts related to space, aerodynamics, planets, and astronauts [1], [3], [4], [8], [9], [10].",
+      "correct": true,
+      "f1": 0.05,
+      "latency_ms": 17987,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:41:20.562154Z"
+    },
+    {
+      "id": "orch-14",
+      "rag_type": "orchestrator",
+      "question": "What is the boiling point of water?",
+      "expected": "100 degrees Celsius",
+      "answer": "The boiling point of water is $100^\\circ\\text{C}$ at sea level [2] and $212^\\circ\\text{F}$ [1].",
+      "correct": true,
+      "f1": 0.0952,
+      "latency_ms": 12012,
+      "error": null,
+      "error_type": null,
+      "match_type": "NUMERIC_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:41:32.585588Z"
+    },
+    {
+      "id": "orch-15",
+      "rag_type": "orchestrator",
+      "question": "What was the operating income for all companies in Q1 2023?",
+      "expected": "TechVision $465.9M, GreenEnergy $184.7M, HealthPlus $48.2M",
+      "answer": "The operating income for the companies in Q1 2023, based on the executed query, is as follows:\n\n*   **TechVision Inc:** \\$465,908,000.00\n*   **GreenEnergy Corp:** \\$184,690,000.00\n*   **HealthPlus Labs:** \\$48,153,000.00",
+      "correct": true,
+      "f1": 0.3158,
+      "latency_ms": 9799,
+      "error": null,
+      "error_type": null,
+      "match_type": "ENTITY_MATCH",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T00:41:42.394156Z"
+    }
+  ],
   "history": [
     {
       "timestamp": "2026-02-07T10:00:00Z",
@@ -156,25 +1078,56 @@
       "timestamp": "2026-02-07T09:00:00Z",
       "description": "Orchestrator bug fixes: If1 dead-end branch connected, Return Response V8 fixed, invalid settings removed",
       "change_type": "bugfix",
-      "files_changed": ["V10.1 orchestrator copy (5).json"],
-      "affected_pipelines": ["orchestrator"],
-      "before_metrics": {"orchestrator": {"accuracy": null, "errors": null, "latency": null}},
-      "after_metrics": {"orchestrator": {"accuracy": 48.0, "errors": 16, "latency": 10908}}
+      "files_changed": [
+        "V10.1 orchestrator copy (5).json"
+      ],
+      "affected_pipelines": [
+        "orchestrator"
+      ],
+      "before_metrics": {
+        "orchestrator": {
+          "accuracy": null,
+          "errors": null,
+          "latency": null
+        }
+      },
+      "after_metrics": {
+        "orchestrator": {
+          "accuracy": 48.0,
+          "errors": 16,
+          "latency": 10908
+        }
+      }
     },
     {
       "timestamp": "2026-02-07T11:30:00Z",
       "description": "Knowledge graph enrichment: +20 new entities, +71 new relationships. Critical path fixes for Fleming->COVID-19, Einstein->Cambridge. WHO direct disease links added.",
       "change_type": "enrichment",
-      "files_changed": ["benchmark-workflows/populate-neo4j-entities.py", "benchmark-workflows/community-summaries-migration.sql"],
-      "affected_pipelines": ["graph", "orchestrator"],
-      "before_metrics": {"graph": {"accuracy": 50.0, "errors": 2, "latency": 4385}},
+      "files_changed": [
+        "benchmark-workflows/populate-neo4j-entities.py",
+        "benchmark-workflows/community-summaries-migration.sql"
+      ],
+      "affected_pipelines": [
+        "graph",
+        "orchestrator"
+      ],
+      "before_metrics": {
+        "graph": {
+          "accuracy": 50.0,
+          "errors": 2,
+          "latency": 4385
+        }
+      },
       "after_metrics": null
     },
     {
       "timestamp": "2026-02-07T13:00:00Z",
       "description": "Comprehensive analysis roadmap in CLAUDE.md + interactive 6-tab monitoring dashboard with cost tracking and cross-analysis",
       "change_type": "feature",
-      "files_changed": ["CLAUDE.md", "docs/index.html"],
+      "files_changed": [
+        "CLAUDE.md",
+        "docs/index.html"
+      ],
       "affected_pipelines": [],
       "before_metrics": null,
       "after_metrics": null
@@ -183,13 +1136,1021 @@
       "timestamp": "2026-02-07T14:00:00Z",
       "description": "Structured logging infrastructure: execution JSONL logs, error traces, DB snapshots, workflow evolution tracking. New logs/ directory with per-question detailed traces.",
       "change_type": "feature",
-      "files_changed": ["benchmark-workflows/live-results-writer.py", "benchmark-workflows/run-comprehensive-eval.py", "docs/data.json", "docs/index.html", "logs/"],
-      "affected_pipelines": ["standard", "graph", "quantitative", "orchestrator"],
+      "files_changed": [
+        "benchmark-workflows/live-results-writer.py",
+        "benchmark-workflows/run-comprehensive-eval.py",
+        "docs/data.json",
+        "docs/index.html",
+        "logs/"
+      ],
+      "affected_pipelines": [
+        "standard",
+        "graph",
+        "quantitative",
+        "orchestrator"
+      ],
       "before_metrics": null,
       "after_metrics": null
     }
   ],
-  "execution_logs": [],
+  "execution_logs": [
+    {
+      "timestamp": "2026-02-08T00:23:56.417586Z",
+      "question_id": "std-01",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.2222,
+      "latency_ms": 6483,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Normandy is located in northern France [1], [4].",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:24:01.731414Z",
+      "question_id": "std-02",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.0667,
+      "latency_ms": 5309,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Le contexte documentaire fourni ne contient aucune information concernant la date de diffusion de la",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:24:06.868082Z",
+      "question_id": "std-03",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.25,
+      "latency_ms": 5132,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The capital of Japan is Tokyo [1].",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:24:11.287125Z",
+      "question_id": "std-04",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.3333,
+      "latency_ms": 4414,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "*Romeo and Juliet* was written by William Shakespeare [1], [2].",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:24:17.344036Z",
+      "question_id": "std-05",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.2273,
+      "latency_ms": 6052,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Penicillin is a type of antibiotic [3]. Antibiotics function by either killing bacteria (bactericida",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:24:23.130084Z",
+      "question_id": "std-06",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.0345,
+      "latency_ms": 5781,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "La théorie de la relativité a été développée par Albert Einstein [1], [2], [4], [7].\n\nCette théorie ",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:24:28.045843Z",
+      "question_id": "std-07",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.3636,
+      "latency_ms": 4911,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The largest ocean on Earth is the Pacific Ocean [1], [2].",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:24:33.153694Z",
+      "question_id": "std-08",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.3158,
+      "latency_ms": 5103,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "La Joconde (Mona Lisa) a été peinte par Léonard de Vinci (Leonardo da Vinci) [1], [2], [3].",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:24:38.596172Z",
+      "question_id": "std-09",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.3529,
+      "latency_ms": 5437,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Photosynthesis is the process by which green plants convert light energy into chemical energy [1]. D",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:24:44.017871Z",
+      "question_id": "std-10",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.1333,
+      "latency_ms": 5417,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "La vitesse de la lumière est de **299 792 458 mètres par seconde** [1], [2].\n\nElle est également app",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:24:49.211317Z",
+      "question_id": "std-11",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.0769,
+      "latency_ms": 5187,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "La découverte de la gravité est attribuée à **Sir Isaac Newton** [1, 3].\n\nBien que le contexte docum",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:24:54.299344Z",
+      "question_id": "std-12",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.1395,
+      "latency_ms": 5083,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "DNA (Deoxyribonucleic acid) is a molecule whose sequences can be precisely modified using technologi",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:24:58.667203Z",
+      "question_id": "std-13",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.25,
+      "latency_ms": 4362,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "World War II ended in **1945** [1].",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:25:03.714417Z",
+      "question_id": "std-14",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 5042,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The chemical formula for water is $\\text{H}_2\\text{O}$ [1].",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:25:08.544160Z",
+      "question_id": "std-15",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.2667,
+      "latency_ms": 4824,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "La première personne à avoir marché sur la Lune fut Neil Armstrong [1], [2].",
+      "confidence": 1,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 5
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:25:12.887809Z",
+      "question_id": "graph-01",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.125,
+      "latency_ms": 4337,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Marie Curie a remporté deux prix Nobel : le prix Nobel de physique en 1903 et le prix Nobel de chimi",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:25:14.780949Z",
+      "question_id": "graph-02",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 1887,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T00:25:18.907620Z",
+      "question_id": "graph-03",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.4,
+      "latency_ms": 4120,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Alexander Fleming discovered penicillin.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:25:23.667185Z",
+      "question_id": "graph-04",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4754,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The context does not contain information about which disease penicillin protects against.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:25:27.686862Z",
+      "question_id": "graph-05",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4014,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The context does not contain information about where Alan Turing studied.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:25:29.772420Z",
+      "question_id": "graph-06",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 2079,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T00:25:35.394839Z",
+      "question_id": "graph-07",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 5616,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The provided context does not mention which scientists are connected to the University of Cambridge.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:25:39.595758Z",
+      "question_id": "graph-08",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.1739,
+      "latency_ms": 4195,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The context does not contain information about what the World Wide Web is or where it was created.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:25:44.772481Z",
+      "question_id": "graph-09",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 5170,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The provided context does not specify which organizations use Artificial Intelligence.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:25:48.549828Z",
+      "question_id": "graph-10",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.25,
+      "latency_ms": 3771,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Louvre Museum is located in Paris.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:25:53.134855Z",
+      "question_id": "graph-11",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4579,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The context does not contain information about who developed vaccination.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:25:58.639306Z",
+      "question_id": "graph-12",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 5497,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The provided context does not specify which diseases the World Health Organization studies. It only ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:03.127609Z",
+      "question_id": "graph-13",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.3333,
+      "latency_ms": 4482,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The provided context does not contain information about the relationship between NASA and Nuclear En",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:07.525588Z",
+      "question_id": "graph-14",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4391,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The context mentions Napoleon Bonaparte in relation to the French Revolution, but it does not explic",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:11.830055Z",
+      "question_id": "graph-15",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.3158,
+      "latency_ms": 4298,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The context does not contain information about the link between Google and Stanford University.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:14.861776Z",
+      "question_id": "quant-01",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 3023,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's total revenue in fiscal year 2023 was **\\$6,745,000,000.00**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT SUM(revenue) FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 AND period = 'FY' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:17.432943Z",
+      "question_id": "quant-02",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 2564,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "GreenEnergy Corp's net income in 2023 was **\\$664,400,000.00**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT net_income FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%GreenEnergy Corp%' AND fiscal_year = 2023 AND period = 'FY' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:20.289100Z",
+      "question_id": "quant-03",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 2847,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The revenue of HealthPlus Labs in Q4 2023 was **$322,560,000.00**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT SUM(revenue) FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%HealthPlus Labs%' AND fiscal_year = 2023 AND period = 'Q4' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:23.567032Z",
+      "question_id": "quant-04",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.16,
+      "latency_ms": 3269,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc. had a significantly higher gross profit than GreenEnergy Corp in FY 2023.\n\n*   **Tec",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT company_name, gross_profit FROM financials WHERE tenant_id = 'benchmark' AND fiscal_year = 2023 AND period = 'FY' AND company_name IN ('TechVision Inc', 'GreenEnergy Corp') LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 2,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:26.773299Z",
+      "question_id": "quant-05",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 3199,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's R&D spending in 2023 was **\\$1,349,000,000.00**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT SUM(research_development) FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 AND period = 'FY' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:29.760168Z",
+      "question_id": "quant-06",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.1333,
+      "latency_ms": 2979,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was **6.7100**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT T1.diluted_eps FROM financials AS T1 WHERE T1.tenant_id = 'benchmark' AND T1.company_name ILIKE '%HealthPlus Labs%' AND T1.fiscal_year = 2023 AND T1.period = 'FY' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:32.927604Z",
+      "question_id": "quant-07",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 3160,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc. had **\\$2,200,000,000.00** in cash and equivalents at the end of 2023.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT T1.cash_and_equivalents FROM balance_sheet AS T1 WHERE T1.tenant_id = 'benchmark' AND T1.company_name ILIKE '%TechVision Inc%' AND T1.fiscal_year = 2023 ORDER BY T1.as_of_date DESC LIMIT 1",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:35.562853Z",
+      "question_id": "quant-08",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 2627,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "GreenEnergy Corp's total assets at the end of fiscal year 2023 were **\\$4,460,000,000.00**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT total_assets FROM balance_sheet WHERE tenant_id = 'benchmark' AND company_name ILIKE '%GreenEnergy Corp%' AND fiscal_year = 2023 LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:38.666742Z",
+      "question_id": "quant-09",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 3096,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The total stockholders' equity for HealthPlus Labs at the end of 2023 was **\\$795,000,000.00**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT SUM(t1.total_stockholders_equity) FROM balance_sheet AS t1 WHERE t1.tenant_id = 'benchmark' AND t1.company_name ILIKE '%HealthPlus Labs%' AND t1.fiscal_year = 2023 AND t1.as_of_date = (SELECT M",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:26:41.208969Z",
+      "question_id": "quant-10",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 2534,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's operating income in Q3 2023 was **\\$516,525,000.00**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT operating_income FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 AND period = 'Q3' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:27:20.870953Z",
+      "question_id": "quant-11",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error_type": "SERVER_ERROR",
+      "error_preview": "HTTP 500: {\"message\":\"Error in workflow\"}",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T00:27:23.722347Z",
+      "question_id": "quant-12",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.1905,
+      "latency_ms": 2842,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The company with the highest revenue in fiscal year 2023 was **TechVision Inc**, with a total revenu",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT company_name, SUM(revenue) AS total_revenue FROM financials WHERE tenant_id = 'benchmark' AND fiscal_year = 2023 AND period = 'FY' GROUP BY company_name ORDER BY total_revenue DESC LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 3,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:27:27.137220Z",
+      "question_id": "quant-13",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 3406,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The total long-term debt for GreenEnergy Corp at the end of 2023 was **\\$300,000,000.00**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT T1.long_term_debt FROM balance_sheet AS T1 WHERE T1.tenant_id = 'benchmark' AND T1.company_name ILIKE '%GreenEnergy Corp%' AND T1.fiscal_year = 2023 ORDER BY T1.as_of_date DESC LIMIT 1",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:27:37.351607Z",
+      "question_id": "quant-14",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3293,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Based on the SQL query results, TechVision has **0** active employees.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT COUNT(t1.id) FROM employees AS t1 WHERE t1.tenant_id = 'benchmark' AND t1.status = 'active' AND t1.name ILIKE '%TechVision%' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:27:41.734072Z",
+      "question_id": "quant-15",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4374,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The average salary of Engineering employees at TechVision is **172,000.00**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT AVG(T1.salary) FROM employees AS T1 INNER JOIN balance_sheet AS T2 ON T1.company_id = T2.company_id AND T1.tenant_id = T2.tenant_id WHERE T1.department = 'Engineering' AND T2.company_name ILIKE",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:28:00.249881Z",
+      "question_id": "orch-01",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.5,
+      "latency_ms": 18507,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's revenue in 2023 was **\\$6,745,000,000.00**.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:28:10.618907Z",
+      "question_id": "orch-02",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.5,
+      "latency_ms": 10359,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Alexander Fleming discovered penicillin [1], [2].",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:32:24.802048Z",
+      "question_id": "orch-03",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T00:32:37.708991Z",
+      "question_id": "orch-04",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 12898,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The revenue generated by GreenEnergy Corp in Q4 2023 was **$1,021,500,000.00**.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:36:51.902721Z",
+      "question_id": "orch-05",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T00:37:04.710868Z",
+      "question_id": "orch-06",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.1538,
+      "latency_ms": 12799,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The capital city of France is Paris [1], [2], [4], [5], [7].",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:37:16.375894Z",
+      "question_id": "orch-07",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 11656,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The gross profit margin for HealthPlus Labs in 2023 was **51.997%**.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:38:41.204365Z",
+      "question_id": "orch-08",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 22779,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The provided document context does not explicitly state who created Artificial Intelligence as a fie",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:38:53.735427Z",
+      "question_id": "orch-09",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.4103,
+      "latency_ms": 12522,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Machine learning is a subset of artificial intelligence where systems learn from data to improve per",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:39:13.322874Z",
+      "question_id": "orch-10",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.2791,
+      "latency_ms": 19578,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The R&D spending for the three companies in 2023 is as follows:\n\n*   **TechVision Inc:** \\$1,349,000",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:39:23.117412Z",
+      "question_id": "orch-11",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 9785,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The net income of TechVision Inc for fiscal year 2022 was **$1,337,550,000.00**.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:41:02.568408Z",
+      "question_id": "orch-12",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 37393,
+      "error_type": "TIMEOUT",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T00:41:20.565753Z",
+      "question_id": "orch-13",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.05,
+      "latency_ms": 17987,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The provided document context does not explicitly state what NASA studies, but it contains facts rel",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:41:32.588719Z",
+      "question_id": "orch-14",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.0952,
+      "latency_ms": 12012,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The boiling point of water is $100^\\circ\\text{C}$ at sea level [2] and $212^\\circ\\text{F}$ [1].",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T00:41:42.397111Z",
+      "question_id": "orch-15",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.3158,
+      "latency_ms": 9799,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The operating income for the companies in Q1 2023, based on the executed query, is as follows:\n\n*   ",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    }
+  ],
   "current_phase": 1,
   "phase_iteration": 1,
   "evaluation_phases": [
@@ -198,23 +2159,79 @@
       "name": "Baseline",
       "status": "active",
       "total_questions": 200,
-      "questions_per_pipeline": {"standard": 50, "graph": 50, "quantitative": 50, "orchestrator": 50},
-      "datasets": ["hand-crafted", "curated-HF"],
+      "questions_per_pipeline": {
+        "standard": 50,
+        "graph": 50,
+        "quantitative": 50,
+        "orchestrator": 50
+      },
+      "datasets": [
+        "hand-crafted",
+        "curated-HF"
+      ],
       "db_readiness": {
-        "pinecone": {"ready": true, "vectors_needed": 0, "vectors_available": 10411, "note": "All 50 standard questions have matching content"},
-        "neo4j": {"ready": true, "entities_needed": 0, "entities_available": 110, "note": "All 50 graph questions reference seeded entities"},
-        "supabase": {"ready": true, "rows_needed": 0, "rows_available": 88, "note": "All 50 quant questions target existing tables"}
+        "pinecone": {
+          "ready": true,
+          "vectors_needed": 0,
+          "vectors_available": 10411,
+          "note": "All 50 standard questions have matching content"
+        },
+        "neo4j": {
+          "ready": true,
+          "entities_needed": 0,
+          "entities_available": 110,
+          "note": "All 50 graph questions reference seeded entities"
+        },
+        "supabase": {
+          "ready": true,
+          "rows_needed": 0,
+          "rows_available": 88,
+          "note": "All 50 quant questions target existing tables"
+        }
       },
       "gates": {
-        "standard": {"target": 85, "current": 78, "passed": false},
-        "graph": {"target": 70, "current": 50, "passed": false},
-        "quantitative": {"target": 85, "current": 80, "passed": false},
-        "orchestrator": {"target": 70, "current": 48, "passed": false},
-        "overall": {"target": 75, "current": 64, "passed": false},
-        "stability": {"consecutive_stable_runs": 0, "required": 3, "passed": false}
+        "standard": {
+          "target": 85,
+          "current": 78,
+          "passed": false
+        },
+        "graph": {
+          "target": 70,
+          "current": 50,
+          "passed": false
+        },
+        "quantitative": {
+          "target": 85,
+          "current": 80,
+          "passed": false
+        },
+        "orchestrator": {
+          "target": 70,
+          "current": 48,
+          "passed": false
+        },
+        "overall": {
+          "target": 75,
+          "current": 64,
+          "passed": false
+        },
+        "stability": {
+          "consecutive_stable_runs": 0,
+          "required": 3,
+          "passed": false
+        }
       },
       "iterations": [
-        {"iteration": 1, "timestamp": "2026-02-07T12:58:00Z", "standard": 78, "graph": 50, "quantitative": 80, "orchestrator": 48, "overall": 64, "changes": "Initial baseline"}
+        {
+          "iteration": 1,
+          "timestamp": "2026-02-07T12:58:00Z",
+          "standard": 78,
+          "graph": 50,
+          "quantitative": 80,
+          "orchestrator": 48,
+          "overall": 64,
+          "changes": "Initial baseline"
+        }
       ]
     },
     {
@@ -222,17 +2239,53 @@
       "name": "Expand",
       "status": "locked",
       "total_questions": 1000,
-      "questions_per_pipeline": {"graph": 500, "quantitative": 500},
-      "datasets": ["musique", "2wikimultihopqa", "finqa", "tatqa", "convfinqa", "wikitablequestions"],
+      "questions_per_pipeline": {
+        "graph": 500,
+        "quantitative": 500
+      },
+      "datasets": [
+        "musique",
+        "2wikimultihopqa",
+        "finqa",
+        "tatqa",
+        "convfinqa",
+        "wikitablequestions"
+      ],
       "db_readiness": {
-        "pinecone": {"ready": true, "vectors_needed": 0, "vectors_available": 10411, "note": "Not directly tested in Phase 2"},
-        "neo4j": {"ready": false, "entities_needed": 2500, "entities_available": 110, "note": "Must extract entities from question contexts"},
-        "supabase": {"ready": false, "rows_needed": 10000, "rows_available": 88, "note": "Must parse table_data from questions"}
+        "pinecone": {
+          "ready": true,
+          "vectors_needed": 0,
+          "vectors_available": 10411,
+          "note": "Not directly tested in Phase 2"
+        },
+        "neo4j": {
+          "ready": false,
+          "entities_needed": 2500,
+          "entities_available": 110,
+          "note": "Must extract entities from question contexts"
+        },
+        "supabase": {
+          "ready": false,
+          "rows_needed": 10000,
+          "rows_available": 88,
+          "note": "Must parse table_data from questions"
+        }
       },
       "gates": {
-        "graph": {"target": 60, "current": null, "passed": false},
-        "quantitative": {"target": 70, "current": null, "passed": false},
-        "no_regression": {"description": "Phase 1 results must not regress", "passed": false}
+        "graph": {
+          "target": 60,
+          "current": null,
+          "passed": false
+        },
+        "quantitative": {
+          "target": 70,
+          "current": null,
+          "passed": false
+        },
+        "no_regression": {
+          "description": "Phase 1 results must not regress",
+          "passed": false
+        }
       },
       "iterations": []
     },
@@ -241,19 +2294,76 @@
       "name": "Scale",
       "status": "locked",
       "total_questions": 11500,
-      "questions_per_pipeline": {"standard": 8500, "graph": 1500, "quantitative": 500, "orchestrator": 1000},
-      "datasets": ["musique", "2wikimultihopqa", "hotpotqa", "finqa", "tatqa", "convfinqa", "wikitablequestions", "frames", "triviaqa", "squad_v2", "popqa", "msmarco", "asqa", "narrativeqa", "pubmedqa", "natural_questions"],
+      "questions_per_pipeline": {
+        "standard": 8500,
+        "graph": 1500,
+        "quantitative": 500,
+        "orchestrator": 1000
+      },
+      "datasets": [
+        "musique",
+        "2wikimultihopqa",
+        "hotpotqa",
+        "finqa",
+        "tatqa",
+        "convfinqa",
+        "wikitablequestions",
+        "frames",
+        "triviaqa",
+        "squad_v2",
+        "popqa",
+        "msmarco",
+        "asqa",
+        "narrativeqa",
+        "pubmedqa",
+        "natural_questions"
+      ],
       "db_readiness": {
-        "pinecone": {"ready": false, "vectors_needed": 5000, "vectors_available": 10411, "note": "Need additional context embeddings"},
-        "neo4j": {"ready": false, "entities_needed": 4000, "entities_available": 110, "note": "Requires Phase 2 + hotpotqa entities"},
-        "supabase": {"ready": false, "rows_needed": 12000, "rows_available": 88, "note": "Extends Phase 2 tables"}
+        "pinecone": {
+          "ready": false,
+          "vectors_needed": 5000,
+          "vectors_available": 10411,
+          "note": "Need additional context embeddings"
+        },
+        "neo4j": {
+          "ready": false,
+          "entities_needed": 4000,
+          "entities_available": 110,
+          "note": "Requires Phase 2 + hotpotqa entities"
+        },
+        "supabase": {
+          "ready": false,
+          "rows_needed": 12000,
+          "rows_available": 88,
+          "note": "Extends Phase 2 tables"
+        }
       },
       "gates": {
-        "standard": {"target": 75, "current": null, "passed": false},
-        "graph": {"target": 55, "current": null, "passed": false},
-        "quantitative": {"target": 65, "current": null, "passed": false},
-        "orchestrator": {"target": 60, "current": null, "passed": false},
-        "error_rate": {"target_max": 10, "current": null, "passed": false}
+        "standard": {
+          "target": 75,
+          "current": null,
+          "passed": false
+        },
+        "graph": {
+          "target": 55,
+          "current": null,
+          "passed": false
+        },
+        "quantitative": {
+          "target": 65,
+          "current": null,
+          "passed": false
+        },
+        "orchestrator": {
+          "target": 60,
+          "current": null,
+          "passed": false
+        },
+        "error_rate": {
+          "target_max": 10,
+          "current": null,
+          "passed": false
+        }
       },
       "iterations": []
     },
@@ -262,15 +2372,40 @@
       "name": "Full HF",
       "status": "locked",
       "total_questions": 100000,
-      "questions_per_pipeline": {"standard": 60000, "graph": 15000, "quantitative": 7000, "orchestrator": 18000},
-      "datasets": ["all 16 datasets at 10x sample"],
+      "questions_per_pipeline": {
+        "standard": 60000,
+        "graph": 15000,
+        "quantitative": 7000,
+        "orchestrator": 18000
+      },
+      "datasets": [
+        "all 16 datasets at 10x sample"
+      ],
       "db_readiness": {
-        "pinecone": {"ready": false, "vectors_needed": 100000, "vectors_available": 10411, "note": "May require paid plan"},
-        "neo4j": {"ready": false, "entities_needed": 15000, "entities_available": 110, "note": "May require Aura Pro"},
-        "supabase": {"ready": false, "rows_needed": 50000, "rows_available": 88, "note": "Within free tier"}
+        "pinecone": {
+          "ready": false,
+          "vectors_needed": 100000,
+          "vectors_available": 10411,
+          "note": "May require paid plan"
+        },
+        "neo4j": {
+          "ready": false,
+          "entities_needed": 15000,
+          "entities_available": 110,
+          "note": "May require Aura Pro"
+        },
+        "supabase": {
+          "ready": false,
+          "rows_needed": 50000,
+          "rows_available": 88,
+          "note": "Within free tier"
+        }
       },
       "gates": {
-        "no_regression": {"description": "Maintain Phase 3 accuracy levels", "passed": false}
+        "no_regression": {
+          "description": "Maintain Phase 3 accuracy levels",
+          "passed": false
+        }
       },
       "iterations": []
     },
@@ -279,15 +2414,42 @@
       "name": "Million+",
       "status": "locked",
       "total_questions": 2200000,
-      "questions_per_pipeline": {"standard": 1500000, "graph": 300000, "quantitative": 50000, "orchestrator": 350000},
-      "datasets": ["all 16 datasets, full splits"],
+      "questions_per_pipeline": {
+        "standard": 1500000,
+        "graph": 300000,
+        "quantitative": 50000,
+        "orchestrator": 350000
+      },
+      "datasets": [
+        "all 16 datasets, full splits"
+      ],
       "db_readiness": {
-        "pinecone": {"ready": false, "vectors_needed": 500000, "vectors_available": 10411, "note": "Requires production infrastructure"},
-        "neo4j": {"ready": false, "entities_needed": 50000, "entities_available": 110, "note": "Requires production infrastructure"},
-        "supabase": {"ready": false, "rows_needed": 200000, "rows_available": 88, "note": "Requires Pro plan"}
+        "pinecone": {
+          "ready": false,
+          "vectors_needed": 500000,
+          "vectors_available": 10411,
+          "note": "Requires production infrastructure"
+        },
+        "neo4j": {
+          "ready": false,
+          "entities_needed": 50000,
+          "entities_available": 110,
+          "note": "Requires production infrastructure"
+        },
+        "supabase": {
+          "ready": false,
+          "rows_needed": 200000,
+          "rows_available": 88,
+          "note": "Requires Pro plan"
+        }
       },
       "gates": {
-        "sustained_throughput": {"target": 100, "unit": "questions/hour", "current": null, "passed": false}
+        "sustained_throughput": {
+          "target": 100,
+          "unit": "questions/hour",
+          "current": null,
+          "passed": false
+        }
       },
       "iterations": []
     }
