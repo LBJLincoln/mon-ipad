@@ -134,22 +134,38 @@
 
 ---
 
-## Iteration Cycle Protocol
+## Iteration Cycle Protocol (Two-Phase)
 
 Follow this for every iteration. See CLAUDE.md for detailed commands.
 
+### Phase A: Fast Iteration (10q/pipeline, ~2-3 min, parallel)
 ```
-Step 0: Read current state (STATUS.md + docs/data.json meta)
-Step 1: Sync workflows          → python workflows/sync.py
-Step 2: Smoke test              → python eval/quick-test.py --questions 5
-Step 3: Analyze failures        → python eval/analyzer.py
-Step 4: Patch workflow in n8n   → then sync.py + quick-test.py
-Step 5: Run evaluation          → python eval/run-eval.py --types ... --label "..."
-Step 6: Commit + push           → git add docs/ workflows/ logs/ && git commit && git push
-Step 7: Repeat from Step 3
+A1: Sync workflows           → python workflows/sync.py
+A2: Smoke test                → python eval/quick-test.py --questions 5
+A3: Fast iteration test       → python eval/fast-iter.py --label "description"
+A4: Review results            → check logs/fast-iter/ and logs/pipeline-results/
+A5: If bad → fix in n8n → repeat from A1
+    If good → proceed to Phase B
+A6: Commit results            → git add docs/ logs/ && git commit
+```
+
+### Phase B: Full Evaluation (200q, parallel, ~15-20 min)
+```
+B1: Run parallel eval         → python eval/run-eval-parallel.py --reset --label "..."
+B2: Analyze results           → python eval/analyzer.py
+B3: Commit + push             → git add docs/ workflows/ logs/ && git commit && git push
+B4: Back to Phase A for next improvement
 ```
 
 **Rule**: ONE change per iteration. Don't change multiple things at once.
+
+### Key Scripts
+| Script | Purpose | Speed |
+|--------|---------|-------|
+| `eval/fast-iter.py` | Quick validation, 10q/pipeline, parallel | ~2-3 min |
+| `eval/run-eval-parallel.py` | Full 200q eval, all pipelines parallel | ~15-20 min |
+| `eval/run-eval.py` | Sequential eval (legacy/debug) | ~60-80 min |
+| `eval/quick-test.py` | Smoke test, 3-5 known-good questions | ~1 min |
 
 ---
 
@@ -171,10 +187,12 @@ Step 7: Repeat from Step 3
 | This file | `STATUS.md` |
 | Dashboard | `docs/index.html` |
 | Eval data | `docs/data.json` |
-| Run eval | `eval/run-eval.py` |
+| **Fast iteration (10q, parallel)** | **`eval/fast-iter.py`** |
+| **Parallel eval (200q)** | **`eval/run-eval-parallel.py`** |
+| Sequential eval (legacy) | `eval/run-eval.py` |
 | Smoke test | `eval/quick-test.py` |
 | Analyze | `eval/analyzer.py` |
-| Live writer | `eval/live-writer.py` |
+| Live writer (thread-safe) | `eval/live-writer.py` |
 | Iterate script | `eval/iterate.sh` |
 | **Apply improvements** | **`workflows/improved/apply.py`** |
 | Sync workflows | `workflows/sync.py` |
@@ -184,6 +202,8 @@ Step 7: Repeat from Step 3
 | Dataset manifest | `datasets/manifest.json` |
 | Error traces | `logs/errors/` |
 | DB snapshots | `logs/db-snapshots/` |
+| Pipeline results | `logs/pipeline-results/` |
+| Fast-iter snapshots | `logs/fast-iter/` |
 
 ---
 

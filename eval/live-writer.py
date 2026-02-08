@@ -50,6 +50,10 @@ _session_id = None
 _exec_log_path = None
 _iteration_id = None
 
+# Thread-safety lock for data.json reads/writes
+import threading
+_data_lock = threading.Lock()
+
 
 def _load():
     """Load data.json."""
@@ -347,44 +351,46 @@ def init(status="running", label="", description="", changes=None):
 def record_question(rag_type, question_id, question_text, correct, f1=0,
                     latency_ms=0, error=None, cost_usd=0, expected="", answer="",
                     match_type="", category=""):
-    """Record a single question result into the current iteration + question registry."""
-    data = _load()
-    data = _ensure_v2(data)
+    """Record a single question result into the current iteration + question registry.
+    Thread-safe: uses _data_lock for concurrent pipeline execution."""
+    with _data_lock:
+        data = _load()
+        data = _ensure_v2(data)
 
-    error_type = _classify_error(str(error) if error else None, latency_ms)
+        error_type = _classify_error(str(error) if error else None, latency_ms)
 
-    # Add to current iteration's questions list
-    iteration = _get_current_iteration(data)
-    iteration["questions"].append({
-        "id": question_id,
-        "rag_type": rag_type,
-        "correct": bool(correct),
-        "f1": round(f1, 4),
-        "latency_ms": int(latency_ms),
-        "answer": _sanitize(answer, 500),
-        "expected": _sanitize(expected, 300),
-        "match_type": match_type,
-        "error": _sanitize(error, 200) if error else None,
-        "error_type": error_type,
-        "timestamp": datetime.utcnow().isoformat() + "Z",
-    })
-    iteration["timestamp_end"] = datetime.utcnow().isoformat() + "Z"
+        # Add to current iteration's questions list
+        iteration = _get_current_iteration(data)
+        iteration["questions"].append({
+            "id": question_id,
+            "rag_type": rag_type,
+            "correct": bool(correct),
+            "f1": round(f1, 4),
+            "latency_ms": int(latency_ms),
+            "answer": _sanitize(answer, 500),
+            "expected": _sanitize(expected, 300),
+            "match_type": match_type,
+            "error": _sanitize(error, 200) if error else None,
+            "error_type": error_type,
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+        })
+        iteration["timestamp_end"] = datetime.utcnow().isoformat() + "Z"
 
-    # Recompute iteration summary
-    _recompute_iteration_summary(iteration)
+        # Recompute iteration summary
+        _recompute_iteration_summary(iteration)
 
-    # Update question registry
-    _update_question_registry(data, question_id, rag_type, question_text, expected,
-                               correct, f1, latency_ms, match_type, error, error_type, answer, category)
+        # Update question registry
+        _update_question_registry(data, question_id, rag_type, question_text, expected,
+                                   correct, f1, latency_ms, match_type, error, error_type, answer, category)
 
-    # Update pipeline trends
-    _update_pipeline_trends(data)
+        # Update pipeline trends
+        _update_pipeline_trends(data)
 
-    # Update meta
-    _update_meta(data)
-    data["meta"]["status"] = "running"
+        # Update meta
+        _update_meta(data)
+        data["meta"]["status"] = "running"
 
-    _save(data)
+        _save(data)
 
 
 def record_execution(rag_type, question_id, question_text, expected="",
@@ -469,27 +475,28 @@ def record_execution(rag_type, question_id, question_text, expected="",
         with open(err_path, "w") as f:
             json.dump(err_trace, f, indent=2, ensure_ascii=False)
 
-    # Update execution_logs summary in data.json (last 200)
-    data = _load()
-    data = _ensure_v2(data)
-    if "execution_logs" not in data:
-        data["execution_logs"] = []
-    data["execution_logs"].append({
-        "timestamp": entry["timestamp"],
-        "question_id": question_id,
-        "rag_type": rag_type,
-        "correct": bool(correct),
-        "f1": round(f1, 4),
-        "latency_ms": int(latency_ms),
-        "error_type": error_type,
-        "error_preview": _sanitize(error, 100) if error else None,
-        "answer_preview": extracted_answer[:100],
-        "confidence": entry["output"]["confidence"],
-        "pipeline_details_summary": _summarize_pipeline_details(rag_type, pipeline_details),
-    })
-    if len(data["execution_logs"]) > 200:
-        data["execution_logs"] = data["execution_logs"][-200:]
-    _save(data)
+    # Update execution_logs summary in data.json (last 200) — thread-safe
+    with _data_lock:
+        data = _load()
+        data = _ensure_v2(data)
+        if "execution_logs" not in data:
+            data["execution_logs"] = []
+        data["execution_logs"].append({
+            "timestamp": entry["timestamp"],
+            "question_id": question_id,
+            "rag_type": rag_type,
+            "correct": bool(correct),
+            "f1": round(f1, 4),
+            "latency_ms": int(latency_ms),
+            "error_type": error_type,
+            "error_preview": _sanitize(error, 100) if error else None,
+            "answer_preview": extracted_answer[:100],
+            "confidence": entry["output"]["confidence"],
+            "pipeline_details_summary": _summarize_pipeline_details(rag_type, pipeline_details),
+        })
+        if len(data["execution_logs"]) > 200:
+            data["execution_logs"] = data["execution_logs"][-200:]
+        _save(data)
 
     return entry
 
@@ -529,22 +536,23 @@ def record_quick_test(pipeline, query, status, latency_ms, response_preview="",
         response_preview: First 200 chars of response
         trigger: "post-deployment"|"manual"|"pre-eval"
     """
-    data = _load()
-    data = _ensure_v2(data)
-    data["quick_tests"].append({
-        "timestamp": datetime.utcnow().isoformat() + "Z",
-        "pipeline": pipeline,
-        "query": query[:200],
-        "status": status,
-        "latency_ms": int(latency_ms),
-        "response_preview": _sanitize(response_preview, 200),
-        "trigger": trigger,
-        "error": _sanitize(error, 200) if error else None,
-    })
-    # Keep last 50 quick tests
-    if len(data["quick_tests"]) > 50:
-        data["quick_tests"] = data["quick_tests"][-50:]
-    _save(data)
+    with _data_lock:
+        data = _load()
+        data = _ensure_v2(data)
+        data["quick_tests"].append({
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "pipeline": pipeline,
+            "query": query[:200],
+            "status": status,
+            "latency_ms": int(latency_ms),
+            "response_preview": _sanitize(response_preview, 200),
+            "trigger": trigger,
+            "error": _sanitize(error, 200) if error else None,
+        })
+        # Keep last 50 quick tests
+        if len(data["quick_tests"]) > 50:
+            data["quick_tests"] = data["quick_tests"][-50:]
+        _save(data)
 
 
 def record_workflow_change(description, files_changed=None, before_metrics=None,
