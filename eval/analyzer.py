@@ -104,9 +104,9 @@ def analyze_flaky_questions(data):
     flaky = []
     for qid, info in reg.items():
         runs = info.get("runs", [])
-        if len(runs) >= 3:
+        if len(runs) >= 2:
             pass_rate = info.get("pass_rate", 1.0)
-            if 0.2 < pass_rate < 0.8:
+            if 0.1 < pass_rate < 0.9:
                 flaky.append({
                     "id": qid,
                     "rag_type": info.get("rag_type", ""),
@@ -135,7 +135,7 @@ def analyze_pipeline_gaps(data):
         plateaued = False
         if len(trend) >= 2:
             recent = [t["accuracy_pct"] for t in trend[-2:]]
-            plateaued = abs(recent[0] - recent[1]) < 2.0
+            plateaued = abs(recent[0] - recent[1]) < 1.0  # Tighter threshold: <1pp change = plateau
 
         gaps.append({
             "pipeline": name,

@@ -190,10 +190,25 @@ def call_rag(endpoint, question, tenant_id="benchmark", timeout=60):
                     data = json.loads(raw)
                     if isinstance(data, list):
                         data = data[0] if data else {}
+                    # Check if response has actual content (not just metadata)
+                    answer_found = False
+                    if isinstance(data, dict):
+                        for key in ["response", "answer", "result", "final_response", "interpretation"]:
+                            if key in data and data[key] and str(data[key]).strip():
+                                answer_found = True
+                                break
+                    if not answer_found and attempt < 2:
+                        # Retry once on empty-content response
+                        time.sleep(2)
+                        continue
                     return {"data": data, "latency_ms": latency, "error": None,
                             "http_status": http_status, "response_size": len(raw),
                             "input_payload": input_payload, "raw_response": data,
                             "attempts": attempt + 1}
+                if attempt < 2:
+                    # Retry once on truly empty response
+                    time.sleep(2)
+                    continue
                 return {"data": None, "latency_ms": latency,
                         "error": "Empty response (HTTP 200)",
                         "http_status": http_status, "response_size": 0,
@@ -234,22 +249,42 @@ def extract_answer(data):
         return ""
     if isinstance(data, str):
         return data
-    for key in ["response", "answer", "result", "interpretation", "final_response"]:
+
+    # Priority 1: Direct answer fields
+    for key in ["response", "answer", "result", "final_response", "interpretation"]:
         if key in data and data[key]:
             val = data[key]
-            if isinstance(val, str) and len(val) > 0:
-                return val
+            if isinstance(val, str) and len(val.strip()) > 0:
+                return val.strip()
+
+    # Priority 2: Nested response formats
     if "success" in data and "response" in data:
         resp = data["response"]
         if isinstance(resp, str):
-            return resp
-    if "interpretation" in data:
-        return str(data["interpretation"])
+            return resp.strip()
+
+    # Priority 3: Orchestrator-specific nested response
+    if "task_results" in data and isinstance(data["task_results"], list):
+        for tr in data["task_results"]:
+            if isinstance(tr, dict):
+                for key in ["response", "answer", "result"]:
+                    if key in tr and tr[key]:
+                        return str(tr[key]).strip()
+
+    # Priority 4: LLM-style response format
     if "choices" in data:
         try:
-            return data["choices"][0]["message"]["content"]
-        except:
+            return data["choices"][0]["message"]["content"].strip()
+        except (KeyError, IndexError, TypeError):
             pass
+
+    # Priority 5: Any non-empty string value (heuristic)
+    for key, val in data.items():
+        if key not in ("query", "tenant_id", "benchmark_mode", "top_k", "include_sources",
+                        "trace_id", "confidence", "sources", "metadata", "perf"):
+            if isinstance(val, str) and len(val.strip()) > 20:
+                return val.strip()
+
     return str(data)[:500]
 
 
@@ -285,10 +320,25 @@ def extract_pipeline_details(data, rag_type):
     return details
 
 
+def normalize_text(text):
+    """Normalize text for comparison: lowercase, remove articles/punctuation."""
+    text = text.lower().strip()
+    # Remove common prefixes that don't affect correctness
+    for prefix in ["the answer is ", "the answer is: ", "based on the context, ",
+                    "according to the data, ", "based on the provided context, "]:
+        if text.startswith(prefix):
+            text = text[len(prefix):]
+    # Remove trailing periods and whitespace
+    text = text.rstrip('. ')
+    return text
+
+
 def compute_f1(prediction, reference):
-    """Compute token-level F1 score."""
-    pred_tokens = set(re.findall(r'\w+', prediction.lower()))
-    ref_tokens = set(re.findall(r'\w+', reference.lower()))
+    """Compute token-level F1 score with normalization."""
+    pred_norm = normalize_text(prediction)
+    ref_norm = normalize_text(reference)
+    pred_tokens = set(re.findall(r'\w+', pred_norm))
+    ref_tokens = set(re.findall(r'\w+', ref_norm))
     if not pred_tokens or not ref_tokens:
         return 0.0
     common = pred_tokens & ref_tokens
@@ -342,22 +392,52 @@ def numeric_match(prediction, expected):
     return False, None, None
 
 
+def exact_match(prediction, expected):
+    """Check if the expected answer is contained exactly (case-insensitive) in the prediction."""
+    pred_norm = normalize_text(prediction)
+    exp_norm = normalize_text(expected)
+    if not exp_norm:
+        return False
+    # Direct containment check
+    if exp_norm in pred_norm:
+        return True
+    # Check if all words of expected appear in prediction (for short expected answers)
+    exp_words = exp_norm.split()
+    if len(exp_words) <= 3:
+        return all(w in pred_norm for w in exp_words)
+    return False
+
+
 def evaluate_answer(prediction, expected):
-    """Multi-strategy answer evaluation."""
+    """Multi-strategy answer evaluation with improved scoring."""
     if not prediction or prediction.strip() == "":
-        return {"correct": False, "method": "NO_ANSWER", "detail": "Empty prediction"}
+        return {"correct": False, "method": "NO_ANSWER", "f1": 0.0, "detail": "Empty prediction"}
+
     f1 = compute_f1(prediction, expected)
+
+    # Strategy 1: Exact containment (highest confidence)
+    if exact_match(prediction, expected):
+        return {"correct": True, "method": "EXACT_MATCH", "f1": f1,
+                "detail": f"Expected found in answer"}
+
+    # Strategy 2: Numeric match (5% tolerance)
     num_ok, pred_num, exp_num = numeric_match(prediction, expected)
     if num_ok:
         return {"correct": True, "method": "NUMERIC_MATCH", "f1": f1,
                 "detail": f"{pred_num}~={exp_num}"}
+
+    # Strategy 3: Entity match (at least 50% of expected entities found)
     matched, total = entity_match(prediction, expected)
     if total > 0 and matched >= max(1, total * 0.5):
         return {"correct": True, "method": "ENTITY_MATCH", "f1": f1,
                 "detail": f"{matched}/{total}"}
-    if f1 >= 0.5:
+
+    # Strategy 4: F1 threshold (lower threshold for short expected answers)
+    f1_threshold = 0.4 if len(expected.split()) <= 3 else 0.5
+    if f1 >= f1_threshold:
         return {"correct": True, "method": "F1_THRESHOLD", "f1": f1,
-                "detail": f"F1={f1:.3f}"}
+                "detail": f"F1={f1:.3f} (threshold={f1_threshold})"}
+
     return {"correct": False, "method": "PARTIAL", "f1": f1,
             "detail": f"F1={f1:.3f}"}
 

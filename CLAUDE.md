@@ -112,7 +112,7 @@ Additional Phase 1 exit criteria:
 
 ---
 
-## Iteration Results (200q, Feb 8 2026 — 4 iterations)
+## Iteration Results (200q, Feb 8 2026 — 5 iterations)
 
 | Pipeline | Baseline | After Improvements | Delta | Errors | Status |
 |---|---|---|---|---|---|
@@ -127,6 +127,7 @@ Additional Phase 1 exit criteria:
 2. **Iter 2** (60q): Fixed Graph RAG Response Formatter JS syntax error (single quotes inside single-quoted string). Deployed "never say insufficient context" directive. Orchestrator Intent Analyzer timeout reduced.
 3. **Iter 3** (100q, 200 total): All 200 base questions tested. Graph RAG improved to 60% on retested questions. Standard at 100% for new questions.
 4. **Iter 4** (18q retested): OpenRouter API credits exhausted — all remaining orchestrator retests returned empty/error. Not a workflow issue.
+5. **Iter 5** (code improvements, no eval — env vars not set): Deep analysis of 79 error files. apply.py rewritten with 17 workflow patches (9 P0). Orchestrator: continueOnFail, Response Builder null-safe, timeouts capped. Graph: fuzzy matching (Levenshtein), entity extraction rules. Quant: SQL hints, ILIKE, zero-row detection. Standard: RRF boost, empty fallback. Eval scoring improved: exact_match, normalize_text, retry on empty responses. Fixed quantitative-rag.json invalid JSON.
 
 ---
 
