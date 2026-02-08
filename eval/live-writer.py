@@ -128,7 +128,9 @@ def _classify_error(error_str, latency_ms, http_status=None):
     err = error_str.lower()
     if "timed out" in err or "timeout" in err or latency_ms > 25000:
         return "TIMEOUT"
-    if "urlopen error" in err or "connection" in err:
+    if "credits" in err or "quota" in err or "billing" in err or "insufficient_funds" in err:
+        return "CREDITS_EXHAUSTED"
+    if "urlopen error" in err or "connection" in err or "tunnel" in err:
         return "NETWORK"
     if http_status and http_status >= 500:
         return "SERVER_ERROR"

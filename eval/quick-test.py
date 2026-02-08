@@ -51,20 +51,20 @@ SMOKE_QUESTIONS = {
     ],
     "quantitative": [
         {"query": "What was TechVision Inc's total revenue in fiscal year 2023?", "expected_contains": "6745"},
-        {"query": "How many employees does GreenEnergy Corp have?", "expected_contains": ""},
+        {"query": "How many employees does GreenEnergy Corp have?", "expected_contains": "3"},
         {"query": "What is the total number of products across all companies?", "expected_contains": ""},
         {"query": "What was HealthPlus Labs' net income in 2022?", "expected_contains": ""},
         {"query": "What was TechVision's revenue in Q1 2023?", "expected_contains": ""},
     ],
     "orchestrator": [
         {"query": "What is the capital of Japan?", "expected_contains": "Tokyo"},
-        {"query": "What was TechVision Inc's total revenue in 2023?", "expected_contains": ""},
+        {"query": "What was TechVision Inc's total revenue in 2023?", "expected_contains": "6745"},
         {"query": "What did Marie Curie win Nobel Prizes for?", "expected_contains": "Nobel"},
     ],
 }
 
 
-def call_endpoint(endpoint, query, timeout=30):
+def call_endpoint(endpoint, query, timeout=60):
     """Call a RAG endpoint and return response info."""
     payload = json.dumps({
         "query": query,
@@ -111,7 +111,9 @@ def run_quick_tests(pipelines, max_questions=3, trigger="manual"):
         pipe_results = []
 
         for i, q in enumerate(questions):
-            resp = call_endpoint(endpoint, q["query"])
+            # Use longer timeout for orchestrator (sub-workflow chaining)
+            pipe_timeout = 90 if pipe == "orchestrator" else 60
+            resp = call_endpoint(endpoint, q["query"], timeout=pipe_timeout)
             expected = q.get("expected_contains", "")
             passed = False
 
