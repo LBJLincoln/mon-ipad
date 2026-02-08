@@ -12,6 +12,7 @@ Use --llm flag for LLM-based extraction (slower but higher quality).
 Usage:
     python db/populate/phase2_neo4j.py              # Heuristic (fast)
     python db/populate/phase2_neo4j.py --llm        # LLM extraction
+    python db/populate/phase2_neo4j.py --reset      # Wipe Phase 2 entities first, then re-extract
     python db/populate/phase2_neo4j.py --dry-run    # Parse only
     python db/populate/phase2_neo4j.py --limit 50   # First 50 questions
 """
@@ -431,9 +432,55 @@ Rules:
 # Main pipeline
 # ============================================================
 
+def reset_phase2_entities(dry_run=False):
+    """Delete all Phase 2 extracted entities and relationships from Neo4j."""
+    if dry_run:
+        print("  [DRY RUN] Would delete all nodes/rels where source='phase2_extraction'")
+        return True
+
+    print("  Deleting Phase 2 relationships...")
+    r1 = neo4j_execute_single(
+        "MATCH ()-[r]->() WHERE r.source = 'phase2_extraction' DELETE r",
+        timeout=120
+    )
+    if r1:
+        print("    Relationships deleted.")
+
+    print("  Deleting Phase 2 entity nodes...")
+    # Delete in batches to avoid timeout on large graphs
+    deleted = 0
+    for _ in range(50):  # max 50 batches of 1000
+        r2 = neo4j_execute_single(
+            "MATCH (n:Entity) WHERE n.source = 'phase2_extraction' "
+            "WITH n LIMIT 1000 DETACH DELETE n RETURN count(*) as deleted",
+            timeout=60
+        )
+        if r2 and r2.get("data"):
+            data = r2["data"]
+            # Parse count from response
+            batch_count = 0
+            if isinstance(data, dict) and "values" in data:
+                batch_count = data["values"][0] if data["values"] else 0
+            elif isinstance(data, list) and len(data) > 0:
+                row = data[0]
+                if isinstance(row, dict):
+                    batch_count = row.get("deleted", row.get("values", [0])[0] if row.get("values") else 0)
+                elif isinstance(row, list):
+                    batch_count = row[0] if row else 0
+            deleted += batch_count if isinstance(batch_count, int) else 0
+            if batch_count == 0:
+                break
+        else:
+            break
+
+    print(f"    Deleted ~{deleted} Phase 2 entity nodes.")
+    return True
+
+
 def main():
     use_llm = "--llm" in sys.argv
     dry_run = "--dry-run" in sys.argv
+    do_reset = "--reset" in sys.argv
     limit = None
     for i, arg in enumerate(sys.argv):
         if arg == "--limit" and i + 1 < len(sys.argv):
@@ -442,7 +489,7 @@ def main():
     print("=" * 60)
     print("PHASE 2 NEO4J ENTITY EXTRACTION")
     print(f"Time: {datetime.now().isoformat()}")
-    print(f"Mode: {'LLM' if use_llm else 'Heuristic'} | {'DRY RUN' if dry_run else 'LIVE'}")
+    print(f"Mode: {'LLM' if use_llm else 'Heuristic'} | {'DRY RUN' if dry_run else 'LIVE'}{' + RESET' if do_reset else ''}")
     if limit:
         print(f"Limit: {limit} questions")
     print("=" * 60)
@@ -450,6 +497,11 @@ def main():
     if not dry_run and not NEO4J_PASSWORD:
         print("ERROR: NEO4J_PASSWORD not set")
         sys.exit(1)
+
+    # Step 0: Reset if requested
+    if do_reset:
+        print("\n0. Resetting Phase 2 entities (--reset)...")
+        reset_phase2_entities(dry_run)
 
     # Step 1: Load questions
     print("\n1. Loading Phase 2 graph questions...")

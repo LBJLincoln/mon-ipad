@@ -10,6 +10,9 @@ Usage:
     # Run migration first, then populate
     python db/populate/phase2_supabase.py
 
+    # Wipe old data first, then repopulate from scratch
+    python db/populate/phase2_supabase.py --reset
+
     # Dry run (parse only, no DB writes)
     python db/populate/phase2_supabase.py --dry-run
 
@@ -151,6 +154,29 @@ def format_table_string(rows):
 # ============================================================
 # Database operations
 # ============================================================
+
+def reset_tables(dry_run=False):
+    """Drop and recreate all Phase 2 tables (clean slate)."""
+    if dry_run:
+        print("  [DRY RUN] Would TRUNCATE finqa_tables, tatqa_tables, convfinqa_tables")
+        return True
+
+    sql = """
+    TRUNCATE finqa_tables RESTART IDENTITY;
+    TRUNCATE tatqa_tables RESTART IDENTITY;
+    TRUNCATE convfinqa_tables RESTART IDENTITY;
+    """
+    result = subprocess.run(
+        ["psql", SUPABASE_CONN, "-c", sql],
+        capture_output=True, text=True, timeout=30
+    )
+    if result.returncode != 0:
+        # Tables may not exist yet — that's OK, migration will create them
+        print(f"  Reset note (OK if tables don't exist yet): {result.stderr[:200]}")
+    else:
+        print("  Truncated all Phase 2 tables.")
+    return True
+
 
 def run_migration(dry_run=False):
     """Run the Phase 2 migration SQL."""
@@ -300,6 +326,7 @@ def load_and_parse_questions(dataset_filter=None):
 
 def main():
     dry_run = "--dry-run" in sys.argv
+    do_reset = "--reset" in sys.argv
     dataset_filter = None
     for arg in sys.argv[1:]:
         if arg.startswith("--dataset"):
@@ -313,7 +340,7 @@ def main():
     print("=" * 60)
     print("PHASE 2 SUPABASE TABLE POPULATION")
     print(f"Time: {datetime.now().isoformat()}")
-    print(f"Mode: {'DRY RUN' if dry_run else 'LIVE'}")
+    print(f"Mode: {'DRY RUN' if dry_run else 'LIVE'}{' + RESET' if do_reset else ''}")
     if dataset_filter:
         print(f"Dataset filter: {dataset_filter}")
     print("=" * 60)
@@ -322,6 +349,11 @@ def main():
     if not dry_run and not os.environ.get("SUPABASE_PASSWORD"):
         print("ERROR: SUPABASE_PASSWORD not set")
         sys.exit(1)
+
+    # Step 0: Reset if requested
+    if do_reset:
+        print("\n0. Resetting Phase 2 tables (--reset)...")
+        reset_tables(dry_run)
 
     # Step 1: Run migration
     print("\n1. Running Phase 2 migration...")

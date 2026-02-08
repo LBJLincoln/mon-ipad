@@ -184,15 +184,22 @@ Additional Phase 1 exit criteria:
 ```bash
 cd ~/mon-ipad && git pull origin main
 
-# 1. Create Supabase tables + populate 450 rows
-python3 db/populate/phase2_supabase.py
+# 1. Create Supabase tables + populate 450 rows (--reset wipe old data first)
+python3 db/populate/phase2_supabase.py --reset
 
-# 2. Extract ~5000 entities into Neo4j (heuristic mode, fast)
-python3 db/populate/phase2_neo4j.py
+# 2. Extract ~5000 entities into Neo4j (--reset wipe old Phase 2 entities first)
+python3 db/populate/phase2_neo4j.py --reset
 
 # 2b. OR with LLM for higher quality (~5min, ~$0.05)
-python3 db/populate/phase2_neo4j.py --llm
+python3 db/populate/phase2_neo4j.py --reset --llm
 ```
+
+**Flags disponibles:**
+- `--reset` : supprime les données existantes avant de repeupler (RECOMMANDE)
+- `--dry-run` : parse sans écrire en base
+- `--dataset finqa` : un seul dataset (supabase uniquement)
+- `--limit 50` : premières N questions (neo4j uniquement)
+- `--llm` : extraction LLM au lieu d'heuristique (neo4j uniquement)
 
 ### Phase 3 — Scale (~9,500q)
 - Requires: Phase 2 gates + full `db/populate/push-datasets.py` execution
