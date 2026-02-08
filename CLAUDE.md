@@ -14,64 +14,76 @@ Phase 1 (200q) → Phase 2 (1,000q) → Phase 3 (~10Kq) → Phase 4 (~100Kq) →
 
 ---
 
-## Quick Start — Iteration Cycle Protocol
+## Quick Start — Two-Phase Iteration Cycle
 
-This is the rapid iteration loop used throughout Phase 1 (and future phases).
-Every session should follow this cycle:
+The iteration loop has two phases: **fast iteration** (10q, rapid workflow tuning)
+and **full evaluation** (200q, parallel). Workflows are validated with fast-iter
+before committing to a full eval.
 
-### Step 0: Read current state
-```bash
-# Check current metrics (always start here)
-cat docs/data.json | python -m json.tool | head -20
-cat STATUS.md
+### Phase A: Fast Iteration Loop (10q per pipeline, ~2-3 min)
+
+This is the inner loop for rapid workflow improvement. Run this repeatedly
+until results look good, THEN proceed to Phase B.
+
+```
+Step A0: Read current state      → cat STATUS.md
+Step A1: Sync workflows           → python workflows/sync.py
+Step A2: Smoke test               → python eval/quick-test.py --questions 5
+Step A3: Fast iteration test      → python eval/fast-iter.py --label "description"
+Step A4: Review per-pipeline results (auto-saved to logs/fast-iter/ and logs/pipeline-results/)
+Step A5: If bad → fix workflow in n8n → repeat from A1
+         If good → proceed to Phase B
+Step A6: Commit fast-iter results → git add docs/ logs/ && git commit -m "fast-iter: ..."
 ```
 
-### Step 1: Sync workflows from n8n
-```bash
-python workflows/sync.py
-```
-Pulls latest workflow JSON from n8n cloud, stores snapshots in `workflows/snapshots/`,
-computes diffs, updates `workflows/manifest.json`.
+**Fast-iter features:**
+- Runs all 4 pipelines in **parallel** (~4x speedup)
+- Selects a **strategic mix**: 50% previously-failing, 30% untested, 20% passing (regression check)
+- Saves per-pipeline JSON snapshots to `logs/pipeline-results/`
+- Auto-compares with previous fast-iter run (regressions/fixes)
+- Results feed the dashboard in real-time
 
-### Step 2: Smoke test (validate endpoints are alive)
+**Commands:**
 ```bash
-python eval/quick-test.py --questions 5
-```
-Tests 5 known-good questions per pipeline. If any fail → investigate before proceeding.
-Results written to `docs/data.json` under `quick_tests[]`.
-
-### Step 3: Analyze failures (decide what to fix)
-```bash
-python eval/analyzer.py
-```
-Reads `docs/data.json`, identifies regressions, error patterns, gap-to-target per pipeline.
-Outputs prioritized recommendations.
-
-### Step 4: Apply workflow patch in n8n
-Modify the workflow directly in n8n cloud UI, then:
-```bash
-python workflows/sync.py  # capture the change
-python eval/quick-test.py  # verify no regression
+python eval/fast-iter.py                                 # 10q per pipeline, all 4
+python eval/fast-iter.py --questions 5 --pipelines graph # 5q, graph only
+python eval/fast-iter.py --only-failing                  # Re-test only failures
+python eval/fast-iter.py --label "after fuzzy matching"  # Tag the run
 ```
 
-### Step 5: Run evaluation
-```bash
-python eval/run-eval.py \
-  --types standard,graph,quantitative,orchestrator \
-  --label "Description of what changed" \
-  --description "Detailed change notes" \
-  --reset  # re-test all questions (omit to skip already-tested)
-```
-Results feed `docs/data.json` live. Dashboard auto-refreshes.
+### Phase B: Full Evaluation (200q, parallel, ~15-20 min)
 
-### Step 6: Commit + push
-```bash
-git add docs/ workflows/ logs/
-git commit -m "eval: iteration N — description"
-git push
+Run this only AFTER fast-iter shows the workflow is ready. Uses **parallel execution**
+across all 4 pipelines simultaneously.
+
+```
+Step B1: Run parallel evaluation  → python eval/run-eval-parallel.py --reset --label "Iter N: description"
+Step B2: Analyze results          → python eval/analyzer.py
+Step B3: Commit + push            → git add docs/ workflows/ logs/ && git commit && git push
+Step B4: Back to Phase A for next improvement
 ```
 
-### Step 7: Repeat from Step 3
+**Parallel eval features:**
+- All 4 pipelines execute **concurrently** (ThreadPoolExecutor)
+- Thread-safe dashboard writes (live-writer.py uses locks)
+- Per-pipeline result snapshots saved to `logs/pipeline-results/`
+- ~4x speedup vs sequential `run-eval.py`
+
+**Commands:**
+```bash
+python eval/run-eval-parallel.py --reset --label "Iter 6: fuzzy matching"  # Full 200q
+python eval/run-eval-parallel.py --max 20 --types graph,orchestrator       # Subset
+python eval/run-eval-parallel.py --push                                     # Auto git push
+```
+
+### Legacy: Sequential Evaluation
+
+The original sequential `run-eval.py` is still available for debugging or
+when you want to isolate a single pipeline:
+
+```bash
+python eval/run-eval.py --types graph --max 10 --label "debug graph"
+```
 
 **Key principle**: Each iteration should target ONE specific improvement.
 Don't change multiple things at once — it makes it impossible to attribute improvements.
@@ -200,8 +212,10 @@ mon-ipad/
 │       └── hf-1000.json               # 1,000q: HuggingFace datasets
 │
 ├── eval/                              # Evaluation scripts
-│   ├── run-eval.py                    # Main eval runner (feeds dashboard live)
-│   ├── live-writer.py                 # Writes results to docs/data.json + logs/
+│   ├── run-eval.py                    # Sequential eval runner (legacy/debug)
+│   ├── run-eval-parallel.py           # PARALLEL eval runner (~4x faster)
+│   ├── fast-iter.py                   # Fast iteration: 10q/pipeline, parallel
+│   ├── live-writer.py                 # Writes results to docs/data.json + logs/ (thread-safe)
 │   ├── quick-test.py                  # Smoke tests (5q/pipeline)
 │   ├── analyzer.py                    # Post-eval analysis + recommendations
 │   └── iterate.sh                     # Run eval + auto-commit + push
@@ -261,7 +275,9 @@ mon-ipad/
 │   ├── README.md                      # Schema documentation
 │   ├── executions/                    # Per-session JSONL logs
 │   ├── errors/                        # Individual error trace files (102 files)
-│   └── db-snapshots/                  # Periodic DB state snapshots (15 files)
+│   ├── db-snapshots/                  # Periodic DB state snapshots (15 files)
+│   ├── pipeline-results/              # Per-pipeline JSON result snapshots
+│   └── fast-iter/                     # Fast iteration run snapshots
 │
 └── .github/workflows/
     ├── rag-eval.yml                   # Scheduled + manual eval runner
@@ -308,14 +324,25 @@ and auto-refreshes every 15 seconds.
 ## Data Flow
 
 ```
-n8n Workflow → HTTP Response → eval/run-eval.py
-                                   ↓
-                              eval/live-writer.py
-                                   ↓ (parallel writes)
-                   ┌───────────────┼──────────────┐
-                   ↓               ↓              ↓
-           docs/data.json   logs/executions/  logs/errors/
-           (dashboard)      (JSONL traces)    (error files)
+                          ┌─────────────────────────────────────┐
+                          │  eval/fast-iter.py (10q, parallel)  │  ← Fast iteration loop
+                          │  eval/run-eval-parallel.py (200q)   │  ← Full eval
+                          │  eval/run-eval.py (sequential)      │  ← Legacy/debug
+                          └──────────────┬──────────────────────┘
+                                         │ (4 parallel threads)
+             ┌───────────┬───────────────┼───────────────┬──────────────┐
+             ↓           ↓               ↓               ↓              ↓
+         Standard    Graph RAG     Quantitative     Orchestrator    (concurrent)
+         Pipeline    Pipeline       Pipeline         Pipeline
+             │           │               │               │
+             └───────────┴───────────────┴───────────────┘
+                                         │
+                              eval/live-writer.py (thread-safe, locked)
+                                         │
+                   ┌─────────────┬───────┼───────────┬──────────────┐
+                   ↓             ↓       ↓           ↓              ↓
+           docs/data.json  logs/exec  logs/errors  logs/pipeline-  logs/fast-iter/
+           (dashboard)     (JSONL)    (per-error)  results/        (run snapshots)
                    ↓
            docs/index.html (10-tab dashboard, auto-refresh 15s)
 ```
