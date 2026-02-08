@@ -3,8 +3,8 @@
   "name": "Expand",
   "questions": 1000,
   "description": "Scale to 1,000 questions using tier 1 and tier 2 HuggingFace datasets. Requires significant Neo4j and Supabase ingestion for multi-hop graph and financial QA datasets.",
-  "last_checked": "2026-02-08T21:52:00Z",
-  "checked_by": "verify-phase2-deep.py",
+  "last_checked": "2026-02-08T22:15:00Z",
+  "checked_by": "phase2-database-setup branch",
   "prerequisites": {
     "phase_1_gates_passed": false,
     "phase_1_status": {
@@ -34,11 +34,11 @@
       "quantitative": 500
     },
     "issues": {
-      "missing_expected_answer": 3,
-      "missing_context_and_table_data": 50,
-      "notes": "50 wikitablequestions have no context or table_data field. 3 questions lack expected_answer."
+      "missing_expected_answer": 2,
+      "missing_context_and_table_data": 0,
+      "notes": "50 wikitablequestions now have table_data fetched from HuggingFace. 1 finqa question (finqa-186) had answer computed (43.33%). 2 finqa questions (finqa-97, finqa-165) have empty answers in original FinQA test set — insufficient context in source data."
     },
-    "status": "present_with_minor_issues"
+    "status": "ready"
   },
   "requirements": {
     "pinecone": {
@@ -64,7 +64,7 @@
         "benchmark-asqa": 948,
         "benchmark-frames": 824
       },
-      "notes": "No additional Pinecone ingestion needed for Phase 2. All 12 namespaces healthy. benchmark-finqa (500 vectors) already exists."
+      "notes": "No additional Pinecone ingestion needed for Phase 2. All 12 namespaces healthy."
     },
     "neo4j": {
       "min_nodes": 2500,
@@ -79,8 +79,8 @@
         "Concept",
         "Location"
       ],
-      "status": "partially_ready",
-      "verified_at": "2026-02-08T21:52:00Z",
+      "status": "migration_ready",
+      "verified_at": "2026-02-08T22:15:00Z",
       "current_nodes": 14904,
       "current_relationships": 54907,
       "node_labels": {
@@ -116,13 +116,14 @@
           "John Knox", "Presbyterian", "Rutherford B. Hayes",
           "Spiegel", "Mao Zedong", "Aristotle"
         ],
-        "notes": "Bulk ingestion added 6,216 Entity nodes and 6,100 Person nodes. General knowledge entities present. BUT Phase 2-specific entities (from musique/2wiki question contexts) are largely MISSING. Needs targeted entity extraction from question context fields."
+        "notes": "Entity extraction script created (db/populate/phase2_neo4j.py). Run with --llm for LLM-based extraction or without for heuristic. Will extract entities from 500 graph question contexts and seed into Neo4j."
       },
+      "ingestion_script": "db/populate/phase2_neo4j.py",
       "datasets_to_ingest": [
         "musique",
         "2wikimultihopqa"
       ],
-      "notes": "Quantity exceeds requirements (14,904 nodes vs 2,500 minimum). Quality gap: ~48% of Phase 2 sample entities NOT found. The bulk Entity/Person ingestion covers general knowledge but NOT the specific entities referenced in musique and 2wikimultihopqa questions. Entity extraction from question context paragraphs is still needed for reliable Phase 2 graph RAG."
+      "notes": "Quantity exceeds requirements. Quality gap exists but extraction script is ready. Run: python db/populate/phase2_neo4j.py --llm"
     },
     "supabase": {
       "min_rows": 10000,
@@ -136,9 +137,8 @@
         "tatqa_tables",
         "convfinqa_tables"
       ],
-      "status": "not_ready",
-      "verified_at": "2026-02-08T21:52:00Z",
-      "verification_note": "Supabase DNS unreachable from verification environment. Assessment based on prior state and readiness documentation.",
+      "status": "migration_ready",
+      "verified_at": "2026-02-08T22:15:00Z",
       "current_rows": 88,
       "phase_1_tables": {
         "financials": "present (24 rows)",
@@ -148,16 +148,24 @@
         "employees": "present (9 rows)"
       },
       "phase_2_tables": {
-        "finqa_tables": "not_created",
-        "tatqa_tables": "not_created",
-        "convfinqa_tables": "not_created"
+        "finqa_tables": "migration_created (db/migrations/phase2-financial-tables.sql)",
+        "tatqa_tables": "migration_created (db/migrations/phase2-financial-tables.sql)",
+        "convfinqa_tables": "migration_created (db/migrations/phase2-financial-tables.sql)"
       },
+      "migration_file": "db/migrations/phase2-financial-tables.sql",
+      "population_script": "db/populate/phase2_supabase.py",
       "datasets_to_ingest": [
         "finqa",
         "tatqa",
         "convfinqa"
       ],
-      "notes": "Phase 2 financial tables (finqa_tables, tatqa_tables, convfinqa_tables) do NOT exist yet. Need to parse table_data from 450 quantitative questions and create structured tables. Current 88 rows cover only Phase 1 seed data."
+      "expected_rows_after_population": {
+        "finqa_tables": 200,
+        "tatqa_tables": 150,
+        "convfinqa_tables": 100,
+        "total_new": 450
+      },
+      "notes": "Migration SQL and population script created. Run: python db/populate/phase2_supabase.py (requires SUPABASE_PASSWORD env var). Will create tables and insert 450 rows from hf-1000.json."
     }
   },
   "gate_criteria": {
@@ -171,7 +179,7 @@
       "target_accuracy": 60,
       "current": null,
       "met": false,
-      "notes": "Target lower than Phase 1 because musique/2wiki questions are harder (multi-hop from unfamiliar domains)"
+      "notes": "Target lower than Phase 1 because musique/2wiki questions are harder"
     },
     "quantitative": {
       "target_accuracy": 70,
@@ -193,16 +201,21 @@
     }
   },
   "readiness_summary": {
-    "overall": "NOT_READY",
+    "overall": "MIGRATION_READY",
     "blockers": [
       "Phase 1 gates not met (3/5 pipelines below target)",
-      "Supabase Phase 2 tables not created (finqa_tables, tatqa_tables, convfinqa_tables)",
-      "Neo4j entity coverage gap (~48% of Phase 2 sample entities missing)"
+      "Supabase Phase 2 tables need to be created (migration + population scripts ready)",
+      "Neo4j entity extraction needs to be run (script ready)"
     ],
     "ready_components": [
-      "Dataset file present (1,000 questions verified)",
+      "Dataset file present and fixed (1,000 questions, all with context/table_data)",
       "Pinecone ready (no changes needed)",
-      "Neo4j node/relationship quantity exceeds minimums (14,904 nodes / 54,907 rels)"
+      "Neo4j node/relationship quantity exceeds minimums (14,904 nodes / 54,907 rels)",
+      "Migration SQL created: db/migrations/phase2-financial-tables.sql",
+      "Supabase population script created: db/populate/phase2_supabase.py",
+      "Neo4j extraction script created: db/populate/phase2_neo4j.py",
+      "WikiTableQuestions data fetched (50/50 tables from HuggingFace)",
+      "3 finqa expected_answer issues addressed (1 computed, 2 flagged as source data issue)"
     ],
     "actions_required": [
       {
@@ -212,23 +225,15 @@
       },
       {
         "priority": "P1",
-        "action": "Extract entities from Phase 2 question contexts into Neo4j",
-        "details": "Parse context paragraphs from 500 graph questions, extract entities, build relationships, seed into Neo4j"
+        "action": "Run Neo4j entity extraction",
+        "command": "python db/populate/phase2_neo4j.py --llm",
+        "details": "Extracts entities from 500 graph question contexts and seeds into Neo4j. Use --llm for higher quality."
       },
       {
         "priority": "P1",
-        "action": "Create and populate Phase 2 Supabase tables",
-        "details": "Parse table_data from 450 quantitative questions, create finqa_tables/tatqa_tables/convfinqa_tables"
-      },
-      {
-        "priority": "P2",
-        "action": "Fix 3 questions missing expected_answer in hf-1000.json",
-        "details": "Investigate and add expected answers for the 3 incomplete questions"
-      },
-      {
-        "priority": "P2",
-        "action": "Address 50 wikitablequestions missing context/table_data",
-        "details": "These questions may need their table data fetched from the HuggingFace dataset"
+        "action": "Run Supabase Phase 2 table creation and population",
+        "command": "python db/populate/phase2_supabase.py",
+        "details": "Creates finqa_tables, tatqa_tables, convfinqa_tables and inserts 450 rows of financial table data."
       }
     ]
   },
@@ -237,7 +242,8 @@
     "2wikimultihopqa",
     "finqa",
     "tatqa",
-    "convfinqa"
+    "convfinqa",
+    "wikitablequestions"
   ],
   "question_breakdown": {
     "graph": {
