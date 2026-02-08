@@ -1,10 +1,10 @@
 {
   "versions": {
     "standard": {
-      "version": 1,
-      "hash": "84d655f7dd6b4285",
-      "timestamp": "2026-02-08T10:13:53.876123Z",
-      "snapshot_file": "standard-2026-02-08T10-13-53-84d655f7dd6b4285.json",
+      "version": 2,
+      "hash": "d578dc6a4d9df340",
+      "timestamp": "2026-02-08T19:49:21.514623Z",
+      "snapshot_file": "standard-2026-02-08T19-49-20-d578dc6a4d9df340.json",
       "name": "WF5 Standard RAG V3.4",
       "webhook": "/webhook/rag-multi-index-v3",
       "summary": {
@@ -47,13 +47,30 @@
           "Execution Summary (standard)"
         ]
       },
-      "diff_from_previous": null
+      "diff_from_previous": {
+        "added_nodes": [],
+        "removed_nodes": [],
+        "modified_nodes": [
+          {
+            "node": "RRF Merge & Rank V3.4",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// ============================================\n// PATCH 07 - RRF Merge & Rank V3.4.2\n// FIX: Lecture robuste des 3 sources (HyDE, Original, BM25)\n// ============================================\n//\n//",
+                "new": "// ============================================\n// PATCH 07 - RRF Merge & Rank V3.4.2\n// FIX: Lecture robuste des 3 sources (HyDE, Original, BM25)\n// ============================================\n//\n//"
+              }
+            ]
+          }
+        ],
+        "has_changes": true,
+        "summary": "+0 -0 ~1 nodes"
+      }
     },
     "graph": {
-      "version": 1,
-      "hash": "0d8b93db1b973437",
-      "timestamp": "2026-02-08T10:13:54.464310Z",
-      "snapshot_file": "graph-2026-02-08T10-13-53-0d8b93db1b973437.json",
+      "version": 3,
+      "hash": "d7076662382217d6",
+      "timestamp": "2026-02-08T20:03:49.655706Z",
+      "snapshot_file": "graph-2026-02-08T20-03-49-d7076662382217d6.json",
       "name": "WF2 Graph RAG V3.3",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
       "summary": {
@@ -99,13 +116,40 @@
           "Entity Extraction Logger"
         ]
       },
-      "diff_from_previous": null
+      "diff_from_previous": {
+        "added_nodes": [],
+        "removed_nodes": [],
+        "modified_nodes": [
+          {
+            "node": "WF3: HyDE & Entity Extraction",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemini-2.5-flash-preview-05-20' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfe",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer"
+              }
+            ]
+          },
+          {
+            "node": "Response Formatter",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// Embedding Fallback: if vector search returned nothing,\n// use Neo4j entity data + community summaries as context\nlet contextSources = [];\ntry {\n  const vectorResults = $node['WF3: Cohere Reranker']",
+                "new": "// Embedding Fallback: if vector search returned nothing,\n// use Neo4j entity data + community summaries as context\nlet contextSources = [];\ntry {\n  const vectorResults = $node['WF3: Cohere Reranker']"
+              }
+            ]
+          }
+        ],
+        "has_changes": true,
+        "summary": "+0 -0 ~2 nodes"
+      }
     },
     "quantitative": {
-      "version": 1,
-      "hash": "be29c6eb1f039f56",
-      "timestamp": "2026-02-08T10:13:55.077892Z",
-      "snapshot_file": "quantitative-2026-02-08T10-13-53-be29c6eb1f039f56.json",
+      "version": 2,
+      "hash": "c9e99a05d63f0e47",
+      "timestamp": "2026-02-08T20:03:49.904401Z",
+      "snapshot_file": "quantitative-2026-02-08T20-03-49-c9e99a05d63f0e47.json",
       "name": "WF4 Quantitative V2.0",
       "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
       "summary": {
@@ -150,13 +194,50 @@
           "SQL Execution Logger"
         ]
       },
-      "diff_from_previous": null
+      "diff_from_previous": {
+        "added_nodes": [],
+        "removed_nodes": [],
+        "modified_nodes": [
+          {
+            "node": "Prepare SQL Repair Request",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// Prepare SQL Repair Request - Safe JSON Building\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepse",
+                "new": "// Prepare SQL Repair Request - Safe JSON Building\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-l"
+              }
+            ]
+          },
+          {
+            "node": "Prepare SQL Request",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepseek/deepseek-chat',\n  messages: [\n    {\n",
+                "new": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  me"
+              }
+            ]
+          },
+          {
+            "node": "Prepare Interpretation Request",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemini-2.5-flash-preview-",
+                "new": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free',\n  m"
+              }
+            ]
+          }
+        ],
+        "has_changes": true,
+        "summary": "+0 -0 ~3 nodes"
+      }
     },
     "orchestrator": {
-      "version": 1,
-      "hash": "fe3f79014b73ce12",
-      "timestamp": "2026-02-08T10:13:55.547990Z",
-      "snapshot_file": "orchestrator-2026-02-08T10-13-53-fe3f79014b73ce12.json",
+      "version": 3,
+      "hash": "c55e6aa96654944a",
+      "timestamp": "2026-02-08T20:03:50.279209Z",
+      "snapshot_file": "orchestrator-2026-02-08T20-03-49-c55e6aa96654944a.json",
       "name": "V10.1 Orchestrator",
       "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
       "summary": {
@@ -248,7 +329,54 @@
           "Execution Summary (orchestrator)"
         ]
       },
-      "diff_from_previous": null
+      "diff_from_previous": {
+        "added_nodes": [],
+        "removed_nodes": [],
+        "modified_nodes": [
+          {
+            "node": "🎯 LLM 2: Task Planner",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_PLANNER_MODEL || 'anthropic/claude-sonnet-4-5-20250929' }}\",\n  \"temperature\": 0.2,\n  \"max_tokens\": 2000,\n  \"response_format\": {\"type\": \"json_object\"},\n  \"messages\": [\n    {",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_PLANNER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"temperature\": 0.2,\n  \"max_tokens\": 2000,\n  \"response_format\": {\"type\": \"json_object\"},\n  \"messages\": [\n   "
+              }
+            ]
+          },
+          {
+            "node": "HTTP Request",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemini-2.5-flash' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es l'INTENT ANALYZER d'un système RAG multi-moteurs sophisti",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es l'INTENT ANALYZER d'un système RAG multi-moteurs sophi"
+              }
+            ]
+          },
+          {
+            "node": "🎯 LLM 3: Agent Harness (Opus 4.5)",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={{ {\n  \"model\": $vars.LLM_AGENT_MODEL || 'anthropic/claude-3-5-sonnet-20241022',\n  \"max_tokens\": 2000,\n  \"temperature\": 0.3,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are th",
+                "new": "={{ {\n  \"model\": $vars.LLM_AGENT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  \"max_tokens\": 2000,\n  \"temperature\": 0.3,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are "
+              }
+            ]
+          },
+          {
+            "node": "🧠 LLM 1: Intent Analyzer",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_INTENT_MODEL || 'deepseek/deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated multi-engine RA",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_INTENT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated"
+              }
+            ]
+          }
+        ],
+        "has_changes": true,
+        "summary": "+0 -0 ~4 nodes"
+      }
     }
   },
   "history": [
@@ -283,6 +411,54 @@
       "hash": "fe3f79014b73ce12",
       "diff_summary": "initial",
       "snapshot_file": "orchestrator-2026-02-08T10-13-53-fe3f79014b73ce12.json"
+    },
+    {
+      "timestamp": "2026-02-08T19:49:21.514634Z",
+      "pipeline": "standard",
+      "version": 2,
+      "hash": "d578dc6a4d9df340",
+      "diff_summary": "+0 -0 ~1 nodes",
+      "snapshot_file": "standard-2026-02-08T19-49-20-d578dc6a4d9df340.json"
+    },
+    {
+      "timestamp": "2026-02-08T19:49:22.116594Z",
+      "pipeline": "graph",
+      "version": 2,
+      "hash": "45d303db74b3ad80",
+      "diff_summary": "+0 -0 ~3 nodes",
+      "snapshot_file": "graph-2026-02-08T19-49-20-45d303db74b3ad80.json"
+    },
+    {
+      "timestamp": "2026-02-08T19:49:23.483108Z",
+      "pipeline": "orchestrator",
+      "version": 2,
+      "hash": "23998b9e1fa8a7e2",
+      "diff_summary": "+0 -0 ~2 nodes",
+      "snapshot_file": "orchestrator-2026-02-08T19-49-20-23998b9e1fa8a7e2.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:03:49.655716Z",
+      "pipeline": "graph",
+      "version": 3,
+      "hash": "d7076662382217d6",
+      "diff_summary": "+0 -0 ~2 nodes",
+      "snapshot_file": "graph-2026-02-08T20-03-49-d7076662382217d6.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:03:49.904409Z",
+      "pipeline": "quantitative",
+      "version": 2,
+      "hash": "c9e99a05d63f0e47",
+      "diff_summary": "+0 -0 ~3 nodes",
+      "snapshot_file": "quantitative-2026-02-08T20-03-49-c9e99a05d63f0e47.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:03:50.279220Z",
+      "pipeline": "orchestrator",
+      "version": 3,
+      "hash": "c55e6aa96654944a",
+      "diff_summary": "+0 -0 ~4 nodes",
+      "snapshot_file": "orchestrator-2026-02-08T20-03-49-c55e6aa96654944a.json"
     }
   ]
 }
