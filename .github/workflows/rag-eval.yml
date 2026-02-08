@@ -1,0 +1,85 @@
+name: RAG Evaluation Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      types:
+        description: 'Pipeline types to test (comma-separated)'
+        default: 'standard,graph,quantitative,orchestrator'
+        type: string
+      max_per_type:
+        description: 'Max questions per pipeline (empty = all)'
+        default: ''
+        type: string
+      reset:
+        description: 'Reset dedup (re-test all questions)'
+        default: false
+        type: boolean
+  schedule:
+    # Run daily at 06:00 UTC
+    - cron: '0 6 * * *'
+
+env:
+  SUPABASE_PASSWORD: ${{ secrets.SUPABASE_PASSWORD }}
+  PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+  PINECONE_HOST: ${{ secrets.PINECONE_HOST }}
+  NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
+  OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+  N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+  N8N_HOST: https://amoret.app.n8n.cloud
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run RAG Evaluation
+        run: |
+          cd benchmark-workflows
+          ARGS="--types ${{ inputs.types || 'standard,graph,quantitative,orchestrator' }}"
+          if [ -n "${{ inputs.max_per_type }}" ]; then
+            ARGS="$ARGS --max ${{ inputs.max_per_type }}"
+          fi
+          if [ "${{ inputs.reset }}" = "true" ]; then
+            ARGS="$ARGS --reset"
+          fi
+          python run-comprehensive-eval.py $ARGS
+
+      - name: Commit and push results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data.json docs/tested-questions.json logs/
+          git diff --staged --quiet || (git commit -m "eval: automated pipeline evaluation results" && git push)
+
+      - name: Generate summary
+        if: always()
+        run: |
+          python3 -c "
+          import json
+          with open('docs/data.json') as f:
+              data = json.load(f)
+          print('## RAG Evaluation Results')
+          print()
+          print('| Pipeline | Tested | Correct | Accuracy | Errors | Avg Latency |')
+          print('|----------|--------|---------|----------|--------|-------------|')
+          for name, p in data['pipelines'].items():
+              tested = p.get('tested', 0)
+              correct = p.get('correct', 0)
+              acc = f\"{correct/tested*100:.1f}%\" if tested > 0 else 'N/A'
+              print(f\"| {name} | {tested} | {correct} | {acc} | {p.get('errors',0)} | {p.get('avg_latency_ms',0)}ms |\")
+          total_tested = sum(p.get('tested',0) for p in data['pipelines'].values())
+          total_correct = sum(p.get('correct',0) for p in data['pipelines'].values())
+          overall = f\"{total_correct/total_tested*100:.1f}%\" if total_tested > 0 else 'N/A'
+          print(f\"| **Overall** | **{total_tested}** | **{total_correct}** | **{overall}** | | |')
+          " >> $GITHUB_STEP_SUMMARY
