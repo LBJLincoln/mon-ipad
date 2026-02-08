@@ -17,6 +17,7 @@ import os
 import sys
 import time
 import copy
+import uuid
 import urllib.request
 import urllib.error
 
@@ -57,14 +58,27 @@ def download_workflow(wf_id):
     return n8n_api("GET", f"/api/v1/workflows/{wf_id}")
 
 
+def sanitize_settings(settings):
+    """Remove settings fields that cause n8n API 400 errors."""
+    if not settings:
+        return {"executionOrder": "v1"}
+    invalid_keys = {"availableInMCP", "timeSavedMode"}
+    return {k: v for k, v in settings.items() if k not in invalid_keys}
+
+
 def update_workflow(wf_id, wf_data):
-    clean = {k: v for k, v in wf_data.items()
-             if k in ("nodes", "connections", "settings", "name")}
+    # n8n API requires 'name' and 'settings' fields in PUT body
+    clean = {
+        "name": wf_data.get("name", f"Workflow {wf_id}"),
+        "nodes": wf_data.get("nodes", []),
+        "connections": wf_data.get("connections", {}),
+        "settings": sanitize_settings(wf_data.get("settings")),
+    }
     return n8n_api("PUT", f"/api/v1/workflows/{wf_id}", clean)
 
 
 def activate_workflow(wf_id):
-    return n8n_api("PATCH", f"/api/v1/workflows/{wf_id}", {"active": True})
+    return n8n_api("POST", f"/api/v1/workflows/{wf_id}/activate", {})
 
 
 def find_node(wf, name):
@@ -127,7 +141,7 @@ const logEntry = {{
 
 return [{{ json: logEntry }}];"""
         },
-        "id": f"github-logger-{pipeline_name}",
+        "id": str(uuid.uuid4()),
         "name": f"GitHub Error Logger ({pipeline_name})",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -162,7 +176,7 @@ const summary = {{
 
 return [{{ json: summary }}];"""
         },
-        "id": f"exec-summary-{pipeline_name}",
+        "id": str(uuid.uuid4()),
         "name": f"Execution Summary ({pipeline_name})",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -270,7 +284,7 @@ const log = {
 // Pass through original data + log
 return [{ json: { ...input, _entity_log: log } }];"""
         },
-        "id": "entity-extraction-logger",
+        "id": str(uuid.uuid4()),
         "name": "Entity Extraction Logger",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -355,7 +369,7 @@ const log = {
 
 return [{ json: { ...input, _sql_log: log } }];"""
         },
-        "id": "sql-execution-logger",
+        "id": str(uuid.uuid4()),
         "name": "SQL Execution Logger",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
