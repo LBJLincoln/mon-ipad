@@ -24,6 +24,35 @@ Phase 1 (200q) → Phase 2 (1,000q) → Phase 3 (~10Kq) → Phase 4 (~100Kq) →
 | **Orchestrator** | 48.0% (24/50) | 10.9s | 23.3s | 16 | 0.10 | ≥70%, <15s |
 | **Overall** | **64.0%** | **5.8s** | — | **24** | **0.11** | **≥75%** |
 
+## Iteration Results (200q, Feb 8 2026 — 4 iterations)
+
+| Pipeline | Baseline | After Improvements | Delta | Errors | Status |
+|---|---|---|---|---|---|
+| **Standard** | 78.0% | **82.6%** | +4.6pp | 0 | topK increased, good recall |
+| **Graph** | 50.0% | **52.0%** (13/25) | +2.0pp | 1 | Fixed JS syntax, fuzzy matching deployed |
+| **Quantitative** | 80.0% | **80.0%** | +0.0pp | 14 | Stable, SQL edge cases remain |
+| **Orchestrator** | 48.0% | **49.6%** | +1.6pp | 37 | Timeouts + credits exhausted |
+| **Overall** | **64.0%** | **67.7%** | **+3.7pp** | — | — |
+
+### CI/CD & Monitoring Deployed
+- `.github/workflows/rag-eval.yml` — Scheduled + manual eval runner
+- `.github/workflows/n8n-error-log.yml` — Receives n8n errors via repository_dispatch
+- `.github/workflows/dashboard-deploy.yml` — Auto-deploy dashboard to GitHub Pages
+- `deploy-n8n-logging-patches.py` — GitHub Error Logger + Execution Summary Logger in all 4 workflows
+- `iterate-eval.sh` — Run eval + auto-commit + push per iteration
+
+### Iteration Log
+1. **Iter 1** (40q): Standard 90%, Graph 40%, Quant 100%, Orch 60%. Identified Graph entity extraction + Orch timeout as critical.
+2. **Iter 2** (60q): Fixed Graph RAG Response Formatter JS syntax error (single quotes inside single-quoted string). Deployed "never say insufficient context" directive. Orchestrator Intent Analyzer timeout reduced.
+3. **Iter 3** (100q, 200 total): All 200 base questions tested. Graph RAG improved to 60% on retested questions. Standard at 100% for new questions.
+4. **Iter 4** (18q retested): OpenRouter API credits exhausted — all remaining orchestrator retests returned empty/error. Not a workflow issue.
+
+### Remaining Blockers
+1. **OpenRouter credits**: Need to refill to continue orchestrator + graph testing
+2. **Orchestrator timeouts**: Even with reduced LLM timeouts, sub-workflow chaining exceeds 60s for complex multi-pipeline questions
+3. **Graph RAG entity extraction**: Fuzzy matching deployed but many entities still not found (Ada Lovelace, Mozart, Roosevelt, Lincoln not in Neo4j)
+4. **Quantitative edge cases**: Employee count queries return 0, product department queries fail (data seeding issues)
+
 ### Root Cause Analysis
 
 #### Orchestrator (48% — CRITICAL)
