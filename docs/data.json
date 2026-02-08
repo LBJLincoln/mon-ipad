@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "2.0",
-    "generated_at": "2026-02-08T20:03:50.286541Z",
+    "generated_at": "2026-02-08T20:19:31.863730Z",
     "status": "idle",
     "project": "Multi-RAG Orchestrator SOTA 2026",
     "phase": "Phase 1 — Baseline (200q)",
@@ -14300,6 +14300,19 @@
       ],
       "before_metrics": null,
       "after_metrics": null
+    },
+    {
+      "timestamp": "2026-02-08T20:19:31.863718Z",
+      "description": "graph workflow updated (v4, hash d6ab9804916d48c4) — +0 -0 ~5 nodes",
+      "change_type": "workflow-sync",
+      "files_changed": [
+        "graph-2026-02-08T20-19-30-d6ab9804916d48c4.json"
+      ],
+      "affected_pipelines": [
+        "graph"
+      ],
+      "before_metrics": null,
+      "after_metrics": null
     }
   ],
   "databases": {
@@ -17756,186 +17769,6 @@
   ],
   "quick_tests": [
     {
-      "timestamp": "2026-02-08T10:15:32.409936Z",
-      "pipeline": "standard",
-      "query": "What year did World War II end?",
-      "status": "pass",
-      "latency_ms": 16448,
-      "response_preview": "La Seconde Guerre mondiale s'est terminée en 1945 [1].\n\nPlus précisément, la guerre en Europe s'est achevée le 8 mai 1945 avec la capitulation sans condition de l'Allemagne nazie, signée le 7 mai à Re",
-      "trigger": "post-sync",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T10:15:52.038894Z",
-      "pipeline": "graph",
-      "query": "What did Marie Curie win Nobel Prizes for?",
-      "status": "pass",
-      "latency_ms": 19597,
-      "response_preview": "Marie Curie won Nobel Prizes in Physics (1903) for her work on radioactivity and in Chemistry (1911) for discovering radium and polonium.",
-      "trigger": "post-sync",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T10:16:06.519918Z",
-      "pipeline": "graph",
-      "query": "What did Alexander Fleming discover?",
-      "status": "pass",
-      "latency_ms": 14453,
-      "response_preview": "Alexander Fleming discovered penicillin, the world's first antibiotic, in 1928 when he noticed that a mold called Penicillium notatum had contaminated a bacterial culture and killed the bacteria aroun",
-      "trigger": "post-sync",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T10:16:12.706045Z",
-      "pipeline": "graph",
-      "query": "Who founded Microsoft?",
-      "status": "pass",
-      "latency_ms": 6154,
-      "response_preview": "Microsoft was founded by Bill Gates and Paul Allen in 1975.",
-      "trigger": "post-sync",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T10:16:24.110806Z",
-      "pipeline": "graph",
-      "query": "What is the WHO?",
-      "status": "pass",
-      "latency_ms": 11367,
-      "response_preview": "The World Health Organization (WHO) is a specialized agency of the United Nations responsible for international public health.",
-      "trigger": "post-sync",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T10:16:42.438730Z",
-      "pipeline": "graph",
-      "query": "What disease is caused by mosquitoes?",
-      "status": "pass",
-      "latency_ms": 18290,
-      "response_preview": "Mosquitoes can transmit several diseases including malaria, dengue fever, Zika virus, West Nile virus, and yellow fever.",
-      "trigger": "post-sync",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T10:16:52.082155Z",
-      "pipeline": "quantitative",
-      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
-      "status": "fail",
-      "latency_ms": 9609,
-      "response_preview": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
-      "trigger": "post-sync",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T10:16:58.009636Z",
-      "pipeline": "quantitative",
-      "query": "How many employees does GreenEnergy Corp have?",
-      "status": "pass",
-      "latency_ms": 5901,
-      "response_preview": "GreenEnergy Corp has 50 employees.",
-      "trigger": "post-sync",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T10:17:03.022142Z",
-      "pipeline": "quantitative",
-      "query": "What is the total number of products across all companies?",
-      "status": "pass",
-      "latency_ms": 4985,
-      "response_preview": "The total number of products across all companies is 18.",
-      "trigger": "post-sync",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T10:17:12.519215Z",
-      "pipeline": "quantitative",
-      "query": "What was HealthPlus Labs' net income in 2022?",
-      "status": "pass",
-      "latency_ms": 9464,
-      "response_preview": "HealthPlus Labs' net income in 2022 was $88,638,000.",
-      "trigger": "post-sync",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T10:17:18.871333Z",
-      "pipeline": "quantitative",
-      "query": "What was TechVision's revenue in Q1 2023?",
-      "status": "pass",
-      "latency_ms": 6325,
-      "response_preview": "TechVision's revenue in Q1 2023 was $1,552,350,000.",
-      "trigger": "post-sync",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T10:17:36.464766Z",
-      "pipeline": "orchestrator",
-      "query": "What is the capital of Japan?",
-      "status": "error",
-      "latency_ms": 17563,
-      "response_preview": "",
-      "trigger": "post-sync",
-      "error": "Empty response"
-    },
-    {
-      "timestamp": "2026-02-08T10:18:05.827773Z",
-      "pipeline": "orchestrator",
-      "query": "What was TechVision Inc's total revenue in 2023?",
-      "status": "pass",
-      "latency_ms": 29333,
-      "response_preview": "TechVision Inc's total revenue for 2023 was $13,490,000,000.00.",
-      "trigger": "post-sync",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T10:18:27.102860Z",
-      "pipeline": "orchestrator",
-      "query": "What did Marie Curie win Nobel Prizes for?",
-      "status": "error",
-      "latency_ms": 21248,
-      "response_preview": "",
-      "trigger": "post-sync",
-      "error": "Empty response"
-    },
-    {
-      "timestamp": "2026-02-08T15:49:43.891506Z",
-      "pipeline": "standard",
-      "query": "What is the capital of Japan?",
-      "status": "pass",
-      "latency_ms": 24096,
-      "response_preview": "La capitale du Japon est Tokyo [1]. Tokyo est située sur la côte est de l'île principale de Honshu. C'est la plus grande zone métropolitaine du monde avec plus de 37 millions d'habitants dans son aggl",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T15:50:06.949230Z",
-      "pipeline": "standard",
-      "query": "Where is Normandy located?",
-      "status": "pass",
-      "latency_ms": 23029,
-      "response_preview": "Normandy is a region located in the northwestern part of France, along the English Channel. It is bordered by Brittany to the west, the Île-de-France region to the east, and the Hauts-de-France region",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T15:50:31.067529Z",
-      "pipeline": "standard",
-      "query": "Who painted the Mona Lisa?",
-      "status": "pass",
-      "latency_ms": 24090,
-      "response_preview": "La Mona Lisa, également connue sous le nom de La Joconde, a été peinte par l'artiste italien Léonard de Vinci [1]. Cette œuvre maîtresse a été réalisée entre 1503 et 1519 et est actuellement exposée a",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-08T15:50:56.079832Z",
-      "pipeline": "standard",
-      "query": "What is the largest ocean?",
-      "status": "pass",
-      "latency_ms": 24985,
-      "response_preview": "The largest ocean on Earth is the Pacific Ocean [1]. It covers an area of approximately 165.25 million square kilometers (63.8 million square miles), which is about one-third of the Earth's total surf",
-      "trigger": "manual",
-      "error": null
-    },
-    {
       "timestamp": "2026-02-08T15:51:15.759744Z",
       "pipeline": "standard",
       "query": "What year did World War II end?",
@@ -18254,6 +18087,186 @@
       "response_preview": "",
       "trigger": "manual",
       "error": "Empty response"
+    },
+    {
+      "timestamp": "2026-02-08T20:04:47.118654Z",
+      "pipeline": "standard",
+      "query": "What is the capital of Japan?",
+      "status": "pass",
+      "latency_ms": 23073,
+      "response_preview": "La capitale du Japon est Tokyo [1]. Tokyo est située sur l'île de Honshu et est la plus grande zone métropolitaine du monde avec plus de 37 millions d'habitants dans son agglomération [2]. Elle est le",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:05:12.672756Z",
+      "pipeline": "standard",
+      "query": "Where is Normandy located?",
+      "status": "pass",
+      "latency_ms": 25519,
+      "response_preview": "Normandy is located in the northwestern part of France, along the English Channel. It is a region that comprises five departments: Calvados, Eure, Manche, Orne, and Seine-Maritime. Normandy is bordere",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:05:44.141305Z",
+      "pipeline": "standard",
+      "query": "Who painted the Mona Lisa?",
+      "status": "pass",
+      "latency_ms": 31440,
+      "response_preview": "La Mona Lisa, également connue sous le nom de La Joconde, est un portrait peint par l'artiste italien Léonard de Vinci [1]. Cette œuvre a été réalisée entre 1503 et 1506, bien que Léonard ait continué",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:06:07.873921Z",
+      "pipeline": "standard",
+      "query": "What is the largest ocean?",
+      "status": "pass",
+      "latency_ms": 23704,
+      "response_preview": "The largest ocean on Earth is the Pacific Ocean. It covers an area of approximately 165.25 million square kilometers (63.8 million square miles), which is about one-third of the Earth's total surface ",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:06:22.487619Z",
+      "pipeline": "standard",
+      "query": "What year did World War II end?",
+      "status": "pass",
+      "latency_ms": 14585,
+      "response_preview": "World War II ended in 1945. Specifically, the war in Europe concluded on May 8, 1945, when Germany surrendered unconditionally to the Allied forces. This date is known as Victory in Europe Day (VE Day",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:06:45.302401Z",
+      "pipeline": "graph",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "fail",
+      "latency_ms": 22786,
+      "response_preview": "No answer generated",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:06:58.968096Z",
+      "pipeline": "graph",
+      "query": "What did Alexander Fleming discover?",
+      "status": "fail",
+      "latency_ms": 13637,
+      "response_preview": "No answer generated",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:07:11.361145Z",
+      "pipeline": "graph",
+      "query": "Who founded Microsoft?",
+      "status": "fail",
+      "latency_ms": 12364,
+      "response_preview": "No answer generated",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:07:26.810314Z",
+      "pipeline": "graph",
+      "query": "What is the WHO?",
+      "status": "fail",
+      "latency_ms": 15418,
+      "response_preview": "No answer generated",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:07:51.601959Z",
+      "pipeline": "graph",
+      "query": "What disease is caused by mosquitoes?",
+      "status": "fail",
+      "latency_ms": 24762,
+      "response_preview": "No answer generated",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:08:07.108767Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "status": "fail",
+      "latency_ms": 15476,
+      "response_preview": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:08:16.436803Z",
+      "pipeline": "quantitative",
+      "query": "How many employees does GreenEnergy Corp have?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "manual",
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    {
+      "timestamp": "2026-02-08T20:08:25.830888Z",
+      "pipeline": "quantitative",
+      "query": "What is the total number of products across all companies?",
+      "status": "pass",
+      "latency_ms": 9364,
+      "response_preview": "The total number of products across all companies is 18.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:08:38.263638Z",
+      "pipeline": "quantitative",
+      "query": "What was HealthPlus Labs' net income in 2022?",
+      "status": "pass",
+      "latency_ms": 12404,
+      "response_preview": "HealthPlus Labs' net income in 2022 was $88,638,000.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:08:49.031567Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision's revenue in Q1 2023?",
+      "status": "pass",
+      "latency_ms": 10739,
+      "response_preview": "TechVision's revenue in Q1 2023 was $1,552,350,000.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:09:22.437270Z",
+      "pipeline": "orchestrator",
+      "query": "What is the capital of Japan?",
+      "status": "error",
+      "latency_ms": 33374,
+      "response_preview": "",
+      "trigger": "manual",
+      "error": "Empty response"
+    },
+    {
+      "timestamp": "2026-02-08T20:09:48.274537Z",
+      "pipeline": "orchestrator",
+      "query": "What was TechVision Inc's total revenue in 2023?",
+      "status": "fail",
+      "latency_ms": 25805,
+      "response_preview": "TechVision Inc's total revenue for the year 2023 was $6,745,000,000.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T20:10:18.785877Z",
+      "pipeline": "orchestrator",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "error",
+      "latency_ms": 30482,
+      "response_preview": "",
+      "trigger": "manual",
+      "error": "Empty response"
     }
   ],
   "history": [
@@ -18297,25 +18310,55 @@
       }
     },
     "graph": {
-      "version": 3,
-      "hash": "d7076662382217d6",
-      "timestamp": "2026-02-08T20:03:49.655706Z",
+      "version": 4,
+      "hash": "d6ab9804916d48c4",
+      "timestamp": "2026-02-08T20:19:31.853812Z",
       "name": "WF2 Graph RAG V3.3",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
       "total_nodes": 26,
       "models_used": [],
-      "snapshot_file": "graph-2026-02-08T20-03-49-d7076662382217d6.json",
+      "snapshot_file": "graph-2026-02-08T20-19-30-d6ab9804916d48c4.json",
       "diff_from_previous": {
         "added_nodes": [],
         "removed_nodes": [],
         "modified_nodes": [
           {
-            "node": "WF3: HyDE & Entity Extraction",
+            "node": "Merge Graph + Vector + Community (Deep)",
             "changes": [
               {
-                "param": "jsonBody",
-                "old": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemini-2.5-flash-preview-05-20' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfe",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer"
+                "param": "jsCode",
+                "old": "// Enhanced Merge for Deep Traversal Results - CONFIRMÉ\n// Handles paths up to 4 hops with intelligent deduplication\n\n// === COLLECT ALL SOURCES ===\nlet graphResults = [];\nlet vectorResults = [];\nlet ",
+                "new": "// Enhanced Merge for Deep Traversal Results - CONFIRMÉ\n// Handles paths up to 4 hops with intelligent deduplication\n\n// === COLLECT ALL SOURCES ===\nlet graphResults = [];\nlet vectorResults = [];\nlet "
+              }
+            ]
+          },
+          {
+            "node": "Answer Formatter",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// Extract LLM answer and format final response\nconst answer = $json.choices?.[0]?.message?.content || 'No answer generated';\nconst contextData = $node['Response Formatter'].json;\n\nreturn [{ json: {\n ",
+                "new": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract parti"
+              }
+            ]
+          },
+          {
+            "node": "Validate Neo4j Results",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "const neo4jData = $json;\n\n// Check if we have valid results\nlet hasResults = false;\nlet errorMessage = null;\n\nif (neo4jData.errors && neo4jData.errors.length > 0) {\n  errorMessage = neo4jData.errors[0",
+                "new": "// Validate Neo4j Results - handles both REST and query/v2 API formats\nconst neo4jData = $json;\n\nlet hasResults = false;\nlet errorMessage = null;\n\n// Check for errors\nif (neo4jData.errors && neo4jData"
+              }
+            ]
+          },
+          {
+            "node": "LLM Answer Synthesis",
+            "changes": [
+              {
+                "param": "options",
+                "old": "{'timeout': 25000, 'retry': {'maxTries': 3, 'waitBetweenTries': 2000}}",
+                "new": "{'timeout': 30000, 'retry': {'maxTries': 3, 'waitBetweenTries': 3000}}"
               }
             ]
           },
@@ -18325,13 +18368,13 @@
               {
                 "param": "jsCode",
                 "old": "// Embedding Fallback: if vector search returned nothing,\n// use Neo4j entity data + community summaries as context\nlet contextSources = [];\ntry {\n  const vectorResults = $node['WF3: Cohere Reranker']",
-                "new": "// Embedding Fallback: if vector search returned nothing,\n// use Neo4j entity data + community summaries as context\nlet contextSources = [];\ntry {\n  const vectorResults = $node['WF3: Cohere Reranker']"
+                "new": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\nt"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~2 nodes"
+        "summary": "+0 -0 ~5 nodes"
       }
     },
     "quantitative": {
@@ -18521,6 +18564,14 @@
       "hash": "c55e6aa96654944a",
       "diff_summary": "+0 -0 ~4 nodes",
       "snapshot_file": "orchestrator-2026-02-08T20-03-49-c55e6aa96654944a.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:19:31.853822Z",
+      "pipeline": "graph",
+      "version": 4,
+      "hash": "d6ab9804916d48c4",
+      "diff_summary": "+0 -0 ~5 nodes",
+      "snapshot_file": "graph-2026-02-08T20-19-30-d6ab9804916d48c4.json"
     }
   ]
 }

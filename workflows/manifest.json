@@ -67,10 +67,10 @@
       }
     },
     "graph": {
-      "version": 3,
-      "hash": "d7076662382217d6",
-      "timestamp": "2026-02-08T20:03:49.655706Z",
-      "snapshot_file": "graph-2026-02-08T20-03-49-d7076662382217d6.json",
+      "version": 4,
+      "hash": "d6ab9804916d48c4",
+      "timestamp": "2026-02-08T20:19:31.853812Z",
+      "snapshot_file": "graph-2026-02-08T20-19-30-d6ab9804916d48c4.json",
       "name": "WF2 Graph RAG V3.3",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
       "summary": {
@@ -121,12 +121,42 @@
         "removed_nodes": [],
         "modified_nodes": [
           {
-            "node": "WF3: HyDE & Entity Extraction",
+            "node": "Merge Graph + Vector + Community (Deep)",
             "changes": [
               {
-                "param": "jsonBody",
-                "old": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemini-2.5-flash-preview-05-20' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfe",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer"
+                "param": "jsCode",
+                "old": "// Enhanced Merge for Deep Traversal Results - CONFIRMÉ\n// Handles paths up to 4 hops with intelligent deduplication\n\n// === COLLECT ALL SOURCES ===\nlet graphResults = [];\nlet vectorResults = [];\nlet ",
+                "new": "// Enhanced Merge for Deep Traversal Results - CONFIRMÉ\n// Handles paths up to 4 hops with intelligent deduplication\n\n// === COLLECT ALL SOURCES ===\nlet graphResults = [];\nlet vectorResults = [];\nlet "
+              }
+            ]
+          },
+          {
+            "node": "Answer Formatter",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// Extract LLM answer and format final response\nconst answer = $json.choices?.[0]?.message?.content || 'No answer generated';\nconst contextData = $node['Response Formatter'].json;\n\nreturn [{ json: {\n ",
+                "new": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract parti"
+              }
+            ]
+          },
+          {
+            "node": "Validate Neo4j Results",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "const neo4jData = $json;\n\n// Check if we have valid results\nlet hasResults = false;\nlet errorMessage = null;\n\nif (neo4jData.errors && neo4jData.errors.length > 0) {\n  errorMessage = neo4jData.errors[0",
+                "new": "// Validate Neo4j Results - handles both REST and query/v2 API formats\nconst neo4jData = $json;\n\nlet hasResults = false;\nlet errorMessage = null;\n\n// Check for errors\nif (neo4jData.errors && neo4jData"
+              }
+            ]
+          },
+          {
+            "node": "LLM Answer Synthesis",
+            "changes": [
+              {
+                "param": "options",
+                "old": "{'timeout': 25000, 'retry': {'maxTries': 3, 'waitBetweenTries': 2000}}",
+                "new": "{'timeout': 30000, 'retry': {'maxTries': 3, 'waitBetweenTries': 3000}}"
               }
             ]
           },
@@ -136,13 +166,13 @@
               {
                 "param": "jsCode",
                 "old": "// Embedding Fallback: if vector search returned nothing,\n// use Neo4j entity data + community summaries as context\nlet contextSources = [];\ntry {\n  const vectorResults = $node['WF3: Cohere Reranker']",
-                "new": "// Embedding Fallback: if vector search returned nothing,\n// use Neo4j entity data + community summaries as context\nlet contextSources = [];\ntry {\n  const vectorResults = $node['WF3: Cohere Reranker']"
+                "new": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\nt"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~2 nodes"
+        "summary": "+0 -0 ~5 nodes"
       }
     },
     "quantitative": {
@@ -459,6 +489,14 @@
       "hash": "c55e6aa96654944a",
       "diff_summary": "+0 -0 ~4 nodes",
       "snapshot_file": "orchestrator-2026-02-08T20-03-49-c55e6aa96654944a.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:19:31.853822Z",
+      "pipeline": "graph",
+      "version": 4,
+      "hash": "d6ab9804916d48c4",
+      "diff_summary": "+0 -0 ~5 nodes",
+      "snapshot_file": "graph-2026-02-08T20-19-30-d6ab9804916d48c4.json"
     }
   ]
 }
