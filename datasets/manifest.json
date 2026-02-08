@@ -1,6 +1,8 @@
 {
   "version": "1.0",
-  "last_updated": "2026-02-08",
+  "last_updated": "2026-02-08T21:52:00Z",
+  "last_verified": "2026-02-08T21:52:00Z",
+  "verified_by": "verify-phase2-deep.py",
   "description": "Dataset manifest for Multi-RAG Orchestrator evaluation across 5 phases. Tracks all 16 HuggingFace datasets and Phase 1 curated questions.",
   "total_datasets": 16,
   "phase_1_curated": {
@@ -42,11 +44,12 @@
         "phase_5": "full"
       },
       "ingestion_status": {
-        "pinecone": "not_started",
-        "neo4j": "not_started",
-        "supabase": "not_started"
+        "pinecone": "not_needed",
+        "neo4j": "partial",
+        "supabase": "not_needed"
       },
-      "current_question_count": 0
+      "current_question_count": 200,
+      "neo4j_notes": "General entities present in Neo4j (14,904 nodes) but musique-specific entities from question contexts need targeted extraction"
     },
     {
       "name": "2wikimultihopqa",
@@ -62,11 +65,12 @@
         "phase_5": "full"
       },
       "ingestion_status": {
-        "pinecone": "not_started",
-        "neo4j": "not_started",
-        "supabase": "not_started"
+        "pinecone": "not_needed",
+        "neo4j": "partial",
+        "supabase": "not_needed"
       },
-      "current_question_count": 0
+      "current_question_count": 300,
+      "neo4j_notes": "General entities present in Neo4j but 2wiki-specific entities from question contexts need targeted extraction"
     },
     {
       "name": "hotpotqa",
@@ -102,11 +106,13 @@
         "phase_5": "full"
       },
       "ingestion_status": {
-        "pinecone": "not_started",
-        "neo4j": "not_started",
+        "pinecone": "partial",
+        "neo4j": "not_needed",
         "supabase": "not_started"
       },
-      "current_question_count": 0
+      "current_question_count": 200,
+      "pinecone_vectors": 500,
+      "supabase_notes": "finqa_tables not yet created in Supabase. Need to parse table_data from questions."
     },
     {
       "name": "tatqa",
@@ -122,11 +128,12 @@
         "phase_5": "full"
       },
       "ingestion_status": {
-        "pinecone": "not_started",
-        "neo4j": "not_started",
+        "pinecone": "not_needed",
+        "neo4j": "not_needed",
         "supabase": "not_started"
       },
-      "current_question_count": 0
+      "current_question_count": 150,
+      "supabase_notes": "tatqa_tables not yet created in Supabase. Need to parse table_data from questions."
     },
     {
       "name": "convfinqa",
@@ -142,11 +149,12 @@
         "phase_5": "full"
       },
       "ingestion_status": {
-        "pinecone": "not_started",
-        "neo4j": "not_started",
+        "pinecone": "not_needed",
+        "neo4j": "not_needed",
         "supabase": "not_started"
       },
-      "current_question_count": 0
+      "current_question_count": 100,
+      "supabase_notes": "convfinqa_tables not yet created in Supabase. Need to parse table_data from questions."
     },
     {
       "name": "wikitablequestions",

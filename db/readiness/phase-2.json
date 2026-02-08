@@ -3,11 +3,42 @@
   "name": "Expand",
   "questions": 1000,
   "description": "Scale to 1,000 questions using tier 1 and tier 2 HuggingFace datasets. Requires significant Neo4j and Supabase ingestion for multi-hop graph and financial QA datasets.",
-  "last_checked": null,
-  "checked_by": null,
+  "last_checked": "2026-02-08T21:52:00Z",
+  "checked_by": "verify-phase2-deep.py",
   "prerequisites": {
     "phase_1_gates_passed": false,
-    "notes": "Phase 1 must reach all gate criteria before Phase 2 begins."
+    "phase_1_status": {
+      "standard": {"current": 83.6, "target": 85, "met": false, "gap": -1.4},
+      "graph": {"current": 76.4, "target": 70, "met": true, "gap": 6.4},
+      "quantitative": {"current": 65.5, "target": 85, "met": false, "gap": -19.5},
+      "orchestrator": {"current": 44.0, "target": 70, "met": false, "gap": -26.0},
+      "overall": {"current": 68.3, "target": 75, "met": false, "gap": -6.7}
+    },
+    "notes": "Phase 1 gates NOT met. Graph pipeline passed (76.4% > 70%). Standard close (-1.4pp). Quantitative and Orchestrator need significant improvement."
+  },
+  "dataset_file": {
+    "path": "datasets/phase-2/hf-1000.json",
+    "exists": true,
+    "size_mb": 4.7,
+    "total_questions": 1000,
+    "by_dataset": {
+      "musique": 200,
+      "2wikimultihopqa": 300,
+      "finqa": 200,
+      "tatqa": 150,
+      "convfinqa": 100,
+      "wikitablequestions": 50
+    },
+    "by_rag_target": {
+      "graph": 500,
+      "quantitative": 500
+    },
+    "issues": {
+      "missing_expected_answer": 3,
+      "missing_context_and_table_data": 50,
+      "notes": "50 wikitablequestions have no context or table_data field. 3 questions lack expected_answer."
+    },
+    "status": "present_with_minor_issues"
   },
   "requirements": {
     "pinecone": {
@@ -19,7 +50,21 @@
       ],
       "status": "ready",
       "current": 10411,
-      "notes": "No additional Pinecone ingestion needed for Phase 2. Phase 2 focuses on graph and quantitative datasets."
+      "verified_at": "2026-02-08T21:52:00Z",
+      "namespaces": {
+        "benchmark-squad_v2": 1000,
+        "benchmark-triviaqa": 1000,
+        "benchmark-popqa": 1000,
+        "benchmark-finqa": 500,
+        "benchmark-hotpotqa": 1000,
+        "benchmark-msmarco": 1000,
+        "benchmark-narrativeqa": 1000,
+        "benchmark-natural_questions": 1000,
+        "benchmark-pubmedqa": 500,
+        "benchmark-asqa": 948,
+        "benchmark-frames": 824
+      },
+      "notes": "No additional Pinecone ingestion needed for Phase 2. All 12 namespaces healthy. benchmark-finqa (500 vectors) already exists."
     },
     "neo4j": {
       "min_nodes": 2500,
@@ -30,18 +75,54 @@
         "Technology",
         "City",
         "Disease",
-        "Event",
+        "Entity",
         "Concept",
         "Location"
       ],
-      "status": "not_started",
-      "current_nodes": 110,
-      "current_relationships": 151,
+      "status": "partially_ready",
+      "verified_at": "2026-02-08T21:52:00Z",
+      "current_nodes": 14904,
+      "current_relationships": 54907,
+      "node_labels": {
+        "Entity": 6216,
+        "Person": 6100,
+        "Organization": 1582,
+        "City": 775,
+        "Technology": 126,
+        "Museum": 47,
+        "Disease": 22,
+        "Concept": 12,
+        "other": 24
+      },
+      "quantity_check": {
+        "nodes_required": 2500,
+        "nodes_actual": 14904,
+        "nodes_ok": true,
+        "relationships_required": 3000,
+        "relationships_actual": 54907,
+        "relationships_ok": true
+      },
+      "quality_check": {
+        "phase2_sample_entities_tested": 21,
+        "phase2_sample_entities_found": 11,
+        "coverage_pct": 52,
+        "entities_found": [
+          "SpongeBob", "Napoleon", "Julius Caesar", "Shakespeare",
+          "Beethoven", "Einstein", "Marie Curie", "Alan Turing",
+          "Tesla", "Newton", "Darwin"
+        ],
+        "entities_not_found": [
+          "Plankton", "Mr. Lawrence", "Senica", "Heinrich Gross",
+          "John Knox", "Presbyterian", "Rutherford B. Hayes",
+          "Spiegel", "Mao Zedong", "Aristotle"
+        ],
+        "notes": "Bulk ingestion added 6,216 Entity nodes and 6,100 Person nodes. General knowledge entities present. BUT Phase 2-specific entities (from musique/2wiki question contexts) are largely MISSING. Needs targeted entity extraction from question context fields."
+      },
       "datasets_to_ingest": [
         "musique",
         "2wikimultihopqa"
       ],
-      "notes": "Need to extract entities and relationships from musique (200q) and 2wikimultihopqa (300q) supporting passages and ingest into Neo4j."
+      "notes": "Quantity exceeds requirements (14,904 nodes vs 2,500 minimum). Quality gap: ~48% of Phase 2 sample entities NOT found. The bulk Entity/Person ingestion covers general knowledge but NOT the specific entities referenced in musique and 2wikimultihopqa questions. Entity extraction from question context paragraphs is still needed for reliable Phase 2 graph RAG."
     },
     "supabase": {
       "min_rows": 10000,
@@ -55,31 +136,48 @@
         "tatqa_tables",
         "convfinqa_tables"
       ],
-      "status": "not_started",
+      "status": "not_ready",
+      "verified_at": "2026-02-08T21:52:00Z",
+      "verification_note": "Supabase DNS unreachable from verification environment. Assessment based on prior state and readiness documentation.",
       "current_rows": 88,
+      "phase_1_tables": {
+        "financials": "present (24 rows)",
+        "balance_sheet": "present (12 rows)",
+        "sales_data": "present (16 rows)",
+        "products": "present (18 rows)",
+        "employees": "present (9 rows)"
+      },
+      "phase_2_tables": {
+        "finqa_tables": "not_created",
+        "tatqa_tables": "not_created",
+        "convfinqa_tables": "not_created"
+      },
       "datasets_to_ingest": [
         "finqa",
         "tatqa",
         "convfinqa"
       ],
-      "notes": "Need to create new tables for financial QA datasets and ingest structured data from finqa (200q), tatqa (150q), convfinqa (100q)."
+      "notes": "Phase 2 financial tables (finqa_tables, tatqa_tables, convfinqa_tables) do NOT exist yet. Need to parse table_data from 450 quantitative questions and create structured tables. Current 88 rows cover only Phase 1 seed data."
     }
   },
   "gate_criteria": {
     "standard": {
       "target_accuracy": 85,
       "current": null,
-      "met": false
+      "met": false,
+      "notes": "Standard not directly tested in Phase 2 (carryover from Phase 1)"
     },
     "graph": {
       "target_accuracy": 60,
       "current": null,
-      "met": false
+      "met": false,
+      "notes": "Target lower than Phase 1 because musique/2wiki questions are harder (multi-hop from unfamiliar domains)"
     },
     "quantitative": {
       "target_accuracy": 70,
       "current": null,
-      "met": false
+      "met": false,
+      "notes": "Target lower than Phase 1 because financial report questions are more complex"
     },
     "orchestrator": {
       "target_accuracy": 65,
@@ -93,6 +191,46 @@
       "current": null,
       "met": false
     }
+  },
+  "readiness_summary": {
+    "overall": "NOT_READY",
+    "blockers": [
+      "Phase 1 gates not met (3/5 pipelines below target)",
+      "Supabase Phase 2 tables not created (finqa_tables, tatqa_tables, convfinqa_tables)",
+      "Neo4j entity coverage gap (~48% of Phase 2 sample entities missing)"
+    ],
+    "ready_components": [
+      "Dataset file present (1,000 questions verified)",
+      "Pinecone ready (no changes needed)",
+      "Neo4j node/relationship quantity exceeds minimums (14,904 nodes / 54,907 rels)"
+    ],
+    "actions_required": [
+      {
+        "priority": "P0",
+        "action": "Pass Phase 1 gates",
+        "details": "Standard needs +1.4pp, Quantitative needs +19.5pp, Orchestrator needs +26pp"
+      },
+      {
+        "priority": "P1",
+        "action": "Extract entities from Phase 2 question contexts into Neo4j",
+        "details": "Parse context paragraphs from 500 graph questions, extract entities, build relationships, seed into Neo4j"
+      },
+      {
+        "priority": "P1",
+        "action": "Create and populate Phase 2 Supabase tables",
+        "details": "Parse table_data from 450 quantitative questions, create finqa_tables/tatqa_tables/convfinqa_tables"
+      },
+      {
+        "priority": "P2",
+        "action": "Fix 3 questions missing expected_answer in hf-1000.json",
+        "details": "Investigate and add expected answers for the 3 incomplete questions"
+      },
+      {
+        "priority": "P2",
+        "action": "Address 50 wikitablequestions missing context/table_data",
+        "details": "These questions may need their table data fetched from the HuggingFace dataset"
+      }
+    ]
   },
   "datasets_used": [
     "musique",
@@ -111,7 +249,8 @@
       "finqa": 200,
       "tatqa": 150,
       "convfinqa": 100,
-      "total": 450
+      "wikitablequestions": 50,
+      "total": 500
     },
     "standard": {
       "carryover_from_phase_1": 50,
