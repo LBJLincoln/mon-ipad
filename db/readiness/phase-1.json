@@ -3,8 +3,8 @@
   "name": "Baseline",
   "questions": 200,
   "description": "Establish baseline accuracy with 50 hand-crafted questions per pipeline. Iteratively improve workflows until gate criteria are met.",
-  "last_checked": null,
-  "checked_by": null,
+  "last_checked": "2026-02-08T21:52:00Z",
+  "checked_by": "verify-phase2-deep.py",
   "requirements": {
     "pinecone": {
       "min_vectors": 10000,
@@ -15,7 +15,20 @@
       ],
       "status": "ready",
       "current": 10411,
-      "notes": "Existing seed data from initial ingestion covers all Phase 1 standard RAG questions."
+      "namespaces_verified": {
+        "benchmark-squad_v2": 1000,
+        "benchmark-triviaqa": 1000,
+        "benchmark-popqa": 1000,
+        "benchmark-asqa": 948,
+        "benchmark-frames": 824,
+        "benchmark-finqa": 500,
+        "benchmark-hotpotqa": 1000,
+        "benchmark-msmarco": 1000,
+        "benchmark-narrativeqa": 1000,
+        "benchmark-natural_questions": 1000,
+        "benchmark-pubmedqa": 500
+      },
+      "notes": "All 12 namespaces verified with 10,411 total vectors. 1536-dim embeddings."
     },
     "neo4j": {
       "min_nodes": 100,
@@ -28,9 +41,32 @@
         "Disease"
       ],
       "status": "ready",
-      "current_nodes": 110,
-      "current_relationships": 151,
-      "notes": "Entity enrichment session (Feb 7) added 20 new entities and 71 new relationships. 9 community summaries updated."
+      "current_nodes": 14904,
+      "current_relationships": 54907,
+      "node_labels": {
+        "Entity": 6216,
+        "Person": 6100,
+        "Organization": 1582,
+        "City": 775,
+        "Technology": 126,
+        "Museum": 47,
+        "Disease": 22,
+        "Concept": 12,
+        "Rate": 4,
+        "Molecule": 3,
+        "Award": 3,
+        "Artwork": 2,
+        "Law": 2,
+        "Country": 2,
+        "Discovery": 2,
+        "Agreement": 1,
+        "Treatment": 1,
+        "Article": 1,
+        "Monument": 1,
+        "Theory": 1,
+        "Element": 1
+      },
+      "notes": "Massive growth from initial 110 nodes to 14,904 nodes (135x). 6,216 Entity-labeled nodes added via bulk ingestion. Phase 1 entities (Einstein, Curie, Turing, etc.) confirmed present."
     },
     "supabase": {
       "min_rows": 80,
@@ -43,36 +79,54 @@
       ],
       "status": "ready",
       "current_rows": 88,
-      "notes": "Financial tables seeded with 3 companies. Employee table has only 9 rows (known gap for some queries)."
+      "notes": "Cannot verify from current environment (DNS blocked). Based on prior verification: 88 rows across 5 tables. Financial tables seeded with 3 companies."
     }
   },
   "gate_criteria": {
     "standard": {
       "target_accuracy": 85,
-      "current": 82.6,
-      "met": false
+      "current": 83.6,
+      "tested_on": 55,
+      "from_iteration": "iter-003",
+      "met": false,
+      "gap": -1.4,
+      "notes": "Latest small run (10q) showed 100%. Need full 50q eval to confirm."
     },
     "graph": {
       "target_accuracy": 70,
-      "current": 52.0,
-      "met": false
+      "current": 76.4,
+      "tested_on": 55,
+      "from_iteration": "iter-003",
+      "met": true,
+      "gap": 6.4,
+      "notes": "Passed target. Latest small run (10q) also shows 70%."
     },
     "quantitative": {
       "target_accuracy": 85,
-      "current": 80.0,
-      "met": false
+      "current": 65.5,
+      "tested_on": 29,
+      "from_iteration": "iter-003",
+      "met": false,
+      "gap": -19.5,
+      "notes": "Significant gap. Network errors (401 Tunnel auth) inflated failure rate. Latest small run (10q) showed 100%."
     },
     "orchestrator": {
       "target_accuracy": 70,
       "max_p95_latency_s": 15,
       "max_error_rate_pct": 5,
-      "current": 49.6,
-      "met": false
+      "current": 44.0,
+      "tested_on": 50,
+      "from_iteration": "iter-002",
+      "met": false,
+      "gap": -26.0,
+      "notes": "Critical gap. Cascading timeouts + empty responses. Latest small run (4q) showed 75% but high latency (66s avg)."
     },
     "overall": {
       "target_accuracy": 75,
-      "current": 67.7,
-      "met": false
+      "current": 68.3,
+      "met": false,
+      "gap": -6.7,
+      "notes": "Weighted average across all pipeline evaluations."
     }
   },
   "datasets_used": [

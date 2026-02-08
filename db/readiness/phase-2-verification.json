@@ -1,0 +1,179 @@
+{
+  "generated_at": "2026-02-08T21:52:09.068216",
+  "phase": 2,
+  "supabase": {
+    "connected": false,
+    "tables": {},
+    "phase_1_tables": {},
+    "phase_2_tables": {},
+    "benchmark_datasets": {},
+    "community_summaries": 0,
+    "total_rows": 0,
+    "phase_2_ready": false,
+    "issues": [
+      "Connection error: Primary: could not translate host name \"aws-0-eu-west-1.pooler.supabase.com\" to address: Temporary failure in name resolution\n | Alternate: could not translate host name \"aws-1-eu-west-1.pooler.supabase.com\" to address: Temporary failure in name resolution\n"
+    ]
+  },
+  "neo4j": {
+    "connected": true,
+    "total_nodes": 14904,
+    "total_relationships": 54907,
+    "node_labels": {
+      "Entity": 6216,
+      "Person": 6100,
+      "Organization": 1582,
+      "City": 775,
+      "Technology": 126,
+      "Museum": 47,
+      "Disease": 22,
+      "Concept": 12,
+      "Rate": 4,
+      "Molecule": 3,
+      "Award": 3,
+      "Artwork": 2,
+      "Law": 2,
+      "Country": 2,
+      "Discovery": 2,
+      "Agreement": 1,
+      "Treatment": 1,
+      "Article": 1,
+      "Monument": 1,
+      "Theory": 1,
+      "Element": 1
+    },
+    "relationship_types": {
+      "CONNECTE": 53580,
+      "SOUS_ENSEMBLE_DE": 554,
+      "A_CREE": 497,
+      "UTILISE": 99,
+      "ETEND": 66,
+      "CIBLE": 52,
+      "ETUDIE": 38,
+      "CAUSE_PAR": 7,
+      "PROTEGE_CONTRE": 6,
+      "VISE_A_LIMITER": 4,
+      "EXPOSE_A": 4
+    },
+    "phase2_entity_coverage": {},
+    "sample_entities_found": 11,
+    "sample_entities_total": 21,
+    "phase_2_ready": true,
+    "issues": [
+      "10/21 Phase 2 sample entities not found in Neo4j"
+    ],
+    "entities_not_found": [
+      "Plankton",
+      "Mr. Lawrence",
+      "Senica",
+      "Heinrich Gross",
+      "John Knox",
+      "Presbyterian",
+      "Rutherford B. Hayes",
+      "Spiegel",
+      "Mao Zedong",
+      "Aristotle"
+    ]
+  },
+  "pinecone": {
+    "connected": true,
+    "total_vectors": 10411,
+    "namespaces": {
+      "": 639,
+      "benchmark-asqa": 948,
+      "benchmark-finqa": 500,
+      "benchmark-frames": 824,
+      "benchmark-hotpotqa": 1000,
+      "benchmark-msmarco": 1000,
+      "benchmark-narrativeqa": 1000,
+      "benchmark-natural_questions": 1000,
+      "benchmark-popqa": 1000,
+      "benchmark-pubmedqa": 500,
+      "benchmark-squad_v2": 1000,
+      "benchmark-triviaqa": 1000
+    },
+    "issues": [],
+    "dimension": 1536
+  },
+  "phase_1_status": {
+    "pipelines": {
+      "standard": {
+        "accuracy": 83.6,
+        "target": 85,
+        "met": false,
+        "tested": 55,
+        "from_iteration": "iter-003"
+      },
+      "graph": {
+        "accuracy": 76.4,
+        "target": 70,
+        "met": true,
+        "tested": 55,
+        "from_iteration": "iter-003"
+      },
+      "quantitative": {
+        "accuracy": 65.5,
+        "target": 85,
+        "met": false,
+        "tested": 29,
+        "from_iteration": "iter-003"
+      },
+      "orchestrator": {
+        "accuracy": 44.0,
+        "target": 70,
+        "met": false,
+        "tested": 50,
+        "from_iteration": "iter-002"
+      }
+    },
+    "overall": 68.3,
+    "phase_1_gates_met": false,
+    "issues": [
+      "standard: 83.6% < target 85%",
+      "quantitative: 65.5% < target 85%",
+      "orchestrator: 44.0% < target 70%"
+    ]
+  },
+  "dataset_file": {
+    "exists": true,
+    "total": 1000,
+    "by_dataset": {
+      "musique": 200,
+      "2wikimultihopqa": 300,
+      "finqa": 200,
+      "tatqa": 150,
+      "convfinqa": 100,
+      "wikitablequestions": 50
+    },
+    "by_rag_target": {
+      "graph": 500,
+      "quantitative": 500
+    },
+    "issues": [
+      "3 questions missing expected_answer",
+      "50 questions with neither context nor table_data"
+    ]
+  },
+  "all_issues": [
+    "Connection error: Primary: could not translate host name \"aws-0-eu-west-1.pooler.supabase.com\" to address: Temporary failure in name resolution\n | Alternate: could not translate host name \"aws-1-eu-west-1.pooler.supabase.com\" to address: Temporary failure in name resolution\n",
+    "10/21 Phase 2 sample entities not found in Neo4j",
+    "standard: 83.6% < target 85%",
+    "quantitative: 65.5% < target 85%",
+    "orchestrator: 44.0% < target 70%",
+    "3 questions missing expected_answer",
+    "50 questions with neither context nor table_data"
+  ],
+  "summary": {
+    "supabase_connected": false,
+    "neo4j_connected": true,
+    "pinecone_connected": true,
+    "neo4j_nodes": 14904,
+    "neo4j_relationships": 54907,
+    "neo4j_phase2_ready": true,
+    "supabase_phase2_ready": false,
+    "pinecone_phase2_ready": true,
+    "phase1_gates_met": false,
+    "dataset_file_ok": false,
+    "total_issues": 7,
+    "overall_ready": false
+  }
+}
