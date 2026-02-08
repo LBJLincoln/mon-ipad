@@ -50,9 +50,12 @@ export N8N_HOST="https://amoret.app.n8n.cloud"
 
 ### Google Cloud free tier VM setup (one-time)
 
+Run these commands **in order**:
 ```bash
-sudo apt-get update && sudo apt-get install -y python3 python3-pip postgresql-client git
-pip3 install requests psycopg2-binary
+# Step 1: Install system packages + Python libraries via apt (Debian Bookworm blocks pip)
+sudo apt-get update && sudo apt-get install -y python3 python3-psycopg2 python3-requests git
+
+# Step 2: Clone repo (skip if already cloned)
 git clone https://github.com/LBJLincoln/mon-ipad.git ~/mon-ipad
 cd ~/mon-ipad
 ```
