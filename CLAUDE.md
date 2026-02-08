@@ -52,7 +52,7 @@ export N8N_HOST="https://amoret.app.n8n.cloud"
 
 ```bash
 sudo apt-get update && sudo apt-get install -y python3 python3-pip postgresql-client git
-pip3 install requests psycopg2-binary
+python3 -m pip install requests psycopg2-binary
 git clone https://github.com/LBJLincoln/mon-ipad.git ~/mon-ipad
 cd ~/mon-ipad
 ```
