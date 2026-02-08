@@ -6,30 +6,29 @@ from the hf-1000.json dataset file.
 Parses table_data and context fields from each question and inserts
 structured records into the appropriate Supabase table.
 
+Uses psycopg2 Python driver (no psql CLI needed).
+Install: pip3 install psycopg2-binary
+
 Usage:
-    # Run migration first, then populate
-    python db/populate/phase2_supabase.py
-
-    # Wipe old data first, then repopulate from scratch
-    python db/populate/phase2_supabase.py --reset
-
-    # Dry run (parse only, no DB writes)
-    python db/populate/phase2_supabase.py --dry-run
-
-    # Specific dataset only
-    python db/populate/phase2_supabase.py --dataset finqa
+    python3 db/populate/phase2_supabase.py --reset     # Wipe + repopulate (RECOMMENDED)
+    python3 db/populate/phase2_supabase.py             # Populate (upsert)
+    python3 db/populate/phase2_supabase.py --dry-run   # Parse only, no DB writes
+    python3 db/populate/phase2_supabase.py --dataset finqa  # Single dataset
 """
 import json
 import os
 import re
-import subprocess
 import sys
 from datetime import datetime
 
 # ============================================================
 # Configuration
 # ============================================================
-SUPABASE_CONN = f"postgresql://postgres.ayqviqmxifzmhphiqfmj:{os.environ.get('SUPABASE_PASSWORD', '')}@aws-1-eu-west-1.pooler.supabase.com:6543/postgres"
+SUPABASE_HOST = "aws-1-eu-west-1.pooler.supabase.com"
+SUPABASE_PORT = 6543
+SUPABASE_DB = "postgres"
+SUPABASE_USER = "postgres.ayqviqmxifzmhphiqfmj"
+
 DATASET_FILE = os.path.join(os.path.dirname(__file__), "..", "..", "datasets", "phase-2", "hf-1000.json")
 MIGRATION_FILE = os.path.join(os.path.dirname(__file__), "..", "migrations", "phase2-financial-tables.sql")
 
@@ -38,6 +37,51 @@ DATASET_TABLE_MAP = {
     "tatqa": "tatqa_tables",
     "convfinqa": "convfinqa_tables",
 }
+
+
+# ============================================================
+# Database connection (psycopg2)
+# ============================================================
+
+def get_connection():
+    """Get a psycopg2 connection to Supabase PostgreSQL."""
+    try:
+        import psycopg2
+    except ImportError:
+        print("ERROR: psycopg2 not installed.")
+        print("Fix:   pip3 install psycopg2-binary")
+        sys.exit(1)
+
+    password = os.environ.get("SUPABASE_PASSWORD", "")
+    if not password:
+        print("ERROR: SUPABASE_PASSWORD not set")
+        sys.exit(1)
+
+    return psycopg2.connect(
+        host=SUPABASE_HOST,
+        port=SUPABASE_PORT,
+        dbname=SUPABASE_DB,
+        user=SUPABASE_USER,
+        password=password,
+        connect_timeout=30,
+    )
+
+
+def execute_sql(conn, sql, params=None, fetch=False):
+    """Execute SQL statement and optionally fetch results."""
+    cur = conn.cursor()
+    try:
+        cur.execute(sql, params)
+        if fetch:
+            rows = cur.fetchall()
+            return rows
+        conn.commit()
+        return cur.rowcount
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cur.close()
 
 
 # ============================================================
@@ -61,12 +105,9 @@ def parse_table_data_string(td_str):
     if not isinstance(rows, list) or len(rows) == 0:
         return None, str(td_str), [], 0, 0
 
-    # First row is headers
     headers = [str(h).strip() for h in rows[0]] if rows else []
-    num_rows = len(rows) - 1  # exclude header
+    num_rows = len(rows) - 1
     num_cols = len(headers)
-
-    # Build human-readable table string
     table_string = format_table_string(rows)
 
     return rows, table_string, headers, num_rows, num_cols
@@ -81,8 +122,6 @@ def extract_tables_from_tatqa_context(context_str):
     if not context_str:
         return None, None, [], 0, 0
 
-    # Find JSON arrays embedded in the context
-    # Pattern: [["...", ...], ["...", ...], ...]
     pattern = r'\[\s*\[(?:"[^"]*"(?:\s*,\s*"[^"]*")*)\](?:\s*,\s*\[(?:"[^"]*"(?:\s*,\s*"[^"]*")*)\])*\s*\]'
     matches = re.findall(pattern, context_str)
 
@@ -96,10 +135,7 @@ def extract_tables_from_tatqa_context(context_str):
             continue
 
     if not all_rows:
-        # Try a simpler approach: the context often contains table data
-        # between specific markers or as the main content
         try:
-            # Try parsing the whole thing if it looks like a table
             if context_str.strip().startswith('['):
                 rows = json.loads(context_str)
                 if isinstance(rows, list):
@@ -123,7 +159,6 @@ def format_table_string(rows):
     if not rows:
         return ""
 
-    # Calculate column widths
     col_widths = []
     for row in rows:
         for i, cell in enumerate(row):
@@ -132,7 +167,6 @@ def format_table_string(rows):
                 col_widths.append(0)
             col_widths[i] = max(col_widths[i], len(cell_str))
 
-    # Cap column widths at 30 chars
     col_widths = [min(w, 30) for w in col_widths]
 
     lines = []
@@ -155,30 +189,23 @@ def format_table_string(rows):
 # Database operations
 # ============================================================
 
-def reset_tables(dry_run=False):
-    """Drop and recreate all Phase 2 tables (clean slate)."""
+def reset_tables(conn, dry_run=False):
+    """Truncate all Phase 2 tables (clean slate)."""
     if dry_run:
         print("  [DRY RUN] Would TRUNCATE finqa_tables, tatqa_tables, convfinqa_tables")
         return True
 
-    sql = """
-    TRUNCATE finqa_tables RESTART IDENTITY;
-    TRUNCATE tatqa_tables RESTART IDENTITY;
-    TRUNCATE convfinqa_tables RESTART IDENTITY;
-    """
-    result = subprocess.run(
-        ["psql", SUPABASE_CONN, "-c", sql],
-        capture_output=True, text=True, timeout=30
-    )
-    if result.returncode != 0:
-        # Tables may not exist yet — that's OK, migration will create them
-        print(f"  Reset note (OK if tables don't exist yet): {result.stderr[:200]}")
-    else:
-        print("  Truncated all Phase 2 tables.")
+    for table in DATASET_TABLE_MAP.values():
+        try:
+            execute_sql(conn, f"TRUNCATE {table} RESTART IDENTITY;")
+            print(f"  Truncated {table}")
+        except Exception as e:
+            # Table may not exist yet — migration will create it
+            print(f"  {table}: skip ({e})")
     return True
 
 
-def run_migration(dry_run=False):
+def run_migration(conn, dry_run=False):
     """Run the Phase 2 migration SQL."""
     if dry_run:
         print("  [DRY RUN] Would run migration: phase2-financial-tables.sql")
@@ -189,28 +216,20 @@ def run_migration(dry_run=False):
         print(f"  ERROR: Migration file not found: {migration_path}")
         return False
 
-    result = subprocess.run(
-        ["psql", SUPABASE_CONN, "-f", migration_path],
-        capture_output=True, text=True, timeout=60
-    )
+    with open(migration_path) as f:
+        sql = f.read()
 
-    if result.returncode != 0:
-        print(f"  Migration error: {result.stderr[:500]}")
+    try:
+        execute_sql(conn, sql)
+        print("  Migration executed successfully.")
+        return True
+    except Exception as e:
+        print(f"  Migration error: {e}")
         return False
 
-    print(f"  Migration output: {result.stdout[:500]}")
-    return True
 
-
-def escape_sql_string(s):
-    """Escape a string for safe SQL insertion."""
-    if s is None:
-        return "NULL"
-    return "'" + str(s).replace("'", "''").replace("\\", "\\\\") + "'"
-
-
-def insert_rows(table_name, rows, dry_run=False):
-    """Insert parsed rows into the specified Supabase table."""
+def insert_rows(conn, table_name, rows, dry_run=False):
+    """Insert parsed rows into the specified Supabase table using psycopg2."""
     if dry_run:
         print(f"  [DRY RUN] Would insert {len(rows)} rows into {table_name}")
         return len(rows)
@@ -218,52 +237,49 @@ def insert_rows(table_name, rows, dry_run=False):
     if not rows:
         return 0
 
+    import psycopg2.extras
+
     inserted = 0
-    batch_size = 20
 
-    for batch_start in range(0, len(rows), batch_size):
-        batch = rows[batch_start:batch_start + batch_size]
-        values_list = []
+    sql = f"""INSERT INTO {table_name}
+        (tenant_id, question_id, question, expected_answer, context_text,
+         table_data, table_string, num_rows, num_cols, headers)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    ON CONFLICT (tenant_id, question_id) DO UPDATE SET
+        table_data = EXCLUDED.table_data,
+        table_string = EXCLUDED.table_string,
+        context_text = EXCLUDED.context_text,
+        num_rows = EXCLUDED.num_rows,
+        num_cols = EXCLUDED.num_cols,
+        headers = EXCLUDED.headers;"""
 
-        for row in batch:
-            table_data_json = json.dumps(row["table_data"]) if row["table_data"] else "NULL"
-            headers_array = "ARRAY[" + ",".join(escape_sql_string(h) for h in row["headers"]) + "]::TEXT[]" if row["headers"] else "NULL"
-
-            values = (
-                f"({escape_sql_string(row['tenant_id'])}, "
-                f"{escape_sql_string(row['question_id'])}, "
-                f"{escape_sql_string(row['question'])}, "
-                f"{escape_sql_string(row['expected_answer'])}, "
-                f"{escape_sql_string(row['context_text'])}, "
-                f"{escape_sql_string(table_data_json) if row['table_data'] else 'NULL'}::JSONB, "
-                f"{escape_sql_string(row['table_string'])}, "
-                f"{row['num_rows']}, "
-                f"{row['num_cols']}, "
-                f"{headers_array})"
+    cur = conn.cursor()
+    try:
+        for row in rows:
+            table_data_json = json.dumps(row["table_data"]) if row["table_data"] else None
+            params = (
+                row["tenant_id"],
+                row["question_id"],
+                row["question"],
+                row["expected_answer"],
+                row["context_text"],
+                table_data_json,
+                row["table_string"],
+                row["num_rows"],
+                row["num_cols"],
+                row["headers"] if row["headers"] else None,
             )
-            values_list.append(values)
+            try:
+                cur.execute(sql, params)
+                inserted += 1
+            except Exception as e:
+                conn.rollback()
+                print(f"    Error inserting {row['question_id']}: {e}")
+                continue
 
-        sql = f"""INSERT INTO {table_name}
-            (tenant_id, question_id, question, expected_answer, context_text,
-             table_data, table_string, num_rows, num_cols, headers)
-        VALUES {', '.join(values_list)}
-        ON CONFLICT (tenant_id, question_id) DO UPDATE SET
-            table_data = EXCLUDED.table_data,
-            table_string = EXCLUDED.table_string,
-            context_text = EXCLUDED.context_text,
-            num_rows = EXCLUDED.num_rows,
-            num_cols = EXCLUDED.num_cols,
-            headers = EXCLUDED.headers;"""
-
-        result = subprocess.run(
-            ["psql", SUPABASE_CONN, "-c", sql],
-            capture_output=True, text=True, timeout=30
-        )
-
-        if result.returncode != 0:
-            print(f"    INSERT error (batch {batch_start}): {result.stderr[:300]}")
-        else:
-            inserted += len(batch)
+        conn.commit()
+    finally:
+        cur.close()
 
     return inserted
 
@@ -299,10 +315,8 @@ def load_and_parse_questions(dataset_filter=None):
         table_data_raw = q.get("table_data")
 
         if ds in ("finqa", "convfinqa"):
-            # Parse table_data JSON string
             table_data, table_string, headers, num_rows, num_cols = parse_table_data_string(table_data_raw)
         elif ds == "tatqa":
-            # Extract tables from context string
             table_data, table_string, headers, num_rows, num_cols = extract_tables_from_tatqa_context(context)
         else:
             continue
@@ -312,7 +326,7 @@ def load_and_parse_questions(dataset_filter=None):
             "question_id": question_id,
             "question": question_text,
             "expected_answer": expected_answer,
-            "context_text": context[:10000] if context else None,  # cap at 10K chars
+            "context_text": context[:10000] if context else None,
             "table_data": table_data,
             "table_string": table_string,
             "num_rows": num_rows,
@@ -345,20 +359,24 @@ def main():
         print(f"Dataset filter: {dataset_filter}")
     print("=" * 60)
 
-    # Check env
-    if not dry_run and not os.environ.get("SUPABASE_PASSWORD"):
-        print("ERROR: SUPABASE_PASSWORD not set")
-        sys.exit(1)
+    # Connect
+    conn = None
+    if not dry_run:
+        print("\n  Connecting to Supabase PostgreSQL...")
+        conn = get_connection()
+        print("  Connected.")
 
     # Step 0: Reset if requested
     if do_reset:
         print("\n0. Resetting Phase 2 tables (--reset)...")
-        reset_tables(dry_run)
+        reset_tables(conn, dry_run)
 
     # Step 1: Run migration
     print("\n1. Running Phase 2 migration...")
-    if not run_migration(dry_run):
+    if not run_migration(conn, dry_run):
         print("   Migration failed. Aborting.")
+        if conn:
+            conn.close()
         sys.exit(1)
     print("   Migration complete.")
 
@@ -379,26 +397,29 @@ def main():
             continue
         table_name = DATASET_TABLE_MAP[ds]
         print(f"   Inserting {len(rows)} rows into {table_name}...")
-        count = insert_rows(table_name, rows, dry_run)
+        count = insert_rows(conn, table_name, rows, dry_run)
         total_inserted += count
         print(f"   Inserted: {count}")
 
     # Step 4: Verify
-    if not dry_run:
+    if not dry_run and conn:
         print("\n4. Verifying...")
         for ds, table_name in DATASET_TABLE_MAP.items():
-            result = subprocess.run(
-                ["psql", SUPABASE_CONN, "-t", "-A", "-c",
-                 f"SELECT COUNT(*) FROM {table_name} WHERE tenant_id = 'benchmark';"],
-                capture_output=True, text=True, timeout=15
-            )
-            if result.returncode == 0:
-                count = result.stdout.strip()
+            try:
+                result = execute_sql(
+                    conn,
+                    f"SELECT COUNT(*) FROM {table_name} WHERE tenant_id = 'benchmark';",
+                    fetch=True
+                )
+                count = result[0][0] if result else 0
                 print(f"   {table_name}: {count} rows")
-            else:
-                print(f"   {table_name}: verification failed - {result.stderr[:200]}")
+            except Exception as e:
+                print(f"   {table_name}: verification failed - {e}")
     else:
         print("\n4. [DRY RUN] Skipping verification")
+
+    if conn:
+        conn.close()
 
     print(f"\n{'='*60}")
     print(f"PHASE 2 SUPABASE POPULATION {'(DRY RUN) ' if dry_run else ''}COMPLETE")
