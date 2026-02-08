@@ -67,10 +67,10 @@
       }
     },
     "graph": {
-      "version": 4,
-      "hash": "d6ab9804916d48c4",
-      "timestamp": "2026-02-08T20:19:31.853812Z",
-      "snapshot_file": "graph-2026-02-08T20-19-30-d6ab9804916d48c4.json",
+      "version": 5,
+      "hash": "3bf32010e221159c",
+      "timestamp": "2026-02-08T20:31:37.765802Z",
+      "snapshot_file": "graph-2026-02-08T20-31-37-3bf32010e221159c.json",
       "name": "WF2 Graph RAG V3.3",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
       "summary": {
@@ -121,42 +121,12 @@
         "removed_nodes": [],
         "modified_nodes": [
           {
-            "node": "Merge Graph + Vector + Community (Deep)",
-            "changes": [
-              {
-                "param": "jsCode",
-                "old": "// Enhanced Merge for Deep Traversal Results - CONFIRMÉ\n// Handles paths up to 4 hops with intelligent deduplication\n\n// === COLLECT ALL SOURCES ===\nlet graphResults = [];\nlet vectorResults = [];\nlet ",
-                "new": "// Enhanced Merge for Deep Traversal Results - CONFIRMÉ\n// Handles paths up to 4 hops with intelligent deduplication\n\n// === COLLECT ALL SOURCES ===\nlet graphResults = [];\nlet vectorResults = [];\nlet "
-              }
-            ]
-          },
-          {
-            "node": "Answer Formatter",
-            "changes": [
-              {
-                "param": "jsCode",
-                "old": "// Extract LLM answer and format final response\nconst answer = $json.choices?.[0]?.message?.content || 'No answer generated';\nconst contextData = $node['Response Formatter'].json;\n\nreturn [{ json: {\n ",
-                "new": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract parti"
-              }
-            ]
-          },
-          {
-            "node": "Validate Neo4j Results",
-            "changes": [
-              {
-                "param": "jsCode",
-                "old": "const neo4jData = $json;\n\n// Check if we have valid results\nlet hasResults = false;\nlet errorMessage = null;\n\nif (neo4jData.errors && neo4jData.errors.length > 0) {\n  errorMessage = neo4jData.errors[0",
-                "new": "// Validate Neo4j Results - handles both REST and query/v2 API formats\nconst neo4jData = $json;\n\nlet hasResults = false;\nlet errorMessage = null;\n\n// Check for errors\nif (neo4jData.errors && neo4jData"
-              }
-            ]
-          },
-          {
             "node": "LLM Answer Synthesis",
             "changes": [
               {
                 "param": "options",
-                "old": "{'timeout': 25000, 'retry': {'maxTries': 3, 'waitBetweenTries': 2000}}",
-                "new": "{'timeout': 30000, 'retry': {'maxTries': 3, 'waitBetweenTries': 3000}}"
+                "old": "{'timeout': 30000, 'retry': {'maxTries': 3, 'waitBetweenTries': 3000}}",
+                "new": "{'timeout': 30000, 'retry': {'maxTries': 1, 'waitBetweenTries': 5000}}"
               }
             ]
           },
@@ -165,14 +135,14 @@
             "changes": [
               {
                 "param": "jsCode",
-                "old": "// Embedding Fallback: if vector search returned nothing,\n// use Neo4j entity data + community summaries as context\nlet contextSources = [];\ntry {\n  const vectorResults = $node['WF3: Cohere Reranker']",
+                "old": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\nt",
                 "new": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\nt"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~5 nodes"
+        "summary": "+0 -0 ~2 nodes"
       }
     },
     "quantitative": {
@@ -264,10 +234,10 @@
       }
     },
     "orchestrator": {
-      "version": 3,
-      "hash": "c55e6aa96654944a",
-      "timestamp": "2026-02-08T20:03:50.279209Z",
-      "snapshot_file": "orchestrator-2026-02-08T20-03-49-c55e6aa96654944a.json",
+      "version": 4,
+      "hash": "b43d039e4e56ccec",
+      "timestamp": "2026-02-08T20:34:16.702689Z",
+      "snapshot_file": "orchestrator-2026-02-08T20-34-15-b43d039e4e56ccec.json",
       "name": "V10.1 Orchestrator",
       "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
       "summary": {
@@ -364,48 +334,28 @@
         "removed_nodes": [],
         "modified_nodes": [
           {
-            "node": "🎯 LLM 2: Task Planner",
+            "node": "Invoke WF4: Quantitative",
             "changes": [
               {
-                "param": "jsonBody",
-                "old": "={\n  \"model\": \"{{ $vars.LLM_PLANNER_MODEL || 'anthropic/claude-sonnet-4-5-20250929' }}\",\n  \"temperature\": 0.2,\n  \"max_tokens\": 2000,\n  \"response_format\": {\"type\": \"json_object\"},\n  \"messages\": [\n    {",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_PLANNER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"temperature\": 0.2,\n  \"max_tokens\": 2000,\n  \"response_format\": {\"type\": \"json_object\"},\n  \"messages\": [\n   "
+                "param": "workflowId",
+                "old": "{'__rl': True, 'value': 'xrzL7TRX9F0UrWks0tdCI', 'mode': 'list', 'cachedResultUrl': '/workflow/xrzL7TRX9F0UrWks0tdCI', 'cachedResultName': 'TEST - SOTA 2026 - WF4 Quantitative V2.0'}",
+                "new": "{'__rl': True, 'value': 'LjUz8fxQZ03G9IsU', 'mode': 'id'}"
               }
             ]
           },
           {
-            "node": "HTTP Request",
+            "node": "Invoke WF5: Standard",
             "changes": [
               {
-                "param": "jsonBody",
-                "old": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemini-2.5-flash' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es l'INTENT ANALYZER d'un système RAG multi-moteurs sophisti",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es l'INTENT ANALYZER d'un système RAG multi-moteurs sophi"
-              }
-            ]
-          },
-          {
-            "node": "🎯 LLM 3: Agent Harness (Opus 4.5)",
-            "changes": [
-              {
-                "param": "jsonBody",
-                "old": "={{ {\n  \"model\": $vars.LLM_AGENT_MODEL || 'anthropic/claude-3-5-sonnet-20241022',\n  \"max_tokens\": 2000,\n  \"temperature\": 0.3,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are th",
-                "new": "={{ {\n  \"model\": $vars.LLM_AGENT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  \"max_tokens\": 2000,\n  \"temperature\": 0.3,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are "
-              }
-            ]
-          },
-          {
-            "node": "🧠 LLM 1: Intent Analyzer",
-            "changes": [
-              {
-                "param": "jsonBody",
-                "old": "={\n  \"model\": \"{{ $vars.LLM_INTENT_MODEL || 'deepseek/deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated multi-engine RA",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_INTENT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated"
+                "param": "workflowId",
+                "old": "{'__rl': True, 'value': 'qtBs2Wbi_raU2o_dqfdDC', 'mode': 'id', 'cachedResultUrl': '/workflow/qtBs2Wbi_raU2o_dqfdDC'}",
+                "new": "{'__rl': True, 'value': 'LnTqRX4LZlI009Ks-3Jnp', 'mode': 'id'}"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~4 nodes"
+        "summary": "+0 -0 ~2 nodes"
       }
     }
   },
@@ -497,6 +447,22 @@
       "hash": "d6ab9804916d48c4",
       "diff_summary": "+0 -0 ~5 nodes",
       "snapshot_file": "graph-2026-02-08T20-19-30-d6ab9804916d48c4.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:31:37.765813Z",
+      "pipeline": "graph",
+      "version": 5,
+      "hash": "3bf32010e221159c",
+      "diff_summary": "+0 -0 ~2 nodes",
+      "snapshot_file": "graph-2026-02-08T20-31-37-3bf32010e221159c.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:34:16.702700Z",
+      "pipeline": "orchestrator",
+      "version": 4,
+      "hash": "b43d039e4e56ccec",
+      "diff_summary": "+0 -0 ~2 nodes",
+      "snapshot_file": "orchestrator-2026-02-08T20-34-15-b43d039e4e56ccec.json"
     }
   ]
 }
