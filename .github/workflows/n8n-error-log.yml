@@ -1,0 +1,78 @@
+name: Log n8n Error
+
+on:
+  repository_dispatch:
+    types: [n8n-error-log, n8n-execution-log]
+
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Write log entry
+        run: |
+          PAYLOAD='${{ toJson(github.event.client_payload) }}'
+          EVENT_TYPE="${{ github.event.action }}"
+          PIPELINE=$(echo "$PAYLOAD" | python3 -c "import sys,json; print(json.load(sys.stdin).get('pipeline','unknown'))" 2>/dev/null || echo "unknown")
+          QID=$(echo "$PAYLOAD" | python3 -c "import sys,json; print(json.load(sys.stdin).get('question_id','unknown'))" 2>/dev/null || echo "unknown")
+          ERROR_TYPE=$(echo "$PAYLOAD" | python3 -c "import sys,json; print(json.load(sys.stdin).get('error_type','unknown'))" 2>/dev/null || echo "unknown")
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H-%M-%S")
+
+          if [ "$EVENT_TYPE" = "n8n-error-log" ]; then
+            mkdir -p logs/errors
+            FILENAME="logs/errors/err-${TIMESTAMP}-${QID}-${ERROR_TYPE}.json"
+            echo "$PAYLOAD" | python3 -m json.tool > "$FILENAME"
+            COMMIT_MSG="log: ${PIPELINE} error on ${QID} (${ERROR_TYPE})"
+          else
+            mkdir -p logs/executions
+            FILENAME="logs/executions/exec-${TIMESTAMP}-${QID}.json"
+            echo "$PAYLOAD" | python3 -m json.tool > "$FILENAME"
+            COMMIT_MSG="exec: ${PIPELINE} execution trace (${QID})"
+          fi
+
+          echo "Wrote: $FILENAME"
+
+      - name: Update dashboard data
+        run: |
+          python3 -c "
+          import json, os, sys
+          from datetime import datetime
+
+          payload = json.loads('''${{ toJson(github.event.client_payload) }}''')
+          event_type = '${{ github.event.action }}'
+
+          data_path = 'docs/data.json'
+          if not os.path.exists(data_path):
+              sys.exit(0)
+
+          with open(data_path) as f:
+              data = json.load(f)
+
+          if event_type == 'n8n-error-log':
+              if 'execution_logs' not in data:
+                  data['execution_logs'] = []
+              data['execution_logs'].append({
+                  'timestamp': datetime.utcnow().isoformat() + 'Z',
+                  'question_id': payload.get('question_id', ''),
+                  'rag_type': payload.get('pipeline', ''),
+                  'correct': False,
+                  'error_type': payload.get('error_type', 'UNKNOWN'),
+                  'error_preview': str(payload.get('error_message', ''))[:100],
+                  'source': 'n8n-direct'
+              })
+              if len(data['execution_logs']) > 200:
+                  data['execution_logs'] = data['execution_logs'][-200:]
+
+          with open(data_path, 'w') as f:
+              json.dump(data, f, indent=2, ensure_ascii=False)
+          "
+
+      - name: Commit and push
+        run: |
+          git config user.name "n8n-logger[bot]"
+          git config user.email "n8n-logger[bot]@users.noreply.github.com"
+          git add logs/ docs/data.json
+          git diff --staged --quiet || (git commit -m "$COMMIT_MSG" && git push)
