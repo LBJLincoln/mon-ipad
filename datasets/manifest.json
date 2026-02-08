@@ -1,8 +1,8 @@
 {
   "version": "1.0",
-  "last_updated": "2026-02-08T21:52:00Z",
-  "last_verified": "2026-02-08T21:52:00Z",
-  "verified_by": "verify-phase2-deep.py",
+  "last_updated": "2026-02-08T22:15:00Z",
+  "last_verified": "2026-02-08T22:15:00Z",
+  "verified_by": "phase2-database-setup branch",
   "description": "Dataset manifest for Multi-RAG Orchestrator evaluation across 5 phases. Tracks all 16 HuggingFace datasets and Phase 1 curated questions.",
   "total_datasets": 16,
   "phase_1_curated": {
@@ -45,11 +45,11 @@
       },
       "ingestion_status": {
         "pinecone": "not_needed",
-        "neo4j": "partial",
+        "neo4j": "script_ready",
         "supabase": "not_needed"
       },
       "current_question_count": 200,
-      "neo4j_notes": "General entities present in Neo4j (14,904 nodes) but musique-specific entities from question contexts need targeted extraction"
+      "neo4j_notes": "Entity extraction script ready: db/populate/phase2_neo4j.py. Run with --llm to extract from question contexts."
     },
     {
       "name": "2wikimultihopqa",
@@ -66,11 +66,11 @@
       },
       "ingestion_status": {
         "pinecone": "not_needed",
-        "neo4j": "partial",
+        "neo4j": "script_ready",
         "supabase": "not_needed"
       },
       "current_question_count": 300,
-      "neo4j_notes": "General entities present in Neo4j but 2wiki-specific entities from question contexts need targeted extraction"
+      "neo4j_notes": "Entity extraction script ready: db/populate/phase2_neo4j.py. Run with --llm to extract from question contexts."
     },
     {
       "name": "hotpotqa",
@@ -108,11 +108,11 @@
       "ingestion_status": {
         "pinecone": "partial",
         "neo4j": "not_needed",
-        "supabase": "not_started"
+        "supabase": "script_ready"
       },
       "current_question_count": 200,
       "pinecone_vectors": 500,
-      "supabase_notes": "finqa_tables not yet created in Supabase. Need to parse table_data from questions."
+      "supabase_notes": "Migration and population script ready. Run: python db/populate/phase2_supabase.py"
     },
     {
       "name": "tatqa",
@@ -130,10 +130,10 @@
       "ingestion_status": {
         "pinecone": "not_needed",
         "neo4j": "not_needed",
-        "supabase": "not_started"
+        "supabase": "script_ready"
       },
       "current_question_count": 150,
-      "supabase_notes": "tatqa_tables not yet created in Supabase. Need to parse table_data from questions."
+      "supabase_notes": "Migration and population script ready. Run: python db/populate/phase2_supabase.py"
     },
     {
       "name": "convfinqa",
@@ -151,30 +151,31 @@
       "ingestion_status": {
         "pinecone": "not_needed",
         "neo4j": "not_needed",
-        "supabase": "not_started"
+        "supabase": "script_ready"
       },
       "current_question_count": 100,
-      "supabase_notes": "convfinqa_tables not yet created in Supabase. Need to parse table_data from questions."
+      "supabase_notes": "Migration and population script ready. Run: python db/populate/phase2_supabase.py"
     },
     {
       "name": "wikitablequestions",
-      "hf_source": "Stanford/wikitablequestions",
+      "hf_source": "TableSenseAI/WikiTableQuestions",
       "rag_target": "quantitative",
       "tier": 2,
-      "phase_introduced": 3,
+      "phase_introduced": 2,
       "sample_sizes": {
         "phase_1": 0,
-        "phase_2": 0,
+        "phase_2": 50,
         "phase_3": 50,
         "phase_4": 500,
         "phase_5": "full"
       },
       "ingestion_status": {
-        "pinecone": "not_started",
-        "neo4j": "not_started",
-        "supabase": "not_started"
+        "pinecone": "not_needed",
+        "neo4j": "not_needed",
+        "supabase": "not_needed"
       },
-      "current_question_count": 0
+      "current_question_count": 50,
+      "notes": "Table data fetched from HuggingFace (50/50 CSV tables). Questions now have context and table_data in hf-1000.json."
     },
     {
       "name": "frames",
