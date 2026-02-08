@@ -1,33 +1,33 @@
 {
   "meta": {
-    "generated_at": "2026-02-08T03:32:41.569283Z",
+    "generated_at": "2026-02-08T03:39:25.414309Z",
     "eval_script": "run-comprehensive-eval.py",
     "status": "complete",
     "total_questions_in_datasets": 1200,
     "total_testable": 200,
     "total_testable_after_ingestion": 1200,
-    "total_tested": 405,
+    "total_tested": 352,
     "total_cost_usd": 0,
     "ingestion_status": "pending_supabase",
     "ingestion_note": "Neo4j OK (145 nodes), Pinecone OK (10411 vectors). Supabase DNS blocked in current env - need external session for full ingestion.",
-    "current_session": "2026-02-08T02-34-46"
+    "current_session": "2026-02-08T03-36-38"
   },
   "databases": {
     "pinecone": {
       "total_vectors": 10411,
       "namespaces": {
-        "benchmark-popqa": 1000,
-        "benchmark-asqa": 948,
-        "benchmark-frames": 824,
         "benchmark-finqa": 500,
-        "benchmark-natural_questions": 1000,
-        "benchmark-hotpotqa": 1000,
         "benchmark-msmarco": 1000,
+        "": 639,
+        "benchmark-natural_questions": 1000,
         "benchmark-narrativeqa": 1000,
+        "benchmark-popqa": 1000,
         "benchmark-squad_v2": 1000,
-        "benchmark-triviaqa": 1000,
+        "benchmark-frames": 824,
+        "benchmark-hotpotqa": 1000,
+        "benchmark-asqa": 948,
         "benchmark-pubmedqa": 500,
-        "": 639
+        "benchmark-triviaqa": 1000
       }
     },
     "neo4j": {
@@ -214,6 +214,26 @@
       "neo4j_relationships": 54907,
       "supabase_rows": 0,
       "file": "logs/db-snapshots/snap-2026-02-08T03-32-38.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-08T03-36-38",
+      "timestamp": "2026-02-08T03:36:38.455191Z",
+      "trigger": "pre-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 14904,
+      "neo4j_relationships": 54907,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-08T03-36-38.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-08T03-39-22",
+      "timestamp": "2026-02-08T03:39:22.585200Z",
+      "trigger": "post-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 14904,
+      "neo4j_relationships": 54907,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-08T03-39-22.json"
     }
   ],
   "pipelines": {
@@ -246,10 +266,10 @@
     },
     "orchestrator": {
       "total_questions": 50,
-      "tested": 115,
-      "correct": 57,
-      "errors": 37,
-      "avg_latency_ms": 14277,
+      "tested": 62,
+      "correct": 33,
+      "errors": 16,
+      "avg_latency_ms": 12353,
       "p95_latency_ms": 21511,
       "cost_usd": 0
     }
@@ -886,21 +906,6 @@
       "timestamp": "2026-02-08T00:28:10.615604Z"
     },
     {
-      "id": "orch-03",
-      "rag_type": "orchestrator",
-      "question": "What is the relationship between Marie Curie and the Nobel Prize?",
-      "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T00:32:24.799445Z"
-    },
-    {
       "id": "orch-04",
       "rag_type": "orchestrator",
       "question": "How much revenue did GreenEnergy Corp generate in Q4 2023?",
@@ -914,21 +919,6 @@
       "match_type": "NUMERIC_MATCH",
       "cost_usd": 0,
       "timestamp": "2026-02-08T00:32:37.706066Z"
-    },
-    {
-      "id": "orch-05",
-      "rag_type": "orchestrator",
-      "question": "Which scientists are connected to the University of Cambridge and what is the total employee count at TechVision?",
-      "expected": "Newton, Darwin, Turing studied at Cambridge; TechVision has ~47 active employees",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T00:36:51.899643Z"
     },
     {
       "id": "orch-06",
@@ -1019,21 +1009,6 @@
       "match_type": "NUMERIC_MATCH",
       "cost_usd": 0,
       "timestamp": "2026-02-08T00:39:23.114503Z"
-    },
-    {
-      "id": "orch-12",
-      "rag_type": "orchestrator",
-      "question": "Which film directors worked in London?",
-      "expected": "Alfred Hitchcock, Stanley Kubrick",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 37393,
-      "error": "Empty response (HTTP 200)",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T00:41:02.565202Z"
     },
     {
       "id": "orch-13",
@@ -1561,21 +1536,6 @@
       "timestamp": "2026-02-08T01:40:39.951298Z"
     },
     {
-      "id": "orch-03",
-      "rag_type": "orchestrator",
-      "question": "What is the relationship between Marie Curie and the Nobel Prize?",
-      "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T01:44:54.148622Z"
-    },
-    {
       "id": "orch-04",
       "rag_type": "orchestrator",
       "question": "How much revenue did GreenEnergy Corp generate in Q4 2023?",
@@ -1589,21 +1549,6 @@
       "match_type": "NUMERIC_MATCH",
       "cost_usd": 0,
       "timestamp": "2026-02-08T01:45:03.523990Z"
-    },
-    {
-      "id": "orch-05",
-      "rag_type": "orchestrator",
-      "question": "Which scientists are connected to the University of Cambridge and what is the total employee count at TechVision?",
-      "expected": "Newton, Darwin, Turing studied at Cambridge; TechVision has ~47 active employees",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T01:49:17.706759Z"
     },
     {
       "id": "orch-06",
@@ -2146,21 +2091,6 @@
       "timestamp": "2026-02-08T02:02:49.433662Z"
     },
     {
-      "id": "orch-12",
-      "rag_type": "orchestrator",
-      "question": "Which film directors worked in London?",
-      "expected": "Alfred Hitchcock, Stanley Kubrick",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T02:07:03.627704Z"
-    },
-    {
       "id": "orch-13",
       "rag_type": "orchestrator",
       "question": "What does NASA study and how much cash does GreenEnergy Corp have?",
@@ -2206,21 +2136,6 @@
       "timestamp": "2026-02-08T02:07:50.971419Z"
     },
     {
-      "id": "orch-16",
-      "rag_type": "orchestrator",
-      "question": "What is the connection between the World Health Organization and the United Nations?",
-      "expected": "WHO is a subset of the United Nations",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T02:12:05.165322Z"
-    },
-    {
       "id": "orch-17",
       "rag_type": "orchestrator",
       "question": "Who was Winston Churchill?",
@@ -2249,36 +2164,6 @@
       "match_type": "PARTIAL",
       "cost_usd": 0,
       "timestamp": "2026-02-08T02:12:35.507685Z"
-    },
-    {
-      "id": "orch-19",
-      "rag_type": "orchestrator",
-      "question": "Which Nobel Prize winners are in the knowledge graph and what was their contribution?",
-      "expected": "Einstein (Relativity), Curie (radioactivity), Mandela (anti-apartheid)",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T02:16:49.697304Z"
-    },
-    {
-      "id": "orch-20",
-      "rag_type": "orchestrator",
-      "question": "What is the total debt of HealthPlus Labs and who is connected to the city of Princeton?",
-      "expected": "HealthPlus total debt ~$140M (ST+LT 2023); Einstein connected to Princeton",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T02:21:03.899104Z"
     },
     {
       "id": "orch-21",
@@ -2324,21 +2209,6 @@
       "match_type": "PARTIAL",
       "cost_usd": 0,
       "timestamp": "2026-02-08T02:23:53.667108Z"
-    },
-    {
-      "id": "orch-24",
-      "rag_type": "orchestrator",
-      "question": "What was the EPS difference between TechVision Inc and GreenEnergy Corp in 2023?",
-      "expected": "TechVision basic EPS $16.17 vs GreenEnergy $13.29",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T02:28:07.861793Z"
     },
     {
       "id": "orch-25",
@@ -3736,36 +3606,6 @@
       "timestamp": "2026-02-08T02:43:37.469408Z"
     },
     {
-      "id": "orch-28",
-      "rag_type": "orchestrator",
-      "question": "Which company had the highest revenue growth between 2020 and 2023?",
-      "expected": "HealthPlus Labs with 260% growth",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T02:47:51.679811Z"
-    },
-    {
-      "id": "orch-29",
-      "rag_type": "orchestrator",
-      "question": "What is the path from Alan Turing to Google through the knowledge graph?",
-      "expected": "Turing → AI → Google, or Turing → Cambridge → Stanford → Google",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T02:52:05.877703Z"
-    },
-    {
       "id": "orch-30",
       "rag_type": "orchestrator",
       "question": "Explain what is photosynthesis and what is its chemical equation",
@@ -3779,21 +3619,6 @@
       "match_type": "ENTITY_MATCH",
       "cost_usd": 0,
       "timestamp": "2026-02-08T02:52:26.889241Z"
-    },
-    {
-      "id": "orch-31",
-      "rag_type": "orchestrator",
-      "question": "What was the total assets growth of TechVision from 2020 to 2023 and who are the key scientists in the graph?",
-      "expected": "Assets grew from $5.4B to $7.924B; Key scientists: Einstein, Curie, Newton, Darwin, Turing, Fleming",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T02:56:41.080273Z"
     },
     {
       "id": "orch-32",
@@ -3811,36 +3636,6 @@
       "timestamp": "2026-02-08T02:56:50.835891Z"
     },
     {
-      "id": "orch-33",
-      "rag_type": "orchestrator",
-      "question": "Which artists worked in Paris according to the knowledge graph?",
-      "expected": "Pablo Picasso, Vincent van Gogh",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T03:01:05.051806Z"
-    },
-    {
-      "id": "orch-34",
-      "rag_type": "orchestrator",
-      "question": "Who was Nikola Tesla and what was his rivalry with Edison?",
-      "expected": "Tesla was an inventor, both connected to Electricity in New York City",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T03:05:19.275566Z"
-    },
-    {
       "id": "orch-35",
       "rag_type": "orchestrator",
       "question": "What is the average salary across all departments at GreenEnergy?",
@@ -3854,21 +3649,6 @@
       "match_type": "ENTITY_MATCH",
       "cost_usd": 0,
       "timestamp": "2026-02-08T03:05:29.186567Z"
-    },
-    {
-      "id": "orch-36",
-      "rag_type": "orchestrator",
-      "question": "What is the Pythagorean theorem and who invented it?",
-      "expected": "a² + b² = c², attributed to Pythagoras",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T03:09:43.385619Z"
     },
     {
       "id": "orch-37",
@@ -3946,36 +3726,6 @@
       "timestamp": "2026-02-08T03:10:45.111275Z"
     },
     {
-      "id": "orch-42",
-      "rag_type": "orchestrator",
-      "question": "What is the connection between Louis Pasteur and disease prevention?",
-      "expected": "Pasteur created vaccination which protects against Influenza and COVID-19",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T03:14:59.308024Z"
-    },
-    {
-      "id": "orch-43",
-      "rag_type": "orchestrator",
-      "question": "List the top 3 companies by stockholders equity at end of 2023 and explain who Einstein was connected to",
-      "expected": "TechVision $6.149B, GreenEnergy $3.276B, HealthPlus $795M; Einstein connected to Princeton, Nobel Foundation, Theory of Relativity",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T03:19:13.520449Z"
-    },
-    {
       "id": "orch-44",
       "rag_type": "orchestrator",
       "question": "What is CRISPR technology used for?",
@@ -4006,21 +3756,6 @@
       "timestamp": "2026-02-08T03:19:32.731233Z"
     },
     {
-      "id": "orch-46",
-      "rag_type": "orchestrator",
-      "question": "What museums are connected to Washington D.C. in the knowledge graph?",
-      "expected": "Smithsonian Institution",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T03:23:46.950560Z"
-    },
-    {
       "id": "orch-47",
       "rag_type": "orchestrator",
       "question": "What is the French Revolution?",
@@ -4034,21 +3769,6 @@
       "match_type": "NUMERIC_MATCH",
       "cost_usd": 0,
       "timestamp": "2026-02-08T03:23:58.443055Z"
-    },
-    {
-      "id": "orch-48",
-      "rag_type": "orchestrator",
-      "question": "What products does HealthPlus sell and who is connected to the Nobel Foundation?",
-      "expected": "GenomeScan, ImmunoBoost, NeuroShield, MedAssist AI, PatientHub; Einstein, Curie, Mandela connected to Nobel Foundation",
-      "answer": "",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
-      "match_type": "NO_ANSWER",
-      "cost_usd": 0,
-      "timestamp": "2026-02-08T03:28:12.641489Z"
     },
     {
       "id": "orch-49",
@@ -4066,6 +3786,261 @@
       "timestamp": "2026-02-08T03:28:24.373684Z"
     },
     {
+      "id": "orch-03",
+      "rag_type": "orchestrator",
+      "question": "What is the relationship between Marie Curie and the Nobel Prize?",
+      "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry",
+      "answer": "Erreur: limite d'itérations atteinte.\n\n*⚠️ Confiance modérée - vérifiez les informations.*",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 69016,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:37:50.352739Z"
+    },
+    {
+      "id": "orch-05",
+      "rag_type": "orchestrator",
+      "question": "Which scientists are connected to the University of Cambridge and what is the total employee count at TechVision?",
+      "expected": "Newton, Darwin, Turing studied at Cambridge; TechVision has ~47 active employees",
+      "answer": "Erreur: limite d'itérations atteinte.\n\n*⚠️ Confiance modérée - vérifiez les informations.*",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 70167,
+      "error": null,
+      "error_type": null,
+      "match_type": "PARTIAL",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:00.542109Z"
+    },
+    {
+      "id": "orch-12",
+      "rag_type": "orchestrator",
+      "question": "Which film directors worked in London?",
+      "expected": "Alfred Hitchcock, Stanley Kubrick",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4198,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:04.763094Z"
+    },
+    {
+      "id": "orch-16",
+      "rag_type": "orchestrator",
+      "question": "What is the connection between the World Health Organization and the United Nations?",
+      "expected": "WHO is a subset of the United Nations",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 1013,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:05.798239Z"
+    },
+    {
+      "id": "orch-19",
+      "rag_type": "orchestrator",
+      "question": "Which Nobel Prize winners are in the knowledge graph and what was their contribution?",
+      "expected": "Einstein (Relativity), Curie (radioactivity), Mandela (anti-apartheid)",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 974,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:06.794997Z"
+    },
+    {
+      "id": "orch-20",
+      "rag_type": "orchestrator",
+      "question": "What is the total debt of HealthPlus Labs and who is connected to the city of Princeton?",
+      "expected": "HealthPlus total debt ~$140M (ST+LT 2023); Einstein connected to Princeton",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 1402,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:08.219523Z"
+    },
+    {
+      "id": "orch-24",
+      "rag_type": "orchestrator",
+      "question": "What was the EPS difference between TechVision Inc and GreenEnergy Corp in 2023?",
+      "expected": "TechVision basic EPS $16.17 vs GreenEnergy $13.29",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 779,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:09.020185Z"
+    },
+    {
+      "id": "orch-28",
+      "rag_type": "orchestrator",
+      "question": "Which company had the highest revenue growth between 2020 and 2023?",
+      "expected": "HealthPlus Labs with 260% growth",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4458,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:13.500533Z"
+    },
+    {
+      "id": "orch-29",
+      "rag_type": "orchestrator",
+      "question": "What is the path from Alan Turing to Google through the knowledge graph?",
+      "expected": "Turing → AI → Google, or Turing → Cambridge → Stanford → Google",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 849,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:14.371874Z"
+    },
+    {
+      "id": "orch-31",
+      "rag_type": "orchestrator",
+      "question": "What was the total assets growth of TechVision from 2020 to 2023 and who are the key scientists in the graph?",
+      "expected": "Assets grew from $5.4B to $7.924B; Key scientists: Einstein, Curie, Newton, Darwin, Turing, Fleming",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 858,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:15.253500Z"
+    },
+    {
+      "id": "orch-33",
+      "rag_type": "orchestrator",
+      "question": "Which artists worked in Paris according to the knowledge graph?",
+      "expected": "Pablo Picasso, Vincent van Gogh",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 913,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:16.189411Z"
+    },
+    {
+      "id": "orch-34",
+      "rag_type": "orchestrator",
+      "question": "Who was Nikola Tesla and what was his rivalry with Edison?",
+      "expected": "Tesla was an inventor, both connected to Electricity in New York City",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 839,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:17.050900Z"
+    },
+    {
+      "id": "orch-36",
+      "rag_type": "orchestrator",
+      "question": "What is the Pythagorean theorem and who invented it?",
+      "expected": "a² + b² = c², attributed to Pythagoras",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 968,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:18.040604Z"
+    },
+    {
+      "id": "orch-42",
+      "rag_type": "orchestrator",
+      "question": "What is the connection between Louis Pasteur and disease prevention?",
+      "expected": "Pasteur created vaccination which protects against Influenza and COVID-19",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 803,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:18.866380Z"
+    },
+    {
+      "id": "orch-43",
+      "rag_type": "orchestrator",
+      "question": "List the top 3 companies by stockholders equity at end of 2023 and explain who Einstein was connected to",
+      "expected": "TechVision $6.149B, GreenEnergy $3.276B, HealthPlus $795M; Einstein connected to Princeton, Nobel Foundation, Theory of Relativity",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 801,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:19.689777Z"
+    },
+    {
+      "id": "orch-46",
+      "rag_type": "orchestrator",
+      "question": "What museums are connected to Washington D.C. in the knowledge graph?",
+      "expected": "Smithsonian Institution",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 846,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:20.558223Z"
+    },
+    {
+      "id": "orch-48",
+      "rag_type": "orchestrator",
+      "question": "What products does HealthPlus sell and who is connected to the Nobel Foundation?",
+      "expected": "GenomeScan, ImmunoBoost, NeuroShield, MedAssist AI, PatientHub; Einstein, Curie, Mandela connected to Nobel Foundation",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 788,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
+      "match_type": "NO_ANSWER",
+      "cost_usd": 0,
+      "timestamp": "2026-02-08T03:39:21.368361Z"
+    },
+    {
       "id": "orch-50",
       "rag_type": "orchestrator",
       "question": "Describe the relationship chain from Alexander Fleming to COVID-19 in the knowledge graph",
@@ -4073,12 +4048,12 @@
       "answer": "",
       "correct": false,
       "f1": 0.0,
-      "latency_ms": 0,
-      "error": "The read operation timed out",
-      "error_type": "TIMEOUT",
+      "latency_ms": 1170,
+      "error": "Empty response (HTTP 200)",
+      "error_type": "EMPTY_RESPONSE",
       "match_type": "NO_ANSWER",
       "cost_usd": 0,
-      "timestamp": "2026-02-08T03:32:38.567890Z"
+      "timestamp": "2026-02-08T03:39:22.563153Z"
     }
   ],
   "history": [
@@ -4173,316 +4148,6 @@
     }
   ],
   "execution_logs": [
-    {
-      "timestamp": "2026-02-08T01:39:25.576577Z",
-      "question_id": "graph-06",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 2929,
-      "error_type": "EMPTY_RESPONSE",
-      "error_preview": "Empty response (HTTP 200)",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T01:39:30.753463Z",
-      "question_id": "graph-07",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 5161,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Insufficient context.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:39:35.315407Z",
-      "question_id": "graph-08",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 4544,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Insufficient context.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:39:40.124451Z",
-      "question_id": "graph-09",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 4795,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Insufficient context.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:39:44.048298Z",
-      "question_id": "graph-10",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.4,
-      "latency_ms": 3910,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Paris Louvre museum famous.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:39:46.965121Z",
-      "question_id": "quant-01",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 2899,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "TechVision Inc's total revenue in fiscal year 2023 was **\\$6,745,000,000.00**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT SUM(revenue) FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 AND period = 'FY' LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:39:49.550845Z",
-      "question_id": "quant-02",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 2572,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "GreenEnergy Corp's net income in 2023 was **\\$664,400,000.00**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT net_income FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%GreenEnergy Corp%' AND fiscal_year = 2023 AND period = 'FY' LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:39:52.220423Z",
-      "question_id": "quant-03",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 2657,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The revenue of HealthPlus Labs in Q4 2023 was **\\$322,560,000.00**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT SUM(revenue) FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%HealthPlus Labs%' AND fiscal_year = 2023 AND period = 'Q4' LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:39:55.017308Z",
-      "question_id": "quant-04",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.1333,
-      "latency_ms": 2783,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The gross profit for TechVision Inc in FY 2023 was **\\$4,586,600,000.00**, and the gross profit for ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT\n  company_name,\n  gross_profit\nFROM financials\nWHERE\n  tenant_id = 'benchmark' AND fiscal_year = 2023 AND period = 'FY' AND (company_name ILIKE '%TechVision Inc%' OR company_name ILIKE '%GreenE",
-        "sql_status": "PASSED",
-        "result_count": 2,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:39:57.566653Z",
-      "question_id": "quant-05",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 2535,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "TechVision Inc's R&D spending in 2023 was **\\$1,349,000,000.00**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT SUM(research_development) FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 AND period = 'FY' LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:40:00.078673Z",
-      "question_id": "quant-06",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.1333,
-      "latency_ms": 2500,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was **6.7100**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT T1.diluted_eps FROM financials AS T1 WHERE T1.tenant_id = 'benchmark' AND T1.company_name ILIKE '%HealthPlus Labs%' AND T1.fiscal_year = 2023 AND T1.period = 'FY' LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:40:02.892149Z",
-      "question_id": "quant-07",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 2799,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "TechVision Inc. had **\\$2,200,000,000.00** in cash and equivalents at the end of 2023.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT T1.cash_and_equivalents FROM balance_sheet AS T1 WHERE T1.tenant_id = 'benchmark' AND T1.company_name ILIKE '%TechVision Inc%' AND T1.fiscal_year = 2023 ORDER BY T1.as_of_date DESC LIMIT 1",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:40:05.555400Z",
-      "question_id": "quant-08",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 2649,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "GreenEnergy Corp's total assets at the end of fiscal year 2023 were **\\$4,460,000,000.00**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT total_assets FROM balance_sheet WHERE tenant_id = 'benchmark' AND company_name ILIKE '%GreenEnergy Corp%' AND fiscal_year = 2023 LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:40:08.560180Z",
-      "question_id": "quant-09",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 2991,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The total stockholders' equity for HealthPlus Labs at the end of 2023 was **\\$795,000,000.00**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT SUM(t1.total_stockholders_equity) FROM balance_sheet AS t1 WHERE t1.tenant_id = 'benchmark' AND t1.company_name ILIKE '%HealthPlus Labs%' AND t1.fiscal_year = 2023 AND t1.as_of_date = (SELECT M",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:40:11.131228Z",
-      "question_id": "quant-10",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 2558,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "TechVision Inc's operating income in Q3 2023 was **$516,525,000.00**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT operating_income FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 AND period = 'Q3' LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:40:28.918946Z",
-      "question_id": "orch-01",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.5,
-      "latency_ms": 17772,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "TechVision Inc's revenue in 2023 was **\\$6,745,000,000.00**.",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:40:39.956672Z",
-      "question_id": "orch-02",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.3333,
-      "latency_ms": 11023,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The person who discovered penicillin is Alexander Fleming [1], [2].",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T01:44:54.153670Z",
-      "question_id": "orch-03",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "TIMEOUT",
-      "error_preview": "The read operation timed out",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
     {
       "timestamp": "2026-02-08T01:45:03.528421Z",
       "question_id": "orch-04",
@@ -7420,6 +7085,246 @@
       "latency_ms": 0,
       "error_type": "TIMEOUT",
       "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:37:50.360597Z",
+      "question_id": "orch-03",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 69016,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Erreur: limite d'itérations atteinte.\n\n*⚠️ Confiance modérée - vérifiez les informations.*",
+      "confidence": 0,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T03:39:00.550271Z",
+      "question_id": "orch-05",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 70167,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Erreur: limite d'itérations atteinte.\n\n*⚠️ Confiance modérée - vérifiez les informations.*",
+      "confidence": 0,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T03:39:04.770520Z",
+      "question_id": "orch-12",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4198,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:05.806319Z",
+      "question_id": "orch-16",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 1013,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:06.802564Z",
+      "question_id": "orch-19",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 974,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:08.226824Z",
+      "question_id": "orch-20",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 1402,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:09.027737Z",
+      "question_id": "orch-24",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 779,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:13.508064Z",
+      "question_id": "orch-28",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4458,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:14.379507Z",
+      "question_id": "orch-29",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 849,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:15.261428Z",
+      "question_id": "orch-31",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 858,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:16.197253Z",
+      "question_id": "orch-33",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 913,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:17.058052Z",
+      "question_id": "orch-34",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 839,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:18.048415Z",
+      "question_id": "orch-36",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 968,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:18.873645Z",
+      "question_id": "orch-42",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 803,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:19.697770Z",
+      "question_id": "orch-43",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 801,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:20.565816Z",
+      "question_id": "orch-46",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 846,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:21.376015Z",
+      "question_id": "orch-48",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 788,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T03:39:22.571496Z",
+      "question_id": "orch-50",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 1170,
+      "error_type": "EMPTY_RESPONSE",
+      "error_preview": "Empty response (HTTP 200)",
       "answer_preview": "",
       "confidence": null,
       "pipeline_details_summary": null
