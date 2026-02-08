@@ -1,0 +1,154 @@
+{
+  "phase": 4,
+  "name": "Full HF",
+  "questions": 101324,
+  "description": "Scale to ~100K questions with 10x larger samples from all 16 datasets. Requires extended database capacity and may need paid tiers for Pinecone and Neo4j.",
+  "last_checked": null,
+  "checked_by": null,
+  "prerequisites": {
+    "phase_3_gates_passed": false,
+    "notes": "Phase 3 must reach all gate criteria before Phase 4 begins."
+  },
+  "requirements": {
+    "pinecone": {
+      "min_vectors": 100000,
+      "namespaces_required": [
+        "benchmark-squad_v2",
+        "benchmark-triviaqa",
+        "benchmark-popqa",
+        "benchmark-frames",
+        "benchmark-msmarco",
+        "benchmark-asqa",
+        "benchmark-narrativeqa",
+        "benchmark-pubmedqa",
+        "benchmark-natural_questions",
+        "benchmark-hotpotqa"
+      ],
+      "status": "not_started",
+      "current": 10411,
+      "plan_required": "paid",
+      "notes": "Free tier may not support 100K vectors. Evaluate Pinecone Starter vs Standard plan. Embedding cost for 100K vectors estimated at $1-2."
+    },
+    "neo4j": {
+      "min_nodes": 15000,
+      "min_relationships": 20000,
+      "entity_types_required": [
+        "Person",
+        "Organization",
+        "Technology",
+        "City",
+        "Disease",
+        "Event",
+        "Concept",
+        "Location",
+        "Document",
+        "ScientificConcept",
+        "HistoricalEvent",
+        "GeographicFeature"
+      ],
+      "status": "not_started",
+      "current_nodes": 110,
+      "current_relationships": 151,
+      "plan_required": "aura_free_may_suffice",
+      "notes": "15K nodes within Aura Free limits (50K nodes). May need performance tuning for query speed at this scale."
+    },
+    "supabase": {
+      "min_rows": 50000,
+      "tables_required": [
+        "financials",
+        "balance_sheet",
+        "sales_data",
+        "products",
+        "employees",
+        "finqa_tables",
+        "tatqa_tables",
+        "convfinqa_tables",
+        "wikitablequestions_tables"
+      ],
+      "status": "not_started",
+      "current_rows": 88,
+      "plan_required": "free_tier_sufficient",
+      "notes": "Supabase free tier supports 500MB. 50K rows of financial data should be well within limits."
+    }
+  },
+  "gate_criteria": {
+    "standard": {
+      "target_accuracy": 75,
+      "current": null,
+      "met": false,
+      "notes": "No regression from Phase 3"
+    },
+    "graph": {
+      "target_accuracy": 55,
+      "current": null,
+      "met": false,
+      "notes": "No regression from Phase 3"
+    },
+    "quantitative": {
+      "target_accuracy": 65,
+      "current": null,
+      "met": false,
+      "notes": "No regression from Phase 3"
+    },
+    "orchestrator": {
+      "target_accuracy": 60,
+      "max_p95_latency_s": 20,
+      "max_error_rate_pct": 10,
+      "current": null,
+      "met": false,
+      "notes": "No regression from Phase 3"
+    },
+    "overall": {
+      "target_accuracy": 65,
+      "current": null,
+      "met": false,
+      "notes": "No regression from Phase 3"
+    }
+  },
+  "datasets_used": [
+    "musique",
+    "2wikimultihopqa",
+    "hotpotqa",
+    "finqa",
+    "tatqa",
+    "convfinqa",
+    "wikitablequestions",
+    "frames",
+    "triviaqa",
+    "squad_v2",
+    "popqa",
+    "msmarco",
+    "asqa",
+    "narrativeqa",
+    "pubmedqa",
+    "natural_questions"
+  ],
+  "question_breakdown": {
+    "graph": {
+      "musique": 2000,
+      "2wikimultihopqa": 3000,
+      "hotpotqa": 10000,
+      "total": 15000
+    },
+    "quantitative": {
+      "finqa": 2000,
+      "tatqa": 1500,
+      "convfinqa": 1000,
+      "wikitablequestions": 500,
+      "total": 5000
+    },
+    "standard": {
+      "frames": 824,
+      "triviaqa": 10000,
+      "squad_v2": 10000,
+      "popqa": 10000,
+      "msmarco": 10000,
+      "asqa": 6000,
+      "narrativeqa": 10000,
+      "pubmedqa": 5000,
+      "natural_questions": 10000,
+      "hotpotqa": 9500,
+      "total": 81324
+    }
+  }
+}

@@ -21,12 +21,12 @@ echo "  Branch: $BRANCH"
 echo "  Extra args: $EXTRA_ARGS"
 echo "=============================================="
 
-cd "$REPO_ROOT/benchmark-workflows"
+cd "$REPO_ROOT/eval"
 
 # Run evaluation
 echo ""
 echo ">>> Running evaluation..."
-python3 run-comprehensive-eval.py $EXTRA_ARGS
+python3 run-eval.py $EXTRA_ARGS
 
 # Commit and push results
 echo ""

@@ -1,0 +1,82 @@
+{
+  "phase": 1,
+  "name": "Baseline",
+  "questions": 200,
+  "description": "Establish baseline accuracy with 50 hand-crafted questions per pipeline. Iteratively improve workflows until gate criteria are met.",
+  "last_checked": null,
+  "checked_by": null,
+  "requirements": {
+    "pinecone": {
+      "min_vectors": 10000,
+      "namespaces_required": [
+        "benchmark-squad_v2",
+        "benchmark-triviaqa",
+        "benchmark-popqa"
+      ],
+      "status": "ready",
+      "current": 10411,
+      "notes": "Existing seed data from initial ingestion covers all Phase 1 standard RAG questions."
+    },
+    "neo4j": {
+      "min_nodes": 100,
+      "min_relationships": 140,
+      "entity_types_required": [
+        "Person",
+        "Organization",
+        "Technology",
+        "City",
+        "Disease"
+      ],
+      "status": "ready",
+      "current_nodes": 110,
+      "current_relationships": 151,
+      "notes": "Entity enrichment session (Feb 7) added 20 new entities and 71 new relationships. 9 community summaries updated."
+    },
+    "supabase": {
+      "min_rows": 80,
+      "tables_required": [
+        "financials",
+        "balance_sheet",
+        "sales_data",
+        "products",
+        "employees"
+      ],
+      "status": "ready",
+      "current_rows": 88,
+      "notes": "Financial tables seeded with 3 companies. Employee table has only 9 rows (known gap for some queries)."
+    }
+  },
+  "gate_criteria": {
+    "standard": {
+      "target_accuracy": 85,
+      "current": 82.6,
+      "met": false
+    },
+    "graph": {
+      "target_accuracy": 70,
+      "current": 52.0,
+      "met": false
+    },
+    "quantitative": {
+      "target_accuracy": 85,
+      "current": 80.0,
+      "met": false
+    },
+    "orchestrator": {
+      "target_accuracy": 70,
+      "max_p95_latency_s": 15,
+      "max_error_rate_pct": 5,
+      "current": 49.6,
+      "met": false
+    },
+    "overall": {
+      "target_accuracy": 75,
+      "current": 67.7,
+      "met": false
+    }
+  },
+  "datasets_used": [
+    "phase-1/standard-orch-50x2.json",
+    "phase-1/graph-quant-50x2.json"
+  ]
+}

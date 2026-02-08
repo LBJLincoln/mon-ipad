@@ -1,0 +1,121 @@
+{
+  "phase": 2,
+  "name": "Expand",
+  "questions": 1000,
+  "description": "Scale to 1,000 questions using tier 1 and tier 2 HuggingFace datasets. Requires significant Neo4j and Supabase ingestion for multi-hop graph and financial QA datasets.",
+  "last_checked": null,
+  "checked_by": null,
+  "prerequisites": {
+    "phase_1_gates_passed": false,
+    "notes": "Phase 1 must reach all gate criteria before Phase 2 begins."
+  },
+  "requirements": {
+    "pinecone": {
+      "min_vectors": 10411,
+      "namespaces_required": [
+        "benchmark-squad_v2",
+        "benchmark-triviaqa",
+        "benchmark-popqa"
+      ],
+      "status": "ready",
+      "current": 10411,
+      "notes": "No additional Pinecone ingestion needed for Phase 2. Phase 2 focuses on graph and quantitative datasets."
+    },
+    "neo4j": {
+      "min_nodes": 2500,
+      "min_relationships": 3000,
+      "entity_types_required": [
+        "Person",
+        "Organization",
+        "Technology",
+        "City",
+        "Disease",
+        "Event",
+        "Concept",
+        "Location"
+      ],
+      "status": "not_started",
+      "current_nodes": 110,
+      "current_relationships": 151,
+      "datasets_to_ingest": [
+        "musique",
+        "2wikimultihopqa"
+      ],
+      "notes": "Need to extract entities and relationships from musique (200q) and 2wikimultihopqa (300q) supporting passages and ingest into Neo4j."
+    },
+    "supabase": {
+      "min_rows": 10000,
+      "tables_required": [
+        "financials",
+        "balance_sheet",
+        "sales_data",
+        "products",
+        "employees",
+        "finqa_tables",
+        "tatqa_tables",
+        "convfinqa_tables"
+      ],
+      "status": "not_started",
+      "current_rows": 88,
+      "datasets_to_ingest": [
+        "finqa",
+        "tatqa",
+        "convfinqa"
+      ],
+      "notes": "Need to create new tables for financial QA datasets and ingest structured data from finqa (200q), tatqa (150q), convfinqa (100q)."
+    }
+  },
+  "gate_criteria": {
+    "standard": {
+      "target_accuracy": 85,
+      "current": null,
+      "met": false
+    },
+    "graph": {
+      "target_accuracy": 60,
+      "current": null,
+      "met": false
+    },
+    "quantitative": {
+      "target_accuracy": 70,
+      "current": null,
+      "met": false
+    },
+    "orchestrator": {
+      "target_accuracy": 65,
+      "max_p95_latency_s": 15,
+      "max_error_rate_pct": 10,
+      "current": null,
+      "met": false
+    },
+    "overall": {
+      "target_accuracy": 70,
+      "current": null,
+      "met": false
+    }
+  },
+  "datasets_used": [
+    "musique",
+    "2wikimultihopqa",
+    "finqa",
+    "tatqa",
+    "convfinqa"
+  ],
+  "question_breakdown": {
+    "graph": {
+      "musique": 200,
+      "2wikimultihopqa": 300,
+      "total": 500
+    },
+    "quantitative": {
+      "finqa": 200,
+      "tatqa": 150,
+      "convfinqa": 100,
+      "total": 450
+    },
+    "standard": {
+      "carryover_from_phase_1": 50,
+      "total": 50
+    }
+  }
+}

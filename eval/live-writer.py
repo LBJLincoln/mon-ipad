@@ -10,7 +10,7 @@ Updates docs/data.json (v2 format) with:
 
 Usage from eval scripts:
     from importlib.machinery import SourceFileLoader
-    writer = SourceFileLoader("w", "benchmark-workflows/live-results-writer.py").load_module()
+    writer = SourceFileLoader("w", "eval/live-writer.py").load_module()
     writer.init(label="Iteration 4", description="After topK increase")
     writer.record_question(rag_type, question_id, question_text, correct, f1, latency_ms, ...)
     writer.record_execution(rag_type, question_id, ...)  # detailed trace to JSONL
@@ -20,10 +20,10 @@ Usage from eval scripts:
     writer.finish()
 
 Or standalone:
-    python live-results-writer.py --update-db
-    python live-results-writer.py --snapshot-db
-    python live-results-writer.py --reset
-    python live-results-writer.py --push
+    python live-writer.py --update-db
+    python live-writer.py --snapshot-db
+    python live-writer.py --reset
+    python live-writer.py --push
 """
 import json
 import os
@@ -749,4 +749,4 @@ if __name__ == "__main__":
         finish()
         print("Marked as complete.")
     else:
-        print("Usage: python live-results-writer.py [--update-db|--snapshot-db|--reset|--push|--finish]")
+        print("Usage: python live-writer.py [--update-db|--snapshot-db|--reset|--push|--finish]")

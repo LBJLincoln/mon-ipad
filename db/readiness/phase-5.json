@@ -1,0 +1,173 @@
+{
+  "phase": 5,
+  "name": "Million",
+  "questions": "1M+",
+  "description": "Full production-scale evaluation with 1M+ questions from complete HuggingFace dataset splits. Requires paid infrastructure plans across all databases.",
+  "last_checked": null,
+  "checked_by": null,
+  "prerequisites": {
+    "phase_4_gates_passed": false,
+    "notes": "Phase 4 must reach all gate criteria before Phase 5 begins."
+  },
+  "requirements": {
+    "pinecone": {
+      "min_vectors": 500000,
+      "namespaces_required": [
+        "benchmark-squad_v2",
+        "benchmark-triviaqa",
+        "benchmark-popqa",
+        "benchmark-frames",
+        "benchmark-msmarco",
+        "benchmark-asqa",
+        "benchmark-narrativeqa",
+        "benchmark-pubmedqa",
+        "benchmark-natural_questions",
+        "benchmark-hotpotqa"
+      ],
+      "status": "not_started",
+      "current": 10411,
+      "plan_required": "paid",
+      "estimated_monthly_cost": "$70-150",
+      "notes": "Pinecone Standard plan required for 500K+ vectors. Embedding generation cost estimated at $5-15. Consider batch embedding pipeline."
+    },
+    "neo4j": {
+      "min_nodes": 50000,
+      "min_relationships": 75000,
+      "entity_types_required": [
+        "Person",
+        "Organization",
+        "Technology",
+        "City",
+        "Disease",
+        "Event",
+        "Concept",
+        "Location",
+        "Document",
+        "ScientificConcept",
+        "HistoricalEvent",
+        "GeographicFeature",
+        "MedicalConcept",
+        "FinancialEntity"
+      ],
+      "status": "not_started",
+      "current_nodes": 110,
+      "current_relationships": 151,
+      "plan_required": "aura_pro",
+      "estimated_monthly_cost": "$65+",
+      "notes": "Aura Free limit is 50K nodes. Phase 5 is at the boundary - may need Aura Pro for headroom and performance. Full-text indexes essential at this scale."
+    },
+    "supabase": {
+      "min_rows": 200000,
+      "tables_required": [
+        "financials",
+        "balance_sheet",
+        "sales_data",
+        "products",
+        "employees",
+        "finqa_tables",
+        "tatqa_tables",
+        "convfinqa_tables",
+        "wikitablequestions_tables"
+      ],
+      "status": "not_started",
+      "current_rows": 88,
+      "plan_required": "pro",
+      "estimated_monthly_cost": "$25",
+      "notes": "Supabase Pro plan for 8GB storage and higher connection limits. 200K rows should be ~100MB, well within limits, but concurrent query load needs Pro plan."
+    }
+  },
+  "gate_criteria": {
+    "standard": {
+      "target_accuracy": 75,
+      "current": null,
+      "met": false,
+      "notes": "Maintain Phase 4 levels"
+    },
+    "graph": {
+      "target_accuracy": 55,
+      "current": null,
+      "met": false,
+      "notes": "Maintain Phase 4 levels"
+    },
+    "quantitative": {
+      "target_accuracy": 65,
+      "current": null,
+      "met": false,
+      "notes": "Maintain Phase 4 levels"
+    },
+    "orchestrator": {
+      "target_accuracy": 60,
+      "max_p95_latency_s": 20,
+      "max_error_rate_pct": 10,
+      "current": null,
+      "met": false,
+      "notes": "Maintain Phase 4 levels"
+    },
+    "overall": {
+      "target_accuracy": 65,
+      "current": null,
+      "met": false,
+      "notes": "Maintain Phase 4 levels"
+    }
+  },
+  "throughput_requirements": {
+    "min_questions_per_hour": 100,
+    "target_questions_per_hour": 500,
+    "max_concurrent_requests": 10,
+    "notes": "At 100q/hour, 1M questions would take ~10,000 hours. Need parallel execution and batching. Target 500q/hour for ~2,000 hours (~83 days continuous)."
+  },
+  "datasets_used": [
+    "musique",
+    "2wikimultihopqa",
+    "hotpotqa",
+    "finqa",
+    "tatqa",
+    "convfinqa",
+    "wikitablequestions",
+    "frames",
+    "triviaqa",
+    "squad_v2",
+    "popqa",
+    "msmarco",
+    "asqa",
+    "narrativeqa",
+    "pubmedqa",
+    "natural_questions"
+  ],
+  "question_breakdown": {
+    "graph": {
+      "musique": "full",
+      "2wikimultihopqa": "full",
+      "hotpotqa": "full",
+      "estimated_total": "150K+"
+    },
+    "quantitative": {
+      "finqa": "full",
+      "tatqa": "full",
+      "convfinqa": "full",
+      "wikitablequestions": "full",
+      "estimated_total": "30K+"
+    },
+    "standard": {
+      "frames": 824,
+      "triviaqa": "full",
+      "squad_v2": "full",
+      "popqa": "full",
+      "msmarco": "full",
+      "asqa": "full",
+      "narrativeqa": "full",
+      "pubmedqa": "full",
+      "natural_questions": "full",
+      "hotpotqa": "full",
+      "estimated_total": "800K+"
+    }
+  },
+  "estimated_infrastructure_cost": {
+    "pinecone_monthly": "$70-150",
+    "neo4j_monthly": "$65+",
+    "supabase_monthly": "$25",
+    "openrouter_llm": "$50-200",
+    "embedding_generation": "$5-15",
+    "total_estimated_monthly": "$215-455"
+  }
+}

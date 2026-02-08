@@ -16,14 +16,14 @@ from collections import defaultdict
 from datetime import datetime
 from copy import deepcopy
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_FILE = os.path.join(REPO_ROOT, "docs", "data.json")
 BACKUP_FILE = os.path.join(REPO_ROOT, "docs", "data-v1-backup.json")
 
 # Question files for full text lookup
 QUESTIONS_FILES = [
-    os.path.join(REPO_ROOT, "benchmark-workflows", "benchmark-standard-orchestrator-questions.json"),
-    os.path.join(REPO_ROOT, "benchmark-workflows", "benchmark-50x2-questions.json"),
+    os.path.join(REPO_ROOT, "datasets", "phase-1", "standard-orch-50x2.json"),
+    os.path.join(REPO_ROOT, "datasets", "phase-1", "graph-quant-50x2.json"),
 ]
 
 

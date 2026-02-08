@@ -11,9 +11,9 @@ Outputs:
   - Improvement suggestions (data-driven, not speculative)
 
 Usage:
-  python agentic-analyzer.py                    # Print analysis to stdout
-  python agentic-analyzer.py --output-summary   # Markdown for GitHub Step Summary
-  python agentic-analyzer.py --json             # JSON output for AI agent consumption
+  python analyzer.py                    # Print analysis to stdout
+  python analyzer.py --output-summary   # Markdown for GitHub Step Summary
+  python analyzer.py --json             # JSON output for AI agent consumption
 """
 
 import json

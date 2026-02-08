@@ -33,7 +33,7 @@ DATA_FILE = os.path.join(REPO_ROOT, "docs", "data.json")
 os.makedirs(SNAPSHOTS_DIR, exist_ok=True)
 
 # Load writer for recording changes
-writer = SourceFileLoader("w", os.path.join(REPO_ROOT, "benchmark-workflows", "live-results-writer.py")).load_module()
+writer = SourceFileLoader("w", os.path.join(REPO_ROOT, "eval", "live-writer.py")).load_module()
 
 # n8n API config
 N8N_HOST = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")

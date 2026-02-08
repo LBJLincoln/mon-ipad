@@ -1,0 +1,385 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-02-08",
+  "description": "Dataset manifest for Multi-RAG Orchestrator evaluation across 5 phases. Tracks all 16 HuggingFace datasets and Phase 1 curated questions.",
+  "total_datasets": 16,
+  "phase_1_curated": {
+    "description": "Hand-crafted questions for Phase 1 baseline (200 total, 50 per pipeline)",
+    "files": [
+      {
+        "filename": "phase-1/standard-orch-50x2.json",
+        "path": "datasets/phase-1/standard-orch-50x2.json",
+        "question_count": 100,
+        "breakdown": {
+          "standard": 50,
+          "orchestrator": 50
+        }
+      },
+      {
+        "filename": "phase-1/graph-quant-50x2.json",
+        "path": "datasets/phase-1/graph-quant-50x2.json",
+        "question_count": 100,
+        "breakdown": {
+          "graph": 50,
+          "quantitative": 50
+        }
+      }
+    ],
+    "total_questions": 200
+  },
+  "hf_datasets": [
+    {
+      "name": "musique",
+      "hf_source": "StanfordNLP/musique",
+      "rag_target": "graph",
+      "tier": 1,
+      "phase_introduced": 2,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 200,
+        "phase_3": 200,
+        "phase_4": 2000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "not_started",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 0
+    },
+    {
+      "name": "2wikimultihopqa",
+      "hf_source": "xanhho/2WikiMultihopQA",
+      "rag_target": "graph",
+      "tier": 1,
+      "phase_introduced": 2,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 300,
+        "phase_3": 300,
+        "phase_4": 3000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "not_started",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 0
+    },
+    {
+      "name": "hotpotqa",
+      "hf_source": "hotpot_qa",
+      "rag_target": "standard+graph",
+      "tier": 1,
+      "phase_introduced": 3,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 0,
+        "phase_3": 1000,
+        "phase_4": 10000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "not_started",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 0
+    },
+    {
+      "name": "finqa",
+      "hf_source": "dreamerdeo/finqa",
+      "rag_target": "quantitative",
+      "tier": 2,
+      "phase_introduced": 2,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 200,
+        "phase_3": 200,
+        "phase_4": 2000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "not_started",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 0
+    },
+    {
+      "name": "tatqa",
+      "hf_source": "next-tat-qa",
+      "rag_target": "quantitative",
+      "tier": 2,
+      "phase_introduced": 2,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 150,
+        "phase_3": 150,
+        "phase_4": 1500,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "not_started",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 0
+    },
+    {
+      "name": "convfinqa",
+      "hf_source": "zhiheng-huang/convfinqa",
+      "rag_target": "quantitative",
+      "tier": 2,
+      "phase_introduced": 2,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 100,
+        "phase_3": 100,
+        "phase_4": 1000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "not_started",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 0
+    },
+    {
+      "name": "wikitablequestions",
+      "hf_source": "Stanford/wikitablequestions",
+      "rag_target": "quantitative",
+      "tier": 2,
+      "phase_introduced": 3,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 0,
+        "phase_3": 50,
+        "phase_4": 500,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "not_started",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 0
+    },
+    {
+      "name": "frames",
+      "hf_source": "google/frames-benchmark",
+      "rag_target": "standard",
+      "tier": 3,
+      "phase_introduced": 3,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 0,
+        "phase_3": 1000,
+        "phase_4": 824,
+        "phase_5": 824
+      },
+      "ingestion_status": {
+        "pinecone": "partial",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 824,
+      "pinecone_vectors": 824
+    },
+    {
+      "name": "triviaqa",
+      "hf_source": "trivia_qa",
+      "rag_target": "standard",
+      "tier": 3,
+      "phase_introduced": 3,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 0,
+        "phase_3": 1000,
+        "phase_4": 10000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "partial",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 1000,
+      "pinecone_vectors": 1000
+    },
+    {
+      "name": "squad_v2",
+      "hf_source": "rajpurkar/squad_v2",
+      "rag_target": "standard",
+      "tier": 3,
+      "phase_introduced": 3,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 0,
+        "phase_3": 1000,
+        "phase_4": 10000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "partial",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 1000,
+      "pinecone_vectors": 1000
+    },
+    {
+      "name": "popqa",
+      "hf_source": "akariasai/PopQA",
+      "rag_target": "standard",
+      "tier": 3,
+      "phase_introduced": 3,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 0,
+        "phase_3": 1000,
+        "phase_4": 10000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "partial",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 1000,
+      "pinecone_vectors": 1000
+    },
+    {
+      "name": "msmarco",
+      "hf_source": "microsoft/ms_marco",
+      "rag_target": "standard",
+      "tier": 3,
+      "phase_introduced": 3,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 0,
+        "phase_3": 1000,
+        "phase_4": 10000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "partial",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 1000,
+      "pinecone_vectors": 1000
+    },
+    {
+      "name": "asqa",
+      "hf_source": "din0s/asqa",
+      "rag_target": "standard",
+      "tier": 3,
+      "phase_introduced": 3,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 0,
+        "phase_3": 1000,
+        "phase_4": 6000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "partial",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 948,
+      "pinecone_vectors": 948
+    },
+    {
+      "name": "narrativeqa",
+      "hf_source": "deepmind/narrativeqa",
+      "rag_target": "standard",
+      "tier": 3,
+      "phase_introduced": 3,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 0,
+        "phase_3": 1000,
+        "phase_4": 10000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "partial",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 1000,
+      "pinecone_vectors": 1000
+    },
+    {
+      "name": "pubmedqa",
+      "hf_source": "qiaojin/PubMedQA",
+      "rag_target": "standard",
+      "tier": 3,
+      "phase_introduced": 3,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 0,
+        "phase_3": 500,
+        "phase_4": 5000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "partial",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 500,
+      "pinecone_vectors": 500
+    },
+    {
+      "name": "natural_questions",
+      "hf_source": "google-research-datasets/natural_questions",
+      "rag_target": "standard",
+      "tier": 3,
+      "phase_introduced": 3,
+      "sample_sizes": {
+        "phase_1": 0,
+        "phase_2": 0,
+        "phase_3": 1000,
+        "phase_4": 10000,
+        "phase_5": "full"
+      },
+      "ingestion_status": {
+        "pinecone": "partial",
+        "neo4j": "not_started",
+        "supabase": "not_started"
+      },
+      "current_question_count": 1000,
+      "pinecone_vectors": 1000
+    }
+  ],
+  "tier_summary": {
+    "tier_1": {
+      "description": "Multi-hop reasoning (graph-centric)",
+      "datasets": ["musique", "2wikimultihopqa", "hotpotqa"],
+      "primary_db": "neo4j"
+    },
+    "tier_2": {
+      "description": "Financial and tabular QA (quantitative-centric)",
+      "datasets": ["finqa", "tatqa", "convfinqa", "wikitablequestions"],
+      "primary_db": "supabase"
+    },
+    "tier_3": {
+      "description": "General knowledge QA (standard RAG)",
+      "datasets": ["frames", "triviaqa", "squad_v2", "popqa", "msmarco", "asqa", "narrativeqa", "pubmedqa", "natural_questions"],
+      "primary_db": "pinecone"
+    }
+  },
+  "phase_question_totals": {
+    "phase_1": 200,
+    "phase_2": 1200,
+    "phase_3": 10700,
+    "phase_4": 101324,
+    "phase_5": "1M+"
+  }
+}

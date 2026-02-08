@@ -126,7 +126,7 @@ Each line in an execution log is a JSON object:
 
 ## Usage
 
-Logs are written automatically by `benchmark-workflows/live-results-writer.py`.
+Logs are written automatically by `eval/live-writer.py`.
 Error traces are created for any question with `error != null`.
 DB snapshots are taken before/after each evaluation run.
 

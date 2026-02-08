@@ -45,7 +45,7 @@ jobs:
 
       - name: Run RAG Evaluation
         run: |
-          cd benchmark-workflows
+          cd eval
           ARGS="--types ${{ inputs.types || 'standard,graph,quantitative,orchestrator' }}"
           if [ -n "${{ inputs.max_per_type }}" ]; then
             ARGS="$ARGS --max ${{ inputs.max_per_type }}"
@@ -53,7 +53,7 @@ jobs:
           if [ "${{ inputs.reset }}" = "true" ]; then
             ARGS="$ARGS --reset"
           fi
-          python run-comprehensive-eval.py $ARGS
+          python run-eval.py $ARGS
 
       - name: Commit and push results
         run: |
