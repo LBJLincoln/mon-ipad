@@ -14,6 +14,51 @@ Phase 1 (200q) → Phase 2 (1,000q) → Phase 3 (~10Kq) → Phase 4 (~100Kq) →
 
 ---
 
+## Terminal Execution Environment
+
+**Claude Code (sandbox) does NOT have network access.** All commands that call
+external APIs (n8n, Supabase, Neo4j, Pinecone, OpenRouter) MUST be run manually
+by the user on their terminal.
+
+### Where to run commands
+
+| Where | What |
+|---|---|
+| **Termius** (SSH to Google Cloud free tier VM) | All `python` commands that hit APIs (eval, populate, sync, deploy) |
+| **Google Cloud Console** (browser SSH) | Same — alternative if Termius unavailable |
+| **Claude Code** (this sandbox) | Code editing, analysis, git commits, dry-runs only |
+
+### Before every terminal session — ALWAYS pull from main
+
+```bash
+# === RUN THIS FIRST IN TERMIUS / GOOGLE CLOUD CONSOLE ===
+cd ~/mon-ipad
+git pull origin main          # Always sync from main before running anything
+```
+
+### Environment variables — paste once per terminal session
+
+```bash
+export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
+export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
+export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
+export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
+export OPENROUTER_API_KEY="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"
+export N8N_API_KEY="..."
+export N8N_HOST="https://amoret.app.n8n.cloud"
+```
+
+### Google Cloud free tier VM setup (one-time)
+
+```bash
+sudo apt-get update && sudo apt-get install -y python3 python3-pip postgresql-client git
+pip3 install requests
+git clone https://github.com/LBJLincoln/mon-ipad.git ~/mon-ipad
+cd ~/mon-ipad
+```
+
+---
+
 ## Quick Start — Two-Phase Iteration Cycle
 
 The iteration loop has two phases: **fast iteration** (10q, rapid workflow tuning)
@@ -25,15 +70,29 @@ before committing to a full eval.
 This is the inner loop for rapid workflow improvement. Run this repeatedly
 until results look good, THEN proceed to Phase B.
 
-```
-Step A0: Read current state      → cat STATUS.md
-Step A1: Sync workflows           → python workflows/sync.py
-Step A2: Smoke test               → python eval/quick-test.py --questions 5
-Step A3: Fast iteration test      → python eval/fast-iter.py --label "description"
-Step A4: Review per-pipeline results (auto-saved to logs/fast-iter/ and logs/pipeline-results/)
-Step A5: If bad → fix workflow in n8n → repeat from A1
-         If good → proceed to Phase B
-Step A6: Commit fast-iter results → git add docs/ logs/ && git commit -m "fast-iter: ..."
+**Run in Termius / Google Cloud Console:**
+```bash
+cd ~/mon-ipad && git pull origin main
+
+# Step A0: Read current state
+cat STATUS.md
+
+# Step A1: Sync workflows from n8n cloud
+python3 workflows/sync.py
+
+# Step A2: Smoke test (5 questions)
+python3 eval/quick-test.py --questions 5
+
+# Step A3: Fast iteration test
+python3 eval/fast-iter.py --label "description"
+
+# Step A4: Review results (auto-saved to logs/fast-iter/ and logs/pipeline-results/)
+
+# Step A5: If bad → fix workflow in n8n → repeat from A1
+#          If good → proceed to Phase B
+
+# Step A6: Commit results
+git add docs/ logs/ && git commit -m "fast-iter: ..." && git push origin main
 ```
 
 **Fast-iter features:**
@@ -43,12 +102,12 @@ Step A6: Commit fast-iter results → git add docs/ logs/ && git commit -m "fast
 - Auto-compares with previous fast-iter run (regressions/fixes)
 - Results feed the dashboard in real-time
 
-**Commands:**
+**Commands (run in Termius / Google Cloud Console):**
 ```bash
-python eval/fast-iter.py                                 # 10q per pipeline, all 4
-python eval/fast-iter.py --questions 5 --pipelines graph # 5q, graph only
-python eval/fast-iter.py --only-failing                  # Re-test only failures
-python eval/fast-iter.py --label "after fuzzy matching"  # Tag the run
+python3 eval/fast-iter.py                                 # 10q per pipeline, all 4
+python3 eval/fast-iter.py --questions 5 --pipelines graph # 5q, graph only
+python3 eval/fast-iter.py --only-failing                  # Re-test only failures
+python3 eval/fast-iter.py --label "after fuzzy matching"  # Tag the run
 ```
 
 ### Phase B: Full Evaluation (200q, parallel, ~15-20 min)
@@ -56,11 +115,20 @@ python eval/fast-iter.py --label "after fuzzy matching"  # Tag the run
 Run this only AFTER fast-iter shows the workflow is ready. Uses **parallel execution**
 across all 4 pipelines simultaneously.
 
-```
-Step B1: Run parallel evaluation  → python eval/run-eval-parallel.py --reset --label "Iter N: description"
-Step B2: Analyze results          → python eval/analyzer.py
-Step B3: Commit + push            → git add docs/ workflows/ logs/ && git commit && git push
-Step B4: Back to Phase A for next improvement
+**Run in Termius / Google Cloud Console:**
+```bash
+cd ~/mon-ipad && git pull origin main
+
+# Step B1: Run parallel evaluation
+python3 eval/run-eval-parallel.py --reset --label "Iter N: description"
+
+# Step B2: Analyze results
+python3 eval/analyzer.py
+
+# Step B3: Commit + push
+git add docs/ workflows/ logs/ && git commit -m "eval: Iter N" && git push origin main
+
+# Step B4: Back to Phase A for next improvement
 ```
 
 **Parallel eval features:**
@@ -69,11 +137,11 @@ Step B4: Back to Phase A for next improvement
 - Per-pipeline result snapshots saved to `logs/pipeline-results/`
 - ~4x speedup vs sequential `run-eval.py`
 
-**Commands:**
+**Commands (run in Termius / Google Cloud Console):**
 ```bash
-python eval/run-eval-parallel.py --reset --label "Iter 6: fuzzy matching"  # Full 200q
-python eval/run-eval-parallel.py --max 20 --types graph,orchestrator       # Subset
-python eval/run-eval-parallel.py --push                                     # Auto git push
+python3 eval/run-eval-parallel.py --reset --label "Iter 6: fuzzy matching"  # Full 200q
+python3 eval/run-eval-parallel.py --max 20 --types graph,orchestrator       # Subset
+python3 eval/run-eval-parallel.py --push                                     # Auto git push
 ```
 
 ### Legacy: Sequential Evaluation
@@ -81,8 +149,9 @@ python eval/run-eval-parallel.py --push                                     # Au
 The original sequential `run-eval.py` is still available for debugging or
 when you want to isolate a single pipeline:
 
+**Run in Termius / Google Cloud Console:**
 ```bash
-python eval/run-eval.py --types graph --max 10 --label "debug graph"
+python3 eval/run-eval.py --types graph --max 10 --label "debug graph"
 ```
 
 **Key principle**: Each iteration should target ONE specific improvement.
@@ -109,6 +178,21 @@ Additional Phase 1 exit criteria:
 - Requires: Phase 1 gates passed + DB ingestion (Neo4j entities + Supabase tables from HF datasets)
 - Targets: Graph ≥60%, Quantitative ≥70% on new questions
 - No Phase 1 regression
+- **DB setup status**: MIGRATION_READY (scripts created, need to run on terminal)
+
+**Phase 2 DB ingestion (run in Termius / Google Cloud Console):**
+```bash
+cd ~/mon-ipad && git pull origin main
+
+# 1. Create Supabase tables + populate 450 rows
+python3 db/populate/phase2_supabase.py
+
+# 2. Extract ~5000 entities into Neo4j (heuristic mode, fast)
+python3 db/populate/phase2_neo4j.py
+
+# 2b. OR with LLM for higher quality (~5min, ~$0.05)
+python3 db/populate/phase2_neo4j.py --llm
+```
 
 ### Phase 3 — Scale (~9,500q)
 - Requires: Phase 2 gates + full `db/populate/push-datasets.py` execution
@@ -253,9 +337,13 @@ mon-ipad/
 │   │   ├── supabase-core.sql
 │   │   ├── financial-tables.sql
 │   │   └── community-summaries.sql
+│   │   └── phase2-financial-tables.sql # Phase 2: finqa/tatqa/convfinqa tables
 │   ├── populate/
 │   │   ├── all.py                     # Master DB population script
-│   │   ├── neo4j.py                   # Neo4j entity graph builder
+│   │   ├── neo4j.py                   # Neo4j entity graph builder (Phase 1)
+│   │   ├── phase2_neo4j.py            # Neo4j entity extraction (Phase 2, 500 graph q)
+│   │   ├── phase2_supabase.py         # Supabase table population (Phase 2, 450 rows)
+│   │   ├── fetch_wikitablequestions.py # Fetch wiki table CSVs from HuggingFace
 │   │   ├── pinecone.py                # Pinecone embedding creator
 │   │   ├── push-datasets.py           # HuggingFace dataset ingestion
 │   │   └── migrate.py                 # Run SQL migrations
@@ -363,12 +451,14 @@ Errors are automatically classified into types for analytics:
 ---
 
 ## Environment Variables Required
+
+**Paste in Termius / Google Cloud Console at the start of each session:**
 ```bash
-export SUPABASE_PASSWORD="..."        # Supabase PostgreSQL
-export PINECONE_API_KEY="..."         # Pinecone vector DB
+export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
+export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
-export NEO4J_PASSWORD="..."           # Neo4j Aura graph DB
-export OPENROUTER_API_KEY="..."       # LLM API (for embeddings + eval)
+export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
+export OPENROUTER_API_KEY="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"
 export N8N_API_KEY="..."              # JWT for n8n cloud API
 export N8N_HOST="https://amoret.app.n8n.cloud"
 ```
@@ -385,3 +475,11 @@ export N8N_HOST="https://amoret.app.n8n.cloud"
 - Error traces are written as individual JSON files for easy inspection
 - Execution logs use JSONL format (one JSON per line) for streaming analysis
 - ONE change per iteration — never change multiple things at once
+
+### Terminal Execution Rules
+- **Claude Code sandbox has NO network access** — it cannot call Supabase, Neo4j, Pinecone, OpenRouter, or n8n
+- **ALL API-calling scripts** must be run by the user in **Termius** (SSH to GCloud VM) or **Google Cloud Console** (browser SSH)
+- **Always `git pull origin main`** before running any command on the terminal
+- **Always `git push origin main`** after running commands that produce results (logs, data.json, etc.)
+- Claude Code can: edit files, analyze data, write scripts, commit, push to feature branches
+- Claude Code cannot: run eval, populate DBs, sync workflows, deploy patches
