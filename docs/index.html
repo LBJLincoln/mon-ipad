@@ -160,9 +160,11 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 <div class="tabs">
   <div class="tab active" data-tab="matrix">Test Matrix</div>
+  <div class="tab" data-tab="smoke">Smoke Tests</div>
   <div class="tab" data-tab="iterations">Iterations</div>
   <div class="tab" data-tab="questions">Questions</div>
   <div class="tab" data-tab="pipelines">Pipelines</div>
+  <div class="tab" data-tab="workflows">Workflows</div>
   <div class="tab" data-tab="changes">Changes Log</div>
   <div class="tab" data-tab="api">Agentic API</div>
 </div>
@@ -289,7 +291,51 @@ tr:hover td{background:rgba(255,255,255,.02)}
   </div>
 </div>
 
-<!-- TAB 5: CHANGES LOG -->
+<!-- TAB 5: SMOKE TESTS -->
+<div id="tab-smoke" class="panel">
+  <div class="grid g4" id="smokeStatusCards"></div>
+  <div class="card" style="margin-top:12px">
+    <h3>Smoke Test History <span style="font-weight:400;text-transform:none;color:var(--tx3)">(endpoint validation after each workflow change)</span></h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:150px">Timestamp</th>
+          <th style="width:90px">Pipeline</th>
+          <th style="width:60px">Status</th>
+          <th style="width:80px">Trigger</th>
+          <th style="width:80px">Latency</th>
+          <th>Query</th>
+          <th>Response / Error</th>
+        </tr>
+      </thead>
+      <tbody id="smokeTestsBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB 6: WORKFLOWS -->
+<div id="tab-workflows" class="panel">
+  <div class="grid g4" id="wfVersionCards"></div>
+  <div class="card" style="margin-top:12px">
+    <h3>Workflow Version History</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:150px">Timestamp</th>
+          <th style="width:100px">Pipeline</th>
+          <th style="width:60px">Version</th>
+          <th style="width:110px">Hash</th>
+          <th>Changes</th>
+          <th style="width:120px">Snapshot</th>
+        </tr>
+      </thead>
+      <tbody id="wfHistoryBody"></tbody>
+    </table>
+  </div>
+  <div id="wfDiffPanel" class="detail-panel" style="display:none;margin-top:12px"></div>
+</div>
+
+<!-- TAB 7: CHANGES LOG -->
 <div id="tab-changes" class="panel">
   <div class="card">
     <h3>Workflow Changes & Impact</h3>
@@ -408,9 +454,11 @@ function render() {
   renderHeader();
   renderSummaryCards();
   renderMatrix();
+  renderSmokeTests();
   renderIterations();
   renderQuestions();
   renderPipelines();
+  renderWorkflows();
   renderChanges();
   renderAPI();
 }
@@ -1076,6 +1124,174 @@ function renderCategoryBreakdown(reg) {
   });
   html += '</tbody></table>';
   document.getElementById('categoryBreakdown').innerHTML = html;
+}
+
+// ============================================================
+// Smoke Tests Tab
+// ============================================================
+function renderSmokeTests() {
+  const tests = DATA.quick_tests || [];
+
+  // Status cards per pipeline
+  const pipeNames = ['standard', 'graph', 'quantitative', 'orchestrator'];
+  const pipeColors = { standard: '#4f8efa', graph: '#a060f0', quantitative: '#20c0d8', orchestrator: '#f08030' };
+  let cardsHtml = '';
+
+  pipeNames.forEach(pipe => {
+    const pipeTests = tests.filter(t => t.pipeline === pipe);
+    const latest = pipeTests.length > 0 ? pipeTests[pipeTests.length - 1] : null;
+    const recentGroup = [];
+    // Get last batch of tests (same trigger + within 2 min)
+    for (let i = pipeTests.length - 1; i >= 0; i--) {
+      if (recentGroup.length === 0) {
+        recentGroup.push(pipeTests[i]);
+      } else {
+        const lastTs = new Date(recentGroup[recentGroup.length - 1].timestamp).getTime();
+        const thisTs = new Date(pipeTests[i].timestamp).getTime();
+        if (lastTs - thisTs < 120000) {
+          recentGroup.push(pipeTests[i]);
+        } else break;
+      }
+    }
+    const passCount = recentGroup.filter(t => t.status === 'pass').length;
+    const totalCount = recentGroup.length;
+    const allPass = totalCount > 0 && passCount === totalCount;
+    const avgLatency = totalCount > 0 ? Math.round(recentGroup.reduce((s, t) => s + t.latency_ms, 0) / totalCount) : 0;
+
+    const statusColor = allPass ? 'var(--gn)' : totalCount === 0 ? 'var(--tx3)' : 'var(--rd)';
+    const statusText = totalCount === 0 ? 'NO DATA' : allPass ? 'HEALTHY' : `${totalCount - passCount} FAILING`;
+
+    cardsHtml += `<div class="card">
+      <h3 style="color:${pipeColors[pipe]}">${pipe.toUpperCase()}</h3>
+      <div class="stat" style="margin-bottom:8px">
+        <div class="value" style="color:${statusColor};font-size:22px">${statusText}</div>
+        <div class="label">${passCount}/${totalCount} smoke tests passing</div>
+      </div>
+      <div style="font-size:11px;color:var(--tx2);display:flex;justify-content:space-between">
+        <span>Avg: ${avgLatency}ms</span>
+        <span>${latest ? latest.trigger : '-'}</span>
+        <span class="mono">${latest ? latest.timestamp.slice(0,16).replace('T',' ') : '-'}</span>
+      </div>
+    </div>`;
+  });
+  document.getElementById('smokeStatusCards').innerHTML = cardsHtml;
+
+  // Test history table
+  let html = '';
+  tests.slice().reverse().forEach(t => {
+    const statusTag = t.status === 'pass' ? '<span class="tag tag-pass">PASS</span>' :
+                      t.status === 'error' ? '<span class="tag tag-error">ERR</span>' :
+                      '<span class="tag tag-fail">FAIL</span>';
+    const triggerTag = `<span class="tag" style="background:rgba(79,142,250,.12);color:var(--ac)">${t.trigger || 'manual'}</span>`;
+    const content = t.error ? `<span style="color:var(--rd)">${escHtml(t.error)}</span>` :
+                    escHtml((t.response_preview || '').slice(0, 120));
+
+    html += `<tr>
+      <td class="mono" style="font-size:11px">${t.timestamp.replace('T', ' ').slice(0, 19)}</td>
+      <td><span class="pipe-${t.pipeline}" style="font-weight:600">${t.pipeline.slice(0,5)}</span></td>
+      <td>${statusTag}</td>
+      <td>${triggerTag}</td>
+      <td class="mono">${t.latency_ms}ms</td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(t.query)}</td>
+      <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${content}</td>
+    </tr>`;
+  });
+  document.getElementById('smokeTestsBody').innerHTML = html;
+}
+
+// ============================================================
+// Workflows Tab
+// ============================================================
+function renderWorkflows() {
+  const versions = DATA.workflow_versions || {};
+  const history = DATA.workflow_history || [];
+  const pipeColors = { standard: '#4f8efa', graph: '#a060f0', quantitative: '#20c0d8', orchestrator: '#f08030' };
+
+  // Version cards
+  let cardsHtml = '';
+  ['standard', 'graph', 'quantitative', 'orchestrator'].forEach(pipe => {
+    const v = versions[pipe] || {};
+    const models = (v.models_used || []).join(', ') || 'N/A';
+    const diffSummary = v.diff_from_previous?.summary || 'initial';
+
+    cardsHtml += `<div class="card">
+      <h3 style="color:${pipeColors[pipe]}">${pipe.toUpperCase()}</h3>
+      <div class="stat" style="margin-bottom:8px">
+        <div class="value" style="font-size:20px;color:var(--tx)">v${v.version || '?'}</div>
+        <div class="label">${v.name || pipe}</div>
+      </div>
+      <div style="font-size:11px;color:var(--tx2);line-height:1.8">
+        <div>Nodes: <strong>${v.total_nodes || '?'}</strong></div>
+        <div>Hash: <code>${(v.hash || '').slice(0, 12)}</code></div>
+        <div>Models: <code style="font-size:10px">${escHtml(models)}</code></div>
+        <div>Last sync: <span class="mono">${v.timestamp ? v.timestamp.slice(0,16).replace('T',' ') : '-'}</span></div>
+        <div>Changes: <span class="mono">${diffSummary}</span></div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('wfVersionCards').innerHTML = cardsHtml;
+
+  // History table
+  let html = '';
+  history.slice().reverse().forEach(h => {
+    html += `<tr onclick="showWfDiff('${h.pipeline}','${h.snapshot_file}')" style="cursor:pointer">
+      <td class="mono" style="font-size:11px">${h.timestamp.replace('T', ' ').slice(0, 19)}</td>
+      <td><span class="pipe-${h.pipeline}" style="font-weight:600">${h.pipeline}</span></td>
+      <td class="mono">v${h.version}</td>
+      <td class="mono" style="font-size:11px">${(h.hash || '').slice(0, 12)}</td>
+      <td>${escHtml(h.diff_summary || 'initial')}</td>
+      <td class="mono" style="font-size:10px">${h.snapshot_file || '-'}</td>
+    </tr>`;
+  });
+  document.getElementById('wfHistoryBody').innerHTML = html;
+}
+
+function showWfDiff(pipeline, snapshotFile) {
+  const versions = DATA.workflow_versions || {};
+  const v = versions[pipeline];
+  if (!v) return;
+
+  const diff = v.diff_from_previous;
+  let html = `<h3 style="font-size:14px;font-weight:600;margin-bottom:10px">${pipeline.toUpperCase()} — v${v.version} diff</h3>`;
+
+  if (!diff || !diff.has_changes) {
+    html += `<div style="color:var(--tx2)">No changes from previous version (or first version).</div>`;
+  } else {
+    html += `<div style="font-size:12px;color:var(--tx2);margin-bottom:10px">${diff.summary}</div>`;
+
+    if (diff.added_nodes?.length) {
+      html += `<div style="margin-bottom:8px"><strong style="color:var(--gn)">Added nodes (${diff.added_nodes.length}):</strong></div>`;
+      html += `<div class="answer-block" style="border-left:3px solid var(--gn)">${diff.added_nodes.map(n => '+ ' + escHtml(n)).join('\n')}</div>`;
+    }
+    if (diff.removed_nodes?.length) {
+      html += `<div style="margin-bottom:8px;margin-top:8px"><strong style="color:var(--rd)">Removed nodes (${diff.removed_nodes.length}):</strong></div>`;
+      html += `<div class="answer-block" style="border-left:3px solid var(--rd)">${diff.removed_nodes.map(n => '- ' + escHtml(n)).join('\n')}</div>`;
+    }
+    if (diff.modified_nodes?.length) {
+      html += `<div style="margin-bottom:8px;margin-top:8px"><strong style="color:var(--yl)">Modified nodes (${diff.modified_nodes.length}):</strong></div>`;
+      diff.modified_nodes.forEach(mod => {
+        html += `<div style="margin-bottom:6px"><code style="color:var(--yl)">${escHtml(mod.node)}</code></div>`;
+        html += `<table style="margin-bottom:8px"><thead><tr><th>Parameter</th><th>Old</th><th>New</th></tr></thead><tbody>`;
+        (mod.changes || []).forEach(ch => {
+          html += `<tr>
+            <td class="mono" style="font-size:11px">${escHtml(ch.param)}</td>
+            <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--rd)">${escHtml((ch.old||'').slice(0,100))}</td>
+            <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--gn)">${escHtml((ch.new||'').slice(0,100))}</td>
+          </tr>`;
+        });
+        html += `</tbody></table>`;
+      });
+    }
+  }
+
+  html += `<div style="margin-top:10px;font-size:11px;color:var(--tx3)">
+    Snapshot: <code>${snapshotFile}</code> | Hash: <code>${v.hash}</code> | Nodes: ${v.total_nodes} | Models: ${(v.models_used||[]).join(', ')||'N/A'}
+  </div>`;
+
+  const panel = document.getElementById('wfDiffPanel');
+  panel.innerHTML = html;
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 // ============================================================

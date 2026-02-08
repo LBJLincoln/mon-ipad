@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "2.0",
-    "generated_at": "2026-02-08T09:52:25.253695Z",
+    "generated_at": "2026-02-08T10:18:27.102881Z",
     "status": "idle",
     "project": "Multi-RAG Orchestrator SOTA 2026",
     "phase": "Phase 1 — Baseline (200q)",
@@ -14170,6 +14170,58 @@
       ],
       "before_metrics": null,
       "after_metrics": null
+    },
+    {
+      "timestamp": "2026-02-08T10:13:53.884134Z",
+      "description": "standard workflow updated (v1, hash 84d655f7dd6b4285)",
+      "change_type": "workflow-sync",
+      "files_changed": [
+        "standard-2026-02-08T10-13-53-84d655f7dd6b4285.json"
+      ],
+      "affected_pipelines": [
+        "standard"
+      ],
+      "before_metrics": null,
+      "after_metrics": null
+    },
+    {
+      "timestamp": "2026-02-08T10:13:54.470170Z",
+      "description": "graph workflow updated (v1, hash 0d8b93db1b973437)",
+      "change_type": "workflow-sync",
+      "files_changed": [
+        "graph-2026-02-08T10-13-53-0d8b93db1b973437.json"
+      ],
+      "affected_pipelines": [
+        "graph"
+      ],
+      "before_metrics": null,
+      "after_metrics": null
+    },
+    {
+      "timestamp": "2026-02-08T10:13:55.083579Z",
+      "description": "quantitative workflow updated (v1, hash be29c6eb1f039f56)",
+      "change_type": "workflow-sync",
+      "files_changed": [
+        "quantitative-2026-02-08T10-13-53-be29c6eb1f039f56.json"
+      ],
+      "affected_pipelines": [
+        "quantitative"
+      ],
+      "before_metrics": null,
+      "after_metrics": null
+    },
+    {
+      "timestamp": "2026-02-08T10:13:55.555085Z",
+      "description": "orchestrator workflow updated (v1, hash fe3f79014b73ce12)",
+      "change_type": "workflow-sync",
+      "files_changed": [
+        "orchestrator-2026-02-08T10-13-53-fe3f79014b73ce12.json"
+      ],
+      "affected_pipelines": [
+        "orchestrator"
+      ],
+      "before_metrics": null,
+      "after_metrics": null
     }
   ],
   "databases": {
@@ -17624,7 +17676,188 @@
       "pipeline_details_summary": null
     }
   ],
-  "quick_tests": [],
+  "quick_tests": [
+    {
+      "timestamp": "2026-02-08T10:14:25.645124Z",
+      "pipeline": "standard",
+      "query": "What is the capital of Japan?",
+      "status": "pass",
+      "latency_ms": 13399,
+      "response_preview": "La capitale du Japon est Tokyo [1]. Tokyo est située sur l'île de Honshu et est la plus grande zone métropolitaine du monde avec plus de 37 millions d'habitants dans son agglomération [2]. Elle est le",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:14:45.559078Z",
+      "pipeline": "standard",
+      "query": "Where is Normandy located?",
+      "status": "pass",
+      "latency_ms": 19886,
+      "response_preview": "Normandy is a region located in the northwestern part of France, along the English Channel. It is bordered by the regions of Hauts-de-France to the northeast, Île-de-France to the east, Centre-Val de ",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:14:57.645050Z",
+      "pipeline": "standard",
+      "query": "Who painted the Mona Lisa?",
+      "status": "pass",
+      "latency_ms": 12059,
+      "response_preview": "La Joconde, également connue sous le nom de Mona Lisa, a été peinte par Léonard de Vinci [1]. C'est l'un des tableaux les plus célèbres et les plus reconnaissables au monde. Léonard de Vinci a commenc",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:15:15.933169Z",
+      "pipeline": "standard",
+      "query": "What is the largest ocean?",
+      "status": "pass",
+      "latency_ms": 18259,
+      "response_preview": "The largest ocean on Earth is the Pacific Ocean [1]. It covers an area of approximately 165.25 million square kilometers (63.8 million square miles), which is about one-third of the Earth's total surf",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:15:32.409936Z",
+      "pipeline": "standard",
+      "query": "What year did World War II end?",
+      "status": "pass",
+      "latency_ms": 16448,
+      "response_preview": "La Seconde Guerre mondiale s'est terminée en 1945 [1].\n\nPlus précisément, la guerre en Europe s'est achevée le 8 mai 1945 avec la capitulation sans condition de l'Allemagne nazie, signée le 7 mai à Re",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:15:52.038894Z",
+      "pipeline": "graph",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "pass",
+      "latency_ms": 19597,
+      "response_preview": "Marie Curie won Nobel Prizes in Physics (1903) for her work on radioactivity and in Chemistry (1911) for discovering radium and polonium.",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:16:06.519918Z",
+      "pipeline": "graph",
+      "query": "What did Alexander Fleming discover?",
+      "status": "pass",
+      "latency_ms": 14453,
+      "response_preview": "Alexander Fleming discovered penicillin, the world's first antibiotic, in 1928 when he noticed that a mold called Penicillium notatum had contaminated a bacterial culture and killed the bacteria aroun",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:16:12.706045Z",
+      "pipeline": "graph",
+      "query": "Who founded Microsoft?",
+      "status": "pass",
+      "latency_ms": 6154,
+      "response_preview": "Microsoft was founded by Bill Gates and Paul Allen in 1975.",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:16:24.110806Z",
+      "pipeline": "graph",
+      "query": "What is the WHO?",
+      "status": "pass",
+      "latency_ms": 11367,
+      "response_preview": "The World Health Organization (WHO) is a specialized agency of the United Nations responsible for international public health.",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:16:42.438730Z",
+      "pipeline": "graph",
+      "query": "What disease is caused by mosquitoes?",
+      "status": "pass",
+      "latency_ms": 18290,
+      "response_preview": "Mosquitoes can transmit several diseases including malaria, dengue fever, Zika virus, West Nile virus, and yellow fever.",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:16:52.082155Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "status": "fail",
+      "latency_ms": 9609,
+      "response_preview": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:16:58.009636Z",
+      "pipeline": "quantitative",
+      "query": "How many employees does GreenEnergy Corp have?",
+      "status": "pass",
+      "latency_ms": 5901,
+      "response_preview": "GreenEnergy Corp has 50 employees.",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:17:03.022142Z",
+      "pipeline": "quantitative",
+      "query": "What is the total number of products across all companies?",
+      "status": "pass",
+      "latency_ms": 4985,
+      "response_preview": "The total number of products across all companies is 18.",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:17:12.519215Z",
+      "pipeline": "quantitative",
+      "query": "What was HealthPlus Labs' net income in 2022?",
+      "status": "pass",
+      "latency_ms": 9464,
+      "response_preview": "HealthPlus Labs' net income in 2022 was $88,638,000.",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:17:18.871333Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision's revenue in Q1 2023?",
+      "status": "pass",
+      "latency_ms": 6325,
+      "response_preview": "TechVision's revenue in Q1 2023 was $1,552,350,000.",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:17:36.464766Z",
+      "pipeline": "orchestrator",
+      "query": "What is the capital of Japan?",
+      "status": "error",
+      "latency_ms": 17563,
+      "response_preview": "",
+      "trigger": "post-sync",
+      "error": "Empty response"
+    },
+    {
+      "timestamp": "2026-02-08T10:18:05.827773Z",
+      "pipeline": "orchestrator",
+      "query": "What was TechVision Inc's total revenue in 2023?",
+      "status": "pass",
+      "latency_ms": 29333,
+      "response_preview": "TechVision Inc's total revenue for 2023 was $13,490,000,000.00.",
+      "trigger": "post-sync",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-08T10:18:27.102860Z",
+      "pipeline": "orchestrator",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "error",
+      "latency_ms": 21248,
+      "response_preview": "",
+      "trigger": "post-sync",
+      "error": "Empty response"
+    }
+  ],
   "history": [
     {
       "timestamp": "2026-02-07T10:00:00Z",
@@ -17634,6 +17867,86 @@
       "quantitative": 80.0,
       "orchestrator": 48.0,
       "total_tested": 200
+    }
+  ],
+  "workflow_versions": {
+    "standard": {
+      "version": 1,
+      "hash": "84d655f7dd6b4285",
+      "timestamp": "2026-02-08T10:13:53.876123Z",
+      "name": "WF5 Standard RAG V3.4",
+      "webhook": "/webhook/rag-multi-index-v3",
+      "total_nodes": 23,
+      "models_used": [],
+      "snapshot_file": "standard-2026-02-08T10-13-53-84d655f7dd6b4285.json",
+      "diff_from_previous": null
+    },
+    "graph": {
+      "version": 1,
+      "hash": "0d8b93db1b973437",
+      "timestamp": "2026-02-08T10:13:54.464310Z",
+      "name": "WF2 Graph RAG V3.3",
+      "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+      "total_nodes": 26,
+      "models_used": [],
+      "snapshot_file": "graph-2026-02-08T10-13-53-0d8b93db1b973437.json",
+      "diff_from_previous": null
+    },
+    "quantitative": {
+      "version": 1,
+      "hash": "be29c6eb1f039f56",
+      "timestamp": "2026-02-08T10:13:55.077892Z",
+      "name": "WF4 Quantitative V2.0",
+      "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+      "total_nodes": 25,
+      "models_used": [],
+      "snapshot_file": "quantitative-2026-02-08T10-13-53-be29c6eb1f039f56.json",
+      "diff_from_previous": null
+    },
+    "orchestrator": {
+      "version": 1,
+      "hash": "fe3f79014b73ce12",
+      "timestamp": "2026-02-08T10:13:55.547990Z",
+      "name": "V10.1 Orchestrator",
+      "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+      "total_nodes": 68,
+      "models_used": [],
+      "snapshot_file": "orchestrator-2026-02-08T10-13-53-fe3f79014b73ce12.json",
+      "diff_from_previous": null
+    }
+  },
+  "workflow_history": [
+    {
+      "timestamp": "2026-02-08T10:13:53.876140Z",
+      "pipeline": "standard",
+      "version": 1,
+      "hash": "84d655f7dd6b4285",
+      "diff_summary": "initial",
+      "snapshot_file": "standard-2026-02-08T10-13-53-84d655f7dd6b4285.json"
+    },
+    {
+      "timestamp": "2026-02-08T10:13:54.464328Z",
+      "pipeline": "graph",
+      "version": 1,
+      "hash": "0d8b93db1b973437",
+      "diff_summary": "initial",
+      "snapshot_file": "graph-2026-02-08T10-13-53-0d8b93db1b973437.json"
+    },
+    {
+      "timestamp": "2026-02-08T10:13:55.077914Z",
+      "pipeline": "quantitative",
+      "version": 1,
+      "hash": "be29c6eb1f039f56",
+      "diff_summary": "initial",
+      "snapshot_file": "quantitative-2026-02-08T10-13-53-be29c6eb1f039f56.json"
+    },
+    {
+      "timestamp": "2026-02-08T10:13:55.548007Z",
+      "pipeline": "orchestrator",
+      "version": 1,
+      "hash": "fe3f79014b73ce12",
+      "diff_summary": "initial",
+      "snapshot_file": "orchestrator-2026-02-08T10-13-53-fe3f79014b73ce12.json"
     }
   ]
 }
