@@ -557,15 +557,16 @@ def deploy_workflow(wf_id, workflow_data):
     n8n_api("POST", f"/api/v1/workflows/{wf_id}/deactivate")
     time.sleep(1)
 
-    # Clean workflow data for PUT
-    clean = copy.deepcopy(workflow_data)
-    for key in ["id", "createdAt", "updatedAt", "isArchived"]:
-        clean.pop(key, None)
-
-    # Remove problematic settings
-    settings = clean.get("settings", {})
-    for bad_key in ["availableInMCP", "timeSavedMode"]:
-        settings.pop(bad_key, None)
+    # Build minimal clean payload (only required fields)
+    settings = workflow_data.get("settings", {})
+    clean_settings = {k: v for k, v in settings.items()
+                      if k not in ("availableInMCP", "timeSavedMode")}
+    clean = {
+        "name": workflow_data.get("name", f"Workflow {wf_id}"),
+        "nodes": workflow_data.get("nodes", []),
+        "connections": workflow_data.get("connections", {}),
+        "settings": clean_settings,
+    }
 
     print(f"  Uploading workflow {wf_id}...")
     result = n8n_api("PUT", f"/api/v1/workflows/{wf_id}", clean)
