@@ -1,14 +1,15 @@
 {
   "meta": {
     "version": "2.0",
-    "generated_at": "2026-02-08T20:34:16.711925Z",
-    "status": "idle",
+    "generated_at": "2026-02-08T21:00:18.852643Z",
+    "status": "running",
     "project": "Multi-RAG Orchestrator SOTA 2026",
     "phase": "Phase 1 — Baseline (200q)",
     "total_unique_questions": 200,
-    "total_test_runs": 396,
-    "total_iterations": 3,
-    "total_cost_usd": 0
+    "total_test_runs": 430,
+    "total_iterations": 7,
+    "total_cost_usd": 0,
+    "current_session": "2026-02-08T20-50-42"
   },
   "iterations": [
     {
@@ -5314,6 +5315,548 @@
           "timestamp": "2026-02-08T05:30:40.707045Z"
         }
       ]
+    },
+    {
+      "id": "iter-2026-02-08T20-38-36",
+      "number": 4,
+      "timestamp_start": "2026-02-08T20:38:36.306874Z",
+      "timestamp_end": "2026-02-08T20:43:48.845397Z",
+      "label": "Pre-eval standard test",
+      "description": "10q test after model switch",
+      "changes_applied": [],
+      "results_summary": {
+        "standard": {
+          "tested": 10,
+          "correct": 10,
+          "errors": 0,
+          "accuracy_pct": 100.0,
+          "avg_latency_ms": 30648,
+          "p95_latency_ms": 44637,
+          "avg_f1": 0.0584
+        }
+      },
+      "total_tested": 10,
+      "total_correct": 10,
+      "overall_accuracy_pct": 100.0,
+      "questions": [
+        {
+          "id": "std-01",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.0541,
+          "latency_ms": 22966,
+          "answer": "Normandy is located in France [1]. It is a region in the northwest of the country, situated along the English Channel. Normandy is known for its historical significance, particularly related to World War II events such as the D-Day landings in 1944 [2].",
+          "expected": "France",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:39:01.868013Z"
+        },
+        {
+          "id": "std-02",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.1277,
+          "latency_ms": 23728,
+          "answer": "The first season of SpongeBob SquarePants aired from May 1, 1999 to April 8, 2000 on Nickelodeon [1]. It consisted of 20 episodes, with the pilot episode \"Help Wanted\" originally airing on May 1, 1999 [2]. The season concluded with the episode \"Culture Shock\" on April 8, 2000 [3].\n\n[1] https://en.wikipedia.org/wiki/List_of_SpongeBob_SquarePants_episodes\n[2] https://www.imdb.com/title/tt0219653/\n[3] https://www.imdb.com/title/tt0219653/episodes?season=1",
+          "expected": "May 1, 1999",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:39:25.650970Z"
+        },
+        {
+          "id": "std-03",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.0444,
+          "latency_ms": 23925,
+          "answer": "La capitale du Japon est Tokyo [1]. Tokyo est située sur l'île de Honshu et est la plus grande zone métropolitaine du monde avec plus de 37 millions d'habitants dans son agglomération [2]. Elle est le centre politique, économique et culturel du Japon depuis 1868, date à laquelle elle a remplacé Kyoto comme capitale [3].",
+          "expected": "Tokyo",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:39:49.634003Z"
+        },
+        {
+          "id": "std-04",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.1379,
+          "latency_ms": 11283,
+          "answer": "William Shakespeare wrote Romeo and Juliet [1]. This famous tragedy was written by Shakespeare in the late 16th century, likely between 1591 and 1595. It was first published in 1597 [2].",
+          "expected": "William Shakespeare",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:40:00.972496Z"
+        },
+        {
+          "id": "std-05",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.0682,
+          "latency_ms": 38473,
+          "answer": "Penicillin is a group of antibiotics originally derived from the Penicillium fungi [1]. It was the first antibiotic discovered and has been widely used to treat bacterial infections since the 1940s.\n\nThe discovery of penicillin is attributed to Scottish scientist Alexander Fleming in 1928. He observed that a mold contaminating one of his bacterial culture plates had created a bacteria-free circle around itself. This mold was later identified as Penicillium notatum [2].\n\nPenicillin works by inter",
+          "expected": "An antibiotic discovered by Alexander Fleming",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:40:39.499983Z"
+        },
+        {
+          "id": "std-06",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.0323,
+          "latency_ms": 37226,
+          "answer": "La théorie de la relativité, développée par Albert Einstein au début du XXe siècle, est un ensemble de deux théories physiques : la relativité restreinte (1905) et la relativité générale (1915). Ces théories révolutionnèrent notre compréhension de l'espace, du temps, de la gravité et de l'univers dans son ensemble.\n\nLa relativité restreinte repose sur deux postulats fondamentaux :\n\n1. Les lois de la physique sont les mêmes dans tous les référentiels inertiels (c'est-à-dire non accélérés).\n2. La ",
+          "expected": "Einstein's theory describing gravity and spacetime",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:41:16.780309Z"
+        },
+        {
+          "id": "std-07",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.0392,
+          "latency_ms": 31048,
+          "answer": "The largest ocean on Earth is the Pacific Ocean. It covers an area of approximately 165.25 million square kilometers (63.8 million square miles), which is about one-third of the Earth's total surface area and larger than all of the Earth's land area combined [1].\n\nThe Pacific Ocean extends from the Arctic in the north to the Southern Ocean in the south, bounded by Asia and Australia in the west, and the Americas in the east. It contains the deepest point on Earth, the Challenger Deep in the Mari",
+          "expected": "Pacific Ocean",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:41:47.884619Z"
+        },
+        {
+          "id": "std-08",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.0317,
+          "latency_ms": 44637,
+          "answer": "The Mona Lisa was painted by the Italian Renaissance artist Leonardo da Vinci [1]. This iconic portrait, also known as La Gioconda, was created between 1503 and 1519. Leonardo da Vinci, born in 1452 in Vinci, Italy, was a polymath who excelled in various fields including painting, sculpture, architecture, science, music, mathematics, engineering, literature, anatomy, geology, astronomy, botany, writing, history, and cartography [2].\n\nThe Mona Lisa is considered one of the most famous and enigmat",
+          "expected": "Leonardo da Vinci",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:42:32.574874Z"
+        },
+        {
+          "id": "std-09",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.0156,
+          "latency_ms": 34789,
+          "answer": "La photosynthèse est le processus par lequel les plantes vertes, les algues et certaines bactéries utilisent l'énergie lumineuse pour convertir le dioxyde de carbone (CO2) et l'eau (H2O) en glucose (C6H12O6) et en oxygène (O2). Ce processus se déroule principalement dans les chloroplastes des cellules végétales, où se trouvent les pigments chlorophylliens qui captent l'énergie lumineuse.\n\nL'équation chimique générale de la photosynthèse est :\n\n6 CO2 + 6 H2O + énergie lumineuse → C6H12O6 + 6 O2\n\n",
+          "expected": "Process by which plants convert light energy into chemical energy",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:43:07.417771Z"
+        },
+        {
+          "id": "std-10",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.0325,
+          "latency_ms": 38410,
+          "answer": "La vitesse de la lumière dans le vide est une constante physique fondamentale, notée c, qui vaut exactement 299 792 458 mètres par seconde [1]. Cette valeur a été fixée par définition en 1983 par le Bureau international des poids et mesures (BIPM) [2].\n\nLa vitesse de la lumière est la vitesse limite ultime dans l'univers selon la théorie de la relativité restreinte d'Einstein. Rien ne peut voyager plus vite que la lumière dans le vide [3].\n\nDans d'autres milieux transparents comme l'eau ou le ve",
+          "expected": "approximately 299,792 kilometers per second",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:43:45.883502Z"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-08T20-43-59",
+      "number": 5,
+      "timestamp_start": "2026-02-08T20:43:59.402860Z",
+      "timestamp_end": "2026-02-08T20:48:09.126231Z",
+      "label": "Pre-eval graph test",
+      "description": "10q test after Graph RAG fixes",
+      "changes_applied": [],
+      "results_summary": {
+        "graph": {
+          "tested": 10,
+          "correct": 7,
+          "errors": 0,
+          "accuracy_pct": 70.0,
+          "avg_latency_ms": 24413,
+          "p95_latency_ms": 43039,
+          "avg_f1": 0.7755
+        }
+      },
+      "total_tested": 10,
+      "total_correct": 7,
+      "overall_accuracy_pct": 70.0,
+      "questions": [
+        {
+          "id": "graph-01",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.4706,
+          "latency_ms": 26903,
+          "answer": "Marie Curie-[CONNECTE]->Nobel Foundation",
+          "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry, connected to Nobel Foundation",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:44:28.501078Z"
+        },
+        {
+          "id": "graph-02",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 23715,
+          "answer": "Albert Einstein",
+          "expected": "Albert Einstein",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:44:52.269471Z"
+        },
+        {
+          "id": "graph-03",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 23462,
+          "answer": "Penicillin",
+          "expected": "Penicillin",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:45:15.789280Z"
+        },
+        {
+          "id": "graph-04",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 12722,
+          "answer": "Tuberculosis",
+          "expected": "Tuberculosis",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:45:28.566515Z"
+        },
+        {
+          "id": "graph-05",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 22965,
+          "answer": "London",
+          "expected": "University of Cambridge",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:45:51.586546Z"
+        },
+        {
+          "id": "graph-06",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 23484,
+          "answer": "Nikola Tesla-[CONNECTE]->Thomas Edison",
+          "expected": "They are connected, both worked on electricity in New York City",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:46:15.125320Z"
+        },
+        {
+          "id": "graph-07",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 43039,
+          "answer": "Alan Turing, Charles Darwin, Isaac Newton",
+          "expected": "Isaac Newton, Charles Darwin, Alan Turing",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:46:58.222203Z"
+        },
+        {
+          "id": "graph-08",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.4,
+          "latency_ms": 15079,
+          "answer": "The World Wide Web is a system of interlinked hypertext documents accessed via the Internet. It was created at CERN.",
+          "expected": "Created at CERN, extends the Internet",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:47:13.357612Z"
+        },
+        {
+          "id": "graph-09",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.3333,
+          "latency_ms": 38480,
+          "answer": "Netflix, Microsoft",
+          "expected": "Apple Inc, Google, Microsoft",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:47:51.896721Z"
+        },
+        {
+          "id": "graph-10",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 14290,
+          "answer": "Paris",
+          "expected": "Paris",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:48:06.242691Z"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-08T20-48-20",
+      "number": 6,
+      "timestamp_start": "2026-02-08T20:48:20.909679Z",
+      "timestamp_end": "2026-02-08T20:50:32.844088Z",
+      "label": "Pre-eval quant test",
+      "description": "10q test after model switch",
+      "changes_applied": [],
+      "results_summary": {
+        "quantitative": {
+          "tested": 10,
+          "correct": 10,
+          "errors": 0,
+          "accuracy_pct": 100.0,
+          "avg_latency_ms": 12647,
+          "p95_latency_ms": 16191,
+          "avg_f1": 0.1311
+        }
+      },
+      "total_tested": 10,
+      "total_correct": 10,
+      "overall_accuracy_pct": 100.0,
+      "questions": [
+        {
+          "id": "quant-01",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 11470,
+          "answer": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
+          "expected": "6745000000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:48:34.440075Z"
+        },
+        {
+          "id": "quant-02",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 10049,
+          "answer": "GreenEnergy Corp's net income in 2023 varied across different periods or reporting segments, with values ranging from $145,905,000 to $664,400,000. The specific net income figure depends on the particular financial report or segment being referenced.",
+          "expected": "664400000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:48:44.546003Z"
+        },
+        {
+          "id": "quant-03",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 10410,
+          "answer": "The revenue of HealthPlus Labs in Q4 2023 was $322,560,000.",
+          "expected": "322560000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:48:55.013485Z"
+        },
+        {
+          "id": "quant-04",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.129,
+          "latency_ms": 16191,
+          "answer": "In FY 2023, TechVision Inc had a gross profit of $4,586,600,000, while GreenEnergy Corp had a gross profit of $1,715,000,000. TechVision Inc's gross profit was significantly higher than GreenEnergy Corp's by $2,871,600,000.",
+          "expected": "TechVision: 4586600000, GreenEnergy: 1715000000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:49:11.267628Z"
+        },
+        {
+          "id": "quant-05",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 16126,
+          "answer": "TechVision Inc's R&D spending in 2023 was $1,349,000,000.",
+          "expected": "1349000000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:49:27.454448Z"
+        },
+        {
+          "id": "quant-06",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.1333,
+          "latency_ms": 13102,
+          "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was 6.7100.",
+          "expected": "6.71",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:49:40.616093Z"
+        },
+        {
+          "id": "quant-07",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 14349,
+          "answer": "TechVision Inc had $2,200,000,000 in cash and equivalents at the end of 2023.",
+          "expected": "2200000000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:49:55.021574Z"
+        },
+        {
+          "id": "quant-08",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 10986,
+          "answer": "GreenEnergy Corp's total assets at the end of fiscal year 2023 were $4,460,000,000.00.",
+          "expected": "4460000000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:50:06.065142Z"
+        },
+        {
+          "id": "quant-09",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 10530,
+          "answer": "The total stockholders equity for HealthPlus Labs at the end of 2023 was $795,000,000.00.",
+          "expected": "795000000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:50:16.652359Z"
+        },
+        {
+          "id": "quant-10",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 13265,
+          "answer": "TechVision Inc's operating income in Q3 2023 was $516,525,000.",
+          "expected": "516525000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:50:29.974082Z"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-08T20-50-42",
+      "number": 7,
+      "timestamp_start": "2026-02-08T20:50:42.211303Z",
+      "timestamp_end": "2026-02-08T21:00:18.825000Z",
+      "label": "Pre-eval orchestrator test",
+      "description": "10q test after ID fix",
+      "changes_applied": [],
+      "results_summary": {
+        "orchestrator": {
+          "tested": 4,
+          "correct": 3,
+          "errors": 1,
+          "accuracy_pct": 75.0,
+          "avg_latency_ms": 66755,
+          "p95_latency_ms": 86366,
+          "avg_f1": 0.2087
+        }
+      },
+      "total_tested": 4,
+      "total_correct": 3,
+      "overall_accuracy_pct": 75.0,
+      "questions": [
+        {
+          "id": "orch-01",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.3846,
+          "latency_ms": 86366,
+          "answer": "TechVision Inc's revenue for the year 2023 is $6,745,000,000.00.",
+          "expected": "TechVision Inc revenue $6.745B in 2023; Albert Einstein created Theory of Relativity",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:52:10.544803Z"
+        },
+        {
+          "id": "orch-02",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.0328,
+          "latency_ms": 70540,
+          "answer": "La personne qui a découvert la pénicilline est Alexander Fleming [1]. En 1928, Fleming, un bactériologiste écossais, a fait cette découverte par hasard dans son laboratoire de l'hôpital St Mary à Londres. Il a remarqué qu'un champignon (Penicillium notatum) avait contaminé une de ses cultures de staphylocoques et avait créé une zone claire autour de lui où les bactéries ne pouvaient pas croître. Cette observation a conduit à l'identification de la pénicilline comme le premier antibiotique [2].\n\n",
+          "expected": "Alexander Fleming",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T20:53:21.142878Z"
+        },
+        {
+          "id": "orch-03",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "answer": "",
+          "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry",
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-08T20:59:35.405408Z"
+        },
+        {
+          "id": "orch-04",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 43361,
+          "answer": "The Q4 2023 revenue for GreenEnergy Corp is $1,021,500,000.00.",
+          "expected": "1021500000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-08T21:00:18.824989Z"
+        }
+      ]
     }
   ],
   "question_registry": {
@@ -5374,13 +5917,25 @@
           "error_type": null,
           "answer": "Normandy is located in France [1]. It is a region in the northwest of the country, situated along the English Channel. Normandy is divided into two administrative regions: Upper Normandy (Haute-Normandie) and Lower Normandy (Basse-Normandie) [2]. The region is known for its historical significance, ",
           "timestamp": "2026-02-08T04:32:37.180003Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-38-36",
+          "iteration_number": 4,
+          "correct": true,
+          "f1": 0.0541,
+          "latency_ms": 22966,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Normandy is located in France [1]. It is a region in the northwest of the country, situated along the English Channel. Normandy is known for its historical significance, particularly related to World War II events such as the D-Day landings in 1944 [2].",
+          "timestamp": "2026-02-08T20:39:01.868062Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 3,
-      "pass_rate": 0.75,
+      "total_runs": 5,
+      "pass_count": 4,
+      "pass_rate": 0.8,
       "current_status": "pass",
-      "last_tested": "2026-02-08T04:32:37.180003Z",
+      "last_tested": "2026-02-08T20:39:01.868062Z",
       "best_f1": 0.2222,
       "trend": "stable"
     },
@@ -5441,14 +5996,26 @@
           "error_type": null,
           "answer": "The first season of SpongeBob SquarePants aired from May 1, 1999 to April 8, 2000 on Nickelodeon [1]. This inaugural season consisted of 20 episodes, marking the beginning of what would become one of the most popular and long-running animated series in television history.\n\nThe show was created by ma",
           "timestamp": "2026-02-08T04:33:02.817473Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-38-36",
+          "iteration_number": 4,
+          "correct": true,
+          "f1": 0.1277,
+          "latency_ms": 23728,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The first season of SpongeBob SquarePants aired from May 1, 1999 to April 8, 2000 on Nickelodeon [1]. It consisted of 20 episodes, with the pilot episode \"Help Wanted\" originally airing on May 1, 1999 [2]. The season concluded with the episode \"Culture Shock\" on April 8, 2000 [3].\n\n[1] https://en.wikipedia.org/wiki/List_of_SpongeBob_SquarePants_episodes\n[2] https://www.imdb.com/title/tt0219653/\n[3] https://www.imdb.com/title/tt0219653/episodes?season=1",
+          "timestamp": "2026-02-08T20:39:25.651015Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 3,
-      "pass_rate": 0.75,
+      "total_runs": 5,
+      "pass_count": 4,
+      "pass_rate": 0.8,
       "current_status": "pass",
-      "last_tested": "2026-02-08T04:33:02.817473Z",
-      "best_f1": 0.0667,
+      "last_tested": "2026-02-08T20:39:25.651015Z",
+      "best_f1": 0.1277,
       "trend": "stable"
     },
     "std-03": {
@@ -5508,13 +6075,25 @@
           "error_type": null,
           "answer": "La capitale du Japon est Tokyo [1]. Tokyo est située sur l'île de Honshu et est la plus grande zone métropolitaine du monde avec plus de 37 millions d'habitants dans son agglomération [2]. Elle est le centre politique, économique et culturel du Japon depuis 1868, date à laquelle elle a remplacé Kyot",
           "timestamp": "2026-02-08T04:33:20.869994Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-38-36",
+          "iteration_number": 4,
+          "correct": true,
+          "f1": 0.0444,
+          "latency_ms": 23925,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "La capitale du Japon est Tokyo [1]. Tokyo est située sur l'île de Honshu et est la plus grande zone métropolitaine du monde avec plus de 37 millions d'habitants dans son agglomération [2]. Elle est le centre politique, économique et culturel du Japon depuis 1868, date à laquelle elle a remplacé Kyoto comme capitale [3].",
+          "timestamp": "2026-02-08T20:39:49.634055Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 3,
-      "pass_rate": 0.75,
+      "total_runs": 5,
+      "pass_count": 4,
+      "pass_rate": 0.8,
       "current_status": "pass",
-      "last_tested": "2026-02-08T04:33:20.869994Z",
+      "last_tested": "2026-02-08T20:39:49.634055Z",
       "best_f1": 0.25,
       "trend": "stable"
     },
@@ -5575,13 +6154,25 @@
           "error_type": null,
           "answer": "William Shakespeare wrote Romeo and Juliet [1]. This tragic play was written by Shakespeare in the late 16th century, likely between 1591 and 1595. It was first published in 1597 [2]. Romeo and Juliet is one of Shakespeare's most famous works and is considered a classic of English literature. The pl",
           "timestamp": "2026-02-08T04:33:36.390634Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-38-36",
+          "iteration_number": 4,
+          "correct": true,
+          "f1": 0.1379,
+          "latency_ms": 11283,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "William Shakespeare wrote Romeo and Juliet [1]. This famous tragedy was written by Shakespeare in the late 16th century, likely between 1591 and 1595. It was first published in 1597 [2].",
+          "timestamp": "2026-02-08T20:40:00.972544Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 3,
-      "pass_rate": 0.75,
+      "total_runs": 5,
+      "pass_count": 4,
+      "pass_rate": 0.8,
       "current_status": "pass",
-      "last_tested": "2026-02-08T04:33:36.390634Z",
+      "last_tested": "2026-02-08T20:40:00.972544Z",
       "best_f1": 0.3333,
       "trend": "stable"
     },
@@ -5642,13 +6233,25 @@
           "error_type": null,
           "answer": "Penicillin is a group of antibiotics derived from Penicillium fungi, first discovered in 1928 by Scottish scientist Alexander Fleming [1]. It was the first antibiotic to be mass-produced and widely used to treat bacterial infections.\n\nKey facts about penicillin:\n\n1. Discovery: Fleming noticed that a",
           "timestamp": "2026-02-08T04:34:28.588716Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-38-36",
+          "iteration_number": 4,
+          "correct": true,
+          "f1": 0.0682,
+          "latency_ms": 38473,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Penicillin is a group of antibiotics originally derived from the Penicillium fungi [1]. It was the first antibiotic discovered and has been widely used to treat bacterial infections since the 1940s.\n\nThe discovery of penicillin is attributed to Scottish scientist Alexander Fleming in 1928. He observed that a mold contaminating one of his bacterial culture plates had created a bacteria-free circle around itself. This mold was later identified as Penicillium notatum [2].\n\nPenicillin works by inter",
+          "timestamp": "2026-02-08T20:40:39.500029Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 3,
-      "pass_rate": 0.75,
+      "total_runs": 5,
+      "pass_count": 4,
+      "pass_rate": 0.8,
       "current_status": "pass",
-      "last_tested": "2026-02-08T04:34:28.588716Z",
+      "last_tested": "2026-02-08T20:40:39.500029Z",
       "best_f1": 0.2273,
       "trend": "stable"
     },
@@ -5697,13 +6300,25 @@
           "error_type": null,
           "answer": "La théorie de la relativité, développée par Albert Einstein au début du XXe siècle, est un ensemble de deux théories physiques : la relativité restreinte (1905) et la relativité générale (1915). Ces théories révolutionnèrent notre compréhension de l'espace, du temps, de la gravité et de l'univers da",
           "timestamp": "2026-02-08T04:35:12.881850Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-38-36",
+          "iteration_number": 4,
+          "correct": true,
+          "f1": 0.0323,
+          "latency_ms": 37226,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "La théorie de la relativité, développée par Albert Einstein au début du XXe siècle, est un ensemble de deux théories physiques : la relativité restreinte (1905) et la relativité générale (1915). Ces théories révolutionnèrent notre compréhension de l'espace, du temps, de la gravité et de l'univers dans son ensemble.\n\nLa relativité restreinte repose sur deux postulats fondamentaux :\n\n1. Les lois de la physique sont les mêmes dans tous les référentiels inertiels (c'est-à-dire non accélérés).\n2. La ",
+          "timestamp": "2026-02-08T20:41:16.780353Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 1,
-      "pass_rate": 0.333,
+      "total_runs": 4,
+      "pass_count": 2,
+      "pass_rate": 0.5,
       "current_status": "pass",
-      "last_tested": "2026-02-08T04:35:12.881850Z",
+      "last_tested": "2026-02-08T20:41:16.780353Z",
       "best_f1": 0.0392,
       "trend": "improving"
     },
@@ -5752,13 +6367,25 @@
           "error_type": null,
           "answer": "The largest ocean on Earth is the Pacific Ocean. It covers an area of approximately 165.25 million square kilometers (63.8 million square miles), which is about 46% of the Earth's water surface and about one-third of its total surface area [1]. The Pacific Ocean is so vast that it is larger than all",
           "timestamp": "2026-02-08T04:35:32.372660Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-38-36",
+          "iteration_number": 4,
+          "correct": true,
+          "f1": 0.0392,
+          "latency_ms": 31048,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The largest ocean on Earth is the Pacific Ocean. It covers an area of approximately 165.25 million square kilometers (63.8 million square miles), which is about one-third of the Earth's total surface area and larger than all of the Earth's land area combined [1].\n\nThe Pacific Ocean extends from the Arctic in the north to the Southern Ocean in the south, bounded by Asia and Australia in the west, and the Americas in the east. It contains the deepest point on Earth, the Challenger Deep in the Mari",
+          "timestamp": "2026-02-08T20:41:47.884669Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 3,
+      "total_runs": 4,
+      "pass_count": 4,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T04:35:32.372660Z",
+      "last_tested": "2026-02-08T20:41:47.884669Z",
       "best_f1": 0.3636,
       "trend": "stable"
     },
@@ -5807,13 +6434,25 @@
           "error_type": null,
           "answer": "La Mona Lisa, également connue sous le nom de La Joconde, a été peinte par l'artiste italien Léonard de Vinci [1]. Cette œuvre maîtresse de la Renaissance a été réalisée entre 1503 et 1506, bien que Léonard ait continué à la retoucher jusqu'en 1517 [2].\n\nLéonard de Vinci (1452-1519) était un polymat",
           "timestamp": "2026-02-08T04:36:03.356991Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-38-36",
+          "iteration_number": 4,
+          "correct": true,
+          "f1": 0.0317,
+          "latency_ms": 44637,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Mona Lisa was painted by the Italian Renaissance artist Leonardo da Vinci [1]. This iconic portrait, also known as La Gioconda, was created between 1503 and 1519. Leonardo da Vinci, born in 1452 in Vinci, Italy, was a polymath who excelled in various fields including painting, sculpture, architecture, science, music, mathematics, engineering, literature, anatomy, geology, astronomy, botany, writing, history, and cartography [2].\n\nThe Mona Lisa is considered one of the most famous and enigmat",
+          "timestamp": "2026-02-08T20:42:32.574947Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 3,
+      "total_runs": 4,
+      "pass_count": 4,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T04:36:03.356991Z",
+      "last_tested": "2026-02-08T20:42:32.574947Z",
       "best_f1": 0.3158,
       "trend": "stable"
     },
@@ -5862,13 +6501,25 @@
           "error_type": null,
           "answer": "La photosynthèse est le processus par lequel les plantes vertes, les algues et certaines bactéries transforment l'énergie lumineuse en énergie chimique stockée sous forme de sucres [1]. Ce processus complexe se déroule principalement dans les feuilles des plantes, plus précisément dans les chloropla",
           "timestamp": "2026-02-08T04:36:38.523218Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-38-36",
+          "iteration_number": 4,
+          "correct": true,
+          "f1": 0.0156,
+          "latency_ms": 34789,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "La photosynthèse est le processus par lequel les plantes vertes, les algues et certaines bactéries utilisent l'énergie lumineuse pour convertir le dioxyde de carbone (CO2) et l'eau (H2O) en glucose (C6H12O6) et en oxygène (O2). Ce processus se déroule principalement dans les chloroplastes des cellules végétales, où se trouvent les pigments chlorophylliens qui captent l'énergie lumineuse.\n\nL'équation chimique générale de la photosynthèse est :\n\n6 CO2 + 6 H2O + énergie lumineuse → C6H12O6 + 6 O2\n\n",
+          "timestamp": "2026-02-08T20:43:07.417819Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 3,
+      "total_runs": 4,
+      "pass_count": 4,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T04:36:38.523218Z",
+      "last_tested": "2026-02-08T20:43:07.417819Z",
       "best_f1": 0.3529,
       "trend": "stable"
     },
@@ -5917,13 +6568,25 @@
           "error_type": null,
           "answer": "La vitesse de la lumière dans le vide est une constante physique fondamentale, notée c, qui vaut exactement 299 792 458 mètres par seconde (m/s) [1]. Cette valeur a été fixée par définition en 1983 par le Bureau international des poids et mesures (BIPM) [2].\n\nLa vitesse de la lumière est la vitesse ",
           "timestamp": "2026-02-08T04:37:13.247633Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-38-36",
+          "iteration_number": 4,
+          "correct": true,
+          "f1": 0.0325,
+          "latency_ms": 38410,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "La vitesse de la lumière dans le vide est une constante physique fondamentale, notée c, qui vaut exactement 299 792 458 mètres par seconde [1]. Cette valeur a été fixée par définition en 1983 par le Bureau international des poids et mesures (BIPM) [2].\n\nLa vitesse de la lumière est la vitesse limite ultime dans l'univers selon la théorie de la relativité restreinte d'Einstein. Rien ne peut voyager plus vite que la lumière dans le vide [3].\n\nDans d'autres milieux transparents comme l'eau ou le ve",
+          "timestamp": "2026-02-08T20:43:45.883553Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 3,
+      "total_runs": 4,
+      "pass_count": 4,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T04:37:13.247633Z",
+      "last_tested": "2026-02-08T20:43:45.883553Z",
       "best_f1": 0.1333,
       "trend": "stable"
     },
@@ -6259,13 +6922,25 @@
           "error_type": null,
           "answer": "Marie Curie was the first woman to win a Nobel Prize and remains the only person to win Nobel Prizes in two different sciences (Physics and Chemistry).",
           "timestamp": "2026-02-08T05:02:08.491874Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-43-59",
+          "iteration_number": 5,
+          "correct": true,
+          "f1": 0.4706,
+          "latency_ms": 26903,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Marie Curie-[CONNECTE]->Nobel Foundation",
+          "timestamp": "2026-02-08T20:44:28.501119Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 3,
-      "pass_rate": 0.75,
+      "total_runs": 5,
+      "pass_count": 4,
+      "pass_rate": 0.8,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:02:08.491874Z",
+      "last_tested": "2026-02-08T20:44:28.501119Z",
       "best_f1": 0.6957,
       "trend": "stable"
     },
@@ -6326,14 +7001,26 @@
           "error_type": null,
           "answer": "Albert Einstein created the Theory of Relativity.",
           "timestamp": "2026-02-08T05:02:31.985354Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-43-59",
+          "iteration_number": 5,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 23715,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Albert Einstein",
+          "timestamp": "2026-02-08T20:44:52.269518Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 2,
-      "pass_rate": 0.5,
+      "total_runs": 5,
+      "pass_count": 3,
+      "pass_rate": 0.6,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:02:31.985354Z",
-      "best_f1": 0.6667,
+      "last_tested": "2026-02-08T20:44:52.269518Z",
+      "best_f1": 1.0,
       "trend": "improving"
     },
     "graph-03": {
@@ -6393,14 +7080,26 @@
           "error_type": null,
           "answer": "Alexander Fleming discovered penicillin, the first antibiotic, in 1928 when he noticed that a mold called Penicillium notatum had contaminated a culture plate and killed surrounding bacteria.",
           "timestamp": "2026-02-08T05:02:55.256217Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-43-59",
+          "iteration_number": 5,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 23462,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Penicillin",
+          "timestamp": "2026-02-08T20:45:15.789333Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 3,
-      "pass_rate": 0.75,
+      "total_runs": 5,
+      "pass_count": 4,
+      "pass_rate": 0.8,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:02:55.256217Z",
-      "best_f1": 0.4,
+      "last_tested": "2026-02-08T20:45:15.789333Z",
+      "best_f1": 1.0,
       "trend": "stable"
     },
     "graph-04": {
@@ -6460,15 +7159,27 @@
           "error_type": null,
           "answer": "Penicillin protects against bacterial infections, particularly streptococcal infections, pneumonia, and syphilis.",
           "timestamp": "2026-02-08T05:03:19.286157Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-43-59",
+          "iteration_number": 5,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 12722,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Tuberculosis",
+          "timestamp": "2026-02-08T20:45:28.566568Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-02-08T05:03:19.286157Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 5,
+      "pass_count": 1,
+      "pass_rate": 0.2,
+      "current_status": "pass",
+      "last_tested": "2026-02-08T20:45:28.566568Z",
+      "best_f1": 1.0,
+      "trend": "improving"
     },
     "graph-05": {
       "id": "graph-05",
@@ -6527,15 +7238,27 @@
           "error_type": null,
           "answer": "Alan Turing studied at King's College, Cambridge, where he earned his undergraduate degree in mathematics. He later pursued graduate studies at Princeton University in the United States.",
           "timestamp": "2026-02-08T05:03:47.788565Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-43-59",
+          "iteration_number": 5,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 22965,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "London",
+          "timestamp": "2026-02-08T20:45:51.586596Z"
         }
       ],
-      "total_runs": 4,
+      "total_runs": 5,
       "pass_count": 1,
-      "pass_rate": 0.25,
-      "current_status": "pass",
-      "last_tested": "2026-02-08T05:03:47.788565Z",
+      "pass_rate": 0.2,
+      "current_status": "fail",
+      "last_tested": "2026-02-08T20:45:51.586596Z",
       "best_f1": 0.1429,
-      "trend": "improving"
+      "trend": "stable"
     },
     "graph-06": {
       "id": "graph-06",
@@ -6582,13 +7305,25 @@
           "error_type": null,
           "answer": "Tesla and Edison were rivals in the \"War of Currents\" - Tesla advocated for alternating current (AC) while Edison promoted direct current (DC).",
           "timestamp": "2026-02-08T05:04:04.454899Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-43-59",
+          "iteration_number": 5,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 23484,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Nikola Tesla-[CONNECTE]->Thomas Edison",
+          "timestamp": "2026-02-08T20:46:15.125368Z"
         }
       ],
-      "total_runs": 3,
+      "total_runs": 4,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-08T05:04:04.454899Z",
+      "last_tested": "2026-02-08T20:46:15.125368Z",
       "best_f1": 0.0667,
       "trend": "stable"
     },
@@ -6637,14 +7372,26 @@
           "error_type": null,
           "answer": "Several notable scientists are connected to the University of Cambridge, including Isaac Newton, Charles Darwin, Stephen Hawking, and Rosalind Franklin.",
           "timestamp": "2026-02-08T05:04:28.128207Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-43-59",
+          "iteration_number": 5,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 43039,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Alan Turing, Charles Darwin, Isaac Newton",
+          "timestamp": "2026-02-08T20:46:58.222251Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 1,
-      "pass_rate": 0.333,
+      "total_runs": 4,
+      "pass_count": 2,
+      "pass_rate": 0.5,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:04:28.128207Z",
-      "best_f1": 0.3077,
+      "last_tested": "2026-02-08T20:46:58.222251Z",
+      "best_f1": 1.0,
       "trend": "improving"
     },
     "graph-08": {
@@ -6692,14 +7439,26 @@
           "error_type": null,
           "answer": "The World Wide Web is an information system where documents and other web resources are identified by URLs and interlinked by hypertext. It was created at CERN in Switzerland by Tim Berners-Lee in 1989.",
           "timestamp": "2026-02-08T05:04:42.922608Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-43-59",
+          "iteration_number": 5,
+          "correct": true,
+          "f1": 0.4,
+          "latency_ms": 15079,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The World Wide Web is a system of interlinked hypertext documents accessed via the Internet. It was created at CERN.",
+          "timestamp": "2026-02-08T20:47:13.357669Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 2,
-      "pass_rate": 0.667,
+      "total_runs": 4,
+      "pass_count": 3,
+      "pass_rate": 0.75,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:04:42.922608Z",
-      "best_f1": 0.2222,
+      "last_tested": "2026-02-08T20:47:13.357669Z",
+      "best_f1": 0.4,
       "trend": "stable"
     },
     "graph-09": {
@@ -6747,15 +7506,27 @@
           "error_type": null,
           "answer": "Many organizations use Artificial Intelligence, including tech companies like Google, Microsoft, and IBM, as well as healthcare providers, financial institutions, and government agencies for various applications.",
           "timestamp": "2026-02-08T05:05:12.923197Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-43-59",
+          "iteration_number": 5,
+          "correct": false,
+          "f1": 0.3333,
+          "latency_ms": 38480,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Netflix, Microsoft",
+          "timestamp": "2026-02-08T20:47:51.896769Z"
         }
       ],
-      "total_runs": 3,
+      "total_runs": 4,
       "pass_count": 1,
-      "pass_rate": 0.333,
-      "current_status": "pass",
-      "last_tested": "2026-02-08T05:05:12.923197Z",
-      "best_f1": 0.1429,
-      "trend": "improving"
+      "pass_rate": 0.25,
+      "current_status": "fail",
+      "last_tested": "2026-02-08T20:47:51.896769Z",
+      "best_f1": 0.3333,
+      "trend": "stable"
     },
     "graph-10": {
       "id": "graph-10",
@@ -6802,14 +7573,26 @@
           "error_type": null,
           "answer": "The Louvre Museum is located in Paris, France.",
           "timestamp": "2026-02-08T05:05:33.699547Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-43-59",
+          "iteration_number": 5,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 14290,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Paris",
+          "timestamp": "2026-02-08T20:48:06.242741Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 3,
+      "total_runs": 4,
+      "pass_count": 4,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:05:33.699547Z",
-      "best_f1": 0.4,
+      "last_tested": "2026-02-08T20:48:06.242741Z",
+      "best_f1": 1.0,
       "trend": "stable"
     },
     "quant-01": {
@@ -6871,13 +7654,25 @@
           "error_type": null,
           "answer": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
           "timestamp": "2026-02-08T05:24:47.838627Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-48-20",
+          "iteration_number": 6,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 11470,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
+          "timestamp": "2026-02-08T20:48:34.440116Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:24:47.838627Z",
+      "last_tested": "2026-02-08T20:48:34.440116Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -6940,13 +7735,25 @@
           "error_type": null,
           "answer": "GreenEnergy Corp's net income in 2023 was $664,400,000.",
           "timestamp": "2026-02-08T05:25:01.222671Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-48-20",
+          "iteration_number": 6,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 10049,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "GreenEnergy Corp's net income in 2023 varied across different periods or reporting segments, with values ranging from $145,905,000 to $664,400,000. The specific net income figure depends on the particular financial report or segment being referenced.",
+          "timestamp": "2026-02-08T20:48:44.546047Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:25:01.222671Z",
+      "last_tested": "2026-02-08T20:48:44.546047Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -7009,13 +7816,25 @@
           "error_type": null,
           "answer": "The revenue of HealthPlus Labs in Q4 2023 was $322,560,000.",
           "timestamp": "2026-02-08T05:25:17.184066Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-48-20",
+          "iteration_number": 6,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 10410,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The revenue of HealthPlus Labs in Q4 2023 was $322,560,000.",
+          "timestamp": "2026-02-08T20:48:55.013545Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:25:17.184066Z",
+      "last_tested": "2026-02-08T20:48:55.013545Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -7078,13 +7897,25 @@
           "error_type": null,
           "answer": "TechVision Inc had a gross profit of $4,586,600,000 in FY 2023, while GreenEnergy Corp had a gross profit of $1,715,000,000 in the same period. TechVision Inc's gross profit was approximately 2.67 times higher than GreenEnergy Corp's gross profit in FY 2023.",
           "timestamp": "2026-02-08T05:25:28.892232Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-48-20",
+          "iteration_number": 6,
+          "correct": true,
+          "f1": 0.129,
+          "latency_ms": 16191,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "In FY 2023, TechVision Inc had a gross profit of $4,586,600,000, while GreenEnergy Corp had a gross profit of $1,715,000,000. TechVision Inc's gross profit was significantly higher than GreenEnergy Corp's by $2,871,600,000.",
+          "timestamp": "2026-02-08T20:49:11.267691Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:25:28.892232Z",
+      "last_tested": "2026-02-08T20:49:11.267691Z",
       "best_f1": 0.16,
       "trend": "stable"
     },
@@ -7147,13 +7978,25 @@
           "error_type": null,
           "answer": "TechVision Inc's R&D spending in 2023 varied across different records, with values ranging from $310,390,000 to $1,349,000,000. The specific R&D spending amount depends on which record is being referenced.",
           "timestamp": "2026-02-08T05:25:39.040161Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-48-20",
+          "iteration_number": 6,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 16126,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's R&D spending in 2023 was $1,349,000,000.",
+          "timestamp": "2026-02-08T20:49:27.454496Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:25:39.040161Z",
+      "last_tested": "2026-02-08T20:49:27.454496Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -7204,13 +8047,25 @@
           "error_type": null,
           "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was 6.7100.",
           "timestamp": "2026-02-08T05:25:51.440148Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-48-20",
+          "iteration_number": 6,
+          "correct": true,
+          "f1": 0.1333,
+          "latency_ms": 13102,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was 6.7100.",
+          "timestamp": "2026-02-08T20:49:40.616149Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 3,
+      "total_runs": 4,
+      "pass_count": 4,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:25:51.440148Z",
+      "last_tested": "2026-02-08T20:49:40.616149Z",
       "best_f1": 0.1333,
       "trend": "stable"
     },
@@ -7261,13 +8116,25 @@
           "error_type": null,
           "answer": "TechVision Inc had $2,200,000,000 in cash and equivalents at the end of 2023.",
           "timestamp": "2026-02-08T05:26:00.255030Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-48-20",
+          "iteration_number": 6,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 14349,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc had $2,200,000,000 in cash and equivalents at the end of 2023.",
+          "timestamp": "2026-02-08T20:49:55.021637Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 3,
+      "total_runs": 4,
+      "pass_count": 4,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:26:00.255030Z",
+      "last_tested": "2026-02-08T20:49:55.021637Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -7318,13 +8185,25 @@
           "error_type": null,
           "answer": "GreenEnergy Corp's total assets at the end of fiscal year 2023 were $4,460,000,000.00.",
           "timestamp": "2026-02-08T05:26:50.169482Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-48-20",
+          "iteration_number": 6,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 10986,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "GreenEnergy Corp's total assets at the end of fiscal year 2023 were $4,460,000,000.00.",
+          "timestamp": "2026-02-08T20:50:06.065197Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 3,
+      "total_runs": 4,
+      "pass_count": 4,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:26:50.169482Z",
+      "last_tested": "2026-02-08T20:50:06.065197Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -7375,13 +8254,25 @@
           "error_type": null,
           "answer": "The total stockholders equity for HealthPlus Labs at the end of 2023 was $795,000,000.00.",
           "timestamp": "2026-02-08T05:27:02.690388Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-48-20",
+          "iteration_number": 6,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 10530,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The total stockholders equity for HealthPlus Labs at the end of 2023 was $795,000,000.00.",
+          "timestamp": "2026-02-08T20:50:16.652418Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 3,
+      "total_runs": 4,
+      "pass_count": 4,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:27:02.690388Z",
+      "last_tested": "2026-02-08T20:50:16.652418Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -7432,13 +8323,25 @@
           "error_type": null,
           "answer": "TechVision Inc's operating income in Q3 2023 was $516,525,000.",
           "timestamp": "2026-02-08T05:27:15.554646Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-48-20",
+          "iteration_number": 6,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 13265,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's operating income in Q3 2023 was $516,525,000.",
+          "timestamp": "2026-02-08T20:50:29.974134Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 3,
+      "total_runs": 4,
+      "pass_count": 4,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:27:15.554646Z",
+      "last_tested": "2026-02-08T20:50:29.974134Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -7772,15 +8675,27 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-08T04:21:02.126518Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-50-42",
+          "iteration_number": 7,
+          "correct": true,
+          "f1": 0.3846,
+          "latency_ms": 86366,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's revenue for the year 2023 is $6,745,000,000.00.",
+          "timestamp": "2026-02-08T20:52:10.544872Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 2,
-      "pass_rate": 0.667,
-      "current_status": "error",
-      "last_tested": "2026-02-08T04:21:02.126518Z",
+      "total_runs": 4,
+      "pass_count": 3,
+      "pass_rate": 0.75,
+      "current_status": "pass",
+      "last_tested": "2026-02-08T20:52:10.544872Z",
       "best_f1": 0.5,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "orch-02": {
       "id": "orch-02",
@@ -7827,15 +8742,27 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-08T04:21:31.015853Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-50-42",
+          "iteration_number": 7,
+          "correct": true,
+          "f1": 0.0328,
+          "latency_ms": 70540,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "La personne qui a découvert la pénicilline est Alexander Fleming [1]. En 1928, Fleming, un bactériologiste écossais, a fait cette découverte par hasard dans son laboratoire de l'hôpital St Mary à Londres. Il a remarqué qu'un champignon (Penicillium notatum) avait contaminé une de ses cultures de staphylocoques et avait créé une zone claire autour de lui où les bactéries ne pouvaient pas croître. Cette observation a conduit à l'identification de la pénicilline comme le premier antibiotique [2].\n\n",
+          "timestamp": "2026-02-08T20:53:21.142921Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 2,
-      "pass_rate": 0.667,
-      "current_status": "error",
-      "last_tested": "2026-02-08T04:21:31.015853Z",
+      "total_runs": 4,
+      "pass_count": 3,
+      "pass_rate": 0.75,
+      "current_status": "pass",
+      "last_tested": "2026-02-08T20:53:21.142921Z",
       "best_f1": 0.5,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "orch-04": {
       "id": "orch-04",
@@ -7882,13 +8809,25 @@
           "error_type": null,
           "answer": "The Q4 2023 revenue for GreenEnergy Corp is $1,021,500,000.00.",
           "timestamp": "2026-02-08T04:22:52.087303Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-50-42",
+          "iteration_number": 7,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 43361,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Q4 2023 revenue for GreenEnergy Corp is $1,021,500,000.00.",
+          "timestamp": "2026-02-08T21:00:18.825034Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 3,
+      "total_runs": 4,
+      "pass_count": 4,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T04:22:52.087303Z",
+      "last_tested": "2026-02-08T21:00:18.825034Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -13420,13 +14359,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-08T04:22:17.928293Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-50-42",
+          "iteration_number": 7,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-08T20:59:35.405461Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "error",
-      "last_tested": "2026-02-08T04:22:17.928293Z",
+      "last_tested": "2026-02-08T20:59:35.405461Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -13998,6 +14949,14 @@
           "tested": 55,
           "errors": 5,
           "avg_latency_ms": 35483
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-38-36",
+          "iteration_number": 4,
+          "accuracy_pct": 100.0,
+          "tested": 10,
+          "errors": 0,
+          "avg_latency_ms": 30648
         }
       ]
     },
@@ -14028,6 +14987,14 @@
           "tested": 55,
           "errors": 5,
           "avg_latency_ms": 26005
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-43-59",
+          "iteration_number": 5,
+          "accuracy_pct": 70.0,
+          "tested": 10,
+          "errors": 0,
+          "avg_latency_ms": 24413
         }
       ]
     },
@@ -14058,6 +15025,14 @@
           "tested": 29,
           "errors": 10,
           "avg_latency_ms": 12838
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-48-20",
+          "iteration_number": 6,
+          "accuracy_pct": 100.0,
+          "tested": 10,
+          "errors": 0,
+          "avg_latency_ms": 12647
         }
       ]
     },
@@ -14088,6 +15063,14 @@
           "tested": 5,
           "errors": 4,
           "avg_latency_ms": 44776
+        },
+        {
+          "iteration_id": "iter-2026-02-08T20-50-42",
+          "iteration_number": 7,
+          "accuracy_pct": 75.0,
+          "tested": 4,
+          "errors": 1,
+          "avg_latency_ms": 66755
         }
       ]
     }
@@ -14345,18 +15328,18 @@
     "pinecone": {
       "total_vectors": 10411,
       "namespaces": {
-        "benchmark-msmarco": 1000,
-        "benchmark-squad_v2": 1000,
-        "benchmark-triviaqa": 1000,
-        "benchmark-natural_questions": 1000,
         "benchmark-frames": 824,
-        "benchmark-finqa": 500,
-        "benchmark-hotpotqa": 1000,
-        "": 639,
-        "benchmark-pubmedqa": 500,
+        "benchmark-narrativeqa": 1000,
+        "benchmark-squad_v2": 1000,
         "benchmark-asqa": 948,
         "benchmark-popqa": 1000,
-        "benchmark-narrativeqa": 1000
+        "benchmark-triviaqa": 1000,
+        "benchmark-natural_questions": 1000,
+        "": 639,
+        "benchmark-pubmedqa": 500,
+        "benchmark-hotpotqa": 1000,
+        "benchmark-msmarco": 1000,
+        "benchmark-finqa": 500
       }
     },
     "neo4j": {
@@ -14417,53 +15400,6 @@
     }
   },
   "db_snapshots": [
-    {
-      "snapshot_id": "snap-initial",
-      "timestamp": "2026-02-07T08:00:00Z",
-      "trigger": "initial-setup",
-      "pinecone_vectors": 10411,
-      "neo4j_nodes": 90,
-      "neo4j_relationships": 80,
-      "supabase_rows": 88
-    },
-    {
-      "snapshot_id": "snap-post-enrichment-1",
-      "timestamp": "2026-02-07T11:30:00Z",
-      "trigger": "enrichment",
-      "pinecone_vectors": 10411,
-      "neo4j_nodes": 110,
-      "neo4j_relationships": 151,
-      "supabase_rows": 88
-    },
-    {
-      "snapshot_id": "snap-baseline-eval",
-      "timestamp": "2026-02-07T12:58:00Z",
-      "trigger": "post-eval",
-      "pinecone_vectors": 10411,
-      "neo4j_nodes": 145,
-      "neo4j_relationships": 98,
-      "supabase_rows": 88
-    },
-    {
-      "snapshot_id": "snap-2026-02-08T00-23-49",
-      "timestamp": "2026-02-08T00:23:49.040589Z",
-      "trigger": "pre-eval",
-      "pinecone_vectors": 0,
-      "neo4j_nodes": 0,
-      "neo4j_relationships": 0,
-      "supabase_rows": 0,
-      "file": "logs/db-snapshots/snap-2026-02-08T00-23-49.json"
-    },
-    {
-      "snapshot_id": "snap-2026-02-08T00-41-42",
-      "timestamp": "2026-02-08T00:41:42.401598Z",
-      "trigger": "post-eval",
-      "pinecone_vectors": 0,
-      "neo4j_nodes": 0,
-      "neo4j_relationships": 0,
-      "supabase_rows": 0,
-      "file": "logs/db-snapshots/snap-2026-02-08T00-41-42.json"
-    },
     {
       "snapshot_id": "snap-2026-02-08T01-38-00",
       "timestamp": "2026-02-08T01:38:00.560062Z",
@@ -14593,537 +15529,79 @@
       "neo4j_relationships": 0,
       "supabase_rows": 0,
       "file": "logs/db-snapshots/snap-2026-02-08T04-32-17.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-08T20-38-36",
+      "timestamp": "2026-02-08T20:38:36.329402Z",
+      "trigger": "pre-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 14904,
+      "neo4j_relationships": 54907,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-08T20-38-36.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-08T20-43-45",
+      "timestamp": "2026-02-08T20:43:45.932821Z",
+      "trigger": "post-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 14904,
+      "neo4j_relationships": 54907,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-08T20-43-45.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-08T20-43-59",
+      "timestamp": "2026-02-08T20:43:59.425253Z",
+      "trigger": "pre-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 14904,
+      "neo4j_relationships": 54907,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-08T20-43-59.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-08T20-48-06",
+      "timestamp": "2026-02-08T20:48:06.292333Z",
+      "trigger": "post-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 14904,
+      "neo4j_relationships": 54907,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-08T20-48-06.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-08T20-48-20",
+      "timestamp": "2026-02-08T20:48:20.933383Z",
+      "trigger": "pre-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 14904,
+      "neo4j_relationships": 54907,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-08T20-48-20.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-08T20-50-30",
+      "timestamp": "2026-02-08T20:50:30.023371Z",
+      "trigger": "post-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 14904,
+      "neo4j_relationships": 54907,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-08T20-50-30.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-08T20-50-42",
+      "timestamp": "2026-02-08T20:50:42.233509Z",
+      "trigger": "pre-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 14904,
+      "neo4j_relationships": 54907,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-08T20-50-42.json"
     }
   ],
   "execution_logs": [
-    {
-      "timestamp": "2026-02-08T02:41:06.969164Z",
-      "question_id": "quant-38",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0952,
-      "latency_ms": 2857,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The quarter with the highest revenue for TechVision Inc in 2023 was **Q4**, with a total revenue of ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT period, SUM(revenue) AS total_revenue FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 AND period IN ('Q1', 'Q2', 'Q3', 'Q4') GROUP",
-        "sql_status": "PASSED",
-        "result_count": 4,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:41:09.421005Z",
-      "question_id": "quant-39",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 2429,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "HealthPlus Labs' income before tax in FY 2023 was **220,840,000.00**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT T1.income_before_tax FROM financials AS T1 WHERE T1.tenant_id = 'benchmark' AND T1.company_name ILIKE '%HealthPlus Labs%' AND T1.fiscal_year = 2023 AND T1.period = 'FY' LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:41:12.689756Z",
-      "question_id": "quant-40",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 3245,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The retained earnings for TechVision Inc at the end of 2023 was **5,149,000,000.00**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT retained_earnings FROM balance_sheet WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 ORDER BY as_of_date DESC LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:41:47.384919Z",
-      "question_id": "quant-41",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "SERVER_ERROR",
-      "error_preview": "HTTP 500: {\"message\":\"Error in workflow\"}",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T02:41:50.262987Z",
-      "question_id": "quant-42",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 2852,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "GreenEnergy Corp's operating income in 2022 was **$561,600,000.00**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT operating_income FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%GreenEnergy Corp%' AND fiscal_year = 2022 AND period = 'FY' LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:42:11.364768Z",
-      "question_id": "quant-43",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "SERVER_ERROR",
-      "error_preview": "HTTP 500: {\"code\":0,\"message\":\"No item to return was found\"}",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T02:42:14.094547Z",
-      "question_id": "quant-44",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 2704,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The total liabilities for HealthPlus Labs at the end of 2022 were **\\$305,000,000.00**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT SUM(total_liabilities) FROM balance_sheet WHERE tenant_id = 'benchmark' AND company_name ILIKE '%HealthPlus Labs%' AND fiscal_year = 2022 LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:42:17.341087Z",
-      "question_id": "quant-45",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.186,
-      "latency_ms": 3221,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "TechVision Inc's revenue per quarter in 2023 showed a consistent upward trend:\n\n*   **Q1 2023:** \\$1",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT period, revenue FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 AND period IN ('Q1', 'Q2', 'Q3', 'Q4') ORDER BY period LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 4,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:42:56.428092Z",
-      "question_id": "quant-46",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "SERVER_ERROR",
-      "error_preview": "HTTP 500: {\"message\":\"Error in workflow\"}",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T02:42:59.588543Z",
-      "question_id": "quant-47",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 3136,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The property, plant and equipment value for GreenEnergy Corp at the end of 2023 was **1,950,000,000.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT T1.property_plant_equipment FROM balance_sheet AS T1 WHERE T1.tenant_id = 'benchmark' AND T1.company_name ILIKE '%GreenEnergy Corp%' AND T1.fiscal_year = 2023 ORDER BY T1.as_of_date DESC LIMIT ",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:43:02.862767Z",
-      "question_id": "quant-48",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.1481,
-      "latency_ms": 3250,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The company that spent the most on research and development in 2023 is **TechVision Inc**, with a to",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT company_name, SUM(research_development) AS total_r_and_d FROM financials WHERE tenant_id = 'benchmark' AND fiscal_year = 2023 AND period = 'FY' GROUP BY company_name ORDER BY total_r_and_d DESC",
-        "sql_status": "PASSED",
-        "result_count": 3,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:43:06.089019Z",
-      "question_id": "quant-49",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.1429,
-      "latency_ms": 3197,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "GreenEnergy Corp's basic EPS in fiscal year 2022 was **8.7500**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT T1.basic_eps FROM financials AS T1 WHERE T1.tenant_id = 'benchmark' AND T1.company_name ILIKE '%GreenEnergy Corp%' AND T1.fiscal_year = 2022 AND T1.period = 'FY' LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:43:08.551234Z",
-      "question_id": "quant-50",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 2440,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The total short-term debt across all companies at the end of 2023 was **220,000,000.00**.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": "SELECT SUM(short_term_debt) FROM balance_sheet WHERE tenant_id = 'benchmark' AND EXTRACT(YEAR FROM as_of_date) = 2023 LIMIT 1000",
-        "sql_status": "PASSED",
-        "result_count": 1,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:43:25.893142Z",
-      "question_id": "orch-26",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.2381,
-      "latency_ms": 17316,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Vaccination protects against specific pathogens by training the immune system [1]. Based on the prov",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:43:37.478474Z",
-      "question_id": "orch-27",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.087,
-      "latency_ms": 11561,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The provided document context does not contain a definition or description of what the ozone layer i",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:47:51.688122Z",
-      "question_id": "orch-28",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "TIMEOUT",
-      "error_preview": "The read operation timed out",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T02:52:05.886940Z",
-      "question_id": "orch-29",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "TIMEOUT",
-      "error_preview": "The read operation timed out",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T02:52:26.898649Z",
-      "question_id": "orch-30",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.2564,
-      "latency_ms": 20985,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Photosynthesis is the process where green plants convert light energy into chemical energy [1]. Plan",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T02:56:41.089140Z",
-      "question_id": "orch-31",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "TIMEOUT",
-      "error_preview": "The read operation timed out",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T02:56:50.844995Z",
-      "question_id": "orch-32",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.4706,
-      "latency_ms": 9730,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "HealthPlus Labs' quarterly revenues for 2023 are as follows:\n\n*   **Q1 2023:** \\$253,440,000.00\n*   ",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T03:01:05.061024Z",
-      "question_id": "orch-33",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "TIMEOUT",
-      "error_preview": "The read operation timed out",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T03:05:19.286945Z",
-      "question_id": "orch-34",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "TIMEOUT",
-      "error_preview": "The read operation timed out",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T03:05:29.194526Z",
-      "question_id": "orch-35",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.1026,
-      "latency_ms": 9880,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "[WARNING: Aggregation query returned NULL — this likely means no matching rows were found. Check tha",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T03:09:43.393601Z",
-      "question_id": "orch-36",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "TIMEOUT",
-      "error_preview": "The read operation timed out",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T03:09:59.673223Z",
-      "question_id": "orch-37",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.2353,
-      "latency_ms": 16254,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "TechVision's interest income in 2023 was **$45,000,000.00**.",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T03:10:08.167120Z",
-      "question_id": "orch-38",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 8468,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The total liabilities for all companies at the end of 2023 is **3,279,000,000.00**.",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T03:10:19.426875Z",
-      "question_id": "orch-39",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 11234,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The provided document context discusses concepts related to Artificial Intelligence (AI), such as ma",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T03:10:29.910189Z",
-      "question_id": "orch-40",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.1143,
-      "latency_ms": 10457,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Quantum computing utilizes quantum bits (qubits) capable of existing in multiple states simultaneous",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T03:10:45.120487Z",
-      "question_id": "orch-41",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0667,
-      "latency_ms": 15184,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Je n'ai pas pu trouver d'information pertinente pour répondre à votre question. Pourriez-vous reform",
-      "confidence": 0.1,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T03:14:59.317491Z",
-      "question_id": "orch-42",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "TIMEOUT",
-      "error_preview": "The read operation timed out",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T03:19:13.529123Z",
-      "question_id": "orch-43",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "TIMEOUT",
-      "error_preview": "The read operation timed out",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T03:19:24.493556Z",
-      "question_id": "orch-44",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.2564,
-      "latency_ms": 10939,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "CRISPR-Cas9 is a gene-editing technology that allows scientists to precisely modify DNA sequences by",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T03:19:32.739540Z",
-      "question_id": "orch-45",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 8221,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "GreenEnergy Corp's cost of goods sold in 2022 was **1,544,400,000.00**.",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T03:23:46.959546Z",
-      "question_id": "orch-46",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 0,
-      "error_type": "TIMEOUT",
-      "error_preview": "The read operation timed out",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
     {
       "timestamp": "2026-02-08T03:23:58.451621Z",
       "question_id": "orch-47",
@@ -17791,6 +18269,587 @@
       "answer_preview": "",
       "confidence": null,
       "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T20:39:01.888545Z",
+      "question_id": "std-01",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.0541,
+      "latency_ms": 22966,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Normandy is located in France [1]. It is a region in the northwest of the country, situated along th",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:39:25.672135Z",
+      "question_id": "std-02",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.1277,
+      "latency_ms": 23728,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The first season of SpongeBob SquarePants aired from May 1, 1999 to April 8, 2000 on Nickelodeon [1]",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:39:49.655393Z",
+      "question_id": "std-03",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.0444,
+      "latency_ms": 23925,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "La capitale du Japon est Tokyo [1]. Tokyo est située sur l'île de Honshu et est la plus grande zone ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:40:00.993933Z",
+      "question_id": "std-04",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.1379,
+      "latency_ms": 11283,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "William Shakespeare wrote Romeo and Juliet [1]. This famous tragedy was written by Shakespeare in th",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:40:39.521407Z",
+      "question_id": "std-05",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.0682,
+      "latency_ms": 38473,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Penicillin is a group of antibiotics originally derived from the Penicillium fungi [1]. It was the f",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:41:16.802082Z",
+      "question_id": "std-06",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.0323,
+      "latency_ms": 37226,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "La théorie de la relativité, développée par Albert Einstein au début du XXe siècle, est un ensemble ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:41:47.904873Z",
+      "question_id": "std-07",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.0392,
+      "latency_ms": 31048,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The largest ocean on Earth is the Pacific Ocean. It covers an area of approximately 165.25 million s",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:42:32.595885Z",
+      "question_id": "std-08",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.0317,
+      "latency_ms": 44637,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Mona Lisa was painted by the Italian Renaissance artist Leonardo da Vinci [1]. This iconic portr",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:43:07.439388Z",
+      "question_id": "std-09",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.0156,
+      "latency_ms": 34789,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "La photosynthèse est le processus par lequel les plantes vertes, les algues et certaines bactéries u",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:43:45.904988Z",
+      "question_id": "std-10",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.0325,
+      "latency_ms": 38410,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "La vitesse de la lumière dans le vide est une constante physique fondamentale, notée c, qui vaut exa",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:44:28.521210Z",
+      "question_id": "graph-01",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.4706,
+      "latency_ms": 26903,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Marie Curie-[CONNECTE]->Nobel Foundation",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:44:52.290546Z",
+      "question_id": "graph-02",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 23715,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Albert Einstein",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:45:15.811013Z",
+      "question_id": "graph-03",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 23462,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Penicillin",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:45:28.587535Z",
+      "question_id": "graph-04",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 12722,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Tuberculosis",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:45:51.607597Z",
+      "question_id": "graph-05",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 22965,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "London",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:46:15.146338Z",
+      "question_id": "graph-06",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 23484,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Nikola Tesla-[CONNECTE]->Thomas Edison",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:46:58.244329Z",
+      "question_id": "graph-07",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 43039,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Alan Turing, Charles Darwin, Isaac Newton",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:47:13.381259Z",
+      "question_id": "graph-08",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.4,
+      "latency_ms": 15079,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The World Wide Web is a system of interlinked hypertext documents accessed via the Internet. It was ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:47:51.919039Z",
+      "question_id": "graph-09",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.3333,
+      "latency_ms": 38480,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Netflix, Microsoft",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:48:06.264219Z",
+      "question_id": "graph-10",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 14290,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Paris",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:48:34.462212Z",
+      "question_id": "quant-01",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 11470,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT SUM(revenue) AS total_revenue FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 AND period = 'FY' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:48:44.568687Z",
+      "question_id": "quant-02",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 10049,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "GreenEnergy Corp's net income in 2023 varied across different periods or reporting segments, with va",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT net_income FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%GreenEnergy Corp%' AND fiscal_year = 2023 LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 5,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:48:55.038403Z",
+      "question_id": "quant-03",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 10410,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The revenue of HealthPlus Labs in Q4 2023 was $322,560,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT revenue FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%HealthPlus Labs%' AND period = 'Q4' AND fiscal_year = 2023 LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:49:11.289627Z",
+      "question_id": "quant-04",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.129,
+      "latency_ms": 16191,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "In FY 2023, TechVision Inc had a gross profit of $4,586,600,000, while GreenEnergy Corp had a gross ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT company_name, fiscal_year, gross_profit FROM financials WHERE tenant_id = 'benchmark' AND period = 'FY' AND fiscal_year = 2023 AND (company_name ILIKE '%TechVision Inc%' OR company_name ILIKE '",
+        "sql_status": "PASSED",
+        "result_count": 2,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:49:27.478341Z",
+      "question_id": "quant-05",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 16126,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's R&D spending in 2023 was $1,349,000,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT research_development FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 AND period = 'FY' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:49:40.637633Z",
+      "question_id": "quant-06",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.1333,
+      "latency_ms": 13102,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was 6.7100.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT diluted_eps FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%HealthPlus Labs%' AND fiscal_year = 2023 AND period = 'FY' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:49:55.043424Z",
+      "question_id": "quant-07",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 14349,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc had $2,200,000,000 in cash and equivalents at the end of 2023.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT cash_and_equivalents FROM balance_sheet WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 ORDER BY as_of_date DESC LIMIT 1",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:50:06.086851Z",
+      "question_id": "quant-08",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 10986,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "GreenEnergy Corp's total assets at the end of fiscal year 2023 were $4,460,000,000.00.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT total_assets FROM balance_sheet WHERE tenant_id = 'benchmark' AND company_name ILIKE '%GreenEnergy Corp%' AND fiscal_year = 2023 LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:50:16.674883Z",
+      "question_id": "quant-09",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 10530,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The total stockholders equity for HealthPlus Labs at the end of 2023 was $795,000,000.00.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT total_stockholders_equity FROM balance_sheet WHERE tenant_id = 'benchmark' AND company_name ILIKE '%HealthPlus Labs%' AND fiscal_year = 2023 LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:50:29.995250Z",
+      "question_id": "quant-10",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 13265,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's operating income in Q3 2023 was $516,525,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT operating_income FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND period = 'Q3' AND fiscal_year = 2023 LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:52:10.567442Z",
+      "question_id": "orch-01",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.3846,
+      "latency_ms": 86366,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's revenue for the year 2023 is $6,745,000,000.00.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:53:21.165616Z",
+      "question_id": "orch-02",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.0328,
+      "latency_ms": 70540,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "La personne qui a découvert la pénicilline est Alexander Fleming [1]. En 1928, Fleming, un bactériol",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-08T20:59:35.427675Z",
+      "question_id": "orch-03",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-08T21:00:18.846827Z",
+      "question_id": "orch-04",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 43361,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Q4 2023 revenue for GreenEnergy Corp is $1,021,500,000.00.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
     }
   ],
   "quick_tests": [
@@ -18304,6 +19363,24 @@
       "quantitative": 80.0,
       "orchestrator": 48.0,
       "total_tested": 200
+    },
+    {
+      "timestamp": "2026-02-08T20:43:48.845409Z",
+      "event": "eval_complete",
+      "total_tested": 406,
+      "standard": 100.0
+    },
+    {
+      "timestamp": "2026-02-08T20:48:09.126245Z",
+      "event": "eval_complete",
+      "total_tested": 416,
+      "graph": 70.0
+    },
+    {
+      "timestamp": "2026-02-08T20:50:32.844098Z",
+      "event": "eval_complete",
+      "total_tested": 426,
+      "quantitative": 100.0
     }
   ],
   "workflow_versions": {
