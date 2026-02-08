@@ -7,17 +7,17 @@ to docs/data.json (GitHub Pages dashboard) and tracks tested question IDs
 to prevent re-testing across sessions.
 
 Datasets:
-  - benchmark-50x2-questions.json           → 50 graph + 50 quantitative
-  - benchmark-standard-orchestrator-questions.json → 50 standard + 50 orchestrator
-  - rag-1000-test-questions.json            → 500 graph + 500 quantitative (HF)
+  - datasets/phase-1/graph-quant-50x2.json           → 50 graph + 50 quantitative
+  - datasets/phase-1/standard-orch-50x2.json         → 50 standard + 50 orchestrator
+  - datasets/phase-2/hf-1000.json                    → 500 graph + 500 quantitative (HF)
 
 Usage:
-  python run-comprehensive-eval.py                    # All untested questions
-  python run-comprehensive-eval.py --max 10           # Max 10 per pipeline
-  python run-comprehensive-eval.py --types graph,quantitative  # Specific types
-  python run-comprehensive-eval.py --include-1000     # Include rag-1000 HF questions
-  python run-comprehensive-eval.py --reset            # Re-test everything (ignore dedup)
-  python run-comprehensive-eval.py --push             # Git push after completion
+  python run-eval.py                    # All untested questions
+  python run-eval.py --max 10           # Max 10 per pipeline
+  python run-eval.py --types graph,quantitative  # Specific types
+  python run-eval.py --include-1000     # Include HF-1000 questions
+  python run-eval.py --reset            # Re-test everything (ignore dedup)
+  python run-eval.py --push             # Git push after completion
 """
 
 import json
@@ -32,7 +32,8 @@ from importlib.machinery import SourceFileLoader
 # === CONFIGURATION ===
 N8N_HOST = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_DIR = os.path.join(REPO_ROOT, "benchmark-workflows")
+EVAL_DIR = os.path.dirname(os.path.abspath(__file__))
+DATASETS_DIR = os.path.join(REPO_ROOT, "datasets")
 DOCS_DIR = os.path.join(REPO_ROOT, "docs")
 DEDUP_FILE = os.path.join(DOCS_DIR, "tested-questions.json")
 
@@ -43,8 +44,8 @@ RAG_ENDPOINTS = {
     "orchestrator": f"{N8N_HOST}/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
 }
 
-# Load live-results-writer module
-writer = SourceFileLoader("w", os.path.join(BASE_DIR, "live-results-writer.py")).load_module()
+# Load live-writer module
+writer = SourceFileLoader("w", os.path.join(EVAL_DIR, "live-writer.py")).load_module()
 
 
 # ============================================================
@@ -103,8 +104,8 @@ def load_questions(include_1000=False):
     """Load questions from dataset files."""
     questions = {"standard": [], "graph": [], "quantitative": [], "orchestrator": []}
 
-    # Standard + Orchestrator from benchmark-standard-orchestrator-questions.json
-    std_orch_path = os.path.join(BASE_DIR, "benchmark-standard-orchestrator-questions.json")
+    # Standard + Orchestrator from datasets/phase-1/standard-orch-50x2.json
+    std_orch_path = os.path.join(DATASETS_DIR, "phase-1", "standard-orch-50x2.json")
     with open(std_orch_path) as f:
         raw = json.load(f)
     std_orch_data = raw.get("questions", raw) if isinstance(raw, dict) else raw
@@ -120,8 +121,8 @@ def load_questions(include_1000=False):
                 "category": q.get("category", "")
             })
 
-    # Graph + Quantitative from benchmark-50x2-questions.json
-    gq_path = os.path.join(BASE_DIR, "benchmark-50x2-questions.json")
+    # Graph + Quantitative from datasets/phase-1/graph-quant-50x2.json
+    gq_path = os.path.join(DATASETS_DIR, "phase-1", "graph-quant-50x2.json")
     with open(gq_path) as f:
         raw2 = json.load(f)
     gq_data = raw2.get("questions", raw2) if isinstance(raw2, dict) else raw2
@@ -137,9 +138,9 @@ def load_questions(include_1000=False):
                 "category": q.get("category", "")
             })
 
-    # Optional: rag-1000-test-questions.json (HuggingFace datasets)
+    # Optional: datasets/phase-2/hf-1000.json (HuggingFace datasets)
     if include_1000:
-        hf_path = os.path.join(BASE_DIR, "rag-1000-test-questions.json")
+        hf_path = os.path.join(DATASETS_DIR, "phase-2", "hf-1000.json")
         if os.path.exists(hf_path):
             with open(hf_path) as f:
                 raw3 = json.load(f)

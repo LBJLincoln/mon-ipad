@@ -23,8 +23,9 @@ from urllib import request, error, parse
 N8N_HOST = "https://amoret.app.n8n.cloud"
 N8N_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
 
-BASE_DIR = "/home/user/mon-ipad/benchmark-workflows"
-RESULTS_DIR = "/home/user/mon-ipad/dataset-results"
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+WORKFLOWS_DIR = os.path.join(REPO_ROOT, "workflows")
+RESULTS_DIR = os.path.join(REPO_ROOT, "dataset-results")
 
 WORKFLOW_FILES = [
     "WF-Benchmark-Dataset-Ingestion.json",
@@ -157,7 +158,7 @@ def deploy_workflows():
 
     results = {}
     for filename in WORKFLOW_FILES:
-        filepath = os.path.join(BASE_DIR, filename)
+        filepath = os.path.join(WORKFLOWS_DIR, filename)
         if not os.path.exists(filepath):
             print(f"  SKIP: {filename} not found")
             continue
@@ -554,7 +555,7 @@ if __name__ == "__main__":
         "total_duration_s": round(total_elapsed, 1)
     }
 
-    output_file = os.path.join(BASE_DIR, "push-all-results.json")
+    output_file = os.path.join(REPO_ROOT, "push-all-results.json")
     with open(output_file, "w") as f:
         json.dump(all_results, f, indent=2)
     print(f"\nFull results saved: {output_file}")

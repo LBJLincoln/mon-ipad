@@ -52,7 +52,7 @@ jobs:
       - name: Analyze latest results
         id: analysis
         run: |
-          python3 benchmark-workflows/agentic-analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY
+          python3 eval/analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY
 
       - name: Create issue if regressions found
         if: steps.analysis.outputs.has_regressions == 'true'
@@ -81,7 +81,7 @@ jobs:
 
       - name: Run quick endpoint tests
         run: |
-          python3 benchmark-workflows/quick-test.py \
+          python3 eval/quick-test.py \
             --pipelines "${{ inputs.pipelines }}" \
             --questions 3
 
@@ -109,8 +109,8 @@ jobs:
 
       - name: Run full evaluation
         run: |
-          cd benchmark-workflows
-          python run-comprehensive-eval.py \
+          cd eval
+          python run-eval.py \
             --types "${{ inputs.pipelines }}" \
             --max "${{ inputs.max_questions }}" \
             --reset
@@ -124,4 +124,4 @@ jobs:
 
       - name: Run analysis
         run: |
-          python3 benchmark-workflows/agentic-analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY
+          python3 eval/analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY

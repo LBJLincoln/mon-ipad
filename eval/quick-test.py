@@ -20,11 +20,11 @@ from urllib import request, error
 from importlib.machinery import SourceFileLoader
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_DIR = os.path.join(REPO_ROOT, "benchmark-workflows")
+EVAL_DIR = os.path.dirname(os.path.abspath(__file__))
 N8N_HOST = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")
 
 # Load writer
-writer = SourceFileLoader("w", os.path.join(BASE_DIR, "live-results-writer.py")).load_module()
+writer = SourceFileLoader("w", os.path.join(EVAL_DIR, "live-writer.py")).load_module()
 
 RAG_ENDPOINTS = {
     "standard":     f"{N8N_HOST}/webhook/rag-multi-index-v3",

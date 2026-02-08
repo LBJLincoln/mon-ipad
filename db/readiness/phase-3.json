@@ -1,0 +1,167 @@
+{
+  "phase": 3,
+  "name": "Scale",
+  "questions": 10700,
+  "description": "Scale to ~10K questions using all 16 HuggingFace datasets. All databases must handle full dataset ingestion. First phase to test all standard RAG datasets at scale.",
+  "last_checked": null,
+  "checked_by": null,
+  "prerequisites": {
+    "phase_2_gates_passed": false,
+    "notes": "Phase 2 must reach all gate criteria before Phase 3 begins."
+  },
+  "requirements": {
+    "pinecone": {
+      "min_vectors": 15000,
+      "namespaces_required": [
+        "benchmark-squad_v2",
+        "benchmark-triviaqa",
+        "benchmark-popqa",
+        "benchmark-frames",
+        "benchmark-msmarco",
+        "benchmark-asqa",
+        "benchmark-narrativeqa",
+        "benchmark-pubmedqa",
+        "benchmark-natural_questions",
+        "benchmark-hotpotqa"
+      ],
+      "status": "not_started",
+      "current": 10411,
+      "datasets_to_ingest": [
+        "hotpotqa",
+        "frames",
+        "triviaqa",
+        "squad_v2",
+        "popqa",
+        "msmarco",
+        "asqa",
+        "narrativeqa",
+        "pubmedqa",
+        "natural_questions"
+      ],
+      "notes": "Need to verify existing vectors cover Phase 3 sample sizes. Some datasets (frames=824, asqa=948, pubmedqa=500) already have partial vectors. May need additional embedding runs."
+    },
+    "neo4j": {
+      "min_nodes": 4000,
+      "min_relationships": 5000,
+      "entity_types_required": [
+        "Person",
+        "Organization",
+        "Technology",
+        "City",
+        "Disease",
+        "Event",
+        "Concept",
+        "Location",
+        "Document",
+        "ScientificConcept"
+      ],
+      "status": "not_started",
+      "current_nodes": 110,
+      "current_relationships": 151,
+      "datasets_to_ingest": [
+        "musique",
+        "2wikimultihopqa",
+        "hotpotqa"
+      ],
+      "notes": "hotpotqa (1000q) is introduced in Phase 3 and requires both Neo4j and Pinecone. Significant entity extraction pipeline needed."
+    },
+    "supabase": {
+      "min_rows": 12000,
+      "tables_required": [
+        "financials",
+        "balance_sheet",
+        "sales_data",
+        "products",
+        "employees",
+        "finqa_tables",
+        "tatqa_tables",
+        "convfinqa_tables",
+        "wikitablequestions_tables"
+      ],
+      "status": "not_started",
+      "current_rows": 88,
+      "datasets_to_ingest": [
+        "finqa",
+        "tatqa",
+        "convfinqa",
+        "wikitablequestions"
+      ],
+      "notes": "wikitablequestions (50q) introduced in Phase 3. Requires new table schema for arbitrary Wikipedia tables."
+    }
+  },
+  "gate_criteria": {
+    "standard": {
+      "target_accuracy": 75,
+      "current": null,
+      "met": false
+    },
+    "graph": {
+      "target_accuracy": 55,
+      "current": null,
+      "met": false
+    },
+    "quantitative": {
+      "target_accuracy": 65,
+      "current": null,
+      "met": false
+    },
+    "orchestrator": {
+      "target_accuracy": 60,
+      "max_p95_latency_s": 20,
+      "max_error_rate_pct": 10,
+      "current": null,
+      "met": false
+    },
+    "overall": {
+      "target_accuracy": 65,
+      "current": null,
+      "met": false
+    }
+  },
+  "datasets_used": [
+    "musique",
+    "2wikimultihopqa",
+    "hotpotqa",
+    "finqa",
+    "tatqa",
+    "convfinqa",
+    "wikitablequestions",
+    "frames",
+    "triviaqa",
+    "squad_v2",
+    "popqa",
+    "msmarco",
+    "asqa",
+    "narrativeqa",
+    "pubmedqa",
+    "natural_questions"
+  ],
+  "question_breakdown": {
+    "graph": {
+      "musique": 200,
+      "2wikimultihopqa": 300,
+      "hotpotqa": 1000,
+      "total": 1500
+    },
+    "quantitative": {
+      "finqa": 200,
+      "tatqa": 150,
+      "convfinqa": 100,
+      "wikitablequestions": 50,
+      "total": 500
+    },
+    "standard": {
+      "frames": 1000,
+      "triviaqa": 1000,
+      "squad_v2": 1000,
+      "popqa": 1000,
+      "msmarco": 1000,
+      "asqa": 1000,
+      "narrativeqa": 1000,
+      "pubmedqa": 500,
+      "natural_questions": 1000,
+      "hotpotqa": 200,
+      "total": 8700
+    }
+  }
+}
