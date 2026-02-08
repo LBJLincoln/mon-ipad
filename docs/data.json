@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "2.0",
-    "generated_at": "2026-02-08T20:19:31.863730Z",
+    "generated_at": "2026-02-08T20:31:37.779107Z",
     "status": "idle",
     "project": "Multi-RAG Orchestrator SOTA 2026",
     "phase": "Phase 1 — Baseline (200q)",
@@ -14313,6 +14313,19 @@
       ],
       "before_metrics": null,
       "after_metrics": null
+    },
+    {
+      "timestamp": "2026-02-08T20:31:37.779096Z",
+      "description": "graph workflow updated (v5, hash 3bf32010e221159c) — +0 -0 ~2 nodes",
+      "change_type": "workflow-sync",
+      "files_changed": [
+        "graph-2026-02-08T20-31-37-3bf32010e221159c.json"
+      ],
+      "affected_pipelines": [
+        "graph"
+      ],
+      "before_metrics": null,
+      "after_metrics": null
     }
   ],
   "databases": {
@@ -18310,55 +18323,25 @@
       }
     },
     "graph": {
-      "version": 4,
-      "hash": "d6ab9804916d48c4",
-      "timestamp": "2026-02-08T20:19:31.853812Z",
+      "version": 5,
+      "hash": "3bf32010e221159c",
+      "timestamp": "2026-02-08T20:31:37.765802Z",
       "name": "WF2 Graph RAG V3.3",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
       "total_nodes": 26,
       "models_used": [],
-      "snapshot_file": "graph-2026-02-08T20-19-30-d6ab9804916d48c4.json",
+      "snapshot_file": "graph-2026-02-08T20-31-37-3bf32010e221159c.json",
       "diff_from_previous": {
         "added_nodes": [],
         "removed_nodes": [],
         "modified_nodes": [
           {
-            "node": "Merge Graph + Vector + Community (Deep)",
-            "changes": [
-              {
-                "param": "jsCode",
-                "old": "// Enhanced Merge for Deep Traversal Results - CONFIRMÉ\n// Handles paths up to 4 hops with intelligent deduplication\n\n// === COLLECT ALL SOURCES ===\nlet graphResults = [];\nlet vectorResults = [];\nlet ",
-                "new": "// Enhanced Merge for Deep Traversal Results - CONFIRMÉ\n// Handles paths up to 4 hops with intelligent deduplication\n\n// === COLLECT ALL SOURCES ===\nlet graphResults = [];\nlet vectorResults = [];\nlet "
-              }
-            ]
-          },
-          {
-            "node": "Answer Formatter",
-            "changes": [
-              {
-                "param": "jsCode",
-                "old": "// Extract LLM answer and format final response\nconst answer = $json.choices?.[0]?.message?.content || 'No answer generated';\nconst contextData = $node['Response Formatter'].json;\n\nreturn [{ json: {\n ",
-                "new": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract parti"
-              }
-            ]
-          },
-          {
-            "node": "Validate Neo4j Results",
-            "changes": [
-              {
-                "param": "jsCode",
-                "old": "const neo4jData = $json;\n\n// Check if we have valid results\nlet hasResults = false;\nlet errorMessage = null;\n\nif (neo4jData.errors && neo4jData.errors.length > 0) {\n  errorMessage = neo4jData.errors[0",
-                "new": "// Validate Neo4j Results - handles both REST and query/v2 API formats\nconst neo4jData = $json;\n\nlet hasResults = false;\nlet errorMessage = null;\n\n// Check for errors\nif (neo4jData.errors && neo4jData"
-              }
-            ]
-          },
-          {
             "node": "LLM Answer Synthesis",
             "changes": [
               {
                 "param": "options",
-                "old": "{'timeout': 25000, 'retry': {'maxTries': 3, 'waitBetweenTries': 2000}}",
-                "new": "{'timeout': 30000, 'retry': {'maxTries': 3, 'waitBetweenTries': 3000}}"
+                "old": "{'timeout': 30000, 'retry': {'maxTries': 3, 'waitBetweenTries': 3000}}",
+                "new": "{'timeout': 30000, 'retry': {'maxTries': 1, 'waitBetweenTries': 5000}}"
               }
             ]
           },
@@ -18367,14 +18350,14 @@
             "changes": [
               {
                 "param": "jsCode",
-                "old": "// Embedding Fallback: if vector search returned nothing,\n// use Neo4j entity data + community summaries as context\nlet contextSources = [];\ntry {\n  const vectorResults = $node['WF3: Cohere Reranker']",
+                "old": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\nt",
                 "new": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\nt"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~5 nodes"
+        "summary": "+0 -0 ~2 nodes"
       }
     },
     "quantitative": {
@@ -18572,6 +18555,14 @@
       "hash": "d6ab9804916d48c4",
       "diff_summary": "+0 -0 ~5 nodes",
       "snapshot_file": "graph-2026-02-08T20-19-30-d6ab9804916d48c4.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:31:37.765813Z",
+      "pipeline": "graph",
+      "version": 5,
+      "hash": "3bf32010e221159c",
+      "diff_summary": "+0 -0 ~2 nodes",
+      "snapshot_file": "graph-2026-02-08T20-31-37-3bf32010e221159c.json"
     }
   ]
 }
