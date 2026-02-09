@@ -46,39 +46,33 @@ All Phase 2 database ingestion is done:
 
 ## Next Steps (Priority Order)
 
-### P0 — Run Phase 2 Evaluation (bypass Phase 1 gates with --force)
+### P0 — Pass Phase 1 Gates (DO NOT SKIP)
 
-All 4 pipelines are WORKING. Phase 1 gates are not met but Phase 2 DB is COMPLETE.
-Strategy: Force-run Phase 2 eval to get baseline metrics on 200+ questions.
+Phase 1 gates MUST be met before Phase 2. Focus on fixing root causes:
 
-#### Step 1: Set environment variables (see CLAUDE.md for full list)
-```bash
-export OPENROUTER_API_KEY="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"
-export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
-export SUPABASE_API_KEY="sb_publishable_xUcuBcYYUO2G9Mkq_McdeQ_ocFjgonm"
-export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
-export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
-export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
-export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
-export N8N_HOST="https://amoret.app.n8n.cloud"
-export GITHUB_TOKEN="..."  # Set by user — GitHub PAT
-```
+**BLOCKER: n8n Zombie Executions**
+- 23 stuck Quantitative/Orchestrator executions blocking all n8n webhooks
+- Root cause: Postgres nodes in Quantitative workflow have NO timeout
+- Eval script had no circuit breaker → flooded n8n with requests
+- **FIX DEPLOYED**: Circuit breaker (5 consecutive failures → stop pipeline)
+- **FIX DEPLOYED**: No-retry on timeouts (prevents zombie creation)
+- **FIX DEPLOYED**: 2s inter-request delay in eval scripts
+- **FIX DEPLOYED**: Response Formatter bug in Standard RAG (undefined `response` variable)
+- **PENDING**: Add execution timeout to Quantitative/Orchestrator workflows (60s/90s)
+- **PENDING**: Wait for stuck executions to clear (~1-2h from 03:30 UTC)
 
-#### Step 2: Deploy workflow improvements
-```bash
-cd ~/mon-ipad && git pull origin main
-python3 workflows/improved/apply.py --deploy
-```
+**Known Issues (Feb 9 Phase 1 eval)**:
+- Standard: "Unable to generate answer - retrieval and LLM both unavailable" (LLM nodes failing)
+- Graph: "Unable to process query" (0 entities extracted, 0 Neo4j paths)
+- Quantitative: All TIMEOUT (Postgres nodes hanging)
+- Orchestrator: All TIMEOUT (cascading from sub-workflows)
 
-#### Step 3: Fast iteration test (10q/pipeline)
-```bash
-python3 eval/fast-iter.py --label "Iter 6: deploy apply.py P0 fixes"
-```
-
-#### Step 4: Full Phase 1 eval (200q)
-```bash
-python3 eval/run-eval-parallel.py --reset --label "Iter 6: P0 fixes deployed"
-```
+#### Next Steps (when n8n clears):
+1. Smoke test: `python3 eval/quick-test.py --questions 5`
+2. Debug LLM node failures in Standard/Graph (check OpenRouter rate limits)
+3. Fast iteration: `python3 eval/fast-iter.py --label "Iter 6: post-fix"`
+4. Full Phase 1 eval: `python3 eval/run-eval-parallel.py --reset --label "Iter 6"`
+5. Iterate until Phase 1 gates pass
 
 ### P1 — Run Phase 2 Evaluation (1,000q)
 

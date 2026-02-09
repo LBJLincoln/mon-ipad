@@ -128,7 +128,11 @@ def save_pipeline_results(rag_type, results, label=""):
 
 def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
     """Run a single pipeline's evaluation. Designed to run in a thread.
-    Returns (rag_type, totals_dict, per_question_results)."""
+    Returns (rag_type, totals_dict, per_question_results).
+
+    Includes circuit breaker: stops pipeline after 5 consecutive timeouts/errors
+    to prevent flooding n8n with zombie executions.
+    """
     endpoint = RAG_ENDPOINTS[rag_type]
     already_tested = tested_ids_by_type.get(rag_type, set())
     untested = [q for q in questions if q["id"] not in already_tested]
@@ -142,8 +146,20 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
 
     totals = {"tested": 0, "correct": 0, "errors": 0}
     per_question_results = []
+    consecutive_failures = 0
+    CIRCUIT_BREAKER_THRESHOLD = 5  # Stop after 5 consecutive timeouts/errors
 
     for i, q in enumerate(untested):
+        # Circuit breaker: stop if too many consecutive failures
+        if consecutive_failures >= CIRCUIT_BREAKER_THRESHOLD:
+            tprint(f"  [{rag_type.upper()}] CIRCUIT BREAKER: {consecutive_failures} consecutive "
+                   f"failures — stopping pipeline to prevent n8n flooding")
+            break
+
+        # Inter-request delay to prevent overwhelming n8n (2s between requests)
+        if i > 0:
+            time.sleep(2)
+
         qid = q["id"]
         rag_timeout = 90 if rag_type == "orchestrator" else 60
         resp = call_rag(endpoint, q["question"], timeout=rag_timeout)
@@ -161,6 +177,12 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
         is_correct = evaluation.get("correct", False)
         f1_val = evaluation.get("f1", compute_f1(answer, q["expected"]))
         has_error = resp["error"] is not None
+
+        # Circuit breaker tracking
+        if has_error or evaluation.get("method") == "NO_ANSWER":
+            consecutive_failures += 1
+        else:
+            consecutive_failures = 0  # Reset on any successful response
 
         # Thread-safe print
         symbol = "[+]" if is_correct else "[-]"

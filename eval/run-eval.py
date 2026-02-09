@@ -259,10 +259,18 @@ def call_rag(endpoint, question, tenant_id="benchmark", timeout=60):
                     "input_payload": input_payload, "raw_response": None,
                     "attempts": attempt + 1}
         except Exception as e:
-            if attempt < 3:
+            err_str = str(e)
+            is_timeout = "timed out" in err_str.lower() or "timeout" in err_str.lower()
+            # Don't retry timeouts — each retry creates another zombie execution in n8n
+            if is_timeout:
+                return {"data": None, "latency_ms": 0, "error": err_str,
+                        "http_status": None, "response_size": 0,
+                        "input_payload": input_payload, "raw_response": None,
+                        "attempts": attempt + 1}
+            if attempt < 2:  # Max 3 attempts (was 4) for non-timeout errors
                 time.sleep(2 ** (attempt + 1))
                 continue
-            return {"data": None, "latency_ms": 0, "error": str(e),
+            return {"data": None, "latency_ms": 0, "error": err_str,
                     "http_status": None, "response_size": 0,
                     "input_payload": input_payload, "raw_response": None,
                     "attempts": attempt + 1}
@@ -270,7 +278,7 @@ def call_rag(endpoint, question, tenant_id="benchmark", timeout=60):
     return {"data": None, "latency_ms": 0, "error": "Max retries exceeded",
             "http_status": None, "response_size": 0,
             "input_payload": input_payload, "raw_response": None,
-            "attempts": 4}
+            "attempts": 3}
 
 
 def extract_answer(data):

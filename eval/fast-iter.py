@@ -171,14 +171,30 @@ def select_questions(all_questions, rag_type, n=10, only_failing=False):
 
 def run_pipeline_fast(rag_type, questions, label=""):
     """Run a single pipeline's fast iteration test.
-    Returns (rag_type, results_list)."""
+    Returns (rag_type, results_list).
+
+    Includes circuit breaker: stops after 3 consecutive timeouts/errors
+    to prevent flooding n8n with zombie executions.
+    """
     endpoint = RAG_ENDPOINTS[rag_type]
 
     tprint(f"\n  [{rag_type.upper()}] Testing {len(questions)} questions...")
     results = []
     start = time.time()
+    consecutive_failures = 0
+    CIRCUIT_BREAKER_THRESHOLD = 3  # Fast-iter uses lower threshold
 
     for i, q in enumerate(questions):
+        # Circuit breaker
+        if consecutive_failures >= CIRCUIT_BREAKER_THRESHOLD:
+            tprint(f"  [{rag_type.upper()}] CIRCUIT BREAKER: {consecutive_failures} consecutive "
+                   f"failures — stopping to prevent n8n flooding")
+            break
+
+        # Inter-request delay (1s for fast-iter)
+        if i > 0:
+            time.sleep(1)
+
         qid = q["id"]
         rag_timeout = 90 if rag_type == "orchestrator" else 60
         resp = call_rag(endpoint, q["question"], timeout=rag_timeout)
@@ -188,10 +204,12 @@ def run_pipeline_fast(rag_type, questions, label=""):
             evaluation = {"correct": False, "method": "NO_ANSWER", "f1": 0.0,
                           "detail": resp["error"]}
             pipeline_details = {}
+            consecutive_failures += 1
         else:
             answer = extract_answer(resp["data"])
             evaluation = evaluate_answer(answer, q["expected"])
             pipeline_details = extract_pipeline_details(resp["data"], rag_type)
+            consecutive_failures = 0  # Reset on success
 
         is_correct = evaluation.get("correct", False)
         f1_val = evaluation.get("f1", compute_f1(answer, q["expected"]))

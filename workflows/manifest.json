@@ -1,10 +1,10 @@
 {
   "versions": {
     "standard": {
-      "version": 3,
-      "hash": "77ce11e45b64537e",
-      "timestamp": "2026-02-09T03:09:06.601558Z",
-      "snapshot_file": "standard-2026-02-09T03-09-06-77ce11e45b64537e.json",
+      "version": 4,
+      "hash": "1b240670981017e4",
+      "timestamp": "2026-02-09T03:59:49.523656Z",
+      "snapshot_file": "standard-2026-02-09T03-59-49-1b240670981017e4.json",
       "name": "WF5 Standard RAG V3.4",
       "webhook": "/webhook/rag-multi-index-v3",
       "summary": {
@@ -52,150 +52,25 @@
         "removed_nodes": [],
         "modified_nodes": [
           {
-            "node": "📋 Configuration SOTA 2026",
-            "changes": [
-              {
-                "param": "content",
-                "old": "# 🔧 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `OPENROUTER_BASE_URL` - https://openrouter.ai/api/v1/chat/completions\n- `LLM_HYDE_MODEL` - google/gemini-2.0-flash-exp\n- `LLM_FAST_MOD",
-                "new": "# 🔧 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `OPENROUTER_BASE_URL` - https://openrouter.ai/api/v1/chat/completions\n- `LLM_HYDE_MODEL` - meta-llama/llama-3.3-70b-instruct:free\n- `L"
-              }
-            ]
-          },
-          {
-            "node": "Original Embedding",
-            "changes": [
-              {
-                "param": "authentication",
-                "old": "predefinedCredentialType",
-                "new": "none"
-              },
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
-              },
-              {
-                "param": "headerParameters",
-                "old": "",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
-              }
-            ]
-          },
-          {
             "node": "Response Formatter",
             "changes": [
               {
                 "param": "jsCode",
-                "old": "// Response Formatter - with LLM Fallback\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.me",
-                "new": "// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generati"
-              }
-            ]
-          },
-          {
-            "node": "HyDE Generator",
-            "changes": [
-              {
-                "param": "jsonBody",
-                "old": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots qui repondr",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots "
-              },
-              {
-                "param": "authentication",
-                "old": "predefinedCredentialType",
-                "new": "none"
-              },
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
-              },
-              {
-                "param": "headerParameters",
-                "old": "",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
-              }
-            ]
-          },
-          {
-            "node": "HyDE Embedding",
-            "changes": [
-              {
-                "param": "authentication",
-                "old": "predefinedCredentialType",
-                "new": "none"
-              },
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
-              },
-              {
-                "param": "headerParameters",
-                "old": "",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
-              }
-            ]
-          },
-          {
-            "node": "Query Decomposer (V.3.4)",
-            "changes": [
-              {
-                "param": "jsonBody",
-                "old": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la q",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. A"
-              },
-              {
-                "param": "authentication",
-                "old": "predefinedCredentialType",
-                "new": "none"
-              },
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
-              },
-              {
-                "param": "headerParameters",
-                "old": "",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
-              }
-            ]
-          },
-          {
-            "node": "LLM Generation",
-            "changes": [
-              {
-                "param": "jsonBody",
-                "old": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere precise et fa",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere pr"
-              },
-              {
-                "param": "authentication",
-                "old": "predefinedCredentialType",
-                "new": "none"
-              },
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
-              },
-              {
-                "param": "headerParameters",
-                "old": "",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+                "old": "// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generati",
+                "new": "\n// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generat"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~7 nodes"
+        "summary": "+0 -0 ~1 nodes"
       }
     },
     "graph": {
-      "version": 6,
-      "hash": "fc7f35d4da4f1140",
-      "timestamp": "2026-02-09T03:09:06.935954Z",
-      "snapshot_file": "graph-2026-02-09T03-09-06-fc7f35d4da4f1140.json",
+      "version": 7,
+      "hash": "8f2c68b196dc3110",
+      "timestamp": "2026-02-09T03:59:50.020965Z",
+      "snapshot_file": "graph-2026-02-09T03-59-49-8f2c68b196dc3110.json",
       "name": "WF2 Graph RAG V3.3",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
       "summary": {
@@ -246,73 +121,18 @@
         "removed_nodes": [],
         "modified_nodes": [
           {
-            "node": "LLM Answer Synthesis",
+            "node": "Answer Formatter",
             "changes": [
               {
-                "param": "authentication",
-                "old": "predefinedCredentialType",
-                "new": "none"
-              },
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
-              },
-              {
-                "param": "headerParameters",
-                "old": "",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
-              }
-            ]
-          },
-          {
-            "node": "WF3: HyDE & Entity Extraction",
-            "changes": [
-              {
-                "param": "jsonBody",
-                "old": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer"
-              },
-              {
-                "param": "authentication",
-                "old": "predefinedCredentialType",
-                "new": "none"
-              },
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
-              },
-              {
-                "param": "headerParameters",
-                "old": "",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
-              }
-            ]
-          },
-          {
-            "node": "Generate HyDE Embedding",
-            "changes": [
-              {
-                "param": "authentication",
-                "old": "predefinedCredentialType",
-                "new": "none"
-              },
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
-              },
-              {
-                "param": "headerParameters",
-                "old": "",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+                "param": "jsCode",
+                "old": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract parti",
+                "new": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract parti"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~3 nodes"
+        "summary": "+0 -0 ~1 nodes"
       }
     },
     "quantitative": {
@@ -800,6 +620,22 @@
       "hash": "0c2b1440cb8034e4",
       "diff_summary": "+0 -0 ~4 nodes",
       "snapshot_file": "orchestrator-2026-02-09T03-09-06-0c2b1440cb8034e4.json"
+    },
+    {
+      "timestamp": "2026-02-09T03:59:49.523667Z",
+      "pipeline": "standard",
+      "version": 4,
+      "hash": "1b240670981017e4",
+      "diff_summary": "+0 -0 ~1 nodes",
+      "snapshot_file": "standard-2026-02-09T03-59-49-1b240670981017e4.json"
+    },
+    {
+      "timestamp": "2026-02-09T03:59:50.020978Z",
+      "pipeline": "graph",
+      "version": 7,
+      "hash": "8f2c68b196dc3110",
+      "diff_summary": "+0 -0 ~1 nodes",
+      "snapshot_file": "graph-2026-02-09T03-59-49-8f2c68b196dc3110.json"
     }
   ]
 }
