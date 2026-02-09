@@ -340,17 +340,85 @@ details .detail-content{padding:14px;border:1px solid var(--bd);border-top:none;
 
 <!-- Tabs -->
 <div class="tabs" id="tab-bar">
-  <div class="tab active" data-tab="exec">Executive Summary <span class="kbd">1</span></div>
+  <div class="tab active" data-tab="tower">Control Tower <span class="kbd">0</span></div>
+  <div class="tab" data-tab="exec">Executive Summary <span class="kbd">1</span></div>
   <div class="tab" data-tab="focus">Focus <span class="kbd">2</span></div>
   <div class="tab" data-tab="questions">Questions <span class="kbd">3</span></div>
   <div class="tab" data-tab="workflows">Workflows <span class="kbd">4</span></div>
   <div class="tab" data-tab="databases">Databases <span class="kbd">5</span></div>
   <div class="tab" data-tab="costs">Costs & Models <span class="kbd">6</span></div>
   <div class="tab" data-tab="agent">AI Agent <span class="kbd">7</span></div>
+  <div class="tab" data-tab="kb">Knowledge Base <span class="kbd">8</span></div>
+</div>
+
+<!-- ============ TAB 0: CONTROL TOWER ============ -->
+<div class="panel active" id="p-tower">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <h2 style="margin-bottom:0">Control Tower</h2>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn btn-sm btn-primary" onclick="fetchN8nExecutions()">Fetch n8n Logs</button>
+      <button class="btn btn-sm" onclick="loadStageData()">Refresh Stages</button>
+    </div>
+  </div>
+
+  <!-- Iterative Stages Pipeline: 5 → 10 → 50 -->
+  <div class="card card-pp" style="margin-bottom:18px">
+    <h3>Iterative Pipeline Stages (5 &rarr; 10 &rarr; 50)</h3>
+    <p style="font-size:11px;color:var(--tx2);margin-bottom:14px">Each pipeline progresses independently through 3 stages. Only advances if accuracy &amp; error rate gates pass.</p>
+    <div class="grid g4" id="tower-stages"></div>
+    <div id="tower-stage-detail" style="margin-top:12px"></div>
+  </div>
+
+  <!-- Live n8n Executions -->
+  <div class="card" style="margin-bottom:18px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <h3 style="margin-bottom:0">n8n Live Executions</h3>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="tower-pipe-filter" onchange="renderTowerExecutions()" style="background:var(--s3);border:1px solid var(--bd);border-radius:var(--r-sm);padding:4px 8px;color:var(--tx);font-size:11px">
+          <option value="">All Pipelines</option>
+          <option value="standard">Standard</option>
+          <option value="graph">Graph</option>
+          <option value="quantitative">Quantitative</option>
+          <option value="orchestrator">Orchestrator</option>
+        </select>
+        <span id="tower-exec-count" style="font-size:11px;color:var(--tx3)"></span>
+      </div>
+    </div>
+    <div id="tower-exec-summary" class="grid g4" style="margin-bottom:14px"></div>
+    <div style="max-height:500px;overflow-y:auto" id="tower-exec-list"></div>
+  </div>
+
+  <!-- Node-by-Node Inspector -->
+  <div class="card" style="margin-bottom:18px;display:none" id="tower-node-inspector">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <h3 style="margin-bottom:0">Node Inspector</h3>
+      <button class="btn btn-sm" onclick="document.getElementById('tower-node-inspector').style.display='none'">Close</button>
+    </div>
+    <div id="tower-node-flow" class="node-flow" style="margin-bottom:14px"></div>
+    <div id="tower-node-detail"></div>
+  </div>
+
+  <!-- Error Pattern Analysis -->
+  <div class="grid g2" style="margin-bottom:18px">
+    <div class="card card-rd">
+      <h3>Error Pattern Analysis</h3>
+      <div id="tower-error-patterns"></div>
+    </div>
+    <div class="card card-gn">
+      <h3>Quick Actions</h3>
+      <div id="tower-quick-actions"></div>
+    </div>
+  </div>
+
+  <!-- Knowledge Base Matches -->
+  <div class="card" style="margin-bottom:18px">
+    <h3>Known Error Patterns &amp; Fixes (from Knowledge Base)</h3>
+    <div id="tower-kb-matches"></div>
+  </div>
 </div>
 
 <!-- ============ TAB 1: EXECUTIVE SUMMARY ============ -->
-<div class="panel active" id="p-exec">
+<div class="panel" id="p-exec">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
     <h2 style="margin-bottom:0">Executive Summary</h2>
     <div id="exec-health-badge"></div>
@@ -613,6 +681,54 @@ details .detail-content{padding:14px;border:1px solid var(--bd);border-top:none;
   </div>
 </div>
 
+<!-- ============ TAB 8: KNOWLEDGE BASE ============ -->
+<div class="panel" id="p-kb">
+  <h2>Knowledge Base</h2>
+  <p style="color:var(--tx2);margin-bottom:18px;font-size:13px">Documented error patterns, fixes, and functional choices. Auto-loaded by iterative-eval.py for pattern matching.</p>
+
+  <div class="filters" style="margin-bottom:14px">
+    <select id="kb-filter" onchange="renderKB()">
+      <option value="">All Categories</option>
+      <option value="error_patterns">Error Patterns</option>
+      <option value="common_fixes">Common Fixes</option>
+      <option value="functional_choices">Functional Choices</option>
+      <option value="answer_matching_notes">Answer Matching</option>
+    </select>
+    <select id="kb-pipe-filter" onchange="renderKB()">
+      <option value="">All Pipelines</option>
+      <option value="standard">Standard</option>
+      <option value="graph">Graph</option>
+      <option value="quantitative">Quantitative</option>
+      <option value="orchestrator">Orchestrator</option>
+    </select>
+    <input type="text" id="kb-search" placeholder="Search knowledge base..." oninput="renderKB()">
+  </div>
+
+  <!-- Error Patterns -->
+  <div id="kb-error-patterns" style="margin-bottom:18px">
+    <h3>Error Patterns</h3>
+    <div id="kb-errors-list"></div>
+  </div>
+
+  <!-- Common Fixes -->
+  <div id="kb-common-fixes" style="margin-bottom:18px">
+    <h3>Common Fixes</h3>
+    <div id="kb-fixes-list"></div>
+  </div>
+
+  <!-- Functional Choices -->
+  <div id="kb-functional-choices" style="margin-bottom:18px">
+    <h3>Functional Choices &amp; Justifications</h3>
+    <div id="kb-choices-list"></div>
+  </div>
+
+  <!-- Answer Matching Notes -->
+  <div id="kb-answer-matching" style="margin-bottom:18px">
+    <h3>Answer Matching Notes</h3>
+    <div id="kb-matching-list"></div>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // GLOBAL STATE & CONSTANTS
@@ -747,6 +863,7 @@ if(localStorage.getItem('theme')==='light')document.documentElement.classList.ad
 // COMMAND PALETTE
 // ============================================================
 const CMD_ITEMS=[
+  {label:'Control Tower',action:()=>switchTab('tower'),hint:'Tab 0'},
   {label:'Executive Summary',action:()=>switchTab('exec'),hint:'Tab 1'},
   {label:'Focus',action:()=>switchTab('focus'),hint:'Tab 2'},
   {label:'Questions Explorer',action:()=>switchTab('questions'),hint:'Tab 3'},
@@ -754,6 +871,8 @@ const CMD_ITEMS=[
   {label:'Databases',action:()=>switchTab('databases'),hint:'Tab 5'},
   {label:'Costs & Models',action:()=>switchTab('costs'),hint:'Tab 6'},
   {label:'AI Agent',action:()=>switchTab('agent'),hint:'Tab 7'},
+  {label:'Knowledge Base',action:()=>switchTab('kb'),hint:'Tab 8'},
+  {label:'Fetch n8n Logs',action:()=>{closePalette();fetchN8nExecutions()},hint:'Live'},
   {label:'Export Questions CSV',action:()=>{closePalette();exportCSV()},hint:'Download'},
   {label:'Toggle Theme',action:()=>{closePalette();toggleTheme()},hint:'Dark/Light'},
   {label:'Refresh Data',action:()=>{closePalette();loadData()},hint:'Reload'},
@@ -875,9 +994,10 @@ function renderLoadError(errMsg){
 function render(){
   if(!DATA)return;
   const fns=[
-    ['Header',renderHeader],['StatusBar',renderStatusBar],['Exec',renderExec],
-    ['Focus',renderFocus],['Questions',renderQuestions],['Workflows',renderWorkflows],
-    ['Databases',renderDatabases],['Costs',renderCosts],['Agent',renderAgent]
+    ['Header',renderHeader],['StatusBar',renderStatusBar],['Tower',renderTower],
+    ['Exec',renderExec],['Focus',renderFocus],['Questions',renderQuestions],
+    ['Workflows',renderWorkflows],['Databases',renderDatabases],['Costs',renderCosts],
+    ['Agent',renderAgent],['KB',renderKB]
   ];
   const errors=[];
   fns.forEach(([name,fn])=>{
@@ -914,11 +1034,11 @@ document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openPalette();return;}
   // Escape
   if(e.key==='Escape'){closePalette();return;}
-  // Number keys 1-7 (not in input)
+  // Number keys 0-8 (not in input)
   if(!e.metaKey&&!e.ctrlKey&&!e.altKey&&e.target.tagName!=='INPUT'&&e.target.tagName!=='SELECT'&&e.target.tagName!=='TEXTAREA'){
-    const tabs=['exec','focus','questions','workflows','databases','costs','agent'];
+    const tabs=['tower','exec','focus','questions','workflows','databases','costs','agent','kb'];
     const n=parseInt(e.key);
-    if(n>=1&&n<=7){switchTab(tabs[n-1]);}
+    if(n>=0&&n<=8){switchTab(tabs[n]);}
   }
 });
 
@@ -1886,9 +2006,528 @@ function renderAgent(){
 document.getElementById('q-search')?.addEventListener('input',renderQuestions);
 
 // ============================================================
+// TAB 0: CONTROL TOWER
+// ============================================================
+let N8N_EXEC_DATA=null,STAGE_DATA=null,KB_DATA=null;
+
+async function fetchN8nExecutions(){
+  showToast('Fetching n8n execution logs...','info',2000);
+  try{
+    // Try local proxy first, then fall back to n8n-live/latest.json
+    let data=null;
+    try{
+      const r=await fetch('http://localhost:8787/api/executions',{signal:AbortSignal.timeout(3000)});
+      if(r.ok)data=await r.json();
+    }catch(e){}
+    if(!data){
+      try{
+        const r=await fetch('../logs/n8n-live/latest.json?t='+Date.now());
+        if(r.ok)data=await r.json();
+      }catch(e){}
+    }
+    if(data&&data.executions){
+      N8N_EXEC_DATA=data;
+      renderTowerExecutions();
+      showToast(`Loaded ${data.executions.length} executions`,'success',2000);
+    }else{
+      showToast('No execution data available. Run: python eval/n8n-proxy.py --fetch','error',4000);
+    }
+  }catch(e){
+    showToast('Failed to fetch n8n data: '+e.message,'error',4000);
+  }
+}
+
+async function loadStageData(){
+  try{
+    let data=null;
+    try{
+      const r=await fetch('http://localhost:8787/api/stages',{signal:AbortSignal.timeout(3000)});
+      if(r.ok)data=await r.json();
+    }catch(e){}
+    if(!data){
+      try{
+        const r=await fetch('../logs/iterative-eval/latest-stages.json?t='+Date.now());
+        if(r.ok)data=await r.json();
+      }catch(e){}
+    }
+    if(data&&data.pipelines){
+      STAGE_DATA=data;
+      renderTowerStages();
+      showToast('Stage data loaded','success',2000);
+    }
+  }catch(e){}
+}
+
+async function loadKBData(){
+  try{
+    let data=null;
+    try{
+      const r=await fetch('http://localhost:8787/api/knowledge-base',{signal:AbortSignal.timeout(3000)});
+      if(r.ok)data=await r.json();
+    }catch(e){}
+    if(!data){
+      try{
+        const r=await fetch('knowledge-base.json?t='+Date.now());
+        if(r.ok)data=await r.json();
+      }catch(e){}
+    }
+    if(data){KB_DATA=data;renderKB();}
+  }catch(e){}
+}
+
+function renderTower(){
+  renderTowerStages();
+  renderTowerExecutions();
+  renderTowerErrorPatterns();
+  renderTowerQuickActions();
+  renderTowerKBMatches();
+}
+
+function renderTowerStages(){
+  const el=document.getElementById('tower-stages');
+  if(!el)return;
+
+  // Try to get stage data from STAGE_DATA, else derive from DATA
+  if(STAGE_DATA&&STAGE_DATA.pipelines){
+    el.innerHTML=PIPES.map(p=>{
+      const pData=STAGE_DATA.pipelines[p];
+      if(!pData)return `<div class="card fade-in"><h3 style="color:${PCOL[p]}">${p}</h3><p style="color:var(--tx3);font-size:11px">No stage data</p></div>`;
+      const stages=pData.stages||[];
+      const status=pData.status||'pending';
+      const statusIcon=status==='passed'?'&#10003;':status==='blocked'?'&#10007;':'&#8230;';
+      const statusCol=status==='passed'?'var(--gn)':status==='blocked'?'var(--rd)':'var(--yl)';
+
+      const stageBoxes=['5q','10q','50q'].map((label,i)=>{
+        const s=stages[i];
+        if(!s)return `<div class="phase-dot locked" style="font-size:10px;height:32px;flex:1">${label}</div>`;
+        const cls=s.accuracy>=((i===2?PTARGET[p]:i===0?60:65))?'done':'current';
+        return `<div class="phase-dot ${cls}" style="font-size:10px;height:32px;flex:1">${label}<br><span style="font-weight:400;font-size:9px">${s.accuracy}%</span></div>`;
+      }).join('');
+
+      return `<div class="card fade-in">
+        <h3 style="color:${PCOL[p]}">${p} <span style="color:${statusCol};font-size:12px;float:right">${statusIcon}</span></h3>
+        <div style="display:flex;gap:4px;margin:8px 0">${stageBoxes}</div>
+        ${stages.length?`<div style="font-size:11px;color:var(--tx2)">
+          Last stage: ${stages[stages.length-1].accuracy}% acc, ${stages[stages.length-1].error_rate}% err
+          <br>Tested: ${stages[stages.length-1].total}q | ${stages[stages.length-1].elapsed_s}s
+        </div>`:'<div style="font-size:11px;color:var(--tx3)">Run: python eval/iterative-eval.py</div>'}
+      </div>`;
+    }).join('');
+    return;
+  }
+
+  // Fallback: derive from DATA
+  const pipeTrends=DATA?.pipelines||{};
+  el.innerHTML=PIPES.map(p=>{
+    const trend=pipeTrends[p]?.trend||[];
+    const lastT=trend[trend.length-1];
+    const acc=lastT?lastT.accuracy_pct:0;
+    const target=PTARGET[p];
+    const tested=lastT?lastT.tested:0;
+
+    // Determine which stage we're at based on tested count
+    const stage=tested>=50?3:tested>=10?2:tested>=5?1:0;
+    const stageBoxes=['5q','10q','50q'].map((label,i)=>{
+      const cls=i<stage?'done':i===stage?'current':'locked';
+      return `<div class="phase-dot ${cls}" style="font-size:10px;height:32px;flex:1">${label}</div>`;
+    }).join('');
+
+    return `<div class="card fade-in">
+      <h3 style="color:${PCOL[p]}">${p}</h3>
+      <div style="display:flex;gap:4px;margin:8px 0">${stageBoxes}</div>
+      <div style="font-size:11px;color:var(--tx2)">
+        ${acc}% accuracy (target: ${target}%)
+        <br>${tested} questions tested
+      </div>
+      <div class="pbar" style="margin-top:8px"><div class="fill" style="width:${Math.min(100,acc/target*100)}%;background:${acc>=target?'var(--gn)':'var(--rd)'}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderTowerExecutions(){
+  const listEl=document.getElementById('tower-exec-list');
+  const summEl=document.getElementById('tower-exec-summary');
+  const countEl=document.getElementById('tower-exec-count');
+  if(!listEl)return;
+
+  if(!N8N_EXEC_DATA||!N8N_EXEC_DATA.executions||!N8N_EXEC_DATA.executions.length){
+    summEl.innerHTML='';
+    listEl.innerHTML=`<div style="text-align:center;padding:40px;color:var(--tx3)">
+      <p style="font-size:13px;margin-bottom:8px">No n8n execution data loaded</p>
+      <p style="font-size:11px">Click "Fetch n8n Logs" or run: <code>python eval/n8n-proxy.py --fetch</code></p>
+    </div>`;
+    return;
+  }
+
+  const filter=document.getElementById('tower-pipe-filter')?.value||'';
+  let execs=N8N_EXEC_DATA.executions;
+  if(filter)execs=execs.filter(e=>e.pipeline===filter);
+  countEl.textContent=`${execs.length} executions`;
+
+  // Summary cards
+  const byPipe={};
+  execs.forEach(e=>{
+    if(!byPipe[e.pipeline])byPipe[e.pipeline]={total:0,success:0,error:0,durations:[]};
+    byPipe[e.pipeline].total++;
+    if(e.status==='success')byPipe[e.pipeline].success++;
+    else byPipe[e.pipeline].error++;
+    if(e.duration_ms>0)byPipe[e.pipeline].durations.push(e.duration_ms);
+  });
+
+  summEl.innerHTML=Object.entries(byPipe).map(([pipe,info])=>{
+    const avgDur=info.durations.length?Math.round(info.durations.reduce((a,b)=>a+b,0)/info.durations.length):0;
+    const errRate=info.total?Math.round(info.error/info.total*100):0;
+    return `<div class="card stat fade-in" style="padding:12px">
+      <div style="font-size:11px;font-weight:600;color:${PCOL[pipe]||'var(--tx)'};text-transform:uppercase">${pipe}</div>
+      <div style="font-size:20px;font-weight:800;font-family:'JetBrains Mono'">${info.success}/${info.total}</div>
+      <div style="font-size:10px;color:var(--tx3)">avg ${avgDur}ms | ${errRate}% errors</div>
+    </div>`;
+  }).join('');
+
+  // Execution list
+  listEl.innerHTML=`<table><thead><tr>
+    <th>Exec ID</th><th>Pipeline</th><th>Status</th><th>Duration</th><th>Nodes</th><th>Query</th><th>Errors</th><th>Time</th>
+  </tr></thead><tbody>
+  ${execs.slice(0,50).map(e=>{
+    const statusCls=e.status==='success'?'t-pass':'t-fail';
+    const errCount=e.error_nodes?e.error_nodes.length:0;
+    return `<tr class="expandable" style="cursor:pointer" onclick="inspectExecution('${e.execution_id}')">
+      <td class="mono" style="font-size:11px">${e.execution_id}</td>
+      <td><span style="color:${PCOL[e.pipeline]||'var(--tx)'}">${esc(e.pipeline)}</span></td>
+      <td><span class="tag ${statusCls}">${esc(e.status)}</span></td>
+      <td class="mono" style="font-size:11px">${e.duration_ms}ms</td>
+      <td>${e.node_count}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${esc(e.trigger_query||'')}</td>
+      <td>${errCount?`<span class="tag t-fail">${errCount}</span>`:'-'}</td>
+      <td style="font-size:10px;color:var(--tx3)">${timeAgo(e.started_at)}</td>
+    </tr>`;
+  }).join('')}
+  </tbody></table>`;
+}
+
+function inspectExecution(execId){
+  if(!N8N_EXEC_DATA)return;
+  const exec=N8N_EXEC_DATA.executions.find(e=>e.execution_id===execId);
+  if(!exec)return;
+
+  const inspector=document.getElementById('tower-node-inspector');
+  inspector.style.display='block';
+
+  // Node flow
+  const flowEl=document.getElementById('tower-node-flow');
+  flowEl.innerHTML=exec.nodes.map((n,i)=>{
+    const cls=n.status==='error'?'nf-if':
+      n.name.toLowerCase().includes('webhook')||n.name.toLowerCase().includes('trigger')?'nf-trigger':
+      n.name.toLowerCase().includes('ai')||n.name.toLowerCase().includes('llm')||n.name.toLowerCase().includes('generator')||n.name.toLowerCase().includes('extraction')||n.name.toLowerCase().includes('synthesis')||n.name.toLowerCase().includes('sql')?'nf-ai':
+      n.name.toLowerCase().includes('neo4j')||n.name.toLowerCase().includes('pinecone')||n.name.toLowerCase().includes('supabase')||n.name.toLowerCase().includes('db')?'nf-db':
+      n.name.toLowerCase().includes('http')||n.name.toLowerCase().includes('rerank')?'nf-http':
+      n.name.toLowerCase().includes('merge')||n.name.toLowerCase().includes('response')||n.name.toLowerCase().includes('format')?'nf-merge':'nf-code';
+    const durLabel=n.duration_ms?`${n.duration_ms}ms`:'';
+    return `<div class="nf-node ${cls}" onclick="showNodeDetail('${execId}',${i})" style="cursor:pointer" title="${esc(n.name)}">
+      ${esc(n.name)}${durLabel?`<span style="font-size:9px;opacity:.6;margin-left:4px">${durLabel}</span>`:''}
+      ${n.status==='error'?'<span style="color:var(--rd);margin-left:2px">!</span>':''}
+    </div>${i<exec.nodes.length-1?'<span class="nf-arrow">&#8594;</span>':''}`;
+  }).join('');
+
+  // Default: show summary
+  const detailEl=document.getElementById('tower-node-detail');
+  detailEl.innerHTML=`<div class="grid g3">
+    ${exec.nodes.map(n=>{
+      const bg=n.status==='error'?'var(--rd-bg)':'var(--s3)';
+      return `<div style="padding:10px;background:${bg};border-radius:var(--r-sm);font-size:11px">
+        <div style="font-weight:700;margin-bottom:4px">${esc(n.name)}</div>
+        <div>Status: <span class="tag ${n.status==='error'?'t-fail':'t-pass'}">${n.status}</span></div>
+        <div>Duration: ${n.duration_ms||0}ms</div>
+        <div>In: ${n.items_in} | Out: ${n.items_out}</div>
+        ${n.error?`<div style="color:var(--rd);margin-top:4px;word-break:break-all">${esc(n.error)}</div>`:''}
+      </div>`;
+    }).join('')}
+  </div>`;
+
+  inspector.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function showNodeDetail(execId,nodeIdx){
+  if(!N8N_EXEC_DATA)return;
+  const exec=N8N_EXEC_DATA.executions.find(e=>e.execution_id===execId);
+  if(!exec||!exec.nodes[nodeIdx])return;
+  const node=exec.nodes[nodeIdx];
+
+  const detailEl=document.getElementById('tower-node-detail');
+  detailEl.innerHTML=`<div class="card" style="border-left:3px solid ${node.status==='error'?'var(--rd)':'var(--gn)'}">
+    <h3>${esc(node.name)}</h3>
+    <div class="grid g2" style="margin:10px 0">
+      <div>
+        <div style="font-size:11px;color:var(--tx2)">
+          <strong>Status:</strong> <span class="tag ${node.status==='error'?'t-fail':'t-pass'}">${node.status}</span><br>
+          <strong>Duration:</strong> ${node.duration_ms||0}ms<br>
+          <strong>Items in:</strong> ${node.items_in} | <strong>Items out:</strong> ${node.items_out}
+        </div>
+      </div>
+      <div>
+        ${node.error?`<div style="color:var(--rd);font-size:12px;font-weight:600;margin-bottom:4px">Error:</div>
+        <div class="code-block" style="font-size:10px;max-height:120px;overflow:auto;white-space:pre-wrap">${esc(node.error)}</div>`:''}
+      </div>
+    </div>
+    ${node.data_preview?`<details><summary>Output Data Preview</summary>
+      <div class="detail-content"><pre class="code-block" style="font-size:10px;max-height:300px;overflow:auto;white-space:pre-wrap">${esc(node.data_preview)}</pre></div>
+    </details>`:''}
+  </div>`;
+}
+
+function renderTowerErrorPatterns(){
+  const el=document.getElementById('tower-error-patterns');
+  if(!el||!DATA)return;
+
+  // Aggregate errors from recent iterations
+  const errCounts={};
+  const errExamples={};
+  const iters=DATA.iterations||[];
+  const recent=iters.slice(-5);
+
+  recent.forEach(iter=>{
+    (iter.questions||[]).forEach(q=>{
+      if(q.error_type){
+        const key=q.rag_type+'|'+q.error_type;
+        errCounts[key]=(errCounts[key]||0)+1;
+        if(!errExamples[key])errExamples[key]=[];
+        if(errExamples[key].length<3)errExamples[key].push(q.id);
+      }
+    });
+  });
+
+  const sorted=Object.entries(errCounts).sort((a,b)=>b[1]-a[1]);
+
+  if(!sorted.length){
+    el.innerHTML='<p style="font-size:12px;color:var(--gn)">No errors in last 5 iterations</p>';
+    return;
+  }
+
+  el.innerHTML=sorted.map(([key,count])=>{
+    const [pipe,errType]=key.split('|');
+    const examples=errExamples[key]||[];
+    return `<div style="padding:6px 0;font-size:12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd)">
+      <span style="color:${PCOL[pipe]||'var(--tx)'};min-width:80px;font-weight:600">${pipe}</span>
+      <span class="tag t-fail" style="min-width:100px">${errType}</span>
+      <span style="font-weight:700;min-width:30px;text-align:right">${count}x</span>
+      <span style="color:var(--tx3);font-size:10px">${examples.join(', ')}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderTowerQuickActions(){
+  const el=document.getElementById('tower-quick-actions');
+  if(!el||!DATA)return;
+
+  // Determine recommended actions based on current state
+  const actions=[];
+  const pipeTrends=DATA.pipelines||{};
+
+  // Check each pipeline
+  PIPES.forEach(p=>{
+    const trend=pipeTrends[p]?.trend||[];
+    const last=trend[trend.length-1];
+    if(!last)return;
+
+    if(last.accuracy_pct<PTARGET[p]){
+      const gap=PTARGET[p]-last.accuracy_pct;
+      if(gap>20){
+        actions.push({priority:'P0',pipeline:p,action:`Fix ${p} pipeline (${last.accuracy_pct}% vs ${PTARGET[p]}% target)`,
+          cmd:`python3 eval/iterative-eval.py --pipelines ${p} --label "fix ${p}"`});
+      }else{
+        actions.push({priority:'P1',pipeline:p,action:`Improve ${p} (${gap.toFixed(1)}pp gap)`,
+          cmd:`python3 eval/iterative-eval.py --pipelines ${p} --label "improve ${p}"`});
+      }
+    }
+
+    if(last.errors>3){
+      actions.push({priority:'P0',pipeline:p,action:`Fix ${last.errors} errors in ${p}`,
+        cmd:`python3 eval/iterative-eval.py --pipelines ${p} --label "error fix"`});
+    }
+  });
+
+  // Global actions
+  actions.push({priority:'P2',pipeline:'all',action:'Deploy all workflow patches',
+    cmd:'python3 workflows/improved/apply.py --deploy'});
+  actions.push({priority:'P2',pipeline:'all',action:'Full iterative eval (5&rarr;10&rarr;50)',
+    cmd:'python3 eval/iterative-eval.py --parallel --label "full check"'});
+
+  actions.sort((a,b)=>a.priority.localeCompare(b.priority));
+
+  el.innerHTML=actions.map(a=>{
+    const prCol=a.priority==='P0'?'var(--rd)':a.priority==='P1'?'var(--yl)':'var(--tx3)';
+    return `<div style="padding:8px 0;border-bottom:1px solid var(--bd)">
+      <div style="display:flex;align-items:center;gap:8px;font-size:12px">
+        <span style="color:${prCol};font-weight:800;font-size:10px">${a.priority}</span>
+        <span style="color:${PCOL[a.pipeline]||'var(--tx)'}">${a.pipeline}</span>
+        <span>${a.action}</span>
+      </div>
+      <code style="font-size:10px;color:var(--tx3);display:block;margin-top:4px">${a.cmd}</code>
+    </div>`;
+  }).join('');
+}
+
+function renderTowerKBMatches(){
+  const el=document.getElementById('tower-kb-matches');
+  if(!el)return;
+
+  if(!KB_DATA){
+    el.innerHTML=`<p style="font-size:12px;color:var(--tx3)">Loading knowledge base... <button class="btn btn-sm" onclick="loadKBData()">Retry</button></p>`;
+    return;
+  }
+
+  const patterns=KB_DATA.error_patterns||[];
+
+  // Match current errors against KB
+  const iters=DATA?.iterations||[];
+  const recent=iters.slice(-3);
+  const recentErrors={};
+  recent.forEach(iter=>{
+    (iter.questions||[]).forEach(q=>{
+      if(q.error_type){
+        const key=q.rag_type+'|'+q.error_type;
+        recentErrors[key]=(recentErrors[key]||0)+1;
+      }
+    });
+  });
+
+  const matches=[];
+  Object.entries(recentErrors).forEach(([key,count])=>{
+    const [pipe,errType]=key.split('|');
+    const pattern=patterns.find(p=>p.error_type===errType&&(!p.pipeline||p.pipeline===pipe));
+    if(pattern){
+      matches.push({pipe,errType,count,pattern});
+    }
+  });
+
+  if(!matches.length){
+    el.innerHTML='<p style="font-size:12px;color:var(--tx3)">No matching patterns for current errors</p>';
+    return;
+  }
+
+  el.innerHTML=matches.map(m=>{
+    const prCol=m.pattern.priority==='critical'?'var(--rd)':m.pattern.priority==='high'?'var(--or)':'var(--yl)';
+    return `<details style="margin:4px 0">
+      <summary style="border-left:3px solid ${prCol}">
+        <span style="color:${PCOL[m.pipe]}">${m.pipe}</span> &mdash;
+        <span class="tag t-fail">${m.errType}</span> (${m.count}x recent) &mdash;
+        <span style="color:${prCol};font-size:10px;font-weight:800">${m.pattern.priority.toUpperCase()}</span>
+      </summary>
+      <div class="detail-content" style="font-size:12px">
+        <p><strong>Root cause:</strong> ${esc(m.pattern.root_cause)}</p>
+        <p style="margin-top:8px;color:var(--gn)"><strong>Fix:</strong> ${esc(m.pattern.fix)}</p>
+      </div>
+    </details>`;
+  }).join('');
+}
+
+// ============================================================
+// TAB 8: KNOWLEDGE BASE
+// ============================================================
+function renderKB(){
+  if(!KB_DATA)return;
+
+  const filter=document.getElementById('kb-filter')?.value||'';
+  const pipeFilter=document.getElementById('kb-pipe-filter')?.value||'';
+  const search=(document.getElementById('kb-search')?.value||'').toLowerCase();
+
+  // Error Patterns
+  const epSection=document.getElementById('kb-error-patterns');
+  if(epSection)epSection.style.display=(!filter||filter==='error_patterns')?'block':'none';
+
+  const patterns=(KB_DATA.error_patterns||[]).filter(p=>{
+    if(pipeFilter&&p.pipeline&&p.pipeline!==pipeFilter)return false;
+    if(search){
+      const hay=(p.error_type+' '+p.root_cause+' '+p.fix+' '+(p.pipeline||'')).toLowerCase();
+      if(!hay.includes(search))return false;
+    }
+    return true;
+  });
+
+  document.getElementById('kb-errors-list').innerHTML=patterns.map(p=>{
+    const prCol=p.priority==='critical'?'var(--rd)':p.priority==='high'?'var(--or)':p.priority==='medium'?'var(--yl)':'var(--tx3)';
+    return `<details style="margin:4px 0">
+      <summary>
+        <span style="color:${prCol};font-weight:800;font-size:10px;min-width:50px">${p.priority.toUpperCase()}</span>
+        <span class="tag t-fail">${p.error_type}</span>
+        <span style="color:${PCOL[p.pipeline]||'var(--tx3)'};margin-left:6px">${p.pipeline||'all'}</span>
+        <span style="color:var(--tx3);margin-left:6px;font-size:10px">${p.id} | ${p.occurrences}x</span>
+      </summary>
+      <div class="detail-content" style="font-size:12px;line-height:1.8">
+        <p><strong>Root cause:</strong> ${esc(p.root_cause)}</p>
+        <p style="color:var(--gn);margin-top:6px"><strong>Fix:</strong> ${esc(p.fix)}</p>
+        ${p.example_qids&&p.example_qids.length?`<p style="margin-top:4px;color:var(--tx3)"><strong>Examples:</strong> ${p.example_qids.join(', ')}</p>`:''}
+      </div>
+    </details>`;
+  }).join('')||'<p style="color:var(--tx3);font-size:12px">No matching patterns</p>';
+
+  // Common Fixes
+  const cfSection=document.getElementById('kb-common-fixes');
+  if(cfSection)cfSection.style.display=(!filter||filter==='common_fixes')?'block':'none';
+
+  const fixes=(KB_DATA.common_fixes||[]).filter(f=>{
+    if(pipeFilter&&f.pipelines&&!f.pipelines.includes(pipeFilter))return false;
+    if(search&&!(f.title+' '+f.description+' '+f.command).toLowerCase().includes(search))return false;
+    return true;
+  });
+
+  document.getElementById('kb-fixes-list').innerHTML=fixes.map(f=>{
+    return `<div class="card" style="margin:6px 0;padding:14px">
+      <div style="font-weight:700;font-size:13px;margin-bottom:6px">${esc(f.id)}: ${esc(f.title)}</div>
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:8px">${esc(f.description)}</div>
+      <div class="code-block" style="font-size:11px;padding:10px;position:relative">${esc(f.command)}<button class="copy-btn" onclick="copyText('${esc(f.command).replace(/'/g,"\\'")}',this)" style="position:absolute;top:6px;right:6px">Copy</button></div>
+      <div style="font-size:11px;color:var(--tx3);margin-top:6px"><strong>When:</strong> ${esc(f.when_to_use)}</div>
+      <div style="font-size:10px;color:var(--tx3);margin-top:2px">Pipelines: ${(f.pipelines||[]).map(p=>`<span style="color:${PCOL[p]}">${p}</span>`).join(', ')}</div>
+    </div>`;
+  }).join('')||'<p style="color:var(--tx3);font-size:12px">No matching fixes</p>';
+
+  // Functional Choices
+  const fcSection=document.getElementById('kb-functional-choices');
+  if(fcSection)fcSection.style.display=(!filter||filter==='functional_choices')?'block':'none';
+
+  const choices=(KB_DATA.functional_choices||[]).filter(c=>{
+    if(search&&!(c.decision+' '+c.rationale+' '+c.tradeoffs).toLowerCase().includes(search))return false;
+    return true;
+  });
+
+  document.getElementById('kb-choices-list').innerHTML=choices.map(c=>{
+    return `<details style="margin:4px 0">
+      <summary>
+        <span style="font-weight:700">${esc(c.id)}</span>
+        <span style="margin-left:8px">${esc(c.decision)}</span>
+        <span style="color:var(--tx3);font-size:10px;margin-left:8px">${c.date||''}</span>
+      </summary>
+      <div class="detail-content" style="font-size:12px;line-height:1.8">
+        <p><strong>Rationale:</strong> ${esc(c.rationale)}</p>
+        <p style="margin-top:6px;color:var(--yl)"><strong>Tradeoffs:</strong> ${esc(c.tradeoffs)}</p>
+      </div>
+    </details>`;
+  }).join('')||'<p style="color:var(--tx3);font-size:12px">No matching choices</p>';
+
+  // Answer Matching Notes
+  const amSection=document.getElementById('kb-answer-matching');
+  if(amSection)amSection.style.display=(!filter||filter==='answer_matching_notes')?'block':'none';
+
+  const notes=(KB_DATA.answer_matching_notes||[]).filter(n=>{
+    if(search&&!(n.issue+' '+n.description+' '+n.recommendation).toLowerCase().includes(search))return false;
+    return true;
+  });
+
+  document.getElementById('kb-matching-list').innerHTML=notes.map(n=>{
+    return `<div class="card" style="margin:6px 0;padding:14px;border-left:3px solid var(--yl)">
+      <div style="font-weight:700;font-size:12px;margin-bottom:4px">${esc(n.id)}: ${esc(n.issue)}</div>
+      <div style="font-size:11px;color:var(--tx2);margin-bottom:6px">${esc(n.description)}</div>
+      <div style="font-size:11px;color:var(--gn)"><strong>Recommendation:</strong> ${esc(n.recommendation)}</div>
+    </div>`;
+  }).join('')||'<p style="color:var(--tx3);font-size:12px">No matching notes</p>';
+}
+
+// ============================================================
 // INIT
 // ============================================================
 loadData();
+loadKBData();
+loadStageData();
 setInterval(loadData,15000);
 
 // Auto-update status bar every second for "time ago" freshness

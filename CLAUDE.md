@@ -19,12 +19,15 @@ Then: fix the ONE pipeline with the worst gap → deploy → eval → commit →
 | **Live status** | `cat docs/status.json` |
 | **Phase gates** | `python3 eval/phase_gates.py` |
 | **Regenerate status** | `python3 eval/generate_status.py` |
+| **Iterative eval (5→10→50)** | `python3 eval/iterative-eval.py --label "..."` |
 | **Fast iter (10q)** | `python3 eval/fast-iter.py --label "..."` |
 | **Full eval (200q)** | `python3 eval/run-eval-parallel.py --reset --label "..."` |
 | **Phase 2 eval** | `python3 eval/run-eval-parallel.py --dataset phase-2 --reset --label "..."` |
 | **Sync workflows** | `python3 workflows/sync.py` |
 | **Deploy patches** | `python3 workflows/improved/apply.py --deploy` |
 | **Smoke test** | `python3 eval/quick-test.py --questions 5` |
+| **Fetch n8n logs** | `python3 eval/n8n-proxy.py --fetch` |
+| **n8n log server** | `python3 eval/n8n-proxy.py --serve --port 8787` |
 
 ---
 
@@ -69,6 +72,23 @@ All LLMs: `meta-llama/llama-3.3-70b-instruct:free` via OpenRouter ($0 cost).
 
 ---
 
+## Iteration Protocol (MANDATORY)
+
+**Always use iterative evaluation (5→10→50) before full eval:**
+
+1. `python3 eval/iterative-eval.py --pipelines <target> --label "what changed"`
+   - Stage 1: 5 questions (must pass ≥60% accuracy, ≤40% errors)
+   - Stage 2: 10 questions (must pass ≥65% accuracy, ≤20% errors)
+   - Stage 3: 50 questions (must pass pipeline target, ≤10% errors)
+   - Each pipeline advances independently. Blocked pipelines show fix recommendations.
+2. If all stages pass → run full eval: `python3 eval/run-eval-parallel.py --reset`
+3. If blocked → check `docs/knowledge-base.json` for known fixes, apply, re-run.
+
+**Dashboard = Control Tower**: Open `docs/index.html` (Tab 0: Control Tower) for live analysis.
+Use `python3 eval/n8n-proxy.py --fetch` to pull n8n execution logs node-by-node.
+
+---
+
 ## Rules
 
 1. **ONE fix per iteration** — never change multiple pipelines simultaneously
@@ -76,9 +96,10 @@ All LLMs: `meta-llama/llama-3.3-70b-instruct:free` via OpenRouter ($0 cost).
 3. **Commit + push after every iteration** to keep agents in sync
 4. **Workflow JSON via deploy scripts only** — never edit JSONs directly
 5. **`docs/status.json` is auto-generated** — regenerated after every eval by `live-writer.py`
-6. If accuracy < target → analyze `logs/errors/`, fix ONE root cause, re-test
+6. If accuracy < target → check `docs/knowledge-base.json` first, then analyze `logs/errors/`, fix ONE root cause, re-test
 7. If error rate > 10% → prioritize error fixes over accuracy
 8. If 3+ regressions → REVERT last change immediately
+9. **Always run iterative-eval.py (5→10→50) before full 200q eval** — saves time
 
 ---
 
@@ -88,8 +109,11 @@ All LLMs: `meta-llama/llama-3.3-70b-instruct:free` via OpenRouter ($0 cost).
 |---|---|
 | `docs/status.json` | Compact live status (auto-generated, <3KB) |
 | `docs/data.json` | Full eval data (1MB+, source of truth) |
+| `docs/index.html` | **Control Tower dashboard** (Tab 0 = central hub) |
+| `docs/knowledge-base.json` | Error patterns, fixes, functional choices |
 | `docs/architecture.md` | Detailed architecture reference |
-| `STATUS.md` | Human-readable status summary |
+| `eval/iterative-eval.py` | **Progressive 5→10→50 per pipeline** |
+| `eval/n8n-proxy.py` | Fetch n8n execution logs node-by-node |
 | `eval/generate_status.py` | Generates status.json from data.json |
 | `eval/live-writer.py` | Writes eval results + auto-regenerates status.json |
 | `eval/phase_gates.py` | Phase gate validator |

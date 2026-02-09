@@ -1,0 +1,227 @@
+{
+  "_description": "Knowledge base for RAG pipeline error patterns, fixes, and functional choices. Auto-loaded by iterative-eval.py. Updated manually and automatically.",
+  "_last_updated": "2026-02-09T00:00:00Z",
+  "_version": "1.0",
+
+  "error_patterns": [
+    {
+      "id": "EP-001",
+      "error_type": "TIMEOUT",
+      "pipeline": "orchestrator",
+      "keywords": ["timed out", "timeout", "deadline exceeded"],
+      "root_cause": "Orchestrator waits for all 3 sub-pipelines sequentially. If any sub-pipeline is slow (especially graph with complex entity extraction), the total latency cascades.",
+      "fix": "Check OpenRouter API key validity. Increase timeout to 90s for orchestrator. Consider adding parallel sub-pipeline execution in n8n.",
+      "priority": "high",
+      "occurrences": 27,
+      "example_qids": ["orch-02", "orch-05", "orch-12"]
+    },
+    {
+      "id": "EP-002",
+      "error_type": "EMPTY_RESPONSE",
+      "pipeline": "orchestrator",
+      "keywords": ["empty response", "no content", "null response"],
+      "root_cause": "Response Builder node crashes when sub-pipeline returns null/empty. Router bug: leading whitespace in routing decision causes no sub-pipeline to be invoked.",
+      "fix": "Deploy apply.py patches: fix Router whitespace trimming, add null-safe Response Builder fallback. Verify with: python workflows/improved/apply.py --deploy",
+      "priority": "high",
+      "occurrences": 20,
+      "example_qids": ["orch-19", "orch-28", "orch-31"]
+    },
+    {
+      "id": "EP-003",
+      "error_type": "EMPTY_RESPONSE",
+      "pipeline": "graph",
+      "keywords": ["empty response", "no entity", "entity not found"],
+      "root_cause": "Entity extraction fails to identify the correct entity in the question, or the entity exists in Neo4j under a different name/spelling. Fuzzy matching not enabled.",
+      "fix": "Enable fuzzy matching in Graph RAG entity lookup (Levenshtein distance ≤2). Add entity aliases to Neo4j. Check with: MATCH (n) WHERE n.name =~ '(?i).*keyword.*' RETURN n",
+      "priority": "high",
+      "occurrences": 14,
+      "example_qids": ["graph-01", "graph-03", "graph-05"]
+    },
+    {
+      "id": "EP-004",
+      "error_type": "SERVER_ERROR",
+      "pipeline": "quantitative",
+      "keywords": ["500", "server error", "internal server error"],
+      "root_cause": "SQL generation produces invalid SQL (wrong table/column names, unsupported JOINs). Supabase returns 500 on execution failure. Also occurs when Supabase connection pool is exhausted.",
+      "fix": "Check SQL validator node is active. Ensure table schema is included in the prompt. For Phase 2: verify phase2 tables exist (finqa_tables, tatqa_tables). Deploy SQL retry patch.",
+      "priority": "high",
+      "occurrences": 8,
+      "example_qids": ["quant-11", "quant-16", "quant-33"]
+    },
+    {
+      "id": "EP-005",
+      "error_type": "NETWORK",
+      "pipeline": "quantitative",
+      "keywords": ["urlopen error", "connection refused", "tunnel connection failed"],
+      "root_cause": "Supabase connection via proxy fails (403 blocked). Must access Supabase through n8n workflow nodes, not direct HTTP.",
+      "fix": "Do NOT try direct Supabase access from eval scripts. Ensure all Supabase queries go through n8n Supabase nodes. Network errors during eval are usually transient — retry with backoff.",
+      "priority": "medium",
+      "occurrences": 10,
+      "example_qids": ["quant-15", "quant-16", "quant-17"]
+    },
+    {
+      "id": "EP-006",
+      "error_type": "SERVER_ERROR",
+      "pipeline": "standard",
+      "keywords": ["server error", "500", "no item to return"],
+      "root_cause": "Pinecone returns empty results for queries with no matching embeddings. The 'Set' node after Pinecone fails with 'No items to return'.",
+      "fix": "Add empty-result guard in Standard RAG after Pinecone query node. Set topK to at least 5. Ensure HyDE generator produces good hypothetical documents.",
+      "priority": "medium",
+      "occurrences": 5,
+      "example_qids": ["std-01", "std-02", "std-03"]
+    },
+    {
+      "id": "EP-007",
+      "error_type": "CREDITS_EXHAUSTED",
+      "pipeline": null,
+      "keywords": ["credits", "quota", "billing", "insufficient_funds", "rate limit"],
+      "root_cause": "OpenRouter free tier credit exhausted or rate-limited. All pipelines fail simultaneously.",
+      "fix": "Wait for credits to refresh (usually hourly). Switch to a different free model temporarily. Check status at openrouter.ai/activity. Current model: meta-llama/llama-3.3-70b-instruct:free",
+      "priority": "critical",
+      "occurrences": 0,
+      "example_qids": []
+    },
+    {
+      "id": "EP-008",
+      "error_type": "ENTITY_MISS",
+      "pipeline": "graph",
+      "keywords": ["entity", "not found", "no path", "miss"],
+      "root_cause": "Question references an entity not in Neo4j. Common for Phase 2 entities (musique, 2wikimultihopqa datasets) that haven't been ingested yet.",
+      "fix": "Run db/populate/phase2_neo4j.py to ingest Phase 2 entities. For Phase 1: check entity aliases and spelling variants in Neo4j.",
+      "priority": "medium",
+      "occurrences": 5,
+      "example_qids": []
+    },
+    {
+      "id": "EP-009",
+      "error_type": "SQL_ERROR",
+      "pipeline": "quantitative",
+      "keywords": ["sql", "syntax error", "column does not exist", "relation does not exist"],
+      "root_cause": "LLM generates SQL referencing non-existent tables/columns. Schema not properly included in Text-to-SQL prompt. Phase 2 tables have different schema.",
+      "fix": "Ensure full schema is injected into Text-to-SQL prompt. For Phase 2: update schema definition to include finqa_tables, tatqa_tables, convfinqa_tables. Add SQL validator retry loop.",
+      "priority": "medium",
+      "occurrences": 3,
+      "example_qids": []
+    },
+    {
+      "id": "EP-010",
+      "error_type": "TIMEOUT",
+      "pipeline": "graph",
+      "keywords": ["timeout", "timed out"],
+      "root_cause": "Complex Neo4j traversals (depth > 3) or community summary matching takes too long. Especially with Phase 2 larger graph.",
+      "fix": "Limit traversal depth to 3. Add Neo4j query timeout (30s). Consider pre-computing community summaries.",
+      "priority": "low",
+      "occurrences": 2,
+      "example_qids": []
+    }
+  ],
+
+  "answer_matching_notes": [
+    {
+      "id": "AM-001",
+      "issue": "Numeric answers with different formatting",
+      "description": "Expected '42.5%' but got '42.5 percent' or '0.425'. F1 score drops due to string mismatch.",
+      "recommendation": "evaluate_answer() handles FUZZY matching. Ensure numeric normalization strips %, $, commas. Current threshold: F1 ≥ 0.5 for FUZZY match."
+    },
+    {
+      "id": "AM-002",
+      "issue": "Verbose answers vs concise expected",
+      "description": "LLM returns 'The capital of France is Paris' when expected is just 'Paris'. Method shows as PARTIAL instead of EXACT.",
+      "recommendation": "Standard RAG prompt should include 'Answer concisely in as few words as possible'. ENTITY match type catches single-entity answers."
+    },
+    {
+      "id": "AM-003",
+      "issue": "List answers in different order",
+      "description": "Expected 'A, B, C' but got 'C, A, B'. Exact match fails even though content is correct.",
+      "recommendation": "F1 score handles this correctly (order-independent). Check that evaluate_answer uses F1 as fallback for list-type answers."
+    }
+  ],
+
+  "functional_choices": [
+    {
+      "id": "FC-001",
+      "decision": "Use OpenRouter free LLMs instead of paid models",
+      "rationale": "Cost optimization: $0 per query vs ~$0.003-0.01 with GPT-4o/Gemini. Enables unlimited iteration during development. Model: meta-llama/llama-3.3-70b-instruct:free performs comparably for RAG tasks.",
+      "tradeoffs": "Lower reasoning quality on complex multi-hop queries. Rate limits during peak hours. No SLA guarantees.",
+      "date": "2026-01-15"
+    },
+    {
+      "id": "FC-002",
+      "decision": "4 separate RAG pipelines + orchestrator pattern",
+      "rationale": "Each data source (vector, graph, SQL) has fundamentally different retrieval patterns. Orchestrator routes to the best pipeline based on query intent analysis.",
+      "tradeoffs": "Higher latency for orchestrator (serial sub-pipeline calls). More complex to debug. Each pipeline must be independently reliable.",
+      "date": "2026-01-10"
+    },
+    {
+      "id": "FC-003",
+      "decision": "Phase-gated evaluation (200 → 1K → 10K → 100K → 1M+)",
+      "rationale": "Prevents premature scaling. Each phase validates reliability before adding question diversity. Phase 1 ensures baseline correctness; Phase 2 tests generalization.",
+      "tradeoffs": "Slower overall progress. Must achieve strict accuracy targets before advancing. Can be overridden with --force.",
+      "date": "2026-01-20"
+    },
+    {
+      "id": "FC-004",
+      "decision": "HyDE (Hypothetical Document Embeddings) for Standard RAG",
+      "rationale": "Improves retrieval quality by generating a hypothetical answer first, then using it for vector search. Reduces vocabulary mismatch between queries and documents.",
+      "tradeoffs": "Adds one extra LLM call per query. Slightly higher latency. Quality depends on HyDE generator model.",
+      "date": "2026-01-25"
+    },
+    {
+      "id": "FC-005",
+      "decision": "n8n Cloud for workflow orchestration (not self-hosted)",
+      "rationale": "Eliminates infrastructure management. Visual workflow editor. Built-in credentials management. Webhook endpoints with auto-SSL.",
+      "tradeoffs": "Less control over timeouts and execution. Cannot access n8n logs programmatically (only via GUI). Limited to n8n's node types.",
+      "date": "2026-01-08"
+    },
+    {
+      "id": "FC-006",
+      "decision": "Iterative stage gates (5 → 10 → 50) before full eval",
+      "rationale": "Prevents wasting 30-60 min on a full 200q eval when a pipeline is fundamentally broken. 5 questions take ~30s and catch 90% of critical issues.",
+      "tradeoffs": "Small sample sizes can produce noisy accuracy estimates. Stage thresholds must be lower than final targets (60% → 65% → target%).",
+      "date": "2026-02-09"
+    }
+  ],
+
+  "common_fixes": [
+    {
+      "id": "FIX-001",
+      "title": "Deploy all workflow patches",
+      "command": "python3 workflows/improved/apply.py --deploy",
+      "description": "Applies 30+ fixes across all 4 pipelines. Includes Router bug fix, null-safe response builder, SQL validator, entity fuzzy matching.",
+      "when_to_use": "After any n8n workflow reset, or when multiple pipelines show errors simultaneously.",
+      "pipelines": ["standard", "graph", "quantitative", "orchestrator"]
+    },
+    {
+      "id": "FIX-002",
+      "title": "Verify OpenRouter API key",
+      "command": "curl -s https://openrouter.ai/api/v1/models -H 'Authorization: Bearer $OPENROUTER_API_KEY' | python3 -c 'import sys,json; d=json.load(sys.stdin); print(f\"OK: {len(d.get(\"data\",[]))} models\")' 2>/dev/null || echo 'FAILED: API key invalid'",
+      "description": "Checks if the OpenRouter API key is valid and can list models.",
+      "when_to_use": "When all pipelines return TIMEOUT or CREDITS_EXHAUSTED errors.",
+      "pipelines": ["standard", "graph", "quantitative", "orchestrator"]
+    },
+    {
+      "id": "FIX-003",
+      "title": "Sync workflow JSONs from n8n",
+      "command": "python3 workflows/sync.py",
+      "description": "Downloads current workflow JSONs from n8n cloud and computes diffs with local versions.",
+      "when_to_use": "Before deploying patches. After manual n8n edits. When workflow behavior doesn't match expectations.",
+      "pipelines": ["standard", "graph", "quantitative", "orchestrator"]
+    },
+    {
+      "id": "FIX-004",
+      "title": "Check database readiness",
+      "command": "python3 eval/live-writer.py --snapshot-db",
+      "description": "Probes Pinecone, Neo4j, and Supabase for current row/node/vector counts.",
+      "when_to_use": "Before starting a new phase. When graph or quantitative pipelines return entity/SQL errors.",
+      "pipelines": ["graph", "quantitative"]
+    },
+    {
+      "id": "FIX-005",
+      "title": "Quick smoke test",
+      "command": "python3 eval/quick-test.py --questions 3",
+      "description": "Runs 3 known-good questions to verify endpoints are alive and responding.",
+      "when_to_use": "Before any eval run. After deploying workflow changes. First thing in any session.",
+      "pipelines": ["standard", "graph", "quantitative", "orchestrator"]
+    }
+  ]
+}
