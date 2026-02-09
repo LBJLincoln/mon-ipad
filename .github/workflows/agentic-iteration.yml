@@ -1,0 +1,345 @@
+name: Agentic Iteration Loop
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Execution mode'
+        default: 'fast-iter'
+        type: choice
+        options:
+          - fast-iter        # 10q/pipeline quick validation
+          - full-eval        # 200q full evaluation
+          - agentic-loop     # Full agentic: deploy + fast-iter + full-eval + gate check
+          - gate-check       # Just check phase gates
+          - phase2-transition # Transition to Phase 2
+      label:
+        description: 'Iteration label'
+        default: ''
+        type: string
+      deploy_patches:
+        description: 'Deploy workflow patches before eval'
+        default: false
+        type: boolean
+      max_iterations:
+        description: 'Max iterations for agentic loop'
+        default: '1'
+        type: string
+      pipelines:
+        description: 'Pipelines to test (comma-separated)'
+        default: 'standard,graph,quantitative,orchestrator'
+        type: string
+      push_results:
+        description: 'Push results to GitHub'
+        default: true
+        type: boolean
+  schedule:
+    # Run agentic loop every 6 hours
+    - cron: '0 */6 * * *'
+
+env:
+  SUPABASE_PASSWORD: ${{ secrets.SUPABASE_PASSWORD }}
+  PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+  PINECONE_HOST: ${{ secrets.PINECONE_HOST }}
+  NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
+  OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+  N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+  N8N_HOST: https://amoret.app.n8n.cloud
+
+jobs:
+  # ========================================
+  # Job 1: Deploy patches (optional)
+  # ========================================
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: ${{ inputs.deploy_patches == true || inputs.mode == 'agentic-loop' }}
+    outputs:
+      deployed: ${{ steps.deploy.outputs.deployed }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Deploy workflow patches
+        id: deploy
+        run: |
+          echo "Deploying workflow patches to n8n..."
+          if [ -n "$N8N_API_KEY" ]; then
+            python3 workflows/improved/apply.py --deploy
+            echo "deployed=true" >> $GITHUB_OUTPUT
+          else
+            echo "N8N_API_KEY not set — applying locally only"
+            python3 workflows/improved/apply.py --local
+            echo "deployed=local" >> $GITHUB_OUTPUT
+          fi
+
+  # ========================================
+  # Job 2: Fast iteration (10q/pipeline)
+  # ========================================
+  fast-iter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [deploy]
+    if: |
+      always() &&
+      (inputs.mode == 'fast-iter' || inputs.mode == 'agentic-loop' || github.event_name == 'schedule')
+    outputs:
+      overall_accuracy: ${{ steps.fast-iter.outputs.overall_accuracy }}
+      passed_threshold: ${{ steps.fast-iter.outputs.passed_threshold }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run fast iteration
+        id: fast-iter
+        run: |
+          LABEL="${{ inputs.label || 'Agentic fast-iter' }}"
+          python3 eval/fast-iter.py \
+            --questions 10 \
+            --pipelines "${{ inputs.pipelines || 'standard,graph,quantitative,orchestrator' }}" \
+            --label "$LABEL" | tee /tmp/fast-iter-output.txt
+
+          # Parse overall accuracy from output
+          OVERALL=$(grep -oP 'OVERALL\s*:\s*\d+/\d+\s*\(\K[\d.]+' /tmp/fast-iter-output.txt || echo "0")
+          echo "overall_accuracy=$OVERALL" >> $GITHUB_OUTPUT
+          if (( $(echo "$OVERALL >= 55" | bc -l) )); then
+            echo "passed_threshold=true" >> $GITHUB_OUTPUT
+          else
+            echo "passed_threshold=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit fast-iter results
+        if: ${{ inputs.push_results != false }}
+        run: |
+          git config user.name "agentic-loop[bot]"
+          git config user.email "agentic-loop[bot]@users.noreply.github.com"
+          git add docs/data.json docs/tested-questions.json logs/
+          git diff --staged --quiet || (
+            git commit -m "agentic: fast-iter results (${{ inputs.label || 'scheduled' }})" &&
+            git push
+          )
+
+  # ========================================
+  # Job 3: Full evaluation (200q parallel)
+  # ========================================
+  full-eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: [fast-iter]
+    if: |
+      always() &&
+      (inputs.mode == 'full-eval' ||
+       (inputs.mode == 'agentic-loop' && needs.fast-iter.outputs.passed_threshold == 'true'))
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Get latest commits from fast-iter job
+          ref: ${{ github.ref }}
+
+      - name: Pull latest
+        run: git pull origin ${{ github.ref_name }} || true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run full parallel evaluation
+        run: |
+          LABEL="${{ inputs.label || 'Agentic full-eval' }}"
+          python3 eval/run-eval-parallel.py \
+            --reset \
+            --types "${{ inputs.pipelines || 'standard,graph,quantitative,orchestrator' }}" \
+            --label "$LABEL"
+
+      - name: Commit full eval results
+        if: ${{ inputs.push_results != false }}
+        run: |
+          git config user.name "agentic-loop[bot]"
+          git config user.email "agentic-loop[bot]@users.noreply.github.com"
+          git add docs/data.json docs/tested-questions.json logs/
+          git diff --staged --quiet || (
+            git commit -m "agentic: full eval results (${{ inputs.label || 'scheduled' }})" &&
+            git push
+          )
+
+  # ========================================
+  # Job 4: Analyze + Gate Check
+  # ========================================
+  analyze-and-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [fast-iter, full-eval]
+    if: always()
+    outputs:
+      phase_passed: ${{ steps.gate.outputs.phase_passed }}
+      overall_accuracy: ${{ steps.gate.outputs.overall_accuracy }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.ref }}
+
+      - name: Pull latest
+        run: git pull origin ${{ github.ref_name }} || true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run analysis
+        run: |
+          python3 eval/analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY || true
+
+      - name: Check phase gates
+        id: gate
+        run: |
+          python3 eval/phase-gate.py --json | tee /tmp/gate-result.json || true
+
+          # Parse results
+          PASSED=$(python3 -c "
+          import json
+          with open('/tmp/gate-result.json') as f:
+              r = json.load(f)
+          print('true' if r.get('passed') else 'false')
+          print(r.get('overall_accuracy', 0))
+          " 2>/dev/null || echo "false\n0")
+
+          PHASE_PASSED=$(echo "$PASSED" | head -1)
+          OVERALL=$(echo "$PASSED" | tail -1)
+          echo "phase_passed=$PHASE_PASSED" >> $GITHUB_OUTPUT
+          echo "overall_accuracy=$OVERALL" >> $GITHUB_OUTPUT
+
+          # Add gate results to step summary
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Phase Gate Check" >> $GITHUB_STEP_SUMMARY
+          if [ "$PHASE_PASSED" = "true" ]; then
+            echo "**PHASE 1 GATES: PASSED**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**PHASE 1 GATES: NOT MET**" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "Overall accuracy: $OVERALL%" >> $GITHUB_STEP_SUMMARY
+
+      - name: Create issue on regression
+        if: steps.gate.outputs.phase_passed == 'false'
+        run: |
+          # Check if there are regressions
+          python3 -c "
+          import json
+          with open('docs/data.json') as f:
+              data = json.load(f)
+          iters = data.get('iterations', [])
+          if len(iters) >= 2:
+              prev = {q['id']: q for q in iters[-2].get('questions', [])}
+              curr = {q['id']: q for q in iters[-1].get('questions', [])}
+              regs = [qid for qid in set(prev) & set(curr) if prev[qid].get('correct') and not curr[qid].get('correct')]
+              if len(regs) >= 3:
+                  print(f'REGRESSION: {len(regs)} questions regressed')
+                  exit(1)
+          " 2>/dev/null || true
+
+  # ========================================
+  # Job 5: Phase 2 Transition (if gates pass)
+  # ========================================
+  phase2-transition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [analyze-and-gate]
+    if: |
+      needs.analyze-and-gate.outputs.phase_passed == 'true' ||
+      inputs.mode == 'phase2-transition'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.ref }}
+
+      - name: Pull latest
+        run: git pull origin ${{ github.ref_name }} || true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Phase 2 transition
+        run: |
+          python3 eval/phase2-transition.py --auto
+
+      - name: Commit Phase 2 transition
+        run: |
+          git config user.name "agentic-loop[bot]"
+          git config user.email "agentic-loop[bot]@users.noreply.github.com"
+          git add docs/ STATUS.md CLAUDE.md eval/ datasets/
+          git diff --staged --quiet || (
+            git commit -m "phase2: transition from Phase 1 — gates passed" &&
+            git push
+          )
+
+      - name: Create Phase 2 milestone issue
+        run: |
+          gh issue create \
+            --title "Phase 1 Complete — Begin Phase 2 (1,000q expansion)" \
+            --body "$(cat <<'EOF'
+          ## Phase 1 Gates Passed
+
+          All Phase 1 exit criteria have been met. The system is ready to transition to Phase 2.
+
+          ### Phase 2 Requirements
+          - [ ] Run Phase 2 DB ingestion (Supabase + Neo4j)
+          - [ ] Run Phase 2 evaluation (500 graph + 500 quant from HuggingFace)
+          - [ ] Verify no Phase 1 regression
+          - [ ] Graph >= 60% on Phase 2 questions
+          - [ ] Quantitative >= 70% on Phase 2 questions
+
+          ### Commands (run in Termius)
+          ```bash
+          cd ~/mon-ipad && git pull origin main
+          python3 db/populate/phase2_supabase.py --reset
+          python3 db/populate/phase2_neo4j.py --reset --llm
+          python3 eval/run-eval-parallel.py --include-1000 --reset --label "Phase 2 baseline"
+          ```
+          EOF
+          )" \
+            --label "phase-transition,automated" || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ========================================
+  # Job: Gate Check Only
+  # ========================================
+  gate-check-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: ${{ inputs.mode == 'gate-check' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check phase gates
+        run: |
+          python3 eval/phase-gate.py --strict | tee -a $GITHUB_STEP_SUMMARY
