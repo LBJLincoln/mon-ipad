@@ -1,15 +1,15 @@
 {
   "meta": {
     "version": "2.0",
-    "generated_at": "2026-02-09T12:50:02.213286Z",
+    "generated_at": "2026-02-09T13:09:14.420966Z",
     "status": "running",
     "project": "Multi-RAG Orchestrator SOTA 2026",
     "phase": "Phase 1 — Baseline (200q)",
     "total_unique_questions": 208,
-    "total_test_runs": 867,
-    "total_iterations": 37,
+    "total_test_runs": 914,
+    "total_iterations": 38,
     "total_cost_usd": 0,
-    "current_session": "2026-02-09T11-54-27"
+    "current_session": "2026-02-09T13-05-57"
   },
   "iterations": [
     {
@@ -11822,6 +11822,642 @@
           "timestamp": "2026-02-09T12:50:02.156935Z"
         }
       ]
+    },
+    {
+      "id": "iter-2026-02-09T13-05-57",
+      "number": 38,
+      "timestamp_start": "2026-02-09T13:05:57.440406Z",
+      "timestamp_end": "2026-02-09T13:09:14.358323Z",
+      "label": "Phase 1 full eval: Orchestrator",
+      "description": "Dataset: phase-1, Parallel: orchestrator, Max: None, Reset: True",
+      "changes_applied": [],
+      "results_summary": {
+        "orchestrator": {
+          "tested": 47,
+          "correct": 8,
+          "errors": 0,
+          "accuracy_pct": 17.0,
+          "avg_latency_ms": 4055,
+          "p95_latency_ms": 5434,
+          "avg_f1": 0.1162
+        }
+      },
+      "total_tested": 47,
+      "total_correct": 8,
+      "overall_accuracy_pct": 17.0,
+      "questions": [
+        {
+          "id": "orch-01",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 6097,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "TechVision Inc revenue $6.745B in 2023; Albert Einstein created Theory of Relativity",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:04.466581Z"
+        },
+        {
+          "id": "orch-02",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4305,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Alexander Fleming",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:08.886319Z"
+        },
+        {
+          "id": "orch-03",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.1111,
+          "latency_ms": 5434,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:14.426857Z"
+        },
+        {
+          "id": "orch-04",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3839,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "1021500000",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:18.378696Z"
+        },
+        {
+          "id": "orch-05",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3646,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Newton, Darwin, Turing studied at Cambridge; TechVision has ~47 active employees",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:22.130272Z"
+        },
+        {
+          "id": "orch-06",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 5649,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Paris",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:27.903325Z"
+        },
+        {
+          "id": "orch-07",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3978,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "52%",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:31.993658Z"
+        },
+        {
+          "id": "orch-08",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3930,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Alan Turing, used by Apple, Google, Microsoft",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:36.038181Z"
+        },
+        {
+          "id": "orch-09",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3664,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "A subset of AI where systems learn from data",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:39.820687Z"
+        },
+        {
+          "id": "orch-10",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4211,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "TechVision $1.349B, GreenEnergy $365M, HealthPlus $288M; Louvre Museum is in Paris",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:44.147146Z"
+        },
+        {
+          "id": "orch-11",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3841,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "1337550000",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:48.104104Z"
+        },
+        {
+          "id": "orch-12",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4227,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Alfred Hitchcock, Stanley Kubrick",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:52.438671Z"
+        },
+        {
+          "id": "orch-13",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4172,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "NASA uses Nuclear Energy; GreenEnergy Corp had $900M cash at end 2023",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:06:56.722201Z"
+        },
+        {
+          "id": "orch-14",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3787,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "100 degrees Celsius",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:00.627095Z"
+        },
+        {
+          "id": "orch-15",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3916,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "TechVision $465.9M, GreenEnergy $184.7M, HealthPlus $48.2M",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:04.653516Z"
+        },
+        {
+          "id": "orch-16",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 5333,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "WHO is a subset of the United Nations",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:10.109947Z"
+        },
+        {
+          "id": "orch-17",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3879,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "British Prime Minister during World War II",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:14.104775Z"
+        },
+        {
+          "id": "orch-18",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.1739,
+          "latency_ms": 4237,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "VisionAI Platform and VisionAI Edge; Revenue grew from $4.25B to $6.745B (2020-2023)",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:18.462033Z"
+        },
+        {
+          "id": "orch-19",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3850,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Einstein (Relativity), Curie (radioactivity), Mandela (anti-apartheid)",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:22.419496Z"
+        },
+        {
+          "id": "orch-20",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.1,
+          "latency_ms": 3911,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "HealthPlus total debt ~$140M (ST+LT 2023); Einstein connected to Princeton",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:26.438611Z"
+        },
+        {
+          "id": "orch-21",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3709,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "SolarMax 400W, SolarMax 600W, WindTurbo 5kW, PowerVault 10kWh, PowerVault 20kWh, GridManager Pro",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:30.259135Z"
+        },
+        {
+          "id": "orch-22",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3750,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Electricity, Telephone, Steam Engine",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:34.120599Z"
+        },
+        {
+          "id": "orch-23",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3653,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Deoxyribonucleic acid carries genetic instructions for development",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:37.900668Z"
+        },
+        {
+          "id": "orch-24",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4064,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "TechVision basic EPS $16.17 vs GreenEnergy $13.29",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:42.080812Z"
+        },
+        {
+          "id": "orch-25",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.1176,
+          "latency_ms": 3927,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "CERN is connected to Zurich, studies Nuclear Energy",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:46.124574Z"
+        },
+        {
+          "id": "orch-26",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.0909,
+          "latency_ms": 3794,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Vaccination protects against Influenza and COVID-19; HealthPlus has employees in various departments",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:50.033946Z"
+        },
+        {
+          "id": "orch-27",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3874,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Layer in stratosphere that absorbs UV radiation",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:54.025027Z"
+        },
+        {
+          "id": "orch-28",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4011,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "HealthPlus Labs with 260% growth",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:07:58.149261Z"
+        },
+        {
+          "id": "orch-29",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3743,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Turing → AI → Google, or Turing → Cambridge → Stanford → Google",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:02.008096Z"
+        },
+        {
+          "id": "orch-30",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.1053,
+          "latency_ms": 3777,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Process converting light to chemical energy, 6CO2 + 6H2O → C6H12O6 + 6O2",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:05.902677Z"
+        },
+        {
+          "id": "orch-31",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.08,
+          "latency_ms": 3954,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Assets grew from $5.4B to $7.924B; Key scientists: Einstein, Curie, Newton, Darwin, Turing, Fleming",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:09.981380Z"
+        },
+        {
+          "id": "orch-32",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3897,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Q1 $253.4M, Q2 $276.5M, Q3 $299.5M, Q4 $322.6M",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:14.013613Z"
+        },
+        {
+          "id": "orch-33",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4065,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Pablo Picasso, Vincent van Gogh",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:18.188947Z"
+        },
+        {
+          "id": "orch-34",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.1905,
+          "latency_ms": 4069,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Tesla was an inventor, both connected to Electricity in New York City",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:22.376766Z"
+        },
+        {
+          "id": "orch-35",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3778,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Average salary calculation across departments",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:26.283753Z"
+        },
+        {
+          "id": "orch-36",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.1333,
+          "latency_ms": 3911,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "a² + b² = c², attributed to Pythagoras",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:30.309183Z"
+        },
+        {
+          "id": "orch-37",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3771,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Interest income $45M; WWW created at CERN",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:34.205442Z"
+        },
+        {
+          "id": "orch-38",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3652,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "TechVision $1.775B, GreenEnergy $1.184B, HealthPlus $320M",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:37.974783Z"
+        },
+        {
+          "id": "orch-39",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3728,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "MIT, Stanford University",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:41.818572Z"
+        },
+        {
+          "id": "orch-40",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.1111,
+          "latency_ms": 3798,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Computing using quantum mechanical phenomena like superposition and entanglement",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:45.735250Z"
+        },
+        {
+          "id": "orch-41",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3766,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Operating income $218.8M, R&D $288M - R&D exceeds operating income",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:49.629409Z"
+        },
+        {
+          "id": "orch-42",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.1053,
+          "latency_ms": 4168,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Pasteur created vaccination which protects against Influenza and COVID-19",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:53.912096Z"
+        },
+        {
+          "id": "orch-43",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0769,
+          "latency_ms": 3731,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "TechVision $6.149B, GreenEnergy $3.276B, HealthPlus $795M; Einstein connected to Princeton, Nobel Foundation, Theory of Relativity",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:08:57.750198Z"
+        },
+        {
+          "id": "orch-44",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.125,
+          "latency_ms": 4524,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Gene editing and modification of DNA sequences",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:09:02.389086Z"
+        },
+        {
+          "id": "orch-45",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3879,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "1544400000",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:09:06.409365Z"
+        },
+        {
+          "id": "orch-46",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4056,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Smithsonian Institution",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:09:10.579954Z"
+        },
+        {
+          "id": "orch-47",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.1053,
+          "latency_ms": 3663,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "expected": "Period of political and social upheaval in France starting in 1789",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T13:09:14.358311Z"
+        }
+      ]
     }
   ],
   "question_registry": {
@@ -16404,15 +17040,27 @@
           "error_type": null,
           "answer": "TechVision Inc's revenue for 2023 is $6,745,000,000.",
           "timestamp": "2026-02-09T11:44:56.875358Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 6097,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:04.466640Z"
         }
       ],
-      "total_runs": 8,
+      "total_runs": 9,
       "pass_count": 5,
-      "pass_rate": 0.625,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T11:44:56.875358Z",
+      "pass_rate": 0.556,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:06:04.466640Z",
       "best_f1": 0.5,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-02": {
       "id": "orch-02",
@@ -16519,15 +17167,27 @@
           "error_type": null,
           "answer": "Alexander Fleming discovered penicillin in 1928.",
           "timestamp": "2026-02-09T11:45:25.235083Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4305,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:08.886373Z"
         }
       ],
-      "total_runs": 8,
+      "total_runs": 9,
       "pass_count": 5,
-      "pass_rate": 0.625,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T11:45:25.235083Z",
+      "pass_rate": 0.556,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:06:08.886373Z",
       "best_f1": 0.5,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-04": {
       "id": "orch-04",
@@ -16634,15 +17294,27 @@
           "error_type": null,
           "answer": "The Q4 2023 revenue figure for GreenEnergy Corp is $1,021,500,000.00.",
           "timestamp": "2026-02-09T11:48:07.712711Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3839,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:18.378766Z"
         }
       ],
-      "total_runs": 8,
+      "total_runs": 9,
       "pass_count": 6,
-      "pass_rate": 0.75,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T11:48:07.712711Z",
+      "pass_rate": 0.667,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:06:18.378766Z",
       "best_f1": 0.0,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-06": {
       "id": "orch-06",
@@ -16713,15 +17385,27 @@
           "error_type": null,
           "answer": "The capital city of France is Paris.",
           "timestamp": "2026-02-09T11:54:57.482749Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 5649,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:27.903386Z"
         }
       ],
-      "total_runs": 5,
+      "total_runs": 6,
       "pass_count": 3,
-      "pass_rate": 0.6,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T11:54:57.482749Z",
+      "pass_rate": 0.5,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:06:27.903386Z",
       "best_f1": 0.25,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-07": {
       "id": "orch-07",
@@ -16792,15 +17476,27 @@
           "error_type": null,
           "answer": "The gross profit margin for HealthPlus Labs in 2023 is 51.9965%.",
           "timestamp": "2026-02-09T11:55:30.717182Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3978,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:31.993714Z"
         }
       ],
-      "total_runs": 5,
+      "total_runs": 6,
       "pass_count": 3,
-      "pass_rate": 0.6,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T11:55:30.717182Z",
+      "pass_rate": 0.5,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:06:31.993714Z",
       "best_f1": 0.0,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-08": {
       "id": "orch-08",
@@ -16871,13 +17567,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-09T12:01:45.016603Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3930,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:36.038240Z"
         }
       ],
-      "total_runs": 5,
+      "total_runs": 6,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-09T12:01:45.016603Z",
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:06:36.038240Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -16950,15 +17658,27 @@
           "error_type": null,
           "answer": "Machine learning is a branch of artificial intelligence that enables computer systems to automatically learn and improve from experience without being explicitly programmed, by identifying patterns in data and making predictions or decisions based on those patterns.",
           "timestamp": "2026-02-09T12:02:20.700736Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3664,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:39.820755Z"
         }
       ],
-      "total_runs": 5,
+      "total_runs": 6,
       "pass_count": 4,
-      "pass_rate": 0.8,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T12:02:20.700736Z",
+      "pass_rate": 0.667,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:06:39.820755Z",
       "best_f1": 0.4211,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-10": {
       "id": "orch-10",
@@ -17029,15 +17749,27 @@
           "error_type": null,
           "answer": "In 2023, TechVision Inc led the three companies with the highest R&D spending at $1,349,000,000, followed by GreenEnergy Corp at $365,000,000, and HealthPlus Labs at $288,000,000.",
           "timestamp": "2026-02-09T12:06:40.101054Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4211,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:44.147214Z"
         }
       ],
-      "total_runs": 5,
+      "total_runs": 6,
       "pass_count": 2,
-      "pass_rate": 0.4,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T12:06:40.101054Z",
+      "pass_rate": 0.333,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:06:44.147214Z",
       "best_f1": 0.4167,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-11": {
       "id": "orch-11",
@@ -17108,15 +17840,27 @@
           "error_type": null,
           "answer": "The net income figure for TechVision Inc in fiscal year 2022 is $1,337,550,000.00.",
           "timestamp": "2026-02-09T12:07:40.673868Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3841,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:48.104167Z"
         }
       ],
-      "total_runs": 5,
+      "total_runs": 6,
       "pass_count": 4,
-      "pass_rate": 0.8,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T12:07:40.673868Z",
+      "pass_rate": 0.667,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:06:48.104167Z",
       "best_f1": 0.0,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-13": {
       "id": "orch-13",
@@ -17175,15 +17919,27 @@
           "error_type": null,
           "answer": "GreenEnergy Corp's current cash balance is $900,000,000.00.",
           "timestamp": "2026-02-09T12:15:05.093239Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4172,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:56.722261Z"
         }
       ],
-      "total_runs": 4,
+      "total_runs": 5,
       "pass_count": 4,
-      "pass_rate": 1.0,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T12:15:05.093239Z",
+      "pass_rate": 0.8,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:06:56.722261Z",
       "best_f1": 0.2727,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-14": {
       "id": "orch-14",
@@ -17242,15 +17998,27 @@
           "error_type": null,
           "answer": "The boiling point of water is 100°C (212°F) at standard atmospheric pressure.",
           "timestamp": "2026-02-09T12:15:40.150589Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3787,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:00.627176Z"
         }
       ],
-      "total_runs": 4,
+      "total_runs": 5,
       "pass_count": 4,
-      "pass_rate": 1.0,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T12:15:40.150589Z",
+      "pass_rate": 0.8,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:07:00.627176Z",
       "best_f1": 0.1176,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-15": {
       "id": "orch-15",
@@ -17309,15 +18077,27 @@
           "error_type": null,
           "answer": "The SQL query successfully retrieved the operating income for three companies in Q1 2023. The results show:\n\n1. GreenEnergy Corp: $184,690,000\n2. HealthPlus Labs: $48,153,000\n3. TechVision Inc: $465,908,000\n\nThese figures represent the operating income for each company during the specified period. TechVision Inc has the highest operating income among the three companies, followed by GreenEnergy Corp and HealthPlus Labs.",
           "timestamp": "2026-02-09T12:16:17.778475Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3916,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:04.653577Z"
         }
       ],
-      "total_runs": 4,
+      "total_runs": 5,
       "pass_count": 4,
-      "pass_rate": 1.0,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T12:16:17.778475Z",
+      "pass_rate": 0.8,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:07:04.653577Z",
       "best_f1": 0.3158,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "std-16": {
       "id": "std-16",
@@ -18832,15 +19612,27 @@
           "error_type": null,
           "answer": "Winston Churchill was a British statesman, orator, and author who served as Prime Minister of the United Kingdom during World War II and again from 1951 to 1955.",
           "timestamp": "2026-02-09T12:23:08.386545Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3879,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:14.104836Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 1,
-      "pass_rate": 0.5,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T12:23:08.386545Z",
+      "pass_rate": 0.333,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:07:14.104836Z",
       "best_f1": 0.4118,
-      "trend": "improving"
+      "trend": "stable"
     },
     "orch-18": {
       "id": "orch-18",
@@ -18875,14 +19667,26 @@
           "error_type": null,
           "answer": "Products in the AI/ML category include machine learning platforms, AI-powered analytics tools, natural language processing systems, computer vision software, and automated machine learning solutions.",
           "timestamp": "2026-02-09T12:24:34.427191Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": true,
+          "f1": 0.1739,
+          "latency_ms": 4237,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:18.462093Z"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 1,
-      "pass_rate": 0.5,
+      "total_runs": 3,
+      "pass_count": 2,
+      "pass_rate": 0.667,
       "current_status": "pass",
-      "last_tested": "2026-02-09T12:24:34.427191Z",
-      "best_f1": 0.0541,
+      "last_tested": "2026-02-09T13:07:18.462093Z",
+      "best_f1": 0.1739,
       "trend": "improving"
     },
     "orch-21": {
@@ -18918,13 +19722,25 @@
           "error_type": null,
           "answer": "GreenEnergy Corp sells solar panels, wind turbines, and energy storage systems.",
           "timestamp": "2026-02-09T12:35:26.886736Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3709,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:30.259196Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-09T12:35:26.886736Z",
+      "last_tested": "2026-02-09T13:07:30.259196Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -18961,13 +19777,25 @@
           "error_type": null,
           "answer": "The technology that preceded the Internet was the ARPANET, developed in the late 1960s by the U.S. Department of Defense's Advanced Research Projects Agency (ARPA).",
           "timestamp": "2026-02-09T12:37:36.623578Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3750,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:34.120672Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-09T12:37:36.623578Z",
+      "last_tested": "2026-02-09T13:07:34.120672Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -19004,15 +19832,27 @@
           "error_type": null,
           "answer": "DNA, or deoxyribonucleic acid, is the hereditary material in humans and almost all other organisms that carries genetic instructions for development, functioning, growth, and reproduction.",
           "timestamp": "2026-02-09T12:38:18.945103Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3653,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:37.900728Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 1,
-      "pass_rate": 0.5,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T12:38:18.945103Z",
+      "pass_rate": 0.333,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:07:37.900728Z",
       "best_f1": 0.4516,
-      "trend": "improving"
+      "trend": "stable"
     },
     "orch-25": {
       "id": "orch-25",
@@ -19047,15 +19887,27 @@
           "error_type": null,
           "answer": "CERN studies fundamental particles and their interactions by accelerating particles to high energies and colliding them, using advanced detectors to analyze the resulting particle showers and test theories like the Standard Model.",
           "timestamp": "2026-02-09T12:45:44.338444Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.1176,
+          "latency_ms": 3927,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:46.124641Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 2,
-      "pass_rate": 1.0,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T12:45:44.338444Z",
+      "pass_rate": 0.667,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:07:46.124641Z",
       "best_f1": 0.1714,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "graph-11": {
       "id": "graph-11",
@@ -24822,13 +25674,25 @@
           "error_type": null,
           "answer": "The number of medical employees at HealthPlus is not provided in the given context.",
           "timestamp": "2026-02-09T12:48:33.673964Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": true,
+          "f1": 0.0909,
+          "latency_ms": 3794,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:50.034018Z"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 2,
+      "total_runs": 3,
+      "pass_count": 3,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-09T12:48:33.673964Z",
+      "last_tested": "2026-02-09T13:07:50.034018Z",
       "best_f1": 0.2381,
       "trend": "stable"
     },
@@ -24865,15 +25729,27 @@
           "error_type": null,
           "answer": "The ozone layer is a region of Earth's stratosphere containing a high concentration of ozone (O3) molecules, which absorb most of the sun's harmful ultraviolet radiation, protecting life on Earth from its damaging effects.",
           "timestamp": "2026-02-09T12:49:11.216100Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3874,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:54.025105Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 2,
-      "pass_rate": 1.0,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T12:49:11.216100Z",
+      "pass_rate": 0.667,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:07:54.025105Z",
       "best_f1": 0.1667,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-30": {
       "id": "orch-30",
@@ -24896,15 +25772,27 @@
           "error_type": null,
           "answer": "Photosynthesis is the process where green plants convert light energy into chemical energy [1]. Plants use chlorophyll to absorb sunlight and convert carbon dioxide and water into glucose and oxygen [1]. This process occurs in the chloroplasts [4].",
           "timestamp": "2026-02-08T02:52:26.889241Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.1053,
+          "latency_ms": 3777,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:05.902770Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 1,
-      "pass_rate": 1.0,
-      "current_status": "pass",
-      "last_tested": "2026-02-08T02:52:26.889241Z",
+      "pass_rate": 0.5,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:08:05.902770Z",
       "best_f1": 0.2564,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-32": {
       "id": "orch-32",
@@ -24927,15 +25815,27 @@
           "error_type": null,
           "answer": "HealthPlus Labs' quarterly revenues for 2023 are as follows:\n\n*   **Q1 2023:** \\$253,440,000.00\n*   **Q2 2023:** \\$276,480,000.00\n*   **Q3 2023:** \\$299,520,000.00\n*   **Q4 2023:** \\$322,560,000.00",
           "timestamp": "2026-02-08T02:56:50.835891Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3897,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:14.013692Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 1,
-      "pass_rate": 1.0,
-      "current_status": "pass",
-      "last_tested": "2026-02-08T02:56:50.835891Z",
+      "pass_rate": 0.5,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:08:14.013692Z",
       "best_f1": 0.4706,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-35": {
       "id": "orch-35",
@@ -24958,15 +25858,27 @@
           "error_type": null,
           "answer": "[WARNING: Aggregation query returned NULL — this likely means no matching rows were found. Check that entity names and filters match the exact values in the database.] The average salary across all departments at GreenEnergy could not be calculated because the executed SQL query returned a `NULL` va",
           "timestamp": "2026-02-08T03:05:29.186567Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3778,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:26.283827Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 1,
-      "pass_rate": 1.0,
-      "current_status": "pass",
-      "last_tested": "2026-02-08T03:05:29.186567Z",
+      "pass_rate": 0.5,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:08:26.283827Z",
       "best_f1": 0.1026,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-37": {
       "id": "orch-37",
@@ -24989,15 +25901,27 @@
           "error_type": null,
           "answer": "TechVision's interest income in 2023 was **$45,000,000.00**.",
           "timestamp": "2026-02-08T03:09:59.664864Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3771,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:34.205515Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 1,
-      "pass_rate": 1.0,
-      "current_status": "pass",
-      "last_tested": "2026-02-08T03:09:59.664864Z",
+      "pass_rate": 0.5,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:08:34.205515Z",
       "best_f1": 0.2353,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-38": {
       "id": "orch-38",
@@ -25020,13 +25944,25 @@
           "error_type": null,
           "answer": "The total liabilities for all companies at the end of 2023 is **3,279,000,000.00**.",
           "timestamp": "2026-02-08T03:10:08.158817Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3652,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:37.974857Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-08T03:10:08.158817Z",
+      "last_tested": "2026-02-09T13:08:37.974857Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -25051,13 +25987,25 @@
           "error_type": null,
           "answer": "The provided document context discusses concepts related to Artificial Intelligence (AI), such as machine learning and deep learning, but it does not list any specific universities that study AI [1], [2], [4], [6].",
           "timestamp": "2026-02-08T03:10:19.416759Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3728,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:41.818649Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-08T03:10:19.416759Z",
+      "last_tested": "2026-02-09T13:08:41.818649Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -25082,13 +26030,25 @@
           "error_type": null,
           "answer": "Quantum computing utilizes quantum bits (qubits) capable of existing in multiple states simultaneously, unlike classical bits [1]. This capability enables quantum computers to solve specific problems exponentially faster than classical computers [1].",
           "timestamp": "2026-02-08T03:10:29.901771Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": true,
+          "f1": 0.1111,
+          "latency_ms": 3798,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:45.735336Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 1,
+      "total_runs": 2,
+      "pass_count": 2,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T03:10:29.901771Z",
+      "last_tested": "2026-02-09T13:08:45.735336Z",
       "best_f1": 0.1143,
       "trend": "stable"
     },
@@ -25113,13 +26073,25 @@
           "error_type": null,
           "answer": "Je n'ai pas pu trouver d'information pertinente pour répondre à votre question. Pourriez-vous reformuler ?\n\n*⚠️ Confiance modérée - vérifiez les informations.*",
           "timestamp": "2026-02-08T03:10:45.111275Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3766,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:49.629500Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-08T03:10:45.111275Z",
+      "last_tested": "2026-02-09T13:08:49.629500Z",
       "best_f1": 0.0667,
       "trend": "stable"
     },
@@ -25144,13 +26116,25 @@
           "error_type": null,
           "answer": "CRISPR-Cas9 is a gene-editing technology that allows scientists to precisely modify DNA sequences by using a guide RNA to locate specific genes and the Cas9 enzyme to cut DNA, enabling additions, deletions, or replacements [1].",
           "timestamp": "2026-02-08T03:19:24.485543Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": true,
+          "f1": 0.125,
+          "latency_ms": 4524,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:09:02.389196Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 1,
+      "total_runs": 2,
+      "pass_count": 2,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T03:19:24.485543Z",
+      "last_tested": "2026-02-09T13:09:02.389196Z",
       "best_f1": 0.2564,
       "trend": "stable"
     },
@@ -25175,15 +26159,27 @@
           "error_type": null,
           "answer": "GreenEnergy Corp's cost of goods sold in 2022 was **1,544,400,000.00**.",
           "timestamp": "2026-02-08T03:19:32.731233Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3879,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:09:06.409445Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 1,
-      "pass_rate": 1.0,
-      "current_status": "pass",
-      "last_tested": "2026-02-08T03:19:32.731233Z",
+      "pass_rate": 0.5,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:09:06.409445Z",
       "best_f1": 0.0,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-47": {
       "id": "orch-47",
@@ -25206,13 +26202,25 @@
           "error_type": null,
           "answer": "The French Revolution began in 1789 with the storming of the Bastille, leading to the end of the monarchy and the subsequent rise of Napoleon Bonaparte [1], [3], [5], [9]. This event influenced democratic movements worldwide [4], [6].",
           "timestamp": "2026-02-08T03:23:58.443055Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": true,
+          "f1": 0.1053,
+          "latency_ms": 3663,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:09:14.358392Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 1,
+      "total_runs": 2,
+      "pass_count": 2,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T03:23:58.443055Z",
+      "last_tested": "2026-02-09T13:09:14.358392Z",
       "best_f1": 0.1951,
       "trend": "stable"
     },
@@ -25340,13 +26348,25 @@
           "error_type": null,
           "answer": "Marie Curie was the first woman to win a Nobel Prize and remains the only person to have won Nobel Prizes in two different scientific fields (Physics in 1903 and Chemistry in 1911).",
           "timestamp": "2026-02-09T11:47:33.651651Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": true,
+          "f1": 0.1111,
+          "latency_ms": 5434,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:14.426914Z"
         }
       ],
-      "total_runs": 7,
-      "pass_count": 3,
-      "pass_rate": 0.429,
+      "total_runs": 8,
+      "pass_count": 4,
+      "pass_rate": 0.5,
       "current_status": "pass",
-      "last_tested": "2026-02-09T11:47:33.651651Z",
+      "last_tested": "2026-02-09T13:06:14.426914Z",
       "best_f1": 0.5,
       "trend": "improving"
     },
@@ -25431,13 +26451,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-09T11:54:21.981454Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3646,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:22.130325Z"
         }
       ],
-      "total_runs": 6,
+      "total_runs": 7,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-09T11:54:21.981454Z",
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:06:22.130325Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -25498,13 +26530,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-09T12:13:54.933421Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4227,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:06:52.438730Z"
         }
       ],
-      "total_runs": 4,
+      "total_runs": 5,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-09T12:13:54.933421Z",
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:06:52.438730Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -25541,13 +26585,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-09T12:22:32.074545Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 5333,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:10.110013Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-09T12:22:32.074545Z",
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:07:10.110013Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -25584,13 +26640,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-09T12:30:48.746958Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3850,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:22.419565Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-09T12:30:48.746958Z",
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:07:22.419565Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -25627,15 +26695,27 @@
           "error_type": null,
           "answer": "The total debt amount for HealthPlus Labs is $770,000,000.00.",
           "timestamp": "2026-02-09T12:34:50.044661Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.1,
+          "latency_ms": 3911,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:26.438673Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 1,
-      "pass_rate": 0.5,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T12:34:50.044661Z",
+      "pass_rate": 0.333,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:07:26.438673Z",
       "best_f1": 0.2727,
-      "trend": "improving"
+      "trend": "stable"
     },
     "orch-24": {
       "id": "orch-24",
@@ -25670,13 +26750,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-09T12:44:33.274688Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4064,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:42.080873Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-09T12:44:33.274688Z",
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:07:42.080873Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -25713,15 +26805,27 @@
           "error_type": null,
           "answer": "Based on the SQL query results, HealthPlus Labs (company_id: healthplus) has the highest revenue growth between 2020 and 2023, with a growth rate of 260%.",
           "timestamp": "2026-02-09T12:50:02.157031Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4011,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:07:58.149362Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 1,
-      "pass_rate": 0.5,
-      "current_status": "pass",
-      "last_tested": "2026-02-09T12:50:02.157031Z",
+      "pass_rate": 0.333,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:07:58.149362Z",
       "best_f1": 0.3704,
-      "trend": "improving"
+      "trend": "stable"
     },
     "orch-29": {
       "id": "orch-29",
@@ -25744,13 +26848,25 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-08T03:39:14.371874Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3743,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:02.008167Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-08T03:39:14.371874Z",
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:08:02.008167Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -25775,14 +26891,26 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-08T03:39:15.253500Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.08,
+          "latency_ms": 3954,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:09.981467Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-08T03:39:15.253500Z",
-      "best_f1": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:08:09.981467Z",
+      "best_f1": 0.08,
       "trend": "stable"
     },
     "orch-33": {
@@ -25806,13 +26934,25 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-08T03:39:16.189411Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4065,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:18.189033Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-08T03:39:16.189411Z",
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:08:18.189033Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -25837,15 +26977,27 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-08T03:39:17.050900Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": true,
+          "f1": 0.1905,
+          "latency_ms": 4069,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:22.376847Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-08T03:39:17.050900Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 2,
+      "pass_count": 1,
+      "pass_rate": 0.5,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T13:08:22.376847Z",
+      "best_f1": 0.1905,
+      "trend": "improving"
     },
     "orch-36": {
       "id": "orch-36",
@@ -25868,14 +27020,26 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-08T03:39:18.040604Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.1333,
+          "latency_ms": 3911,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:30.309339Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-08T03:39:18.040604Z",
-      "best_f1": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:08:30.309339Z",
+      "best_f1": 0.1333,
       "trend": "stable"
     },
     "orch-42": {
@@ -25899,15 +27063,27 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-08T03:39:18.866380Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": true,
+          "f1": 0.1053,
+          "latency_ms": 4168,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:53.912169Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-08T03:39:18.866380Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 2,
+      "pass_count": 1,
+      "pass_rate": 0.5,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T13:08:53.912169Z",
+      "best_f1": 0.1053,
+      "trend": "improving"
     },
     "orch-43": {
       "id": "orch-43",
@@ -25930,14 +27106,26 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-08T03:39:19.689777Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0769,
+          "latency_ms": 3731,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:08:57.750281Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-08T03:39:19.689777Z",
-      "best_f1": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:08:57.750281Z",
+      "best_f1": 0.0769,
       "trend": "stable"
     },
     "orch-46": {
@@ -25961,13 +27149,25 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-08T03:39:20.558223Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4056,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer - retrieval and LLM both unavailable",
+          "timestamp": "2026-02-09T13:09:10.580048Z"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-08T03:39:20.558223Z",
+      "current_status": "fail",
+      "last_tested": "2026-02-09T13:09:10.580048Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -26720,6 +27920,14 @@
           "tested": 10,
           "errors": 2,
           "avg_latency_ms": 51015
+        },
+        {
+          "iteration_id": "iter-2026-02-09T13-05-57",
+          "iteration_number": 38,
+          "accuracy_pct": 17.0,
+          "tested": 47,
+          "errors": 0,
+          "avg_latency_ms": 4055
         }
       ]
     }
@@ -27102,16 +28310,6 @@
   },
   "db_snapshots": [
     {
-      "snapshot_id": "snap-2026-02-08T04-32-17",
-      "timestamp": "2026-02-08T04:32:17.858568Z",
-      "trigger": "pre-eval",
-      "pinecone_vectors": 10411,
-      "neo4j_nodes": 0,
-      "neo4j_relationships": 0,
-      "supabase_rows": 0,
-      "file": "logs/db-snapshots/snap-2026-02-08T04-32-17.json"
-    },
-    {
       "snapshot_id": "snap-2026-02-08T20-38-36",
       "timestamp": "2026-02-08T20:38:36.329402Z",
       "trigger": "pre-eval",
@@ -27300,811 +28498,19 @@
       "neo4j_relationships": 0,
       "supabase_rows": 0,
       "file": "logs/db-snapshots/snap-2026-02-09T12-25-59.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-09T13-05-57",
+      "timestamp": "2026-02-09T13:05:57.483616Z",
+      "trigger": "pre-eval",
+      "pinecone_vectors": 0,
+      "neo4j_nodes": 0,
+      "neo4j_relationships": 0,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-09T13-05-57.json"
     }
   ],
   "execution_logs": [
-    {
-      "timestamp": "2026-02-09T10:57:59.249571Z",
-      "question_id": "std-29",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.1176,
-      "latency_ms": 11177,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The boiling point of water is 100°C (212°F) at standard atmospheric pressure.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T10:58:13.877075Z",
-      "question_id": "std-30",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.1667,
-      "latency_ms": 14554,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The United Nations is an international organization founded in 1945 that aims to maintain internatio",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T10:58:27.183222Z",
-      "question_id": "std-31",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.1765,
-      "latency_ms": 13226,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Hubble Space Telescope is a large, space-based observatory that has revolutionized astronomy by ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T10:58:43.310057Z",
-      "question_id": "std-32",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.5806,
-      "latency_ms": 16050,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Galileo Galilei was an Italian astronomer, physicist, and engineer from Pisa, known as the \"father o",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T10:59:00.679665Z",
-      "question_id": "std-33",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.1935,
-      "latency_ms": 17292,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The human genome is the complete set of genetic instructions found in human cells, consisting of app",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T10:59:18.828631Z",
-      "question_id": "std-34",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.2667,
-      "latency_ms": 18073,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Blockchain technology is a decentralized, distributed ledger system that records transactions across",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T10:59:39.436474Z",
-      "question_id": "std-35",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.303,
-      "latency_ms": 20530,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Napoleon Bonaparte was a French military leader and emperor who rose to prominence during the French",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T10:59:52.670039Z",
-      "question_id": "std-36",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.35,
-      "latency_ms": 13161,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The International Space Station (ISS) is a habitable artificial satellite in low Earth orbit that se",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:00:09.595562Z",
-      "question_id": "std-37",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.3902,
-      "latency_ms": 16849,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Climate change refers to long-term shifts in temperatures and weather patterns, primarily caused by ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:00:19.346486Z",
-      "question_id": "std-38",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.5,
-      "latency_ms": 9673,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Alexander Fleming discovered penicillin in 1928.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:00:38.703247Z",
-      "question_id": "std-39",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.2162,
-      "latency_ms": 19285,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Rosetta Stone is a granodiorite stele inscribed with three versions of a decree issued in Memphi",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:00:52.475063Z",
-      "question_id": "std-40",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.5128,
-      "latency_ms": 13686,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "GDP, or Gross Domestic Product, is the total monetary value of all finished goods and services produ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:01:09.978492Z",
-      "question_id": "std-41",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.2273,
-      "latency_ms": 17426,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Mahatma Gandhi was an Indian lawyer, anti-colonial nationalist, and political ethicist who employed ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:01:22.808076Z",
-      "question_id": "std-42",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.449,
-      "latency_ms": 12754,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "A tsunami is a series of ocean waves caused by large-scale disturbances of the sea floor, typically ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:01:37.968726Z",
-      "question_id": "std-43",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.3429,
-      "latency_ms": 15084,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "CRISPR is a gene-editing technology that allows scientists to precisely modify DNA sequences in livi",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:01:50.013833Z",
-      "question_id": "std-44",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.3077,
-      "latency_ms": 11961,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Marie Antoinette was the last queen of France before the French Revolution, known for her lavish lif",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:02:05.394179Z",
-      "question_id": "std-45",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.5,
-      "latency_ms": 15300,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The ozone layer is a region of Earth's stratosphere containing a high concentration of ozone (O3) mo",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:02:19.445181Z",
-      "question_id": "std-46",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.25,
-      "latency_ms": 13976,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Antibiotics are medicines used to prevent and treat bacterial infections by either killing bacteria ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:02:35.299647Z",
-      "question_id": "std-47",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.1667,
-      "latency_ms": 15777,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The pyramids of Giza were built by the ancient Egyptians during the Fourth Dynasty of the Old Kingdo",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:02:48.546462Z",
-      "question_id": "std-48",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.32,
-      "latency_ms": 13165,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The heart is a muscular organ that pumps blood throughout the body, delivering oxygen and nutrients ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:03:03.096098Z",
-      "question_id": "std-49",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.3243,
-      "latency_ms": 14468,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Renaissance was a period of cultural, artistic, and intellectual revival in Europe, beginning in",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:03:20.807121Z",
-      "question_id": "std-50",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.5,
-      "latency_ms": 17636,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Albert Einstein was a renowned German-born theoretical physicist who developed the theory of relativ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:04:29.703953Z",
-      "question_id": "graph-01",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.5455,
-      "latency_ms": 19921,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Marie Curie won Nobel Prizes in two different scientific fields.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:04:52.464892Z",
-      "question_id": "graph-02",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 22681,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Albert Einstein",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:05:03.488608Z",
-      "question_id": "graph-03",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 10945,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Penicillin",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:05:16.011097Z",
-      "question_id": "graph-04",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 12446,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Penicillin protects against bacterial infections.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:05:26.666593Z",
-      "question_id": "graph-05",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.4444,
-      "latency_ms": 10576,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "King's College, Cambridge; Princeton University",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:05:41.648825Z",
-      "question_id": "graph-06",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 14900,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Nikola Tesla-[CONNECTE]->Thomas Edison",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:05:56.445261Z",
-      "question_id": "graph-07",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.5455,
-      "latency_ms": 14715,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Sir Isaac Newton, Charles Darwin, James Clerk Maxwell, Ernest Rutherford, Alan Turing, Stephen Hawki",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:06:05.388182Z",
-      "question_id": "graph-08",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.3846,
-      "latency_ms": 8860,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The World Wide Web is an information system for accessing documents over the Internet. It was create",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:06:25.483073Z",
-      "question_id": "graph-09",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 20013,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Tech giants, social media platforms, automotive industry, financial institutions, healthcare organiz",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:06:41.079856Z",
-      "question_id": "graph-10",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 15515,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Paris",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:06:54.881192Z",
-      "question_id": "graph-11",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 13725,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Edward Jenner",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:07:12.761219Z",
-      "question_id": "graph-12",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 17797,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Infectious diseases, non-communicable diseases, mental health disorders, maternal and child health i",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:07:26.912344Z",
-      "question_id": "graph-13",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.3,
-      "latency_ms": 14073,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "NASA uses nuclear energy for space exploration, including radioisotope power systems, nuclear therma",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:07:43.559107Z",
-      "question_id": "graph-14",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 16568,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "No city is connected to Napoleon Bonaparte in the provided context.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:08:00.002625Z",
-      "question_id": "graph-15",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.24,
-      "latency_ms": 16364,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Google's founders, Larry Page and Sergey Brin, developed the company's core technology while PhD stu",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:08:14.947630Z",
-      "question_id": "graph-16",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 14871,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Salzburg",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:08:30.124289Z",
-      "question_id": "graph-17",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.3529,
-      "latency_ms": 15098,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Vaccination reduces risk of severe illness, hospitalization, and death from COVID-19.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:08:43.658822Z",
-      "question_id": "graph-18",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.4615,
-      "latency_ms": 13453,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Marie Curie, Albert Einstein, Martin Luther King Jr., Mother Teresa, Nelson Mandela, Malala Yousafza",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:09:05.851439Z",
-      "question_id": "graph-19",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.2,
-      "latency_ms": 22112,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Ada Lovelace is known for her work on Charles Babbage's early mechanical general-purpose computer, t",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:09:24.338803Z",
-      "question_id": "graph-20",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.2353,
-      "latency_ms": 18402,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "British Museum, Natural History Museum, Science Museum, Victoria and Albert Museum, Tate Modern, Nat",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:09:38.962323Z",
-      "question_id": "graph-21",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.3333,
-      "latency_ms": 14543,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "CERN focuses on fundamental physics research, while nuclear energy involves harnessing nuclear react",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:09:53.315734Z",
-      "question_id": "graph-22",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 14272,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "President, Congress members, federal agency heads, foreign diplomats, political organization leaders",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:10:28.270152Z",
-      "question_id": "graph-23",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 34873,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Biology, geology, natural history; HMS Beagle, Down House",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:10:54.720432Z",
-      "question_id": "graph-24",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.6364,
-      "latency_ms": 26374,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Leonardo da Vinci's Mona Lisa is housed in the Louvre Museum.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-09T11:11:09.114757Z",
-      "question_id": "graph-25",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.4,
-      "latency_ms": 14316,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "MIT, Stanford, Carnegie Mellon, UC Berkeley, Caltech, University of Toronto, University of Oxford, U",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
     {
       "timestamp": "2026-02-09T11:11:40.964319Z",
       "question_id": "graph-26",
@@ -30744,6 +31150,758 @@
       "error_type": null,
       "error_preview": null,
       "answer_preview": "Based on the SQL query results, HealthPlus Labs (company_id: healthplus) has the highest revenue gro",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:04.510766Z",
+      "question_id": "orch-01",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 6097,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:08.927159Z",
+      "question_id": "orch-02",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4305,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:14.471627Z",
+      "question_id": "orch-03",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.1111,
+      "latency_ms": 5434,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:18.418064Z",
+      "question_id": "orch-04",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3839,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:22.172823Z",
+      "question_id": "orch-05",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3646,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:27.944201Z",
+      "question_id": "orch-06",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 5649,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:32.034608Z",
+      "question_id": "orch-07",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3978,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:36.089291Z",
+      "question_id": "orch-08",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3930,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:39.862276Z",
+      "question_id": "orch-09",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3664,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:44.190891Z",
+      "question_id": "orch-10",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4211,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:48.143353Z",
+      "question_id": "orch-11",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3841,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:52.478110Z",
+      "question_id": "orch-12",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4227,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:06:56.765950Z",
+      "question_id": "orch-13",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4172,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:00.667786Z",
+      "question_id": "orch-14",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3787,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:04.701222Z",
+      "question_id": "orch-15",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3916,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:10.155050Z",
+      "question_id": "orch-16",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 5333,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:14.152367Z",
+      "question_id": "orch-17",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3879,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:18.501970Z",
+      "question_id": "orch-18",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.1739,
+      "latency_ms": 4237,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:22.459617Z",
+      "question_id": "orch-19",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3850,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:26.479371Z",
+      "question_id": "orch-20",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.1,
+      "latency_ms": 3911,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:30.301615Z",
+      "question_id": "orch-21",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3709,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:34.168772Z",
+      "question_id": "orch-22",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3750,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:37.941709Z",
+      "question_id": "orch-23",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3653,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:42.126140Z",
+      "question_id": "orch-24",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4064,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:46.170347Z",
+      "question_id": "orch-25",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.1176,
+      "latency_ms": 3927,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:50.075493Z",
+      "question_id": "orch-26",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.0909,
+      "latency_ms": 3794,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:54.066587Z",
+      "question_id": "orch-27",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3874,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:07:58.193720Z",
+      "question_id": "orch-28",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4011,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:02.047582Z",
+      "question_id": "orch-29",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3743,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:05.950647Z",
+      "question_id": "orch-30",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.1053,
+      "latency_ms": 3777,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:10.040832Z",
+      "question_id": "orch-31",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.08,
+      "latency_ms": 3954,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:14.056995Z",
+      "question_id": "orch-32",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3897,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:18.234037Z",
+      "question_id": "orch-33",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4065,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:22.428512Z",
+      "question_id": "orch-34",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.1905,
+      "latency_ms": 4069,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:26.325469Z",
+      "question_id": "orch-35",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3778,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:30.357981Z",
+      "question_id": "orch-36",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.1333,
+      "latency_ms": 3911,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:34.250477Z",
+      "question_id": "orch-37",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3771,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:38.017427Z",
+      "question_id": "orch-38",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3652,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:41.862871Z",
+      "question_id": "orch-39",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3728,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:45.784162Z",
+      "question_id": "orch-40",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.1111,
+      "latency_ms": 3798,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:49.670109Z",
+      "question_id": "orch-41",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3766,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:53.953288Z",
+      "question_id": "orch-42",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.1053,
+      "latency_ms": 4168,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:08:57.794422Z",
+      "question_id": "orch-43",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0769,
+      "latency_ms": 3731,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:09:02.447652Z",
+      "question_id": "orch-44",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.125,
+      "latency_ms": 4524,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:09:06.456458Z",
+      "question_id": "orch-45",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3879,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:09:10.625379Z",
+      "question_id": "orch-46",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4056,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T13:09:14.406429Z",
+      "question_id": "orch-47",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.1053,
+      "latency_ms": 3663,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
       "confidence": 0.8,
       "pipeline_details_summary": {
         "sub_pipelines": [],
