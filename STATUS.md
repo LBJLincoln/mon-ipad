@@ -47,15 +47,17 @@ All Phase 2 database ingestion is done:
 
 ### P0 — Pass Phase 1 Gates
 
-#### Step 1: Set environment variables
+#### Step 1: Set environment variables (see CLAUDE.md for full list)
 ```bash
-export N8N_API_KEY="..."
 export OPENROUTER_API_KEY="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"
 export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
+export SUPABASE_API_KEY="sb_publishable_xUcuBcYYUO2G9Mkq_McdeQ_ocFjgonm"
 export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
 export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
+export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
 export N8N_HOST="https://amoret.app.n8n.cloud"
+export GITHUB_TOKEN="..."  # Set by user — GitHub PAT
 ```
 
 #### Step 2: Deploy workflow improvements
@@ -252,12 +254,14 @@ B5: Back to Phase A for next improvement
 
 ```bash
 export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
+export SUPABASE_API_KEY="sb_publishable_xUcuBcYYUO2G9Mkq_McdeQ_ocFjgonm"
 export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
 export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
 export OPENROUTER_API_KEY="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"
-export N8N_API_KEY="..."
+export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
 export N8N_HOST="https://amoret.app.n8n.cloud"
+export GITHUB_TOKEN="..."  # Set by user — GitHub PAT
 ```
 
 ---
