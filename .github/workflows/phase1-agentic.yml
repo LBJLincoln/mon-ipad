@@ -1,0 +1,364 @@
+name: "Phase 1 — Team-Agentic Loop"
+
+# Team-Agentic workflow for completing Phase 1 automatically.
+# Runs: Eval → Analyze → Gate Check → Improve → Validate → Loop
+# Exits when all Phase 1 gates pass or max iterations reached.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Evaluation mode"
+        default: "fast-iter"
+        type: choice
+        options:
+          - fast-iter
+          - full-eval
+      max_iterations:
+        description: "Max loop iterations (safety limit)"
+        default: "5"
+        type: string
+      questions_per_pipeline:
+        description: "Questions per pipeline (fast-iter mode)"
+        default: "10"
+        type: string
+      target_pipeline:
+        description: "Target specific pipeline (empty = all)"
+        default: ""
+        type: string
+      auto_deploy:
+        description: "Auto-deploy improvements to n8n"
+        default: true
+        type: boolean
+      apply_all_first:
+        description: "Apply ALL pending improvements before first eval"
+        default: true
+        type: boolean
+
+env:
+  SUPABASE_PASSWORD: ${{ secrets.SUPABASE_PASSWORD }}
+  PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+  PINECONE_HOST: ${{ secrets.PINECONE_HOST }}
+  NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
+  OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+  N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+  N8N_HOST: https://amoret.app.n8n.cloud
+
+jobs:
+  # ─────────────────────────────────────────────────────────────
+  # JOB 1: PRE-FLIGHT — Apply all pending improvements up front
+  # ─────────────────────────────────────────────────────────────
+  preflight:
+    name: "Pre-Flight: Apply Improvements"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: ${{ inputs.apply_all_first }}
+    outputs:
+      improvements_applied: ${{ steps.apply.outputs.count }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Apply all pending improvements
+        id: apply
+        run: |
+          echo "## Pre-Flight: Applying Improvements" >> $GITHUB_STEP_SUMMARY
+
+          # Show current backlog status
+          python3 eval/auto-improve.py --status
+
+          # Apply all pending improvements and deploy
+          if [ "${{ inputs.auto_deploy }}" = "true" ]; then
+            python3 eval/auto-improve.py --apply-all --deploy 2>&1 | tee /tmp/apply_output.txt
+          else
+            python3 eval/auto-improve.py --apply-all 2>&1 | tee /tmp/apply_output.txt
+          fi
+
+          # Count improvements applied
+          COUNT=$(python3 -c "
+          import json
+          with open('eval/improvements.json') as f:
+              data = json.load(f)
+          applied = sum(1 for i in data['improvements'] if i['status'] in ('applied', 'verified'))
+          print(applied)
+          ")
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+          echo "Applied $COUNT improvements" >> $GITHUB_STEP_SUMMARY
+
+      - name: Commit improvement state
+        run: |
+          git config user.name "agentic-loop[bot]"
+          git config user.email "agentic-loop[bot]@users.noreply.github.com"
+          git add eval/improvements.json workflows/
+          git diff --staged --quiet || (git commit -m "agent: apply all pending improvements" && git push)
+
+  # ─────────────────────────────────────────────────────────────
+  # JOB 2: EVAL AGENTS — Run parallel evaluation per pipeline
+  # ─────────────────────────────────────────────────────────────
+  evaluate:
+    name: "Eval Agent: ${{ matrix.pipeline }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [preflight]
+    if: ${{ always() && !cancelled() }}
+
+    strategy:
+      matrix:
+        pipeline: [standard, graph, quantitative, orchestrator]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull latest changes
+        run: git pull origin ${{ github.ref_name }} || true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Skip if not targeted
+        id: check
+        run: |
+          TARGET="${{ inputs.target_pipeline }}"
+          PIPE="${{ matrix.pipeline }}"
+          if [ -n "$TARGET" ] && [ "$TARGET" != "$PIPE" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "Skipping $PIPE (target: $TARGET)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run evaluation
+        if: steps.check.outputs.skip != 'true'
+        id: eval
+        run: |
+          MODE="${{ inputs.mode }}"
+          PIPE="${{ matrix.pipeline }}"
+          QUESTIONS="${{ inputs.questions_per_pipeline || '10' }}"
+
+          echo "## Eval Agent: $PIPE ($MODE)" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$MODE" = "full-eval" ]; then
+            python3 eval/run-eval-parallel.py \
+              --types "$PIPE" \
+              --reset \
+              --label "Agentic loop: $PIPE" 2>&1 | tail -30
+          else
+            python3 eval/fast-iter.py \
+              --pipelines "$PIPE" \
+              --questions "$QUESTIONS" \
+              --label "Agentic loop: $PIPE" 2>&1 | tail -30
+          fi
+
+          # Extract accuracy from latest data
+          python3 -c "
+          import json
+          with open('docs/data.json') as f:
+              data = json.load(f)
+          pipe = data.get('pipelines', {}).get('$PIPE', {})
+          trend = pipe.get('trend', [])
+          if trend:
+              latest = trend[-1]
+              acc = latest.get('accuracy_pct', 0)
+              errors = latest.get('errors', 0)
+              print(f'$PIPE: {acc}% accuracy, {errors} errors')
+          " >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload eval results
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-${{ matrix.pipeline }}
+          path: |
+            docs/data.json
+            logs/pipeline-results/
+            logs/fast-iter/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────
+  # JOB 3: MERGE + ANALYZE — Combine results and run analysis
+  # ─────────────────────────────────────────────────────────────
+  analyze:
+    name: "Analyzer Agent"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [evaluate]
+    if: ${{ always() && !cancelled() }}
+    outputs:
+      has_regressions: ${{ steps.analysis.outputs.has_regressions }}
+      phase1_complete: ${{ steps.gate.outputs.phase1_complete }}
+      gates_passed: ${{ steps.gate.outputs.gates_passed }}
+      gates_total: ${{ steps.gate.outputs.gates_total }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull latest changes
+        run: git pull origin ${{ github.ref_name }} || true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Download all eval artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: eval-results-*
+          merge-multiple: true
+
+      - name: Run analysis
+        id: analysis
+        run: |
+          echo "## Analyzer Agent" >> $GITHUB_STEP_SUMMARY
+          python3 eval/analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY
+
+      - name: Check Phase 1 gates
+        id: gate
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Phase 1 Gate Check" >> $GITHUB_STEP_SUMMARY
+          python3 eval/phase-gate.py >> $GITHUB_STEP_SUMMARY
+          python3 eval/phase-gate.py --json > /tmp/gate.json
+
+          # Set outputs
+          COMPLETE=$(python3 -c "import json; d=json.load(open('/tmp/gate.json')); print('true' if d['phase1_complete'] else 'false')")
+          PASSED=$(python3 -c "import json; d=json.load(open('/tmp/gate.json')); print(d['gates_passed'])")
+          TOTAL=$(python3 -c "import json; d=json.load(open('/tmp/gate.json')); print(d['gates_total'])")
+
+          echo "phase1_complete=$COMPLETE" >> $GITHUB_OUTPUT
+          echo "gates_passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "gates_total=$TOTAL" >> $GITHUB_OUTPUT
+
+          if [ "$COMPLETE" = "true" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### PHASE 1 COMPLETE! All gates passed." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Commit analysis results
+        run: |
+          git config user.name "agentic-loop[bot]"
+          git config user.email "agentic-loop[bot]@users.noreply.github.com"
+          git add docs/ logs/ eval/
+          git diff --staged --quiet || (git commit -m "agent: eval + analysis (gates ${{ steps.gate.outputs.gates_passed }}/${{ steps.gate.outputs.gates_total }})" && git push)
+
+  # ─────────────────────────────────────────────────────────────
+  # JOB 4: DECISION — Phase 1 complete or trigger next iteration
+  # ─────────────────────────────────────────────────────────────
+  decision:
+    name: "Decision Agent"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [analyze]
+    if: ${{ always() && !cancelled() }}
+
+    steps:
+      - name: Phase 1 complete
+        if: ${{ needs.analyze.outputs.phase1_complete == 'true' }}
+        run: |
+          echo "## PHASE 1 COMPLETE" >> $GITHUB_STEP_SUMMARY
+          echo "All gates passed! Ready for Phase 2." >> $GITHUB_STEP_SUMMARY
+          echo "Gates: ${{ needs.analyze.outputs.gates_passed }}/${{ needs.analyze.outputs.gates_total }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Trigger next iteration
+        if: ${{ needs.analyze.outputs.phase1_complete != 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CURRENT_ITER=${{ inputs.max_iterations || '5' }}
+          REMAINING=$((CURRENT_ITER - 1))
+
+          echo "## Decision: Continue Iteration" >> $GITHUB_STEP_SUMMARY
+          echo "Gates: ${{ needs.analyze.outputs.gates_passed }}/${{ needs.analyze.outputs.gates_total }}" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$REMAINING" -gt 0 ]; then
+            echo "Triggering next iteration ($REMAINING remaining)..." >> $GITHUB_STEP_SUMMARY
+
+            gh workflow run "phase1-agentic.yml" \
+              -f mode="${{ inputs.mode || 'fast-iter' }}" \
+              -f max_iterations="$REMAINING" \
+              -f questions_per_pipeline="${{ inputs.questions_per_pipeline || '10' }}" \
+              -f target_pipeline="${{ inputs.target_pipeline || '' }}" \
+              -f auto_deploy="${{ inputs.auto_deploy || 'true' }}" \
+              -f apply_all_first="false"
+
+            echo "Next iteration triggered." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Max iterations reached. Manual intervention needed." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+            echo "1. Review failing pipelines in the dashboard" >> $GITHUB_STEP_SUMMARY
+            echo "2. Apply manual workflow fixes in n8n" >> $GITHUB_STEP_SUMMARY
+            echo "3. Re-trigger this workflow" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ─────────────────────────────────────────────────────────────
+  # JOB 5: NOTIFY — Create issue or PR on completion/failure
+  # ─────────────────────────────────────────────────────────────
+  notify:
+    name: "Notify"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [analyze, decision]
+    if: ${{ always() && !cancelled() }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create completion issue
+        if: ${{ needs.analyze.outputs.phase1_complete == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "Phase 1 COMPLETE — All gates passed" \
+            --body "$(cat <<'BODY'
+          ## Phase 1 Complete
+
+          All Phase 1 exit criteria have been met by the team-agentic loop.
+
+          **Gates:** ${{ needs.analyze.outputs.gates_passed }}/${{ needs.analyze.outputs.gates_total }}
+
+          ### Next Steps
+          - [ ] Review dashboard for final metrics
+          - [ ] Begin Phase 2 DB ingestion
+          - [ ] Run Phase 2 evaluation
+
+          *Auto-generated by Phase 1 Team-Agentic Loop*
+
+          https://claude.ai/code/session_01UhT2zeaXTRjf5Mz1TrcADw
+          BODY
+          )" \
+            --label "phase-1,automated,milestone"
+
+      - name: Create regression issue
+        if: ${{ needs.analyze.outputs.has_regressions == 'true' && needs.analyze.outputs.phase1_complete != 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "Regression detected in agentic loop iteration" \
+            --body "$(cat <<'BODY'
+          ## Regression Detected
+
+          The agentic evaluation loop detected regressions.
+
+          **Gates:** ${{ needs.analyze.outputs.gates_passed }}/${{ needs.analyze.outputs.gates_total }}
+
+          Check the workflow run for details.
+
+          *Auto-generated by Phase 1 Team-Agentic Loop*
+          BODY
+          )" \
+            --label "regression,automated" || true

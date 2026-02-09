@@ -169,6 +169,93 @@ B4: Back to Phase A for next improvement
 
 ---
 
+## Team-Agentic System (NEW)
+
+### Overview
+Autonomous improvement loop with 5 specialized agents working together:
+
+```
+┌─────────────────────────────────────────────────────┐
+│ EVAL AGENTS (4x parallel)                           │
+│   Standard | Graph | Quantitative | Orchestrator    │
+│                    ↓                                │
+│ ANALYZER AGENT — regressions, patterns, suggestions │
+│                    ↓                                │
+│ GATE AGENT — check Phase 1 exit criteria            │
+│                    ↓                                │
+│         Pass? ── Yes → PHASE 1 COMPLETE             │
+│         No ↓                                        │
+│ IMPROVE AGENT — select & apply best improvement     │
+│                    ↓                                │
+│ VALIDATOR AGENT — smoke test, no regression         │
+│                    ↓                                │
+│              Loop back to eval                      │
+└─────────────────────────────────────────────────────┘
+```
+
+### How to Run
+
+#### Option 1: GitHub Actions (Recommended)
+```bash
+# Trigger the team-agentic loop via GitHub CLI
+gh workflow run phase1-agentic.yml
+
+# With options
+gh workflow run phase1-agentic.yml \
+  -f mode=fast-iter \
+  -f max_iterations=5 \
+  -f auto_deploy=true
+```
+
+#### Option 2: Local (Termius / Google Cloud Console)
+```bash
+cd ~/mon-ipad && git pull origin main
+
+# Full autonomous loop
+python3 eval/agent-loop.py --auto-deploy
+
+# With options
+python3 eval/agent-loop.py \
+  --max-iterations 10 \
+  --questions 10 \
+  --auto-deploy \
+  --auto-push
+
+# Dry-run (shows what would happen)
+python3 eval/agent-loop.py --dry-run
+
+# Target specific pipeline
+python3 eval/agent-loop.py --pipeline graph --auto-deploy
+```
+
+### Agent Scripts (run individually)
+| Script | Purpose |
+|--------|---------|
+| `eval/agent-loop.py` | **Master orchestrator** — runs the full agentic loop |
+| `eval/phase-gate.py` | Check Phase 1 exit criteria |
+| `eval/auto-improve.py` | Select & apply best next improvement |
+| `eval/improvements.json` | Improvement backlog (priority, status) |
+
+### Quick Commands
+```bash
+# Check current gate status
+python3 eval/phase-gate.py
+
+# See improvement backlog
+python3 eval/auto-improve.py --status
+
+# Apply next improvement (dry-run)
+python3 eval/auto-improve.py
+
+# Apply and deploy to n8n
+python3 eval/auto-improve.py --apply --deploy
+
+# Apply ALL pending improvements
+python3 eval/auto-improve.py --apply-all --deploy
+```
+
+---
+
 ## Critical Blockers
 
 1. **Environment variables not set** — Cannot run any eval scripts or deploy to n8n
@@ -187,13 +274,16 @@ B4: Back to Phase A for next improvement
 | This file | `STATUS.md` |
 | Dashboard | `docs/index.html` |
 | Eval data | `docs/data.json` |
-| **Fast iteration (10q, parallel)** | **`eval/fast-iter.py`** |
-| **Parallel eval (200q)** | **`eval/run-eval-parallel.py`** |
+| **Agentic loop (master)** | **`eval/agent-loop.py`** |
+| **Phase gate checker** | **`eval/phase-gate.py`** |
+| **Auto-improve engine** | **`eval/auto-improve.py`** |
+| **Improvement backlog** | **`eval/improvements.json`** |
+| Fast iteration (10q, parallel) | `eval/fast-iter.py` |
+| Parallel eval (200q) | `eval/run-eval-parallel.py` |
 | Sequential eval (legacy) | `eval/run-eval.py` |
 | Smoke test | `eval/quick-test.py` |
 | Analyze | `eval/analyzer.py` |
 | Live writer (thread-safe) | `eval/live-writer.py` |
-| Iterate script | `eval/iterate.sh` |
 | **Apply improvements** | **`workflows/improved/apply.py`** |
 | Sync workflows | `workflows/sync.py` |
 | Deploy to n8n | `workflows/deploy/deploy.py` |
@@ -204,6 +294,8 @@ B4: Back to Phase A for next improvement
 | DB snapshots | `logs/db-snapshots/` |
 | Pipeline results | `logs/pipeline-results/` |
 | Fast-iter snapshots | `logs/fast-iter/` |
+| **Agent loop logs** | **`logs/agent-loop/`** |
+| **Team-agentic CI** | **`.github/workflows/phase1-agentic.yml`** |
 
 ---
 

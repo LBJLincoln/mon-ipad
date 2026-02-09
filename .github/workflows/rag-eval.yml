@@ -43,9 +43,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run RAG Evaluation
+      - name: Run RAG Evaluation (Parallel)
         run: |
-          cd eval
           ARGS="--types ${{ inputs.types || 'standard,graph,quantitative,orchestrator' }}"
           if [ -n "${{ inputs.max_per_type }}" ]; then
             ARGS="$ARGS --max ${{ inputs.max_per_type }}"
@@ -53,7 +52,7 @@ jobs:
           if [ "${{ inputs.reset }}" = "true" ]; then
             ARGS="$ARGS --reset"
           fi
-          python run-eval.py $ARGS
+          python3 eval/run-eval-parallel.py $ARGS
 
       - name: Commit and push results
         run: |
@@ -62,15 +61,21 @@ jobs:
           git add docs/data.json docs/tested-questions.json logs/
           git diff --staged --quiet || (git commit -m "eval: automated pipeline evaluation results" && git push)
 
+      - name: Check Phase 1 gates
+        if: always()
+        run: |
+          echo "## Phase 1 Gate Status" >> $GITHUB_STEP_SUMMARY
+          python3 eval/phase-gate.py >> $GITHUB_STEP_SUMMARY || true
+
       - name: Generate summary
         if: always()
         run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## RAG Evaluation Results" >> $GITHUB_STEP_SUMMARY
           python3 -c "
           import json
           with open('docs/data.json') as f:
               data = json.load(f)
-          print('## RAG Evaluation Results')
-          print()
           print('| Pipeline | Tested | Correct | Accuracy | Errors | Avg Latency |')
           print('|----------|--------|---------|----------|--------|-------------|')
           for name, p in data['pipelines'].items():

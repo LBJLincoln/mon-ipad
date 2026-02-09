@@ -162,6 +162,76 @@ Don't change multiple things at once — it makes it impossible to attribute imp
 
 ---
 
+## Team-Agentic Loop (Autonomous Phase 1 Completion)
+
+The team-agentic system automates the eval → analyze → improve → re-eval cycle
+with 5 specialized agents. It runs until all Phase 1 gates pass or max iterations
+are reached.
+
+### Quick Start (run in Termius / Google Cloud Console)
+
+```bash
+cd ~/mon-ipad && git pull origin main
+
+# Full autonomous loop (recommended)
+python3 eval/agent-loop.py --auto-deploy --auto-push
+
+# With options
+python3 eval/agent-loop.py \
+  --max-iterations 10 \
+  --questions 10 \
+  --auto-deploy \
+  --auto-push \
+  --pipeline graph          # optional: focus on one pipeline
+```
+
+### Or via GitHub Actions
+
+```bash
+gh workflow run phase1-agentic.yml \
+  -f mode=fast-iter \
+  -f max_iterations=5 \
+  -f auto_deploy=true \
+  -f apply_all_first=true
+```
+
+### Agent Components
+
+| Agent | Script | Purpose |
+|-------|--------|---------|
+| **Eval Agent** | `eval/fast-iter.py` / `eval/run-eval-parallel.py` | Run parallel evaluation (4 pipelines concurrent) |
+| **Analyzer Agent** | `eval/analyzer.py` | Detect regressions, error patterns, generate suggestions |
+| **Gate Agent** | `eval/phase-gate.py` | Check Phase 1 exit criteria (6 gates) |
+| **Improve Agent** | `eval/auto-improve.py` | Select and apply highest-impact improvement |
+| **Validator Agent** | `eval/quick-test.py` | Smoke test after improvement |
+
+### Standalone Agent Commands
+
+```bash
+# Check current gate status
+python3 eval/phase-gate.py
+python3 eval/phase-gate.py --json     # For CI consumption
+
+# View improvement backlog
+python3 eval/auto-improve.py --status
+
+# Apply next best improvement
+python3 eval/auto-improve.py --apply --deploy
+
+# Apply ALL pending improvements
+python3 eval/auto-improve.py --apply-all --deploy
+
+# Mark improvement as verified after eval
+python3 eval/auto-improve.py --verify orch-continue-on-fail --impact 12.5
+```
+
+### Improvement Backlog
+The file `eval/improvements.json` tracks all pending, applied, and verified
+improvements with priorities (P0/P1/P2) and expected impact in pp. The auto-improve
+engine selects the improvement targeting the pipeline with the biggest accuracy gap.
+
+---
+
 ## Phase Gates (Exit Criteria)
 
 ### Phase 1 — Baseline (200q) — CURRENT
@@ -306,6 +376,10 @@ mon-ipad/
 │       └── hf-1000.json               # 1,000q: HuggingFace datasets
 │
 ├── eval/                              # Evaluation scripts
+│   ├── agent-loop.py                  # TEAM-AGENTIC LOOP: autonomous Phase 1 completion
+│   ├── phase-gate.py                  # Phase 1 exit criteria checker (6 gates)
+│   ├── auto-improve.py                # AI-driven improvement selector + applier
+│   ├── improvements.json              # Improvement backlog (P0/P1/P2, status tracking)
 │   ├── run-eval.py                    # Sequential eval runner (legacy/debug)
 │   ├── run-eval-parallel.py           # PARALLEL eval runner (~4x faster)
 │   ├── fast-iter.py                   # Fast iteration: 10q/pipeline, parallel
@@ -377,9 +451,14 @@ mon-ipad/
 │   ├── pipeline-results/              # Per-pipeline JSON result snapshots
 │   └── fast-iter/                     # Fast iteration run snapshots
 │
+├── logs/                              # Structured execution traces
+│   ├── agent-loop/                    # Agentic loop session logs
+│   └── ...
+│
 └── .github/workflows/
+    ├── phase1-agentic.yml             # TEAM-AGENTIC LOOP: autonomous Phase 1 (NEW)
     ├── rag-eval.yml                   # Scheduled + manual eval runner
-    ├── agentic-eval.yml               # Post-eval AI analysis
+    ├── agentic-eval.yml               # Post-eval AI analysis + gate check
     ├── n8n-error-log.yml              # Receives n8n errors via repository_dispatch
     └── dashboard-deploy.yml           # Auto-deploy dashboard to GitHub Pages
 ```
@@ -421,6 +500,23 @@ and auto-refreshes every 15 seconds.
 
 ## Data Flow
 
+### Team-Agentic Loop
+```
+  ┌──────────────────────────────────────────────────────────┐
+  │                  eval/agent-loop.py                       │
+  │              (or .github/workflows/phase1-agentic.yml)    │
+  │                                                           │
+  │  EVAL AGENTS ──→ ANALYZER ──→ GATE CHECK ──→ IMPROVER    │
+  │  (4 parallel)     (patterns)   (6 criteria)  (auto-pick) │
+  │       │                              │              │     │
+  │       │                         Pass? ── Yes → DONE │     │
+  │       │                              No             │     │
+  │       └──────────────────────────────────────────────┘     │
+  │                        (loop)                              │
+  └──────────────────────────────────────────────────────────┘
+```
+
+### Data Pipeline
 ```
                           ┌─────────────────────────────────────┐
                           │  eval/fast-iter.py (10q, parallel)  │  ← Fast iteration loop

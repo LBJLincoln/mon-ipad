@@ -54,6 +54,13 @@ jobs:
         run: |
           python3 eval/analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY
 
+      - name: Check Phase 1 gates
+        id: gate
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Phase 1 Gate Check" >> $GITHUB_STEP_SUMMARY
+          python3 eval/phase-gate.py >> $GITHUB_STEP_SUMMARY || true
+
       - name: Create issue if regressions found
         if: steps.analysis.outputs.has_regressions == 'true'
         run: |
@@ -63,6 +70,14 @@ jobs:
             --label "regression,automated"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger agentic loop if gates not passed
+        if: steps.gate.outputs.phase1_complete != 'true'
+        run: |
+          echo "Phase 1 gates not yet passed. Consider running the team-agentic loop:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "gh workflow run phase1-agentic.yml" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
   quick-test:
     runs-on: ubuntu-latest
@@ -107,10 +122,9 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run full evaluation
+      - name: Run full evaluation (parallel)
         run: |
-          cd eval
-          python run-eval.py \
+          python3 eval/run-eval-parallel.py \
             --types "${{ inputs.pipelines }}" \
             --max "${{ inputs.max_questions }}" \
             --reset
