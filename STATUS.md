@@ -1,289 +1,77 @@
-# Session Context — Multi-RAG Orchestrator SOTA 2026
+# Session Status — Multi-RAG Orchestrator SOTA 2026
 
-> This document is the entry point for any new session (human or agentic).
-> Read this first, then consult `docs/data.json` for current metrics.
+> For live machine-readable metrics: `cat docs/status.json`
+> For detailed architecture: `docs/architecture.md`
+> For project instructions: `CLAUDE.md`
 
 ---
 
 ## Current State (Feb 9, 2026)
 
-### PHASE 1 — ALL GATES MET (Feb 9, 2026)
+### PHASE 1 — NOT COMPLETE
 
-| Pipeline | Accuracy | Target | Status |
-|----------|----------|--------|--------|
-| **Standard** | **100.0%** | 85% | GATE MET (50/50) |
-| **Graph** | **70.0%** | 70% | GATE MET (35/50) |
-| **Quantitative** | **88.0%** | 85% | GATE MET (44/50) |
-| **Orchestrator** | **90.0%** | 70% | GATE MET (9/10) |
-| **Overall** | **86.2%** | **75%** | **GATE MET** |
+The question_registry (source of truth used by `phase_gates.py`) shows:
 
-### Dashboard: LIVE
+| Pipeline | Accuracy | Tested | Correct | Target | Gap | Status |
+|----------|----------|--------|---------|--------|-----|--------|
+| **Standard** | **100.0%** | 50 | 50 | 85% | +15.0pp | GATE MET |
+| **Graph** | **69.1%** | 55 | 38 | 70% | -0.9pp | CLOSE |
+| **Quantitative** | **83.0%** | 53 | 44 | 85% | -2.0pp | ITERATING |
+| **Orchestrator** | **20.0%** | 50 | 10 | 70% | -50.0pp | CRITICAL |
+| **Overall** | **68.0%** | 208 | 142 | **75%** | -7.0pp | **NOT MET** |
+
+### Data Integrity Note
+
+The iter-040 "consolidated" iteration reported 86.2% overall (S:100%, G:70%, Q:88%, O:90%).
+However, only 10 orchestrator questions were tested in that iteration. After iter-040,
+two additional orchestrator runs polluted the question_registry:
+- iter-2026-02-09T13-05-57: 47 orchestrator questions at 17% (8/47)
+- iter-2026-02-09T13-44-04: 2 orchestrator questions at 50% (1/2)
+
+The question_registry now reflects ALL runs, giving orchestrator 10/50 = 20%.
+**The orchestrator eval needs to be re-run with a working OpenRouter API key.**
+
+### Priority: Orchestrator (gap: -50pp)
+
+1. Update OpenRouter API key (new key provided)
+2. Re-run orchestrator full eval (50 questions)
+3. Then address Graph (-0.9pp gap) and Quantitative (-2.0pp gap)
+
+---
+
+## Dashboard
 
 - **URL**: https://lbjlincoln.github.io/mon-ipad/
-- **Data**: 40 iterations, 208 unique questions, all 4 pipeline trends
-- **Deploy**: Auto via GitHub Actions on push to main (`.github/workflows/dashboard-deploy.yml`)
+- **Data**: 40 iterations, 208 unique questions
+- **Live status**: `docs/status.json` (auto-generated after every eval)
 
-### LLM Strategy: All Free Models via OpenRouter ($0 LLM cost)
+---
 
-All workflows use `meta-llama/llama-3.3-70b-instruct:free` via OpenRouter.
-Rate limits: 20 req/min, 1000 req/day (with $10+ credit purchase), 50 req/day (without).
-
-### Phase 2 Database: COMPLETE
+## Phase 2 Database: COMPLETE
 
 All Phase 2 database ingestion is done:
-- **Supabase**: 538 total rows (88 Phase 1 + 450 Phase 2: 200 finqa + 150 tatqa + 100 convfinqa)
-- **Neo4j**: 19,788 nodes (4,884 Phase 2 entities) + 21,625 relationships
-- **Pinecone**: 10,411 vectors (no changes needed)
+- **Supabase**: 538 total rows (88 Phase 1 + 450 Phase 2)
+- **Neo4j**: 19,788 nodes + 21,625 relationships
+- **Pinecone**: 10,411 vectors
 - **Dataset**: 1,000 Phase 2 questions in `datasets/phase-2/hf-1000.json`
 
-### Key Numbers
-- 200 unique Phase 1 questions tested across 40 iterations
-- 1,000 Phase 2 questions ready (500 graph + 500 quantitative)
-- All 4 n8n workflows deployed and active
-
 ---
 
-## Next Steps (Priority Order)
+## Next Steps
 
-### P0 — Run Phase 2 Evaluation (1,000q)
-
-Phase 1 gates are ALL MET. Phase 2 DB is COMPLETE. Ready to run Phase 2.
-
-Phase 2 DB is COMPLETE. CI/CD workflows updated with `--dataset` support.
-Run Phase 2 evaluation when ready:
-
-```bash
-# Phase 2 fast iteration (10q/pipeline, graph + quant only — auto-adjusted)
-python3 eval/fast-iter.py --dataset phase-2 --label "Phase 2: baseline"
-
-# Phase 2 full eval (1,000q, graph + quant only — auto-adjusted)
-python3 eval/run-eval-parallel.py --dataset phase-2 --reset --label "Phase 2: baseline"
-
-# Combined Phase 1 + Phase 2 (1,200q, all pipelines)
-python3 eval/run-eval-parallel.py --dataset all --reset --label "Phase 1+2: combined"
-```
-
-**GitHub Actions** (manual dispatch): select `phase-2` from the dataset dropdown in both
-`RAG Evaluation Pipeline` and `Agentic Evaluation Analysis` workflows.
-
-### Phase 2 Targets (graph + quantitative only)
-| Pipeline | Target | Note |
-|----------|--------|------|
-| Graph | >=60% | Multi-hop from HF datasets (musique, 2wikimultihopqa) |
-| Quantitative | >=70% | Financial report questions (finqa, tatqa, convfinqa) |
-
-### P2 — Re-run Neo4j with --llm (free model, no cost)
-```bash
-python3 db/populate/phase2_neo4j.py --reset --llm
-```
-
-### P3 — Rate Limit Mitigation
-If hitting 50 req/day limit on OpenRouter free tier:
-- **Option A**: Purchase $10 in OpenRouter credits to unlock 1000 req/day (credits don't expire)
-- **Option B**: Run evals in smaller batches across multiple days
-- **Option C**: Switch to `deepseek/deepseek-chat-v3-0324:free` or `google/gemma-3-27b-it:free` as alternates
-
----
-
-## Root Cause Analysis (from Feb 8 deep dive)
-
-### Orchestrator (49.6% — 36 errors, CRITICAL)
-**Error breakdown**: 20 TIMEOUT + 16 EMPTY_RESPONSE
-- **Cascading timeouts**: Broadcasts to ALL 3 sub-pipelines, waits for slowest
-- **Response Builder V9 crash**: Gets empty `task_results` from timed-out sub-workflows
-- **Query Router bug**: Leading space in `" direct_llm"` causes misrouting
-- **Cache Hit bug**: Compares against string `"Null"` instead of boolean check
-- **Fixes in apply.py**: 11 fixes (P0: Router, Cache, Response Builder, continueOnFail, Intent Analyzer single-pipeline preference)
-
-### Graph RAG (52% — 21 errors, HIGH PRIORITY)
-**All 21 errors are EMPTY_RESPONSE**
-- **Entity extraction failures**: HyDE extracts wrong names → Neo4j lookup empty
-- **Missing entities**: Historical figures not matched
-- **Fixes in apply.py**: 7 fixes (P0: Fuzzy matching with Levenshtein, entity extraction rules, answer compression)
-
-### Quantitative RAG (80% — 17 errors)
-**Error breakdown**: 10 NETWORK (401 Tunnel auth) + 7 SERVER_ERROR (SQL failures)
-- **SQL edge cases**: Multi-table JOINs, period filtering, entity name mismatch
-- **Fixes in apply.py**: 8 fixes (P0: SQL hints, ILIKE, zero-row detection, Phase 2 table support)
-
-### Standard RAG (82.6% — 5 errors)
-**All 5 errors are SERVER_ERROR**: "No item to return" from Pinecone
-- **Verbose answers**: Low F1 even on passing answers
-- **Fixes in apply.py**: 6 fixes (P0: Answer compression, topK increase, HyDE improvement)
-
----
-
-## Improvements Ready to Deploy
-
-### Workflow patches (`workflows/improved/apply.py`)
-- Orchestrator: 11 fixes targeting timeout cascade, routing bugs, Response Builder
-- Graph RAG: 7 fixes for entity extraction, fuzzy matching, answer conciseness
-- Standard RAG: 6 fixes for answer compression, topK, HyDE prompts
-- Quantitative: 8 fixes for SQL generation, ILIKE, zero-row detection + Phase 2 tables
-- Supports: `--local` (patch source files) + `--deploy` (push to n8n)
-
-### Eval scripts
-- `--dataset` flag: `phase-1` (200q), `phase-2` (1,000q), `all` (1,200q)
-- Auto-adjusts pipeline types for Phase 2 (graph + quantitative only) — all 3 runners
-- Improved scoring: percentage matching, magnitude-aware numeric matching
-- Phase 2 questions skip empty expected_answer entries
-
-### GitHub Actions (Phase 2 ready)
-- `rag-eval.yml`: Added `dataset` dropdown (phase-1/phase-2/all), `label` input, switched to `run-eval-parallel.py`
-- `agentic-eval.yml`: Added `dataset` dropdown and `label` input to full-eval job
-- DB snapshots now include Phase 2 tables (finqa_tables, tatqa_tables, convfinqa_tables)
-
-### Expected impact (Phase 1):
-| Pipeline | Current | Expected After Fixes | Reasoning |
-|---|---|---|---|
-| Standard | 82.6% | ~88% | Answer compression reduces verbosity → higher F1 |
-| Graph | 52.0% | ~65% | Fuzzy matching + entity rules fix 10-15 of 21 failures |
-| Quantitative | 80.0% | ~85% | ILIKE + SQL hints fix 3-5 of 7 SQL errors |
-| Orchestrator | 49.6% | ~68% | continueOnFail + null-safe Response Builder fix 15-20 of 36 |
-| **Overall** | **67.7%** | **~77%** | **Above 75% Phase 1 gate** |
-
----
-
-## Iteration Cycle Protocol
-
-### Phase A: Fast Iteration (10q/pipeline, parallel)
-```
-A1: Pull latest              → cd ~/mon-ipad && git pull origin main
-A2: Sync workflows           → python3 workflows/sync.py
-A3: Smoke test               → python3 eval/quick-test.py --questions 5
-A4: Fast iteration test      → python3 eval/fast-iter.py --label "description"
-A5: Review results           → check logs/fast-iter/ and logs/pipeline-results/
-A6: If bad → fix in n8n → repeat from A1
-    If good → proceed to Phase B
-A7: Commit results           → git add docs/ logs/ && git commit && git push origin main
-```
-
-### Phase B: Full Evaluation (200q or 1000q, parallel)
-```
-B1: Phase 1 eval             → python3 eval/run-eval-parallel.py --reset --label "..."
-B2: Phase 2 eval             → python3 eval/run-eval-parallel.py --dataset phase-2 --reset --label "..."
-B3: Analyze results          → python3 eval/analyzer.py
-B4: Commit + push            → git add docs/ workflows/ logs/ && git commit && git push origin main
-B5: Back to Phase A for next improvement
-```
-
-**Rule**: ONE change per iteration. Don't change multiple things at once.
-
-### Key Scripts
-| Script | Purpose | Flags |
-|--------|---------|-------|
-| `eval/fast-iter.py` | Quick validation, 10q/pipeline, parallel | `--dataset phase-2` |
-| `eval/run-eval-parallel.py` | Full eval, all pipelines parallel | `--dataset phase-2` |
-| `eval/run-eval.py` | Sequential eval (legacy/debug) | `--dataset phase-2` |
-| `eval/quick-test.py` | Smoke test, 3-5 known-good questions | |
-| `workflows/improved/apply.py` | Deploy workflow improvements | `--deploy` |
-
----
-
-## Resolved Blockers
-
-1. ~~**Phase 1 gates not met**~~ — ALL MET (Feb 9): S:100%, G:70%, Q:88%, O:90%, Overall:86.2%
-2. ~~**OpenRouter credits exhausted**~~ — Migrated to free models (`meta-llama/llama-3.3-70b-instruct:free`)
-3. ~~**Orchestrator timeouts**~~ — Fixed with rate-limit safe eval + circuit breaker patches
-4. ~~**Graph entity extraction**~~ — Fixed with fuzzy matching, entity rules
-5. ~~**Dashboard empty**~~ — Fixed error handling, data.json deployed to GitHub Pages
-
-### Remaining Concerns
-- **Free model rate limits** — 50 req/day (no credits) or 1000 req/day ($10+ credits). Phase 2 = 4000+ API calls
-- **Orchestrator tested on only 10q** — Full 50q test may reveal more issues
-
----
-
-## File Map (Quick Reference)
-
-| What | Where |
-|------|-------|
-| Project anchor | `CLAUDE.md` |
-| This file | `STATUS.md` |
-| Dashboard | `docs/index.html` |
-| Eval data | `docs/data.json` |
-| **Fast iteration** | **`eval/fast-iter.py`** |
-| **Parallel eval** | **`eval/run-eval-parallel.py`** |
-| Sequential eval (legacy) | `eval/run-eval.py` |
-| Smoke test | `eval/quick-test.py` |
-| Analyze | `eval/analyzer.py` |
-| Live writer (thread-safe) | `eval/live-writer.py` |
-| **Apply improvements** | **`workflows/improved/apply.py`** |
-| Sync workflows | `workflows/sync.py` |
-| Phase 1 questions | `datasets/phase-1/*.json` |
-| **Phase 2 questions** | **`datasets/phase-2/hf-1000.json`** |
-| Phase 2 readiness | `db/readiness/phase-2.json` |
-| Phase 2 Supabase script | `db/populate/phase2_supabase.py` |
-| Phase 2 Neo4j script | `db/populate/phase2_neo4j.py` |
-| Phase strategy | `phases/overview.md` |
-| Dataset manifest | `datasets/manifest.json` |
-| Error traces | `logs/errors/` |
-| DB snapshots | `logs/db-snapshots/` |
-| Pipeline results | `logs/pipeline-results/` |
-| Fast-iter snapshots | `logs/fast-iter/` |
+1. **P0**: Re-run orchestrator eval with new OpenRouter key → target 70%
+2. **P1**: Close Graph gap (69.1% → 70%) — likely 1 more correct answer needed
+3. **P1**: Close Quantitative gap (83.0% → 85%) — 1-2 more correct answers needed
+4. **P2**: Once ALL Phase 1 gates pass → run Phase 2 eval (1,000q)
 
 ---
 
 ## Environment Variables
 
 ```bash
-export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
-export SUPABASE_API_KEY="sb_publishable_xUcuBcYYUO2G9Mkq_McdeQ_ocFjgonm"
-export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
-export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
-export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
-export OPENROUTER_API_KEY="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"
+export OPENROUTER_API_KEY="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"
 export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
 export N8N_HOST="https://amoret.app.n8n.cloud"
-export GITHUB_TOKEN="..."  # Set by user — GitHub PAT
 ```
 
----
-
-## Session Log (Feb 9, 2026 — Free Model Migration + Cleanup)
-
-### What Changed
-
-#### 1. Free Model Migration (ALL workflows)
-Replaced all paid models with `meta-llama/llama-3.3-70b-instruct:free`:
-- `workflows/improved/standard-rag.json` — was `google/gemini-2.0-flash-exp`
-- `workflows/improved/graph-rag.json` — was `google/gemini-2.5-flash-preview-05-20` + `gemini-2.0-flash-exp`
-- `workflows/improved/quantitative-rag.json` — was `deepseek/deepseek-chat` + `gemini-2.5-flash-preview-05-20`
-- `workflows/improved/orchestrator.json` — was `deepseek/deepseek-chat` + `gemini-2.5-flash`
-- `workflows/source/standard-rag.json` — was `google/gemini-2.0-flash-exp`
-- `workflows/source/graph-rag.json` — sticky notes updated
-- `db/populate/neo4j.py` — was `google/gemini-2.0-flash-001`
-- `db/populate/phase2_neo4j.py` — was `google/gemini-2.0-flash-001`
-
-#### 2. Repo Cleanup (~600K removed)
-- Deleted `workflows/improved/backups/` (4 files, 170K)
-- Deleted `workflows/improved/*_v1_backup.json` (3 files, 280K)
-- Deleted `workflows/improved/{standard,graph,quantitative}_rag.json` (underscore-named duplicates)
-- Deleted `workflows/deploy/deploy-{iteration2-fixes,embedding-fallback,free-model-fixes,logging-patches}.py` (4 old scripts, 51K)
-- Deleted `db/readiness/verify-phase2*.py` (2 files, 52K)
-- Deleted `docs/data-v1-backup.json` (343K)
-- Deleted tiny test snapshots from `logs/db-snapshots/`
-
-#### 3. Documentation Updated
-- `CLAUDE.md` — LLM Model Registry updated to show all free models + $0 cost projections
-- `STATUS.md` — Free model migration status, updated blockers, rate limit mitigation
-
-### Available Free Model Alternatives (if Llama 3.3 underperforms)
-| Model | Params | Context | Best For |
-|---|---|---|---|
-| `meta-llama/llama-3.3-70b-instruct:free` | 70B | 131K | **CURRENT — all nodes** |
-| `google/gemma-3-27b-it:free` | 27B | 131K | Faster, lighter alternative |
-| `deepseek/deepseek-chat-v3-0324:free` | 671B MoE | 164K | Strong coding/SQL |
-| `qwen/qwen3-coder:free` | 480B MoE | 262K | SQL generation specialist |
-| `meta-llama/llama-4-maverick:free` | Large MoE | 131K | Newest Llama model |
-| `deepseek/deepseek-r1:free` | 671B MoE | 164K | Reasoning tasks |
-
-### Next Session Checklist
-1. Read `STATUS.md` (this file)
-2. Set env vars in Termius (especially `OPENROUTER_API_KEY` and `N8N_API_KEY`)
-3. `git pull origin main` on the VM
-4. Deploy: `python3 workflows/improved/apply.py --deploy`
-5. Smoke test: `python3 eval/quick-test.py --questions 5`
-6. Fast iter: `python3 eval/fast-iter.py --label "Iter 6: free model + P0 fixes"`
-7. If results look good, full eval: `python3 eval/run-eval-parallel.py --reset --label "Iter 6"`
-8. Compare Llama 3.3 vs old Gemini Flash results — if regression > 5pp, try alternate free model
+See `CLAUDE.md` for full credentials list.
