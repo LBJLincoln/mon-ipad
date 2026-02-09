@@ -213,11 +213,13 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
         if has_error:
             totals["errors"] += 1
 
-        # Rate-limit protection: delay between questions (orchestrator uses 3-5 LLM calls each)
-        if rag_type == "orchestrator" and i < len(untested) - 1:
-            time.sleep(5)
-        elif i < len(untested) - 1:
-            time.sleep(2)
+        # Rate-limit protection: delay between questions
+        # With free models, use --delay 10 to avoid rate limiting
+        delay = getattr(run_pipeline, '_delay', None)
+        if delay is None:
+            delay = 5 if rag_type == "orchestrator" else 2
+        if i < len(untested) - 1:
+            time.sleep(delay)
 
         # Per-question result for pipeline snapshot
         per_question_results.append({
@@ -268,7 +270,15 @@ def main():
                         help="Description of what changed before this eval")
     parser.add_argument("--force", action="store_true",
                         help="Force run even if phase gates are not met")
+    parser.add_argument("--delay", type=int, default=None,
+                        help="Delay (seconds) between questions. Default: 2s (5s for orchestrator). Use 10+ for free models.")
+    parser.add_argument("--workers", type=int, default=None,
+                        help="Max parallel workers. Default: number of pipeline types. Use 1 for sequential.")
     args = parser.parse_args()
+
+    # Pass delay to run_pipeline via function attribute
+    if args.delay is not None:
+        run_pipeline._delay = args.delay
 
     # Phase gate enforcement
     if not args.force and not check_phase_gate(args.dataset):
@@ -339,7 +349,8 @@ def main():
     print("\n  Launching parallel pipeline evaluation...")
     overall_totals = {"tested": 0, "correct": 0, "errors": 0}
 
-    with ThreadPoolExecutor(max_workers=len(requested_types)) as executor:
+    max_workers = args.workers or len(requested_types)
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {}
         for rag_type in requested_types:
             if questions.get(rag_type):
