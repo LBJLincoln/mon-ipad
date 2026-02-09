@@ -34,8 +34,8 @@ N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 WORKFLOW_IDS = {
     "standard": "LnTqRX4LZlI009Ks-3Jnp",
     "graph": "95x2BBAbJlLWZtWEJn6rb",
-    "quantitative": "LjUz8fxQZ03G9IsU",
-    "orchestrator": "FZxkpldDbgV8AD_cg7IWG",
+    "quantitative": "E19NZG9WfM7FNsxr",
+    "orchestrator": "ALd4gOEqiKL5KR1p",
 }
 
 WORKFLOW_NAMES = {v: k for k, v in WORKFLOW_IDS.items()}

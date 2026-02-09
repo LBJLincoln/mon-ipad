@@ -1,0 +1,213 @@
+{
+  "execution_id": "18351",
+  "workflow_id": "LnTqRX4LZlI009Ks-3Jnp",
+  "pipeline": "standard",
+  "status": "success",
+  "started_at": "2026-02-09T20:37:40.588Z",
+  "finished_at": "2026-02-09T20:37:55.347Z",
+  "duration_ms": 14759,
+  "mode": "webhook",
+  "trigger_query": {},
+  "nodes": [
+    {
+      "name": "Webhook",
+      "status": "success",
+      "started": 1770669460615,
+      "finished": null,
+      "duration_ms": 0,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"headers\": {\"host\": \"amoret.app.n8n.cloud\", \"user-agent\": \"Python-urllib/3.11\", \"content-length\": \"130\", \"accept-encoding\": \"gzip, br\", \"cdn-loop\": \"cloudflare; loops=1; subreqs=1\", \"cf-connecting-ip\": \"34.69.200.125\", \"cf-ew-via\": \"15\", \"cf-ipcountry\": \"US\", \"cf-ray\": \"9cb62a7e418ce417-ORD\", \"cf-visitor\": \"{\\\"scheme\\\":\\\"https\\\"}\", \"cf-worker\": \"n8n.cloud\", \"content-type\": \"application/json\", \"x-forwarded-for\": \"34.69.200.125, 172.70.100.210\", \"x-forwarded-host\": \"amoret.app.n8n.cloud\", \"x-forw"
+    },
+    {
+      "name": "Init & ACL Pre-Filter V3.4",
+      "status": "success",
+      "started": 1770669460615,
+      "finished": null,
+      "duration_ms": 12,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"trace_id\": \"tr-1770669460626\", \"query\": \"What is the capital of Japan?\", \"acl_filter\": {\"$or\": [{\"tenant_id\": \"benchmark\", \"allowed_groups\": {\"$in\": [\"admin\", \"guest\"]}}, {\"tenant_id\": {\"$exists\": false}}]}, \"acl_disabled\": false, \"user_context\": {\"tenant_id\": \"benchmark\", \"groups\": [\"admin\", \"guest\"]}, \"complexity\": \"moderate\", \"topK\": 15, \"adaptive_topK\": 15, \"needs_decomposition\": false}"
+    },
+    {
+      "name": "Needs Decomposition?",
+      "status": "success",
+      "started": 1770669460627,
+      "finished": null,
+      "duration_ms": 1,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"trace_id\": \"tr-1770669460626\", \"query\": \"What is the capital of Japan?\", \"acl_filter\": {\"$or\": [{\"tenant_id\": \"benchmark\", \"allowed_groups\": {\"$in\": [\"admin\", \"guest\"]}}, {\"tenant_id\": {\"$exists\": false}}]}, \"acl_disabled\": false, \"user_context\": {\"tenant_id\": \"benchmark\", \"groups\": [\"admin\", \"guest\"]}, \"complexity\": \"moderate\", \"topK\": 15, \"adaptive_topK\": 15, \"needs_decomposition\": false}"
+    },
+    {
+      "name": "Query Decomposer (V.3.4)",
+      "status": "success",
+      "started": 1770669460628,
+      "finished": null,
+      "duration_ms": 8271,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"id\": \"gen-1770669460-Eq5KoWn1mpMYcQ1Ki17G\", \"provider\": \"Arcee AI\", \"model\": \"arcee-ai/trinity-large-preview:free\", \"object\": \"chat.completion\", \"created\": 1770669460, \"choices\": [{\"logprobs\": null, \"finish_reason\": \"stop\", \"native_finish_reason\": \"stop\", \"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"{\\n  \\\"is_simple\\\": true,\\n  \\\"original_query\\\": \\\"What is the capital of Japan?\\\",\\n  \\\"sub_queries\\\": [],\\n  \\\"reasoning\\\": \\\"La question est simple et directe, demandant une informat"
+    },
+    {
+      "name": "Query Merger V3.4",
+      "status": "success",
+      "started": 1770669468899,
+      "finished": null,
+      "duration_ms": 9,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"queries\": [\"What is the capital of Japan?\"], \"primary_query\": \"What is the capital of Japan?\", \"is_decomposed\": false, \"topK_per_query\": 15, \"trace_id\": \"tr-1770669460626\", \"user_context\": {\"tenant_id\": \"benchmark\", \"groups\": [\"admin\", \"guest\"]}, \"acl_filter\": {\"$or\": [{\"tenant_id\": \"benchmark\", \"allowed_groups\": {\"$in\": [\"admin\", \"guest\"]}}, {\"tenant_id\": {\"$exists\": false}}]}}"
+    },
+    {
+      "name": "HyDE Generator",
+      "status": "success",
+      "started": 1770669468909,
+      "finished": null,
+      "duration_ms": 3828,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"id\": \"gen-1770669469-goUx0u7QiHvCe6Wlk9TF\", \"provider\": \"Arcee AI\", \"model\": \"arcee-ai/trinity-large-preview:free\", \"object\": \"chat.completion\", \"created\": 1770669469, \"choices\": [{\"logprobs\": null, \"finish_reason\": \"stop\", \"native_finish_reason\": \"stop\", \"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"The capital of Japan is Tokyo. It is the largest metropolitan area in the world and serves as the seat of the Japanese government and the Emperor of Japan.\", \"refusal\": null, \"reasoning"
+    },
+    {
+      "name": "HyDE Embedding",
+      "status": "success",
+      "started": 1770669472737,
+      "finished": null,
+      "duration_ms": 113,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"402 - \\\"{\\\\\\\"error\\\\\\\":{\\\\\\\"message\\\\\\\":\\\\\\\"Insufficient credits. Add more using https://openrouter.ai/settings/credits\\\\\\\",\\\\\\\"code\\\\\\\":402}}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 402\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axio"
+    },
+    {
+      "name": "HTTP Pinecone Query HyDE",
+      "status": "success",
+      "started": 1770669472850,
+      "finished": null,
+      "duration_ms": 450,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"400 - \\\"{\\\\\\\"code\\\\\\\":3,\\\\\\\"message\\\\\\\":\\\\\\\"Either 'vector' or 'ID' must be provided\\\\\\\",\\\\\\\"details\\\\\\\":[]}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 400\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n   "
+    },
+    {
+      "name": "BM25 Search Postgres",
+      "status": "success",
+      "started": 1770669473300,
+      "finished": null,
+      "duration_ms": 197,
+      "items_in": 0,
+      "items_out": 0,
+      "error": null,
+      "data_preview": null
+    },
+    {
+      "name": "Original Embedding",
+      "status": "success",
+      "started": 1770669473497,
+      "finished": null,
+      "duration_ms": 71,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"402 - \\\"{\\\\\\\"error\\\\\\\":{\\\\\\\"message\\\\\\\":\\\\\\\"Insufficient credits. Add more using https://openrouter.ai/settings/credits\\\\\\\",\\\\\\\"code\\\\\\\":402}}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 402\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axio"
+    },
+    {
+      "name": "HTTP Pinecone Query Original",
+      "status": "success",
+      "started": 1770669473568,
+      "finished": null,
+      "duration_ms": 446,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"400 - \\\"{\\\\\\\"code\\\\\\\":3,\\\\\\\"message\\\\\\\":\\\\\\\"Either 'vector' or 'ID' must be provided\\\\\\\",\\\\\\\"details\\\\\\\":[]}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 400\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n   "
+    },
+    {
+      "name": "Wait All Branches",
+      "status": "success",
+      "started": 1770669474014,
+      "finished": null,
+      "duration_ms": 1,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"400 - \\\"{\\\\\\\"code\\\\\\\":3,\\\\\\\"message\\\\\\\":\\\\\\\"Either 'vector' or 'ID' must be provided\\\\\\\",\\\\\\\"details\\\\\\\":[]}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 400\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n   "
+    },
+    {
+      "name": "RRF Merge & Rank V3.4",
+      "status": "success",
+      "started": 1770669474016,
+      "finished": null,
+      "duration_ms": 18,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"results\": [], \"metadata\": {\"sources_available\": 0, \"total_unique_docs\": 0, \"warnings\": [\"HyDE: 0 results\", \"Original: 0 results\", \"BM25: 0 results (may need tenant_id configuration)\"], \"is_decomposed\": false, \"rrf_normalized\": true, \"version\": \"3.4.3\", \"trace_id\": \"tr-1770669460626\"}, \"skip_reranker\": true}"
+    },
+    {
+      "name": "Cohere Reranker",
+      "status": "success",
+      "started": 1770669474034,
+      "finished": null,
+      "duration_ms": 190,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"Try spacing your requests out using the batching settings under 'Options'\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 429\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n    at RedirectableRequest.emit (node:ev"
+    },
+    {
+      "name": "Rerank Merger",
+      "status": "success",
+      "started": 1770669474225,
+      "finished": null,
+      "duration_ms": 11,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"results\": [], \"metadata\": {\"sources_available\": 0, \"total_unique_docs\": 0, \"warnings\": [\"HyDE: 0 results\", \"Original: 0 results\", \"BM25: 0 results (may need tenant_id configuration)\"], \"is_decomposed\": false, \"rrf_normalized\": true, \"version\": \"3.4.3\", \"trace_id\": \"tr-1770669460626\", \"reranked\": false, \"empty_database\": true}, \"skip_llm\": false, \"fallback_response\": {\"response\": \"Je n'ai trouvé aucun document pertinent dans la base de connaissances.\", \"sources\": [], \"confidence\": 0, \"trace_id\""
+    },
+    {
+      "name": "Skip LLM?",
+      "status": "success",
+      "started": 1770669474236,
+      "finished": null,
+      "duration_ms": 1,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": null
+    },
+    {
+      "name": "LLM Generation",
+      "status": "success",
+      "started": 1770669474237,
+      "finished": null,
+      "duration_ms": 1101,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"id\": \"gen-1770669474-D9V1QvyzdeMloquub9d6\", \"provider\": \"Arcee AI\", \"model\": \"arcee-ai/trinity-large-preview:free\", \"object\": \"chat.completion\", \"created\": 1770669474, \"choices\": [{\"logprobs\": null, \"finish_reason\": \"stop\", \"native_finish_reason\": \"stop\", \"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"Tokyo is the capital of Japan.\", \"refusal\": null, \"reasoning\": null}}], \"system_fingerprint\": null, \"usage\": {\"prompt_tokens\": 68, \"completion_tokens\": 8, \"total_tokens\": 76, \"cost\": 0,"
+    },
+    {
+      "name": "Response Formatter",
+      "status": "success",
+      "started": 1770669475338,
+      "finished": null,
+      "duration_ms": 9,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"response\": \"Tokyo is the capital of Japan.\", \"trace_id\": \"tr-1770669460626\", \"sources\": [], \"model\": \"meta-llama/llama-3.3-70b-instruct:free\", \"embedding_fallback\": true, \"timestamp\": \"2026-02-09T20:37:55.347Z\"}"
+    }
+  ],
+  "node_count": 18,
+  "error_nodes": []
+}
