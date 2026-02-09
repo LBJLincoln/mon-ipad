@@ -196,7 +196,7 @@ def run_pipeline_fast(rag_type, questions, label=""):
             time.sleep(1)
 
         qid = q["id"]
-        rag_timeout = 90 if rag_type == "orchestrator" else 60
+        rag_timeout = 120 if rag_type == "orchestrator" else 90
         resp = call_rag(endpoint, q["question"], timeout=rag_timeout)
 
         if resp["error"]:

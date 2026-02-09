@@ -156,12 +156,12 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
                    f"failures — stopping pipeline to prevent n8n flooding")
             break
 
-        # Inter-request delay to prevent overwhelming n8n (2s between requests)
+        # Inter-request delay to prevent overwhelming n8n (5s between requests)
         if i > 0:
-            time.sleep(2)
+            time.sleep(5)
 
         qid = q["id"]
-        rag_timeout = 90 if rag_type == "orchestrator" else 60
+        rag_timeout = 120 if rag_type == "orchestrator" else 90
         resp = call_rag(endpoint, q["question"], timeout=rag_timeout)
 
         if resp["error"]:

@@ -25,9 +25,9 @@ N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 
 WORKFLOW_IDS = {
     "graph_rag": "95x2BBAbJlLWZtWEJn6rb",
-    "orchestrator": "FZxkpldDbgV8AD_cg7IWG",
+    "orchestrator": "ALd4gOEqiKL5KR1p",
     "standard_rag": "LnTqRX4LZlI009Ks-3Jnp",
-    "quantitative_rag": "LjUz8fxQZ03G9IsU",
+    "quantitative_rag": "E19NZG9WfM7FNsxr",
 }
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))

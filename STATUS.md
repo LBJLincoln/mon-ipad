@@ -9,13 +9,22 @@
 
 ### Multi-Model Free Strategy: ACTIVE (Feb 9)
 
-LLM models spread across 3 free providers to reduce rate limiting ($0 LLM cost):
-- **SQL/Intent/Fast**: `arcee-ai/trinity-large-preview:free` (400B MoE, 13B active, 131K ctx)
-- **HyDE/General**: `meta-llama/llama-3.3-70b-instruct:free` (70B, 128K ctx)
+ALL LLM models on `arcee-ai/trinity-large-preview:free` ($0 cost):
+- **All LLM variables**: Switched from Llama 3.3 (rate-limited at 429) to Arcee Trinity
 - **Cohere Rerank**: `rerank-multilingual-v3.0` (kept — no free alternative)
-- **API Key**: Updated in n8n (sk-or-v1-ae340...91389)
-- **Workflow fixes**: Removed `response_format: json_object` (unsupported by free providers), added `continueOnFail` to all LLM nodes
-- **All 4 pipelines**: SMOKE TEST PASS (Feb 9)
+- **Workflow fixes**: Removed `response_format: json_object`, added `continueOnFail`, English prompts
+- **All 4 pipelines**: SMOKE TEST PASS (individual calls work, ~40-100s latency)
+
+### Workflow Recreation (Feb 9 ~04:30 UTC)
+
+Zombie executions (23 total) blocked all n8n webhooks. Fixed by deleting and recreating:
+- **Quantitative**: OLD `LjUz8fxQZ03G9IsU` → NEW `E19NZG9WfM7FNsxr` (60s timeout)
+- **Orchestrator**: OLD `FZxkpldDbgV8AD_cg7IWG` → NEW `ALd4gOEqiKL5KR1p` (90s timeout)
+- Webhook paths preserved (same UUIDs)
+- Sub-workflow references updated (Orchestrator → Quantitative)
+- Fixed `Analyzis` typo in 3 Orchestrator nodes (Intent Analyzer, Agent Harness, HTTP Request)
+- Deactivated duplicate webhook workflows (qtBs2Wbi, xrzL7TRX)
+- Standard and Graph RAG workflows unchanged
 
 ### Phase 2 Database: COMPLETE
 
@@ -50,28 +59,24 @@ All Phase 2 database ingestion is done:
 
 Phase 1 gates MUST be met before Phase 2. Focus on fixing root causes:
 
-**BLOCKER: n8n Zombie Executions**
-- 23 stuck Quantitative/Orchestrator executions blocking all n8n webhooks
-- Root cause: Postgres nodes in Quantitative workflow have NO timeout
-- Eval script had no circuit breaker → flooded n8n with requests
-- **FIX DEPLOYED**: Circuit breaker (5 consecutive failures → stop pipeline)
-- **FIX DEPLOYED**: No-retry on timeouts (prevents zombie creation)
-- **FIX DEPLOYED**: 2s inter-request delay in eval scripts
-- **FIX DEPLOYED**: Response Formatter bug in Standard RAG (undefined `response` variable)
-- **PENDING**: Add execution timeout to Quantitative/Orchestrator workflows (60s/90s)
-- **PENDING**: Wait for stuck executions to clear (~1-2h from 03:30 UTC)
+**RESOLVED: Zombie Executions (Feb 9 04:30 UTC)**
+- 23 zombies killed by deleting + recreating Quantitative and Orchestrator workflows
+- Circuit breaker added (5 consecutive failures → stop), 5s inter-request delay
+- No-retry on timeouts, executionTimeout set (60s/90s)
+- Response Formatter bug fixed in Standard RAG
+- Prompts translated French→English in Standard RAG and Orchestrator
+- `Analyzis` typo fixed in 3 Orchestrator nodes
 
-**Known Issues (Feb 9 Phase 1 eval)**:
-- Standard: "Unable to generate answer - retrieval and LLM both unavailable" (LLM nodes failing)
-- Graph: "Unable to process query" (0 entities extracted, 0 Neo4j paths)
-- Quantitative: All TIMEOUT (Postgres nodes hanging)
-- Orchestrator: All TIMEOUT (cascading from sub-workflows)
+**Known Issues (Feb 9)**:
+- n8n Cloud worker unstable: intermittent 503, slow responses (40-100s), executions stuck in "new"
+- Worker needs periodic cleanup of "new" status executions
+- Arcee Trinity model responses need quality evaluation (F1 scores untested with new model)
 
-#### Next Steps (when n8n clears):
-1. Smoke test: `python3 eval/quick-test.py --questions 5`
-2. Debug LLM node failures in Standard/Graph (check OpenRouter rate limits)
-3. Fast iteration: `python3 eval/fast-iter.py --label "Iter 6: post-fix"`
-4. Full Phase 1 eval: `python3 eval/run-eval-parallel.py --reset --label "Iter 6"`
+#### Next Steps:
+1. Wait for n8n Cloud to stabilize (503 errors may indicate worker restart)
+2. Smoke test: `python3 eval/quick-test.py --questions 5`
+3. Fast iteration: `python3 eval/fast-iter.py --label "Iter 6: all fixes"`
+4. Full Phase 1 eval: `python3 eval/run-eval-parallel.py --reset --label "Iter 6: all fixes"`
 5. Iterate until Phase 1 gates pass
 
 ### P1 — Run Phase 2 Evaluation (1,000q)

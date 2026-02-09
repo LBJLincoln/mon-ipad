@@ -27,7 +27,7 @@ WORKFLOWS = {
         "name": "Graph RAG V3.3"
     },
     "orchestrator": {
-        "id": "FZxkpldDbgV8AD_cg7IWG",
+        "id": "ALd4gOEqiKL5KR1p",
         "file": "/home/user/mon-ipad/V10.1 orchestrator copy (5).json",
         "name": "Orchestrator V10.1"
     }

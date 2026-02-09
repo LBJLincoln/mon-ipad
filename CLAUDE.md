@@ -256,8 +256,8 @@ Error logging only works through eval scripts, not real-time from n8n.
 |---|---|---|---|---|
 | WF5 Standard RAG V3.4 | `/webhook/rag-multi-index-v3` | Pinecone | 23 | [Open](https://amoret.app.n8n.cloud/workflow/LnTqRX4LZlI009Ks-3Jnp) |
 | WF2 Graph RAG V3.3 | `/webhook/ff622742-...` | Neo4j + Supabase | 26 | [Open](https://amoret.app.n8n.cloud/workflow/95x2BBAbJlLWZtWEJn6rb) |
-| WF4 Quantitative V2.0 | `/webhook/3e0f8010-...` | Supabase SQL | 25 | [Open](https://amoret.app.n8n.cloud/workflow/LjUz8fxQZ03G9IsU) |
-| V10.1 Orchestrator | `/webhook/92217bb8-...` | Routes to above | 68 | [Open](https://amoret.app.n8n.cloud/workflow/FZxkpldDbgV8AD_cg7IWG) |
+| WF4 Quantitative V2.0 | `/webhook/3e0f8010-...` | Supabase SQL | 25 | [Open](https://amoret.app.n8n.cloud/workflow/E19NZG9WfM7FNsxr) |
+| V10.1 Orchestrator | `/webhook/92217bb8-...` | Routes to above | 68 | [Open](https://amoret.app.n8n.cloud/workflow/ALd4gOEqiKL5KR1p) |
 
 ### Databases
 

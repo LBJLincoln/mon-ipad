@@ -563,8 +563,8 @@ def run_eval(questions_by_type, tested_ids_by_type, max_per_type=None):
 
         for i, q in enumerate(untested):
             qid = q["id"]
-            # Orchestrator needs more time due to sub-workflow chaining
-            rag_timeout = 90 if rag_type == "orchestrator" else 60
+            # n8n Cloud responds in 30-100s; orchestrator chains sub-workflows
+            rag_timeout = 120 if rag_type == "orchestrator" else 90
             resp = call_rag(endpoint, q["question"], timeout=rag_timeout)
 
             if resp["error"]:
