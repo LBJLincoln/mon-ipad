@@ -1,12 +1,12 @@
 {
   "meta": {
     "version": "2.0",
-    "generated_at": "2026-02-09T21:11:59.129995Z",
+    "generated_at": "2026-02-09T21:27:10.009759Z",
     "status": "running",
     "project": "Multi-RAG Orchestrator SOTA 2026",
     "phase": "Phase 1 — Baseline (200q)",
     "total_unique_questions": 208,
-    "total_test_runs": 930,
+    "total_test_runs": 934,
     "total_iterations": 41,
     "total_cost_usd": 0,
     "current_session": "2026-02-09T20-53-09"
@@ -12558,24 +12558,24 @@
       "id": "iter-2026-02-09T20-53-09",
       "number": 41,
       "timestamp_start": "2026-02-09T20:53:09.233778Z",
-      "timestamp_end": "2026-02-09T21:11:59.079488Z",
+      "timestamp_end": "2026-02-09T21:27:09.961672Z",
       "label": "orchestrator sequential fix",
       "description": "Iterative evaluation: stages 1-3, pipelines: orchestrator",
       "changes_applied": [],
       "results_summary": {
         "orchestrator": {
-          "tested": 5,
-          "correct": 3,
-          "errors": 2,
-          "accuracy_pct": 60.0,
-          "avg_latency_ms": 56531,
-          "p95_latency_ms": 60699,
-          "avg_f1": 0.5
+          "tested": 9,
+          "correct": 5,
+          "errors": 4,
+          "accuracy_pct": 55.6,
+          "avg_latency_ms": 62556,
+          "p95_latency_ms": 83497,
+          "avg_f1": 0.3438
         }
       },
-      "total_tested": 5,
-      "total_correct": 3,
-      "overall_accuracy_pct": 60.0,
+      "total_tested": 9,
+      "total_correct": 5,
+      "overall_accuracy_pct": 55.6,
       "questions": [
         {
           "id": "orch-01",
@@ -12641,6 +12641,58 @@
           "error": null,
           "error_type": null,
           "timestamp": "2026-02-09T21:11:59.079473Z"
+        },
+        {
+          "id": "orch-01",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "answer": "",
+          "expected": "TechVision Inc revenue $6.745B in 2023; Albert Einstein created Theory of Relativity",
+          "match_type": "NO_ANSWER",
+          "error": "HTTP 500: {\"code\":0,\"message\":\"The execution was cancelled because it timed out\"}",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-09T21:18:15.657584Z"
+        },
+        {
+          "id": "orch-05",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "answer": "",
+          "expected": "Newton, Darwin, Turing studied at Cambridge; TechVision has ~47 active employees",
+          "match_type": "NO_ANSWER",
+          "error": "HTTP 500: {\"code\":0,\"message\":\"The execution was cancelled because it timed out\"}",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-09T21:24:36.576010Z"
+        },
+        {
+          "id": "orch-06",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.25,
+          "latency_ms": 59693,
+          "answer": "The capital city of France is Paris.",
+          "expected": "Paris",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T21:25:41.362202Z"
+        },
+        {
+          "id": "orch-07",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.125,
+          "latency_ms": 83497,
+          "answer": "The gross profit margin for HealthPlus Labs in 2023 is 51.996527777777777778%, or approximately 52%.",
+          "expected": "52%",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T21:27:09.961660Z"
         }
       ]
     }
@@ -17369,13 +17421,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-09T20:59:25.963647Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T20-53-09",
+          "iteration_number": 41,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "match_type": "NO_ANSWER",
+          "error": "HTTP 500: {\"code\":0,\"message\":\"The execution was cancelled because it timed out\"}",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-09T21:18:15.657680Z"
         }
       ],
-      "total_runs": 11,
+      "total_runs": 12,
       "pass_count": 5,
-      "pass_rate": 0.455,
+      "pass_rate": 0.417,
       "current_status": "error",
-      "last_tested": "2026-02-09T20:59:25.963647Z",
+      "last_tested": "2026-02-09T21:18:15.657680Z",
       "best_f1": 0.5,
       "trend": "regressing"
     },
@@ -17750,15 +17814,27 @@
           "error_type": null,
           "answer": "Unable to generate answer - retrieval and LLM both unavailable",
           "timestamp": "2026-02-09T13:06:27.903386Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T20-53-09",
+          "iteration_number": 41,
+          "correct": true,
+          "f1": 0.25,
+          "latency_ms": 59693,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The capital city of France is Paris.",
+          "timestamp": "2026-02-09T21:25:41.362270Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 3,
-      "pass_rate": 0.5,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T13:06:27.903386Z",
+      "total_runs": 7,
+      "pass_count": 4,
+      "pass_rate": 0.571,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T21:25:41.362270Z",
       "best_f1": 0.25,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "orch-07": {
       "id": "orch-07",
@@ -17841,15 +17917,27 @@
           "error_type": null,
           "answer": "Unable to generate answer - retrieval and LLM both unavailable",
           "timestamp": "2026-02-09T13:06:31.993714Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T20-53-09",
+          "iteration_number": 41,
+          "correct": true,
+          "f1": 0.125,
+          "latency_ms": 83497,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The gross profit margin for HealthPlus Labs in 2023 is 51.996527777777777778%, or approximately 52%.",
+          "timestamp": "2026-02-09T21:27:09.961717Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 3,
-      "pass_rate": 0.5,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T13:06:31.993714Z",
-      "best_f1": 0.0,
-      "trend": "regressing"
+      "total_runs": 7,
+      "pass_count": 4,
+      "pass_rate": 0.571,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T21:27:09.961717Z",
+      "best_f1": 0.125,
+      "trend": "stable"
     },
     "orch-08": {
       "id": "orch-08",
@@ -26840,13 +26928,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-09T21:06:42.723169Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T20-53-09",
+          "iteration_number": 41,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "match_type": "NO_ANSWER",
+          "error": "HTTP 500: {\"code\":0,\"message\":\"The execution was cancelled because it timed out\"}",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-09T21:24:36.576070Z"
         }
       ],
-      "total_runs": 8,
+      "total_runs": 9,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "error",
-      "last_tested": "2026-02-09T21:06:42.723169Z",
+      "last_tested": "2026-02-09T21:24:36.576070Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -28333,10 +28433,10 @@
         {
           "iteration_id": "iter-2026-02-09T20-53-09",
           "iteration_number": 41,
-          "accuracy_pct": 60.0,
-          "tested": 5,
-          "errors": 2,
-          "avg_latency_ms": 56531
+          "accuracy_pct": 55.6,
+          "tested": 9,
+          "errors": 4,
+          "avg_latency_ms": 62556
         }
       ]
     }
@@ -28920,70 +29020,6 @@
     }
   ],
   "execution_logs": [
-    {
-      "timestamp": "2026-02-09T13:08:05.950647Z",
-      "question_id": "orch-30",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.1053,
-      "latency_ms": 3777,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-09T13:08:10.040832Z",
-      "question_id": "orch-31",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.08,
-      "latency_ms": 3954,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-09T13:08:14.056995Z",
-      "question_id": "orch-32",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 3897,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-09T13:08:18.234037Z",
-      "question_id": "orch-33",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 4065,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
     {
       "timestamp": "2026-02-09T13:08:22.428512Z",
       "question_id": "orch-34",
@@ -32210,6 +32246,64 @@
       "error_type": null,
       "error_preview": null,
       "answer_preview": "Marie Curie was the first woman to win a Nobel Prize and remains the only person to have won Nobel P",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T21:18:15.695131Z",
+      "question_id": "orch-01",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error_type": "TIMEOUT",
+      "error_preview": "HTTP 500: {\"code\":0,\"message\":\"The execution was cancelled because it timed out\"}",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-09T21:24:36.609756Z",
+      "question_id": "orch-05",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error_type": "TIMEOUT",
+      "error_preview": "HTTP 500: {\"code\":0,\"message\":\"The execution was cancelled because it timed out\"}",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-09T21:25:41.398795Z",
+      "question_id": "orch-06",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.25,
+      "latency_ms": 59693,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The capital city of France is Paris.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T21:27:09.997942Z",
+      "question_id": "orch-07",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.125,
+      "latency_ms": 83497,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The gross profit margin for HealthPlus Labs in 2023 is 51.996527777777777778%, or approximately 52%.",
       "confidence": 0.8,
       "pipeline_details_summary": {
         "sub_pipelines": [],

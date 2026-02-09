@@ -374,6 +374,7 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
   <div class="tab" data-tab="costs">Costs & Models <span class="kbd">6</span></div>
   <div class="tab" data-tab="agent">AI Agent <span class="kbd">7</span></div>
   <div class="tab" data-tab="kb">Knowledge Base <span class="kbd">8</span></div>
+  <div class="tab" data-tab="diag">Diagnostics <span class="kbd">9</span></div>
 </div>
 
 <!-- ============ TAB 0: CONTROL TOWER ============ -->
@@ -789,6 +790,50 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
   </div>
 </div>
 
+<!-- ============ TAB 9: DIAGNOSTICS ============ -->
+<div class="panel" id="p-diag">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+    <div>
+      <h2 style="margin-bottom:4px">Node-by-Node Diagnostics</h2>
+      <p style="font-size:12.5px;color:var(--tx3)">Automated execution analysis &mdash; every stage batch is analyzed node-by-node</p>
+    </div>
+    <div style="display:flex;gap:10px">
+      <select id="diag-pipe-filter" onchange="renderDiagnostics()" style="background:var(--s3);border:1px solid var(--bd);border-radius:var(--r-sm);padding:5px 10px;color:var(--tx);font-size:11px">
+        <option value="">All Pipelines</option>
+        <option value="standard">Standard</option>
+        <option value="graph">Graph</option>
+        <option value="quantitative">Quantitative</option>
+        <option value="orchestrator">Orchestrator</option>
+      </select>
+      <button class="btn btn-sm btn-primary" onclick="loadDiagData()">Refresh</button>
+    </div>
+  </div>
+
+  <!-- Severity Summary Cards -->
+  <div class="grid g4" id="diag-severity-cards" style="margin-bottom:20px"></div>
+
+  <!-- Per-Pipeline Diagnostics -->
+  <div id="diag-pipeline-sections"></div>
+
+  <!-- Top Issues -->
+  <div class="card card-rd" style="margin-bottom:20px">
+    <h3>Top Issues (Across All Pipelines)</h3>
+    <div id="diag-top-issues"></div>
+  </div>
+
+  <!-- Node Health Map -->
+  <div class="card" style="margin-bottom:20px">
+    <h3>Node Health Map</h3>
+    <div id="diag-node-health" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+  </div>
+
+  <!-- Recommendations -->
+  <div class="card card-gn" style="margin-bottom:20px">
+    <h3>Automated Recommendations</h3>
+    <div id="diag-recommendations"></div>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // GLOBAL STATE & CONSTANTS
@@ -932,6 +977,7 @@ const CMD_ITEMS=[
   {label:'Costs & Models',action:()=>switchTab('costs'),hint:'Tab 6'},
   {label:'AI Agent',action:()=>switchTab('agent'),hint:'Tab 7'},
   {label:'Knowledge Base',action:()=>switchTab('kb'),hint:'Tab 8'},
+  {label:'Diagnostics',action:()=>switchTab('diag'),hint:'Tab 9'},
   {label:'Fetch n8n Logs',action:()=>{closePalette();fetchN8nExecutions()},hint:'Live'},
   {label:'Export Questions CSV',action:()=>{closePalette();exportCSV()},hint:'Download'},
   {label:'Toggle Theme',action:()=>{closePalette();toggleTheme()},hint:'Dark/Light'},
@@ -1096,9 +1142,9 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closePalette();return;}
   // Number keys 0-8 (not in input)
   if(!e.metaKey&&!e.ctrlKey&&!e.altKey&&e.target.tagName!=='INPUT'&&e.target.tagName!=='SELECT'&&e.target.tagName!=='TEXTAREA'){
-    const tabs=['tower','exec','focus','questions','workflows','databases','costs','agent','kb'];
+    const tabs=['tower','exec','focus','questions','workflows','databases','costs','agent','kb','diag'];
     const n=parseInt(e.key);
-    if(n>=0&&n<=8){switchTab(tabs[n]);}
+    if(n>=0&&n<=9){switchTab(tabs[n]);}
   }
 });
 
@@ -2684,11 +2730,198 @@ function renderKB(){
 }
 
 // ============================================================
+// TAB 9: DIAGNOSTICS
+// ============================================================
+let DIAG_DATA=null;
+
+function loadDiagData(){
+  // Try to load from stage data diagnostics first
+  if(STAGE_DATA){
+    DIAG_DATA=STAGE_DATA;
+    renderDiagnostics();
+  }
+  // Also try loading latest diagnostics from logs
+  fetch('https://raw.githubusercontent.com/LBJLincoln/mon-ipad/claude/iterative-pipeline-stages-2vAXq/logs/diagnostics/latest.json')
+    .then(r=>r.ok?r.json():null).then(d=>{if(d){DIAG_DATA=Object.assign(DIAG_DATA||{},d);renderDiagnostics();}}).catch(()=>{});
+}
+
+function renderDiagnostics(){
+  const pipeFilter=document.getElementById('diag-pipe-filter')?.value||'';
+
+  // Collect diagnostics from stage data
+  let allDiags=[];
+  let allIssues=[];
+  let allRecommendations=[];
+  let severityCounts={critical:0,high:0,medium:0,low:0};
+
+  // From stage data
+  if(STAGE_DATA&&STAGE_DATA.pipelines){
+    Object.entries(STAGE_DATA.pipelines).forEach(([pipe,info])=>{
+      if(pipeFilter&&pipe!==pipeFilter)return;
+      (info.stages||[]).forEach(stage=>{
+        if(stage.diagnostics){
+          const d=stage.diagnostics;
+          allDiags.push({pipeline:pipe,stage:stage.name,...d});
+          (d.top_issues||[]).forEach(i=>{i._pipeline=pipe;allIssues.push(i);});
+          (d.recommendations||[]).forEach(r=>{r._pipeline=pipe;allRecommendations.push(r);});
+          Object.entries(d.issues_by_severity||{}).forEach(([sev,count])=>{
+            severityCounts[sev]=(severityCounts[sev]||0)+count;
+          });
+        }
+      });
+    });
+  }
+
+  // From DIAG_DATA (node-analyzer output)
+  if(DIAG_DATA){
+    ['standard','graph','quantitative','orchestrator'].forEach(pipe=>{
+      if(pipeFilter&&pipe!==pipeFilter)return;
+      const d=DIAG_DATA[pipe];
+      if(!d||!d.timestamp)return;
+      if(!allDiags.find(x=>x.pipeline===pipe&&x.stage===d.stage)){
+        allDiags.push({pipeline:pipe,...d});
+        (d.top_issues||[]).forEach(i=>{i._pipeline=pipe;allIssues.push(i);});
+        (d.recommendations||[]).forEach(r=>{r._pipeline=pipe;allRecommendations.push(r);});
+        Object.entries(d.issues_by_severity||{}).forEach(([sev,count])=>{
+          severityCounts[sev]=(severityCounts[sev]||0)+count;
+        });
+      }
+    });
+  }
+
+  // Severity cards
+  const sevEl=document.getElementById('diag-severity-cards');
+  if(sevEl){
+    const total=Object.values(severityCounts).reduce((a,b)=>a+b,0);
+    sevEl.innerHTML=`
+      <div class="card" style="text-align:center;border-top:3px solid var(--rd)"><div class="stat-value" style="font-size:28px;color:var(--rd)">${severityCounts.critical}</div><div style="font-size:11px;color:var(--tx3)">Critical</div></div>
+      <div class="card" style="text-align:center;border-top:3px solid var(--or)"><div class="stat-value" style="font-size:28px;color:var(--or)">${severityCounts.high}</div><div style="font-size:11px;color:var(--tx3)">High</div></div>
+      <div class="card" style="text-align:center;border-top:3px solid var(--yl)"><div class="stat-value" style="font-size:28px;color:var(--yl)">${severityCounts.medium}</div><div style="font-size:11px;color:var(--tx3)">Medium</div></div>
+      <div class="card" style="text-align:center;border-top:3px solid var(--ac)"><div class="stat-value" style="font-size:28px;color:var(--ac)">${severityCounts.low}</div><div style="font-size:11px;color:var(--tx3)">Low</div></div>
+    `;
+  }
+
+  // Per-pipeline sections
+  const sectionsEl=document.getElementById('diag-pipeline-sections');
+  if(sectionsEl){
+    const pipes=pipeFilter?[pipeFilter]:['standard','graph','quantitative','orchestrator'];
+    sectionsEl.innerHTML=pipes.map(pipe=>{
+      const diagsForPipe=allDiags.filter(d=>d.pipeline===pipe);
+      if(!diagsForPipe.length)return '';
+
+      const nodeAnalysis=diagsForPipe[0].node_analysis||{};
+      const crossPatterns=diagsForPipe[0].cross_execution_patterns||{};
+
+      // Node cards
+      const nodeCards=Object.entries(nodeAnalysis).map(([name,info])=>{
+        const hasIssues=(info.issues||[]).length>0;
+        const isLLM=info.is_llm;
+        const borderColor=info.errors>0?'var(--rd)':hasIssues?'var(--yl)':'var(--gn)';
+        return `<div class="card" style="padding:12px;border-left:3px solid ${borderColor};margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div style="font-weight:700;font-size:12px">${esc(name)}</div>
+            <div style="display:flex;gap:6px">
+              ${isLLM?'<span class="tag tag-purple">LLM</span>':''}
+              ${info.is_retrieval?'<span class="tag tag-blue">Retrieval</span>':''}
+              ${info.is_routing?'<span class="tag tag-yellow">Routing</span>':''}
+              ${info.errors>0?`<span class="tag tag-red">${info.errors} errors</span>`:''}
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;font-size:11px;color:var(--tx2);margin-bottom:6px">
+            <span>Avg: ${info.avg_duration_ms}ms</span>
+            <span>Runs: ${info.executions}</span>
+            ${info.llm_avg_output_chars?`<span>LLM Output: ${info.llm_avg_output_chars} chars</span>`:''}
+            ${info.llm_avg_tokens?`<span>Tokens: ${info.llm_avg_tokens}</span>`:''}
+          </div>
+          ${(info.issues||[]).map(iss=>`<div style="font-size:11px;padding:4px 8px;background:${iss.severity==='critical'||iss.severity==='high'?'var(--rd-bg)':'var(--yl-bg)'};border-radius:var(--r-sm);margin-top:4px">
+            <span style="font-weight:600;color:${iss.severity==='critical'||iss.severity==='high'?'var(--rd)':'var(--yl)'}">[${(iss.severity||'').toUpperCase()}]</span> ${esc(iss.type)}: ${esc((iss.detail||'').slice(0,120))}
+          </div>`).join('')}
+        </div>`;
+      }).join('');
+
+      // Verbosity report
+      const verbReport=crossPatterns.verbosity_report||{};
+      const verbCards=Object.entries(verbReport).filter(([,v])=>v.verdict!=='ok').map(([name,v])=>{
+        return `<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;background:${v.verdict==='critical'?'var(--rd-bg)':'var(--yl-bg)'};border-radius:var(--r-sm);font-size:11px;margin:3px">
+          <strong>${esc(name)}</strong>: avg ${v.avg_chars} chars (max ${v.max_chars})
+          <span class="tag ${v.verdict==='critical'?'tag-red':'tag-yellow'}">${v.verdict}</span>
+        </div>`;
+      }).join('');
+
+      return `<div class="card pipe-card pipe-${pipe}" style="margin-bottom:20px;padding:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h3 style="margin-bottom:0;text-transform:capitalize;font-size:14px;color:var(--tx)">${pipe} Pipeline</h3>
+          <div style="font-size:11px;color:var(--tx2)">
+            ${diagsForPipe[0].executions_analyzed||0} executions analyzed
+            &bull; ${diagsForPipe[0].total_issues||0} issues
+          </div>
+        </div>
+        ${verbCards?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:6px">LLM VERBOSITY ALERTS</div>${verbCards}</div>`:''}
+        <div style="font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:8px">NODE ANALYSIS</div>
+        ${nodeCards||'<p style="color:var(--tx3);font-size:12px">No node data available</p>'}
+      </div>`;
+    }).join('');
+  }
+
+  // Top issues
+  const issuesEl=document.getElementById('diag-top-issues');
+  if(issuesEl){
+    issuesEl.innerHTML=allIssues.slice(0,15).map(iss=>{
+      const sevColor={critical:'var(--rd)',high:'var(--or)',medium:'var(--yl)',low:'var(--ac)'}[iss.severity]||'var(--tx2)';
+      return `<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:12px;align-items:flex-start">
+        <span style="font-weight:700;color:${sevColor};min-width:60px;font-size:10px;text-transform:uppercase">${iss.severity||'?'}</span>
+        <span style="font-weight:600;min-width:100px;color:var(--tx)">${esc(iss.type||'')}</span>
+        <span style="color:var(--tx2);flex:1">${esc((iss.detail||'').slice(0,150))}</span>
+        <span class="tag" style="font-size:10px">${esc(iss.node||iss._pipeline||'')}</span>
+      </div>`;
+    }).join('')||'<p style="color:var(--tx3);font-size:12px">No issues detected. Run an iterative eval to generate diagnostics.</p>';
+  }
+
+  // Node health map
+  const healthEl=document.getElementById('diag-node-health');
+  if(healthEl){
+    const allNodes={};
+    allDiags.forEach(d=>{
+      Object.entries(d.cross_execution_patterns?.node_health||{}).forEach(([name,info])=>{
+        if(!allNodes[name])allNodes[name]=info;
+      });
+    });
+    healthEl.innerHTML=Object.entries(allNodes).map(([name,info])=>{
+      const bg=info.health==='critical'?'var(--rd-bg)':info.health==='warning'?'var(--yl-bg)':'var(--gn-bg)';
+      const color=info.health==='critical'?'var(--rd)':info.health==='warning'?'var(--yl)':'var(--gn)';
+      return `<div style="padding:8px 12px;background:${bg};border:1px solid ${color}33;border-radius:var(--r-sm);font-size:11px">
+        <span style="font-weight:600;color:${color}">${esc(name)}</span>
+        <span style="color:var(--tx3);margin-left:6px">${info.error_rate_pct}% err (${info.total_runs} runs)</span>
+      </div>`;
+    }).join('')||'<p style="color:var(--tx3);font-size:12px">No node health data</p>';
+  }
+
+  // Recommendations
+  const recsEl=document.getElementById('diag-recommendations');
+  if(recsEl){
+    recsEl.innerHTML=allRecommendations.slice(0,10).map(rec=>{
+      if(typeof rec==='string')return `<div style="padding:8px;font-size:12px;color:var(--tx2)">${esc(rec)}</div>`;
+      const priColor={CRITICAL:'var(--rd)',HIGH:'var(--or)',MEDIUM:'var(--yl)',LOW:'var(--ac)'}[rec.priority]||'var(--tx2)';
+      return `<div class="card" style="margin-bottom:8px;padding:12px;border-left:3px solid ${priColor}">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="font-weight:700;color:${priColor};font-size:11px">[${rec.priority}]</span>
+          <span style="font-weight:600;font-size:12px">${esc(rec.type)}</span>
+          ${(rec.affected_nodes||[]).map(n=>`<span class="tag" style="font-size:10px">${esc(n)}</span>`).join('')}
+        </div>
+        <div style="font-size:11px;color:var(--tx2);margin-bottom:4px">${esc((rec.description||'').slice(0,200))}</div>
+        <div style="font-size:11px;color:var(--gn)"><strong>Action:</strong> ${esc((rec.action||'').slice(0,200))}</div>
+      </div>`;
+    }).join('')||'<p style="color:var(--tx3);font-size:12px">No recommendations. Run iterative eval with node analysis enabled.</p>';
+  }
+}
+
+// ============================================================
 // INIT
 // ============================================================
 loadData();
 loadKBData();
 loadStageData();
+setTimeout(loadDiagData,2000);
 setInterval(loadData,15000);
 
 // Auto-update status bar every second for "time ago" freshness

@@ -55,6 +55,12 @@ compute_f1 = run_eval_mod.compute_f1
 load_questions = run_eval_mod.load_questions
 RAG_ENDPOINTS = run_eval_mod.RAG_ENDPOINTS
 
+# Node analyzer for post-stage diagnostics
+try:
+    node_analyzer = SourceFileLoader("node_analyzer", os.path.join(EVAL_DIR, "node-analyzer.py")).load_module()
+except Exception:
+    node_analyzer = None
+
 # Directories
 RESULTS_DIR = os.path.join(REPO_ROOT, "logs", "iterative-eval")
 KB_FILE = os.path.join(REPO_ROOT, "docs", "knowledge-base.json")
@@ -535,6 +541,8 @@ def main():
                         help="Git push results after completion")
     parser.add_argument("--parallel", action="store_true",
                         help="Run pipelines in parallel within each stage")
+    parser.add_argument("--no-analysis", action="store_true",
+                        help="Skip post-stage node-by-node analysis")
     args = parser.parse_args()
 
     start_time = datetime.now()
@@ -686,6 +694,35 @@ def main():
                 if not args.no_gate:
                     pipeline_status[pipe] = "blocked"
 
+        # === POST-STAGE NODE ANALYSIS ===
+        # Automatically fetch n8n execution logs and analyze node-by-node
+        if node_analyzer and not args.no_analysis:
+            tprint(f"\n  --- {stage_name}: NODE-BY-NODE ANALYSIS ---")
+            for pipe in active_pipelines:
+                if pipe not in stage_results:
+                    continue
+                result = stage_results[pipe]
+                questions_for_analysis = [
+                    {"id": r["id"], "question": r["question"]}
+                    for r in result["results"]
+                ]
+                try:
+                    diag = node_analyzer.analyze_stage(
+                        pipeline=pipe,
+                        questions_tested=questions_for_analysis,
+                        stage_name=stage_name,
+                        label=args.label,
+                    )
+                    # Attach diagnostics to stage results
+                    result["diagnostics"] = {
+                        "total_issues": diag.get("total_issues", 0),
+                        "issues_by_severity": diag.get("issues_by_severity", {}),
+                        "top_issues": diag.get("top_issues", [])[:5],
+                        "recommendations": diag.get("recommendations", [])[:3],
+                    }
+                except Exception as e:
+                    tprint(f"  [NODE-ANALYZER] Error analyzing {pipe}: {e}")
+
     # Generate report
     report = generate_stage_report(all_stage_results, kb)
 
@@ -714,6 +751,7 @@ def main():
                 "errors": s["errors"],
                 "elapsed_s": s["elapsed_s"],
                 "results": s["results"],
+                "diagnostics": s.get("diagnostics"),
             } for s in stages],
         }
     with open(stage_data_path, "w") as f:
