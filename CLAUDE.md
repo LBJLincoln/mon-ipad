@@ -7,7 +7,7 @@ The system evaluates each pipeline's accuracy, latency, and cost, then proposes 
 workflow structure improvements ONLY when data shows a clear need (e.g. accuracy plateau,
 high error rate, routing failures).
 
-**Current phase: Phase 1 — Baseline (200q, iterative improvement loop) | Phase 2 DB: READY**
+**Current phase: Phase 1 — Baseline (200q, iterative improvement loop) | Phase 2 DB: COMPLETE**
 
 See `phases/overview.md` for the full 5-phase strategy:
 Phase 1 (200q) → Phase 2 (1,000q) → Phase 3 (~10Kq) → Phase 4 (~100Kq) → Phase 5 (1M+q)
@@ -182,7 +182,7 @@ Additional Phase 1 exit criteria:
 - Requires: Phase 1 gates passed + DB ingestion (Neo4j entities + Supabase tables from HF datasets)
 - Targets: Graph ≥60%, Quantitative ≥70% on new questions
 - No Phase 1 regression
-- **DB setup status**: MIGRATION_READY (scripts created, need to run on terminal)
+- **DB setup status**: COMPLETE (538 total Supabase rows, 19,788 Neo4j nodes, 10,411 Pinecone vectors)
 
 **Phase 2 DB ingestion (run in Termius / Google Cloud Console):**
 ```bash
@@ -283,11 +283,11 @@ python3 db/populate/phase2_neo4j.py --reset --llm
 | V10.1 Orchestrator | `/webhook/92217bb8-...` | Routes to above | 68 |
 
 ### Databases
-| DB | Content | Size |
-|---|---|---|
-| **Pinecone** | Vector embeddings (text-embedding-3-small, 1536-dim) | 10,411 vectors, 12 namespaces |
-| **Neo4j** | Entity graph (Person, Org, Tech, City, Museum, Disease) | 110+ nodes, 151+ relationships |
-| **Supabase** | Financial tables (3 companies) + benchmark_datasets + community_summaries | 88 rows + HF datasets |
+| DB | Content | Phase 1 | Phase 2 |
+|---|---|---|---|
+| **Pinecone** | Vector embeddings (text-embedding-3-small, 1536-dim) | 10,411 vectors, 12 namespaces | No changes needed |
+| **Neo4j** | Entity graph (Person, Org, Tech, City, Museum, Disease) | 110 nodes, 151 relationships | +4,884 entities, 21,625 total relationships |
+| **Supabase** | Financial tables + benchmark_datasets + HF tables | 88 rows, 5 tables | +450 rows (finqa/tatqa/convfinqa), 538 total |
 
 ---
 
@@ -365,7 +365,7 @@ mon-ipad/
 │   └── overview.md                    # Full 5-phase strategy + exit criteria
 │
 ├── docs/                              # GitHub Pages dashboard
-│   ├── index.html                     # Interactive dashboard (10 tabs)
+│   ├── index.html                     # Interactive dashboard (7 tabs)
 │   ├── data.json                      # Live evaluation data (v2 format)
 │   ├── tested-questions.json          # Dedup manifest
 │   └── data-v1-backup.json
@@ -387,22 +387,19 @@ mon-ipad/
 
 ---
 
-## Dashboard (docs/index.html — 10 tabs)
+## Dashboard (docs/index.html — 7 tabs)
 
 The dashboard is the central monitoring and analysis tool. It reads `docs/data.json`
-and auto-refreshes every 15 seconds.
+and auto-refreshes every 15 seconds. Each tab serves a distinct operational purpose.
 
 ### Tabs
-1. **Command Center** — Phase progress, pipeline gauges vs targets, blockers, AI recommendations
-2. **Test Matrix** — Questions x Iterations grid (heat map: green/red/yellow per cell with F1 gradient)
-3. **Iterations** — Timeline, accuracy trend chart, iteration comparison (fixed/broken/improved), burndown to targets
-4. **Pipelines** — Per-pipeline accuracy/error/latency charts, F1 distribution, error type breakdown
-5. **Error Analysis** — Error classification breakdown, timeline, patterns, most-erroring questions
-6. **Phase Tracker** — 5-phase roadmap, exit criteria checklist (live-computed), DB readiness gauges
-7. **Questions Explorer** — Searchable table with full answer history, pass rate, trend
-8. **Smoke Tests** — Endpoint health checks, per-pipeline status cards
-9. **Workflows & Changes** — n8n versions, node diffs, DB snapshots, modification log
-10. **AI Insights** — Live analysis, auto-generated recommendations, decision rules, API schema
+1. **Executive Summary** — Phase roadmap, key metrics, pipeline gauges vs targets, accuracy trend chart, error distribution, blockers, next actions
+2. **Focus** — Current step detail: incremental testing progress, Phase 1 exit criteria checklist, Phase 2 readiness, per-pipeline iteration cards, what's working / what's failing
+3. **Questions** — Filterable table (phase/pipeline/status/dataset/search), expandable detail with full run history per question
+4. **Workflows** — n8n-linked workflow cards (open in n8n), node-level breakdown with LLM model details, modification history, DB state chart
+5. **Databases** — DB status cards (Pinecone/Neo4j/Supabase), Phase Readiness Matrix (5 phases × 3 DBs), data growth projection, missing data for next phase
+6. **Costs & Models** — LLM model registry per n8n node (model/provider/cost/role/tokens), cost stats, phase cost projection, per-pipeline cost chart
+7. **AI Agent** — Environment variables (copy button), iteration protocol, command reference (9 commands with flags), 10 decision rules, data.json schema
 
 ### Data Format (v2)
 `docs/data.json` contains:
@@ -443,7 +440,7 @@ and auto-refreshes every 15 seconds.
            docs/data.json  logs/exec  logs/errors  logs/pipeline-  logs/fast-iter/
            (dashboard)     (JSONL)    (per-error)  results/        (run snapshots)
                    ↓
-           docs/index.html (10-tab dashboard, auto-refresh 15s)
+           docs/index.html (7-tab dashboard, auto-refresh 15s)
 ```
 
 ---
@@ -473,6 +470,124 @@ export OPENROUTER_API_KEY="sk-or-v1-9e449697e63791bfea573ed17b80a3d5fdcc7db7a05c
 export N8N_API_KEY="..."              # JWT for n8n cloud API
 export N8N_HOST="https://amoret.app.n8n.cloud"
 ```
+
+---
+
+## Incremental Testing Protocol
+
+The core philosophy is progressive validation. Never skip levels.
+
+```
+Endpoint health → 5q/pipeline → 10q (fast-iter) → 50q → 200q (full Phase 1) → 1000q (Phase 2)
+```
+
+Each level must PASS before scaling up. At each level:
+1. Run test at current scale
+2. Analyze errors and regressions
+3. Fix ONE root cause
+4. Re-test at same scale until pass
+5. Scale up to next level
+
+### Scaling Commands
+| Level | Command | When to use |
+|---|---|---|
+| Health check | `python3 eval/quick-test.py --questions 1` | After any workflow deploy |
+| 5q/pipeline | `python3 eval/quick-test.py --questions 5` | Smoke test after changes |
+| 10q/pipeline | `python3 eval/fast-iter.py --label "desc"` | Standard fast iteration |
+| 50q subset | `python3 eval/run-eval-parallel.py --max 50` | Pre-full-eval validation |
+| 200q full P1 | `python3 eval/run-eval-parallel.py --reset --label "desc"` | Phase 1 gate check |
+| 1000q Phase 2 | `python3 eval/run-eval-parallel.py --dataset phase-2 --reset` | Phase 2 gate check |
+
+---
+
+## LLM Model Registry
+
+All n8n workflow nodes use models via OpenRouter (except embeddings via OpenAI).
+
+| Workflow | Node | Model | Provider | Cost (in/out per 1K tok) | Role |
+|---|---|---|---|---|---|
+| Standard | HyDE Generator | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Hypothetical doc generation |
+| Standard | LLM Generation | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Answer synthesis |
+| Standard | Cohere Rerank | rerank-v3.5 | Cohere | $0.002/— | Re-rank passages |
+| Standard | Pinecone Query | text-embedding-3-small | OpenAI | $0.02/— | Vector embedding |
+| Graph | HyDE Entity Extraction | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Extract entities |
+| Graph | Answer Synthesis | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Generate from graph |
+| Quantitative | Text-to-SQL | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | NL to SQL |
+| Quantitative | SQL Validator | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Validate/fix SQL |
+| Quantitative | Interpretation | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Interpret results |
+| Orchestrator | Intent Analyzer | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Route to pipeline |
+| Orchestrator | Task Planner | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Plan sub-tasks |
+| Orchestrator | Response Builder | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Merge results |
+
+### Cost Projections
+| Phase | LLM | Embeddings | Infrastructure | Total |
+|---|---|---|---|---|
+| Phase 1 (200q) | $0.03 | $0.00 | $0.00 | **$0.03** |
+| Phase 2 (1Kq) | $0.15 | $0.05 | $0.00 | **$0.20** |
+| Phase 3 (10Kq) | $1.50 | $0.50 | $0.00 | **$2.00** |
+| Phase 4 (100Kq) | $15 | $5 | $0 | **$20** |
+| Phase 5 (1M+) | $150 | $50 | $50 | **$250** |
+
+---
+
+## HuggingFace Datasets (16 total)
+
+Source datasets used across all phases. See `datasets/manifest.json` for full metadata.
+
+| Dataset | Type | Phase | Questions | Status |
+|---|---|---|---|---|
+| Custom Phase 1 questions | standard/graph/quant/orch | 1 | 200 | ACTIVE |
+| FinQA | quantitative | 2 | 200 | INGESTED |
+| TAT-QA | quantitative | 2 | 150 | INGESTED |
+| ConvFinQA | quantitative | 2 | 100 | INGESTED |
+| MuSiQue | graph (multi-hop) | 2 | 250 | INGESTED |
+| 2WikiMultiHopQA | graph (multi-hop) | 2 | 250 | INGESTED |
+| FRAMES | standard | 3+ | ~8K | PLANNED |
+| HotpotQA | graph | 3+ | ~1K | PLANNED |
+| WikiTableQuestions | quantitative | 3+ | ~1K | PLANNED |
+| SQA (Sequential QA) | quantitative | 4+ | TBD | PLANNED |
+| HybridQA | orchestrator | 4+ | TBD | PLANNED |
+| OTT-QA | orchestrator | 4+ | TBD | PLANNED |
+| MultiModalQA | orchestrator | 5 | TBD | PLANNED |
+| FEVEROUS | graph | 5 | TBD | PLANNED |
+| TabFact | quantitative | 5 | TBD | PLANNED |
+| InfoTabs | quantitative | 5 | TBD | PLANNED |
+
+---
+
+## n8n Workflow IDs (for deep linking)
+
+| Pipeline | n8n Workflow ID | Link |
+|---|---|---|
+| Standard RAG | `LnTqRX4LZlI009Ks-3Jnp` | `https://amoret.app.n8n.cloud/workflow/LnTqRX4LZlI009Ks-3Jnp` |
+| Graph RAG | `95x2BBAbJlLWZtWEJn6rb` | `https://amoret.app.n8n.cloud/workflow/95x2BBAbJlLWZtWEJn6rb` |
+| Quantitative RAG | `LjUz8fxQZ03G9IsU` | `https://amoret.app.n8n.cloud/workflow/LjUz8fxQZ03G9IsU` |
+| Orchestrator | `FZxkpldDbgV8AD_cg7IWG` | `https://amoret.app.n8n.cloud/workflow/FZxkpldDbgV8AD_cg7IWG` |
+
+---
+
+## Session Start Protocol
+
+Every new session (human or agentic) MUST follow this sequence:
+
+1. **Read** `STATUS.md` — current state, next steps, blockers
+2. **Read** `CLAUDE.md` — architecture, conventions, commands
+3. **Check** `docs/data.json` — latest metrics (meta, iterations, pipelines)
+4. **Check** dashboard — `docs/index.html` (7 tabs, auto-refresh)
+5. **Identify** the current phase gate status and next action
+6. **Execute** ONE change per iteration, test, commit
+
+### AI Decision Rules
+1. If accuracy < target: analyze error traces, fix ONE root cause, re-test
+2. If error rate > 10%: prioritize error fixes over accuracy
+3. If 3+ regressions: REVERT last change immediately
+4. If orchestrator timeout > 60s: reduce sub-pipeline invocations
+5. If graph entity miss: check entity catalog, add fuzzy matching
+6. If SQL errors > 5: review Schema Context hints, add ILIKE
+7. If empty responses > 10: check continueOnFail, add null-safe guards
+8. ONE fix per iteration — never change multiple things
+9. Never run eval in Claude Code sandbox — only in Termius / GCloud
+10. After Phase 1 gates pass: `--dataset phase-2 --reset`
 
 ---
 

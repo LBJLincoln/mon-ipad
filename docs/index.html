@@ -3,1115 +3,1029 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RAG Test Runner — SOTA 2026</title>
+<title>Multi-RAG Orchestrator — SOTA 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-:root{--bg:#0b0f15;--s1:#111720;--s2:#171d28;--s3:#1e2533;--bd:#2a3140;--tx:#dce4f0;--tx2:#7f8da0;--tx3:#4e5a6d;--ac:#4f8efa;--gn:#2dd47a;--gn-bg:rgba(45,212,122,.1);--rd:#f05555;--rd-bg:rgba(240,85,85,.1);--yl:#e8b820;--yl-bg:rgba(232,184,32,.1);--or:#f08030;--pp:#a060f0;--cy:#20c0d8}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--bg:#0a0e14;--s1:#10151d;--s2:#151b26;--s3:#1c2330;--s4:#232b3a;--bd:#2a3344;--tx:#dce4f0;--tx2:#8896a8;--tx3:#556070;--ac:#4f8efa;--ac2:#3a70d4;--gn:#2dd47a;--gn2:#1fa55e;--gn-bg:rgba(45,212,122,.08);--rd:#f05555;--rd2:#c83838;--rd-bg:rgba(240,85,85,.08);--yl:#e8b820;--yl-bg:rgba(232,184,32,.08);--or:#f08030;--pp:#a060f0;--cy:#20c0d8;--mg:#e060a0;--r:8px}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.5}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.55}
 ::selection{background:var(--ac);color:#fff}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
-code,.mono{font-family:'JetBrains Mono',monospace;font-size:.92em}
-a{color:var(--ac);text-decoration:none}
-a:hover{text-decoration:underline}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+code,.mono{font-family:'JetBrains Mono',monospace;font-size:.9em}
+a{color:var(--ac);text-decoration:none}a:hover{text-decoration:underline}
+h2{font-size:18px;font-weight:700;margin-bottom:16px;letter-spacing:-.02em}
+h3{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx2);margin-bottom:10px}
 
-/* Header */
-.header{background:var(--s1);border-bottom:1px solid var(--bd);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.header h1{font-size:15px;font-weight:600;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
-.header .meta{display:flex;gap:16px;align-items:center;font-size:12px;color:var(--tx2)}
-.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
-.status-dot.ok{background:var(--gn);box-shadow:0 0 6px var(--gn)}
-.status-dot.running{background:var(--yl);animation:blink 1.5s infinite}
-.status-dot.error{background:var(--rd)}
+/* Layout */
+.header{background:var(--s1);border-bottom:1px solid var(--bd);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header h1{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.header .meta{display:flex;gap:14px;align-items:center;font-size:11.5px;color:var(--tx2)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.dot.ok{background:var(--gn);box-shadow:0 0 6px var(--gn)}.dot.run{background:var(--yl);animation:blink 1.5s infinite}.dot.err{background:var(--rd)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* Tabs */
-.tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--bd);padding:0 24px;overflow-x:auto;gap:0}
-.tab{padding:10px 20px;font-size:12.5px;font-weight:500;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
-.tab:hover{color:var(--tx)}
-.tab.active{color:var(--ac);border-bottom-color:var(--ac)}
-.panel{display:none;padding:20px 24px;max-width:1600px;margin:0 auto}
-.panel.active{display:block}
+.tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--bd);padding:0 20px;overflow-x:auto;gap:0}
+.tab{padding:10px 18px;font-size:12px;font-weight:600;color:var(--tx3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.15s}
+.tab:hover{color:var(--tx2)}.tab.active{color:var(--ac);border-color:var(--ac)}
+.panel{display:none;padding:20px 24px;max-width:1600px;margin:0 auto}.panel.active{display:block}
 
 /* Cards */
-.card{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:16px;overflow:hidden}
-.card h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx2);margin-bottom:10px}
+.card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:16px;overflow:hidden}
+.card-accent{border-left:3px solid var(--ac)}
 .grid{display:grid;gap:12px;margin:12px 0}
-.g4{grid-template-columns:repeat(4,1fr)}
-.g3{grid-template-columns:repeat(3,1fr)}
-.g2{grid-template-columns:1fr 1fr}
-.g1-2{grid-template-columns:1fr 2fr}
-.g2-1{grid-template-columns:2fr 1fr}
+.g5{grid-template-columns:repeat(5,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}
+.g1-2{grid-template-columns:1fr 2fr}.g2-1{grid-template-columns:2fr 1fr}.g1-3{grid-template-columns:1fr 3fr}
 
-/* Stat cards */
-.stat{text-align:center}
-.stat .value{font-size:28px;font-weight:700;font-family:'JetBrains Mono',monospace}
-.stat .label{font-size:11px;color:var(--tx2);margin-top:2px}
-.stat .delta{font-size:11px;font-weight:600;margin-top:2px}
-.delta-up{color:var(--gn)}
-.delta-down{color:var(--rd)}
-.delta-flat{color:var(--tx3)}
+/* Stats */
+.stat{text-align:center;padding:12px 8px}
+.stat .v{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.1}
+.stat .l{font-size:11px;color:var(--tx2);margin-top:4px}
+.stat .d{font-size:11px;font-weight:600;margin-top:2px}
+.d-up{color:var(--gn)}.d-dn{color:var(--rd)}.d-fl{color:var(--tx3)}
 
 /* Tags */
-.tag{display:inline-block;padding:1px 7px;border-radius:4px;font-size:10.5px;font-weight:600;letter-spacing:.02em}
-.tag-pass{background:var(--gn-bg);color:var(--gn)}
-.tag-fail{background:var(--rd-bg);color:var(--rd)}
-.tag-error{background:var(--yl-bg);color:var(--yl)}
-.tag-skip{background:rgba(78,90,109,.15);color:var(--tx3)}
-.tag-improving{background:rgba(45,212,122,.12);color:var(--gn)}
-.tag-regressing{background:rgba(240,85,85,.12);color:var(--rd)}
-.tag-stable{background:rgba(78,90,109,.12);color:var(--tx3)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.03em}
+.t-pass{background:var(--gn-bg);color:var(--gn)}.t-fail{background:var(--rd-bg);color:var(--rd)}.t-err{background:var(--yl-bg);color:var(--yl)}.t-skip{background:rgba(78,90,109,.12);color:var(--tx3)}
+.t-p1{background:rgba(79,142,250,.12);color:var(--ac)}.t-p2{background:rgba(160,96,240,.12);color:var(--pp)}.t-p3{background:rgba(32,192,216,.12);color:var(--cy)}
 
 /* Tables */
-table{width:100%;border-collapse:collapse;font-size:12.5px}
-th{text-align:left;padding:8px 10px;background:var(--s3);color:var(--tx2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em;position:sticky;top:0;z-index:2}
-td{padding:7px 10px;border-top:1px solid var(--bd)}
-tr:hover td{background:rgba(255,255,255,.02)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 10px;background:var(--s3);color:var(--tx2);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;position:sticky;top:0;z-index:2}
+td{padding:6px 10px;border-top:1px solid var(--bd)}
+tr:hover td{background:rgba(255,255,255,.015)}
+tr.expandable{cursor:pointer}
 
-/* Test matrix cells */
-.cell-pass{background:rgba(45,212,122,.18);color:var(--gn);text-align:center;font-weight:600;font-size:11px;cursor:pointer;min-width:28px}
-.cell-fail{background:rgba(240,85,85,.18);color:var(--rd);text-align:center;font-weight:600;font-size:11px;cursor:pointer}
-.cell-error{background:rgba(232,184,32,.18);color:var(--yl);text-align:center;font-weight:600;font-size:11px;cursor:pointer}
-.cell-skip{background:transparent;color:var(--tx3);text-align:center;font-size:10px}
-.cell-pass:hover,.cell-fail:hover,.cell-error:hover{outline:2px solid var(--ac);outline-offset:-1px;z-index:1;position:relative}
+/* Progress bars */
+.pbar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;position:relative}
+.pbar .fill{height:100%;border-radius:3px;transition:width .4s}.pbar .marker{position:absolute;top:-2px;height:10px;width:2px;background:var(--tx2);border-radius:1px}
+.pbar-lg{height:10px}
 
-/* Accuracy bar */
-.acc-bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;position:relative}
-.acc-bar .fill{height:100%;border-radius:3px;transition:width .3s}
-.acc-bar .target{position:absolute;top:-2px;height:10px;width:2px;background:var(--tx2)}
+/* Gauge */
+.gauge{position:relative;width:100px;height:100px;margin:0 auto}
+.gauge svg{transform:rotate(-90deg)}.gauge circle{fill:none;stroke-linecap:round}
+.gauge .bg{stroke:var(--s3);stroke-width:6}.gauge .fg{stroke-width:6;transition:stroke-dashoffset .6s}
+.gauge .val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace}
+.gauge .lbl{text-align:center;font-size:10px;color:var(--tx2);margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
 
-/* Search */
-.search-box{display:flex;gap:8px;margin-bottom:12px;align-items:center}
-.search-box input{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:7px 12px;color:var(--tx);font-size:12.5px;flex:1;outline:none}
-.search-box input:focus{border-color:var(--ac)}
-.search-box select{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:7px 10px;color:var(--tx);font-size:12.5px;outline:none}
+/* Phase timeline */
+.phase-line{display:flex;gap:4px;margin:16px 0}
+.phase-dot{flex:1;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1px solid var(--bd);color:var(--tx3);background:var(--s2);transition:.2s;position:relative}
+.phase-dot.current{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 0 12px rgba(79,142,250,.3)}
+.phase-dot.done{background:var(--gn2);color:#fff;border-color:var(--gn2)}
+.phase-dot.locked{opacity:.5}
 
-/* Timeline */
-.timeline{position:relative;padding-left:24px}
-.timeline::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:2px;background:var(--bd)}
-.timeline-item{position:relative;margin-bottom:20px;padding:14px;background:var(--s2);border:1px solid var(--bd);border-radius:8px}
-.timeline-item::before{content:'';position:absolute;left:-21px;top:18px;width:10px;height:10px;border-radius:50%;background:var(--ac);border:2px solid var(--bg)}
-.timeline-item .time{font-size:11px;color:var(--tx3);margin-bottom:4px;font-family:'JetBrains Mono',monospace}
-.timeline-item h4{font-size:14px;font-weight:600;margin-bottom:6px}
-.timeline-item .changes{font-size:12px;color:var(--tx2);margin-bottom:8px}
-.timeline-item .metrics{display:flex;gap:16px;flex-wrap:wrap}
-.timeline-item .metric{font-size:12px}
-.timeline-item .metric strong{color:var(--tx)}
+/* Search / Filters */
+.filters{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap}
+.filters input,.filters select{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:7px 12px;color:var(--tx);font-size:12px;outline:none}
+.filters input:focus,.filters select:focus{border-color:var(--ac)}
+.filters input{flex:1;min-width:200px}
 
-/* Expandable */
-.expandable{cursor:pointer}
-.expandable::after{content:'';display:inline-block;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--tx3);margin-left:6px;transition:transform .2s}
-.expandable.open::after{transform:rotate(180deg)}
-.expand-content{display:none;padding-top:10px}
-.expand-content.open{display:block}
+/* Copy button */
+.copy-btn{background:var(--s3);border:1px solid var(--bd);color:var(--tx2);padding:3px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace}
+.copy-btn:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
+.copy-btn.copied{background:var(--gn);color:#fff;border-color:var(--gn)}
 
-/* Detail panel */
-.detail-panel{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:16px;margin-top:8px}
-.detail-panel .answer-block{background:var(--s3);border-radius:6px;padding:10px 12px;margin:6px 0;font-size:12.5px;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto}
-.detail-panel .answer-block.expected{border-left:3px solid var(--gn)}
-.detail-panel .answer-block.actual{border-left:3px solid var(--ac)}
-.detail-panel .answer-block.error-block{border-left:3px solid var(--rd)}
+/* Code block */
+.code-block{background:var(--s1);border:1px solid var(--bd);border-radius:6px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;overflow-x:auto;white-space:pre;line-height:1.6;position:relative}
+.code-block .copy-btn{position:absolute;top:8px;right:8px}
 
-/* Diff highlight */
-.diff-added{background:rgba(45,212,122,.15);color:var(--gn)}
-.diff-removed{background:rgba(240,85,85,.15);color:var(--rd)}
-
-/* Tooltip */
-.tooltip{position:relative}
-.tooltip .tip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--s1);border:1px solid var(--bd);border-radius:6px;padding:8px 12px;font-size:11.5px;white-space:nowrap;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,.4)}
-.tooltip:hover .tip{display:block}
-
-/* Pipeline colors */
-.pipe-standard{color:#4f8efa}
-.pipe-graph{color:#a060f0}
-.pipe-quantitative{color:#20c0d8}
-.pipe-orchestrator{color:#f08030}
-.dot-standard{background:#4f8efa}
-.dot-graph{background:#a060f0}
-.dot-quantitative{background:#20c0d8}
-.dot-orchestrator{background:#f08030}
-
-/* ==========================================
-   Gauge — circular gauge component
-   ========================================== */
-.gauge{position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center;flex-direction:column;margin:0 auto}
-.gauge svg{position:absolute;top:0;left:0;width:100%;height:100%;transform:rotate(-90deg)}
-.gauge .gauge-bg{fill:none;stroke:var(--s3);stroke-width:8}
-.gauge .gauge-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
-.gauge .gauge-value{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1}
-.gauge .gauge-label{font-size:10px;color:var(--tx2);margin-top:2px}
-.gauge .gauge-target{font-size:9px;color:var(--tx3);margin-top:1px}
-
-/* ==========================================
-   Phase cards — phase tracker
-   ========================================== */
-.phase-card{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:18px;position:relative;transition:all .2s}
-.phase-card h4{font-size:14px;font-weight:600;margin-bottom:4px}
-.phase-card .phase-number{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx2);margin-bottom:6px}
-.phase-card .phase-desc{font-size:12px;color:var(--tx2);margin-bottom:12px;line-height:1.5}
-.phase-active{border-color:var(--ac);box-shadow:0 0 20px rgba(79,142,250,.12)}
-.phase-active .phase-number{color:var(--ac)}
-.phase-active::before{content:'';position:absolute;top:12px;right:12px;width:8px;height:8px;border-radius:50%;background:var(--ac);box-shadow:0 0 8px var(--ac);animation:blink 1.5s infinite}
-.phase-locked{opacity:.5}
-.phase-locked::after{content:'';position:absolute;top:12px;right:12px;width:14px;height:14px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234e5a6d' stroke-width='2'%3E%3Crect x='3' y='11' width='18' height='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0110 0v4'/%3E%3C/svg%3E") no-repeat center/contain}
-.phase-completed{border-color:var(--gn);opacity:.85}
-.phase-completed .phase-number{color:var(--gn)}
-
-/* ==========================================
-   Criteria list — exit criteria checklists
-   ========================================== */
-.criteria-list{list-style:none;padding:0;margin:8px 0 0 0}
-.criteria-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:12px;color:var(--tx2);border-bottom:1px solid rgba(42,49,64,.4)}
-.criteria-item:last-child{border-bottom:none}
-.criteria-check{flex-shrink:0;width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-top:1px}
-.criteria-check.pass{background:var(--gn-bg);color:var(--gn)}
-.criteria-check.pass::after{content:'\\2713'}
-.criteria-miss{flex-shrink:0;width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-top:1px}
-.criteria-miss{background:var(--rd-bg);color:var(--rd)}
-.criteria-miss::after{content:'\\2717'}
-
-/* ==========================================
-   Blocker items
-   ========================================== */
-.blocker-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--s3);border-radius:6px;margin-bottom:8px;border-left:3px solid var(--rd)}
-.blocker-item .blocker-severity{flex-shrink:0;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:3px}
-.blocker-item .blocker-severity.critical{background:var(--rd-bg);color:var(--rd)}
-.blocker-item .blocker-severity.high{background:var(--or);color:#fff;background:rgba(240,128,48,.15);color:var(--or)}
-.blocker-item .blocker-severity.medium{background:var(--yl-bg);color:var(--yl)}
-.blocker-item .blocker-text{font-size:12.5px;color:var(--tx);line-height:1.5}
-.blocker-item .blocker-text .blocker-detail{font-size:11.5px;color:var(--tx2);margin-top:2px}
-
-/* ==========================================
-   Insight cards — AI insight cards
-   ========================================== */
-.insight-card{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:14px 16px;margin-bottom:10px;border-left:3px solid var(--ac)}
-.insight-card.insight-positive{border-left-color:var(--gn)}
-.insight-card.insight-negative{border-left-color:var(--rd)}
-.insight-card.insight-warning{border-left-color:var(--yl)}
-.insight-card.insight-info{border-left-color:var(--ac)}
-.insight-card h4{font-size:13px;font-weight:600;margin-bottom:4px}
-.insight-card p{font-size:12px;color:var(--tx2);line-height:1.6}
-.insight-card .insight-meta{display:flex;gap:12px;margin-top:8px;font-size:10.5px;color:var(--tx3)}
-.insight-card .insight-action{margin-top:8px;padding:8px 10px;background:var(--s3);border-radius:5px;font-size:12px;color:var(--tx);font-family:'JetBrains Mono',monospace}
-
-/* ==========================================
-   Progress ring — SVG circular progress
-   ========================================== */
-.progress-ring{position:relative;display:inline-flex;align-items:center;justify-content:center}
-.progress-ring svg{transform:rotate(-90deg)}
-.progress-ring .progress-ring-bg{fill:none;stroke:var(--s3);stroke-width:4}
-.progress-ring .progress-ring-fill{fill:none;stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .5s ease}
-.progress-ring .progress-ring-text{position:absolute;font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace}
-
-/* ==========================================
-   Error badge — error count badges
-   ========================================== */
-.error-badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:10px;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace}
-.error-badge.error-badge-red{background:var(--rd-bg);color:var(--rd)}
-.error-badge.error-badge-yellow{background:var(--yl-bg);color:var(--yl)}
-.error-badge.error-badge-green{background:var(--gn-bg);color:var(--gn)}
-.error-badge.error-badge-zero{background:rgba(78,90,109,.12);color:var(--tx3)}
+/* Collapsible */
+details{margin:8px 0}
+details>summary{cursor:pointer;padding:8px 12px;background:var(--s3);border:1px solid var(--bd);border-radius:6px;font-size:12px;font-weight:600;list-style:none}
+details>summary::before{content:'\25B6';margin-right:8px;font-size:10px;transition:.2s}
+details[open]>summary::before{transform:rotate(90deg)}
+details>summary:hover{background:var(--s4)}
+details .detail-content{padding:12px;border:1px solid var(--bd);border-top:none;border-radius:0 0 6px 6px;background:var(--s2)}
 
 /* Responsive */
-@media(max-width:1200px){.g4{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:768px){.g4,.g3,.g2{grid-template-columns:1fr}.panel{padding:12px}}
+@media(max-width:1200px){.g4,.g5{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.g4,.g5,.g3,.g2{grid-template-columns:1fr}.g1-2,.g2-1,.g1-3{grid-template-columns:1fr}.tabs{gap:0}.tab{padding:8px 12px;font-size:11px}}
 
-/* Print */
-@media print{.header,.tabs{display:none}.panel{display:block!important}}
+/* Node map */
+.node{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:10.5px;font-weight:600;margin:2px;border:1px solid var(--bd)}
+.node-trigger{background:rgba(79,142,250,.12);border-color:rgba(79,142,250,.3);color:var(--ac)}
+.node-code{background:rgba(232,184,32,.08);border-color:rgba(232,184,32,.2);color:var(--yl)}
+.node-http{background:rgba(45,212,122,.08);border-color:rgba(45,212,122,.2);color:var(--gn)}
+.node-db{background:rgba(160,96,240,.08);border-color:rgba(160,96,240,.2);color:var(--pp)}
+.node-ai{background:rgba(240,96,160,.08);border-color:rgba(240,96,160,.2);color:var(--mg)}
+.node-merge{background:rgba(32,192,216,.08);border-color:rgba(32,192,216,.2);color:var(--cy)}
+.node-if{background:rgba(240,128,48,.08);border-color:rgba(240,128,48,.2);color:var(--or)}
+
+/* Blockers */
+.blocker{background:var(--rd-bg);border:1px solid rgba(240,85,85,.2);border-radius:6px;padding:10px 14px;margin:4px 0}
+.blocker .priority{font-size:10px;font-weight:800;padding:1px 6px;border-radius:3px;background:var(--rd);color:#fff;margin-right:6px}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
-    RAG Test Runner
-    <span id="statusDot" class="status-dot ok"></span>
-  </h1>
+  <h1><span class="dot" id="hd-dot"></span> Multi-RAG Orchestrator <span style="color:var(--tx3);font-weight:400">SOTA 2026</span></h1>
   <div class="meta">
-    <span id="metaPhase">Phase 1</span>
-    <span id="metaIterations">0 iterations</span>
-    <span id="metaQuestions">0 questions</span>
-    <span id="metaRuns">0 test runs</span>
-    <span id="metaUpdated" class="mono">--</span>
+    <span id="hd-phase"></span>
+    <span id="hd-iter"></span>
+    <span id="hd-qs"></span>
+    <span id="hd-ts"></span>
   </div>
 </div>
 
 <div class="tabs">
-  <div class="tab active" data-tab="command">Command Center</div>
-  <div class="tab" data-tab="matrix">Test Matrix</div>
-  <div class="tab" data-tab="iterations">Iterations</div>
-  <div class="tab" data-tab="pipelines">Pipelines</div>
-  <div class="tab" data-tab="errors">Error Analysis</div>
-  <div class="tab" data-tab="phases">Phase Tracker</div>
+  <div class="tab active" data-tab="exec">Executive Summary</div>
+  <div class="tab" data-tab="focus">Focus</div>
   <div class="tab" data-tab="questions">Questions</div>
-  <div class="tab" data-tab="smoke">Smoke Tests</div>
   <div class="tab" data-tab="workflows">Workflows</div>
-  <div class="tab" data-tab="insights">AI Insights</div>
+  <div class="tab" data-tab="databases">Databases</div>
+  <div class="tab" data-tab="costs">Costs & Models</div>
+  <div class="tab" data-tab="agent">AI Agent</div>
 </div>
 
-<!-- TAB 1: COMMAND CENTER -->
-<div id="tab-command" class="panel active">
-  <div class="grid g4" id="cmdSummaryCards"></div>
-
-  <div class="card" style="margin-top:12px">
-    <h3>Phase Progress</h3>
-    <div id="cmdPhaseProgress"></div>
+<!-- ============ TAB 1: EXECUTIVE SUMMARY ============ -->
+<div class="panel active" id="p-exec">
+  <h2>Executive Summary</h2>
+  <div class="card" style="margin-bottom:16px;border-left:3px solid var(--ac)">
+    <p style="font-size:13px;color:var(--tx2);line-height:1.7">
+      <strong style="color:var(--tx)">Objective:</strong> Build a production-grade multi-RAG pipeline that intelligently routes user queries to the optimal retrieval strategy (vector search, knowledge graph, SQL analytics, or orchestrated multi-pipeline). The system is validated against <strong style="color:var(--tx)">16 HuggingFace benchmark datasets</strong> across 5 incremental phases (200 &rarr; 1K &rarr; 10K &rarr; 100K &rarr; 1M+ questions), ensuring accuracy, latency, and cost are optimized at every scale. The goal is a pipeline exportable to <em>any</em> data type and database.
+    </p>
   </div>
 
-  <div class="grid g4" style="margin-top:12px" id="cmdPipeGauges"></div>
+  <!-- Phase Progress -->
+  <h3>Phase Roadmap</h3>
+  <div class="phase-line" id="exec-phases"></div>
 
+  <!-- Key Metrics -->
+  <div class="grid g5" id="exec-stats"></div>
+
+  <!-- Pipeline Gauges -->
+  <h3 style="margin-top:16px">Pipeline Performance vs Targets</h3>
+  <div class="grid g4" id="exec-gauges"></div>
+
+  <!-- Charts row -->
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card"><h3>Accuracy Trend</h3><canvas id="ch-exec-trend" height="200"></canvas></div>
+    <div class="card"><h3>Error Distribution</h3><canvas id="ch-exec-errors" height="200"></canvas></div>
+  </div>
+
+  <!-- Blockers + Next Actions -->
   <div class="grid g2" style="margin-top:12px">
-    <div class="card" id="cmdBlockers">
-      <h3>Active Blockers</h3>
-      <div id="cmdBlockersList"></div>
-    </div>
-    <div class="card" id="cmdRecommendations">
-      <h3>Top Recommendations</h3>
-      <div id="cmdRecommendationsList"></div>
-    </div>
+    <div class="card"><h3>Active Blockers</h3><div id="exec-blockers"></div></div>
+    <div class="card"><h3>Next Actions</h3><div id="exec-actions"></div></div>
   </div>
 </div>
 
-<!-- TAB 2: TEST MATRIX -->
-<div id="tab-matrix" class="panel">
-  <div class="grid g4" id="summaryCards"></div>
+<!-- ============ TAB 2: FOCUS ============ -->
+<div class="panel" id="p-focus">
+  <h2>Focus: Current Step Detail</h2>
 
-  <div class="card" style="margin-top:12px">
-    <h3>Test Matrix: Questions x Iterations <span id="matrixFilterInfo" style="font-weight:400;text-transform:none;color:var(--tx3)"></span></h3>
-    <div class="search-box">
-      <select id="matrixPipeFilter">
-        <option value="all">All pipelines</option>
-        <option value="standard">Standard</option>
-        <option value="graph">Graph</option>
-        <option value="quantitative">Quantitative</option>
-        <option value="orchestrator">Orchestrator</option>
-      </select>
-      <select id="matrixStatusFilter">
-        <option value="all">All statuses</option>
-        <option value="pass">Passing</option>
-        <option value="fail">Failing</option>
-        <option value="error">Errors</option>
-        <option value="regressing">Regressing</option>
-        <option value="improving">Improving</option>
-      </select>
-      <input type="text" id="matrixSearch" placeholder="Search question ID or text...">
-    </div>
-    <div style="overflow-x:auto;max-height:70vh;overflow-y:auto">
-      <table id="matrixTable">
-        <thead id="matrixHeader"></thead>
-        <tbody id="matrixBody"></tbody>
-      </table>
-    </div>
+  <!-- Incremental Testing Progress -->
+  <div class="card" style="margin-bottom:16px;border-left:3px solid var(--pp)">
+    <h3>Incremental Testing Protocol</h3>
+    <p style="font-size:12px;color:var(--tx2);margin-bottom:12px">Test endpoints &rarr; 5q parallel per workflow &rarr; fix &rarr; repeat until pass &rarr; scale to 10, 50, 200, 1000...</p>
+    <div id="focus-steps"></div>
   </div>
 
-  <div id="questionDetail" class="detail-panel" style="display:none;margin-top:12px"></div>
-</div>
-
-<!-- TAB 3: ITERATIONS -->
-<div id="tab-iterations" class="panel">
-  <div class="card" style="margin-bottom:12px">
-    <h3>Accuracy Trend Across Iterations</h3>
-    <canvas id="iterChart" height="250"></canvas>
-  </div>
-  <div class="card">
-    <h3>Iteration Comparison</h3>
-    <div class="search-box">
-      <select id="iterCompareA"></select>
-      <span style="color:var(--tx3)">vs</span>
-      <select id="iterCompareB"></select>
-      <button onclick="compareIterations()" style="background:var(--ac);color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px">Compare</button>
-    </div>
-    <div id="iterCompareResult"></div>
-  </div>
-  <div class="card" style="margin-top:12px">
-    <h3>Burndown to Targets</h3>
-    <canvas id="burndownChart" height="200"></canvas>
-  </div>
-  <div style="margin-top:16px">
-    <h3 style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx2);margin-bottom:12px">Iteration Timeline</h3>
-    <div class="timeline" id="iterTimeline"></div>
-  </div>
-</div>
-
-<!-- TAB 4: PIPELINES -->
-<div id="tab-pipelines" class="panel">
-  <div class="grid g4" id="pipelineCards"></div>
-  <div class="grid g2" style="margin-top:12px">
-    <div class="card">
-      <h3>Accuracy per Iteration</h3>
-      <canvas id="pipeAccChart" height="280"></canvas>
-    </div>
-    <div class="card">
-      <h3>Error Rate per Iteration</h3>
-      <canvas id="pipeErrChart" height="280"></canvas>
-    </div>
-  </div>
-  <div class="grid g2" style="margin-top:12px">
-    <div class="card">
-      <h3>Average Latency (ms)</h3>
-      <canvas id="pipeLatChart" height="280"></canvas>
-    </div>
-    <div class="card">
-      <h3>Question Category Breakdown</h3>
-      <div id="categoryBreakdown"></div>
-    </div>
-  </div>
-  <div class="grid g2" style="margin-top:12px">
-    <div class="card" id="f1Distribution">
-      <h3>F1 Score Distribution</h3>
-      <canvas id="f1DistChart" height="280"></canvas>
-    </div>
-    <div class="card" id="errorBreakdown">
-      <h3>Error Type Breakdown</h3>
-      <canvas id="errorBreakdownChart" height="280"></canvas>
-    </div>
-  </div>
-</div>
-
-<!-- TAB 5: ERROR ANALYSIS -->
-<div id="tab-errors" class="panel">
-  <div class="grid g4" id="errorStatCards"></div>
-
-  <div class="grid g2" style="margin-top:12px">
-    <div class="card">
-      <h3>Errors by Type</h3>
-      <canvas id="errorTypeChart" height="280"></canvas>
-    </div>
-    <div class="card">
-      <h3>Error Timeline</h3>
-      <canvas id="errorTimelineChart" height="280"></canvas>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top:12px">
-    <h3>Error Patterns</h3>
-    <div id="errorPatterns"></div>
-  </div>
-
-  <div class="card" style="margin-top:12px">
-    <h3>Per-Question Error Details</h3>
-    <div class="search-box">
-      <select id="errorPipeFilter">
-        <option value="all">All pipelines</option>
-        <option value="standard">Standard</option>
-        <option value="graph">Graph</option>
-        <option value="quantitative">Quantitative</option>
-        <option value="orchestrator">Orchestrator</option>
-      </select>
-      <select id="errorTypeFilter">
-        <option value="all">All error types</option>
-        <option value="TIMEOUT">Timeout</option>
-        <option value="EMPTY_RESPONSE">Empty Response</option>
-        <option value="ENTITY_MISS">Entity Miss</option>
-        <option value="SQL_ERROR">SQL Error</option>
-        <option value="NETWORK">Network</option>
-        <option value="SERVER_ERROR">Server Error</option>
-        <option value="RATE_LIMIT">Rate Limit</option>
-        <option value="UNKNOWN">Unknown</option>
-      </select>
-    </div>
-    <div style="overflow-x:auto;max-height:60vh;overflow-y:auto">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:80px">ID</th>
-            <th style="width:90px">Pipeline</th>
-            <th style="width:100px">Error Type</th>
-            <th style="width:50px">Count</th>
-            <th>Question</th>
-            <th>Last Error</th>
-            <th style="width:80px">Last Iter</th>
-          </tr>
-        </thead>
-        <tbody id="errorDetailsBody"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- TAB 6: PHASE TRACKER -->
-<div id="tab-phases" class="panel">
-  <div class="card" style="margin-bottom:16px">
-    <h3>Phase Roadmap</h3>
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;padding:8px 0" id="phaseRoadmapBar"></div>
-  </div>
-
-  <div id="phaseCards"></div>
-</div>
-
-<!-- TAB 7: QUESTIONS -->
-<div id="tab-questions" class="panel">
-  <div class="search-box">
-    <input type="text" id="qSearch" placeholder="Search by ID, question text, or expected answer...">
-    <select id="qPipeFilter">
-      <option value="all">All pipelines</option>
-      <option value="standard">Standard</option>
-      <option value="graph">Graph</option>
-      <option value="quantitative">Quantitative</option>
-      <option value="orchestrator">Orchestrator</option>
-    </select>
-    <select id="qStatusFilter">
-      <option value="all">All</option>
-      <option value="pass">Passing</option>
-      <option value="fail">Failing</option>
-      <option value="error">Has errors</option>
-      <option value="improving">Improving</option>
-      <option value="regressing">Regressing</option>
-    </select>
-  </div>
-  <div style="overflow-x:auto">
-    <table>
-      <thead>
-        <tr>
-          <th style="width:80px">ID</th>
-          <th>Question</th>
-          <th style="width:80px">Pipeline</th>
-          <th style="width:60px">Runs</th>
-          <th style="width:70px">Pass Rate</th>
-          <th style="width:60px">Best F1</th>
-          <th style="width:80px">Status</th>
-          <th style="width:70px">Trend</th>
-        </tr>
-      </thead>
-      <tbody id="questionsBody"></tbody>
-    </table>
-  </div>
-  <div id="qDetailPanel" class="detail-panel" style="display:none;margin-top:12px"></div>
-</div>
-
-<!-- TAB 8: SMOKE TESTS -->
-<div id="tab-smoke" class="panel">
-  <div class="grid g4" id="smokeStatusCards"></div>
-  <div class="card" style="margin-top:12px">
-    <h3>Smoke Test History <span style="font-weight:400;text-transform:none;color:var(--tx3)">(endpoint validation after each workflow change)</span></h3>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:150px">Timestamp</th>
-          <th style="width:90px">Pipeline</th>
-          <th style="width:60px">Status</th>
-          <th style="width:80px">Trigger</th>
-          <th style="width:80px">Latency</th>
-          <th>Query</th>
-          <th>Response / Error</th>
-        </tr>
-      </thead>
-      <tbody id="smokeTestsBody"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- TAB 9: WORKFLOWS (merged workflows + changes) -->
-<div id="tab-workflows" class="panel">
-  <div class="grid g4" id="wfVersionCards"></div>
-  <div class="card" style="margin-top:12px">
-    <h3>Workflow Version History</h3>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:150px">Timestamp</th>
-          <th style="width:100px">Pipeline</th>
-          <th style="width:60px">Version</th>
-          <th style="width:110px">Hash</th>
-          <th>Changes</th>
-          <th style="width:120px">Snapshot</th>
-        </tr>
-      </thead>
-      <tbody id="wfHistoryBody"></tbody>
-    </table>
-  </div>
-  <div id="wfDiffPanel" class="detail-panel" style="display:none;margin-top:12px"></div>
-
-  <div class="card" style="margin-top:16px">
-    <h3>Workflow Changes & Impact</h3>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:150px">Timestamp</th>
-          <th style="width:100px">Type</th>
-          <th>Description</th>
-          <th style="width:120px">Pipelines</th>
-          <th style="width:100px">Impact</th>
-        </tr>
-      </thead>
-      <tbody id="changesBody"></tbody>
-    </table>
-  </div>
-
-  <div class="card" style="margin-top:12px">
-    <h3>Database State Over Time</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Snapshot</th>
-          <th>Trigger</th>
-          <th>Pinecone Vectors</th>
-          <th>Neo4j Nodes</th>
-          <th>Neo4j Rels</th>
-          <th>Supabase Rows</th>
-        </tr>
-      </thead>
-      <tbody id="dbSnapshotsBody"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- TAB 10: AI INSIGHTS (upgraded from api tab) -->
-<div id="tab-insights" class="panel">
+  <!-- Current phase detail -->
   <div class="grid g2">
     <div class="card">
-      <h3>Live Insights</h3>
-      <div id="liveInsights"></div>
+      <h3>Phase 1 — Exit Criteria</h3>
+      <div id="focus-gates"></div>
     </div>
     <div class="card">
-      <h3>AI Recommendations</h3>
-      <div id="recommendations"></div>
+      <h3>Phase 2 — Readiness</h3>
+      <div id="focus-p2"></div>
     </div>
   </div>
 
-  <div class="card" style="margin-top:16px">
-    <h3>Agentic Evaluation API</h3>
-    <p style="color:var(--tx2);margin-bottom:12px">This data structure is designed for consumption by an AI agent that continuously evaluates and improves the RAG pipelines. The agent reads <code>data.json</code> and uses the structured data to make improvement decisions.</p>
+  <!-- Per-pipeline iteration detail -->
+  <h3 style="margin-top:16px">Latest Iteration Results</h3>
+  <div class="grid g4" id="focus-pipes"></div>
 
-    <h4 style="font-size:13px;margin:16px 0 8px">Data Schema (v2.0)</h4>
-    <div class="answer-block" style="background:var(--s3);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;white-space:pre;overflow-x:auto;max-height:400px;overflow-y:auto" id="apiSchema"></div>
-
-    <h4 style="font-size:13px;margin:16px 0 8px">Decision Rules for Agentic Evaluation</h4>
-    <div id="agenticRules" style="font-size:12.5px;color:var(--tx2)"></div>
-
-    <h4 style="font-size:13px;margin:16px 0 8px">GitHub Actions Integration</h4>
-    <div id="ghActionsDoc"></div>
-
-    <h4 style="font-size:13px;margin:16px 0 8px">Quick Test Endpoint</h4>
-    <div class="answer-block" style="background:var(--s3);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;white-space:pre;overflow-x:auto">POST https://amoret.app.n8n.cloud/webhook/{endpoint}
-Content-Type: application/json
-
-{
-  "query": "test question",
-  "tenant_id": "benchmark",
-  "top_k": 10,
-  "include_sources": true,
-  "benchmark_mode": true
-}</div>
-
-    <h4 style="font-size:13px;margin:16px 0 8px">Running Evaluations</h4>
-    <div class="answer-block" style="background:var(--s3);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;white-space:pre;overflow-x:auto"># Full eval (all pipelines, skip already-tested)
-python run-comprehensive-eval.py
-
-# Specific pipelines, max 10 per type
-python run-comprehensive-eval.py --types standard,graph --max 10
-
-# Re-test everything (ignore dedup)
-python run-comprehensive-eval.py --reset
-
-# GitHub Actions: trigger manually
-gh workflow run rag-eval.yml -f types=standard,graph -f max_per_type=10 -f reset=true</div>
+  <!-- What's working / What's not -->
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card" style="border-left:3px solid var(--gn)"><h3>What's Working</h3><div id="focus-pass"></div></div>
+    <div class="card" style="border-left:3px solid var(--rd)"><h3>What Needs Fixing</h3><div id="focus-fail"></div></div>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<!-- ============ TAB 3: QUESTIONS ============ -->
+<div class="panel" id="p-questions">
+  <h2>Questions Explorer</h2>
+  <div class="filters">
+    <select id="q-phase"><option value="">All Phases</option><option value="1">Phase 1 (200q)</option><option value="2">Phase 2 (1000q)</option></select>
+    <select id="q-pipe"><option value="">All Pipelines</option><option value="standard">Standard</option><option value="graph">Graph</option><option value="quantitative">Quantitative</option><option value="orchestrator">Orchestrator</option></select>
+    <select id="q-status"><option value="">All Status</option><option value="pass">Pass</option><option value="fail">Fail</option><option value="error">Error</option></select>
+    <select id="q-dataset"><option value="">All Datasets</option></select>
+    <input type="text" id="q-search" placeholder="Search ID, question text, expected answer...">
+  </div>
+  <div class="card" style="padding:0;max-height:70vh;overflow:auto">
+    <table>
+      <thead><tr><th>ID</th><th>Pipeline</th><th>Phase</th><th>Question</th><th>Expected</th><th>Runs</th><th>Pass%</th><th>Best F1</th><th>Status</th><th>Trend</th></tr></thead>
+      <tbody id="q-tbody"></tbody>
+    </table>
+  </div>
+  <div id="q-detail" style="margin-top:12px"></div>
+</div>
+
+<!-- ============ TAB 4: WORKFLOWS ============ -->
+<div class="panel" id="p-workflows">
+  <h2>Workflows</h2>
+  <p style="color:var(--tx2);margin-bottom:16px">n8n Cloud workflows with node-level detail. Each workflow is linked to its n8n instance for live inspection.</p>
+
+  <!-- Workflow cards -->
+  <div class="grid g4" id="wf-cards"></div>
+
+  <!-- Node breakdown per workflow -->
+  <h3 style="margin-top:16px">Node Breakdown</h3>
+  <div id="wf-nodes"></div>
+
+  <!-- Modification History -->
+  <h3 style="margin-top:16px">Modification History (by Step)</h3>
+  <div class="card" style="padding:0;max-height:50vh;overflow:auto">
+    <table>
+      <thead><tr><th>Timestamp</th><th>Type</th><th>Description</th><th>Pipelines</th><th>Impact</th></tr></thead>
+      <tbody id="wf-history"></tbody>
+    </table>
+  </div>
+
+  <!-- DB Snapshots -->
+  <h3 style="margin-top:16px">Database State Over Time</h3>
+  <div class="card"><canvas id="ch-wf-db" height="180"></canvas></div>
+</div>
+
+<!-- ============ TAB 5: DATABASES ============ -->
+<div class="panel" id="p-databases">
+  <h2>Databases</h2>
+
+  <!-- DB status cards -->
+  <div class="grid g3" id="db-cards"></div>
+
+  <!-- Phase Readiness Matrix -->
+  <h3 style="margin-top:16px">Phase Readiness Matrix</h3>
+  <div class="card" style="padding:0;overflow:auto">
+    <table id="db-readiness-table">
+      <thead><tr><th>Database</th><th>Phase 1 (200q)</th><th>Phase 2 (1Kq)</th><th>Phase 3 (10Kq)</th><th>Phase 4 (100Kq)</th><th>Phase 5 (1M+)</th></tr></thead>
+      <tbody id="db-readiness"></tbody>
+    </table>
+  </div>
+
+  <!-- Growth chart -->
+  <h3 style="margin-top:16px">Data Growth Over Time</h3>
+  <div class="card"><canvas id="ch-db-growth" height="200"></canvas></div>
+
+  <!-- Missing data -->
+  <h3 style="margin-top:16px">Missing Data for Next Phase</h3>
+  <div id="db-missing"></div>
+</div>
+
+<!-- ============ TAB 6: COSTS & MODELS ============ -->
+<div class="panel" id="p-costs">
+  <h2>Costs & Models</h2>
+
+  <!-- Model registry -->
+  <h3>LLM Model Registry (per n8n Node)</h3>
+  <div class="card" style="padding:0;max-height:50vh;overflow:auto">
+    <table>
+      <thead><tr><th>Workflow</th><th>Node</th><th>Model</th><th>Provider</th><th>Cost/1K tokens</th><th>Role</th><th>Avg Tokens</th></tr></thead>
+      <tbody id="cost-models"></tbody>
+    </table>
+  </div>
+
+  <!-- Cost summary -->
+  <div class="grid g4" style="margin-top:16px" id="cost-stats"></div>
+
+  <!-- Phase cost projection -->
+  <h3 style="margin-top:16px">Cost Projection by Phase</h3>
+  <div class="card"><canvas id="ch-cost-phase" height="200"></canvas></div>
+
+  <!-- Per-pipeline cost -->
+  <h3 style="margin-top:16px">Cost per Question by Pipeline</h3>
+  <div class="card"><canvas id="ch-cost-pipe" height="200"></canvas></div>
+</div>
+
+<!-- ============ TAB 7: AI AGENT ============ -->
+<div class="panel" id="p-agent">
+  <h2>AI Agent Reference</h2>
+  <p style="color:var(--tx2);margin-bottom:16px">Everything the agentic workflow needs: credentials, commands, iteration protocol, and decision rules. This page is the single source of truth for CLAUDE.md.</p>
+
+  <!-- Environment Variables -->
+  <div class="card" style="margin-bottom:16px">
+    <h3>Environment Variables <span style="color:var(--tx3);text-transform:none;font-weight:400">(paste in Termius/GCloud Console)</span></h3>
+    <div id="agent-env"></div>
+  </div>
+
+  <!-- Iteration Protocol -->
+  <div class="card" style="margin-bottom:16px;border-left:3px solid var(--ac)">
+    <h3>Iteration Protocol</h3>
+    <div id="agent-protocol"></div>
+  </div>
+
+  <!-- Command Reference -->
+  <div class="card" style="margin-bottom:16px">
+    <h3>Command Reference</h3>
+    <div id="agent-commands"></div>
+  </div>
+
+  <!-- Decision Rules -->
+  <div class="card" style="margin-bottom:16px">
+    <h3>AI Decision Rules</h3>
+    <div id="agent-rules"></div>
+  </div>
+
+  <!-- API Schema -->
+  <div class="card">
+    <h3>data.json Schema (v2.0)</h3>
+    <details><summary>Expand Schema</summary>
+    <div class="detail-content"><pre class="code-block" style="font-size:11px" id="agent-schema"></pre></div>
+    </details>
+  </div>
+</div>
+
 <script>
+// ============================================================
+// GLOBAL STATE
+// ============================================================
 let DATA=null,charts={};
-function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 const PIPES=['standard','graph','quantitative','orchestrator'];
-const PCOL={standard:'#4f8efa',graph:'#a060f0',quantitative:'#20c0d8',orchestrator:'#f08030'};
+const PCOL={standard:'#4f8efa',graph:'#2dd47a',quantitative:'#e8b820',orchestrator:'#f08030'};
 const PTARGET={standard:85,graph:70,quantitative:85,orchestrator:70};
-const ECOL={TIMEOUT:'#f05555',NETWORK:'#f08030',EMPTY_RESPONSE:'#e8b820',UNKNOWN:'#4e5a6d',ENTITY_MISS:'#a060f0',SQL_ERROR:'#20c0d8',SERVER_ERROR:'#f05555',RATE_LIMIT:'#e8b820'};
-const CHART_GRID='#1e2533',CHART_TICK='#5a6578',CHART_LEG='#8896a8';
+const P2TARGET={graph:60,quantitative:70};
+const ECOL={TIMEOUT:'#f05555',NETWORK:'#f08030',SERVER_ERROR:'#e8b820',EMPTY_RESPONSE:'#a060f0',RATE_LIMIT:'#20c0d8',ENTITY_MISS:'#e060a0',SQL_ERROR:'#4f8efa',UNKNOWN:'#556070',CREDITS_EXHAUSTED:'#f05555'};
+const N8N_HOST='https://amoret.app.n8n.cloud';
+const WF_IDS={standard:'LnTqRX4LZlI009Ks-3Jnp',graph:'95x2BBAbJlLWZtWEJn6rb',quantitative:'LjUz8fxQZ03G9IsU',orchestrator:'FZxkpldDbgV8AD_cg7IWG'};
 
-async function loadData(){try{const r=await fetch('data.json?'+Date.now());DATA=await r.json();render()}catch(e){console.error('Load failed:',e)}}
+// Model registry (static config — derived from workflow JSON analysis)
+const MODEL_REGISTRY=[
+  {wf:'Standard',node:'HyDE Generator',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Hypothetical document generation',avg_tokens:400},
+  {wf:'Standard',node:'LLM Generation',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Answer synthesis from retrieved context',avg_tokens:500},
+  {wf:'Standard',node:'Cohere Rerank',model:'rerank-v3.5',provider:'Cohere',cost_in:0.002,cost_out:0,role:'Re-rank retrieved passages',avg_tokens:2000},
+  {wf:'Graph',node:'HyDE Entity Extraction',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Extract entities from query',avg_tokens:350},
+  {wf:'Graph',node:'Answer Synthesis',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Generate answer from graph paths',avg_tokens:600},
+  {wf:'Quantitative',node:'Text-to-SQL Generator',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Natural language to SQL',avg_tokens:450},
+  {wf:'Quantitative',node:'SQL Validator',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Validate and fix SQL',avg_tokens:300},
+  {wf:'Quantitative',node:'Interpretation Layer',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Interpret SQL results as answer',avg_tokens:400},
+  {wf:'Orchestrator',node:'Intent Analyzer',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Route query to correct pipeline',avg_tokens:300},
+  {wf:'Orchestrator',node:'Task Planner',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Plan sub-tasks',avg_tokens:500},
+  {wf:'Orchestrator',node:'Response Builder V9',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Merge sub-pipeline results',avg_tokens:600},
+  {wf:'Standard',node:'Pinecone Query',model:'text-embedding-3-small',provider:'OpenAI',cost_in:0.02,cost_out:0,role:'Vector embedding for retrieval',avg_tokens:300},
+];
 
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  const p=document.getElementById('tab-'+t.dataset.tab);
-  if(p)p.classList.add('active');
-}));
+// Phase cost projections
+const PHASE_COSTS=[
+  {phase:'Phase 1 (200q)',llm:0.03,embed:0,db:0,total:0.03},
+  {phase:'Phase 2 (1Kq)',llm:0.15,embed:0.05,db:0,total:0.20},
+  {phase:'Phase 3 (10Kq)',llm:1.50,embed:0.50,db:0,total:2.00},
+  {phase:'Phase 4 (100Kq)',llm:15,embed:5,db:0,total:20},
+  {phase:'Phase 5 (1M+)',llm:150,embed:50,db:50,total:250},
+];
 
-function render(){if(!DATA)return;renderHeader();renderCommandCenter();renderSummaryCards();renderMatrix();renderIterations();renderPipelines();renderErrorAnalysis();renderPhaseTracker();renderQuestions();renderSmokeTests();renderWorkflows();renderInsights()}
+// DB readiness data
+const DB_READINESS={
+  pinecone:[
+    {status:'ready',detail:'10,411 vectors, 12 namespaces'},
+    {status:'ready',detail:'No changes needed'},
+    {status:'partial',detail:'~2-5K additional vectors needed'},
+    {status:'upgrade',detail:'Paid plan needed (>100K vectors)'},
+    {status:'upgrade',detail:'Standard tier minimum'}
+  ],
+  neo4j:[
+    {status:'ready',detail:'110 nodes, 151 relationships'},
+    {status:'ready',detail:'19,788 nodes, 21,625 relationships'},
+    {status:'required',detail:'+hotpotqa entities (~1K new)'},
+    {status:'upgrade',detail:'Aura Pro needed (~15K entities)'},
+    {status:'upgrade',detail:'Production infrastructure'}
+  ],
+  supabase:[
+    {status:'ready',detail:'88 rows, 5 tables'},
+    {status:'ready',detail:'538 rows (450 Phase 2 added)'},
+    {status:'partial',detail:'WikiTableQuestions tables'},
+    {status:'upgrade',detail:'~50K rows needed'},
+    {status:'upgrade',detail:'Pro plan needed'}
+  ]
+};
 
-// === HEADER ===
+// ============================================================
+// HELPERS
+// ============================================================
+const esc=s=>s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):'';
+const pct=(n,d)=>d?Math.round(n/d*1000)/10:0;
+const fmtN=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n);
+
+function mkGauge(val,target,color,label){
+  const r=42,c=2*Math.PI*r,pctV=Math.min(val/100,1),off=c*(1-pctV);
+  const col=val>=target?'var(--gn)':val>=target-10?'var(--yl)':'var(--rd)';
+  return `<div class="gauge"><svg width="100" height="100"><circle class="bg" cx="50" cy="50" r="${r}" stroke-dasharray="${c}"/><circle class="fg" cx="50" cy="50" r="${r}" stroke="${col}" stroke-dasharray="${c}" stroke-dashoffset="${off}"/></svg><div class="val" style="color:${col}">${val}%</div><div class="lbl">${esc(label)}</div><div style="text-align:center;font-size:10px;color:var(--tx3)">Target: ${target}%</div></div>`;
+}
+
+function mkStat(v,l,d,dc){
+  return `<div class="card stat"><div class="v">${v}</div><div class="l">${l}</div>${d?`<div class="d ${dc||''}">${d}</div>`:''}</div>`;
+}
+
+function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+function getCtx(id){return document.getElementById(id)?.getContext('2d');}
+
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='Copied!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied');},1500);
+  });
+}
+
+// ============================================================
+// DATA LOADING
+// ============================================================
+async function loadData(){
+  try{
+    const r=await fetch('data.json?t='+Date.now());
+    DATA=await r.json();
+    render();
+  }catch(e){console.error('Load error:',e);}
+}
+
+function render(){
+  if(!DATA)return;
+  renderHeader();
+  renderExec();
+  renderFocus();
+  renderQuestions();
+  renderWorkflows();
+  renderDatabases();
+  renderCosts();
+  renderAgent();
+}
+
+// ============================================================
+// HEADER
+// ============================================================
 function renderHeader(){
   const m=DATA.meta||{};
-  const d=document.getElementById('statusDot');
-  if(d)d.className='status-dot '+(m.status==='running'?'running':'ok');
-  const s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-  s('metaPhase',m.phase||'Phase 1');
-  s('metaIterations',(m.total_iterations||0)+' iterations');
-  s('metaQuestions',(m.total_unique_questions||0)+' questions');
-  s('metaRuns',(m.total_test_runs||0)+' test runs');
-  s('metaUpdated',m.generated_at?m.generated_at.replace('T',' ').slice(0,19):'--');
+  const dot=document.getElementById('hd-dot');
+  dot.className='dot '+(m.status==='running'?'run':m.status==='error'?'err':'ok');
+  document.getElementById('hd-phase').textContent=m.phase||'Phase 1';
+  document.getElementById('hd-iter').textContent='Iter '+(m.total_iterations||0);
+  document.getElementById('hd-qs').textContent=(m.total_unique_questions||0)+' questions';
+  document.getElementById('hd-ts').textContent=m.generated_at?new Date(m.generated_at).toLocaleString():'';
 }
 
-// === COMMAND CENTER ===
-function renderCommandCenter(){
-  const iters=DATA.iterations||[],reg=DATA.question_registry||{},pipes=DATA.pipelines||{};
-  const latest=iters[iters.length-1],prev=iters.length>1?iters[iters.length-2]:null;
-  const latAcc=latest?.overall_accuracy_pct||0;
-  const prevAcc=prev?.overall_accuracy_pct;
-  const delta=prevAcc!=null?(latAcc-prevAcc):null;
-  const totalQ=Object.keys(reg).length;
-  const totalErrors=Object.values(reg).filter(q=>q.current_status==='error').length;
-  const totalRuns=DATA.meta?.total_test_runs||0;
-  const errRate=totalRuns>0?((totalErrors/totalQ)*100).toFixed(1):0;
+// ============================================================
+// TAB 1: EXECUTIVE SUMMARY
+// ============================================================
+function renderExec(){
+  // Phase roadmap
+  const phases=[{n:1,l:'Baseline',q:'200q'},{n:2,l:'Expand',q:'1Kq'},{n:3,l:'Scale',q:'10Kq'},{n:4,l:'Full HF',q:'100Kq'},{n:5,l:'Million+',q:'1M+q'}];
+  const curPhase=1;// TODO: derive from data
+  document.getElementById('exec-phases').innerHTML=phases.map(p=>
+    `<div class="phase-dot ${p.n===curPhase?'current':p.n<curPhase?'done':'locked'}">P${p.n}: ${p.l} (${p.q})</div>`
+  ).join('');
 
-  // Summary cards
-  const el=document.getElementById('cmdSummaryCards');
-  if(el)el.innerHTML=[
-    {v:latAcc.toFixed(1)+'%',l:'Overall Accuracy',d:delta!=null?(delta>=0?'+':'')+delta.toFixed(1)+'pp':null,c:latAcc>=75?'var(--gn)':latAcc>=60?'var(--yl)':'var(--rd)',dc:delta>=0?'delta-up':'delta-down'},
-    {v:totalQ,l:'Total Questions',c:'var(--ac)'},
-    {v:errRate+'%',l:'Error Rate',c:errRate>10?'var(--rd)':errRate>5?'var(--yl)':'var(--gn)'},
-    {v:iters.length,l:'Iterations',c:'var(--ac)'}
-  ].map(c=>`<div class="card stat"><div class="value" style="color:${c.c}">${c.v}</div><div class="label">${c.l}</div>${c.d?`<div class="delta ${c.dc||''}">${c.d}</div>`:''}</div>`).join('');
-
-  // Phase progress
-  const pp=document.getElementById('cmdPhaseProgress');
-  if(pp){const pct=Math.min(latAcc/75*100,100);pp.innerHTML=`<div style="display:flex;align-items:center;gap:12px"><div class="acc-bar" style="flex:1;height:10px"><div class="fill" style="width:${pct}%;background:${latAcc>=75?'var(--gn)':latAcc>=60?'var(--yl)':'var(--rd)'}"></div><div class="target" style="left:100%"></div></div><span class="mono" style="font-size:13px;white-space:nowrap">${latAcc.toFixed(1)}% / 75% target</span></div>`}
+  // Key metrics
+  const m=DATA.meta||{};
+  const iters=DATA.iterations||[];
+  const last=iters[iters.length-1];
+  const overall=last?last.overall_accuracy_pct:0;
+  const errRate=last?pct(Object.values(last.results_summary||{}).reduce((a,p)=>a+(p.errors||0),0),last.total_tested||1):0;
+  document.getElementById('exec-stats').innerHTML=[
+    mkStat(overall.toFixed(1)+'%','Overall Accuracy',overall>=75?'Gate: MET':'Gap: '+(75-overall).toFixed(1)+'pp',overall>=75?'d-up':'d-dn'),
+    mkStat(m.total_unique_questions||0,'Questions Tested','Phase 1: 200 / Phase 2: 1000'),
+    mkStat(m.total_iterations||0,'Iterations','5 eval runs + improvements'),
+    mkStat(errRate.toFixed(1)+'%','Error Rate',errRate<5?'Target: <5%':'Above target!',errRate<5?'d-up':'d-dn'),
+    mkStat(m.total_test_runs||0,'Total Test Runs','Across all iterations'),
+  ].join('');
 
   // Pipeline gauges
-  const pg=document.getElementById('cmdPipeGauges');
-  if(pg){const circ=314.16;pg.innerHTML=PIPES.map(p=>{
-    const t=pipes[p]?.trend||[];const lat=t[t.length-1];const prv=t.length>1?t[t.length-2]:null;
-    const acc=lat?.accuracy_pct||0;const tgt=PTARGET[p];const d2=prv?(acc-prv.accuracy_pct):null;
-    const off=circ*(1-acc/100);const col=acc>=tgt?'var(--gn)':acc>=tgt-10?'var(--yl)':'var(--rd)';
-    return`<div class="card"><h3 style="color:${PCOL[p]}">${p.toUpperCase()}</h3><div class="gauge"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="gauge-bg"/><circle cx="60" cy="60" r="50" class="gauge-fill" style="stroke:${col};stroke-dasharray:${circ};stroke-dashoffset:${off}"/></svg><div class="gauge-value" style="color:${col}">${acc.toFixed(0)}%</div><div class="gauge-target">target ${tgt}%</div></div>${d2!=null?`<div style="text-align:center;margin-top:4px" class="delta ${d2>=0?'delta-up':'delta-down'}">${d2>=0?'+':''}${d2.toFixed(1)}pp</div>`:''}</div>`}).join('')}
+  const pipeTrends=DATA.pipelines||{};
+  document.getElementById('exec-gauges').innerHTML=PIPES.map(p=>{
+    const trend=pipeTrends[p]?.trend||[];
+    const lastT=trend[trend.length-1];
+    const acc=lastT?lastT.accuracy_pct:0;
+    return `<div class="card">${mkGauge(acc,PTARGET[p],PCOL[p],p)}</div>`;
+  }).join('');
+
+  // Accuracy trend chart
+  renderExecTrend();
+  renderExecErrors();
 
   // Blockers
-  const bl=document.getElementById('cmdBlockersList');
-  if(bl){let bh='';
-    PIPES.forEach(p=>{const t=pipes[p]?.trend||[];const lat=t[t.length-1];if(!lat)return;
-      const acc=lat.accuracy_pct||0;const tgt=PTARGET[p];const gap=tgt-acc;const eRate=lat.tested>0?(lat.errors/lat.tested*100):0;
-      if(eRate>15)bh+=`<div class="blocker-item"><span class="blocker-severity critical">CRITICAL</span><div class="blocker-text">${p.toUpperCase()}: ${eRate.toFixed(0)}% error rate<div class="blocker-detail">${lat.errors} errors in ${lat.tested} tests</div></div></div>`;
-      if(gap>15)bh+=`<div class="blocker-item"><span class="blocker-severity high">HIGH</span><div class="blocker-text">${p.toUpperCase()}: ${gap.toFixed(1)}pp below target<div class="blocker-detail">Current ${acc.toFixed(1)}% vs target ${tgt}%</div></div></div>`;
-    });
-    const orchLat=latest?.results_summary?.orchestrator;
-    if(orchLat&&orchLat.p95_latency_ms>15000)bh+=`<div class="blocker-item"><span class="blocker-severity high">HIGH</span><div class="blocker-text">Orchestrator P95 latency: ${(orchLat.p95_latency_ms/1000).toFixed(1)}s<div class="blocker-detail">Target &lt;15s</div></div></div>`;
-    if(!bh)bh='<div style="color:var(--gn);font-size:12px">No active blockers</div>';
-    bl.innerHTML=bh}
+  const blockers=[];
+  PIPES.forEach(p=>{
+    const trend=pipeTrends[p]?.trend||[];
+    const lastT=trend[trend.length-1];
+    if(lastT){
+      if(lastT.accuracy_pct<PTARGET[p]) blockers.push({p:'P0',text:`${p}: ${lastT.accuracy_pct}% (target ${PTARGET[p]}%, gap -${(PTARGET[p]-lastT.accuracy_pct).toFixed(1)}pp)`});
+      if(lastT.errors>5) blockers.push({p:'P1',text:`${p}: ${lastT.errors} errors in last iteration`});
+    }
+  });
+  blockers.push({p:'P0',text:'OpenRouter credits EXPIRED — need new API key for LLM calls'});
+  document.getElementById('exec-blockers').innerHTML=blockers.length?blockers.map(b=>`<div class="blocker"><span class="priority">${b.p}</span>${esc(b.text)}</div>`).join(''):'<p style="color:var(--gn)">No active blockers</p>';
 
-  // Recommendations
-  const rc=document.getElementById('cmdRecommendationsList');
-  if(rc){let rh='';
-    let maxGap=0,maxGapPipe='';PIPES.forEach(p=>{const t=pipes[p]?.trend||[];const lat=t[t.length-1];if(!lat)return;const gap=PTARGET[p]-(lat.accuracy_pct||0);if(gap>maxGap){maxGap=gap;maxGapPipe=p}});
-    if(maxGapPipe)rh+=`<div class="insight-card insight-negative"><h4>Priority: Improve ${maxGapPipe}</h4><p>${maxGap.toFixed(1)}pp gap to target (${PTARGET[maxGapPipe]}%). Focus iteration efforts here.</p></div>`;
-    const errCounts={};iters.forEach(it=>(it.questions||[]).forEach(q=>{if(q.error_type)errCounts[q.error_type]=(errCounts[q.error_type]||0)+1}));
-    const topErr=Object.entries(errCounts).sort((a,b)=>b[1]-a[1])[0];
-    if(topErr)rh+=`<div class="insight-card insight-warning"><h4>Fix ${topErr[0]} errors</h4><p>${topErr[1]} occurrences across all iterations. Targeted fix could improve overall accuracy.</p></div>`;
-    const regressing=Object.values(reg).filter(q=>q.trend==='regressing').length;
-    if(regressing>0)rh+=`<div class="insight-card insight-negative"><h4>Investigate regressions</h4><p>${regressing} questions regressing. Check for unintended side effects.</p></div>`;
-    rc.innerHTML=rh||'<div style="color:var(--tx2);font-size:12px">No recommendations at this time.</div>'}
+  // Next actions
+  document.getElementById('exec-actions').innerHTML=`
+    <ol style="padding-left:20px;color:var(--tx2);line-height:2">
+      <li><strong>Set env vars</strong> in Termius (N8N_API_KEY, OPENROUTER_API_KEY)</li>
+      <li><strong>Deploy fixes</strong>: <code>python3 workflows/improved/apply.py --deploy</code></li>
+      <li><strong>Fast iteration</strong>: <code>python3 eval/fast-iter.py --label "Iter 6"</code></li>
+      <li><strong>Full Phase 1 eval</strong>: <code>python3 eval/run-eval-parallel.py --reset</code></li>
+      <li><strong>Phase 2 eval</strong>: <code>python3 eval/run-eval-parallel.py --dataset phase-2 --reset</code></li>
+    </ol>`;
 }
 
-// === SUMMARY CARDS (Test Matrix tab) ===
-function renderSummaryCards(){
-  const iters=DATA.iterations||[],reg=DATA.question_registry||{};
-  const latest=iters[iters.length-1],prev=iters.length>1?iters[iters.length-2]:null;
-  const totalQ=Object.keys(reg).length;
-  const passing=Object.values(reg).filter(q=>q.current_status==='pass').length;
-  const failing=Object.values(reg).filter(q=>q.current_status==='fail').length;
-  const errors=Object.values(reg).filter(q=>q.current_status==='error').length;
-  const improving=Object.values(reg).filter(q=>q.trend==='improving').length;
-  const regressing=Object.values(reg).filter(q=>q.trend==='regressing').length;
-  const latAcc=latest?.overall_accuracy_pct||0;
-  const prevAcc=prev?.overall_accuracy_pct;
-  const delta=prevAcc!=null?(latAcc-prevAcc):null;
-  document.getElementById('summaryCards').innerHTML=[
-    {v:latAcc.toFixed(1)+'%',l:'Latest Accuracy',d:delta!=null?(delta>=0?'+':'')+delta.toFixed(1)+'pp':null,dc:delta>0?'delta-up':delta<0?'delta-down':'delta-flat',c:latAcc>=75?'var(--gn)':latAcc>=60?'var(--yl)':'var(--rd)'},
-    {v:passing+'/'+totalQ,l:'Passing',c:'var(--gn)'},
-    {v:failing+errors,l:'Failing + Errors',c:(failing+errors)>0?'var(--rd)':'var(--gn)'},
-    {v:improving+' / '+regressing,l:'Improving / Regressing',c:improving>regressing?'var(--gn)':'var(--yl)'}
-  ].map(c=>`<div class="card stat"><div class="value" style="color:${c.c}">${c.v}</div><div class="label">${c.l}</div>${c.d?`<div class="delta ${c.dc}">${c.d}</div>`:''}</div>`).join('');
-}
-
-// === TEST MATRIX ===
-function renderMatrix(){
-  const iters=DATA.iterations||[],reg=DATA.question_registry||{};
-  let hh='<tr><th>ID</th><th>Pipeline</th><th style="min-width:200px">Question</th><th>Status</th>';
-  iters.forEach(it=>{hh+=`<th class="mono" style="text-align:center;min-width:75px" title="${escHtml(it.label)}">Iter ${it.number}<br><span style="font-size:10px;color:var(--tx3)">${it.total_tested}q</span></th>`});
-  hh+='<th>Trend</th></tr>';
-  document.getElementById('matrixHeader').innerHTML=hh;
-  const iLook={};iters.forEach(it=>{const m={};(it.questions||[]).forEach(q=>{m[q.id]=q});iLook[it.id]=m});
-  const pf=document.getElementById('matrixPipeFilter').value;
-  const sf=document.getElementById('matrixStatusFilter').value;
-  const st=document.getElementById('matrixSearch').value.toLowerCase();
-  const sorted=Object.keys(reg).sort((a,b)=>{const qa=reg[a],qb=reg[b];if(qa.rag_type!==qb.rag_type)return qa.rag_type.localeCompare(qb.rag_type);return a.localeCompare(b)});
-  let bh='',pp='',vc=0;
-  sorted.forEach(qid=>{
-    const q=reg[qid];
-    if(pf!=='all'&&q.rag_type!==pf)return;
-    if(sf==='pass'&&q.current_status!=='pass')return;
-    if(sf==='fail'&&q.current_status!=='fail')return;
-    if(sf==='error'&&q.current_status!=='error')return;
-    if(sf==='improving'&&q.trend!=='improving')return;
-    if(sf==='regressing'&&q.trend!=='regressing')return;
-    if(st&&!qid.toLowerCase().includes(st)&&!(q.question||'').toLowerCase().includes(st)&&!(q.expected||'').toLowerCase().includes(st))return;
-    if(q.rag_type!==pp){bh+=`<tr><td colspan="${4+iters.length+1}" style="background:var(--s3);padding:6px 10px;font-weight:600;font-size:11px;text-transform:uppercase;color:var(--tx2)">${escHtml(q.rag_type)} RAG</td></tr>`;pp=q.rag_type}
-    const stag=q.current_status==='pass'?'<span class="tag tag-pass">PASS</span>':q.current_status==='error'?'<span class="tag tag-error">ERR</span>':'<span class="tag tag-fail">FAIL</span>';
-    const ttag=q.trend==='improving'?'<span class="tag tag-improving">UP</span>':q.trend==='regressing'?'<span class="tag tag-regressing">DOWN</span>':'<span class="tag tag-stable">--</span>';
-    bh+=`<tr data-qid="${escHtml(qid)}" style="cursor:pointer"><td class="mono" style="font-size:11px">${escHtml(qid)}</td><td><span class="pipe-${q.rag_type}" style="font-size:11px;font-weight:600">${escHtml((q.rag_type||'').slice(0,4).toUpperCase())}</span></td><td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escHtml(q.question)}">${escHtml((q.question||'').slice(0,80))}</td><td>${stag}</td>`;
-    iters.forEach(it=>{const r=iLook[it.id]?.[qid];if(!r)bh+='<td class="cell-skip">-</td>';else if(r.error)bh+=`<td class="cell-error" title="${escHtml(String(r.error).slice(0,100))}">E</td>`;else if(r.correct){const f=r.f1!=null?r.f1.toFixed(2):'';bh+=`<td class="cell-pass" title="F1: ${f}">${f||'P'}</td>`}else{const f=r.f1!=null?r.f1.toFixed(2):'';bh+=`<td class="cell-fail" title="F1: ${f}">${f||'F'}</td>`}});
-    bh+=`<td>${ttag}</td></tr>`;vc++});
-  document.getElementById('matrixBody').innerHTML=bh;
-  document.getElementById('matrixFilterInfo').textContent=`(${vc} of ${sorted.length} questions)`;
-}
-['matrixPipeFilter','matrixStatusFilter'].forEach(id=>document.getElementById(id)?.addEventListener('change',renderMatrix));
-document.getElementById('matrixSearch')?.addEventListener('input',renderMatrix);
-
-// === QUESTION DETAIL ===
-function showQuestionDetail(qid){
-  const q=(DATA.question_registry||{})[qid];if(!q)return;
-  let h=`<h3 style="font-size:14px;font-weight:600;margin-bottom:10px">${escHtml(qid)} — ${escHtml(q.question)}</h3>`;
-  h+=`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;font-size:12px;color:var(--tx2)">`;
-  h+=`<span>Pipeline: <strong class="pipe-${q.rag_type}">${escHtml(q.rag_type)}</strong></span>`;
-  h+=`<span>Category: <strong>${escHtml(q.category||'N/A')}</strong></span>`;
-  h+=`<span>Pass rate: <strong>${((q.pass_rate||0)*100).toFixed(0)}%</strong> (${q.pass_count||0}/${q.total_runs||0})</span>`;
-  h+=`<span>Best F1: <strong>${(q.best_f1||0).toFixed(3)}</strong></span>`;
-  h+=`<span>Trend: <span class="tag tag-${q.trend||'stable'}">${q.trend||'stable'}</span></span>`;
-  if(q.entities?.length)h+=`<span>Entities: <code>${escHtml(q.entities.join(', '))}</code></span>`;
-  if(q.tables?.length)h+=`<span>Tables: <code>${escHtml(q.tables.join(', '))}</code></span>`;
-  h+=`</div>`;
-  h+=`<div style="margin-bottom:8px"><strong style="font-size:11px;color:var(--tx2)">EXPECTED:</strong></div>`;
-  h+=`<div class="answer-block expected">${escHtml(q.expected)}${q.expected_detail?'\n\n'+escHtml(q.expected_detail):''}</div>`;
-  h+=`<div style="margin-top:12px"><strong style="font-size:11px;color:var(--tx2)">RUNS (${(q.runs||[]).length}):</strong></div>`;
-  h+=`<table style="margin-top:6px"><thead><tr><th>Iter</th><th>Result</th><th>F1</th><th>Latency</th><th>Method</th><th>Answer</th></tr></thead><tbody>`;
-  (q.runs||[]).forEach(r=>{
-    const tag=r.error?'<span class="tag tag-error">ERR</span>':r.correct?'<span class="tag tag-pass">PASS</span>':'<span class="tag tag-fail">FAIL</span>';
-    const ans=r.error?`<span style="color:var(--rd)">${escHtml(String(r.error).slice(0,120))}</span>`:escHtml((r.answer||'(empty)').slice(0,150));
-    h+=`<tr><td class="mono">${r.iteration_number||'?'}</td><td>${tag}</td><td class="mono">${(r.f1||0).toFixed(3)}</td><td class="mono">${r.latency_ms||0}ms</td><td class="mono" style="font-size:10px">${escHtml(r.match_type||'-')}</td><td style="max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ans}</td></tr>`});
-  h+=`</tbody></table>`;
-  const p=document.getElementById('questionDetail');p.innerHTML=h;p.style.display='block';p.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
-// === ITERATIONS ===
-function renderIterations(){
+function renderExecTrend(){
+  destroyChart('execTrend');
+  const ctx=getCtx('ch-exec-trend');if(!ctx)return;
   const iters=DATA.iterations||[];
-  let th='';iters.slice().reverse().forEach(it=>{
-    const acc=it.overall_accuracy_pct||0;const col=acc>=75?'var(--gn)':acc>=60?'var(--yl)':'var(--rd)';
-    th+=`<div class="timeline-item"><div class="time">${(it.timestamp_start||'').replace('T',' ').slice(0,19)}</div>`;
-    th+=`<h4>${escHtml(it.label)} <span style="color:${col};font-size:13px">(${acc}%)</span></h4>`;
-    if(it.description)th+=`<div class="changes">${escHtml(it.description)}</div>`;
-    if(it.changes_applied?.length){th+=`<div class="changes" style="border-left:2px solid var(--ac);padding-left:8px;margin-bottom:8px">`;it.changes_applied.forEach(c=>{th+=`<div style="margin-bottom:2px">${escHtml(c)}</div>`});th+=`</div>`}
-    th+=`<div class="metrics">`;
-    for(const[rt,rs]of Object.entries(it.results_summary||{})){const eR=rs.tested>0?(rs.errors/rs.tested*100).toFixed(0):0;th+=`<div class="metric"><span class="pipe-${rt}" style="font-weight:600">${rt.slice(0,4).toUpperCase()}</span>: <strong>${rs.accuracy_pct}%</strong> (${rs.correct}/${rs.tested}) <span style="color:var(--tx3)">${rs.avg_latency_ms}ms, ${eR}% err</span></div>`}
-    th+=`</div></div>`});
-  document.getElementById('iterTimeline').innerHTML=th;
-  const sA=document.getElementById('iterCompareA'),sB=document.getElementById('iterCompareB');
-  if(sA&&sB){sA.innerHTML=iters.map(i=>`<option value="${i.id}">Iter ${i.number}: ${escHtml(i.label)}</option>`).join('');sB.innerHTML=sA.innerHTML;if(iters.length>1){sA.value=iters[iters.length-2].id;sB.value=iters[iters.length-1].id}}
-  renderIterChart(iters);renderBurndownChart(iters);
+  const labels=iters.map(i=>i.label||`Iter ${i.number}`);
+  const datasets=PIPES.map(p=>({
+    label:p,borderColor:PCOL[p],backgroundColor:PCOL[p]+'20',data:iters.map(i=>(i.results_summary||{})[p]?.accuracy_pct||null),
+    tension:.3,pointRadius:4,spanGaps:true
+  }));
+  datasets.push({label:'Target (75%)',borderColor:'#556070',borderDash:[5,5],data:iters.map(()=>75),pointRadius:0});
+  charts.execTrend=new Chart(ctx,{type:'line',data:{labels,datasets},options:{responsive:true,plugins:{legend:{labels:{color:'#8896a8',font:{size:11}}}},scales:{y:{beginAtZero:true,max:100,ticks:{color:'#556070'},grid:{color:'#1c2330'}},x:{ticks:{color:'#556070'},grid:{color:'#1c2330'}}}}});
 }
 
-function renderIterChart(iters){
-  const ctx=document.getElementById('iterChart');if(!ctx)return;if(charts.iter)charts.iter.destroy();
-  const labels=iters.map(i=>'Iter '+i.number);
-  const ds=PIPES.map(p=>({label:p.charAt(0).toUpperCase()+p.slice(1),data:iters.map(i=>i.results_summary?.[p]?.accuracy_pct??null),borderColor:PCOL[p],backgroundColor:PCOL[p]+'20',fill:false,tension:.3,pointRadius:5,spanGaps:true}));
-  ds.push({label:'Overall',data:iters.map(i=>i.overall_accuracy_pct),borderColor:'#ffffff',borderDash:[5,3],fill:false,tension:.3,pointRadius:5});
-  ds.push({label:'Target (75%)',data:iters.map(()=>75),borderColor:'#ffffff40',borderDash:[10,5],borderWidth:1,pointRadius:0,fill:false});
-  charts.iter=new Chart(ctx,{type:'line',data:{labels,datasets:ds},options:{responsive:true,plugins:{legend:{labels:{color:CHART_LEG,font:{size:11}}}},scales:{y:{min:0,max:100,grid:{color:CHART_GRID},ticks:{color:CHART_TICK,callback:v=>v+'%'}},x:{grid:{color:CHART_GRID},ticks:{color:CHART_TICK}}}}});
+function renderExecErrors(){
+  destroyChart('execErr');
+  const ctx=getCtx('ch-exec-errors');if(!ctx)return;
+  const errs={};
+  (DATA.iterations||[]).forEach(iter=>{
+    (iter.questions||[]).forEach(q=>{
+      if(q.error_type){errs[q.error_type]=(errs[q.error_type]||0)+1;}
+    });
+  });
+  const labels=Object.keys(errs);
+  const colors=labels.map(l=>ECOL[l]||'#556070');
+  charts.execErr=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data:Object.values(errs),backgroundColor:colors}]},options:{responsive:true,plugins:{legend:{position:'right',labels:{color:'#8896a8',font:{size:11}}}}}});
 }
 
-function renderBurndownChart(iters){
-  const ctx=document.getElementById('burndownChart');if(!ctx)return;if(charts.burndown)charts.burndown.destroy();
-  const latest=iters[iters.length-1];if(!latest)return;
-  const gaps=PIPES.map(p=>{const acc=latest.results_summary?.[p]?.accuracy_pct||0;return acc-PTARGET[p]});
-  charts.burndown=new Chart(ctx,{type:'bar',data:{labels:PIPES.map(p=>p.charAt(0).toUpperCase()+p.slice(1)),datasets:[{label:'Gap to Target (pp)',data:gaps,backgroundColor:gaps.map(g=>g>=0?'rgba(45,212,122,.6)':'rgba(240,85,85,.6)'),borderColor:gaps.map(g=>g>=0?'#2dd47a':'#f05555'),borderWidth:1}]},options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:CHART_GRID},ticks:{color:CHART_TICK,callback:v=>(v>0?'+':'')+v+'pp'}},y:{grid:{display:false},ticks:{color:CHART_TICK}}}}});
-}
-
-function compareIterations(){
-  const iters=DATA.iterations||[];const itA=iters.find(i=>i.id===document.getElementById('iterCompareA')?.value);const itB=iters.find(i=>i.id===document.getElementById('iterCompareB')?.value);if(!itA||!itB)return;
-  const mA={},mB={};(itA.questions||[]).forEach(q=>{mA[q.id]=q});(itB.questions||[]).forEach(q=>{mB[q.id]=q});
-  const all=new Set([...Object.keys(mA),...Object.keys(mB)]);const fixed=[],broken=[],improved=[],regressed=[],same=[];
-  all.forEach(qid=>{const a=mA[qid],b=mB[qid];if(!a||!b)return;if(!a.correct&&b.correct)fixed.push({qid,a,b});else if(a.correct&&!b.correct)broken.push({qid,a,b});else if(a.correct&&b.correct&&(b.f1||0)>(a.f1||0)+.05)improved.push({qid,a,b});else if(a.correct&&b.correct&&(a.f1||0)>(b.f1||0)+.05)regressed.push({qid,a,b});else same.push({qid,a,b})});
-  let h=`<div style="margin-top:12px"><div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Comparing ${all.size} questions</div>`;
-  h+=`<div class="grid g4" style="margin-bottom:12px">`;
-  h+=`<div class="card stat"><div class="value" style="color:var(--gn)">${fixed.length}</div><div class="label">Fixed</div></div>`;
-  h+=`<div class="card stat"><div class="value" style="color:var(--rd)">${broken.length}</div><div class="label">Broken</div></div>`;
-  h+=`<div class="card stat"><div class="value" style="color:var(--ac)">${improved.length}</div><div class="label">Improved F1</div></div>`;
-  h+=`<div class="card stat"><div class="value" style="color:var(--yl)">${regressed.length}</div><div class="label">Regressed F1</div></div></div>`;
-  if(fixed.length)h+=renderCompareTable('Fixed',fixed,'gn');
-  if(broken.length)h+=renderCompareTable('Broken',broken,'rd');
-  if(regressed.length)h+=renderCompareTable('Regressed',regressed,'yl');
-  h+='</div>';document.getElementById('iterCompareResult').innerHTML=h;
-}
-
-function renderCompareTable(title,items,cv){
-  let h=`<div style="margin-top:12px"><strong style="font-size:12px;color:var(--${cv})">${title} (${items.length})</strong><table style="margin-top:4px"><thead><tr><th>ID</th><th>Before</th><th>After</th><th>F1 Change</th></tr></thead><tbody>`;
-  items.forEach(({qid,a,b})=>{const d=((b.f1||0)-(a.f1||0)).toFixed(3);const c=(b.f1||0)>(a.f1||0)?'var(--gn)':'var(--rd)';h+=`<tr><td class="mono">${escHtml(qid)}</td><td>${a.correct?'<span class="tag tag-pass">P</span>':'<span class="tag tag-fail">F</span>'} ${(a.f1||0).toFixed(3)}</td><td>${b.correct?'<span class="tag tag-pass">P</span>':'<span class="tag tag-fail">F</span>'} ${(b.f1||0).toFixed(3)}</td><td class="mono" style="color:${c}">${d>0?'+':''}${d}</td></tr>`});
-  h+='</tbody></table></div>';return h;
-}
-
-// === PIPELINES ===
-function renderPipelines(){
-  const pipes=DATA.pipelines||{},iters=DATA.iterations||[],reg=DATA.question_registry||{};
-  let ch='';PIPES.forEach(name=>{
-    const p=pipes[name]||{};const t=p.trend||[];const lat=t[t.length-1]||{};const prv=t.length>1?t[t.length-2]:null;
-    const delta=prv?(lat.accuracy_pct-prv.accuracy_pct):null;const tgt=p.target_accuracy||PTARGET[name];const acc=lat.accuracy_pct||0;
-    const fillW=Math.min(acc,100);const fillC=acc>=tgt?'var(--gn)':acc>=tgt-10?'var(--yl)':'var(--rd)';
-    const qc=Object.values(reg).filter(q=>q.rag_type===name).length;const pc=Object.values(reg).filter(q=>q.rag_type===name&&q.current_status==='pass').length;
-    ch+=`<div class="card"><h3 style="color:${PCOL[name]}">${name.toUpperCase()}</h3><div class="stat" style="margin-bottom:10px"><div class="value" style="color:${fillC}">${acc.toFixed(1)}%</div><div class="label">Accuracy (target: ${tgt}%)</div>${delta!=null?`<div class="delta ${delta>=0?'delta-up':'delta-down'}">${delta>=0?'+':''}${delta.toFixed(1)}pp</div>`:''}</div><div class="acc-bar" style="margin-bottom:8px"><div class="fill" style="width:${fillW}%;background:${fillC}"></div><div class="target" style="left:${tgt}%"></div></div><div style="font-size:11px;color:var(--tx2);display:flex;justify-content:space-between"><span>${pc}/${qc} passing</span><span>${lat.errors||0} errors</span><span>${lat.avg_latency_ms||0}ms</span></div></div>`});
-  document.getElementById('pipelineCards').innerHTML=ch;
-  renderPipeCharts(iters);renderCategoryBreakdown(reg);renderF1Distribution(reg);renderErrorBreakdownChart();
-}
-
-function renderPipeCharts(iters){
-  const labels=iters.map(i=>'Iter '+i.number);
-  if(charts.pipeAcc)charts.pipeAcc.destroy();
-  charts.pipeAcc=new Chart(document.getElementById('pipeAccChart'),{type:'bar',data:{labels,datasets:PIPES.map(p=>({label:p.charAt(0).toUpperCase()+p.slice(1),data:iters.map(i=>i.results_summary?.[p]?.accuracy_pct??null),backgroundColor:PCOL[p]+'80',borderColor:PCOL[p],borderWidth:1}))},options:{responsive:true,plugins:{legend:{labels:{color:CHART_LEG,font:{size:11}}}},scales:{y:{min:0,max:100,grid:{color:CHART_GRID},ticks:{color:CHART_TICK,callback:v=>v+'%'}},x:{grid:{color:CHART_GRID},ticks:{color:CHART_TICK}}}}});
-  if(charts.pipeErr)charts.pipeErr.destroy();
-  charts.pipeErr=new Chart(document.getElementById('pipeErrChart'),{type:'bar',data:{labels,datasets:PIPES.map(p=>({label:p.charAt(0).toUpperCase()+p.slice(1),data:iters.map(i=>{const rs=i.results_summary?.[p];return rs&&rs.tested>0?(rs.errors/rs.tested*100).toFixed(1):null}),backgroundColor:PCOL[p]+'60',borderColor:PCOL[p],borderWidth:1}))},options:{responsive:true,plugins:{legend:{labels:{color:CHART_LEG,font:{size:11}}}},scales:{y:{min:0,grid:{color:CHART_GRID},ticks:{color:CHART_TICK,callback:v=>v+'%'}},x:{grid:{color:CHART_GRID},ticks:{color:CHART_TICK}}}}});
-  if(charts.pipeLat)charts.pipeLat.destroy();
-  charts.pipeLat=new Chart(document.getElementById('pipeLatChart'),{type:'line',data:{labels,datasets:PIPES.map(p=>({label:p.charAt(0).toUpperCase()+p.slice(1),data:iters.map(i=>i.results_summary?.[p]?.avg_latency_ms??null),borderColor:PCOL[p],fill:false,tension:.3,pointRadius:5,spanGaps:true}))},options:{responsive:true,plugins:{legend:{labels:{color:CHART_LEG,font:{size:11}}}},scales:{y:{min:0,grid:{color:CHART_GRID},ticks:{color:CHART_TICK,callback:v=>v+'ms'}},x:{grid:{color:CHART_GRID},ticks:{color:CHART_TICK}}}}});
-}
-
-function renderCategoryBreakdown(reg){
-  const cats={};Object.values(reg).forEach(q=>{const c=q.category||'uncategorized';if(!cats[c])cats[c]={t:0,p:0,f:0,e:0};cats[c].t++;if(q.current_status==='pass')cats[c].p++;else if(q.current_status==='error')cats[c].e++;else cats[c].f++});
-  let h='<table><thead><tr><th>Category</th><th>Total</th><th>Pass</th><th>Fail</th><th>Error</th><th>Accuracy</th></tr></thead><tbody>';
-  Object.entries(cats).sort((a,b)=>b[1].t-a[1].t).forEach(([c,i])=>{const acc=(i.p/i.t*100).toFixed(0);const col=acc>=75?'var(--gn)':acc>=50?'var(--yl)':'var(--rd)';h+=`<tr><td class="mono" style="font-size:11px">${escHtml(c)}</td><td>${i.t}</td><td style="color:var(--gn)">${i.p}</td><td style="color:var(--rd)">${i.f}</td><td style="color:var(--yl)">${i.e}</td><td style="color:${col};font-weight:600">${acc}%</td></tr>`});
-  h+='</tbody></table>';document.getElementById('categoryBreakdown').innerHTML=h;
-}
-
-function renderF1Distribution(reg){
-  const ctx=document.getElementById('f1DistChart');if(!ctx)return;if(charts.f1Dist)charts.f1Dist.destroy();
-  const buckets=['0-0.1','0.1-0.3','0.3-0.5','0.5-0.7','0.7-1.0'];const ranges=[[0,.1],[.1,.3],[.3,.5],[.5,.7],[.7,1.01]];
-  const ds=PIPES.map(p=>{const counts=[0,0,0,0,0];Object.values(reg).forEach(q=>{if(q.rag_type!==p)return;const f=q.best_f1||0;ranges.forEach((r,i)=>{if(f>=r[0]&&f<r[1])counts[i]++})});return{label:p.charAt(0).toUpperCase()+p.slice(1),data:counts,backgroundColor:PCOL[p]+'80',borderColor:PCOL[p],borderWidth:1}});
-  charts.f1Dist=new Chart(ctx,{type:'bar',data:{labels:buckets,datasets:ds},options:{responsive:true,plugins:{legend:{labels:{color:CHART_LEG,font:{size:11}}}},scales:{y:{grid:{color:CHART_GRID},ticks:{color:CHART_TICK}},x:{grid:{color:CHART_GRID},ticks:{color:CHART_TICK}}}}});
-}
-
-function renderErrorBreakdownChart(){
-  const ctx=document.getElementById('errorBreakdownChart');if(!ctx)return;if(charts.errBreak)charts.errBreak.destroy();
-  const byType={};(DATA.iterations||[]).forEach(it=>(it.questions||[]).forEach(q=>{if(!q.error_type)return;if(!byType[q.error_type])byType[q.error_type]={};byType[q.error_type][q.rag_type]=(byType[q.error_type][q.rag_type]||0)+1}));
-  const types=Object.keys(byType);if(!types.length)return;
-  const ds=PIPES.map(p=>({label:p.charAt(0).toUpperCase()+p.slice(1),data:types.map(t=>byType[t]?.[p]||0),backgroundColor:PCOL[p]+'80',borderColor:PCOL[p],borderWidth:1}));
-  charts.errBreak=new Chart(ctx,{type:'bar',data:{labels:types,datasets:ds},options:{responsive:true,indexAxis:'y',plugins:{legend:{labels:{color:CHART_LEG,font:{size:11}}}},scales:{x:{stacked:true,grid:{color:CHART_GRID},ticks:{color:CHART_TICK}},y:{stacked:true,grid:{display:false},ticks:{color:CHART_TICK}}}}});
-}
-
-// === ERROR ANALYSIS ===
-function renderErrorAnalysis(){
-  const iters=DATA.iterations||[],reg=DATA.question_registry||{};
-  const errs=[];const byType={},byPipe={};
-  iters.forEach(it=>(it.questions||[]).forEach(q=>{if(!q.error_type)return;errs.push({...q,iter:it.number});byType[q.error_type]=(byType[q.error_type]||0)+1;byPipe[q.rag_type]=(byPipe[q.rag_type]||0)+1}));
-  const totalErrs=errs.length;const totalRuns=DATA.meta?.total_test_runs||1;const errRate=(totalErrs/totalRuns*100).toFixed(1);
-  const topType=Object.entries(byType).sort((a,b)=>b[1]-a[1])[0];const topPipe=Object.entries(byPipe).sort((a,b)=>b[1]-a[1])[0];
-
-  document.getElementById('errorStatCards').innerHTML=[
-    {v:totalErrs,l:'Total Errors',c:totalErrs>20?'var(--rd)':totalErrs>5?'var(--yl)':'var(--gn)'},
-    {v:errRate+'%',l:'Error Rate',c:errRate>10?'var(--rd)':errRate>5?'var(--yl)':'var(--gn)'},
-    {v:topType?topType[0]:'None',l:'Most Common Type',c:'var(--yl)'},
-    {v:topPipe?topPipe[0]:'None',l:'Most Affected Pipeline',c:topPipe?PCOL[topPipe[0]]||'var(--tx)':'var(--tx)'}
-  ].map(c=>`<div class="card stat"><div class="value" style="color:${c.c};font-size:${String(c.v).length>10?'18':'28'}px">${c.v}</div><div class="label">${c.l}</div></div>`).join('');
-
-  // Error type doughnut
-  const ctx1=document.getElementById('errorTypeChart');
-  if(ctx1){if(charts.errType)charts.errType.destroy();const types=Object.keys(byType);charts.errType=new Chart(ctx1,{type:'doughnut',data:{labels:types,datasets:[{data:types.map(t=>byType[t]),backgroundColor:types.map(t=>ECOL[t]||'#4e5a6d')}]},options:{responsive:true,plugins:{legend:{position:'right',labels:{color:CHART_LEG,font:{size:11}}}}}})}
-
-  // Error timeline
-  const ctx2=document.getElementById('errorTimelineChart');
-  if(ctx2){if(charts.errTimeline)charts.errTimeline.destroy();const labels=iters.map(i=>'Iter '+i.number);
-    const ds=PIPES.map(p=>({label:p.charAt(0).toUpperCase()+p.slice(1),data:iters.map(i=>(i.questions||[]).filter(q=>q.error_type&&q.rag_type===p).length),backgroundColor:PCOL[p]+'80',borderColor:PCOL[p],borderWidth:1}));
-    charts.errTimeline=new Chart(ctx2,{type:'bar',data:{labels,datasets:ds},options:{responsive:true,plugins:{legend:{labels:{color:CHART_LEG,font:{size:11}}}},scales:{x:{stacked:true,grid:{color:CHART_GRID},ticks:{color:CHART_TICK}},y:{stacked:true,grid:{color:CHART_GRID},ticks:{color:CHART_TICK}}}}})}
-
-  // Error patterns
-  const patterns={};errs.forEach(e=>{const k=e.rag_type+'|'+e.error_type;patterns[k]=(patterns[k]||0)+1});
-  const topPatterns=Object.entries(patterns).sort((a,b)=>b[1]-a[1]).slice(0,3);
-  document.getElementById('errorPatterns').innerHTML=topPatterns.map(([k,c])=>{const[pipe,type]=k.split('|');return`<div class="insight-card insight-negative"><h4>${escHtml(type)} in ${escHtml(pipe)} pipeline</h4><p>${c} occurrences. ${type==='EMPTY_RESPONSE'?'Workflow returns empty body — check response builder node.':type==='TIMEOUT'?'Execution exceeds timeout — consider reducing pipeline complexity.':type==='NETWORK'?'Connection failures — check n8n cloud availability.':'Investigate root cause in error logs.'}</p></div>`}).join('')||'<div style="color:var(--tx2);font-size:12px">No error patterns detected.</div>';
-
-  // Error details table
-  renderErrorDetails();
-}
-
-function renderErrorDetails(){
-  const iters=DATA.iterations||[],reg=DATA.question_registry||{};
-  const pf=document.getElementById('errorPipeFilter')?.value||'all';
-  const tf=document.getElementById('errorTypeFilter')?.value||'all';
-  const qErrs={};
-  iters.forEach(it=>(it.questions||[]).forEach(q=>{if(!q.error_type)return;if(pf!=='all'&&q.rag_type!==pf)return;if(tf!=='all'&&q.error_type!==tf)return;
-    if(!qErrs[q.id])qErrs[q.id]={id:q.id,pipe:q.rag_type,type:q.error_type,count:0,lastErr:'',lastIter:0,question:''};qErrs[q.id].count++;qErrs[q.id].lastErr=q.error||'';qErrs[q.id].lastIter=it.number;qErrs[q.id].question=reg[q.id]?.question||''}));
-  const sorted=Object.values(qErrs).sort((a,b)=>b.count-a.count);
-  document.getElementById('errorDetailsBody').innerHTML=sorted.map(e=>`<tr><td class="mono" style="font-size:11px">${escHtml(e.id)}</td><td><span class="pipe-${e.pipe}" style="font-weight:600">${escHtml(e.pipe)}</span></td><td><span class="tag tag-error">${escHtml(e.type)}</span></td><td class="mono">${e.count}</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml((e.question||'').slice(0,80))}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--rd)">${escHtml(String(e.lastErr).slice(0,100))}</td><td class="mono">${e.lastIter}</td></tr>`).join('');
-}
-document.getElementById('errorPipeFilter')?.addEventListener('change',renderErrorDetails);
-document.getElementById('errorTypeFilter')?.addEventListener('change',renderErrorDetails);
-
-// === PHASE TRACKER ===
-function renderPhaseTracker(){
-  const iters=DATA.iterations||[],pipes=DATA.pipelines||{};
-  const latest=iters[iters.length-1];
-  // Roadmap bar
-  const phases=[{n:1,l:'Baseline',active:true},{n:2,l:'Expand'},{n:3,l:'Scale'},{n:4,l:'Full HF'},{n:5,l:'Million+'}];
-  document.getElementById('phaseRoadmapBar').innerHTML=phases.map((p,i)=>`<div style="flex:1;text-align:center;padding:8px;border-radius:6px;font-size:11px;font-weight:600;${p.active?'background:var(--ac);color:#fff':'background:var(--s3);color:var(--tx3)'}">${p.n}. ${p.l}</div>${i<4?'<div style="width:20px;height:2px;background:var(--bd)"></div>':''}`).join('');
-
-  // Phase 1 card with exit criteria
-  const getAcc=p=>latest?.results_summary?.[p]?.accuracy_pct||0;
-  const overallAcc=latest?.overall_accuracy_pct||0;
-  const orchP95=latest?.results_summary?.orchestrator?.p95_latency_ms||0;
-  const totalErrs=(latest?.questions||[]).filter(q=>q.error_type).length;
-  const totalTested=latest?.total_tested||1;
-  const errRate=(totalErrs/totalTested*100);
-  const stableIters=iters.length>=3?iters.slice(-3).every((it,i,arr)=>{if(i===0)return true;return it.overall_accuracy_pct>=arr[i-1].overall_accuracy_pct-2}):false;
-
-  const criteria=[
-    {l:`Standard >= 85%`,v:getAcc('standard').toFixed(1)+'%',pass:getAcc('standard')>=85},
-    {l:`Graph >= 70%`,v:getAcc('graph').toFixed(1)+'%',pass:getAcc('graph')>=70},
-    {l:`Quantitative >= 85%`,v:getAcc('quantitative').toFixed(1)+'%',pass:getAcc('quantitative')>=85},
-    {l:`Orchestrator >= 70%`,v:getAcc('orchestrator').toFixed(1)+'%',pass:getAcc('orchestrator')>=70},
-    {l:`Overall >= 75%`,v:overallAcc.toFixed(1)+'%',pass:overallAcc>=75},
-    {l:`Orchestrator P95 < 15s`,v:(orchP95/1000).toFixed(1)+'s',pass:orchP95<15000&&orchP95>0},
-    {l:`Error rate < 5%`,v:errRate.toFixed(1)+'%',pass:errRate<5},
-    {l:`3 consecutive stable iterations`,v:stableIters?'Yes':'No',pass:stableIters}
+// ============================================================
+// TAB 2: FOCUS
+// ============================================================
+function renderFocus(){
+  // Incremental steps
+  const steps=[
+    {level:'Endpoints',q:'health check',status:'done'},
+    {level:'5q',q:'5 per pipeline',status:'done'},
+    {level:'10q',q:'fast-iter',status:'done'},
+    {level:'50q',q:'subset eval',status:'done'},
+    {level:'200q',q:'full Phase 1',status:'current'},
+    {level:'1000q',q:'Phase 2 HF',status:'ready'},
   ];
-  const passCount=criteria.filter(c=>c.pass).length;
+  document.getElementById('focus-steps').innerHTML=`<div style="display:flex;gap:6px">`+steps.map(s=>{
+    const cls=s.status==='done'?'done':s.status==='current'?'current':'locked';
+    return `<div class="phase-dot ${cls}" style="font-size:10px">${s.level}<br><span style="font-weight:400;opacity:.7">${s.q}</span></div>`;
+  }).join('')+'</div>';
 
-  let h=`<div class="phase-card phase-active" style="margin-bottom:16px"><div class="phase-number">Phase 1 — Current</div><h4>Baseline (200q)</h4><div class="phase-desc">Benchmark all 4 pipelines with 200 curated questions. Exit when all accuracy targets met.</div>`;
-  h+=`<div style="margin-bottom:12px;font-size:12px;color:var(--tx2)">Exit criteria: <strong style="color:${passCount===criteria.length?'var(--gn)':'var(--yl)'}">${passCount}/${criteria.length} passed</strong></div>`;
-  h+=`<ul class="criteria-list">`;
-  criteria.forEach(c=>{h+=`<li class="criteria-item"><span class="${c.pass?'criteria-check pass':'criteria-miss'}"></span><span>${escHtml(c.l)}</span><span class="mono" style="margin-left:auto;font-size:11px;color:${c.pass?'var(--gn)':'var(--rd)'}">${c.v}</span></li>`});
-  h+=`</ul>`;
-  // Pipeline progress bars
-  h+=`<div style="margin-top:16px">`;
-  PIPES.forEach(p=>{const acc=getAcc(p);const tgt=PTARGET[p];const pct=Math.min(acc/tgt*100,100);const col=acc>=tgt?'var(--gn)':acc>=tgt-10?'var(--yl)':'var(--rd)';
-    h+=`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span class="pipe-${p}" style="font-weight:600">${p}</span><span class="mono">${acc.toFixed(1)}% / ${tgt}%</span></div><div class="acc-bar"><div class="fill" style="width:${pct}%;background:${col}"></div><div class="target" style="left:100%"></div></div></div>`});
-  h+=`</div></div>`;
-
-  // Future phases
-  const futurePhases=[
-    {n:2,t:'Expand (1,000q)',d:'Scale to 1,000 questions from HuggingFace datasets. Requires Phase 1 gates passed + DB ingestion.'},
-    {n:3,t:'Scale (~10Kq)',d:'Full dataset ingestion and evaluation at scale. Targets: Standard >=75%, Graph >=55%.'},
-    {n:4,t:'Full HF (~100Kq)',d:'Complete HuggingFace evaluation corpus. No regression from Phase 3.'},
-    {n:5,t:'Million+ (1M+q)',d:'Production-grade infrastructure. Sustained accuracy + throughput >100q/hour.'}
+  // Phase 1 gates
+  const pipeTrends=DATA.pipelines||{};
+  const gates=[
+    {name:'Standard >= 85%',check:()=>{const t=pipeTrends.standard?.trend||[];return t.length?(t[t.length-1].accuracy_pct>=85):false;}},
+    {name:'Graph >= 70%',check:()=>{const t=pipeTrends.graph?.trend||[];return t.length?(t[t.length-1].accuracy_pct>=70):false;}},
+    {name:'Quantitative >= 85%',check:()=>{const t=pipeTrends.quantitative?.trend||[];return t.length?(t[t.length-1].accuracy_pct>=85):false;}},
+    {name:'Orchestrator >= 70%',check:()=>{const t=pipeTrends.orchestrator?.trend||[];return t.length?(t[t.length-1].accuracy_pct>=70):false;}},
+    {name:'Overall >= 75%',check:()=>{const iters=DATA.iterations||[];const last=iters[iters.length-1];return last?(last.overall_accuracy_pct>=75):false;}},
+    {name:'Error rate < 5%',check:()=>false},
+    {name:'3 consecutive stable iterations',check:()=>false},
   ];
-  futurePhases.forEach(p=>{h+=`<div class="phase-card phase-locked" style="margin-bottom:12px"><div class="phase-number">Phase ${p.n}</div><h4>${escHtml(p.t)}</h4><div class="phase-desc">${escHtml(p.d)}</div></div>`});
-  document.getElementById('phaseCards').innerHTML=h;
+  document.getElementById('focus-gates').innerHTML=gates.map(g=>{
+    const met=g.check();
+    return `<div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:${met?'var(--gn)':'var(--rd)'};font-size:14px">${met?'&#10003;':'&#10007;'}</span><span style="font-size:12px">${esc(g.name)}</span></div>`;
+  }).join('');
+
+  // Phase 2 readiness
+  document.getElementById('focus-p2').innerHTML=`
+    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--gn);font-size:14px">&#10003;</span><span>Dataset: 1,000 questions (500 graph + 500 quant)</span></div>
+    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--gn);font-size:14px">&#10003;</span><span>Supabase: 450 Phase 2 rows populated</span></div>
+    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--gn);font-size:14px">&#10003;</span><span>Neo4j: 4,884 entities + 21,625 relationships</span></div>
+    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--gn);font-size:14px">&#10003;</span><span>Pinecone: no changes needed (10,411 vectors)</span></div>
+    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--rd);font-size:14px">&#10007;</span><span>Phase 1 gates NOT met (prerequisite)</span></div>
+    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--yl);font-size:14px">&#9888;</span><span>OpenRouter API key expired</span></div>`;
+
+  // Per-pipeline cards
+  const iters=DATA.iterations||[];
+  const last=iters[iters.length-1];
+  document.getElementById('focus-pipes').innerHTML=PIPES.map(p=>{
+    const rs=last?.results_summary?.[p]||{};
+    const acc=rs.accuracy_pct||0;
+    const target=PTARGET[p];
+    const col=acc>=target?'var(--gn)':acc>=target-10?'var(--yl)':'var(--rd)';
+    return `<div class="card"><h3 style="color:${PCOL[p]}">${p}</h3>
+      <div style="font-size:24px;font-weight:800;color:${col};font-family:'JetBrains Mono'">${acc}%</div>
+      <div style="font-size:11px;color:var(--tx3)">Target: ${target}% | Gap: ${(target-acc).toFixed(1)}pp</div>
+      <div class="pbar" style="margin-top:8px"><div class="fill" style="width:${acc}%;background:${col}"></div><div class="marker" style="left:${target}%"></div></div>
+      <div style="margin-top:8px;font-size:11px;color:var(--tx2)">Tested: ${rs.tested||0} | Errors: ${rs.errors||0} | Avg latency: ${rs.avg_latency_ms||0}ms</div>
+    </div>`;
+  }).join('');
+
+  // What's working / not
+  const reg=DATA.question_registry||{};
+  const passing=[],failing=[];
+  Object.values(reg).forEach(q=>{
+    if(q.current_status==='pass'&&q.total_runs>=2) passing.push(q);
+    else if(q.current_status==='fail'||q.current_status==='error') failing.push(q);
+  });
+  passing.sort((a,b)=>b.best_f1-a.best_f1);
+  failing.sort((a,b)=>a.pass_rate-b.pass_rate);
+
+  document.getElementById('focus-pass').innerHTML=passing.slice(0,8).map(q=>
+    `<div style="padding:4px 0;font-size:12px"><span class="tag t-pass">PASS</span> <span class="mono">${esc(q.id)}</span> — F1: ${q.best_f1.toFixed(3)} (${q.pass_count}/${q.total_runs} runs)</div>`
+  ).join('')||'<p style="color:var(--tx3)">No consistent passes yet</p>';
+
+  document.getElementById('focus-fail').innerHTML=failing.slice(0,8).map(q=>{
+    const runs=q.runs||[];
+    const lastErr=runs.filter(r=>r.error).pop();
+    return `<div style="padding:4px 0;font-size:12px"><span class="tag t-fail">${q.current_status?.toUpperCase()}</span> <span class="mono">${esc(q.id)}</span> — ${lastErr?esc(lastErr.error_type||'UNKNOWN'):'low F1'} (${q.pass_count}/${q.total_runs})</div>`;
+  }).join('')||'<p style="color:var(--tx3)">No failures recorded</p>';
 }
 
-// === QUESTIONS ===
+// ============================================================
+// TAB 3: QUESTIONS
+// ============================================================
 function renderQuestions(){
   const reg=DATA.question_registry||{};
-  const st=document.getElementById('qSearch')?.value?.toLowerCase()||'';
-  const pf=document.getElementById('qPipeFilter')?.value||'all';
-  const sf=document.getElementById('qStatusFilter')?.value||'all';
-  const sorted=Object.values(reg).sort((a,b)=>{if(a.rag_type!==b.rag_type)return a.rag_type.localeCompare(b.rag_type);return(a.id||'').localeCompare(b.id||'')});
-  let h='';sorted.forEach(q=>{
-    if(pf!=='all'&&q.rag_type!==pf)return;
-    if(sf==='pass'&&q.current_status!=='pass')return;
-    if(sf==='fail'&&q.current_status!=='fail'&&q.current_status!=='error')return;
-    if(sf==='error'&&!(q.runs||[]).some(r=>r.error))return;
-    if(sf==='improving'&&q.trend!=='improving')return;
-    if(sf==='regressing'&&q.trend!=='regressing')return;
-    if(st&&!(q.id||'').toLowerCase().includes(st)&&!(q.question||'').toLowerCase().includes(st)&&!(q.expected||'').toLowerCase().includes(st))return;
-    const stag=q.current_status==='pass'?'<span class="tag tag-pass">PASS</span>':q.current_status==='error'?'<span class="tag tag-error">ERR</span>':'<span class="tag tag-fail">FAIL</span>';
-    const ttag=q.trend==='improving'?'<span class="tag tag-improving">UP</span>':q.trend==='regressing'?'<span class="tag tag-regressing">DOWN</span>':'<span class="tag tag-stable">--</span>';
-    h+=`<tr data-showq="${escHtml(q.id)}" style="cursor:pointer"><td class="mono" style="font-size:11px">${escHtml(q.id)}</td><td style="max-width:350px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escHtml(q.question)}">${escHtml((q.question||'').slice(0,90))}</td><td><span class="pipe-${q.rag_type}" style="font-size:11px;font-weight:600">${escHtml((q.rag_type||'').slice(0,5))}</span></td><td class="mono">${q.total_runs||0}</td><td class="mono">${((q.pass_rate||0)*100).toFixed(0)}%</td><td class="mono">${(q.best_f1||0).toFixed(3)}</td><td>${stag}</td><td>${ttag}</td></tr>`});
-  document.getElementById('questionsBody').innerHTML=h;
-}
-function showQDetail(qid){
-  const q=(DATA.question_registry||{})[qid];if(!q)return;
-  let h=`<h3 style="font-size:14px;font-weight:600;margin-bottom:10px">${escHtml(qid)}: ${escHtml(q.question)}</h3>`;
-  h+=`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:12px;color:var(--tx2)"><span>Pipeline: <strong class="pipe-${q.rag_type}">${escHtml(q.rag_type)}</strong></span><span>Pass rate: <strong>${((q.pass_rate||0)*100).toFixed(0)}%</strong></span><span>Best F1: <strong>${(q.best_f1||0).toFixed(3)}</strong></span></div>`;
-  h+=`<div class="answer-block expected">${escHtml(q.expected)}</div>`;
-  h+=`<table style="margin-top:10px"><thead><tr><th>Iter</th><th>Result</th><th>F1</th><th>Latency</th><th>Answer/Error</th></tr></thead><tbody>`;
-  (q.runs||[]).forEach(r=>{const tag=r.error?'<span class="tag tag-error">ERR</span>':r.correct?'<span class="tag tag-pass">PASS</span>':'<span class="tag tag-fail">FAIL</span>';const c=r.error?`<span style="color:var(--rd)">${escHtml(String(r.error).slice(0,200))}</span>`:escHtml((r.answer||'').slice(0,200));h+=`<tr><td class="mono">${r.iteration_number||'?'}</td><td>${tag}</td><td class="mono">${(r.f1||0).toFixed(3)}</td><td class="mono">${r.latency_ms||0}ms</td><td style="max-width:500px;white-space:pre-wrap;word-break:break-word;font-size:12px">${c}</td></tr>`});
-  h+=`</tbody></table>`;const p=document.getElementById('qDetailPanel');p.innerHTML=h;p.style.display='block';p.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-['qSearch'].forEach(id=>document.getElementById(id)?.addEventListener('input',renderQuestions));
-['qPipeFilter','qStatusFilter'].forEach(id=>document.getElementById(id)?.addEventListener('change',renderQuestions));
+  const entries=Object.values(reg);
+  const tbody=document.getElementById('q-tbody');
 
-// === SMOKE TESTS ===
-function renderSmokeTests(){
-  const tests=DATA.quick_tests||[];
-  let ch='';PIPES.forEach(pipe=>{
-    const pt=tests.filter(t=>t.pipeline===pipe);const lat=pt[pt.length-1];
-    const recent=[];for(let i=pt.length-1;i>=0;i--){if(!recent.length)recent.push(pt[i]);else{const d=new Date(recent[recent.length-1].timestamp).getTime()-new Date(pt[i].timestamp).getTime();if(d<120000)recent.push(pt[i]);else break}}
-    const pc=recent.filter(t=>t.status==='pass').length;const tc=recent.length;const allPass=tc>0&&pc===tc;
-    const avgLat=tc>0?Math.round(recent.reduce((s,t)=>s+(t.latency_ms||0),0)/tc):0;
-    const sc=allPass?'var(--gn)':tc===0?'var(--tx3)':'var(--rd)';const st=tc===0?'NO DATA':allPass?'HEALTHY':`${tc-pc} FAILING`;
-    ch+=`<div class="card"><h3 style="color:${PCOL[pipe]}">${pipe.toUpperCase()}</h3><div class="stat" style="margin-bottom:8px"><div class="value" style="color:${sc};font-size:22px">${st}</div><div class="label">${pc}/${tc} smoke tests passing</div></div><div style="font-size:11px;color:var(--tx2);display:flex;justify-content:space-between"><span>Avg: ${avgLat}ms</span><span>${lat?.trigger||'-'}</span><span class="mono">${lat?lat.timestamp.slice(0,16).replace('T',' '):'-'}</span></div></div>`});
-  document.getElementById('smokeStatusCards').innerHTML=ch;
-  let h='';tests.slice().reverse().forEach(t=>{
-    const stag=t.status==='pass'?'<span class="tag tag-pass">PASS</span>':t.status==='error'?'<span class="tag tag-error">ERR</span>':'<span class="tag tag-fail">FAIL</span>';
-    const c=t.error?`<span style="color:var(--rd)">${escHtml(t.error)}</span>`:escHtml((t.response_preview||'').slice(0,120));
-    h+=`<tr><td class="mono" style="font-size:11px">${(t.timestamp||'').replace('T',' ').slice(0,19)}</td><td><span class="pipe-${t.pipeline}" style="font-weight:600">${escHtml((t.pipeline||'').slice(0,5))}</span></td><td>${stag}</td><td><span class="tag" style="background:rgba(79,142,250,.12);color:var(--ac)">${escHtml(t.trigger||'manual')}</span></td><td class="mono">${t.latency_ms||0}ms</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(t.query)}</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c}</td></tr>`});
-  document.getElementById('smokeTestsBody').innerHTML=h;
+  // Populate dataset filter
+  const datasets=new Set();
+  entries.forEach(q=>{if(q.category)datasets.add(q.category);});
+
+  // Filter
+  const fPhase=document.getElementById('q-phase').value;
+  const fPipe=document.getElementById('q-pipe').value;
+  const fStatus=document.getElementById('q-status').value;
+  const fSearch=(document.getElementById('q-search').value||'').toLowerCase();
+
+  let filtered=entries.filter(q=>{
+    if(fPipe&&q.rag_type!==fPipe)return false;
+    if(fStatus){
+      if(fStatus==='pass'&&q.current_status!=='pass')return false;
+      if(fStatus==='fail'&&q.current_status!=='fail')return false;
+      if(fStatus==='error'&&!(q.runs||[]).some(r=>r.error))return false;
+    }
+    if(fPhase){
+      const phase=q.id?.startsWith('graph-musique')||q.id?.startsWith('graph-2wiki')||q.id?.startsWith('quantitative-finqa')||q.id?.startsWith('quantitative-tatqa')||q.id?.startsWith('quantitative-convfinqa')?'2':'1';
+      if(phase!==fPhase)return false;
+    }
+    if(fSearch){
+      const hay=(q.id+' '+q.question+' '+q.expected+' '+(q.category||'')).toLowerCase();
+      if(!hay.includes(fSearch))return false;
+    }
+    return true;
+  });
+
+  filtered.sort((a,b)=>(a.id||'').localeCompare(b.id||''));
+
+  tbody.innerHTML=filtered.slice(0,200).map(q=>{
+    const phase=q.id?.startsWith('graph-musique')||q.id?.startsWith('graph-2wiki')||q.id?.startsWith('quantitative-finqa')||q.id?.startsWith('quantitative-tatqa')||q.id?.startsWith('quantitative-convfinqa')?2:1;
+    const statusCls=q.current_status==='pass'?'t-pass':q.current_status==='error'?'t-err':'t-fail';
+    const trendIcon=q.trend==='improving'?'&#9650;':q.trend==='regressing'?'&#9660;':'&#8212;';
+    const trendCls=q.trend==='improving'?'d-up':q.trend==='regressing'?'d-dn':'d-fl';
+    return `<tr class="expandable" data-qid="${esc(q.id)}">
+      <td class="mono" style="font-size:11px;white-space:nowrap">${esc(q.id)}</td>
+      <td><span style="color:${PCOL[q.rag_type]||'#fff'}">${esc(q.rag_type)}</span></td>
+      <td><span class="tag ${phase===1?'t-p1':'t-p2'}">P${phase}</span></td>
+      <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(q.question)}</td>
+      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" class="mono">${esc(q.expected)}</td>
+      <td>${q.total_runs||0}</td>
+      <td>${(q.pass_rate*100).toFixed(0)}%</td>
+      <td class="mono">${(q.best_f1||0).toFixed(3)}</td>
+      <td><span class="tag ${statusCls}">${(q.current_status||'?').toUpperCase()}</span></td>
+      <td class="${trendCls}">${trendIcon}</td>
+    </tr>`;
+  }).join('');
+
+  // Click to expand
+  tbody.querySelectorAll('tr.expandable').forEach(tr=>{
+    tr.onclick=()=>{
+      const qid=tr.dataset.qid;
+      const q=reg[qid];
+      if(!q)return;
+      const detail=document.getElementById('q-detail');
+      const runs=(q.runs||[]).reverse();
+      detail.innerHTML=`<div class="card card-accent"><h3>${esc(qid)} — ${esc(q.rag_type)}</h3>
+        <p style="margin-bottom:8px"><strong>Question:</strong> ${esc(q.question)}</p>
+        <p style="margin-bottom:8px"><strong>Expected:</strong> <code>${esc(q.expected)}</code></p>
+        <p style="margin-bottom:12px"><strong>Category:</strong> ${esc(q.category)} | <strong>Best F1:</strong> ${(q.best_f1||0).toFixed(3)} | <strong>Pass rate:</strong> ${(q.pass_rate*100).toFixed(0)}%</p>
+        <table><thead><tr><th>Iter</th><th>Result</th><th>F1</th><th>Latency</th><th>Method</th><th>Answer</th><th>Error</th></tr></thead><tbody>
+        ${runs.map(r=>`<tr>
+          <td>${r.iteration_number||'?'}</td>
+          <td><span class="tag ${r.correct?'t-pass':'t-fail'}">${r.correct?'PASS':'FAIL'}</span></td>
+          <td class="mono">${(r.f1||0).toFixed(3)}</td>
+          <td class="mono">${r.latency_ms||0}ms</td>
+          <td>${esc(r.match_type||'')}</td>
+          <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.answer||'')}</td>
+          <td style="color:var(--rd)">${esc(r.error||'')}</td>
+        </tr>`).join('')}
+        </tbody></table></div>`;
+      detail.scrollIntoView({behavior:'smooth'});
+    };
+  });
 }
 
-// === WORKFLOWS (merged with changes) ===
+// ============================================================
+// TAB 4: WORKFLOWS
+// ============================================================
 function renderWorkflows(){
-  const versions=DATA.workflow_versions||{},history=DATA.workflow_history||[],changes=DATA.workflow_changes||[],snapshots=DATA.db_snapshots||[];
-  let ch='';['standard','graph','quantitative','orchestrator'].forEach(pipe=>{
-    const v=versions[pipe]||{};const models=(v.models_used||[]).join(', ')||'N/A';
-    ch+=`<div class="card"><h3 style="color:${PCOL[pipe]}">${pipe.toUpperCase()}</h3><div class="stat" style="margin-bottom:8px"><div class="value" style="font-size:20px;color:var(--tx)">v${v.version||'?'}</div><div class="label">${escHtml(v.name||pipe)}</div></div><div style="font-size:11px;color:var(--tx2);line-height:1.8"><div>Nodes: <strong>${v.total_nodes||'?'}</strong></div><div>Hash: <code>${escHtml((v.hash||'').slice(0,12))}</code></div><div>Models: <code style="font-size:10px">${escHtml(models)}</code></div><div>Last sync: <span class="mono">${v.timestamp?v.timestamp.slice(0,16).replace('T',' '):'-'}</span></div></div></div>`});
-  document.getElementById('wfVersionCards').innerHTML=ch;
-  let hh='';history.slice().reverse().forEach(h=>{hh+=`<tr data-wfdiff="1" data-wfpipe="${escHtml(h.pipeline)}" data-wfsnap="${escHtml(h.snapshot_file||'')}" style="cursor:pointer"><td class="mono" style="font-size:11px">${(h.timestamp||'').replace('T',' ').slice(0,19)}</td><td><span class="pipe-${h.pipeline}" style="font-weight:600">${escHtml(h.pipeline)}</span></td><td class="mono">v${h.version}</td><td class="mono" style="font-size:11px">${escHtml((h.hash||'').slice(0,12))}</td><td>${escHtml(h.diff_summary||'initial')}</td><td class="mono" style="font-size:10px">${escHtml(h.snapshot_file||'-')}</td></tr>`});
-  document.getElementById('wfHistoryBody').innerHTML=hh;
-  let cc='';changes.slice().reverse().forEach(c=>{cc+=`<tr><td class="mono" style="font-size:11px">${(c.timestamp||'').replace('T',' ').slice(0,19)}</td><td><span class="tag" style="background:rgba(79,142,250,.12);color:var(--ac)">${escHtml(c.change_type||'mod')}</span></td><td>${escHtml(c.description)}</td><td>${(c.affected_pipelines||[]).map(p=>`<span class="pipe-${p}" style="font-size:11px;font-weight:600">${escHtml(p.slice(0,4))}</span>`).join(' ')}</td><td>${c.after_metrics?formatDelta(c.before_metrics,c.after_metrics):'-'}</td></tr>`});
-  document.getElementById('changesBody').innerHTML=cc;
-  let ss='';snapshots.slice().reverse().forEach(s=>{ss+=`<tr><td class="mono" style="font-size:11px">${(s.timestamp||'').replace('T',' ').slice(0,19)}</td><td><span class="tag" style="background:rgba(79,142,250,.12);color:var(--ac)">${escHtml(s.trigger)}</span></td><td class="mono">${(s.pinecone_vectors||0).toLocaleString()}</td><td class="mono">${(s.neo4j_nodes||0).toLocaleString()}</td><td class="mono">${(s.neo4j_relationships||0).toLocaleString()}</td><td class="mono">${(s.supabase_rows||0).toLocaleString()}</td></tr>`});
-  document.getElementById('dbSnapshotsBody').innerHTML=ss;
+  const wfv=DATA.workflow_versions||{};
+  const n8nUrl=N8N_HOST;
+
+  // Workflow cards
+  document.getElementById('wf-cards').innerHTML=PIPES.map(p=>{
+    const w=wfv[p]||{};
+    return `<div class="card"><h3 style="color:${PCOL[p]}">${p}</h3>
+      <div style="font-size:20px;font-weight:700">v${w.version||'?'}</div>
+      <div style="font-size:11px;color:var(--tx2);margin:4px 0">${esc(w.name||'')}</div>
+      <div style="font-size:11px"><span class="mono">${(w.hash||'').slice(0,12)}</span></div>
+      <div style="margin-top:8px;font-size:11px">
+        <div>Nodes: <strong>${w.total_nodes||'?'}</strong></div>
+        <div>Models: <strong>${(w.models_used||[]).join(', ')||'see registry'}</strong></div>
+      </div>
+      <div style="margin-top:8px"><a href="${n8nUrl}/workflow/${WF_IDS[p]}" target="_blank" style="font-size:11px">Open in n8n &rarr;</a></div>
+    </div>`;
+  }).join('');
+
+  // Node breakdown (from model registry as proxy — in production would parse workflow JSON)
+  const nodesByWf={};
+  MODEL_REGISTRY.forEach(m=>{
+    const key=m.wf.toLowerCase();
+    if(!nodesByWf[key])nodesByWf[key]=[];
+    nodesByWf[key].push(m);
+  });
+  document.getElementById('wf-nodes').innerHTML=PIPES.map(p=>{
+    const nodes=nodesByWf[p]||[];
+    const w=wfv[p]||{};
+    const nodeTypes={trigger:1,code:0,http:0,db:0,ai:0,merge:0,if_:0};
+    // Estimate node types from total count
+    const total=w.total_nodes||0;
+    return `<details><summary style="color:${PCOL[p]}">${p.toUpperCase()} — ${total} nodes</summary>
+    <div class="detail-content">
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
+        <span class="node node-trigger">Webhook (trigger)</span>
+        ${nodes.map(n=>{
+          const cls=n.role.includes('SQL')?'node-db':n.role.includes('embed')?'node-http':'node-ai';
+          return `<span class="node ${cls}">${esc(n.node)}</span>`;
+        }).join('')}
+        <span class="node node-code">OTEL Init</span>
+        <span class="node node-merge">Response Formatter</span>
+      </div>
+      <table style="font-size:11px"><thead><tr><th>Node</th><th>Model</th><th>Role</th><th>Avg Tokens</th></tr></thead>
+      <tbody>${nodes.map(n=>`<tr><td>${esc(n.node)}</td><td class="mono">${esc(n.model)}</td><td>${esc(n.role)}</td><td>${n.avg_tokens}</td></tr>`).join('')}</tbody></table>
+    </div></details>`;
+  }).join('');
+
+  // Modification history
+  const changes=DATA.workflow_changes||[];
+  document.getElementById('wf-history').innerHTML=changes.slice().reverse().map(c=>{
+    const typeCls=c.change_type==='bugfix'?'t-fail':c.change_type==='improvement'?'t-pass':c.change_type==='deploy'?'t-p1':'t-skip';
+    const impact=c.after_metrics?PIPES.filter(p=>c.after_metrics[p]?.accuracy!==null&&c.after_metrics[p]?.accuracy!==undefined).map(p=>{
+      const before=c.before_metrics?.[p]?.accuracy;
+      const after=c.after_metrics?.[p]?.accuracy;
+      if(before!=null&&after!=null){const d=after-before;return `${p}: ${d>0?'+':''}${d.toFixed(1)}pp`;}
+      return `${p}: ${after}%`;
+    }).join(', '):'—';
+    return `<tr><td class="mono" style="font-size:11px;white-space:nowrap">${c.timestamp?.slice(0,16)||'?'}</td>
+      <td><span class="tag ${typeCls}">${esc(c.change_type||'')}</span></td>
+      <td>${esc(c.description||'')}</td>
+      <td>${(c.affected_pipelines||[]).map(p=>`<span style="color:${PCOL[p]}">${p}</span>`).join(', ')}</td>
+      <td style="font-size:11px">${impact}</td></tr>`;
+  }).join('');
+
+  // DB state chart
+  renderDbChart();
 }
 
-function showWfDiff(pipeline){
-  const v=(DATA.workflow_versions||{})[pipeline];if(!v)return;const diff=v.diff_from_previous;
-  let h=`<h3 style="font-size:14px;font-weight:600;margin-bottom:10px">${escHtml(pipeline.toUpperCase())} — v${v.version} diff</h3>`;
-  if(!diff||!diff.has_changes){h+=`<div style="color:var(--tx2)">No changes from previous version.</div>`}
-  else{h+=`<div style="font-size:12px;color:var(--tx2);margin-bottom:10px">${escHtml(diff.summary)}</div>`;
-    if(diff.added_nodes?.length)h+=`<div style="margin-bottom:8px"><strong style="color:var(--gn)">Added (${diff.added_nodes.length}):</strong></div><div class="answer-block" style="border-left:3px solid var(--gn)">${diff.added_nodes.map(n=>'+ '+escHtml(n)).join('\n')}</div>`;
-    if(diff.removed_nodes?.length)h+=`<div style="margin-top:8px"><strong style="color:var(--rd)">Removed (${diff.removed_nodes.length}):</strong></div><div class="answer-block" style="border-left:3px solid var(--rd)">${diff.removed_nodes.map(n=>'- '+escHtml(n)).join('\n')}</div>`;
-    if(diff.modified_nodes?.length){h+=`<div style="margin-top:8px"><strong style="color:var(--yl)">Modified (${diff.modified_nodes.length}):</strong></div>`;diff.modified_nodes.forEach(mod=>{h+=`<div style="margin-top:6px"><code style="color:var(--yl)">${escHtml(mod.node)}</code></div><table style="margin-bottom:8px"><thead><tr><th>Param</th><th>Old</th><th>New</th></tr></thead><tbody>`;(mod.changes||[]).forEach(c=>{h+=`<tr><td class="mono" style="font-size:11px">${escHtml(c.param)}</td><td style="color:var(--rd)">${escHtml((c.old||'').slice(0,100))}</td><td style="color:var(--gn)">${escHtml((c.new||'').slice(0,100))}</td></tr>`});h+=`</tbody></table>`})}}
-  h+=`<div style="margin-top:10px;font-size:11px;color:var(--tx3)">Hash: <code>${escHtml(v.hash)}</code> | Nodes: ${v.total_nodes}</div>`;
-  const p=document.getElementById('wfDiffPanel');p.innerHTML=h;p.style.display='block';p.scrollIntoView({behavior:'smooth',block:'nearest'});
+function renderDbChart(){
+  destroyChart('wfDb');
+  const ctx=getCtx('ch-wf-db');if(!ctx)return;
+  const snaps=DATA.db_snapshots||[];
+  if(!snaps.length)return;
+  const labels=snaps.map(s=>s.timestamp?.slice(5,16)||'?');
+  charts.wfDb=new Chart(ctx,{type:'line',data:{labels,datasets:[
+    {label:'Pinecone Vectors',data:snaps.map(s=>s.pinecone_vectors),borderColor:'#4f8efa',tension:.3,pointRadius:2},
+    {label:'Neo4j Nodes',data:snaps.map(s=>s.neo4j_nodes),borderColor:'#2dd47a',tension:.3,pointRadius:2},
+    {label:'Supabase Rows',data:snaps.map(s=>s.supabase_rows),borderColor:'#e8b820',tension:.3,pointRadius:2},
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#8896a8',font:{size:11}}}},scales:{y:{ticks:{color:'#556070'},grid:{color:'#1c2330'}},x:{ticks:{color:'#556070',maxRotation:45},grid:{color:'#1c2330'}}}}});
 }
 
-function formatDelta(before,after){if(!before||!after)return'-';let parts=[];for(const[pipe,m]of Object.entries(after)){const b=before[pipe];if(b&&m.accuracy!=null&&b.accuracy!=null){const d=m.accuracy-b.accuracy;parts.push(`<span class="${d>=0?'delta-up':'delta-down'}">${escHtml(pipe.slice(0,4))}: ${d>=0?'+':''}${d.toFixed(1)}%</span>`)}}return parts.join(' ')||'-'}
+// ============================================================
+// TAB 5: DATABASES
+// ============================================================
+function renderDatabases(){
+  const db=DATA.databases||{};
 
-// === AI INSIGHTS ===
-function renderInsights(){
-  const reg=DATA.question_registry||{},iters=DATA.iterations||[],pipes=DATA.pipelines||{};
-  // Live insights
-  let ins='';
-  // Gap analysis
-  let maxGap=0,maxP='';PIPES.forEach(p=>{const t=pipes[p]?.trend||[];const l=t[t.length-1];if(!l)return;const g=PTARGET[p]-(l.accuracy_pct||0);if(g>maxGap){maxGap=g;maxP=p}});
-  if(maxP)ins+=`<div class="insight-card insight-negative"><h4>Biggest Gap: ${escHtml(maxP)}</h4><p>${maxGap.toFixed(1)}pp below target (${PTARGET[maxP]}%). This pipeline needs the most attention.</p></div>`;
-  // Error hotspot
-  const ec={};iters.forEach(it=>(it.questions||[]).forEach(q=>{if(q.error_type)ec[q.error_type]=(ec[q.error_type]||0)+1}));const te=Object.entries(ec).sort((a,b)=>b[1]-a[1])[0];
-  if(te)ins+=`<div class="insight-card insight-warning"><h4>Error Hotspot: ${escHtml(te[0])}</h4><p>${te[1]} total occurrences across all iterations. Fixing this type could improve overall reliability.</p></div>`;
-  // Flaky questions
-  const flaky=Object.values(reg).filter(q=>(q.pass_rate||0)<.5&&(q.total_runs||0)>=2).length;
-  if(flaky>0)ins+=`<div class="insight-card insight-info"><h4>Flaky Questions: ${flaky}</h4><p>Questions with &lt;50% pass rate across 2+ runs. These indicate inconsistent pipeline behavior.</p></div>`;
-  // F1 quality
-  const passing=Object.values(reg).filter(q=>q.current_status==='pass');const avgF1=passing.length>0?(passing.reduce((s,q)=>s+(q.best_f1||0),0)/passing.length):0;
-  ins+=`<div class="insight-card insight-${avgF1>.5?'positive':'warning'}"><h4>Answer Quality: F1 = ${avgF1.toFixed(3)}</h4><p>Average best F1 across passing questions. ${avgF1<.3?'Answers are verbose — consider conciseness tuning.':avgF1<.5?'Room for improvement in answer precision.':'Good answer quality.'}</p></div>`;
-  document.getElementById('liveInsights').innerHTML=ins;
+  // DB cards
+  document.getElementById('db-cards').innerHTML=[
+    {name:'Pinecone',icon:'&#9670;',color:'#4f8efa',metric:fmtN(db.pinecone?.total_vectors||10411),label:'vectors',detail:`${Object.keys(db.pinecone?.namespaces||{}).length} namespaces | text-embedding-3-small (1536d)`},
+    {name:'Neo4j',icon:'&#9679;',color:'#2dd47a',metric:fmtN(db.neo4j?.total_nodes||19788),label:'nodes',detail:`${fmtN(db.neo4j?.total_relationships||21625)} relationships | ${Object.keys(db.neo4j?.labels||{}).length} entity types`},
+    {name:'Supabase',icon:'&#9632;',color:'#e8b820',metric:db.supabase?.total_rows||538,label:'rows',detail:`${Object.keys(db.supabase?.tables||{}).length} tables | 3 companies + Phase 2 HF tables`},
+  ].map(d=>`<div class="card"><h3 style="color:${d.color}"><span style="font-size:16px">${d.icon}</span> ${d.name}</h3>
+    <div style="font-size:28px;font-weight:800;font-family:'JetBrains Mono'">${d.metric}</div>
+    <div style="font-size:11px;color:var(--tx3)">${d.label}</div>
+    <div style="font-size:11px;color:var(--tx2);margin-top:8px">${d.detail}</div>
+  </div>`).join('');
 
-  // Recommendations
-  let rec='';let priority=1;
-  if(maxP)rec+=`<div class="insight-card insight-negative"><h4>#${priority++}: Improve ${escHtml(maxP)} pipeline</h4><p>Gap of ${maxGap.toFixed(1)}pp to target. Focus next iteration on this pipeline.</p></div>`;
-  if(te)rec+=`<div class="insight-card insight-warning"><h4>#${priority++}: Fix ${escHtml(te[0])} errors</h4><p>${te[1]} occurrences. A targeted fix could significantly improve reliability.</p></div>`;
-  const regCount=Object.values(reg).filter(q=>q.trend==='regressing').length;
-  if(regCount)rec+=`<div class="insight-card insight-negative"><h4>#${priority++}: Investigate ${regCount} regressions</h4><p>Questions that were passing now fail. Check for unintended side effects from recent changes.</p></div>`;
-  if(avgF1<.3)rec+=`<div class="insight-card insight-info"><h4>#${priority++}: Improve answer conciseness</h4><p>Mean F1 of ${avgF1.toFixed(3)} suggests verbose answers. Tune prompts for more concise responses.</p></div>`;
-  document.getElementById('recommendations').innerHTML=rec||'<div style="color:var(--tx2);font-size:12px">No recommendations at this time.</div>';
+  // Phase readiness matrix
+  const statusIcon={ready:'<span style="color:var(--gn)">&#10003; Ready</span>',partial:'<span style="color:var(--yl)">&#9888; Partial</span>',required:'<span style="color:var(--rd)">&#10007; Required</span>',upgrade:'<span style="color:var(--pp)">&#8593; Upgrade</span>'};
+  document.getElementById('db-readiness').innerHTML=['pinecone','neo4j','supabase'].map(dbName=>{
+    return `<tr><td style="font-weight:700;text-transform:capitalize">${dbName}</td>
+      ${DB_READINESS[dbName].map(p=>`<td>${statusIcon[p.status]}<br><span style="font-size:10px;color:var(--tx3)">${p.detail}</span></td>`).join('')}
+    </tr>`;
+  }).join('');
+
+  // Growth chart
+  destroyChart('dbGrowth');
+  const ctx=getCtx('ch-db-growth');if(!ctx)return;
+  const projLabels=['Phase 1','Phase 2','Phase 3','Phase 4','Phase 5'];
+  const projData={
+    pinecone:[10411,10411,15000,100000,500000],
+    neo4j:[110,19788,24000,100000,500000],
+    supabase:[88,538,12000,50000,200000]
+  };
+  charts.dbGrowth=new Chart(ctx,{type:'bar',data:{labels:projLabels,datasets:[
+    {label:'Pinecone Vectors',data:projData.pinecone,backgroundColor:'#4f8efa60',borderColor:'#4f8efa',borderWidth:1},
+    {label:'Neo4j Nodes',data:projData.neo4j,backgroundColor:'#2dd47a60',borderColor:'#2dd47a',borderWidth:1},
+    {label:'Supabase Rows',data:projData.supabase,backgroundColor:'#e8b82060',borderColor:'#e8b820',borderWidth:1},
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#8896a8',font:{size:11}}}},scales:{y:{type:'logarithmic',ticks:{color:'#556070'},grid:{color:'#1c2330'}},x:{ticks:{color:'#556070'},grid:{color:'#1c2330'}}}}});
+
+  // Missing data
+  document.getElementById('db-missing').innerHTML=`
+    <div class="card" style="border-left:3px solid var(--yl)">
+      <h3>For Phase 3 (10K questions)</h3>
+      <ul style="padding-left:20px;color:var(--tx2);line-height:1.8;font-size:12px">
+        <li><strong>Pinecone:</strong> ~2,000-5,000 additional vectors for FRAMES dataset gaps</li>
+        <li><strong>Neo4j:</strong> ~1,000 new entities from HotpotQA dataset</li>
+        <li><strong>Supabase:</strong> WikiTableQuestions additional table structures</li>
+        <li><strong>Orchestrator:</strong> ~1,000 mixed-type routing questions</li>
+      </ul>
+    </div>`;
+}
+
+// ============================================================
+// TAB 6: COSTS & MODELS
+// ============================================================
+function renderCosts(){
+  // Model registry table
+  document.getElementById('cost-models').innerHTML=MODEL_REGISTRY.map(m=>
+    `<tr><td style="color:${PCOL[m.wf.toLowerCase()]||'var(--tx)'}">${esc(m.wf)}</td>
+      <td>${esc(m.node)}</td><td class="mono">${esc(m.model)}</td>
+      <td>${esc(m.provider)}</td>
+      <td class="mono">$${m.cost_in}/${m.cost_out?'$'+m.cost_out:'—'}</td>
+      <td style="font-size:11px">${esc(m.role)}</td>
+      <td class="mono">${m.avg_tokens}</td></tr>`
+  ).join('');
+
+  // Cost stats
+  const totalCostP1=PHASE_COSTS[0].total;
+  const totalCostAll=PHASE_COSTS.reduce((a,p)=>a+p.total,0);
+  const avgCostPerQ=totalCostP1/200;
+  document.getElementById('cost-stats').innerHTML=[
+    mkStat('$'+totalCostP1.toFixed(2),'Phase 1 Cost','200 questions'),
+    mkStat('$'+PHASE_COSTS[1].total.toFixed(2),'Phase 2 Projected','1,000 questions'),
+    mkStat('$'+avgCostPerQ.toFixed(4),'Cost per Question','Phase 1 average'),
+    mkStat('$'+totalCostAll.toFixed(0),'Total All Phases','Projected through Phase 5'),
+  ].join('');
+
+  // Phase cost chart
+  destroyChart('costPhase');
+  const ctx1=getCtx('ch-cost-phase');
+  if(ctx1){
+    charts.costPhase=new Chart(ctx1,{type:'bar',data:{
+      labels:PHASE_COSTS.map(p=>p.phase),
+      datasets:[
+        {label:'LLM Calls',data:PHASE_COSTS.map(p=>p.llm),backgroundColor:'#f0555580'},
+        {label:'Embeddings',data:PHASE_COSTS.map(p=>p.embed),backgroundColor:'#4f8efa80'},
+        {label:'Infrastructure',data:PHASE_COSTS.map(p=>p.db),backgroundColor:'#e8b82080'},
+      ]
+    },options:{responsive:true,plugins:{legend:{labels:{color:'#8896a8',font:{size:11}}}},scales:{y:{stacked:true,type:'logarithmic',ticks:{color:'#556070'},grid:{color:'#1c2330'}},x:{stacked:true,ticks:{color:'#556070'},grid:{color:'#1c2330'}}}}});
+  }
+
+  // Per-pipeline cost chart
+  destroyChart('costPipe');
+  const ctx2=getCtx('ch-cost-pipe');
+  if(ctx2){
+    const pipeCosts=PIPES.map(p=>{
+      const nodes=MODEL_REGISTRY.filter(m=>m.wf.toLowerCase()===p);
+      return nodes.reduce((sum,n)=>{
+        const inputCost=n.avg_tokens*n.cost_in/1e6;
+        const outputCost=n.avg_tokens*n.cost_out/1e6;
+        return sum+inputCost+outputCost;
+      },0);
+    });
+    charts.costPipe=new Chart(ctx2,{type:'bar',data:{
+      labels:PIPES.map(p=>p.charAt(0).toUpperCase()+p.slice(1)),
+      datasets:[{label:'Est. Cost per Question ($)',data:pipeCosts,backgroundColor:PIPES.map(p=>PCOL[p]+'80'),borderColor:PIPES.map(p=>PCOL[p]),borderWidth:1}]
+    },options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#556070',callback:v=>'$'+v.toFixed(5)},grid:{color:'#1c2330'}},x:{ticks:{color:'#556070'},grid:{color:'#1c2330'}}}}});
+  }
+}
+
+// ============================================================
+// TAB 7: AI AGENT
+// ============================================================
+function renderAgent(){
+  // Environment variables
+  const envVars=[
+    {key:'SUPABASE_PASSWORD',val:'udVECdcSnkMCAPiY',status:'ok'},
+    {key:'PINECONE_API_KEY',val:'pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY',status:'ok'},
+    {key:'PINECONE_HOST',val:'https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io',status:'ok'},
+    {key:'NEO4J_PASSWORD',val:'jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak',status:'ok'},
+    {key:'OPENROUTER_API_KEY',val:'sk-or-v1-... (EXPIRED)',status:'err'},
+    {key:'N8N_API_KEY',val:'...',status:'warn'},
+    {key:'N8N_HOST',val:'https://amoret.app.n8n.cloud',status:'ok'},
+  ];
+
+  const allEnv=envVars.map(e=>`export ${e.key}="${e.val}"`).join('\n');
+  document.getElementById('agent-env').innerHTML=`
+    <div class="code-block" style="position:relative">${envVars.map(e=>{
+      const col=e.status==='ok'?'var(--gn)':e.status==='err'?'var(--rd)':'var(--yl)';
+      return `<span style="color:${col}">export</span> ${e.key}=<span style="color:var(--ac)">"${esc(e.val)}"</span>`;
+    }).join('\n')}<button class="copy-btn" onclick="copyText(\`${esc(allEnv)}\`,this)">Copy</button></div>`;
+
+  // Iteration Protocol
+  document.getElementById('agent-protocol').innerHTML=`
+    <div style="font-size:12px;color:var(--tx2);line-height:1.8">
+    <p style="font-weight:700;color:var(--tx);margin-bottom:8px">Incremental Testing Principle:</p>
+    <p>Test endpoints &rarr; 5q per workflow (parallel) &rarr; analyze &rarr; fix if needed &rarr; repeat until 5q pass &rarr; scale to 10q &rarr; 50q &rarr; 200q &rarr; 1000q. Never skip levels. ONE change per iteration.</p>
+    <div style="margin-top:12px;padding:12px;background:var(--s3);border-radius:6px">
+      <p style="font-weight:600;color:var(--tx)">Phase A: Fast Iteration (10q/pipeline)</p>
+      <ol style="padding-left:20px;line-height:2">
+        <li><code>cd ~/mon-ipad && git pull origin main</code></li>
+        <li><code>python3 workflows/sync.py</code></li>
+        <li><code>python3 eval/quick-test.py --questions 5</code></li>
+        <li><code>python3 eval/fast-iter.py --label "description"</code></li>
+        <li>Review logs/fast-iter/ and logs/pipeline-results/</li>
+        <li>If bad &rarr; fix in n8n &rarr; repeat. If good &rarr; Phase B</li>
+      </ol>
+    </div>
+    <div style="margin-top:8px;padding:12px;background:var(--s3);border-radius:6px">
+      <p style="font-weight:600;color:var(--tx)">Phase B: Full Evaluation</p>
+      <ol style="padding-left:20px;line-height:2">
+        <li><code>python3 eval/run-eval-parallel.py --reset --label "Iter N"</code></li>
+        <li><code>python3 eval/run-eval-parallel.py --dataset phase-2 --reset --label "Phase 2"</code></li>
+        <li><code>python3 eval/analyzer.py</code></li>
+        <li><code>git add docs/ workflows/ logs/ && git commit && git push origin main</code></li>
+      </ol>
+    </div>
+    </div>`;
+
+  // Command reference
+  const commands=[
+    {cmd:'python3 eval/fast-iter.py',desc:'Fast iteration (10q/pipeline, parallel)',flags:'--questions 5 --pipelines graph --dataset phase-2 --only-failing --label "desc"'},
+    {cmd:'python3 eval/run-eval-parallel.py',desc:'Full parallel eval (all pipelines concurrent)',flags:'--reset --max 20 --types graph,quantitative --dataset phase-2 --push --label "desc"'},
+    {cmd:'python3 eval/run-eval.py',desc:'Sequential eval (legacy/debug)',flags:'--dataset phase-2 --reset --max 10 --types graph'},
+    {cmd:'python3 eval/quick-test.py',desc:'Smoke test (3-5 known-good questions)',flags:'--questions 5'},
+    {cmd:'python3 eval/analyzer.py',desc:'Post-eval analysis + recommendations',flags:''},
+    {cmd:'python3 workflows/sync.py',desc:'Pull workflow JSON from n8n cloud',flags:''},
+    {cmd:'python3 workflows/improved/apply.py',desc:'Apply + deploy workflow patches',flags:'--local --deploy'},
+    {cmd:'python3 db/populate/phase2_supabase.py',desc:'Populate Phase 2 Supabase tables',flags:'--reset --dry-run --dataset finqa'},
+    {cmd:'python3 db/populate/phase2_neo4j.py',desc:'Extract Phase 2 Neo4j entities',flags:'--reset --llm --limit 50'},
+  ];
+  document.getElementById('agent-commands').innerHTML=`<table><thead><tr><th>Command</th><th>Description</th><th>Flags</th></tr></thead><tbody>
+    ${commands.map(c=>`<tr><td class="mono" style="white-space:nowrap">${esc(c.cmd)}</td><td>${esc(c.desc)}</td><td class="mono" style="font-size:10px;color:var(--tx3)">${esc(c.flags)}</td></tr>`).join('')}
+  </tbody></table>`;
+
+  // Decision rules
+  document.getElementById('agent-rules').innerHTML=`
+    <ol style="padding-left:20px;color:var(--tx2);line-height:2;font-size:12px">
+      <li>If <strong>accuracy &lt; target</strong> for a pipeline: analyze error traces, then fix ONE root cause and re-test</li>
+      <li>If <strong>error rate &gt; 10%</strong>: prioritize error fixes over accuracy improvements</li>
+      <li>If <strong>3+ regressions</strong> detected: REVERT the last change immediately</li>
+      <li>If <strong>orchestrator timeout &gt; 60s</strong>: reduce sub-pipeline invocations (single-pipeline routing)</li>
+      <li>If <strong>graph entity extraction fails</strong>: check entity catalog in HyDE prompt, add fuzzy matching</li>
+      <li>If <strong>SQL errors &gt; 5</strong>: review Schema Context hints, add ILIKE and period rules</li>
+      <li>If <strong>empty responses &gt; 10</strong>: check continueOnFail settings, add null-safe guards</li>
+      <li><strong>NEVER</strong> change multiple things per iteration — ONE fix, then test</li>
+      <li><strong>NEVER</strong> run eval in Claude Code sandbox — only in Termius / GCloud Console</li>
+      <li>After Phase 1 gates pass, run Phase 2: <code>--dataset phase-2 --reset</code></li>
+    </ol>`;
 
   // API Schema
-  const schema={"meta":"{ version, status, phase, total_unique_questions, total_test_runs, total_iterations }","iterations[]":{"id":"iter-001","results_summary":{"[pipeline]":"{ tested, correct, errors, accuracy_pct, avg_latency_ms }"}},"question_registry":{"[qid]":{"question":"string","expected":"string","rag_type":"string","current_status":"pass|fail|error","trend":"improving|regressing|stable"}},"pipelines":{"[name]":"{ endpoint, target_accuracy, trend[] }"},"quick_tests[]":"{ timestamp, pipeline, status, latency_ms }"};
-  const el=document.getElementById('apiSchema');if(el)el.textContent=JSON.stringify(schema,null,2);
-
-  const rules=document.getElementById('agenticRules');
-  if(rules)rules.innerHTML=`<ol style="padding-left:20px;line-height:2"><li><strong>Identify regressions:</strong> Compare latest iteration with previous. PASS→FAIL = regression.</li><li><strong>Analyze error patterns:</strong> Group by error_type. High concentration = targeted fix.</li><li><strong>Track question stability:</strong> pass_rate &lt; 0.5 across 3+ runs = flaky.</li><li><strong>Compare pipeline targets:</strong> Gap &gt; 10pp = priority improvement.</li><li><strong>Propose improvements only with data:</strong> Never without 2+ stale iterations or &gt;15% error rate.</li><li><strong>Quick test after changes:</strong> 3-5 known-good questions before full eval.</li><li><strong>Version everything:</strong> Record changes in workflow_changes[].</li><li><strong>Fail-fast on regressions:</strong> Revert immediately if quick test shows regression.</li></ol>`;
-
-  const gh=document.getElementById('ghActionsDoc');
-  if(gh)gh.innerHTML=`<div style="font-size:12.5px;color:var(--tx2)"><table style="margin-top:8px"><thead><tr><th>Workflow</th><th>Trigger</th><th>Purpose</th></tr></thead><tbody><tr><td class="mono">rag-eval.yml</td><td>Daily 06:00 UTC + manual</td><td>Runs eval, commits results</td></tr><tr><td class="mono">agentic-eval.yml</td><td>After eval + manual</td><td>AI analysis, proposes improvements</td></tr><tr><td class="mono">n8n-error-log.yml</td><td>repository_dispatch</td><td>Receives n8n error logs</td></tr><tr><td class="mono">dashboard-deploy.yml</td><td>Push to docs/**</td><td>Auto-deploy dashboard to GitHub Pages</td></tr></tbody></table></div>`;
+  document.getElementById('agent-schema').textContent=JSON.stringify({
+    meta:{version:'2.0',status:'running|complete|error',phase:'string',total_unique_questions:'number',total_test_runs:'number',total_iterations:'number'},
+    iterations:[{id:'string',number:'number',label:'string',questions:[{id:'string',rag_type:'string',correct:'boolean',f1:'number',error:'string|null'}],results_summary:{pipeline:{tested:'number',correct:'number',errors:'number',accuracy_pct:'number',avg_latency_ms:'number'}}}],
+    question_registry:{qid:{question:'string',expected:'string',rag_type:'string',current_status:'pass|fail|error',trend:'improving|regressing|stable',runs:[]}},
+    pipelines:{name:{endpoint:'string',target_accuracy:'number',trend:[]}},
+    workflow_versions:{pipeline:{version:'number',hash:'string',total_nodes:'number'}},
+    databases:{pinecone:{total_vectors:'number'},neo4j:{total_nodes:'number'},supabase:{total_rows:'number'}},
+  },null,2);
 }
 
-// === EVENT DELEGATION ===
-document.addEventListener('click',function(e){
-  const qr=e.target.closest('[data-qid]');if(qr)showQuestionDetail(qr.dataset.qid);
-  const sq=e.target.closest('[data-showq]');if(sq)showQDetail(sq.dataset.showq);
-  const wd=e.target.closest('[data-wfdiff]');if(wd)showWfDiff(wd.dataset.wfpipe);
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('p-'+tab.dataset.tab).classList.add('active');
+  });
 });
 
-// === INIT ===
+// Question filters
+['q-phase','q-pipe','q-status','q-dataset'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('change',renderQuestions);
+});
+document.getElementById('q-search')?.addEventListener('input',renderQuestions);
+
+// ============================================================
+// INIT
+// ============================================================
 loadData();
 setInterval(loadData,15000);
 </script>
