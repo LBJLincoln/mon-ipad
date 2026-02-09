@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Multi-RAG Orchestrator — SOTA 2026</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1" onerror="window._chartJsFailed=true"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -320,6 +320,10 @@ details .detail-content{padding:14px;border:1px solid var(--bd);border-top:none;
     </button>
   </div>
 </div>
+
+<!-- Error/Loading banners -->
+<div id="render-errors" style="display:none;background:var(--rd-bg);border:1px solid var(--rd);color:var(--rd);padding:8px 16px;font-size:12px;text-align:center"></div>
+<div id="load-banner" style="background:var(--ac-bg);border-bottom:1px solid var(--ac);color:var(--ac);padding:8px 16px;font-size:12px;text-align:center">Loading data.json...</div>
 
 <!-- Status Bar -->
 <div class="status-bar">
@@ -824,49 +828,68 @@ function toggleNotifications(){
 // DATA LOADING
 // ============================================================
 async function loadData(){
+  const banner=document.getElementById('load-banner');
   try{
+    if(banner&&!DATA)banner.style.display='block';
     const r=await fetch('data.json?t='+Date.now());
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const newData=await r.json();
+    if(!r.ok)throw new Error('HTTP '+r.status+' '+r.statusText);
+    const txt=await r.text();
+    let newData;
+    try{newData=JSON.parse(txt);}catch(pe){
+      throw new Error('JSON parse failed ('+txt.length+' chars): '+pe.message);
+    }
+    if(!newData||typeof newData!=='object')throw new Error('data.json is not an object');
     const isFirst=!DATA;
     DATA=newData;
     loadError=false;
     lastLoadTime=new Date();
+    if(banner)banner.style.display='none';
     render();
     updateBellBadge();
     if(!isFirst)showToast('Data refreshed','success',2000);
   }catch(e){
     console.error('Load error:',e);
     loadError=true;
+    if(banner)banner.textContent='Load failed: '+e.message;
+    if(banner)banner.style.background='var(--rd-bg)';
+    if(banner)banner.style.borderColor='var(--rd)';
+    if(banner)banner.style.color='var(--rd)';
     updateStatusBar();
-    if(!DATA)renderLoadError();
+    if(!DATA)renderLoadError(e.message);
     else showToast('Refresh failed: '+e.message,'error',4000);
   }
 }
 
-function renderLoadError(){
+function renderLoadError(errMsg){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   const exec=document.getElementById('p-exec');
   exec.classList.add('active');
   exec.innerHTML=`<div class="card" style="text-align:center;padding:60px 20px">
     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--rd)" stroke-width="2" style="margin-bottom:16px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
     <h2 style="color:var(--rd)">Failed to Load Data</h2>
-    <p style="color:var(--tx2);margin:12px 0">Could not fetch <code>data.json</code>. Make sure the file exists and is valid JSON.</p>
+    <p style="color:var(--tx2);margin:12px 0">${errMsg?'<code>'+errMsg+'</code><br><br>':''}Could not fetch <code>data.json</code>. Make sure the file exists and is valid JSON.</p>
     <button class="btn btn-primary" onclick="loadData()" style="margin-top:12px">Retry</button>
   </div>`;
 }
 
 function render(){
   if(!DATA)return;
-  renderHeader();
-  renderStatusBar();
-  renderExec();
-  renderFocus();
-  renderQuestions();
-  renderWorkflows();
-  renderDatabases();
-  renderCosts();
-  renderAgent();
+  const fns=[
+    ['Header',renderHeader],['StatusBar',renderStatusBar],['Exec',renderExec],
+    ['Focus',renderFocus],['Questions',renderQuestions],['Workflows',renderWorkflows],
+    ['Databases',renderDatabases],['Costs',renderCosts],['Agent',renderAgent]
+  ];
+  const errors=[];
+  fns.forEach(([name,fn])=>{
+    try{fn();}catch(e){
+      console.error('render'+name+' error:',e);
+      errors.push(name+': '+e.message);
+    }
+  });
+  if(errors.length){
+    const el=document.getElementById('render-errors');
+    if(el){el.style.display='block';el.textContent='Render errors: '+errors.join(' | ');}
+  }
 }
 
 // ============================================================
