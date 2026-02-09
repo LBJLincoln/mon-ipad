@@ -19,7 +19,7 @@
 
 | DB | Content | Phase 1 | Phase 2 |
 |---|---|---|---|
-| **Pinecone** | Vector embeddings (text-embedding-3-small, 1536-dim) | 10,411 vectors, 12 namespaces | No changes needed |
+| **Pinecone** | Vector embeddings (configurable via `setup_embeddings.py`) | 10,411 vectors, 12 namespaces | Embedding model configurable via n8n `$vars` |
 | **Neo4j** | Entity graph (Person, Org, Tech, City, Museum, Disease) | 110 nodes, 151 relationships | +4,884 entities, 21,625 total relationships |
 | **Supabase** | Financial tables + benchmark_datasets + HF tables | 88 rows, 5 tables | +450 rows (finqa/tatqa/convfinqa), 538 total |
 
@@ -27,22 +27,22 @@
 
 ## LLM Model Registry
 
-All models FREE via OpenRouter (`meta-llama/llama-3.3-70b-instruct:free`).
+All LLM models FREE via OpenRouter (`arcee-ai/trinity-large-preview:free`).
 Rate limits: 20 req/min, 1000 req/day (with $10+ credit), 50 req/day (without).
 
 | Workflow | Node | Model |
 |---|---|---|
-| Standard | HyDE Generator | llama-3.3-70b-instruct:free |
-| Standard | LLM Generation | llama-3.3-70b-instruct:free |
-| Standard | Cohere Rerank | rerank-v3.5 ($0.002/1K) |
-| Standard | Pinecone Query | text-embedding-3-small ($0.02/1K) |
-| Graph | HyDE Entity Extraction | llama-3.3-70b-instruct:free |
-| Graph | Answer Synthesis | llama-3.3-70b-instruct:free |
-| Quantitative | Text-to-SQL | llama-3.3-70b-instruct:free |
-| Quantitative | SQL Validator | llama-3.3-70b-instruct:free |
-| Orchestrator | Intent Analyzer | llama-3.3-70b-instruct:free |
-| Orchestrator | Task Planner | llama-3.3-70b-instruct:free |
-| Orchestrator | Response Builder | llama-3.3-70b-instruct:free |
+| Standard | HyDE Generator | arcee-ai/trinity-large-preview:free |
+| Standard | LLM Generation | arcee-ai/trinity-large-preview:free |
+| Standard | Cohere Rerank | rerank-multilingual-v3.0 ($0.002/1K) |
+| Standard | Pinecone Query | n8n `$vars.EMBEDDING_MODEL` (configurable) |
+| Graph | HyDE Entity Extraction | arcee-ai/trinity-large-preview:free |
+| Graph | Answer Synthesis | arcee-ai/trinity-large-preview:free |
+| Quantitative | Text-to-SQL | arcee-ai/trinity-large-preview:free |
+| Quantitative | SQL Validator | arcee-ai/trinity-large-preview:free |
+| Orchestrator | Intent Analyzer | arcee-ai/trinity-large-preview:free |
+| Orchestrator | Task Planner | arcee-ai/trinity-large-preview:free |
+| Orchestrator | Response Builder | arcee-ai/trinity-large-preview:free |
 
 ### Free Alternatives (if needed)
 | Model | Params | Context | Best For |

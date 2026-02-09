@@ -29,6 +29,7 @@ Then: analyze the ONE pipeline with the worst gap → diagnose via n8n execution
 | **Node diagnostics** | `python3 eval/node-analyzer.py --pipeline graph --last 5` |
 | **All diagnostics** | `python3 eval/node-analyzer.py --all --last 5` |
 | **Single execution** | `python3 eval/node-analyzer.py --execution-id <ID>` |
+| **Setup embeddings** | `python3 db/populate/setup_embeddings.py --provider jina` |
 
 ---
 
@@ -70,7 +71,8 @@ export N8N_HOST="https://amoret.app.n8n.cloud"
 | **Quantitative** (Supabase SQL) | `E19NZG9WfM7FNsxr` | `/webhook/3e0f8010-...` |
 | **Orchestrator** (routes to all 3) | `ALd4gOEqiKL5KR1p` | `/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0` |
 
-All LLMs: `meta-llama/llama-3.3-70b-instruct:free` via OpenRouter ($0 cost).
+All LLMs: `arcee-ai/trinity-large-preview:free` via OpenRouter ($0 cost).
+Embeddings: configurable via n8n `$vars.EMBEDDING_MODEL` (see `db/populate/setup_embeddings.py`).
 
 **Full architecture details**: `docs/architecture.md`
 
@@ -231,5 +233,9 @@ python3 eval/node-analyzer.py --pipeline <target> --last 10
 | `workflows/sync.py` | **Sync active workflows from n8n to GitHub** |
 | `workflows/live/` | **Synced workflow JSONs** (record of what's deployed) |
 | `workflows/improved/apply.py` | Historical patches (DEPRECATED for new changes) |
+| `db/populate/setup_embeddings.py` | **Free embeddings setup** (Jina/HF/OpenRouter → Pinecone + n8n) |
+| `db/populate/phase2_neo4j.py` | Phase 2 Neo4j entity extraction |
+| `db/populate/phase2_supabase.py` | Phase 2 Supabase table population |
+| `db/readiness/` | Per-phase database readiness checks |
 | `logs/diagnostics/` | Node-level diagnostic reports |
 | `phases/overview.md` | Full 5-phase strategy |
