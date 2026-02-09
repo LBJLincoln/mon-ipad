@@ -220,11 +220,22 @@ def main():
                         help="Human-readable label for this iteration")
     parser.add_argument("--description", type=str, default="",
                         help="Description of what changed before this eval")
+    parser.add_argument("--force", action="store_true",
+                        help="Force run even if phase gates are not met")
     args = parser.parse_args()
 
     start_time = datetime.now()
     requested_types = [t.strip() for t in args.types.split(",")]
     dataset_label = args.dataset or ("phase-1+2" if args.include_1000 else "phase-1")
+
+    # Phase gate enforcement for Phase 2+
+    if args.dataset and args.dataset != "phase-1":
+        try:
+            from phase_gates import enforce_gate
+            phase_num = int(args.dataset.split("-")[1]) if "-" in args.dataset else 2
+            enforce_gate(target_phase=phase_num, force=getattr(args, 'force', False))
+        except (ImportError, Exception) as e:
+            print(f"  WARN: Phase gate check skipped: {e}")
 
     # Auto-adjust types for Phase 2 (only graph + quantitative)
     if args.dataset == "phase-2" and args.types == "standard,graph,quantitative,orchestrator":
