@@ -265,7 +265,7 @@ def main():
     args = parser.parse_args()
 
     # Phase gate enforcement
-    if not args.force_phase and not check_phase_gate(args.dataset):
+    if not args.force and not check_phase_gate(args.dataset):
         sys.exit(1)
 
     start_time = datetime.now()

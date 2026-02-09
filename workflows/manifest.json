@@ -1,10 +1,10 @@
 {
   "versions": {
     "standard": {
-      "version": 2,
-      "hash": "d578dc6a4d9df340",
-      "timestamp": "2026-02-08T19:49:21.514623Z",
-      "snapshot_file": "standard-2026-02-08T19-49-20-d578dc6a4d9df340.json",
+      "version": 3,
+      "hash": "77ce11e45b64537e",
+      "timestamp": "2026-02-09T03:09:06.601558Z",
+      "snapshot_file": "standard-2026-02-09T03-09-06-77ce11e45b64537e.json",
       "name": "WF5 Standard RAG V3.4",
       "webhook": "/webhook/rag-multi-index-v3",
       "summary": {
@@ -52,25 +52,150 @@
         "removed_nodes": [],
         "modified_nodes": [
           {
-            "node": "RRF Merge & Rank V3.4",
+            "node": "📋 Configuration SOTA 2026",
+            "changes": [
+              {
+                "param": "content",
+                "old": "# 🔧 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `OPENROUTER_BASE_URL` - https://openrouter.ai/api/v1/chat/completions\n- `LLM_HYDE_MODEL` - google/gemini-2.0-flash-exp\n- `LLM_FAST_MOD",
+                "new": "# 🔧 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `OPENROUTER_BASE_URL` - https://openrouter.ai/api/v1/chat/completions\n- `LLM_HYDE_MODEL` - meta-llama/llama-3.3-70b-instruct:free\n- `L"
+              }
+            ]
+          },
+          {
+            "node": "Original Embedding",
+            "changes": [
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+              }
+            ]
+          },
+          {
+            "node": "Response Formatter",
             "changes": [
               {
                 "param": "jsCode",
-                "old": "// ============================================\n// PATCH 07 - RRF Merge & Rank V3.4.2\n// FIX: Lecture robuste des 3 sources (HyDE, Original, BM25)\n// ============================================\n//\n//",
-                "new": "// ============================================\n// PATCH 07 - RRF Merge & Rank V3.4.2\n// FIX: Lecture robuste des 3 sources (HyDE, Original, BM25)\n// ============================================\n//\n//"
+                "old": "// Response Formatter - with LLM Fallback\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.me",
+                "new": "// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generati"
+              }
+            ]
+          },
+          {
+            "node": "HyDE Generator",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots qui repondr",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots "
+              },
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+              }
+            ]
+          },
+          {
+            "node": "HyDE Embedding",
+            "changes": [
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+              }
+            ]
+          },
+          {
+            "node": "Query Decomposer (V.3.4)",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la q",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. A"
+              },
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+              }
+            ]
+          },
+          {
+            "node": "LLM Generation",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere precise et fa",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere pr"
+              },
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~1 nodes"
+        "summary": "+0 -0 ~7 nodes"
       }
     },
     "graph": {
-      "version": 5,
-      "hash": "3bf32010e221159c",
-      "timestamp": "2026-02-08T20:31:37.765802Z",
-      "snapshot_file": "graph-2026-02-08T20-31-37-3bf32010e221159c.json",
+      "version": 6,
+      "hash": "fc7f35d4da4f1140",
+      "timestamp": "2026-02-09T03:09:06.935954Z",
+      "snapshot_file": "graph-2026-02-09T03-09-06-fc7f35d4da4f1140.json",
       "name": "WF2 Graph RAG V3.3",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
       "summary": {
@@ -124,32 +249,77 @@
             "node": "LLM Answer Synthesis",
             "changes": [
               {
-                "param": "options",
-                "old": "{'timeout': 30000, 'retry': {'maxTries': 3, 'waitBetweenTries': 3000}}",
-                "new": "{'timeout': 30000, 'retry': {'maxTries': 1, 'waitBetweenTries': 5000}}"
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
               }
             ]
           },
           {
-            "node": "Response Formatter",
+            "node": "WF3: HyDE & Entity Extraction",
             "changes": [
               {
-                "param": "jsCode",
-                "old": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\nt",
-                "new": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\nt"
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer"
+              },
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+              }
+            ]
+          },
+          {
+            "node": "Generate HyDE Embedding",
+            "changes": [
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~2 nodes"
+        "summary": "+0 -0 ~3 nodes"
       }
     },
     "quantitative": {
-      "version": 2,
-      "hash": "c9e99a05d63f0e47",
-      "timestamp": "2026-02-08T20:03:49.904401Z",
-      "snapshot_file": "quantitative-2026-02-08T20-03-49-c9e99a05d63f0e47.json",
+      "version": 3,
+      "hash": "ba83b107d0984014",
+      "timestamp": "2026-02-09T03:09:07.540677Z",
+      "snapshot_file": "quantitative-2026-02-09T03-09-06-ba83b107d0984014.json",
       "name": "WF4 Quantitative V2.0",
       "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
       "summary": {
@@ -199,12 +369,82 @@
         "removed_nodes": [],
         "modified_nodes": [
           {
+            "node": "Interpretation Layer (LLM Analyst)",
+            "changes": [
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+              }
+            ]
+          },
+          {
+            "node": "Text-to-SQL Generator (CoT Enhanced)",
+            "changes": [
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+              }
+            ]
+          },
+          {
+            "node": "SQL Repair LLM",
+            "changes": [
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+              }
+            ]
+          },
+          {
             "node": "Prepare SQL Repair Request",
             "changes": [
               {
                 "param": "jsCode",
-                "old": "// Prepare SQL Repair Request - Safe JSON Building\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepse",
-                "new": "// Prepare SQL Repair Request - Safe JSON Building\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-l"
+                "old": "// Prepare SQL Repair Request - Safe JSON Building\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-l",
+                "new": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...err"
+              }
+            ]
+          },
+          {
+            "node": "SQL Error Handler (Self-Healing)",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// SQL Error Handler - Self-Healing with graceful fallback\ntry {\n  const executorResult = $json;\n\n  let validatorData = {};\n  let originalQuery = '';\n  let schemaContext = '';\n  let tenantId = 'defaul",
+                "new": "// SQL Error Handler - Self-Healing (MAX 3 REPAIRS)\nconst MAX_REPAIRS = 3;\nconst currentAttempt = ($json.repair_attempts || 0) + 1;\n\nif (currentAttempt > MAX_REPAIRS) {\n  // Give up - return error res"
               }
             ]
           },
@@ -213,31 +453,21 @@
             "changes": [
               {
                 "param": "jsCode",
-                "old": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepseek/deepseek-chat',\n  messages: [\n    {\n",
+                "old": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  me",
                 "new": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  me"
-              }
-            ]
-          },
-          {
-            "node": "Prepare Interpretation Request",
-            "changes": [
-              {
-                "param": "jsCode",
-                "old": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemini-2.5-flash-preview-",
-                "new": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free',\n  m"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~3 nodes"
+        "summary": "+0 -0 ~6 nodes"
       }
     },
     "orchestrator": {
-      "version": 4,
-      "hash": "b43d039e4e56ccec",
-      "timestamp": "2026-02-08T20:34:16.702689Z",
-      "snapshot_file": "orchestrator-2026-02-08T20-34-15-b43d039e4e56ccec.json",
+      "version": 5,
+      "hash": "0c2b1440cb8034e4",
+      "timestamp": "2026-02-09T03:09:08.143779Z",
+      "snapshot_file": "orchestrator-2026-02-09T03-09-06-0c2b1440cb8034e4.json",
       "name": "V10.1 Orchestrator",
       "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
       "summary": {
@@ -334,28 +564,103 @@
         "removed_nodes": [],
         "modified_nodes": [
           {
-            "node": "Invoke WF4: Quantitative",
+            "node": "🎯 LLM 3: Agent Harness (Opus 4.5)",
             "changes": [
               {
-                "param": "workflowId",
-                "old": "{'__rl': True, 'value': 'xrzL7TRX9F0UrWks0tdCI', 'mode': 'list', 'cachedResultUrl': '/workflow/xrzL7TRX9F0UrWks0tdCI', 'cachedResultName': 'TEST - SOTA 2026 - WF4 Quantitative V2.0'}",
-                "new": "{'__rl': True, 'value': 'LjUz8fxQZ03G9IsU', 'mode': 'id'}"
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
               }
             ]
           },
           {
-            "node": "Invoke WF5: Standard",
+            "node": "🧠 LLM 1: Intent Analyzer",
             "changes": [
               {
-                "param": "workflowId",
-                "old": "{'__rl': True, 'value': 'qtBs2Wbi_raU2o_dqfdDC', 'mode': 'id', 'cachedResultUrl': '/workflow/qtBs2Wbi_raU2o_dqfdDC'}",
-                "new": "{'__rl': True, 'value': 'LnTqRX4LZlI009Ks-3Jnp', 'mode': 'id'}"
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_INTENT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_INTENT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated"
+              },
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+              }
+            ]
+          },
+          {
+            "node": "HTTP Request",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es l'INTENT ANALYZER d'un système RAG multi-moteurs sophi",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es l'INTENT ANALYZER d'un système RAG multi-moteurs sophi"
+              },
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+              }
+            ]
+          },
+          {
+            "node": "🎯 LLM 2: Task Planner",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_PLANNER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"temperature\": 0.2,\n  \"max_tokens\": 2000,\n  \"response_format\": {\"type\": \"json_object\"},\n  \"messages\": [\n   ",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_PLANNER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"temperature\": 0.2,\n  \"max_tokens\": 2000,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ J"
+              },
+              {
+                "param": "authentication",
+                "old": "predefinedCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~2 nodes"
+        "summary": "+0 -0 ~4 nodes"
       }
     }
   },
@@ -463,6 +768,38 @@
       "hash": "b43d039e4e56ccec",
       "diff_summary": "+0 -0 ~2 nodes",
       "snapshot_file": "orchestrator-2026-02-08T20-34-15-b43d039e4e56ccec.json"
+    },
+    {
+      "timestamp": "2026-02-09T03:09:06.601574Z",
+      "pipeline": "standard",
+      "version": 3,
+      "hash": "77ce11e45b64537e",
+      "diff_summary": "+0 -0 ~7 nodes",
+      "snapshot_file": "standard-2026-02-09T03-09-06-77ce11e45b64537e.json"
+    },
+    {
+      "timestamp": "2026-02-09T03:09:06.935968Z",
+      "pipeline": "graph",
+      "version": 6,
+      "hash": "fc7f35d4da4f1140",
+      "diff_summary": "+0 -0 ~3 nodes",
+      "snapshot_file": "graph-2026-02-09T03-09-06-fc7f35d4da4f1140.json"
+    },
+    {
+      "timestamp": "2026-02-09T03:09:07.540690Z",
+      "pipeline": "quantitative",
+      "version": 3,
+      "hash": "ba83b107d0984014",
+      "diff_summary": "+0 -0 ~6 nodes",
+      "snapshot_file": "quantitative-2026-02-09T03-09-06-ba83b107d0984014.json"
+    },
+    {
+      "timestamp": "2026-02-09T03:09:08.143793Z",
+      "pipeline": "orchestrator",
+      "version": 5,
+      "hash": "0c2b1440cb8034e4",
+      "diff_summary": "+0 -0 ~4 nodes",
+      "snapshot_file": "orchestrator-2026-02-09T03-09-06-0c2b1440cb8034e4.json"
     }
   ]
 }
