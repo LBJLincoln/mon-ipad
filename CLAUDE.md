@@ -14,48 +14,55 @@ Phase 1 (200q) → Phase 2 (1,000q) → Phase 3 (~10Kq) → Phase 4 (~100Kq) →
 
 ---
 
-## Terminal Execution Environment
+## Execution Environment
 
-**Claude Code (sandbox) does NOT have network access.** All commands that call
-external APIs (n8n, Supabase, Neo4j, Pinecone, OpenRouter) MUST be run manually
-by the user on their terminal.
+**Claude Code HAS network access** via HTTP proxy. Most API-calling scripts can run
+directly from Claude Code. Only `psql` (direct TCP to Supabase) and scripts requiring
+`N8N_API_KEY` need user intervention.
 
-### Where to run commands
+### What Claude Code can run directly
 
-| Where | What |
-|---|---|
-| **Termius** (SSH to Google Cloud free tier VM) | All `python` commands that hit APIs (eval, populate, sync, deploy) |
-| **Google Cloud Console** (browser SSH) | Same — alternative if Termius unavailable |
-| **Claude Code** (this sandbox) | Code editing, analysis, git commits, dry-runs only |
+| Script | Status | Notes |
+|---|---|---|
+| `eval/quick-test.py` | ✅ Run directly | n8n webhooks via HTTPS |
+| `eval/fast-iter.py` | ✅ Run directly | Parallel eval, all pipelines |
+| `eval/run-eval-parallel.py` | ✅ Run directly | Full eval (200q or 1000q) |
+| `eval/run-eval.py` | ✅ Run directly | Sequential eval |
+| `eval/analyzer.py` | ✅ Run directly | Local file analysis |
+| `eval/live-writer.py --snapshot-db` | ⚠️ Partial | Pinecone + Neo4j OK, Supabase psql fails |
+| `workflows/improved/apply.py --local` | ✅ Run directly | Local JSON patches |
+| `workflows/improved/apply.py --deploy` | ❌ Needs N8N_API_KEY | User must provide |
+| `workflows/sync.py` | ❌ Needs N8N_API_KEY | User must provide |
+| `db/populate/phase2_neo4j.py` | ✅ Run directly | Uses Neo4j HTTP API |
+| `db/populate/phase2_supabase.py` | ❌ Needs psql | DNS blocked for TCP |
+| `db/populate/neo4j.py` | ✅ Run directly | Uses Neo4j HTTP API |
 
-### Before every terminal session — ALWAYS pull from main
+### What requires user action
 
-```bash
-# === RUN THIS FIRST IN TERMIUS / GOOGLE CLOUD CONSOLE ===
-cd ~/mon-ipad
-git pull origin main          # Always sync from main before running anything
-```
+| Action | Why | Where |
+|---|---|---|
+| Provide `N8N_API_KEY` | JWT for n8n cloud API, not committed | User provides at session start |
+| Update n8n credentials | If OpenRouter key expires in n8n | n8n cloud dashboard |
+| Run Supabase psql scripts | Direct TCP DNS blocked by proxy | Termius or GCloud Console |
 
-### Environment variables — paste once per terminal session
+### Environment variables
+
+Claude Code sets these automatically before running scripts. If running manually:
 
 ```bash
 export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
 export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
 export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
-export OPENROUTER_API_KEY="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"
-export N8N_API_KEY="..."
+export OPENROUTER_API_KEY="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"
+export N8N_API_KEY="..."              # User must provide — not committed
 export N8N_HOST="https://amoret.app.n8n.cloud"
 ```
 
-### Google Cloud free tier VM setup (one-time)
+### Fallback: Google Cloud free tier VM (for psql-dependent scripts only)
 
-Run these commands **in order**:
 ```bash
-# Step 1: Install system packages + Python libraries via apt (Debian Bookworm blocks pip)
 sudo apt-get update && sudo apt-get install -y python3 python3-psycopg2 python3-requests git
-
-# Step 2: Clone repo (skip if already cloned)
 git clone https://github.com/LBJLincoln/mon-ipad.git ~/mon-ipad
 cd ~/mon-ipad
 ```
@@ -65,47 +72,24 @@ cd ~/mon-ipad
 ## Quick Start — Two-Phase Iteration Cycle
 
 The iteration loop has two phases: **fast iteration** (10q, rapid workflow tuning)
-and **full evaluation** (200q, parallel). Workflows are validated with fast-iter
-before committing to a full eval.
+and **full evaluation** (200q or 1000q, parallel). Claude Code runs all of these directly.
 
 ### Phase A: Fast Iteration Loop (10q per pipeline, ~2-3 min)
 
-This is the inner loop for rapid workflow improvement. Run this repeatedly
-until results look good, THEN proceed to Phase B.
+Claude Code runs the full iteration loop:
 
-**Run in Termius / Google Cloud Console:**
-```bash
-cd ~/mon-ipad && git pull origin main
-
-# Step A0: Read current state
-cat STATUS.md
-
-# Step A1: Sync workflows from n8n cloud
-python3 workflows/sync.py
-
-# Step A2: Smoke test (5 questions)
-python3 eval/quick-test.py --questions 5
-
-# Step A3: Fast iteration test
-python3 eval/fast-iter.py --label "description"
-
-# Step A4: Review results (auto-saved to logs/fast-iter/ and logs/pipeline-results/)
-
-# Step A5: If bad → fix workflow in n8n → repeat from A1
-#          If good → proceed to Phase B
-
-# Step A6: Commit results
-git add docs/ logs/ && git commit -m "fast-iter: ..." && git push origin main
+```
+A0: Read STATUS.md
+A1: Sync workflows      → python3 workflows/sync.py
+A2: Smoke test           → python3 eval/quick-test.py --questions 5
+A3: Fast iteration test  → python3 eval/fast-iter.py --label "description"
+A4: Review results       → check logs/fast-iter/ and logs/pipeline-results/
+A5: If bad → fix workflow → repeat from A1
+    If good → proceed to Phase B
+A6: Commit results       → git add docs/ logs/ && git commit && git push
 ```
 
-**Fast-iter features:**
-- Runs all 4 pipelines in **parallel** (~4x speedup)
-- Selects a **strategic mix**: 50% previously-failing, 30% untested, 20% passing (regression check)
-- Saves per-pipeline JSON snapshots to `logs/pipeline-results/`
-- Auto-compares with previous fast-iter run (regressions/fixes)
-- Results feed the dashboard in real-time
-
-**Commands (run in Termius / Google Cloud Console):**
+**Commands:**
 ```bash
 python3 eval/fast-iter.py                                 # 10q per pipeline, all 4
 python3 eval/fast-iter.py --questions 5 --pipelines graph # 5q, graph only
@@ -114,46 +98,30 @@ python3 eval/fast-iter.py --label "after fuzzy matching"  # Tag the run
 python3 eval/fast-iter.py --dataset phase-2               # Phase 2 questions (graph + quant)
 ```
 
-### Phase B: Full Evaluation (200q, parallel, ~15-20 min)
+### Phase B: Full Evaluation (200q or 1000q, parallel)
 
-Run this only AFTER fast-iter shows the workflow is ready. Uses **parallel execution**
-across all 4 pipelines simultaneously.
+Run only AFTER fast-iter shows the workflow is ready.
 
-**Run in Termius / Google Cloud Console:**
 ```bash
-cd ~/mon-ipad && git pull origin main
-
-# Step B1: Run parallel evaluation
+# Phase 1: 200q, all 4 pipelines
 python3 eval/run-eval-parallel.py --reset --label "Iter N: description"
 
-# Step B2: Analyze results
+# Phase 2: 1000q, graph + quantitative only (auto-adjusted)
+python3 eval/run-eval-parallel.py --dataset phase-2 --reset --label "Phase 2: baseline"
+
+# Combined: 1200q, all pipelines
+python3 eval/run-eval-parallel.py --dataset all --reset --label "Phase 1+2: combined"
+
+# Analyze results
 python3 eval/analyzer.py
 
-# Step B3: Commit + push
-git add docs/ workflows/ logs/ && git commit -m "eval: Iter N" && git push origin main
-
-# Step B4: Back to Phase A for next improvement
-```
-
-**Parallel eval features:**
-- All 4 pipelines execute **concurrently** (ThreadPoolExecutor)
-- Thread-safe dashboard writes (live-writer.py uses locks)
-- Per-pipeline result snapshots saved to `logs/pipeline-results/`
-- ~4x speedup vs sequential `run-eval.py`
-
-**Commands (run in Termius / Google Cloud Console):**
-```bash
-python3 eval/run-eval-parallel.py --reset --label "Iter 6: fuzzy matching"  # Full 200q
-python3 eval/run-eval-parallel.py --max 20 --types graph,orchestrator       # Subset
-python3 eval/run-eval-parallel.py --push                                     # Auto git push
+# Commit + push
+git add docs/ workflows/ logs/ && git commit -m "eval: Iter N" && git push
 ```
 
 ### Legacy: Sequential Evaluation
 
-The original sequential `run-eval.py` is still available for debugging or
-when you want to isolate a single pipeline:
-
-**Run in Termius / Google Cloud Console:**
+For debugging or isolating a single pipeline:
 ```bash
 python3 eval/run-eval.py --types graph --max 10 --label "debug graph"
 ```
@@ -184,18 +152,14 @@ Additional Phase 1 exit criteria:
 - No Phase 1 regression
 - **DB setup status**: COMPLETE (538 total Supabase rows, 19,788 Neo4j nodes, 10,411 Pinecone vectors)
 
-**Phase 2 DB ingestion (run in Termius / Google Cloud Console):**
+**Phase 2 DB ingestion:**
 ```bash
-cd ~/mon-ipad && git pull origin main
-
-# 1. Create Supabase tables + populate 450 rows (--reset wipe old data first)
-python3 db/populate/phase2_supabase.py --reset
-
-# 2. Extract ~5000 entities into Neo4j (--reset wipe old Phase 2 entities first)
+# Neo4j (runs directly from Claude Code — uses HTTP API)
 python3 db/populate/phase2_neo4j.py --reset
+python3 db/populate/phase2_neo4j.py --reset --llm    # LLM extraction (higher quality)
 
-# 2b. OR with LLM for higher quality (~5min, ~$0.05)
-python3 db/populate/phase2_neo4j.py --reset --llm
+# Supabase (requires psql — run in Termius if DNS blocked)
+python3 db/populate/phase2_supabase.py --reset
 ```
 
 **Flags disponibles:**
@@ -457,14 +421,16 @@ Errors are automatically classified into types for analytics:
 
 ## Environment Variables Required
 
-**Paste in Termius / Google Cloud Console at the start of each session:**
+Claude Code sets these automatically before running scripts. User must provide `N8N_API_KEY`
+at session start (not committed to repo).
+
 ```bash
 export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
 export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
 export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
-export OPENROUTER_API_KEY="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"
-export N8N_API_KEY="..."              # JWT for n8n cloud API
+export OPENROUTER_API_KEY="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"
+export N8N_API_KEY="..."              # User provides — JWT for n8n cloud API
 export N8N_HOST="https://amoret.app.n8n.cloud"
 ```
 
@@ -590,7 +556,7 @@ Every new session (human or agentic) MUST follow this sequence:
 6. If SQL errors > 5: review Schema Context hints, add ILIKE
 7. If empty responses > 10: check continueOnFail, add null-safe guards
 8. ONE fix per iteration — never change multiple things
-9. Never run eval in Claude Code sandbox — only in Termius / GCloud
+9. Run eval directly from Claude Code (has network access via HTTP proxy)
 10. After Phase 1 gates pass: `--dataset phase-2 --reset`
 
 ---
@@ -606,10 +572,9 @@ Every new session (human or agentic) MUST follow this sequence:
 - Execution logs use JSONL format (one JSON per line) for streaming analysis
 - ONE change per iteration — never change multiple things at once
 
-### Terminal Execution Rules
-- **Claude Code sandbox has NO network access** — it cannot call Supabase, Neo4j, Pinecone, OpenRouter, or n8n
-- **ALL API-calling scripts** must be run by the user in **Termius** (SSH to GCloud VM) or **Google Cloud Console** (browser SSH)
-- **Always `git pull origin main`** before running any command on the terminal
-- **Always `git push origin main`** after running commands that produce results (logs, data.json, etc.)
-- Claude Code can: edit files, analyze data, write scripts, commit, push to feature branches
-- Claude Code cannot: run eval, populate DBs, sync workflows, deploy patches
+### Execution Capabilities
+- **Claude Code HAS network access** via HTTP proxy (Pinecone, Neo4j, n8n webhooks, OpenRouter)
+- **Direct TCP is blocked** (psql for Supabase fails on DNS resolution)
+- Claude Code can: run evals, sync/deploy workflows, populate Neo4j, analyze, commit, push
+- Claude Code cannot: run psql commands (use Termius for Supabase population scripts)
+- User provides: `N8N_API_KEY` (session start), new OpenRouter key (if expired)
