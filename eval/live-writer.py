@@ -40,6 +40,7 @@ EXEC_DIR = os.path.join(LOGS_DIR, "executions")
 ERR_DIR = os.path.join(LOGS_DIR, "errors")
 SNAP_DIR = os.path.join(LOGS_DIR, "db-snapshots")
 DATA_FILE = os.path.join(DOCS_DIR, "data.json")
+GENERATE_STATUS = os.path.join(REPO_ROOT, "eval", "generate_status.py")
 
 # Ensure directories exist
 for d in [EXEC_DIR, ERR_DIR, SNAP_DIR]:
@@ -64,12 +65,26 @@ def _load():
 
 
 def _save(data):
-    """Save data.json atomically."""
+    """Save data.json atomically, then regenerate docs/status.json."""
     data["meta"]["generated_at"] = datetime.utcnow().isoformat() + "Z"
     tmp = DATA_FILE + ".tmp"
     with open(tmp, "w") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
     os.replace(tmp, DATA_FILE)
+    _regenerate_status()
+
+
+def _regenerate_status():
+    """Regenerate docs/status.json from data.json (non-blocking)."""
+    try:
+        if os.path.exists(GENERATE_STATUS):
+            subprocess.Popen(
+                [sys.executable, GENERATE_STATUS],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+    except Exception:
+        pass  # Never block eval on status generation failure
 
 
 def _default_data():
