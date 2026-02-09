@@ -1,0 +1,1887 @@
+{
+  "updatedAt": "2026-02-09T02:45:23.689Z",
+  "createdAt": "2026-01-25T13:18:45.656Z",
+  "id": "LjUz8fxQZ03G9IsU",
+  "name": "TEST - SOTA 2026 - WF4 Quantitative V2.0",
+  "description": null,
+  "active": true,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// ============================================\n// PATCH #1: INIT & ACL - ORCHESTRATOR SUPPORT\n// ============================================\n// Pour: WF4 Quantitative & WF2 Graph\n// Bug: Workflows échouent quand appelés par orchestrateur\n// Fix: Support multi-format d'entrée\n\n// Init & ACL for RAG - HARDENED V2.2 (ORCHESTRATOR FIX)\nconst rawInput = $input.first().json;\nconst input = rawInput.body || rawInput;\n\n// === EXTRACTION ROBUSTE DE LA QUERY ===\n// Supporte: webhook, chat trigger, sub-workflow, ET orchestrator\nlet queryStr = '';\n\n// Priorité 1: Direct query field (webhook/chat)\nif (typeof input.query === 'string') {\n  queryStr = input.query;\n}\n// Priorité 2: Chat input\nelse if (input.chatInput) {\n  queryStr = input.chatInput;\n}\n// Priorité 3: Orchestrator format - task_query\nelse if (input.task_query) {\n  queryStr = input.task_query;\n}\n// Priorité 4: Orchestrator format - current_task.query\nelse if (input.current_task && typeof input.current_task.query === 'string') {\n  queryStr = input.current_task.query;\n}\n// Priorité 5: Query as object (stringify)\nelse if (input.query && typeof input.query === 'object') {\n  queryStr = JSON.stringify(input.query);\n}\n\nconst query = queryStr.trim();\n\n// === VALIDATION ===\nif (!query || query.length < 2) {\n  throw new Error('VALIDATION_ERROR: query is required and must be at least 2 characters');\n}\n\n// === EXTRACTION DU USER CONTEXT ===\n// Parse user_context (peut être string JSON ou objet)\nlet userContext = {};\n\nif (typeof input.user_context === 'string') {\n  try {\n    userContext = JSON.parse(input.user_context);\n  } catch (e) {\n    userContext = {};\n  }\n} else if (input.user_context && typeof input.user_context === 'object') {\n  userContext = input.user_context;\n}\n\n// === EXTRACTION DU TRACE_ID ===\n// Support multiple sources\nconst traceId = input.trace_id || \n                input.current_task?.trace_id || \n                `tr-rag-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\n// === OUTPUT ===\nreturn [{\n  json: {\n    trace_id: traceId,\n    query: query.substring(0, 2000),\n    user_context: {\n      tenant_id: userContext.tenant_id || input.tenant_id || 'default',\n      groups: Array.isArray(userContext.groups) ? userContext.groups : ['guest']\n    },\n    timestamp: new Date().toISOString(),\n    source: rawInput.body ? 'webhook' : \n            (rawInput.chatInput ? 'chat' : \n            (input.task_query ? 'orchestrator' : 'subworkflow')),\n    \n    // Metadata pour debugging\n    _debug: {\n      original_input_keys: Object.keys(input),\n      query_source: input.task_query ? 'task_query' : \n                    (input.current_task ? 'current_task.query' : \n                    (input.chatInput ? 'chatInput' : 'query'))\n    }\n  }\n}];\n\n"
+      },
+      "id": "d8623e2a-1060-46e1-b3e9-33251065d013",
+      "name": "Init & ACL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT table_name, column_name, data_type, is_nullable \nFROM information_schema.columns \nWHERE table_schema = 'public'\n  AND table_name IN ('financials', 'balance_sheet', 'sales_data', 'products', 'employees', 'kpis', 'companies')\n  AND table_name NOT LIKE 'pg_%'\n  AND table_name NOT LIKE '_realtime%'\n  AND table_name NOT LIKE 'supabase_%'\nORDER BY table_name, ordinal_position\nLIMIT 500",
+        "options": {}
+      },
+      "id": "629ec593-2bf6-4688-99d2-fe8b2009e062",
+      "name": "Schema Introspection",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        400,
+        208
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build schema context for LLM\nconst inputData = $input.all();\nif (!inputData || inputData.length === 0) {\n  return {\n    ...$node['Init & ACL'].json,\n    schema_context: \"Aucune table trouvée dans le schéma public.\",\n    available_tables: []\n  };\n}\n\nconst schemaData = inputData.map(i => i.json);\nconst tables = {};\n\nschemaData.forEach(col => {\n  if (!tables[col.table_name]) tables[col.table_name] = [];\n  tables[col.table_name].push(`${col.column_name} ${col.data_type}${col.is_nullable === 'NO' ? ' NOT NULL' : ''}`);\n});\n\nconst schemaContext = Object.entries(tables)\n  .map(([table, columns]) => `Table: ${table}\\nColumns: ${columns.join(', ')}`)\n  .join('\\n\\n');\n\nconst initData = $node['Init & ACL'].json;\n\nreturn {\n  ...initData,\n  schema_context: schemaContext,\n  available_tables: Object.keys(tables)\n};"
+      },
+      "id": "f52905d6-700c-45b2-8265-4501a7c08482",
+      "name": "Schema Context Builder",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "authentication": "none",
+        "nodeCredentialType": "openRouterApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.requestBody) }}\n",
+        "options": {
+          "timeout": 25000,
+          "retry": {
+            "maxTries": 3,
+            "waitBetweenTries": 2000
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+            }
+          ]
+        }
+      },
+      "id": "1b0e89ee-a913-498e-ab6d-2f8d568a2d2f",
+      "name": "Text-to-SQL Generator (CoT Enhanced)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        800,
+        208
+      ],
+      "credentials": {},
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// CRITICAL: SQL Validator - Security Shield (ERROR-SAFE VERSION)\n// Never throws - returns error data that flows through pipeline\nconst contextData = $node['Schema Context Builder'].json;\n\ntry {\n  let llmResponse = {};\n  try {\n    llmResponse = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n  } catch (e) {\n    // LLM returned invalid JSON - return safe fallback\n    return {\n      ...contextData,\n      validated_sql: \"SELECT 'SQL_GENERATION_ERROR: Invalid LLM response' as error_message, 'error' as status WHERE tenant_id = '\" + contextData.user_context.tenant_id + \"' LIMIT 1\",\n      explanation: 'LLM returned invalid JSON response',\n      validation_status: 'FAILED',\n      validation_error: 'SQL_GENERATION_ERROR',\n      validation_timestamp: new Date().toISOString()\n    };\n  }\n\n  const sql = String(llmResponse.sql || '').trim();\n  const sqlUpper = sql.toUpperCase();\n\n  // FORBIDDEN PATTERNS - P0 Security\n  const forbiddenPatterns = [\n    /DELETE|UPDATE|INSERT|DROP|TRUNCATE|ALTER|CREATE/i,\n    /GRANT|REVOKE|EXEC|EXECUTE|CALL/i,\n    /--|;.*;|UNION.*SELECT/i,\n    /xp_|sp_|pg_sleep/i,\n    /\\bINTO\\s+OUTFILE\\b|\\bLOAD_FILE\\b/i\n  ];\n\n  for (const pattern of forbiddenPatterns) {\n    if (pattern.test(sqlUpper)) {\n      return {\n        ...contextData,\n        validated_sql: \"SELECT 'SQL_INJECTION_DETECTED' as error_message, 'error' as status WHERE tenant_id = '\" + contextData.user_context.tenant_id + \"' LIMIT 1\",\n        explanation: 'Forbidden SQL pattern detected',\n        validation_status: 'FAILED',\n        validation_error: 'SQL_INJECTION_DETECTED',\n        validation_timestamp: new Date().toISOString()\n      };\n    }\n  }\n\n  // REQUIRED PATTERNS - return error instead of throwing\n  if (!sqlUpper.startsWith('SELECT')) {\n    return {\n      ...contextData,\n      validated_sql: \"SELECT 'Query must start with SELECT' as error_message, 'error' as status WHERE tenant_id = '\" + contextData.user_context.tenant_id + \"' LIMIT 1\",\n      explanation: 'Query must start with SELECT',\n      validation_status: 'FAILED',\n      validation_error: 'SQL_VALIDATION_ERROR',\n      validation_timestamp: new Date().toISOString()\n    };\n  }\n\n  // Add LIMIT if missing (instead of throwing)\n  let finalSql = llmResponse.sql;\n  if (!sqlUpper.includes('LIMIT')) {\n    finalSql = finalSql + ' LIMIT 1000';\n  }\n\n  // Extract LIMIT value\n  const limitMatch = sqlUpper.match(/LIMIT\\s+(\\d+)/i);\n  if (limitMatch) {\n    const limitValue = parseInt(limitMatch[1]);\n    if (limitValue > 1000) {\n      finalSql = finalSql.replace(/LIMIT\\s+\\d+/i, 'LIMIT 1000');\n    }\n  }\n\n  // Check tenant_id filter - add if missing (instead of throwing)\n  if (!sqlUpper.includes('TENANT_ID')) {\n    // Try to add tenant_id filter\n    if (sqlUpper.includes('WHERE')) {\n      finalSql = finalSql.replace(/WHERE/i, `WHERE tenant_id = '${contextData.user_context.tenant_id}' AND`);\n    } else if (sqlUpper.includes('FROM')) {\n      finalSql = finalSql.replace(/(FROM\\s+\\w+)/i, `$1 WHERE tenant_id = '${contextData.user_context.tenant_id}'`);\n    }\n  }\n\n  // Passed validation\n  return {\n    ...contextData,\n    validated_sql: finalSql,\n    explanation: llmResponse.explanation || '',\n    validation_status: 'PASSED',\n    validation_timestamp: new Date().toISOString()\n  };\n\n} catch (globalError) {\n  // Catch-all: never let the node crash\n  return {\n    ...contextData,\n    validated_sql: \"SELECT 'VALIDATOR_ERROR: \" + String(globalError.message).replace(/'/g, \"''\").substring(0, 100) + \"' as error_message, 'error' as status LIMIT 1\",\n    explanation: 'Validator encountered an unexpected error: ' + globalError.message,\n    validation_status: 'FAILED',\n    validation_error: 'VALIDATOR_CRASH',\n    validation_timestamp: new Date().toISOString()\n  };\n}\n"
+      },
+      "id": "e3780345-617d-4483-9ab4-79a5c8873cf8",
+      "name": "SQL Validator (Shield #1)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.validated_sql }}",
+        "options": {}
+      },
+      "id": "9ca49b68-4d2e-4770-8118-1fc2c22b2ab9",
+      "name": "SQL Executor (Postgres)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        1216,
+        208
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare data for interpretation - handles both success and error from SQL Executor\nlet validatorData = {};\ntry {\n  validatorData = $node['SQL Validator (Shield #1)'].json || {};\n} catch (e) {\n  validatorData = {};\n}\n\nconst inputItems = $input.all();\nconst sqlResults = [];\n\nfor (const item of inputItems) {\n  // Check if this is an error item\n  if (item.json && !item.json.error && !item.json.errorMessage) {\n    sqlResults.push(item.json);\n  }\n}\n\nif (sqlResults.length === 0) {\n  return {\n    ...validatorData,\n    sql_results: [],\n    result_count: 0,\n    has_results: false,\n    null_aggregation: false\n  };\n}\n\n// ISSUE-QT-14: Detect null aggregation results (SUM/AVG/COUNT returning null)\n// This happens when WHERE filters match no rows (e.g., company_name = 'TechVision'\n// when DB has 'TechVision Inc') - query succeeds but all aggregates return null.\nconst validatedSql = (validatorData.validated_sql || '').toUpperCase();\nconst isAggregation = /\\b(SUM|AVG|COUNT|MIN|MAX)\\s*\\(/.test(validatedSql);\n\nif (isAggregation && sqlResults.length > 0) {\n  const allAggNull = sqlResults.every(row => {\n    const vals = Object.values(row);\n    return vals.length > 0 && vals.every(v => v === null || v === undefined);\n  });\n  if (allAggNull) {\n    return {\n      ...validatorData,\n      sql_results: sqlResults,\n      result_count: 0,\n      has_results: false,\n      null_aggregation: true,\n      result_preview: 'WARNING: Aggregation query returned null on all columns. Probable cause: WHERE filter with inexact entity name. No rows matched the filter.'\n    };\n  }\n}\n\nreturn {\n  ...validatorData,\n  sql_results: sqlResults,\n  result_count: sqlResults.length,\n  has_results: true,\n  null_aggregation: false,\n  result_preview: JSON.stringify(sqlResults.slice(0, 5), null, 2)\n};\n"
+      },
+      "id": "47637bf5-d3c9-4a67-9864-3b5a547ca262",
+      "name": "Result Aggregator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1456,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "authentication": "none",
+        "nodeCredentialType": "openRouterApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.requestBody }}",
+        "options": {
+          "timeout": 25000,
+          "retry": {
+            "maxTries": 3,
+            "waitBetweenTries": 2000
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+            }
+          ]
+        }
+      },
+      "id": "1179b1b8-11c3-41ae-b750-cec4e2687620",
+      "name": "Interpretation Layer (LLM Analyst)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1872,
+        0
+      ],
+      "credentials": {},
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Response Formatter - handles both success and error paths\n// May receive data from Interpretation Layer (success) or Needs SQL Repair? (error)\nlet aggregatorData = {};\nlet initData = {};\nlet interpretation = '';\n\n// Try to get Init & ACL data (always available)\ntry {\n  initData = $node['Init & ACL'].json || {};\n} catch (e) {\n  initData = {};\n}\n\n// Try to get Result Aggregator data (only on success path)\ntry {\n  aggregatorData = $node['Result Aggregator'].json || {};\n} catch (e) {\n  aggregatorData = {};\n}\n\n// Determine interpretation based on input source\n// On success path: $json comes from Interpretation Layer (has choices)\n// On error path: $json comes from Needs SQL Repair? (has error/fallback_message)\nif ($json.choices?.[0]?.message?.content) {\n  interpretation = $json.choices[0].message.content;\n} else if ($json.error || $json.fallback_message) {\n  // Coming from error path\n  interpretation = $json.fallback_message || 'Unable to generate SQL query for this question. Error: ' + ($json.error || 'unknown');\n} else {\n  interpretation = 'No interpretation available';\n}\n\nreturn {\n  // ISSUE-QT-14: detect null aggregation - mark as NULL_RESULT not SUCCESS\n  status: aggregatorData.null_aggregation ? 'NULL_RESULT' : (aggregatorData.validation_status === 'PASSED' ? 'SUCCESS' : 'ERROR'),\n  trace_id: aggregatorData.trace_id || initData.trace_id || '',\n  query: aggregatorData.query || initData.query || '',\n  sql_executed: aggregatorData.validated_sql || '',\n  result_count: aggregatorData.result_count || 0,\n  interpretation: interpretation,\n  raw_results: aggregatorData.has_results ? (aggregatorData.sql_results || []) : [],\n  null_aggregation: aggregatorData.null_aggregation || false,\n  metadata: {\n    validation_status: aggregatorData.null_aggregation ? 'NULL_AGGREGATION' : (aggregatorData.validation_status || 'UNKNOWN'),\n    timestamp: new Date().toISOString(),\n    engine: 'QUANTITATIVE'\n  }\n};\n"
+      },
+      "id": "d059dfee-3534-4743-a6f8-bb29e0cf17be",
+      "name": "Response Formatter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2128,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"quantitative_rag_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"attributes\": {\n    \"result_count\": {{ $json.result_count }},\n    \"sql_length\": {{ $json.sql_executed?.length || 0 }}\n  }\n}",
+        "options": {
+          "timeout": 5000
+        }
+      },
+      "id": "5ba4b171-8e2a-4e2d-82ef-04d6f3cb5c01",
+      "name": "OTEL Export (Shield #9)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2384,
+        208
+      ],
+      "onError": "continueErrorOutput",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "id": "3abfc5c3-e8ce-40ab-936d-a49a33c8e47c",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        368,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Error handler - graceful fallback when nodes haven't executed\ntry {\n  const error = $json;\n  let initData = {};\n  try {\n    initData = $node['Init & ACL']?.json || {};\n  } catch (e) {\n    initData = { trace_id: 'err-' + Date.now(), query: 'unknown' };\n  }\n\n  return {\n    status: 'ERROR',\n    trace_id: initData.trace_id || 'err-' + Date.now(),\n    error_type: error.message?.includes('SQL_') ? 'SQL_ERROR' :\n                error.message?.includes('rate') ? 'RATE_LIMIT' :\n                error.message?.includes('Provider') ? 'PROVIDER_ERROR' : 'SYSTEM_ERROR',\n    error_message: error.message || error.description || 'Unknown error',\n    query: initData.query || 'unknown',\n    timestamp: new Date().toISOString()\n  };\n} catch (e) {\n  return {\n    status: 'ERROR',\n    trace_id: 'err-fallback-' + Date.now(),\n    error_type: 'ERROR_HANDLER_FAILURE',\n    error_message: e.message || 'Error handler itself failed',\n    timestamp: new Date().toISOString()\n  };\n}"
+      },
+      "id": "84eb686e-dc41-452e-a894-f0b6603457c1",
+      "name": "Error Response Builder",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// SQL Error Handler - Self-Healing (MAX 3 REPAIRS)\nconst MAX_REPAIRS = 3;\nconst currentAttempt = ($json.repair_attempts || 0) + 1;\n\nif (currentAttempt > MAX_REPAIRS) {\n  // Give up - return error response instead of looping forever\n  return {\n    json: {\n      ...($json),\n      repair_exhausted: true,\n      needs_repair: false,\n      error_message: 'SQL repair exhausted after ' + MAX_REPAIRS + ' attempts',\n      repair_attempts: currentAttempt\n    }\n  };\n}\n\n// SQL Error Handler - Self-Healing with graceful fallback\ntry {\n  const executorResult = $json;\n\n  let validatorData = {};\n  let originalQuery = '';\n  let schemaContext = '';\n  let tenantId = 'default';\n\n  try { validatorData = $node['SQL Validator (Shield #1)'].json; } catch(e) {}\n  try { originalQuery = $node['Init & ACL'].json.query; } catch(e) { originalQuery = 'unknown'; }\n  try { schemaContext = $node['Schema Context Builder'].json.schema_context; } catch(e) {}\n  try { tenantId = $node['Init & ACL'].json.user_context.tenant_id; } catch(e) {}\n\n  const staticData = $getWorkflowStaticData('global');\n  const traceId = 'sql-repair-' + Date.now();\n\n  const retryKey = `retry_${traceId}`;\n  const retryCount = (staticData[retryKey] || 0) + 1;\n  staticData[retryKey] = retryCount;\n\n  if (retryCount > 2) {\n    delete staticData[retryKey];\n    return [{\n      json: {\n        status: 'ERROR',\n        trace_id: traceId,\n        error_type: 'SQL_MAX_RETRIES',\n        error_message: 'SQL self-healing exhausted after 2 retries',\n        original_query: originalQuery,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  const errorMsg = executorResult.error_message || executorResult.message || 'SQL execution failed';\n  const failedSQL = validatorData.validated_sql || executorResult.sql || '';\n\n  return [{\n    json: {\n      needs_repair: true,\n      retry_count: retryCount,\n      original_query: originalQuery,\n      failed_sql: failedSQL,\n      error_message: errorMsg,\n      schema_context: schemaContext,\n      tenant_id: tenantId,\n      trace_id: traceId\n    }\n  }];\n} catch (e) {\n  return [{\n    json: {\n      status: 'ERROR',\n      error_type: 'SELF_HEAL_FAILURE',\n      error_message: e.message,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}\n\n// Track repair attempts in output\nconst output = $json;\nif (typeof output === 'object') {\n  output.repair_attempts = currentAttempt;\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        416
+      ],
+      "id": "37d15e46-31a0-40d5-9baa-77b573a8ee6e",
+      "name": "SQL Error Handler (Self-Healing)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "authentication": "none",
+        "nodeCredentialType": "openRouterApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.requestBody }}",
+        "options": {
+          "timeout": 20000,
+          "retry": {
+            "maxTries": 3,
+            "waitBetweenTries": 2000
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1872,
+        480
+      ],
+      "id": "62e9e6c2-a7b6-4f8f-baf1-8eef71eb898c",
+      "name": "SQL Repair LLM",
+      "credentials": {},
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "conditions": [
+                {
+                  "leftValue": "={{ $json.needs_repair }}",
+                  "rightValue": true,
+                  "operator": {
+                    "type": "boolean",
+                    "operation": "equals"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        240
+      ],
+      "id": "9ea1857a-7959-4480-8a05-962791dd7a5f",
+      "name": "Needs SQL Repair?"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse SQL Repair response and prepare for retry\nconst repairResponse = $json;\nlet repairedSql = '';\n\ntry {\n  const content = repairResponse.choices?.[0]?.message?.content || repairResponse.body?.choices?.[0]?.message?.content;\n  const parsed = JSON.parse(content);\n  repairedSql = parsed.sql;\n} catch (e) {\n  // If parsing fails, return error\n  return {\n    success: false,\n    error: 'SQL_REPAIR_PARSE_ERROR',\n    raw_response: repairResponse\n  };\n}\n\n// Prepare for SQL Validator re-run\nreturn {\n  sql: repairedSql,\n  is_repaired: true,\n  repair_iteration: $node['SQL Error Handler (Self-Healing)'].json.retry_count\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2096,
+        480
+      ],
+      "id": "92c3d6ed-285f-4816-b5c6-5173b374cf65",
+      "name": "Repair Parser"
+    },
+    {
+      "parameters": {
+        "content": "# 🔧 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `DEEPSEEK_API_KEY` - API key DeepSeek (api.deepseek.com)\n- `ANTHROPIC_API_KEY` - API key Anthropic (pour planning)\n- `GOOGLE_API_KEY` - API key Google (Gemini Flash)\n\n## LLM URLs (optionnel - défauts inclus)\n- `SQL_GENERATION_API_URL` - URL API pour SQL\n- `INTENT_ANALYSIS_API_URL` - URL API pour intent\n- `PLANNING_API_URL` - URL API pour planning\n- `GENERATION_API_URL` - URL API pour génération\n\n## LLM Models (optionnel)\n- `SQL_GENERATION_MODEL` = deepseek-chat\n- `INTENT_ANALYSIS_MODEL` = deepseek-chat\n- `PLANNING_MODEL` = claude-sonnet-4-5-20250929\n- `GENERATION_MODEL` = deepseek-chat\n\n## Embedding (RECOMMANDÉ: self-hosted)\n- `EMBEDDING_API_URL` - URL embedding (défaut: OpenAI)\n- `EMBEDDING_MODEL` - text-embedding-3-small → Qwen3-Embedding-8B\n\n## Reranking (RECOMMANDÉ: self-hosted)\n- `RERANKER_API_URL` - URL reranker (défaut: Cohere)\n- `RERANKER_MODEL` - rerank-v3 → Qwen3-Reranker-8B\n\n## Impact estimé (selon research):\n- -89% coût ingestion\n- -95% coût requêtes\n- +3% accuracy SQL (BIRD-SQL)\n- +15 pts MTEB (embedding)\n",
+        "height": 600,
+        "width": 400
+      },
+      "id": "caefcce7-a945-4749-bc3d-fbb4efc23bdc",
+      "name": "📋 Configuration SOTA 2026",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        16,
+        208
+      ],
+      "id": "1aa72ae4-5080-4b72-9a03-898056161710",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "availableInChat": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c97d44ab-afc1-4640-a369-3ba05aedafc3",
+      "name": "When chat message received",
+      "webhookId": "326acdfb-3e93-4cc0-8548-1f6e17a4e335"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "3e0f8010-39e0-4bca-9d19-35e5094391a9",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        432
+      ],
+      "id": "6598d255-2b2a-4afe-9fc8-cd97d1f066e7",
+      "name": "Webhook",
+      "webhookId": "3e0f8010-39e0-4bca-9d19-35e5094391a9"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER: The financials table has BOTH annual (period='FY') and quarterly (period='Q1'-'Q4') rows.\n  For annual totals: ALWAYS add period = 'FY' to avoid double-counting.\n  For quarterly analysis: filter period IN ('Q1','Q2','Q3','Q4').\n  NEVER SUM without specifying period - you will get 2x the real value.\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        464
+      ],
+      "id": "817873e1-b27e-41e8-9767-356782ae9429",
+      "name": "Prepare SQL Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        0
+      ],
+      "id": "330eeb68-886e-428f-b453-297cb2094b5d",
+      "name": "Prepare Interpretation Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"meta-llama/llama-3.3-70b-instruct:free\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1696,
+        480
+      ],
+      "id": "585ba1b1-1f92-4703-b30e-c245342df589",
+      "name": "Prepare SQL Repair Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// GitHub Error Logger for quantitative\nconst errorData = $input.first().json;\nconst timestamp = new Date().toISOString();\nconst questionId = errorData.question_id || errorData.trace_id || 'q-' + Date.now();\nconst errorType = errorData.error_type || errorData.error_code || 'UNKNOWN';\nconst pipeline = 'quantitative';\n\nconst logEntry = {\n  timestamp: timestamp,\n  pipeline: pipeline,\n  question_id: questionId,\n  error_type: errorType,\n  error_message: (errorData.error || errorData.message || 'No message').slice(0, 500),\n  input: {\n    query: (errorData.query || errorData.original_query || '').slice(0, 300),\n    tenant_id: errorData.tenant_id || 'benchmark'\n  },\n  partial_response: errorData.partial_response || errorData.response || null,\n  n8n_context: {\n    workflow_id: $workflow.id,\n    workflow_name: $workflow.name,\n    execution_id: $execution.id\n  },\n  performance: {\n    latency_ms: errorData.latency_ms || 0,\n    http_status: errorData.http_status || null\n  }\n};\n\nreturn [{ json: logEntry }];"
+      },
+      "id": "67b4a644-948c-402d-9f71-bae592c0ee3d",
+      "name": "GitHub Error Logger (quantitative)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2684,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// SQL Execution Logger\nconst input = $input.first().json;\n\nconst log = {\n  timestamp: new Date().toISOString(),\n  pipeline: 'quantitative',\n  step: 'sql_execution',\n  sql: (input.validated_sql || input.sql || input.sql_executed || '').slice(0, 500),\n  validation_status: input.validation_status || input.metadata?.validation_status || 'UNKNOWN',\n  result_count: input.result_count || 0,\n  null_aggregation: input.null_aggregation || false,\n  error: input.sql_error || null\n};\n\nreturn [{ json: { ...input, _sql_log: log } }];"
+      },
+      "id": "bc332ab4-b2b3-48a4-9569-cf1d47c6aa30",
+      "name": "SQL Execution Logger",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2684,
+        200
+      ],
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Init & ACL": {
+      "main": [
+        [
+          {
+            "node": "Schema Introspection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schema Introspection": {
+      "main": [
+        [
+          {
+            "node": "Schema Context Builder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schema Context Builder": {
+      "main": [
+        [
+          {
+            "node": "Prepare SQL Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text-to-SQL Generator (CoT Enhanced)": {
+      "main": [
+        [
+          {
+            "node": "SQL Validator (Shield #1)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SQL Validator (Shield #1)": {
+      "main": [
+        [
+          {
+            "node": "SQL Executor (Postgres)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SQL Executor (Postgres)": {
+      "main": [
+        [
+          {
+            "node": "Result Aggregator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SQL Error Handler (Self-Healing)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Result Aggregator": {
+      "main": [
+        [
+          {
+            "node": "Prepare Interpretation Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Interpretation Layer (LLM Analyst)": {
+      "main": [
+        [
+          {
+            "node": "Response Formatter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Response Formatter": {
+      "main": [
+        [
+          {
+            "node": "OTEL Export (Shield #9)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Error Response Builder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SQL Error Handler (Self-Healing)": {
+      "main": [
+        [
+          {
+            "node": "Needs SQL Repair?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs SQL Repair?": {
+      "main": [
+        [
+          {
+            "node": "Prepare SQL Repair Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Response Formatter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SQL Repair LLM": {
+      "main": [
+        [
+          {
+            "node": "Repair Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Repair Parser": {
+      "main": [
+        [
+          {
+            "node": "SQL Validator (Shield #1)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Init & ACL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Init & ACL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Init & ACL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SQL Request": {
+      "main": [
+        [
+          {
+            "node": "Text-to-SQL Generator (CoT Enhanced)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Interpretation Request": {
+      "main": [
+        [
+          {
+            "node": "Interpretation Layer (LLM Analyst)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SQL Repair Request": {
+      "main": [
+        [
+          {
+            "node": "SQL Repair LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed"
+  },
+  "staticData": {
+    "global": {
+      "sqlRetries": {
+        "tr-sqli-5-1770370369": {
+          "count": 1,
+          "errors": [
+            {
+              "level": "warning",
+              "tags": {},
+              "description": "Failed query: SELECT 'SQL Injection Attempt Neutralized' AS status, 'test-injection' AS tenant_id WHERE 1=1 AND tenant_id = 'test-injection' LIMIT 100",
+              "timestamp": 1770370372337,
+              "context": {},
+              "functionality": "regular",
+              "name": "NodeOperationError",
+              "node": {
+                "parameters": {
+                  "resource": "database",
+                  "operation": "executeQuery",
+                  "query": "={{ $json.validated_sql }}",
+                  "options": {}
+                },
+                "id": "9ca49b68-4d2e-4770-8118-1fc2c22b2ab9",
+                "name": "SQL Executor (Postgres)",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.4,
+                "position": [
+                  1216,
+                  208
+                ],
+                "credentials": {
+                  "postgres": {
+                    "id": "zEr7jPswZNv6lWKu",
+                    "name": "Supabase PostgreSQL"
+                  }
+                },
+                "onError": "continueErrorOutput"
+              },
+              "messages": []
+            }
+          ],
+          "errorTypes": []
+        },
+        "tr-integrity-1770370569": {
+          "count": 1,
+          "errors": [
+            {
+              "level": "warning",
+              "tags": {},
+              "description": "Failed query: SELECT T1.* FROM rlhf_feedback AS T1 WHERE T1.tenant_id = 'test-integrity' AND (T1.query_text LIKE '%test-doc-integrity-1770370566.pdf%' OR T1.response LIKE '%test-doc-integrity-1770370566.pdf%') LIMIT 100",
+              "timestamp": 1770370571990,
+              "context": {},
+              "functionality": "regular",
+              "name": "NodeOperationError",
+              "node": {
+                "parameters": {
+                  "resource": "database",
+                  "operation": "executeQuery",
+                  "query": "={{ $json.validated_sql }}",
+                  "options": {}
+                },
+                "id": "9ca49b68-4d2e-4770-8118-1fc2c22b2ab9",
+                "name": "SQL Executor (Postgres)",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.4,
+                "position": [
+                  1216,
+                  208
+                ],
+                "credentials": {
+                  "postgres": {
+                    "id": "zEr7jPswZNv6lWKu",
+                    "name": "Supabase PostgreSQL"
+                  }
+                },
+                "onError": "continueErrorOutput"
+              },
+              "messages": []
+            }
+          ],
+          "errorTypes": []
+        },
+        "tr-rag-1770370606668-b6bllknw": {
+          "count": 1,
+          "errors": [
+            {
+              "level": "warning",
+              "tags": {},
+              "description": "Failed query: SELECT health_status FROM v_latest_test_runs WHERE tenant_id = 'probe' LIMIT 100",
+              "timestamp": 1770370608249,
+              "context": {},
+              "functionality": "regular",
+              "name": "NodeOperationError",
+              "node": {
+                "parameters": {
+                  "resource": "database",
+                  "operation": "executeQuery",
+                  "query": "={{ $json.validated_sql }}",
+                  "options": {}
+                },
+                "id": "9ca49b68-4d2e-4770-8118-1fc2c22b2ab9",
+                "name": "SQL Executor (Postgres)",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.4,
+                "position": [
+                  1216,
+                  208
+                ],
+                "credentials": {
+                  "postgres": {
+                    "id": "zEr7jPswZNv6lWKu",
+                    "name": "Supabase PostgreSQL"
+                  }
+                },
+                "onError": "continueErrorOutput"
+              },
+              "messages": []
+            }
+          ],
+          "errorTypes": []
+        },
+        "tr-rag-1770399743115-1ysffqp9": {
+          "count": 1,
+          "errors": [
+            {
+              "level": "warning",
+              "tags": {},
+              "description": "Failed query: SELECT SUM(T1.revenue) AS total_revenue_2015\nFROM sales AS T1\nINNER JOIN orders AS T2 ON T1.order_id = T2.id\nINNER JOIN customers AS T3 ON T2.customer_id = T3.id\nWHERE T3.name = 'entergy corporation' AND T1.tenant_id = 'benchmark' AND EXTRACT(YEAR FROM T2.order_date) = 2015\nLIMIT 100",
+              "timestamp": 1770399745926,
+              "context": {},
+              "functionality": "regular",
+              "name": "NodeOperationError",
+              "node": {
+                "parameters": {
+                  "resource": "database",
+                  "operation": "executeQuery",
+                  "query": "={{ $json.validated_sql }}",
+                  "options": {}
+                },
+                "id": "9ca49b68-4d2e-4770-8118-1fc2c22b2ab9",
+                "name": "SQL Executor (Postgres)",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.4,
+                "position": [
+                  1216,
+                  208
+                ],
+                "credentials": {
+                  "postgres": {
+                    "id": "zEr7jPswZNv6lWKu",
+                    "name": "Supabase PostgreSQL"
+                  }
+                },
+                "onError": "continueErrorOutput"
+              },
+              "messages": []
+            }
+          ],
+          "errorTypes": []
+        },
+        "tr-rag-1770400458243-obmblpje": {
+          "count": 1,
+          "errors": [
+            {
+              "level": "warning",
+              "tags": {},
+              "description": "Failed query: SELECT id, summary_context, content FROM documents WHERE tenant_id = 'benchmark' AND (summary_context ILIKE '%short stay%' OR summary_context ILIKE '%23-hour ward%' OR summary_context ILIKE '%children\\'s hospital%') AND (content ILIKE '%effective%' OR summary_context ILIKE '%effective%') LIMIT 100",
+              "timestamp": 1770400460378,
+              "context": {
+                "itemIndex": 0
+              },
+              "functionality": "regular",
+              "name": "NodeOperationError",
+              "node": {
+                "parameters": {
+                  "resource": "database",
+                  "operation": "executeQuery",
+                  "query": "={{ $json.validated_sql }}",
+                  "options": {}
+                },
+                "id": "9ca49b68-4d2e-4770-8118-1fc2c22b2ab9",
+                "name": "SQL Executor (Postgres)",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.4,
+                "position": [
+                  1216,
+                  208
+                ],
+                "credentials": {
+                  "postgres": {
+                    "id": "zEr7jPswZNv6lWKu",
+                    "name": "Supabase PostgreSQL"
+                  }
+                },
+                "onError": "continueErrorOutput"
+              },
+              "messages": []
+            }
+          ],
+          "errorTypes": []
+        },
+        "tr-rag-1770400559538-wg675flr": {
+          "count": 1,
+          "errors": [
+            {
+              "level": "warning",
+              "tags": {},
+              "description": "Failed query: SELECT DISTINCT query, response FROM rlhf_training_data WHERE (query ILIKE '%suicide%' OR response ILIKE '%suicide%') AND tenant_id = 'benchmark' LIMIT 100",
+              "timestamp": 1770400561721,
+              "context": {},
+              "functionality": "regular",
+              "name": "NodeOperationError",
+              "node": {
+                "parameters": {
+                  "resource": "database",
+                  "operation": "executeQuery",
+                  "query": "={{ $json.validated_sql }}",
+                  "options": {}
+                },
+                "id": "9ca49b68-4d2e-4770-8118-1fc2c22b2ab9",
+                "name": "SQL Executor (Postgres)",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.4,
+                "position": [
+                  1216,
+                  208
+                ],
+                "credentials": {
+                  "postgres": {
+                    "id": "zEr7jPswZNv6lWKu",
+                    "name": "Supabase PostgreSQL"
+                  }
+                },
+                "onError": "continueErrorOutput"
+              },
+              "messages": []
+            }
+          ],
+          "errorTypes": []
+        },
+        "tr-rag-1770400569701-5ayz2tgo": {
+          "count": 1,
+          "errors": [
+            {
+              "level": "warning",
+              "tags": {},
+              "description": "Failed query: SELECT response FROM rlhf_training_data WHERE tenant_id = 'benchmark' AND query ILIKE '%Mark%' AND query ILIKE '%protesting students%' LIMIT 100",
+              "timestamp": 1770400571958,
+              "context": {},
+              "functionality": "regular",
+              "name": "NodeOperationError",
+              "node": {
+                "parameters": {
+                  "resource": "database",
+                  "operation": "executeQuery",
+                  "query": "={{ $json.validated_sql }}",
+                  "options": {}
+                },
+                "id": "9ca49b68-4d2e-4770-8118-1fc2c22b2ab9",
+                "name": "SQL Executor (Postgres)",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.4,
+                "position": [
+                  1216,
+                  208
+                ],
+                "credentials": {
+                  "postgres": {
+                    "id": "zEr7jPswZNv6lWKu",
+                    "name": "Supabase PostgreSQL"
+                  }
+                },
+                "onError": "continueErrorOutput"
+              },
+              "messages": []
+            }
+          ],
+          "errorTypes": []
+        },
+        "tr-rag-1770438955725-e7zdssmw": {
+          "count": 1,
+          "errors": [
+            {
+              "level": "warning",
+              "tags": {},
+              "description": "Failed query: SELECT SUM(amount) AS total_revenue\nFROM sales_data\nWHERE tenant_id = 'benchmark'\n  AND company_name ILIKE '%TechVision Inc%'\n  AND quarter = 'Q4'\n  AND fiscal_year = 2023\nLIMIT 100",
+              "timestamp": 1770438957400,
+              "context": {},
+              "functionality": "regular",
+              "name": "NodeOperationError",
+              "node": {
+                "parameters": {
+                  "resource": "database",
+                  "operation": "executeQuery",
+                  "query": "={{ $json.validated_sql }}",
+                  "options": {}
+                },
+                "id": "9ca49b68-4d2e-4770-8118-1fc2c22b2ab9",
+                "name": "SQL Executor (Postgres)",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.4,
+                "position": [
+                  1216,
+                  208
+                ],
+                "credentials": {
+                  "postgres": {
+                    "id": "zEr7jPswZNv6lWKu",
+                    "name": "Supabase PostgreSQL"
+                  }
+                },
+                "alwaysOutputData": true,
+                "onError": "continueErrorOutput"
+              },
+              "messages": []
+            }
+          ],
+          "errorTypes": []
+        },
+        "tr-rag-1770439007430-w9dee5jk": {
+          "count": 1,
+          "errors": [
+            {
+              "level": "warning",
+              "tags": {},
+              "description": "Failed query: SELECT NULL AS error_message\nWHERE EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'employees' AND tenant_id = 'benchmark')\nAND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'salaries' AND tenant_id = 'benchmark')\nLIMIT 1;",
+              "timestamp": 1770439009625,
+              "context": {},
+              "functionality": "regular",
+              "name": "NodeOperationError",
+              "node": {
+                "parameters": {
+                  "resource": "database",
+                  "operation": "executeQuery",
+                  "query": "={{ $json.validated_sql }}",
+                  "options": {}
+                },
+                "id": "9ca49b68-4d2e-4770-8118-1fc2c22b2ab9",
+                "name": "SQL Executor (Postgres)",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.4,
+                "position": [
+                  1216,
+                  208
+                ],
+                "credentials": {
+                  "postgres": {
+                    "id": "zEr7jPswZNv6lWKu",
+                    "name": "Supabase PostgreSQL"
+                  }
+                },
+                "alwaysOutputData": true,
+                "onError": "continueErrorOutput"
+              },
+              "messages": []
+            }
+          ],
+          "errorTypes": []
+        }
+      },
+      "retry_sql-repair-1770528373021": 1,
+      "retry_sql-repair-1770528387112": 1,
+      "retry_sql-repair-1770528484022": 1,
+      "retry_sql-repair-1770542699408": 1,
+      "retry_sql-repair-1770542712813": 1,
+      "retry_sql-repair-1770542725816": 1,
+      "retry_sql-repair-1770542777371": 1,
+      "retry_sql-repair-1770542837850": 1,
+      "retry_sql-repair-1770542844792": 1,
+      "retry_sql-repair-1770542853053": 1,
+      "retry_sql-repair-1770542866791": 1,
+      "retry_sql-repair-1770542874428": 1,
+      "retry_sql-repair-1770542882235": 1,
+      "retry_sql-repair-1770542893432": 1,
+      "retry_sql-repair-1770542908262": 1,
+      "retry_sql-repair-1770543163366": 1,
+      "retry_sql-repair-1770543171812": 1,
+      "retry_sql-repair-1770543183972": 1,
+      "retry_sql-repair-1770543196133": 1,
+      "retry_sql-repair-1770543242417": 1,
+      "retry_sql-repair-1770543251701": 1,
+      "retry_sql-repair-1770543268890": 1,
+      "retry_sql-repair-1770543286182": 1,
+      "retry_sql-repair-1770565988488": 1,
+      "retry_sql-repair-1770566824902": 1,
+      "retry_sql-repair-1770567735545": 1,
+      "retry_sql-repair-1770567748645": 1,
+      "retry_sql-repair-1770567817848": 1,
+      "retry_sql-repair-1770567834408": 1,
+      "retry_sql-repair-1770567923580": 1,
+      "retry_sql-repair-1770567937743": 1,
+      "retry_sql-repair-1770567947075": 1,
+      "retry_sql-repair-1770567961322": 1,
+      "retry_sql-repair-1770567973651": 1,
+      "retry_sql-repair-1770567981105": 1,
+      "retry_sql-repair-1770567992836": 1,
+      "retry_sql-repair-1770568008955": 1,
+      "retry_sql-repair-1770578169724": 1,
+      "retry_sql-repair-1770578534179": 1,
+      "retry_sql-repair-1770580463001": 1,
+      "retry_sql-repair-1770581296294": 1,
+      "retry_sql-repair-1770599948443": 1,
+      "retry_sql-repair-1770600415351": 1,
+      "retry_sql-repair-1770600753750": 1,
+      "retry_sql-repair-1770604653782": 1,
+      "retry_sql-repair-1770604834697": 1,
+      "retry_sql-repair-1770604835990": 1,
+      "retry_sql-repair-1770604836883": 1,
+      "retry_sql-repair-1770604839276": 1,
+      "retry_sql-repair-1770604843009": 1,
+      "retry_sql-repair-1770604850586": 1,
+      "retry_sql-repair-1770604851388": 1,
+      "retry_sql-repair-1770604853877": 1,
+      "retry_sql-repair-1770605060425": 1,
+      "retry_sql-repair-1770605061387": 1,
+      "retry_sql-repair-1770605062215": 1,
+      "retry_sql-repair-1770605062976": 1,
+      "retry_sql-repair-1770605063810": 1,
+      "retry_sql-repair-1770605064727": 1,
+      "retry_sql-repair-1770605065710": 1,
+      "retry_sql-repair-1770605066497": 1
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "632def55-dd8e-4f92-a2b5-dde49467bf7e",
+  "activeVersionId": "632def55-dd8e-4f92-a2b5-dde49467bf7e",
+  "versionCounter": 338,
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2026-01-25T13:18:45.658Z",
+      "createdAt": "2026-01-25T13:18:45.658Z",
+      "role": "workflow:owner",
+      "workflowId": "LjUz8fxQZ03G9IsU",
+      "projectId": "JV7MbqBbWPTstXIo",
+      "project": {
+        "updatedAt": "2026-01-07T13:20:26.996Z",
+        "createdAt": "2026-01-07T13:20:21.870Z",
+        "id": "JV7MbqBbWPTstXIo",
+        "name": "Alexis Moret <alexis.moret6@outlook.fr>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "215767e0-958a-4c74-a67a-e335807eba64",
+        "projectRelations": [
+          {
+            "updatedAt": "2026-01-07T13:20:21.870Z",
+            "createdAt": "2026-01-07T13:20:21.870Z",
+            "userId": "215767e0-958a-4c74-a67a-e335807eba64",
+            "projectId": "JV7MbqBbWPTstXIo",
+            "user": {
+              "updatedAt": "2026-02-08T23:36:29.000Z",
+              "createdAt": "2026-01-07T13:20:20.003Z",
+              "id": "215767e0-958a-4c74-a67a-e335807eba64",
+              "email": "alexis.moret6@outlook.fr",
+              "firstName": "Alexis",
+              "lastName": "Moret",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "userClaimedAiCredits": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "e3_89vptJG7PPA-OHyAg3",
+                "userActivatedAt": 1767837780144,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1768407850905
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-02-08",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-02-09T02:45:23.691Z",
+    "createdAt": "2026-02-09T02:45:23.691Z",
+    "versionId": "632def55-dd8e-4f92-a2b5-dde49467bf7e",
+    "workflowId": "LjUz8fxQZ03G9IsU",
+    "nodes": [
+      {
+        "parameters": {
+          "jsCode": "// ============================================\n// PATCH #1: INIT & ACL - ORCHESTRATOR SUPPORT\n// ============================================\n// Pour: WF4 Quantitative & WF2 Graph\n// Bug: Workflows échouent quand appelés par orchestrateur\n// Fix: Support multi-format d'entrée\n\n// Init & ACL for RAG - HARDENED V2.2 (ORCHESTRATOR FIX)\nconst rawInput = $input.first().json;\nconst input = rawInput.body || rawInput;\n\n// === EXTRACTION ROBUSTE DE LA QUERY ===\n// Supporte: webhook, chat trigger, sub-workflow, ET orchestrator\nlet queryStr = '';\n\n// Priorité 1: Direct query field (webhook/chat)\nif (typeof input.query === 'string') {\n  queryStr = input.query;\n}\n// Priorité 2: Chat input\nelse if (input.chatInput) {\n  queryStr = input.chatInput;\n}\n// Priorité 3: Orchestrator format - task_query\nelse if (input.task_query) {\n  queryStr = input.task_query;\n}\n// Priorité 4: Orchestrator format - current_task.query\nelse if (input.current_task && typeof input.current_task.query === 'string') {\n  queryStr = input.current_task.query;\n}\n// Priorité 5: Query as object (stringify)\nelse if (input.query && typeof input.query === 'object') {\n  queryStr = JSON.stringify(input.query);\n}\n\nconst query = queryStr.trim();\n\n// === VALIDATION ===\nif (!query || query.length < 2) {\n  throw new Error('VALIDATION_ERROR: query is required and must be at least 2 characters');\n}\n\n// === EXTRACTION DU USER CONTEXT ===\n// Parse user_context (peut être string JSON ou objet)\nlet userContext = {};\n\nif (typeof input.user_context === 'string') {\n  try {\n    userContext = JSON.parse(input.user_context);\n  } catch (e) {\n    userContext = {};\n  }\n} else if (input.user_context && typeof input.user_context === 'object') {\n  userContext = input.user_context;\n}\n\n// === EXTRACTION DU TRACE_ID ===\n// Support multiple sources\nconst traceId = input.trace_id || \n                input.current_task?.trace_id || \n                `tr-rag-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\n// === OUTPUT ===\nreturn [{\n  json: {\n    trace_id: traceId,\n    query: query.substring(0, 2000),\n    user_context: {\n      tenant_id: userContext.tenant_id || input.tenant_id || 'default',\n      groups: Array.isArray(userContext.groups) ? userContext.groups : ['guest']\n    },\n    timestamp: new Date().toISOString(),\n    source: rawInput.body ? 'webhook' : \n            (rawInput.chatInput ? 'chat' : \n            (input.task_query ? 'orchestrator' : 'subworkflow')),\n    \n    // Metadata pour debugging\n    _debug: {\n      original_input_keys: Object.keys(input),\n      query_source: input.task_query ? 'task_query' : \n                    (input.current_task ? 'current_task.query' : \n                    (input.chatInput ? 'chatInput' : 'query'))\n    }\n  }\n}];\n\n"
+        },
+        "id": "d8623e2a-1060-46e1-b3e9-33251065d013",
+        "name": "Init & ACL",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          208,
+          208
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT table_name, column_name, data_type, is_nullable \nFROM information_schema.columns \nWHERE table_schema = 'public'\n  AND table_name IN ('financials', 'balance_sheet', 'sales_data', 'products', 'employees', 'kpis', 'companies')\n  AND table_name NOT LIKE 'pg_%'\n  AND table_name NOT LIKE '_realtime%'\n  AND table_name NOT LIKE 'supabase_%'\nORDER BY table_name, ordinal_position\nLIMIT 500",
+          "options": {}
+        },
+        "id": "629ec593-2bf6-4688-99d2-fe8b2009e062",
+        "name": "Schema Introspection",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.4,
+        "position": [
+          400,
+          208
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Build schema context for LLM\nconst inputData = $input.all();\nif (!inputData || inputData.length === 0) {\n  return {\n    ...$node['Init & ACL'].json,\n    schema_context: \"Aucune table trouvée dans le schéma public.\",\n    available_tables: []\n  };\n}\n\nconst schemaData = inputData.map(i => i.json);\nconst tables = {};\n\nschemaData.forEach(col => {\n  if (!tables[col.table_name]) tables[col.table_name] = [];\n  tables[col.table_name].push(`${col.column_name} ${col.data_type}${col.is_nullable === 'NO' ? ' NOT NULL' : ''}`);\n});\n\nconst schemaContext = Object.entries(tables)\n  .map(([table, columns]) => `Table: ${table}\\nColumns: ${columns.join(', ')}`)\n  .join('\\n\\n');\n\nconst initData = $node['Init & ACL'].json;\n\nreturn {\n  ...initData,\n  schema_context: schemaContext,\n  available_tables: Object.keys(tables)\n};"
+        },
+        "id": "f52905d6-700c-45b2-8265-4501a7c08482",
+        "name": "Schema Context Builder",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          608,
+          208
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+          "authentication": "none",
+          "nodeCredentialType": "openRouterApi",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify($json.requestBody) }}\n",
+          "options": {
+            "timeout": 25000,
+            "retry": {
+              "maxTries": 3,
+              "waitBetweenTries": 2000
+            }
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              }
+            ]
+          }
+        },
+        "id": "1b0e89ee-a913-498e-ab6d-2f8d568a2d2f",
+        "name": "Text-to-SQL Generator (CoT Enhanced)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          800,
+          208
+        ],
+        "credentials": {},
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "jsCode": "// CRITICAL: SQL Validator - Security Shield (ERROR-SAFE VERSION)\n// Never throws - returns error data that flows through pipeline\nconst contextData = $node['Schema Context Builder'].json;\n\ntry {\n  let llmResponse = {};\n  try {\n    llmResponse = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n  } catch (e) {\n    // LLM returned invalid JSON - return safe fallback\n    return {\n      ...contextData,\n      validated_sql: \"SELECT 'SQL_GENERATION_ERROR: Invalid LLM response' as error_message, 'error' as status WHERE tenant_id = '\" + contextData.user_context.tenant_id + \"' LIMIT 1\",\n      explanation: 'LLM returned invalid JSON response',\n      validation_status: 'FAILED',\n      validation_error: 'SQL_GENERATION_ERROR',\n      validation_timestamp: new Date().toISOString()\n    };\n  }\n\n  const sql = String(llmResponse.sql || '').trim();\n  const sqlUpper = sql.toUpperCase();\n\n  // FORBIDDEN PATTERNS - P0 Security\n  const forbiddenPatterns = [\n    /DELETE|UPDATE|INSERT|DROP|TRUNCATE|ALTER|CREATE/i,\n    /GRANT|REVOKE|EXEC|EXECUTE|CALL/i,\n    /--|;.*;|UNION.*SELECT/i,\n    /xp_|sp_|pg_sleep/i,\n    /\\bINTO\\s+OUTFILE\\b|\\bLOAD_FILE\\b/i\n  ];\n\n  for (const pattern of forbiddenPatterns) {\n    if (pattern.test(sqlUpper)) {\n      return {\n        ...contextData,\n        validated_sql: \"SELECT 'SQL_INJECTION_DETECTED' as error_message, 'error' as status WHERE tenant_id = '\" + contextData.user_context.tenant_id + \"' LIMIT 1\",\n        explanation: 'Forbidden SQL pattern detected',\n        validation_status: 'FAILED',\n        validation_error: 'SQL_INJECTION_DETECTED',\n        validation_timestamp: new Date().toISOString()\n      };\n    }\n  }\n\n  // REQUIRED PATTERNS - return error instead of throwing\n  if (!sqlUpper.startsWith('SELECT')) {\n    return {\n      ...contextData,\n      validated_sql: \"SELECT 'Query must start with SELECT' as error_message, 'error' as status WHERE tenant_id = '\" + contextData.user_context.tenant_id + \"' LIMIT 1\",\n      explanation: 'Query must start with SELECT',\n      validation_status: 'FAILED',\n      validation_error: 'SQL_VALIDATION_ERROR',\n      validation_timestamp: new Date().toISOString()\n    };\n  }\n\n  // Add LIMIT if missing (instead of throwing)\n  let finalSql = llmResponse.sql;\n  if (!sqlUpper.includes('LIMIT')) {\n    finalSql = finalSql + ' LIMIT 1000';\n  }\n\n  // Extract LIMIT value\n  const limitMatch = sqlUpper.match(/LIMIT\\s+(\\d+)/i);\n  if (limitMatch) {\n    const limitValue = parseInt(limitMatch[1]);\n    if (limitValue > 1000) {\n      finalSql = finalSql.replace(/LIMIT\\s+\\d+/i, 'LIMIT 1000');\n    }\n  }\n\n  // Check tenant_id filter - add if missing (instead of throwing)\n  if (!sqlUpper.includes('TENANT_ID')) {\n    // Try to add tenant_id filter\n    if (sqlUpper.includes('WHERE')) {\n      finalSql = finalSql.replace(/WHERE/i, `WHERE tenant_id = '${contextData.user_context.tenant_id}' AND`);\n    } else if (sqlUpper.includes('FROM')) {\n      finalSql = finalSql.replace(/(FROM\\s+\\w+)/i, `$1 WHERE tenant_id = '${contextData.user_context.tenant_id}'`);\n    }\n  }\n\n  // Passed validation\n  return {\n    ...contextData,\n    validated_sql: finalSql,\n    explanation: llmResponse.explanation || '',\n    validation_status: 'PASSED',\n    validation_timestamp: new Date().toISOString()\n  };\n\n} catch (globalError) {\n  // Catch-all: never let the node crash\n  return {\n    ...contextData,\n    validated_sql: \"SELECT 'VALIDATOR_ERROR: \" + String(globalError.message).replace(/'/g, \"''\").substring(0, 100) + \"' as error_message, 'error' as status LIMIT 1\",\n    explanation: 'Validator encountered an unexpected error: ' + globalError.message,\n    validation_status: 'FAILED',\n    validation_error: 'VALIDATOR_CRASH',\n    validation_timestamp: new Date().toISOString()\n  };\n}\n"
+        },
+        "id": "e3780345-617d-4483-9ab4-79a5c8873cf8",
+        "name": "SQL Validator (Shield #1)",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1008,
+          208
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "={{ $json.validated_sql }}",
+          "options": {}
+        },
+        "id": "9ca49b68-4d2e-4770-8118-1fc2c22b2ab9",
+        "name": "SQL Executor (Postgres)",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.4,
+        "position": [
+          1216,
+          208
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Prepare data for interpretation - handles both success and error from SQL Executor\nlet validatorData = {};\ntry {\n  validatorData = $node['SQL Validator (Shield #1)'].json || {};\n} catch (e) {\n  validatorData = {};\n}\n\nconst inputItems = $input.all();\nconst sqlResults = [];\n\nfor (const item of inputItems) {\n  // Check if this is an error item\n  if (item.json && !item.json.error && !item.json.errorMessage) {\n    sqlResults.push(item.json);\n  }\n}\n\nif (sqlResults.length === 0) {\n  return {\n    ...validatorData,\n    sql_results: [],\n    result_count: 0,\n    has_results: false,\n    null_aggregation: false\n  };\n}\n\n// ISSUE-QT-14: Detect null aggregation results (SUM/AVG/COUNT returning null)\n// This happens when WHERE filters match no rows (e.g., company_name = 'TechVision'\n// when DB has 'TechVision Inc') - query succeeds but all aggregates return null.\nconst validatedSql = (validatorData.validated_sql || '').toUpperCase();\nconst isAggregation = /\\b(SUM|AVG|COUNT|MIN|MAX)\\s*\\(/.test(validatedSql);\n\nif (isAggregation && sqlResults.length > 0) {\n  const allAggNull = sqlResults.every(row => {\n    const vals = Object.values(row);\n    return vals.length > 0 && vals.every(v => v === null || v === undefined);\n  });\n  if (allAggNull) {\n    return {\n      ...validatorData,\n      sql_results: sqlResults,\n      result_count: 0,\n      has_results: false,\n      null_aggregation: true,\n      result_preview: 'WARNING: Aggregation query returned null on all columns. Probable cause: WHERE filter with inexact entity name. No rows matched the filter.'\n    };\n  }\n}\n\nreturn {\n  ...validatorData,\n  sql_results: sqlResults,\n  result_count: sqlResults.length,\n  has_results: true,\n  null_aggregation: false,\n  result_preview: JSON.stringify(sqlResults.slice(0, 5), null, 2)\n};\n"
+        },
+        "id": "47637bf5-d3c9-4a67-9864-3b5a547ca262",
+        "name": "Result Aggregator",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1456,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+          "authentication": "none",
+          "nodeCredentialType": "openRouterApi",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.requestBody }}",
+          "options": {
+            "timeout": 25000,
+            "retry": {
+              "maxTries": 3,
+              "waitBetweenTries": 2000
+            }
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              }
+            ]
+          }
+        },
+        "id": "1179b1b8-11c3-41ae-b750-cec4e2687620",
+        "name": "Interpretation Layer (LLM Analyst)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1872,
+          0
+        ],
+        "credentials": {},
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "jsCode": "// Response Formatter - handles both success and error paths\n// May receive data from Interpretation Layer (success) or Needs SQL Repair? (error)\nlet aggregatorData = {};\nlet initData = {};\nlet interpretation = '';\n\n// Try to get Init & ACL data (always available)\ntry {\n  initData = $node['Init & ACL'].json || {};\n} catch (e) {\n  initData = {};\n}\n\n// Try to get Result Aggregator data (only on success path)\ntry {\n  aggregatorData = $node['Result Aggregator'].json || {};\n} catch (e) {\n  aggregatorData = {};\n}\n\n// Determine interpretation based on input source\n// On success path: $json comes from Interpretation Layer (has choices)\n// On error path: $json comes from Needs SQL Repair? (has error/fallback_message)\nif ($json.choices?.[0]?.message?.content) {\n  interpretation = $json.choices[0].message.content;\n} else if ($json.error || $json.fallback_message) {\n  // Coming from error path\n  interpretation = $json.fallback_message || 'Unable to generate SQL query for this question. Error: ' + ($json.error || 'unknown');\n} else {\n  interpretation = 'No interpretation available';\n}\n\nreturn {\n  // ISSUE-QT-14: detect null aggregation - mark as NULL_RESULT not SUCCESS\n  status: aggregatorData.null_aggregation ? 'NULL_RESULT' : (aggregatorData.validation_status === 'PASSED' ? 'SUCCESS' : 'ERROR'),\n  trace_id: aggregatorData.trace_id || initData.trace_id || '',\n  query: aggregatorData.query || initData.query || '',\n  sql_executed: aggregatorData.validated_sql || '',\n  result_count: aggregatorData.result_count || 0,\n  interpretation: interpretation,\n  raw_results: aggregatorData.has_results ? (aggregatorData.sql_results || []) : [],\n  null_aggregation: aggregatorData.null_aggregation || false,\n  metadata: {\n    validation_status: aggregatorData.null_aggregation ? 'NULL_AGGREGATION' : (aggregatorData.validation_status || 'UNKNOWN'),\n    timestamp: new Date().toISOString(),\n    engine: 'QUANTITATIVE'\n  }\n};\n"
+        },
+        "id": "d059dfee-3534-4743-a6f8-bb29e0cf17be",
+        "name": "Response Formatter",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2128,
+          208
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"quantitative_rag_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"attributes\": {\n    \"result_count\": {{ $json.result_count }},\n    \"sql_length\": {{ $json.sql_executed?.length || 0 }}\n  }\n}",
+          "options": {
+            "timeout": 5000
+          }
+        },
+        "id": "5ba4b171-8e2a-4e2d-82ef-04d6f3cb5c01",
+        "name": "OTEL Export (Shield #9)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          2384,
+          208
+        ],
+        "onError": "continueErrorOutput",
+        "disabled": true
+      },
+      {
+        "parameters": {},
+        "id": "3abfc5c3-e8ce-40ab-936d-a49a33c8e47c",
+        "name": "Error Handler",
+        "type": "n8n-nodes-base.errorTrigger",
+        "typeVersion": 1,
+        "position": [
+          368,
+          640
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Error handler - graceful fallback when nodes haven't executed\ntry {\n  const error = $json;\n  let initData = {};\n  try {\n    initData = $node['Init & ACL']?.json || {};\n  } catch (e) {\n    initData = { trace_id: 'err-' + Date.now(), query: 'unknown' };\n  }\n\n  return {\n    status: 'ERROR',\n    trace_id: initData.trace_id || 'err-' + Date.now(),\n    error_type: error.message?.includes('SQL_') ? 'SQL_ERROR' :\n                error.message?.includes('rate') ? 'RATE_LIMIT' :\n                error.message?.includes('Provider') ? 'PROVIDER_ERROR' : 'SYSTEM_ERROR',\n    error_message: error.message || error.description || 'Unknown error',\n    query: initData.query || 'unknown',\n    timestamp: new Date().toISOString()\n  };\n} catch (e) {\n  return {\n    status: 'ERROR',\n    trace_id: 'err-fallback-' + Date.now(),\n    error_type: 'ERROR_HANDLER_FAILURE',\n    error_message: e.message || 'Error handler itself failed',\n    timestamp: new Date().toISOString()\n  };\n}"
+        },
+        "id": "84eb686e-dc41-452e-a894-f0b6603457c1",
+        "name": "Error Response Builder",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          576,
+          640
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// SQL Error Handler - Self-Healing (MAX 3 REPAIRS)\nconst MAX_REPAIRS = 3;\nconst currentAttempt = ($json.repair_attempts || 0) + 1;\n\nif (currentAttempt > MAX_REPAIRS) {\n  // Give up - return error response instead of looping forever\n  return {\n    json: {\n      ...($json),\n      repair_exhausted: true,\n      needs_repair: false,\n      error_message: 'SQL repair exhausted after ' + MAX_REPAIRS + ' attempts',\n      repair_attempts: currentAttempt\n    }\n  };\n}\n\n// SQL Error Handler - Self-Healing with graceful fallback\ntry {\n  const executorResult = $json;\n\n  let validatorData = {};\n  let originalQuery = '';\n  let schemaContext = '';\n  let tenantId = 'default';\n\n  try { validatorData = $node['SQL Validator (Shield #1)'].json; } catch(e) {}\n  try { originalQuery = $node['Init & ACL'].json.query; } catch(e) { originalQuery = 'unknown'; }\n  try { schemaContext = $node['Schema Context Builder'].json.schema_context; } catch(e) {}\n  try { tenantId = $node['Init & ACL'].json.user_context.tenant_id; } catch(e) {}\n\n  const staticData = $getWorkflowStaticData('global');\n  const traceId = 'sql-repair-' + Date.now();\n\n  const retryKey = `retry_${traceId}`;\n  const retryCount = (staticData[retryKey] || 0) + 1;\n  staticData[retryKey] = retryCount;\n\n  if (retryCount > 2) {\n    delete staticData[retryKey];\n    return [{\n      json: {\n        status: 'ERROR',\n        trace_id: traceId,\n        error_type: 'SQL_MAX_RETRIES',\n        error_message: 'SQL self-healing exhausted after 2 retries',\n        original_query: originalQuery,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  const errorMsg = executorResult.error_message || executorResult.message || 'SQL execution failed';\n  const failedSQL = validatorData.validated_sql || executorResult.sql || '';\n\n  return [{\n    json: {\n      needs_repair: true,\n      retry_count: retryCount,\n      original_query: originalQuery,\n      failed_sql: failedSQL,\n      error_message: errorMsg,\n      schema_context: schemaContext,\n      tenant_id: tenantId,\n      trace_id: traceId\n    }\n  }];\n} catch (e) {\n  return [{\n    json: {\n      status: 'ERROR',\n      error_type: 'SELF_HEAL_FAILURE',\n      error_message: e.message,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}\n\n// Track repair attempts in output\nconst output = $json;\nif (typeof output === 'object') {\n  output.repair_attempts = currentAttempt;\n}\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1392,
+          416
+        ],
+        "id": "37d15e46-31a0-40d5-9baa-77b573a8ee6e",
+        "name": "SQL Error Handler (Self-Healing)"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+          "authentication": "none",
+          "nodeCredentialType": "openRouterApi",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.requestBody }}",
+          "options": {
+            "timeout": 20000,
+            "retry": {
+              "maxTries": 3,
+              "waitBetweenTries": 2000
+            }
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1872,
+          480
+        ],
+        "id": "62e9e6c2-a7b6-4f8f-baf1-8eef71eb898c",
+        "name": "SQL Repair LLM",
+        "credentials": {},
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.needs_repair }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          1568,
+          240
+        ],
+        "id": "9ea1857a-7959-4480-8a05-962791dd7a5f",
+        "name": "Needs SQL Repair?"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Parse SQL Repair response and prepare for retry\nconst repairResponse = $json;\nlet repairedSql = '';\n\ntry {\n  const content = repairResponse.choices?.[0]?.message?.content || repairResponse.body?.choices?.[0]?.message?.content;\n  const parsed = JSON.parse(content);\n  repairedSql = parsed.sql;\n} catch (e) {\n  // If parsing fails, return error\n  return {\n    success: false,\n    error: 'SQL_REPAIR_PARSE_ERROR',\n    raw_response: repairResponse\n  };\n}\n\n// Prepare for SQL Validator re-run\nreturn {\n  sql: repairedSql,\n  is_repaired: true,\n  repair_iteration: $node['SQL Error Handler (Self-Healing)'].json.retry_count\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2096,
+          480
+        ],
+        "id": "92c3d6ed-285f-4816-b5c6-5173b374cf65",
+        "name": "Repair Parser"
+      },
+      {
+        "parameters": {
+          "content": "# 🔧 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `DEEPSEEK_API_KEY` - API key DeepSeek (api.deepseek.com)\n- `ANTHROPIC_API_KEY` - API key Anthropic (pour planning)\n- `GOOGLE_API_KEY` - API key Google (Gemini Flash)\n\n## LLM URLs (optionnel - défauts inclus)\n- `SQL_GENERATION_API_URL` - URL API pour SQL\n- `INTENT_ANALYSIS_API_URL` - URL API pour intent\n- `PLANNING_API_URL` - URL API pour planning\n- `GENERATION_API_URL` - URL API pour génération\n\n## LLM Models (optionnel)\n- `SQL_GENERATION_MODEL` = deepseek-chat\n- `INTENT_ANALYSIS_MODEL` = deepseek-chat\n- `PLANNING_MODEL` = claude-sonnet-4-5-20250929\n- `GENERATION_MODEL` = deepseek-chat\n\n## Embedding (RECOMMANDÉ: self-hosted)\n- `EMBEDDING_API_URL` - URL embedding (défaut: OpenAI)\n- `EMBEDDING_MODEL` - text-embedding-3-small → Qwen3-Embedding-8B\n\n## Reranking (RECOMMANDÉ: self-hosted)\n- `RERANKER_API_URL` - URL reranker (défaut: Cohere)\n- `RERANKER_MODEL` - rerank-v3 → Qwen3-Reranker-8B\n\n## Impact estimé (selon research):\n- -89% coût ingestion\n- -95% coût requêtes\n- +3% accuracy SQL (BIRD-SQL)\n- +15 pts MTEB (embedding)\n",
+          "height": 600,
+          "width": 400
+        },
+        "id": "caefcce7-a945-4749-bc3d-fbb4efc23bdc",
+        "name": "📋 Configuration SOTA 2026",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -496,
+          208
+        ]
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          16,
+          208
+        ],
+        "id": "1aa72ae4-5080-4b72-9a03-898056161710",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "public": true,
+          "availableInChat": true,
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "typeVersion": 1.4,
+        "position": [
+          0,
+          0
+        ],
+        "id": "c97d44ab-afc1-4640-a369-3ba05aedafc3",
+        "name": "When chat message received",
+        "webhookId": "326acdfb-3e93-4cc0-8548-1f6e17a4e335"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "3e0f8010-39e0-4bca-9d19-35e5094391a9",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          432
+        ],
+        "id": "6598d255-2b2a-4afe-9fc8-cd97d1f066e7",
+        "name": "Webhook",
+        "webhookId": "3e0f8010-39e0-4bca-9d19-35e5094391a9"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER: The financials table has BOTH annual (period='FY') and quarterly (period='Q1'-'Q4') rows.\n  For annual totals: ALWAYS add period = 'FY' to avoid double-counting.\n  For quarterly analysis: filter period IN ('Q1','Q2','Q3','Q4').\n  NEVER SUM without specifying period - you will get 2x the real value.\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          688,
+          464
+        ],
+        "id": "817873e1-b27e-41e8-9767-356782ae9429",
+        "name": "Prepare SQL Request"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1632,
+          0
+        ],
+        "id": "330eeb68-886e-428f-b453-297cb2094b5d",
+        "name": "Prepare Interpretation Request"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"meta-llama/llama-3.3-70b-instruct:free\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1696,
+          480
+        ],
+        "id": "585ba1b1-1f92-4703-b30e-c245342df589",
+        "name": "Prepare SQL Repair Request"
+      },
+      {
+        "parameters": {
+          "jsCode": "// GitHub Error Logger for quantitative\nconst errorData = $input.first().json;\nconst timestamp = new Date().toISOString();\nconst questionId = errorData.question_id || errorData.trace_id || 'q-' + Date.now();\nconst errorType = errorData.error_type || errorData.error_code || 'UNKNOWN';\nconst pipeline = 'quantitative';\n\nconst logEntry = {\n  timestamp: timestamp,\n  pipeline: pipeline,\n  question_id: questionId,\n  error_type: errorType,\n  error_message: (errorData.error || errorData.message || 'No message').slice(0, 500),\n  input: {\n    query: (errorData.query || errorData.original_query || '').slice(0, 300),\n    tenant_id: errorData.tenant_id || 'benchmark'\n  },\n  partial_response: errorData.partial_response || errorData.response || null,\n  n8n_context: {\n    workflow_id: $workflow.id,\n    workflow_name: $workflow.name,\n    execution_id: $execution.id\n  },\n  performance: {\n    latency_ms: errorData.latency_ms || 0,\n    http_status: errorData.http_status || null\n  }\n};\n\nreturn [{ json: logEntry }];"
+        },
+        "id": "67b4a644-948c-402d-9f71-bae592c0ee3d",
+        "name": "GitHub Error Logger (quantitative)",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2684,
+          0
+        ],
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "// SQL Execution Logger\nconst input = $input.first().json;\n\nconst log = {\n  timestamp: new Date().toISOString(),\n  pipeline: 'quantitative',\n  step: 'sql_execution',\n  sql: (input.validated_sql || input.sql || input.sql_executed || '').slice(0, 500),\n  validation_status: input.validation_status || input.metadata?.validation_status || 'UNKNOWN',\n  result_count: input.result_count || 0,\n  null_aggregation: input.null_aggregation || false,\n  error: input.sql_error || null\n};\n\nreturn [{ json: { ...input, _sql_log: log } }];"
+        },
+        "id": "bc332ab4-b2b3-48a4-9569-cf1d47c6aa30",
+        "name": "SQL Execution Logger",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2684,
+          200
+        ],
+        "onError": "continueRegularOutput"
+      }
+    ],
+    "connections": {
+      "Init & ACL": {
+        "main": [
+          [
+            {
+              "node": "Schema Introspection",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schema Introspection": {
+        "main": [
+          [
+            {
+              "node": "Schema Context Builder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schema Context Builder": {
+        "main": [
+          [
+            {
+              "node": "Prepare SQL Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Text-to-SQL Generator (CoT Enhanced)": {
+        "main": [
+          [
+            {
+              "node": "SQL Validator (Shield #1)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SQL Validator (Shield #1)": {
+        "main": [
+          [
+            {
+              "node": "SQL Executor (Postgres)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SQL Executor (Postgres)": {
+        "main": [
+          [
+            {
+              "node": "Result Aggregator",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "SQL Error Handler (Self-Healing)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Result Aggregator": {
+        "main": [
+          [
+            {
+              "node": "Prepare Interpretation Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Interpretation Layer (LLM Analyst)": {
+        "main": [
+          [
+            {
+              "node": "Response Formatter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Response Formatter": {
+        "main": [
+          [
+            {
+              "node": "OTEL Export (Shield #9)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Error Handler": {
+        "main": [
+          [
+            {
+              "node": "Error Response Builder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SQL Error Handler (Self-Healing)": {
+        "main": [
+          [
+            {
+              "node": "Needs SQL Repair?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Needs SQL Repair?": {
+        "main": [
+          [
+            {
+              "node": "Prepare SQL Repair Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Response Formatter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SQL Repair LLM": {
+        "main": [
+          [
+            {
+              "node": "Repair Parser",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Repair Parser": {
+        "main": [
+          [
+            {
+              "node": "SQL Validator (Shield #1)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Init & ACL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "Init & ACL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Init & ACL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare SQL Request": {
+        "main": [
+          [
+            {
+              "node": "Text-to-SQL Generator (CoT Enhanced)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Interpretation Request": {
+        "main": [
+          [
+            {
+              "node": "Interpretation Layer (LLM Analyst)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare SQL Repair Request": {
+        "main": [
+          [
+            {
+              "node": "SQL Repair LLM",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Alexis Moret",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-09T02:45:23.921Z",
+        "id": 755,
+        "workflowId": "LjUz8fxQZ03G9IsU",
+        "versionId": "632def55-dd8e-4f92-a2b5-dde49467bf7e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      }
+    ]
+  }
+}
