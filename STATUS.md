@@ -76,15 +76,28 @@ python3 eval/run-eval-parallel.py --reset --label "Iter 6: P0 fixes deployed"
 
 ### P1 — Run Phase 2 Evaluation (1,000q)
 
-Once Phase 1 gates pass (or are close enough to proceed):
+Phase 2 DB is COMPLETE. CI/CD workflows updated with `--dataset` support.
+Run Phase 2 evaluation when ready:
 
 ```bash
-# Phase 2 fast iteration (10q/pipeline, graph + quant only)
+# Phase 2 fast iteration (10q/pipeline, graph + quant only — auto-adjusted)
 python3 eval/fast-iter.py --dataset phase-2 --label "Phase 2: baseline"
 
-# Phase 2 full eval (1,000q, graph + quant only)
+# Phase 2 full eval (1,000q, graph + quant only — auto-adjusted)
 python3 eval/run-eval-parallel.py --dataset phase-2 --reset --label "Phase 2: baseline"
+
+# Combined Phase 1 + Phase 2 (1,200q, all pipelines)
+python3 eval/run-eval-parallel.py --dataset all --reset --label "Phase 1+2: combined"
 ```
+
+**GitHub Actions** (manual dispatch): select `phase-2` from the dataset dropdown in both
+`RAG Evaluation Pipeline` and `Agentic Evaluation Analysis` workflows.
+
+### Phase 2 Targets (graph + quantitative only)
+| Pipeline | Target | Note |
+|----------|--------|------|
+| Graph | >=60% | Multi-hop from HF datasets (musique, 2wikimultihopqa) |
+| Quantitative | >=70% | Financial report questions (finqa, tatqa, convfinqa) |
 
 ### P2 — Re-run Neo4j with --llm (free model, no cost)
 ```bash
@@ -138,9 +151,14 @@ If hitting 50 req/day limit on OpenRouter free tier:
 
 ### Eval scripts
 - `--dataset` flag: `phase-1` (200q), `phase-2` (1,000q), `all` (1,200q)
-- Auto-adjusts pipeline types for Phase 2 (graph + quantitative only)
+- Auto-adjusts pipeline types for Phase 2 (graph + quantitative only) — all 3 runners
 - Improved scoring: percentage matching, magnitude-aware numeric matching
 - Phase 2 questions skip empty expected_answer entries
+
+### GitHub Actions (Phase 2 ready)
+- `rag-eval.yml`: Added `dataset` dropdown (phase-1/phase-2/all), `label` input, switched to `run-eval-parallel.py`
+- `agentic-eval.yml`: Added `dataset` dropdown and `label` input to full-eval job
+- DB snapshots now include Phase 2 tables (finqa_tables, tatqa_tables, convfinqa_tables)
 
 ### Expected impact (Phase 1):
 | Pipeline | Current | Expected After Fixes | Reasoning |

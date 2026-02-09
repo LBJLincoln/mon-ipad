@@ -638,7 +638,8 @@ def snapshot_databases(trigger="manual"):
     # Supabase
     try:
         conn = f"postgresql://postgres.ayqviqmxifzmhphiqfmj:{os.environ.get('SUPABASE_PASSWORD','')}@aws-1-eu-west-1.pooler.supabase.com:6543/postgres"
-        tables = ["financials", "balance_sheet", "sales_data", "products", "employees", "community_summaries"]
+        tables = ["financials", "balance_sheet", "sales_data", "products", "employees", "community_summaries",
+                  "finqa_tables", "tatqa_tables", "convfinqa_tables"]
         tb = {}
         for t in tables:
             r = subprocess.run(["psql", conn, "-t", "-A", "-c", f"SELECT COUNT(*) FROM {t};"],

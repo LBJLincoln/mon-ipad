@@ -662,6 +662,11 @@ def main():
 
     dataset_label = args.dataset or ("phase-1+2" if args.include_1000 else "phase-1")
 
+    # Auto-adjust types for Phase 2 (only graph + quantitative)
+    if args.dataset == "phase-2" and args.types == "standard,graph,quantitative,orchestrator":
+        args.types = "graph,quantitative"
+        print("  NOTE: Phase 2 only tests graph + quantitative. Auto-adjusted --types.")
+
     start_time = datetime.now()
     print("=" * 70)
     print("  COMPREHENSIVE RAG EVALUATION — Dashboard-Connected")
