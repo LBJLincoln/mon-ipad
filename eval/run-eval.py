@@ -658,7 +658,27 @@ def main():
                         help="Human-readable label for this iteration")
     parser.add_argument("--description", type=str, default="",
                         help="Description of what changed before this eval")
+    parser.add_argument("--force-phase", action="store_true",
+                        help="Skip phase gate check (for testing/debugging only)")
     args = parser.parse_args()
+
+    # Phase gate enforcement
+    if not args.force_phase:
+        readiness_file = os.path.join(REPO_ROOT, "db", "readiness", "phase-1.json")
+        if args.dataset and args.dataset != "phase-1" and os.path.exists(readiness_file):
+            with open(readiness_file) as f:
+                p1 = json.load(f)
+            gates = p1.get("gate_criteria", {})
+            unmet = [f"    {k}: {v.get('current','?')}% (target: {v.get('target_accuracy', v.get('target','?'))}%)"
+                     for k, v in gates.items() if not v.get("met", False)]
+            if unmet:
+                print("\n  PHASE GATE BLOCKED: Phase 1 exit criteria NOT met.")
+                print("  Pipelines below target:")
+                for line in unmet:
+                    print(line)
+                print(f"\n  Cannot run --dataset {args.dataset} until all Phase 1 gates pass.")
+                print("  Use --force-phase to override.")
+                sys.exit(1)
 
     dataset_label = args.dataset or ("phase-1+2" if args.include_1000 else "phase-1")
 

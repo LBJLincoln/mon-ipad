@@ -58,6 +58,46 @@ _dedup_lock = threading.Lock()
 _print_lock = threading.Lock()
 
 
+def check_phase_gate(requested_dataset):
+    """Verify previous phase gates are met before allowing progression.
+    Returns True if OK, False if blocked. Use --force-phase to override."""
+    if not requested_dataset or requested_dataset == "phase-1":
+        return True
+
+    # For phase-2+, check Phase 1 gates from readiness file
+    readiness_file = os.path.join(REPO_ROOT, "db", "readiness", "phase-1.json")
+    if not os.path.exists(readiness_file):
+        print("  WARNING: Phase 1 readiness file not found. Cannot verify gates.")
+        print("  Use --force-phase to skip gate check.")
+        return False
+
+    with open(readiness_file) as f:
+        p1 = json.load(f)
+
+    gates = p1.get("gate_criteria", {})
+    all_met = True
+    unmet = []
+
+    for pipeline, info in gates.items():
+        if not info.get("met", False):
+            all_met = False
+            target = info.get("target_accuracy", info.get("target", "?"))
+            current = info.get("current", "?")
+            unmet.append(f"    {pipeline}: {current}% (target: {target}%)")
+
+    if not all_met:
+        print("\n  PHASE GATE BLOCKED: Phase 1 exit criteria NOT met.")
+        print("  Pipelines below target:")
+        for line in unmet:
+            print(line)
+        print(f"\n  Cannot run --dataset {requested_dataset} until all Phase 1 gates pass.")
+        print("  Use --force-phase to override (for testing/debugging only).")
+        return False
+
+    print("  Phase 1 gates: ALL MET. Proceeding to requested dataset.")
+    return True
+
+
 def tprint(msg):
     """Thread-safe print."""
     with _print_lock:
@@ -220,7 +260,13 @@ def main():
                         help="Human-readable label for this iteration")
     parser.add_argument("--description", type=str, default="",
                         help="Description of what changed before this eval")
+    parser.add_argument("--force-phase", action="store_true",
+                        help="Skip phase gate check (for testing/debugging only)")
     args = parser.parse_args()
+
+    # Phase gate enforcement
+    if not args.force_phase and not check_phase_gate(args.dataset):
+        sys.exit(1)
 
     start_time = datetime.now()
     requested_types = [t.strip() for t in args.types.split(",")]

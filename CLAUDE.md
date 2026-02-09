@@ -538,26 +538,15 @@ Source datasets used across all phases. See `datasets/manifest.json` for full me
 
 ## Session Start Protocol
 
-Every new session (human or agentic) MUST follow this sequence:
+Every new session MUST follow this sequence autonomously:
 
 1. **Read** `STATUS.md` — current state, next steps, blockers
 2. **Read** `CLAUDE.md` — architecture, conventions, commands
 3. **Check** `docs/data.json` — latest metrics (meta, iterations, pipelines)
-4. **Check** dashboard — `docs/index.html` (7 tabs, auto-refresh)
-5. **Identify** the current phase gate status and next action
-6. **Execute** ONE change per iteration, test, commit
-
-### AI Decision Rules
-1. If accuracy < target: analyze error traces, fix ONE root cause, re-test
-2. If error rate > 10%: prioritize error fixes over accuracy
-3. If 3+ regressions: REVERT last change immediately
-4. If orchestrator timeout > 60s: reduce sub-pipeline invocations
-5. If graph entity miss: check entity catalog, add fuzzy matching
-6. If SQL errors > 5: review Schema Context hints, add ILIKE
-7. If empty responses > 10: check continueOnFail, add null-safe guards
-8. ONE fix per iteration — never change multiple things
-9. Run eval directly from Claude Code (has network access via HTTP proxy)
-10. After Phase 1 gates pass: `--dataset phase-2 --reset`
+4. **Check** `db/readiness/phase-N.json` — current phase gate status
+5. **Identify** next action based on decision rules below
+6. **Execute** ONE change per iteration, test, commit, push
+7. **Update** `STATUS.md` with new state after each iteration
 
 ---
 
@@ -578,3 +567,131 @@ Every new session (human or agentic) MUST follow this sequence:
 - Claude Code can: run evals, sync/deploy workflows, populate Neo4j, analyze, commit, push
 - Claude Code cannot: run psql commands (use Termius for Supabase population scripts)
 - User provides: `N8N_API_KEY` (session start), new OpenRouter key (if expired)
+
+---
+
+## n8n <-> GitHub Integration Status
+
+Bidirectional connectivity between n8n Cloud and GitHub for error logging, dashboard
+updates, workflow sync, and automated evaluation.
+
+### Working Flows
+
+| Flow | Direction | Mechanism | Status |
+|---|---|---|---|
+| Eval results -> Dashboard | GitHub -> Pages | `live-writer.py` -> `data.json` -> `dashboard-deploy.yml` | WORKING |
+| Workflow sync | n8n -> Git | `sync.py` pulls via n8n API, saves snapshots + manifest | WORKING |
+| Workflow deploy | Git -> n8n | `deploy.py` pushes via n8n API PUT | WORKING |
+| Post-eval analysis | GitHub Actions | `agentic-eval.yml` -> `analyzer.py` -> creates issues | WORKING |
+| Scheduled eval | GitHub Actions | `rag-eval.yml` daily cron -> auto-commit results | WORKING |
+| Dashboard auto-deploy | GitHub Actions | `dashboard-deploy.yml` on `docs/` push -> GitHub Pages | WORKING |
+
+### Partially Working
+
+| Flow | Issue | Fix Needed |
+|---|---|---|
+| n8n error logging | GitHub Error Logger Code nodes exist in all 4 workflows but **no HTTP Request node** to send to GitHub API | Add HTTP Request node after each logger -> `POST /repos/.../dispatches` |
+| Error reception | `n8n-error-log.yml` ready to receive `repository_dispatch` events | Blocked by missing sender (above) |
+| n8n credential update | Updated via API PATCH (credential ID: `aTHBqnntMBApo0Dy`) | Working when N8N_API_KEY provided |
+
+### Key Integration Points
+
+- **OpenRouter credential** `aTHBqnntMBApo0Dy` — shared across all 15 LLM nodes in 4 workflows
+- **Workflow IDs**: Standard `LnTqRX4LZlI009Ks-3Jnp`, Graph `95x2BBAbJlLWZtWEJn6rb`, Quant `LjUz8fxQZ03G9IsU`, Orch `FZxkpldDbgV8AD_cg7IWG`
+- **Dashboard**: auto-refreshes every 15s from `docs/data.json` on GitHub Pages
+
+---
+
+## Phase Gate Enforcement
+
+Phase gates are **enforced in code**. All eval scripts (`run-eval-parallel.py`,
+`fast-iter.py`, `run-eval.py`) and GitHub Actions workflows check `db/readiness/phase-1.json`
+before allowing `--dataset phase-2` or higher.
+
+### How it works
+
+1. When `--dataset phase-2` (or `all`) is requested, the script reads `db/readiness/phase-1.json`
+2. It checks `gate_criteria` — every pipeline must have `"met": true`
+3. If any pipeline is below target, the script **exits with error** and prints which gates failed
+4. Use `--force-phase` to override for testing/debugging only
+
+### Where gates are enforced
+
+| Location | Mechanism |
+|---|---|
+| `eval/run-eval-parallel.py` | `check_phase_gate()` before `load_questions()` |
+| `eval/fast-iter.py` | `check_phase_gate()` before `load_questions()` |
+| `eval/run-eval.py` | Inline gate check before `load_questions()` |
+| `.github/workflows/rag-eval.yml` | Python gate check step before eval step |
+| `.github/workflows/agentic-eval.yml` | Python gate check step before full-eval step |
+
+### Updating gates after evaluation
+
+After a full 200q eval, update `db/readiness/phase-1.json` gate_criteria with new accuracy
+values and set `"met": true/false` accordingly. This is the source of truth for phase progression.
+
+---
+
+## Team-Agentic Mode (2026)
+
+This project operates in **full agentic mode**. Claude Code is the primary executor.
+The human operator provides credentials, approves deployments, and reviews results.
+
+### Operating Principles
+
+1. **Zero-command user experience**: Claude Code runs ALL evaluation, analysis, workflow
+   patching, Neo4j population, and Git operations. The user never needs to run commands.
+
+2. **Autonomous iteration loop**: Claude Code follows the A0-A6 cycle autonomously:
+   - Read STATUS.md -> Sync workflows -> Smoke test -> Fast-iter -> Analyze -> Fix -> Commit
+
+3. **Self-correcting**: If an eval shows regressions, Claude Code reverts and re-tests.
+   If a workflow deploy fails, it diagnoses and retries. If credentials expire, it asks
+   the user for new ones.
+
+4. **Progressive validation**: Never skip test levels. Each fix is validated at the same
+   scale before scaling up. Phase gates prevent premature progression.
+
+5. **Transparent**: All actions are logged to `docs/data.json`, `logs/`, and Git history.
+   The dashboard at GitHub Pages shows real-time progress.
+
+### What Claude Code handles autonomously
+
+| Action | How |
+|---|---|
+| Run evaluations | `eval/fast-iter.py`, `eval/run-eval-parallel.py` directly |
+| Analyze results | `eval/analyzer.py` + manual error trace analysis |
+| Patch workflows | `workflows/improved/apply.py` -> deploy via n8n API |
+| Update credentials | n8n API PATCH on credential objects |
+| Populate Neo4j | `db/populate/phase2_neo4j.py` via HTTP API |
+| Snapshot databases | `eval/live-writer.py --snapshot-db` (Pinecone + Neo4j) |
+| Update dashboard | Writes to `docs/data.json` -> auto-deployed via GitHub Pages |
+| Commit & push | Git operations on feature branches |
+| Create PRs | `gh pr create` via GitHub CLI |
+
+### What requires human
+
+| Action | Why |
+|---|---|
+| Provide `N8N_API_KEY` | JWT for n8n cloud, not committed, expires |
+| Provide new OpenRouter key | If credit-based key expires |
+| Run Supabase psql | TCP port 6543 blocked by sandbox firewall |
+| Review & merge PRs | Human approval for main branch changes |
+| Purchase OpenRouter credits | If free tier rate limits block evals |
+
+### Agent Decision Rules (expanded)
+
+1. If accuracy < target: analyze error traces, fix ONE root cause, re-test
+2. If error rate > 10%: prioritize error fixes over accuracy improvement
+3. If 3+ regressions: REVERT last change immediately
+4. If orchestrator timeout > 60s: reduce sub-pipeline invocations
+5. If graph entity miss: check entity catalog, add fuzzy matching
+6. If SQL errors > 5: review Schema Context hints, add ILIKE
+7. If empty responses > 10: check continueOnFail, add null-safe guards
+8. ONE fix per iteration — never change multiple things at once
+9. Run eval directly from Claude Code (has network access via HTTP proxy)
+10. Phase gates enforced: `--dataset phase-2` blocked until Phase 1 gates pass
+11. After eval: update `db/readiness/phase-N.json` with new metrics
+12. If credential expires: ask user, update via API, verify with smoke test
+13. If n8n deploy fails: check ALLOWED_SETTINGS filter, retry with clean payload
+14. Commit after every successful iteration — never batch multiple iterations
