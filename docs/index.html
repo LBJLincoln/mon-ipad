@@ -666,7 +666,7 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
   <div class="card" style="margin-top:18px;margin-bottom:18px;text-align:center;padding:20px;border-left:3px solid var(--gn)">
     <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gn)">Cost Optimization</div>
     <div style="font-size:32px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--gn)">$0.00</div>
-    <div style="font-size:12px;color:var(--tx2)">All LLMs free via OpenRouter (llama-3.3-70b-instruct:free)</div>
+    <div style="font-size:12px;color:var(--tx2)">All LLMs free via OpenRouter (arcee-ai/trinity-large-preview:free)</div>
   </div>
 
   <h3>LLM Model Registry</h3>
@@ -910,18 +910,18 @@ const WF_IDS={standard:'LnTqRX4LZlI009Ks-3Jnp',graph:'95x2BBAbJlLWZtWEJn6rb',qua
 
 // Updated Model Registry — actual models (Feb 2026)
 const MODEL_REGISTRY=[
-  {wf:'Standard',node:'HyDE Generator',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Hypothetical document generation',avg_tokens:400},
-  {wf:'Standard',node:'LLM Generation',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Answer synthesis from retrieved context',avg_tokens:500},
-  {wf:'Standard',node:'Cohere Rerank',model:'rerank-v3.5',provider:'Cohere',cost_in:0.002,cost_out:0,role:'Re-rank retrieved passages',avg_tokens:2000},
-  {wf:'Standard',node:'Pinecone Query',model:'text-embedding-3-small',provider:'OpenAI',cost_in:0.02,cost_out:0,role:'Vector embedding for retrieval',avg_tokens:300},
-  {wf:'Graph',node:'HyDE Entity Extraction',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Extract entities from query',avg_tokens:350},
-  {wf:'Graph',node:'Answer Synthesis',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Generate answer from graph paths',avg_tokens:600},
-  {wf:'Quantitative',node:'Text-to-SQL Generator',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Natural language to SQL',avg_tokens:450},
-  {wf:'Quantitative',node:'SQL Validator',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Validate and fix SQL',avg_tokens:300},
-  {wf:'Quantitative',node:'Interpretation Layer',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Interpret SQL results as answer',avg_tokens:400},
-  {wf:'Orchestrator',node:'Intent Analyzer',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Route query to correct pipeline',avg_tokens:300},
-  {wf:'Orchestrator',node:'Task Planner',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Plan sub-tasks',avg_tokens:500},
-  {wf:'Orchestrator',node:'Response Builder',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Merge sub-pipeline results',avg_tokens:600},
+  {wf:'Standard',node:'HyDE Generator',model:'arcee-ai/trinity-large-preview:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Hypothetical document generation',avg_tokens:400},
+  {wf:'Standard',node:'LLM Generation',model:'arcee-ai/trinity-large-preview:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Answer synthesis from retrieved context',avg_tokens:500},
+  {wf:'Standard',node:'Cohere Rerank',model:'rerank-multilingual-v3.0',provider:'Cohere',cost_in:0.002,cost_out:0,role:'Re-rank retrieved passages',avg_tokens:2000},
+  {wf:'Standard',node:'Pinecone Query',model:'n8n $vars.EMBEDDING_MODEL',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Vector embedding for retrieval (configurable via setup_embeddings.py)',avg_tokens:300},
+  {wf:'Graph',node:'HyDE Entity Extraction',model:'arcee-ai/trinity-large-preview:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Extract entities from query',avg_tokens:350},
+  {wf:'Graph',node:'Answer Synthesis',model:'arcee-ai/trinity-large-preview:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Generate answer from graph paths',avg_tokens:600},
+  {wf:'Quantitative',node:'Text-to-SQL Generator',model:'arcee-ai/trinity-large-preview:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Natural language to SQL',avg_tokens:450},
+  {wf:'Quantitative',node:'SQL Validator',model:'arcee-ai/trinity-large-preview:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Validate and fix SQL',avg_tokens:300},
+  {wf:'Quantitative',node:'Interpretation Layer',model:'arcee-ai/trinity-large-preview:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Interpret SQL results as answer',avg_tokens:400},
+  {wf:'Orchestrator',node:'Intent Analyzer',model:'arcee-ai/trinity-large-preview:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Route query to correct pipeline',avg_tokens:300},
+  {wf:'Orchestrator',node:'Task Planner',model:'arcee-ai/trinity-large-preview:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Plan sub-tasks',avg_tokens:500},
+  {wf:'Orchestrator',node:'Response Builder',model:'arcee-ai/trinity-large-preview:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Merge sub-pipeline results',avg_tokens:600},
 ];
 
 // Phase cost projections — updated for FREE models
@@ -1363,11 +1363,13 @@ function renderExec(){
   // Next actions
   document.getElementById('exec-actions').innerHTML=`
     <ol style="padding-left:20px;color:var(--tx2);line-height:2.2;font-size:12px">
-      <li><strong>Deploy fixes</strong>: <code>python3 workflows/improved/apply.py --deploy</code></li>
+      <li><strong>Smoke test (5q)</strong>: <code>python3 eval/quick-test.py --questions 5</code></li>
       <li><strong>Fast iteration</strong>: <code>python3 eval/fast-iter.py --label "Iter N"</code></li>
-      <li><strong>Full Phase 1 eval</strong>: <code>python3 eval/run-eval-parallel.py --reset</code></li>
+      <li><strong>Iterative eval (5&rarr;10&rarr;50)</strong>: <code>python3 eval/iterative-eval.py --label "..."</code></li>
+      <li><strong>Full Phase 1 eval</strong>: <code>python3 eval/run-eval-parallel.py --reset --label "..."</code></li>
+      <li><strong>Node diagnostics</strong>: <code>python3 eval/node-analyzer.py --pipeline graph --last 5</code></li>
       <li><strong>Check gates</strong>: <code>python3 eval/phase_gates.py</code></li>
-      <li><strong>Phase 2 eval</strong>: <code>python3 eval/run-eval-parallel.py --dataset phase-2 --reset</code></li>
+      <li><strong>Sync workflows</strong>: <code>python3 workflows/sync.py</code></li>
     </ol>`;
 
   // Top improving / regressing
@@ -2015,7 +2017,7 @@ function renderDatabases(){
   const db=DATA.databases||{};
 
   document.getElementById('db-cards').innerHTML=[
-    {name:'Pinecone',icon:'&#9670;',color:'#5b93ff',metric:fmtN(db.pinecone?.total_vectors||10411),label:'vectors',detail:`${Object.keys(db.pinecone?.namespaces||{}).length} namespaces | text-embedding-3-small (1536d)`},
+    {name:'Pinecone',icon:'&#9670;',color:'#5b93ff',metric:fmtN(db.pinecone?.total_vectors||10411),label:'vectors',detail:`${Object.keys(db.pinecone?.namespaces||{}).length} namespaces | embedding via n8n $vars (configurable)`},
     {name:'Neo4j',icon:'&#9679;',color:'#34d88a',metric:fmtN(db.neo4j?.total_nodes||14904),label:'nodes',detail:`${fmtN(db.neo4j?.total_relationships||54907)} relationships | ${Object.keys(db.neo4j?.labels||{}).length} entity types`},
     {name:'Supabase',icon:'&#9632;',color:'#f0c030',metric:fmtN(db.supabase?.total_rows||538),label:'rows',detail:`${Object.keys(db.supabase?.tables||{}).length} tables`},
   ].map(d=>`<div class="card fade-in"><h3 style="color:${d.color}"><span style="font-size:16px">${d.icon}</span> ${d.name}</h3>
@@ -2201,7 +2203,9 @@ function renderAgent(){
         iterative_eval:'python3 eval/iterative-eval.py --pipelines <target> --label "description"',
         node_diagnostics:'python3 eval/node-analyzer.py --pipeline <target> --last 10',
         full_eval:'python3 eval/run-eval-parallel.py --reset --label "description"',
-        deploy_patches:'python3 workflows/improved/apply.py --deploy',
+        sync_workflows:'python3 workflows/sync.py',
+        node_diagnostics_all:'python3 eval/node-analyzer.py --all --last 5',
+        fetch_n8n_logs:'python3 eval/n8n-proxy.py --fetch',
       },
     },null,2);
   }
@@ -2224,7 +2228,7 @@ function renderAgent(){
     `<div style="text-align:center;padding:14px;background:var(--s3);border-radius:var(--r-sm)">
       <div class="dot ok" style="width:10px;height:10px;margin:0 auto 8px"></div>
       <div style="font-size:12px;font-weight:700">OpenRouter</div>
-      <div style="font-size:10px;color:var(--gn);margin-top:4px">llama-3.3-70b:free</div>
+      <div style="font-size:10px;color:var(--gn);margin-top:4px">arcee-ai/trinity-large:free</div>
     </div>`,
     `<div style="text-align:center;padding:14px;background:var(--s3);border-radius:var(--r-sm)">
       <div style="font-size:11px;font-weight:700;margin-bottom:4px">Last Eval</div>
@@ -2282,9 +2286,9 @@ function renderAgent(){
   const credEl=document.getElementById('agent-credentials');
   if(credEl){
     const creds=[
-      {name:'OpenRouter',type:'API Key',model:'meta-llama/llama-3.3-70b-instruct:free',justification:'$0 cost, 70B params, comparable to GPT-3.5 for RAG tasks',status:'ok'},
-      {name:'Pinecone',type:'API Key',model:'text-embedding-3-small (1536d)',justification:'Low-cost embeddings, sufficient quality for RAG retrieval',status:'ok'},
-      {name:'Cohere',type:'API Key',model:'rerank-v3.5',justification:'Best-in-class reranking, minimal cost ($0.002/1K queries)',status:'ok'},
+      {name:'OpenRouter',type:'API Key',model:'arcee-ai/trinity-large-preview:free',justification:'$0 cost, strong RAG performance, all LLM nodes',status:'ok'},
+      {name:'Pinecone',type:'API Key',model:'Embedding via n8n $vars (configurable)',justification:'Free tier, 100K vectors, setup via db/populate/setup_embeddings.py',status:'ok'},
+      {name:'Cohere',type:'API Key',model:'rerank-multilingual-v3.0',justification:'Best-in-class reranking, minimal cost ($0.002/1K queries)',status:'ok'},
       {name:'Neo4j Aura',type:'Connection URI',model:'N/A (database)',justification:'Free tier Aura, 200K nodes limit sufficient for Phase 1-3',status:'ok'},
       {name:'Supabase',type:'PostgreSQL',model:'N/A (database)',justification:'Free tier, 500MB storage, sufficient for Phase 1-2',status:'ok'},
     ];
@@ -2326,37 +2330,41 @@ function renderAgent(){
     <p style="font-weight:700;color:var(--tx);margin-bottom:10px">Fully Agentic Execution Model</p>
     <p style="margin-bottom:10px">Claude Code operates autonomously -- no user terminal needed for evaluations. The agent runs all eval scripts, deploys workflow patches, and commits results directly.</p>
     <div style="margin-top:12px;padding:14px;background:var(--s3);border-radius:var(--r-sm)">
-      <p style="font-weight:600;color:var(--tx)">Phase A: Fast Iteration (10q/pipeline)</p>
+      <p style="font-weight:600;color:var(--tx)">Phase A: Diagnose &amp; Fix (per-pipeline)</p>
       <ol style="padding-left:20px;line-height:2.2">
-        <li><code>cat STATUS.md</code> -- check current state</li>
-        <li><code>python3 workflows/sync.py</code></li>
-        <li><code>python3 eval/quick-test.py --questions 5</code></li>
-        <li><code>python3 eval/fast-iter.py --label "description"</code></li>
-        <li>If bad: fix workflow, repeat. If good: Phase B</li>
-        <li><code>git add docs/ logs/ && git commit && git push</code></li>
+        <li><code>cat docs/status.json</code> -- check live status</li>
+        <li><code>python3 eval/quick-test.py --questions 5</code> -- smoke test</li>
+        <li><code>python3 eval/node-analyzer.py --pipeline &lt;target&gt; --last 5</code> -- diagnose</li>
+        <li>Fix ONE node via n8n REST API (see CLAUDE.md protocol)</li>
+        <li><code>python3 eval/quick-test.py --questions 5</code> -- verify fix</li>
+        <li><code>python3 workflows/sync.py</code> -- sync to GitHub</li>
+        <li><code>git add . && git commit && git push</code></li>
       </ol>
     </div>
     <div style="margin-top:10px;padding:14px;background:var(--s3);border-radius:var(--r-sm)">
-      <p style="font-weight:600;color:var(--tx)">Phase B: Full Evaluation</p>
+      <p style="font-weight:600;color:var(--tx)">Phase B: Scale Up Evaluation</p>
       <ol style="padding-left:20px;line-height:2.2">
-        <li><code>python3 eval/run-eval-parallel.py --reset --label "Iter N"</code></li>
+        <li><code>python3 eval/iterative-eval.py --label "description"</code> -- progressive 5&rarr;10&rarr;50</li>
+        <li><code>python3 eval/run-eval-parallel.py --reset --label "Iter N"</code> -- full 200q</li>
         <li><code>python3 eval/phase_gates.py</code> -- check if gates pass</li>
-        <li><code>python3 eval/run-eval-parallel.py --dataset phase-2 --reset</code></li>
-        <li><code>python3 eval/analyzer.py</code></li>
-        <li><code>git add docs/ workflows/ logs/ && git commit && git push</code></li>
+        <li><code>python3 eval/run-eval-parallel.py --dataset phase-2 --reset</code> -- Phase 2</li>
+        <li><code>git add . && git commit && git push</code></li>
       </ol>
     </div>
     </div>`;
 
   // Command reference
   const commands=[
-    {cmd:'python3 eval/fast-iter.py',desc:'Fast iteration (10q/pipeline, parallel)',flags:'--questions 5 --pipelines graph --label "desc"'},
-    {cmd:'python3 eval/run-eval-parallel.py',desc:'Full parallel eval (gate-enforced)',flags:'--reset --dataset phase-2 --push --label "desc"'},
-    {cmd:'python3 eval/quick-test.py',desc:'Smoke test (3-5 questions)',flags:'--questions 5'},
+    {cmd:'python3 eval/quick-test.py',desc:'Smoke test (5q)',flags:'--questions 5'},
+    {cmd:'python3 eval/fast-iter.py',desc:'Fast iteration (10q/pipeline)',flags:'--label "desc"'},
+    {cmd:'python3 eval/iterative-eval.py',desc:'Progressive eval (5\u219210\u219250)',flags:'--label "desc"'},
+    {cmd:'python3 eval/run-eval-parallel.py',desc:'Full parallel eval (200q)',flags:'--reset --label "desc"'},
     {cmd:'python3 eval/phase_gates.py',desc:'Check phase gate status',flags:'--phase 1 --json'},
-    {cmd:'python3 eval/analyzer.py',desc:'Post-eval analysis + recommendations',flags:''},
-    {cmd:'python3 workflows/sync.py',desc:'Pull workflow JSON from n8n cloud',flags:''},
-    {cmd:'python3 workflows/improved/apply.py',desc:'Apply + deploy workflow patches',flags:'--deploy'},
+    {cmd:'python3 eval/node-analyzer.py',desc:'Node-by-node execution diagnostics',flags:'--pipeline graph --last 5'},
+    {cmd:'python3 eval/n8n-proxy.py',desc:'Fetch n8n execution logs',flags:'--fetch'},
+    {cmd:'python3 eval/generate_status.py',desc:'Regenerate status.json from data.json',flags:''},
+    {cmd:'python3 workflows/sync.py',desc:'Sync workflows from n8n to GitHub',flags:''},
+    {cmd:'python3 db/populate/setup_embeddings.py',desc:'Setup free embeddings database',flags:'--provider jina --dry-run'},
   ];
   document.getElementById('agent-commands').innerHTML=`<table><thead><tr><th>Command</th><th>Description</th><th>Flags</th></tr></thead><tbody>
     ${commands.map(c=>`<tr><td class="mono" style="white-space:nowrap;font-size:11px">${esc(c.cmd)}</td><td style="font-size:11px">${esc(c.desc)}</td><td class="mono" style="font-size:10px;color:var(--tx3)">${esc(c.flags)}</td></tr>`).join('')}
@@ -2791,8 +2799,8 @@ function renderTowerQuickActions(){
   });
 
   // Global actions
-  actions.push({priority:'P2',pipeline:'all',action:'Deploy all workflow patches',
-    cmd:'python3 workflows/improved/apply.py --deploy'});
+  actions.push({priority:'P2',pipeline:'all',action:'Sync workflows from n8n',
+    cmd:'python3 workflows/sync.py'});
   actions.push({priority:'P2',pipeline:'all',action:'Full iterative eval (5&rarr;10&rarr;50)',
     cmd:'python3 eval/iterative-eval.py --parallel --label "full check"'});
 
