@@ -1,10 +1,10 @@
 {
   "versions": {
     "standard": {
-      "version": 4,
-      "hash": "1b240670981017e4",
-      "timestamp": "2026-02-09T03:59:49.523656Z",
-      "snapshot_file": "standard-2026-02-09T03-59-49-1b240670981017e4.json",
+      "version": 5,
+      "hash": "2733b6faf639388d",
+      "timestamp": "2026-02-09T04:14:51.526758Z",
+      "snapshot_file": "standard-2026-02-09T04-14-50-2733b6faf639388d.json",
       "name": "WF5 Standard RAG V3.4",
       "webhook": "/webhook/rag-multi-index-v3",
       "summary": {
@@ -52,18 +52,28 @@
         "removed_nodes": [],
         "modified_nodes": [
           {
-            "node": "Response Formatter",
+            "node": "HyDE Generator",
             "changes": [
               {
-                "param": "jsCode",
-                "old": "// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generati",
-                "new": "\n// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generat"
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots ",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100"
+              }
+            ]
+          },
+          {
+            "node": "LLM Generation",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere pr",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~1 nodes"
+        "summary": "+0 -0 ~2 nodes"
       }
     },
     "graph": {
@@ -284,10 +294,10 @@
       }
     },
     "orchestrator": {
-      "version": 5,
-      "hash": "0c2b1440cb8034e4",
-      "timestamp": "2026-02-09T03:09:08.143779Z",
-      "snapshot_file": "orchestrator-2026-02-09T03-09-06-0c2b1440cb8034e4.json",
+      "version": 6,
+      "hash": "eaa2eed29d2e89d7",
+      "timestamp": "2026-02-09T04:14:53.120781Z",
+      "snapshot_file": "orchestrator-2026-02-09T04-14-50-eaa2eed29d2e89d7.json",
       "name": "V10.1 Orchestrator",
       "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
       "summary": {
@@ -387,19 +397,9 @@
             "node": "🎯 LLM 3: Agent Harness (Opus 4.5)",
             "changes": [
               {
-                "param": "authentication",
-                "old": "predefinedCredentialType",
-                "new": "none"
-              },
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
-              },
-              {
-                "param": "headerParameters",
-                "old": "",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+                "param": "jsonBody",
+                "old": "={{ {\n  \"model\": $vars.LLM_AGENT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  \"max_tokens\": 2000,\n  \"temperature\": 0.3,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are ",
+                "new": "={{ {\n  \"model\": $vars.LLM_AGENT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  \"max_tokens\": 2000,\n  \"temperature\": 0.3,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are "
               }
             ]
           },
@@ -410,21 +410,6 @@
                 "param": "jsonBody",
                 "old": "={\n  \"model\": \"{{ $vars.LLM_INTENT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated",
                 "new": "={\n  \"model\": \"{{ $vars.LLM_INTENT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated"
-              },
-              {
-                "param": "authentication",
-                "old": "predefinedCredentialType",
-                "new": "none"
-              },
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
-              },
-              {
-                "param": "headerParameters",
-                "old": "",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
               }
             ]
           },
@@ -434,53 +419,13 @@
               {
                 "param": "jsonBody",
                 "old": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es l'INTENT ANALYZER d'un système RAG multi-moteurs sophi",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es l'INTENT ANALYZER d'un système RAG multi-moteurs sophi"
-              },
-              {
-                "param": "authentication",
-                "old": "predefinedCredentialType",
-                "new": "none"
-              },
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
-              },
-              {
-                "param": "headerParameters",
-                "old": "",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
-              }
-            ]
-          },
-          {
-            "node": "🎯 LLM 2: Task Planner",
-            "changes": [
-              {
-                "param": "jsonBody",
-                "old": "={\n  \"model\": \"{{ $vars.LLM_PLANNER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"temperature\": 0.2,\n  \"max_tokens\": 2000,\n  \"response_format\": {\"type\": \"json_object\"},\n  \"messages\": [\n   ",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_PLANNER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"temperature\": 0.2,\n  \"max_tokens\": 2000,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ J"
-              },
-              {
-                "param": "authentication",
-                "old": "predefinedCredentialType",
-                "new": "none"
-              },
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
-              },
-              {
-                "param": "headerParameters",
-                "old": "",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}"
+                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated multi-engine "
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~4 nodes"
+        "summary": "+0 -0 ~3 nodes"
       }
     }
   },
@@ -636,6 +581,22 @@
       "hash": "8f2c68b196dc3110",
       "diff_summary": "+0 -0 ~1 nodes",
       "snapshot_file": "graph-2026-02-09T03-59-49-8f2c68b196dc3110.json"
+    },
+    {
+      "timestamp": "2026-02-09T04:14:51.526773Z",
+      "pipeline": "standard",
+      "version": 5,
+      "hash": "2733b6faf639388d",
+      "diff_summary": "+0 -0 ~2 nodes",
+      "snapshot_file": "standard-2026-02-09T04-14-50-2733b6faf639388d.json"
+    },
+    {
+      "timestamp": "2026-02-09T04:14:53.120795Z",
+      "pipeline": "orchestrator",
+      "version": 6,
+      "hash": "eaa2eed29d2e89d7",
+      "diff_summary": "+0 -0 ~3 nodes",
+      "snapshot_file": "orchestrator-2026-02-09T04-14-50-eaa2eed29d2e89d7.json"
     }
   ]
 }
