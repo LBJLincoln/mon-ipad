@@ -115,8 +115,24 @@ h3{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em
 .g5{grid-template-columns:repeat(5,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}
 .g1-2{grid-template-columns:1fr 2fr}.g2-1{grid-template-columns:2fr 1fr}.g1-3{grid-template-columns:1fr 3fr}
 /* Pipeline-colored top border cards */
-.pipe-card{position:relative;overflow:hidden}
+/* App-bubble pipeline cards */
+.pipe-card{position:relative;overflow:hidden;transition:var(--transition)}
+.pipe-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 .pipe-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
+
+/* App icon bubbles */
+.app-bubble{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.2);position:relative}
+.app-bubble::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,.2) 0%,transparent 50%);pointer-events:none}
+.app-bubble-standard{background:linear-gradient(135deg,#4C8BF5,#2563EB)}
+.app-bubble-graph{background:linear-gradient(135deg,#30D982,#16A35A)}
+.app-bubble-quantitative{background:linear-gradient(135deg,#F5B731,#D4A010)}
+.app-bubble-orchestrator{background:linear-gradient(135deg,#F08838,#D07028)}
+
+/* Status dot */
+.status-dot{width:10px;height:10px;border-radius:50%;position:absolute;bottom:-1px;right:-1px;border:2px solid var(--s1)}
+.status-dot.online{background:var(--gn);box-shadow:0 0 6px var(--gn)}
+.status-dot.warning{background:var(--yl);box-shadow:0 0 6px var(--yl)}
+.status-dot.offline{background:var(--rd);box-shadow:0 0 6px var(--rd)}
 .pipe-card.pipe-standard::before{background:linear-gradient(90deg,#4C8BF5,#6BA3FF)}
 .pipe-card.pipe-graph::before{background:linear-gradient(90deg,#30D982,#50F0A0)}
 .pipe-card.pipe-quantitative::before{background:linear-gradient(90deg,#F5B731,#FFD060)}
@@ -365,16 +381,13 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
 
 <!-- Tabs -->
 <div class="tabs" id="tab-bar">
-  <div class="tab active" data-tab="tower">Control Tower <span class="kbd">0</span></div>
-  <div class="tab" data-tab="exec">Executive Summary <span class="kbd">1</span></div>
-  <div class="tab" data-tab="focus">Focus <span class="kbd">2</span></div>
-  <div class="tab" data-tab="questions">Questions <span class="kbd">3</span></div>
-  <div class="tab" data-tab="workflows">Workflows <span class="kbd">4</span></div>
-  <div class="tab" data-tab="databases">Databases <span class="kbd">5</span></div>
-  <div class="tab" data-tab="costs">Costs & Models <span class="kbd">6</span></div>
-  <div class="tab" data-tab="agent">AI Agent <span class="kbd">7</span></div>
-  <div class="tab" data-tab="kb">Knowledge Base <span class="kbd">8</span></div>
-  <div class="tab" data-tab="diag">Diagnostics <span class="kbd">9</span></div>
+  <div class="tab active" data-tab="tower">Dashboard <span class="kbd">0</span></div>
+  <div class="tab" data-tab="questions">Questions <span class="kbd">1</span></div>
+  <div class="tab" data-tab="workflows">Pipelines <span class="kbd">2</span></div>
+  <div class="tab" data-tab="databases">Databases <span class="kbd">3</span></div>
+  <div class="tab" data-tab="diag">Diagnostics <span class="kbd">4</span></div>
+  <div class="tab" data-tab="kb">Knowledge Base <span class="kbd">5</span></div>
+  <div class="tab" data-tab="agent">AI Copilot <span class="kbd">6</span></div>
 </div>
 
 <!-- ============ TAB 0: CONTROL TOWER ============ -->
@@ -382,8 +395,8 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
   <!-- Hero Section -->
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
     <div>
-      <h2 style="margin-bottom:4px">Control Tower</h2>
-      <p style="font-size:12.5px;color:var(--tx3)">Live pipeline monitoring &amp; progressive stage evaluation</p>
+      <h2 style="margin-bottom:4px">Dashboard</h2>
+      <p style="font-size:12.5px;color:var(--tx3)">Live pipeline monitoring, diagnostics &amp; iteration control</p>
     </div>
     <div style="display:flex;gap:10px;align-items:center">
       <button class="btn btn-sm btn-primary" onclick="fetchN8nExecutions()">Fetch n8n Logs</button>
@@ -452,15 +465,39 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
     <div id="tower-node-detail"></div>
   </div>
 
+  <!-- Charts row (moved from Executive Summary) -->
+  <div class="grid g2" style="margin-bottom:20px">
+    <div class="card"><h3>Accuracy Trend</h3><canvas id="ch-exec-trend" height="200"></canvas></div>
+    <div class="card"><h3>Error Distribution</h3><canvas id="ch-exec-errors" height="200"></canvas></div>
+  </div>
+
+  <!-- Iteration Timeline + Blockers (moved from Executive Summary) -->
+  <div class="grid g2" style="margin-bottom:20px">
+    <div class="card" style="max-height:350px;overflow-y:auto">
+      <h3>Iteration Timeline</h3>
+      <div class="timeline" id="exec-timeline"></div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px"><h3>Active Blockers</h3><div id="exec-blockers"></div></div>
+      <div class="card"><h3>Next Actions</h3><div id="exec-actions"></div></div>
+    </div>
+  </div>
+
   <!-- Knowledge Base Matches -->
   <div class="card card-pp" style="margin-bottom:20px">
     <h3>Known Error Patterns &amp; Fixes</h3>
     <div id="tower-kb-matches"></div>
   </div>
+
+  <!-- What's Improving / Regressing (moved from Executive Summary) -->
+  <div class="grid g2" style="margin-bottom:20px">
+    <div class="card card-gn"><h3>Top Improving Questions</h3><div id="exec-improving"></div></div>
+    <div class="card card-rd"><h3>Top Regressing Questions</h3><div id="exec-regressing"></div></div>
+  </div>
 </div>
 
-<!-- ============ TAB 1: EXECUTIVE SUMMARY ============ -->
-<div class="panel" id="p-exec">
+<!-- ============ TAB 1: EXECUTIVE SUMMARY (MERGED INTO DASHBOARD) ============ -->
+<div class="panel" id="p-exec" style="display:none !important">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
     <h2 style="margin-bottom:0">Executive Summary</h2>
     <div id="exec-health-badge"></div>
@@ -509,8 +546,8 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
   </div>
 </div>
 
-<!-- ============ TAB 2: FOCUS ============ -->
-<div class="panel" id="p-focus">
+<!-- ============ TAB 2: FOCUS (MERGED INTO DASHBOARD) ============ -->
+<div class="panel" id="p-focus" style="display:none !important">
   <h2>Focus: Current Step Detail</h2>
 
   <div class="card card-pp" style="margin-bottom:18px">
@@ -604,10 +641,10 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
   <div id="q-detail" style="margin-top:14px"></div>
 </div>
 
-<!-- ============ TAB 4: WORKFLOWS ============ -->
+<!-- ============ TAB 4: PIPELINES & WORKFLOWS ============ -->
 <div class="panel" id="p-workflows">
-  <h2>Workflows</h2>
-  <p style="color:var(--tx2);margin-bottom:18px;font-size:13px">n8n Cloud workflows with node-level architecture. Click to open in n8n for live inspection.</p>
+  <h2>Pipelines</h2>
+  <p style="color:var(--tx2);margin-bottom:18px;font-size:13px">n8n Cloud workflows, LLM models &amp; costs. Click to open in n8n for live inspection.</p>
 
   <div class="grid g4" id="wf-cards"></div>
 
@@ -624,6 +661,21 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
 
   <h3 style="margin-top:18px">Database State Over Time</h3>
   <div class="card"><canvas id="ch-wf-db" height="180"></canvas></div>
+
+  <!-- Model Registry + Cost (moved from Costs tab) -->
+  <div class="card" style="margin-top:18px;margin-bottom:18px;text-align:center;padding:20px;border-left:3px solid var(--gn)">
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gn)">Cost Optimization</div>
+    <div style="font-size:32px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--gn)">$0.00</div>
+    <div style="font-size:12px;color:var(--tx2)">All LLMs free via OpenRouter (llama-3.3-70b-instruct:free)</div>
+  </div>
+
+  <h3>LLM Model Registry</h3>
+  <div class="card" style="padding:0;max-height:40vh;overflow:auto">
+    <table>
+      <thead><tr><th>Pipeline</th><th>Node</th><th>Model</th><th>Provider</th><th>Cost</th><th>Role</th></tr></thead>
+      <tbody id="wf-model-registry"></tbody>
+    </table>
+  </div>
 </div>
 
 <!-- ============ TAB 5: DATABASES ============ -->
@@ -650,8 +702,8 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
   <div id="db-missing"></div>
 </div>
 
-<!-- ============ TAB 6: COSTS & MODELS ============ -->
-<div class="panel" id="p-costs">
+<!-- ============ TAB 6: COSTS & MODELS (MERGED INTO PIPELINES) ============ -->
+<div class="panel" id="p-costs" style="display:none !important">
   <h2>Costs & Models</h2>
 
   <!-- Cost savings hero -->
@@ -678,14 +730,23 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
   <div class="card"><canvas id="ch-cost-pipe" height="200"></canvas></div>
 </div>
 
-<!-- ============ TAB 7: AI AGENT ============ -->
+<!-- ============ TAB 7: AI COPILOT ============ -->
 <div class="panel" id="p-agent">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
     <div>
-      <h2 style="margin-bottom:4px">AI Agent</h2>
-      <p style="color:var(--tx3);font-size:12.5px">Autonomous eval, deployment &amp; analysis engine</p>
+      <h2 style="margin-bottom:4px">AI Copilot</h2>
+      <p style="color:var(--tx3);font-size:12.5px">Complete monitoring hub for AI agents &mdash; all data in one page</p>
     </div>
     <div id="agent-status-badge"></div>
+  </div>
+
+  <!-- AI Quick Status — machine-readable summary -->
+  <div class="card card-accent" style="margin-bottom:18px;padding:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <h3 style="margin-bottom:0">Structured Status (Machine-Readable)</h3>
+      <button class="btn btn-sm" onclick="copyText(document.getElementById('ai-structured-data').textContent,this)">Copy JSON</button>
+    </div>
+    <pre id="ai-structured-data" class="code-block" style="font-size:10.5px;max-height:300px;overflow:auto;white-space:pre-wrap"></pre>
   </div>
 
   <!-- System Health + Live Feed -->
@@ -968,16 +1029,13 @@ if(localStorage.getItem('theme')==='light')document.documentElement.classList.ad
 // COMMAND PALETTE
 // ============================================================
 const CMD_ITEMS=[
-  {label:'Control Tower',action:()=>switchTab('tower'),hint:'Tab 0'},
-  {label:'Executive Summary',action:()=>switchTab('exec'),hint:'Tab 1'},
-  {label:'Focus',action:()=>switchTab('focus'),hint:'Tab 2'},
-  {label:'Questions Explorer',action:()=>switchTab('questions'),hint:'Tab 3'},
-  {label:'Workflows',action:()=>switchTab('workflows'),hint:'Tab 4'},
-  {label:'Databases',action:()=>switchTab('databases'),hint:'Tab 5'},
-  {label:'Costs & Models',action:()=>switchTab('costs'),hint:'Tab 6'},
-  {label:'AI Agent',action:()=>switchTab('agent'),hint:'Tab 7'},
-  {label:'Knowledge Base',action:()=>switchTab('kb'),hint:'Tab 8'},
-  {label:'Diagnostics',action:()=>switchTab('diag'),hint:'Tab 9'},
+  {label:'Dashboard',action:()=>switchTab('tower'),hint:'Tab 0'},
+  {label:'Questions Explorer',action:()=>switchTab('questions'),hint:'Tab 1'},
+  {label:'Pipelines & Workflows',action:()=>switchTab('workflows'),hint:'Tab 2'},
+  {label:'Databases',action:()=>switchTab('databases'),hint:'Tab 3'},
+  {label:'Diagnostics',action:()=>switchTab('diag'),hint:'Tab 4'},
+  {label:'Knowledge Base',action:()=>switchTab('kb'),hint:'Tab 5'},
+  {label:'AI Copilot',action:()=>switchTab('agent'),hint:'Tab 6'},
   {label:'Fetch n8n Logs',action:()=>{closePalette();fetchN8nExecutions()},hint:'Live'},
   {label:'Export Questions CSV',action:()=>{closePalette();exportCSV()},hint:'Download'},
   {label:'Toggle Theme',action:()=>{closePalette();toggleTheme()},hint:'Dark/Light'},
@@ -1142,9 +1200,9 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closePalette();return;}
   // Number keys 0-8 (not in input)
   if(!e.metaKey&&!e.ctrlKey&&!e.altKey&&e.target.tagName!=='INPUT'&&e.target.tagName!=='SELECT'&&e.target.tagName!=='TEXTAREA'){
-    const tabs=['tower','exec','focus','questions','workflows','databases','costs','agent','kb','diag'];
+    const tabs=['tower','questions','workflows','databases','diag','kb','agent'];
     const n=parseInt(e.key);
-    if(n>=0&&n<=9){switchTab(tabs[n]);}
+    if(n>=0&&n<=6){switchTab(tabs[n]);}
   }
 });
 
@@ -1643,22 +1701,108 @@ function expandQuestion(qid){
   const q=reg[qid];if(!q)return;
   const detail=document.getElementById('q-detail');
   const runs=(q.runs||[]).slice().reverse();
-  detail.innerHTML=`<div class="card card-accent fade-in"><h3>${esc(qid)} -- ${esc(q.rag_type)}</h3>
-    <p style="margin-bottom:8px;font-size:12px"><strong>Question:</strong> ${esc(q.question)}</p>
-    <p style="margin-bottom:8px;font-size:12px"><strong>Expected:</strong> <code>${esc(q.expected)}</code></p>
-    <p style="margin-bottom:12px;font-size:12px"><strong>Category:</strong> ${esc(q.category)} | <strong>Best F1:</strong> ${(q.best_f1||0).toFixed(3)} | <strong>Pass rate:</strong> ${((q.pass_rate||0)*100).toFixed(0)}%</p>
-    <table><thead><tr><th>Iter</th><th>Result</th><th>F1</th><th>Latency</th><th>Method</th><th>Answer</th><th>Error</th></tr></thead><tbody>
-    ${runs.map(r=>`<tr>
-      <td>${r.iteration_number||'?'}</td>
-      <td><span class="tag ${r.correct?'t-pass':'t-fail'}">${r.correct?'PASS':'FAIL'}</span></td>
-      <td class="mono">${(r.f1||0).toFixed(3)}</td>
-      <td class="mono">${r.latency_ms||0}ms</td>
-      <td style="font-size:11px">${esc(r.match_type||'')}</td>
-      <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${esc(r.answer||'')}</td>
-      <td style="color:var(--rd);font-size:11px">${esc(r.error||'')}</td>
-    </tr>`).join('')}
-    </tbody></table></div>`;
+  const latestRun=runs[0]||{};
+  const pipeColor=PCOL[q.rag_type]||'var(--ac)';
+
+  // Find matching execution logs for this question
+  const execLogs=(DATA.execution_logs||[]).filter(l=>l.question_id===qid).slice(-5).reverse();
+
+  detail.innerHTML=`<div class="card fade-in" style="border-top:3px solid ${pipeColor};padding:20px">
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span class="mono" style="font-size:16px;font-weight:800">${esc(qid)}</span>
+          <span class="tag ${latestRun.correct?'t-pass':'t-fail'}" style="font-size:12px">${latestRun.correct?'PASS':'FAIL'}</span>
+          <span style="color:${pipeColor};font-weight:600;font-size:12px">${esc(q.rag_type)}</span>
+        </div>
+        <div style="font-size:13px;color:var(--tx);line-height:1.6">${esc(q.question)}</div>
+      </div>
+      <button class="btn btn-sm" onclick="document.getElementById('q-detail').innerHTML=''">&times; Close</button>
+    </div>
+
+    <!-- Answer comparison -->
+    <div class="grid g2" style="margin-bottom:16px;gap:12px">
+      <div style="background:var(--gn-bg);border:1px solid rgba(48,217,130,.15);border-radius:var(--r);padding:12px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gn);margin-bottom:6px">Expected Answer</div>
+        <div class="mono" style="font-size:12px;color:var(--tx)">${esc(q.expected)}</div>
+      </div>
+      <div style="background:${latestRun.correct?'var(--gn-bg)':'var(--rd-bg)'};border:1px solid ${latestRun.correct?'rgba(48,217,130,.15)':'rgba(244,76,76,.15)'};border-radius:var(--r);padding:12px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:${latestRun.correct?'var(--gn)':'var(--rd)'};margin-bottom:6px">Last Answer</div>
+        <div class="mono" style="font-size:12px;color:var(--tx)">${esc(latestRun.answer||'No answer')}</div>
+      </div>
+    </div>
+
+    <!-- Quick metrics -->
+    <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">
+      <div style="background:var(--s2);border-radius:var(--r-sm);padding:8px 14px;text-align:center">
+        <div style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace">${((q.pass_rate||0)*100).toFixed(0)}%</div>
+        <div style="font-size:10px;color:var(--tx3)">Pass Rate</div>
+      </div>
+      <div style="background:var(--s2);border-radius:var(--r-sm);padding:8px 14px;text-align:center">
+        <div style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace">${(q.best_f1||0).toFixed(3)}</div>
+        <div style="font-size:10px;color:var(--tx3)">Best F1</div>
+      </div>
+      <div style="background:var(--s2);border-radius:var(--r-sm);padding:8px 14px;text-align:center">
+        <div style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace">${q.total_runs||0}</div>
+        <div style="font-size:10px;color:var(--tx3)">Total Runs</div>
+      </div>
+      <div style="background:var(--s2);border-radius:var(--r-sm);padding:8px 14px;text-align:center">
+        <div style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace">${latestRun.latency_ms||0}<span style="font-size:11px">ms</span></div>
+        <div style="font-size:10px;color:var(--tx3)">Last Latency</div>
+      </div>
+      <div style="background:var(--s2);border-radius:var(--r-sm);padding:8px 14px;text-align:center">
+        <div style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace">${esc(latestRun.match_type||'?')}</div>
+        <div style="font-size:10px;color:var(--tx3)">Match Method</div>
+      </div>
+    </div>
+
+    <!-- Execution trace (from execution_logs) -->
+    ${execLogs.length?`<details open style="margin-bottom:14px">
+      <summary style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx2);cursor:pointer;margin-bottom:8px">Execution Trace (${execLogs.length} logs)</summary>
+      ${execLogs.map(log=>`<div style="background:var(--s2);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:6px;font-size:11px;border-left:3px solid ${log.correct?'var(--gn)':'var(--rd)'}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-weight:600">${log.correct?'PASS':'FAIL'} | ${log.latency_ms}ms | F1: ${(log.f1||0).toFixed(3)}</span>
+          <span style="color:var(--tx3);font-size:10px">${log.timestamp||''}</span>
+        </div>
+        ${log.confidence!=null?`<div style="color:var(--tx2)">Confidence: ${log.confidence}</div>`:''}
+        ${log.pipeline_details_summary?`<div style="color:var(--tx2)">${renderPipelineDetails(log.pipeline_details_summary)}</div>`:''}
+        ${log.error_type?`<div style="color:var(--rd)">Error: [${log.error_type}] ${esc(log.error_preview||'')}</div>`:''}
+        ${log.answer_preview?`<div class="mono" style="color:var(--tx3);margin-top:4px">${esc(log.answer_preview)}</div>`:''}
+      </div>`).join('')}
+    </details>`:''}
+
+    <!-- Run history -->
+    <details ${!execLogs.length?'open':''}>
+      <summary style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx2);cursor:pointer;margin-bottom:8px">Run History (${runs.length} runs)</summary>
+      <table style="font-size:11px"><thead><tr><th>Iter</th><th>Result</th><th>F1</th><th>Latency</th><th>Method</th><th>Answer</th><th>Error</th></tr></thead><tbody>
+      ${runs.map(r=>`<tr>
+        <td>${r.iteration_number||'?'}</td>
+        <td><span class="tag ${r.correct?'t-pass':'t-fail'}">${r.correct?'PASS':'FAIL'}</span></td>
+        <td class="mono">${(r.f1||0).toFixed(3)}</td>
+        <td class="mono">${r.latency_ms||0}ms</td>
+        <td>${esc(r.match_type||'')}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.answer||'')}</td>
+        <td style="color:var(--rd)">${esc(r.error||'')}</td>
+      </tr>`).join('')}
+      </tbody></table>
+    </details>
+  </div>`;
   detail.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function renderPipelineDetails(details){
+  if(!details)return '';
+  const parts=[];
+  if(details.sub_pipelines)parts.push('Sub-pipelines: '+details.sub_pipelines.join(', '));
+  if(details.routing)parts.push('Routing: '+details.routing);
+  if(details.topK)parts.push('TopK: '+details.topK);
+  if(details.pinecone_results)parts.push('Pinecone: '+details.pinecone_results+' results');
+  if(details.entities&&details.entities.length)parts.push('Entities: '+details.entities.join(', '));
+  if(details.neo4j_paths)parts.push('Neo4j: '+details.neo4j_paths+' paths');
+  if(details.sql)parts.push('SQL: '+details.sql);
+  if(details.sql_status)parts.push('SQL Status: '+details.sql_status);
+  return parts.join(' | ');
 }
 
 // Compare mode
@@ -1752,19 +1896,23 @@ function renderWorkflows(){
     const avgLat=lastT?Math.round(lastT.avg_latency_ms||0):0;
     const models=MODEL_REGISTRY.filter(m=>m.wf.toLowerCase()===p);
     const freeCount=models.filter(m=>m.cost_in===0&&m.cost_out===0).length;
-    return `<div class="card pipe-card pipe-${p} fade-in" style="padding-top:24px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <span style="font-size:15px;font-weight:800;color:${PCOL[p]};text-transform:capitalize">${p}</span>
-        <span style="font-size:18px;font-weight:800;font-family:'JetBrains Mono';color:${acc>=PTARGET[p]?'var(--gn)':'var(--rd)'}">${acc}%</span>
+    return `<div class="card pipe-card pipe-${p} fade-in" style="padding:20px">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+        <div class="app-bubble app-bubble-${p}" style="position:relative">${p[0].toUpperCase()}<div class="status-dot ${acc>=PTARGET[p]?'online':'warning'}"></div></div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-weight:700;font-size:14px;text-transform:capitalize">${p}</span>
+            <span style="font-size:18px;font-weight:800;font-family:'JetBrains Mono';color:${acc>=PTARGET[p]?'var(--gn)':'var(--rd)'}">${acc}%</span>
+          </div>
+          <div style="font-size:11px;color:var(--tx3)">${esc(w.name||'')} v${w.version||'?'} | ${w.total_nodes||'?'} nodes</div>
+        </div>
       </div>
-      <div style="font-size:12px;color:var(--tx2);margin-bottom:10px">${esc(w.name||'')} <span class="mono" style="font-size:10px;color:var(--tx3)">v${w.version||'?'}</span></div>
       <div style="font-size:11px;color:var(--tx3);line-height:2">
-        <div>Nodes: <strong style="color:var(--tx)">${w.total_nodes||'?'}</strong> | Database: <strong style="color:var(--tx)">${wfDatabases[p]}</strong></div>
-        <div>Models: <strong style="color:var(--tx)">${models.length}</strong> (${freeCount} free) | Avg: <strong style="color:var(--tx)">${avgLat}ms</strong></div>
+        <div>Database: <strong style="color:var(--tx)">${wfDatabases[p]}</strong> | Models: <strong style="color:var(--tx)">${models.length}</strong> (${freeCount} free)</div>
+        <div>Avg Latency: <strong style="color:var(--tx)">${avgLat}ms</strong></div>
         <div>Endpoint: <code style="font-size:9.5px">${esc(wfEndpoints[p])}</code></div>
-        <div>ID: <code style="font-size:9.5px">${WF_IDS[p]}</code></div>
       </div>
-      <div style="margin-top:12px;display:flex;gap:8px">
+      <div style="margin-top:12px">
         <a href="${N8N_HOST}/workflow/${WF_IDS[p]}" target="_blank" class="btn btn-sm" style="font-size:10px">Open in n8n</a>
       </div>
     </div>`;
@@ -1829,6 +1977,19 @@ function renderWorkflows(){
   }).join('');
 
   renderDbChart();
+
+  // Model registry (moved from Costs tab)
+  const regEl=document.getElementById('wf-model-registry');
+  if(regEl){
+    regEl.innerHTML=MODEL_REGISTRY.map(m=>`<tr>
+      <td style="font-size:11px"><span style="color:${PCOL[m.workflow]||'var(--tx)'}">${esc(m.workflow)}</span></td>
+      <td style="font-size:11px">${esc(m.node)}</td>
+      <td class="mono" style="font-size:10px">${esc(m.model)}</td>
+      <td style="font-size:10px">${esc(m.provider)}</td>
+      <td style="font-size:10px;color:var(--gn)">${esc(m.cost)}</td>
+      <td style="font-size:10px;color:var(--tx2)">${esc(m.role)}</td>
+    </tr>`).join('');
+  }
 }
 
 function renderDbChart(){
@@ -1990,6 +2151,61 @@ function renderCosts(){
 // TAB 7: AI AGENT
 // ============================================================
 function renderAgent(){
+  // Structured status for AI agents — machine-readable JSON
+  const structEl=document.getElementById('ai-structured-data');
+  if(structEl){
+    const m=DATA.meta||{};
+    const lastIter=(DATA.iterations||[]).slice(-1)[0];
+    const pipelines={};
+    PIPES.forEach(p=>{
+      const trend=(DATA.pipelines||{})[p]?.trend||[];
+      const last=trend[trend.length-1];
+      pipelines[p]={
+        accuracy:last?.accuracy_pct||0,
+        target:PTARGET[p],
+        met:(last?.accuracy_pct||0)>=PTARGET[p],
+        gap:((last?.accuracy_pct||0)-PTARGET[p]).toFixed(1),
+        tested:last?.tested||0,
+        errors:last?.errors||0,
+        avg_latency_ms:last?.avg_latency_ms||0,
+      };
+    });
+    const failingQs=Object.values(DATA.question_registry||{}).filter(q=>q.current_status!=='pass').slice(0,20).map(q=>({id:q.id,pipeline:q.rag_type,question:q.question?.slice(0,100),expected:q.expected?.slice(0,80),last_answer:(q.runs||[]).slice(-1)[0]?.answer?.slice(0,100)||'',last_error:(q.runs||[]).slice(-1)[0]?.error||null,pass_rate:q.pass_rate}));
+    const recentErrors=(DATA.execution_logs||[]).filter(l=>l.error_type).slice(-10).reverse().map(l=>({question_id:l.question_id,pipeline:l.rag_type,error_type:l.error_type,error:l.error_preview,latency_ms:l.latency_ms}));
+    const diagSummary={};
+    if(DIAG_DATA){
+      PIPES.forEach(p=>{
+        if(DIAG_DATA[p]){
+          diagSummary[p]={
+            issues:DIAG_DATA[p].total_issues,
+            severity:DIAG_DATA[p].issues_by_severity,
+            top_recommendations:(DIAG_DATA[p].recommendations||[]).slice(0,3).map(r=>typeof r==='string'?r:`[${r.priority}] ${r.type}: ${r.action?.slice(0,100)}`),
+          };
+        }
+      });
+    }
+    structEl.textContent=JSON.stringify({
+      timestamp:new Date().toISOString(),
+      phase:{current:1,name:'Baseline (200q)',gates_passed:Object.values(pipelines).every(p=>p.met)},
+      pipelines,
+      overall_accuracy:lastIter?.overall_accuracy_pct||0,
+      overall_target:75,
+      total_questions_tested:m.total_unique_questions||0,
+      total_iterations:m.total_iterations||0,
+      blocking_pipelines:Object.entries(pipelines).filter(([,p])=>!p.met).map(([name,p])=>`${name}: ${p.accuracy}% (need ${p.target}%, gap ${p.gap}pp)`),
+      priority_action:Object.entries(pipelines).filter(([,p])=>!p.met).sort((a,b)=>a[1].gap-b[1].gap).map(([name])=>name)[0]||'all gates met',
+      failing_questions:failingQs,
+      recent_errors:recentErrors,
+      diagnostics:diagSummary,
+      commands:{
+        iterative_eval:'python3 eval/iterative-eval.py --pipelines <target> --label "description"',
+        node_diagnostics:'python3 eval/node-analyzer.py --pipeline <target> --last 10',
+        full_eval:'python3 eval/run-eval-parallel.py --reset --label "description"',
+        deploy_patches:'python3 workflows/improved/apply.py --deploy',
+      },
+    },null,2);
+  }
+
   // Status badge
   const m=DATA.meta||{};
   const genAt=m.generated_at?new Date(m.generated_at):null;
@@ -2257,6 +2473,8 @@ function renderTower(){
   renderTowerErrorPatterns();
   renderTowerQuickActions();
   renderTowerKBMatches();
+  // Render charts/timeline/blockers (moved from Executive Summary)
+  try{renderExec();}catch(e){}
 }
 
 function renderTowerPhaseHero(){
@@ -2293,26 +2511,40 @@ function renderTowerStages(){
   if(STAGE_DATA&&STAGE_DATA.pipelines){
     el.innerHTML=PIPES.map(p=>{
       const pData=STAGE_DATA.pipelines[p];
-      if(!pData)return `<div class="card fade-in"><h3 style="color:${PCOL[p]}">${p}</h3><p style="color:var(--tx3);font-size:11px">No stage data</p></div>`;
+      if(!pData)return `<div class="card fade-in pipe-card pipe-${p}" style="padding:20px"><div style="display:flex;align-items:center;gap:14px"><div class="app-bubble app-bubble-${p}">${p[0].toUpperCase()}</div><div><div style="font-weight:700;font-size:14px;text-transform:capitalize">${p}</div><div style="font-size:11px;color:var(--tx3)">No stage data</div></div></div></div>`;
       const stages=pData.stages||[];
       const status=pData.status||'pending';
-      const statusIcon=status==='passed'?'&#10003;':status==='blocked'?'&#10007;':'&#8230;';
-      const statusCol=status==='passed'?'var(--gn)':status==='blocked'?'var(--rd)':'var(--yl)';
+      const statusDot=status==='passed'?'online':status==='blocked'?'offline':'warning';
+      const lastStage=stages[stages.length-1];
+      const acc=lastStage?lastStage.accuracy:0;
+      const met=acc>=PTARGET[p];
 
       const stageBoxes=['5q','10q','50q'].map((label,i)=>{
         const s=stages[i];
-        if(!s)return `<div class="phase-dot locked" style="font-size:10px;height:32px;flex:1">${label}</div>`;
+        if(!s)return `<div class="phase-dot locked" style="font-size:10px;height:30px;flex:1">${label}</div>`;
         const cls=s.accuracy>=((i===2?PTARGET[p]:i===0?60:65))?'done':'current';
-        return `<div class="phase-dot ${cls}" style="font-size:10px;height:32px;flex:1">${label}<br><span style="font-weight:400;font-size:9px">${s.accuracy}%</span></div>`;
+        return `<div class="phase-dot ${cls}" style="font-size:10px;height:30px;flex:1">${label}<br><span style="font-weight:400;font-size:9px">${s.accuracy}%</span></div>`;
       }).join('');
 
-      return `<div class="card fade-in">
-        <h3 style="color:${PCOL[p]}">${p} <span style="color:${statusCol};font-size:12px;float:right">${statusIcon}</span></h3>
-        <div style="display:flex;gap:4px;margin:8px 0">${stageBoxes}</div>
-        ${stages.length?`<div style="font-size:11px;color:var(--tx2)">
-          Last stage: ${stages[stages.length-1].accuracy}% acc, ${stages[stages.length-1].error_rate}% err
-          <br>Tested: ${stages[stages.length-1].total}q | ${stages[stages.length-1].elapsed_s}s
-        </div>`:'<div style="font-size:11px;color:var(--tx3)">Run: python eval/iterative-eval.py</div>'}
+      const diagBadge=lastStage?.diagnostics?.total_issues?`<span class="tag tag-yellow" style="font-size:9px">${lastStage.diagnostics.total_issues} issues</span>`:'';
+
+      return `<div class="card fade-in pipe-card pipe-${p}" style="padding:20px">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+          <div class="app-bubble app-bubble-${p}" style="position:relative">${p[0].toUpperCase()}<div class="status-dot ${statusDot}"></div></div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-weight:700;font-size:14px;text-transform:capitalize">${p}</span>
+              <span class="tag ${met?'t-pass':'t-fail'}" style="font-size:9px">${met?'MET':'GAP'}</span>
+              ${diagBadge}
+            </div>
+            <div style="font-size:28px;font-weight:800;font-family:'JetBrains Mono';color:${met?'var(--gn)':'var(--rd)'};letter-spacing:-.02em;margin-top:2px">${acc}%</div>
+          </div>
+        </div>
+        <div class="pbar" style="margin-bottom:8px"><div class="fill" style="width:${Math.min(100,acc/PTARGET[p]*100)}%;background:${met?'var(--gn)':'var(--rd)'}"></div><div class="marker" style="left:${Math.min(100,PTARGET[p])}%"></div></div>
+        <div style="display:flex;gap:4px;margin-bottom:8px">${stageBoxes}</div>
+        ${lastStage?`<div style="font-size:11px;color:var(--tx2)">
+          ${lastStage.total}q tested | ${lastStage.elapsed_s}s | ${lastStage.error_rate}% errors
+        </div>`:''}
       </div>`;
     }).join('');
     return;
@@ -2336,14 +2568,19 @@ function renderTowerStages(){
       return `<div class="phase-dot ${cls}" style="font-size:10px;height:34px;flex:1">${label}</div>`;
     }).join('');
 
-    return `<div class="card pipe-card pipe-${p} fade-in" style="padding-top:24px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:14px;font-weight:800;color:${PCOL[p]};text-transform:capitalize">${p}</span>
-        <span class="tag ${met?'t-pass':'t-fail'}" style="font-size:9px">${met?'MET':'GAP '+(target-acc).toFixed(1)+'pp'}</span>
+    return `<div class="card pipe-card pipe-${p} fade-in" style="padding:20px">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+        <div class="app-bubble app-bubble-${p}" style="position:relative">${p[0].toUpperCase()}<div class="status-dot ${met?'online':'warning'}"></div></div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-weight:700;font-size:14px;text-transform:capitalize">${p}</span>
+            <span class="tag ${met?'t-pass':'t-fail'}" style="font-size:9px">${met?'MET':'GAP '+(target-acc).toFixed(1)+'pp'}</span>
+          </div>
+          <div style="font-size:28px;font-weight:800;font-family:'JetBrains Mono';color:${met?'var(--gn)':'var(--rd)'};letter-spacing:-.02em;margin-top:2px">${acc}%</div>
+        </div>
       </div>
-      <div style="font-size:30px;font-weight:800;font-family:'JetBrains Mono';color:${met?'var(--gn)':'var(--rd)'};letter-spacing:-.02em">${acc}%</div>
-      <div class="pbar" style="margin:10px 0"><div class="fill" style="width:${Math.min(100,acc/target*100)}%;background:${met?'var(--gn)':'var(--rd)'}"></div><div class="marker" style="left:${Math.min(100,target)}%"></div></div>
-      <div style="display:flex;gap:4px;margin:10px 0">${stageBoxes}</div>
+      <div class="pbar" style="margin-bottom:8px"><div class="fill" style="width:${Math.min(100,acc/target*100)}%;background:${met?'var(--gn)':'var(--rd)'}"></div><div class="marker" style="left:${Math.min(100,target)}%"></div></div>
+      <div style="display:flex;gap:4px;margin-bottom:8px">${stageBoxes}</div>
       <div style="font-size:11px;color:var(--tx3);display:flex;justify-content:space-between">
         <span>${tested}q tested</span><span>${errors} errors</span>
       </div>
