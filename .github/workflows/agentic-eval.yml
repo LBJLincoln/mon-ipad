@@ -119,12 +119,29 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Check phase gates
+        if: ${{ inputs.dataset != 'phase-1' && inputs.dataset != '' }}
+        run: |
+          python3 -c "
+          import json, sys
+          with open('db/readiness/phase-1.json') as f:
+              p1 = json.load(f)
+          gates = p1.get('gate_criteria', {})
+          unmet = [(k, v) for k, v in gates.items() if not v.get('met', False)]
+          if unmet:
+              print('PHASE GATE CHECK FAILED')
+              for k, v in unmet:
+                  print(f'  {k}: {v.get(\"current\",\"?\")}% (target: {v.get(\"target_accuracy\", v.get(\"target\",\"?\"))}%)')
+              sys.exit(1)
+          print('Phase 1 gates: ALL MET')
+          "
+
       - name: Run full evaluation
         run: |
           cd eval
           DATASET="${{ inputs.dataset || 'phase-1' }}"
           LABEL="${{ inputs.label || '' }}"
-          ARGS="--dataset $DATASET --types ${{ inputs.pipelines }} --max ${{ inputs.max_questions }} --reset"
+          ARGS="--dataset $DATASET --types ${{ inputs.pipelines }} --max ${{ inputs.max_questions }} --reset --force-phase"
           if [ -n "$LABEL" ]; then
             ARGS="$ARGS --label \"$LABEL\""
           fi
