@@ -1,5 +1,13 @@
 # Multi-RAG Orchestrator — SOTA 2026
 
+> **NEXT SESSION BOOTSTRAP** — Claude Code: read this block FIRST, then execute.
+> 1. `cat STATUS.md` — current state, blockers, next action
+> 2. `python3 eval/phase_gates.py` — check which phase gates are met/blocked
+> 3. Identify the ONE pipeline with the worst gap to target
+> 4. Fix that ONE root cause → deploy → fast-iter → check improvement
+> 5. Repeat until all Phase 1 gates pass, THEN `--dataset phase-2`
+> 6. Commit + push after every iteration
+
 ## Objective
 
 Benchmark, test, and iteratively improve 4 n8n RAG workflows deployed on n8n cloud.
@@ -12,23 +20,44 @@ Phase 1 (200q) → Phase 2 (1,000q) → Phase 3 (~10Kq) → Phase 4 (~100Kq) →
 
 ---
 
-## Execution Model — Team-Agentic 2026
+## Execution Model — Full-Agentic 2026
 
-This project runs in **fully agentic mode**. Claude Code agents operate autonomously
-with direct HTTPS access to all external APIs. No manual terminal required.
+This project runs in **fully agentic mode**. Claude Code operates autonomously —
+NO user terminal (Termius/GCloud) needed. The agent does everything directly.
 
-### Capabilities
+### Capability Matrix (verified Feb 9, 2026)
 
-| Capability | Status | Details |
+| Capability | Access | How |
 |---|---|---|
-| **n8n Webhooks** (eval, smoke tests) | DIRECT | All 4 pipeline webhooks accessible |
-| **n8n REST API** (workflow sync/deploy) | DIRECT | GET/PUT/PATCH workflows via API |
-| **GitHub** (push, PR, issues) | DIRECT | Via `gh` CLI or git with token |
-| **OpenRouter** (LLM calls via n8n) | DIRECT | Free models, no cost |
-| **Code editing, analysis, commits** | DIRECT | Full filesystem access |
-| **Supabase** (SQL queries) | DIRECT | Via REST API with API key |
-| **Pinecone** (vector queries) | DIRECT | Via REST API |
-| **Neo4j** (graph queries) | DIRECT | Via HTTP API |
+| **n8n Webhooks** (eval pipelines) | DIRECT | HTTPS to `amoret.app.n8n.cloud/webhook/*` |
+| **n8n REST API** (sync/deploy workflows) | DIRECT | HTTPS to `amoret.app.n8n.cloud/api/v1/*` |
+| **GitHub** (push, PR, issues) | DIRECT | `git push` + `gh` CLI |
+| **OpenRouter** (LLM via n8n) | DIRECT | Proxied through n8n webhooks |
+| **Pinecone** (vector stats) | DIRECT | HTTPS REST API |
+| **Code, files, git, analysis** | DIRECT | Full filesystem + git access |
+| **Supabase** (PostgreSQL) | BLOCKED | Proxy 403 — use n8n Quantitative pipeline for SQL |
+| **Neo4j** (graph queries) | BLOCKED | Proxy 403 — use n8n Graph pipeline for queries |
+
+**Key insight**: Supabase and Neo4j are NOT directly accessible from Claude Code
+(proxy blocks those domains). But this doesn't matter for eval — all DB queries go
+through n8n workflows which have full DB access. For DB population scripts, the user
+must run them on a machine with direct DB access (GCloud VM).
+
+### What Claude Code does autonomously (no user needed)
+
+1. **Run evaluations**: `python3 eval/fast-iter.py` — calls n8n webhooks directly
+2. **Deploy workflow patches**: `python3 workflows/improved/apply.py --deploy` — n8n API
+3. **Sync workflows**: `python3 workflows/sync.py` — n8n API
+4. **Analyze results**: read `docs/data.json`, `logs/errors/`, produce recommendations
+5. **Fix n8n workflow bugs**: GET workflow → patch node → PUT back → activate
+6. **Git operations**: commit, push, create PRs
+7. **Check phase gates**: `python3 eval/phase_gates.py`
+
+### What requires user action (DB population only)
+
+1. `python3 db/populate/phase2_supabase.py` — needs psycopg2 + Supabase DNS
+2. `python3 db/populate/phase2_neo4j.py` — needs Neo4j bolt protocol
+3. `pip3 install psycopg2-binary` on GCloud VM (one-time)
 
 ### Team-Agentic Protocol
 
