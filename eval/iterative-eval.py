@@ -346,10 +346,14 @@ def run_pipeline_stage(pipeline, questions, stage_name):
             "rag_type": pipeline,
         })
 
-        # Rate-limit protection: delay between questions
+        # Adaptive rate-limit: only sleep on rate-limit errors, not between all questions
+        # For orchestrator: small delay to avoid cascading sub-workflow contention
         if i < len(questions) - 1:
-            delay = 5 if pipeline == "orchestrator" else 2
-            time.sleep(delay)
+            if error_type in ("RATE_LIMIT", "CREDITS_EXHAUSTED"):
+                time.sleep(3)  # Back off only when rate-limited
+            elif pipeline == "orchestrator":
+                time.sleep(1)  # Minimal delay for orchestrator sub-workflow spacing
+            # No delay for standard/graph/quantitative — the webhook handles its own rate limits
 
     elapsed = int(time.time() - start)
     correct = sum(1 for r in results if r["correct"])

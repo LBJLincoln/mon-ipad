@@ -213,13 +213,15 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
         if has_error:
             totals["errors"] += 1
 
-        # Rate-limit protection: delay between questions
-        # With free models, use --delay 10 to avoid rate limiting
-        delay = getattr(run_pipeline, '_delay', None)
-        if delay is None:
-            delay = 5 if rag_type == "orchestrator" else 2
+        # Adaptive rate-limit: only delay on rate-limit errors or for orchestrator spacing
         if i < len(untested) - 1:
-            time.sleep(delay)
+            custom_delay = getattr(run_pipeline, '_delay', None)
+            if custom_delay is not None:
+                time.sleep(custom_delay)
+            elif has_error and error_str and ("429" in error_str or "rate" in error_str.lower() or "credit" in error_str.lower()):
+                time.sleep(3)  # Back off on rate limit
+            elif rag_type == "orchestrator":
+                time.sleep(1)  # Minimal spacing for sub-workflow contention
 
         # Per-question result for pipeline snapshot
         per_question_results.append({

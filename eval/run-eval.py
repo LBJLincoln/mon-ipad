@@ -197,7 +197,14 @@ def load_questions(include_1000=False, dataset=None):
 # ============================================================
 
 def call_rag(endpoint, question, tenant_id="benchmark", timeout=60):
-    """Call a RAG endpoint with retry logic. Returns enriched response with raw data."""
+    """Call a RAG endpoint with smart retry logic. Returns enriched response with raw data.
+
+    Retry strategy:
+    - 429/503: Exponential backoff (rate limit / overload)
+    - 500+: One fast retry only (transient server error)
+    - Empty response: One fast retry
+    - Other errors: No retry (client error / permanent failure)
+    """
     input_payload = {
         "query": question,
         "tenant_id": tenant_id,
@@ -206,9 +213,9 @@ def call_rag(endpoint, question, tenant_id="benchmark", timeout=60):
         "benchmark_mode": True
     }
     body = json.dumps(input_payload).encode()
-    headers = {"Content-Type": "application/json"}
+    headers = {"Content-Type": "application/json", "Connection": "keep-alive"}
 
-    for attempt in range(4):
+    for attempt in range(3):
         try:
             req = request.Request(endpoint, data=body, headers=headers, method="POST")
             start = time.time()
@@ -227,17 +234,16 @@ def call_rag(endpoint, question, tenant_id="benchmark", timeout=60):
                             if key in data and data[key] and str(data[key]).strip():
                                 answer_found = True
                                 break
-                    if not answer_found and attempt < 2:
-                        # Retry once on empty-content response
-                        time.sleep(2)
+                    if not answer_found and attempt < 1:
+                        # One fast retry on empty-content response
+                        time.sleep(0.5)
                         continue
                     return {"data": data, "latency_ms": latency, "error": None,
                             "http_status": http_status, "response_size": len(raw),
                             "input_payload": input_payload, "raw_response": data,
                             "attempts": attempt + 1}
-                if attempt < 2:
-                    # Retry once on truly empty response
-                    time.sleep(2)
+                if attempt < 1:
+                    time.sleep(0.5)
                     continue
                 return {"data": None, "latency_ms": latency,
                         "error": "Empty response (HTTP 200)",
@@ -250,8 +256,12 @@ def call_rag(endpoint, question, tenant_id="benchmark", timeout=60):
                 err_body = e.read().decode()[:300]
             except:
                 pass
-            if (e.code == 403 or e.code >= 500) and attempt < 3:
-                time.sleep(2 ** (attempt + 1))
+            # Smart retry: only on rate-limit or temporary overload
+            if e.code in (429, 503) and attempt < 2:
+                time.sleep(min(2 ** attempt, 8))  # 1s, 2s max
+                continue
+            if e.code >= 500 and attempt < 1:
+                time.sleep(0.5)  # One fast retry for transient server errors
                 continue
             return {"data": None, "latency_ms": 0,
                     "error": f"HTTP {e.code}: {err_body}",
@@ -259,8 +269,15 @@ def call_rag(endpoint, question, tenant_id="benchmark", timeout=60):
                     "input_payload": input_payload, "raw_response": None,
                     "attempts": attempt + 1}
         except Exception as e:
-            if attempt < 3:
-                time.sleep(2 ** (attempt + 1))
+            if "timed out" in str(e).lower():
+                # Don't retry timeouts — they'll just time out again
+                return {"data": None, "latency_ms": int((time.time() - start) * 1000) if 'start' in dir() else 0,
+                        "error": str(e),
+                        "http_status": None, "response_size": 0,
+                        "input_payload": input_payload, "raw_response": None,
+                        "attempts": attempt + 1}
+            if attempt < 1:
+                time.sleep(0.5)
                 continue
             return {"data": None, "latency_ms": 0, "error": str(e),
                     "http_status": None, "response_size": 0,
@@ -270,7 +287,7 @@ def call_rag(endpoint, question, tenant_id="benchmark", timeout=60):
     return {"data": None, "latency_ms": 0, "error": "Max retries exceeded",
             "http_status": None, "response_size": 0,
             "input_payload": input_payload, "raw_response": None,
-            "attempts": 4}
+            "attempts": 3}
 
 
 def extract_answer(data):

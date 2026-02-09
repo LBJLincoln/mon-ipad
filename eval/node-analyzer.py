@@ -212,6 +212,12 @@ def _parse_rich_node(name, run):
     if output_data:
         node["items_out"] = sum(len(d) if isinstance(d, list) else 0 for d in output_data)
 
+    # Capture input preview (what the node received)
+    first_input = _get_first_output_item(input_data)  # Same structure as output
+    if first_input:
+        node["input_preview"] = json.dumps(first_input, ensure_ascii=False)[:1000]
+        node["input_keys"] = list(first_input.keys())[:20]
+
     # Extract first output item for analysis
     first_item = _get_first_output_item(output_data)
     if first_item:
@@ -231,6 +237,17 @@ def _parse_rich_node(name, run):
                 "used": first_item.get("tokens_used", 0),
                 "remaining": first_item.get("tokens_remaining", 0),
             }
+
+        # Conditional flow tracing (IF/Switch path detection)
+        if _is_node_type(name, ROUTING_NODE_KEYWORDS):
+            # Track which output branches have items
+            if output_data and isinstance(output_data, list):
+                active_branches = []
+                for branch_idx, branch in enumerate(output_data):
+                    if isinstance(branch, list) and len(branch) > 0:
+                        active_branches.append(branch_idx)
+                node["active_branches"] = active_branches
+                node["total_branches"] = len(output_data)
 
         # Context/retrieval data
         if "results" in first_item and isinstance(first_item["results"], list):
