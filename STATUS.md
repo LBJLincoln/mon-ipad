@@ -87,85 +87,119 @@
 
 ---
 
+## Agentic Workflow (NEW -- Feb 9, 2026)
+
+### One-command Phase 1 completion
+Run this on your terminal (Termius/GCloud) to complete Phase 1 automatically:
+
+```bash
+cd ~/mon-ipad && git pull origin main
+
+# Set env vars (see bottom of this file)
+
+# Option 1: Full agentic loop (deploy + fast-iter + full-eval + gate check)
+python3 eval/agentic-loop.py --full-eval --push --label "Iter 6: P0 fixes"
+
+# Option 2: Multi-iteration loop (keeps going until gates pass)
+python3 eval/agentic-loop.py --max-iterations 5 --full-eval --push
+
+# Option 3: Shell script with all steps
+bash eval/iterate.sh --deploy --full --label "Iter 6"
+
+# Option 4: Agentic mode via shell
+bash eval/iterate.sh --agentic --max-iter 5
+```
+
+### Just check gates
+```bash
+python3 eval/phase-gate.py          # Quick check
+python3 eval/phase-gate.py --strict # With stability requirement
+python3 eval/phase-gate.py --json   # Machine-readable output
+```
+
+### GitHub Actions (auto-runs every 6 hours)
+Workflow: `.github/workflows/agentic-iteration.yml`
+- Modes: `fast-iter`, `full-eval`, `agentic-loop`, `gate-check`, `phase2-transition`
+- Auto-creates issues on regression
+- Auto-transitions to Phase 2 when gates pass
+
+---
+
 ## Next Steps (Priority Order)
 
-### Before running eval:
-1. **Set environment variables** (CRITICAL BLOCKER):
-   ```bash
-   export N8N_API_KEY="..."
-   export OPENROUTER_API_KEY="..."
-   export SUPABASE_PASSWORD="..."
-   export PINECONE_API_KEY="..."
-   export NEO4J_PASSWORD="..."
-   export N8N_HOST="https://amoret.app.n8n.cloud"
-   ```
+### Step 1: Set environment variables (CRITICAL BLOCKER)
+```bash
+export N8N_API_KEY="..."
+export OPENROUTER_API_KEY="..."
+export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
+export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
+export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
+export N8N_HOST="https://amoret.app.n8n.cloud"
+```
 
-2. **Deploy workflow improvements**:
-   ```bash
-   python workflows/improved/apply.py --deploy
-   # Or with local source files:
-   python workflows/improved/apply.py --local --deploy
-   ```
+### Step 2: Deploy + eval + gate check (one command)
+```bash
+python3 eval/agentic-loop.py --full-eval --push --label "Iter 6: apply.py P0 fixes"
+```
 
-3. **Smoke test after deployment**:
-   ```bash
-   python eval/quick-test.py --questions 5
-   ```
+### Step 3: If gates pass -> Phase 2 transition
+```bash
+python3 eval/phase2-transition.py --auto
+```
 
-4. **Run full eval with reset**:
-   ```bash
-   python eval/run-eval.py --reset --label "Iter 5: comprehensive fixes" \
-     --description "apply.py P0 fixes: Router space, Cache Hit, Response Builder null-safe, Intent single-pipeline, entity extraction rules, SQL hints, answer compression"
-   ```
-
-5. **Analyze results**:
-   ```bash
-   python eval/analyzer.py
-   ```
-
-### Expected impact:
-| Pipeline | Current | Expected After Fixes | Reasoning |
+### Expected impact of apply.py patches:
+| Pipeline | Current | Expected | Reasoning |
 |---|---|---|---|
-| Standard | 82.6% | ~88% | Answer compression reduces verbosity → higher F1 |
+| Standard | 82.6% | ~88% | Answer compression → higher F1 |
 | Graph | 52.0% | ~65% | Fuzzy matching + entity rules fix 10-15 of 21 failures |
 | Quantitative | 80.0% | ~85% | ILIKE + SQL hints fix 3-5 of 7 SQL errors |
-| Orchestrator | 49.6% | ~68% | continueOnFail + null-safe Response Builder fix 15-20 of 36 errors |
+| Orchestrator | 49.6% | ~68% | continueOnFail + null-safe Response Builder fix 15-20 of 36 |
 | **Overall** | **67.7%** | **~77%** | **Above 75% Phase 1 gate** |
 
 ---
 
-## Iteration Cycle Protocol (Two-Phase)
+## Iteration Cycle (Automated vs Manual)
 
-Follow this for every iteration. See CLAUDE.md for detailed commands.
-
-### Phase A: Fast Iteration (10q/pipeline, ~2-3 min, parallel)
+### Automated (recommended): agentic-loop.py
 ```
-A1: Sync workflows           → python workflows/sync.py
-A2: Smoke test                → python eval/quick-test.py --questions 5
-A3: Fast iteration test       → python eval/fast-iter.py --label "description"
-A4: Review results            → check logs/fast-iter/ and logs/pipeline-results/
-A5: If bad → fix in n8n → repeat from A1
-    If good → proceed to Phase B
-A6: Commit results            → git add docs/ logs/ && git commit
+1. DEPLOY   → Apply workflow patches to n8n
+2. VALIDATE → Fast-iter (10q/pipeline, parallel, ~3 min)
+3. ANALYZE  → Regression detection, error patterns
+4. GATE     → Check Phase 1 exit criteria
+5. FULL     → Full 200q parallel eval (if fast-iter passes)
+6. DECIDE   → Gates pass → Phase 2 transition
+              Gates fail → Log findings, iterate again
 ```
 
-### Phase B: Full Evaluation (200q, parallel, ~15-20 min)
+### Manual: step-by-step
 ```
-B1: Run parallel eval         → python eval/run-eval-parallel.py --reset --label "..."
-B2: Analyze results           → python eval/analyzer.py
-B3: Commit + push             → git add docs/ workflows/ logs/ && git commit && git push
-B4: Back to Phase A for next improvement
+A1: Deploy patches      → python3 workflows/improved/apply.py --deploy
+A2: Smoke test           → python3 eval/quick-test.py --questions 5
+A3: Fast iteration       → python3 eval/fast-iter.py --label "description"
+A4: Review               → python3 eval/analyzer.py
+A5: Gate check           → python3 eval/phase-gate.py
+A6: Full eval            → python3 eval/run-eval-parallel.py --reset --label "..."
+A7: Commit               → git add docs/ logs/ && git commit && git push
 ```
 
 **Rule**: ONE change per iteration. Don't change multiple things at once.
 
-### Key Scripts
+---
+
+## Key Scripts
+
 | Script | Purpose | Speed |
 |--------|---------|-------|
+| **`eval/agentic-loop.py`** | **Full automated iteration cycle** | Varies |
+| **`eval/phase-gate.py`** | **Phase gate validator** | <1s |
+| **`eval/phase2-transition.py`** | **Phase 2 transition** | <1s |
+| `eval/iterate.sh` | Shell wrapper (manual or agentic) | Varies |
 | `eval/fast-iter.py` | Quick validation, 10q/pipeline, parallel | ~2-3 min |
 | `eval/run-eval-parallel.py` | Full 200q eval, all pipelines parallel | ~15-20 min |
 | `eval/run-eval.py` | Sequential eval (legacy/debug) | ~60-80 min |
 | `eval/quick-test.py` | Smoke test, 3-5 known-good questions | ~1 min |
+| `eval/analyzer.py` | Post-eval analysis + recommendations | <1s |
+| `workflows/improved/apply.py` | 32 workflow patches (deploy to n8n) | ~2 min |
 
 ---
 
@@ -173,8 +207,8 @@ B4: Back to Phase A for next improvement
 
 1. **Environment variables not set** — Cannot run any eval scripts or deploy to n8n
 2. **OpenRouter credits exhausted** — LLM calls (for orchestrator + graph) will fail
-3. **Orchestrator timeouts** — Sub-workflow chaining exceeds 60s
-4. **Graph entity extraction** — Many entities not found in Neo4j
+3. **Orchestrator timeouts** — Sub-workflow chaining exceeds 60s (32 patches ready)
+4. **Graph entity extraction** — Many entities not found in Neo4j (fuzzy matching patch ready)
 5. **Quantitative network errors** — Supabase 401 Tunnel auth failures
 
 ---
@@ -187,14 +221,18 @@ B4: Back to Phase A for next improvement
 | This file | `STATUS.md` |
 | Dashboard | `docs/index.html` |
 | Eval data | `docs/data.json` |
-| **Fast iteration (10q, parallel)** | **`eval/fast-iter.py`** |
-| **Parallel eval (200q)** | **`eval/run-eval-parallel.py`** |
+| **Agentic loop (NEW)** | **`eval/agentic-loop.py`** |
+| **Phase gate (NEW)** | **`eval/phase-gate.py`** |
+| **Phase 2 transition (NEW)** | **`eval/phase2-transition.py`** |
+| **Agentic CI/CD (NEW)** | **`.github/workflows/agentic-iteration.yml`** |
+| Fast iteration (10q, parallel) | `eval/fast-iter.py` |
+| Parallel eval (200q) | `eval/run-eval-parallel.py` |
+| Iterate shell script | `eval/iterate.sh` |
 | Sequential eval (legacy) | `eval/run-eval.py` |
 | Smoke test | `eval/quick-test.py` |
 | Analyze | `eval/analyzer.py` |
 | Live writer (thread-safe) | `eval/live-writer.py` |
-| Iterate script | `eval/iterate.sh` |
-| **Apply improvements** | **`workflows/improved/apply.py`** |
+| Apply improvements | `workflows/improved/apply.py` |
 | Sync workflows | `workflows/sync.py` |
 | Deploy to n8n | `workflows/deploy/deploy.py` |
 | Populate DBs | `db/populate/all.py` |

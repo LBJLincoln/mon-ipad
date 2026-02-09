@@ -62,50 +62,69 @@ cd ~/mon-ipad
 
 ---
 
-## Quick Start — Two-Phase Iteration Cycle
+## Quick Start — Agentic Workflow (RECOMMENDED)
 
-The iteration loop has two phases: **fast iteration** (10q, rapid workflow tuning)
-and **full evaluation** (200q, parallel). Workflows are validated with fast-iter
-before committing to a full eval.
+### One-command Phase 1 completion
+The agentic loop automates the entire iteration cycle. Run on Termius/GCloud:
+
+```bash
+cd ~/mon-ipad && git pull origin main
+
+# Full agentic cycle: deploy patches → fast-iter → full eval → gate check → push
+python3 eval/agentic-loop.py --full-eval --push --label "Iter 6: P0 fixes"
+
+# Multi-iteration: keeps going until Phase 1 gates pass (max 5 rounds)
+python3 eval/agentic-loop.py --max-iterations 5 --full-eval --push
+
+# Just check if Phase 1 gates are met
+python3 eval/phase-gate.py
+python3 eval/phase-gate.py --strict --json    # With stability check, JSON output
+
+# Phase 2 transition (after gates pass)
+python3 eval/phase2-transition.py --auto
+```
+
+### Agentic loop flow
+```
+1. DEPLOY   → Apply 32 workflow patches to n8n (apply.py --deploy)
+2. VALIDATE → Fast-iter (10q/pipeline, parallel, ~3 min)
+3. ANALYZE  → Regression detection, error patterns (analyzer.py)
+4. GATE     → Check Phase 1 exit criteria (phase-gate.py)
+5. FULL     → Full 200q parallel eval (if fast-iter passes)
+6. DECIDE   → Gates pass → Phase 2 transition
+              Gates fail → Log findings, iterate again
+```
+
+### Shell script alternative
+```bash
+bash eval/iterate.sh --deploy --full --label "Iter 6"   # Manual steps
+bash eval/iterate.sh --agentic --max-iter 5              # Agentic mode
+bash eval/iterate.sh --gate --strict                     # Gate check only
+```
+
+### GitHub Actions (auto-runs every 6 hours)
+Workflow: `.github/workflows/agentic-iteration.yml`
+Modes: `fast-iter`, `full-eval`, `agentic-loop`, `gate-check`, `phase2-transition`
+
+---
+
+## Manual Iteration Cycle (Alternative)
 
 ### Phase A: Fast Iteration Loop (10q per pipeline, ~2-3 min)
-
-This is the inner loop for rapid workflow improvement. Run this repeatedly
-until results look good, THEN proceed to Phase B.
 
 **Run in Termius / Google Cloud Console:**
 ```bash
 cd ~/mon-ipad && git pull origin main
 
-# Step A0: Read current state
-cat STATUS.md
-
-# Step A1: Sync workflows from n8n cloud
-python3 workflows/sync.py
-
-# Step A2: Smoke test (5 questions)
-python3 eval/quick-test.py --questions 5
-
-# Step A3: Fast iteration test
-python3 eval/fast-iter.py --label "description"
-
-# Step A4: Review results (auto-saved to logs/fast-iter/ and logs/pipeline-results/)
-
-# Step A5: If bad → fix workflow in n8n → repeat from A1
-#          If good → proceed to Phase B
-
-# Step A6: Commit results
-git add docs/ logs/ && git commit -m "fast-iter: ..." && git push origin main
+python3 workflows/sync.py                           # A1: Sync workflows
+python3 eval/quick-test.py --questions 5             # A2: Smoke test
+python3 eval/fast-iter.py --label "description"      # A3: Fast iteration
+python3 eval/analyzer.py                             # A4: Analyze
+python3 eval/phase-gate.py                           # A5: Check gates
+git add docs/ logs/ && git commit && git push         # A6: Commit
 ```
 
-**Fast-iter features:**
-- Runs all 4 pipelines in **parallel** (~4x speedup)
-- Selects a **strategic mix**: 50% previously-failing, 30% untested, 20% passing (regression check)
-- Saves per-pipeline JSON snapshots to `logs/pipeline-results/`
-- Auto-compares with previous fast-iter run (regressions/fixes)
-- Results feed the dashboard in real-time
-
-**Commands (run in Termius / Google Cloud Console):**
+**Commands:**
 ```bash
 python3 eval/fast-iter.py                                 # 10q per pipeline, all 4
 python3 eval/fast-iter.py --questions 5 --pipelines graph # 5q, graph only
@@ -115,50 +134,14 @@ python3 eval/fast-iter.py --label "after fuzzy matching"  # Tag the run
 
 ### Phase B: Full Evaluation (200q, parallel, ~15-20 min)
 
-Run this only AFTER fast-iter shows the workflow is ready. Uses **parallel execution**
-across all 4 pipelines simultaneously.
-
-**Run in Termius / Google Cloud Console:**
 ```bash
-cd ~/mon-ipad && git pull origin main
-
-# Step B1: Run parallel evaluation
 python3 eval/run-eval-parallel.py --reset --label "Iter N: description"
-
-# Step B2: Analyze results
 python3 eval/analyzer.py
-
-# Step B3: Commit + push
-git add docs/ workflows/ logs/ && git commit -m "eval: Iter N" && git push origin main
-
-# Step B4: Back to Phase A for next improvement
-```
-
-**Parallel eval features:**
-- All 4 pipelines execute **concurrently** (ThreadPoolExecutor)
-- Thread-safe dashboard writes (live-writer.py uses locks)
-- Per-pipeline result snapshots saved to `logs/pipeline-results/`
-- ~4x speedup vs sequential `run-eval.py`
-
-**Commands (run in Termius / Google Cloud Console):**
-```bash
-python3 eval/run-eval-parallel.py --reset --label "Iter 6: fuzzy matching"  # Full 200q
-python3 eval/run-eval-parallel.py --max 20 --types graph,orchestrator       # Subset
-python3 eval/run-eval-parallel.py --push                                     # Auto git push
-```
-
-### Legacy: Sequential Evaluation
-
-The original sequential `run-eval.py` is still available for debugging or
-when you want to isolate a single pipeline:
-
-**Run in Termius / Google Cloud Console:**
-```bash
-python3 eval/run-eval.py --types graph --max 10 --label "debug graph"
+python3 eval/phase-gate.py --strict
+git add docs/ workflows/ logs/ && git commit && git push
 ```
 
 **Key principle**: Each iteration should target ONE specific improvement.
-Don't change multiple things at once — it makes it impossible to attribute improvements.
 
 ---
 
@@ -306,13 +289,16 @@ mon-ipad/
 │       └── hf-1000.json               # 1,000q: HuggingFace datasets
 │
 ├── eval/                              # Evaluation scripts
+│   ├── agentic-loop.py               # NEW: Master automated iteration cycle
+│   ├── phase-gate.py                 # NEW: Phase exit criteria validator
+│   ├── phase2-transition.py          # NEW: Phase 2 transition automation
 │   ├── run-eval.py                    # Sequential eval runner (legacy/debug)
 │   ├── run-eval-parallel.py           # PARALLEL eval runner (~4x faster)
 │   ├── fast-iter.py                   # Fast iteration: 10q/pipeline, parallel
 │   ├── live-writer.py                 # Writes results to docs/data.json + logs/ (thread-safe)
 │   ├── quick-test.py                  # Smoke tests (5q/pipeline)
 │   ├── analyzer.py                    # Post-eval analysis + recommendations
-│   └── iterate.sh                     # Run eval + auto-commit + push
+│   └── iterate.sh                     # Shell wrapper: manual or agentic mode
 │
 ├── workflows/                         # n8n workflow management
 │   ├── manifest.json                  # Version tracking (hashes, diffs)
@@ -378,6 +364,7 @@ mon-ipad/
 │   └── fast-iter/                     # Fast iteration run snapshots
 │
 └── .github/workflows/
+    ├── agentic-iteration.yml          # NEW: Full agentic loop (every 6h + manual)
     ├── rag-eval.yml                   # Scheduled + manual eval runner
     ├── agentic-eval.yml               # Post-eval AI analysis
     ├── n8n-error-log.yml              # Receives n8n errors via repository_dispatch
