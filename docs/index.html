@@ -679,19 +679,37 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
 
 <!-- ============ TAB 7: AI AGENT ============ -->
 <div class="panel" id="p-agent">
-  <h2>AI Agent Reference</h2>
-  <p style="color:var(--tx2);margin-bottom:18px;font-size:13px">Fully autonomous agent execution model. Claude Code runs all evaluations, deployments, and analysis directly -- no user terminal needed for eval operations.</p>
-
-  <!-- System Health -->
-  <div class="card" style="margin-bottom:18px">
-    <h3>System Health</h3>
-    <div id="agent-health" class="grid g3"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+    <div>
+      <h2 style="margin-bottom:4px">AI Agent</h2>
+      <p style="color:var(--tx3);font-size:12.5px">Autonomous eval, deployment &amp; analysis engine</p>
+    </div>
+    <div id="agent-status-badge"></div>
   </div>
 
-  <!-- Capability Matrix -->
-  <div class="card" style="margin-bottom:18px">
-    <h3>Agent Capability Matrix</h3>
-    <div id="agent-capabilities"></div>
+  <!-- System Health + Live Feed -->
+  <div class="grid g2" style="margin-bottom:18px">
+    <div class="card">
+      <h3>System Health</h3>
+      <div id="agent-health" class="grid g2"></div>
+    </div>
+    <div class="card card-accent">
+      <h3>Live Analysis Feed</h3>
+      <p style="font-size:10.5px;color:var(--tx3);margin-bottom:8px">Recent errors &amp; results for AI analysis</p>
+      <div id="agent-live-feed" style="max-height:220px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.8"></div>
+    </div>
+  </div>
+
+  <!-- Capability + Credentials -->
+  <div class="grid g2" style="margin-bottom:18px">
+    <div class="card">
+      <h3>Agent Capabilities</h3>
+      <div id="agent-capabilities"></div>
+    </div>
+    <div class="card card-pp">
+      <h3>n8n Credentials &amp; Models</h3>
+      <div id="agent-credentials"></div>
+    </div>
   </div>
 
   <div class="card" style="margin-bottom:18px">
@@ -699,19 +717,20 @@ details .detail-content{padding:16px;border:1px solid var(--glass-border);border
     <div id="agent-env"></div>
   </div>
 
-  <div class="card card-accent" style="margin-bottom:18px">
+  <div class="card card-or" style="margin-bottom:18px">
     <h3>Iteration Protocol</h3>
     <div id="agent-protocol"></div>
   </div>
 
-  <div class="card" style="margin-bottom:18px">
-    <h3>Command Reference</h3>
-    <div id="agent-commands"></div>
-  </div>
-
-  <div class="card" style="margin-bottom:18px">
-    <h3>AI Decision Rules</h3>
-    <div id="agent-rules"></div>
+  <div class="grid g2" style="margin-bottom:18px">
+    <div class="card">
+      <h3>Command Reference</h3>
+      <div id="agent-commands"></div>
+    </div>
+    <div class="card card-yl">
+      <h3>AI Decision Rules</h3>
+      <div id="agent-rules"></div>
+    </div>
   </div>
 
   <div class="card">
@@ -1925,46 +1944,100 @@ function renderCosts(){
 // TAB 7: AI AGENT
 // ============================================================
 function renderAgent(){
-  // System Health
+  // Status badge
   const m=DATA.meta||{};
   const genAt=m.generated_at?new Date(m.generated_at):null;
+  const isRunning=m.status==='running';
+  const badgeEl=document.getElementById('agent-status-badge');
+  if(badgeEl)badgeEl.innerHTML=`<span class="health-badge ${isRunning?'health-warn':'health-good'}"><span class="dot ${isRunning?'run':'ok'}" style="width:8px;height:8px"></span>${isRunning?'Running':'Idle'}</span>`;
+
+  // System Health — 4 cards
   const evalRecent=genAt&&(Date.now()-genAt.getTime())<3600000;
   document.getElementById('agent-health').innerHTML=[
-    `<div class="card" style="text-align:center;padding:16px">
+    `<div style="text-align:center;padding:14px;background:var(--s3);border-radius:var(--r-sm)">
       <div class="dot ${evalRecent?'ok':'stale'}" style="width:10px;height:10px;margin:0 auto 8px"></div>
-      <div style="font-size:12px;font-weight:600">n8n Webhooks</div>
-      <div style="font-size:11px;color:var(--tx3);margin-top:4px">${N8N_HOST.replace('https://','')}</div>
+      <div style="font-size:12px;font-weight:700">n8n Cloud</div>
+      <div style="font-size:10px;color:var(--tx3);margin-top:4px">${N8N_HOST.replace('https://','')}</div>
     </div>`,
-    `<div class="card" style="text-align:center;padding:16px">
+    `<div style="text-align:center;padding:14px;background:var(--s3);border-radius:var(--r-sm)">
       <div class="dot ok" style="width:10px;height:10px;margin:0 auto 8px"></div>
-      <div style="font-size:12px;font-weight:600">OpenRouter LLMs</div>
-      <div style="font-size:11px;color:var(--gn);margin-top:4px">Free tier active</div>
+      <div style="font-size:12px;font-weight:700">OpenRouter</div>
+      <div style="font-size:10px;color:var(--gn);margin-top:4px">llama-3.3-70b:free</div>
     </div>`,
-    `<div class="card" style="text-align:center;padding:16px">
-      <div style="font-size:11px;font-weight:600;margin-bottom:4px">Last Eval</div>
+    `<div style="text-align:center;padding:14px;background:var(--s3);border-radius:var(--r-sm)">
+      <div style="font-size:11px;font-weight:700;margin-bottom:4px">Last Eval</div>
       <div style="font-size:16px;font-weight:800;font-family:'JetBrains Mono'">${genAt?timeAgo(m.generated_at):'--'}</div>
-      <div style="font-size:10px;color:var(--tx3);margin-top:4px">${genAt?genAt.toLocaleString():''}</div>
+    </div>`,
+    `<div style="text-align:center;padding:14px;background:var(--s3);border-radius:var(--r-sm)">
+      <div style="font-size:11px;font-weight:700;margin-bottom:4px">Iterations</div>
+      <div style="font-size:16px;font-weight:800;font-family:'JetBrains Mono'">${m.total_iterations||0}</div>
     </div>`,
   ].join('');
 
+  // Live analysis feed (recent errors + results)
+  const feedEl=document.getElementById('agent-live-feed');
+  if(feedEl){
+    const iters=DATA.iterations||[];
+    const recent=iters.slice(-3);
+    const feedItems=[];
+    recent.forEach(iter=>{
+      (iter.questions||[]).forEach(q=>{
+        if(q.error||!q.correct){
+          const color=q.error?'var(--rd)':q.correct?'var(--gn)':'var(--yl)';
+          feedItems.push({
+            ts:iter.timestamp_start||'',
+            text:`[${q.rag_type}] ${q.id}: ${q.error?'ERR '+q.error_type:q.correct?'PASS':'FAIL'} | F1=${(q.f1||0).toFixed(3)}`,
+            color
+          });
+        }
+      });
+    });
+    feedEl.innerHTML=feedItems.slice(-20).reverse().map(f=>
+      `<div style="color:${f.color};padding:2px 0;border-bottom:1px solid var(--bd)">${esc(f.text)}</div>`
+    ).join('')||'<div style="color:var(--tx3)">No recent errors or failures</div>';
+  }
+
   // Capability Matrix
   const caps=[
-    {cap:'n8n Webhooks (eval pipelines)',access:'DIRECT',how:'HTTPS webhooks',ok:true},
-    {cap:'n8n REST API (sync/deploy)',access:'DIRECT',how:'HTTPS API + API key',ok:true},
-    {cap:'GitHub (push, PR, issues)',access:'DIRECT',how:'git + gh CLI',ok:true},
-    {cap:'OpenRouter (LLM)',access:'DIRECT',how:'Proxied through n8n',ok:true},
-    {cap:'Pinecone (vector stats)',access:'DIRECT',how:'HTTPS REST API',ok:true},
-    {cap:'Code, files, git, analysis',access:'DIRECT',how:'Full filesystem + git',ok:true},
-    {cap:'Supabase (PostgreSQL)',access:'BLOCKED',how:'Use n8n Quantitative pipeline',ok:false},
-    {cap:'Neo4j (graph queries)',access:'BLOCKED',how:'Use n8n Graph pipeline',ok:false},
+    {cap:'n8n Webhooks (eval)',access:'DIRECT',how:'HTTPS webhooks',ok:true},
+    {cap:'n8n REST API (sync/deploy)',access:'DIRECT',how:'API key auth',ok:true},
+    {cap:'GitHub (push, PR)',access:'DIRECT',how:'git + gh CLI',ok:true},
+    {cap:'OpenRouter (LLM)',access:'DIRECT',how:'Via n8n workflows',ok:true},
+    {cap:'Pinecone (vectors)',access:'DIRECT',how:'REST API',ok:true},
+    {cap:'Code / filesystem',access:'DIRECT',how:'Full access',ok:true},
+    {cap:'Supabase (SQL)',access:'BLOCKED',how:'Via n8n Quant pipeline',ok:false},
+    {cap:'Neo4j (graph)',access:'BLOCKED',how:'Via n8n Graph pipeline',ok:false},
   ];
-  document.getElementById('agent-capabilities').innerHTML=`<table style="font-size:12px"><tbody>
+  document.getElementById('agent-capabilities').innerHTML=`<table style="font-size:11.5px"><tbody>
     ${caps.map(c=>`<tr>
-      <td>${esc(c.cap)}</td>
-      <td><span class="tag ${c.ok?'t-pass':'t-fail'}">${c.access}</span></td>
-      <td style="color:var(--tx3);font-size:11px">${esc(c.how)}</td>
+      <td style="padding:6px 8px">${esc(c.cap)}</td>
+      <td style="padding:6px 8px"><span class="tag ${c.ok?'t-pass':'t-fail'}">${c.access}</span></td>
+      <td style="color:var(--tx3);font-size:10.5px;padding:6px 8px">${esc(c.how)}</td>
     </tr>`).join('')}
   </tbody></table>`;
+
+  // n8n Credentials & Models
+  const credEl=document.getElementById('agent-credentials');
+  if(credEl){
+    const creds=[
+      {name:'OpenRouter',type:'API Key',model:'meta-llama/llama-3.3-70b-instruct:free',justification:'$0 cost, 70B params, comparable to GPT-3.5 for RAG tasks',status:'ok'},
+      {name:'Pinecone',type:'API Key',model:'text-embedding-3-small (1536d)',justification:'Low-cost embeddings, sufficient quality for RAG retrieval',status:'ok'},
+      {name:'Cohere',type:'API Key',model:'rerank-v3.5',justification:'Best-in-class reranking, minimal cost ($0.002/1K queries)',status:'ok'},
+      {name:'Neo4j Aura',type:'Connection URI',model:'N/A (database)',justification:'Free tier Aura, 200K nodes limit sufficient for Phase 1-3',status:'ok'},
+      {name:'Supabase',type:'PostgreSQL',model:'N/A (database)',justification:'Free tier, 500MB storage, sufficient for Phase 1-2',status:'ok'},
+    ];
+    credEl.innerHTML=creds.map(c=>
+      `<div style="padding:8px 0;border-bottom:1px solid var(--bd);font-size:11.5px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span class="dot ok" style="width:6px;height:6px"></span>
+          <strong>${esc(c.name)}</strong>
+          <span class="tag t-free" style="font-size:8px">${esc(c.type)}</span>
+        </div>
+        <div style="color:var(--tx2);font-size:10.5px">${esc(c.model)}</div>
+        <div style="color:var(--tx3);font-size:10px;margin-top:2px">${esc(c.justification)}</div>
+      </div>`
+    ).join('');
+  }
 
   // Environment variables
   const envVars=[
