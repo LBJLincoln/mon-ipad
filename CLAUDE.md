@@ -27,7 +27,9 @@ Then: fix the ONE pipeline with the worst gap → deploy → eval → commit →
 | **Deploy patches** | `python3 workflows/improved/apply.py --deploy` |
 | **Smoke test** | `python3 eval/quick-test.py --questions 5` |
 | **Fetch n8n logs** | `python3 eval/n8n-proxy.py --fetch` |
-| **n8n log server** | `python3 eval/n8n-proxy.py --serve --port 8787` |
+| **Node diagnostics** | `python3 eval/node-analyzer.py --pipeline graph --last 5` |
+| **All diagnostics** | `python3 eval/node-analyzer.py --all --last 5` |
+| **Single execution** | `python3 eval/node-analyzer.py --execution-id 18352` |
 
 ---
 
@@ -80,12 +82,37 @@ All LLMs: `meta-llama/llama-3.3-70b-instruct:free` via OpenRouter ($0 cost).
    - Stage 1: 5 questions (must pass ≥60% accuracy, ≤40% errors)
    - Stage 2: 10 questions (must pass ≥65% accuracy, ≤20% errors)
    - Stage 3: 50 questions (must pass pipeline target, ≤10% errors)
+   - **After each stage**: Automatic node-by-node analysis via `eval/node-analyzer.py`
    - Each pipeline advances independently. Blocked pipelines show fix recommendations.
 2. If all stages pass → run full eval: `python3 eval/run-eval-parallel.py --reset`
-3. If blocked → check `docs/knowledge-base.json` for known fixes, apply, re-run.
+3. If blocked → check diagnostics and knowledge base, apply fix, re-run.
+
+## Diagnostics Workflow (READ THIS)
+
+**After every eval batch, check diagnostics before making fixes:**
+
+1. **Auto-generated diagnostics**: `logs/diagnostics/latest.json` (combined all pipelines)
+2. **Per-pipeline diagnostics**: `logs/diagnostics/latest-{pipeline}.json`
+3. **Dashboard Tab 9**: Diagnostics tab shows node health, verbosity alerts, recommendations
+4. **Manual analysis**: `python3 eval/node-analyzer.py --pipeline graph --last 5`
+
+**What the analyzer detects automatically:**
+- LLM verbosity (intermediate nodes producing too-long/too-complete responses)
+- Token budget waste (high completion tokens on intermediate steps)
+- Latency bottlenecks (slow nodes, p95 latency)
+- Retrieval failures (0 documents retrieved, empty database)
+- Routing flag anomalies (skip flags, fallback activations)
+- Error patterns per node (rate-limited, credits exhausted)
+- Cross-execution patterns (recurring failures at same node)
+
+**Before fixing a pipeline, always run:**
+```bash
+python3 eval/node-analyzer.py --pipeline <target> --last 10
+cat logs/diagnostics/latest-<target>.json | python3 -m json.tool | head -80
+```
 
 **Dashboard = Control Tower**: Open `docs/index.html` (Tab 0: Control Tower) for live analysis.
-Use `python3 eval/n8n-proxy.py --fetch` to pull n8n execution logs node-by-node.
+Use Tab 9 (Diagnostics) for node-by-node execution inspection.
 
 ---
 
@@ -112,10 +139,13 @@ Use `python3 eval/n8n-proxy.py --fetch` to pull n8n execution logs node-by-node.
 | `docs/index.html` | **Control Tower dashboard** (Tab 0 = central hub) |
 | `docs/knowledge-base.json` | Error patterns, fixes, functional choices |
 | `docs/architecture.md` | Detailed architecture reference |
-| `eval/iterative-eval.py` | **Progressive 5→10→50 per pipeline** |
-| `eval/n8n-proxy.py` | Fetch n8n execution logs node-by-node |
+| `eval/iterative-eval.py` | **Progressive 5→10→50 per pipeline** (auto-triggers node analysis) |
+| `eval/node-analyzer.py` | **Node-by-node execution analyzer** (auto + standalone) |
+| `eval/n8n-proxy.py` | Fetch n8n execution logs + rich data capture |
 | `eval/generate_status.py` | Generates status.json from data.json |
 | `eval/live-writer.py` | Writes eval results + auto-regenerates status.json |
 | `eval/phase_gates.py` | Phase gate validator |
 | `workflows/improved/apply.py` | 30+ workflow patches + deploy |
+| `logs/diagnostics/latest.json` | **Latest node diagnostics** (check before fixing) |
+| `logs/diagnostics/latest-{pipe}.json` | Per-pipeline diagnostic reports |
 | `phases/overview.md` | Full 5-phase strategy |

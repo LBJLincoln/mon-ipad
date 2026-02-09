@@ -1,0 +1,1986 @@
+{
+  "graph": {
+    "timestamp": "2026-02-09T21:26:55.338002Z",
+    "pipeline": "graph",
+    "stage": "manual-analysis",
+    "label": "",
+    "questions_tested": 5,
+    "executions_analyzed": 5,
+    "total_issues": 24,
+    "issues_by_severity": {
+      "critical": 9,
+      "high": 10,
+      "medium": 4,
+      "low": 1
+    },
+    "node_analysis": {
+      "When Executed by Another Workflow": {
+        "name": "When Executed by Another Workflow",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 0,
+        "total_duration_ms": 0,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "OTEL Init": {
+        "name": "OTEL Init",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 8,
+        "total_duration_ms": 44,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "WF3: HyDE & Entity Extraction": {
+        "name": "WF3: HyDE & Entity Extraction",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 28575,
+        "total_duration_ms": 142875,
+        "is_llm": true,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "VERBOSE_LLM_CRITICAL",
+            "severity": "high",
+            "node": "WF3: HyDE & Entity Extraction",
+            "detail": "LLM output is 2193 chars — likely producing near-final answers instead of intermediate results",
+            "metric": {
+              "output_chars": 2193
+            },
+            "suggestion": "Constrain the system prompt to output ONLY the required intermediate data (entities, SQL, routing decision). Add max_tokens limit."
+          },
+          {
+            "type": "VERY_SLOW_NODE",
+            "severity": "high",
+            "node": "WF3: HyDE & Entity Extraction",
+            "detail": "Node took 29870ms (>15000ms threshold)",
+            "metric": {
+              "duration_ms": 29870
+            },
+            "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
+          }
+        ],
+        "llm_avg_output_chars": 2008,
+        "llm_avg_tokens": 323
+      },
+      "Neo4j Query Builder (Deep Traversal V2)": {
+        "name": "Neo4j Query Builder (Deep Traversal V2)",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 9,
+        "total_duration_ms": 49,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Shield #4: Neo4j Guardian Traversal": {
+        "name": "Shield #4: Neo4j Guardian Traversal",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 62,
+        "total_duration_ms": 310,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Validate Neo4j Results": {
+        "name": "Validate Neo4j Results",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 7,
+        "total_duration_ms": 35,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Community Summaries Fetch": {
+        "name": "Community Summaries Fetch",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 185,
+        "total_duration_ms": 927,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Extract HyDE Document": {
+        "name": "Extract HyDE Document",
+        "executions": 4,
+        "errors": 0,
+        "avg_duration_ms": 16,
+        "total_duration_ms": 64,
+        "is_llm": true,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Generate HyDE Embedding": {
+        "name": "Generate HyDE Embedding",
+        "executions": 4,
+        "errors": 0,
+        "avg_duration_ms": 129,
+        "total_duration_ms": 516,
+        "is_llm": true,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Validate Embedding": {
+        "name": "Validate Embedding",
+        "executions": 4,
+        "errors": 0,
+        "avg_duration_ms": 8,
+        "total_duration_ms": 32,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "WF3: Pinecone HyDE Search": {
+        "name": "WF3: Pinecone HyDE Search",
+        "executions": 4,
+        "errors": 0,
+        "avg_duration_ms": 425,
+        "total_duration_ms": 1701,
+        "is_llm": true,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Merge": {
+        "name": "Merge",
+        "executions": 4,
+        "errors": 0,
+        "avg_duration_ms": 2,
+        "total_duration_ms": 10,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Merge Graph + Vector + Community (Deep)": {
+        "name": "Merge Graph + Vector + Community (Deep)",
+        "executions": 4,
+        "errors": 0,
+        "avg_duration_ms": 11,
+        "total_duration_ms": 47,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "WF3: Cohere Reranker": {
+        "name": "WF3: Cohere Reranker",
+        "executions": 4,
+        "errors": 0,
+        "avg_duration_ms": 166,
+        "total_duration_ms": 665,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Reranker Fallback Handler": {
+        "name": "Reranker Fallback Handler",
+        "executions": 4,
+        "errors": 0,
+        "avg_duration_ms": 8,
+        "total_duration_ms": 33,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "JS: Token Budgeting & Map-Reduce": {
+        "name": "JS: Token Budgeting & Map-Reduce",
+        "executions": 4,
+        "errors": 0,
+        "avg_duration_ms": 7,
+        "total_duration_ms": 28,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Response Formatter": {
+        "name": "Response Formatter",
+        "executions": 4,
+        "errors": 0,
+        "avg_duration_ms": 11,
+        "total_duration_ms": 44,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "EMBEDDING_FALLBACK",
+            "severity": "medium",
+            "node": "Response Formatter",
+            "detail": "Using embedding fallback — primary embedding failed",
+            "suggestion": "Check OpenRouter credits or embedding API configuration."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "LLM Answer Synthesis": {
+        "name": "LLM Answer Synthesis",
+        "executions": 4,
+        "errors": 0,
+        "avg_duration_ms": 2705,
+        "total_duration_ms": 10822,
+        "is_llm": true,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "SLOW_NODE",
+            "severity": "low",
+            "node": "LLM Answer Synthesis",
+            "detail": "Node took 6042ms (>5000ms threshold)",
+            "metric": {
+              "duration_ms": 6042
+            },
+            "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+          }
+        ],
+        "llm_avg_output_chars": 71,
+        "llm_avg_tokens": 12
+      },
+      "Answer Formatter": {
+        "name": "Answer Formatter",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 8,
+        "total_duration_ms": 26,
+        "is_llm": true,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "ZERO_RETRIEVAL",
+            "severity": "critical",
+            "node": "Answer Formatter",
+            "detail": "0 documents retrieved. Warnings: []",
+            "suggestion": "Check embedding generation, vector index, and query formation."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Shield #9: Export Trace": {
+        "name": "Shield #9: Export Trace",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 0,
+        "total_duration_ms": 0,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "ZERO_RETRIEVAL",
+            "severity": "critical",
+            "node": "Shield #9: Export Trace",
+            "detail": "0 documents retrieved. Warnings: []",
+            "suggestion": "Check embedding generation, vector index, and query formation."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Respond to Webhook": {
+        "name": "Respond to Webhook",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 0,
+        "total_duration_ms": 2,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "ZERO_RETRIEVAL",
+            "severity": "critical",
+            "node": "Respond to Webhook",
+            "detail": "0 documents retrieved. Warnings: []",
+            "suggestion": "Check embedding generation, vector index, and query formation."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      }
+    },
+    "cross_execution_patterns": {
+      "node_health": {
+        "When Executed by Another Workflow": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "OTEL Init": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "WF3: HyDE & Entity Extraction": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Neo4j Query Builder (Deep Traversal V2)": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Shield #4: Neo4j Guardian Traversal": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Validate Neo4j Results": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Community Summaries Fetch": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Extract HyDE Document": {
+          "total_runs": 4,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Generate HyDE Embedding": {
+          "total_runs": 4,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Validate Embedding": {
+          "total_runs": 4,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "WF3: Pinecone HyDE Search": {
+          "total_runs": 4,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Merge": {
+          "total_runs": 4,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Merge Graph + Vector + Community (Deep)": {
+          "total_runs": 4,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "WF3: Cohere Reranker": {
+          "total_runs": 4,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Reranker Fallback Handler": {
+          "total_runs": 4,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "JS: Token Budgeting & Map-Reduce": {
+          "total_runs": 4,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Response Formatter": {
+          "total_runs": 4,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "LLM Answer Synthesis": {
+          "total_runs": 4,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Answer Formatter": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Shield #9: Export Trace": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Respond to Webhook": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        }
+      },
+      "latency_bottlenecks": [
+        {
+          "node": "WF3: HyDE & Entity Extraction",
+          "avg_ms": 28575,
+          "p95_ms": 31637,
+          "max_ms": 31637,
+          "samples": 5
+        }
+      ],
+      "verbosity_report": {
+        "WF3: HyDE & Entity Extraction": {
+          "avg_chars": 2008,
+          "max_chars": 2193,
+          "min_chars": 1753,
+          "samples": 5,
+          "verdict": "critical"
+        },
+        "LLM Answer Synthesis": {
+          "avg_chars": 71,
+          "max_chars": 92,
+          "min_chars": 64,
+          "samples": 4,
+          "verdict": "ok"
+        }
+      },
+      "routing_summary": {
+        "Neo4j Query Builder (Deep Traversal V2)": {
+          "skip_neo4j=True": 5
+        },
+        "Validate Neo4j Results": {
+          "skip_graph=True": 5
+        },
+        "Extract HyDE Document": {
+          "hyde_success=True": 4
+        },
+        "Merge": {
+          "skip_graph=True": 4
+        },
+        "Reranker Fallback Handler": {
+          "fallback=True": 4
+        },
+        "JS: Token Budgeting & Map-Reduce": {
+          "fallback=True": 4
+        },
+        "Response Formatter": {
+          "embedding_fallback=True": 4
+        }
+      }
+    },
+    "top_issues": [
+      {
+        "type": "ZERO_RETRIEVAL",
+        "severity": "critical",
+        "node": "Answer Formatter",
+        "detail": "0 documents retrieved. Warnings: []",
+        "suggestion": "Check embedding generation, vector index, and query formation."
+      },
+      {
+        "type": "ZERO_RETRIEVAL",
+        "severity": "critical",
+        "node": "Shield #9: Export Trace",
+        "detail": "0 documents retrieved. Warnings: []",
+        "suggestion": "Check embedding generation, vector index, and query formation."
+      },
+      {
+        "type": "ZERO_RETRIEVAL",
+        "severity": "critical",
+        "node": "Respond to Webhook",
+        "detail": "0 documents retrieved. Warnings: []",
+        "suggestion": "Check embedding generation, vector index, and query formation."
+      },
+      {
+        "type": "VERBOSE_LLM_CRITICAL",
+        "severity": "high",
+        "node": "WF3: HyDE & Entity Extraction",
+        "detail": "LLM output is 2193 chars — likely producing near-final answers instead of intermediate results",
+        "metric": {
+          "output_chars": 2193
+        },
+        "suggestion": "Constrain the system prompt to output ONLY the required intermediate data (entities, SQL, routing decision). Add max_tokens limit."
+      },
+      {
+        "type": "VERY_SLOW_NODE",
+        "severity": "high",
+        "node": "WF3: HyDE & Entity Extraction",
+        "detail": "Node took 29870ms (>15000ms threshold)",
+        "metric": {
+          "duration_ms": 29870
+        },
+        "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
+      },
+      {
+        "type": "EMBEDDING_FALLBACK",
+        "severity": "medium",
+        "node": "Response Formatter",
+        "detail": "Using embedding fallback — primary embedding failed",
+        "suggestion": "Check OpenRouter credits or embedding API configuration."
+      },
+      {
+        "type": "SLOW_NODE",
+        "severity": "low",
+        "node": "LLM Answer Synthesis",
+        "detail": "Node took 6042ms (>5000ms threshold)",
+        "metric": {
+          "duration_ms": 6042
+        },
+        "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+      }
+    ],
+    "recommendations": [
+      {
+        "priority": "CRITICAL",
+        "type": "ZERO_RETRIEVAL",
+        "affected_nodes": [
+          "Shield #9: Export Trace",
+          "Respond to Webhook",
+          "Answer Formatter"
+        ],
+        "description": "0 documents retrieved. Warnings: []",
+        "action": "Check embedding generation, vector index, and query formation.",
+        "occurrences": 9
+      },
+      {
+        "priority": "HIGH",
+        "type": "VERBOSE_LLM",
+        "affected_nodes": [
+          "WF3: HyDE & Entity Extraction"
+        ],
+        "description": "LLM node 'WF3: HyDE & Entity Extraction' avg output: 2008 chars (max: 2193)",
+        "action": "Constrain system prompt to output only required intermediate data. Add max_tokens parameter.",
+        "occurrences": 5
+      },
+      {
+        "priority": "MEDIUM",
+        "type": "LATENCY_BOTTLENECK",
+        "affected_nodes": [
+          "WF3: HyDE & Entity Extraction"
+        ],
+        "description": "Node 'WF3: HyDE & Entity Extraction' avg 28575ms (p95: 31637ms)",
+        "action": "Consider caching, parallelization, or model optimization.",
+        "occurrences": 5
+      }
+    ],
+    "execution_ids": [
+      "18418",
+      "18416",
+      "18413",
+      "18410",
+      "18395"
+    ]
+  },
+  "_updated_at": "2026-02-09T21:27:08.269139Z",
+  "orchestrator": {
+    "timestamp": "2026-02-09T21:27:08.264297Z",
+    "pipeline": "orchestrator",
+    "stage": "manual-analysis",
+    "label": "",
+    "questions_tested": 5,
+    "executions_analyzed": 5,
+    "total_issues": 37,
+    "issues_by_severity": {
+      "critical": 7,
+      "high": 15,
+      "medium": 11,
+      "low": 4
+    },
+    "node_analysis": {
+      "Webhook V8": {
+        "name": "Webhook V8",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 0,
+        "total_duration_ms": 2,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Input Merger V8": {
+        "name": "Input Merger V8",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 41,
+        "total_duration_ms": 209,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Init V8 Security & Analysis": {
+        "name": "Init V8 Security & Analysis",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 39,
+        "total_duration_ms": 195,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "ZERO_RETRIEVAL",
+            "severity": "critical",
+            "node": "Init V8 Security & Analysis",
+            "detail": "0 documents retrieved. Warnings: []",
+            "suggestion": "Check embedding generation, vector index, and query formation."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Postgres L2/L3 Memory": {
+        "name": "Postgres L2/L3 Memory",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 124,
+        "total_duration_ms": 624,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "EMPTY_RETRIEVAL",
+            "severity": "high",
+            "node": "Postgres L2/L3 Memory",
+            "detail": "Retrieval node returned 0 items",
+            "suggestion": "Check query formation, index configuration, or embedding quality."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Redis: Fetch Conversation": {
+        "name": "Redis: Fetch Conversation",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 134,
+        "total_duration_ms": 672,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🛡️ Redis Failure Handler V10.1": {
+        "name": "🛡️ Redis Failure Handler V10.1",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 29,
+        "total_duration_ms": 148,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🛡️ Rate Limit Guard": {
+        "name": "🛡️ Rate Limit Guard",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 37,
+        "total_duration_ms": 185,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "IF: Rate Limited?": {
+        "name": "IF: Rate Limited?",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 0,
+        "total_duration_ms": 1,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🧠 Memory Merger (Redis + Postgres)": {
+        "name": "🧠 Memory Merger (Redis + Postgres)",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 38,
+        "total_duration_ms": 190,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "📦 Context Compression V10.1": {
+        "name": "📦 Context Compression V10.1",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 27,
+        "total_duration_ms": 139,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🛡️ Advanced Guardrails": {
+        "name": "🛡️ Advanced Guardrails",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 26,
+        "total_duration_ms": 132,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "IF: Guardrail Passed?": {
+        "name": "IF: Guardrail Passed?",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 0,
+        "total_duration_ms": 3,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🔍 Query Classifier V10.1": {
+        "name": "🔍 Query Classifier V10.1",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 28,
+        "total_duration_ms": 141,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🔀 Query Router": {
+        "name": "🔀 Query Router",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 2,
+        "total_duration_ms": 10,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🔎 Cache Semantic Search": {
+        "name": "🔎 Cache Semantic Search",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 25,
+        "total_duration_ms": 125,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Redis: Cache + Generator": {
+        "name": "Redis: Cache + Generator",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 138,
+        "total_duration_ms": 692,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Cache Parser": {
+        "name": "Cache Parser",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 27,
+        "total_duration_ms": 138,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "IF: Cache Hit?": {
+        "name": "IF: Cache Hit?",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 0,
+        "total_duration_ms": 2,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🧠 LLM 1: Intent Analyzer": {
+        "name": "🧠 LLM 1: Intent Analyzer",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 17301,
+        "total_duration_ms": 86506,
+        "is_llm": true,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "VERBOSE_LLM",
+            "severity": "medium",
+            "node": "🧠 LLM 1: Intent Analyzer",
+            "detail": "LLM output is 591 chars — may be overly detailed for an intermediate step",
+            "metric": {
+              "output_chars": 591
+            },
+            "suggestion": "Consider adding max_tokens constraint or simplifying the prompt."
+          },
+          {
+            "type": "SLOW_NODE",
+            "severity": "low",
+            "node": "🧠 LLM 1: Intent Analyzer",
+            "detail": "Node took 11460ms (>5000ms threshold)",
+            "metric": {
+              "duration_ms": 11460
+            },
+            "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+          },
+          {
+            "type": "VERY_SLOW_NODE",
+            "severity": "high",
+            "node": "🧠 LLM 1: Intent Analyzer",
+            "detail": "Node took 21509ms (>15000ms threshold)",
+            "metric": {
+              "duration_ms": 21509
+            },
+            "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
+          }
+        ],
+        "llm_avg_output_chars": 948,
+        "llm_avg_tokens": 250
+      },
+      "Intent Parser V9": {
+        "name": "Intent Parser V9",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 35,
+        "total_duration_ms": 175,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🎯 LLM 2: Task Planner": {
+        "name": "🎯 LLM 2: Task Planner",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 29179,
+        "total_duration_ms": 145897,
+        "is_llm": true,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "VERBOSE_LLM",
+            "severity": "medium",
+            "node": "🎯 LLM 2: Task Planner",
+            "detail": "LLM output is 794 chars — may be overly detailed for an intermediate step",
+            "metric": {
+              "output_chars": 794
+            },
+            "suggestion": "Consider adding max_tokens constraint or simplifying the prompt."
+          },
+          {
+            "type": "VERY_SLOW_NODE",
+            "severity": "high",
+            "node": "🎯 LLM 2: Task Planner",
+            "detail": "Node took 21575ms (>15000ms threshold)",
+            "metric": {
+              "duration_ms": 21575
+            },
+            "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
+          }
+        ],
+        "llm_avg_output_chars": 1287,
+        "llm_avg_tokens": 375
+      },
+      "Postgres: Init Tasks Table": {
+        "name": "Postgres: Init Tasks Table",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 193,
+        "total_duration_ms": 965,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "📝 Format & Dispatch (Plan→DB)": {
+        "name": "📝 Format & Dispatch (Plan→DB)",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 35,
+        "total_duration_ms": 177,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Postgres: Insert Tasks": {
+        "name": "Postgres: Insert Tasks",
+        "executions": 5,
+        "errors": 0,
+        "avg_duration_ms": 27,
+        "total_duration_ms": 136,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Postgres : Get Current Tasks": {
+        "name": "Postgres : Get Current Tasks",
+        "executions": 8,
+        "errors": 0,
+        "avg_duration_ms": 183,
+        "total_duration_ms": 1465,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "⚙️ Execution Engine V10": {
+        "name": "⚙️ Execution Engine V10",
+        "executions": 8,
+        "errors": 0,
+        "avg_duration_ms": 45,
+        "total_duration_ms": 366,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "If": {
+        "name": "If",
+        "executions": 8,
+        "errors": 0,
+        "avg_duration_ms": 0,
+        "total_duration_ms": 6,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🔀 Dynamic Switch V10": {
+        "name": "🔀 Dynamic Switch V10",
+        "executions": 7,
+        "errors": 0,
+        "avg_duration_ms": 1,
+        "total_duration_ms": 7,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Invoke WF5: Standard": {
+        "name": "Invoke WF5: Standard",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 12411,
+        "total_duration_ms": 12411,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "SLOW_NODE",
+            "severity": "low",
+            "node": "Invoke WF5: Standard",
+            "detail": "Node took 12411ms (>5000ms threshold)",
+            "metric": {
+              "duration_ms": 12411
+            },
+            "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+          },
+          {
+            "type": "EMBEDDING_FALLBACK",
+            "severity": "medium",
+            "node": "Invoke WF5: Standard",
+            "detail": "Using embedding fallback — primary embedding failed",
+            "suggestion": "Check OpenRouter credits or embedding API configuration."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "📥 Task Result Handler": {
+        "name": "📥 Task Result Handler",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 35,
+        "total_duration_ms": 106,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Postgres: Update Task": {
+        "name": "Postgres: Update Task",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 197,
+        "total_duration_ms": 592,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🔄 Fallback Monitor V10": {
+        "name": "🔄 Fallback Monitor V10",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 32,
+        "total_duration_ms": 98,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "IF: Fallback Needed?": {
+        "name": "IF: Fallback Needed?",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 0,
+        "total_duration_ms": 1,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "📊 Task Status Aggregator": {
+        "name": "📊 Task Status Aggregator",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 53,
+        "total_duration_ms": 53,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🎯 LLM 3: Agent Harness (Opus 4.5)": {
+        "name": "🎯 LLM 3: Agent Harness (Opus 4.5)",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 11038,
+        "total_duration_ms": 11038,
+        "is_llm": true,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "SLOW_NODE",
+            "severity": "low",
+            "node": "🎯 LLM 3: Agent Harness (Opus 4.5)",
+            "detail": "Node took 11038ms (>5000ms threshold)",
+            "metric": {
+              "duration_ms": 11038
+            },
+            "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+          }
+        ],
+        "llm_avg_output_chars": 284,
+        "llm_avg_tokens": 62
+      },
+      "📊 Agent Decision Parser": {
+        "name": "📊 Agent Decision Parser",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 35,
+        "total_duration_ms": 35,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🔄 Task Updater": {
+        "name": "🔄 Task Updater",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 30,
+        "total_duration_ms": 30,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "If1": {
+        "name": "If1",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 1,
+        "total_duration_ms": 1,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Response Builder V9": {
+        "name": "Response Builder V9",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 53,
+        "total_duration_ms": 53,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Execution Summary (orchestrator)": {
+        "name": "Execution Summary (orchestrator)",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 47,
+        "total_duration_ms": 47,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Redis: Store Conv V8": {
+        "name": "Redis: Store Conv V8",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 137,
+        "total_duration_ms": 137,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Postgres: Update Context V8": {
+        "name": "Postgres: Update Context V8",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 184,
+        "total_duration_ms": 184,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Store RLHF Data V8": {
+        "name": "Store RLHF Data V8",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 31,
+        "total_duration_ms": 31,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "💾 Cache Storage": {
+        "name": "💾 Cache Storage",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 34,
+        "total_duration_ms": 34,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Redis: Set Cache": {
+        "name": "Redis: Set Cache",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 169,
+        "total_duration_ms": 169,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Merge": {
+        "name": "Merge",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 1,
+        "total_duration_ms": 1,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Output Router (Final)": {
+        "name": "Output Router (Final)",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 7,
+        "total_duration_ms": 7,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Return Response V8": {
+        "name": "Return Response V8",
+        "executions": 1,
+        "errors": 0,
+        "avg_duration_ms": 11,
+        "total_duration_ms": 11,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Invoke WF2: Graph": {
+        "name": "Invoke WF2: Graph",
+        "executions": 2,
+        "errors": 0,
+        "avg_duration_ms": 30069,
+        "total_duration_ms": 60139,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "VERY_SLOW_NODE",
+            "severity": "high",
+            "node": "Invoke WF2: Graph",
+            "detail": "Node took 29968ms (>15000ms threshold)",
+            "metric": {
+              "duration_ms": 29968
+            },
+            "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
+          },
+          {
+            "type": "ZERO_RETRIEVAL",
+            "severity": "critical",
+            "node": "Invoke WF2: Graph",
+            "detail": "0 documents retrieved. Warnings: []",
+            "suggestion": "Check embedding generation, vector index, and query formation."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🔄 Fallback Dispatch": {
+        "name": "🔄 Fallback Dispatch",
+        "executions": 2,
+        "errors": 0,
+        "avg_duration_ms": 29,
+        "total_duration_ms": 59,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Postgres: Update Fallback": {
+        "name": "Postgres: Update Fallback",
+        "executions": 2,
+        "errors": 0,
+        "avg_duration_ms": 27,
+        "total_duration_ms": 54,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      }
+    },
+    "cross_execution_patterns": {
+      "node_health": {
+        "Webhook V8": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Input Merger V8": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Init V8 Security & Analysis": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Postgres L2/L3 Memory": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Redis: Fetch Conversation": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🛡️ Redis Failure Handler V10.1": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🛡️ Rate Limit Guard": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "IF: Rate Limited?": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🧠 Memory Merger (Redis + Postgres)": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "📦 Context Compression V10.1": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🛡️ Advanced Guardrails": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "IF: Guardrail Passed?": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🔍 Query Classifier V10.1": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🔀 Query Router": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🔎 Cache Semantic Search": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Redis: Cache + Generator": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Cache Parser": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "IF: Cache Hit?": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🧠 LLM 1: Intent Analyzer": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Intent Parser V9": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🎯 LLM 2: Task Planner": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Postgres: Init Tasks Table": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "📝 Format & Dispatch (Plan→DB)": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Postgres: Insert Tasks": {
+          "total_runs": 5,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Postgres : Get Current Tasks": {
+          "total_runs": 8,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "⚙️ Execution Engine V10": {
+          "total_runs": 8,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "If": {
+          "total_runs": 8,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🔀 Dynamic Switch V10": {
+          "total_runs": 7,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Invoke WF5: Standard": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "📥 Task Result Handler": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Postgres: Update Task": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🔄 Fallback Monitor V10": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "IF: Fallback Needed?": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "📊 Task Status Aggregator": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🎯 LLM 3: Agent Harness (Opus 4.5)": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "📊 Agent Decision Parser": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🔄 Task Updater": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "If1": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Response Builder V9": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Execution Summary (orchestrator)": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Redis: Store Conv V8": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Postgres: Update Context V8": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Store RLHF Data V8": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "💾 Cache Storage": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Redis: Set Cache": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Merge": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Output Router (Final)": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Return Response V8": {
+          "total_runs": 1,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Invoke WF2: Graph": {
+          "total_runs": 2,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🔄 Fallback Dispatch": {
+          "total_runs": 2,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Postgres: Update Fallback": {
+          "total_runs": 2,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        }
+      },
+      "latency_bottlenecks": [
+        {
+          "node": "Invoke WF2: Graph",
+          "avg_ms": 30069,
+          "p95_ms": 30171,
+          "max_ms": 30171,
+          "samples": 2
+        },
+        {
+          "node": "🎯 LLM 2: Task Planner",
+          "avg_ms": 29179,
+          "p95_ms": 38885,
+          "max_ms": 38885,
+          "samples": 5
+        },
+        {
+          "node": "🧠 LLM 1: Intent Analyzer",
+          "avg_ms": 17301,
+          "p95_ms": 22554,
+          "max_ms": 22554,
+          "samples": 5
+        },
+        {
+          "node": "Invoke WF5: Standard",
+          "avg_ms": 12411,
+          "p95_ms": 12411,
+          "max_ms": 12411,
+          "samples": 1
+        },
+        {
+          "node": "🎯 LLM 3: Agent Harness (Opus 4.5)",
+          "avg_ms": 11038,
+          "p95_ms": 11038,
+          "max_ms": 11038,
+          "samples": 1
+        }
+      ],
+      "verbosity_report": {
+        "🧠 LLM 1: Intent Analyzer": {
+          "avg_chars": 948,
+          "max_chars": 1100,
+          "min_chars": 591,
+          "samples": 5,
+          "verdict": "warning"
+        },
+        "🎯 LLM 2: Task Planner": {
+          "avg_chars": 1287,
+          "max_chars": 1442,
+          "min_chars": 794,
+          "samples": 5,
+          "verdict": "warning"
+        },
+        "🎯 LLM 3: Agent Harness (Opus 4.5)": {
+          "avg_chars": 284,
+          "max_chars": 284,
+          "min_chars": 284,
+          "samples": 1,
+          "verdict": "ok"
+        }
+      },
+      "routing_summary": {
+        "Invoke WF5: Standard": {
+          "embedding_fallback=True": 1
+        }
+      }
+    },
+    "top_issues": [
+      {
+        "type": "ZERO_RETRIEVAL",
+        "severity": "critical",
+        "node": "Init V8 Security & Analysis",
+        "detail": "0 documents retrieved. Warnings: []",
+        "suggestion": "Check embedding generation, vector index, and query formation."
+      },
+      {
+        "type": "ZERO_RETRIEVAL",
+        "severity": "critical",
+        "node": "Invoke WF2: Graph",
+        "detail": "0 documents retrieved. Warnings: []",
+        "suggestion": "Check embedding generation, vector index, and query formation."
+      },
+      {
+        "type": "EMPTY_RETRIEVAL",
+        "severity": "high",
+        "node": "Postgres L2/L3 Memory",
+        "detail": "Retrieval node returned 0 items",
+        "suggestion": "Check query formation, index configuration, or embedding quality."
+      },
+      {
+        "type": "VERY_SLOW_NODE",
+        "severity": "high",
+        "node": "🎯 LLM 2: Task Planner",
+        "detail": "Node took 21575ms (>15000ms threshold)",
+        "metric": {
+          "duration_ms": 21575
+        },
+        "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
+      },
+      {
+        "type": "VERY_SLOW_NODE",
+        "severity": "high",
+        "node": "🧠 LLM 1: Intent Analyzer",
+        "detail": "Node took 21509ms (>15000ms threshold)",
+        "metric": {
+          "duration_ms": 21509
+        },
+        "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
+      },
+      {
+        "type": "VERY_SLOW_NODE",
+        "severity": "high",
+        "node": "Invoke WF2: Graph",
+        "detail": "Node took 29968ms (>15000ms threshold)",
+        "metric": {
+          "duration_ms": 29968
+        },
+        "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
+      },
+      {
+        "type": "VERBOSE_LLM",
+        "severity": "medium",
+        "node": "🧠 LLM 1: Intent Analyzer",
+        "detail": "LLM output is 591 chars — may be overly detailed for an intermediate step",
+        "metric": {
+          "output_chars": 591
+        },
+        "suggestion": "Consider adding max_tokens constraint or simplifying the prompt."
+      },
+      {
+        "type": "VERBOSE_LLM",
+        "severity": "medium",
+        "node": "🎯 LLM 2: Task Planner",
+        "detail": "LLM output is 794 chars — may be overly detailed for an intermediate step",
+        "metric": {
+          "output_chars": 794
+        },
+        "suggestion": "Consider adding max_tokens constraint or simplifying the prompt."
+      },
+      {
+        "type": "EMBEDDING_FALLBACK",
+        "severity": "medium",
+        "node": "Invoke WF5: Standard",
+        "detail": "Using embedding fallback — primary embedding failed",
+        "suggestion": "Check OpenRouter credits or embedding API configuration."
+      },
+      {
+        "type": "SLOW_NODE",
+        "severity": "low",
+        "node": "🧠 LLM 1: Intent Analyzer",
+        "detail": "Node took 11460ms (>5000ms threshold)",
+        "metric": {
+          "duration_ms": 11460
+        },
+        "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+      },
+      {
+        "type": "SLOW_NODE",
+        "severity": "low",
+        "node": "Invoke WF5: Standard",
+        "detail": "Node took 12411ms (>5000ms threshold)",
+        "metric": {
+          "duration_ms": 12411
+        },
+        "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+      },
+      {
+        "type": "SLOW_NODE",
+        "severity": "low",
+        "node": "🎯 LLM 3: Agent Harness (Opus 4.5)",
+        "detail": "Node took 11038ms (>5000ms threshold)",
+        "metric": {
+          "duration_ms": 11038
+        },
+        "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+      }
+    ],
+    "recommendations": [
+      {
+        "priority": "CRITICAL",
+        "type": "ZERO_RETRIEVAL",
+        "affected_nodes": [
+          "Init V8 Security & Analysis",
+          "Invoke WF2: Graph"
+        ],
+        "description": "0 documents retrieved. Warnings: []",
+        "action": "Check embedding generation, vector index, and query formation.",
+        "occurrences": 7
+      },
+      {
+        "priority": "MEDIUM",
+        "type": "VERBOSE_LLM",
+        "affected_nodes": [
+          "🧠 LLM 1: Intent Analyzer"
+        ],
+        "description": "LLM node '🧠 LLM 1: Intent Analyzer' avg output: 948 chars (max: 1100)",
+        "action": "Constrain system prompt to output only required intermediate data. Add max_tokens parameter.",
+        "occurrences": 5
+      },
+      {
+        "priority": "MEDIUM",
+        "type": "VERBOSE_LLM",
+        "affected_nodes": [
+          "🎯 LLM 2: Task Planner"
+        ],
+        "description": "LLM node '🎯 LLM 2: Task Planner' avg output: 1287 chars (max: 1442)",
+        "action": "Constrain system prompt to output only required intermediate data. Add max_tokens parameter.",
+        "occurrences": 5
+      },
+      {
+        "priority": "MEDIUM",
+        "type": "LATENCY_BOTTLENECK",
+        "affected_nodes": [
+          "Invoke WF2: Graph"
+        ],
+        "description": "Node 'Invoke WF2: Graph' avg 30069ms (p95: 30171ms)",
+        "action": "Consider caching, parallelization, or model optimization.",
+        "occurrences": 2
+      },
+      {
+        "priority": "MEDIUM",
+        "type": "LATENCY_BOTTLENECK",
+        "affected_nodes": [
+          "🎯 LLM 2: Task Planner"
+        ],
+        "description": "Node '🎯 LLM 2: Task Planner' avg 29179ms (p95: 38885ms)",
+        "action": "Consider caching, parallelization, or model optimization.",
+        "occurrences": 5
+      },
+      {
+        "priority": "MEDIUM",
+        "type": "LATENCY_BOTTLENECK",
+        "affected_nodes": [
+          "🧠 LLM 1: Intent Analyzer"
+        ],
+        "description": "Node '🧠 LLM 1: Intent Analyzer' avg 17301ms (p95: 22554ms)",
+        "action": "Consider caching, parallelization, or model optimization.",
+        "occurrences": 5
+      }
+    ],
+    "execution_ids": [
+      "18419",
+      "18417",
+      "18415",
+      "18412",
+      "18409"
+    ]
+  }
+}

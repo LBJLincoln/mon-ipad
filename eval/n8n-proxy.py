@@ -83,8 +83,13 @@ def fetch_executions(workflow_id=None, limit=10, status=None):
     return result.get("data", [])
 
 
-def parse_execution(execution):
-    """Parse a raw n8n execution into a structured format."""
+def parse_execution(execution, rich=False):
+    """Parse a raw n8n execution into a structured format.
+
+    Args:
+        execution: Raw n8n API execution object
+        rich: If True, capture full node data (tokens, flags, LLM content) instead of 500-char preview
+    """
     exec_id = execution.get("id", "unknown")
     wf_id = execution.get("workflowId", "")
     pipeline = WORKFLOW_NAMES.get(wf_id, "unknown")
@@ -131,15 +136,41 @@ def parse_execution(execution):
             if output_data:
                 node_info["items_out"] = sum(len(d) if isinstance(d, list) else 0 for d in output_data)
 
-            # Extract data preview (first item output)
+            # Extract data preview / rich data
             if output_data and isinstance(output_data, list) and len(output_data) > 0:
                 first_output = output_data[0]
                 if isinstance(first_output, list) and len(first_output) > 0:
                     item = first_output[0]
                     if isinstance(item, dict):
                         json_data = item.get("json", item)
-                        preview = json.dumps(json_data, ensure_ascii=False)[:500]
-                        node_info["data_preview"] = preview
+                        if rich:
+                            # Rich mode: capture structured fields
+                            node_info["data_preview"] = json.dumps(json_data, ensure_ascii=False)[:2000]
+                            node_info["output_keys"] = list(json_data.keys())[:30]
+                            # LLM data extraction
+                            if "choices" in json_data:
+                                choices = json_data.get("choices", [])
+                                if choices:
+                                    content = choices[0].get("message", {}).get("content", "")
+                                    node_info["llm_content"] = content[:3000]
+                                    node_info["llm_content_length"] = len(content)
+                                usage = json_data.get("usage", {})
+                                if usage:
+                                    node_info["llm_tokens"] = {
+                                        "prompt": usage.get("prompt_tokens", 0),
+                                        "completion": usage.get("completion_tokens", 0),
+                                        "total": usage.get("total_tokens", 0),
+                                    }
+                                node_info["llm_model"] = json_data.get("model", "")
+                            # Routing flags
+                            for flag in ["skip_neo4j", "skip_graph", "skip_llm", "skip_reranker",
+                                         "fallback", "embedding_fallback", "empty_database",
+                                         "is_simple", "is_decomposed", "reranked"]:
+                                if flag in json_data:
+                                    node_info.setdefault("flags", {})[flag] = json_data[flag]
+                        else:
+                            preview = json.dumps(json_data, ensure_ascii=False)[:500]
+                            node_info["data_preview"] = preview
 
             nodes.append(node_info)
 
@@ -184,6 +215,19 @@ def parse_execution(execution):
         "node_count": len(nodes),
         "error_nodes": [n for n in nodes if n["status"] == "error"],
     }
+
+
+def fetch_rich_for_pipeline(pipeline, limit=10):
+    """Fetch executions with rich data for a specific pipeline (for node-analyzer)."""
+    wf_id = WORKFLOW_IDS.get(pipeline)
+    if not wf_id:
+        return []
+    raw = fetch_executions(workflow_id=wf_id, limit=limit)
+    results = []
+    for ex in raw:
+        parsed = parse_execution(ex, rich=True)
+        results.append(parsed)
+    return results
 
 
 def fetch_and_save(workflow_filter=None, limit=10):
@@ -308,8 +352,27 @@ def serve_api(port=8787):
                 else:
                     self.wfile.write(b'{"error":"No stage data. Run iterative-eval.py first."}')
 
+            elif self.path == "/api/diagnostics":
+                diag_path = os.path.join(REPO_ROOT, "logs", "diagnostics", "latest.json")
+                if os.path.exists(diag_path):
+                    with open(diag_path) as f:
+                        data = f.read()
+                    self.wfile.write(data.encode())
+                else:
+                    self.wfile.write(b'{"error":"No diagnostics yet. Run node-analyzer.py first."}')
+
+            elif self.path.startswith("/api/diagnostics/"):
+                pipeline = self.path.split("/")[-1]
+                diag_path = os.path.join(REPO_ROOT, "logs", "diagnostics", f"latest-{pipeline}.json")
+                if os.path.exists(diag_path):
+                    with open(diag_path) as f:
+                        data = f.read()
+                    self.wfile.write(data.encode())
+                else:
+                    self.wfile.write(b'{"error":"No diagnostics for this pipeline"}')
+
             else:
-                self.wfile.write(b'{"endpoints":["/api/executions","/api/execution/{id}","/api/knowledge-base","/api/stages"]}')
+                self.wfile.write(b'{"endpoints":["/api/executions","/api/execution/{id}","/api/knowledge-base","/api/stages","/api/diagnostics","/api/diagnostics/{pipeline}"]}')
 
         def do_OPTIONS(self):
             self.send_response(200)
