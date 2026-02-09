@@ -600,7 +600,7 @@ def improve_quantitative_rag(wf):
             if "table_schema = 'public'" in query and "table_name IN" not in query:
                 query = query.replace(
                     "table_schema = 'public'",
-                    "table_schema = 'public'\n  AND table_name IN ('financials', 'balance_sheet', 'sales_data', 'products', 'employees')"
+                    "table_schema = 'public'\n  AND table_name IN ('financials', 'balance_sheet', 'sales_data', 'products', 'employees', 'finqa_tables', 'tatqa_tables', 'convfinqa_tables')"
                 )
                 params["query"] = query
                 changes.append("P1-FIX: Schema Introspection - filtered to relevant tables only")
@@ -612,9 +612,11 @@ def improve_quantitative_rag(wf):
             code = node.get("parameters", {}).get("jsCode", "")
             if "sampleValues" in code or "SAMPLE VALUES" in code.upper():
                 sql_hints = """
-// PHASE-1 FIX: Add SQL generation hints to prevent common failures
+// SQL generation hints to prevent common failures
 const SQL_GENERATION_HINTS = `
 CRITICAL SQL RULES:
+
+=== Phase 1 Tables (company financials) ===
 1. Company names MUST match EXACTLY: 'TechVision Inc', 'GreenEnergy Corp', 'HealthPlus Labs'
    - Use ILIKE for fuzzy matching: WHERE company_name ILIKE '%TechVision%'
 2. Period filtering: financials has BOTH annual (period='FY') AND quarterly (period='Q1'-'Q4').
@@ -624,6 +626,19 @@ CRITICAL SQL RULES:
 4. Growth calculations: (new - old) / old * 100 for percentage growth.
 5. Always include: WHERE tenant_id = 'benchmark' AND LIMIT 1000
 6. For revenue: column is 'revenue' in financials table (in raw numbers, not formatted).
+
+=== Phase 2 Tables (HuggingFace financial datasets) ===
+7. finqa_tables: columns (id, question_id, table_json JSONB, context TEXT, dataset_name, tenant_id)
+   - Contains 200 financial report tables from FinQA. Query table_json with ->>/-> operators.
+   - Example: SELECT table_json->>'header' FROM finqa_tables WHERE question_id = 'quantitative-finqa-0'
+8. tatqa_tables: columns (id, question_id, table_json JSONB, context TEXT, dataset_name, tenant_id)
+   - Contains 150 tables from TAT-QA. Same JSONB structure as finqa_tables.
+9. convfinqa_tables: columns (id, question_id, table_json JSONB, context TEXT, dataset_name, tenant_id)
+   - Contains 100 conversational finance tables from ConvFinQA.
+10. For Phase 2 questions: FIRST check if the question references a known company (Phase 1 tables).
+    If not, search Phase 2 tables using ILIKE on context column or table_json::text.
+11. Phase 2 table_json format: JSON array of arrays, first row = headers.
+    Parse with: SELECT jsonb_array_elements(table_json) to iterate rows.
 `;
 """
                 if "CRITICAL SQL RULES" not in code:

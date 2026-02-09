@@ -7,7 +7,7 @@ The system evaluates each pipeline's accuracy, latency, and cost, then proposes 
 workflow structure improvements ONLY when data shows a clear need (e.g. accuracy plateau,
 high error rate, routing failures).
 
-**Current phase: Phase 1 — Baseline (200q, iterative improvement loop)**
+**Current phase: Phase 1 — Baseline (200q, iterative improvement loop) | Phase 2 DB: READY**
 
 See `phases/overview.md` for the full 5-phase strategy:
 Phase 1 (200q) → Phase 2 (1,000q) → Phase 3 (~10Kq) → Phase 4 (~100Kq) → Phase 5 (1M+q)
@@ -111,6 +111,7 @@ python3 eval/fast-iter.py                                 # 10q per pipeline, al
 python3 eval/fast-iter.py --questions 5 --pipelines graph # 5q, graph only
 python3 eval/fast-iter.py --only-failing                  # Re-test only failures
 python3 eval/fast-iter.py --label "after fuzzy matching"  # Tag the run
+python3 eval/fast-iter.py --dataset phase-2               # Phase 2 questions (graph + quant)
 ```
 
 ### Phase B: Full Evaluation (200q, parallel, ~15-20 min)

@@ -100,46 +100,69 @@ def load_tested_ids_by_type():
 # Load questions from all dataset files
 # ============================================================
 
-def load_questions(include_1000=False):
-    """Load questions from dataset files."""
+def load_questions(include_1000=False, dataset=None):
+    """Load questions from dataset files.
+
+    Args:
+        include_1000: Legacy flag — include Phase 2 HF-1000 questions alongside Phase 1.
+        dataset: Explicit dataset selector:
+            - None or "phase-1": Phase 1 only (200 questions)
+            - "phase-2": Phase 2 only (1,000 HF questions)
+            - "all": Phase 1 + Phase 2 (1,200 questions)
+    """
     questions = {"standard": [], "graph": [], "quantitative": [], "orchestrator": []}
 
-    # Standard + Orchestrator from datasets/phase-1/standard-orch-50x2.json
-    std_orch_path = os.path.join(DATASETS_DIR, "phase-1", "standard-orch-50x2.json")
-    with open(std_orch_path) as f:
-        raw = json.load(f)
-    std_orch_data = raw.get("questions", raw) if isinstance(raw, dict) else raw
-    for q in std_orch_data:
-        if not isinstance(q, dict):
-            continue
-        target = q.get("rag_target", "")
-        if target in ("standard", "orchestrator"):
-            questions[target].append({
-                "id": q["id"],
-                "question": q["question"],
-                "expected": q["expected_answer"],
-                "category": q.get("category", "")
-            })
+    # Determine which datasets to load
+    load_phase1 = True
+    load_phase2 = include_1000
+    if dataset == "phase-2":
+        load_phase1 = False
+        load_phase2 = True
+    elif dataset == "all":
+        load_phase2 = True
 
-    # Graph + Quantitative from datasets/phase-1/graph-quant-50x2.json
-    gq_path = os.path.join(DATASETS_DIR, "phase-1", "graph-quant-50x2.json")
-    with open(gq_path) as f:
-        raw2 = json.load(f)
-    gq_data = raw2.get("questions", raw2) if isinstance(raw2, dict) else raw2
-    for q in gq_data:
-        if not isinstance(q, dict):
-            continue
-        target = q.get("rag_target", "")
-        if target in ("graph", "quantitative"):
-            questions[target].append({
-                "id": q["id"],
-                "question": q["question"],
-                "expected": q["expected_answer"],
-                "category": q.get("category", "")
-            })
+    # Phase 1: Standard + Orchestrator
+    if load_phase1:
+        std_orch_path = os.path.join(DATASETS_DIR, "phase-1", "standard-orch-50x2.json")
+        with open(std_orch_path) as f:
+            raw = json.load(f)
+        std_orch_data = raw.get("questions", raw) if isinstance(raw, dict) else raw
+        for q in std_orch_data:
+            if not isinstance(q, dict):
+                continue
+            target = q.get("rag_target", "")
+            if target in ("standard", "orchestrator"):
+                questions[target].append({
+                    "id": q["id"],
+                    "question": q["question"],
+                    "expected": q["expected_answer"],
+                    "category": q.get("category", ""),
+                    "dataset_name": q.get("dataset_name", "phase-1"),
+                    "phase": 1,
+                })
 
-    # Optional: datasets/phase-2/hf-1000.json (HuggingFace datasets)
-    if include_1000:
+    # Phase 1: Graph + Quantitative
+    if load_phase1:
+        gq_path = os.path.join(DATASETS_DIR, "phase-1", "graph-quant-50x2.json")
+        with open(gq_path) as f:
+            raw2 = json.load(f)
+        gq_data = raw2.get("questions", raw2) if isinstance(raw2, dict) else raw2
+        for q in gq_data:
+            if not isinstance(q, dict):
+                continue
+            target = q.get("rag_target", "")
+            if target in ("graph", "quantitative"):
+                questions[target].append({
+                    "id": q["id"],
+                    "question": q["question"],
+                    "expected": q["expected_answer"],
+                    "category": q.get("category", ""),
+                    "dataset_name": q.get("dataset_name", "phase-1"),
+                    "phase": 1,
+                })
+
+    # Phase 2: HuggingFace datasets (500 graph + 500 quantitative)
+    if load_phase2:
         hf_path = os.path.join(DATASETS_DIR, "phase-2", "hf-1000.json")
         if os.path.exists(hf_path):
             with open(hf_path) as f:
@@ -150,15 +173,22 @@ def load_questions(include_1000=False):
                     continue
                 target = q.get("rag_target", "")
                 if target in ("graph", "quantitative"):
+                    expected = q.get("expected_answer", "")
+                    if not expected:
+                        continue  # Skip questions with empty expected answers
                     questions[target].append({
                         "id": q["id"],
                         "question": q["question"],
-                        "expected": q.get("expected_answer", ""),
-                        "category": q.get("category", "")
+                        "expected": expected,
+                        "category": q.get("category", ""),
+                        "dataset_name": q.get("dataset_name", ""),
+                        "phase": 2,
                     })
 
+    phase_label = dataset or ("phase-1+2" if include_1000 else "phase-1")
     for t in questions:
-        print(f"  {t}: {len(questions[t])} questions loaded")
+        if questions[t]:
+            print(f"  {t}: {len(questions[t])} questions loaded ({phase_label})")
     return questions
 
 
@@ -368,27 +398,67 @@ def entity_match(prediction, expected):
     return matched, total
 
 
+def normalize_number(text):
+    """Extract and normalize a numeric value from text, handling currency and units."""
+    text = text.strip().lower()
+    # Handle "X percent" or "X %" patterns
+    text = text.replace(" percent", "%").replace(" per cent", "%")
+    # Handle currency symbols
+    text = text.replace("$", "").replace("€", "").replace("£", "")
+    # Handle magnitude words
+    multipliers = {"billion": 1e9, "million": 1e6, "thousand": 1e3, "k": 1e3, "m": 1e6, "b": 1e9}
+    for word, mult in multipliers.items():
+        if word in text:
+            nums = re.findall(r'[\d,]+\.?\d*', text.replace(',', ''))
+            if nums:
+                try:
+                    return float(nums[0]) * mult
+                except ValueError:
+                    pass
+    return None
+
+
 def numeric_match(prediction, expected):
-    """Check if numeric values match (within 5% tolerance)."""
+    """Check if numeric values match (within 5% tolerance).
+    Handles percentages, currency, and magnitude words."""
     pred_nums = re.findall(r'[\d,]+\.?\d*', prediction.replace(',', ''))
     exp_nums = re.findall(r'[\d,]+\.?\d*', expected.replace(',', ''))
     if not exp_nums:
         return False, None, None
+
+    # Also try magnitude-aware matching
+    exp_normalized = normalize_number(expected)
+
     for exp_str in exp_nums:
         try:
             exp_val = float(exp_str)
-        except:
+        except ValueError:
             continue
         for pred_str in pred_nums:
             try:
                 pred_val = float(pred_str)
-            except:
+            except ValueError:
                 continue
             if exp_val == 0:
                 if pred_val == 0:
                     return True, pred_val, exp_val
             elif abs(pred_val - exp_val) / abs(exp_val) < 0.05:
                 return True, pred_val, exp_val
+
+    # Try magnitude-aware matching (e.g., "$56.7 million" vs "56700000")
+    if exp_normalized is not None:
+        for pred_str in pred_nums:
+            try:
+                pred_val = float(pred_str)
+            except ValueError:
+                continue
+            if exp_normalized != 0 and abs(pred_val - exp_normalized) / abs(exp_normalized) < 0.05:
+                return True, pred_val, exp_normalized
+        pred_normalized = normalize_number(prediction)
+        if pred_normalized is not None and exp_normalized != 0:
+            if abs(pred_normalized - exp_normalized) / abs(exp_normalized) < 0.05:
+                return True, pred_normalized, exp_normalized
+
     return False, None, None
 
 
@@ -432,7 +502,23 @@ def evaluate_answer(prediction, expected):
         return {"correct": True, "method": "ENTITY_MATCH", "f1": f1,
                 "detail": f"{matched}/{total}"}
 
-    # Strategy 4: F1 threshold (lower threshold for short expected answers)
+    # Strategy 4: Percentage match (handle "6%" matching "6.0%", "6 percent", etc.)
+    if "%" in expected or "percent" in expected.lower():
+        exp_pct = re.findall(r'([\d.]+)\s*%', expected)
+        pred_pct = re.findall(r'([\d.]+)\s*%', prediction)
+        if not pred_pct:
+            pred_pct = re.findall(r'([\d.]+)\s*percent', prediction.lower())
+        if exp_pct and pred_pct:
+            try:
+                for ep in exp_pct:
+                    for pp in pred_pct:
+                        if abs(float(ep) - float(pp)) < 0.5:  # within 0.5 percentage points
+                            return {"correct": True, "method": "PERCENTAGE_MATCH", "f1": f1,
+                                    "detail": f"{pp}%~={ep}%"}
+            except ValueError:
+                pass
+
+    # Strategy 5: F1 threshold (lower threshold for short expected answers)
     f1_threshold = 0.4 if len(expected.split()) <= 3 else 0.5
     if f1 >= f1_threshold:
         return {"correct": True, "method": "F1_THRESHOLD", "f1": f1,
@@ -559,8 +645,11 @@ def main():
                         help="Max questions per pipeline type")
     parser.add_argument("--types", type=str, default="standard,graph,quantitative,orchestrator",
                         help="Comma-separated pipeline types to test")
+    parser.add_argument("--dataset", type=str, default=None,
+                        choices=["phase-1", "phase-2", "all"],
+                        help="Dataset to evaluate: phase-1 (200q), phase-2 (1000q HF), all (1200q)")
     parser.add_argument("--include-1000", action="store_true",
-                        help="Include rag-1000 HuggingFace questions")
+                        help="[Legacy] Include HF-1000 questions (use --dataset all instead)")
     parser.add_argument("--reset", action="store_true",
                         help="Ignore dedup, re-test all questions")
     parser.add_argument("--push", action="store_true",
@@ -571,25 +660,27 @@ def main():
                         help="Description of what changed before this eval")
     args = parser.parse_args()
 
+    dataset_label = args.dataset or ("phase-1+2" if args.include_1000 else "phase-1")
+
     start_time = datetime.now()
     print("=" * 70)
     print("  COMPREHENSIVE RAG EVALUATION — Dashboard-Connected")
     print(f"  Started: {start_time.isoformat()}")
+    print(f"  Dataset: {dataset_label}")
     print(f"  Types: {args.types}")
-    print(f"  Include HF-1000: {args.include_1000}")
     print(f"  Reset dedup: {args.reset}")
     print("=" * 70)
 
     # Initialize dashboard with iteration metadata
     writer.init(
         status="running",
-        label=args.label or f"Eval {args.types}",
-        description=args.description or f"Types: {args.types}, Max: {args.max}, Reset: {args.reset}",
+        label=args.label or f"Eval {dataset_label} {args.types}",
+        description=args.description or f"Dataset: {dataset_label}, Types: {args.types}, Max: {args.max}, Reset: {args.reset}",
     )
 
     # Load questions
     print("\n  Loading questions...")
-    questions = load_questions(include_1000=args.include_1000)
+    questions = load_questions(include_1000=args.include_1000, dataset=args.dataset)
 
     # Filter to requested types
     requested_types = set(args.types.split(","))

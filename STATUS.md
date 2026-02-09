@@ -7,7 +7,15 @@
 
 ## Current State (Feb 8, 2026)
 
-### Pipeline Status (from latest eval)
+### Phase 2 Database: COMPLETE
+
+All Phase 2 database ingestion is done:
+- **Supabase**: 538 total rows (88 Phase 1 + 450 Phase 2: 200 finqa + 150 tatqa + 100 convfinqa)
+- **Neo4j**: 19,788 nodes (4,884 Phase 2 entities) + 21,625 relationships
+- **Pinecone**: 10,411 vectors (no changes needed)
+- **Dataset**: 1,000 Phase 2 questions in `datasets/phase-2/hf-1000.json`
+
+### Phase 1 Pipeline Status (from latest eval — gates NOT MET)
 
 | Pipeline | Accuracy | Target | Gap | Errors | Status |
 |----------|----------|--------|-----|--------|--------|
@@ -18,10 +26,61 @@
 | **Overall** | **67.7%** | **75%** | **-7.3pp** | — | **Phase 1 gate: NOT MET** |
 
 ### Key Numbers
-- 200 unique questions, 396 total test runs across 3 iterations
+- 200 unique Phase 1 questions, 396 total test runs across 3 iterations
+- 1,000 Phase 2 questions ready (500 graph + 500 quantitative)
 - 25 questions improving, 14 regressing, 161 stable
 - 17 flaky questions (inconsistent across runs)
-- 79 error trace files in `logs/errors/`
+- 80 error trace files in `logs/errors/`
+
+---
+
+## Next Steps (Priority Order)
+
+### P0 — Pass Phase 1 Gates
+
+#### Step 1: Set environment variables (CRITICAL BLOCKER)
+```bash
+export N8N_API_KEY="..."
+export OPENROUTER_API_KEY="..."
+export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
+export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
+export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
+export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
+export N8N_HOST="https://amoret.app.n8n.cloud"
+```
+
+#### Step 2: Deploy workflow improvements
+```bash
+cd ~/mon-ipad && git pull origin main
+python3 workflows/improved/apply.py --deploy
+```
+
+#### Step 3: Fast iteration test (10q/pipeline)
+```bash
+python3 eval/fast-iter.py --label "Iter 6: deploy apply.py P0 fixes"
+```
+
+#### Step 4: Full Phase 1 eval (200q)
+```bash
+python3 eval/run-eval-parallel.py --reset --label "Iter 6: P0 fixes deployed"
+```
+
+### P1 — Run Phase 2 Evaluation (1,000q)
+
+Once Phase 1 gates pass (or are close enough to proceed):
+
+```bash
+# Phase 2 fast iteration (10q/pipeline, graph + quant only)
+python3 eval/fast-iter.py --dataset phase-2 --label "Phase 2: baseline"
+
+# Phase 2 full eval (1,000q, graph + quant only)
+python3 eval/run-eval-parallel.py --dataset phase-2 --reset --label "Phase 2: baseline"
+```
+
+### P2 — Re-run Neo4j with --llm (when OpenRouter key renewed)
+```bash
+python3 db/populate/phase2_neo4j.py --reset --llm
+```
 
 ---
 
@@ -29,153 +88,98 @@
 
 ### Orchestrator (49.6% — 36 errors, CRITICAL)
 **Error breakdown**: 20 TIMEOUT + 16 EMPTY_RESPONSE
-- **Cascading timeouts**: Broadcasts to ALL 3 sub-pipelines, waits for slowest. Latency = max(std, graph, quant) + overhead
-- **Response Builder V9 crash**: Gets empty `task_results` from timed-out sub-workflows, returns nothing
+- **Cascading timeouts**: Broadcasts to ALL 3 sub-pipelines, waits for slowest
+- **Response Builder V9 crash**: Gets empty `task_results` from timed-out sub-workflows
 - **Query Router bug**: Leading space in `" direct_llm"` causes misrouting
 - **Cache Hit bug**: Compares against string `"Null"` instead of boolean check
-- **Fixes applied in apply.py**: 11 fixes (P0: Router, Cache, Response Builder, Task Planner timeout, continueOnFail, Intent Analyzer single-pipeline preference)
+- **Fixes in apply.py**: 11 fixes (P0: Router, Cache, Response Builder, continueOnFail, Intent Analyzer single-pipeline preference)
 
 ### Graph RAG (52% — 21 errors, HIGH PRIORITY)
-**All 21 errors are EMPTY_RESPONSE** (HTTP 200 with no data)
-- **Entity extraction failures**: HyDE extracts wrong/incomplete entity names → Neo4j lookup returns empty
-- **Missing entities**: Historical figures (Marie Curie, Einstein, Fleming, Turing, Pasteur) not matched
-- **Fixes applied in apply.py**: 7 fixes (P0: Fuzzy matching with Levenshtein, entity extraction rules, answer compression, no "insufficient context")
+**All 21 errors are EMPTY_RESPONSE**
+- **Entity extraction failures**: HyDE extracts wrong names → Neo4j lookup empty
+- **Missing entities**: Historical figures not matched
+- **Fixes in apply.py**: 7 fixes (P0: Fuzzy matching with Levenshtein, entity extraction rules, answer compression)
 
 ### Quantitative RAG (80% — 17 errors)
 **Error breakdown**: 10 NETWORK (401 Tunnel auth) + 7 SERVER_ERROR (SQL failures)
-- **Network errors**: Supabase proxy auth failures (401 Unauthorized tunnel)
-- **SQL edge cases**: Multi-table JOINs, period filtering confusion (FY vs Q1-Q4), entity name mismatch
-- **Fixes applied in apply.py**: 8 fixes (P0: SQL hints, ILIKE, zero-row detection, answer compression)
+- **SQL edge cases**: Multi-table JOINs, period filtering, entity name mismatch
+- **Fixes in apply.py**: 8 fixes (P0: SQL hints, ILIKE, zero-row detection, Phase 2 table support)
 
 ### Standard RAG (82.6% — 5 errors)
 **All 5 errors are SERVER_ERROR**: "No item to return" from Pinecone
-- **Verbose answers**: Low F1 (mean 0.16) even on passing answers
-- **Missing topics**: 5 questions on topics not in Pinecone (geography, entertainment, science)
-- **Fixes applied in apply.py**: 6 fixes (P0: Answer compression prompt, topK increase, HyDE improvement)
+- **Verbose answers**: Low F1 even on passing answers
+- **Fixes in apply.py**: 6 fixes (P0: Answer compression, topK increase, HyDE improvement)
 
 ---
 
-## Improvements Applied (Iteration 5)
+## Improvements Ready to Deploy
 
-### Code improvements (ready to deploy)
+### Workflow patches (`workflows/improved/apply.py`)
+- Orchestrator: 11 fixes targeting timeout cascade, routing bugs, Response Builder
+- Graph RAG: 7 fixes for entity extraction, fuzzy matching, answer conciseness
+- Standard RAG: 6 fixes for answer compression, topK, HyDE prompts
+- Quantitative: 8 fixes for SQL generation, ILIKE, zero-row detection + Phase 2 tables
+- Supports: `--local` (patch source files) + `--deploy` (push to n8n)
 
-1. **`workflows/improved/apply.py`** — Comprehensive workflow patcher
-   - Orchestrator: 11 fixes targeting timeout cascade, routing bugs, Response Builder
-   - Graph RAG: 7 fixes for entity extraction, fuzzy matching, answer conciseness
-   - Standard RAG: 6 fixes for answer compression, topK, HyDE prompts
-   - Quantitative: 8 fixes for SQL generation, ILIKE, zero-row detection
-   - Supports: `--local` (patch source files) + `--deploy` (push to n8n)
+### Eval scripts
+- `--dataset` flag: `phase-1` (200q), `phase-2` (1,000q), `all` (1,200q)
+- Auto-adjusts pipeline types for Phase 2 (graph + quantitative only)
+- Improved scoring: percentage matching, magnitude-aware numeric matching
+- Phase 2 questions skip empty expected_answer entries
 
-2. **`eval/run-eval.py`** — Improved answer evaluation
-   - Added `exact_match()` strategy (highest confidence)
-   - Added `normalize_text()` for answer comparison (removes prefixes/punctuation)
-   - Lowered F1 threshold for short expected answers (0.5 → 0.4)
-   - Added retry logic for empty responses (retry once before marking as error)
-   - Improved answer extraction (nested task_results, heuristic fallback)
-
-3. **`eval/live-writer.py`** — Better error classification
-   - Added CREDITS_EXHAUSTED error type (catches "credits", "quota", "billing")
-   - Added "tunnel" to NETWORK classification
-
-4. **`eval/quick-test.py`** — Better smoke tests
-   - Added actual expected values for quantitative tests
-   - Increased timeout to 60s (90s for orchestrator)
-
-5. **`eval/analyzer.py`** — Improved analysis
-   - Tighter plateau detection threshold (2pp → 1pp)
-   - Flaky detection from 2+ runs (was 3+)
-
----
-
-## Next Steps (Priority Order)
-
-### Before running eval:
-1. **Set environment variables** (CRITICAL BLOCKER):
-   ```bash
-   export N8N_API_KEY="..."
-   export OPENROUTER_API_KEY="..."
-   export SUPABASE_PASSWORD="..."
-   export PINECONE_API_KEY="..."
-   export NEO4J_PASSWORD="..."
-   export N8N_HOST="https://amoret.app.n8n.cloud"
-   ```
-
-2. **Deploy workflow improvements**:
-   ```bash
-   python workflows/improved/apply.py --deploy
-   # Or with local source files:
-   python workflows/improved/apply.py --local --deploy
-   ```
-
-3. **Smoke test after deployment**:
-   ```bash
-   python eval/quick-test.py --questions 5
-   ```
-
-4. **Run full eval with reset**:
-   ```bash
-   python eval/run-eval.py --reset --label "Iter 5: comprehensive fixes" \
-     --description "apply.py P0 fixes: Router space, Cache Hit, Response Builder null-safe, Intent single-pipeline, entity extraction rules, SQL hints, answer compression"
-   ```
-
-5. **Analyze results**:
-   ```bash
-   python eval/analyzer.py
-   ```
-
-### Expected impact:
+### Expected impact (Phase 1):
 | Pipeline | Current | Expected After Fixes | Reasoning |
 |---|---|---|---|
 | Standard | 82.6% | ~88% | Answer compression reduces verbosity → higher F1 |
 | Graph | 52.0% | ~65% | Fuzzy matching + entity rules fix 10-15 of 21 failures |
 | Quantitative | 80.0% | ~85% | ILIKE + SQL hints fix 3-5 of 7 SQL errors |
-| Orchestrator | 49.6% | ~68% | continueOnFail + null-safe Response Builder fix 15-20 of 36 errors |
+| Orchestrator | 49.6% | ~68% | continueOnFail + null-safe Response Builder fix 15-20 of 36 |
 | **Overall** | **67.7%** | **~77%** | **Above 75% Phase 1 gate** |
 
 ---
 
-## Iteration Cycle Protocol (Two-Phase)
+## Iteration Cycle Protocol
 
-Follow this for every iteration. See CLAUDE.md for detailed commands.
-
-### Phase A: Fast Iteration (10q/pipeline, ~2-3 min, parallel)
+### Phase A: Fast Iteration (10q/pipeline, parallel)
 ```
-A1: Sync workflows           → python workflows/sync.py
-A2: Smoke test                → python eval/quick-test.py --questions 5
-A3: Fast iteration test       → python eval/fast-iter.py --label "description"
-A4: Review results            → check logs/fast-iter/ and logs/pipeline-results/
-A5: If bad → fix in n8n → repeat from A1
+A1: Pull latest              → cd ~/mon-ipad && git pull origin main
+A2: Sync workflows           → python3 workflows/sync.py
+A3: Smoke test               → python3 eval/quick-test.py --questions 5
+A4: Fast iteration test      → python3 eval/fast-iter.py --label "description"
+A5: Review results           → check logs/fast-iter/ and logs/pipeline-results/
+A6: If bad → fix in n8n → repeat from A1
     If good → proceed to Phase B
-A6: Commit results            → git add docs/ logs/ && git commit
+A7: Commit results           → git add docs/ logs/ && git commit && git push origin main
 ```
 
-### Phase B: Full Evaluation (200q, parallel, ~15-20 min)
+### Phase B: Full Evaluation (200q or 1000q, parallel)
 ```
-B1: Run parallel eval         → python eval/run-eval-parallel.py --reset --label "..."
-B2: Analyze results           → python eval/analyzer.py
-B3: Commit + push             → git add docs/ workflows/ logs/ && git commit && git push
-B4: Back to Phase A for next improvement
+B1: Phase 1 eval             → python3 eval/run-eval-parallel.py --reset --label "..."
+B2: Phase 2 eval             → python3 eval/run-eval-parallel.py --dataset phase-2 --reset --label "..."
+B3: Analyze results          → python3 eval/analyzer.py
+B4: Commit + push            → git add docs/ workflows/ logs/ && git commit && git push origin main
+B5: Back to Phase A for next improvement
 ```
 
 **Rule**: ONE change per iteration. Don't change multiple things at once.
 
 ### Key Scripts
-| Script | Purpose | Speed |
+| Script | Purpose | Flags |
 |--------|---------|-------|
-| `eval/fast-iter.py` | Quick validation, 10q/pipeline, parallel | ~2-3 min |
-| `eval/run-eval-parallel.py` | Full 200q eval, all pipelines parallel | ~15-20 min |
-| `eval/run-eval.py` | Sequential eval (legacy/debug) | ~60-80 min |
-| `eval/quick-test.py` | Smoke test, 3-5 known-good questions | ~1 min |
+| `eval/fast-iter.py` | Quick validation, 10q/pipeline, parallel | `--dataset phase-2` |
+| `eval/run-eval-parallel.py` | Full eval, all pipelines parallel | `--dataset phase-2` |
+| `eval/run-eval.py` | Sequential eval (legacy/debug) | `--dataset phase-2` |
+| `eval/quick-test.py` | Smoke test, 3-5 known-good questions | |
+| `workflows/improved/apply.py` | Deploy workflow improvements | `--deploy` |
 
 ---
 
 ## Critical Blockers
 
-1. **Environment variables not set** — Cannot run any eval scripts or deploy to n8n
-2. **OpenRouter credits exhausted** — LLM calls (for orchestrator + graph) will fail
+1. **Phase 1 gates not met** — Need to deploy fixes and iterate before Phase 2 eval
+2. **OpenRouter credits exhausted** — Need new key for orchestrator + graph LLM calls
 3. **Orchestrator timeouts** — Sub-workflow chaining exceeds 60s
 4. **Graph entity extraction** — Many entities not found in Neo4j
-5. **Quantitative network errors** — Supabase 401 Tunnel auth failures
 
 ---
 
@@ -187,17 +191,19 @@ B4: Back to Phase A for next improvement
 | This file | `STATUS.md` |
 | Dashboard | `docs/index.html` |
 | Eval data | `docs/data.json` |
-| **Fast iteration (10q, parallel)** | **`eval/fast-iter.py`** |
-| **Parallel eval (200q)** | **`eval/run-eval-parallel.py`** |
+| **Fast iteration** | **`eval/fast-iter.py`** |
+| **Parallel eval** | **`eval/run-eval-parallel.py`** |
 | Sequential eval (legacy) | `eval/run-eval.py` |
 | Smoke test | `eval/quick-test.py` |
 | Analyze | `eval/analyzer.py` |
 | Live writer (thread-safe) | `eval/live-writer.py` |
-| Iterate script | `eval/iterate.sh` |
 | **Apply improvements** | **`workflows/improved/apply.py`** |
 | Sync workflows | `workflows/sync.py` |
-| Deploy to n8n | `workflows/deploy/deploy.py` |
-| Populate DBs | `db/populate/all.py` |
+| Phase 1 questions | `datasets/phase-1/*.json` |
+| **Phase 2 questions** | **`datasets/phase-2/hf-1000.json`** |
+| Phase 2 readiness | `db/readiness/phase-2.json` |
+| Phase 2 Supabase script | `db/populate/phase2_supabase.py` |
+| Phase 2 Neo4j script | `db/populate/phase2_neo4j.py` |
 | Phase strategy | `phases/overview.md` |
 | Dataset manifest | `datasets/manifest.json` |
 | Error traces | `logs/errors/` |
@@ -210,11 +216,11 @@ B4: Back to Phase A for next improvement
 ## Environment Variables
 
 ```bash
-export SUPABASE_PASSWORD="..."
-export PINECONE_API_KEY="..."
+export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
+export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
-export NEO4J_PASSWORD="..."
-export OPENROUTER_API_KEY="..."
+export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
+export OPENROUTER_API_KEY="sk-or-v1-..."  # EXPIRED — need new key
 export N8N_API_KEY="..."
 export N8N_HOST="https://amoret.app.n8n.cloud"
 ```

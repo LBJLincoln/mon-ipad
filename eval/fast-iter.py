@@ -278,6 +278,9 @@ def main():
                         help="Questions per pipeline (default: 10)")
     parser.add_argument("--pipelines", type=str, default="standard,graph,quantitative,orchestrator",
                         help="Comma-separated pipelines to test")
+    parser.add_argument("--dataset", type=str, default=None,
+                        choices=["phase-1", "phase-2", "all"],
+                        help="Dataset: phase-1 (200q), phase-2 (1000q HF), all (1200q)")
     parser.add_argument("--label", type=str, default="",
                         help="Label for this fast iteration run")
     parser.add_argument("--only-failing", action="store_true",
@@ -288,10 +291,17 @@ def main():
 
     start_time = datetime.now()
     pipelines = [p.strip() for p in args.pipelines.split(",")]
+    dataset_label = args.dataset or "phase-1"
+
+    # Auto-adjust pipelines for Phase 2 (only graph + quantitative)
+    if args.dataset == "phase-2" and args.pipelines == "standard,graph,quantitative,orchestrator":
+        pipelines = ["graph", "quantitative"]
+        print("  NOTE: Phase 2 only tests graph + quantitative. Auto-adjusted --pipelines.")
 
     print("=" * 70)
     print("  FAST ITERATION — Quick Pipeline Validation")
     print(f"  Started: {start_time.isoformat()}")
+    print(f"  Dataset: {dataset_label}")
     print(f"  Pipelines: {', '.join(pipelines)}")
     print(f"  Questions per pipeline: {args.questions}")
     print(f"  Only failing: {args.only_failing}")
@@ -302,13 +312,13 @@ def main():
     # Init writer for this fast-iter session
     writer.init(
         status="running",
-        label=args.label or f"Fast-iter {args.questions}q x {len(pipelines)} pipes",
-        description=f"Fast iteration: {args.questions}q/pipeline, parallel",
+        label=args.label or f"Fast-iter {dataset_label} {args.questions}q x {len(pipelines)} pipes",
+        description=f"Fast iteration: {args.questions}q/pipeline, parallel, dataset={dataset_label}",
     )
 
     # Load questions
     print("\n  Loading questions...")
-    all_questions = load_questions()
+    all_questions = load_questions(dataset=args.dataset)
 
     # Select strategic question mix per pipeline
     selected = {}
