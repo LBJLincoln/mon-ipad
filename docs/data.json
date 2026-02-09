@@ -1,15 +1,15 @@
 {
   "meta": {
     "version": "2.0",
-    "generated_at": "2026-02-09T03:09:08.150285Z",
-    "status": "running",
+    "generated_at": "2026-02-09T10:38:05.347947Z",
+    "status": "complete",
     "project": "Multi-RAG Orchestrator SOTA 2026",
     "phase": "Phase 1 — Baseline (200q)",
     "total_unique_questions": 208,
-    "total_test_runs": 438,
-    "total_iterations": 8,
+    "total_test_runs": 518,
+    "total_iterations": 9,
     "total_cost_usd": 0,
-    "current_session": "2026-02-09T01-32-12"
+    "current_session": "2026-02-09T10-24-54"
   },
   "iterations": [
     {
@@ -5995,6 +5995,578 @@
           "timestamp": "2026-02-09T01:33:04.686837Z"
         }
       ]
+    },
+    {
+      "id": "iter-2026-02-09T10-24-54",
+      "number": 9,
+      "timestamp_start": "2026-02-09T10:24:54.784736Z",
+      "timestamp_end": "2026-02-09T10:38:05.347931Z",
+      "label": "Iter 7: new API key + continueOnFail fixes",
+      "description": "Fast iteration: 10q/pipeline, parallel, dataset=phase-1",
+      "changes_applied": [],
+      "results_summary": {
+        "standard": {
+          "tested": 10,
+          "correct": 10,
+          "errors": 0,
+          "accuracy_pct": 100.0,
+          "avg_latency_ms": 9757,
+          "p95_latency_ms": 12164,
+          "avg_f1": 0.3627
+        },
+        "graph": {
+          "tested": 10,
+          "correct": 8,
+          "errors": 0,
+          "accuracy_pct": 80.0,
+          "avg_latency_ms": 15009,
+          "p95_latency_ms": 22827,
+          "avg_f1": 0.686
+        },
+        "quantitative": {
+          "tested": 10,
+          "correct": 10,
+          "errors": 0,
+          "accuracy_pct": 100.0,
+          "avg_latency_ms": 12117,
+          "p95_latency_ms": 16989,
+          "avg_f1": 0.1255
+        },
+        "orchestrator": {
+          "tested": 10,
+          "correct": 9,
+          "errors": 1,
+          "accuracy_pct": 90.0,
+          "avg_latency_ms": 35952,
+          "p95_latency_ms": 55030,
+          "avg_f1": 0.2893
+        }
+      },
+      "total_tested": 40,
+      "total_correct": 37,
+      "overall_accuracy_pct": 92.5,
+      "questions": [
+        {
+          "id": "std-01",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.3333,
+          "latency_ms": 9700,
+          "answer": "Normandy is located in France.",
+          "expected": "France",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:04.552682Z"
+        },
+        {
+          "id": "graph-01",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.5455,
+          "latency_ms": 13374,
+          "answer": "Marie Curie won two Nobel Prizes in different scientific fields.",
+          "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry, connected to Nobel Foundation",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:08.226926Z"
+        },
+        {
+          "id": "std-02",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.3333,
+          "latency_ms": 6962,
+          "answer": "The first season of SpongeBob SquarePants aired from May 1, 1999 to April 8, 2000.",
+          "expected": "May 1, 1999",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:11.577294Z"
+        },
+        {
+          "id": "quant-01",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 16989,
+          "answer": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
+          "expected": "6745000000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:11.843135Z"
+        },
+        {
+          "id": "std-03",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.2857,
+          "latency_ms": 8390,
+          "answer": "Tokyo is the capital of Japan.",
+          "expected": "Tokyo",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:20.032704Z"
+        },
+        {
+          "id": "graph-02",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 11884,
+          "answer": "Albert Einstein",
+          "expected": "Albert Einstein",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:20.170331Z"
+        },
+        {
+          "id": "quant-02",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 9763,
+          "answer": "GreenEnergy Corp's net income in 2023 was $664,400,000.",
+          "expected": "664400000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:21.667763Z"
+        },
+        {
+          "id": "std-04",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 9514,
+          "answer": "William Shakespeare wrote Romeo and Juliet.",
+          "expected": "William Shakespeare",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:29.613084Z"
+        },
+        {
+          "id": "quant-03",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 9672,
+          "answer": "The revenue of HealthPlus Labs in Q4 2023 was $322,560,000.",
+          "expected": "322560000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:31.405099Z"
+        },
+        {
+          "id": "graph-03",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 15060,
+          "answer": "Penicillin",
+          "expected": "Penicillin",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:35.297753Z"
+        },
+        {
+          "id": "std-05",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.4286,
+          "latency_ms": 11355,
+          "answer": "Penicillin is an antibiotic derived from the Penicillium fungus, discovered by Alexander Fleming in 1928, that revolutionized medicine by effectively treating bacterial infections.",
+          "expected": "An antibiotic discovered by Alexander Fleming",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:41.030548Z"
+        },
+        {
+          "id": "quant-04",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.1176,
+          "latency_ms": 13999,
+          "answer": "TechVision Inc had a gross profit of $4,586,600,000 in FY 2023, while GreenEnergy Corp had a gross profit of $1,715,000,000 in the same period. TechVision Inc's gross profit was approximately 2.67 times higher than GreenEnergy Corp's.",
+          "expected": "TechVision: 4586600000, GreenEnergy: 1715000000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:45.469927Z"
+        },
+        {
+          "id": "graph-04",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 13143,
+          "answer": "Penicillin protects against bacterial infections.",
+          "expected": "Tuberculosis",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:48.503917Z"
+        },
+        {
+          "id": "orch-01",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.3846,
+          "latency_ms": 55030,
+          "answer": "TechVision Inc's revenue for the year 2023 is $6,745,000,000.00.",
+          "expected": "TechVision Inc revenue $6.745B in 2023; Albert Einstein created Theory of Relativity",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:49.890094Z"
+        },
+        {
+          "id": "std-07",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.25,
+          "latency_ms": 10040,
+          "answer": "The Pacific Ocean is the largest ocean on Earth, covering approximately 63.8 million square miles.",
+          "expected": "Pacific Ocean",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:51.141208Z"
+        },
+        {
+          "id": "quant-05",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 12042,
+          "answer": "TechVision Inc's R&D spending in 2023 varied across different financial records, with the following amounts reported:\n\n1. $1,349,000,000.00\n2. $310,390,000.00\n3. $323,880,000.00\n4. $344,350,000.00\n5. $370,300,000.00\n\nThe query returned multiple records, indicating that TechVision Inc's R&D spending was reported differently across various financial statements or periods within 2023. The highest reported R&D spending was $1,349,000,000.00, while the lowest was $310,390,000.00.",
+          "expected": "1349000000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:57.578677Z"
+        },
+        {
+          "id": "std-08",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.6,
+          "latency_ms": 8420,
+          "answer": "Leonardo da Vinci painted the Mona Lisa.",
+          "expected": "Leonardo da Vinci",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:25:59.626162Z"
+        },
+        {
+          "id": "graph-05",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.3636,
+          "latency_ms": 12198,
+          "answer": "Sherborne School, King's College Cambridge, Princeton University",
+          "expected": "University of Cambridge",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:26:00.768917Z"
+        },
+        {
+          "id": "quant-06",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.1333,
+          "latency_ms": 8241,
+          "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was 6.7100.",
+          "expected": "6.71",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:26:05.889136Z"
+        },
+        {
+          "id": "std-09",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.3333,
+          "latency_ms": 11606,
+          "answer": "Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to produce oxygen and energy in the form of sugar.",
+          "expected": "Process by which plants convert light energy into chemical energy",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:26:11.297281Z"
+        },
+        {
+          "id": "orch-02",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 25030,
+          "answer": "Alexander Fleming discovered penicillin in 1928.",
+          "expected": "Alexander Fleming",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:26:14.986324Z"
+        },
+        {
+          "id": "graph-08",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.3571,
+          "latency_ms": 15115,
+          "answer": "The World Wide Web is a system of interlinked hypertext documents accessed via the Internet. It was created at CERN in Geneva, Switzerland.",
+          "expected": "Created at CERN, extends the Internet",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:26:15.948189Z"
+        },
+        {
+          "id": "quant-07",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 14380,
+          "answer": "TechVision Inc had $2,200,000,000 in cash and equivalents at the end of 2023.",
+          "expected": "2200000000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:26:20.334707Z"
+        },
+        {
+          "id": "std-10",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.381,
+          "latency_ms": 9423,
+          "answer": "The speed of light in a vacuum is exactly 299,792,458 meters per second.",
+          "expected": "approximately 299,792 kilometers per second",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:26:20.784486Z"
+        },
+        {
+          "id": "graph-10",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 8064,
+          "answer": "Paris",
+          "expected": "Paris",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:26:24.077713Z"
+        },
+        {
+          "id": "std-11",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.1818,
+          "latency_ms": 12164,
+          "answer": "Sir Isaac Newton discovered gravity in the late 17th century, famously inspired by observing an apple fall from a tree.",
+          "expected": "Isaac Newton",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:26:33.014090Z"
+        },
+        {
+          "id": "graph-12",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 22827,
+          "answer": "Infectious diseases, non-communicable diseases, emerging health threats, mental health disorders, neurological conditions, substance abuse",
+          "expected": "COVID-19, Malaria",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:26:46.974935Z"
+        },
+        {
+          "id": "graph-13",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.2222,
+          "latency_ms": 18506,
+          "answer": "NASA has a long history of utilizing nuclear energy for space exploration, primarily through radioisotope thermoelectric generators (RTGs) and, more recently, nuclear fission reactors.",
+          "expected": "NASA utilizes Nuclear Energy",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:27:05.546448Z"
+        },
+        {
+          "id": "graph-14",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 19922,
+          "answer": "Paris",
+          "expected": "Paris",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:27:25.542552Z"
+        },
+        {
+          "id": "quant-08",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 10573,
+          "answer": "GreenEnergy Corp's total assets at the end of fiscal year 2023 were $4,460,000,000.00.",
+          "expected": "4460000000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:27:33.017053Z"
+        },
+        {
+          "id": "quant-09",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 11777,
+          "answer": "The total stockholders' equity for HealthPlus Labs at the end of 2023 was $795,000,000.",
+          "expected": "795000000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:27:44.863435Z"
+        },
+        {
+          "id": "orch-03",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 31120,
+          "answer": "Marie Curie was the first woman to win a Nobel Prize and remains the only person to have won Nobel Prizes in two different scientific fields (Physics in 1903 and Chemistry in 1911).",
+          "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:28:18.211275Z"
+        },
+        {
+          "id": "orch-04",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 30232,
+          "answer": "The Q4 2023 revenue figure for GreenEnergy Corp is $1,021,500,000.00.",
+          "expected": "1021500000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:28:48.512272Z"
+        },
+        {
+          "id": "quant-10",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 13735,
+          "answer": "TechVision Inc's operating income in Q3 2023 was $516,525,000.",
+          "expected": "516525000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:29:00.704027Z"
+        },
+        {
+          "id": "orch-05",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "answer": "",
+          "expected": "Newton, Darwin, Turing studied at Cambridge; TechVision has ~47 active employees",
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-09T10:35:02.765420Z"
+        },
+        {
+          "id": "orch-09",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.3256,
+          "latency_ms": 31496,
+          "answer": "Machine learning is a subset of artificial intelligence that enables computer systems to learn and improve from experience without being explicitly programmed, by identifying patterns in data and making predictions or decisions based on those patterns.",
+          "expected": "A subset of AI where systems learn from data",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:35:34.332629Z"
+        },
+        {
+          "id": "orch-11",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 30532,
+          "answer": "The net income for TechVision Inc in fiscal year 2022 is $1,337,550,000.00.",
+          "expected": "1337550000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:36:04.933083Z"
+        },
+        {
+          "id": "orch-13",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.0588,
+          "latency_ms": 47867,
+          "answer": "NASA studies a wide range of research areas and topics including Earth science, planetary science, astrophysics, heliophysics, space technology, human exploration and operations, and aeronautics.",
+          "expected": "NASA uses Nuclear Energy; GreenEnergy Corp had $900M cash at end 2023",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:36:52.872278Z"
+        },
+        {
+          "id": "orch-14",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.087,
+          "latency_ms": 35580,
+          "answer": "The boiling point of water is 100°C (212°F) at standard atmospheric pressure (1 atm or 101.325 kPa).",
+          "expected": "100 degrees Celsius",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:37:28.524099Z"
+        },
+        {
+          "id": "orch-15",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.169,
+          "latency_ms": 36686,
+          "answer": "The SQL query successfully retrieved the operating income for three companies in Q1 2023. The results show:\n\n1. GreenEnergy Corp: $184,690,000\n2. HealthPlus Labs: $48,153,000\n3. TechVision Inc: $465,908,000\n\nThese companies are part of the 'benchmark' tenant group, and their operating income figures are for the first quarter of the 2023 fiscal year. The data is ordered alphabetically by company name and limited to 1000 rows, though only 3 rows were returned in this case.",
+          "expected": "TechVision $465.9M, GreenEnergy $184.7M, HealthPlus $48.2M",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T10:38:05.276686Z"
+        }
+      ]
     }
   ],
   "question_registry": {
@@ -6079,15 +6651,27 @@
           "error_type": null,
           "answer": "response is not defined [line 3]",
           "timestamp": "2026-02-09T01:56:27.944506Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.3333,
+          "latency_ms": 9700,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Normandy is located in France.",
+          "timestamp": "2026-02-09T10:25:04.552747Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 4,
-      "pass_rate": 0.667,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T01:56:27.944506Z",
-      "best_f1": 0.2222,
-      "trend": "regressing"
+      "total_runs": 7,
+      "pass_count": 5,
+      "pass_rate": 0.714,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:04.552747Z",
+      "best_f1": 0.3333,
+      "trend": "stable"
     },
     "std-02": {
       "id": "std-02",
@@ -6170,15 +6754,27 @@
           "error_type": null,
           "answer": "response is not defined [line 3]",
           "timestamp": "2026-02-09T01:56:47.003061Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.3333,
+          "latency_ms": 6962,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The first season of SpongeBob SquarePants aired from May 1, 1999 to April 8, 2000.",
+          "timestamp": "2026-02-09T10:25:11.577348Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 4,
-      "pass_rate": 0.667,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T01:56:47.003061Z",
-      "best_f1": 0.1277,
-      "trend": "regressing"
+      "total_runs": 7,
+      "pass_count": 5,
+      "pass_rate": 0.714,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:11.577348Z",
+      "best_f1": 0.3333,
+      "trend": "stable"
     },
     "std-03": {
       "id": "std-03",
@@ -6261,15 +6857,27 @@
           "error_type": null,
           "answer": "response is not defined [line 3]",
           "timestamp": "2026-02-09T01:57:06.348672Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.2857,
+          "latency_ms": 8390,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Tokyo is the capital of Japan.",
+          "timestamp": "2026-02-09T10:25:20.032770Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 4,
-      "pass_rate": 0.667,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T01:57:06.348672Z",
-      "best_f1": 0.25,
-      "trend": "regressing"
+      "total_runs": 7,
+      "pass_count": 5,
+      "pass_rate": 0.714,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:20.032770Z",
+      "best_f1": 0.2857,
+      "trend": "stable"
     },
     "std-04": {
       "id": "std-04",
@@ -6352,15 +6960,27 @@
           "error_type": null,
           "answer": "response is not defined [line 3]",
           "timestamp": "2026-02-09T01:57:15.551446Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 9514,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "William Shakespeare wrote Romeo and Juliet.",
+          "timestamp": "2026-02-09T10:25:29.613143Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 4,
-      "pass_rate": 0.667,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T01:57:15.551446Z",
-      "best_f1": 0.3333,
-      "trend": "regressing"
+      "total_runs": 7,
+      "pass_count": 5,
+      "pass_rate": 0.714,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:29.613143Z",
+      "best_f1": 0.5,
+      "trend": "stable"
     },
     "std-05": {
       "id": "std-05",
@@ -6443,15 +7063,27 @@
           "error_type": null,
           "answer": "response is not defined [line 3]",
           "timestamp": "2026-02-09T01:57:25.113939Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.4286,
+          "latency_ms": 11355,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Penicillin is an antibiotic derived from the Penicillium fungus, discovered by Alexander Fleming in 1928, that revolutionized medicine by effectively treating bacterial infections.",
+          "timestamp": "2026-02-09T10:25:41.030615Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 4,
-      "pass_rate": 0.667,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T01:57:25.113939Z",
-      "best_f1": 0.2273,
-      "trend": "regressing"
+      "total_runs": 7,
+      "pass_count": 5,
+      "pass_rate": 0.714,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:41.030615Z",
+      "best_f1": 0.4286,
+      "trend": "stable"
     },
     "std-06": {
       "id": "std-06",
@@ -6589,13 +7221,25 @@
           "error_type": null,
           "answer": "The largest ocean on Earth is the Pacific Ocean. It covers an area of approximately 165.25 million square kilometers (63.8 million square miles), which is about one-third of the Earth's total surface area and larger than all of the Earth's land area combined [1].\n\nThe Pacific Ocean extends from the Arctic in the north to the Southern Ocean in the south, bounded by Asia and Australia in the west, and the Americas in the east. It contains the deepest point on Earth, the Challenger Deep in the Mari",
           "timestamp": "2026-02-08T20:41:47.884669Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.25,
+          "latency_ms": 10040,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Pacific Ocean is the largest ocean on Earth, covering approximately 63.8 million square miles.",
+          "timestamp": "2026-02-09T10:25:51.141268Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T20:41:47.884669Z",
+      "last_tested": "2026-02-09T10:25:51.141268Z",
       "best_f1": 0.3636,
       "trend": "stable"
     },
@@ -6656,14 +7300,26 @@
           "error_type": null,
           "answer": "The Mona Lisa was painted by the Italian Renaissance artist Leonardo da Vinci [1]. This iconic portrait, also known as La Gioconda, was created between 1503 and 1519. Leonardo da Vinci, born in 1452 in Vinci, Italy, was a polymath who excelled in various fields including painting, sculpture, architecture, science, music, mathematics, engineering, literature, anatomy, geology, astronomy, botany, writing, history, and cartography [2].\n\nThe Mona Lisa is considered one of the most famous and enigmat",
           "timestamp": "2026-02-08T20:42:32.574947Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.6,
+          "latency_ms": 8420,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Leonardo da Vinci painted the Mona Lisa.",
+          "timestamp": "2026-02-09T10:25:59.626233Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T20:42:32.574947Z",
-      "best_f1": 0.3158,
+      "last_tested": "2026-02-09T10:25:59.626233Z",
+      "best_f1": 0.6,
       "trend": "stable"
     },
     "std-09": {
@@ -6723,13 +7379,25 @@
           "error_type": null,
           "answer": "La photosynthèse est le processus par lequel les plantes vertes, les algues et certaines bactéries utilisent l'énergie lumineuse pour convertir le dioxyde de carbone (CO2) et l'eau (H2O) en glucose (C6H12O6) et en oxygène (O2). Ce processus se déroule principalement dans les chloroplastes des cellules végétales, où se trouvent les pigments chlorophylliens qui captent l'énergie lumineuse.\n\nL'équation chimique générale de la photosynthèse est :\n\n6 CO2 + 6 H2O + énergie lumineuse → C6H12O6 + 6 O2\n\n",
           "timestamp": "2026-02-08T20:43:07.417819Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.3333,
+          "latency_ms": 11606,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to produce oxygen and energy in the form of sugar.",
+          "timestamp": "2026-02-09T10:26:11.297353Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T20:43:07.417819Z",
+      "last_tested": "2026-02-09T10:26:11.297353Z",
       "best_f1": 0.3529,
       "trend": "stable"
     },
@@ -6790,14 +7458,26 @@
           "error_type": null,
           "answer": "La vitesse de la lumière dans le vide est une constante physique fondamentale, notée c, qui vaut exactement 299 792 458 mètres par seconde [1]. Cette valeur a été fixée par définition en 1983 par le Bureau international des poids et mesures (BIPM) [2].\n\nLa vitesse de la lumière est la vitesse limite ultime dans l'univers selon la théorie de la relativité restreinte d'Einstein. Rien ne peut voyager plus vite que la lumière dans le vide [3].\n\nDans d'autres milieux transparents comme l'eau ou le ve",
           "timestamp": "2026-02-08T20:43:45.883553Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.381,
+          "latency_ms": 9423,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The speed of light in a vacuum is exactly 299,792,458 meters per second.",
+          "timestamp": "2026-02-09T10:26:20.784543Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T20:43:45.883553Z",
-      "best_f1": 0.1333,
+      "last_tested": "2026-02-09T10:26:20.784543Z",
+      "best_f1": 0.381,
       "trend": "stable"
     },
     "std-11": {
@@ -6845,13 +7525,25 @@
           "error_type": null,
           "answer": "La découverte de la gravité est généralement attribuée à Sir Isaac Newton au 17ème siècle. Cependant, il est important de noter que l'idée de la gravité existait bien avant Newton, mais c'est lui qui a formulé la loi universelle de la gravitation.\n\nEn 1687, Newton publia son œuvre majeure \"Philosoph",
           "timestamp": "2026-02-08T04:38:04.270258Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.1818,
+          "latency_ms": 12164,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Sir Isaac Newton discovered gravity in the late 17th century, famously inspired by observing an apple fall from a tree.",
+          "timestamp": "2026-02-09T10:26:33.014162Z"
         }
       ],
-      "total_runs": 3,
-      "pass_count": 3,
+      "total_runs": 4,
+      "pass_count": 4,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T04:38:04.270258Z",
+      "last_tested": "2026-02-09T10:26:33.014162Z",
       "best_f1": 0.2667,
       "trend": "stable"
     },
@@ -7156,15 +7848,27 @@
           "error_type": null,
           "answer": "Unable to process query at this time. Please try again.",
           "timestamp": "2026-02-09T01:55:09.834348Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.5455,
+          "latency_ms": 13374,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Marie Curie won two Nobel Prizes in different scientific fields.",
+          "timestamp": "2026-02-09T10:25:08.226985Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 4,
-      "pass_rate": 0.667,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T01:55:09.834348Z",
+      "total_runs": 7,
+      "pass_count": 5,
+      "pass_rate": 0.714,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:08.226985Z",
       "best_f1": 0.6957,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "graph-02": {
       "id": "graph-02",
@@ -7247,15 +7951,27 @@
           "error_type": null,
           "answer": "Unable to process query at this time. Please try again.",
           "timestamp": "2026-02-09T01:55:11.077879Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 11884,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Albert Einstein",
+          "timestamp": "2026-02-09T10:25:20.170379Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 3,
-      "pass_rate": 0.5,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T01:55:11.077879Z",
+      "total_runs": 7,
+      "pass_count": 4,
+      "pass_rate": 0.571,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:20.170379Z",
       "best_f1": 1.0,
-      "trend": "stable"
+      "trend": "improving"
     },
     "graph-03": {
       "id": "graph-03",
@@ -7338,15 +8054,27 @@
           "error_type": null,
           "answer": "Unable to process query at this time. Please try again.",
           "timestamp": "2026-02-09T01:55:12.423455Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 15060,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Penicillin",
+          "timestamp": "2026-02-09T10:25:35.297807Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 4,
-      "pass_rate": 0.667,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T01:55:12.423455Z",
+      "total_runs": 7,
+      "pass_count": 5,
+      "pass_rate": 0.714,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:35.297807Z",
       "best_f1": 1.0,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "graph-04": {
       "id": "graph-04",
@@ -7429,13 +8157,25 @@
           "error_type": null,
           "answer": "Unable to process query at this time. Please try again.",
           "timestamp": "2026-02-09T01:55:13.728142Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 13143,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Penicillin protects against bacterial infections.",
+          "timestamp": "2026-02-09T10:25:48.503986Z"
         }
       ],
-      "total_runs": 6,
+      "total_runs": 7,
       "pass_count": 1,
-      "pass_rate": 0.167,
+      "pass_rate": 0.143,
       "current_status": "fail",
-      "last_tested": "2026-02-09T01:55:13.728142Z",
+      "last_tested": "2026-02-09T10:25:48.503986Z",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -7520,15 +8260,27 @@
           "error_type": null,
           "answer": "Unable to process query at this time. Please try again.",
           "timestamp": "2026-02-09T01:55:02.672726Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.3636,
+          "latency_ms": 12198,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Sherborne School, King's College Cambridge, Princeton University",
+          "timestamp": "2026-02-09T10:26:00.768979Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 1,
-      "pass_rate": 0.167,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T01:55:02.672726Z",
-      "best_f1": 0.1429,
-      "trend": "stable"
+      "total_runs": 7,
+      "pass_count": 2,
+      "pass_rate": 0.286,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:26:00.768979Z",
+      "best_f1": 0.3636,
+      "trend": "improving"
     },
     "graph-06": {
       "id": "graph-06",
@@ -7745,13 +8497,25 @@
           "error_type": null,
           "answer": "The World Wide Web is a system of interlinked hypertext documents accessed via the Internet. It was created at CERN.",
           "timestamp": "2026-02-08T20:47:13.357669Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.3571,
+          "latency_ms": 15115,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The World Wide Web is a system of interlinked hypertext documents accessed via the Internet. It was created at CERN in Geneva, Switzerland.",
+          "timestamp": "2026-02-09T10:26:15.948251Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 3,
-      "pass_rate": 0.75,
+      "total_runs": 5,
+      "pass_count": 4,
+      "pass_rate": 0.8,
       "current_status": "pass",
-      "last_tested": "2026-02-08T20:47:13.357669Z",
+      "last_tested": "2026-02-09T10:26:15.948251Z",
       "best_f1": 0.4,
       "trend": "stable"
     },
@@ -7891,13 +8655,25 @@
           "error_type": null,
           "answer": "Paris",
           "timestamp": "2026-02-08T20:48:06.242741Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 8064,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Paris",
+          "timestamp": "2026-02-09T10:26:24.077791Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T20:48:06.242741Z",
+      "last_tested": "2026-02-09T10:26:24.077791Z",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -7984,15 +8760,27 @@
           "error_type": "UNKNOWN",
           "answer": "",
           "timestamp": "2026-02-09T01:56:37.063481Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 16989,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
+          "timestamp": "2026-02-09T10:25:11.843177Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 5,
-      "pass_rate": 0.833,
-      "current_status": "error",
-      "last_tested": "2026-02-09T01:56:37.063481Z",
+      "total_runs": 7,
+      "pass_count": 6,
+      "pass_rate": 0.857,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:11.843177Z",
       "best_f1": 0.0,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "quant-02": {
       "id": "quant-02",
@@ -8077,15 +8865,27 @@
           "error_type": "UNKNOWN",
           "answer": "",
           "timestamp": "2026-02-09T01:56:52.866058Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 9763,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "GreenEnergy Corp's net income in 2023 was $664,400,000.",
+          "timestamp": "2026-02-09T10:25:21.667831Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 5,
-      "pass_rate": 0.833,
-      "current_status": "error",
-      "last_tested": "2026-02-09T01:56:52.866058Z",
+      "total_runs": 7,
+      "pass_count": 6,
+      "pass_rate": 0.857,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:21.667831Z",
       "best_f1": 0.0,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "quant-03": {
       "id": "quant-03",
@@ -8170,15 +8970,27 @@
           "error_type": "UNKNOWN",
           "answer": "",
           "timestamp": "2026-02-09T01:57:08.676751Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 9672,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The revenue of HealthPlus Labs in Q4 2023 was $322,560,000.",
+          "timestamp": "2026-02-09T10:25:31.405155Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 5,
-      "pass_rate": 0.833,
-      "current_status": "error",
-      "last_tested": "2026-02-09T01:57:08.676751Z",
+      "total_runs": 7,
+      "pass_count": 6,
+      "pass_rate": 0.857,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:31.405155Z",
       "best_f1": 0.0,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "quant-04": {
       "id": "quant-04",
@@ -8263,15 +9075,27 @@
           "error_type": "UNKNOWN",
           "answer": "",
           "timestamp": "2026-02-09T01:57:24.601216Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.1176,
+          "latency_ms": 13999,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc had a gross profit of $4,586,600,000 in FY 2023, while GreenEnergy Corp had a gross profit of $1,715,000,000 in the same period. TechVision Inc's gross profit was approximately 2.67 times higher than GreenEnergy Corp's.",
+          "timestamp": "2026-02-09T10:25:45.469983Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 5,
-      "pass_rate": 0.833,
-      "current_status": "error",
-      "last_tested": "2026-02-09T01:57:24.601216Z",
+      "total_runs": 7,
+      "pass_count": 6,
+      "pass_rate": 0.857,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:45.469983Z",
       "best_f1": 0.16,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "quant-05": {
       "id": "quant-05",
@@ -8356,15 +9180,27 @@
           "error_type": "UNKNOWN",
           "answer": "",
           "timestamp": "2026-02-09T01:57:40.500836Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 12042,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's R&D spending in 2023 varied across different financial records, with the following amounts reported:\n\n1. $1,349,000,000.00\n2. $310,390,000.00\n3. $323,880,000.00\n4. $344,350,000.00\n5. $370,300,000.00\n\nThe query returned multiple records, indicating that TechVision Inc's R&D spending was reported differently across various financial statements or periods within 2023. The highest reported R&D spending was $1,349,000,000.00, while the lowest was $310,390,000.00.",
+          "timestamp": "2026-02-09T10:25:57.578749Z"
         }
       ],
-      "total_runs": 6,
-      "pass_count": 5,
-      "pass_rate": 0.833,
-      "current_status": "error",
-      "last_tested": "2026-02-09T01:57:40.500836Z",
+      "total_runs": 7,
+      "pass_count": 6,
+      "pass_rate": 0.857,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:57.578749Z",
       "best_f1": 0.0,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "quant-06": {
       "id": "quant-06",
@@ -8425,13 +9261,25 @@
           "error_type": null,
           "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was 6.7100.",
           "timestamp": "2026-02-08T20:49:40.616149Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.1333,
+          "latency_ms": 8241,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was 6.7100.",
+          "timestamp": "2026-02-09T10:26:05.889201Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T20:49:40.616149Z",
+      "last_tested": "2026-02-09T10:26:05.889201Z",
       "best_f1": 0.1333,
       "trend": "stable"
     },
@@ -8494,13 +9342,25 @@
           "error_type": null,
           "answer": "TechVision Inc had $2,200,000,000 in cash and equivalents at the end of 2023.",
           "timestamp": "2026-02-08T20:49:55.021637Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 14380,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc had $2,200,000,000 in cash and equivalents at the end of 2023.",
+          "timestamp": "2026-02-09T10:26:20.334786Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T20:49:55.021637Z",
+      "last_tested": "2026-02-09T10:26:20.334786Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -8563,13 +9423,25 @@
           "error_type": null,
           "answer": "GreenEnergy Corp's total assets at the end of fiscal year 2023 were $4,460,000,000.00.",
           "timestamp": "2026-02-08T20:50:06.065197Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 10573,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "GreenEnergy Corp's total assets at the end of fiscal year 2023 were $4,460,000,000.00.",
+          "timestamp": "2026-02-09T10:27:33.017164Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T20:50:06.065197Z",
+      "last_tested": "2026-02-09T10:27:33.017164Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -8632,13 +9504,25 @@
           "error_type": null,
           "answer": "The total stockholders equity for HealthPlus Labs at the end of 2023 was $795,000,000.00.",
           "timestamp": "2026-02-08T20:50:16.652418Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 11777,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The total stockholders' equity for HealthPlus Labs at the end of 2023 was $795,000,000.",
+          "timestamp": "2026-02-09T10:27:44.863509Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T20:50:16.652418Z",
+      "last_tested": "2026-02-09T10:27:44.863509Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -8701,13 +9585,25 @@
           "error_type": null,
           "answer": "TechVision Inc's operating income in Q3 2023 was $516,525,000.",
           "timestamp": "2026-02-08T20:50:29.974134Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 13735,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's operating income in Q3 2023 was $516,525,000.",
+          "timestamp": "2026-02-09T10:29:00.704113Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 4,
+      "total_runs": 5,
+      "pass_count": 5,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T20:50:29.974134Z",
+      "last_tested": "2026-02-09T10:29:00.704113Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -9077,15 +9973,27 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-09T01:55:41.778195Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.3846,
+          "latency_ms": 55030,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's revenue for the year 2023 is $6,745,000,000.00.",
+          "timestamp": "2026-02-09T10:25:49.890159Z"
         }
       ],
-      "total_runs": 5,
-      "pass_count": 3,
-      "pass_rate": 0.6,
-      "current_status": "error",
-      "last_tested": "2026-02-09T01:55:41.778195Z",
+      "total_runs": 6,
+      "pass_count": 4,
+      "pass_rate": 0.667,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:25:49.890159Z",
       "best_f1": 0.5,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "orch-02": {
       "id": "orch-02",
@@ -9156,15 +10064,27 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-09T01:55:48.247503Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 25030,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Alexander Fleming discovered penicillin in 1928.",
+          "timestamp": "2026-02-09T10:26:14.986400Z"
         }
       ],
-      "total_runs": 5,
-      "pass_count": 3,
-      "pass_rate": 0.6,
-      "current_status": "error",
-      "last_tested": "2026-02-09T01:55:48.247503Z",
+      "total_runs": 6,
+      "pass_count": 4,
+      "pass_rate": 0.667,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:26:14.986400Z",
       "best_f1": 0.5,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "orch-04": {
       "id": "orch-04",
@@ -9235,15 +10155,27 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-09T01:55:54.747348Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 30232,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Q4 2023 revenue figure for GreenEnergy Corp is $1,021,500,000.00.",
+          "timestamp": "2026-02-09T10:28:48.512360Z"
         }
       ],
-      "total_runs": 5,
-      "pass_count": 4,
-      "pass_rate": 0.8,
-      "current_status": "error",
-      "last_tested": "2026-02-09T01:55:54.747348Z",
+      "total_runs": 6,
+      "pass_count": 5,
+      "pass_rate": 0.833,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:28:48.512360Z",
       "best_f1": 0.0,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "orch-06": {
       "id": "orch-06",
@@ -9443,13 +10375,25 @@
           "error_type": null,
           "answer": "Machine learning is a subset of artificial intelligence where systems learn from data to improve performance without explicit programming [1], [2]. Algorithms in machine learning identify patterns in data to make predictions or decisions [1].",
           "timestamp": "2026-02-08T01:53:24.340956Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.3256,
+          "latency_ms": 31496,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Machine learning is a subset of artificial intelligence that enables computer systems to learn and improve from experience without being explicitly programmed, by identifying patterns in data and making predictions or decisions based on those patterns.",
+          "timestamp": "2026-02-09T10:35:34.332718Z"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 2,
+      "total_runs": 3,
+      "pass_count": 3,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T01:53:24.340956Z",
+      "last_tested": "2026-02-09T10:35:34.332718Z",
       "best_f1": 0.4211,
       "trend": "stable"
     },
@@ -9541,13 +10485,25 @@
           "error_type": null,
           "answer": "The net income of TechVision Inc in fiscal year 2022 was **\\$1,337,550,000.00**.",
           "timestamp": "2026-02-08T02:02:49.433662Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 30532,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The net income for TechVision Inc in fiscal year 2022 is $1,337,550,000.00.",
+          "timestamp": "2026-02-09T10:36:04.933201Z"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 2,
+      "total_runs": 3,
+      "pass_count": 3,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T02:02:49.433662Z",
+      "last_tested": "2026-02-09T10:36:04.933201Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -9584,14 +10540,26 @@
           "error_type": null,
           "answer": "The provided document context does not explicitly list NASA's areas of study, but it contains facts related to aerodynamics (boomerangs in space, how airplanes fly) [1], [8], and space phenomena (crying in microgravity) [2], which are related to space exploration and science.",
           "timestamp": "2026-02-08T02:07:24.760769Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.0588,
+          "latency_ms": 47867,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NASA studies a wide range of research areas and topics including Earth science, planetary science, astrophysics, heliophysics, space technology, human exploration and operations, and aeronautics.",
+          "timestamp": "2026-02-09T10:36:52.872382Z"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 2,
+      "total_runs": 3,
+      "pass_count": 3,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T02:07:24.760769Z",
-      "best_f1": 0.05,
+      "last_tested": "2026-02-09T10:36:52.872382Z",
+      "best_f1": 0.0588,
       "trend": "stable"
     },
     "orch-14": {
@@ -9627,13 +10595,25 @@
           "error_type": null,
           "answer": "The boiling point of water is $100^\\circ\\text{C}$ at sea level [2] and $212^\\circ\\text{F}$ [1].",
           "timestamp": "2026-02-08T02:07:39.147876Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.087,
+          "latency_ms": 35580,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The boiling point of water is 100°C (212°F) at standard atmospheric pressure (1 atm or 101.325 kPa).",
+          "timestamp": "2026-02-09T10:37:28.524190Z"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 2,
+      "total_runs": 3,
+      "pass_count": 3,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T02:07:39.147876Z",
+      "last_tested": "2026-02-09T10:37:28.524190Z",
       "best_f1": 0.0952,
       "trend": "stable"
     },
@@ -9670,13 +10650,25 @@
           "error_type": null,
           "answer": "The operating income for the companies in Q1 2023, based on the executed query, is as follows:\n\n*   **TechVision Inc:** \\$465,908,000.00\n*   **GreenEnergy Corp:** \\$184,690,000.00\n*   **HealthPlus Labs:** \\$48,153,000.00",
           "timestamp": "2026-02-08T02:07:50.971419Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.169,
+          "latency_ms": 36686,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The SQL query successfully retrieved the operating income for three companies in Q1 2023. The results show:\n\n1. GreenEnergy Corp: $184,690,000\n2. HealthPlus Labs: $48,153,000\n3. TechVision Inc: $465,908,000\n\nThese companies are part of the 'benchmark' tenant group, and their operating income figures are for the first quarter of the 2023 fiscal year. The data is ordered alphabetically by company name and limited to 1000 rows, though only 3 rows were returned in this case.",
+          "timestamp": "2026-02-09T10:38:05.276766Z"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 2,
+      "total_runs": 3,
+      "pass_count": 3,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T02:07:50.971419Z",
+      "last_tested": "2026-02-09T10:38:05.276766Z",
       "best_f1": 0.3158,
       "trend": "stable"
     },
@@ -10870,15 +11862,27 @@
           "error_type": null,
           "answer": "The World Health Organization studies a wide range of diseases including infectious diseases like HIV/AIDS, tuberculosis, malaria, and COVID-19, as well as non-communicable diseases such as cancer, diabetes, and cardiovascular diseases.",
           "timestamp": "2026-02-08T05:06:11.560407Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 22827,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Infectious diseases, non-communicable diseases, emerging health threats, mental health disorders, neurological conditions, substance abuse",
+          "timestamp": "2026-02-09T10:26:46.975042Z"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 1,
-      "pass_rate": 0.5,
-      "current_status": "pass",
-      "last_tested": "2026-02-08T05:06:11.560407Z",
+      "pass_rate": 0.333,
+      "current_status": "fail",
+      "last_tested": "2026-02-09T10:26:46.975042Z",
       "best_f1": 0.1935,
-      "trend": "improving"
+      "trend": "stable"
     },
     "graph-13": {
       "id": "graph-13",
@@ -10913,13 +11917,25 @@
           "error_type": null,
           "answer": "NASA has used nuclear energy for space missions, particularly radioisotope thermoelectric generators (RTGs) to power spacecraft like Voyager and Curiosity rover, providing reliable long-term power in space where solar energy is insufficient.",
           "timestamp": "2026-02-08T05:06:38.346489Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.2222,
+          "latency_ms": 18506,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NASA has a long history of utilizing nuclear energy for space exploration, primarily through radioisotope thermoelectric generators (RTGs) and, more recently, nuclear fission reactors.",
+          "timestamp": "2026-02-09T10:27:05.546551Z"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 2,
+      "total_runs": 3,
+      "pass_count": 3,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:06:38.346489Z",
+      "last_tested": "2026-02-09T10:27:05.546551Z",
       "best_f1": 0.3529,
       "trend": "stable"
     },
@@ -10956,14 +11972,26 @@
           "error_type": null,
           "answer": "Paris is the city most connected to Napoleon Bonaparte, as it was his capital and the center of his empire.",
           "timestamp": "2026-02-08T05:06:59.495656Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 19922,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Paris",
+          "timestamp": "2026-02-09T10:27:25.542630Z"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 2,
+      "total_runs": 3,
+      "pass_count": 3,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-08T05:06:59.495656Z",
-      "best_f1": 0.2857,
+      "last_tested": "2026-02-09T10:27:25.542630Z",
+      "best_f1": 1.0,
       "trend": "stable"
     },
     "graph-15": {
@@ -14965,15 +15993,27 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-09T01:55:08.368136Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 31120,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Marie Curie was the first woman to win a Nobel Prize and remains the only person to have won Nobel Prizes in two different scientific fields (Physics in 1903 and Chemistry in 1911).",
+          "timestamp": "2026-02-09T10:28:18.211358Z"
         }
       ],
-      "total_runs": 4,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-09T01:55:08.368136Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 5,
+      "pass_count": 1,
+      "pass_rate": 0.2,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T10:28:18.211358Z",
+      "best_f1": 0.5,
+      "trend": "improving"
     },
     "orch-05": {
       "id": "orch-05",
@@ -15020,13 +16060,25 @@
           "error_type": "EMPTY_RESPONSE",
           "answer": "",
           "timestamp": "2026-02-09T01:55:15.046126Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-09T10:35:02.765523Z"
         }
       ],
-      "total_runs": 3,
+      "total_runs": 4,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "error",
-      "last_tested": "2026-02-09T01:55:15.046126Z",
+      "last_tested": "2026-02-09T10:35:02.765523Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -15825,12 +16877,12 @@
           "avg_latency_ms": 30648
         },
         {
-          "iteration_id": "iter-2026-02-09T01-54-59",
-          "iteration_number": 8,
-          "accuracy_pct": 0.0,
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "accuracy_pct": 100.0,
           "tested": 10,
           "errors": 0,
-          "avg_latency_ms": 6765
+          "avg_latency_ms": 9757
         }
       ]
     },
@@ -15877,6 +16929,14 @@
           "tested": 5,
           "errors": 0,
           "avg_latency_ms": 8137
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "accuracy_pct": 80.0,
+          "tested": 10,
+          "errors": 0,
+          "avg_latency_ms": 15009
         }
       ]
     },
@@ -15923,6 +16983,14 @@
           "tested": 3,
           "errors": 0,
           "avg_latency_ms": 14225
+        },
+        {
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "accuracy_pct": 100.0,
+          "tested": 10,
+          "errors": 0,
+          "avg_latency_ms": 12117
         }
       ]
     },
@@ -15963,12 +17031,12 @@
           "avg_latency_ms": 66755
         },
         {
-          "iteration_id": "iter-2026-02-09T01-54-59",
-          "iteration_number": 8,
-          "accuracy_pct": 0.0,
+          "iteration_id": "iter-2026-02-09T10-24-54",
+          "iteration_number": 9,
+          "accuracy_pct": 90.0,
           "tested": 10,
-          "errors": 10,
-          "avg_latency_ms": 816
+          "errors": 1,
+          "avg_latency_ms": 35952
         }
       ]
     }
@@ -16552,787 +17620,6 @@
     }
   ],
   "execution_logs": [
-    {
-      "timestamp": "2026-02-08T04:22:52.097077Z",
-      "question_id": "orch-04",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 34133,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Q4 2023 revenue for GreenEnergy Corp is $1,021,500,000.00.",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:23:48.157521Z",
-      "question_id": "orch-05",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 56034,
-      "error_type": "TIMEOUT",
-      "error_preview": "Empty response (HTTP 200)",
-      "answer_preview": "",
-      "confidence": null,
-      "pipeline_details_summary": null
-    },
-    {
-      "timestamp": "2026-02-08T04:32:37.188419Z",
-      "question_id": "std-01",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0357,
-      "latency_ms": 18388,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Normandy is located in France [1]. It is a region in the northwest of the country, situated along th",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:33:02.827583Z",
-      "question_id": "std-02",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0395,
-      "latency_ms": 25612,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The first season of SpongeBob SquarePants aired from May 1, 1999 to April 8, 2000 on Nickelodeon [1]",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:33:20.878291Z",
-      "question_id": "std-03",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0435,
-      "latency_ms": 18025,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "La capitale du Japon est Tokyo [1]. Tokyo est située sur l'île de Honshu et est la plus grande zone ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:33:36.400744Z",
-      "question_id": "std-04",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0714,
-      "latency_ms": 15495,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "William Shakespeare wrote Romeo and Juliet [1]. This tragic play was written by Shakespeare in the l",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:34:28.601140Z",
-      "question_id": "std-05",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0402,
-      "latency_ms": 52169,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Penicillin is a group of antibiotics derived from Penicillium fungi, first discovered in 1928 by Sco",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:35:12.890493Z",
-      "question_id": "std-06",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0194,
-      "latency_ms": 44259,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "La théorie de la relativité, développée par Albert Einstein au début du XXe siècle, est un ensemble ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:35:32.381073Z",
-      "question_id": "std-07",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.046,
-      "latency_ms": 19465,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The largest ocean on Earth is the Pacific Ocean. It covers an area of approximately 165.25 million s",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:36:03.366557Z",
-      "question_id": "std-08",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0492,
-      "latency_ms": 30960,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "La Mona Lisa, également connue sous le nom de La Joconde, a été peinte par l'artiste italien Léonard",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:36:38.532661Z",
-      "question_id": "std-09",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0105,
-      "latency_ms": 35140,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "La photosynthèse est le processus par lequel les plantes vertes, les algues et certaines bactéries t",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:37:13.258474Z",
-      "question_id": "std-10",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0414,
-      "latency_ms": 34697,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "La vitesse de la lumière dans le vide est une constante physique fondamentale, notée c, qui vaut exa",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:38:04.283143Z",
-      "question_id": "std-11",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0247,
-      "latency_ms": 50991,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "La découverte de la gravité est généralement attribuée à Sir Isaac Newton au 17ème siècle. Cependant",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:38:38.590743Z",
-      "question_id": "std-12",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0192,
-      "latency_ms": 34278,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "L'ADN (acide désoxyribonucléique) est une molécule biologique complexe qui contient les instructions",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:39:02.938266Z",
-      "question_id": "std-13",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0364,
-      "latency_ms": 24316,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "World War II ended in 1945. The war in Europe concluded on May 8, 1945, when Germany surrendered unc",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:39:39.012807Z",
-      "question_id": "std-14",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0213,
-      "latency_ms": 36048,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The chemical formula for water is H2O. This means that each molecule of water is composed of two hyd",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:40:14.347344Z",
-      "question_id": "std-15",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.019,
-      "latency_ms": 35308,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The first person to walk on the moon was Neil Armstrong, an American astronaut. This historic event ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:40:42.472898Z",
-      "question_id": "std-16",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0976,
-      "latency_ms": 28098,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Great Wall of China is an ancient series of walls and fortifications located in northern China, ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:41:14.254613Z",
-      "question_id": "std-17",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0392,
-      "latency_ms": 31754,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "La monnaie officielle du Royaume-Uni est la livre sterling (pound sterling en anglais), dont le code",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:42:06.278446Z",
-      "question_id": "std-18",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0361,
-      "latency_ms": 51994,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Machine learning (ML) est une branche de l'intelligence artificielle qui permet aux systèmes informa",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:42:42.474620Z",
-      "question_id": "std-19",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0619,
-      "latency_ms": 36164,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "L'auteur de la série Harry Potter est J.K. Rowling [1]. Son nom complet est Joanne Rowling, bien qu'",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:43:15.442081Z",
-      "question_id": "std-20",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0519,
-      "latency_ms": 32940,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Earthquakes are caused by the sudden release of energy in the Earth's crust that creates seismic wav",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:44:00.597571Z",
-      "question_id": "std-21",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0714,
-      "latency_ms": 45125,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Amazon rainforest, also known as Amazonia, is the world's largest tropical rainforest, covering ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:44:27.063517Z",
-      "question_id": "std-22",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0811,
-      "latency_ms": 26436,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Alexander Graham Bell est généralement crédité comme l'inventeur du téléphone [1]. Il a obtenu le pr",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:44:58.026178Z",
-      "question_id": "std-23",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.1314,
-      "latency_ms": 30935,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Pythagorean theorem is a fundamental relation in Euclidean geometry between the three sides of a",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:45:40.389232Z",
-      "question_id": "std-24",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0268,
-      "latency_ms": 42338,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "L'Union européenne (UE) est une union politico-économique unique au monde, regroupant actuellement 2",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:46:20.353037Z",
-      "question_id": "std-25",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0899,
-      "latency_ms": 39937,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Cleopatra VII Philopator (69-30 BCE) was the last active ruler of the Ptolemaic Kingdom of Egypt [1]",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:47:06.254861Z",
-      "question_id": "std-26",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.011,
-      "latency_ms": 45875,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Un trou noir est une région de l'espace-temps présentant une courbure si intense qu'il empêche toute",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:47:46.696769Z",
-      "question_id": "std-27",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0583,
-      "latency_ms": 40414,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Sahara Desert is the largest hot desert in the world, covering an area of approximately 9.2 mill",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:48:12.937845Z",
-      "question_id": "std-28",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0231,
-      "latency_ms": 26214,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Four Seasons, a group of four violin concerti, was composed by Antonio Vivaldi (1678-1741), an I",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:48:40.499861Z",
-      "question_id": "std-29",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0167,
-      "latency_ms": 27534,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The boiling point of water is 100°C (212°F) at standard atmospheric pressure (1 atmosphere or 101.32",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:49:15.630378Z",
-      "question_id": "std-30",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0621,
-      "latency_ms": 35103,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The United Nations (UN) is an international organization founded in 1945 after World War II, with th",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:50:03.177101Z",
-      "question_id": "std-31",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0432,
-      "latency_ms": 47514,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Le télescope spatial Hubble (Hubble Space Telescope ou HST en anglais) est un télescope placé en orb",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:50:39.163471Z",
-      "question_id": "std-32",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0133,
-      "latency_ms": 35954,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Galileo Galilei (1564-1642) était un astronome, physicien et ingénieur italien, souvent considéré co",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:51:28.072917Z",
-      "question_id": "std-33",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0099,
-      "latency_ms": 48882,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Le génome humain est l'ensemble complet du matériel génétique d'un être humain. Il est constitué d'e",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:52:05.393586Z",
-      "question_id": "std-34",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0699,
-      "latency_ms": 37294,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Blockchain technology is a decentralized, distributed ledger system that records transactions across",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:52:38.239777Z",
-      "question_id": "std-35",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 32821,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Napoleon Bonaparte (1769-1821) était un militaire et homme d'État français, l'un des personnages les",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:53:24.321402Z",
-      "question_id": "std-36",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0683,
-      "latency_ms": 46052,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The International Space Station (ISS) is a large spacecraft that orbits Earth and serves as a space ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:53:56.580675Z",
-      "question_id": "std-37",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0214,
-      "latency_ms": 32230,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Le changement climatique fait référence aux modifications à long terme des températures et des modèl",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:54:16.229921Z",
-      "question_id": "std-38",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0597,
-      "latency_ms": 19622,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Alexander Fleming a découvert la pénicilline en 1928 [1]. Il a remarqué qu'un champignon, plus tard ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:55:02.567224Z",
-      "question_id": "std-39",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0643,
-      "latency_ms": 46307,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Rosetta Stone is an ancient Egyptian granodiorite stele inscribed with three versions of a decre",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:55:28.706519Z",
-      "question_id": "std-40",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.013,
-      "latency_ms": 26111,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Le PIB (Produit Intérieur Brut) est la valeur totale des biens et services produits sur un territoir",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:55:56.439411Z",
-      "question_id": "std-41",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0,
-      "latency_ms": 27707,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Mahatma Gandhi (1869-1948) était un avocat, penseur et homme politique indien qui a joué un rôle cen",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:56:26.126900Z",
-      "question_id": "std-42",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0083,
-      "latency_ms": 29657,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Un tsunami est une série d'énormes vagues océaniques causées par des perturbations soudaines du fond",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:57:09.495271Z",
-      "question_id": "std-43",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 43340,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "CRISPR (Clustered Regularly Interspaced Short Palindromic Repeats) est un système de défense naturel",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:57:47.306612Z",
-      "question_id": "std-44",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0805,
-      "latency_ms": 37784,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Marie Antoinette (1755-1793) était une archiduchesse d'Autriche qui devint reine de France et de Nav",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:58:39.337467Z",
-      "question_id": "std-45",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0791,
-      "latency_ms": 51999,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The ozone layer is a region of Earth's stratosphere that contains a high concentration of ozone (O3)",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:59:07.454161Z",
-      "question_id": "std-46",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0171,
-      "latency_ms": 28088,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Les antibiotiques sont des médicaments utilisés pour traiter les infections bactériennes [1]. Ils ag",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-08T04:59:43.855497Z",
-      "question_id": "std-47",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.0149,
-      "latency_ms": 36374,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Les pyramides de Gizeh ont été construites par les anciens Égyptiens pendant l'Ancien Empire, plus p",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
     {
       "timestamp": "2026-02-08T05:00:17.711389Z",
       "question_id": "std-48",
@@ -20003,6 +20290,683 @@
         "result_count": 0,
         "null_agg": true
       }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:04.575534Z",
+      "question_id": "std-01",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.3333,
+      "latency_ms": 9700,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Normandy is located in France.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:08.249611Z",
+      "question_id": "graph-01",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.5455,
+      "latency_ms": 13374,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Marie Curie won two Nobel Prizes in different scientific fields.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:11.604317Z",
+      "question_id": "std-02",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.3333,
+      "latency_ms": 6962,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The first season of SpongeBob SquarePants aired from May 1, 1999 to April 8, 2000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:11.865302Z",
+      "question_id": "quant-01",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 16989,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT SUM(revenue) AS total_revenue FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 AND period = 'FY' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:20.056940Z",
+      "question_id": "std-03",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.2857,
+      "latency_ms": 8390,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Tokyo is the capital of Japan.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:20.195482Z",
+      "question_id": "graph-02",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 11884,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Albert Einstein",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:21.690951Z",
+      "question_id": "quant-02",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 9763,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "GreenEnergy Corp's net income in 2023 was $664,400,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT net_income FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%GreenEnergy Corp%' AND fiscal_year = 2023 AND period = 'FY' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:29.635424Z",
+      "question_id": "std-04",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.5,
+      "latency_ms": 9514,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "William Shakespeare wrote Romeo and Juliet.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:31.428155Z",
+      "question_id": "quant-03",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 9672,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The revenue of HealthPlus Labs in Q4 2023 was $322,560,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT revenue FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%HealthPlus Labs%' AND period = 'Q4' AND fiscal_year = 2023 LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:35.320422Z",
+      "question_id": "graph-03",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 15060,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Penicillin",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:41.060274Z",
+      "question_id": "std-05",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.4286,
+      "latency_ms": 11355,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Penicillin is an antibiotic derived from the Penicillium fungus, discovered by Alexander Fleming in ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:45.496605Z",
+      "question_id": "quant-04",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.1176,
+      "latency_ms": 13999,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc had a gross profit of $4,586,600,000 in FY 2023, while GreenEnergy Corp had a gross p",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT company_name, fiscal_year, gross_profit FROM financials WHERE tenant_id = 'benchmark' AND fiscal_year = 2023 AND period = 'FY' AND (company_name ILIKE '%TechVision Inc%' OR company_name ILIKE '",
+        "sql_status": "PASSED",
+        "result_count": 2,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:48.530449Z",
+      "question_id": "graph-04",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 13143,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Penicillin protects against bacterial infections.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:49.914368Z",
+      "question_id": "orch-01",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.3846,
+      "latency_ms": 55030,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's revenue for the year 2023 is $6,745,000,000.00.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:51.165238Z",
+      "question_id": "std-07",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.25,
+      "latency_ms": 10040,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Pacific Ocean is the largest ocean on Earth, covering approximately 63.8 million square miles.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:57.602527Z",
+      "question_id": "quant-05",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 12042,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's R&D spending in 2023 varied across different financial records, with the following ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT research_development FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 5,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:25:59.649754Z",
+      "question_id": "std-08",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.6,
+      "latency_ms": 8420,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Leonardo da Vinci painted the Mona Lisa.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:26:00.793432Z",
+      "question_id": "graph-05",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.3636,
+      "latency_ms": 12198,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Sherborne School, King's College Cambridge, Princeton University",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:26:05.912447Z",
+      "question_id": "quant-06",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.1333,
+      "latency_ms": 8241,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was 6.7100.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT diluted_eps FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%HealthPlus Labs%' AND fiscal_year = 2023 AND period = 'FY' LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:26:11.320484Z",
+      "question_id": "std-09",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.3333,
+      "latency_ms": 11606,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to produce oxy",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:26:15.009886Z",
+      "question_id": "orch-02",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.5,
+      "latency_ms": 25030,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Alexander Fleming discovered penicillin in 1928.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:26:15.971345Z",
+      "question_id": "graph-08",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.3571,
+      "latency_ms": 15115,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The World Wide Web is a system of interlinked hypertext documents accessed via the Internet. It was ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:26:20.358831Z",
+      "question_id": "quant-07",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 14380,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc had $2,200,000,000 in cash and equivalents at the end of 2023.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT cash_and_equivalents FROM balance_sheet WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND fiscal_year = 2023 AND as_of_date = (SELECT MAX(as_of_date) FROM balance_shee",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:26:20.808705Z",
+      "question_id": "std-10",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.381,
+      "latency_ms": 9423,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The speed of light in a vacuum is exactly 299,792,458 meters per second.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:26:24.105678Z",
+      "question_id": "graph-10",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 8064,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Paris",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:26:33.038351Z",
+      "question_id": "std-11",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.1818,
+      "latency_ms": 12164,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Sir Isaac Newton discovered gravity in the late 17th century, famously inspired by observing an appl",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:26:46.998985Z",
+      "question_id": "graph-12",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 22827,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Infectious diseases, non-communicable diseases, emerging health threats, mental health disorders, ne",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:27:05.574259Z",
+      "question_id": "graph-13",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.2222,
+      "latency_ms": 18506,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NASA has a long history of utilizing nuclear energy for space exploration, primarily through radiois",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:27:25.565641Z",
+      "question_id": "graph-14",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 19922,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Paris",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:27:33.044549Z",
+      "question_id": "quant-08",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 10573,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "GreenEnergy Corp's total assets at the end of fiscal year 2023 were $4,460,000,000.00.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT total_assets FROM balance_sheet WHERE tenant_id = 'benchmark' AND company_name ILIKE '%GreenEnergy Corp%' AND fiscal_year = 2023 LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:27:44.887193Z",
+      "question_id": "quant-09",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 11777,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The total stockholders' equity for HealthPlus Labs at the end of 2023 was $795,000,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT SUM(total_stockholders_equity) AS total_stockholders_equity FROM balance_sheet WHERE tenant_id = 'benchmark' AND company_name ILIKE '%HealthPlus Labs%' AND fiscal_year = 2023 AND as_of_date = '",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:28:18.235182Z",
+      "question_id": "orch-03",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.5,
+      "latency_ms": 31120,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Marie Curie was the first woman to win a Nobel Prize and remains the only person to have won Nobel P",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:28:48.536307Z",
+      "question_id": "orch-04",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 30232,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Q4 2023 revenue figure for GreenEnergy Corp is $1,021,500,000.00.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:29:00.728749Z",
+      "question_id": "quant-10",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 13735,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's operating income in Q3 2023 was $516,525,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT operating_income FROM financials WHERE tenant_id = 'benchmark' AND company_name ILIKE '%TechVision Inc%' AND period = 'Q3' AND fiscal_year = 2023 LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:35:02.793971Z",
+      "question_id": "orch-05",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-09T10:35:34.358013Z",
+      "question_id": "orch-09",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.3256,
+      "latency_ms": 31496,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Machine learning is a subset of artificial intelligence that enables computer systems to learn and i",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:36:04.961955Z",
+      "question_id": "orch-11",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 30532,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The net income for TechVision Inc in fiscal year 2022 is $1,337,550,000.00.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:36:52.899630Z",
+      "question_id": "orch-13",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.0588,
+      "latency_ms": 47867,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NASA studies a wide range of research areas and topics including Earth science, planetary science, a",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:37:28.547952Z",
+      "question_id": "orch-14",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.087,
+      "latency_ms": 35580,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The boiling point of water is 100°C (212°F) at standard atmospheric pressure (1 atm or 101.325 kPa).",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T10:38:05.302291Z",
+      "question_id": "orch-15",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.169,
+      "latency_ms": 36686,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The SQL query successfully retrieved the operating income for three companies in Q1 2023. The result",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
     }
   ],
   "quick_tests": [
@@ -20543,6 +21507,15 @@
       "orchestrator": 0.0,
       "standard": 0.0,
       "quantitative": 0.0
+    },
+    {
+      "timestamp": "2026-02-09T10:38:05.347942Z",
+      "event": "fast_iter_complete",
+      "total_tested": 518,
+      "standard": 100.0,
+      "graph": 80.0,
+      "quantitative": 100.0,
+      "orchestrator": 90.0
     }
   ],
   "workflow_versions": {

@@ -1,0 +1,484 @@
+{
+  "timestamp": "2026-02-09T10:38:05.335826Z",
+  "label": "Iter 7: new API key + continueOnFail fixes",
+  "questions_per_pipeline": 10,
+  "only_failing": false,
+  "pipelines": {
+    "standard": {
+      "total_tested": 10,
+      "correct": 10,
+      "errors": 0,
+      "accuracy_pct": 100.0,
+      "avg_latency_ms": 9757,
+      "results": [
+        {
+          "id": "std-01",
+          "question": "In what country is Normandy located?",
+          "expected": "France",
+          "answer": "Normandy is located in France.",
+          "correct": true,
+          "f1": 0.3333,
+          "latency_ms": 9700,
+          "method": "EXACT_MATCH",
+          "error": null
+        },
+        {
+          "id": "std-02",
+          "question": "When was the first season of SpongeBob SquarePants aired?",
+          "expected": "May 1, 1999",
+          "answer": "The first season of SpongeBob SquarePants aired from May 1, 1999 to April 8, 2000.",
+          "correct": true,
+          "f1": 0.3333,
+          "latency_ms": 6962,
+          "method": "EXACT_MATCH",
+          "error": null
+        },
+        {
+          "id": "std-03",
+          "question": "What is the capital of Japan?",
+          "expected": "Tokyo",
+          "answer": "Tokyo is the capital of Japan.",
+          "correct": true,
+          "f1": 0.2857,
+          "latency_ms": 8390,
+          "method": "EXACT_MATCH",
+          "error": null
+        },
+        {
+          "id": "std-04",
+          "question": "Who wrote Romeo and Juliet?",
+          "expected": "William Shakespeare",
+          "answer": "William Shakespeare wrote Romeo and Juliet.",
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 9514,
+          "method": "EXACT_MATCH",
+          "error": null
+        },
+        {
+          "id": "std-05",
+          "question": "What is penicillin?",
+          "expected": "An antibiotic discovered by Alexander Fleming",
+          "answer": "Penicillin is an antibiotic derived from the Penicillium fungus, discovered by Alexander Fleming in 1928, that revolutionized medicine by effectively treating bacterial infections.",
+          "correct": true,
+          "f1": 0.4286,
+          "latency_ms": 11355,
+          "method": "ENTITY_MATCH",
+          "error": null
+        },
+        {
+          "id": "std-07",
+          "question": "What is the largest ocean on Earth?",
+          "expected": "Pacific Ocean",
+          "answer": "The Pacific Ocean is the largest ocean on Earth, covering approximately 63.8 million square miles.",
+          "correct": true,
+          "f1": 0.25,
+          "latency_ms": 10040,
+          "method": "EXACT_MATCH",
+          "error": null
+        },
+        {
+          "id": "std-08",
+          "question": "Who painted the Mona Lisa?",
+          "expected": "Leonardo da Vinci",
+          "answer": "Leonardo da Vinci painted the Mona Lisa.",
+          "correct": true,
+          "f1": 0.6,
+          "latency_ms": 8420,
+          "method": "EXACT_MATCH",
+          "error": null
+        },
+        {
+          "id": "std-09",
+          "question": "What is photosynthesis?",
+          "expected": "Process by which plants convert light energy into chemical energy",
+          "answer": "Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to produce oxygen and energy in the form of sugar.",
+          "correct": true,
+          "f1": 0.3333,
+          "latency_ms": 11606,
+          "method": "ENTITY_MATCH",
+          "error": null
+        },
+        {
+          "id": "std-10",
+          "question": "What is the speed of light?",
+          "expected": "approximately 299,792 kilometers per second",
+          "answer": "The speed of light in a vacuum is exactly 299,792,458 meters per second.",
+          "correct": true,
+          "f1": 0.381,
+          "latency_ms": 9423,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "std-11",
+          "question": "Who discovered gravity?",
+          "expected": "Isaac Newton",
+          "answer": "Sir Isaac Newton discovered gravity in the late 17th century, famously inspired by observing an apple fall from a tree.",
+          "correct": true,
+          "f1": 0.1818,
+          "latency_ms": 12164,
+          "method": "EXACT_MATCH",
+          "error": null
+        }
+      ]
+    },
+    "graph": {
+      "total_tested": 10,
+      "correct": 8,
+      "errors": 0,
+      "accuracy_pct": 80.0,
+      "avg_latency_ms": 15009,
+      "results": [
+        {
+          "id": "graph-01",
+          "question": "What is the relationship between Marie Curie and the Nobel Prize?",
+          "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry, connected to Nobel Foundation",
+          "answer": "Marie Curie won two Nobel Prizes in different scientific fields.",
+          "correct": true,
+          "f1": 0.5455,
+          "latency_ms": 13374,
+          "method": "ENTITY_MATCH",
+          "error": null
+        },
+        {
+          "id": "graph-02",
+          "question": "Who created the Theory of Relativity?",
+          "expected": "Albert Einstein",
+          "answer": "Albert Einstein",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 11884,
+          "method": "EXACT_MATCH",
+          "error": null
+        },
+        {
+          "id": "graph-03",
+          "question": "What did Alexander Fleming discover?",
+          "expected": "Penicillin",
+          "answer": "Penicillin",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 15060,
+          "method": "EXACT_MATCH",
+          "error": null
+        },
+        {
+          "id": "graph-04",
+          "question": "Which disease does Penicillin protect against?",
+          "expected": "Tuberculosis",
+          "answer": "Penicillin protects against bacterial infections.",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 13143,
+          "method": "PARTIAL",
+          "error": null
+        },
+        {
+          "id": "graph-05",
+          "question": "Where did Alan Turing study?",
+          "expected": "University of Cambridge",
+          "answer": "Sherborne School, King's College Cambridge, Princeton University",
+          "correct": true,
+          "f1": 0.3636,
+          "latency_ms": 12198,
+          "method": "ENTITY_MATCH",
+          "error": null
+        },
+        {
+          "id": "graph-08",
+          "question": "What is the World Wide Web and where was it created?",
+          "expected": "Created at CERN, extends the Internet",
+          "answer": "The World Wide Web is a system of interlinked hypertext documents accessed via the Internet. It was created at CERN in Geneva, Switzerland.",
+          "correct": true,
+          "f1": 0.3571,
+          "latency_ms": 15115,
+          "method": "ENTITY_MATCH",
+          "error": null
+        },
+        {
+          "id": "graph-10",
+          "question": "What city is the Louvre Museum located in?",
+          "expected": "Paris",
+          "answer": "Paris",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 8064,
+          "method": "EXACT_MATCH",
+          "error": null
+        },
+        {
+          "id": "graph-12",
+          "question": "What diseases does the World Health Organization study?",
+          "expected": "COVID-19, Malaria",
+          "answer": "Infectious diseases, non-communicable diseases, emerging health threats, mental health disorders, neurological conditions, substance abuse",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 22827,
+          "method": "PARTIAL",
+          "error": null
+        },
+        {
+          "id": "graph-13",
+          "question": "What is the relationship between NASA and Nuclear Energy?",
+          "expected": "NASA utilizes Nuclear Energy",
+          "answer": "NASA has a long history of utilizing nuclear energy for space exploration, primarily through radioisotope thermoelectric generators (RTGs) and, more recently, nuclear fission reactors.",
+          "correct": true,
+          "f1": 0.2222,
+          "latency_ms": 18506,
+          "method": "ENTITY_MATCH",
+          "error": null
+        },
+        {
+          "id": "graph-14",
+          "question": "Which city is connected to Napoleon Bonaparte?",
+          "expected": "Paris",
+          "answer": "Paris",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 19922,
+          "method": "EXACT_MATCH",
+          "error": null
+        }
+      ]
+    },
+    "quantitative": {
+      "total_tested": 10,
+      "correct": 10,
+      "errors": 0,
+      "accuracy_pct": 100.0,
+      "avg_latency_ms": 12117,
+      "results": [
+        {
+          "id": "quant-01",
+          "question": "What was TechVision Inc's total revenue in fiscal year 2023?",
+          "expected": "6745000000",
+          "answer": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 16989,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "quant-02",
+          "question": "What was GreenEnergy Corp's net income in 2023?",
+          "expected": "664400000",
+          "answer": "GreenEnergy Corp's net income in 2023 was $664,400,000.",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 9763,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "quant-03",
+          "question": "What was the revenue of HealthPlus Labs in Q4 2023?",
+          "expected": "322560000",
+          "answer": "The revenue of HealthPlus Labs in Q4 2023 was $322,560,000.",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 9672,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "quant-04",
+          "question": "Compare the gross profit of TechVision Inc and GreenEnergy Corp in FY 2023",
+          "expected": "TechVision: 4586600000, GreenEnergy: 1715000000",
+          "answer": "TechVision Inc had a gross profit of $4,586,600,000 in FY 2023, while GreenEnergy Corp had a gross profit of $1,715,000,000 in the same period. TechVision Inc's gross profit was approximately 2.67 times higher than GreenEnergy Corp's.",
+          "correct": true,
+          "f1": 0.1176,
+          "latency_ms": 13999,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "quant-05",
+          "question": "What was TechVision Inc's R&D spending in 2023?",
+          "expected": "1349000000",
+          "answer": "TechVision Inc's R&D spending in 2023 varied across different financial records, with the following amounts reported:\n\n1. $1,349,000,000.00\n2. $310,390,000.00\n3. $323,880,000.00\n4. $344,350,000.00\n5. $370,300,000.00\n\nThe query returned multiple records, indicating that TechVision Inc's R&D spending ",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 12042,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "quant-06",
+          "question": "What was the diluted EPS for HealthPlus Labs in fiscal year 2023?",
+          "expected": "6.71",
+          "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was 6.7100.",
+          "correct": true,
+          "f1": 0.1333,
+          "latency_ms": 8241,
+          "method": "EXACT_MATCH",
+          "error": null
+        },
+        {
+          "id": "quant-07",
+          "question": "How much cash and equivalents did TechVision Inc have at end of 2023?",
+          "expected": "2200000000",
+          "answer": "TechVision Inc had $2,200,000,000 in cash and equivalents at the end of 2023.",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 14380,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "quant-08",
+          "question": "What were GreenEnergy Corp's total assets at the end of fiscal year 2023?",
+          "expected": "4460000000",
+          "answer": "GreenEnergy Corp's total assets at the end of fiscal year 2023 were $4,460,000,000.00.",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 10573,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "quant-09",
+          "question": "What was the total stockholders equity for HealthPlus Labs at end of 2023?",
+          "expected": "795000000",
+          "answer": "The total stockholders' equity for HealthPlus Labs at the end of 2023 was $795,000,000.",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 11777,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "quant-10",
+          "question": "What was TechVision Inc's operating income in Q3 2023?",
+          "expected": "516525000",
+          "answer": "TechVision Inc's operating income in Q3 2023 was $516,525,000.",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 13735,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        }
+      ]
+    },
+    "orchestrator": {
+      "total_tested": 10,
+      "correct": 9,
+      "errors": 1,
+      "accuracy_pct": 90.0,
+      "avg_latency_ms": 32357,
+      "results": [
+        {
+          "id": "orch-01",
+          "question": "What was TechVision Inc's revenue in 2023 and who created the Theory of Relativity?",
+          "expected": "TechVision Inc revenue $6.745B in 2023; Albert Einstein created Theory of Relativity",
+          "answer": "TechVision Inc's revenue for the year 2023 is $6,745,000,000.00.",
+          "correct": true,
+          "f1": 0.3846,
+          "latency_ms": 55030,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "orch-02",
+          "question": "Who discovered penicillin?",
+          "expected": "Alexander Fleming",
+          "answer": "Alexander Fleming discovered penicillin in 1928.",
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 25030,
+          "method": "EXACT_MATCH",
+          "error": null
+        },
+        {
+          "id": "orch-03",
+          "question": "What is the relationship between Marie Curie and the Nobel Prize?",
+          "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry",
+          "answer": "Marie Curie was the first woman to win a Nobel Prize and remains the only person to have won Nobel Prizes in two different scientific fields (Physics in 1903 and Chemistry in 1911).",
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 31120,
+          "method": "ENTITY_MATCH",
+          "error": null
+        },
+        {
+          "id": "orch-04",
+          "question": "How much revenue did GreenEnergy Corp generate in Q4 2023?",
+          "expected": "1021500000",
+          "answer": "The Q4 2023 revenue figure for GreenEnergy Corp is $1,021,500,000.00.",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 30232,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "orch-05",
+          "question": "Which scientists are connected to the University of Cambridge and what is the total employee count at TechVision?",
+          "expected": "Newton, Darwin, Turing studied at Cambridge; TechVision has ~47 active employees",
+          "answer": "",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "method": "NO_ANSWER",
+          "error": "The read operation timed out"
+        },
+        {
+          "id": "orch-09",
+          "question": "What is machine learning?",
+          "expected": "A subset of AI where systems learn from data",
+          "answer": "Machine learning is a subset of artificial intelligence that enables computer systems to learn and improve from experience without being explicitly programmed, by identifying patterns in data and making predictions or decisions based on those patterns.",
+          "correct": true,
+          "f1": 0.3256,
+          "latency_ms": 31496,
+          "method": "ENTITY_MATCH",
+          "error": null
+        },
+        {
+          "id": "orch-11",
+          "question": "What was the net income of TechVision Inc in fiscal year 2022?",
+          "expected": "1337550000",
+          "answer": "The net income for TechVision Inc in fiscal year 2022 is $1,337,550,000.00.",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 30532,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "orch-13",
+          "question": "What does NASA study and how much cash does GreenEnergy Corp have?",
+          "expected": "NASA uses Nuclear Energy; GreenEnergy Corp had $900M cash at end 2023",
+          "answer": "NASA studies a wide range of research areas and topics including Earth science, planetary science, astrophysics, heliophysics, space technology, human exploration and operations, and aeronautics.",
+          "correct": true,
+          "f1": 0.0588,
+          "latency_ms": 47867,
+          "method": "ENTITY_MATCH",
+          "error": null
+        },
+        {
+          "id": "orch-14",
+          "question": "What is the boiling point of water?",
+          "expected": "100 degrees Celsius",
+          "answer": "The boiling point of water is 100°C (212°F) at standard atmospheric pressure (1 atm or 101.325 kPa).",
+          "correct": true,
+          "f1": 0.087,
+          "latency_ms": 35580,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        },
+        {
+          "id": "orch-15",
+          "question": "What was the operating income for all companies in Q1 2023?",
+          "expected": "TechVision $465.9M, GreenEnergy $184.7M, HealthPlus $48.2M",
+          "answer": "The SQL query successfully retrieved the operating income for three companies in Q1 2023. The results show:\n\n1. GreenEnergy Corp: $184,690,000\n2. HealthPlus Labs: $48,153,000\n3. TechVision Inc: $465,908,000\n\nThese companies are part of the 'benchmark' tenant group, and their operating income figures",
+          "correct": true,
+          "f1": 0.169,
+          "latency_ms": 36686,
+          "method": "NUMERIC_MATCH",
+          "error": null
+        }
+      ]
+    }
+  }
+}
