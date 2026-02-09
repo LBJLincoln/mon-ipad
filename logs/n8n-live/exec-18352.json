@@ -1,0 +1,213 @@
+{
+  "execution_id": "18352",
+  "workflow_id": "LnTqRX4LZlI009Ks-3Jnp",
+  "pipeline": "standard",
+  "status": "success",
+  "started_at": "2026-02-09T20:37:56.016Z",
+  "finished_at": "2026-02-09T20:38:16.394Z",
+  "duration_ms": 20378,
+  "mode": "webhook",
+  "trigger_query": {},
+  "nodes": [
+    {
+      "name": "Webhook",
+      "status": "success",
+      "started": 1770669476043,
+      "finished": null,
+      "duration_ms": 0,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"headers\": {\"host\": \"amoret.app.n8n.cloud\", \"user-agent\": \"Python-urllib/3.11\", \"content-length\": \"127\", \"accept-encoding\": \"gzip, br\", \"cdn-loop\": \"cloudflare; loops=1; subreqs=1\", \"cf-connecting-ip\": \"34.57.202.47\", \"cf-ew-via\": \"15\", \"cf-ipcountry\": \"US\", \"cf-ray\": \"9cb62adea41eeb03-ORD\", \"cf-visitor\": \"{\\\"scheme\\\":\\\"https\\\"}\", \"cf-worker\": \"n8n.cloud\", \"content-type\": \"application/json\", \"x-forwarded-for\": \"34.57.202.47, 172.71.255.127\", \"x-forwarded-host\": \"amoret.app.n8n.cloud\", \"x-forwar"
+    },
+    {
+      "name": "Init & ACL Pre-Filter V3.4",
+      "status": "success",
+      "started": 1770669476043,
+      "finished": null,
+      "duration_ms": 8,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"trace_id\": \"tr-1770669476051\", \"query\": \"Where is Normandy located?\", \"acl_filter\": {\"$or\": [{\"tenant_id\": \"benchmark\", \"allowed_groups\": {\"$in\": [\"admin\", \"guest\"]}}, {\"tenant_id\": {\"$exists\": false}}]}, \"acl_disabled\": false, \"user_context\": {\"tenant_id\": \"benchmark\", \"groups\": [\"admin\", \"guest\"]}, \"complexity\": \"moderate\", \"topK\": 15, \"adaptive_topK\": 15, \"needs_decomposition\": false}"
+    },
+    {
+      "name": "Needs Decomposition?",
+      "status": "success",
+      "started": 1770669476051,
+      "finished": null,
+      "duration_ms": 1,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"trace_id\": \"tr-1770669476051\", \"query\": \"Where is Normandy located?\", \"acl_filter\": {\"$or\": [{\"tenant_id\": \"benchmark\", \"allowed_groups\": {\"$in\": [\"admin\", \"guest\"]}}, {\"tenant_id\": {\"$exists\": false}}]}, \"acl_disabled\": false, \"user_context\": {\"tenant_id\": \"benchmark\", \"groups\": [\"admin\", \"guest\"]}, \"complexity\": \"moderate\", \"topK\": 15, \"adaptive_topK\": 15, \"needs_decomposition\": false}"
+    },
+    {
+      "name": "Query Decomposer (V.3.4)",
+      "status": "success",
+      "started": 1770669476052,
+      "finished": null,
+      "duration_ms": 10633,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"id\": \"gen-1770669476-ZpW5Qv4nuhgkXaVgMtgy\", \"provider\": \"Arcee AI\", \"model\": \"arcee-ai/trinity-large-preview:free\", \"object\": \"chat.completion\", \"created\": 1770669476, \"choices\": [{\"logprobs\": null, \"finish_reason\": \"stop\", \"native_finish_reason\": \"stop\", \"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"{\\n  \\\"is_simple\\\": true,\\n  \\\"original_query\\\": \\\"Where is Normandy located?\\\",\\n  \\\"sub_queries\\\": [],\\n  \\\"reasoning\\\": \\\"La question est simple et directe, demandant simplement la l"
+    },
+    {
+      "name": "Query Merger V3.4",
+      "status": "success",
+      "started": 1770669486686,
+      "finished": null,
+      "duration_ms": 8,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"queries\": [\"Where is Normandy located?\"], \"primary_query\": \"Where is Normandy located?\", \"is_decomposed\": false, \"topK_per_query\": 15, \"trace_id\": \"tr-1770669476051\", \"user_context\": {\"tenant_id\": \"benchmark\", \"groups\": [\"admin\", \"guest\"]}, \"acl_filter\": {\"$or\": [{\"tenant_id\": \"benchmark\", \"allowed_groups\": {\"$in\": [\"admin\", \"guest\"]}}, {\"tenant_id\": {\"$exists\": false}}]}}"
+    },
+    {
+      "name": "HyDE Generator",
+      "status": "success",
+      "started": 1770669486694,
+      "finished": null,
+      "duration_ms": 6896,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"id\": \"gen-1770669486-nBzLArud90Es5oHZhrgk\", \"provider\": \"Arcee AI\", \"model\": \"arcee-ai/trinity-large-preview:free\", \"object\": \"chat.completion\", \"created\": 1770669486, \"choices\": [{\"logprobs\": null, \"finish_reason\": \"stop\", \"native_finish_reason\": \"stop\", \"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"Normandy is a region in northwestern France, situated along the English Channel. It comprises the departments of Calvados, Eure, Manche, Orne, and Seine-Maritime. The region's capital i"
+    },
+    {
+      "name": "HyDE Embedding",
+      "status": "success",
+      "started": 1770669493591,
+      "finished": null,
+      "duration_ms": 114,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"402 - \\\"{\\\\\\\"error\\\\\\\":{\\\\\\\"message\\\\\\\":\\\\\\\"Insufficient credits. Add more using https://openrouter.ai/settings/credits\\\\\\\",\\\\\\\"code\\\\\\\":402}}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 402\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axio"
+    },
+    {
+      "name": "HTTP Pinecone Query HyDE",
+      "status": "success",
+      "started": 1770669493705,
+      "finished": null,
+      "duration_ms": 388,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"400 - \\\"{\\\\\\\"code\\\\\\\":3,\\\\\\\"message\\\\\\\":\\\\\\\"Either 'vector' or 'ID' must be provided\\\\\\\",\\\\\\\"details\\\\\\\":[]}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 400\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n   "
+    },
+    {
+      "name": "BM25 Search Postgres",
+      "status": "success",
+      "started": 1770669494093,
+      "finished": null,
+      "duration_ms": 216,
+      "items_in": 0,
+      "items_out": 0,
+      "error": null,
+      "data_preview": null
+    },
+    {
+      "name": "Original Embedding",
+      "status": "success",
+      "started": 1770669494309,
+      "finished": null,
+      "duration_ms": 100,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"402 - \\\"{\\\\\\\"error\\\\\\\":{\\\\\\\"message\\\\\\\":\\\\\\\"Insufficient credits. Add more using https://openrouter.ai/settings/credits\\\\\\\",\\\\\\\"code\\\\\\\":402}}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 402\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axio"
+    },
+    {
+      "name": "HTTP Pinecone Query Original",
+      "status": "success",
+      "started": 1770669494409,
+      "finished": null,
+      "duration_ms": 428,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"400 - \\\"{\\\\\\\"code\\\\\\\":3,\\\\\\\"message\\\\\\\":\\\\\\\"Either 'vector' or 'ID' must be provided\\\\\\\",\\\\\\\"details\\\\\\\":[]}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 400\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n   "
+    },
+    {
+      "name": "Wait All Branches",
+      "status": "success",
+      "started": 1770669494837,
+      "finished": null,
+      "duration_ms": 1,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"400 - \\\"{\\\\\\\"code\\\\\\\":3,\\\\\\\"message\\\\\\\":\\\\\\\"Either 'vector' or 'ID' must be provided\\\\\\\",\\\\\\\"details\\\\\\\":[]}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 400\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n   "
+    },
+    {
+      "name": "RRF Merge & Rank V3.4",
+      "status": "success",
+      "started": 1770669494839,
+      "finished": null,
+      "duration_ms": 12,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"results\": [], \"metadata\": {\"sources_available\": 0, \"total_unique_docs\": 0, \"warnings\": [\"HyDE: 0 results\", \"Original: 0 results\", \"BM25: 0 results (may need tenant_id configuration)\"], \"is_decomposed\": false, \"rrf_normalized\": true, \"version\": \"3.4.3\", \"trace_id\": \"tr-1770669476051\"}, \"skip_reranker\": true}"
+    },
+    {
+      "name": "Cohere Reranker",
+      "status": "success",
+      "started": 1770669494851,
+      "finished": null,
+      "duration_ms": 157,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"Try spacing your requests out using the batching settings under 'Options'\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 429\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n    at RedirectableRequest.emit (node:ev"
+    },
+    {
+      "name": "Rerank Merger",
+      "status": "success",
+      "started": 1770669495008,
+      "finished": null,
+      "duration_ms": 10,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"results\": [], \"metadata\": {\"sources_available\": 0, \"total_unique_docs\": 0, \"warnings\": [\"HyDE: 0 results\", \"Original: 0 results\", \"BM25: 0 results (may need tenant_id configuration)\"], \"is_decomposed\": false, \"rrf_normalized\": true, \"version\": \"3.4.3\", \"trace_id\": \"tr-1770669476051\", \"reranked\": false, \"empty_database\": true}, \"skip_llm\": false, \"fallback_response\": {\"response\": \"Je n'ai trouvé aucun document pertinent dans la base de connaissances.\", \"sources\": [], \"confidence\": 0, \"trace_id\""
+    },
+    {
+      "name": "Skip LLM?",
+      "status": "success",
+      "started": 1770669495018,
+      "finished": null,
+      "duration_ms": 0,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": null
+    },
+    {
+      "name": "LLM Generation",
+      "status": "success",
+      "started": 1770669495018,
+      "finished": null,
+      "duration_ms": 1365,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"id\": \"gen-1770669495-fD7G3i6SoSJYADET16I5\", \"provider\": \"Arcee AI\", \"model\": \"arcee-ai/trinity-large-preview:free\", \"object\": \"chat.completion\", \"created\": 1770669495, \"choices\": [{\"logprobs\": null, \"finish_reason\": \"stop\", \"native_finish_reason\": \"stop\", \"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"Normandy is located in northwestern France, along the English Channel coast.\", \"refusal\": null, \"reasoning\": null}}], \"system_fingerprint\": null, \"usage\": {\"prompt_tokens\": 66, \"complet"
+    },
+    {
+      "name": "Response Formatter",
+      "status": "success",
+      "started": 1770669496384,
+      "finished": null,
+      "duration_ms": 10,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"response\": \"Normandy is located in northwestern France, along the English Channel coast.\", \"trace_id\": \"tr-1770669476051\", \"sources\": [], \"model\": \"meta-llama/llama-3.3-70b-instruct:free\", \"embedding_fallback\": true, \"timestamp\": \"2026-02-09T20:38:16.393Z\"}"
+    }
+  ],
+  "node_count": 18,
+  "error_nodes": []
+}

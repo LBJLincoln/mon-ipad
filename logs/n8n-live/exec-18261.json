@@ -1,0 +1,213 @@
+{
+  "execution_id": "18261",
+  "workflow_id": "LnTqRX4LZlI009Ks-3Jnp",
+  "pipeline": "standard",
+  "status": "success",
+  "started_at": "2026-02-09T19:15:44.822Z",
+  "finished_at": "2026-02-09T19:15:47.525Z",
+  "duration_ms": 2703,
+  "mode": "integrated",
+  "trigger_query": "What is the capital of Japan?",
+  "nodes": [
+    {
+      "name": "Sub-Workflow Trigger",
+      "status": "success",
+      "started": 1770664544851,
+      "finished": null,
+      "duration_ms": 1,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"all_complete\": false, \"trace_id\": \"trace-1770664542714-hsqykg\", \"is_chat\": false, \"original_query\": \"What is the capital of Japan?\", \"current_task\": {\"task_id\": 1, \"intent_id\": \"intent-1\", \"status\": \"pending\", \"rag_called\": \"STANDARD\", \"attempt\": 1, \"query\": \"What is the capital of Japan?\", \"response\": null, \"confidence\": 0.8, \"trace_id\": \"trace-1770664542714-hsqykg\"}, \"route_to\": \"STANDARD\", \"task_id\": 1, \"task_query\": \"What is the capital of Japan?\", \"attempt\": 1, \"is_fallback\": false, \"iter"
+    },
+    {
+      "name": "Init & ACL Pre-Filter V3.4",
+      "status": "success",
+      "started": 1770664544852,
+      "finished": null,
+      "duration_ms": 10,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"trace_id\": \"trace-1770664542714-hsqykg\", \"query\": \"What is the capital of Japan?\", \"acl_filter\": {\"$or\": [{\"tenant_id\": \"default\", \"allowed_groups\": {\"$in\": [\"admin\", \"guest\"]}}, {\"tenant_id\": {\"$exists\": false}}]}, \"acl_disabled\": false, \"user_context\": {\"tenant_id\": \"default\", \"groups\": [\"admin\", \"guest\"]}, \"complexity\": \"moderate\", \"topK\": 20, \"adaptive_topK\": 15, \"needs_decomposition\": false}"
+    },
+    {
+      "name": "Needs Decomposition?",
+      "status": "success",
+      "started": 1770664544862,
+      "finished": null,
+      "duration_ms": 1,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"trace_id\": \"trace-1770664542714-hsqykg\", \"query\": \"What is the capital of Japan?\", \"acl_filter\": {\"$or\": [{\"tenant_id\": \"default\", \"allowed_groups\": {\"$in\": [\"admin\", \"guest\"]}}, {\"tenant_id\": {\"$exists\": false}}]}, \"acl_disabled\": false, \"user_context\": {\"tenant_id\": \"default\", \"groups\": [\"admin\", \"guest\"]}, \"complexity\": \"moderate\", \"topK\": 20, \"adaptive_topK\": 15, \"needs_decomposition\": false}"
+    },
+    {
+      "name": "Query Decomposer (V.3.4)",
+      "status": "success",
+      "started": 1770664544863,
+      "finished": null,
+      "duration_ms": 362,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"400 - \\\"{\\\\\\\"error\\\\\\\":{\\\\\\\"message\\\\\\\":\\\\\\\"Provider returned error\\\\\\\",\\\\\\\"code\\\\\\\":400,\\\\\\\"metadata\\\\\\\":{\\\\\\\"raw\\\\\\\":\\\\\\\"{\\\\\\\\n  \\\\\\\\\\\\\\\"error\\\\\\\\\\\\\\\": {\\\\\\\\n    \\\\\\\\\\\\\\\"code\\\\\\\\\\\\\\\": 400,\\\\\\\\n    \\\\\\\\\\\\\\\"message\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"Developer instruction is not enabled for models/gemma-3-27b-it\\\\\\\\\\\\\\\",\\\\\\\\n    \\\\\\\\\\\\\\\"status\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"INVALID_ARGUMENT\\\\\\\\\\\\\\\"\\\\\\\\n  }\\\\\\\\n}\\\\\\\\n\\\\\\\",\\\\\\\"provider_name\\\\\\\":\\\\\\\"Google AI Studio\\\\\\\",\\\\\\\"is_byok\\\\\\\":false}},\\\\\\\"user_id\\\\\\"
+    },
+    {
+      "name": "Query Merger V3.4",
+      "status": "success",
+      "started": 1770664545225,
+      "finished": null,
+      "duration_ms": 8,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"queries\": [\"What is the capital of Japan?\"], \"primary_query\": \"What is the capital of Japan?\", \"is_decomposed\": false, \"topK_per_query\": 20, \"trace_id\": \"trace-1770664542714-hsqykg\", \"user_context\": {\"tenant_id\": \"default\", \"groups\": [\"admin\", \"guest\"]}, \"acl_filter\": {\"$or\": [{\"tenant_id\": \"default\", \"allowed_groups\": {\"$in\": [\"admin\", \"guest\"]}}, {\"tenant_id\": {\"$exists\": false}}]}}"
+    },
+    {
+      "name": "HyDE Generator",
+      "status": "success",
+      "started": 1770664545233,
+      "finished": null,
+      "duration_ms": 339,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"400 - \\\"{\\\\\\\"error\\\\\\\":{\\\\\\\"message\\\\\\\":\\\\\\\"Provider returned error\\\\\\\",\\\\\\\"code\\\\\\\":400,\\\\\\\"metadata\\\\\\\":{\\\\\\\"raw\\\\\\\":\\\\\\\"{\\\\\\\\n  \\\\\\\\\\\\\\\"error\\\\\\\\\\\\\\\": {\\\\\\\\n    \\\\\\\\\\\\\\\"code\\\\\\\\\\\\\\\": 400,\\\\\\\\n    \\\\\\\\\\\\\\\"message\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"Developer instruction is not enabled for models/gemma-3-27b-it\\\\\\\\\\\\\\\",\\\\\\\\n    \\\\\\\\\\\\\\\"status\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"INVALID_ARGUMENT\\\\\\\\\\\\\\\"\\\\\\\\n  }\\\\\\\\n}\\\\\\\\n\\\\\\\",\\\\\\\"provider_name\\\\\\\":\\\\\\\"Google AI Studio\\\\\\\",\\\\\\\"is_byok\\\\\\\":false}},\\\\\\\"user_id\\\\\\"
+    },
+    {
+      "name": "HyDE Embedding",
+      "status": "success",
+      "started": 1770664545573,
+      "finished": null,
+      "duration_ms": 108,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"402 - \\\"{\\\\\\\"error\\\\\\\":{\\\\\\\"message\\\\\\\":\\\\\\\"Insufficient credits. Add more using https://openrouter.ai/settings/credits\\\\\\\",\\\\\\\"code\\\\\\\":402}}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 402\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axio"
+    },
+    {
+      "name": "HTTP Pinecone Query HyDE",
+      "status": "success",
+      "started": 1770664545682,
+      "finished": null,
+      "duration_ms": 393,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"400 - \\\"{\\\\\\\"code\\\\\\\":3,\\\\\\\"message\\\\\\\":\\\\\\\"Either 'vector' or 'ID' must be provided\\\\\\\",\\\\\\\"details\\\\\\\":[]}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 400\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n   "
+    },
+    {
+      "name": "BM25 Search Postgres",
+      "status": "success",
+      "started": 1770664546075,
+      "finished": null,
+      "duration_ms": 27,
+      "items_in": 0,
+      "items_out": 0,
+      "error": null,
+      "data_preview": null
+    },
+    {
+      "name": "Original Embedding",
+      "status": "success",
+      "started": 1770664546102,
+      "finished": null,
+      "duration_ms": 163,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"402 - \\\"{\\\\\\\"error\\\\\\\":{\\\\\\\"message\\\\\\\":\\\\\\\"Insufficient credits. Add more using https://openrouter.ai/settings/credits\\\\\\\",\\\\\\\"code\\\\\\\":402}}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 402\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axio"
+    },
+    {
+      "name": "HTTP Pinecone Query Original",
+      "status": "success",
+      "started": 1770664546265,
+      "finished": null,
+      "duration_ms": 396,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"400 - \\\"{\\\\\\\"code\\\\\\\":3,\\\\\\\"message\\\\\\\":\\\\\\\"Either 'vector' or 'ID' must be provided\\\\\\\",\\\\\\\"details\\\\\\\":[]}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 400\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n   "
+    },
+    {
+      "name": "Wait All Branches",
+      "status": "success",
+      "started": 1770664546661,
+      "finished": null,
+      "duration_ms": 2,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"400 - \\\"{\\\\\\\"code\\\\\\\":3,\\\\\\\"message\\\\\\\":\\\\\\\"Either 'vector' or 'ID' must be provided\\\\\\\",\\\\\\\"details\\\\\\\":[]}\\\"\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 400\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n   "
+    },
+    {
+      "name": "RRF Merge & Rank V3.4",
+      "status": "success",
+      "started": 1770664546664,
+      "finished": null,
+      "duration_ms": 10,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"results\": [], \"metadata\": {\"sources_available\": 0, \"total_unique_docs\": 0, \"warnings\": [\"HyDE: 0 results\", \"Original: 0 results\", \"BM25: 0 results (may need tenant_id configuration)\"], \"is_decomposed\": false, \"rrf_normalized\": true, \"version\": \"3.4.3\", \"trace_id\": \"trace-1770664542714-hsqykg\"}, \"skip_reranker\": true}"
+    },
+    {
+      "name": "Cohere Reranker",
+      "status": "success",
+      "started": 1770664546674,
+      "finished": null,
+      "duration_ms": 452,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"Try spacing your requests out using the batching settings under 'Options'\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 429\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n    at RedirectableRequest.emit (node:ev"
+    },
+    {
+      "name": "Rerank Merger",
+      "status": "success",
+      "started": 1770664547126,
+      "finished": null,
+      "duration_ms": 9,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"results\": [], \"metadata\": {\"sources_available\": 0, \"total_unique_docs\": 0, \"warnings\": [\"HyDE: 0 results\", \"Original: 0 results\", \"BM25: 0 results (may need tenant_id configuration)\"], \"is_decomposed\": false, \"rrf_normalized\": true, \"version\": \"3.4.3\", \"trace_id\": \"trace-1770664542714-hsqykg\", \"reranked\": false, \"empty_database\": true}, \"skip_llm\": false, \"fallback_response\": {\"response\": \"Je n'ai trouvé aucun document pertinent dans la base de connaissances.\", \"sources\": [], \"confidence\": 0, "
+    },
+    {
+      "name": "Skip LLM?",
+      "status": "success",
+      "started": 1770664547135,
+      "finished": null,
+      "duration_ms": 0,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": null
+    },
+    {
+      "name": "LLM Generation",
+      "status": "success",
+      "started": 1770664547135,
+      "finished": null,
+      "duration_ms": 379,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"error\": {\"message\": \"Try spacing your requests out using the batching settings under 'Options'\", \"name\": \"AxiosError\", \"stack\": \"AxiosError: Request failed with status code 429\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.12.0/node_modules/axios/lib/adapters/http.js:565:9)\\n    at RedirectableRequest.emit (node:ev"
+    },
+    {
+      "name": "Response Formatter",
+      "status": "success",
+      "started": 1770664547515,
+      "finished": null,
+      "duration_ms": 10,
+      "items_in": 0,
+      "items_out": 1,
+      "error": null,
+      "data_preview": "{\"response\": \"Unable to generate answer - retrieval and LLM both unavailable\", \"trace_id\": \"trace-1770664542714-hsqykg\", \"error\": true, \"embedding_fallback\": true, \"timestamp\": \"2026-02-09T19:15:47.525Z\"}"
+    }
+  ],
+  "node_count": 18,
+  "error_nodes": []
+}
