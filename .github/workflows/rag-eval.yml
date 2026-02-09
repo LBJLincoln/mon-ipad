@@ -3,6 +3,14 @@ name: RAG Evaluation Pipeline
 on:
   workflow_dispatch:
     inputs:
+      dataset:
+        description: 'Dataset to evaluate'
+        default: 'phase-1'
+        type: choice
+        options:
+          - phase-1
+          - phase-2
+          - all
       types:
         description: 'Pipeline types to test (comma-separated)'
         default: 'standard,graph,quantitative,orchestrator'
@@ -15,6 +23,10 @@ on:
         description: 'Reset dedup (re-test all questions)'
         default: false
         type: boolean
+      label:
+        description: 'Label for this evaluation run'
+        default: ''
+        type: string
   schedule:
     # Run daily at 06:00 UTC
     - cron: '0 6 * * *'
@@ -31,7 +43,7 @@ env:
 jobs:
   evaluate:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 120
 
     steps:
       - uses: actions/checkout@v4
@@ -46,14 +58,19 @@ jobs:
       - name: Run RAG Evaluation
         run: |
           cd eval
-          ARGS="--types ${{ inputs.types || 'standard,graph,quantitative,orchestrator' }}"
+          DATASET="${{ inputs.dataset || 'phase-1' }}"
+          ARGS="--dataset $DATASET"
+          ARGS="$ARGS --types ${{ inputs.types || 'standard,graph,quantitative,orchestrator' }}"
           if [ -n "${{ inputs.max_per_type }}" ]; then
             ARGS="$ARGS --max ${{ inputs.max_per_type }}"
           fi
           if [ "${{ inputs.reset }}" = "true" ]; then
             ARGS="$ARGS --reset"
           fi
-          python run-eval.py $ARGS
+          if [ -n "${{ inputs.label }}" ]; then
+            ARGS="$ARGS --label \"${{ inputs.label }}\""
+          fi
+          python run-eval-parallel.py $ARGS
 
       - name: Commit and push results
         run: |
