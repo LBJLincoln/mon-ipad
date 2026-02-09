@@ -287,11 +287,22 @@ def main():
                         help="Re-test only previously failing questions")
     parser.add_argument("--push", action="store_true",
                         help="Git push results after completion")
+    parser.add_argument("--force", action="store_true",
+                        help="Force run even if phase gates are not met")
     args = parser.parse_args()
 
     start_time = datetime.now()
     pipelines = [p.strip() for p in args.pipelines.split(",")]
     dataset_label = args.dataset or "phase-1"
+
+    # Phase gate enforcement for Phase 2+
+    if args.dataset and args.dataset != "phase-1":
+        try:
+            from phase_gates import enforce_gate
+            phase_num = int(args.dataset.split("-")[1]) if "-" in args.dataset else 2
+            enforce_gate(target_phase=phase_num, force=getattr(args, 'force', False))
+        except (ImportError, Exception) as e:
+            print(f"  WARN: Phase gate check skipped: {e}")
 
     # Auto-adjust pipelines for Phase 2 (only graph + quantitative)
     if args.dataset == "phase-2" and args.pipelines == "standard,graph,quantitative,orchestrator":
