@@ -1124,7 +1124,7 @@ function renderExecTimeline(){
       return `<span style="color:${PCOL[p]}">${p.slice(0,4)}</span>: <span style="color:${col}">${s.accuracy_pct}%</span>`;
     }).join(' | ');
     return `<div class="tl-item ${cls}" onclick="this.classList.toggle('expanded')">
-      <div class="tl-header">${esc(iter.label||'Iter '+iter.number)} <span style="color:${acc>=75?'var(--gn)':'var(--yl)};font-family:'JetBrains Mono'">${acc}%</span></div>
+      <div class="tl-header">${esc(iter.label||'Iter '+iter.number)} <span style="color:${acc>=75?'var(--gn)':'var(--yl)'};font-family:JetBrains Mono">${acc}%</span></div>
       <div class="tl-meta">${iter.timestamp_start?new Date(iter.timestamp_start).toLocaleString():''} &mdash; ${iter.total_tested||0} questions</div>
       <div class="tl-detail">
         <div style="margin-bottom:6px">${pipes}</div>
