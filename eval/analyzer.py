@@ -39,8 +39,8 @@ def analyze_regressions(data):
     prev = iters[-2]
     curr = iters[-1]
 
-    prev_map = {q["id"]: q for q in prev["questions"]}
-    curr_map = {q["id"]: q for q in curr["questions"]}
+    prev_map = {q["id"]: q for q in prev.get("questions", [])}
+    curr_map = {q["id"]: q for q in curr.get("questions", [])}
 
     regressions = []
     fixes = []
@@ -57,8 +57,8 @@ def analyze_regressions(data):
                 "curr_f1": c.get("f1", 0),
                 "error": c.get("error"),
                 "error_type": c.get("error_type"),
-                "prev_answer": p.get("answer", "")[:100],
-                "curr_answer": c.get("answer", "")[:100],
+                "prev_answer": str(p.get("answer", ""))[:100],
+                "curr_answer": str(c.get("answer", ""))[:100],
             })
         elif not p.get("correct") and c.get("correct"):
             fixes.append({
@@ -86,13 +86,13 @@ def analyze_error_patterns(data):
 
     latest = iters[-1]
     by_type = defaultdict(list)
-    for q in latest["questions"]:
+    for q in latest.get("questions", []):
         if q.get("error"):
-            et = q.get("error_type", "UNKNOWN")
+            et = q.get("error_type", "UNKNOWN") or "UNKNOWN"
             by_type[et].append({
                 "id": q["id"],
                 "rag_type": q.get("rag_type", ""),
-                "error": q.get("error", "")[:100],
+                "error": str(q.get("error", ""))[:100],
             })
 
     return dict(by_type)
@@ -110,7 +110,7 @@ def analyze_flaky_questions(data):
                 flaky.append({
                     "id": qid,
                     "rag_type": info.get("rag_type", ""),
-                    "question": info.get("question", "")[:80],
+                    "question": str(info.get("question", ""))[:80],
                     "pass_rate": pass_rate,
                     "total_runs": len(runs),
                     "pass_count": info.get("pass_count", 0),
@@ -121,22 +121,38 @@ def analyze_flaky_questions(data):
 def analyze_pipeline_gaps(data):
     """Compare current accuracy vs targets."""
     pipes = data.get("pipelines", {})
-    iters = data.get("iterations", [])
     gaps = []
+
+    # Use question_registry as source of truth for accuracy
+    reg = data.get("question_registry", {})
+    pipe_stats = {}
+    for qid, qdata in reg.items():
+        rt = qdata.get("rag_type", "")
+        runs = qdata.get("runs", [])
+        if not runs or not rt:
+            continue
+        if rt not in pipe_stats:
+            pipe_stats[rt] = {"tested": 0, "correct": 0, "errors": 0}
+        pipe_stats[rt]["tested"] += 1
+        last = runs[-1]
+        if last.get("correct"):
+            pipe_stats[rt]["correct"] += 1
+        if last.get("error"):
+            pipe_stats[rt]["errors"] += 1
 
     for name, pipe in pipes.items():
         target = pipe.get("target_accuracy", 85)
-        trend = pipe.get("trend", [])
-        latest = trend[-1] if trend else None
-        acc = latest["accuracy_pct"] if latest else 0
-        gap = target - acc
+        stats = pipe_stats.get(name, {"tested": 0, "correct": 0, "errors": 0})
+        acc = round(stats["correct"] / stats["tested"] * 100, 1) if stats["tested"] > 0 else 0
 
-        # Check if plateaued (accuracy unchanged for 2+ iterations)
+        # Check if plateaued from trend data
         plateaued = False
+        trend = pipe.get("trend", [])
         if len(trend) >= 2:
-            recent = [t["accuracy_pct"] for t in trend[-2:]]
-            plateaued = abs(recent[0] - recent[1]) < 1.0  # Tighter threshold: <1pp change = plateau
+            recent = [t.get("accuracy_pct", 0) for t in trend[-2:]]
+            plateaued = abs(recent[0] - recent[1]) < 1.0
 
+        gap = target - acc
         gaps.append({
             "pipeline": name,
             "current_accuracy": acc,
@@ -144,9 +160,9 @@ def analyze_pipeline_gaps(data):
             "gap_pp": round(gap, 1),
             "on_target": gap <= 0,
             "plateaued": plateaued,
-            "latest_errors": latest.get("errors", 0) if latest else 0,
-            "latest_tested": latest.get("tested", 0) if latest else 0,
-            "error_rate": round(latest["errors"] / latest["tested"] * 100, 1) if latest and latest.get("tested", 0) > 0 else 0,
+            "latest_errors": stats["errors"],
+            "latest_tested": stats["tested"],
+            "error_rate": round(stats["errors"] / stats["tested"] * 100, 1) if stats["tested"] > 0 else 0,
         })
 
     return sorted(gaps, key=lambda x: -x["gap_pp"])
@@ -267,7 +283,6 @@ def output_markdown(data, regressions, error_patterns, flaky, gaps, suggestions)
         lines.append("### Improvement Suggestions")
         lines.append("")
         for s in suggestions:
-            icon = "!!!" if s["priority"] == "HIGH" else "!"
             lines.append(f"- [{s['priority']}] **{s['area']}**: {s['suggestion']}")
             lines.append(f"  - Data: {s['data']}")
         lines.append("")
@@ -303,24 +318,21 @@ def main():
 
     # Set GitHub Actions output for regression detection
     if regressions.get("regressions"):
-        # Write for GitHub Actions
         if os.environ.get("GITHUB_OUTPUT"):
             with open(os.environ["GITHUB_OUTPUT"], "a") as f:
                 f.write("has_regressions=true\n")
-        # Write regression report for issue creation
-        if regressions["regressions"]:
-            with open("/tmp/regression_report.md", "w") as f:
-                f.write(f"# Regression Report\n\n")
-                f.write(f"**{len(regressions['regressions'])} questions regressed** between ")
-                f.write(f"{regressions.get('prev_iteration', '?')} and {regressions.get('curr_iteration', '?')}\n\n")
-                for r in regressions["regressions"]:
-                    f.write(f"- `{r['id']}` ({r['rag_type']}): F1 {r['prev_f1']:.3f} -> {r['curr_f1']:.3f}")
-                    if r.get("error_type"):
-                        f.write(f" [{r['error_type']}]")
-                    f.write("\n")
-            iters = data.get("iterations", [])
-            with open("/tmp/iter_num", "w") as f:
-                f.write(str(iters[-1]["number"] if iters else "?"))
+        with open("/tmp/regression_report.md", "w") as f:
+            f.write(f"# Regression Report\n\n")
+            f.write(f"**{len(regressions['regressions'])} questions regressed** between ")
+            f.write(f"{regressions.get('prev_iteration', '?')} and {regressions.get('curr_iteration', '?')}\n\n")
+            for r in regressions["regressions"]:
+                f.write(f"- `{r['id']}` ({r['rag_type']}): F1 {r['prev_f1']:.3f} -> {r['curr_f1']:.3f}")
+                if r.get("error_type"):
+                    f.write(f" [{r['error_type']}]")
+                f.write("\n")
+        iters = data.get("iterations", [])
+        with open("/tmp/iter_num", "w") as f:
+            f.write(str(iters[-1].get("number", "?") if iters else "?"))
 
 
 if __name__ == "__main__":
