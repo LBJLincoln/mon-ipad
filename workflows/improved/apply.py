@@ -25,7 +25,7 @@ N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 
 WORKFLOW_IDS = {
     "graph_rag": "95x2BBAbJlLWZtWEJn6rb",
-    "orchestrator": "FZxkpldDbgV8AD_cg7IWG",
+    "orchestrator": "ALd4gOEqiKL5KR1p",
     "standard_rag": "LnTqRX4LZlI009Ks-3Jnp",
     "quantitative_rag": "LjUz8fxQZ03G9IsU",
 }
@@ -290,6 +290,46 @@ if (safeResults.length === 0) {
                 if not current_timeout or current_timeout < 15000:
                     opts["timeout"] = 15000
                     changes.append(f"P1-FIX: {node_name} - timeout set to 15s")
+
+    # --- FIX 12: Task Result Handler - fix FORMAT 2 missing else clause ---
+    # BUG: When Graph RAG returns {status: "SUCCESS", response: "string answer"}
+    # FORMAT 2 matches but only processes if nestedResponse.budgeted_context exists.
+    # If response is a direct string (no budgeted_context), nothing is set and
+    # handler exits with success=false, response="", confidence=0 → false fallback.
+    for node in wf["nodes"]:
+        if "Task Result Handler" in node["name"] and node.get("type", "").endswith(".code"):
+            code = node.get("parameters", {}).get("jsCode", "")
+            # Find the FORMAT 2 block - the budgeted_context check with no else
+            search = """      success = response.length > 10 || sources.length > 0;
+    }
+  }
+}
+// === FORMAT 3"""
+            replace = """      success = response.length > 10 || sources.length > 0;
+    }
+  } else {
+    // Graph RAG returned SUCCESS with direct response (no budgeted_context wrapper)
+    formatDetected = 'graph_rag_direct';
+    if (typeof nestedResponse === 'string') {
+      response = nestedResponse;
+    } else if (typeof nestedResponse === 'object') {
+      response = nestedResponse.text || nestedResponse.answer || nestedResponse.content || JSON.stringify(nestedResponse);
+    }
+    const meta = workflowResult.metadata || {};
+    confidence = meta.confidence || 0.5;
+    sources = [];
+    // If metadata has source info, create a source entry
+    if (meta.source) {
+      sources.push({ source: meta.source, content: '', type: 'graph' });
+    }
+    success = response && String(response).trim().length > 10;
+  }
+}
+// === FORMAT 3"""
+            if search in code:
+                node["parameters"]["jsCode"] = code.replace(search, replace)
+                changes.append("P0-FIX: Task Result Handler - added else clause for Graph RAG direct string responses (fixes false fallbacks)")
+            break
 
     # --- FIX 11: Intent Analyzer - simplified prompt for speed ---
     for node in wf["nodes"]:
