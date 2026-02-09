@@ -30,6 +30,7 @@ Then: analyze the ONE pipeline with the worst gap → diagnose via n8n execution
 | **All diagnostics** | `python3 eval/node-analyzer.py --all --last 5` |
 | **Single execution** | `python3 eval/node-analyzer.py --execution-id <ID>` |
 | **Setup embeddings** | `python3 db/populate/setup_embeddings.py --provider jina` |
+| **MCP embedding tools** | Available via MCP server (auto-loaded in Claude Code) |
 
 ---
 
@@ -233,6 +234,8 @@ python3 eval/node-analyzer.py --pipeline <target> --last 10
 | `workflows/sync.py` | **Sync active workflows from n8n to GitHub** |
 | `workflows/live/` | **Synced workflow JSONs** (record of what's deployed) |
 | `workflows/improved/apply.py` | Historical patches (DEPRECATED for new changes) |
+| `mcp/jina-embeddings-server.py` | **MCP server** — 8 tools for embedding + Pinecone + n8n config |
+| `.claude/settings.json` | MCP server config (auto-loaded by Claude Code) |
 | `db/populate/setup_embeddings.py` | **Free embeddings setup** (Jina/HF/OpenRouter → Pinecone + n8n) |
 | `db/populate/phase2_neo4j.py` | Phase 2 Neo4j entity extraction |
 | `db/populate/phase2_supabase.py` | Phase 2 Supabase table population |

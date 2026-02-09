@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 """
-MCP Server — Jina AI Embeddings + Pinecone Vector Management
+MCP Server — Embeddings + Pinecone Vector Management
 
-Provides tools for generating embeddings with Jina AI's free tier
-and managing Pinecone vector indexes. Designed for the Multi-RAG
-Orchestrator benchmark pipeline.
+Provides tools for generating embeddings and managing Pinecone vector
+indexes. Designed for the Multi-RAG Orchestrator benchmark pipeline.
 
-Free: Jina AI gives 10M tokens free (no credit card needed).
-Get your key at: https://jina.ai/api-dashboard/key-manager
+Supports two embedding providers:
+  1. Jina AI (FREE — 10M tokens/month, 1024-dim, jina-embeddings-v3)
+     Get your free key at: https://jina.ai/api-dashboard/key-manager
+  2. OpenRouter (PAID fallback — 1536-dim, text-embedding-3-small)
+     Uses existing n8n OpenRouter API key.
 
 Usage (stdio transport — default for Claude Code):
     python3 mcp/jina-embeddings-server.py
 
 Environment:
-    JINA_API_KEY       — Required. Free at https://jina.ai/
-    PINECONE_API_KEY   — For vector operations
-    N8N_API_KEY        — For updating n8n workflow variables
-    N8N_HOST           — n8n cloud URL (default: https://amoret.app.n8n.cloud)
+    JINA_API_KEY         — Optional. Free at https://jina.ai/ (preferred)
+    OPENROUTER_API_KEY   — Fallback. Paid embeddings via OpenRouter.
+    PINECONE_API_KEY     — For vector operations
+    N8N_API_KEY          — For updating n8n workflow variables
+    N8N_HOST             — n8n cloud URL (default: https://amoret.app.n8n.cloud)
 """
 import json
 import os
@@ -33,6 +36,7 @@ from mcp.types import Tool, TextContent
 # Configuration
 # ============================================================
 JINA_API_KEY = os.environ.get("JINA_API_KEY", "")
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY", "")
 PINECONE_MGMT_URL = "https://api.pinecone.io"
 N8N_HOST = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")
@@ -41,6 +45,10 @@ N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 JINA_EMBEDDING_URL = "https://api.jina.ai/v1/embeddings"
 JINA_MODEL = "jina-embeddings-v3"
 JINA_DIMENSION = 1024
+
+OPENROUTER_EMBEDDING_URL = "https://openrouter.ai/api/v1/embeddings"
+OPENROUTER_MODEL = "openai/text-embedding-3-small"
+OPENROUTER_DIMENSION = 1536
 
 REPO_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 
@@ -67,23 +75,60 @@ def http_request(url, method="GET", body=None, headers=None, timeout=30):
         return {"error": True, "message": str(e)}
 
 
-def jina_embed(texts, task="retrieval.passage", dimensions=JINA_DIMENSION):
-    """Generate embeddings using Jina AI API."""
-    if not JINA_API_KEY:
-        return {"error": True, "message": "JINA_API_KEY not set. Get free key at https://jina.ai/api-dashboard/key-manager"}
+def get_embedding_provider():
+    """Determine which embedding provider to use. Jina preferred (free), OpenRouter fallback."""
+    if JINA_API_KEY:
+        return "jina"
+    elif OPENROUTER_API_KEY:
+        return "openrouter"
+    return None
 
-    headers = {
-        "Authorization": f"Bearer {JINA_API_KEY}",
-        "Content-Type": "application/json",
-    }
-    body = {
-        "model": JINA_MODEL,
-        "input": texts[:64],  # Jina batch limit
-        "task": task,
-        "dimensions": dimensions,
-        "normalized": True,
-    }
-    return http_request(JINA_EMBEDDING_URL, "POST", body, headers, timeout=60)
+
+def embed_texts(texts, task="retrieval.passage", dimensions=None, provider=None):
+    """Generate embeddings using the best available provider.
+
+    Priority: Jina AI (free) > OpenRouter (paid fallback).
+    Returns OpenAI-compatible response format.
+    """
+    if provider is None:
+        provider = get_embedding_provider()
+
+    if provider == "jina":
+        dims = dimensions or JINA_DIMENSION
+        headers = {
+            "Authorization": f"Bearer {JINA_API_KEY}",
+            "Content-Type": "application/json",
+        }
+        body = {
+            "model": JINA_MODEL,
+            "input": texts[:64],  # Jina batch limit
+            "task": task,
+            "dimensions": dims,
+            "normalized": True,
+        }
+        result = http_request(JINA_EMBEDDING_URL, "POST", body, headers, timeout=60)
+        result["_provider"] = "jina"
+        result["_dimension"] = dims
+        return result
+
+    elif provider == "openrouter":
+        dims = dimensions or OPENROUTER_DIMENSION
+        headers = {
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json",
+        }
+        body = {
+            "model": OPENROUTER_MODEL,
+            "input": texts[:64],
+        }
+        if dimensions and dimensions != 1536:
+            body["dimensions"] = dimensions
+        result = http_request(OPENROUTER_EMBEDDING_URL, "POST", body, headers, timeout=60)
+        result["_provider"] = "openrouter"
+        result["_dimension"] = dims
+        return result
+
+    return {"error": True, "message": "No embedding API key available. Set JINA_API_KEY (free: https://jina.ai/api-dashboard/key-manager) or OPENROUTER_API_KEY."}
 
 
 def pinecone_mgmt(method, path, body=None):
@@ -123,7 +168,7 @@ async def list_tools() -> list[Tool]:
     return [
         Tool(
             name="jina_embed",
-            description="Generate embeddings for a list of texts using Jina AI's free API (jina-embeddings-v3, 1024-dim). Returns vectors ready for Pinecone upsert. Free: 10M tokens/month.",
+            description="Generate embeddings for a list of texts. Auto-selects best provider: Jina AI free (1024-dim) if JINA_API_KEY set, otherwise OpenRouter (1536-dim, paid). Returns vectors ready for Pinecone upsert.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -141,8 +186,13 @@ async def list_tools() -> list[Tool]:
                     },
                     "dimensions": {
                         "type": "integer",
-                        "default": 1024,
-                        "description": "Output dimension (32-1024, default 1024)",
+                        "description": "Output dimension (default: 1024 for Jina, 1536 for OpenRouter)",
+                    },
+                    "provider": {
+                        "type": "string",
+                        "enum": ["jina", "openrouter", "auto"],
+                        "default": "auto",
+                        "description": "Embedding provider. 'auto' picks Jina if available, else OpenRouter.",
                     },
                 },
                 "required": ["texts"],
@@ -220,7 +270,7 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="embed_and_upsert",
-            description="All-in-one: embed texts with Jina AI and upsert to Pinecone in one operation. Handles batching automatically. Perfect for populating a namespace from question data.",
+            description="All-in-one: embed texts and upsert to Pinecone in one operation. Auto-selects Jina (free) or OpenRouter (paid fallback). Handles batching automatically. Perfect for populating a namespace from question data.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -249,6 +299,12 @@ async def list_tools() -> list[Tool]:
                         "type": "string",
                         "default": "retrieval.passage",
                         "description": "Embedding task type",
+                    },
+                    "provider": {
+                        "type": "string",
+                        "enum": ["jina", "openrouter", "auto"],
+                        "default": "auto",
+                        "description": "Embedding provider",
                     },
                 },
                 "required": ["index_host", "namespace", "items"],
@@ -343,14 +399,19 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
 def _jina_embed(args):
     texts = args.get("texts", [])
     task = args.get("task", "retrieval.passage")
-    dims = args.get("dimensions", JINA_DIMENSION)
+    dims = args.get("dimensions")
+    provider_arg = args.get("provider", "auto")
+    provider = None if provider_arg == "auto" else provider_arg
 
     if not texts:
         return {"error": "No texts provided"}
 
-    result = jina_embed(texts, task, dims)
+    result = embed_texts(texts, task, dims, provider)
     if result.get("error"):
         return result
+
+    used_provider = result.get("_provider", "unknown")
+    used_dim = result.get("_dimension", 0)
 
     embeddings = []
     for item in result.get("data", []):
@@ -362,9 +423,10 @@ def _jina_embed(args):
 
     return {
         "success": True,
+        "provider": used_provider,
         "count": len(embeddings),
-        "dimension": embeddings[0]["dimension"] if embeddings else 0,
-        "model": result.get("model", JINA_MODEL),
+        "dimension": embeddings[0]["dimension"] if embeddings else used_dim,
+        "model": result.get("model", ""),
         "usage": result.get("usage", {}),
         "embeddings": embeddings,
     }
@@ -461,6 +523,8 @@ def _embed_and_upsert(args):
     namespace = args["namespace"]
     items = args["items"]
     task = args.get("task", "retrieval.passage")
+    provider_arg = args.get("provider", "auto")
+    provider = None if provider_arg == "auto" else provider_arg
 
     if not items:
         return {"error": "No items provided"}
@@ -468,16 +532,20 @@ def _embed_and_upsert(args):
     total_upserted = 0
     batch_size = 64
     errors = []
+    used_provider = None
 
     for i in range(0, len(items), batch_size):
         batch = items[i:i+batch_size]
         texts = [item["text"][:4000] for item in batch]
 
         # Embed
-        emb_result = jina_embed(texts, task)
+        emb_result = embed_texts(texts, task, provider=provider)
         if emb_result.get("error"):
             errors.append(f"Batch {i//batch_size}: {emb_result.get('message', '')}")
             continue
+
+        if not used_provider:
+            used_provider = emb_result.get("_provider", "unknown")
 
         embeddings = emb_result.get("data", [])
         if len(embeddings) != len(batch):
@@ -507,6 +575,7 @@ def _embed_and_upsert(args):
 
     return {
         "success": total_upserted > 0,
+        "provider": used_provider,
         "total_embedded": len(items),
         "total_upserted": total_upserted,
         "namespace": namespace,
@@ -624,23 +693,39 @@ def _setup_status(args):
     status = {
         "timestamp": datetime.now().isoformat(),
         "jina": {"configured": bool(JINA_API_KEY)},
+        "openrouter": {"configured": bool(OPENROUTER_API_KEY)},
         "pinecone": {"configured": bool(PINECONE_API_KEY)},
         "n8n": {"configured": bool(N8N_API_KEY)},
+        "active_provider": get_embedding_provider() or "none",
     }
 
     # Test Jina
     if JINA_API_KEY:
-        result = jina_embed(["connectivity test"], "retrieval.passage")
+        result = embed_texts(["connectivity test"], "retrieval.passage", provider="jina")
         if not result.get("error"):
             dim = len(result.get("data", [{}])[0].get("embedding", []))
             status["jina"]["connected"] = True
             status["jina"]["model"] = JINA_MODEL
             status["jina"]["dimension"] = dim
+            status["jina"]["cost"] = "FREE (10M tokens/month)"
         else:
             status["jina"]["connected"] = False
             status["jina"]["error"] = result.get("message", "")[:200]
     else:
         status["jina"]["message"] = "Set JINA_API_KEY. Free: https://jina.ai/api-dashboard/key-manager"
+
+    # Test OpenRouter
+    if OPENROUTER_API_KEY:
+        result = embed_texts(["connectivity test"], "retrieval.passage", provider="openrouter")
+        if not result.get("error"):
+            dim = len(result.get("data", [{}])[0].get("embedding", []))
+            status["openrouter"]["connected"] = True
+            status["openrouter"]["model"] = OPENROUTER_MODEL
+            status["openrouter"]["dimension"] = dim
+            status["openrouter"]["cost"] = "PAID ($0.02/1M tokens)"
+        else:
+            status["openrouter"]["connected"] = False
+            status["openrouter"]["error"] = result.get("message", "")[:200]
 
     # Check Pinecone
     if PINECONE_API_KEY:
@@ -677,15 +762,13 @@ def _setup_status(args):
     }
 
     # Readiness assessment
-    ready = all([
-        status["jina"].get("connected"),
-        status["pinecone"].get("connected"),
-    ])
+    has_embedding = status["jina"].get("connected") or status["openrouter"].get("connected")
+    ready = has_embedding and status["pinecone"].get("connected")
     status["ready_for_embedding"] = ready
     if not ready:
         blockers = []
-        if not status["jina"].get("connected"):
-            blockers.append("Jina API not connected (set JINA_API_KEY)")
+        if not has_embedding:
+            blockers.append("No embedding provider available (set JINA_API_KEY or OPENROUTER_API_KEY)")
         if not status["pinecone"].get("connected"):
             blockers.append("Pinecone API not connected (set PINECONE_API_KEY)")
         status["blockers"] = blockers
