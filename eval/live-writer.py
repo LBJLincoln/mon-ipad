@@ -67,7 +67,7 @@ def _load():
 def _save(data):
     """Save data.json atomically, then regenerate docs/status.json."""
     data["meta"]["generated_at"] = datetime.utcnow().isoformat() + "Z"
-    tmp = DATA_FILE + ".tmp"
+    tmp = DATA_FILE + f".tmp.{threading.get_ident()}"
     with open(tmp, "w") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
     os.replace(tmp, DATA_FILE)
@@ -298,17 +298,17 @@ def _update_pipeline_trends(data):
         trend = []
         for iteration in data.get("iterations", []):
             rs = iteration.get("results_summary", {}).get(rt)
-            if rs:
+            if rs and rs.get("tested", 0) > 0:
                 trend.append({
                     "iteration_id": iteration["id"],
                     "iteration_number": iteration["number"],
-                    "accuracy_pct": rs["accuracy_pct"],
-                    "tested": rs["tested"],
-                    "errors": rs["errors"],
-                    "avg_latency_ms": rs["avg_latency_ms"],
+                    "accuracy_pct": rs.get("accuracy_pct", 0),
+                    "tested": rs.get("tested", 0),
+                    "errors": rs.get("errors", 0),
+                    "avg_latency_ms": rs.get("avg_latency_ms", 0),
                 })
         if rt in data.get("pipelines", {}):
-            data["pipelines"][rt]["trend"] = trend
+            data["pipelines"][rt]["trend"] = trend[-20:]
 
 
 def _update_meta(data):

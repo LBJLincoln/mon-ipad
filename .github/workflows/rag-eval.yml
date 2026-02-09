@@ -55,28 +55,42 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Check phase gates
-        if: ${{ inputs.dataset != 'phase-1' && inputs.dataset != '' }}
+      - name: Pre-flight health check
         run: |
           python3 -c "
           import json, sys
-          with open('db/readiness/phase-1.json') as f:
-              p1 = json.load(f)
-          gates = p1.get('gate_criteria', {})
-          unmet = [(k, v) for k, v in gates.items() if not v.get('met', False)]
-          if unmet:
-              print('PHASE GATE CHECK FAILED')
-              for k, v in unmet:
-                  print(f'  {k}: {v.get(\"current\",\"?\")}% (target: {v.get(\"target_accuracy\", v.get(\"target\",\"?\"))}%)')
-              sys.exit(1)
-          print('Phase 1 gates: ALL MET')
+          from urllib import request
+          N8N_HOST = 'https://amoret.app.n8n.cloud'
+          endpoints = {
+              'standard': f'{N8N_HOST}/webhook/rag-multi-index-v3',
+              'graph': f'{N8N_HOST}/webhook/ff622742-6d71-4e91-af71-b5c666088717',
+              'quantitative': f'{N8N_HOST}/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9',
+              'orchestrator': f'{N8N_HOST}/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0',
+          }
+          payload = json.dumps({'query': 'ping', 'tenant_id': 'benchmark', 'benchmark_mode': True}).encode()
+          failed = []
+          for name, ep in endpoints.items():
+              try:
+                  req = request.Request(ep, data=payload, headers={'Content-Type': 'application/json'}, method='POST')
+                  with request.urlopen(req, timeout=30) as resp:
+                      print(f'{name}: OK ({resp.status})')
+              except Exception as e:
+                  failed.append(name)
+                  print(f'{name}: FAILED ({e})')
+          if failed:
+              print(f'WARNING: {len(failed)} endpoints unreachable: {failed}')
+              print('Continuing anyway — eval will record errors for failed endpoints.')
           "
+
+      - name: Check phase gates
+        if: ${{ inputs.dataset != 'phase-1' && inputs.dataset != '' }}
+        run: python3 eval/phase_gates.py --enforce ${{ inputs.dataset == 'phase-2' && '2' || '3' }}
 
       - name: Run RAG Evaluation
         run: |
           cd eval
           DATASET="${{ inputs.dataset || 'phase-1' }}"
-          ARGS="--dataset $DATASET --force-phase"
+          ARGS="--dataset $DATASET --force"
           ARGS="$ARGS --types ${{ inputs.types || 'standard,graph,quantitative,orchestrator' }}"
           if [ -n "${{ inputs.max_per_type }}" ]; then
             ARGS="$ARGS --max ${{ inputs.max_per_type }}"
@@ -93,27 +107,45 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/data.json docs/tested-questions.json logs/
+          git add docs/data.json docs/status.json docs/tested-questions.json logs/
           git diff --staged --quiet || (git commit -m "eval: automated pipeline evaluation results" && git push)
 
       - name: Generate summary
         if: always()
         run: |
           python3 -c "
-          import json
-          with open('docs/data.json') as f:
-              data = json.load(f)
+          import json, sys
+          try:
+              with open('docs/data.json') as f:
+                  data = json.load(f)
+          except Exception:
+              print('No data.json found')
+              sys.exit(0)
           print('## RAG Evaluation Results')
           print()
           print('| Pipeline | Tested | Correct | Accuracy | Errors | Avg Latency |')
           print('|----------|--------|---------|----------|--------|-------------|')
-          for name, p in data['pipelines'].items():
-              tested = p.get('tested', 0)
-              correct = p.get('correct', 0)
-              acc = f\"{correct/tested*100:.1f}%\" if tested > 0 else 'N/A'
-              print(f\"| {name} | {tested} | {correct} | {acc} | {p.get('errors',0)} | {p.get('avg_latency_ms',0)}ms |\")
-          total_tested = sum(p.get('tested',0) for p in data['pipelines'].values())
-          total_correct = sum(p.get('correct',0) for p in data['pipelines'].values())
-          overall = f\"{total_correct/total_tested*100:.1f}%\" if total_tested > 0 else 'N/A'
-          print(f\"| **Overall** | **{total_tested}** | **{total_correct}** | **{overall}** | | |')
+          total_tested = 0
+          total_correct = 0
+          for name, p in data.get('pipelines', {}).items():
+              trend = p.get('trend', [])
+              if not trend:
+                  print(f'| {name} | - | - | N/A | - | - |')
+                  continue
+              latest = trend[-1]
+              tested = latest.get('tested', 0)
+              acc = f\"{latest.get('accuracy_pct', 0):.1f}%\"
+              errors = latest.get('errors', 0)
+              latency = f\"{latest.get('avg_latency_ms', 0)}ms\"
+              correct = int(tested * latest.get('accuracy_pct', 0) / 100)
+              total_tested += tested
+              total_correct += correct
+              print(f'| {name} | {tested} | {correct} | {acc} | {errors} | {latency} |')
+          if total_tested > 0:
+              overall = f'{total_correct/total_tested*100:.1f}%'
+              print(f'| **Overall** | **{total_tested}** | **{total_correct}** | **{overall}** | | |')
           " >> $GITHUB_STEP_SUMMARY
+
+      - name: Check phase gates post-eval
+        if: always()
+        run: python3 eval/phase_gates.py

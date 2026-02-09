@@ -31,7 +31,6 @@ on:
         description: 'Label for this evaluation run'
         default: ''
         type: string
-  # Run after the main eval workflow completes
   workflow_run:
     workflows: ["RAG Evaluation Pipeline"]
     types: [completed]
@@ -63,22 +62,25 @@ jobs:
 
       - name: Analyze latest results
         id: analysis
-        run: |
-          python3 eval/analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY
+        run: python3 eval/analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY
 
       - name: Create issue if regressions found
         if: steps.analysis.outputs.has_regressions == 'true'
         run: |
+          ITER_NUM="unknown"
+          if [ -f /tmp/iter_num ]; then ITER_NUM=$(cat /tmp/iter_num); fi
+          BODY="No regression report available."
+          if [ -f /tmp/regression_report.md ]; then BODY=$(cat /tmp/regression_report.md); fi
           gh issue create \
-            --title "Regression detected in iteration $(cat /tmp/iter_num)" \
-            --body "$(cat /tmp/regression_report.md)" \
+            --title "Regression detected in iteration $ITER_NUM" \
+            --body "$BODY" \
             --label "regression,automated"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   quick-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     if: ${{ github.event.inputs.action == 'quick-test' }}
 
     steps:
@@ -101,7 +103,7 @@ jobs:
         run: |
           git config user.name "agentic-eval[bot]"
           git config user.email "agentic-eval[bot]@users.noreply.github.com"
-          git add docs/data.json
+          git add docs/data.json docs/status.json
           git diff --staged --quiet || (git commit -m "quick-test: endpoint smoke test results" && git push)
 
   full-eval:
@@ -119,29 +121,20 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Pre-flight health check
+        run: |
+          python3 eval/quick-test.py --pipelines "${{ inputs.pipelines }}" --questions 1 || true
+
       - name: Check phase gates
         if: ${{ inputs.dataset != 'phase-1' && inputs.dataset != '' }}
-        run: |
-          python3 -c "
-          import json, sys
-          with open('db/readiness/phase-1.json') as f:
-              p1 = json.load(f)
-          gates = p1.get('gate_criteria', {})
-          unmet = [(k, v) for k, v in gates.items() if not v.get('met', False)]
-          if unmet:
-              print('PHASE GATE CHECK FAILED')
-              for k, v in unmet:
-                  print(f'  {k}: {v.get(\"current\",\"?\")}% (target: {v.get(\"target_accuracy\", v.get(\"target\",\"?\"))}%)')
-              sys.exit(1)
-          print('Phase 1 gates: ALL MET')
-          "
+        run: python3 eval/phase_gates.py --enforce ${{ inputs.dataset == 'phase-2' && '2' || '3' }}
 
       - name: Run full evaluation
         run: |
           cd eval
           DATASET="${{ inputs.dataset || 'phase-1' }}"
           LABEL="${{ inputs.label || '' }}"
-          ARGS="--dataset $DATASET --types ${{ inputs.pipelines }} --max ${{ inputs.max_questions }} --reset --force-phase"
+          ARGS="--dataset $DATASET --types ${{ inputs.pipelines }} --max ${{ inputs.max_questions }} --reset --force"
           if [ -n "$LABEL" ]; then
             ARGS="$ARGS --label \"$LABEL\""
           fi
@@ -151,9 +144,13 @@ jobs:
         run: |
           git config user.name "agentic-eval[bot]"
           git config user.email "agentic-eval[bot]@users.noreply.github.com"
-          git add docs/data.json docs/tested-questions.json logs/
+          git add docs/data.json docs/status.json docs/tested-questions.json logs/
           git diff --staged --quiet || (git commit -m "eval: full evaluation (${{ inputs.dataset || 'phase-1' }}, ${{ inputs.pipelines }})" && git push)
 
       - name: Run analysis
-        run: |
-          python3 eval/analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY
+        if: always()
+        run: python3 eval/analyzer.py --output-summary >> $GITHUB_STEP_SUMMARY
+
+      - name: Check phase gates post-eval
+        if: always()
+        run: python3 eval/phase_gates.py
