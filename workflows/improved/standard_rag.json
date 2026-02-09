@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-09T02:38:58.271Z",
+  "updatedAt": "2026-02-09T04:11:53.476Z",
   "createdAt": "2026-01-30T16:51:51.530Z",
   "id": "LnTqRX4LZlI009Ks-3Jnp",
   "name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
@@ -57,7 +57,7 @@
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots qui repondrait parfaitement a la question.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
         "options": {
           "batching": {
             "batch": {
@@ -353,7 +353,7 @@
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere precise et factuelle en citant tes sources entre crochets [1], [2], etc.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 1500\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
         "options": {
           "batching": {
             "batch": {
@@ -389,7 +389,7 @@
     },
     {
       "parameters": {
-        "jsCode": "\n// PHASE-1 FIX: Handle empty Pinecone results gracefully\nif (!response || (typeof response === 'string' && response.trim() === '')) {\n  response = 'Unable to find a specific answer for this question in the knowledge base.';\n}\n// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n\n  // Try to get reranked sources\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n\n  // Try to get init data\n  let initData = {};\n  try {\n    initData = $node['Init & ACL Pre-Filter V3.4'].json;\n  } catch(e) {}\n\n  if (llmContent) {\n    return [{\n      json: {\n        response: llmContent,\n        trace_id: initData.trace_id || 'tr-' + Date.now(),\n        sources: sources.slice(0, 5),\n        model: $vars.LLM_STANDARD_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n        embedding_fallback: sources.length === 0,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  // No LLM answer - return fallback\n  return [{\n    json: {\n      response: 'Unable to generate answer - retrieval and LLM both unavailable',\n      trace_id: initData.trace_id || 'tr-' + Date.now(),\n      error: true,\n      embedding_fallback: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} catch(e) {\n  return [{\n    json: {\n      response: 'Error in response formatting: ' + e.message,\n      error: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
+        "jsCode": "\n// PHASE-1 FIX: Handle empty Pinecone results gracefully\nif (!response || (typeof response === 'string' && response.trim() === '')) {\n  response = 'Unable to find a specific answer for this question in the knowledge base.';\n}\n\n// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n\n  // Try to get reranked sources\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n\n  // Try to get init data\n  let initData = {};\n  try {\n    initData = $node['Init & ACL Pre-Filter V3.4'].json;\n  } catch(e) {}\n\n  if (llmContent) {\n    return [{\n      json: {\n        response: llmContent,\n        trace_id: initData.trace_id || 'tr-' + Date.now(),\n        sources: sources.slice(0, 5),\n        model: $vars.LLM_STANDARD_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n        embedding_fallback: sources.length === 0,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  // No LLM answer - return fallback\n  return [{\n    json: {\n      response: 'Unable to generate answer - retrieval and LLM both unavailable',\n      trace_id: initData.trace_id || 'tr-' + Date.now(),\n      error: true,\n      embedding_fallback: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} catch(e) {\n  return [{\n    json: {\n      response: 'Error in response formatting: ' + e.message,\n      error: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
       },
       "id": "66bf2956-117a-4408-b218-cf96cb317529",
       "name": "Response Formatter",
@@ -844,16 +844,17 @@
     "executionOrder": "v1",
     "availableInMCP": false,
     "timeSavedMode": "fixed",
-    "callerPolicy": "workflowsFromSameOwner"
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 90
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "51a37aad-ece5-4d4c-8c9c-9e721e3291c0",
-  "activeVersionId": "51a37aad-ece5-4d4c-8c9c-9e721e3291c0",
-  "versionCounter": 101,
+  "versionId": "7bff71b4-ac59-4906-8451-2d8ae7a46b3c",
+  "activeVersionId": "7bff71b4-ac59-4906-8451-2d8ae7a46b3c",
+  "versionCounter": 136,
   "triggerCount": 2,
   "shared": [
     {
@@ -878,7 +879,7 @@
             "userId": "215767e0-958a-4c74-a67a-e335807eba64",
             "projectId": "JV7MbqBbWPTstXIo",
             "user": {
-              "updatedAt": "2026-02-08T23:36:29.000Z",
+              "updatedAt": "2026-02-09T05:28:05.000Z",
               "createdAt": "2026-01-07T13:20:20.003Z",
               "id": "215767e0-958a-4c74-a67a-e335807eba64",
               "email": "alexis.moret6@outlook.fr",
@@ -908,9 +909,9 @@
   ],
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-02-09T02:38:58.272Z",
-    "createdAt": "2026-02-09T02:38:58.272Z",
-    "versionId": "51a37aad-ece5-4d4c-8c9c-9e721e3291c0",
+    "updatedAt": "2026-02-09T04:11:53.480Z",
+    "createdAt": "2026-02-09T04:11:53.480Z",
+    "versionId": "7bff71b4-ac59-4906-8451-2d8ae7a46b3c",
     "workflowId": "LnTqRX4LZlI009Ks-3Jnp",
     "nodes": [
       {
@@ -963,7 +964,7 @@
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots qui repondrait parfaitement a la question.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1259,7 +1260,7 @@
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere precise et factuelle en citant tes sources entre crochets [1], [2], etc.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 1500\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1295,7 +1296,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n\n  // Try to get reranked sources\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n\n  // Try to get init data\n  let initData = {};\n  try {\n    initData = $node['Init & ACL Pre-Filter V3.4'].json;\n  } catch(e) {}\n\n  if (llmContent) {\n    return [{\n      json: {\n        response: llmContent,\n        trace_id: initData.trace_id || 'tr-' + Date.now(),\n        sources: sources.slice(0, 5),\n        model: $vars.LLM_STANDARD_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n        embedding_fallback: sources.length === 0,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  // No LLM answer - return fallback\n  return [{\n    json: {\n      response: 'Unable to generate answer - retrieval and LLM both unavailable',\n      trace_id: initData.trace_id || 'tr-' + Date.now(),\n      error: true,\n      embedding_fallback: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} catch(e) {\n  return [{\n    json: {\n      response: 'Error in response formatting: ' + e.message,\n      error: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
+          "jsCode": "\n// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n\n  // Try to get reranked sources\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n\n  // Try to get init data\n  let initData = {};\n  try {\n    initData = $node['Init & ACL Pre-Filter V3.4'].json;\n  } catch(e) {}\n\n  if (llmContent) {\n    return [{\n      json: {\n        response: llmContent,\n        trace_id: initData.trace_id || 'tr-' + Date.now(),\n        sources: sources.slice(0, 5),\n        model: $vars.LLM_STANDARD_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n        embedding_fallback: sources.length === 0,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  // No LLM answer - return fallback\n  return [{\n    json: {\n      response: 'Unable to generate answer - retrieval and LLM both unavailable',\n      trace_id: initData.trace_id || 'tr-' + Date.now(),\n      error: true,\n      embedding_fallback: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} catch(e) {\n  return [{\n    json: {\n      response: 'Error in response formatting: ' + e.message,\n      error: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
         },
         "id": "66bf2956-117a-4408-b218-cf96cb317529",
         "name": "Response Formatter",
@@ -1752,11 +1753,35 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-02-09T02:38:58.507Z",
-        "id": 753,
+        "createdAt": "2026-02-09T04:11:54.717Z",
+        "id": 809,
         "workflowId": "LnTqRX4LZlI009Ks-3Jnp",
-        "versionId": "51a37aad-ece5-4d4c-8c9c-9e721e3291c0",
+        "versionId": "7bff71b4-ac59-4906-8451-2d8ae7a46b3c",
         "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T04:13:07.851Z",
+        "id": 812,
+        "workflowId": "LnTqRX4LZlI009Ks-3Jnp",
+        "versionId": "7bff71b4-ac59-4906-8451-2d8ae7a46b3c",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T17:32:47.993Z",
+        "id": 822,
+        "workflowId": "LnTqRX4LZlI009Ks-3Jnp",
+        "versionId": "7bff71b4-ac59-4906-8451-2d8ae7a46b3c",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T16:41:52.817Z",
+        "id": 819,
+        "workflowId": "LnTqRX4LZlI009Ks-3Jnp",
+        "versionId": "7bff71b4-ac59-4906-8451-2d8ae7a46b3c",
+        "event": "deactivated",
         "userId": "215767e0-958a-4c74-a67a-e335807eba64"
       }
     ]

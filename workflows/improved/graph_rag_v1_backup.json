@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-09T02:38:59.369Z",
+  "updatedAt": "2026-02-09T04:11:55.955Z",
   "createdAt": "2026-01-30T16:54:29.973Z",
   "id": "95x2BBAbJlLWZtWEJn6rb",
   "name": "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED",
@@ -462,7 +462,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract partial info from context\n  const ctx = $node['Response Formatter']?.json || {};\n  answer = 'Unable to process query at this time. Please try again.';\n} else {\n  answer = llmResponse.choices?.[0]?.message?.content || '';\n}\n\nif (!answer || answer.trim() === '') {\n  answer = 'No answer generated';\n}\n\nconst contextData = $node['Response Formatter']?.json || {};\n\nreturn [{ json: {\n  status: answer !== 'No answer generated' ? 'SUCCESS' : 'NO_ANSWER',\n  trace_id: contextData.trace_id || '',\n  response: answer.trim(),\n  metadata: {\n    source: 'graph_rag_llm_synthesis',\n    tokens_used: contextData.tokens_used || 0,\n    traversal_depth: contextData.traversal_depth || 0,\n    context_sources: contextData.context_sources || 0\n  }\n} }];"
+        "jsCode": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract partial info from context\n  const ctx = $node['Response Formatter']?.json || {};\n  // Try to extract answer from context even if LLM failed\n    const ctxFallback = $node['Response Formatter']?.json || {};\n    const contextText = ctxFallback.context || '';\n    if (contextText.length > 20) {\n      // Use first meaningful sentence from context as answer\n      const sentences = contextText.split(/[.!?]/).filter(s => s.trim().length > 10);\n      answer = sentences.slice(0, 2).join('. ').trim() + '.';\n    } else {\n      answer = 'Information not available in the knowledge graph.';\n    }\n} else {\n  answer = llmResponse.choices?.[0]?.message?.content || '';\n}\n\nif (!answer || answer.trim() === '') {\n  answer = 'No answer generated';\n}\n\nconst contextData = $node['Response Formatter']?.json || {};\n\nreturn [{ json: {\n  status: answer !== 'No answer generated' ? 'SUCCESS' : 'NO_ANSWER',\n  trace_id: contextData.trace_id || '',\n  response: answer.trim(),\n  metadata: {\n    source: 'graph_rag_llm_synthesis',\n    tokens_used: contextData.tokens_used || 0,\n    traversal_depth: contextData.traversal_depth || 0,\n    context_sources: contextData.context_sources || 0\n  }\n} }];"
       },
       "id": "e5f6g7h8-answer-formatter",
       "name": "Answer Formatter",
@@ -789,16 +789,17 @@
     "executionOrder": "v1",
     "availableInMCP": false,
     "timeSavedMode": "fixed",
-    "callerPolicy": "workflowsFromSameOwner"
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 90
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "0cbc0bc1-10a2-48dd-b6dd-63dcb1c7eaf7",
-  "activeVersionId": "0cbc0bc1-10a2-48dd-b6dd-63dcb1c7eaf7",
-  "versionCounter": 310,
+  "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+  "activeVersionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+  "versionCounter": 335,
   "triggerCount": 2,
   "shared": [
     {
@@ -823,7 +824,7 @@
             "userId": "215767e0-958a-4c74-a67a-e335807eba64",
             "projectId": "JV7MbqBbWPTstXIo",
             "user": {
-              "updatedAt": "2026-02-08T23:36:29.000Z",
+              "updatedAt": "2026-02-09T05:28:05.000Z",
               "createdAt": "2026-01-07T13:20:20.003Z",
               "id": "215767e0-958a-4c74-a67a-e335807eba64",
               "email": "alexis.moret6@outlook.fr",
@@ -853,9 +854,9 @@
   ],
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-02-09T02:38:59.370Z",
-    "createdAt": "2026-02-09T02:38:59.370Z",
-    "versionId": "0cbc0bc1-10a2-48dd-b6dd-63dcb1c7eaf7",
+    "updatedAt": "2026-02-09T03:44:05.489Z",
+    "createdAt": "2026-02-09T03:44:05.489Z",
+    "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
     "workflowId": "95x2BBAbJlLWZtWEJn6rb",
     "nodes": [
       {
@@ -1313,7 +1314,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract partial info from context\n  const ctx = $node['Response Formatter']?.json || {};\n  answer = 'Unable to process query at this time. Please try again.';\n} else {\n  answer = llmResponse.choices?.[0]?.message?.content || '';\n}\n\nif (!answer || answer.trim() === '') {\n  answer = 'No answer generated';\n}\n\nconst contextData = $node['Response Formatter']?.json || {};\n\nreturn [{ json: {\n  status: answer !== 'No answer generated' ? 'SUCCESS' : 'NO_ANSWER',\n  trace_id: contextData.trace_id || '',\n  response: answer.trim(),\n  metadata: {\n    source: 'graph_rag_llm_synthesis',\n    tokens_used: contextData.tokens_used || 0,\n    traversal_depth: contextData.traversal_depth || 0,\n    context_sources: contextData.context_sources || 0\n  }\n} }];"
+          "jsCode": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract partial info from context\n  const ctx = $node['Response Formatter']?.json || {};\n  // Try to extract answer from context even if LLM failed\n    const ctxFallback = $node['Response Formatter']?.json || {};\n    const contextText = ctxFallback.context || '';\n    if (contextText.length > 20) {\n      // Use first meaningful sentence from context as answer\n      const sentences = contextText.split(/[.!?]/).filter(s => s.trim().length > 10);\n      answer = sentences.slice(0, 2).join('. ').trim() + '.';\n    } else {\n      answer = 'Information not available in the knowledge graph.';\n    }\n} else {\n  answer = llmResponse.choices?.[0]?.message?.content || '';\n}\n\nif (!answer || answer.trim() === '') {\n  answer = 'No answer generated';\n}\n\nconst contextData = $node['Response Formatter']?.json || {};\n\nreturn [{ json: {\n  status: answer !== 'No answer generated' ? 'SUCCESS' : 'NO_ANSWER',\n  trace_id: contextData.trace_id || '',\n  response: answer.trim(),\n  metadata: {\n    source: 'graph_rag_llm_synthesis',\n    tokens_used: contextData.tokens_used || 0,\n    traversal_depth: contextData.traversal_depth || 0,\n    context_sources: contextData.context_sources || 0\n  }\n} }];"
         },
         "id": "e5f6g7h8-answer-formatter",
         "name": "Answer Formatter",
@@ -1642,11 +1643,99 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-02-09T02:38:59.649Z",
-        "id": 754,
+        "createdAt": "2026-02-09T03:44:07.550Z",
+        "id": 765,
         "workflowId": "95x2BBAbJlLWZtWEJn6rb",
-        "versionId": "0cbc0bc1-10a2-48dd-b6dd-63dcb1c7eaf7",
+        "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
         "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T03:53:27.464Z",
+        "id": 777,
+        "workflowId": "95x2BBAbJlLWZtWEJn6rb",
+        "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T03:54:13.410Z",
+        "id": 781,
+        "workflowId": "95x2BBAbJlLWZtWEJn6rb",
+        "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T03:54:28.691Z",
+        "id": 787,
+        "workflowId": "95x2BBAbJlLWZtWEJn6rb",
+        "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T03:55:18.523Z",
+        "id": 797,
+        "workflowId": "95x2BBAbJlLWZtWEJn6rb",
+        "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T04:02:54.047Z",
+        "id": 803,
+        "workflowId": "95x2BBAbJlLWZtWEJn6rb",
+        "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T04:11:57.435Z",
+        "id": 810,
+        "workflowId": "95x2BBAbJlLWZtWEJn6rb",
+        "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T04:13:09.082Z",
+        "id": 813,
+        "workflowId": "95x2BBAbJlLWZtWEJn6rb",
+        "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T03:53:08.716Z",
+        "id": 773,
+        "workflowId": "95x2BBAbJlLWZtWEJn6rb",
+        "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+        "event": "deactivated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T03:54:25.490Z",
+        "id": 786,
+        "workflowId": "95x2BBAbJlLWZtWEJn6rb",
+        "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+        "event": "deactivated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T03:54:53.144Z",
+        "id": 793,
+        "workflowId": "95x2BBAbJlLWZtWEJn6rb",
+        "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+        "event": "deactivated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-09T04:02:50.616Z",
+        "id": 802,
+        "workflowId": "95x2BBAbJlLWZtWEJn6rb",
+        "versionId": "89fbfd30-0348-4174-8a1b-c6934f93e61a",
+        "event": "deactivated",
         "userId": "215767e0-958a-4c74-a67a-e335807eba64"
       }
     ]
