@@ -5,7 +5,16 @@
 
 ---
 
-## Current State (Feb 8, 2026)
+## Current State (Feb 9, 2026)
+
+### Free Model Migration: COMPLETE (Feb 9)
+
+All LLM models migrated to **free OpenRouter models** ($0 LLM cost):
+- **All workflows**: `meta-llama/llama-3.3-70b-instruct:free` (70B, 131K context, GPT-4 level)
+- **DB population scripts**: Same free model for entity extraction
+- **Previous model**: `google/gemini-2.0-flash-exp` (deprecated Feb 6, 2026)
+- **Rate limits**: 20 req/min, 1000 req/day (with $10+ credit purchase)
+- **Repo cleanup**: Removed ~600K of backup/duplicate files
 
 ### Phase 2 Database: COMPLETE
 
@@ -38,10 +47,10 @@ All Phase 2 database ingestion is done:
 
 ### P0 — Pass Phase 1 Gates
 
-#### Step 1: Set environment variables (CRITICAL BLOCKER)
+#### Step 1: Set environment variables
 ```bash
 export N8N_API_KEY="..."
-export OPENROUTER_API_KEY="..."
+export OPENROUTER_API_KEY="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"
 export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
 export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
@@ -77,10 +86,16 @@ python3 eval/fast-iter.py --dataset phase-2 --label "Phase 2: baseline"
 python3 eval/run-eval-parallel.py --dataset phase-2 --reset --label "Phase 2: baseline"
 ```
 
-### P2 — Re-run Neo4j with --llm (when OpenRouter key renewed)
+### P2 — Re-run Neo4j with --llm (free model, no cost)
 ```bash
 python3 db/populate/phase2_neo4j.py --reset --llm
 ```
+
+### P3 — Rate Limit Mitigation
+If hitting 50 req/day limit on OpenRouter free tier:
+- **Option A**: Purchase $10 in OpenRouter credits to unlock 1000 req/day (credits don't expire)
+- **Option B**: Run evals in smaller batches across multiple days
+- **Option C**: Switch to `deepseek/deepseek-chat-v3-0324:free` or `google/gemma-3-27b-it:free` as alternates
 
 ---
 
@@ -177,9 +192,11 @@ B5: Back to Phase A for next improvement
 ## Critical Blockers
 
 1. **Phase 1 gates not met** — Need to deploy fixes and iterate before Phase 2 eval
-2. **OpenRouter credits exhausted** — Need new key for orchestrator + graph LLM calls
-3. **Orchestrator timeouts** — Sub-workflow chaining exceeds 60s
-4. **Graph entity extraction** — Many entities not found in Neo4j
+2. ~~**OpenRouter credits exhausted**~~ — RESOLVED: migrated to free models (`meta-llama/llama-3.3-70b-instruct:free`)
+3. **Free model rate limits** — 50 req/day (no credits) or 1000 req/day ($10+ credits). Full 200q eval = 800+ API calls
+4. **Orchestrator timeouts** — Sub-workflow chaining exceeds 60s
+5. **Graph entity extraction** — Many entities not found in Neo4j
+6. **Model quality delta** — Llama 3.3 70B may perform differently than Gemini Flash — monitor after first deploy
 
 ---
 
@@ -220,7 +237,57 @@ export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
 export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
 export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
-export OPENROUTER_API_KEY="sk-or-v1-..."  # EXPIRED — need new key
+export OPENROUTER_API_KEY="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"
 export N8N_API_KEY="..."
 export N8N_HOST="https://amoret.app.n8n.cloud"
 ```
+
+---
+
+## Session Log (Feb 9, 2026 — Free Model Migration + Cleanup)
+
+### What Changed
+
+#### 1. Free Model Migration (ALL workflows)
+Replaced all paid models with `meta-llama/llama-3.3-70b-instruct:free`:
+- `workflows/improved/standard-rag.json` — was `google/gemini-2.0-flash-exp`
+- `workflows/improved/graph-rag.json` — was `google/gemini-2.5-flash-preview-05-20` + `gemini-2.0-flash-exp`
+- `workflows/improved/quantitative-rag.json` — was `deepseek/deepseek-chat` + `gemini-2.5-flash-preview-05-20`
+- `workflows/improved/orchestrator.json` — was `deepseek/deepseek-chat` + `gemini-2.5-flash`
+- `workflows/source/standard-rag.json` — was `google/gemini-2.0-flash-exp`
+- `workflows/source/graph-rag.json` — sticky notes updated
+- `db/populate/neo4j.py` — was `google/gemini-2.0-flash-001`
+- `db/populate/phase2_neo4j.py` — was `google/gemini-2.0-flash-001`
+
+#### 2. Repo Cleanup (~600K removed)
+- Deleted `workflows/improved/backups/` (4 files, 170K)
+- Deleted `workflows/improved/*_v1_backup.json` (3 files, 280K)
+- Deleted `workflows/improved/{standard,graph,quantitative}_rag.json` (underscore-named duplicates)
+- Deleted `workflows/deploy/deploy-{iteration2-fixes,embedding-fallback,free-model-fixes,logging-patches}.py` (4 old scripts, 51K)
+- Deleted `db/readiness/verify-phase2*.py` (2 files, 52K)
+- Deleted `docs/data-v1-backup.json` (343K)
+- Deleted tiny test snapshots from `logs/db-snapshots/`
+
+#### 3. Documentation Updated
+- `CLAUDE.md` — LLM Model Registry updated to show all free models + $0 cost projections
+- `STATUS.md` — Free model migration status, updated blockers, rate limit mitigation
+
+### Available Free Model Alternatives (if Llama 3.3 underperforms)
+| Model | Params | Context | Best For |
+|---|---|---|---|
+| `meta-llama/llama-3.3-70b-instruct:free` | 70B | 131K | **CURRENT — all nodes** |
+| `google/gemma-3-27b-it:free` | 27B | 131K | Faster, lighter alternative |
+| `deepseek/deepseek-chat-v3-0324:free` | 671B MoE | 164K | Strong coding/SQL |
+| `qwen/qwen3-coder:free` | 480B MoE | 262K | SQL generation specialist |
+| `meta-llama/llama-4-maverick:free` | Large MoE | 131K | Newest Llama model |
+| `deepseek/deepseek-r1:free` | 671B MoE | 164K | Reasoning tasks |
+
+### Next Session Checklist
+1. Read `STATUS.md` (this file)
+2. Set env vars in Termius (especially `OPENROUTER_API_KEY` and `N8N_API_KEY`)
+3. `git pull origin main` on the VM
+4. Deploy: `python3 workflows/improved/apply.py --deploy`
+5. Smoke test: `python3 eval/quick-test.py --questions 5`
+6. Fast iter: `python3 eval/fast-iter.py --label "Iter 6: free model + P0 fixes"`
+7. If results look good, full eval: `python3 eval/run-eval-parallel.py --reset --label "Iter 6"`
+8. Compare Llama 3.3 vs old Gemini Flash results — if regression > 5pp, try alternate free model

@@ -43,7 +43,7 @@ export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
 export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
 export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
-export OPENROUTER_API_KEY="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"
+export OPENROUTER_API_KEY="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"
 export N8N_API_KEY="..."
 export N8N_HOST="https://amoret.app.n8n.cloud"
 ```
@@ -265,10 +265,11 @@ python3 db/populate/phase2_neo4j.py --reset --llm
 ---
 
 ## Remaining Blockers
-1. **OpenRouter credits**: Need to refill to continue orchestrator + graph testing
+1. **Free model rate limits**: 50 req/day without credits, 1000 req/day with $10+ purchase — may bottleneck full evals
 2. **Orchestrator timeouts**: Sub-workflow chaining exceeds 60s for complex queries
 3. **Graph RAG entity extraction**: Many entities still not found in Neo4j
 4. **Quantitative edge cases**: Employee count queries return 0, product queries fail
+5. **Model quality delta**: Llama 3.3 70B may perform differently than Gemini Flash — monitor after deploy
 
 ---
 
@@ -319,11 +320,7 @@ mon-ipad/
 │   ├── manifest.json                  # Version tracking (hashes, diffs)
 │   ├── sync.py                        # Pull workflows from n8n cloud
 │   ├── deploy/
-│   │   ├── deploy.py                  # Deploy workflow JSON to n8n via API
-│   │   ├── deploy-iteration2-fixes.py
-│   │   ├── deploy-embedding-fallback.py
-│   │   ├── deploy-free-model-fixes.py
-│   │   └── deploy-logging-patches.py
+│   │   └── deploy.py                  # Deploy workflow JSON to n8n via API
 │   ├── source/                        # Source workflow JSONs
 │   │   ├── standard-rag.json
 │   │   ├── graph-rag.json
@@ -466,7 +463,7 @@ export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
 export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
 export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
-export OPENROUTER_API_KEY="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"
+export OPENROUTER_API_KEY="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"
 export N8N_API_KEY="..."              # JWT for n8n cloud API
 export N8N_HOST="https://amoret.app.n8n.cloud"
 ```
@@ -502,31 +499,38 @@ Each level must PASS before scaling up. At each level:
 
 ## LLM Model Registry
 
-All n8n workflow nodes use models via OpenRouter (except embeddings via OpenAI).
+**All LLM models are FREE via OpenRouter** (migrated Feb 9, 2026). Embeddings use OpenAI, reranking uses Cohere.
 
-| Workflow | Node | Model | Provider | Cost (in/out per 1K tok) | Role |
+| Workflow | Node | Model | Provider | Cost | Role |
 |---|---|---|---|---|---|
-| Standard | HyDE Generator | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Hypothetical doc generation |
-| Standard | LLM Generation | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Answer synthesis |
-| Standard | Cohere Rerank | rerank-v3.5 | Cohere | $0.002/— | Re-rank passages |
-| Standard | Pinecone Query | text-embedding-3-small | OpenAI | $0.02/— | Vector embedding |
-| Graph | HyDE Entity Extraction | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Extract entities |
-| Graph | Answer Synthesis | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Generate from graph |
-| Quantitative | Text-to-SQL | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | NL to SQL |
-| Quantitative | SQL Validator | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Validate/fix SQL |
-| Quantitative | Interpretation | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Interpret results |
-| Orchestrator | Intent Analyzer | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Route to pipeline |
-| Orchestrator | Task Planner | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Plan sub-tasks |
-| Orchestrator | Response Builder | gemini-2.0-flash-001 | OpenRouter | $0.075/$0.30 | Merge results |
+| Standard | HyDE Generator | meta-llama/llama-3.3-70b-instruct:free | OpenRouter | FREE | Hypothetical doc generation |
+| Standard | LLM Generation | meta-llama/llama-3.3-70b-instruct:free | OpenRouter | FREE | Answer synthesis |
+| Standard | Cohere Rerank | rerank-v3.5 | Cohere | $0.002/1K | Re-rank passages |
+| Standard | Pinecone Query | text-embedding-3-small | OpenAI | $0.02/1K | Vector embedding |
+| Graph | HyDE Entity Extraction | meta-llama/llama-3.3-70b-instruct:free | OpenRouter | FREE | Extract entities |
+| Graph | Answer Synthesis | meta-llama/llama-3.3-70b-instruct:free | OpenRouter | FREE | Generate from graph |
+| Graph | Cohere Rerank | rerank-multilingual-v3.0 | Cohere | $0.002/1K | Re-rank passages |
+| Quantitative | Text-to-SQL | meta-llama/llama-3.3-70b-instruct:free | OpenRouter | FREE | NL to SQL |
+| Quantitative | SQL Validator | meta-llama/llama-3.3-70b-instruct:free | OpenRouter | FREE | Validate/fix SQL |
+| Quantitative | Interpretation | meta-llama/llama-3.3-70b-instruct:free | OpenRouter | FREE | Interpret results |
+| Orchestrator | Intent Analyzer | meta-llama/llama-3.3-70b-instruct:free | OpenRouter | FREE | Route to pipeline |
+| Orchestrator | Task Planner | meta-llama/llama-3.3-70b-instruct:free | OpenRouter | FREE | Plan sub-tasks |
+| Orchestrator | Response Builder | meta-llama/llama-3.3-70b-instruct:free | OpenRouter | FREE | Merge results |
+| DB Population | Entity Extraction | meta-llama/llama-3.3-70b-instruct:free | OpenRouter | FREE | Neo4j entity extraction |
 
-### Cost Projections
-| Phase | LLM | Embeddings | Infrastructure | Total |
+### Free Model Details
+- **meta-llama/llama-3.3-70b-instruct:free** — 70B params, 131K context, GPT-4 level quality
+- Rate limits: 20 req/min, 1000 req/day (with $10+ credit purchase), 50 req/day (without)
+- Fallback models if needed: `google/gemma-3-27b-it:free`, `deepseek/deepseek-chat-v3-0324:free`
+
+### Cost Projections (with free models)
+| Phase | LLM | Embeddings | Reranking | Total |
 |---|---|---|---|---|
-| Phase 1 (200q) | $0.03 | $0.00 | $0.00 | **$0.03** |
-| Phase 2 (1Kq) | $0.15 | $0.05 | $0.00 | **$0.20** |
-| Phase 3 (10Kq) | $1.50 | $0.50 | $0.00 | **$2.00** |
-| Phase 4 (100Kq) | $15 | $5 | $0 | **$20** |
-| Phase 5 (1M+) | $150 | $50 | $50 | **$250** |
+| Phase 1 (200q) | $0.00 | $0.00 | $0.00 | **$0.00** |
+| Phase 2 (1Kq) | $0.00 | $0.02 | $0.01 | **$0.03** |
+| Phase 3 (10Kq) | $0.00 | $0.20 | $0.10 | **$0.30** |
+| Phase 4 (100Kq) | $0.00 | $2.00 | $1.00 | **$3.00** |
+| Phase 5 (1M+) | $0.00 | $20.00 | $10.00 | **$30.00** |
 
 ---
 
