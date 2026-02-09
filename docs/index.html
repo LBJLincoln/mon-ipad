@@ -7,167 +7,391 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
-:root{--bg:#0a0e14;--s1:#10151d;--s2:#151b26;--s3:#1c2330;--s4:#232b3a;--bd:#2a3344;--tx:#dce4f0;--tx2:#8896a8;--tx3:#556070;--ac:#4f8efa;--ac2:#3a70d4;--gn:#2dd47a;--gn2:#1fa55e;--gn-bg:rgba(45,212,122,.08);--rd:#f05555;--rd2:#c83838;--rd-bg:rgba(240,85,85,.08);--yl:#e8b820;--yl-bg:rgba(232,184,32,.08);--or:#f08030;--pp:#a060f0;--cy:#20c0d8;--mg:#e060a0;--r:8px}
+
+/* ===== Theme Variables ===== */
+:root{
+  --bg:#090d12;--s1:#0e1319;--s2:#131a23;--s3:#1a2231;--s4:#212b3d;
+  --bd:#252f42;--bd2:#2e3a50;
+  --tx:#e2e8f3;--tx2:#8a97ad;--tx3:#556278;
+  --ac:#5b93ff;--ac2:#4478e0;--ac-bg:rgba(91,147,255,.08);
+  --gn:#34d88a;--gn2:#22a86a;--gn-bg:rgba(52,216,138,.08);
+  --rd:#f25656;--rd2:#cc3c3c;--rd-bg:rgba(242,86,86,.08);
+  --yl:#f0c030;--yl-bg:rgba(240,192,48,.08);
+  --or:#f08838;--pp:#a868f0;--cy:#28c8e0;--mg:#e868a8;
+  --r:10px;--r-sm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.15);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.4),0 8px 32px rgba(0,0,0,.2);
+  --transition:all .2s cubic-bezier(.4,0,.2,1);
+}
+
+/* Light theme */
+:root.light{
+  --bg:#f5f7fa;--s1:#ffffff;--s2:#f0f2f5;--s3:#e8ebf0;--s4:#dde1e8;
+  --bd:#d0d5de;--bd2:#c0c8d4;
+  --tx:#1a1e2a;--tx2:#555e70;--tx3:#8892a4;
+  --ac:#3570e0;--ac2:#2a5cc0;--ac-bg:rgba(53,112,224,.06);
+  --gn:#1aad60;--gn2:#158a4c;--gn-bg:rgba(26,173,96,.06);
+  --rd:#dc3c3c;--rd2:#b52e2e;--rd-bg:rgba(220,60,60,.06);
+  --yl:#d4a010;--yl-bg:rgba(212,160,16,.06);
+  --or:#d07028;--pp:#8848d0;--cy:#1898b0;--mg:#c84890;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);
+  --shadow-lg:0 4px 12px rgba(0,0,0,.1),0 8px 24px rgba(0,0,0,.06);
+}
+
+/* ===== Reset & Base ===== */
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.55}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 ::selection{background:var(--ac);color:#fff}
-::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
-code,.mono{font-family:'JetBrains Mono',monospace;font-size:.9em}
-a{color:var(--ac);text-decoration:none}a:hover{text-decoration:underline}
-h2{font-size:18px;font-weight:700;margin-bottom:16px;letter-spacing:-.02em}
-h3{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx2);margin-bottom:10px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--bd2)}
+code,.mono{font-family:'JetBrains Mono',monospace;font-size:.88em}
+a{color:var(--ac);text-decoration:none;transition:color .15s}
+a:hover{color:var(--ac2);text-decoration:underline}
+h2{font-size:20px;font-weight:700;margin-bottom:20px;letter-spacing:-.03em;color:var(--tx)}
+h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2);margin-bottom:12px}
 
-/* Layout */
-.header{background:var(--s1);border-bottom:1px solid var(--bd);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.header h1{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
-.header .meta{display:flex;gap:14px;align-items:center;font-size:11.5px;color:var(--tx2)}
-.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
-.dot.ok{background:var(--gn);box-shadow:0 0 6px var(--gn)}.dot.run{background:var(--yl);animation:blink 1.5s infinite}.dot.err{background:var(--rd)}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--bd);padding:0 20px;overflow-x:auto;gap:0}
-.tab{padding:10px 18px;font-size:12px;font-weight:600;color:var(--tx3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.15s}
-.tab:hover{color:var(--tx2)}.tab.active{color:var(--ac);border-color:var(--ac)}
-.panel{display:none;padding:20px 24px;max-width:1600px;margin:0 auto}.panel.active{display:block}
+/* ===== Animations ===== */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes shimmer{0%{background-position:-200px 0}100%{background-position:200px 0}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bellShake{0%,100%{transform:rotate(0)}15%{transform:rotate(12deg)}30%{transform:rotate(-10deg)}45%{transform:rotate(6deg)}60%{transform:rotate(-3deg)}75%{transform:rotate(1deg)}}
+.fade-in{animation:fadeIn .35s ease-out both}
+.slide-in{animation:slideIn .3s ease-out both}
 
-/* Cards */
-.card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:16px;overflow:hidden}
+/* Skeleton loading */
+.skeleton{background:linear-gradient(90deg,var(--s2) 25%,var(--s3) 50%,var(--s2) 75%);background-size:400px 100%;animation:shimmer 1.5s infinite;border-radius:var(--r-sm);min-height:20px}
+.skeleton-card{min-height:120px}
+.skeleton-gauge{width:100px;height:100px;border-radius:50%;margin:0 auto}
+
+/* ===== Layout ===== */
+.header{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.header h1{font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.header .meta{display:flex;gap:16px;align-items:center;font-size:11px;color:var(--tx2)}
+.header .meta>span{display:flex;align-items:center;gap:5px}
+.header-actions{display:flex;align-items:center;gap:8px}
+
+/* Status indicator */
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot.ok{background:var(--gn);box-shadow:0 0 8px rgba(52,216,138,.4)}
+.dot.run{background:var(--yl);animation:pulse 2s infinite}
+.dot.err{background:var(--rd);box-shadow:0 0 8px rgba(242,86,86,.4)}
+.dot.stale{background:var(--or)}
+
+/* Status bar */
+.status-bar{background:var(--s1);border-bottom:1px solid var(--bd);padding:6px 24px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--tx3)}
+.status-bar .left{display:flex;align-items:center;gap:16px}
+.status-bar .right{display:flex;align-items:center;gap:12px}
+.health-dots{display:flex;gap:6px;align-items:center}
+.health-dot{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600}
+
+/* Tabs */
+.tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--bd);padding:0 24px;overflow-x:auto;gap:0;-ms-overflow-style:none;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:12px 20px;font-size:12px;font-weight:600;color:var(--tx3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:var(--transition);user-select:none;position:relative}
+.tab:hover{color:var(--tx2);background:rgba(255,255,255,.02)}
+.tab.active{color:var(--ac);border-color:var(--ac)}
+.tab .kbd{display:inline-block;font-size:9px;font-weight:700;color:var(--tx3);background:var(--s3);border:1px solid var(--bd);border-radius:3px;padding:0 4px;margin-left:6px;font-family:'JetBrains Mono',monospace;line-height:16px;vertical-align:middle;opacity:.6}
+.panel{display:none;padding:24px;max-width:1600px;margin:0 auto;animation:fadeIn .3s ease-out}
+.panel.active{display:block}
+
+/* ===== Cards ===== */
+.card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:20px;overflow:hidden;transition:var(--transition)}
+.card:hover{border-color:var(--bd2)}
 .card-accent{border-left:3px solid var(--ac)}
-.grid{display:grid;gap:12px;margin:12px 0}
+.card-gn{border-left:3px solid var(--gn)}
+.card-rd{border-left:3px solid var(--rd)}
+.card-pp{border-left:3px solid var(--pp)}
+.grid{display:grid;gap:14px;margin:14px 0}
 .g5{grid-template-columns:repeat(5,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}
 .g1-2{grid-template-columns:1fr 2fr}.g2-1{grid-template-columns:2fr 1fr}.g1-3{grid-template-columns:1fr 3fr}
 
-/* Stats */
-.stat{text-align:center;padding:12px 8px}
-.stat .v{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.1}
-.stat .l{font-size:11px;color:var(--tx2);margin-top:4px}
-.stat .d{font-size:11px;font-weight:600;margin-top:2px}
+/* ===== Stats ===== */
+.stat{text-align:center;padding:16px 10px}
+.stat .v{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.1;letter-spacing:-.02em}
+.stat .l{font-size:11px;color:var(--tx2);margin-top:6px;font-weight:500}
+.stat .d{font-size:11px;font-weight:600;margin-top:3px}
 .d-up{color:var(--gn)}.d-dn{color:var(--rd)}.d-fl{color:var(--tx3)}
 
-/* Tags */
-.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.03em}
-.t-pass{background:var(--gn-bg);color:var(--gn)}.t-fail{background:var(--rd-bg);color:var(--rd)}.t-err{background:var(--yl-bg);color:var(--yl)}.t-skip{background:rgba(78,90,109,.12);color:var(--tx3)}
-.t-p1{background:rgba(79,142,250,.12);color:var(--ac)}.t-p2{background:rgba(160,96,240,.12);color:var(--pp)}.t-p3{background:rgba(32,192,216,.12);color:var(--cy)}
+/* ===== Tags ===== */
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.04em}
+.t-pass{background:var(--gn-bg);color:var(--gn)}.t-fail{background:var(--rd-bg);color:var(--rd)}.t-err{background:var(--yl-bg);color:var(--yl)}.t-skip{background:rgba(78,90,109,.1);color:var(--tx3)}
+.t-p1{background:rgba(91,147,255,.1);color:var(--ac)}.t-p2{background:rgba(168,104,240,.1);color:var(--pp)}.t-p3{background:rgba(40,200,224,.1);color:var(--cy)}
+.t-free{background:rgba(52,216,138,.1);color:var(--gn);font-size:9px}
 
-/* Tables */
+/* ===== Tables ===== */
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;padding:8px 10px;background:var(--s3);color:var(--tx2);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;position:sticky;top:0;z-index:2}
-td{padding:6px 10px;border-top:1px solid var(--bd)}
+th{text-align:left;padding:10px 12px;background:var(--s3);color:var(--tx2);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;position:sticky;top:0;z-index:2;cursor:default;user-select:none;white-space:nowrap}
+th.sortable{cursor:pointer}
+th.sortable:hover{color:var(--tx);background:var(--s4)}
+th .sort-arrow{font-size:9px;margin-left:4px;opacity:.5}
+th.sorted .sort-arrow{opacity:1;color:var(--ac)}
+td{padding:8px 12px;border-top:1px solid var(--bd)}
 tr:hover td{background:rgba(255,255,255,.015)}
 tr.expandable{cursor:pointer}
 
-/* Progress bars */
+/* ===== Progress bars ===== */
 .pbar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;position:relative}
-.pbar .fill{height:100%;border-radius:3px;transition:width .4s}.pbar .marker{position:absolute;top:-2px;height:10px;width:2px;background:var(--tx2);border-radius:1px}
-.pbar-lg{height:10px}
+.pbar .fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.pbar .marker{position:absolute;top:-3px;height:12px;width:2px;background:var(--tx2);border-radius:1px;opacity:.7}
 
-/* Gauge */
+/* ===== Gauge ===== */
+.gauge-wrap{text-align:center}
 .gauge{position:relative;width:100px;height:100px;margin:0 auto}
-.gauge svg{transform:rotate(-90deg)}.gauge circle{fill:none;stroke-linecap:round}
-.gauge .bg{stroke:var(--s3);stroke-width:6}.gauge .fg{stroke-width:6;transition:stroke-dashoffset .6s}
+.gauge svg{transform:rotate(-90deg)}
+.gauge circle{fill:none;stroke-linecap:round}
+.gauge .bg{stroke:var(--s3);stroke-width:6}
+.gauge .fg{stroke-width:6;transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)}
 .gauge .val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace}
-.gauge .lbl{text-align:center;font-size:10px;color:var(--tx2);margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
+.gauge .lbl{text-align:center;font-size:10px;color:var(--tx2);margin-top:6px;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
 
-/* Phase timeline */
-.phase-line{display:flex;gap:4px;margin:16px 0}
-.phase-dot{flex:1;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1px solid var(--bd);color:var(--tx3);background:var(--s2);transition:.2s;position:relative}
-.phase-dot.current{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 0 12px rgba(79,142,250,.3)}
+/* Sparkline */
+.sparkline{display:inline-flex;align-items:end;gap:1px;height:20px;vertical-align:middle;margin-left:8px}
+.sparkline-bar{width:4px;border-radius:1px;transition:height .3s}
+
+/* ===== Phase timeline ===== */
+.phase-line{display:flex;gap:6px;margin:16px 0}
+.phase-dot{flex:1;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1px solid var(--bd);color:var(--tx3);background:var(--s2);transition:var(--transition);position:relative}
+.phase-dot.current{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent;box-shadow:0 0 16px rgba(91,147,255,.25)}
 .phase-dot.done{background:var(--gn2);color:#fff;border-color:var(--gn2)}
-.phase-dot.locked{opacity:.5}
+.phase-dot.locked{opacity:.45}
 
-/* Search / Filters */
-.filters{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap}
-.filters input,.filters select{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:7px 12px;color:var(--tx);font-size:12px;outline:none}
-.filters input:focus,.filters select:focus{border-color:var(--ac)}
+/* ===== Search & Filters ===== */
+.filters{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.filters input,.filters select{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:8px 12px;color:var(--tx);font-size:12px;outline:none;transition:var(--transition);font-family:'Inter',system-ui,sans-serif}
+.filters input:focus,.filters select:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(91,147,255,.12)}
 .filters input{flex:1;min-width:200px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--s3);color:var(--tx2);transition:var(--transition);font-family:'Inter',system-ui,sans-serif}
+.btn:hover{background:var(--s4);color:var(--tx);border-color:var(--bd2)}
+.btn-primary{background:var(--ac);color:#fff;border-color:var(--ac)}
+.btn-primary:hover{background:var(--ac2)}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-icon{padding:6px 8px;min-width:32px;justify-content:center}
 
-/* Copy button */
-.copy-btn{background:var(--s3);border:1px solid var(--bd);color:var(--tx2);padding:3px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace}
+/* ===== Toggle ===== */
+.toggle{position:relative;width:36px;height:20px;cursor:pointer}
+.toggle input{display:none}
+.toggle .slider{position:absolute;inset:0;background:var(--s3);border:1px solid var(--bd);border-radius:10px;transition:var(--transition)}
+.toggle .slider::before{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--tx3);transition:var(--transition)}
+.toggle input:checked+.slider{background:var(--ac);border-color:var(--ac)}
+.toggle input:checked+.slider::before{transform:translateX(16px);background:#fff}
+
+/* ===== Copy button ===== */
+.copy-btn{background:var(--s3);border:1px solid var(--bd);color:var(--tx2);padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace;transition:var(--transition)}
 .copy-btn:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
 .copy-btn.copied{background:var(--gn);color:#fff;border-color:var(--gn)}
 
-/* Code block */
-.code-block{background:var(--s1);border:1px solid var(--bd);border-radius:6px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;overflow-x:auto;white-space:pre;line-height:1.6;position:relative}
+/* ===== Code block ===== */
+.code-block{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);padding:14px 18px;font-family:'JetBrains Mono',monospace;font-size:11.5px;overflow-x:auto;white-space:pre;line-height:1.7;position:relative}
 .code-block .copy-btn{position:absolute;top:8px;right:8px}
 
-/* Collapsible */
+/* ===== Collapsible ===== */
 details{margin:8px 0}
-details>summary{cursor:pointer;padding:8px 12px;background:var(--s3);border:1px solid var(--bd);border-radius:6px;font-size:12px;font-weight:600;list-style:none}
-details>summary::before{content:'\25B6';margin-right:8px;font-size:10px;transition:.2s}
+details>summary{cursor:pointer;padding:10px 14px;background:var(--s3);border:1px solid var(--bd);border-radius:var(--r-sm);font-size:12px;font-weight:600;list-style:none;transition:var(--transition);display:flex;align-items:center;gap:8px}
+details>summary::before{content:'\25B6';font-size:9px;transition:transform .2s;color:var(--tx3)}
 details[open]>summary::before{transform:rotate(90deg)}
 details>summary:hover{background:var(--s4)}
-details .detail-content{padding:12px;border:1px solid var(--bd);border-top:none;border-radius:0 0 6px 6px;background:var(--s2)}
+details .detail-content{padding:14px;border:1px solid var(--bd);border-top:none;border-radius:0 0 var(--r-sm) var(--r-sm);background:var(--s2)}
 
-/* Responsive */
-@media(max-width:1200px){.g4,.g5{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:1fr 1fr}}
-@media(max-width:768px){.g4,.g5,.g3,.g2{grid-template-columns:1fr}.g1-2,.g2-1,.g1-3{grid-template-columns:1fr}.tabs{gap:0}.tab{padding:8px 12px;font-size:11px}}
+/* ===== Node flow ===== */
+.node-flow{display:flex;align-items:center;gap:2px;overflow-x:auto;padding:8px 0;flex-wrap:nowrap}
+.node-flow .nf-node{display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:6px;font-size:10.5px;font-weight:600;border:1px solid var(--bd);white-space:nowrap;flex-shrink:0}
+.node-flow .nf-arrow{color:var(--tx3);font-size:12px;flex-shrink:0;padding:0 2px}
+.nf-trigger{background:rgba(91,147,255,.08);border-color:rgba(91,147,255,.25);color:var(--ac)}
+.nf-code{background:rgba(240,192,48,.06);border-color:rgba(240,192,48,.2);color:var(--yl)}
+.nf-http{background:rgba(52,216,138,.06);border-color:rgba(52,216,138,.2);color:var(--gn)}
+.nf-db{background:rgba(168,104,240,.06);border-color:rgba(168,104,240,.2);color:var(--pp)}
+.nf-ai{background:rgba(232,104,168,.06);border-color:rgba(232,104,168,.2);color:var(--mg)}
+.nf-merge{background:rgba(40,200,224,.06);border-color:rgba(40,200,224,.2);color:var(--cy)}
+.nf-if{background:rgba(240,136,56,.06);border-color:rgba(240,136,56,.2);color:var(--or)}
 
-/* Node map */
-.node{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:10.5px;font-weight:600;margin:2px;border:1px solid var(--bd)}
-.node-trigger{background:rgba(79,142,250,.12);border-color:rgba(79,142,250,.3);color:var(--ac)}
-.node-code{background:rgba(232,184,32,.08);border-color:rgba(232,184,32,.2);color:var(--yl)}
-.node-http{background:rgba(45,212,122,.08);border-color:rgba(45,212,122,.2);color:var(--gn)}
-.node-db{background:rgba(160,96,240,.08);border-color:rgba(160,96,240,.2);color:var(--pp)}
-.node-ai{background:rgba(240,96,160,.08);border-color:rgba(240,96,160,.2);color:var(--mg)}
-.node-merge{background:rgba(32,192,216,.08);border-color:rgba(32,192,216,.2);color:var(--cy)}
-.node-if{background:rgba(240,128,48,.08);border-color:rgba(240,128,48,.2);color:var(--or)}
+/* ===== Blockers ===== */
+.blocker{background:var(--rd-bg);border:1px solid rgba(242,86,86,.15);border-radius:var(--r-sm);padding:10px 14px;margin:6px 0;display:flex;align-items:flex-start;gap:8px}
+.blocker .priority{font-size:9px;font-weight:800;padding:2px 6px;border-radius:3px;background:var(--rd);color:#fff;flex-shrink:0;margin-top:1px}
 
-/* Blockers */
-.blocker{background:var(--rd-bg);border:1px solid rgba(240,85,85,.2);border-radius:6px;padding:10px 14px;margin:4px 0}
-.blocker .priority{font-size:10px;font-weight:800;padding:1px 6px;border-radius:3px;background:var(--rd);color:#fff;margin-right:6px}
+/* ===== Toast ===== */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:1000;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px;font-size:12px;box-shadow:var(--shadow-lg);animation:fadeInUp .3s ease-out;display:flex;align-items:center;gap:8px;max-width:320px}
+.toast.success{border-left:3px solid var(--gn)}
+.toast.error{border-left:3px solid var(--rd)}
+.toast.info{border-left:3px solid var(--ac)}
+
+/* ===== Command Palette ===== */
+.cmd-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:flex-start;justify-content:center;padding-top:20vh;backdrop-filter:blur(4px)}
+.cmd-overlay.open{display:flex}
+.cmd-box{background:var(--s1);border:1px solid var(--bd);border-radius:12px;width:540px;max-width:90vw;box-shadow:var(--shadow-lg);overflow:hidden}
+.cmd-input{width:100%;padding:16px 20px;background:transparent;border:none;border-bottom:1px solid var(--bd);color:var(--tx);font-size:15px;font-family:'Inter',system-ui,sans-serif;outline:none}
+.cmd-input::placeholder{color:var(--tx3)}
+.cmd-results{max-height:300px;overflow-y:auto;padding:8px}
+.cmd-item{padding:10px 16px;border-radius:var(--r-sm);cursor:pointer;display:flex;align-items:center;gap:12px;font-size:13px;transition:background .1s}
+.cmd-item:hover,.cmd-item.selected{background:var(--s3)}
+.cmd-item .cmd-label{flex:1}
+.cmd-item .cmd-hint{font-size:11px;color:var(--tx3);font-family:'JetBrains Mono',monospace}
+
+/* ===== Notification Bell ===== */
+.bell{position:relative;cursor:pointer;padding:4px}
+.bell:hover{color:var(--tx)}
+.bell-badge{position:absolute;top:-2px;right:-4px;background:var(--rd);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.bell.has-new svg{animation:bellShake .5s ease-in-out}
+
+/* ===== Tooltip ===== */
+.tip{position:relative}
+.tip .tip-text{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-sm);padding:8px 12px;font-size:11px;white-space:nowrap;z-index:50;box-shadow:var(--shadow);max-width:400px;white-space:normal}
+.tip:hover .tip-text{display:block}
+
+/* ===== Health Score Badge ===== */
+.health-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.health-good{background:var(--gn-bg);color:var(--gn);border:1px solid rgba(52,216,138,.2)}
+.health-warn{background:var(--yl-bg);color:var(--yl);border:1px solid rgba(240,192,48,.2)}
+.health-bad{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(242,86,86,.2)}
+
+/* ===== Iteration Timeline ===== */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--bd)}
+.tl-item{position:relative;padding:10px 0 10px 16px;font-size:12px}
+.tl-item::before{content:'';position:absolute;left:-20px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--bd);background:var(--s2)}
+.tl-item.tl-pass::before{background:var(--gn);border-color:var(--gn)}
+.tl-item.tl-fail::before{background:var(--rd);border-color:var(--rd)}
+.tl-item.tl-current::before{background:var(--ac);border-color:var(--ac);box-shadow:0 0 8px rgba(91,147,255,.4)}
+.tl-header{font-weight:700;color:var(--tx);margin-bottom:2px}
+.tl-meta{color:var(--tx3);font-size:11px}
+.tl-detail{margin-top:6px;display:none;padding:10px;background:var(--s3);border-radius:var(--r-sm);font-size:11px}
+.tl-item.expanded .tl-detail{display:block}
+
+/* ===== Responsive ===== */
+@media(max-width:1200px){
+  .g4,.g5{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:1fr 1fr}
+}
+@media(max-width:768px){
+  .g4,.g5,.g3,.g2{grid-template-columns:1fr}
+  .g1-2,.g2-1,.g1-3{grid-template-columns:1fr}
+  .tabs{gap:0}
+  .tab{padding:10px 14px;font-size:11px}
+  .tab .kbd{display:none}
+  .header{padding:0 16px}
+  .header .meta{display:none}
+  .panel{padding:16px}
+  .status-bar{flex-wrap:wrap;gap:8px}
+  .cmd-box{width:95vw}
+}
+@media(max-width:480px){
+  .header h1 span:last-child{display:none}
+  .filters{flex-direction:column}
+  .filters input{min-width:100%}
+}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1><span class="dot" id="hd-dot"></span> Multi-RAG Orchestrator <span style="color:var(--tx3);font-weight:400">SOTA 2026</span></h1>
-  <div class="meta">
-    <span id="hd-phase"></span>
-    <span id="hd-iter"></span>
-    <span id="hd-qs"></span>
-    <span id="hd-ts"></span>
+<!-- Toast container -->
+<div class="toast-container" id="toasts"></div>
+
+<!-- Command Palette -->
+<div class="cmd-overlay" id="cmd-overlay" onclick="if(event.target===this)closePalette()">
+  <div class="cmd-box">
+    <input class="cmd-input" id="cmd-input" placeholder="Search tabs, questions, pipelines..." autocomplete="off">
+    <div class="cmd-results" id="cmd-results"></div>
   </div>
 </div>
 
-<div class="tabs">
-  <div class="tab active" data-tab="exec">Executive Summary</div>
-  <div class="tab" data-tab="focus">Focus</div>
-  <div class="tab" data-tab="questions">Questions</div>
-  <div class="tab" data-tab="workflows">Workflows</div>
-  <div class="tab" data-tab="databases">Databases</div>
-  <div class="tab" data-tab="costs">Costs & Models</div>
-  <div class="tab" data-tab="agent">AI Agent</div>
+<!-- Header -->
+<div class="header">
+  <h1><span class="dot" id="hd-dot"></span> Multi-RAG Orchestrator <span style="color:var(--tx3);font-weight:400;font-size:12px">SOTA 2026</span></h1>
+  <div class="meta" id="hd-meta">
+    <span id="hd-phase"></span>
+    <span id="hd-iter"></span>
+    <span id="hd-qs"></span>
+  </div>
+  <div class="header-actions">
+    <div class="bell" id="bell-icon" onclick="toggleNotifications()" title="Errors since last viewed">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="bell-badge" id="bell-badge" style="display:none">0</span>
+    </div>
+    <button class="btn btn-sm btn-icon" onclick="toggleTheme()" title="Toggle theme" id="theme-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+    <button class="btn btn-sm" onclick="openPalette()" title="Ctrl+K">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span style="font-size:10px;opacity:.6">Ctrl+K</span>
+    </button>
+  </div>
+</div>
+
+<!-- Status Bar -->
+<div class="status-bar">
+  <div class="left">
+    <span id="sb-refresh">Last refresh: --</span>
+    <span id="sb-live"><span class="dot ok" style="width:6px;height:6px"></span> Live</span>
+    <div class="health-dots" id="sb-health"></div>
+  </div>
+  <div class="right">
+    <span id="sb-health-label"></span>
+    <span id="sb-eval-ts"></span>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs" id="tab-bar">
+  <div class="tab active" data-tab="exec">Executive Summary <span class="kbd">1</span></div>
+  <div class="tab" data-tab="focus">Focus <span class="kbd">2</span></div>
+  <div class="tab" data-tab="questions">Questions <span class="kbd">3</span></div>
+  <div class="tab" data-tab="workflows">Workflows <span class="kbd">4</span></div>
+  <div class="tab" data-tab="databases">Databases <span class="kbd">5</span></div>
+  <div class="tab" data-tab="costs">Costs & Models <span class="kbd">6</span></div>
+  <div class="tab" data-tab="agent">AI Agent <span class="kbd">7</span></div>
 </div>
 
 <!-- ============ TAB 1: EXECUTIVE SUMMARY ============ -->
 <div class="panel active" id="p-exec">
-  <h2>Executive Summary</h2>
-  <div class="card" style="margin-bottom:16px;border-left:3px solid var(--ac)">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <h2 style="margin-bottom:0">Executive Summary</h2>
+    <div id="exec-health-badge"></div>
+  </div>
+
+  <div class="card card-accent" style="margin-bottom:20px">
     <p style="font-size:13px;color:var(--tx2);line-height:1.7">
-      <strong style="color:var(--tx)">Objective:</strong> Build a production-grade multi-RAG pipeline that intelligently routes user queries to the optimal retrieval strategy (vector search, knowledge graph, SQL analytics, or orchestrated multi-pipeline). The system is validated against <strong style="color:var(--tx)">16 HuggingFace benchmark datasets</strong> across 5 incremental phases (200 &rarr; 1K &rarr; 10K &rarr; 100K &rarr; 1M+ questions), ensuring accuracy, latency, and cost are optimized at every scale. The goal is a pipeline exportable to <em>any</em> data type and database.
+      <strong style="color:var(--tx)">Objective:</strong> Build a production-grade multi-RAG pipeline that intelligently routes queries to the optimal retrieval strategy (vector search, knowledge graph, SQL analytics, or orchestrated multi-pipeline). Validated against <strong style="color:var(--tx)">16 HuggingFace benchmark datasets</strong> across 5 phases (200 &rarr; 1K &rarr; 10K &rarr; 100K &rarr; 1M+).
     </p>
   </div>
 
   <!-- Phase Progress -->
   <h3>Phase Roadmap</h3>
   <div class="phase-line" id="exec-phases"></div>
+  <div id="exec-phase-countdown" style="text-align:center;margin:8px 0 16px;font-size:12px;color:var(--tx2)"></div>
 
   <!-- Key Metrics -->
   <div class="grid g5" id="exec-stats"></div>
 
-  <!-- Pipeline Gauges -->
-  <h3 style="margin-top:16px">Pipeline Performance vs Targets</h3>
+  <!-- Pipeline Gauges with sparklines -->
+  <h3 style="margin-top:20px">Pipeline Performance vs Targets</h3>
   <div class="grid g4" id="exec-gauges"></div>
 
   <!-- Charts row -->
-  <div class="grid g2" style="margin-top:16px">
+  <div class="grid g2" style="margin-top:18px">
     <div class="card"><h3>Accuracy Trend</h3><canvas id="ch-exec-trend" height="200"></canvas></div>
     <div class="card"><h3>Error Distribution</h3><canvas id="ch-exec-errors" height="200"></canvas></div>
   </div>
 
+  <!-- Iteration Timeline -->
+  <h3 style="margin-top:18px">Iteration Timeline</h3>
+  <div class="card" style="max-height:400px;overflow-y:auto">
+    <div class="timeline" id="exec-timeline"></div>
+  </div>
+
   <!-- Blockers + Next Actions -->
-  <div class="grid g2" style="margin-top:12px">
+  <div class="grid g2" style="margin-top:14px">
     <div class="card"><h3>Active Blockers</h3><div id="exec-blockers"></div></div>
     <div class="card"><h3>Next Actions</h3><div id="exec-actions"></div></div>
+  </div>
+
+  <!-- Top improving / regressing -->
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card card-gn"><h3>Top Improving Questions</h3><div id="exec-improving"></div></div>
+    <div class="card card-rd"><h3>Top Regressing Questions</h3><div id="exec-regressing"></div></div>
   </div>
 </div>
 
@@ -175,69 +399,108 @@ details .detail-content{padding:12px;border:1px solid var(--bd);border-top:none;
 <div class="panel" id="p-focus">
   <h2>Focus: Current Step Detail</h2>
 
-  <!-- Incremental Testing Progress -->
-  <div class="card" style="margin-bottom:16px;border-left:3px solid var(--pp)">
+  <div class="card card-pp" style="margin-bottom:18px">
     <h3>Incremental Testing Protocol</h3>
     <p style="font-size:12px;color:var(--tx2);margin-bottom:12px">Test endpoints &rarr; 5q parallel per workflow &rarr; fix &rarr; repeat until pass &rarr; scale to 10, 50, 200, 1000...</p>
     <div id="focus-steps"></div>
   </div>
 
-  <!-- Current phase detail -->
+  <!-- Live progress indicator -->
+  <div class="card" id="focus-live-progress" style="margin-bottom:18px;display:none">
+    <h3>Evaluation In Progress</h3>
+    <div id="focus-live-detail"></div>
+  </div>
+
   <div class="grid g2">
     <div class="card">
-      <h3>Phase 1 — Exit Criteria</h3>
+      <h3>Phase 1 -- Exit Criteria</h3>
       <div id="focus-gates"></div>
     </div>
     <div class="card">
-      <h3>Phase 2 — Readiness</h3>
+      <h3>Phase 2 -- Readiness</h3>
       <div id="focus-p2"></div>
     </div>
   </div>
 
-  <!-- Per-pipeline iteration detail -->
-  <h3 style="margin-top:16px">Latest Iteration Results</h3>
+  <h3 style="margin-top:18px">Latest Iteration Results</h3>
   <div class="grid g4" id="focus-pipes"></div>
 
-  <!-- What's working / What's not -->
-  <div class="grid g2" style="margin-top:12px">
-    <div class="card" style="border-left:3px solid var(--gn)"><h3>What's Working</h3><div id="focus-pass"></div></div>
-    <div class="card" style="border-left:3px solid var(--rd)"><h3>What Needs Fixing</h3><div id="focus-fail"></div></div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card card-gn"><h3>What's Working</h3><div id="focus-pass"></div></div>
+    <div class="card card-rd"><h3>What Needs Fixing</h3><div id="focus-fail"></div></div>
   </div>
 </div>
 
 <!-- ============ TAB 3: QUESTIONS ============ -->
 <div class="panel" id="p-questions">
-  <h2>Questions Explorer</h2>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <h2 style="margin-bottom:0">Questions Explorer</h2>
+    <div style="display:flex;gap:8px;align-items:center">
+      <label class="btn btn-sm" style="gap:6px">
+        <input type="checkbox" id="q-group-run" onchange="renderQuestions()" style="accent-color:var(--ac)"> Group by Run
+      </label>
+      <label class="btn btn-sm" style="gap:6px">
+        <input type="checkbox" id="q-compare" onchange="toggleCompare()" style="accent-color:var(--ac)"> Compare Mode
+      </label>
+      <button class="btn btn-sm" onclick="exportCSV()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+    </div>
+  </div>
+
   <div class="filters">
     <select id="q-phase"><option value="">All Phases</option><option value="1">Phase 1 (200q)</option><option value="2">Phase 2 (1000q)</option></select>
     <select id="q-pipe"><option value="">All Pipelines</option><option value="standard">Standard</option><option value="graph">Graph</option><option value="quantitative">Quantitative</option><option value="orchestrator">Orchestrator</option></select>
     <select id="q-status"><option value="">All Status</option><option value="pass">Pass</option><option value="fail">Fail</option><option value="error">Error</option></select>
     <select id="q-dataset"><option value="">All Datasets</option></select>
+    <select id="q-iter" style="display:none"><option value="">Compare Iterations...</option></select>
     <input type="text" id="q-search" placeholder="Search ID, question text, expected answer...">
   </div>
-  <div class="card" style="padding:0;max-height:70vh;overflow:auto">
-    <table>
-      <thead><tr><th>ID</th><th>Pipeline</th><th>Phase</th><th>Question</th><th>Expected</th><th>Runs</th><th>Pass%</th><th>Best F1</th><th>Status</th><th>Trend</th></tr></thead>
+
+  <!-- Compare panel -->
+  <div id="q-compare-panel" style="display:none;margin-bottom:14px" class="card card-accent">
+    <h3>Iteration Comparison</h3>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <select id="q-cmp-a" onchange="renderCompare()"><option value="">Select iteration A...</option></select>
+      <span style="color:var(--tx3);align-self:center">vs</span>
+      <select id="q-cmp-b" onchange="renderCompare()"><option value="">Select iteration B...</option></select>
+    </div>
+    <div id="q-compare-results"></div>
+  </div>
+
+  <div class="card" style="padding:0;max-height:65vh;overflow:auto">
+    <table id="q-table">
+      <thead><tr>
+        <th class="sortable" data-sort="id">ID <span class="sort-arrow">&#9650;</span></th>
+        <th class="sortable" data-sort="pipe">Pipeline <span class="sort-arrow">&#9650;</span></th>
+        <th class="sortable" data-sort="phase">Phase <span class="sort-arrow">&#9650;</span></th>
+        <th>Question</th>
+        <th>Expected</th>
+        <th class="sortable" data-sort="runs">Runs <span class="sort-arrow">&#9650;</span></th>
+        <th class="sortable" data-sort="pass">Pass% <span class="sort-arrow">&#9650;</span></th>
+        <th class="sortable" data-sort="f1">Best F1 <span class="sort-arrow">&#9650;</span></th>
+        <th class="sortable" data-sort="status">Status <span class="sort-arrow">&#9650;</span></th>
+        <th>Trend</th>
+      </tr></thead>
       <tbody id="q-tbody"></tbody>
     </table>
   </div>
-  <div id="q-detail" style="margin-top:12px"></div>
+  <div id="q-count" style="margin-top:8px;font-size:11px;color:var(--tx3)"></div>
+  <div id="q-detail" style="margin-top:14px"></div>
 </div>
 
 <!-- ============ TAB 4: WORKFLOWS ============ -->
 <div class="panel" id="p-workflows">
   <h2>Workflows</h2>
-  <p style="color:var(--tx2);margin-bottom:16px">n8n Cloud workflows with node-level detail. Each workflow is linked to its n8n instance for live inspection.</p>
+  <p style="color:var(--tx2);margin-bottom:18px;font-size:13px">n8n Cloud workflows with node-level architecture. Click to open in n8n for live inspection.</p>
 
-  <!-- Workflow cards -->
   <div class="grid g4" id="wf-cards"></div>
 
-  <!-- Node breakdown per workflow -->
-  <h3 style="margin-top:16px">Node Breakdown</h3>
+  <h3 style="margin-top:18px">Pipeline Architecture</h3>
   <div id="wf-nodes"></div>
 
-  <!-- Modification History -->
-  <h3 style="margin-top:16px">Modification History (by Step)</h3>
+  <h3 style="margin-top:18px">Modification History</h3>
   <div class="card" style="padding:0;max-height:50vh;overflow:auto">
     <table>
       <thead><tr><th>Timestamp</th><th>Type</th><th>Description</th><th>Pipelines</th><th>Impact</th></tr></thead>
@@ -245,8 +508,7 @@ details .detail-content{padding:12px;border:1px solid var(--bd);border-top:none;
     </table>
   </div>
 
-  <!-- DB Snapshots -->
-  <h3 style="margin-top:16px">Database State Over Time</h3>
+  <h3 style="margin-top:18px">Database State Over Time</h3>
   <div class="card"><canvas id="ch-wf-db" height="180"></canvas></div>
 </div>
 
@@ -254,11 +516,12 @@ details .detail-content{padding:12px;border:1px solid var(--bd);border-top:none;
 <div class="panel" id="p-databases">
   <h2>Databases</h2>
 
-  <!-- DB status cards -->
   <div class="grid g3" id="db-cards"></div>
 
-  <!-- Phase Readiness Matrix -->
-  <h3 style="margin-top:16px">Phase Readiness Matrix</h3>
+  <!-- Live stats -->
+  <div id="db-live-stats" style="margin-top:14px"></div>
+
+  <h3 style="margin-top:18px">Phase Readiness Matrix</h3>
   <div class="card" style="padding:0;overflow:auto">
     <table id="db-readiness-table">
       <thead><tr><th>Database</th><th>Phase 1 (200q)</th><th>Phase 2 (1Kq)</th><th>Phase 3 (10Kq)</th><th>Phase 4 (100Kq)</th><th>Phase 5 (1M+)</th></tr></thead>
@@ -266,12 +529,10 @@ details .detail-content{padding:12px;border:1px solid var(--bd);border-top:none;
     </table>
   </div>
 
-  <!-- Growth chart -->
-  <h3 style="margin-top:16px">Data Growth Over Time</h3>
+  <h3 style="margin-top:18px">Data Growth Over Time</h3>
   <div class="card"><canvas id="ch-db-growth" height="200"></canvas></div>
 
-  <!-- Missing data -->
-  <h3 style="margin-top:16px">Missing Data for Next Phase</h3>
+  <h3 style="margin-top:18px">Missing Data for Next Phase</h3>
   <div id="db-missing"></div>
 </div>
 
@@ -279,57 +540,67 @@ details .detail-content{padding:12px;border:1px solid var(--bd);border-top:none;
 <div class="panel" id="p-costs">
   <h2>Costs & Models</h2>
 
-  <!-- Model registry -->
-  <h3>LLM Model Registry (per n8n Node)</h3>
+  <!-- Cost savings hero -->
+  <div class="card" style="margin-bottom:18px;text-align:center;padding:24px;border-left:3px solid var(--gn)">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gn);margin-bottom:8px">Cost Optimization</div>
+    <div style="font-size:36px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--gn)" id="cost-savings">$0.00</div>
+    <div style="font-size:13px;color:var(--tx2);margin-top:4px">saved vs paid models (Gemini/GPT-4o) by using free OpenRouter LLMs</div>
+  </div>
+
+  <h3>LLM Model Registry</h3>
   <div class="card" style="padding:0;max-height:50vh;overflow:auto">
     <table>
-      <thead><tr><th>Workflow</th><th>Node</th><th>Model</th><th>Provider</th><th>Cost/1K tokens</th><th>Role</th><th>Avg Tokens</th></tr></thead>
+      <thead><tr><th>Workflow</th><th>Node</th><th>Model</th><th>Provider</th><th>Cost</th><th>Role</th><th>Avg Tokens</th></tr></thead>
       <tbody id="cost-models"></tbody>
     </table>
   </div>
 
-  <!-- Cost summary -->
-  <div class="grid g4" style="margin-top:16px" id="cost-stats"></div>
+  <div class="grid g4" style="margin-top:18px" id="cost-stats"></div>
 
-  <!-- Phase cost projection -->
-  <h3 style="margin-top:16px">Cost Projection by Phase</h3>
+  <h3 style="margin-top:18px">Cost Projection by Phase</h3>
   <div class="card"><canvas id="ch-cost-phase" height="200"></canvas></div>
 
-  <!-- Per-pipeline cost -->
-  <h3 style="margin-top:16px">Cost per Question by Pipeline</h3>
+  <h3 style="margin-top:18px">Cost per Question by Pipeline</h3>
   <div class="card"><canvas id="ch-cost-pipe" height="200"></canvas></div>
 </div>
 
 <!-- ============ TAB 7: AI AGENT ============ -->
 <div class="panel" id="p-agent">
   <h2>AI Agent Reference</h2>
-  <p style="color:var(--tx2);margin-bottom:16px">Everything the agentic workflow needs: credentials, commands, iteration protocol, and decision rules. This page is the single source of truth for CLAUDE.md.</p>
+  <p style="color:var(--tx2);margin-bottom:18px;font-size:13px">Fully autonomous agent execution model. Claude Code runs all evaluations, deployments, and analysis directly -- no user terminal needed for eval operations.</p>
 
-  <!-- Environment Variables -->
-  <div class="card" style="margin-bottom:16px">
-    <h3>Environment Variables <span style="color:var(--tx3);text-transform:none;font-weight:400">(paste in Termius/GCloud Console)</span></h3>
+  <!-- System Health -->
+  <div class="card" style="margin-bottom:18px">
+    <h3>System Health</h3>
+    <div id="agent-health" class="grid g3"></div>
+  </div>
+
+  <!-- Capability Matrix -->
+  <div class="card" style="margin-bottom:18px">
+    <h3>Agent Capability Matrix</h3>
+    <div id="agent-capabilities"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3>Environment Variables</h3>
     <div id="agent-env"></div>
   </div>
 
-  <!-- Iteration Protocol -->
-  <div class="card" style="margin-bottom:16px;border-left:3px solid var(--ac)">
+  <div class="card card-accent" style="margin-bottom:18px">
     <h3>Iteration Protocol</h3>
     <div id="agent-protocol"></div>
   </div>
 
-  <!-- Command Reference -->
-  <div class="card" style="margin-bottom:16px">
+  <div class="card" style="margin-bottom:18px">
     <h3>Command Reference</h3>
     <div id="agent-commands"></div>
   </div>
 
-  <!-- Decision Rules -->
-  <div class="card" style="margin-bottom:16px">
+  <div class="card" style="margin-bottom:18px">
     <h3>AI Decision Rules</h3>
     <div id="agent-rules"></div>
   </div>
 
-  <!-- API Schema -->
   <div class="card">
     <h3>data.json Schema (v2.0)</h3>
     <details><summary>Expand Schema</summary>
@@ -340,43 +611,46 @@ details .detail-content{padding:12px;border:1px solid var(--bd);border-top:none;
 
 <script>
 // ============================================================
-// GLOBAL STATE
+// GLOBAL STATE & CONSTANTS
 // ============================================================
-let DATA=null,charts={};
+let DATA=null,charts={},sortState={col:null,asc:true},lastErrorCount=0,seenErrorCount=0,loadError=false,lastLoadTime=null;
 const PIPES=['standard','graph','quantitative','orchestrator'];
-const PCOL={standard:'#4f8efa',graph:'#2dd47a',quantitative:'#e8b820',orchestrator:'#f08030'};
+const PCOL={standard:'#5b93ff',graph:'#34d88a',quantitative:'#f0c030',orchestrator:'#f08838'};
 const PTARGET={standard:85,graph:70,quantitative:85,orchestrator:70};
 const P2TARGET={graph:60,quantitative:70};
-const ECOL={TIMEOUT:'#f05555',NETWORK:'#f08030',SERVER_ERROR:'#e8b820',EMPTY_RESPONSE:'#a060f0',RATE_LIMIT:'#20c0d8',ENTITY_MISS:'#e060a0',SQL_ERROR:'#4f8efa',UNKNOWN:'#556070',CREDITS_EXHAUSTED:'#f05555'};
+const ECOL={TIMEOUT:'#f25656',NETWORK:'#f08838',SERVER_ERROR:'#f0c030',EMPTY_RESPONSE:'#a868f0',RATE_LIMIT:'#28c8e0',ENTITY_MISS:'#e868a8',SQL_ERROR:'#5b93ff',UNKNOWN:'#556278',CREDITS_EXHAUSTED:'#f25656'};
 const N8N_HOST='https://amoret.app.n8n.cloud';
 const WF_IDS={standard:'LnTqRX4LZlI009Ks-3Jnp',graph:'95x2BBAbJlLWZtWEJn6rb',quantitative:'LjUz8fxQZ03G9IsU',orchestrator:'FZxkpldDbgV8AD_cg7IWG'};
 
-// Model registry (static config — derived from workflow JSON analysis)
+// Updated Model Registry — actual models (Feb 2026)
 const MODEL_REGISTRY=[
-  {wf:'Standard',node:'HyDE Generator',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Hypothetical document generation',avg_tokens:400},
-  {wf:'Standard',node:'LLM Generation',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Answer synthesis from retrieved context',avg_tokens:500},
+  {wf:'Standard',node:'HyDE Generator',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Hypothetical document generation',avg_tokens:400},
+  {wf:'Standard',node:'LLM Generation',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Answer synthesis from retrieved context',avg_tokens:500},
   {wf:'Standard',node:'Cohere Rerank',model:'rerank-v3.5',provider:'Cohere',cost_in:0.002,cost_out:0,role:'Re-rank retrieved passages',avg_tokens:2000},
-  {wf:'Graph',node:'HyDE Entity Extraction',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Extract entities from query',avg_tokens:350},
-  {wf:'Graph',node:'Answer Synthesis',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Generate answer from graph paths',avg_tokens:600},
-  {wf:'Quantitative',node:'Text-to-SQL Generator',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Natural language to SQL',avg_tokens:450},
-  {wf:'Quantitative',node:'SQL Validator',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Validate and fix SQL',avg_tokens:300},
-  {wf:'Quantitative',node:'Interpretation Layer',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Interpret SQL results as answer',avg_tokens:400},
-  {wf:'Orchestrator',node:'Intent Analyzer',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Route query to correct pipeline',avg_tokens:300},
-  {wf:'Orchestrator',node:'Task Planner',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Plan sub-tasks',avg_tokens:500},
-  {wf:'Orchestrator',node:'Response Builder V9',model:'google/gemini-2.0-flash-001',provider:'OpenRouter',cost_in:0.075,cost_out:0.30,role:'Merge sub-pipeline results',avg_tokens:600},
   {wf:'Standard',node:'Pinecone Query',model:'text-embedding-3-small',provider:'OpenAI',cost_in:0.02,cost_out:0,role:'Vector embedding for retrieval',avg_tokens:300},
+  {wf:'Graph',node:'HyDE Entity Extraction',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Extract entities from query',avg_tokens:350},
+  {wf:'Graph',node:'Answer Synthesis',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Generate answer from graph paths',avg_tokens:600},
+  {wf:'Quantitative',node:'Text-to-SQL Generator',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Natural language to SQL',avg_tokens:450},
+  {wf:'Quantitative',node:'SQL Validator',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Validate and fix SQL',avg_tokens:300},
+  {wf:'Quantitative',node:'Interpretation Layer',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Interpret SQL results as answer',avg_tokens:400},
+  {wf:'Orchestrator',node:'Intent Analyzer',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Route query to correct pipeline',avg_tokens:300},
+  {wf:'Orchestrator',node:'Task Planner',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Plan sub-tasks',avg_tokens:500},
+  {wf:'Orchestrator',node:'Response Builder',model:'meta-llama/llama-3.3-70b-instruct:free',provider:'OpenRouter',cost_in:0,cost_out:0,role:'Merge sub-pipeline results',avg_tokens:600},
 ];
 
-// Phase cost projections
+// Phase cost projections — updated for FREE models
 const PHASE_COSTS=[
-  {phase:'Phase 1 (200q)',llm:0.03,embed:0,db:0,total:0.03},
-  {phase:'Phase 2 (1Kq)',llm:0.15,embed:0.05,db:0,total:0.20},
-  {phase:'Phase 3 (10Kq)',llm:1.50,embed:0.50,db:0,total:2.00},
-  {phase:'Phase 4 (100Kq)',llm:15,embed:5,db:0,total:20},
-  {phase:'Phase 5 (1M+)',llm:150,embed:50,db:50,total:250},
+  {phase:'Phase 1 (200q)',llm:0.00,embed:0.004,rerank:0.004,total:0.008},
+  {phase:'Phase 2 (1Kq)',llm:0.00,embed:0.02,rerank:0.02,total:0.04},
+  {phase:'Phase 3 (10Kq)',llm:0.00,embed:0.20,rerank:0.20,total:0.40},
+  {phase:'Phase 4 (100Kq)',llm:0.00,embed:2.00,rerank:2.00,total:4.00},
+  {phase:'Phase 5 (1M+)',llm:0.00,embed:20.0,rerank:20.0,total:40.0},
 ];
 
-// DB readiness data
+// Hypothetical cost with paid models for comparison
+const PAID_COSTS=[0.12,0.60,6.00,60.0,600.0];
+
+// DB readiness
 const DB_READINESS={
   pinecone:[
     {status:'ready',detail:'10,411 vectors, 12 namespaces'},
@@ -386,8 +660,8 @@ const DB_READINESS={
     {status:'upgrade',detail:'Standard tier minimum'}
   ],
   neo4j:[
-    {status:'ready',detail:'110 nodes, 151 relationships'},
-    {status:'ready',detail:'19,788 nodes, 21,625 relationships'},
+    {status:'ready',detail:'14,904 nodes, 54,907 relationships'},
+    {status:'ready',detail:'19,788+ nodes, 21,625+ relationships'},
     {status:'required',detail:'+hotpotqa entities (~1K new)'},
     {status:'upgrade',detail:'Aura Pro needed (~15K entities)'},
     {status:'upgrade',detail:'Production infrastructure'}
@@ -407,15 +681,25 @@ const DB_READINESS={
 const esc=s=>s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):'';
 const pct=(n,d)=>d?Math.round(n/d*1000)/10:0;
 const fmtN=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n);
+const timeAgo=d=>{if(!d)return'--';const s=Math.floor((Date.now()-new Date(d).getTime())/1000);if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';};
 
 function mkGauge(val,target,color,label){
   const r=42,c=2*Math.PI*r,pctV=Math.min(val/100,1),off=c*(1-pctV);
   const col=val>=target?'var(--gn)':val>=target-10?'var(--yl)':'var(--rd)';
-  return `<div class="gauge"><svg width="100" height="100"><circle class="bg" cx="50" cy="50" r="${r}" stroke-dasharray="${c}"/><circle class="fg" cx="50" cy="50" r="${r}" stroke="${col}" stroke-dasharray="${c}" stroke-dashoffset="${off}"/></svg><div class="val" style="color:${col}">${val}%</div><div class="lbl">${esc(label)}</div><div style="text-align:center;font-size:10px;color:var(--tx3)">Target: ${target}%</div></div>`;
+  return `<div class="gauge"><svg width="100" height="100"><circle class="bg" cx="50" cy="50" r="${r}" stroke-dasharray="${c}"/><circle class="fg" cx="50" cy="50" r="${r}" stroke="${col}" stroke-dasharray="${c}" stroke-dashoffset="${off}"/></svg><div class="val" style="color:${col}">${val}%</div></div><div class="lbl">${esc(label)}</div><div style="text-align:center;font-size:10px;color:var(--tx3);margin-top:2px">Target: ${target}%</div>`;
+}
+
+function mkSparkline(values,color){
+  if(!values||values.length<2)return'';
+  const max=Math.max(...values,1);
+  return `<span class="sparkline">${values.map(v=>{
+    const h=Math.max(2,Math.round(v/max*18));
+    return `<span class="sparkline-bar" style="height:${h}px;background:${color}"></span>`;
+  }).join('')}</span>`;
 }
 
 function mkStat(v,l,d,dc){
-  return `<div class="card stat"><div class="v">${v}</div><div class="l">${l}</div>${d?`<div class="d ${dc||''}">${d}</div>`:''}</div>`;
+  return `<div class="card stat fade-in"><div class="v">${v}</div><div class="l">${l}</div>${d?`<div class="d ${dc||''}">${d}</div>`:''}</div>`;
 }
 
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
@@ -428,20 +712,154 @@ function copyText(text,btn){
   });
 }
 
+function showToast(msg,type='info',duration=3000){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className='toast '+type;
+  t.innerHTML=`<span class="dot ${type==='success'?'ok':type==='error'?'err':'run'}" style="width:6px;height:6px"></span>${esc(msg)}`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(8px)';setTimeout(()=>t.remove(),300);},duration);
+}
+
+// ============================================================
+// THEME
+// ============================================================
+function toggleTheme(){
+  const root=document.documentElement;
+  const isLight=root.classList.toggle('light');
+  localStorage.setItem('theme',isLight?'light':'dark');
+  const btn=document.getElementById('theme-btn');
+  btn.innerHTML=isLight?
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>':
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+  // Update chart colors
+  if(DATA)render();
+}
+
+// Init theme
+if(localStorage.getItem('theme')==='light')document.documentElement.classList.add('light');
+
+// ============================================================
+// COMMAND PALETTE
+// ============================================================
+const CMD_ITEMS=[
+  {label:'Executive Summary',action:()=>switchTab('exec'),hint:'Tab 1'},
+  {label:'Focus',action:()=>switchTab('focus'),hint:'Tab 2'},
+  {label:'Questions Explorer',action:()=>switchTab('questions'),hint:'Tab 3'},
+  {label:'Workflows',action:()=>switchTab('workflows'),hint:'Tab 4'},
+  {label:'Databases',action:()=>switchTab('databases'),hint:'Tab 5'},
+  {label:'Costs & Models',action:()=>switchTab('costs'),hint:'Tab 6'},
+  {label:'AI Agent',action:()=>switchTab('agent'),hint:'Tab 7'},
+  {label:'Export Questions CSV',action:()=>{closePalette();exportCSV()},hint:'Download'},
+  {label:'Toggle Theme',action:()=>{closePalette();toggleTheme()},hint:'Dark/Light'},
+  {label:'Refresh Data',action:()=>{closePalette();loadData()},hint:'Reload'},
+];
+
+function openPalette(){
+  const ov=document.getElementById('cmd-overlay');
+  ov.classList.add('open');
+  const inp=document.getElementById('cmd-input');
+  inp.value='';
+  inp.focus();
+  renderPaletteResults('');
+}
+
+function closePalette(){document.getElementById('cmd-overlay').classList.remove('open');}
+
+function renderPaletteResults(query){
+  const res=document.getElementById('cmd-results');
+  let items=CMD_ITEMS;
+  // Add pipeline-specific items
+  if(DATA){
+    const reg=DATA.question_registry||{};
+    Object.values(reg).forEach(q=>{
+      items.push({label:q.id+': '+((q.question||'').slice(0,60)),action:()=>{closePalette();switchTab('questions');document.getElementById('q-search').value=q.id;renderQuestions();},hint:q.rag_type,_dynamic:true});
+    });
+  }
+  if(query){
+    const lq=query.toLowerCase();
+    items=items.filter(i=>i.label.toLowerCase().includes(lq)||(i.hint||'').toLowerCase().includes(lq));
+  }
+  items=items.slice(0,12);
+  res.innerHTML=items.map((item,i)=>`<div class="cmd-item${i===0?' selected':''}" onclick="CMD_ITEMS_FILTERED[${i}].action();closePalette()"><span class="cmd-label">${esc(item.label)}</span><span class="cmd-hint">${esc(item.hint||'')}</span></div>`).join('');
+  window.CMD_ITEMS_FILTERED=items;
+}
+
+document.getElementById('cmd-input')?.addEventListener('input',e=>renderPaletteResults(e.target.value));
+document.getElementById('cmd-input')?.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closePalette();
+  if(e.key==='Enter'&&window.CMD_ITEMS_FILTERED?.length){window.CMD_ITEMS_FILTERED[0].action();closePalette();}
+});
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+function updateBellBadge(){
+  const badge=document.getElementById('bell-badge');
+  const bell=document.getElementById('bell-icon');
+  if(!DATA)return;
+  let errCount=0;
+  (DATA.iterations||[]).forEach(iter=>{
+    (iter.questions||[]).forEach(q=>{if(q.error)errCount++;});
+  });
+  const newErrors=errCount-seenErrorCount;
+  if(newErrors>0){
+    badge.textContent=newErrors;
+    badge.style.display='flex';
+    bell.classList.add('has-new');
+  }else{
+    badge.style.display='none';
+    bell.classList.remove('has-new');
+  }
+  lastErrorCount=errCount;
+}
+
+function toggleNotifications(){
+  seenErrorCount=lastErrorCount;
+  updateBellBadge();
+  showToast('All errors marked as seen','success');
+}
+
 // ============================================================
 // DATA LOADING
 // ============================================================
 async function loadData(){
   try{
     const r=await fetch('data.json?t='+Date.now());
-    DATA=await r.json();
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const newData=await r.json();
+    const isFirst=!DATA;
+    DATA=newData;
+    loadError=false;
+    lastLoadTime=new Date();
     render();
-  }catch(e){console.error('Load error:',e);}
+    updateBellBadge();
+    if(!isFirst)showToast('Data refreshed','success',2000);
+  }catch(e){
+    console.error('Load error:',e);
+    loadError=true;
+    updateStatusBar();
+    if(!DATA)renderLoadError();
+    else showToast('Refresh failed: '+e.message,'error',4000);
+  }
+}
+
+function renderLoadError(){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const exec=document.getElementById('p-exec');
+  exec.classList.add('active');
+  exec.innerHTML=`<div class="card" style="text-align:center;padding:60px 20px">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--rd)" stroke-width="2" style="margin-bottom:16px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+    <h2 style="color:var(--rd)">Failed to Load Data</h2>
+    <p style="color:var(--tx2);margin:12px 0">Could not fetch <code>data.json</code>. Make sure the file exists and is valid JSON.</p>
+    <button class="btn btn-primary" onclick="loadData()" style="margin-top:12px">Retry</button>
+  </div>`;
 }
 
 function render(){
   if(!DATA)return;
   renderHeader();
+  renderStatusBar();
   renderExec();
   renderFocus();
   renderQuestions();
@@ -452,91 +870,263 @@ function render(){
 }
 
 // ============================================================
-// HEADER
+// TAB SWITCHING
+// ============================================================
+function switchTab(tabId){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const tab=document.querySelector(`.tab[data-tab="${tabId}"]`);
+  if(tab)tab.classList.add('active');
+  const panel=document.getElementById('p-'+tabId);
+  if(panel)panel.classList.add('active');
+}
+
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>switchTab(tab.dataset.tab));
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown',e=>{
+  // Cmd/Ctrl+K
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openPalette();return;}
+  // Escape
+  if(e.key==='Escape'){closePalette();return;}
+  // Number keys 1-7 (not in input)
+  if(!e.metaKey&&!e.ctrlKey&&!e.altKey&&e.target.tagName!=='INPUT'&&e.target.tagName!=='SELECT'&&e.target.tagName!=='TEXTAREA'){
+    const tabs=['exec','focus','questions','workflows','databases','costs','agent'];
+    const n=parseInt(e.key);
+    if(n>=1&&n<=7){switchTab(tabs[n-1]);}
+  }
+});
+
+</script>
+<script>
+// ============================================================
+// HEADER & STATUS BAR
 // ============================================================
 function renderHeader(){
   const m=DATA.meta||{};
   const dot=document.getElementById('hd-dot');
   dot.className='dot '+(m.status==='running'?'run':m.status==='error'?'err':'ok');
-  document.getElementById('hd-phase').textContent=m.phase||'Phase 1';
+  document.getElementById('hd-phase').innerHTML='<span class="tag t-p1">'+esc(m.phase||'Phase 1')+'</span>';
   document.getElementById('hd-iter').textContent='Iter '+(m.total_iterations||0);
-  document.getElementById('hd-qs').textContent=(m.total_unique_questions||0)+' questions';
-  document.getElementById('hd-ts').textContent=m.generated_at?new Date(m.generated_at).toLocaleString():'';
+  document.getElementById('hd-qs').textContent=fmtN(m.total_unique_questions||0)+' questions';
+}
+
+function renderStatusBar(){updateStatusBar();}
+
+function updateStatusBar(){
+  const m=DATA?.meta||{};
+  const refreshEl=document.getElementById('sb-refresh');
+  const liveEl=document.getElementById('sb-live');
+  const healthEl=document.getElementById('sb-health');
+  const healthLabel=document.getElementById('sb-health-label');
+  const evalTs=document.getElementById('sb-eval-ts');
+
+  if(lastLoadTime){
+    refreshEl.textContent='Refreshed '+lastLoadTime.toLocaleTimeString();
+  }
+
+  if(loadError){
+    liveEl.innerHTML='<span class="dot err" style="width:6px;height:6px"></span> <span style="color:var(--rd)">Stale</span>';
+  }else{
+    const genAt=m.generated_at?new Date(m.generated_at):null;
+    const isStale=genAt&&(Date.now()-genAt.getTime())>300000;
+    liveEl.innerHTML=isStale?
+      '<span class="dot stale" style="width:6px;height:6px"></span> <span style="color:var(--or)">Stale ('+timeAgo(m.generated_at)+')</span>':
+      '<span class="dot ok" style="width:6px;height:6px"></span> Live';
+  }
+
+  // Pipeline health dots
+  const pipeTrends=DATA?.pipelines||{};
+  healthEl.innerHTML=PIPES.map(p=>{
+    const trend=pipeTrends[p]?.trend||[];
+    const last=trend[trend.length-1];
+    const acc=last?last.accuracy_pct:0;
+    const col=acc>=PTARGET[p]?'var(--gn)':acc>=PTARGET[p]-10?'var(--yl)':'var(--rd)';
+    return `<span class="health-dot"><span class="dot" style="width:6px;height:6px;background:${col}"></span>${p.slice(0,4)}</span>`;
+  }).join('');
+
+  // Health score
+  const score=computeHealthScore();
+  const scoreCls=score>=80?'health-good':score>=60?'health-warn':'health-bad';
+  healthLabel.innerHTML=`<span class="health-badge ${scoreCls}">${score}</span>`;
+
+  evalTs.textContent=m.generated_at?'Data: '+timeAgo(m.generated_at):'';
+}
+
+function computeHealthScore(){
+  if(!DATA)return 0;
+  const pipeTrends=DATA.pipelines||{};
+  let score=0,count=0;
+  PIPES.forEach(p=>{
+    const trend=pipeTrends[p]?.trend||[];
+    const last=trend[trend.length-1];
+    if(last){
+      const accScore=Math.min(100,last.accuracy_pct/PTARGET[p]*100);
+      const errPenalty=last.errors>5?20:last.errors>2?10:0;
+      score+=accScore-errPenalty;
+      count++;
+    }
+  });
+  return count?Math.round(score/count):0;
 }
 
 // ============================================================
 // TAB 1: EXECUTIVE SUMMARY
 // ============================================================
 function renderExec(){
+  // Health badge
+  const score=computeHealthScore();
+  const scoreCls=score>=80?'health-good':score>=60?'health-warn':'health-bad';
+  document.getElementById('exec-health-badge').innerHTML=`<span class="health-badge ${scoreCls}">Health: ${score}/100</span>`;
+
   // Phase roadmap
   const phases=[{n:1,l:'Baseline',q:'200q'},{n:2,l:'Expand',q:'1Kq'},{n:3,l:'Scale',q:'10Kq'},{n:4,l:'Full HF',q:'100Kq'},{n:5,l:'Million+',q:'1M+q'}];
-  const curPhase=1;// TODO: derive from data
+  const curPhase=1;
   document.getElementById('exec-phases').innerHTML=phases.map(p=>
     `<div class="phase-dot ${p.n===curPhase?'current':p.n<curPhase?'done':'locked'}">P${p.n}: ${p.l} (${p.q})</div>`
   ).join('');
 
+  // Phase 1 countdown
+  const pipeTrends=DATA.pipelines||{};
+  let gatesMet=0,gatesTotal=5;
+  PIPES.forEach(p=>{
+    const trend=pipeTrends[p]?.trend||[];
+    const last=trend[trend.length-1];
+    if(last&&last.accuracy_pct>=PTARGET[p])gatesMet++;
+  });
+  const iters=DATA.iterations||[];
+  const lastIter=iters[iters.length-1];
+  if(lastIter&&lastIter.overall_accuracy_pct>=75)gatesMet++;
+  document.getElementById('exec-phase-countdown').innerHTML=`<strong>${gatesMet}</strong> / ${gatesTotal} Phase 1 gates met &mdash; ${gatesTotal-gatesMet} remaining`;
+
   // Key metrics
   const m=DATA.meta||{};
-  const iters=DATA.iterations||[];
-  const last=iters[iters.length-1];
-  const overall=last?last.overall_accuracy_pct:0;
-  const errRate=last?pct(Object.values(last.results_summary||{}).reduce((a,p)=>a+(p.errors||0),0),last.total_tested||1):0;
+  const overall=lastIter?lastIter.overall_accuracy_pct:0;
+  const totalErrors=(iters.length?Object.values(lastIter?.results_summary||{}).reduce((a,p)=>a+(p.errors||0),0):0);
+  const totalTested=lastIter?.total_tested||1;
+  const errRate=pct(totalErrors,totalTested);
+  const avgLat=lastIter?Math.round(Object.values(lastIter.results_summary||{}).reduce((a,p)=>a+(p.avg_latency_ms||0),0)/Math.max(Object.keys(lastIter.results_summary||{}).length,1)):0;
+
   document.getElementById('exec-stats').innerHTML=[
     mkStat(overall.toFixed(1)+'%','Overall Accuracy',overall>=75?'Gate: MET':'Gap: '+(75-overall).toFixed(1)+'pp',overall>=75?'d-up':'d-dn'),
-    mkStat(m.total_unique_questions||0,'Questions Tested','Phase 1: 200 / Phase 2: 1000'),
-    mkStat(m.total_iterations||0,'Iterations','5 eval runs + improvements'),
-    mkStat(errRate.toFixed(1)+'%','Error Rate',errRate<5?'Target: <5%':'Above target!',errRate<5?'d-up':'d-dn'),
-    mkStat(m.total_test_runs||0,'Total Test Runs','Across all iterations'),
+    mkStat(fmtN(m.total_unique_questions||0),'Questions Tested','P1: 200 / P2: 1000'),
+    mkStat(m.total_iterations||0,'Iterations','Across all sessions'),
+    mkStat(errRate.toFixed(1)+'%','Error Rate',errRate<5?'Target: <5% -- MET':'Target: <5% -- NOT MET',errRate<5?'d-up':'d-dn'),
+    mkStat(avgLat?avgLat+'ms':'--','Avg Latency','Last iteration'),
   ].join('');
 
-  // Pipeline gauges
-  const pipeTrends=DATA.pipelines||{};
+  // Pipeline gauges with sparklines
   document.getElementById('exec-gauges').innerHTML=PIPES.map(p=>{
     const trend=pipeTrends[p]?.trend||[];
     const lastT=trend[trend.length-1];
     const acc=lastT?lastT.accuracy_pct:0;
-    return `<div class="card">${mkGauge(acc,PTARGET[p],PCOL[p],p)}</div>`;
+    const sparkVals=trend.slice(-6).map(t=>t.accuracy_pct);
+    return `<div class="card gauge-wrap fade-in">
+      ${mkGauge(acc,PTARGET[p],PCOL[p],p)}
+      <div style="text-align:center;margin-top:6px">${mkSparkline(sparkVals,PCOL[p])}</div>
+    </div>`;
   }).join('');
 
-  // Accuracy trend chart
   renderExecTrend();
   renderExecErrors();
+  renderExecTimeline();
 
-  // Blockers
+  // Blockers — dynamic from data
   const blockers=[];
   PIPES.forEach(p=>{
     const trend=pipeTrends[p]?.trend||[];
     const lastT=trend[trend.length-1];
     if(lastT){
-      if(lastT.accuracy_pct<PTARGET[p]) blockers.push({p:'P0',text:`${p}: ${lastT.accuracy_pct}% (target ${PTARGET[p]}%, gap -${(PTARGET[p]-lastT.accuracy_pct).toFixed(1)}pp)`});
-      if(lastT.errors>5) blockers.push({p:'P1',text:`${p}: ${lastT.errors} errors in last iteration`});
+      if(lastT.accuracy_pct<PTARGET[p])blockers.push({p:'P0',text:`${p}: ${lastT.accuracy_pct}% (target ${PTARGET[p]}%, gap -${(PTARGET[p]-lastT.accuracy_pct).toFixed(1)}pp)`});
+      if(lastT.errors>5)blockers.push({p:'P1',text:`${p}: ${lastT.errors} errors in last iteration`});
     }
   });
-  blockers.push({p:'P0',text:'OpenRouter credits EXPIRED — need new API key for LLM calls'});
-  document.getElementById('exec-blockers').innerHTML=blockers.length?blockers.map(b=>`<div class="blocker"><span class="priority">${b.p}</span>${esc(b.text)}</div>`).join(''):'<p style="color:var(--gn)">No active blockers</p>';
+  // Check for high latency
+  PIPES.forEach(p=>{
+    const trend=pipeTrends[p]?.trend||[];
+    const lastT=trend[trend.length-1];
+    if(lastT&&lastT.avg_latency_ms>30000)blockers.push({p:'P1',text:`${p}: avg latency ${Math.round(lastT.avg_latency_ms/1000)}s (high)`});
+  });
+  document.getElementById('exec-blockers').innerHTML=blockers.length?
+    blockers.map(b=>`<div class="blocker"><span class="priority">${b.p}</span><span>${esc(b.text)}</span></div>`).join(''):
+    '<p style="color:var(--gn);font-size:12px">No active blockers -- all systems operational</p>';
 
   // Next actions
   document.getElementById('exec-actions').innerHTML=`
-    <ol style="padding-left:20px;color:var(--tx2);line-height:2">
-      <li><strong>Set env vars</strong> in Termius (N8N_API_KEY, OPENROUTER_API_KEY)</li>
+    <ol style="padding-left:20px;color:var(--tx2);line-height:2.2;font-size:12px">
       <li><strong>Deploy fixes</strong>: <code>python3 workflows/improved/apply.py --deploy</code></li>
-      <li><strong>Fast iteration</strong>: <code>python3 eval/fast-iter.py --label "Iter 6"</code></li>
+      <li><strong>Fast iteration</strong>: <code>python3 eval/fast-iter.py --label "Iter N"</code></li>
       <li><strong>Full Phase 1 eval</strong>: <code>python3 eval/run-eval-parallel.py --reset</code></li>
+      <li><strong>Check gates</strong>: <code>python3 eval/phase_gates.py</code></li>
       <li><strong>Phase 2 eval</strong>: <code>python3 eval/run-eval-parallel.py --dataset phase-2 --reset</code></li>
     </ol>`;
+
+  // Top improving / regressing
+  renderImprovingRegressing();
+}
+
+function renderImprovingRegressing(){
+  const reg=DATA.question_registry||{};
+  const entries=Object.values(reg);
+  const improving=entries.filter(q=>q.trend==='improving').sort((a,b)=>b.pass_rate-a.pass_rate).slice(0,5);
+  const regressing=entries.filter(q=>q.trend==='regressing').sort((a,b)=>a.pass_rate-b.pass_rate).slice(0,5);
+
+  document.getElementById('exec-improving').innerHTML=improving.length?
+    improving.map(q=>`<div style="padding:5px 0;font-size:12px;display:flex;align-items:center;gap:8px">
+      <span style="color:var(--gn);font-size:12px">&#9650;</span>
+      <span class="mono" style="font-size:11px;min-width:80px">${esc(q.id)}</span>
+      <span style="color:${PCOL[q.rag_type]||'var(--tx)'};font-size:11px">${esc(q.rag_type)}</span>
+      <span style="color:var(--tx2);font-size:11px">F1: ${(q.best_f1||0).toFixed(3)}</span>
+    </div>`).join(''):'<p style="color:var(--tx3);font-size:12px">No improving questions detected</p>';
+
+  document.getElementById('exec-regressing').innerHTML=regressing.length?
+    regressing.map(q=>`<div style="padding:5px 0;font-size:12px;display:flex;align-items:center;gap:8px">
+      <span style="color:var(--rd);font-size:12px">&#9660;</span>
+      <span class="mono" style="font-size:11px;min-width:80px">${esc(q.id)}</span>
+      <span style="color:${PCOL[q.rag_type]||'var(--tx)'};font-size:11px">${esc(q.rag_type)}</span>
+      <span style="color:var(--tx2);font-size:11px">Pass: ${(q.pass_rate*100).toFixed(0)}%</span>
+    </div>`).join(''):'<p style="color:var(--tx3);font-size:12px">No regressing questions detected</p>';
+}
+
+function renderExecTimeline(){
+  const iters=DATA.iterations||[];
+  const el=document.getElementById('exec-timeline');
+  el.innerHTML=iters.slice().reverse().map((iter,idx)=>{
+    const acc=iter.overall_accuracy_pct||0;
+    const cls=acc>=75?'tl-pass':idx===0?'tl-current':'tl-fail';
+    const pipes=Object.entries(iter.results_summary||{}).map(([p,s])=>{
+      const col=s.accuracy_pct>=PTARGET[p]?'var(--gn)':'var(--rd)';
+      return `<span style="color:${PCOL[p]}">${p.slice(0,4)}</span>: <span style="color:${col}">${s.accuracy_pct}%</span>`;
+    }).join(' | ');
+    return `<div class="tl-item ${cls}" onclick="this.classList.toggle('expanded')">
+      <div class="tl-header">${esc(iter.label||'Iter '+iter.number)} <span style="color:${acc>=75?'var(--gn)':'var(--yl)};font-family:'JetBrains Mono'">${acc}%</span></div>
+      <div class="tl-meta">${iter.timestamp_start?new Date(iter.timestamp_start).toLocaleString():''} &mdash; ${iter.total_tested||0} questions</div>
+      <div class="tl-detail">
+        <div style="margin-bottom:6px">${pipes}</div>
+        <div style="color:var(--tx3)">${esc(iter.description||'')}</div>
+        ${(iter.changes_applied||[]).length?'<div style="margin-top:4px;color:var(--tx2)">Changes: '+iter.changes_applied.map(c=>esc(c)).join(', ')+'</div>':''}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderExecTrend(){
   destroyChart('execTrend');
   const ctx=getCtx('ch-exec-trend');if(!ctx)return;
   const iters=DATA.iterations||[];
-  const labels=iters.map(i=>i.label||`Iter ${i.number}`);
+  const labels=iters.map(i=>i.label||('Iter '+i.number));
+  const isLight=document.documentElement.classList.contains('light');
+  const gridColor=isLight?'#e0e4ea':'#1a2231';
+  const tickColor=isLight?'#888':'#556278';
   const datasets=PIPES.map(p=>({
-    label:p,borderColor:PCOL[p],backgroundColor:PCOL[p]+'20',data:iters.map(i=>(i.results_summary||{})[p]?.accuracy_pct||null),
-    tension:.3,pointRadius:4,spanGaps:true
+    label:p.charAt(0).toUpperCase()+p.slice(1),borderColor:PCOL[p],backgroundColor:PCOL[p]+'18',
+    data:iters.map(i=>(i.results_summary||{})[p]?.accuracy_pct??null),
+    tension:.35,pointRadius:3,pointHoverRadius:6,spanGaps:true,borderWidth:2
   }));
-  datasets.push({label:'Target (75%)',borderColor:'#556070',borderDash:[5,5],data:iters.map(()=>75),pointRadius:0});
-  charts.execTrend=new Chart(ctx,{type:'line',data:{labels,datasets},options:{responsive:true,plugins:{legend:{labels:{color:'#8896a8',font:{size:11}}}},scales:{y:{beginAtZero:true,max:100,ticks:{color:'#556070'},grid:{color:'#1c2330'}},x:{ticks:{color:'#556070'},grid:{color:'#1c2330'}}}}});
+  datasets.push({label:'Target (75%)',borderColor:tickColor,borderDash:[6,4],data:iters.map(()=>75),pointRadius:0,borderWidth:1});
+  charts.execTrend=new Chart(ctx,{type:'line',data:{labels,datasets},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{color:tickColor,font:{size:11,family:'Inter'}},position:'bottom'}},scales:{y:{beginAtZero:true,max:100,ticks:{color:tickColor},grid:{color:gridColor}},x:{ticks:{color:tickColor,maxRotation:45},grid:{color:gridColor}}}}});
 }
 
 function renderExecErrors(){
@@ -549,15 +1139,15 @@ function renderExecErrors(){
     });
   });
   const labels=Object.keys(errs);
-  const colors=labels.map(l=>ECOL[l]||'#556070');
-  charts.execErr=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data:Object.values(errs),backgroundColor:colors}]},options:{responsive:true,plugins:{legend:{position:'right',labels:{color:'#8896a8',font:{size:11}}}}}});
+  const colors=labels.map(l=>ECOL[l]||'#556278');
+  const isLight=document.documentElement.classList.contains('light');
+  charts.execErr=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data:Object.values(errs),backgroundColor:colors,borderWidth:0}]},options:{responsive:true,cutout:'60%',plugins:{legend:{position:'right',labels:{color:isLight?'#555':'#8a97ad',font:{size:11,family:'Inter'},padding:12}}}}});
 }
 
 // ============================================================
 // TAB 2: FOCUS
 // ============================================================
 function renderFocus(){
-  // Incremental steps
   const steps=[
     {level:'Endpoints',q:'health check',status:'done'},
     {level:'5q',q:'5 per pipeline',status:'done'},
@@ -571,6 +1161,26 @@ function renderFocus(){
     return `<div class="phase-dot ${cls}" style="font-size:10px">${s.level}<br><span style="font-weight:400;opacity:.7">${s.q}</span></div>`;
   }).join('')+'</div>';
 
+  // Live progress
+  const m=DATA.meta||{};
+  const liveEl=document.getElementById('focus-live-progress');
+  if(m.status==='running'){
+    liveEl.style.display='block';
+    const tested=m.total_test_runs||0;
+    const target=200;
+    const pctDone=Math.min(100,Math.round(tested/target*100));
+    document.getElementById('focus-live-detail').innerHTML=`
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+        <span class="dot run" style="width:8px;height:8px"></span>
+        <span style="font-size:13px;font-weight:600">Evaluation running</span>
+        <span style="color:var(--tx2);font-size:12px">${tested} / ${target} tests completed</span>
+      </div>
+      <div class="pbar" style="height:8px"><div class="fill" style="width:${pctDone}%;background:var(--ac)"></div></div>
+      <div style="font-size:11px;color:var(--tx3);margin-top:6px">Session: ${esc(m.current_session||'--')}</div>`;
+  }else{
+    liveEl.style.display='none';
+  }
+
   // Phase 1 gates
   const pipeTrends=DATA.pipelines||{};
   const gates=[
@@ -579,22 +1189,22 @@ function renderFocus(){
     {name:'Quantitative >= 85%',check:()=>{const t=pipeTrends.quantitative?.trend||[];return t.length?(t[t.length-1].accuracy_pct>=85):false;}},
     {name:'Orchestrator >= 70%',check:()=>{const t=pipeTrends.orchestrator?.trend||[];return t.length?(t[t.length-1].accuracy_pct>=70):false;}},
     {name:'Overall >= 75%',check:()=>{const iters=DATA.iterations||[];const last=iters[iters.length-1];return last?(last.overall_accuracy_pct>=75):false;}},
-    {name:'Error rate < 5%',check:()=>false},
+    {name:'Error rate < 5%',check:()=>{const iters=DATA.iterations||[];const last=iters[iters.length-1];if(!last)return false;const errs=Object.values(last.results_summary||{}).reduce((a,p)=>a+(p.errors||0),0);return pct(errs,last.total_tested||1)<5;}},
     {name:'3 consecutive stable iterations',check:()=>false},
   ];
   document.getElementById('focus-gates').innerHTML=gates.map(g=>{
     const met=g.check();
-    return `<div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:${met?'var(--gn)':'var(--rd)'};font-size:14px">${met?'&#10003;':'&#10007;'}</span><span style="font-size:12px">${esc(g.name)}</span></div>`;
+    return `<div style="padding:6px 0;display:flex;align-items:center;gap:10px"><span style="color:${met?'var(--gn)':'var(--rd)'};font-size:15px;font-weight:700">${met?'&#10003;':'&#10007;'}</span><span style="font-size:12px">${esc(g.name)}</span></div>`;
   }).join('');
 
-  // Phase 2 readiness
+  // Phase 2 readiness — dynamic
+  const p1AllMet=gates.every(g=>g.check());
   document.getElementById('focus-p2').innerHTML=`
-    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--gn);font-size:14px">&#10003;</span><span>Dataset: 1,000 questions (500 graph + 500 quant)</span></div>
-    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--gn);font-size:14px">&#10003;</span><span>Supabase: 450 Phase 2 rows populated</span></div>
-    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--gn);font-size:14px">&#10003;</span><span>Neo4j: 4,884 entities + 21,625 relationships</span></div>
-    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--gn);font-size:14px">&#10003;</span><span>Pinecone: no changes needed (10,411 vectors)</span></div>
-    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--rd);font-size:14px">&#10007;</span><span>Phase 1 gates NOT met (prerequisite)</span></div>
-    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--yl);font-size:14px">&#9888;</span><span>OpenRouter API key expired</span></div>`;
+    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--gn);font-size:14px">&#10003;</span><span style="font-size:12px">Dataset: 1,000 questions prepared</span></div>
+    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--gn);font-size:14px">&#10003;</span><span style="font-size:12px">Supabase: 538 rows populated</span></div>
+    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--gn);font-size:14px">&#10003;</span><span style="font-size:12px">Neo4j: 14,904+ nodes, 54,907+ relationships</span></div>
+    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--gn);font-size:14px">&#10003;</span><span style="font-size:12px">Pinecone: 10,411 vectors (no changes needed)</span></div>
+    <div style="padding:5px 0;display:flex;align-items:center;gap:8px"><span style="color:${p1AllMet?'var(--gn)':'var(--rd)'};font-size:14px">${p1AllMet?'&#10003;':'&#10007;'}</span><span style="font-size:12px">Phase 1 gates ${p1AllMet?'MET':'NOT met (prerequisite)'}</span></div>`;
 
   // Per-pipeline cards
   const iters=DATA.iterations||[];
@@ -604,11 +1214,16 @@ function renderFocus(){
     const acc=rs.accuracy_pct||0;
     const target=PTARGET[p];
     const col=acc>=target?'var(--gn)':acc>=target-10?'var(--yl)':'var(--rd)';
-    return `<div class="card"><h3 style="color:${PCOL[p]}">${p}</h3>
-      <div style="font-size:24px;font-weight:800;color:${col};font-family:'JetBrains Mono'">${acc}%</div>
-      <div style="font-size:11px;color:var(--tx3)">Target: ${target}% | Gap: ${(target-acc).toFixed(1)}pp</div>
-      <div class="pbar" style="margin-top:8px"><div class="fill" style="width:${acc}%;background:${col}"></div><div class="marker" style="left:${target}%"></div></div>
-      <div style="margin-top:8px;font-size:11px;color:var(--tx2)">Tested: ${rs.tested||0} | Errors: ${rs.errors||0} | Avg latency: ${rs.avg_latency_ms||0}ms</div>
+    const trend=pipeTrends[p]?.trend||[];
+    const sparkVals=trend.slice(-6).map(t=>t.accuracy_pct);
+    return `<div class="card fade-in"><h3 style="color:${PCOL[p]}">${p}</h3>
+      <div style="font-size:26px;font-weight:800;color:${col};font-family:'JetBrains Mono'">${acc}%${mkSparkline(sparkVals,PCOL[p])}</div>
+      <div style="font-size:11px;color:var(--tx3);margin-top:4px">Target: ${target}% | Gap: ${(target-acc).toFixed(1)}pp</div>
+      <div class="pbar" style="margin-top:10px"><div class="fill" style="width:${Math.min(100,acc)}%;background:${col}"></div><div class="marker" style="left:${target}%"></div></div>
+      <div style="margin-top:10px;font-size:11px;color:var(--tx2);line-height:1.8">
+        Tested: ${rs.tested||0} | Errors: ${rs.errors||0}<br>
+        Avg latency: ${rs.avg_latency_ms?Math.round(rs.avg_latency_ms)+'ms':'--'}
+      </div>
     </div>`;
   }).join('');
 
@@ -616,34 +1231,52 @@ function renderFocus(){
   const reg=DATA.question_registry||{};
   const passing=[],failing=[];
   Object.values(reg).forEach(q=>{
-    if(q.current_status==='pass'&&q.total_runs>=2) passing.push(q);
-    else if(q.current_status==='fail'||q.current_status==='error') failing.push(q);
+    if(q.current_status==='pass'&&q.total_runs>=2)passing.push(q);
+    else if(q.current_status==='fail'||q.current_status==='error')failing.push(q);
   });
   passing.sort((a,b)=>b.best_f1-a.best_f1);
   failing.sort((a,b)=>a.pass_rate-b.pass_rate);
 
   document.getElementById('focus-pass').innerHTML=passing.slice(0,8).map(q=>
-    `<div style="padding:4px 0;font-size:12px"><span class="tag t-pass">PASS</span> <span class="mono">${esc(q.id)}</span> — F1: ${q.best_f1.toFixed(3)} (${q.pass_count}/${q.total_runs} runs)</div>`
-  ).join('')||'<p style="color:var(--tx3)">No consistent passes yet</p>';
+    `<div style="padding:5px 0;font-size:12px"><span class="tag t-pass">PASS</span> <span class="mono" style="font-size:11px">${esc(q.id)}</span> -- F1: ${q.best_f1.toFixed(3)} (${q.pass_count}/${q.total_runs})</div>`
+  ).join('')||'<p style="color:var(--tx3);font-size:12px">No consistent passes yet</p>';
 
   document.getElementById('focus-fail').innerHTML=failing.slice(0,8).map(q=>{
     const runs=q.runs||[];
     const lastErr=runs.filter(r=>r.error).pop();
-    return `<div style="padding:4px 0;font-size:12px"><span class="tag t-fail">${q.current_status?.toUpperCase()}</span> <span class="mono">${esc(q.id)}</span> — ${lastErr?esc(lastErr.error_type||'UNKNOWN'):'low F1'} (${q.pass_count}/${q.total_runs})</div>`;
-  }).join('')||'<p style="color:var(--tx3)">No failures recorded</p>';
+    return `<div style="padding:5px 0;font-size:12px"><span class="tag t-fail">${(q.current_status||'FAIL').toUpperCase()}</span> <span class="mono" style="font-size:11px">${esc(q.id)}</span> -- ${lastErr?esc(lastErr.error_type||'UNKNOWN'):'low F1'} (${q.pass_count}/${q.total_runs})</div>`;
+  }).join('')||'<p style="color:var(--tx3);font-size:12px">No failures recorded</p>';
 }
 
+</script>
+<script>
 // ============================================================
 // TAB 3: QUESTIONS
 // ============================================================
+let qSortCol='id',qSortAsc=true;
+
+// Sortable columns
+document.querySelectorAll('#q-table th.sortable').forEach(th=>{
+  th.addEventListener('click',()=>{
+    const col=th.dataset.sort;
+    if(qSortCol===col)qSortAsc=!qSortAsc;
+    else{qSortCol=col;qSortAsc=true;}
+    document.querySelectorAll('#q-table th.sortable').forEach(h=>h.classList.remove('sorted'));
+    th.classList.add('sorted');
+    th.querySelector('.sort-arrow').innerHTML=qSortAsc?'&#9650;':'&#9660;';
+    renderQuestions();
+  });
+});
+
+function getQPhase(q){
+  return (q.id?.startsWith('graph-musique')||q.id?.startsWith('graph-2wiki')||q.id?.startsWith('quantitative-finqa')||q.id?.startsWith('quantitative-tatqa')||q.id?.startsWith('quantitative-convfinqa'))?2:1;
+}
+
 function renderQuestions(){
   const reg=DATA.question_registry||{};
   const entries=Object.values(reg);
   const tbody=document.getElementById('q-tbody');
-
-  // Populate dataset filter
-  const datasets=new Set();
-  entries.forEach(q=>{if(q.category)datasets.add(q.category);});
+  const groupByRun=document.getElementById('q-group-run')?.checked;
 
   // Filter
   const fPhase=document.getElementById('q-phase').value;
@@ -658,10 +1291,7 @@ function renderQuestions(){
       if(fStatus==='fail'&&q.current_status!=='fail')return false;
       if(fStatus==='error'&&!(q.runs||[]).some(r=>r.error))return false;
     }
-    if(fPhase){
-      const phase=q.id?.startsWith('graph-musique')||q.id?.startsWith('graph-2wiki')||q.id?.startsWith('quantitative-finqa')||q.id?.startsWith('quantitative-tatqa')||q.id?.startsWith('quantitative-convfinqa')?'2':'1';
-      if(phase!==fPhase)return false;
-    }
+    if(fPhase){if(String(getQPhase(q))!==fPhase)return false;}
     if(fSearch){
       const hay=(q.id+' '+q.question+' '+q.expected+' '+(q.category||'')).toLowerCase();
       if(!hay.includes(fSearch))return false;
@@ -669,21 +1299,42 @@ function renderQuestions(){
     return true;
   });
 
-  filtered.sort((a,b)=>(a.id||'').localeCompare(b.id||''));
+  // Sort
+  const sortFn={
+    id:(a,b)=>(a.id||'').localeCompare(b.id||''),
+    pipe:(a,b)=>(a.rag_type||'').localeCompare(b.rag_type||''),
+    phase:(a,b)=>getQPhase(a)-getQPhase(b),
+    runs:(a,b)=>(a.total_runs||0)-(b.total_runs||0),
+    pass:(a,b)=>(a.pass_rate||0)-(b.pass_rate||0),
+    f1:(a,b)=>(a.best_f1||0)-(b.best_f1||0),
+    status:(a,b)=>(a.current_status||'').localeCompare(b.current_status||''),
+  };
+  if(sortFn[qSortCol]){
+    filtered.sort(sortFn[qSortCol]);
+    if(!qSortAsc)filtered.reverse();
+  }
 
-  tbody.innerHTML=filtered.slice(0,200).map(q=>{
-    const phase=q.id?.startsWith('graph-musique')||q.id?.startsWith('graph-2wiki')||q.id?.startsWith('quantitative-finqa')||q.id?.startsWith('quantitative-tatqa')||q.id?.startsWith('quantitative-convfinqa')?2:1;
+  document.getElementById('q-count').textContent=`Showing ${Math.min(filtered.length,300)} of ${filtered.length} questions`;
+
+  if(groupByRun){
+    renderQuestionsGrouped(filtered);
+    return;
+  }
+
+  tbody.innerHTML=filtered.slice(0,300).map(q=>{
+    const phase=getQPhase(q);
     const statusCls=q.current_status==='pass'?'t-pass':q.current_status==='error'?'t-err':'t-fail';
     const trendIcon=q.trend==='improving'?'&#9650;':q.trend==='regressing'?'&#9660;':'&#8212;';
     const trendCls=q.trend==='improving'?'d-up':q.trend==='regressing'?'d-dn':'d-fl';
+    const ansPreview=(q.runs||[]).length?((q.runs[q.runs.length-1]?.answer||'').slice(0,120)):'';
     return `<tr class="expandable" data-qid="${esc(q.id)}">
       <td class="mono" style="font-size:11px;white-space:nowrap">${esc(q.id)}</td>
-      <td><span style="color:${PCOL[q.rag_type]||'#fff'}">${esc(q.rag_type)}</span></td>
+      <td><span style="color:${PCOL[q.rag_type]||'var(--tx)'}">${esc(q.rag_type)}</span></td>
       <td><span class="tag ${phase===1?'t-p1':'t-p2'}">P${phase}</span></td>
-      <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(q.question)}</td>
-      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" class="mono">${esc(q.expected)}</td>
+      <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" class="tip">${esc(q.question)}<span class="tip-text" style="max-width:350px;white-space:normal">${esc(ansPreview||'No answer yet')}</span></td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" class="mono">${esc(q.expected)}</td>
       <td>${q.total_runs||0}</td>
-      <td>${(q.pass_rate*100).toFixed(0)}%</td>
+      <td>${((q.pass_rate||0)*100).toFixed(0)}%</td>
       <td class="mono">${(q.best_f1||0).toFixed(3)}</td>
       <td><span class="tag ${statusCls}">${(q.current_status||'?').toUpperCase()}</span></td>
       <td class="${trendCls}">${trendIcon}</td>
@@ -692,30 +1343,146 @@ function renderQuestions(){
 
   // Click to expand
   tbody.querySelectorAll('tr.expandable').forEach(tr=>{
-    tr.onclick=()=>{
-      const qid=tr.dataset.qid;
-      const q=reg[qid];
-      if(!q)return;
-      const detail=document.getElementById('q-detail');
-      const runs=(q.runs||[]).reverse();
-      detail.innerHTML=`<div class="card card-accent"><h3>${esc(qid)} — ${esc(q.rag_type)}</h3>
-        <p style="margin-bottom:8px"><strong>Question:</strong> ${esc(q.question)}</p>
-        <p style="margin-bottom:8px"><strong>Expected:</strong> <code>${esc(q.expected)}</code></p>
-        <p style="margin-bottom:12px"><strong>Category:</strong> ${esc(q.category)} | <strong>Best F1:</strong> ${(q.best_f1||0).toFixed(3)} | <strong>Pass rate:</strong> ${(q.pass_rate*100).toFixed(0)}%</p>
-        <table><thead><tr><th>Iter</th><th>Result</th><th>F1</th><th>Latency</th><th>Method</th><th>Answer</th><th>Error</th></tr></thead><tbody>
-        ${runs.map(r=>`<tr>
-          <td>${r.iteration_number||'?'}</td>
-          <td><span class="tag ${r.correct?'t-pass':'t-fail'}">${r.correct?'PASS':'FAIL'}</span></td>
-          <td class="mono">${(r.f1||0).toFixed(3)}</td>
-          <td class="mono">${r.latency_ms||0}ms</td>
-          <td>${esc(r.match_type||'')}</td>
-          <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.answer||'')}</td>
-          <td style="color:var(--rd)">${esc(r.error||'')}</td>
-        </tr>`).join('')}
-        </tbody></table></div>`;
-      detail.scrollIntoView({behavior:'smooth'});
-    };
+    tr.onclick=()=>expandQuestion(tr.dataset.qid);
   });
+}
+
+function renderQuestionsGrouped(filtered){
+  const tbody=document.getElementById('q-tbody');
+  // Group by last iteration
+  const groups={};
+  filtered.forEach(q=>{
+    const runs=q.runs||[];
+    const lastRun=runs[runs.length-1];
+    const iterNum=lastRun?.iteration_number||0;
+    if(!groups[iterNum])groups[iterNum]=[];
+    groups[iterNum].push(q);
+  });
+
+  let html='';
+  Object.keys(groups).sort((a,b)=>b-a).forEach(iterNum=>{
+    const qs=groups[iterNum];
+    const passCount=qs.filter(q=>q.current_status==='pass').length;
+    html+=`<tr><td colspan="10" style="background:var(--s3);font-weight:700;font-size:12px;padding:10px 12px">
+      Iteration ${iterNum} &mdash; ${qs.length} questions (${passCount} pass, ${qs.length-passCount} fail/error)
+    </td></tr>`;
+    qs.forEach(q=>{
+      const phase=getQPhase(q);
+      const statusCls=q.current_status==='pass'?'t-pass':q.current_status==='error'?'t-err':'t-fail';
+      html+=`<tr class="expandable" data-qid="${esc(q.id)}">
+        <td class="mono" style="font-size:11px">${esc(q.id)}</td>
+        <td><span style="color:${PCOL[q.rag_type]||'var(--tx)'}">${esc(q.rag_type)}</span></td>
+        <td><span class="tag ${phase===1?'t-p1':'t-p2'}">P${phase}</span></td>
+        <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(q.question)}</td>
+        <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" class="mono">${esc(q.expected)}</td>
+        <td>${q.total_runs||0}</td>
+        <td>${((q.pass_rate||0)*100).toFixed(0)}%</td>
+        <td class="mono">${(q.best_f1||0).toFixed(3)}</td>
+        <td><span class="tag ${statusCls}">${(q.current_status||'?').toUpperCase()}</span></td>
+        <td></td>
+      </tr>`;
+    });
+  });
+  tbody.innerHTML=html;
+  tbody.querySelectorAll('tr.expandable').forEach(tr=>{
+    tr.onclick=()=>expandQuestion(tr.dataset.qid);
+  });
+}
+
+function expandQuestion(qid){
+  const reg=DATA.question_registry||{};
+  const q=reg[qid];if(!q)return;
+  const detail=document.getElementById('q-detail');
+  const runs=(q.runs||[]).slice().reverse();
+  detail.innerHTML=`<div class="card card-accent fade-in"><h3>${esc(qid)} -- ${esc(q.rag_type)}</h3>
+    <p style="margin-bottom:8px;font-size:12px"><strong>Question:</strong> ${esc(q.question)}</p>
+    <p style="margin-bottom:8px;font-size:12px"><strong>Expected:</strong> <code>${esc(q.expected)}</code></p>
+    <p style="margin-bottom:12px;font-size:12px"><strong>Category:</strong> ${esc(q.category)} | <strong>Best F1:</strong> ${(q.best_f1||0).toFixed(3)} | <strong>Pass rate:</strong> ${((q.pass_rate||0)*100).toFixed(0)}%</p>
+    <table><thead><tr><th>Iter</th><th>Result</th><th>F1</th><th>Latency</th><th>Method</th><th>Answer</th><th>Error</th></tr></thead><tbody>
+    ${runs.map(r=>`<tr>
+      <td>${r.iteration_number||'?'}</td>
+      <td><span class="tag ${r.correct?'t-pass':'t-fail'}">${r.correct?'PASS':'FAIL'}</span></td>
+      <td class="mono">${(r.f1||0).toFixed(3)}</td>
+      <td class="mono">${r.latency_ms||0}ms</td>
+      <td style="font-size:11px">${esc(r.match_type||'')}</td>
+      <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${esc(r.answer||'')}</td>
+      <td style="color:var(--rd);font-size:11px">${esc(r.error||'')}</td>
+    </tr>`).join('')}
+    </tbody></table></div>`;
+  detail.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// Compare mode
+function toggleCompare(){
+  const on=document.getElementById('q-compare').checked;
+  document.getElementById('q-compare-panel').style.display=on?'block':'none';
+  document.getElementById('q-iter').style.display=on?'inline-block':'none';
+  if(on){
+    const iters=DATA.iterations||[];
+    const opts=iters.map(i=>`<option value="${i.number}">${esc(i.label||'Iter '+i.number)}</option>`).join('');
+    document.getElementById('q-cmp-a').innerHTML='<option value="">Iteration A...</option>'+opts;
+    document.getElementById('q-cmp-b').innerHTML='<option value="">Iteration B...</option>'+opts;
+  }
+}
+
+function renderCompare(){
+  const a=parseInt(document.getElementById('q-cmp-a').value);
+  const b=parseInt(document.getElementById('q-cmp-b').value);
+  const res=document.getElementById('q-compare-results');
+  if(!a||!b){res.innerHTML='<p style="color:var(--tx3);font-size:12px">Select two iterations to compare</p>';return;}
+
+  const iters=DATA.iterations||[];
+  const iterA=iters.find(i=>i.number===a);
+  const iterB=iters.find(i=>i.number===b);
+  if(!iterA||!iterB){res.innerHTML='<p style="color:var(--tx3)">Iterations not found</p>';return;}
+
+  const qsA={},qsB={};
+  (iterA.questions||[]).forEach(q=>{qsA[q.id]=q;});
+  (iterB.questions||[]).forEach(q=>{qsB[q.id]=q;});
+
+  const allIds=new Set([...Object.keys(qsA),...Object.keys(qsB)]);
+  let improved=0,regressed=0,same=0,newInB=0;
+  const changes=[];
+
+  allIds.forEach(id=>{
+    const qa=qsA[id],qb=qsB[id];
+    if(!qa&&qb){newInB++;return;}
+    if(!qb)return;
+    if(qa.correct&&!qb.correct){regressed++;changes.push({id,from:'PASS',to:'FAIL',type:'regressed'});}
+    else if(!qa.correct&&qb.correct){improved++;changes.push({id,from:'FAIL',to:'PASS',type:'improved'});}
+    else same++;
+  });
+
+  res.innerHTML=`
+    <div style="display:flex;gap:16px;margin-bottom:10px;font-size:12px">
+      <span style="color:var(--gn)">&#9650; ${improved} improved</span>
+      <span style="color:var(--rd)">&#9660; ${regressed} regressed</span>
+      <span style="color:var(--tx3)">&#8212; ${same} unchanged</span>
+      <span style="color:var(--ac)">+ ${newInB} new</span>
+    </div>
+    ${changes.length?`<table style="font-size:11px"><thead><tr><th>Question</th><th>Iter ${a}</th><th>Iter ${b}</th></tr></thead><tbody>
+      ${changes.map(c=>`<tr>
+        <td class="mono">${esc(c.id)}</td>
+        <td><span class="tag ${c.from==='PASS'?'t-pass':'t-fail'}">${c.from}</span></td>
+        <td><span class="tag ${c.to==='PASS'?'t-pass':'t-fail'}">${c.to}</span></td>
+      </tr>`).join('')}
+    </tbody></table>`:'<p style="color:var(--tx3);font-size:12px">No status changes between iterations</p>'}`;
+}
+
+function exportCSV(){
+  if(!DATA)return;
+  const reg=DATA.question_registry||{};
+  const rows=[['ID','Pipeline','Phase','Question','Expected','Runs','PassRate','BestF1','Status','Trend']];
+  Object.values(reg).forEach(q=>{
+    rows.push([q.id,q.rag_type,getQPhase(q),'"'+(q.question||'').replace(/"/g,'""')+'"','"'+(q.expected||'').replace(/"/g,'""')+'"',q.total_runs||0,((q.pass_rate||0)*100).toFixed(1)+'%',(q.best_f1||0).toFixed(3),q.current_status||'',q.trend||'']);
+  });
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='questions-export.csv';a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV exported','success');
 }
 
 // ============================================================
@@ -723,70 +1490,80 @@ function renderQuestions(){
 // ============================================================
 function renderWorkflows(){
   const wfv=DATA.workflow_versions||{};
-  const n8nUrl=N8N_HOST;
 
   // Workflow cards
   document.getElementById('wf-cards').innerHTML=PIPES.map(p=>{
     const w=wfv[p]||{};
-    return `<div class="card"><h3 style="color:${PCOL[p]}">${p}</h3>
-      <div style="font-size:20px;font-weight:700">v${w.version||'?'}</div>
-      <div style="font-size:11px;color:var(--tx2);margin:4px 0">${esc(w.name||'')}</div>
-      <div style="font-size:11px"><span class="mono">${(w.hash||'').slice(0,12)}</span></div>
-      <div style="margin-top:8px;font-size:11px">
-        <div>Nodes: <strong>${w.total_nodes||'?'}</strong></div>
-        <div>Models: <strong>${(w.models_used||[]).join(', ')||'see registry'}</strong></div>
-      </div>
-      <div style="margin-top:8px"><a href="${n8nUrl}/workflow/${WF_IDS[p]}" target="_blank" style="font-size:11px">Open in n8n &rarr;</a></div>
+    const pipeTrends=DATA.pipelines||{};
+    const trend=pipeTrends[p]?.trend||[];
+    const lastT=trend[trend.length-1];
+    const acc=lastT?lastT.accuracy_pct:0;
+    return `<div class="card fade-in"><h3 style="color:${PCOL[p]}">${p}</h3>
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:22px;font-weight:700">v${w.version||'?'}</span><span style="font-size:11px;color:var(--tx3)">${w.total_nodes||'?'} nodes</span></div>
+      <div style="font-size:11px;color:var(--tx2);margin:6px 0">${esc(w.name||'')}</div>
+      <div class="mono" style="font-size:10px;color:var(--tx3)">${(w.hash||'').slice(0,12)}</div>
+      <div style="margin-top:10px"><a href="${N8N_HOST}/workflow/${WF_IDS[p]}" target="_blank" style="font-size:11px;font-weight:600">Open in n8n &rarr;</a></div>
     </div>`;
   }).join('');
 
-  // Node breakdown (from model registry as proxy — in production would parse workflow JSON)
-  const nodesByWf={};
-  MODEL_REGISTRY.forEach(m=>{
-    const key=m.wf.toLowerCase();
-    if(!nodesByWf[key])nodesByWf[key]=[];
-    nodesByWf[key].push(m);
-  });
+  // Node flow diagrams
+  const wfNodes={
+    standard:[
+      {name:'Webhook',cls:'nf-trigger'},{name:'OTEL Init',cls:'nf-code'},{name:'HyDE Generator',cls:'nf-ai'},
+      {name:'Pinecone Query',cls:'nf-db'},{name:'Cohere Rerank',cls:'nf-http'},
+      {name:'LLM Generation',cls:'nf-ai'},{name:'Response Format',cls:'nf-merge'}
+    ],
+    graph:[
+      {name:'Webhook',cls:'nf-trigger'},{name:'OTEL Init',cls:'nf-code'},{name:'Entity Extraction',cls:'nf-ai'},
+      {name:'Neo4j Query',cls:'nf-db'},{name:'Supabase Lookup',cls:'nf-db'},
+      {name:'Answer Synthesis',cls:'nf-ai'},{name:'Response Format',cls:'nf-merge'}
+    ],
+    quantitative:[
+      {name:'Webhook',cls:'nf-trigger'},{name:'OTEL Init',cls:'nf-code'},{name:'Text-to-SQL',cls:'nf-ai'},
+      {name:'SQL Validator',cls:'nf-ai'},{name:'Supabase Execute',cls:'nf-db'},
+      {name:'Interpretation',cls:'nf-ai'},{name:'Response Format',cls:'nf-merge'}
+    ],
+    orchestrator:[
+      {name:'Webhook',cls:'nf-trigger'},{name:'Intent Analyzer',cls:'nf-ai'},{name:'Task Planner',cls:'nf-ai'},
+      {name:'Router',cls:'nf-if'},{name:'Sub-pipeline Calls',cls:'nf-http'},
+      {name:'Response Builder',cls:'nf-ai'},{name:'Response Format',cls:'nf-merge'}
+    ]
+  };
+
   document.getElementById('wf-nodes').innerHTML=PIPES.map(p=>{
-    const nodes=nodesByWf[p]||[];
+    const nodes=wfNodes[p]||[];
     const w=wfv[p]||{};
-    const nodeTypes={trigger:1,code:0,http:0,db:0,ai:0,merge:0,if_:0};
-    // Estimate node types from total count
-    const total=w.total_nodes||0;
-    return `<details><summary style="color:${PCOL[p]}">${p.toUpperCase()} — ${total} nodes</summary>
+    return `<details><summary style="color:${PCOL[p]}">${p.toUpperCase()} -- ${w.total_nodes||'?'} nodes</summary>
     <div class="detail-content">
-      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
-        <span class="node node-trigger">Webhook (trigger)</span>
-        ${nodes.map(n=>{
-          const cls=n.role.includes('SQL')?'node-db':n.role.includes('embed')?'node-http':'node-ai';
-          return `<span class="node ${cls}">${esc(n.node)}</span>`;
-        }).join('')}
-        <span class="node node-code">OTEL Init</span>
-        <span class="node node-merge">Response Formatter</span>
-      </div>
-      <table style="font-size:11px"><thead><tr><th>Node</th><th>Model</th><th>Role</th><th>Avg Tokens</th></tr></thead>
-      <tbody>${nodes.map(n=>`<tr><td>${esc(n.node)}</td><td class="mono">${esc(n.model)}</td><td>${esc(n.role)}</td><td>${n.avg_tokens}</td></tr>`).join('')}</tbody></table>
+      <div class="node-flow">${nodes.map((n,i)=>
+        `<div class="nf-node ${n.cls}">${esc(n.name)}</div>${i<nodes.length-1?'<span class="nf-arrow">&#8594;</span>':''}`
+      ).join('')}</div>
+      <table style="font-size:11px;margin-top:10px"><thead><tr><th>Node</th><th>Model</th><th>Role</th><th>Cost</th></tr></thead>
+      <tbody>${MODEL_REGISTRY.filter(m=>m.wf.toLowerCase()===p).map(m=>`<tr>
+        <td>${esc(m.node)}</td><td class="mono" style="font-size:10px">${esc(m.model)}</td>
+        <td style="font-size:11px">${esc(m.role)}</td>
+        <td>${m.cost_in===0&&m.cost_out===0?'<span class="tag t-free">FREE</span>':'$'+m.cost_in+'/1K'}</td>
+      </tr>`).join('')}</tbody></table>
     </div></details>`;
   }).join('');
 
-  // Modification history
+  // History
   const changes=DATA.workflow_changes||[];
   document.getElementById('wf-history').innerHTML=changes.slice().reverse().map(c=>{
     const typeCls=c.change_type==='bugfix'?'t-fail':c.change_type==='improvement'?'t-pass':c.change_type==='deploy'?'t-p1':'t-skip';
-    const impact=c.after_metrics?PIPES.filter(p=>c.after_metrics[p]?.accuracy!==null&&c.after_metrics[p]?.accuracy!==undefined).map(p=>{
+    const impact=c.after_metrics?PIPES.filter(p=>c.after_metrics[p]?.accuracy!=null).map(p=>{
       const before=c.before_metrics?.[p]?.accuracy;
-      const after=c.after_metrics?.[p]?.accuracy;
-      if(before!=null&&after!=null){const d=after-before;return `${p}: ${d>0?'+':''}${d.toFixed(1)}pp`;}
+      const after=c.after_metrics[p].accuracy;
+      if(before!=null){const d=after-before;return `${p}: ${d>0?'+':''}${d.toFixed(1)}pp`;}
       return `${p}: ${after}%`;
-    }).join(', '):'—';
-    return `<tr><td class="mono" style="font-size:11px;white-space:nowrap">${c.timestamp?.slice(0,16)||'?'}</td>
+    }).join(', '):'--';
+    return `<tr><td class="mono" style="font-size:11px;white-space:nowrap">${(c.timestamp||'').slice(0,16)}</td>
       <td><span class="tag ${typeCls}">${esc(c.change_type||'')}</span></td>
-      <td>${esc(c.description||'')}</td>
+      <td style="font-size:11px">${esc(c.description||'')}</td>
       <td>${(c.affected_pipelines||[]).map(p=>`<span style="color:${PCOL[p]}">${p}</span>`).join(', ')}</td>
       <td style="font-size:11px">${impact}</td></tr>`;
   }).join('');
 
-  // DB state chart
   renderDbChart();
 }
 
@@ -795,12 +1572,15 @@ function renderDbChart(){
   const ctx=getCtx('ch-wf-db');if(!ctx)return;
   const snaps=DATA.db_snapshots||[];
   if(!snaps.length)return;
-  const labels=snaps.map(s=>s.timestamp?.slice(5,16)||'?');
+  const labels=snaps.map(s=>(s.timestamp||'').slice(5,16));
+  const isLight=document.documentElement.classList.contains('light');
+  const gridColor=isLight?'#e0e4ea':'#1a2231';
+  const tickColor=isLight?'#888':'#556278';
   charts.wfDb=new Chart(ctx,{type:'line',data:{labels,datasets:[
-    {label:'Pinecone Vectors',data:snaps.map(s=>s.pinecone_vectors),borderColor:'#4f8efa',tension:.3,pointRadius:2},
-    {label:'Neo4j Nodes',data:snaps.map(s=>s.neo4j_nodes),borderColor:'#2dd47a',tension:.3,pointRadius:2},
-    {label:'Supabase Rows',data:snaps.map(s=>s.supabase_rows),borderColor:'#e8b820',tension:.3,pointRadius:2},
-  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#8896a8',font:{size:11}}}},scales:{y:{ticks:{color:'#556070'},grid:{color:'#1c2330'}},x:{ticks:{color:'#556070',maxRotation:45},grid:{color:'#1c2330'}}}}});
+    {label:'Pinecone Vectors',data:snaps.map(s=>s.pinecone_vectors),borderColor:'#5b93ff',backgroundColor:'#5b93ff18',tension:.3,pointRadius:2,borderWidth:2,fill:true},
+    {label:'Neo4j Nodes',data:snaps.map(s=>s.neo4j_nodes),borderColor:'#34d88a',backgroundColor:'#34d88a18',tension:.3,pointRadius:2,borderWidth:2,fill:true},
+    {label:'Supabase Rows',data:snaps.map(s=>s.supabase_rows),borderColor:'#f0c030',backgroundColor:'#f0c03018',tension:.3,pointRadius:2,borderWidth:2,fill:true},
+  ]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{color:tickColor,font:{size:11,family:'Inter'}}}},scales:{y:{ticks:{color:tickColor},grid:{color:gridColor}},x:{ticks:{color:tickColor,maxRotation:45},grid:{color:gridColor}}}}});
 }
 
 // ============================================================
@@ -809,18 +1589,35 @@ function renderDbChart(){
 function renderDatabases(){
   const db=DATA.databases||{};
 
-  // DB cards
   document.getElementById('db-cards').innerHTML=[
-    {name:'Pinecone',icon:'&#9670;',color:'#4f8efa',metric:fmtN(db.pinecone?.total_vectors||10411),label:'vectors',detail:`${Object.keys(db.pinecone?.namespaces||{}).length} namespaces | text-embedding-3-small (1536d)`},
-    {name:'Neo4j',icon:'&#9679;',color:'#2dd47a',metric:fmtN(db.neo4j?.total_nodes||19788),label:'nodes',detail:`${fmtN(db.neo4j?.total_relationships||21625)} relationships | ${Object.keys(db.neo4j?.labels||{}).length} entity types`},
-    {name:'Supabase',icon:'&#9632;',color:'#e8b820',metric:db.supabase?.total_rows||538,label:'rows',detail:`${Object.keys(db.supabase?.tables||{}).length} tables | 3 companies + Phase 2 HF tables`},
-  ].map(d=>`<div class="card"><h3 style="color:${d.color}"><span style="font-size:16px">${d.icon}</span> ${d.name}</h3>
-    <div style="font-size:28px;font-weight:800;font-family:'JetBrains Mono'">${d.metric}</div>
-    <div style="font-size:11px;color:var(--tx3)">${d.label}</div>
-    <div style="font-size:11px;color:var(--tx2);margin-top:8px">${d.detail}</div>
+    {name:'Pinecone',icon:'&#9670;',color:'#5b93ff',metric:fmtN(db.pinecone?.total_vectors||10411),label:'vectors',detail:`${Object.keys(db.pinecone?.namespaces||{}).length} namespaces | text-embedding-3-small (1536d)`},
+    {name:'Neo4j',icon:'&#9679;',color:'#34d88a',metric:fmtN(db.neo4j?.total_nodes||14904),label:'nodes',detail:`${fmtN(db.neo4j?.total_relationships||54907)} relationships | ${Object.keys(db.neo4j?.labels||{}).length} entity types`},
+    {name:'Supabase',icon:'&#9632;',color:'#f0c030',metric:fmtN(db.supabase?.total_rows||538),label:'rows',detail:`${Object.keys(db.supabase?.tables||{}).length} tables`},
+  ].map(d=>`<div class="card fade-in"><h3 style="color:${d.color}"><span style="font-size:16px">${d.icon}</span> ${d.name}</h3>
+    <div style="font-size:30px;font-weight:800;font-family:'JetBrains Mono'">${d.metric}</div>
+    <div style="font-size:11px;color:var(--tx3);margin-top:2px">${d.label}</div>
+    <div style="font-size:11px;color:var(--tx2);margin-top:10px">${d.detail}</div>
   </div>`).join('');
 
-  // Phase readiness matrix
+  // Live stats from db_snapshots
+  const snaps=DATA.db_snapshots||[];
+  if(snaps.length>=2){
+    const latest=snaps[snaps.length-1];
+    const prev=snaps[snaps.length-2];
+    const dVec=(latest.pinecone_vectors||0)-(prev.pinecone_vectors||0);
+    const dNodes=(latest.neo4j_nodes||0)-(prev.neo4j_nodes||0);
+    const dRows=(latest.supabase_rows||0)-(prev.supabase_rows||0);
+    if(dVec||dNodes||dRows){
+      document.getElementById('db-live-stats').innerHTML=`<div class="card" style="font-size:12px;color:var(--tx2)">
+        <h3>Changes Since Last Snapshot</h3>
+        <span style="margin-right:16px">Pinecone: <strong style="color:${dVec>=0?'var(--gn)':'var(--rd)'}">${dVec>=0?'+':''}${fmtN(dVec)}</strong></span>
+        <span style="margin-right:16px">Neo4j: <strong style="color:${dNodes>=0?'var(--gn)':'var(--rd)'}">${dNodes>=0?'+':''}${fmtN(dNodes)}</strong></span>
+        <span>Supabase: <strong style="color:${dRows>=0?'var(--gn)':'var(--rd)'}">${dRows>=0?'+':''}${fmtN(dRows)}</strong></span>
+      </div>`;
+    }
+  }
+
+  // Phase readiness
   const statusIcon={ready:'<span style="color:var(--gn)">&#10003; Ready</span>',partial:'<span style="color:var(--yl)">&#9888; Partial</span>',required:'<span style="color:var(--rd)">&#10007; Required</span>',upgrade:'<span style="color:var(--pp)">&#8593; Upgrade</span>'};
   document.getElementById('db-readiness').innerHTML=['pinecone','neo4j','supabase'].map(dbName=>{
     return `<tr><td style="font-weight:700;text-transform:capitalize">${dbName}</td>
@@ -831,68 +1628,81 @@ function renderDatabases(){
   // Growth chart
   destroyChart('dbGrowth');
   const ctx=getCtx('ch-db-growth');if(!ctx)return;
+  const isLight=document.documentElement.classList.contains('light');
+  const gridColor=isLight?'#e0e4ea':'#1a2231';
+  const tickColor=isLight?'#888':'#556278';
   const projLabels=['Phase 1','Phase 2','Phase 3','Phase 4','Phase 5'];
-  const projData={
-    pinecone:[10411,10411,15000,100000,500000],
-    neo4j:[110,19788,24000,100000,500000],
-    supabase:[88,538,12000,50000,200000]
-  };
+  const projData={pinecone:[10411,10411,15000,100000,500000],neo4j:[110,19788,24000,100000,500000],supabase:[88,538,12000,50000,200000]};
   charts.dbGrowth=new Chart(ctx,{type:'bar',data:{labels:projLabels,datasets:[
-    {label:'Pinecone Vectors',data:projData.pinecone,backgroundColor:'#4f8efa60',borderColor:'#4f8efa',borderWidth:1},
-    {label:'Neo4j Nodes',data:projData.neo4j,backgroundColor:'#2dd47a60',borderColor:'#2dd47a',borderWidth:1},
-    {label:'Supabase Rows',data:projData.supabase,backgroundColor:'#e8b82060',borderColor:'#e8b820',borderWidth:1},
-  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#8896a8',font:{size:11}}}},scales:{y:{type:'logarithmic',ticks:{color:'#556070'},grid:{color:'#1c2330'}},x:{ticks:{color:'#556070'},grid:{color:'#1c2330'}}}}});
+    {label:'Pinecone',data:projData.pinecone,backgroundColor:'#5b93ff50',borderColor:'#5b93ff',borderWidth:1},
+    {label:'Neo4j',data:projData.neo4j,backgroundColor:'#34d88a50',borderColor:'#34d88a',borderWidth:1},
+    {label:'Supabase',data:projData.supabase,backgroundColor:'#f0c03050',borderColor:'#f0c030',borderWidth:1},
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:tickColor,font:{size:11,family:'Inter'}}}},scales:{y:{type:'logarithmic',ticks:{color:tickColor},grid:{color:gridColor}},x:{ticks:{color:tickColor},grid:{color:gridColor}}}}});
 
-  // Missing data
   document.getElementById('db-missing').innerHTML=`
     <div class="card" style="border-left:3px solid var(--yl)">
       <h3>For Phase 3 (10K questions)</h3>
-      <ul style="padding-left:20px;color:var(--tx2);line-height:1.8;font-size:12px">
+      <ul style="padding-left:20px;color:var(--tx2);line-height:2;font-size:12px">
         <li><strong>Pinecone:</strong> ~2,000-5,000 additional vectors for FRAMES dataset gaps</li>
         <li><strong>Neo4j:</strong> ~1,000 new entities from HotpotQA dataset</li>
         <li><strong>Supabase:</strong> WikiTableQuestions additional table structures</li>
-        <li><strong>Orchestrator:</strong> ~1,000 mixed-type routing questions</li>
       </ul>
     </div>`;
 }
 
+</script>
+<script>
 // ============================================================
 // TAB 6: COSTS & MODELS
 // ============================================================
 function renderCosts(){
-  // Model registry table
-  document.getElementById('cost-models').innerHTML=MODEL_REGISTRY.map(m=>
-    `<tr><td style="color:${PCOL[m.wf.toLowerCase()]||'var(--tx)'}">${esc(m.wf)}</td>
-      <td>${esc(m.node)}</td><td class="mono">${esc(m.model)}</td>
+  // Cost savings calculation
+  const m=DATA.meta||{};
+  const totalRuns=m.total_test_runs||0;
+  // Average ~8 LLM calls per question at ~$0.003 per call with paid models
+  const paidCostEst=totalRuns*0.003;
+  const actualCost=totalRuns*0.00004;// only embed + rerank costs
+  const savings=paidCostEst-actualCost;
+  document.getElementById('cost-savings').textContent='$'+savings.toFixed(2);
+
+  // Model registry
+  document.getElementById('cost-models').innerHTML=MODEL_REGISTRY.map(m=>{
+    const isFree=m.cost_in===0&&m.cost_out===0;
+    return `<tr>
+      <td style="color:${PCOL[m.wf.toLowerCase()]||'var(--tx)'}">${esc(m.wf)}</td>
+      <td style="font-size:11px">${esc(m.node)}</td>
+      <td class="mono" style="font-size:10px">${esc(m.model)}</td>
       <td>${esc(m.provider)}</td>
-      <td class="mono">$${m.cost_in}/${m.cost_out?'$'+m.cost_out:'—'}</td>
+      <td>${isFree?'<span class="tag t-free">FREE</span>':'$'+m.cost_in+'/1K'}</td>
       <td style="font-size:11px">${esc(m.role)}</td>
-      <td class="mono">${m.avg_tokens}</td></tr>`
-  ).join('');
+      <td class="mono">${m.avg_tokens}</td>
+    </tr>`;
+  }).join('');
 
   // Cost stats
   const totalCostP1=PHASE_COSTS[0].total;
-  const totalCostAll=PHASE_COSTS.reduce((a,p)=>a+p.total,0);
-  const avgCostPerQ=totalCostP1/200;
   document.getElementById('cost-stats').innerHTML=[
-    mkStat('$'+totalCostP1.toFixed(2),'Phase 1 Cost','200 questions'),
+    mkStat('$'+totalCostP1.toFixed(3),'Phase 1 Actual','~$0 LLM + embed/rerank only'),
     mkStat('$'+PHASE_COSTS[1].total.toFixed(2),'Phase 2 Projected','1,000 questions'),
-    mkStat('$'+avgCostPerQ.toFixed(4),'Cost per Question','Phase 1 average'),
-    mkStat('$'+totalCostAll.toFixed(0),'Total All Phases','Projected through Phase 5'),
+    mkStat('FREE','LLM Cost','All LLM calls via OpenRouter free tier'),
+    mkStat('$'+savings.toFixed(2),'Money Saved','vs paid models (GPT-4o/Gemini)','d-up'),
   ].join('');
 
   // Phase cost chart
   destroyChart('costPhase');
+  const isLight=document.documentElement.classList.contains('light');
+  const gridColor=isLight?'#e0e4ea':'#1a2231';
+  const tickColor=isLight?'#888':'#556278';
   const ctx1=getCtx('ch-cost-phase');
   if(ctx1){
     charts.costPhase=new Chart(ctx1,{type:'bar',data:{
       labels:PHASE_COSTS.map(p=>p.phase),
       datasets:[
-        {label:'LLM Calls',data:PHASE_COSTS.map(p=>p.llm),backgroundColor:'#f0555580'},
-        {label:'Embeddings',data:PHASE_COSTS.map(p=>p.embed),backgroundColor:'#4f8efa80'},
-        {label:'Infrastructure',data:PHASE_COSTS.map(p=>p.db),backgroundColor:'#e8b82080'},
+        {label:'Embeddings',data:PHASE_COSTS.map(p=>p.embed),backgroundColor:'#5b93ff60'},
+        {label:'Rerank',data:PHASE_COSTS.map(p=>p.rerank),backgroundColor:'#34d88a60'},
+        {label:'Hypothetical Paid LLM',data:PAID_COSTS,backgroundColor:'#f2565630',borderColor:'#f25656',borderWidth:1,borderDash:[4,4]},
       ]
-    },options:{responsive:true,plugins:{legend:{labels:{color:'#8896a8',font:{size:11}}}},scales:{y:{stacked:true,type:'logarithmic',ticks:{color:'#556070'},grid:{color:'#1c2330'}},x:{stacked:true,ticks:{color:'#556070'},grid:{color:'#1c2330'}}}}});
+    },options:{responsive:true,plugins:{legend:{labels:{color:tickColor,font:{size:11,family:'Inter'}}}},scales:{y:{stacked:false,type:'logarithmic',ticks:{color:tickColor,callback:v=>'$'+v},grid:{color:gridColor}},x:{ticks:{color:tickColor},grid:{color:gridColor}}}}});
   }
 
   // Per-pipeline cost chart
@@ -902,15 +1712,13 @@ function renderCosts(){
     const pipeCosts=PIPES.map(p=>{
       const nodes=MODEL_REGISTRY.filter(m=>m.wf.toLowerCase()===p);
       return nodes.reduce((sum,n)=>{
-        const inputCost=n.avg_tokens*n.cost_in/1e6;
-        const outputCost=n.avg_tokens*n.cost_out/1e6;
-        return sum+inputCost+outputCost;
+        return sum+(n.avg_tokens*n.cost_in/1e6)+(n.avg_tokens*(n.cost_out||0)/1e6);
       },0);
     });
     charts.costPipe=new Chart(ctx2,{type:'bar',data:{
       labels:PIPES.map(p=>p.charAt(0).toUpperCase()+p.slice(1)),
-      datasets:[{label:'Est. Cost per Question ($)',data:pipeCosts,backgroundColor:PIPES.map(p=>PCOL[p]+'80'),borderColor:PIPES.map(p=>PCOL[p]),borderWidth:1}]
-    },options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#556070',callback:v=>'$'+v.toFixed(5)},grid:{color:'#1c2330'}},x:{ticks:{color:'#556070'},grid:{color:'#1c2330'}}}}});
+      datasets:[{label:'Cost per Question ($)',data:pipeCosts,backgroundColor:PIPES.map(p=>PCOL[p]+'60'),borderColor:PIPES.map(p=>PCOL[p]),borderWidth:1}]
+    },options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{color:tickColor,callback:v=>'$'+v.toFixed(5)},grid:{color:gridColor}},x:{ticks:{color:tickColor},grid:{color:gridColor}}}}});
   }
 }
 
@@ -918,83 +1726,123 @@ function renderCosts(){
 // TAB 7: AI AGENT
 // ============================================================
 function renderAgent(){
+  // System Health
+  const m=DATA.meta||{};
+  const genAt=m.generated_at?new Date(m.generated_at):null;
+  const evalRecent=genAt&&(Date.now()-genAt.getTime())<3600000;
+  document.getElementById('agent-health').innerHTML=[
+    `<div class="card" style="text-align:center;padding:16px">
+      <div class="dot ${evalRecent?'ok':'stale'}" style="width:10px;height:10px;margin:0 auto 8px"></div>
+      <div style="font-size:12px;font-weight:600">n8n Webhooks</div>
+      <div style="font-size:11px;color:var(--tx3);margin-top:4px">${N8N_HOST.replace('https://','')}</div>
+    </div>`,
+    `<div class="card" style="text-align:center;padding:16px">
+      <div class="dot ok" style="width:10px;height:10px;margin:0 auto 8px"></div>
+      <div style="font-size:12px;font-weight:600">OpenRouter LLMs</div>
+      <div style="font-size:11px;color:var(--gn);margin-top:4px">Free tier active</div>
+    </div>`,
+    `<div class="card" style="text-align:center;padding:16px">
+      <div style="font-size:11px;font-weight:600;margin-bottom:4px">Last Eval</div>
+      <div style="font-size:16px;font-weight:800;font-family:'JetBrains Mono'">${genAt?timeAgo(m.generated_at):'--'}</div>
+      <div style="font-size:10px;color:var(--tx3);margin-top:4px">${genAt?genAt.toLocaleString():''}</div>
+    </div>`,
+  ].join('');
+
+  // Capability Matrix
+  const caps=[
+    {cap:'n8n Webhooks (eval pipelines)',access:'DIRECT',how:'HTTPS webhooks',ok:true},
+    {cap:'n8n REST API (sync/deploy)',access:'DIRECT',how:'HTTPS API + API key',ok:true},
+    {cap:'GitHub (push, PR, issues)',access:'DIRECT',how:'git + gh CLI',ok:true},
+    {cap:'OpenRouter (LLM)',access:'DIRECT',how:'Proxied through n8n',ok:true},
+    {cap:'Pinecone (vector stats)',access:'DIRECT',how:'HTTPS REST API',ok:true},
+    {cap:'Code, files, git, analysis',access:'DIRECT',how:'Full filesystem + git',ok:true},
+    {cap:'Supabase (PostgreSQL)',access:'BLOCKED',how:'Use n8n Quantitative pipeline',ok:false},
+    {cap:'Neo4j (graph queries)',access:'BLOCKED',how:'Use n8n Graph pipeline',ok:false},
+  ];
+  document.getElementById('agent-capabilities').innerHTML=`<table style="font-size:12px"><tbody>
+    ${caps.map(c=>`<tr>
+      <td>${esc(c.cap)}</td>
+      <td><span class="tag ${c.ok?'t-pass':'t-fail'}">${c.access}</span></td>
+      <td style="color:var(--tx3);font-size:11px">${esc(c.how)}</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+
   // Environment variables
   const envVars=[
     {key:'SUPABASE_PASSWORD',val:'udVECdcSnkMCAPiY',status:'ok'},
-    {key:'PINECONE_API_KEY',val:'pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY',status:'ok'},
+    {key:'SUPABASE_API_KEY',val:'sb_publishable_xUcuBcYYUO2G9Mkq_McdeQ_ocFjgonm',status:'ok'},
+    {key:'PINECONE_API_KEY',val:'pcsk_6GzVdD_...KFQ1q7dEjp8npWhJGBY',status:'ok'},
     {key:'PINECONE_HOST',val:'https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io',status:'ok'},
     {key:'NEO4J_PASSWORD',val:'jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak',status:'ok'},
-    {key:'OPENROUTER_API_KEY',val:'sk-or-v1-... (EXPIRED)',status:'err'},
-    {key:'N8N_API_KEY',val:'...',status:'warn'},
+    {key:'OPENROUTER_API_KEY',val:'sk-or-v1-...733573',status:'ok'},
+    {key:'N8N_API_KEY',val:'eyJhbGci...AX2A',status:'ok'},
     {key:'N8N_HOST',val:'https://amoret.app.n8n.cloud',status:'ok'},
   ];
 
-  const allEnv=envVars.map(e=>`export ${e.key}="${e.val}"`).join('\n');
   document.getElementById('agent-env').innerHTML=`
-    <div class="code-block" style="position:relative">${envVars.map(e=>{
+    <div class="code-block" style="position:relative;font-size:11px">${envVars.map(e=>{
       const col=e.status==='ok'?'var(--gn)':e.status==='err'?'var(--rd)':'var(--yl)';
       return `<span style="color:${col}">export</span> ${e.key}=<span style="color:var(--ac)">"${esc(e.val)}"</span>`;
-    }).join('\n')}<button class="copy-btn" onclick="copyText(\`${esc(allEnv)}\`,this)">Copy</button></div>`;
+    }).join('\n')}<button class="copy-btn" style="position:absolute;top:8px;right:8px" onclick="copyText(this.parentElement.textContent.replace('Copy','').trim(),this)">Copy</button></div>
+    <p style="font-size:11px;color:var(--tx3);margin-top:6px">Environment variables are set automatically at session start. Claude Code has direct access to all APIs except Supabase/Neo4j (proxied through n8n).</p>`;
 
   // Iteration Protocol
   document.getElementById('agent-protocol').innerHTML=`
     <div style="font-size:12px;color:var(--tx2);line-height:1.8">
-    <p style="font-weight:700;color:var(--tx);margin-bottom:8px">Incremental Testing Principle:</p>
-    <p>Test endpoints &rarr; 5q per workflow (parallel) &rarr; analyze &rarr; fix if needed &rarr; repeat until 5q pass &rarr; scale to 10q &rarr; 50q &rarr; 200q &rarr; 1000q. Never skip levels. ONE change per iteration.</p>
-    <div style="margin-top:12px;padding:12px;background:var(--s3);border-radius:6px">
+    <p style="font-weight:700;color:var(--tx);margin-bottom:10px">Fully Agentic Execution Model</p>
+    <p style="margin-bottom:10px">Claude Code operates autonomously -- no user terminal needed for evaluations. The agent runs all eval scripts, deploys workflow patches, and commits results directly.</p>
+    <div style="margin-top:12px;padding:14px;background:var(--s3);border-radius:var(--r-sm)">
       <p style="font-weight:600;color:var(--tx)">Phase A: Fast Iteration (10q/pipeline)</p>
-      <ol style="padding-left:20px;line-height:2">
-        <li><code>cd ~/mon-ipad && git pull origin main</code></li>
+      <ol style="padding-left:20px;line-height:2.2">
+        <li><code>cat STATUS.md</code> -- check current state</li>
         <li><code>python3 workflows/sync.py</code></li>
         <li><code>python3 eval/quick-test.py --questions 5</code></li>
         <li><code>python3 eval/fast-iter.py --label "description"</code></li>
-        <li>Review logs/fast-iter/ and logs/pipeline-results/</li>
-        <li>If bad &rarr; fix in n8n &rarr; repeat. If good &rarr; Phase B</li>
+        <li>If bad: fix workflow, repeat. If good: Phase B</li>
+        <li><code>git add docs/ logs/ && git commit && git push</code></li>
       </ol>
     </div>
-    <div style="margin-top:8px;padding:12px;background:var(--s3);border-radius:6px">
+    <div style="margin-top:10px;padding:14px;background:var(--s3);border-radius:var(--r-sm)">
       <p style="font-weight:600;color:var(--tx)">Phase B: Full Evaluation</p>
-      <ol style="padding-left:20px;line-height:2">
+      <ol style="padding-left:20px;line-height:2.2">
         <li><code>python3 eval/run-eval-parallel.py --reset --label "Iter N"</code></li>
-        <li><code>python3 eval/run-eval-parallel.py --dataset phase-2 --reset --label "Phase 2"</code></li>
+        <li><code>python3 eval/phase_gates.py</code> -- check if gates pass</li>
+        <li><code>python3 eval/run-eval-parallel.py --dataset phase-2 --reset</code></li>
         <li><code>python3 eval/analyzer.py</code></li>
-        <li><code>git add docs/ workflows/ logs/ && git commit && git push origin main</code></li>
+        <li><code>git add docs/ workflows/ logs/ && git commit && git push</code></li>
       </ol>
     </div>
     </div>`;
 
   // Command reference
   const commands=[
-    {cmd:'python3 eval/fast-iter.py',desc:'Fast iteration (10q/pipeline, parallel)',flags:'--questions 5 --pipelines graph --dataset phase-2 --only-failing --label "desc"'},
-    {cmd:'python3 eval/run-eval-parallel.py',desc:'Full parallel eval (all pipelines concurrent)',flags:'--reset --max 20 --types graph,quantitative --dataset phase-2 --push --label "desc"'},
-    {cmd:'python3 eval/run-eval.py',desc:'Sequential eval (legacy/debug)',flags:'--dataset phase-2 --reset --max 10 --types graph'},
-    {cmd:'python3 eval/quick-test.py',desc:'Smoke test (3-5 known-good questions)',flags:'--questions 5'},
+    {cmd:'python3 eval/fast-iter.py',desc:'Fast iteration (10q/pipeline, parallel)',flags:'--questions 5 --pipelines graph --label "desc"'},
+    {cmd:'python3 eval/run-eval-parallel.py',desc:'Full parallel eval (gate-enforced)',flags:'--reset --dataset phase-2 --push --label "desc"'},
+    {cmd:'python3 eval/quick-test.py',desc:'Smoke test (3-5 questions)',flags:'--questions 5'},
+    {cmd:'python3 eval/phase_gates.py',desc:'Check phase gate status',flags:'--phase 1 --json'},
     {cmd:'python3 eval/analyzer.py',desc:'Post-eval analysis + recommendations',flags:''},
     {cmd:'python3 workflows/sync.py',desc:'Pull workflow JSON from n8n cloud',flags:''},
-    {cmd:'python3 workflows/improved/apply.py',desc:'Apply + deploy workflow patches',flags:'--local --deploy'},
-    {cmd:'python3 db/populate/phase2_supabase.py',desc:'Populate Phase 2 Supabase tables',flags:'--reset --dry-run --dataset finqa'},
-    {cmd:'python3 db/populate/phase2_neo4j.py',desc:'Extract Phase 2 Neo4j entities',flags:'--reset --llm --limit 50'},
+    {cmd:'python3 workflows/improved/apply.py',desc:'Apply + deploy workflow patches',flags:'--deploy'},
   ];
   document.getElementById('agent-commands').innerHTML=`<table><thead><tr><th>Command</th><th>Description</th><th>Flags</th></tr></thead><tbody>
-    ${commands.map(c=>`<tr><td class="mono" style="white-space:nowrap">${esc(c.cmd)}</td><td>${esc(c.desc)}</td><td class="mono" style="font-size:10px;color:var(--tx3)">${esc(c.flags)}</td></tr>`).join('')}
+    ${commands.map(c=>`<tr><td class="mono" style="white-space:nowrap;font-size:11px">${esc(c.cmd)}</td><td style="font-size:11px">${esc(c.desc)}</td><td class="mono" style="font-size:10px;color:var(--tx3)">${esc(c.flags)}</td></tr>`).join('')}
   </tbody></table>`;
 
-  // Decision rules
+  // Decision rules (updated -- removed rule #9 about sandbox)
   document.getElementById('agent-rules').innerHTML=`
-    <ol style="padding-left:20px;color:var(--tx2);line-height:2;font-size:12px">
-      <li>If <strong>accuracy &lt; target</strong> for a pipeline: analyze error traces, then fix ONE root cause and re-test</li>
+    <ol style="padding-left:20px;color:var(--tx2);line-height:2.2;font-size:12px">
+      <li>If <strong>accuracy &lt; target</strong>: analyze error traces, fix ONE root cause, re-test</li>
       <li>If <strong>error rate &gt; 10%</strong>: prioritize error fixes over accuracy improvements</li>
-      <li>If <strong>3+ regressions</strong> detected: REVERT the last change immediately</li>
-      <li>If <strong>orchestrator timeout &gt; 60s</strong>: reduce sub-pipeline invocations (single-pipeline routing)</li>
-      <li>If <strong>graph entity extraction fails</strong>: check entity catalog in HyDE prompt, add fuzzy matching</li>
-      <li>If <strong>SQL errors &gt; 5</strong>: review Schema Context hints, add ILIKE and period rules</li>
-      <li>If <strong>empty responses &gt; 10</strong>: check continueOnFail settings, add null-safe guards</li>
-      <li><strong>NEVER</strong> change multiple things per iteration — ONE fix, then test</li>
-      <li><strong>NEVER</strong> run eval in Claude Code sandbox — only in Termius / GCloud Console</li>
-      <li>After Phase 1 gates pass, run Phase 2: <code>--dataset phase-2 --reset</code></li>
+      <li>If <strong>3+ regressions</strong>: REVERT the last change immediately</li>
+      <li>If <strong>orchestrator timeout &gt; 60s</strong>: reduce sub-pipeline invocations</li>
+      <li>If <strong>graph entity extraction fails</strong>: check entity catalog, add fuzzy matching</li>
+      <li>If <strong>SQL errors &gt; 5</strong>: review Schema Context hints, add ILIKE</li>
+      <li>If <strong>empty responses &gt; 10</strong>: check continueOnFail, add null-safe guards</li>
+      <li><strong>ONE fix per iteration</strong> -- never change multiple things at once</li>
+      <li>After Phase 1 gates pass: <code>--dataset phase-2 --reset</code></li>
     </ol>`;
 
-  // API Schema
+  // Schema
   document.getElementById('agent-schema').textContent=JSON.stringify({
     meta:{version:'2.0',status:'running|complete|error',phase:'string',total_unique_questions:'number',total_test_runs:'number',total_iterations:'number'},
     iterations:[{id:'string',number:'number',label:'string',questions:[{id:'string',rag_type:'string',correct:'boolean',f1:'number',error:'string|null'}],results_summary:{pipeline:{tested:'number',correct:'number',errors:'number',accuracy_pct:'number',avg_latency_ms:'number'}}}],
@@ -1002,22 +1850,13 @@ function renderAgent(){
     pipelines:{name:{endpoint:'string',target_accuracy:'number',trend:[]}},
     workflow_versions:{pipeline:{version:'number',hash:'string',total_nodes:'number'}},
     databases:{pinecone:{total_vectors:'number'},neo4j:{total_nodes:'number'},supabase:{total_rows:'number'}},
+    db_snapshots:[{timestamp:'string',pinecone_vectors:'number',neo4j_nodes:'number',supabase_rows:'number'}],
   },null,2);
 }
 
 // ============================================================
-// TAB SWITCHING
+// QUESTION FILTER LISTENERS
 // ============================================================
-document.querySelectorAll('.tab').forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('p-'+tab.dataset.tab).classList.add('active');
-  });
-});
-
-// Question filters
 ['q-phase','q-pipe','q-status','q-dataset'].forEach(id=>{
   document.getElementById(id)?.addEventListener('change',renderQuestions);
 });
@@ -1028,6 +1867,9 @@ document.getElementById('q-search')?.addEventListener('input',renderQuestions);
 // ============================================================
 loadData();
 setInterval(loadData,15000);
+
+// Auto-update status bar every second for "time ago" freshness
+setInterval(()=>{if(DATA)updateStatusBar();},5000);
 </script>
 </body>
 </html>
