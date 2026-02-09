@@ -1,0 +1,123 @@
+{
+  "pipeline": "graph",
+  "timestamp": "2026-02-09T10:38:05.335826Z",
+  "label": "Iter 7: new API key + continueOnFail fixes",
+  "mode": "fast-iter",
+  "total_tested": 10,
+  "correct": 8,
+  "errors": 0,
+  "accuracy_pct": 80.0,
+  "avg_latency_ms": 15009,
+  "results": [
+    {
+      "id": "graph-01",
+      "question": "What is the relationship between Marie Curie and the Nobel Prize?",
+      "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry, connected to Nobel Foundation",
+      "answer": "Marie Curie won two Nobel Prizes in different scientific fields.",
+      "correct": true,
+      "f1": 0.5455,
+      "latency_ms": 13374,
+      "method": "ENTITY_MATCH",
+      "error": null
+    },
+    {
+      "id": "graph-02",
+      "question": "Who created the Theory of Relativity?",
+      "expected": "Albert Einstein",
+      "answer": "Albert Einstein",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 11884,
+      "method": "EXACT_MATCH",
+      "error": null
+    },
+    {
+      "id": "graph-03",
+      "question": "What did Alexander Fleming discover?",
+      "expected": "Penicillin",
+      "answer": "Penicillin",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 15060,
+      "method": "EXACT_MATCH",
+      "error": null
+    },
+    {
+      "id": "graph-04",
+      "question": "Which disease does Penicillin protect against?",
+      "expected": "Tuberculosis",
+      "answer": "Penicillin protects against bacterial infections.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 13143,
+      "method": "PARTIAL",
+      "error": null
+    },
+    {
+      "id": "graph-05",
+      "question": "Where did Alan Turing study?",
+      "expected": "University of Cambridge",
+      "answer": "Sherborne School, King's College Cambridge, Princeton University",
+      "correct": true,
+      "f1": 0.3636,
+      "latency_ms": 12198,
+      "method": "ENTITY_MATCH",
+      "error": null
+    },
+    {
+      "id": "graph-08",
+      "question": "What is the World Wide Web and where was it created?",
+      "expected": "Created at CERN, extends the Internet",
+      "answer": "The World Wide Web is a system of interlinked hypertext documents accessed via the Internet. It was created at CERN in Geneva, Switzerland.",
+      "correct": true,
+      "f1": 0.3571,
+      "latency_ms": 15115,
+      "method": "ENTITY_MATCH",
+      "error": null
+    },
+    {
+      "id": "graph-10",
+      "question": "What city is the Louvre Museum located in?",
+      "expected": "Paris",
+      "answer": "Paris",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 8064,
+      "method": "EXACT_MATCH",
+      "error": null
+    },
+    {
+      "id": "graph-12",
+      "question": "What diseases does the World Health Organization study?",
+      "expected": "COVID-19, Malaria",
+      "answer": "Infectious diseases, non-communicable diseases, emerging health threats, mental health disorders, neurological conditions, substance abuse",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 22827,
+      "method": "PARTIAL",
+      "error": null
+    },
+    {
+      "id": "graph-13",
+      "question": "What is the relationship between NASA and Nuclear Energy?",
+      "expected": "NASA utilizes Nuclear Energy",
+      "answer": "NASA has a long history of utilizing nuclear energy for space exploration, primarily through radioisotope thermoelectric generators (RTGs) and, more recently, nuclear fission reactors.",
+      "correct": true,
+      "f1": 0.2222,
+      "latency_ms": 18506,
+      "method": "ENTITY_MATCH",
+      "error": null
+    },
+    {
+      "id": "graph-14",
+      "question": "Which city is connected to Napoleon Bonaparte?",
+      "expected": "Paris",
+      "answer": "Paris",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 19922,
+      "method": "EXACT_MATCH",
+      "error": null
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-09T02:38:58.271Z",
+  "updatedAt": "2026-02-09T03:20:45.961Z",
   "createdAt": "2026-01-30T16:51:51.530Z",
   "id": "LnTqRX4LZlI009Ks-3Jnp",
   "name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
@@ -851,9 +851,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "51a37aad-ece5-4d4c-8c9c-9e721e3291c0",
-  "activeVersionId": "51a37aad-ece5-4d4c-8c9c-9e721e3291c0",
-  "versionCounter": 101,
+  "versionId": "8c12df80-4ded-41ab-8cbd-a6f0756d7fd3",
+  "activeVersionId": "8c12df80-4ded-41ab-8cbd-a6f0756d7fd3",
+  "versionCounter": 105,
   "triggerCount": 2,
   "shared": [
     {
@@ -908,9 +908,9 @@
   ],
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-02-09T02:38:58.272Z",
-    "createdAt": "2026-02-09T02:38:58.272Z",
-    "versionId": "51a37aad-ece5-4d4c-8c9c-9e721e3291c0",
+    "updatedAt": "2026-02-09T03:20:45.962Z",
+    "createdAt": "2026-02-09T03:20:45.962Z",
+    "versionId": "8c12df80-4ded-41ab-8cbd-a6f0756d7fd3",
     "workflowId": "LnTqRX4LZlI009Ks-3Jnp",
     "nodes": [
       {
@@ -1295,7 +1295,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n\n  // Try to get reranked sources\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n\n  // Try to get init data\n  let initData = {};\n  try {\n    initData = $node['Init & ACL Pre-Filter V3.4'].json;\n  } catch(e) {}\n\n  if (llmContent) {\n    return [{\n      json: {\n        response: llmContent,\n        trace_id: initData.trace_id || 'tr-' + Date.now(),\n        sources: sources.slice(0, 5),\n        model: $vars.LLM_STANDARD_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n        embedding_fallback: sources.length === 0,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  // No LLM answer - return fallback\n  return [{\n    json: {\n      response: 'Unable to generate answer - retrieval and LLM both unavailable',\n      trace_id: initData.trace_id || 'tr-' + Date.now(),\n      error: true,\n      embedding_fallback: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} catch(e) {\n  return [{\n    json: {\n      response: 'Error in response formatting: ' + e.message,\n      error: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
+          "jsCode": "\n// PHASE-1 FIX: Handle empty Pinecone results gracefully\nif (!response || (typeof response === 'string' && response.trim() === '')) {\n  response = 'Unable to find a specific answer for this question in the knowledge base.';\n}\n// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n\n  // Try to get reranked sources\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n\n  // Try to get init data\n  let initData = {};\n  try {\n    initData = $node['Init & ACL Pre-Filter V3.4'].json;\n  } catch(e) {}\n\n  if (llmContent) {\n    return [{\n      json: {\n        response: llmContent,\n        trace_id: initData.trace_id || 'tr-' + Date.now(),\n        sources: sources.slice(0, 5),\n        model: $vars.LLM_STANDARD_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n        embedding_fallback: sources.length === 0,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  // No LLM answer - return fallback\n  return [{\n    json: {\n      response: 'Unable to generate answer - retrieval and LLM both unavailable',\n      trace_id: initData.trace_id || 'tr-' + Date.now(),\n      error: true,\n      embedding_fallback: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} catch(e) {\n  return [{\n    json: {\n      response: 'Error in response formatting: ' + e.message,\n      error: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
         },
         "id": "66bf2956-117a-4408-b218-cf96cb317529",
         "name": "Response Formatter",
@@ -1752,10 +1752,10 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-02-09T02:38:58.507Z",
-        "id": 753,
+        "createdAt": "2026-02-09T03:20:46.957Z",
+        "id": 758,
         "workflowId": "LnTqRX4LZlI009Ks-3Jnp",
-        "versionId": "51a37aad-ece5-4d4c-8c9c-9e721e3291c0",
+        "versionId": "8c12df80-4ded-41ab-8cbd-a6f0756d7fd3",
         "event": "activated",
         "userId": "215767e0-958a-4c74-a67a-e335807eba64"
       }
