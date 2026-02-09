@@ -145,7 +145,7 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
 
     for i, q in enumerate(untested):
         qid = q["id"]
-        rag_timeout = 90 if rag_type == "orchestrator" else 60
+        rag_timeout = 120 if rag_type == "orchestrator" else 60
         resp = call_rag(endpoint, q["question"], timeout=rag_timeout)
 
         if resp["error"]:
@@ -345,30 +345,42 @@ def main():
     except Exception as e:
         print(f"  DB snapshot failed (non-fatal): {e}")
 
-    # Run all pipelines in parallel
-    print("\n  Launching parallel pipeline evaluation...")
+    # Run pipelines: orchestrator runs AFTER others (it calls sub-workflows internally)
+    print("\n  Launching pipeline evaluation...")
     overall_totals = {"tested": 0, "correct": 0, "errors": 0}
 
-    max_workers = args.workers or len(requested_types)
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = {}
-        for rag_type in requested_types:
-            if questions.get(rag_type):
-                future = executor.submit(
-                    run_pipeline, rag_type, questions[rag_type],
-                    tested_ids, label=args.label
-                )
-                futures[future] = rag_type
+    # Separate orchestrator from other pipelines to avoid resource conflicts
+    non_orch = [t for t in requested_types if t != "orchestrator"]
+    orch_only = [t for t in requested_types if t == "orchestrator"]
 
-        for future in as_completed(futures):
-            rag_type = futures[future]
-            try:
-                _, totals, _ = future.result()
-                overall_totals["tested"] += totals["tested"]
-                overall_totals["correct"] += totals["correct"]
-                overall_totals["errors"] += totals["errors"]
-            except Exception as e:
-                print(f"  [{rag_type.upper()}] FAILED: {e}")
+    for batch_label, batch_types in [("parallel", non_orch), ("sequential (post-parallel)", orch_only)]:
+        if not batch_types:
+            continue
+        batch_workers = args.workers or len(batch_types)
+        # Orchestrator always runs with 1 worker
+        if "orchestrator" in batch_types:
+            batch_workers = 1
+        print(f"\n  Batch: {', '.join(batch_types)} ({batch_label}, {batch_workers} workers)")
+
+        with ThreadPoolExecutor(max_workers=batch_workers) as executor:
+            futures = {}
+            for rag_type in batch_types:
+                if questions.get(rag_type):
+                    future = executor.submit(
+                        run_pipeline, rag_type, questions[rag_type],
+                        tested_ids, label=args.label
+                    )
+                    futures[future] = rag_type
+
+            for future in as_completed(futures):
+                rag_type = futures[future]
+                try:
+                    _, totals, _ = future.result()
+                    overall_totals["tested"] += totals["tested"]
+                    overall_totals["correct"] += totals["correct"]
+                    overall_totals["errors"] += totals["errors"]
+                except Exception as e:
+                    print(f"  [{rag_type.upper()}] FAILED: {e}")
 
     # Post-eval DB snapshot
     print("\n  Taking post-evaluation DB snapshot...")
