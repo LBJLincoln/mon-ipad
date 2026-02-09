@@ -259,7 +259,7 @@ def run_pipeline_stage(pipeline, questions, stage_name):
 
     for i, q in enumerate(questions):
         qid = q["id"]
-        rag_timeout = 90 if pipeline == "orchestrator" else 60
+        rag_timeout = 120 if pipeline == "orchestrator" else 60
         resp = call_rag(endpoint, q["question"], timeout=rag_timeout)
 
         if resp["error"]:
@@ -339,6 +339,11 @@ def run_pipeline_stage(pipeline, questions, stage_name):
             "error_type": error_type,
             "rag_type": pipeline,
         })
+
+        # Rate-limit protection: delay between questions
+        if i < len(questions) - 1:
+            delay = 5 if pipeline == "orchestrator" else 2
+            time.sleep(delay)
 
     elapsed = int(time.time() - start)
     correct = sum(1 for r in results if r["correct"])

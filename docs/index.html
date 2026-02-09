@@ -8,49 +8,51 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* ===== Theme Variables ===== */
+/* ===== Theme Variables — Apple-Inspired ===== */
 :root{
-  --bg:#090d12;--s1:#0e1319;--s2:#131a23;--s3:#1a2231;--s4:#212b3d;
-  --bd:#252f42;--bd2:#2e3a50;
-  --tx:#e2e8f3;--tx2:#8a97ad;--tx3:#556278;
-  --ac:#5b93ff;--ac2:#4478e0;--ac-bg:rgba(91,147,255,.08);
-  --gn:#34d88a;--gn2:#22a86a;--gn-bg:rgba(52,216,138,.08);
-  --rd:#f25656;--rd2:#cc3c3c;--rd-bg:rgba(242,86,86,.08);
-  --yl:#f0c030;--yl-bg:rgba(240,192,48,.08);
-  --or:#f08838;--pp:#a868f0;--cy:#28c8e0;--mg:#e868a8;
-  --r:10px;--r-sm:6px;
-  --shadow:0 1px 3px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.15);
-  --shadow-lg:0 4px 16px rgba(0,0,0,.4),0 8px 32px rgba(0,0,0,.2);
-  --transition:all .2s cubic-bezier(.4,0,.2,1);
+  --bg:#0a0e14;--s1:#0f1318;--s2:#151b24;--s3:#1c2433;--s4:#242e40;
+  --bd:rgba(255,255,255,.06);--bd2:rgba(255,255,255,.1);
+  --tx:#f0f2f8;--tx2:#8a97b0;--tx3:#4e5d75;
+  --ac:#4C8BF5;--ac2:#3A6FD8;--ac-bg:rgba(76,139,245,.08);
+  --gn:#30D982;--gn2:#22B86C;--gn-bg:rgba(48,217,130,.07);
+  --rd:#F44C4C;--rd2:#D63636;--rd-bg:rgba(244,76,76,.07);
+  --yl:#F5B731;--yl-bg:rgba(245,183,49,.07);
+  --or:#F08838;--pp:#A070F0;--cy:#28C8E0;--mg:#E868A8;
+  --r:14px;--r-sm:8px;--r-lg:20px;
+  --shadow:0 2px 8px rgba(0,0,0,.25),0 0 1px rgba(255,255,255,.05);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.4),0 0 1px rgba(255,255,255,.06);
+  --glass:rgba(255,255,255,.03);--glass-border:rgba(255,255,255,.06);
+  --transition:all .25s cubic-bezier(.4,0,.2,1);
 }
 
 /* Light theme */
 :root.light{
-  --bg:#f5f7fa;--s1:#ffffff;--s2:#f0f2f5;--s3:#e8ebf0;--s4:#dde1e8;
-  --bd:#d0d5de;--bd2:#c0c8d4;
+  --bg:#F2F4F8;--s1:#FFFFFF;--s2:#F7F8FA;--s3:#EDF0F5;--s4:#E2E6ED;
+  --bd:rgba(0,0,0,.06);--bd2:rgba(0,0,0,.1);
   --tx:#1a1e2a;--tx2:#555e70;--tx3:#8892a4;
-  --ac:#3570e0;--ac2:#2a5cc0;--ac-bg:rgba(53,112,224,.06);
-  --gn:#1aad60;--gn2:#158a4c;--gn-bg:rgba(26,173,96,.06);
-  --rd:#dc3c3c;--rd2:#b52e2e;--rd-bg:rgba(220,60,60,.06);
-  --yl:#d4a010;--yl-bg:rgba(212,160,16,.06);
-  --or:#d07028;--pp:#8848d0;--cy:#1898b0;--mg:#c84890;
-  --shadow:0 1px 3px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);
-  --shadow-lg:0 4px 12px rgba(0,0,0,.1),0 8px 24px rgba(0,0,0,.06);
+  --ac:#2563EB;--ac2:#1D4FBF;--ac-bg:rgba(37,99,235,.05);
+  --gn:#16A35A;--gn2:#128A4C;--gn-bg:rgba(22,163,90,.05);
+  --rd:#DC2626;--rd2:#B91C1C;--rd-bg:rgba(220,38,38,.05);
+  --yl:#D4A010;--yl-bg:rgba(212,160,16,.05);
+  --or:#D07028;--pp:#7C3AED;--cy:#0891B2;--mg:#C84890;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.03);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.08),0 12px 32px rgba(0,0,0,.04);
+  --glass:rgba(255,255,255,.7);--glass-border:rgba(0,0,0,.06);
 }
 
 /* ===== Reset & Base ===== */
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;font-size:13.5px;line-height:1.65;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden}
 ::selection{background:var(--ac);color:#fff}
-::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar{width:7px;height:7px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--bd2)}
-code,.mono{font-family:'JetBrains Mono',monospace;font-size:.88em}
-a{color:var(--ac);text-decoration:none;transition:color .15s}
-a:hover{color:var(--ac2);text-decoration:underline}
-h2{font-size:20px;font-weight:700;margin-bottom:20px;letter-spacing:-.03em;color:var(--tx)}
-h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2);margin-bottom:12px}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--s4)}
+code,.mono{font-family:'JetBrains Mono',monospace;font-size:.86em}
+a{color:var(--ac);text-decoration:none;transition:color .2s}
+a:hover{color:var(--ac2)}
+h2{font-size:22px;font-weight:800;margin-bottom:24px;letter-spacing:-.04em;color:var(--tx);line-height:1.2}
+h3{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx2);margin-bottom:14px}
 
 /* ===== Animations ===== */
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -68,11 +70,12 @@ h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
 .skeleton-gauge{width:100px;height:100px;border-radius:50%;margin:0 auto}
 
 /* ===== Layout ===== */
-.header{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.header h1{font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px;white-space:nowrap}
-.header .meta{display:flex;gap:16px;align-items:center;font-size:11px;color:var(--tx2)}
-.header .meta>span{display:flex;align-items:center;gap:5px}
-.header-actions{display:flex;align-items:center;gap:8px}
+.header{background:rgba(15,19,24,.82);border-bottom:1px solid var(--bd);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
+:root.light .header{background:rgba(255,255,255,.82)}
+.header h1{font-size:15px;font-weight:800;display:flex;align-items:center;gap:10px;white-space:nowrap;letter-spacing:-.02em}
+.header .meta{display:flex;gap:18px;align-items:center;font-size:11.5px;color:var(--tx2)}
+.header .meta>span{display:flex;align-items:center;gap:6px}
+.header-actions{display:flex;align-items:center;gap:10px}
 
 /* Status indicator */
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
@@ -89,87 +92,109 @@ h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
 .health-dot{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600}
 
 /* Tabs */
-.tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--bd);padding:0 24px;overflow-x:auto;gap:0;-ms-overflow-style:none;scrollbar-width:none}
+.tabs{display:flex;background:rgba(15,19,24,.6);border-bottom:1px solid var(--bd);padding:0 28px;overflow-x:auto;gap:2px;-ms-overflow-style:none;scrollbar-width:none;backdrop-filter:blur(12px)}
+:root.light .tabs{background:rgba(255,255,255,.6)}
 .tabs::-webkit-scrollbar{display:none}
-.tab{padding:12px 20px;font-size:12px;font-weight:600;color:var(--tx3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:var(--transition);user-select:none;position:relative}
-.tab:hover{color:var(--tx2);background:rgba(255,255,255,.02)}
-.tab.active{color:var(--ac);border-color:var(--ac)}
-.tab .kbd{display:inline-block;font-size:9px;font-weight:700;color:var(--tx3);background:var(--s3);border:1px solid var(--bd);border-radius:3px;padding:0 4px;margin-left:6px;font-family:'JetBrains Mono',monospace;line-height:16px;vertical-align:middle;opacity:.6}
-.panel{display:none;padding:24px;max-width:1600px;margin:0 auto;animation:fadeIn .3s ease-out}
+.tab{padding:13px 18px;font-size:12px;font-weight:600;color:var(--tx3);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:var(--transition);user-select:none;position:relative;border-radius:var(--r-sm) var(--r-sm) 0 0}
+.tab:hover{color:var(--tx2);background:var(--glass)}
+.tab.active{color:var(--ac);border-color:var(--ac);background:var(--glass)}
+.tab .kbd{display:inline-block;font-size:9px;font-weight:700;color:var(--tx3);background:var(--s3);border:1px solid var(--bd);border-radius:4px;padding:1px 5px;margin-left:6px;font-family:'JetBrains Mono',monospace;line-height:16px;vertical-align:middle;opacity:.5}
+.panel{display:none;padding:28px;max-width:1600px;margin:0 auto;animation:fadeIn .35s ease-out}
 .panel.active{display:block}
 
-/* ===== Cards ===== */
-.card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:20px;overflow:hidden;transition:var(--transition)}
-.card:hover{border-color:var(--bd2)}
-.card-accent{border-left:3px solid var(--ac)}
-.card-gn{border-left:3px solid var(--gn)}
-.card-rd{border-left:3px solid var(--rd)}
-.card-pp{border-left:3px solid var(--pp)}
-.grid{display:grid;gap:14px;margin:14px 0}
+/* ===== Cards — Glass Morphism ===== */
+.card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--r);padding:22px;overflow:hidden;transition:var(--transition);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.card:hover{border-color:var(--bd2);box-shadow:var(--shadow)}
+.card-accent{border-left:3px solid var(--ac);background:linear-gradient(135deg,rgba(76,139,245,.04),var(--glass))}
+.card-gn{border-left:3px solid var(--gn);background:linear-gradient(135deg,rgba(48,217,130,.04),var(--glass))}
+.card-rd{border-left:3px solid var(--rd);background:linear-gradient(135deg,rgba(244,76,76,.04),var(--glass))}
+.card-pp{border-left:3px solid var(--pp);background:linear-gradient(135deg,rgba(160,112,240,.04),var(--glass))}
+.card-yl{border-left:3px solid var(--yl);background:linear-gradient(135deg,rgba(245,183,49,.04),var(--glass))}
+.card-or{border-left:3px solid var(--or);background:linear-gradient(135deg,rgba(240,136,56,.04),var(--glass))}
+.grid{display:grid;gap:16px;margin:16px 0}
 .g5{grid-template-columns:repeat(5,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}
 .g1-2{grid-template-columns:1fr 2fr}.g2-1{grid-template-columns:2fr 1fr}.g1-3{grid-template-columns:1fr 3fr}
+/* Pipeline-colored top border cards */
+.pipe-card{position:relative;overflow:hidden}
+.pipe-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
+.pipe-card.pipe-standard::before{background:linear-gradient(90deg,#4C8BF5,#6BA3FF)}
+.pipe-card.pipe-graph::before{background:linear-gradient(90deg,#30D982,#50F0A0)}
+.pipe-card.pipe-quantitative::before{background:linear-gradient(90deg,#F5B731,#FFD060)}
+.pipe-card.pipe-orchestrator::before{background:linear-gradient(90deg,#F08838,#FFB060)}
 
 /* ===== Stats ===== */
-.stat{text-align:center;padding:16px 10px}
-.stat .v{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.1;letter-spacing:-.02em}
-.stat .l{font-size:11px;color:var(--tx2);margin-top:6px;font-weight:500}
-.stat .d{font-size:11px;font-weight:600;margin-top:3px}
+.stat{text-align:center;padding:20px 14px}
+.stat .v{font-size:32px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.1;letter-spacing:-.03em;background:linear-gradient(135deg,var(--tx),var(--tx2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat .l{font-size:11.5px;color:var(--tx2);margin-top:8px;font-weight:500;letter-spacing:.01em}
+.stat .d{font-size:11px;font-weight:600;margin-top:4px}
 .d-up{color:var(--gn)}.d-dn{color:var(--rd)}.d-fl{color:var(--tx3)}
 
 /* ===== Tags ===== */
-.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.04em}
-.t-pass{background:var(--gn-bg);color:var(--gn)}.t-fail{background:var(--rd-bg);color:var(--rd)}.t-err{background:var(--yl-bg);color:var(--yl)}.t-skip{background:rgba(78,90,109,.1);color:var(--tx3)}
-.t-p1{background:rgba(91,147,255,.1);color:var(--ac)}.t-p2{background:rgba(168,104,240,.1);color:var(--pp)}.t-p3{background:rgba(40,200,224,.1);color:var(--cy)}
-.t-free{background:rgba(52,216,138,.1);color:var(--gn);font-size:9px}
+.tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:6px;font-size:10.5px;font-weight:700;letter-spacing:.03em;gap:4px}
+.t-pass{background:var(--gn-bg);color:var(--gn);border:1px solid rgba(48,217,130,.15)}
+.t-fail{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(244,76,76,.15)}
+.t-err{background:var(--yl-bg);color:var(--yl);border:1px solid rgba(245,183,49,.15)}
+.t-skip{background:rgba(78,90,109,.08);color:var(--tx3);border:1px solid rgba(78,90,109,.1)}
+.t-p1{background:rgba(76,139,245,.08);color:var(--ac);border:1px solid rgba(76,139,245,.15)}
+.t-p2{background:rgba(160,112,240,.08);color:var(--pp);border:1px solid rgba(160,112,240,.15)}
+.t-p3{background:rgba(40,200,224,.08);color:var(--cy);border:1px solid rgba(40,200,224,.15)}
+.t-free{background:rgba(48,217,130,.08);color:var(--gn);font-size:9px;border:1px solid rgba(48,217,130,.15)}
 
 /* ===== Tables ===== */
-table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;padding:10px 12px;background:var(--s3);color:var(--tx2);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;position:sticky;top:0;z-index:2;cursor:default;user-select:none;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;padding:12px 14px;background:var(--s3);color:var(--tx2);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;position:sticky;top:0;z-index:2;cursor:default;user-select:none;white-space:nowrap;border-bottom:2px solid var(--bd)}
+th:first-child{border-radius:var(--r-sm) 0 0 0}
+th:last-child{border-radius:0 var(--r-sm) 0 0}
 th.sortable{cursor:pointer}
 th.sortable:hover{color:var(--tx);background:var(--s4)}
 th .sort-arrow{font-size:9px;margin-left:4px;opacity:.5}
 th.sorted .sort-arrow{opacity:1;color:var(--ac)}
-td{padding:8px 12px;border-top:1px solid var(--bd)}
-tr:hover td{background:rgba(255,255,255,.015)}
+td{padding:10px 14px;border-top:1px solid var(--bd)}
+tr:hover td{background:rgba(255,255,255,.02)}
 tr.expandable{cursor:pointer}
+tr.expandable:hover td{background:var(--ac-bg)}
 
 /* ===== Progress bars ===== */
-.pbar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;position:relative}
-.pbar .fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
-.pbar .marker{position:absolute;top:-3px;height:12px;width:2px;background:var(--tx2);border-radius:1px;opacity:.7}
+.pbar{height:6px;background:var(--s3);border-radius:4px;overflow:hidden;position:relative}
+.pbar .fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1);position:relative}
+.pbar .fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15));border-radius:4px}
+.pbar .marker{position:absolute;top:-4px;height:14px;width:2px;background:var(--tx2);border-radius:1px;opacity:.6}
+.pbar-lg{height:10px;border-radius:5px}
+.pbar-lg .fill{border-radius:5px}
 
 /* ===== Gauge ===== */
-.gauge-wrap{text-align:center}
-.gauge{position:relative;width:100px;height:100px;margin:0 auto}
-.gauge svg{transform:rotate(-90deg)}
+.gauge-wrap{text-align:center;padding:8px 0}
+.gauge{position:relative;width:110px;height:110px;margin:0 auto}
+.gauge svg{transform:rotate(-90deg);filter:drop-shadow(0 2px 8px rgba(0,0,0,.2))}
 .gauge circle{fill:none;stroke-linecap:round}
-.gauge .bg{stroke:var(--s3);stroke-width:6}
-.gauge .fg{stroke-width:6;transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)}
-.gauge .val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace}
-.gauge .lbl{text-align:center;font-size:10px;color:var(--tx2);margin-top:6px;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.gauge .bg{stroke:var(--s3);stroke-width:7}
+.gauge .fg{stroke-width:7;transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1)}
+.gauge .val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:-.02em}
+.gauge .lbl{text-align:center;font-size:11px;color:var(--tx2);margin-top:8px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
 
 /* Sparkline */
 .sparkline{display:inline-flex;align-items:end;gap:1px;height:20px;vertical-align:middle;margin-left:8px}
 .sparkline-bar{width:4px;border-radius:1px;transition:height .3s}
 
 /* ===== Phase timeline ===== */
-.phase-line{display:flex;gap:6px;margin:16px 0}
-.phase-dot{flex:1;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1px solid var(--bd);color:var(--tx3);background:var(--s2);transition:var(--transition);position:relative}
-.phase-dot.current{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent;box-shadow:0 0 16px rgba(91,147,255,.25)}
-.phase-dot.done{background:var(--gn2);color:#fff;border-color:var(--gn2)}
-.phase-dot.locked{opacity:.45}
+.phase-line{display:flex;gap:8px;margin:18px 0}
+.phase-dot{flex:1;height:44px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;border:1px solid var(--bd);color:var(--tx3);background:var(--glass);transition:var(--transition);position:relative;backdrop-filter:blur(4px)}
+.phase-dot.current{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent;box-shadow:0 4px 20px rgba(76,139,245,.3)}
+.phase-dot.done{background:linear-gradient(135deg,var(--gn),var(--gn2));color:#fff;border-color:transparent;box-shadow:0 2px 12px rgba(48,217,130,.2)}
+.phase-dot.locked{opacity:.35}
 
 /* ===== Search & Filters ===== */
 .filters{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
 .filters input,.filters select{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:8px 12px;color:var(--tx);font-size:12px;outline:none;transition:var(--transition);font-family:'Inter',system-ui,sans-serif}
 .filters input:focus,.filters select:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(91,147,255,.12)}
 .filters input{flex:1;min-width:200px}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--s3);color:var(--tx2);transition:var(--transition);font-family:'Inter',system-ui,sans-serif}
-.btn:hover{background:var(--s4);color:var(--tx);border-color:var(--bd2)}
-.btn-primary{background:var(--ac);color:#fff;border-color:var(--ac)}
-.btn-primary:hover{background:var(--ac2)}
-.btn-sm{padding:4px 10px;font-size:11px}
-.btn-icon{padding:6px 8px;min-width:32px;justify-content:center}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--glass);color:var(--tx2);transition:var(--transition);font-family:'Inter',system-ui,sans-serif;backdrop-filter:blur(4px)}
+.btn:hover{background:var(--s4);color:var(--tx);border-color:var(--bd2);transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent;box-shadow:0 2px 12px rgba(76,139,245,.25)}
+.btn-primary:hover{box-shadow:0 4px 20px rgba(76,139,245,.4);transform:translateY(-1px)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.btn-icon{padding:7px 9px;min-width:34px;justify-content:center}
 
 /* ===== Toggle ===== */
 .toggle{position:relative;width:36px;height:20px;cursor:pointer}
@@ -190,11 +215,11 @@ tr.expandable{cursor:pointer}
 
 /* ===== Collapsible ===== */
 details{margin:8px 0}
-details>summary{cursor:pointer;padding:10px 14px;background:var(--s3);border:1px solid var(--bd);border-radius:var(--r-sm);font-size:12px;font-weight:600;list-style:none;transition:var(--transition);display:flex;align-items:center;gap:8px}
-details>summary::before{content:'\25B6';font-size:9px;transition:transform .2s;color:var(--tx3)}
+details>summary{cursor:pointer;padding:12px 16px;background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--r-sm);font-size:12.5px;font-weight:600;list-style:none;transition:var(--transition);display:flex;align-items:center;gap:8px;backdrop-filter:blur(4px)}
+details>summary::before{content:'\25B6';font-size:9px;transition:transform .25s ease;color:var(--tx3)}
 details[open]>summary::before{transform:rotate(90deg)}
-details>summary:hover{background:var(--s4)}
-details .detail-content{padding:14px;border:1px solid var(--bd);border-top:none;border-radius:0 0 var(--r-sm) var(--r-sm);background:var(--s2)}
+details>summary:hover{background:var(--s3);border-color:var(--bd2)}
+details .detail-content{padding:16px;border:1px solid var(--glass-border);border-top:none;border-radius:0 0 var(--r-sm) var(--r-sm);background:var(--s2);line-height:1.8}
 
 /* ===== Node flow ===== */
 .node-flow{display:flex;align-items:center;gap:2px;overflow-x:auto;padding:8px 0;flex-wrap:nowrap}
@@ -243,10 +268,10 @@ details .detail-content{padding:14px;border:1px solid var(--bd);border-top:none;
 .tip:hover .tip-text{display:block}
 
 /* ===== Health Score Badge ===== */
-.health-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace}
-.health-good{background:var(--gn-bg);color:var(--gn);border:1px solid rgba(52,216,138,.2)}
-.health-warn{background:var(--yl-bg);color:var(--yl);border:1px solid rgba(240,192,48,.2)}
-.health-bad{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(242,86,86,.2)}
+.health-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:12.5px;font-weight:800;font-family:'JetBrains Mono',monospace;backdrop-filter:blur(4px)}
+.health-good{background:var(--gn-bg);color:var(--gn);border:1px solid rgba(48,217,130,.2);box-shadow:0 0 16px rgba(48,217,130,.1)}
+.health-warn{background:var(--yl-bg);color:var(--yl);border:1px solid rgba(245,183,49,.2);box-shadow:0 0 16px rgba(245,183,49,.1)}
+.health-bad{background:var(--rd-bg);color:var(--rd);border:1px solid rgba(244,76,76,.2);box-shadow:0 0 16px rgba(244,76,76,.1)}
 
 /* ===== Iteration Timeline ===== */
 .timeline{position:relative;padding-left:24px}
@@ -353,44 +378,72 @@ details .detail-content{padding:14px;border:1px solid var(--bd);border-top:none;
 
 <!-- ============ TAB 0: CONTROL TOWER ============ -->
 <div class="panel active" id="p-tower">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-    <h2 style="margin-bottom:0">Control Tower</h2>
-    <div style="display:flex;gap:8px;align-items:center">
+  <!-- Hero Section -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+    <div>
+      <h2 style="margin-bottom:4px">Control Tower</h2>
+      <p style="font-size:12.5px;color:var(--tx3)">Live pipeline monitoring &amp; progressive stage evaluation</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
       <button class="btn btn-sm btn-primary" onclick="fetchN8nExecutions()">Fetch n8n Logs</button>
       <button class="btn btn-sm" onclick="loadStageData()">Refresh Stages</button>
     </div>
   </div>
 
-  <!-- Iterative Stages Pipeline: 5 → 10 → 50 -->
-  <div class="card card-pp" style="margin-bottom:18px">
-    <h3>Iterative Pipeline Stages (5 &rarr; 10 &rarr; 50)</h3>
-    <p style="font-size:11px;color:var(--tx2);margin-bottom:14px">Each pipeline progresses independently through 3 stages. Only advances if accuracy &amp; error rate gates pass.</p>
-    <div class="grid g4" id="tower-stages"></div>
-    <div id="tower-stage-detail" style="margin-top:12px"></div>
+  <!-- Overall Phase Gate Status -->
+  <div id="tower-phase-hero" class="card" style="margin-bottom:20px;padding:24px;position:relative;overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3)">Phase 1 &mdash; Baseline (200 Questions)</div>
+        <div id="tower-overall-score" style="font-size:42px;font-weight:800;font-family:'JetBrains Mono',monospace;margin:8px 0;letter-spacing:-.03em"></div>
+        <div id="tower-gates-summary" style="font-size:12px;color:var(--tx2)"></div>
+      </div>
+      <div id="tower-overall-gauge" style="margin-right:20px"></div>
+    </div>
   </div>
 
-  <!-- Live n8n Executions -->
-  <div class="card" style="margin-bottom:18px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <h3 style="margin-bottom:0">n8n Live Executions</h3>
-      <div style="display:flex;gap:8px;align-items:center">
-        <select id="tower-pipe-filter" onchange="renderTowerExecutions()" style="background:var(--s3);border:1px solid var(--bd);border-radius:var(--r-sm);padding:4px 8px;color:var(--tx);font-size:11px">
-          <option value="">All Pipelines</option>
-          <option value="standard">Standard</option>
-          <option value="graph">Graph</option>
-          <option value="quantitative">Quantitative</option>
-          <option value="orchestrator">Orchestrator</option>
-        </select>
-        <span id="tower-exec-count" style="font-size:11px;color:var(--tx3)"></span>
+  <!-- Pipeline Stage Cards — Dynamic per Pipeline -->
+  <h3>Pipeline Stages (5 &rarr; 10 &rarr; 50)</h3>
+  <div class="grid g4" id="tower-stages" style="margin-bottom:20px"></div>
+  <div id="tower-stage-detail" style="margin-bottom:20px"></div>
+
+  <!-- n8n Live Executions + Error Analysis side by side -->
+  <div class="grid g2" style="margin-bottom:20px">
+    <!-- Live n8n Executions -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h3 style="margin-bottom:0">n8n Executions</h3>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="tower-pipe-filter" onchange="renderTowerExecutions()" style="background:var(--s3);border:1px solid var(--bd);border-radius:var(--r-sm);padding:5px 10px;color:var(--tx);font-size:11px">
+            <option value="">All Pipelines</option>
+            <option value="standard">Standard</option>
+            <option value="graph">Graph</option>
+            <option value="quantitative">Quantitative</option>
+            <option value="orchestrator">Orchestrator</option>
+          </select>
+          <span id="tower-exec-count" style="font-size:11px;color:var(--tx3)"></span>
+        </div>
+      </div>
+      <div id="tower-exec-summary" class="grid g2" style="margin-bottom:12px"></div>
+      <div style="max-height:400px;overflow-y:auto" id="tower-exec-list"></div>
+    </div>
+
+    <!-- Error Analysis + Quick Actions -->
+    <div>
+      <div class="card card-rd" style="margin-bottom:16px">
+        <h3>Active Error Patterns</h3>
+        <div id="tower-error-patterns"></div>
+      </div>
+      <div class="card card-gn">
+        <h3>Recommended Actions</h3>
+        <div id="tower-quick-actions"></div>
       </div>
     </div>
-    <div id="tower-exec-summary" class="grid g4" style="margin-bottom:14px"></div>
-    <div style="max-height:500px;overflow-y:auto" id="tower-exec-list"></div>
   </div>
 
-  <!-- Node-by-Node Inspector -->
-  <div class="card" style="margin-bottom:18px;display:none" id="tower-node-inspector">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+  <!-- Node-by-Node Inspector (hidden until activated) -->
+  <div class="card card-accent" style="margin-bottom:20px;display:none" id="tower-node-inspector">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
       <h3 style="margin-bottom:0">Node Inspector</h3>
       <button class="btn btn-sm" onclick="document.getElementById('tower-node-inspector').style.display='none'">Close</button>
     </div>
@@ -398,21 +451,9 @@ details .detail-content{padding:14px;border:1px solid var(--bd);border-top:none;
     <div id="tower-node-detail"></div>
   </div>
 
-  <!-- Error Pattern Analysis -->
-  <div class="grid g2" style="margin-bottom:18px">
-    <div class="card card-rd">
-      <h3>Error Pattern Analysis</h3>
-      <div id="tower-error-patterns"></div>
-    </div>
-    <div class="card card-gn">
-      <h3>Quick Actions</h3>
-      <div id="tower-quick-actions"></div>
-    </div>
-  </div>
-
   <!-- Knowledge Base Matches -->
-  <div class="card" style="margin-bottom:18px">
-    <h3>Known Error Patterns &amp; Fixes (from Knowledge Base)</h3>
+  <div class="card card-pp" style="margin-bottom:20px">
+    <h3>Known Error Patterns &amp; Fixes</h3>
     <div id="tower-kb-matches"></div>
   </div>
 </div>
@@ -740,7 +781,7 @@ const PTARGET={standard:85,graph:70,quantitative:85,orchestrator:70};
 const P2TARGET={graph:60,quantitative:70};
 const ECOL={TIMEOUT:'#f25656',NETWORK:'#f08838',SERVER_ERROR:'#f0c030',EMPTY_RESPONSE:'#a868f0',RATE_LIMIT:'#28c8e0',ENTITY_MISS:'#e868a8',SQL_ERROR:'#5b93ff',UNKNOWN:'#556278',CREDITS_EXHAUSTED:'#f25656'};
 const N8N_HOST='https://amoret.app.n8n.cloud';
-const WF_IDS={standard:'LnTqRX4LZlI009Ks-3Jnp',graph:'95x2BBAbJlLWZtWEJn6rb',quantitative:'LjUz8fxQZ03G9IsU',orchestrator:'FZxkpldDbgV8AD_cg7IWG'};
+const WF_IDS={standard:'LnTqRX4LZlI009Ks-3Jnp',graph:'95x2BBAbJlLWZtWEJn6rb',quantitative:'E19NZG9WfM7FNsxr',orchestrator:'ALd4gOEqiKL5KR1p'};
 
 // Updated Model Registry — actual models (Feb 2026)
 const MODEL_REGISTRY=[
@@ -1634,18 +1675,33 @@ function exportCSV(){
 function renderWorkflows(){
   const wfv=DATA.workflow_versions||{};
 
-  // Workflow cards
+  // Workflow cards with credentials and performance
+  const pipeTrends=DATA.pipelines||{};
+  const wfEndpoints={standard:'/webhook/rag-multi-index-v3',graph:'/webhook/ff622742-...',quantitative:'/webhook/3e0f8010-...',orchestrator:'/webhook/92217bb8-...'};
+  const wfDatabases={standard:'Pinecone (vector)',graph:'Neo4j (graph)',quantitative:'Supabase (SQL)',orchestrator:'All 3 sub-pipelines'};
   document.getElementById('wf-cards').innerHTML=PIPES.map(p=>{
     const w=wfv[p]||{};
-    const pipeTrends=DATA.pipelines||{};
     const trend=pipeTrends[p]?.trend||[];
     const lastT=trend[trend.length-1];
     const acc=lastT?lastT.accuracy_pct:0;
-    return `<div class="card fade-in"><h3 style="color:${PCOL[p]}">${p}</h3>
-      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:22px;font-weight:700">v${w.version||'?'}</span><span style="font-size:11px;color:var(--tx3)">${w.total_nodes||'?'} nodes</span></div>
-      <div style="font-size:11px;color:var(--tx2);margin:6px 0">${esc(w.name||'')}</div>
-      <div class="mono" style="font-size:10px;color:var(--tx3)">${(w.hash||'').slice(0,12)}</div>
-      <div style="margin-top:10px"><a href="${N8N_HOST}/workflow/${WF_IDS[p]}" target="_blank" style="font-size:11px;font-weight:600">Open in n8n &rarr;</a></div>
+    const avgLat=lastT?Math.round(lastT.avg_latency_ms||0):0;
+    const models=MODEL_REGISTRY.filter(m=>m.wf.toLowerCase()===p);
+    const freeCount=models.filter(m=>m.cost_in===0&&m.cost_out===0).length;
+    return `<div class="card pipe-card pipe-${p} fade-in" style="padding-top:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:15px;font-weight:800;color:${PCOL[p]};text-transform:capitalize">${p}</span>
+        <span style="font-size:18px;font-weight:800;font-family:'JetBrains Mono';color:${acc>=PTARGET[p]?'var(--gn)':'var(--rd)'}">${acc}%</span>
+      </div>
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:10px">${esc(w.name||'')} <span class="mono" style="font-size:10px;color:var(--tx3)">v${w.version||'?'}</span></div>
+      <div style="font-size:11px;color:var(--tx3);line-height:2">
+        <div>Nodes: <strong style="color:var(--tx)">${w.total_nodes||'?'}</strong> | Database: <strong style="color:var(--tx)">${wfDatabases[p]}</strong></div>
+        <div>Models: <strong style="color:var(--tx)">${models.length}</strong> (${freeCount} free) | Avg: <strong style="color:var(--tx)">${avgLat}ms</strong></div>
+        <div>Endpoint: <code style="font-size:9.5px">${esc(wfEndpoints[p])}</code></div>
+        <div>ID: <code style="font-size:9.5px">${WF_IDS[p]}</code></div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <a href="${N8N_HOST}/workflow/${WF_IDS[p]}" target="_blank" class="btn btn-sm" style="font-size:10px">Open in n8n</a>
+      </div>
     </div>`;
   }).join('');
 
@@ -2076,11 +2132,38 @@ async function loadKBData(){
 }
 
 function renderTower(){
+  renderTowerPhaseHero();
   renderTowerStages();
   renderTowerExecutions();
   renderTowerErrorPatterns();
   renderTowerQuickActions();
   renderTowerKBMatches();
+}
+
+function renderTowerPhaseHero(){
+  const pipeTrends=DATA?.pipelines||{};
+  let gatesMet=0,total=5;
+  const pipeAccs={};
+  PIPES.forEach(p=>{
+    const trend=pipeTrends[p]?.trend||[];
+    const last=trend[trend.length-1];
+    if(last){pipeAccs[p]=last.accuracy_pct;if(last.accuracy_pct>=PTARGET[p])gatesMet++;}
+  });
+  const iters=DATA?.iterations||[];
+  const lastIter=iters[iters.length-1];
+  const overall=lastIter?lastIter.overall_accuracy_pct:0;
+  if(overall>=75)gatesMet++;
+
+  const allMet=gatesMet===total;
+  const heroEl=document.getElementById('tower-phase-hero');
+  if(heroEl){
+    heroEl.style.borderLeft=allMet?'4px solid var(--gn)':'4px solid var(--yl)';
+    heroEl.style.background=allMet?'linear-gradient(135deg,rgba(48,217,130,.06),var(--glass))':'linear-gradient(135deg,rgba(245,183,49,.04),var(--glass))';
+  }
+
+  document.getElementById('tower-overall-score').innerHTML=`<span style="color:${overall>=75?'var(--gn)':'var(--yl)'}">${overall.toFixed(1)}%</span>`;
+  document.getElementById('tower-gates-summary').innerHTML=`<strong>${gatesMet}</strong>/${total} gates met &mdash; ${PIPES.map(p=>`<span style="color:${(pipeAccs[p]||0)>=PTARGET[p]?'var(--gn)':'var(--rd)'}">${p.slice(0,4)} ${(pipeAccs[p]||0).toFixed(0)}%</span>`).join(' | ')}`;
+  document.getElementById('tower-overall-gauge').innerHTML=mkGauge(overall,75,'var(--ac)','overall');
 }
 
 function renderTowerStages(){
@@ -2124,22 +2207,27 @@ function renderTowerStages(){
     const acc=lastT?lastT.accuracy_pct:0;
     const target=PTARGET[p];
     const tested=lastT?lastT.tested:0;
+    const errors=lastT?lastT.errors:0;
+    const met=acc>=target;
 
     // Determine which stage we're at based on tested count
     const stage=tested>=50?3:tested>=10?2:tested>=5?1:0;
     const stageBoxes=['5q','10q','50q'].map((label,i)=>{
       const cls=i<stage?'done':i===stage?'current':'locked';
-      return `<div class="phase-dot ${cls}" style="font-size:10px;height:32px;flex:1">${label}</div>`;
+      return `<div class="phase-dot ${cls}" style="font-size:10px;height:34px;flex:1">${label}</div>`;
     }).join('');
 
-    return `<div class="card fade-in">
-      <h3 style="color:${PCOL[p]}">${p}</h3>
-      <div style="display:flex;gap:4px;margin:8px 0">${stageBoxes}</div>
-      <div style="font-size:11px;color:var(--tx2)">
-        ${acc}% accuracy (target: ${target}%)
-        <br>${tested} questions tested
+    return `<div class="card pipe-card pipe-${p} fade-in" style="padding-top:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:14px;font-weight:800;color:${PCOL[p]};text-transform:capitalize">${p}</span>
+        <span class="tag ${met?'t-pass':'t-fail'}" style="font-size:9px">${met?'MET':'GAP '+(target-acc).toFixed(1)+'pp'}</span>
       </div>
-      <div class="pbar" style="margin-top:8px"><div class="fill" style="width:${Math.min(100,acc/target*100)}%;background:${acc>=target?'var(--gn)':'var(--rd)'}"></div></div>
+      <div style="font-size:30px;font-weight:800;font-family:'JetBrains Mono';color:${met?'var(--gn)':'var(--rd)'};letter-spacing:-.02em">${acc}%</div>
+      <div class="pbar" style="margin:10px 0"><div class="fill" style="width:${Math.min(100,acc/target*100)}%;background:${met?'var(--gn)':'var(--rd)'}"></div><div class="marker" style="left:${Math.min(100,target)}%"></div></div>
+      <div style="display:flex;gap:4px;margin:10px 0">${stageBoxes}</div>
+      <div style="font-size:11px;color:var(--tx3);display:flex;justify-content:space-between">
+        <span>${tested}q tested</span><span>${errors} errors</span>
+      </div>
     </div>`;
   }).join('');
 }

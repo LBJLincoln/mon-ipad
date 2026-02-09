@@ -1,15 +1,15 @@
 {
   "meta": {
     "version": "2.0",
-    "generated_at": "2026-02-09T20:44:49.800111Z",
-    "status": "idle",
+    "generated_at": "2026-02-09T21:11:59.129995Z",
+    "status": "running",
     "project": "Multi-RAG Orchestrator SOTA 2026",
     "phase": "Phase 1 — Baseline (200q)",
     "total_unique_questions": 208,
-    "total_test_runs": 935,
+    "total_test_runs": 930,
     "total_iterations": 41,
     "total_cost_usd": 0,
-    "current_session": "2026-02-09T18-17-29"
+    "current_session": "2026-02-09T20-53-09"
   },
   "iterations": [
     {
@@ -12553,6 +12553,96 @@
       "total_correct": 138,
       "overall_accuracy_pct": 86.2,
       "questions": []
+    },
+    {
+      "id": "iter-2026-02-09T20-53-09",
+      "number": 41,
+      "timestamp_start": "2026-02-09T20:53:09.233778Z",
+      "timestamp_end": "2026-02-09T21:11:59.079488Z",
+      "label": "orchestrator sequential fix",
+      "description": "Iterative evaluation: stages 1-3, pipelines: orchestrator",
+      "changes_applied": [],
+      "results_summary": {
+        "orchestrator": {
+          "tested": 5,
+          "correct": 3,
+          "errors": 2,
+          "accuracy_pct": 60.0,
+          "avg_latency_ms": 56531,
+          "p95_latency_ms": 60699,
+          "avg_f1": 0.5
+        }
+      },
+      "total_tested": 5,
+      "total_correct": 3,
+      "overall_accuracy_pct": 60.0,
+      "questions": [
+        {
+          "id": "orch-01",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "answer": "",
+          "expected": "TechVision Inc revenue $6.745B in 2023; Albert Einstein created Theory of Relativity",
+          "match_type": "NO_ANSWER",
+          "error": "HTTP 500: {\"code\":0,\"message\":\"The execution was cancelled because it timed out\"}",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-09T20:59:25.963588Z"
+        },
+        {
+          "id": "orch-04",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 50406,
+          "answer": "The Q4 2023 revenue figure for GreenEnergy Corp is $1,021,500,000.00.",
+          "expected": "1021500000",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T21:00:21.467976Z"
+        },
+        {
+          "id": "orch-05",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "answer": "",
+          "expected": "Newton, Darwin, Turing studied at Cambridge; TechVision has ~47 active employees",
+          "match_type": "NO_ANSWER",
+          "error": "HTTP 500: {\"code\":0,\"message\":\"The execution was cancelled because it timed out\"}",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-09T21:06:42.723107Z"
+        },
+        {
+          "id": "orch-02",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 58488,
+          "answer": "Alexander Fleming discovered penicillin in 1928.",
+          "expected": "Alexander Fleming",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T21:07:46.306205Z"
+        },
+        {
+          "id": "orch-03",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 60699,
+          "answer": "Marie Curie was the first woman to win a Nobel Prize and remains the only person to have won Nobel Prizes in two different scientific fields, physics in 1903 and chemistry in 1911.",
+          "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-09T21:11:59.079473Z"
+        }
+      ]
     }
   ],
   "question_registry": {
@@ -17267,13 +17357,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-09T13:50:20.195131Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T20-53-09",
+          "iteration_number": 41,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "match_type": "NO_ANSWER",
+          "error": "HTTP 500: {\"code\":0,\"message\":\"The execution was cancelled because it timed out\"}",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-09T20:59:25.963647Z"
         }
       ],
-      "total_runs": 10,
+      "total_runs": 11,
       "pass_count": 5,
-      "pass_rate": 0.5,
+      "pass_rate": 0.455,
       "current_status": "error",
-      "last_tested": "2026-02-09T13:50:20.195131Z",
+      "last_tested": "2026-02-09T20:59:25.963647Z",
       "best_f1": 0.5,
       "trend": "regressing"
     },
@@ -17406,15 +17508,27 @@
           "error_type": null,
           "answer": "Alexander Fleming discovered penicillin in 1928.",
           "timestamp": "2026-02-09T13:51:29.019720Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T20-53-09",
+          "iteration_number": 41,
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 58488,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Alexander Fleming discovered penicillin in 1928.",
+          "timestamp": "2026-02-09T21:07:46.306261Z"
         }
       ],
-      "total_runs": 10,
-      "pass_count": 6,
-      "pass_rate": 0.6,
+      "total_runs": 11,
+      "pass_count": 7,
+      "pass_rate": 0.636,
       "current_status": "pass",
-      "last_tested": "2026-02-09T13:51:29.019720Z",
+      "last_tested": "2026-02-09T21:07:46.306261Z",
       "best_f1": 0.5,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "orch-04": {
       "id": "orch-04",
@@ -17533,15 +17647,27 @@
           "error_type": null,
           "answer": "Unable to generate answer - retrieval and LLM both unavailable",
           "timestamp": "2026-02-09T13:06:18.378766Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T20-53-09",
+          "iteration_number": 41,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 50406,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Q4 2023 revenue figure for GreenEnergy Corp is $1,021,500,000.00.",
+          "timestamp": "2026-02-09T21:00:21.468030Z"
         }
       ],
-      "total_runs": 9,
-      "pass_count": 6,
-      "pass_rate": 0.667,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T13:06:18.378766Z",
+      "total_runs": 10,
+      "pass_count": 7,
+      "pass_rate": 0.7,
+      "current_status": "pass",
+      "last_tested": "2026-02-09T21:00:21.468030Z",
       "best_f1": 0.0,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "orch-06": {
       "id": "orch-06",
@@ -26587,13 +26713,25 @@
           "error_type": null,
           "answer": "Unable to generate answer - retrieval and LLM both unavailable",
           "timestamp": "2026-02-09T13:06:14.426914Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T20-53-09",
+          "iteration_number": 41,
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 60699,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Marie Curie was the first woman to win a Nobel Prize and remains the only person to have won Nobel Prizes in two different scientific fields, physics in 1903 and chemistry in 1911.",
+          "timestamp": "2026-02-09T21:11:59.079531Z"
         }
       ],
-      "total_runs": 8,
-      "pass_count": 4,
-      "pass_rate": 0.5,
+      "total_runs": 9,
+      "pass_count": 5,
+      "pass_rate": 0.556,
       "current_status": "pass",
-      "last_tested": "2026-02-09T13:06:14.426914Z",
+      "last_tested": "2026-02-09T21:11:59.079531Z",
       "best_f1": 0.5,
       "trend": "improving"
     },
@@ -26690,13 +26828,25 @@
           "error_type": null,
           "answer": "Unable to generate answer - retrieval and LLM both unavailable",
           "timestamp": "2026-02-09T13:06:22.130325Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-09T20-53-09",
+          "iteration_number": 41,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "match_type": "NO_ANSWER",
+          "error": "HTTP 500: {\"code\":0,\"message\":\"The execution was cancelled because it timed out\"}",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-09T21:06:42.723169Z"
         }
       ],
-      "total_runs": 7,
+      "total_runs": 8,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-02-09T13:06:22.130325Z",
+      "current_status": "error",
+      "last_tested": "2026-02-09T21:06:42.723169Z",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -28181,12 +28331,12 @@
           "avg_latency_ms": 0
         },
         {
-          "iteration_id": "iter-2026-02-09T18-17-29",
+          "iteration_id": "iter-2026-02-09T20-53-09",
           "iteration_number": 41,
-          "accuracy_pct": 10.0,
-          "tested": 10,
-          "errors": 0,
-          "avg_latency_ms": 5588
+          "accuracy_pct": 60.0,
+          "tested": 5,
+          "errors": 2,
+          "avg_latency_ms": 56531
         }
       ]
     }
@@ -28770,86 +28920,6 @@
     }
   ],
   "execution_logs": [
-    {
-      "timestamp": "2026-02-09T13:07:46.170347Z",
-      "question_id": "orch-25",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.1176,
-      "latency_ms": 3927,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-09T13:07:50.075493Z",
-      "question_id": "orch-26",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.0909,
-      "latency_ms": 3794,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-09T13:07:54.066587Z",
-      "question_id": "orch-27",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 3874,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-09T13:07:58.193720Z",
-      "question_id": "orch-28",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 4011,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-09T13:08:02.047582Z",
-      "question_id": "orch-29",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 3743,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
-      "confidence": 0.8,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
     {
       "timestamp": "2026-02-09T13:08:05.950647Z",
       "question_id": "orch-30",
@@ -32066,6 +32136,80 @@
       "error_type": null,
       "error_preview": null,
       "answer_preview": "Unable to generate answer - retrieval and LLM both unavailable",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T20:59:26.000534Z",
+      "question_id": "orch-01",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error_type": "TIMEOUT",
+      "error_preview": "HTTP 500: {\"code\":0,\"message\":\"The execution was cancelled because it timed out\"}",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-09T21:00:21.508610Z",
+      "question_id": "orch-04",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 50406,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Q4 2023 revenue figure for GreenEnergy Corp is $1,021,500,000.00.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T21:06:42.758834Z",
+      "question_id": "orch-05",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error_type": "TIMEOUT",
+      "error_preview": "HTTP 500: {\"code\":0,\"message\":\"The execution was cancelled because it timed out\"}",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-09T21:07:46.343000Z",
+      "question_id": "orch-02",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.5,
+      "latency_ms": 58488,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Alexander Fleming discovered penicillin in 1928.",
+      "confidence": 0.8,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T21:11:59.117771Z",
+      "question_id": "orch-03",
+      "rag_type": "orchestrator",
+      "correct": true,
+      "f1": 0.5,
+      "latency_ms": 60699,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Marie Curie was the first woman to win a Nobel Prize and remains the only person to have won Nobel P",
       "confidence": 0.8,
       "pipeline_details_summary": {
         "sub_pipelines": [],
