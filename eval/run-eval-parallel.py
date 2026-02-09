@@ -207,8 +207,11 @@ def main():
                         help="Max questions per pipeline type")
     parser.add_argument("--types", type=str, default="standard,graph,quantitative,orchestrator",
                         help="Comma-separated pipeline types to test")
+    parser.add_argument("--dataset", type=str, default=None,
+                        choices=["phase-1", "phase-2", "all"],
+                        help="Dataset to evaluate: phase-1 (200q), phase-2 (1000q HF), all (1200q)")
     parser.add_argument("--include-1000", action="store_true",
-                        help="Include HF-1000 questions")
+                        help="[Legacy] Include HF-1000 questions (use --dataset all instead)")
     parser.add_argument("--reset", action="store_true",
                         help="Ignore dedup, re-test all questions")
     parser.add_argument("--push", action="store_true",
@@ -221,10 +224,17 @@ def main():
 
     start_time = datetime.now()
     requested_types = [t.strip() for t in args.types.split(",")]
+    dataset_label = args.dataset or ("phase-1+2" if args.include_1000 else "phase-1")
+
+    # Auto-adjust types for Phase 2 (only graph + quantitative)
+    if args.dataset == "phase-2" and args.types == "standard,graph,quantitative,orchestrator":
+        requested_types = ["graph", "quantitative"]
+        print("  NOTE: Phase 2 only tests graph + quantitative. Auto-adjusted --types.")
 
     print("=" * 70)
-    print("  PARALLEL RAG EVALUATION — 4 Pipelines Concurrent")
+    print("  PARALLEL RAG EVALUATION — Pipelines Concurrent")
     print(f"  Started: {start_time.isoformat()}")
+    print(f"  Dataset: {dataset_label}")
     print(f"  Types: {', '.join(requested_types)}")
     print(f"  Max per pipeline: {args.max or 'all'}")
     print(f"  Reset dedup: {args.reset}")
@@ -233,13 +243,13 @@ def main():
     # Initialize dashboard
     writer.init(
         status="running",
-        label=args.label or f"Parallel eval {args.types}",
-        description=args.description or f"Parallel: {args.types}, Max: {args.max}, Reset: {args.reset}",
+        label=args.label or f"Parallel eval {dataset_label} {args.types}",
+        description=args.description or f"Dataset: {dataset_label}, Parallel: {args.types}, Max: {args.max}, Reset: {args.reset}",
     )
 
     # Load questions
     print("\n  Loading questions...")
-    questions = load_questions(include_1000=args.include_1000)
+    questions = load_questions(include_1000=args.include_1000, dataset=args.dataset)
 
     # Filter to requested types + apply max
     for t in list(questions.keys()):
