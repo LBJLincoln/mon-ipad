@@ -58,6 +58,46 @@ _dedup_lock = threading.Lock()
 _print_lock = threading.Lock()
 
 
+def check_phase_gate(requested_dataset):
+    """Verify previous phase gates are met before allowing progression.
+    Returns True if OK, False if blocked. Use --force-phase to override."""
+    if not requested_dataset or requested_dataset == "phase-1":
+        return True
+
+    # For phase-2+, check Phase 1 gates from readiness file
+    readiness_file = os.path.join(REPO_ROOT, "db", "readiness", "phase-1.json")
+    if not os.path.exists(readiness_file):
+        print("  WARNING: Phase 1 readiness file not found. Cannot verify gates.")
+        print("  Use --force-phase to skip gate check.")
+        return False
+
+    with open(readiness_file) as f:
+        p1 = json.load(f)
+
+    gates = p1.get("gate_criteria", {})
+    all_met = True
+    unmet = []
+
+    for pipeline, info in gates.items():
+        if not info.get("met", False):
+            all_met = False
+            target = info.get("target_accuracy", info.get("target", "?"))
+            current = info.get("current", "?")
+            unmet.append(f"    {pipeline}: {current}% (target: {target}%)")
+
+    if not all_met:
+        print("\n  PHASE GATE BLOCKED: Phase 1 exit criteria NOT met.")
+        print("  Pipelines below target:")
+        for line in unmet:
+            print(line)
+        print(f"\n  Cannot run --dataset {requested_dataset} until all Phase 1 gates pass.")
+        print("  Use --force-phase to override (for testing/debugging only).")
+        return False
+
+    print("  Phase 1 gates: ALL MET. Proceeding to requested dataset.")
+    return True
+
+
 def tprint(msg):
     """Thread-safe print."""
     with _print_lock:
@@ -173,6 +213,12 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
         if has_error:
             totals["errors"] += 1
 
+        # Rate-limit protection: delay between questions (orchestrator uses 3-5 LLM calls each)
+        if rag_type == "orchestrator" and i < len(untested) - 1:
+            time.sleep(5)
+        elif i < len(untested) - 1:
+            time.sleep(2)
+
         # Per-question result for pipeline snapshot
         per_question_results.append({
             "id": qid,
@@ -207,8 +253,11 @@ def main():
                         help="Max questions per pipeline type")
     parser.add_argument("--types", type=str, default="standard,graph,quantitative,orchestrator",
                         help="Comma-separated pipeline types to test")
+    parser.add_argument("--dataset", type=str, default=None,
+                        choices=["phase-1", "phase-2", "all"],
+                        help="Dataset to evaluate: phase-1 (200q), phase-2 (1000q HF), all (1200q)")
     parser.add_argument("--include-1000", action="store_true",
-                        help="Include HF-1000 questions")
+                        help="[Legacy] Include HF-1000 questions (use --dataset all instead)")
     parser.add_argument("--reset", action="store_true",
                         help="Ignore dedup, re-test all questions")
     parser.add_argument("--push", action="store_true",
@@ -217,14 +266,36 @@ def main():
                         help="Human-readable label for this iteration")
     parser.add_argument("--description", type=str, default="",
                         help="Description of what changed before this eval")
+    parser.add_argument("--force", action="store_true",
+                        help="Force run even if phase gates are not met")
     args = parser.parse_args()
+
+    # Phase gate enforcement
+    if not args.force and not check_phase_gate(args.dataset):
+        sys.exit(1)
 
     start_time = datetime.now()
     requested_types = [t.strip() for t in args.types.split(",")]
+    dataset_label = args.dataset or ("phase-1+2" if args.include_1000 else "phase-1")
+
+    # Phase gate enforcement for Phase 2+
+    if args.dataset and args.dataset != "phase-1":
+        try:
+            from phase_gates import enforce_gate
+            phase_num = int(args.dataset.split("-")[1]) if "-" in args.dataset else 2
+            enforce_gate(target_phase=phase_num, force=getattr(args, 'force', False))
+        except (ImportError, Exception) as e:
+            print(f"  WARN: Phase gate check skipped: {e}")
+
+    # Auto-adjust types for Phase 2 (only graph + quantitative)
+    if args.dataset == "phase-2" and args.types == "standard,graph,quantitative,orchestrator":
+        requested_types = ["graph", "quantitative"]
+        print("  NOTE: Phase 2 only tests graph + quantitative. Auto-adjusted --types.")
 
     print("=" * 70)
-    print("  PARALLEL RAG EVALUATION — 4 Pipelines Concurrent")
+    print("  PARALLEL RAG EVALUATION — Pipelines Concurrent")
     print(f"  Started: {start_time.isoformat()}")
+    print(f"  Dataset: {dataset_label}")
     print(f"  Types: {', '.join(requested_types)}")
     print(f"  Max per pipeline: {args.max or 'all'}")
     print(f"  Reset dedup: {args.reset}")
@@ -233,13 +304,13 @@ def main():
     # Initialize dashboard
     writer.init(
         status="running",
-        label=args.label or f"Parallel eval {args.types}",
-        description=args.description or f"Parallel: {args.types}, Max: {args.max}, Reset: {args.reset}",
+        label=args.label or f"Parallel eval {dataset_label} {args.types}",
+        description=args.description or f"Dataset: {dataset_label}, Parallel: {args.types}, Max: {args.max}, Reset: {args.reset}",
     )
 
     # Load questions
     print("\n  Loading questions...")
-    questions = load_questions(include_1000=args.include_1000)
+    questions = load_questions(include_1000=args.include_1000, dataset=args.dataset)
 
     # Filter to requested types + apply max
     for t in list(questions.keys()):

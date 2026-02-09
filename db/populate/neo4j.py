@@ -28,7 +28,7 @@ NEO4J_HOST = "38c949a2.databases.neo4j.io"
 NEO4J_USER = os.environ.get("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.environ["NEO4J_PASSWORD"]
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-LLM_MODEL = os.environ.get("LLM_ENTITY_MODEL", "google/gemini-2.0-flash-001")
+LLM_MODEL = os.environ.get("LLM_ENTITY_MODEL", "meta-llama/llama-3.3-70b-instruct:free")
 
 # Neo4j Aura Query API v2 (port 443, works through firewalls)
 NEO4J_HTTP_URL = f"https://{NEO4J_HOST}/db/neo4j/query/v2"

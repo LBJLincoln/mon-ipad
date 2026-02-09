@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-08T19:11:42.111Z",
+  "updatedAt": "2026-02-09T02:45:23.689Z",
   "createdAt": "2026-01-25T13:18:45.656Z",
   "id": "LjUz8fxQZ03G9IsU",
   "name": "TEST - SOTA 2026 - WF4 Quantitative V2.0",
@@ -58,7 +58,7 @@
       "parameters": {
         "method": "POST",
         "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
-        "authentication": "predefinedCredentialType",
+        "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
@@ -69,6 +69,15 @@
             "maxTries": 3,
             "waitBetweenTries": 2000
           }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+            }
+          ]
         }
       },
       "id": "1b0e89ee-a913-498e-ab6d-2f8d568a2d2f",
@@ -79,16 +88,8 @@
         800,
         208
       ],
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "nTJdf91Z5vhsI7cm",
-          "name": "Unstructured API"
-        },
-        "openRouterApi": {
-          "id": "aTHBqnntMBApo0Dy",
-          "name": "OpenRouter account"
-        }
-      }
+      "credentials": {},
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -142,7 +143,7 @@
       "parameters": {
         "method": "POST",
         "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
-        "authentication": "predefinedCredentialType",
+        "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
@@ -153,6 +154,15 @@
             "maxTries": 3,
             "waitBetweenTries": 2000
           }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+            }
+          ]
         }
       },
       "id": "1179b1b8-11c3-41ae-b750-cec4e2687620",
@@ -163,16 +173,8 @@
         1872,
         0
       ],
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "nTJdf91Z5vhsI7cm",
-          "name": "Unstructured API"
-        },
-        "openRouterApi": {
-          "id": "aTHBqnntMBApo0Dy",
-          "name": "OpenRouter account"
-        }
-      }
+      "credentials": {},
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -235,7 +237,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// SQL Error Handler - Self-Healing with graceful fallback\ntry {\n  const executorResult = $json;\n\n  let validatorData = {};\n  let originalQuery = '';\n  let schemaContext = '';\n  let tenantId = 'default';\n\n  try { validatorData = $node['SQL Validator (Shield #1)'].json; } catch(e) {}\n  try { originalQuery = $node['Init & ACL'].json.query; } catch(e) { originalQuery = 'unknown'; }\n  try { schemaContext = $node['Schema Context Builder'].json.schema_context; } catch(e) {}\n  try { tenantId = $node['Init & ACL'].json.user_context.tenant_id; } catch(e) {}\n\n  const staticData = $getWorkflowStaticData('global');\n  const traceId = 'sql-repair-' + Date.now();\n\n  const retryKey = `retry_${traceId}`;\n  const retryCount = (staticData[retryKey] || 0) + 1;\n  staticData[retryKey] = retryCount;\n\n  if (retryCount > 2) {\n    delete staticData[retryKey];\n    return [{\n      json: {\n        status: 'ERROR',\n        trace_id: traceId,\n        error_type: 'SQL_MAX_RETRIES',\n        error_message: 'SQL self-healing exhausted after 2 retries',\n        original_query: originalQuery,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  const errorMsg = executorResult.error_message || executorResult.message || 'SQL execution failed';\n  const failedSQL = validatorData.validated_sql || executorResult.sql || '';\n\n  return [{\n    json: {\n      needs_repair: true,\n      retry_count: retryCount,\n      original_query: originalQuery,\n      failed_sql: failedSQL,\n      error_message: errorMsg,\n      schema_context: schemaContext,\n      tenant_id: tenantId,\n      trace_id: traceId\n    }\n  }];\n} catch (e) {\n  return [{\n    json: {\n      status: 'ERROR',\n      error_type: 'SELF_HEAL_FAILURE',\n      error_message: e.message,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
+        "jsCode": "// SQL Error Handler - Self-Healing (MAX 3 REPAIRS)\nconst MAX_REPAIRS = 3;\nconst currentAttempt = ($json.repair_attempts || 0) + 1;\n\nif (currentAttempt > MAX_REPAIRS) {\n  // Give up - return error response instead of looping forever\n  return {\n    json: {\n      ...($json),\n      repair_exhausted: true,\n      needs_repair: false,\n      error_message: 'SQL repair exhausted after ' + MAX_REPAIRS + ' attempts',\n      repair_attempts: currentAttempt\n    }\n  };\n}\n\n// SQL Error Handler - Self-Healing with graceful fallback\ntry {\n  const executorResult = $json;\n\n  let validatorData = {};\n  let originalQuery = '';\n  let schemaContext = '';\n  let tenantId = 'default';\n\n  try { validatorData = $node['SQL Validator (Shield #1)'].json; } catch(e) {}\n  try { originalQuery = $node['Init & ACL'].json.query; } catch(e) { originalQuery = 'unknown'; }\n  try { schemaContext = $node['Schema Context Builder'].json.schema_context; } catch(e) {}\n  try { tenantId = $node['Init & ACL'].json.user_context.tenant_id; } catch(e) {}\n\n  const staticData = $getWorkflowStaticData('global');\n  const traceId = 'sql-repair-' + Date.now();\n\n  const retryKey = `retry_${traceId}`;\n  const retryCount = (staticData[retryKey] || 0) + 1;\n  staticData[retryKey] = retryCount;\n\n  if (retryCount > 2) {\n    delete staticData[retryKey];\n    return [{\n      json: {\n        status: 'ERROR',\n        trace_id: traceId,\n        error_type: 'SQL_MAX_RETRIES',\n        error_message: 'SQL self-healing exhausted after 2 retries',\n        original_query: originalQuery,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  const errorMsg = executorResult.error_message || executorResult.message || 'SQL execution failed';\n  const failedSQL = validatorData.validated_sql || executorResult.sql || '';\n\n  return [{\n    json: {\n      needs_repair: true,\n      retry_count: retryCount,\n      original_query: originalQuery,\n      failed_sql: failedSQL,\n      error_message: errorMsg,\n      schema_context: schemaContext,\n      tenant_id: tenantId,\n      trace_id: traceId\n    }\n  }];\n} catch (e) {\n  return [{\n    json: {\n      status: 'ERROR',\n      error_type: 'SELF_HEAL_FAILURE',\n      error_message: e.message,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}\n\n// Track repair attempts in output\nconst output = $json;\nif (typeof output === 'object') {\n  output.repair_attempts = currentAttempt;\n}\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -250,7 +252,7 @@
       "parameters": {
         "method": "POST",
         "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
-        "authentication": "predefinedCredentialType",
+        "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
@@ -261,6 +263,15 @@
             "maxTries": 3,
             "waitBetweenTries": 2000
           }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+            }
+          ]
         }
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -271,16 +282,8 @@
       ],
       "id": "62e9e6c2-a7b6-4f8f-baf1-8eef71eb898c",
       "name": "SQL Repair LLM",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "nTJdf91Z5vhsI7cm",
-          "name": "Unstructured API"
-        },
-        "openRouterApi": {
-          "id": "aTHBqnntMBApo0Dy",
-          "name": "OpenRouter account"
-        }
-      }
+      "credentials": {},
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -387,7 +390,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepseek/deepseek-chat',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER: The financials table has BOTH annual (period='FY') and quarterly (period='Q1'-'Q4') rows.\n  For annual totals: ALWAYS add period = 'FY' to avoid double-counting.\n  For quarterly analysis: filter period IN ('Q1','Q2','Q3','Q4').\n  NEVER SUM without specifying period - you will get 2x the real value.\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000,\n  response_format: { type: \"json_object\" }\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
+        "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER: The financials table has BOTH annual (period='FY') and quarterly (period='Q1'-'Q4') rows.\n  For annual totals: ALWAYS add period = 'FY' to avoid double-counting.\n  For quarterly analysis: filter period IN ('Q1','Q2','Q3','Q4').\n  NEVER SUM without specifying period - you will get 2x the real value.\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -400,7 +403,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemini-2.5-flash-preview-05-20',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
+        "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -413,7 +416,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare SQL Repair Request - Safe JSON Building\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepseek/deepseek-chat',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL debugger. Your mission is to FIX a SQL query that has failed.\n\n=== RULES ===\n1. Fix ONLY the error - do NOT change the business logic\n2. Verify EXACT column names in the schema\n3. Add CAST if type mismatch (e.g., '100'::numeric)\n4. Verify quotes (single for strings, double for identifiers)\n5. ALWAYS keep tenant_id in WHERE\n\n=== JSON FORMAT ===\n{\n  \"analysis\": \"What caused the error...\",\n  \"fix_applied\": \"The change made...\",\n  \"sql\": \"SELECT ... (corrected query)\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== ORIGINAL QUERY THAT FAILED ===\n${repairContext.failed_sql}\n\n=== POSTGRES ERROR ===\n${repairContext.error_message}\n\n=== SCHEMA ===\n${repairContext.schema_context}\n\n=== USER QUESTION ===\n${repairContext.original_question}\n\n=== ERROR HISTORY ===\n${JSON.stringify(repairContext.previous_errors, null, 2)}\n\nFix the SQL query. Return ONLY the JSON with the corrected query.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 800,\n  response_format: { type: \"json_object\" }\n};\n\nreturn {\n  json: {\n    ...errorHandlerData,\n    requestBody: requestBody\n  }\n};"
+        "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"meta-llama/llama-3.3-70b-instruct:free\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1091,14 +1094,36 @@
       "retry_sql-repair-1770567992836": 1,
       "retry_sql-repair-1770568008955": 1,
       "retry_sql-repair-1770578169724": 1,
-      "retry_sql-repair-1770578534179": 1
+      "retry_sql-repair-1770578534179": 1,
+      "retry_sql-repair-1770580463001": 1,
+      "retry_sql-repair-1770581296294": 1,
+      "retry_sql-repair-1770599948443": 1,
+      "retry_sql-repair-1770600415351": 1,
+      "retry_sql-repair-1770600753750": 1,
+      "retry_sql-repair-1770604653782": 1,
+      "retry_sql-repair-1770604834697": 1,
+      "retry_sql-repair-1770604835990": 1,
+      "retry_sql-repair-1770604836883": 1,
+      "retry_sql-repair-1770604839276": 1,
+      "retry_sql-repair-1770604843009": 1,
+      "retry_sql-repair-1770604850586": 1,
+      "retry_sql-repair-1770604851388": 1,
+      "retry_sql-repair-1770604853877": 1,
+      "retry_sql-repair-1770605060425": 1,
+      "retry_sql-repair-1770605061387": 1,
+      "retry_sql-repair-1770605062215": 1,
+      "retry_sql-repair-1770605062976": 1,
+      "retry_sql-repair-1770605063810": 1,
+      "retry_sql-repair-1770605064727": 1,
+      "retry_sql-repair-1770605065710": 1,
+      "retry_sql-repair-1770605066497": 1
     }
   },
   "meta": null,
   "pinData": {},
-  "versionId": "5b95d542-f3fb-449a-9c1d-6c9cbffe5c36",
-  "activeVersionId": "5b95d542-f3fb-449a-9c1d-6c9cbffe5c36",
-  "versionCounter": 296,
+  "versionId": "632def55-dd8e-4f92-a2b5-dde49467bf7e",
+  "activeVersionId": "632def55-dd8e-4f92-a2b5-dde49467bf7e",
+  "versionCounter": 338,
   "triggerCount": 2,
   "shared": [
     {
@@ -1123,7 +1148,7 @@
             "userId": "215767e0-958a-4c74-a67a-e335807eba64",
             "projectId": "JV7MbqBbWPTstXIo",
             "user": {
-              "updatedAt": "2026-02-07T23:03:02.000Z",
+              "updatedAt": "2026-02-08T23:36:29.000Z",
               "createdAt": "2026-01-07T13:20:20.003Z",
               "id": "215767e0-958a-4c74-a67a-e335807eba64",
               "email": "alexis.moret6@outlook.fr",
@@ -1143,7 +1168,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2026-02-07",
+              "lastActiveAt": "2026-02-08",
               "isPending": false
             }
           }
@@ -1153,9 +1178,9 @@
   ],
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-02-08T04:07:04.773Z",
-    "createdAt": "2026-02-08T04:07:04.773Z",
-    "versionId": "5b95d542-f3fb-449a-9c1d-6c9cbffe5c36",
+    "updatedAt": "2026-02-09T02:45:23.691Z",
+    "createdAt": "2026-02-09T02:45:23.691Z",
+    "versionId": "632def55-dd8e-4f92-a2b5-dde49467bf7e",
     "workflowId": "LjUz8fxQZ03G9IsU",
     "nodes": [
       {
@@ -1209,7 +1234,7 @@
         "parameters": {
           "method": "POST",
           "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
@@ -1220,6 +1245,15 @@
               "maxTries": 3,
               "waitBetweenTries": 2000
             }
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              }
+            ]
           }
         },
         "id": "1b0e89ee-a913-498e-ab6d-2f8d568a2d2f",
@@ -1230,16 +1264,8 @@
           800,
           208
         ],
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "nTJdf91Z5vhsI7cm",
-            "name": "Unstructured API"
-          },
-          "openRouterApi": {
-            "id": "aTHBqnntMBApo0Dy",
-            "name": "OpenRouter account"
-          }
-        }
+        "credentials": {},
+        "continueOnFail": true
       },
       {
         "parameters": {
@@ -1293,7 +1319,7 @@
         "parameters": {
           "method": "POST",
           "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
@@ -1304,6 +1330,15 @@
               "maxTries": 3,
               "waitBetweenTries": 2000
             }
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              }
+            ]
           }
         },
         "id": "1179b1b8-11c3-41ae-b750-cec4e2687620",
@@ -1314,16 +1349,8 @@
           1872,
           0
         ],
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "nTJdf91Z5vhsI7cm",
-            "name": "Unstructured API"
-          },
-          "openRouterApi": {
-            "id": "aTHBqnntMBApo0Dy",
-            "name": "OpenRouter account"
-          }
-        }
+        "credentials": {},
+        "continueOnFail": true
       },
       {
         "parameters": {
@@ -1386,7 +1413,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// SQL Error Handler - Self-Healing with graceful fallback\ntry {\n  const executorResult = $json;\n\n  let validatorData = {};\n  let originalQuery = '';\n  let schemaContext = '';\n  let tenantId = 'default';\n\n  try { validatorData = $node['SQL Validator (Shield #1)'].json; } catch(e) {}\n  try { originalQuery = $node['Init & ACL'].json.query; } catch(e) { originalQuery = 'unknown'; }\n  try { schemaContext = $node['Schema Context Builder'].json.schema_context; } catch(e) {}\n  try { tenantId = $node['Init & ACL'].json.user_context.tenant_id; } catch(e) {}\n\n  const staticData = $getWorkflowStaticData('global');\n  const traceId = 'sql-repair-' + Date.now();\n\n  const retryKey = `retry_${traceId}`;\n  const retryCount = (staticData[retryKey] || 0) + 1;\n  staticData[retryKey] = retryCount;\n\n  if (retryCount > 2) {\n    delete staticData[retryKey];\n    return [{\n      json: {\n        status: 'ERROR',\n        trace_id: traceId,\n        error_type: 'SQL_MAX_RETRIES',\n        error_message: 'SQL self-healing exhausted after 2 retries',\n        original_query: originalQuery,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  const errorMsg = executorResult.error_message || executorResult.message || 'SQL execution failed';\n  const failedSQL = validatorData.validated_sql || executorResult.sql || '';\n\n  return [{\n    json: {\n      needs_repair: true,\n      retry_count: retryCount,\n      original_query: originalQuery,\n      failed_sql: failedSQL,\n      error_message: errorMsg,\n      schema_context: schemaContext,\n      tenant_id: tenantId,\n      trace_id: traceId\n    }\n  }];\n} catch (e) {\n  return [{\n    json: {\n      status: 'ERROR',\n      error_type: 'SELF_HEAL_FAILURE',\n      error_message: e.message,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
+          "jsCode": "// SQL Error Handler - Self-Healing (MAX 3 REPAIRS)\nconst MAX_REPAIRS = 3;\nconst currentAttempt = ($json.repair_attempts || 0) + 1;\n\nif (currentAttempt > MAX_REPAIRS) {\n  // Give up - return error response instead of looping forever\n  return {\n    json: {\n      ...($json),\n      repair_exhausted: true,\n      needs_repair: false,\n      error_message: 'SQL repair exhausted after ' + MAX_REPAIRS + ' attempts',\n      repair_attempts: currentAttempt\n    }\n  };\n}\n\n// SQL Error Handler - Self-Healing with graceful fallback\ntry {\n  const executorResult = $json;\n\n  let validatorData = {};\n  let originalQuery = '';\n  let schemaContext = '';\n  let tenantId = 'default';\n\n  try { validatorData = $node['SQL Validator (Shield #1)'].json; } catch(e) {}\n  try { originalQuery = $node['Init & ACL'].json.query; } catch(e) { originalQuery = 'unknown'; }\n  try { schemaContext = $node['Schema Context Builder'].json.schema_context; } catch(e) {}\n  try { tenantId = $node['Init & ACL'].json.user_context.tenant_id; } catch(e) {}\n\n  const staticData = $getWorkflowStaticData('global');\n  const traceId = 'sql-repair-' + Date.now();\n\n  const retryKey = `retry_${traceId}`;\n  const retryCount = (staticData[retryKey] || 0) + 1;\n  staticData[retryKey] = retryCount;\n\n  if (retryCount > 2) {\n    delete staticData[retryKey];\n    return [{\n      json: {\n        status: 'ERROR',\n        trace_id: traceId,\n        error_type: 'SQL_MAX_RETRIES',\n        error_message: 'SQL self-healing exhausted after 2 retries',\n        original_query: originalQuery,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  const errorMsg = executorResult.error_message || executorResult.message || 'SQL execution failed';\n  const failedSQL = validatorData.validated_sql || executorResult.sql || '';\n\n  return [{\n    json: {\n      needs_repair: true,\n      retry_count: retryCount,\n      original_query: originalQuery,\n      failed_sql: failedSQL,\n      error_message: errorMsg,\n      schema_context: schemaContext,\n      tenant_id: tenantId,\n      trace_id: traceId\n    }\n  }];\n} catch (e) {\n  return [{\n    json: {\n      status: 'ERROR',\n      error_type: 'SELF_HEAL_FAILURE',\n      error_message: e.message,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}\n\n// Track repair attempts in output\nconst output = $json;\nif (typeof output === 'object') {\n  output.repair_attempts = currentAttempt;\n}\n"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -1401,7 +1428,7 @@
         "parameters": {
           "method": "POST",
           "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
@@ -1412,6 +1439,15 @@
               "maxTries": 3,
               "waitBetweenTries": 2000
             }
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              }
+            ]
           }
         },
         "type": "n8n-nodes-base.httpRequest",
@@ -1422,16 +1458,8 @@
         ],
         "id": "62e9e6c2-a7b6-4f8f-baf1-8eef71eb898c",
         "name": "SQL Repair LLM",
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "nTJdf91Z5vhsI7cm",
-            "name": "Unstructured API"
-          },
-          "openRouterApi": {
-            "id": "aTHBqnntMBApo0Dy",
-            "name": "OpenRouter account"
-          }
-        }
+        "credentials": {},
+        "continueOnFail": true
       },
       {
         "parameters": {
@@ -1538,7 +1566,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepseek/deepseek-chat',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER: The financials table has BOTH annual (period='FY') and quarterly (period='Q1'-'Q4') rows.\n  For annual totals: ALWAYS add period = 'FY' to avoid double-counting.\n  For quarterly analysis: filter period IN ('Q1','Q2','Q3','Q4').\n  NEVER SUM without specifying period - you will get 2x the real value.\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000,\n  response_format: { type: \"json_object\" }\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
+          "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER: The financials table has BOTH annual (period='FY') and quarterly (period='Q1'-'Q4') rows.\n  For annual totals: ALWAYS add period = 'FY' to avoid double-counting.\n  For quarterly analysis: filter period IN ('Q1','Q2','Q3','Q4').\n  NEVER SUM without specifying period - you will get 2x the real value.\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -1551,7 +1579,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemini-2.5-flash-preview-05-20',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
+          "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -1564,7 +1592,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Prepare SQL Repair Request - Safe JSON Building\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'deepseek/deepseek-chat',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL debugger. Your mission is to FIX a SQL query that has failed.\n\n=== RULES ===\n1. Fix ONLY the error - do NOT change the business logic\n2. Verify EXACT column names in the schema\n3. Add CAST if type mismatch (e.g., '100'::numeric)\n4. Verify quotes (single for strings, double for identifiers)\n5. ALWAYS keep tenant_id in WHERE\n\n=== JSON FORMAT ===\n{\n  \"analysis\": \"What caused the error...\",\n  \"fix_applied\": \"The change made...\",\n  \"sql\": \"SELECT ... (corrected query)\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== ORIGINAL QUERY THAT FAILED ===\n${repairContext.failed_sql}\n\n=== POSTGRES ERROR ===\n${repairContext.error_message}\n\n=== SCHEMA ===\n${repairContext.schema_context}\n\n=== USER QUESTION ===\n${repairContext.original_question}\n\n=== ERROR HISTORY ===\n${JSON.stringify(repairContext.previous_errors, null, 2)}\n\nFix the SQL query. Return ONLY the JSON with the corrected query.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 800,\n  response_format: { type: \"json_object\" }\n};\n\nreturn {\n  json: {\n    ...errorHandlerData,\n    requestBody: requestBody\n  }\n};"
+          "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"meta-llama/llama-3.3-70b-instruct:free\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -1846,67 +1874,11 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-02-08T04:07:04.986Z",
-        "id": 657,
+        "createdAt": "2026-02-09T02:45:23.921Z",
+        "id": 755,
         "workflowId": "LjUz8fxQZ03G9IsU",
-        "versionId": "5b95d542-f3fb-449a-9c1d-6c9cbffe5c36",
+        "versionId": "632def55-dd8e-4f92-a2b5-dde49467bf7e",
         "event": "activated",
-        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
-      },
-      {
-        "createdAt": "2026-02-08T04:07:07.551Z",
-        "id": 661,
-        "workflowId": "LjUz8fxQZ03G9IsU",
-        "versionId": "5b95d542-f3fb-449a-9c1d-6c9cbffe5c36",
-        "event": "activated",
-        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
-      },
-      {
-        "createdAt": "2026-02-08T16:02:01.428Z",
-        "id": 682,
-        "workflowId": "LjUz8fxQZ03G9IsU",
-        "versionId": "5b95d542-f3fb-449a-9c1d-6c9cbffe5c36",
-        "event": "activated",
-        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
-      },
-      {
-        "createdAt": "2026-02-08T16:03:58.559Z",
-        "id": 690,
-        "workflowId": "LjUz8fxQZ03G9IsU",
-        "versionId": "5b95d542-f3fb-449a-9c1d-6c9cbffe5c36",
-        "event": "activated",
-        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
-      },
-      {
-        "createdAt": "2026-02-08T19:11:42.527Z",
-        "id": 700,
-        "workflowId": "LjUz8fxQZ03G9IsU",
-        "versionId": "5b95d542-f3fb-449a-9c1d-6c9cbffe5c36",
-        "event": "activated",
-        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
-      },
-      {
-        "createdAt": "2026-02-08T16:01:59.680Z",
-        "id": 681,
-        "workflowId": "LjUz8fxQZ03G9IsU",
-        "versionId": "5b95d542-f3fb-449a-9c1d-6c9cbffe5c36",
-        "event": "deactivated",
-        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
-      },
-      {
-        "createdAt": "2026-02-08T16:03:56.823Z",
-        "id": 689,
-        "workflowId": "LjUz8fxQZ03G9IsU",
-        "versionId": "5b95d542-f3fb-449a-9c1d-6c9cbffe5c36",
-        "event": "deactivated",
-        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
-      },
-      {
-        "createdAt": "2026-02-08T19:11:40.787Z",
-        "id": 699,
-        "workflowId": "LjUz8fxQZ03G9IsU",
-        "versionId": "5b95d542-f3fb-449a-9c1d-6c9cbffe5c36",
-        "event": "deactivated",
         "userId": "215767e0-958a-4c74-a67a-e335807eba64"
       }
     ]

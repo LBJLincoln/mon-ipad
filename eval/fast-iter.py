@@ -58,6 +58,42 @@ os.makedirs(FAST_ITER_DIR, exist_ok=True)
 _print_lock = threading.Lock()
 
 
+def check_phase_gate(requested_dataset):
+    """Verify previous phase gates are met before allowing progression.
+    Returns True if OK, False if blocked. Use --force-phase to override."""
+    if not requested_dataset or requested_dataset == "phase-1":
+        return True
+
+    readiness_file = os.path.join(REPO_ROOT, "db", "readiness", "phase-1.json")
+    if not os.path.exists(readiness_file):
+        print("  WARNING: Phase 1 readiness file not found. Cannot verify gates.")
+        print("  Use --force-phase to skip gate check.")
+        return False
+
+    with open(readiness_file) as f:
+        p1 = json.load(f)
+
+    gates = p1.get("gate_criteria", {})
+    unmet = []
+    for pipeline, info in gates.items():
+        if not info.get("met", False):
+            target = info.get("target_accuracy", info.get("target", "?"))
+            current = info.get("current", "?")
+            unmet.append(f"    {pipeline}: {current}% (target: {target}%)")
+
+    if unmet:
+        print("\n  PHASE GATE BLOCKED: Phase 1 exit criteria NOT met.")
+        print("  Pipelines below target:")
+        for line in unmet:
+            print(line)
+        print(f"\n  Cannot run --dataset {requested_dataset} until all Phase 1 gates pass.")
+        print("  Use --force-phase to override (for testing/debugging only).")
+        return False
+
+    print("  Phase 1 gates: ALL MET. Proceeding to requested dataset.")
+    return True
+
+
 def tprint(msg):
     with _print_lock:
         print(msg, flush=True)
@@ -278,20 +314,45 @@ def main():
                         help="Questions per pipeline (default: 10)")
     parser.add_argument("--pipelines", type=str, default="standard,graph,quantitative,orchestrator",
                         help="Comma-separated pipelines to test")
+    parser.add_argument("--dataset", type=str, default=None,
+                        choices=["phase-1", "phase-2", "all"],
+                        help="Dataset: phase-1 (200q), phase-2 (1000q HF), all (1200q)")
     parser.add_argument("--label", type=str, default="",
                         help="Label for this fast iteration run")
     parser.add_argument("--only-failing", action="store_true",
                         help="Re-test only previously failing questions")
     parser.add_argument("--push", action="store_true",
                         help="Git push results after completion")
+    parser.add_argument("--force", action="store_true",
+                        help="Force run even if phase gates are not met")
     args = parser.parse_args()
+
+    # Phase gate enforcement
+    if not args.force and not check_phase_gate(args.dataset):
+        sys.exit(1)
 
     start_time = datetime.now()
     pipelines = [p.strip() for p in args.pipelines.split(",")]
+    dataset_label = args.dataset or "phase-1"
+
+    # Phase gate enforcement for Phase 2+
+    if args.dataset and args.dataset != "phase-1":
+        try:
+            from phase_gates import enforce_gate
+            phase_num = int(args.dataset.split("-")[1]) if "-" in args.dataset else 2
+            enforce_gate(target_phase=phase_num, force=getattr(args, 'force', False))
+        except (ImportError, Exception) as e:
+            print(f"  WARN: Phase gate check skipped: {e}")
+
+    # Auto-adjust pipelines for Phase 2 (only graph + quantitative)
+    if args.dataset == "phase-2" and args.pipelines == "standard,graph,quantitative,orchestrator":
+        pipelines = ["graph", "quantitative"]
+        print("  NOTE: Phase 2 only tests graph + quantitative. Auto-adjusted --pipelines.")
 
     print("=" * 70)
     print("  FAST ITERATION — Quick Pipeline Validation")
     print(f"  Started: {start_time.isoformat()}")
+    print(f"  Dataset: {dataset_label}")
     print(f"  Pipelines: {', '.join(pipelines)}")
     print(f"  Questions per pipeline: {args.questions}")
     print(f"  Only failing: {args.only_failing}")
@@ -302,13 +363,13 @@ def main():
     # Init writer for this fast-iter session
     writer.init(
         status="running",
-        label=args.label or f"Fast-iter {args.questions}q x {len(pipelines)} pipes",
-        description=f"Fast iteration: {args.questions}q/pipeline, parallel",
+        label=args.label or f"Fast-iter {dataset_label} {args.questions}q x {len(pipelines)} pipes",
+        description=f"Fast iteration: {args.questions}q/pipeline, parallel, dataset={dataset_label}",
     )
 
     # Load questions
     print("\n  Loading questions...")
-    all_questions = load_questions()
+    all_questions = load_questions(dataset=args.dataset)
 
     # Select strategic question mix per pipeline
     selected = {}

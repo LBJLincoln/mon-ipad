@@ -32,7 +32,7 @@ NEO4J_HOST = "38c949a2.databases.neo4j.io"
 NEO4J_USER = os.environ.get("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-LLM_MODEL = os.environ.get("LLM_ENTITY_MODEL", "google/gemini-2.0-flash-001")
+LLM_MODEL = os.environ.get("LLM_ENTITY_MODEL", "meta-llama/llama-3.3-70b-instruct:free")
 
 NEO4J_HTTP_URL = f"https://{NEO4J_HOST}/db/neo4j/query/v2"
 NEO4J_AUTH = base64.b64encode(f"{NEO4J_USER}:{NEO4J_PASSWORD}".encode()).decode()

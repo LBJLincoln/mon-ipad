@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-08T19:19:14.207Z",
+  "updatedAt": "2026-02-09T02:38:58.271Z",
   "createdAt": "2026-01-30T16:51:51.530Z",
   "id": "LnTqRX4LZlI009Ks-3Jnp",
   "name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
@@ -53,11 +53,11 @@
       "parameters": {
         "method": "POST",
         "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
-        "authentication": "predefinedCredentialType",
+        "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots qui repondrait parfaitement a la question.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots qui repondrait parfaitement a la question.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
         "options": {
           "batching": {
             "batch": {
@@ -69,6 +69,15 @@
             "maxTries": 3,
             "waitBetweenTries": 2000
           }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+            }
+          ]
         }
       },
       "id": "2203b6fc-10ed-43f1-8814-134887ef30b3",
@@ -79,19 +88,14 @@
         3520,
         2480
       ],
-      "credentials": {
-        "openRouterApi": {
-          "id": "aTHBqnntMBApo0Dy",
-          "name": "OpenRouter account"
-        }
-      },
+      "credentials": {},
       "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "method": "POST",
         "url": "={{ $vars.EMBEDDING_API_URL || 'https://openrouter.ai/api/v1/embeddings' }}",
-        "authentication": "predefinedCredentialType",
+        "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
@@ -107,6 +111,15 @@
             "maxTries": 3,
             "waitBetweenTries": 2000
           }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+            }
+          ]
         }
       },
       "id": "89633b5e-e055-4431-a38b-2963e872fba3",
@@ -117,12 +130,7 @@
         3728,
         2480
       ],
-      "credentials": {
-        "openRouterApi": {
-          "id": "aTHBqnntMBApo0Dy",
-          "name": "OpenRouter account"
-        }
-      },
+      "credentials": {},
       "onError": "continueRegularOutput"
     },
     {
@@ -163,7 +171,7 @@
       "parameters": {
         "method": "POST",
         "url": "={{ $vars.EMBEDDING_API_URL || 'https://openrouter.ai/api/v1/embeddings' }}",
-        "authentication": "predefinedCredentialType",
+        "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
@@ -179,6 +187,15 @@
             "maxTries": 3,
             "waitBetweenTries": 2000
           }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+            }
+          ]
         }
       },
       "id": "845805cf-5935-4b94-b320-7cf6042c94e9",
@@ -189,12 +206,7 @@
         3152,
         3424
       ],
-      "credentials": {
-        "openRouterApi": {
-          "id": "aTHBqnntMBApo0Dy",
-          "name": "OpenRouter account"
-        }
-      },
+      "credentials": {},
       "onError": "continueRegularOutput"
     },
     {
@@ -337,11 +349,11 @@
       "parameters": {
         "method": "POST",
         "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
-        "authentication": "predefinedCredentialType",
+        "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere precise et factuelle en citant tes sources entre crochets [1], [2], etc.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 1500\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere precise et factuelle en citant tes sources entre crochets [1], [2], etc.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 1500\n}",
         "options": {
           "batching": {
             "batch": {
@@ -353,6 +365,15 @@
             "maxTries": 3,
             "waitBetweenTries": 2000
           }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+            }
+          ]
         }
       },
       "id": "7dc20347-e74b-433b-84c3-6e41e2f5d041",
@@ -363,17 +384,12 @@
         4560,
         3152
       ],
-      "credentials": {
-        "openRouterApi": {
-          "id": "aTHBqnntMBApo0Dy",
-          "name": "OpenRouter account"
-        }
-      },
+      "credentials": {},
       "onError": "continueRegularOutput"
     },
     {
       "parameters": {
-        "jsCode": "// Response Formatter - with LLM Fallback\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n\n  // Try to get reranked sources\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n\n  // Try to get init data\n  let initData = {};\n  try {\n    initData = $node['Init & ACL Pre-Filter V3.4'].json;\n  } catch(e) {}\n\n  if (llmContent) {\n    return [{\n      json: {\n        response: llmContent,\n        trace_id: initData.trace_id || 'tr-' + Date.now(),\n        sources: sources.slice(0, 5),\n        model: 'arcee-ai/trinity-large-preview:free',\n        embedding_fallback: sources.length === 0,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  // LLM_FALLBACK_RESPONSE: If no LLM answer either, return error info\n  return [{\n    json: {\n      response: 'Unable to generate answer - retrieval and LLM both unavailable',\n      trace_id: initData.trace_id || 'tr-' + Date.now(),\n      error: true,\n      embedding_fallback: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} catch(e) {\n  return [{\n    json: {\n      response: 'Error in response formatting: ' + e.message,\n      error: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
+        "jsCode": "// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n\n  // Try to get reranked sources\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n\n  // Try to get init data\n  let initData = {};\n  try {\n    initData = $node['Init & ACL Pre-Filter V3.4'].json;\n  } catch(e) {}\n\n  if (llmContent) {\n    return [{\n      json: {\n        response: llmContent,\n        trace_id: initData.trace_id || 'tr-' + Date.now(),\n        sources: sources.slice(0, 5),\n        model: $vars.LLM_STANDARD_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n        embedding_fallback: sources.length === 0,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  // No LLM answer - return fallback\n  return [{\n    json: {\n      response: 'Unable to generate answer - retrieval and LLM both unavailable',\n      trace_id: initData.trace_id || 'tr-' + Date.now(),\n      error: true,\n      embedding_fallback: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} catch(e) {\n  return [{\n    json: {\n      response: 'Error in response formatting: ' + e.message,\n      error: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
       },
       "id": "66bf2956-117a-4408-b218-cf96cb317529",
       "name": "Response Formatter",
@@ -472,7 +488,7 @@
     },
     {
       "parameters": {
-        "content": "# \ud83d\udd27 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `OPENROUTER_BASE_URL` - https://openrouter.ai/api/v1/chat/completions\n- `LLM_HYDE_MODEL` - google/gemini-2.0-flash-exp\n- `LLM_FAST_MODEL` - google/gemini-2.0-flash-exp\n\n## Embedding\n- `EMBEDDING_API_URL` - URL embedding API\n- `EMBEDDING_MODEL` - text-embedding-3-small\n\n## Reranking\n- `RERANKER_API_URL` - https://api.cohere.ai/v1/rerank\n- `RERANKER_MODEL` - rerank-v3.5 (upgraded from rerank-multilingual-v3.0)\n\n## CORRECTIONS V3.4.1:\n- Fixed HyDE Generator JSON body (removed orphan JS code)\n- Fixed Embedding model string (removed extra quotes)\n- Fixed Query Decomposer model reference\n\n## ISSUE-SR-04 (P1) - PENDING ARCHITECTURE CHANGE:\n- An IF node must be added BEFORE the Cohere Reranker node\n- Condition: skip_reranker === true \u2192 bypass Cohere entirely\n- Currently when skip_reranker=true, a placeholder document is sent to Cohere\n- This wastes API credits and may produce misleading rerank scores\n- Route: RRF \u2192 [new IF: Has Results?] \u2192 true: Cohere \u2192 Rerank Merger\n-                                      \u2192 false: Rerank Merger (directly)\n- STATUS: Requires manual structural change (add node + rewire connections)\n",
+        "content": "# \ud83d\udd27 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `OPENROUTER_BASE_URL` - https://openrouter.ai/api/v1/chat/completions\n- `LLM_HYDE_MODEL` - meta-llama/llama-3.3-70b-instruct:free\n- `LLM_FAST_MODEL` - meta-llama/llama-3.3-70b-instruct:free\n\n## Embedding\n- `EMBEDDING_API_URL` - URL embedding API\n- `EMBEDDING_MODEL` - text-embedding-3-small\n\n## Reranking\n- `RERANKER_API_URL` - https://api.cohere.ai/v1/rerank\n- `RERANKER_MODEL` - rerank-v3.5 (upgraded from rerank-multilingual-v3.0)\n\n## CORRECTIONS V3.4.1:\n- Fixed HyDE Generator JSON body (removed orphan JS code)\n- Fixed Embedding model string (removed extra quotes)\n- Fixed Query Decomposer model reference\n\n## ISSUE-SR-04 (P1) - PENDING ARCHITECTURE CHANGE:\n- An IF node must be added BEFORE the Cohere Reranker node\n- Condition: skip_reranker === true \u2192 bypass Cohere entirely\n- Currently when skip_reranker=true, a placeholder document is sent to Cohere\n- This wastes API credits and may produce misleading rerank scores\n- Route: RRF \u2192 [new IF: Has Results?] \u2192 true: Cohere \u2192 Rerank Merger\n-                                      \u2192 false: Rerank Merger (directly)\n- STATUS: Requires manual structural change (add node + rewire connections)\n",
         "height": 500,
         "width": 400
       },
@@ -505,11 +521,11 @@
       "parameters": {
         "method": "POST",
         "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
-        "authentication": "predefinedCredentialType",
+        "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
         "options": {
           "batching": {
             "batch": {
@@ -521,6 +537,15 @@
             "maxTries": 3,
             "waitBetweenTries": 2000
           }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+            }
+          ]
         }
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -531,12 +556,7 @@
       ],
       "id": "92c737a5-8497-4242-894f-07966ccc6a13",
       "name": "Query Decomposer (V.3.4)",
-      "credentials": {
-        "openRouterApi": {
-          "id": "aTHBqnntMBApo0Dy",
-          "name": "OpenRouter account"
-        }
-      },
+      "credentials": {},
       "onError": "continueRegularOutput"
     },
     {
@@ -831,9 +851,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "ec6df428-3e80-4d4c-a426-9ad83d8975b0",
-  "activeVersionId": "ec6df428-3e80-4d4c-a426-9ad83d8975b0",
-  "versionCounter": 77,
+  "versionId": "51a37aad-ece5-4d4c-8c9c-9e721e3291c0",
+  "activeVersionId": "51a37aad-ece5-4d4c-8c9c-9e721e3291c0",
+  "versionCounter": 101,
   "triggerCount": 2,
   "shared": [
     {
@@ -858,7 +878,7 @@
             "userId": "215767e0-958a-4c74-a67a-e335807eba64",
             "projectId": "JV7MbqBbWPTstXIo",
             "user": {
-              "updatedAt": "2026-02-07T23:03:02.000Z",
+              "updatedAt": "2026-02-08T23:36:29.000Z",
               "createdAt": "2026-01-07T13:20:20.003Z",
               "id": "215767e0-958a-4c74-a67a-e335807eba64",
               "email": "alexis.moret6@outlook.fr",
@@ -878,7 +898,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2026-02-07",
+              "lastActiveAt": "2026-02-08",
               "isPending": false
             }
           }
@@ -888,9 +908,9 @@
   ],
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-02-08T19:19:14.208Z",
-    "createdAt": "2026-02-08T19:19:14.208Z",
-    "versionId": "ec6df428-3e80-4d4c-a426-9ad83d8975b0",
+    "updatedAt": "2026-02-09T02:38:58.272Z",
+    "createdAt": "2026-02-09T02:38:58.272Z",
+    "versionId": "51a37aad-ece5-4d4c-8c9c-9e721e3291c0",
     "workflowId": "LnTqRX4LZlI009Ks-3Jnp",
     "nodes": [
       {
@@ -939,11 +959,11 @@
         "parameters": {
           "method": "POST",
           "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots qui repondrait parfaitement a la question.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots qui repondrait parfaitement a la question.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
           "options": {
             "batching": {
               "batch": {
@@ -955,6 +975,15 @@
               "maxTries": 3,
               "waitBetweenTries": 2000
             }
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              }
+            ]
           }
         },
         "id": "2203b6fc-10ed-43f1-8814-134887ef30b3",
@@ -965,19 +994,14 @@
           3520,
           2480
         ],
-        "credentials": {
-          "openRouterApi": {
-            "id": "aTHBqnntMBApo0Dy",
-            "name": "OpenRouter account"
-          }
-        },
+        "credentials": {},
         "onError": "continueRegularOutput"
       },
       {
         "parameters": {
           "method": "POST",
           "url": "={{ $vars.EMBEDDING_API_URL || 'https://openrouter.ai/api/v1/embeddings' }}",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
@@ -993,6 +1017,15 @@
               "maxTries": 3,
               "waitBetweenTries": 2000
             }
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              }
+            ]
           }
         },
         "id": "89633b5e-e055-4431-a38b-2963e872fba3",
@@ -1003,12 +1036,7 @@
           3728,
           2480
         ],
-        "credentials": {
-          "openRouterApi": {
-            "id": "aTHBqnntMBApo0Dy",
-            "name": "OpenRouter account"
-          }
-        },
+        "credentials": {},
         "onError": "continueRegularOutput"
       },
       {
@@ -1049,7 +1077,7 @@
         "parameters": {
           "method": "POST",
           "url": "={{ $vars.EMBEDDING_API_URL || 'https://openrouter.ai/api/v1/embeddings' }}",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
@@ -1065,6 +1093,15 @@
               "maxTries": 3,
               "waitBetweenTries": 2000
             }
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              }
+            ]
           }
         },
         "id": "845805cf-5935-4b94-b320-7cf6042c94e9",
@@ -1075,12 +1112,7 @@
           3152,
           3424
         ],
-        "credentials": {
-          "openRouterApi": {
-            "id": "aTHBqnntMBApo0Dy",
-            "name": "OpenRouter account"
-          }
-        },
+        "credentials": {},
         "onError": "continueRegularOutput"
       },
       {
@@ -1223,11 +1255,11 @@
         "parameters": {
           "method": "POST",
           "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere precise et factuelle en citant tes sources entre crochets [1], [2], etc.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 1500\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere precise et factuelle en citant tes sources entre crochets [1], [2], etc.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 1500\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1239,6 +1271,15 @@
               "maxTries": 3,
               "waitBetweenTries": 2000
             }
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              }
+            ]
           }
         },
         "id": "7dc20347-e74b-433b-84c3-6e41e2f5d041",
@@ -1249,17 +1290,12 @@
           4560,
           3152
         ],
-        "credentials": {
-          "openRouterApi": {
-            "id": "aTHBqnntMBApo0Dy",
-            "name": "OpenRouter account"
-          }
-        },
+        "credentials": {},
         "onError": "continueRegularOutput"
       },
       {
         "parameters": {
-          "jsCode": "// Response Formatter - with LLM Fallback\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n\n  // Try to get reranked sources\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n\n  // Try to get init data\n  let initData = {};\n  try {\n    initData = $node['Init & ACL Pre-Filter V3.4'].json;\n  } catch(e) {}\n\n  if (llmContent) {\n    return [{\n      json: {\n        response: llmContent,\n        trace_id: initData.trace_id || 'tr-' + Date.now(),\n        sources: sources.slice(0, 5),\n        model: 'arcee-ai/trinity-large-preview:free',\n        embedding_fallback: sources.length === 0,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  // LLM_FALLBACK_RESPONSE: If no LLM answer either, return error info\n  return [{\n    json: {\n      response: 'Unable to generate answer - retrieval and LLM both unavailable',\n      trace_id: initData.trace_id || 'tr-' + Date.now(),\n      error: true,\n      embedding_fallback: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} catch(e) {\n  return [{\n    json: {\n      response: 'Error in response formatting: ' + e.message,\n      error: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
+          "jsCode": "// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n\n  // Try to get reranked sources\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n\n  // Try to get init data\n  let initData = {};\n  try {\n    initData = $node['Init & ACL Pre-Filter V3.4'].json;\n  } catch(e) {}\n\n  if (llmContent) {\n    return [{\n      json: {\n        response: llmContent,\n        trace_id: initData.trace_id || 'tr-' + Date.now(),\n        sources: sources.slice(0, 5),\n        model: $vars.LLM_STANDARD_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n        embedding_fallback: sources.length === 0,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  // No LLM answer - return fallback\n  return [{\n    json: {\n      response: 'Unable to generate answer - retrieval and LLM both unavailable',\n      trace_id: initData.trace_id || 'tr-' + Date.now(),\n      error: true,\n      embedding_fallback: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} catch(e) {\n  return [{\n    json: {\n      response: 'Error in response formatting: ' + e.message,\n      error: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
         },
         "id": "66bf2956-117a-4408-b218-cf96cb317529",
         "name": "Response Formatter",
@@ -1358,7 +1394,7 @@
       },
       {
         "parameters": {
-          "content": "# \ud83d\udd27 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `OPENROUTER_BASE_URL` - https://openrouter.ai/api/v1/chat/completions\n- `LLM_HYDE_MODEL` - google/gemini-2.0-flash-exp\n- `LLM_FAST_MODEL` - google/gemini-2.0-flash-exp\n\n## Embedding\n- `EMBEDDING_API_URL` - URL embedding API\n- `EMBEDDING_MODEL` - text-embedding-3-small\n\n## Reranking\n- `RERANKER_API_URL` - https://api.cohere.ai/v1/rerank\n- `RERANKER_MODEL` - rerank-v3.5 (upgraded from rerank-multilingual-v3.0)\n\n## CORRECTIONS V3.4.1:\n- Fixed HyDE Generator JSON body (removed orphan JS code)\n- Fixed Embedding model string (removed extra quotes)\n- Fixed Query Decomposer model reference\n\n## ISSUE-SR-04 (P1) - PENDING ARCHITECTURE CHANGE:\n- An IF node must be added BEFORE the Cohere Reranker node\n- Condition: skip_reranker === true \u2192 bypass Cohere entirely\n- Currently when skip_reranker=true, a placeholder document is sent to Cohere\n- This wastes API credits and may produce misleading rerank scores\n- Route: RRF \u2192 [new IF: Has Results?] \u2192 true: Cohere \u2192 Rerank Merger\n-                                      \u2192 false: Rerank Merger (directly)\n- STATUS: Requires manual structural change (add node + rewire connections)\n",
+          "content": "# \ud83d\udd27 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `OPENROUTER_BASE_URL` - https://openrouter.ai/api/v1/chat/completions\n- `LLM_HYDE_MODEL` - meta-llama/llama-3.3-70b-instruct:free\n- `LLM_FAST_MODEL` - meta-llama/llama-3.3-70b-instruct:free\n\n## Embedding\n- `EMBEDDING_API_URL` - URL embedding API\n- `EMBEDDING_MODEL` - text-embedding-3-small\n\n## Reranking\n- `RERANKER_API_URL` - https://api.cohere.ai/v1/rerank\n- `RERANKER_MODEL` - rerank-v3.5 (upgraded from rerank-multilingual-v3.0)\n\n## CORRECTIONS V3.4.1:\n- Fixed HyDE Generator JSON body (removed orphan JS code)\n- Fixed Embedding model string (removed extra quotes)\n- Fixed Query Decomposer model reference\n\n## ISSUE-SR-04 (P1) - PENDING ARCHITECTURE CHANGE:\n- An IF node must be added BEFORE the Cohere Reranker node\n- Condition: skip_reranker === true \u2192 bypass Cohere entirely\n- Currently when skip_reranker=true, a placeholder document is sent to Cohere\n- This wastes API credits and may produce misleading rerank scores\n- Route: RRF \u2192 [new IF: Has Results?] \u2192 true: Cohere \u2192 Rerank Merger\n-                                      \u2192 false: Rerank Merger (directly)\n- STATUS: Requires manual structural change (add node + rewire connections)\n",
           "height": 500,
           "width": 400
         },
@@ -1391,11 +1427,11 @@
         "parameters": {
           "method": "POST",
           "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemini-2.0-flash-exp' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1407,6 +1443,15 @@
               "maxTries": 3,
               "waitBetweenTries": 2000
             }
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              }
+            ]
           }
         },
         "type": "n8n-nodes-base.httpRequest",
@@ -1417,12 +1462,7 @@
         ],
         "id": "92c737a5-8497-4242-894f-07966ccc6a13",
         "name": "Query Decomposer (V.3.4)",
-        "credentials": {
-          "openRouterApi": {
-            "id": "aTHBqnntMBApo0Dy",
-            "name": "OpenRouter account"
-          }
-        },
+        "credentials": {},
         "onError": "continueRegularOutput"
       },
       {
@@ -1712,10 +1752,10 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-02-08T19:19:15.634Z",
-        "id": 704,
+        "createdAt": "2026-02-09T02:38:58.507Z",
+        "id": 753,
         "workflowId": "LnTqRX4LZlI009Ks-3Jnp",
-        "versionId": "ec6df428-3e80-4d4c-a426-9ad83d8975b0",
+        "versionId": "51a37aad-ece5-4d4c-8c9c-9e721e3291c0",
         "event": "activated",
         "userId": "215767e0-958a-4c74-a67a-e335807eba64"
       }
