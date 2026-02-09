@@ -213,6 +213,12 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
         if has_error:
             totals["errors"] += 1
 
+        # Rate-limit protection: delay between questions (orchestrator uses 3-5 LLM calls each)
+        if rag_type == "orchestrator" and i < len(untested) - 1:
+            time.sleep(5)
+        elif i < len(untested) - 1:
+            time.sleep(2)
+
         # Per-question result for pipeline snapshot
         per_question_results.append({
             "id": qid,
