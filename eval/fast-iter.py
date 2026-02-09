@@ -58,6 +58,42 @@ os.makedirs(FAST_ITER_DIR, exist_ok=True)
 _print_lock = threading.Lock()
 
 
+def check_phase_gate(requested_dataset):
+    """Verify previous phase gates are met before allowing progression.
+    Returns True if OK, False if blocked. Use --force-phase to override."""
+    if not requested_dataset or requested_dataset == "phase-1":
+        return True
+
+    readiness_file = os.path.join(REPO_ROOT, "db", "readiness", "phase-1.json")
+    if not os.path.exists(readiness_file):
+        print("  WARNING: Phase 1 readiness file not found. Cannot verify gates.")
+        print("  Use --force-phase to skip gate check.")
+        return False
+
+    with open(readiness_file) as f:
+        p1 = json.load(f)
+
+    gates = p1.get("gate_criteria", {})
+    unmet = []
+    for pipeline, info in gates.items():
+        if not info.get("met", False):
+            target = info.get("target_accuracy", info.get("target", "?"))
+            current = info.get("current", "?")
+            unmet.append(f"    {pipeline}: {current}% (target: {target}%)")
+
+    if unmet:
+        print("\n  PHASE GATE BLOCKED: Phase 1 exit criteria NOT met.")
+        print("  Pipelines below target:")
+        for line in unmet:
+            print(line)
+        print(f"\n  Cannot run --dataset {requested_dataset} until all Phase 1 gates pass.")
+        print("  Use --force-phase to override (for testing/debugging only).")
+        return False
+
+    print("  Phase 1 gates: ALL MET. Proceeding to requested dataset.")
+    return True
+
+
 def tprint(msg):
     with _print_lock:
         print(msg, flush=True)
@@ -290,6 +326,10 @@ def main():
     parser.add_argument("--force", action="store_true",
                         help="Force run even if phase gates are not met")
     args = parser.parse_args()
+
+    # Phase gate enforcement
+    if not args.force_phase and not check_phase_gate(args.dataset):
+        sys.exit(1)
 
     start_time = datetime.now()
     pipelines = [p.strip() for p in args.pipelines.split(",")]
