@@ -1,0 +1,1263 @@
+{
+  "updatedAt": "2026-02-06T20:35:08.054Z",
+  "createdAt": "2026-02-06T14:10:08.397Z",
+  "id": "8a72LTsYvsH2X79d",
+  "name": "BENCHMARK - Monitoring & Alerting Dashboard",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "b4000001-0001-4000-a004-000000000001",
+      "name": "Schedule: Hourly Check",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3000,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "benchmark-monitoring",
+        "options": {
+          "rawBody": true
+        },
+        "responseMode": "responseNode"
+      },
+      "id": "b4000001-0002-4000-a004-000000000002",
+      "name": "Webhook: Manual Dashboard",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3000,
+        500
+      ],
+      "webhookId": "bench-monitor-001"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge both triggers and init monitoring session\nconst body = $json?.body || $json || {};\nconst monitorId = `mon-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;\n\nreturn {\n  monitor_id: monitorId,\n  triggered_by: body.dataset_name ? 'manual' : 'scheduled',\n  filter_dataset: body.dataset_name || null,\n  filter_phase: body.phase || null,\n  lookback_hours: body.lookback_hours || 24,\n  regression_threshold_pct: body.regression_threshold_pct || 5,\n  slack_webhook: $vars.SLACK_BENCHMARK_WEBHOOK || null,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "b4000001-0003-4000-a004-000000000003",
+      "name": "Init Monitor Session",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2600,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT\n  run_id, run_type, phase, workflow_name, dataset_names, config,\n  status, total_items, processed_items, error_count,\n  started_at, completed_at, duration_ms, trace_id\nFROM benchmark_runs\nWHERE started_at > NOW() - INTERVAL '{{ $json.lookback_hours }} hours'\n{{ $json.filter_dataset ? \"AND '\" + $json.filter_dataset + \"' = ANY(dataset_names)\" : '' }}\n{{ $json.filter_phase ? \"AND phase = '\" + $json.filter_phase + \"'\" : '' }}\nORDER BY started_at DESC\nLIMIT 100;"
+      },
+      "id": "b4000001-0004-4000-a004-000000000004",
+      "name": "Fetch Recent Runs",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -2300,
+        200
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT\n  bb.baseline_name, bb.dataset_name, bb.phase, bb.metrics,\n  bb.run_id AS baseline_run_id, bb.created_at\nFROM benchmark_baselines bb\nWHERE bb.is_active = TRUE\nORDER BY bb.dataset_name;"
+      },
+      "id": "b4000001-0005-4000-a004-000000000005",
+      "name": "Fetch Active Baselines",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -2300,
+        500
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT\n  br.run_id,\n  r.dataset_name,\n  AVG((r.metrics->>'em')::float) FILTER (WHERE r.metrics ? 'em') AS avg_em,\n  AVG((r.metrics->>'f1')::float) FILTER (WHERE r.metrics ? 'f1') AS avg_f1,\n  AVG((r.metrics->>'recall_at_10')::float) FILTER (WHERE r.metrics ? 'recall_at_10') AS avg_recall_10,\n  AVG((r.metrics->>'mrr_at_10')::float) FILTER (WHERE r.metrics ? 'mrr_at_10') AS avg_mrr_10,\n  AVG((r.metrics->>'accuracy')::float) FILTER (WHERE r.metrics ? 'accuracy') AS avg_accuracy,\n  AVG((r.metrics->>'faithfulness')::float) FILTER (WHERE r.metrics ? 'faithfulness') AS avg_faithfulness,\n  AVG((r.metrics->>'hallucination_rate')::float) FILTER (WHERE r.metrics ? 'hallucination_rate') AS avg_hallucination,\n  AVG((r.metrics->>'routing_correctness')::float) FILTER (WHERE r.metrics ? 'routing_correctness') AS avg_routing,\n  AVG(r.latency_ms) AS avg_latency,\n  COUNT(*) AS total_results,\n  COUNT(*) FILTER (WHERE r.error IS NOT NULL) AS error_count\nFROM benchmark_results r\nJOIN benchmark_runs br ON r.run_id = br.run_id\nWHERE br.started_at > NOW() - INTERVAL '{{ $node['Init Monitor Session'].json.lookback_hours }} hours'\nAND br.status IN ('completed', 'partial')\nGROUP BY br.run_id, r.dataset_name\nORDER BY br.run_id DESC;"
+      },
+      "id": "b4000001-0006-4000-a004-000000000006",
+      "name": "Fetch Aggregated Metrics",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -2300,
+        350
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Analyze results: compare to baselines, detect regressions, generate alerts\nconst monitorData = $node['Init Monitor Session'].json;\nconst runs = ($node['Fetch Recent Runs'].all ? $node['Fetch Recent Runs'].all().map(i => i.json) : [$node['Fetch Recent Runs'].json]).filter(Boolean);\nconst baselines = ($node['Fetch Active Baselines'].all ? $node['Fetch Active Baselines'].all().map(i => i.json) : [$node['Fetch Active Baselines'].json]).filter(Boolean);\nconst metrics = ($node['Fetch Aggregated Metrics'].all ? $node['Fetch Aggregated Metrics'].all().map(i => i.json) : [$node['Fetch Aggregated Metrics'].json]).filter(Boolean);\n\nconst regressionThreshold = monitorData.regression_threshold_pct / 100;\n\n// Build baseline lookup\nconst baselineLookup = {};\nif (Array.isArray(baselines)) {\n  for (const b of baselines) {\n    baselineLookup[b.dataset_name] = b;\n  }\n}\n\n// Analyze each run's metrics against baselines\nconst alerts = [];\nconst dashboardData = [];\n\nconst metricsArray = Array.isArray(metrics) ? metrics : [metrics];\n\nfor (const m of metricsArray) {\n  if (!m || !m.dataset_name) continue;\n  \n  const baseline = baselineLookup[m.dataset_name];\n  const entry = {\n    run_id: m.run_id,\n    dataset_name: m.dataset_name,\n    metrics: {\n      em: m.avg_em,\n      f1: m.avg_f1,\n      recall_at_10: m.avg_recall_10,\n      mrr_at_10: m.avg_mrr_10,\n      accuracy: m.avg_accuracy,\n      faithfulness: m.avg_faithfulness,\n      hallucination_rate: m.avg_hallucination,\n      routing_correctness: m.avg_routing\n    },\n    avg_latency: m.avg_latency,\n    total_results: m.total_results,\n    error_count: m.error_count,\n    error_rate: m.total_results > 0 ? m.error_count / m.total_results : 0,\n    baseline_comparison: {},\n    trend: 'stable'\n  };\n\n  // Compare to baseline\n  if (baseline && baseline.metrics) {\n    const bMetrics = typeof baseline.metrics === 'string' ? JSON.parse(baseline.metrics) : baseline.metrics;\n    \n    for (const [key, currentVal] of Object.entries(entry.metrics)) {\n      if (currentVal == null || bMetrics[key] == null) continue;\n      \n      const baselineVal = parseFloat(bMetrics[key]);\n      if (baselineVal === 0) continue;\n      \n      const delta = (currentVal - baselineVal) / baselineVal;\n      entry.baseline_comparison[key] = {\n        baseline: baselineVal,\n        current: currentVal,\n        delta_pct: Math.round(delta * 10000) / 100\n      };\n\n      // Check for regression (metrics that should go UP)\n      const higherIsBetter = !key.includes('hallucination') && !key.includes('error') && !key.includes('fallback');\n      const isRegression = higherIsBetter ? delta < -regressionThreshold : delta > regressionThreshold;\n\n      if (isRegression) {\n        entry.trend = 'degrading';\n        const severity = Math.abs(delta) > regressionThreshold * 2 ? 'critical' : 'warning';\n        alerts.push({\n          alert_type: 'regression',\n          severity: severity,\n          run_id: m.run_id,\n          dataset_name: m.dataset_name,\n          metric_name: key,\n          baseline_value: baselineVal,\n          current_value: currentVal,\n          delta_pct: Math.round(delta * 10000) / 100,\n          threshold: regressionThreshold * 100,\n          message: `${severity.toUpperCase()}: ${m.dataset_name} \u2014 ${key} regressed by ${Math.abs(Math.round(delta * 100))}% (baseline: ${(baselineVal * 100).toFixed(1)}%, current: ${(currentVal * 100).toFixed(1)}%)`\n        });\n      } else if (delta > regressionThreshold) {\n        entry.trend = 'improving';\n      }\n    }\n  }\n\n  // Check error rate\n  if (entry.error_rate > 0.10) {\n    alerts.push({\n      alert_type: 'error_spike',\n      severity: entry.error_rate > 0.25 ? 'critical' : 'warning',\n      run_id: m.run_id,\n      dataset_name: m.dataset_name,\n      metric_name: 'error_rate',\n      baseline_value: 0,\n      current_value: entry.error_rate,\n      delta_pct: entry.error_rate * 100,\n      threshold: 10,\n      message: `ERROR SPIKE: ${m.dataset_name} \u2014 ${Math.round(entry.error_rate * 100)}% error rate (${m.error_count}/${m.total_results})`\n    });\n  }\n\n  // Check latency\n  if (entry.avg_latency > 10000) {\n    alerts.push({\n      alert_type: 'latency_spike',\n      severity: entry.avg_latency > 30000 ? 'critical' : 'warning',\n      run_id: m.run_id,\n      dataset_name: m.dataset_name,\n      metric_name: 'avg_latency_ms',\n      baseline_value: 5000,\n      current_value: entry.avg_latency,\n      delta_pct: ((entry.avg_latency - 5000) / 5000) * 100,\n      threshold: 10000,\n      message: `LATENCY: ${m.dataset_name} \u2014 avg ${Math.round(entry.avg_latency)}ms (threshold: 10000ms)`\n    });\n  }\n\n  dashboardData.push(entry);\n}\n\n// Run summary\nconst runsArray = Array.isArray(runs) ? runs : [runs];\nconst runsSummary = {\n  total_runs: runsArray.filter(r => r.run_id).length,\n  completed: runsArray.filter(r => r.status === 'completed').length,\n  failed: runsArray.filter(r => r.status === 'failed').length,\n  running: runsArray.filter(r => r.status === 'running').length\n};\n\nconsole.log(`[MONITORING] ${dashboardData.length} datasets analyzed, ${alerts.length} alerts generated`);\n\nreturn {\n  monitor_id: monitorData.monitor_id,\n  triggered_by: monitorData.triggered_by,\n  lookback_hours: monitorData.lookback_hours,\n  runs_summary: runsSummary,\n  dashboard_data: dashboardData,\n  alerts: alerts,\n  critical_alerts: alerts.filter(a => a.severity === 'critical').length,\n  warning_alerts: alerts.filter(a => a.severity === 'warning').length,\n  slack_webhook: monitorData.slack_webhook,\n  timestamp: monitorData.timestamp\n};"
+      },
+      "id": "b4000001-0007-4000-a004-000000000007",
+      "name": "Analyze & Detect Regressions",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1800,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Store dashboard snapshot\nconst data = $json;\nconst dashEntries = data.dashboard_data || [];\n\nif (dashEntries.length === 0) {\n  return { ...data, snapshot_sql: null };\n}\n\nconst values = dashEntries.map(d => {\n  const metricsJson = JSON.stringify(d.metrics).replace(/'/g, \"''\");\n  const compJson = JSON.stringify(d.baseline_comparison).replace(/'/g, \"''\");\n  return `(NOW(), 'all', '${d.dataset_name}', '${metricsJson}'::jsonb, '${compJson}'::jsonb, ${d.total_results}, ${Math.round(d.avg_latency || 0)}, ${d.error_rate}, '${d.trend}')`;\n}).join(',\\n');\n\nreturn {\n  ...data,\n  snapshot_sql: `INSERT INTO benchmark_dashboard_snapshots (snapshot_time, phase, dataset_name, metrics_summary, comparison_to_baseline, total_runs, avg_latency_ms, error_rate, trend) VALUES ${values};`\n};"
+      },
+      "id": "b4000001-0008-4000-a004-000000000008",
+      "name": "Prepare Dashboard Snapshot",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1500,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.snapshot_sql || 'SELECT 1' }}"
+      },
+      "id": "b4000001-0009-4000-a004-000000000009",
+      "name": "Store Dashboard Snapshot",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -1200,
+        200
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Store new alerts in database\nconst data = $json;\nconst alerts = data.alerts || [];\n\nif (alerts.length === 0) {\n  return { ...data, alerts_sql: null };\n}\n\nconst values = alerts.map(a => {\n  const msg = (a.message || '').replace(/'/g, \"''\");\n  const runId = a.run_id ? `'${a.run_id}'` : 'NULL';\n  return `('${a.alert_type}', '${a.severity}', ${runId}, '${a.dataset_name || ''}', '${a.metric_name}', ${a.baseline_value || 0}, ${a.current_value || 0}, ${a.delta_pct || 0}, ${a.threshold || 0}, '${msg}')`;\n}).join(',\\n');\n\nreturn {\n  ...data,\n  alerts_sql: `INSERT INTO benchmark_alerts (alert_type, severity, run_id, dataset_name, metric_name, baseline_value, current_value, delta_pct, threshold, message) VALUES ${values};`\n};"
+      },
+      "id": "b4000001-0010-4000-a004-000000000010",
+      "name": "Prepare Alerts Insert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1500,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.alerts_sql || 'SELECT 1' }}"
+      },
+      "id": "b4000001-0011-4000-a004-000000000011",
+      "name": "Store Alerts",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -1200,
+        500
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-critical-alerts",
+              "leftValue": "={{ $json.critical_alerts }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ]
+        }
+      },
+      "id": "b4000001-0012-4000-a004-000000000012",
+      "name": "Has Critical Alerts?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format Slack alert message\nconst data = $json;\nconst criticalAlerts = data.alerts.filter(a => a.severity === 'critical');\nconst warningAlerts = data.alerts.filter(a => a.severity === 'warning');\n\nconst blocks = [\n  {\n    type: 'header',\n    text: { type: 'plain_text', text: '\ud83d\udea8 RAG Benchmark Alert', emoji: true }\n  },\n  {\n    type: 'section',\n    text: {\n      type: 'mrkdwn',\n      text: `*${criticalAlerts.length} critical* | *${warningAlerts.length} warnings*\\n_Lookback: ${data.lookback_hours}h | Runs: ${data.runs_summary.total_runs}_`\n    }\n  }\n];\n\n// Critical alerts\nif (criticalAlerts.length > 0) {\n  blocks.push({\n    type: 'section',\n    text: {\n      type: 'mrkdwn',\n      text: '*\ud83d\udd34 Critical:*\\n' + criticalAlerts.map(a => `\u2022 ${a.message}`).join('\\n')\n    }\n  });\n}\n\n// Warning alerts (max 5)\nif (warningAlerts.length > 0) {\n  const shown = warningAlerts.slice(0, 5);\n  blocks.push({\n    type: 'section',\n    text: {\n      type: 'mrkdwn',\n      text: '*\ud83d\udfe1 Warnings:*\\n' + shown.map(a => `\u2022 ${a.message}`).join('\\n') + (warningAlerts.length > 5 ? `\\n_...and ${warningAlerts.length - 5} more_` : '')\n    }\n  });\n}\n\n// Summary table\nconst topMetrics = data.dashboard_data.slice(0, 5);\nif (topMetrics.length > 0) {\n  let table = '*Dataset | Trend | Key Metric*\\n';\n  for (const d of topMetrics) {\n    const trendEmoji = d.trend === 'improving' ? '\ud83d\udcc8' : d.trend === 'degrading' ? '\ud83d\udcc9' : '\u27a1\ufe0f';\n    const keyMetric = d.metrics.accuracy != null ? `Acc: ${(d.metrics.accuracy * 100).toFixed(1)}%` :\n                      d.metrics.f1 != null ? `F1: ${(d.metrics.f1 * 100).toFixed(1)}%` :\n                      d.metrics.recall_at_10 != null ? `R@10: ${(d.metrics.recall_at_10 * 100).toFixed(1)}%` : 'N/A';\n    table += `${d.dataset_name} | ${trendEmoji} ${d.trend} | ${keyMetric}\\n`;\n  }\n  blocks.push({ type: 'section', text: { type: 'mrkdwn', text: table } });\n}\n\nblocks.push({\n  type: 'context',\n  elements: [{ type: 'mrkdwn', text: `Monitor ID: ${data.monitor_id} | ${data.timestamp}` }]\n});\n\nreturn {\n  ...data,\n  slack_payload: { blocks: blocks }\n};"
+      },
+      "id": "b4000001-0013-4000-a004-000000000013",
+      "name": "Format Slack Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.slack_webhook }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.slack_payload) }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "b4000001-0014-4000-a004-000000000014",
+      "name": "Send Slack Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -300,
+        200
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Mark alerts as Slack-sent\nconst data = $json;\n\nreturn {\n  ...data,\n  slack_sent: true\n};"
+      },
+      "id": "b4000001-0015-4000-a004-000000000015",
+      "name": "Mark Alerts Sent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// No critical alerts \u2014 just pass through\nreturn $json;"
+      },
+      "id": "b4000001-0016-4000-a004-000000000016",
+      "name": "No Critical Alerts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Final monitoring summary\nconst data = $json;\n\nconst summary = {\n  monitor_id: data.monitor_id,\n  triggered_by: data.triggered_by,\n  lookback_hours: data.lookback_hours,\n  runs_summary: data.runs_summary,\n  datasets_analyzed: (data.dashboard_data || []).length,\n  total_alerts: (data.alerts || []).length,\n  critical_alerts: data.critical_alerts || 0,\n  warning_alerts: data.warning_alerts || 0,\n  slack_sent: data.slack_sent || false,\n  dashboard_data: data.dashboard_data,\n  timestamp: data.timestamp\n};\n\nconsole.log(`[MONITORING COMPLETE] ${summary.datasets_analyzed} datasets | ${summary.total_alerts} alerts (${summary.critical_alerts} critical)`);\n\nreturn summary;"
+      },
+      "id": "b4000001-0017-4000-a004-000000000017",
+      "name": "Monitoring Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"resourceSpans\": [{\n    \"resource\": { \"attributes\": [{ \"key\": \"service.name\", \"value\": { \"stringValue\": \"benchmark-monitoring\" } }] },\n    \"scopeSpans\": [{\n      \"spans\": [{\n        \"traceId\": \"{{ $json.monitor_id }}\",\n        \"spanId\": \"mon-{{ Date.now() }}\",\n        \"name\": \"benchmark.monitoring.check\",\n        \"kind\": 1,\n        \"startTimeUnixNano\": \"{{ new Date($json.timestamp).getTime() * 1000000 }}\",\n        \"endTimeUnixNano\": \"{{ Date.now() * 1000000 }}\",\n        \"attributes\": [\n          { \"key\": \"datasets_analyzed\", \"value\": { \"intValue\": {{ $json.datasets_analyzed }} } },\n          { \"key\": \"total_alerts\", \"value\": { \"intValue\": {{ $json.total_alerts }} } },\n          { \"key\": \"critical_alerts\", \"value\": { \"intValue\": {{ $json.critical_alerts }} } }\n        ],\n        \"status\": { \"code\": 1 }\n      }]\n    }]\n  }]\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "b4000001-0018-4000-a004-000000000018",
+      "name": "Export Monitor Trace OTEL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        600,
+        350
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, monitor_id: $json.monitor_id, datasets_analyzed: $json.datasets_analyzed, alerts: { critical: $json.critical_alerts, warning: $json.warning_alerts }, runs: $json.runs_summary, slack_sent: $json.slack_sent }) }}"
+      },
+      "id": "b4000001-0019-4000-a004-000000000019",
+      "name": "Respond Dashboard",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        350
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule: Hourly Check": {
+      "main": [
+        [
+          {
+            "node": "Init Monitor Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Manual Dashboard": {
+      "main": [
+        [
+          {
+            "node": "Init Monitor Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init Monitor Session": {
+      "main": [
+        [
+          {
+            "node": "Fetch Recent Runs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Active Baselines",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Aggregated Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Recent Runs": {
+      "main": [
+        [
+          {
+            "node": "Analyze & Detect Regressions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Active Baselines": {
+      "main": [
+        [
+          {
+            "node": "Analyze & Detect Regressions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Aggregated Metrics": {
+      "main": [
+        [
+          {
+            "node": "Analyze & Detect Regressions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze & Detect Regressions": {
+      "main": [
+        [
+          {
+            "node": "Prepare Dashboard Snapshot",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Alerts Insert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Has Critical Alerts?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Dashboard Snapshot": {
+      "main": [
+        [
+          {
+            "node": "Store Dashboard Snapshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Alerts Insert": {
+      "main": [
+        [
+          {
+            "node": "Store Alerts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Critical Alerts?": {
+      "main": [
+        [
+          {
+            "node": "Format Slack Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Critical Alerts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Slack Alert": {
+      "main": [
+        [
+          {
+            "node": "Send Slack Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Slack Alert": {
+      "main": [
+        [
+          {
+            "node": "Mark Alerts Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Alerts Sent": {
+      "main": [
+        [
+          {
+            "node": "Monitoring Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Critical Alerts": {
+      "main": [
+        [
+          {
+            "node": "Monitoring Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Dashboard Snapshot": {
+      "main": [
+        [
+          {
+            "node": "Monitoring Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Alerts": {
+      "main": [
+        [
+          {
+            "node": "Monitoring Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monitoring Summary": {
+      "main": [
+        [
+          {
+            "node": "Respond Dashboard",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Export Monitor Trace OTEL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  },
+  "staticData": {
+    "node:Schedule: Hourly Check": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": null,
+  "versionId": "fdaabc24-750c-4df4-90ea-b75e3dacba5e",
+  "activeVersionId": "fdaabc24-750c-4df4-90ea-b75e3dacba5e",
+  "versionCounter": 15,
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2026-02-06T14:10:08.399Z",
+      "createdAt": "2026-02-06T14:10:08.399Z",
+      "role": "workflow:owner",
+      "workflowId": "8a72LTsYvsH2X79d",
+      "projectId": "JV7MbqBbWPTstXIo",
+      "project": {
+        "updatedAt": "2026-01-07T13:20:26.996Z",
+        "createdAt": "2026-01-07T13:20:21.870Z",
+        "id": "JV7MbqBbWPTstXIo",
+        "name": "Alexis Moret <alexis.moret6@outlook.fr>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "215767e0-958a-4c74-a67a-e335807eba64",
+        "projectRelations": [
+          {
+            "updatedAt": "2026-01-07T13:20:21.870Z",
+            "createdAt": "2026-01-07T13:20:21.870Z",
+            "userId": "215767e0-958a-4c74-a67a-e335807eba64",
+            "projectId": "JV7MbqBbWPTstXIo",
+            "user": {
+              "updatedAt": "2026-02-09T23:01:37.000Z",
+              "createdAt": "2026-01-07T13:20:20.003Z",
+              "id": "215767e0-958a-4c74-a67a-e335807eba64",
+              "email": "alexis.moret6@outlook.fr",
+              "firstName": "Alexis",
+              "lastName": "Moret",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "userClaimedAiCredits": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "e3_89vptJG7PPA-OHyAg3",
+                "userActivatedAt": 1767837780144,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1768407850905
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-02-09",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-02-06T14:10:08.429Z",
+    "createdAt": "2026-02-06T14:10:08.429Z",
+    "versionId": "fdaabc24-750c-4df4-90ea-b75e3dacba5e",
+    "workflowId": "8a72LTsYvsH2X79d",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "hoursInterval": 1
+              }
+            ]
+          }
+        },
+        "id": "b4000001-0001-4000-a004-000000000001",
+        "name": "Schedule: Hourly Check",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -3000,
+          200
+        ]
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "benchmark-monitoring",
+          "options": {
+            "rawBody": true
+          },
+          "responseMode": "responseNode"
+        },
+        "id": "b4000001-0002-4000-a004-000000000002",
+        "name": "Webhook: Manual Dashboard",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -3000,
+          500
+        ],
+        "webhookId": "bench-monitor-001"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Merge both triggers and init monitoring session\nconst body = $json?.body || $json || {};\nconst monitorId = `mon-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;\n\nreturn {\n  monitor_id: monitorId,\n  triggered_by: body.dataset_name ? 'manual' : 'scheduled',\n  filter_dataset: body.dataset_name || null,\n  filter_phase: body.phase || null,\n  lookback_hours: body.lookback_hours || 24,\n  regression_threshold_pct: body.regression_threshold_pct || 5,\n  slack_webhook: $vars.SLACK_BENCHMARK_WEBHOOK || null,\n  timestamp: new Date().toISOString()\n};"
+        },
+        "id": "b4000001-0003-4000-a004-000000000003",
+        "name": "Init Monitor Session",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -2600,
+          350
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "=SELECT\n  run_id, run_type, phase, workflow_name, dataset_names, config,\n  status, total_items, processed_items, error_count,\n  started_at, completed_at, duration_ms, trace_id\nFROM benchmark_runs\nWHERE started_at > NOW() - INTERVAL '{{ $json.lookback_hours }} hours'\n{{ $json.filter_dataset ? \"AND '\" + $json.filter_dataset + \"' = ANY(dataset_names)\" : '' }}\n{{ $json.filter_phase ? \"AND phase = '\" + $json.filter_phase + \"'\" : '' }}\nORDER BY started_at DESC\nLIMIT 100;"
+        },
+        "id": "b4000001-0004-4000-a004-000000000004",
+        "name": "Fetch Recent Runs",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -2300,
+          200
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "=SELECT\n  bb.baseline_name, bb.dataset_name, bb.phase, bb.metrics,\n  bb.run_id AS baseline_run_id, bb.created_at\nFROM benchmark_baselines bb\nWHERE bb.is_active = TRUE\nORDER BY bb.dataset_name;"
+        },
+        "id": "b4000001-0005-4000-a004-000000000005",
+        "name": "Fetch Active Baselines",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -2300,
+          500
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "=SELECT\n  br.run_id,\n  r.dataset_name,\n  AVG((r.metrics->>'em')::float) FILTER (WHERE r.metrics ? 'em') AS avg_em,\n  AVG((r.metrics->>'f1')::float) FILTER (WHERE r.metrics ? 'f1') AS avg_f1,\n  AVG((r.metrics->>'recall_at_10')::float) FILTER (WHERE r.metrics ? 'recall_at_10') AS avg_recall_10,\n  AVG((r.metrics->>'mrr_at_10')::float) FILTER (WHERE r.metrics ? 'mrr_at_10') AS avg_mrr_10,\n  AVG((r.metrics->>'accuracy')::float) FILTER (WHERE r.metrics ? 'accuracy') AS avg_accuracy,\n  AVG((r.metrics->>'faithfulness')::float) FILTER (WHERE r.metrics ? 'faithfulness') AS avg_faithfulness,\n  AVG((r.metrics->>'hallucination_rate')::float) FILTER (WHERE r.metrics ? 'hallucination_rate') AS avg_hallucination,\n  AVG((r.metrics->>'routing_correctness')::float) FILTER (WHERE r.metrics ? 'routing_correctness') AS avg_routing,\n  AVG(r.latency_ms) AS avg_latency,\n  COUNT(*) AS total_results,\n  COUNT(*) FILTER (WHERE r.error IS NOT NULL) AS error_count\nFROM benchmark_results r\nJOIN benchmark_runs br ON r.run_id = br.run_id\nWHERE br.started_at > NOW() - INTERVAL '{{ $node['Init Monitor Session'].json.lookback_hours }} hours'\nAND br.status IN ('completed', 'partial')\nGROUP BY br.run_id, r.dataset_name\nORDER BY br.run_id DESC;"
+        },
+        "id": "b4000001-0006-4000-a004-000000000006",
+        "name": "Fetch Aggregated Metrics",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -2300,
+          350
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Analyze results: compare to baselines, detect regressions, generate alerts\nconst monitorData = $node['Init Monitor Session'].json;\nconst runs = ($node['Fetch Recent Runs'].all ? $node['Fetch Recent Runs'].all().map(i => i.json) : [$node['Fetch Recent Runs'].json]).filter(Boolean);\nconst baselines = ($node['Fetch Active Baselines'].all ? $node['Fetch Active Baselines'].all().map(i => i.json) : [$node['Fetch Active Baselines'].json]).filter(Boolean);\nconst metrics = ($node['Fetch Aggregated Metrics'].all ? $node['Fetch Aggregated Metrics'].all().map(i => i.json) : [$node['Fetch Aggregated Metrics'].json]).filter(Boolean);\n\nconst regressionThreshold = monitorData.regression_threshold_pct / 100;\n\n// Build baseline lookup\nconst baselineLookup = {};\nif (Array.isArray(baselines)) {\n  for (const b of baselines) {\n    baselineLookup[b.dataset_name] = b;\n  }\n}\n\n// Analyze each run's metrics against baselines\nconst alerts = [];\nconst dashboardData = [];\n\nconst metricsArray = Array.isArray(metrics) ? metrics : [metrics];\n\nfor (const m of metricsArray) {\n  if (!m || !m.dataset_name) continue;\n  \n  const baseline = baselineLookup[m.dataset_name];\n  const entry = {\n    run_id: m.run_id,\n    dataset_name: m.dataset_name,\n    metrics: {\n      em: m.avg_em,\n      f1: m.avg_f1,\n      recall_at_10: m.avg_recall_10,\n      mrr_at_10: m.avg_mrr_10,\n      accuracy: m.avg_accuracy,\n      faithfulness: m.avg_faithfulness,\n      hallucination_rate: m.avg_hallucination,\n      routing_correctness: m.avg_routing\n    },\n    avg_latency: m.avg_latency,\n    total_results: m.total_results,\n    error_count: m.error_count,\n    error_rate: m.total_results > 0 ? m.error_count / m.total_results : 0,\n    baseline_comparison: {},\n    trend: 'stable'\n  };\n\n  // Compare to baseline\n  if (baseline && baseline.metrics) {\n    const bMetrics = typeof baseline.metrics === 'string' ? JSON.parse(baseline.metrics) : baseline.metrics;\n    \n    for (const [key, currentVal] of Object.entries(entry.metrics)) {\n      if (currentVal == null || bMetrics[key] == null) continue;\n      \n      const baselineVal = parseFloat(bMetrics[key]);\n      if (baselineVal === 0) continue;\n      \n      const delta = (currentVal - baselineVal) / baselineVal;\n      entry.baseline_comparison[key] = {\n        baseline: baselineVal,\n        current: currentVal,\n        delta_pct: Math.round(delta * 10000) / 100\n      };\n\n      // Check for regression (metrics that should go UP)\n      const higherIsBetter = !key.includes('hallucination') && !key.includes('error') && !key.includes('fallback');\n      const isRegression = higherIsBetter ? delta < -regressionThreshold : delta > regressionThreshold;\n\n      if (isRegression) {\n        entry.trend = 'degrading';\n        const severity = Math.abs(delta) > regressionThreshold * 2 ? 'critical' : 'warning';\n        alerts.push({\n          alert_type: 'regression',\n          severity: severity,\n          run_id: m.run_id,\n          dataset_name: m.dataset_name,\n          metric_name: key,\n          baseline_value: baselineVal,\n          current_value: currentVal,\n          delta_pct: Math.round(delta * 10000) / 100,\n          threshold: regressionThreshold * 100,\n          message: `${severity.toUpperCase()}: ${m.dataset_name} \u2014 ${key} regressed by ${Math.abs(Math.round(delta * 100))}% (baseline: ${(baselineVal * 100).toFixed(1)}%, current: ${(currentVal * 100).toFixed(1)}%)`\n        });\n      } else if (delta > regressionThreshold) {\n        entry.trend = 'improving';\n      }\n    }\n  }\n\n  // Check error rate\n  if (entry.error_rate > 0.10) {\n    alerts.push({\n      alert_type: 'error_spike',\n      severity: entry.error_rate > 0.25 ? 'critical' : 'warning',\n      run_id: m.run_id,\n      dataset_name: m.dataset_name,\n      metric_name: 'error_rate',\n      baseline_value: 0,\n      current_value: entry.error_rate,\n      delta_pct: entry.error_rate * 100,\n      threshold: 10,\n      message: `ERROR SPIKE: ${m.dataset_name} \u2014 ${Math.round(entry.error_rate * 100)}% error rate (${m.error_count}/${m.total_results})`\n    });\n  }\n\n  // Check latency\n  if (entry.avg_latency > 10000) {\n    alerts.push({\n      alert_type: 'latency_spike',\n      severity: entry.avg_latency > 30000 ? 'critical' : 'warning',\n      run_id: m.run_id,\n      dataset_name: m.dataset_name,\n      metric_name: 'avg_latency_ms',\n      baseline_value: 5000,\n      current_value: entry.avg_latency,\n      delta_pct: ((entry.avg_latency - 5000) / 5000) * 100,\n      threshold: 10000,\n      message: `LATENCY: ${m.dataset_name} \u2014 avg ${Math.round(entry.avg_latency)}ms (threshold: 10000ms)`\n    });\n  }\n\n  dashboardData.push(entry);\n}\n\n// Run summary\nconst runsArray = Array.isArray(runs) ? runs : [runs];\nconst runsSummary = {\n  total_runs: runsArray.filter(r => r.run_id).length,\n  completed: runsArray.filter(r => r.status === 'completed').length,\n  failed: runsArray.filter(r => r.status === 'failed').length,\n  running: runsArray.filter(r => r.status === 'running').length\n};\n\nconsole.log(`[MONITORING] ${dashboardData.length} datasets analyzed, ${alerts.length} alerts generated`);\n\nreturn {\n  monitor_id: monitorData.monitor_id,\n  triggered_by: monitorData.triggered_by,\n  lookback_hours: monitorData.lookback_hours,\n  runs_summary: runsSummary,\n  dashboard_data: dashboardData,\n  alerts: alerts,\n  critical_alerts: alerts.filter(a => a.severity === 'critical').length,\n  warning_alerts: alerts.filter(a => a.severity === 'warning').length,\n  slack_webhook: monitorData.slack_webhook,\n  timestamp: monitorData.timestamp\n};"
+        },
+        "id": "b4000001-0007-4000-a004-000000000007",
+        "name": "Analyze & Detect Regressions",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1800,
+          350
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Store dashboard snapshot\nconst data = $json;\nconst dashEntries = data.dashboard_data || [];\n\nif (dashEntries.length === 0) {\n  return { ...data, snapshot_sql: null };\n}\n\nconst values = dashEntries.map(d => {\n  const metricsJson = JSON.stringify(d.metrics).replace(/'/g, \"''\");\n  const compJson = JSON.stringify(d.baseline_comparison).replace(/'/g, \"''\");\n  return `(NOW(), 'all', '${d.dataset_name}', '${metricsJson}'::jsonb, '${compJson}'::jsonb, ${d.total_results}, ${Math.round(d.avg_latency || 0)}, ${d.error_rate}, '${d.trend}')`;\n}).join(',\\n');\n\nreturn {\n  ...data,\n  snapshot_sql: `INSERT INTO benchmark_dashboard_snapshots (snapshot_time, phase, dataset_name, metrics_summary, comparison_to_baseline, total_runs, avg_latency_ms, error_rate, trend) VALUES ${values};`\n};"
+        },
+        "id": "b4000001-0008-4000-a004-000000000008",
+        "name": "Prepare Dashboard Snapshot",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1500,
+          200
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "={{ $json.snapshot_sql || 'SELECT 1' }}"
+        },
+        "id": "b4000001-0009-4000-a004-000000000009",
+        "name": "Store Dashboard Snapshot",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -1200,
+          200
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Store new alerts in database\nconst data = $json;\nconst alerts = data.alerts || [];\n\nif (alerts.length === 0) {\n  return { ...data, alerts_sql: null };\n}\n\nconst values = alerts.map(a => {\n  const msg = (a.message || '').replace(/'/g, \"''\");\n  const runId = a.run_id ? `'${a.run_id}'` : 'NULL';\n  return `('${a.alert_type}', '${a.severity}', ${runId}, '${a.dataset_name || ''}', '${a.metric_name}', ${a.baseline_value || 0}, ${a.current_value || 0}, ${a.delta_pct || 0}, ${a.threshold || 0}, '${msg}')`;\n}).join(',\\n');\n\nreturn {\n  ...data,\n  alerts_sql: `INSERT INTO benchmark_alerts (alert_type, severity, run_id, dataset_name, metric_name, baseline_value, current_value, delta_pct, threshold, message) VALUES ${values};`\n};"
+        },
+        "id": "b4000001-0010-4000-a004-000000000010",
+        "name": "Prepare Alerts Insert",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1500,
+          500
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "={{ $json.alerts_sql || 'SELECT 1' }}"
+        },
+        "id": "b4000001-0011-4000-a004-000000000011",
+        "name": "Store Alerts",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -1200,
+          500
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "has-critical-alerts",
+                "leftValue": "={{ $json.critical_alerts }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                }
+              }
+            ]
+          }
+        },
+        "id": "b4000001-0012-4000-a004-000000000012",
+        "name": "Has Critical Alerts?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -900,
+          350
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Format Slack alert message\nconst data = $json;\nconst criticalAlerts = data.alerts.filter(a => a.severity === 'critical');\nconst warningAlerts = data.alerts.filter(a => a.severity === 'warning');\n\nconst blocks = [\n  {\n    type: 'header',\n    text: { type: 'plain_text', text: '\ud83d\udea8 RAG Benchmark Alert', emoji: true }\n  },\n  {\n    type: 'section',\n    text: {\n      type: 'mrkdwn',\n      text: `*${criticalAlerts.length} critical* | *${warningAlerts.length} warnings*\\n_Lookback: ${data.lookback_hours}h | Runs: ${data.runs_summary.total_runs}_`\n    }\n  }\n];\n\n// Critical alerts\nif (criticalAlerts.length > 0) {\n  blocks.push({\n    type: 'section',\n    text: {\n      type: 'mrkdwn',\n      text: '*\ud83d\udd34 Critical:*\\n' + criticalAlerts.map(a => `\u2022 ${a.message}`).join('\\n')\n    }\n  });\n}\n\n// Warning alerts (max 5)\nif (warningAlerts.length > 0) {\n  const shown = warningAlerts.slice(0, 5);\n  blocks.push({\n    type: 'section',\n    text: {\n      type: 'mrkdwn',\n      text: '*\ud83d\udfe1 Warnings:*\\n' + shown.map(a => `\u2022 ${a.message}`).join('\\n') + (warningAlerts.length > 5 ? `\\n_...and ${warningAlerts.length - 5} more_` : '')\n    }\n  });\n}\n\n// Summary table\nconst topMetrics = data.dashboard_data.slice(0, 5);\nif (topMetrics.length > 0) {\n  let table = '*Dataset | Trend | Key Metric*\\n';\n  for (const d of topMetrics) {\n    const trendEmoji = d.trend === 'improving' ? '\ud83d\udcc8' : d.trend === 'degrading' ? '\ud83d\udcc9' : '\u27a1\ufe0f';\n    const keyMetric = d.metrics.accuracy != null ? `Acc: ${(d.metrics.accuracy * 100).toFixed(1)}%` :\n                      d.metrics.f1 != null ? `F1: ${(d.metrics.f1 * 100).toFixed(1)}%` :\n                      d.metrics.recall_at_10 != null ? `R@10: ${(d.metrics.recall_at_10 * 100).toFixed(1)}%` : 'N/A';\n    table += `${d.dataset_name} | ${trendEmoji} ${d.trend} | ${keyMetric}\\n`;\n  }\n  blocks.push({ type: 'section', text: { type: 'mrkdwn', text: table } });\n}\n\nblocks.push({\n  type: 'context',\n  elements: [{ type: 'mrkdwn', text: `Monitor ID: ${data.monitor_id} | ${data.timestamp}` }]\n});\n\nreturn {\n  ...data,\n  slack_payload: { blocks: blocks }\n};"
+        },
+        "id": "b4000001-0013-4000-a004-000000000013",
+        "name": "Format Slack Alert",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -600,
+          200
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $json.slack_webhook }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify($json.slack_payload) }}",
+          "options": {
+            "timeout": 10000
+          }
+        },
+        "id": "b4000001-0014-4000-a004-000000000014",
+        "name": "Send Slack Alert",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -300,
+          200
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Mark alerts as Slack-sent\nconst data = $json;\n\nreturn {\n  ...data,\n  slack_sent: true\n};"
+        },
+        "id": "b4000001-0015-4000-a004-000000000015",
+        "name": "Mark Alerts Sent",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          0,
+          200
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// No critical alerts \u2014 just pass through\nreturn $json;"
+        },
+        "id": "b4000001-0016-4000-a004-000000000016",
+        "name": "No Critical Alerts",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -600,
+          500
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Final monitoring summary\nconst data = $json;\n\nconst summary = {\n  monitor_id: data.monitor_id,\n  triggered_by: data.triggered_by,\n  lookback_hours: data.lookback_hours,\n  runs_summary: data.runs_summary,\n  datasets_analyzed: (data.dashboard_data || []).length,\n  total_alerts: (data.alerts || []).length,\n  critical_alerts: data.critical_alerts || 0,\n  warning_alerts: data.warning_alerts || 0,\n  slack_sent: data.slack_sent || false,\n  dashboard_data: data.dashboard_data,\n  timestamp: data.timestamp\n};\n\nconsole.log(`[MONITORING COMPLETE] ${summary.datasets_analyzed} datasets | ${summary.total_alerts} alerts (${summary.critical_alerts} critical)`);\n\nreturn summary;"
+        },
+        "id": "b4000001-0017-4000-a004-000000000017",
+        "name": "Monitoring Summary",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          300,
+          350
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"resourceSpans\": [{\n    \"resource\": { \"attributes\": [{ \"key\": \"service.name\", \"value\": { \"stringValue\": \"benchmark-monitoring\" } }] },\n    \"scopeSpans\": [{\n      \"spans\": [{\n        \"traceId\": \"{{ $json.monitor_id }}\",\n        \"spanId\": \"mon-{{ Date.now() }}\",\n        \"name\": \"benchmark.monitoring.check\",\n        \"kind\": 1,\n        \"startTimeUnixNano\": \"{{ new Date($json.timestamp).getTime() * 1000000 }}\",\n        \"endTimeUnixNano\": \"{{ Date.now() * 1000000 }}\",\n        \"attributes\": [\n          { \"key\": \"datasets_analyzed\", \"value\": { \"intValue\": {{ $json.datasets_analyzed }} } },\n          { \"key\": \"total_alerts\", \"value\": { \"intValue\": {{ $json.total_alerts }} } },\n          { \"key\": \"critical_alerts\", \"value\": { \"intValue\": {{ $json.critical_alerts }} } }\n        ],\n        \"status\": { \"code\": 1 }\n      }]\n    }]\n  }]\n}",
+          "options": {
+            "timeout": 10000
+          }
+        },
+        "id": "b4000001-0018-4000-a004-000000000018",
+        "name": "Export Monitor Trace OTEL",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          600,
+          350
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify({ success: true, monitor_id: $json.monitor_id, datasets_analyzed: $json.datasets_analyzed, alerts: { critical: $json.critical_alerts, warning: $json.warning_alerts }, runs: $json.runs_summary, slack_sent: $json.slack_sent }) }}"
+        },
+        "id": "b4000001-0019-4000-a004-000000000019",
+        "name": "Respond Dashboard",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          900,
+          350
+        ]
+      }
+    ],
+    "connections": {
+      "Schedule: Hourly Check": {
+        "main": [
+          [
+            {
+              "node": "Init Monitor Session",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook: Manual Dashboard": {
+        "main": [
+          [
+            {
+              "node": "Init Monitor Session",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Init Monitor Session": {
+        "main": [
+          [
+            {
+              "node": "Fetch Recent Runs",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Fetch Active Baselines",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Fetch Aggregated Metrics",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Recent Runs": {
+        "main": [
+          [
+            {
+              "node": "Analyze & Detect Regressions",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Active Baselines": {
+        "main": [
+          [
+            {
+              "node": "Analyze & Detect Regressions",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Aggregated Metrics": {
+        "main": [
+          [
+            {
+              "node": "Analyze & Detect Regressions",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Analyze & Detect Regressions": {
+        "main": [
+          [
+            {
+              "node": "Prepare Dashboard Snapshot",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Prepare Alerts Insert",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Has Critical Alerts?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Dashboard Snapshot": {
+        "main": [
+          [
+            {
+              "node": "Store Dashboard Snapshot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Alerts Insert": {
+        "main": [
+          [
+            {
+              "node": "Store Alerts",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Has Critical Alerts?": {
+        "main": [
+          [
+            {
+              "node": "Format Slack Alert",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Critical Alerts",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Slack Alert": {
+        "main": [
+          [
+            {
+              "node": "Send Slack Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Slack Alert": {
+        "main": [
+          [
+            {
+              "node": "Mark Alerts Sent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mark Alerts Sent": {
+        "main": [
+          [
+            {
+              "node": "Monitoring Summary",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "No Critical Alerts": {
+        "main": [
+          [
+            {
+              "node": "Monitoring Summary",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Store Dashboard Snapshot": {
+        "main": [
+          [
+            {
+              "node": "Monitoring Summary",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Store Alerts": {
+        "main": [
+          [
+            {
+              "node": "Monitoring Summary",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Monitoring Summary": {
+        "main": [
+          [
+            {
+              "node": "Respond Dashboard",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Export Monitor Trace OTEL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Alexis Moret",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-06T14:10:20.579Z",
+        "id": 523,
+        "workflowId": "8a72LTsYvsH2X79d",
+        "versionId": "fdaabc24-750c-4df4-90ea-b75e3dacba5e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T14:35:31.747Z",
+        "id": 527,
+        "workflowId": "8a72LTsYvsH2X79d",
+        "versionId": "fdaabc24-750c-4df4-90ea-b75e3dacba5e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T15:43:47.623Z",
+        "id": 531,
+        "workflowId": "8a72LTsYvsH2X79d",
+        "versionId": "fdaabc24-750c-4df4-90ea-b75e3dacba5e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T20:35:08.234Z",
+        "id": 578,
+        "workflowId": "8a72LTsYvsH2X79d",
+        "versionId": "fdaabc24-750c-4df4-90ea-b75e3dacba5e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      }
+    ]
+  }
+}

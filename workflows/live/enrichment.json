@@ -1,0 +1,2169 @@
+{
+  "updatedAt": "2026-02-07T04:35:35.559Z",
+  "createdAt": "2026-01-25T13:18:48.000Z",
+  "id": "ORa01sX4xI0iRCJ8",
+  "name": "TEST - SOTA 2026 - Enrichissement V3.1",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Init OpenTelemetry trace for enrichment workflow\n// Shield #9: OTEL Resilience\nconst traceId = `tr-enrich-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;\n\nreturn {\n  trace_id: traceId,\n  span_context: 'enrichment-parent',\n  timestamp: new Date().toISOString(),\n  status: 'STARTED'\n};"
+      },
+      "id": "5388fc59-6b35-40e8-b875-8a842d15fccb",
+      "name": "Init OT Trace",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// P0/P1: Distributed Lock for Cron Job - Prevent Overlap\nconst jobId = `enrichment-${new Date().toISOString().split('T')[0]}`;\nconst lockKey = 'lock:enrichment:daily';\nconst ttlSeconds = 7200; // 2 hours max\nconst workerId = `worker-${$execution.id}`;\n\nreturn {\n  lockKey,\n  jobId,\n  workerId,\n  ttlSeconds,\n  trace_id: $node['Init OT Trace'].json.trace_id,\n  action: 'ACQUIRE'\n};"
+      },
+      "id": "791cbef0-562b-4437-8e3f-0b90a4d81ce4",
+      "name": "Prepare Lock",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ $json.lockKey }}",
+        "value": "={{ $json.workerId }}",
+        "expire": true,
+        "ttl": 7200
+      },
+      "id": "redis-lock-acquire",
+      "name": "Redis: Acquire Lock",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        608,
+        400
+      ],
+      "credentials": {
+        "redis": {
+          "id": "O2KEPiv7VzgDG5ZX",
+          "name": "Redis Upstash"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Handle lock acquisition result\nconst lockData = $node['Prepare Lock'].json;\nconst redisResult = $json;\n\nconst lockAcquired = redisResult === 'OK' || redisResult === true || redisResult?.result === 'OK';\n\nif (!lockAcquired) {\n  console.warn('ENRICHMENT_LOCK_FAILED: Another instance running', {\n    lockKey: lockData.lockKey,\n    trace_id: lockData.trace_id\n  });\n  \n  return {\n    ...lockData,\n    lockAcquired: false,\n    status: 'SKIPPED',\n    reason: 'Lock already held - enrichment in progress'\n  };\n}\n\nreturn {\n  ...lockData,\n  lockAcquired: true,\n  status: 'PROCESSING',\n  lockValue: lockData.workerId\n};"
+      },
+      "id": "lock-result-handler",
+      "name": "Lock Result Handler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true
+          },
+          "conditions": [
+            {
+              "id": "lock-acquired",
+              "leftValue": "={{ $json.lockAcquired }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "check-lock",
+      "name": "Lock Acquired?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1008,
+        400
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "url": "https://internal-api.company.com/cas-usage",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "29e87a7b-9242-447b-b605-995248407b44",
+      "name": "Fetch Internal Use Cases",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1024,
+        -80
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "INTERNAL_API_CREDENTIAL_ID",
+          "name": "Internal API Key"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://external-data-provider.com/api/docs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "id": "04c7a554-19c2-4231-9f0e-95dc703881f8",
+      "name": "Fetch External Data Sources",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1168,
+        816
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "EXTERNAL_API_CREDENTIAL_ID",
+          "name": "External API Key"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalize & Merge with Hash Deduplication - HARDENED\nconst crypto = require('crypto');\nconst internal = $items('Fetch Internal Use Cases') || [];\nconst external = $items('Fetch External Data Sources') || [];\n\nconst seen = new Set();\nconst merged = [...internal, ...external]\n  .filter(item => {\n    if (!item.json) return false;\n    const content = JSON.stringify(item.json);\n    const hash = crypto.createHash('sha256').update(content).digest('hex');\n    if (seen.has(hash)) return false;\n    seen.add(hash);\n    return true;\n  })\n  .map(item => ({\n    json: {\n      ...item.json,\n      enriched: false,\n      source_sync_date: new Date().toISOString(),\n      dedup_hash: crypto.createHash('sha256').update(JSON.stringify(item.json)).digest('hex')\n    }\n  }));\n\nconsole.log(`Deduplication: ${internal.length + external.length} -> ${merged.length}`);\nreturn merged;"
+      },
+      "id": "087c43d6-c62e-4365-baba-feb9d762548d",
+      "name": "Normalize & Merge",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json).substring(0, 30000) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "ai-entity-enrichment",
+      "name": "AI Entity Enrichment V3.1 (Enhanced)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1296,
+        1216
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "LLM_API_CREDENTIAL_ID",
+          "name": "OpenAI API Key"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "// V3.1: Relationship Mapper with Entity Linking + Weighted Relations\nconst crypto = require('crypto');\nconst aiData = $node['AI Entity Enrichment V3.1 (Enhanced)'].json;\n\nlet extracted = {};\ntry {\n  extracted = JSON.parse(aiData.choices?.[0]?.message?.content || '{}');\n} catch (e) {\n  extracted = { entities: [], relationships: [] };\n}\n\nconst entities = extracted.entities || [];\nconst relationships = extracted.relationships || [];\nconst tenantId = $node['Lock Result Handler']?.json?.trace_id?.split('-')[0] || 'default';\n\n// === V3.1: ENTITY LINKING ===\n// Normalize entity names and detect duplicates\nconst normalizeEntityName = (name) => {\n  return name\n    .trim()\n    .replace(/\\s+/g, ' ')\n    .replace(/['']/g, \"'\")\n    .toUpperCase();\n};\n\nconst entityMap = new Map();\nconst processedEntities = [];\n\nfor (const entity of entities) {\n  const normalizedName = normalizeEntityName(entity.name);\n  const entityId = crypto.createHash('md5').update(normalizedName + entity.type).digest('hex').substring(0, 16);\n  \n  // Check for existing similar entity\n  let canonicalId = entityId;\n  let isAlias = false;\n  \n  // Check aliases\n  if (entity.aliases && entity.aliases.length > 0) {\n    for (const alias of entity.aliases) {\n      const aliasNorm = normalizeEntityName(alias);\n      if (entityMap.has(aliasNorm)) {\n        canonicalId = entityMap.get(aliasNorm).id;\n        isAlias = true;\n        break;\n      }\n    }\n  }\n  \n  if (!isAlias) {\n    entityMap.set(normalizedName, { id: entityId, name: entity.name });\n    \n    // Also map aliases\n    if (entity.aliases) {\n      for (const alias of entity.aliases) {\n        entityMap.set(normalizeEntityName(alias), { id: entityId, name: entity.name });\n      }\n    }\n  }\n  \n  processedEntities.push({\n    id: entityId,\n    canonical_id: canonicalId,\n    name: entity.name,\n    normalized_name: normalizedName,\n    type: entity.type,\n    aliases: entity.aliases || [],\n    context: entity.context || '',\n    is_alias: isAlias,\n    tenant_id: tenantId\n  });\n}\n\n// === V3.1: WEIGHTED RELATIONSHIPS ===\nconst processedRelationships = relationships.map((rel, idx) => {\n  // Resolve entity names to canonical IDs\n  const sourceNorm = normalizeEntityName(rel.source);\n  const targetNorm = normalizeEntityName(rel.target);\n  \n  const sourceEntity = entityMap.get(sourceNorm);\n  const targetEntity = entityMap.get(targetNorm);\n  \n  if (!sourceEntity || !targetEntity) {\n    return null; // Skip if entities not found\n  }\n  \n  // Relationship weight based on type and confidence\n  const TYPE_WEIGHTS = {\n    'REPORTS_TO': 1.5,\n    'MANAGES': 1.4,\n    'OWNS': 1.3,\n    'WORKS_WITH': 1.2,\n    'IMPACTS': 1.2,\n    'PART_OF': 1.1,\n    'RELATED_TO': 1.0\n  };\n  \n  const baseWeight = TYPE_WEIGHTS[rel.type.toUpperCase()] || 1.0;\n  const confidence = rel.confidence || 0.7;\n  const finalWeight = baseWeight * confidence;\n  \n  return {\n    source_id: sourceEntity.id,\n    source_name: rel.source,\n    target_id: targetEntity.id,\n    target_name: rel.target,\n    type: rel.type.toUpperCase().replace(/[^A-Z_]/g, '_'),\n    weight: Math.round(finalWeight * 100) / 100,\n    confidence: confidence,\n    evidence: rel.evidence || '',\n    tenant_id: tenantId\n  };\n}).filter(r => r !== null);\n\n// === GENERATE NEO4J STATEMENTS ===\n// Entity statements with MERGE on canonical_id\nconst entityStatements = processedEntities\n  .filter(e => !e.is_alias) // Only create canonical entities\n  .map((entity, idx) => ({\n    statement: \\`\n      MERGE (e:Entity {id: $id_\\${idx}})\n      ON CREATE SET \n        e.name = $name_\\${idx},\n        e.type = $type_\\${idx},\n        e.tenant_id = $tenant_\\${idx},\n        e.created_at = datetime()\n      ON MATCH SET \n        e.updated_at = datetime()\n      WITH e\n      UNWIND $aliases_\\${idx} as alias\n      MERGE (a:Alias {name: alias, canonical_id: $id_\\${idx}})\n    \\`,\n    parameters: {\n      [\\`id_\\${idx}\\`]: entity.id,\n      [\\`name_\\${idx}\\`]: entity.name,\n      [\\`type_\\${idx}\\`]: entity.type,\n      [\\`tenant_\\${idx}\\`]: entity.tenant_id,\n      [\\`aliases_\\${idx}\\`]: entity.aliases\n    }\n  }));\n\n// Relationship statements with weights\nconst relationshipStatements = processedRelationships.map((rel, idx) => ({\n  statement: \\`\n    MATCH (a:Entity {id: $source_id_\\${idx}})\n    MATCH (b:Entity {id: $target_id_\\${idx}})\n    MERGE (a)-[r:\\${rel.type}]->(b)\n    SET r.weight = $weight_\\${idx},\n        r.confidence = $conf_\\${idx},\n        r.evidence = $evidence_\\${idx},\n        r.updated_at = datetime()\n  \\`,\n  parameters: {\n    [\\`source_id_\\${idx}\\`]: rel.source_id,\n    [\\`target_id_\\${idx}\\`]: rel.target_id,\n    [\\`weight_\\${idx}\\`]: rel.weight,\n    [\\`conf_\\${idx}\\`]: rel.confidence,\n    [\\`evidence_\\${idx}\\`]: rel.evidence\n  }\n}));\n\nreturn {\n  entity_statements: entityStatements,\n  relationship_statements: relationshipStatements,\n  \n  // V3.1 Stats\n  total_entities: processedEntities.length,\n  canonical_entities: processedEntities.filter(e => !e.is_alias).length,\n  alias_count: processedEntities.filter(e => e.is_alias).length,\n  total_relationships: processedRelationships.length,\n  avg_relationship_weight: processedRelationships.length > 0 \n    ? Math.round(processedRelationships.reduce((sum, r) => sum + r.weight, 0) / processedRelationships.length * 100) / 100\n    : 0,\n  \n  // Pass through for downstream\n  hypothetical_questions: extracted.hypothetical_questions || [],\n  key_facts: extracted.key_facts || []\n};"
+      },
+      "id": "relationship-mapper-neo4j",
+      "name": "Relationship Mapper V3.1 (Entity Linking)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.PINECONE_URL }}/vectors/upsert",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"vectors\": [{\n    \"id\": \"{{ $json.dedup_hash }}\",\n    \"values\": {{ JSON.stringify($json.embedding || []) }},\n    \"metadata\": {{ JSON.stringify($json) }}\n  }]\n}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "upsert-vectors-pinecone",
+      "name": "Upsert Vectors Pinecone",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1488,
+        656
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "pHqLK3RCesLssL6j",
+          "name": "Pinecone API Key"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "schema": "public",
+        "table": "enriched_metadata",
+        "columns": {
+          "0": "d",
+          "1": "e",
+          "2": "d",
+          "3": "u",
+          "4": "p",
+          "5": "_",
+          "6": "h",
+          "7": "a",
+          "8": "s",
+          "9": "h",
+          "10": ",",
+          "11": " ",
+          "12": "s",
+          "13": "o",
+          "14": "u",
+          "15": "r",
+          "16": "c",
+          "17": "e",
+          "18": "_",
+          "19": "d",
+          "20": "a",
+          "21": "t",
+          "22": "a",
+          "23": ",",
+          "24": " ",
+          "25": "s",
+          "26": "y",
+          "27": "n",
+          "28": "c",
+          "29": "_",
+          "30": "d",
+          "31": "a",
+          "32": "t",
+          "33": "e",
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "store-metadata-postgres",
+      "name": "Store Metadata Postgres",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        1856,
+        1136
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"statements\": {{ JSON.stringify([\n    ...$node['Relationship Mapper V3.1 (Entity Linking)'].json.entity_statements,\n    ...$node['Relationship Mapper V3.1 (Entity Linking)'].json.relationship_statements\n  ]) }}\n}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "update-graph-neo4j",
+      "name": "Update Graph Neo4j",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1632,
+        816
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "n4K6ZIj6aa0dsiGN",
+          "name": "Neo4j Aura"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.NEO4J_URL }}/community-detection/trigger",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"algorithm\": \"louvain\",\n  \"min_community_size\": 5,\n  \"tenant_id\": \"{{ $node['Lock Result Handler']?.json?.trace_id?.split('-')[0] || 'default' }}\"\n}",
+        "options": {
+          "timeout": 5000
+        }
+      },
+      "id": "community-detection-trigger",
+      "name": "Community Detection Trigger (Async)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1808,
+        400
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "n4K6ZIj6aa0dsiGN",
+          "name": "Neo4j Aura"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare lock release\nconst lockData = $node['Lock Result Handler'].json;\n\nreturn {\n  lockKey: lockData.lockKey,\n  lockValue: lockData.lockValue,\n  trace_id: lockData.trace_id\n};"
+      },
+      "id": "prepare-lock-release",
+      "name": "Prepare Lock Release",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=={{ $json.lockKey }}\n"
+      },
+      "id": "redis-lock-release",
+      "name": "Redis: Release Lock",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        400
+      ],
+      "credentials": {
+        "redis": {
+          "id": "O2KEPiv7VzgDG5ZX",
+          "name": "Redis Upstash"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log success\nreturn {\n  status: 'SUCCESS',\n  trace_id: $node['Lock Result Handler'].json.trace_id,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "log-success",
+      "name": "Log Success",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"enrichment_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"timestamp\": \"{{ $json.timestamp }}\"\n}",
+        "options": {
+          "timeout": 5000
+        }
+      },
+      "id": "export-trace-otel",
+      "name": "Export Trace to OpenTelemetry",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2608,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "public": true,
+        "availableInChat": true,
+        "options": {
+          "responseMode": "streaming"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        80,
+        0
+      ],
+      "id": "43a2f62c-9089-4617-9072-d580a1778b9b",
+      "name": "When chat message received",
+      "webhookId": "f80a06b7-3c0e-438b-8414-8c77e973ffb4"
+    },
+    {
+      "parameters": {
+        "content": "# \ud83d\udd27 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `DEEPSEEK_API_KEY` - API key DeepSeek (api.deepseek.com)\n- `ANTHROPIC_API_KEY` - API key Anthropic (pour planning)\n- `GOOGLE_API_KEY` - API key Google (Gemini Flash)\n\n## LLM URLs (optionnel - d\u00e9fauts inclus)\n- `SQL_GENERATION_API_URL` - URL API pour SQL\n- `INTENT_ANALYSIS_API_URL` - URL API pour intent\n- `PLANNING_API_URL` - URL API pour planning\n- `GENERATION_API_URL` - URL API pour g\u00e9n\u00e9ration\n\n## LLM Models (optionnel)\n- `SQL_GENERATION_MODEL` = deepseek-chat\n- `INTENT_ANALYSIS_MODEL` = deepseek-chat\n- `PLANNING_MODEL` = claude-sonnet-4-5-20250929\n- `GENERATION_MODEL` = deepseek-chat\n\n## Embedding (RECOMMAND\u00c9: self-hosted)\n- `EMBEDDING_API_URL` - URL embedding (d\u00e9faut: OpenAI)\n- `EMBEDDING_MODEL` - text-embedding-3-small \u2192 Qwen3-Embedding-8B\n\n## Reranking (RECOMMAND\u00c9: self-hosted)\n- `RERANKER_API_URL` - URL reranker (d\u00e9faut: Cohere)\n- `RERANKER_MODEL` - rerank-v3 \u2192 Qwen3-Reranker-8B\n\n## Impact estim\u00e9 (selon research):\n- -89% co\u00fbt ingestion\n- -95% co\u00fbt requ\u00eates\n- +3% accuracy SQL (BIRD-SQL)\n- +15 pts MTEB (embedding)\n",
+        "height": 600,
+        "width": 400
+      },
+      "id": "env-vars-note",
+      "name": "\ud83d\udccb Configuration SOTA 2026",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        -80
+      ]
+    },
+    {
+      "id": "p06-chunk-documents",
+      "name": "Chunk Documents for Entity Extraction",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        500
+      ],
+      "parameters": {
+        "jsCode": "// P06 SOTA 2026: Chunk-level Entity Extraction\n// Split documents into overlapping chunks for thorough entity extraction\nconst crypto = require('crypto');\nconst items = $input.all();\nconst CHUNK_SIZE = 4000;\nconst CHUNK_OVERLAP = 200;\nconst chunks = [];\n\nfor (const item of items) {\n  const content = JSON.stringify(item.json);\n  const sourceId = item.json.dedup_hash || crypto.createHash('sha256').update(content).digest('hex').substring(0, 16);\n\n  if (content.length <= CHUNK_SIZE) {\n    chunks.push({\n      json: {\n        _chunk_index: 0,\n        _chunk_total: 1,\n        _chunk_content: content,\n        _source_id: sourceId,\n        _original: item.json\n      }\n    });\n  } else {\n    let start = 0;\n    let chunkIdx = 0;\n    const totalChunks = Math.ceil((content.length - CHUNK_OVERLAP) / (CHUNK_SIZE - CHUNK_OVERLAP));\n    while (start < content.length) {\n      const end = Math.min(start + CHUNK_SIZE, content.length);\n      chunks.push({\n        json: {\n          _chunk_index: chunkIdx,\n          _chunk_total: totalChunks,\n          _chunk_content: content.substring(start, end),\n          _source_id: sourceId,\n          _original: item.json\n        }\n      });\n      start += CHUNK_SIZE - CHUNK_OVERLAP;\n      chunkIdx++;\n    }\n  }\n}\n\nconsole.log('P06: Split ' + items.length + ' documents into ' + chunks.length + ' chunks');\nreturn chunks;"
+      }
+    },
+    {
+      "id": "p06-split-batches-entity",
+      "name": "SplitInBatches - Entity Chunks",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1296,
+        660
+      ],
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      }
+    },
+    {
+      "id": "p06-extract-entities-per-chunk",
+      "name": "Extract Entities Per Chunk",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1296,
+        820
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "LLM_API_CREDENTIAL_ID",
+          "name": "OpenAI API Key"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json._chunk_content }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+        "options": {
+          "timeout": 30000
+        }
+      }
+    },
+    {
+      "id": "p06-aggregate-entity-results",
+      "name": "Aggregate Entity Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        980
+      ],
+      "parameters": {
+        "jsCode": "// P06: Aggregate entity extraction results from all chunks\nconst allItems = $input.all();\nconst bySource = {};\n\nfor (const item of allItems) {\n  const data = item.json;\n  const sourceId = data._source_id || 'unknown';\n\n  if (!bySource[sourceId]) {\n    bySource[sourceId] = {\n      entities: [],\n      relationships: [],\n      hypothetical_questions: [],\n      key_facts: [],\n      _original: data._original\n    };\n  }\n\n  let extracted = {};\n  try {\n    extracted = JSON.parse(data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : '{}');\n  } catch (e) {\n    continue;\n  }\n\n  bySource[sourceId].entities.push(...(extracted.entities || []));\n  bySource[sourceId].relationships.push(...(extracted.relationships || []));\n  bySource[sourceId].hypothetical_questions.push(...(extracted.hypothetical_questions || []));\n  bySource[sourceId].key_facts.push(...(extracted.key_facts || []));\n}\n\nconst results = Object.entries(bySource).map(function([sourceId, data]) {\n  return {\n    json: {\n      _source_id: sourceId,\n      _original: data._original,\n      choices: [{\n        message: {\n          content: JSON.stringify({\n            entities: data.entities,\n            relationships: data.relationships,\n            hypothetical_questions: [...new Set(data.hypothetical_questions)].slice(0, 5),\n            key_facts: [...new Set(data.key_facts)]\n          })\n        }\n      }]\n    }\n  };\n});\n\nconsole.log('P06: Aggregated from ' + allItems.length + ' chunks into ' + results.length + ' source groups');\nreturn results;"
+      }
+    },
+    {
+      "id": "p07-global-entity-resolution",
+      "name": "Global Entity Resolution",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        1040
+      ],
+      "parameters": {
+        "jsCode": "// P07 SOTA 2026: Global Entity Resolution\n// Cross-document entity deduplication via normalization and alias merging\nconst crypto = require('crypto');\nconst items = $input.all();\nconst allEntities = [];\nconst allRelationships = [];\n\nfor (const item of items) {\n  let extracted = {};\n  try {\n    const content = item.json.choices && item.json.choices[0] && item.json.choices[0].message\n      ? item.json.choices[0].message.content : '{}';\n    extracted = JSON.parse(content);\n  } catch (e) { continue; }\n  allEntities.push(...(extracted.entities || []));\n  allRelationships.push(...(extracted.relationships || []));\n}\n\nconst normalize = (name) => name.trim().replace(/\\s+/g, ' ').toUpperCase();\nconst entityIndex = new Map();\nconst resolved = [];\n\nfor (const entity of allEntities) {\n  const norm = normalize(entity.name);\n  const key = norm + '::' + entity.type;\n\n  if (entityIndex.has(key)) {\n    const existing = entityIndex.get(key);\n    if (entity.aliases) {\n      existing.aliases = [...new Set([...(existing.aliases || []), ...entity.aliases])];\n    }\n    if (entity.context && !(existing.context || '').includes(entity.context)) {\n      existing.context = (existing.context || '') + '; ' + entity.context;\n    }\n  } else {\n    const resolvedEntity = {\n      name: entity.name,\n      type: entity.type,\n      aliases: entity.aliases || [],\n      context: entity.context || '',\n      _resolved_id: crypto.createHash('sha256').update(key).digest('hex').substring(0, 16)\n    };\n    entityIndex.set(key, resolvedEntity);\n    resolved.push(resolvedEntity);\n    if (entity.aliases) {\n      for (const alias of entity.aliases) {\n        entityIndex.set(normalize(alias) + '::' + entity.type, resolvedEntity);\n      }\n    }\n  }\n}\n\nconst relSet = new Set();\nconst resolvedRels = allRelationships.filter(function(rel) {\n  const key = normalize(rel.source) + '::' + rel.type + '::' + normalize(rel.target);\n  if (relSet.has(key)) return false;\n  relSet.add(key);\n  return true;\n});\n\nconsole.log('P07: Resolved ' + allEntities.length + ' entities -> ' + resolved.length + ' unique');\nreturn {\n  json: {\n    choices: [{\n      message: {\n        content: JSON.stringify({\n          entities: resolved,\n          relationships: resolvedRels,\n          hypothetical_questions: [],\n          key_facts: [],\n          _resolution_stats: {\n            entities_before: allEntities.length,\n            entities_after: resolved.length,\n            relationships_before: allRelationships.length,\n            relationships_after: resolvedRels.length\n          }\n        })\n      }\n    }]\n  }\n};"
+      }
+    },
+    {
+      "id": "p08-fetch-community-assignments",
+      "name": "Fetch Community Assignments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2000,
+        200
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "n4K6ZIj6aa0dsiGN",
+          "name": "Neo4j Aura"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"statements\": [{\n    \"statement\": \"MATCH (e:Entity)-[:BELONGS_TO]->(c:Community) WHERE c.algorithm = 'louvain' RETURN c.id as community_id, c.label as community_label, collect({name: e.name, type: e.type}) as members ORDER BY size(members) DESC LIMIT 50\"\n  }]\n}",
+        "options": {
+          "timeout": 15000
+        }
+      }
+    },
+    {
+      "id": "p08-generate-community-summaries",
+      "name": "Generate Community Summaries",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2200,
+        200
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "LLM_API_CREDENTIAL_ID",
+          "name": "OpenAI API Key"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en analyse de communautes dans un graphe de connaissances.\\nPour chaque communaute, genere:\\n1. Un titre descriptif (max 10 mots)\\n2. Un resume de 2-3 phrases expliquant le theme commun\\n3. Les entites cles (max 5)\\n4. Les relations dominantes\\n\\nFormat JSON:\\n{\\n  \\\"title\\\": string,\\n  \\\"summary\\\": string,\\n  \\\"key_entities\\\": [string],\\n  \\\"dominant_relations\\\": [string],\\n  \\\"importance_score\\\": 0.0-1.0\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 2000\n}",
+        "options": {
+          "timeout": 30000
+        }
+      }
+    },
+    {
+      "id": "p09-store-community-summaries-neo4j",
+      "name": "Store Community Summaries Neo4j",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2400,
+        100
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "n4K6ZIj6aa0dsiGN",
+          "name": "Neo4j Aura"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"statements\": [{\n    \"statement\": \"MERGE (c:Community {id: $community_id}) SET c.title = $title, c.summary = $summary, c.key_entities = $key_entities, c.importance_score = $importance_score, c.updated_at = datetime()\",\n    \"parameters\": {\n      \"community_id\": \"{{ $json.community_id }}\",\n      \"title\": \"{{ $json.title }}\",\n      \"summary\": \"{{ $json.summary }}\",\n      \"key_entities\": {{ JSON.stringify($json.key_entities || []) }},\n      \"importance_score\": {{ $json.importance_score || 0.5 }}\n    }\n  }]\n}",
+        "options": {
+          "timeout": 15000
+        }
+      }
+    },
+    {
+      "id": "p09-store-community-summaries-postgres",
+      "name": "Store Community Summaries Postgres",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        2400,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "operation": "upsert",
+        "schema": "public",
+        "table": "community_summaries",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [
+            "community_id"
+          ],
+          "schema": [
+            {
+              "id": "community_id",
+              "displayName": "community_id",
+              "match": true,
+              "required": true,
+              "type": "string"
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "match": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "match": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "id": "key_entities",
+              "displayName": "key_entities",
+              "match": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "id": "importance_score",
+              "displayName": "importance_score",
+              "match": false,
+              "required": false,
+              "type": "number"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "match": false,
+              "required": false,
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Init OT Trace": {
+      "main": [
+        [
+          {
+            "node": "Prepare Lock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Lock": {
+      "main": [
+        [
+          {
+            "node": "Redis: Acquire Lock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis: Acquire Lock": {
+      "main": [
+        [
+          {
+            "node": "Lock Result Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lock Result Handler": {
+      "main": [
+        [
+          {
+            "node": "Lock Acquired?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lock Acquired?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Internal Use Cases",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch External Data Sources",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        null
+      ]
+    },
+    "Fetch Internal Use Cases": {
+      "main": [
+        [
+          {
+            "node": "Normalize & Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch External Data Sources": {
+      "main": [
+        [
+          {
+            "node": "Normalize & Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize & Merge": {
+      "main": [
+        [
+          {
+            "node": "Chunk Documents for Entity Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Entity Enrichment V3.1 (Enhanced)": {
+      "main": [
+        [
+          {
+            "node": "Relationship Mapper V3.1 (Entity Linking)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Relationship Mapper V3.1 (Entity Linking)": {
+      "main": [
+        [
+          {
+            "node": "Upsert Vectors Pinecone",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Store Metadata Postgres",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Graph Neo4j",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Vectors Pinecone": {
+      "main": [
+        [
+          {
+            "node": "Community Detection Trigger (Async)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Metadata Postgres": {
+      "main": [
+        [
+          {
+            "node": "Community Detection Trigger (Async)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Graph Neo4j": {
+      "main": [
+        [
+          {
+            "node": "Community Detection Trigger (Async)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Community Detection Trigger (Async)": {
+      "main": [
+        [
+          {
+            "node": "Prepare Lock Release",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Community Assignments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Lock Release": {
+      "main": [
+        [
+          {
+            "node": "Redis: Release Lock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis: Release Lock": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Success": {
+      "main": [
+        [
+          {
+            "node": "Export Trace to OpenTelemetry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Init OT Trace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunk Documents for Entity Extraction": {
+      "main": [
+        [
+          {
+            "node": "SplitInBatches - Entity Chunks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SplitInBatches - Entity Chunks": {
+      "main": [
+        [
+          {
+            "node": "Extract Entities Per Chunk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Entities Per Chunk": {
+      "main": [
+        [
+          {
+            "node": "SplitInBatches - Entity Chunks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Entity Results": {
+      "main": [
+        [
+          {
+            "node": "Global Entity Resolution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Global Entity Resolution": {
+      "main": [
+        [
+          {
+            "node": "Relationship Mapper V3.1 (Entity Linking)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Community Assignments": {
+      "main": [
+        [
+          {
+            "node": "Generate Community Summaries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Community Summaries": {
+      "main": [
+        [
+          {
+            "node": "Store Community Summaries Neo4j",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Store Community Summaries Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+  "activeVersionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+  "versionCounter": 37,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-25T13:18:48.001Z",
+      "createdAt": "2026-01-25T13:18:48.001Z",
+      "role": "workflow:owner",
+      "workflowId": "ORa01sX4xI0iRCJ8",
+      "projectId": "JV7MbqBbWPTstXIo",
+      "project": {
+        "updatedAt": "2026-01-07T13:20:26.996Z",
+        "createdAt": "2026-01-07T13:20:21.870Z",
+        "id": "JV7MbqBbWPTstXIo",
+        "name": "Alexis Moret <alexis.moret6@outlook.fr>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "215767e0-958a-4c74-a67a-e335807eba64",
+        "projectRelations": [
+          {
+            "updatedAt": "2026-01-07T13:20:21.870Z",
+            "createdAt": "2026-01-07T13:20:21.870Z",
+            "userId": "215767e0-958a-4c74-a67a-e335807eba64",
+            "projectId": "JV7MbqBbWPTstXIo",
+            "user": {
+              "updatedAt": "2026-02-09T23:01:37.000Z",
+              "createdAt": "2026-01-07T13:20:20.003Z",
+              "id": "215767e0-958a-4c74-a67a-e335807eba64",
+              "email": "alexis.moret6@outlook.fr",
+              "firstName": "Alexis",
+              "lastName": "Moret",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "userClaimedAiCredits": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "e3_89vptJG7PPA-OHyAg3",
+                "userActivatedAt": 1767837780144,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1768407850905
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-02-09",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-02-06T00:35:34.536Z",
+    "createdAt": "2026-02-06T00:35:34.536Z",
+    "versionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+    "workflowId": "ORa01sX4xI0iRCJ8",
+    "nodes": [
+      {
+        "parameters": {
+          "jsCode": "// Init OpenTelemetry trace for enrichment workflow\n// Shield #9: OTEL Resilience\nconst traceId = `tr-enrich-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;\n\nreturn {\n  trace_id: traceId,\n  span_context: 'enrichment-parent',\n  timestamp: new Date().toISOString(),\n  status: 'STARTED'\n};"
+        },
+        "id": "5388fc59-6b35-40e8-b875-8a842d15fccb",
+        "name": "Init OT Trace",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          256,
+          432
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// P0/P1: Distributed Lock for Cron Job - Prevent Overlap\nconst jobId = `enrichment-${new Date().toISOString().split('T')[0]}`;\nconst lockKey = 'lock:enrichment:daily';\nconst ttlSeconds = 7200; // 2 hours max\nconst workerId = `worker-${$execution.id}`;\n\nreturn {\n  lockKey,\n  jobId,\n  workerId,\n  ttlSeconds,\n  trace_id: $node['Init OT Trace'].json.trace_id,\n  action: 'ACQUIRE'\n};"
+        },
+        "id": "791cbef0-562b-4437-8e3f-0b90a4d81ce4",
+        "name": "Prepare Lock",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          400,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "set",
+          "key": "={{ $json.lockKey }}",
+          "value": "={{ $json.workerId }}",
+          "expire": true,
+          "ttl": 7200
+        },
+        "id": "redis-lock-acquire",
+        "name": "Redis: Acquire Lock",
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          608,
+          400
+        ],
+        "credentials": {
+          "redis": {
+            "id": "O2KEPiv7VzgDG5ZX",
+            "name": "Redis Upstash"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Handle lock acquisition result\nconst lockData = $node['Prepare Lock'].json;\nconst redisResult = $json;\n\nconst lockAcquired = redisResult === 'OK' || redisResult === true || redisResult?.result === 'OK';\n\nif (!lockAcquired) {\n  console.warn('ENRICHMENT_LOCK_FAILED: Another instance running', {\n    lockKey: lockData.lockKey,\n    trace_id: lockData.trace_id\n  });\n  \n  return {\n    ...lockData,\n    lockAcquired: false,\n    status: 'SKIPPED',\n    reason: 'Lock already held - enrichment in progress'\n  };\n}\n\nreturn {\n  ...lockData,\n  lockAcquired: true,\n  status: 'PROCESSING',\n  lockValue: lockData.workerId\n};"
+        },
+        "id": "lock-result-handler",
+        "name": "Lock Result Handler",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          800,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true
+            },
+            "conditions": [
+              {
+                "id": "lock-acquired",
+                "leftValue": "={{ $json.lockAcquired }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "check-lock",
+        "name": "Lock Acquired?",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          1008,
+          400
+        ],
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "url": "https://internal-api.company.com/cas-usage",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "options": {
+            "timeout": 15000
+          }
+        },
+        "id": "29e87a7b-9242-447b-b605-995248407b44",
+        "name": "Fetch Internal Use Cases",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1024,
+          -80
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "INTERNAL_API_CREDENTIAL_ID",
+            "name": "Internal API Key"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "url": "https://external-data-provider.com/api/docs",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "options": {
+            "timeout": 20000
+          }
+        },
+        "id": "04c7a554-19c2-4231-9f0e-95dc703881f8",
+        "name": "Fetch External Data Sources",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1168,
+          816
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "EXTERNAL_API_CREDENTIAL_ID",
+            "name": "External API Key"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Normalize & Merge with Hash Deduplication - HARDENED\nconst crypto = require('crypto');\nconst internal = $items('Fetch Internal Use Cases') || [];\nconst external = $items('Fetch External Data Sources') || [];\n\nconst seen = new Set();\nconst merged = [...internal, ...external]\n  .filter(item => {\n    if (!item.json) return false;\n    const content = JSON.stringify(item.json);\n    const hash = crypto.createHash('sha256').update(content).digest('hex');\n    if (seen.has(hash)) return false;\n    seen.add(hash);\n    return true;\n  })\n  .map(item => ({\n    json: {\n      ...item.json,\n      enriched: false,\n      source_sync_date: new Date().toISOString(),\n      dedup_hash: crypto.createHash('sha256').update(JSON.stringify(item.json)).digest('hex')\n    }\n  }));\n\nconsole.log(`Deduplication: ${internal.length + external.length} -> ${merged.length}`);\nreturn merged;"
+        },
+        "id": "087c43d6-c62e-4365-baba-feb9d762548d",
+        "name": "Normalize & Merge",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1296,
+          336
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json).substring(0, 30000) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+          "options": {
+            "timeout": 30000
+          }
+        },
+        "id": "ai-entity-enrichment",
+        "name": "AI Entity Enrichment V3.1 (Enhanced)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1296,
+          1216
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "LLM_API_CREDENTIAL_ID",
+            "name": "OpenAI API Key"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "jsCode": "// V3.1: Relationship Mapper with Entity Linking + Weighted Relations\nconst crypto = require('crypto');\nconst aiData = $node['AI Entity Enrichment V3.1 (Enhanced)'].json;\n\nlet extracted = {};\ntry {\n  extracted = JSON.parse(aiData.choices?.[0]?.message?.content || '{}');\n} catch (e) {\n  extracted = { entities: [], relationships: [] };\n}\n\nconst entities = extracted.entities || [];\nconst relationships = extracted.relationships || [];\nconst tenantId = $node['Lock Result Handler']?.json?.trace_id?.split('-')[0] || 'default';\n\n// === V3.1: ENTITY LINKING ===\n// Normalize entity names and detect duplicates\nconst normalizeEntityName = (name) => {\n  return name\n    .trim()\n    .replace(/\\s+/g, ' ')\n    .replace(/['']/g, \"'\")\n    .toUpperCase();\n};\n\nconst entityMap = new Map();\nconst processedEntities = [];\n\nfor (const entity of entities) {\n  const normalizedName = normalizeEntityName(entity.name);\n  const entityId = crypto.createHash('md5').update(normalizedName + entity.type).digest('hex').substring(0, 16);\n  \n  // Check for existing similar entity\n  let canonicalId = entityId;\n  let isAlias = false;\n  \n  // Check aliases\n  if (entity.aliases && entity.aliases.length > 0) {\n    for (const alias of entity.aliases) {\n      const aliasNorm = normalizeEntityName(alias);\n      if (entityMap.has(aliasNorm)) {\n        canonicalId = entityMap.get(aliasNorm).id;\n        isAlias = true;\n        break;\n      }\n    }\n  }\n  \n  if (!isAlias) {\n    entityMap.set(normalizedName, { id: entityId, name: entity.name });\n    \n    // Also map aliases\n    if (entity.aliases) {\n      for (const alias of entity.aliases) {\n        entityMap.set(normalizeEntityName(alias), { id: entityId, name: entity.name });\n      }\n    }\n  }\n  \n  processedEntities.push({\n    id: entityId,\n    canonical_id: canonicalId,\n    name: entity.name,\n    normalized_name: normalizedName,\n    type: entity.type,\n    aliases: entity.aliases || [],\n    context: entity.context || '',\n    is_alias: isAlias,\n    tenant_id: tenantId\n  });\n}\n\n// === V3.1: WEIGHTED RELATIONSHIPS ===\nconst processedRelationships = relationships.map((rel, idx) => {\n  // Resolve entity names to canonical IDs\n  const sourceNorm = normalizeEntityName(rel.source);\n  const targetNorm = normalizeEntityName(rel.target);\n  \n  const sourceEntity = entityMap.get(sourceNorm);\n  const targetEntity = entityMap.get(targetNorm);\n  \n  if (!sourceEntity || !targetEntity) {\n    return null; // Skip if entities not found\n  }\n  \n  // Relationship weight based on type and confidence\n  const TYPE_WEIGHTS = {\n    'REPORTS_TO': 1.5,\n    'MANAGES': 1.4,\n    'OWNS': 1.3,\n    'WORKS_WITH': 1.2,\n    'IMPACTS': 1.2,\n    'PART_OF': 1.1,\n    'RELATED_TO': 1.0\n  };\n  \n  const baseWeight = TYPE_WEIGHTS[rel.type.toUpperCase()] || 1.0;\n  const confidence = rel.confidence || 0.7;\n  const finalWeight = baseWeight * confidence;\n  \n  return {\n    source_id: sourceEntity.id,\n    source_name: rel.source,\n    target_id: targetEntity.id,\n    target_name: rel.target,\n    type: rel.type.toUpperCase().replace(/[^A-Z_]/g, '_'),\n    weight: Math.round(finalWeight * 100) / 100,\n    confidence: confidence,\n    evidence: rel.evidence || '',\n    tenant_id: tenantId\n  };\n}).filter(r => r !== null);\n\n// === GENERATE NEO4J STATEMENTS ===\n// Entity statements with MERGE on canonical_id\nconst entityStatements = processedEntities\n  .filter(e => !e.is_alias) // Only create canonical entities\n  .map((entity, idx) => ({\n    statement: \\`\n      MERGE (e:Entity {id: $id_\\${idx}})\n      ON CREATE SET \n        e.name = $name_\\${idx},\n        e.type = $type_\\${idx},\n        e.tenant_id = $tenant_\\${idx},\n        e.created_at = datetime()\n      ON MATCH SET \n        e.updated_at = datetime()\n      WITH e\n      UNWIND $aliases_\\${idx} as alias\n      MERGE (a:Alias {name: alias, canonical_id: $id_\\${idx}})\n    \\`,\n    parameters: {\n      [\\`id_\\${idx}\\`]: entity.id,\n      [\\`name_\\${idx}\\`]: entity.name,\n      [\\`type_\\${idx}\\`]: entity.type,\n      [\\`tenant_\\${idx}\\`]: entity.tenant_id,\n      [\\`aliases_\\${idx}\\`]: entity.aliases\n    }\n  }));\n\n// Relationship statements with weights\nconst relationshipStatements = processedRelationships.map((rel, idx) => ({\n  statement: \\`\n    MATCH (a:Entity {id: $source_id_\\${idx}})\n    MATCH (b:Entity {id: $target_id_\\${idx}})\n    MERGE (a)-[r:\\${rel.type}]->(b)\n    SET r.weight = $weight_\\${idx},\n        r.confidence = $conf_\\${idx},\n        r.evidence = $evidence_\\${idx},\n        r.updated_at = datetime()\n  \\`,\n  parameters: {\n    [\\`source_id_\\${idx}\\`]: rel.source_id,\n    [\\`target_id_\\${idx}\\`]: rel.target_id,\n    [\\`weight_\\${idx}\\`]: rel.weight,\n    [\\`conf_\\${idx}\\`]: rel.confidence,\n    [\\`evidence_\\${idx}\\`]: rel.evidence\n  }\n}));\n\nreturn {\n  entity_statements: entityStatements,\n  relationship_statements: relationshipStatements,\n  \n  // V3.1 Stats\n  total_entities: processedEntities.length,\n  canonical_entities: processedEntities.filter(e => !e.is_alias).length,\n  alias_count: processedEntities.filter(e => e.is_alias).length,\n  total_relationships: processedRelationships.length,\n  avg_relationship_weight: processedRelationships.length > 0 \n    ? Math.round(processedRelationships.reduce((sum, r) => sum + r.weight, 0) / processedRelationships.length * 100) / 100\n    : 0,\n  \n  // Pass through for downstream\n  hypothetical_questions: extracted.hypothetical_questions || [],\n  key_facts: extracted.key_facts || []\n};"
+        },
+        "id": "relationship-mapper-neo4j",
+        "name": "Relationship Mapper V3.1 (Entity Linking)",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1440,
+          1040
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.PINECONE_URL }}/vectors/upsert",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"vectors\": [{\n    \"id\": \"{{ $json.dedup_hash }}\",\n    \"values\": {{ JSON.stringify($json.embedding || []) }},\n    \"metadata\": {{ JSON.stringify($json) }}\n  }]\n}",
+          "options": {
+            "timeout": 15000
+          }
+        },
+        "id": "upsert-vectors-pinecone",
+        "name": "Upsert Vectors Pinecone",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1488,
+          656
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "pHqLK3RCesLssL6j",
+            "name": "Pinecone API Key"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "schema": "public",
+          "table": "enriched_metadata",
+          "columns": {
+            "0": "d",
+            "1": "e",
+            "2": "d",
+            "3": "u",
+            "4": "p",
+            "5": "_",
+            "6": "h",
+            "7": "a",
+            "8": "s",
+            "9": "h",
+            "10": ",",
+            "11": " ",
+            "12": "s",
+            "13": "o",
+            "14": "u",
+            "15": "r",
+            "16": "c",
+            "17": "e",
+            "18": "_",
+            "19": "d",
+            "20": "a",
+            "21": "t",
+            "22": "a",
+            "23": ",",
+            "24": " ",
+            "25": "s",
+            "26": "y",
+            "27": "n",
+            "28": "c",
+            "29": "_",
+            "30": "d",
+            "31": "a",
+            "32": "t",
+            "33": "e",
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "store-metadata-postgres",
+        "name": "Store Metadata Postgres",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.4,
+        "position": [
+          1856,
+          1136
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"statements\": {{ JSON.stringify([\n    ...$node['Relationship Mapper V3.1 (Entity Linking)'].json.entity_statements,\n    ...$node['Relationship Mapper V3.1 (Entity Linking)'].json.relationship_statements\n  ]) }}\n}",
+          "options": {
+            "timeout": 15000
+          }
+        },
+        "id": "update-graph-neo4j",
+        "name": "Update Graph Neo4j",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1632,
+          816
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "n4K6ZIj6aa0dsiGN",
+            "name": "Neo4j Aura"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.NEO4J_URL }}/community-detection/trigger",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"algorithm\": \"louvain\",\n  \"min_community_size\": 5,\n  \"tenant_id\": \"{{ $node['Lock Result Handler']?.json?.trace_id?.split('-')[0] || 'default' }}\"\n}",
+          "options": {
+            "timeout": 5000
+          }
+        },
+        "id": "community-detection-trigger",
+        "name": "Community Detection Trigger (Async)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1808,
+          400
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "n4K6ZIj6aa0dsiGN",
+            "name": "Neo4j Aura"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Prepare lock release\nconst lockData = $node['Lock Result Handler'].json;\n\nreturn {\n  lockKey: lockData.lockKey,\n  lockValue: lockData.lockValue,\n  trace_id: lockData.trace_id\n};"
+        },
+        "id": "prepare-lock-release",
+        "name": "Prepare Lock Release",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2000,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "delete",
+          "key": "=={{ $json.lockKey }}\n"
+        },
+        "id": "redis-lock-release",
+        "name": "Redis: Release Lock",
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          2208,
+          400
+        ],
+        "credentials": {
+          "redis": {
+            "id": "O2KEPiv7VzgDG5ZX",
+            "name": "Redis Upstash"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Log success\nreturn {\n  status: 'SUCCESS',\n  trace_id: $node['Lock Result Handler'].json.trace_id,\n  timestamp: new Date().toISOString()\n};"
+        },
+        "id": "log-success",
+        "name": "Log Success",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2400,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"enrichment_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"timestamp\": \"{{ $json.timestamp }}\"\n}",
+          "options": {
+            "timeout": 5000
+          }
+        },
+        "id": "export-trace-otel",
+        "name": "Export Trace to OpenTelemetry",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          2608,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "public": true,
+          "availableInChat": true,
+          "options": {
+            "responseMode": "streaming"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "typeVersion": 1.4,
+        "position": [
+          80,
+          0
+        ],
+        "id": "43a2f62c-9089-4617-9072-d580a1778b9b",
+        "name": "When chat message received",
+        "webhookId": "f80a06b7-3c0e-438b-8414-8c77e973ffb4"
+      },
+      {
+        "parameters": {
+          "content": "# \ud83d\udd27 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `DEEPSEEK_API_KEY` - API key DeepSeek (api.deepseek.com)\n- `ANTHROPIC_API_KEY` - API key Anthropic (pour planning)\n- `GOOGLE_API_KEY` - API key Google (Gemini Flash)\n\n## LLM URLs (optionnel - d\u00e9fauts inclus)\n- `SQL_GENERATION_API_URL` - URL API pour SQL\n- `INTENT_ANALYSIS_API_URL` - URL API pour intent\n- `PLANNING_API_URL` - URL API pour planning\n- `GENERATION_API_URL` - URL API pour g\u00e9n\u00e9ration\n\n## LLM Models (optionnel)\n- `SQL_GENERATION_MODEL` = deepseek-chat\n- `INTENT_ANALYSIS_MODEL` = deepseek-chat\n- `PLANNING_MODEL` = claude-sonnet-4-5-20250929\n- `GENERATION_MODEL` = deepseek-chat\n\n## Embedding (RECOMMAND\u00c9: self-hosted)\n- `EMBEDDING_API_URL` - URL embedding (d\u00e9faut: OpenAI)\n- `EMBEDDING_MODEL` - text-embedding-3-small \u2192 Qwen3-Embedding-8B\n\n## Reranking (RECOMMAND\u00c9: self-hosted)\n- `RERANKER_API_URL` - URL reranker (d\u00e9faut: Cohere)\n- `RERANKER_MODEL` - rerank-v3 \u2192 Qwen3-Reranker-8B\n\n## Impact estim\u00e9 (selon research):\n- -89% co\u00fbt ingestion\n- -95% co\u00fbt requ\u00eates\n- +3% accuracy SQL (BIRD-SQL)\n- +15 pts MTEB (embedding)\n",
+          "height": 600,
+          "width": 400
+        },
+        "id": "env-vars-note",
+        "name": "\ud83d\udccb Configuration SOTA 2026",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -416,
+          -80
+        ]
+      },
+      {
+        "id": "p06-chunk-documents",
+        "name": "Chunk Documents for Entity Extraction",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1296,
+          500
+        ],
+        "parameters": {
+          "jsCode": "// P06 SOTA 2026: Chunk-level Entity Extraction\n// Split documents into overlapping chunks for thorough entity extraction\nconst crypto = require('crypto');\nconst items = $input.all();\nconst CHUNK_SIZE = 4000;\nconst CHUNK_OVERLAP = 200;\nconst chunks = [];\n\nfor (const item of items) {\n  const content = JSON.stringify(item.json);\n  const sourceId = item.json.dedup_hash || crypto.createHash('sha256').update(content).digest('hex').substring(0, 16);\n\n  if (content.length <= CHUNK_SIZE) {\n    chunks.push({\n      json: {\n        _chunk_index: 0,\n        _chunk_total: 1,\n        _chunk_content: content,\n        _source_id: sourceId,\n        _original: item.json\n      }\n    });\n  } else {\n    let start = 0;\n    let chunkIdx = 0;\n    const totalChunks = Math.ceil((content.length - CHUNK_OVERLAP) / (CHUNK_SIZE - CHUNK_OVERLAP));\n    while (start < content.length) {\n      const end = Math.min(start + CHUNK_SIZE, content.length);\n      chunks.push({\n        json: {\n          _chunk_index: chunkIdx,\n          _chunk_total: totalChunks,\n          _chunk_content: content.substring(start, end),\n          _source_id: sourceId,\n          _original: item.json\n        }\n      });\n      start += CHUNK_SIZE - CHUNK_OVERLAP;\n      chunkIdx++;\n    }\n  }\n}\n\nconsole.log('P06: Split ' + items.length + ' documents into ' + chunks.length + ' chunks');\nreturn chunks;"
+        }
+      },
+      {
+        "id": "p06-split-batches-entity",
+        "name": "SplitInBatches - Entity Chunks",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          1296,
+          660
+        ],
+        "parameters": {
+          "batchSize": 5,
+          "options": {}
+        }
+      },
+      {
+        "id": "p06-extract-entities-per-chunk",
+        "name": "Extract Entities Per Chunk",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1296,
+          820
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "LLM_API_CREDENTIAL_ID",
+            "name": "OpenAI API Key"
+          }
+        },
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json._chunk_content }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+          "options": {
+            "timeout": 30000
+          }
+        }
+      },
+      {
+        "id": "p06-aggregate-entity-results",
+        "name": "Aggregate Entity Results",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1296,
+          980
+        ],
+        "parameters": {
+          "jsCode": "// P06: Aggregate entity extraction results from all chunks\nconst allItems = $input.all();\nconst bySource = {};\n\nfor (const item of allItems) {\n  const data = item.json;\n  const sourceId = data._source_id || 'unknown';\n\n  if (!bySource[sourceId]) {\n    bySource[sourceId] = {\n      entities: [],\n      relationships: [],\n      hypothetical_questions: [],\n      key_facts: [],\n      _original: data._original\n    };\n  }\n\n  let extracted = {};\n  try {\n    extracted = JSON.parse(data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : '{}');\n  } catch (e) {\n    continue;\n  }\n\n  bySource[sourceId].entities.push(...(extracted.entities || []));\n  bySource[sourceId].relationships.push(...(extracted.relationships || []));\n  bySource[sourceId].hypothetical_questions.push(...(extracted.hypothetical_questions || []));\n  bySource[sourceId].key_facts.push(...(extracted.key_facts || []));\n}\n\nconst results = Object.entries(bySource).map(function([sourceId, data]) {\n  return {\n    json: {\n      _source_id: sourceId,\n      _original: data._original,\n      choices: [{\n        message: {\n          content: JSON.stringify({\n            entities: data.entities,\n            relationships: data.relationships,\n            hypothetical_questions: [...new Set(data.hypothetical_questions)].slice(0, 5),\n            key_facts: [...new Set(data.key_facts)]\n          })\n        }\n      }]\n    }\n  };\n});\n\nconsole.log('P06: Aggregated from ' + allItems.length + ' chunks into ' + results.length + ' source groups');\nreturn results;"
+        }
+      },
+      {
+        "id": "p07-global-entity-resolution",
+        "name": "Global Entity Resolution",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1360,
+          1040
+        ],
+        "parameters": {
+          "jsCode": "// P07 SOTA 2026: Global Entity Resolution\n// Cross-document entity deduplication via normalization and alias merging\nconst crypto = require('crypto');\nconst items = $input.all();\nconst allEntities = [];\nconst allRelationships = [];\n\nfor (const item of items) {\n  let extracted = {};\n  try {\n    const content = item.json.choices && item.json.choices[0] && item.json.choices[0].message\n      ? item.json.choices[0].message.content : '{}';\n    extracted = JSON.parse(content);\n  } catch (e) { continue; }\n  allEntities.push(...(extracted.entities || []));\n  allRelationships.push(...(extracted.relationships || []));\n}\n\nconst normalize = (name) => name.trim().replace(/\\s+/g, ' ').toUpperCase();\nconst entityIndex = new Map();\nconst resolved = [];\n\nfor (const entity of allEntities) {\n  const norm = normalize(entity.name);\n  const key = norm + '::' + entity.type;\n\n  if (entityIndex.has(key)) {\n    const existing = entityIndex.get(key);\n    if (entity.aliases) {\n      existing.aliases = [...new Set([...(existing.aliases || []), ...entity.aliases])];\n    }\n    if (entity.context && !(existing.context || '').includes(entity.context)) {\n      existing.context = (existing.context || '') + '; ' + entity.context;\n    }\n  } else {\n    const resolvedEntity = {\n      name: entity.name,\n      type: entity.type,\n      aliases: entity.aliases || [],\n      context: entity.context || '',\n      _resolved_id: crypto.createHash('sha256').update(key).digest('hex').substring(0, 16)\n    };\n    entityIndex.set(key, resolvedEntity);\n    resolved.push(resolvedEntity);\n    if (entity.aliases) {\n      for (const alias of entity.aliases) {\n        entityIndex.set(normalize(alias) + '::' + entity.type, resolvedEntity);\n      }\n    }\n  }\n}\n\nconst relSet = new Set();\nconst resolvedRels = allRelationships.filter(function(rel) {\n  const key = normalize(rel.source) + '::' + rel.type + '::' + normalize(rel.target);\n  if (relSet.has(key)) return false;\n  relSet.add(key);\n  return true;\n});\n\nconsole.log('P07: Resolved ' + allEntities.length + ' entities -> ' + resolved.length + ' unique');\nreturn {\n  json: {\n    choices: [{\n      message: {\n        content: JSON.stringify({\n          entities: resolved,\n          relationships: resolvedRels,\n          hypothetical_questions: [],\n          key_facts: [],\n          _resolution_stats: {\n            entities_before: allEntities.length,\n            entities_after: resolved.length,\n            relationships_before: allRelationships.length,\n            relationships_after: resolvedRels.length\n          }\n        })\n      }\n    }]\n  }\n};"
+        }
+      },
+      {
+        "id": "p08-fetch-community-assignments",
+        "name": "Fetch Community Assignments",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          2000,
+          200
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "n4K6ZIj6aa0dsiGN",
+            "name": "Neo4j Aura"
+          }
+        },
+        "onError": "continueErrorOutput",
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"statements\": [{\n    \"statement\": \"MATCH (e:Entity)-[:BELONGS_TO]->(c:Community) WHERE c.algorithm = 'louvain' RETURN c.id as community_id, c.label as community_label, collect({name: e.name, type: e.type}) as members ORDER BY size(members) DESC LIMIT 50\"\n  }]\n}",
+          "options": {
+            "timeout": 15000
+          }
+        }
+      },
+      {
+        "id": "p08-generate-community-summaries",
+        "name": "Generate Community Summaries",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          2200,
+          200
+        ],
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "LLM_API_CREDENTIAL_ID",
+            "name": "OpenAI API Key"
+          }
+        },
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en analyse de communautes dans un graphe de connaissances.\\nPour chaque communaute, genere:\\n1. Un titre descriptif (max 10 mots)\\n2. Un resume de 2-3 phrases expliquant le theme commun\\n3. Les entites cles (max 5)\\n4. Les relations dominantes\\n\\nFormat JSON:\\n{\\n  \\\"title\\\": string,\\n  \\\"summary\\\": string,\\n  \\\"key_entities\\\": [string],\\n  \\\"dominant_relations\\\": [string],\\n  \\\"importance_score\\\": 0.0-1.0\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 2000\n}",
+          "options": {
+            "timeout": 30000
+          }
+        }
+      },
+      {
+        "id": "p09-store-community-summaries-neo4j",
+        "name": "Store Community Summaries Neo4j",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          2400,
+          100
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "n4K6ZIj6aa0dsiGN",
+            "name": "Neo4j Aura"
+          }
+        },
+        "onError": "continueErrorOutput",
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"statements\": [{\n    \"statement\": \"MERGE (c:Community {id: $community_id}) SET c.title = $title, c.summary = $summary, c.key_entities = $key_entities, c.importance_score = $importance_score, c.updated_at = datetime()\",\n    \"parameters\": {\n      \"community_id\": \"{{ $json.community_id }}\",\n      \"title\": \"{{ $json.title }}\",\n      \"summary\": \"{{ $json.summary }}\",\n      \"key_entities\": {{ JSON.stringify($json.key_entities || []) }},\n      \"importance_score\": {{ $json.importance_score || 0.5 }}\n    }\n  }]\n}",
+          "options": {
+            "timeout": 15000
+          }
+        }
+      },
+      {
+        "id": "p09-store-community-summaries-postgres",
+        "name": "Store Community Summaries Postgres",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.4,
+        "position": [
+          2400,
+          300
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        },
+        "onError": "continueErrorOutput",
+        "parameters": {
+          "operation": "upsert",
+          "schema": "public",
+          "table": "community_summaries",
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [
+              "community_id"
+            ],
+            "schema": [
+              {
+                "id": "community_id",
+                "displayName": "community_id",
+                "match": true,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "id": "title",
+                "displayName": "title",
+                "match": false,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "id": "summary",
+                "displayName": "summary",
+                "match": false,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "id": "key_entities",
+                "displayName": "key_entities",
+                "match": false,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "id": "importance_score",
+                "displayName": "importance_score",
+                "match": false,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "id": "updated_at",
+                "displayName": "updated_at",
+                "match": false,
+                "required": false,
+                "type": "dateTime"
+              }
+            ]
+          },
+          "options": {}
+        }
+      }
+    ],
+    "connections": {
+      "Init OT Trace": {
+        "main": [
+          [
+            {
+              "node": "Prepare Lock",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Lock": {
+        "main": [
+          [
+            {
+              "node": "Redis: Acquire Lock",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis: Acquire Lock": {
+        "main": [
+          [
+            {
+              "node": "Lock Result Handler",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lock Result Handler": {
+        "main": [
+          [
+            {
+              "node": "Lock Acquired?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lock Acquired?": {
+        "main": [
+          [
+            {
+              "node": "Fetch Internal Use Cases",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Fetch External Data Sources",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          null
+        ]
+      },
+      "Fetch Internal Use Cases": {
+        "main": [
+          [
+            {
+              "node": "Normalize & Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch External Data Sources": {
+        "main": [
+          [
+            {
+              "node": "Normalize & Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize & Merge": {
+        "main": [
+          [
+            {
+              "node": "Chunk Documents for Entity Extraction",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Entity Enrichment V3.1 (Enhanced)": {
+        "main": [
+          [
+            {
+              "node": "Relationship Mapper V3.1 (Entity Linking)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Relationship Mapper V3.1 (Entity Linking)": {
+        "main": [
+          [
+            {
+              "node": "Upsert Vectors Pinecone",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Store Metadata Postgres",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Update Graph Neo4j",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upsert Vectors Pinecone": {
+        "main": [
+          [
+            {
+              "node": "Community Detection Trigger (Async)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Store Metadata Postgres": {
+        "main": [
+          [
+            {
+              "node": "Community Detection Trigger (Async)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Graph Neo4j": {
+        "main": [
+          [
+            {
+              "node": "Community Detection Trigger (Async)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Community Detection Trigger (Async)": {
+        "main": [
+          [
+            {
+              "node": "Prepare Lock Release",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Fetch Community Assignments",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Lock Release": {
+        "main": [
+          [
+            {
+              "node": "Redis: Release Lock",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis: Release Lock": {
+        "main": [
+          [
+            {
+              "node": "Log Success",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Log Success": {
+        "main": [
+          [
+            {
+              "node": "Export Trace to OpenTelemetry",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "Init OT Trace",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chunk Documents for Entity Extraction": {
+        "main": [
+          [
+            {
+              "node": "SplitInBatches - Entity Chunks",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SplitInBatches - Entity Chunks": {
+        "main": [
+          [
+            {
+              "node": "Extract Entities Per Chunk",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract Entities Per Chunk": {
+        "main": [
+          [
+            {
+              "node": "SplitInBatches - Entity Chunks",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate Entity Results": {
+        "main": [
+          [
+            {
+              "node": "Global Entity Resolution",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Global Entity Resolution": {
+        "main": [
+          [
+            {
+              "node": "Relationship Mapper V3.1 (Entity Linking)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Community Assignments": {
+        "main": [
+          [
+            {
+              "node": "Generate Community Summaries",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Community Summaries": {
+        "main": [
+          [
+            {
+              "node": "Store Community Summaries Neo4j",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Store Community Summaries Postgres",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Alexis Moret",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-06T00:35:34.806Z",
+        "id": 457,
+        "workflowId": "ORa01sX4xI0iRCJ8",
+        "versionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T00:35:55.845Z",
+        "id": 462,
+        "workflowId": "ORa01sX4xI0iRCJ8",
+        "versionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T07:11:48.401Z",
+        "id": 467,
+        "workflowId": "ORa01sX4xI0iRCJ8",
+        "versionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T07:13:31.229Z",
+        "id": 472,
+        "workflowId": "ORa01sX4xI0iRCJ8",
+        "versionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T07:14:33.628Z",
+        "id": 474,
+        "workflowId": "ORa01sX4xI0iRCJ8",
+        "versionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T07:34:03.383Z",
+        "id": 480,
+        "workflowId": "ORa01sX4xI0iRCJ8",
+        "versionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T07:34:39.522Z",
+        "id": 485,
+        "workflowId": "ORa01sX4xI0iRCJ8",
+        "versionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T07:35:09.296Z",
+        "id": 490,
+        "workflowId": "ORa01sX4xI0iRCJ8",
+        "versionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T07:35:36.838Z",
+        "id": 495,
+        "workflowId": "ORa01sX4xI0iRCJ8",
+        "versionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-07T04:35:35.830Z",
+        "id": 599,
+        "workflowId": "ORa01sX4xI0iRCJ8",
+        "versionId": "6a65318c-bd00-4ea2-a340-fc087de9f37e",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      }
+    ]
+  }
+}

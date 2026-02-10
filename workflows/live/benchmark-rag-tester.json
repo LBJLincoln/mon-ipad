@@ -1,0 +1,961 @@
+{
+  "updatedAt": "2026-02-06T20:35:06.233Z",
+  "createdAt": "2026-02-06T13:14:46.006Z",
+  "id": "QCHKdqnTIEwEN1Ng",
+  "name": "BENCHMARK - RAG Batch Tester",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "benchmark-test-rag",
+        "options": {
+          "rawBody": true
+        },
+        "responseMode": "responseNode"
+      },
+      "id": "b2000001-0001-4000-a002-000000000001",
+      "name": "Webhook: Start RAG Test",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3000,
+        300
+      ],
+      "webhookId": "bench-test-rag-001"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Init RAG Test Session\nconst body = $json.body || $json || {};\n\nif (!body.dataset_name) throw new Error('VALIDATION_ERROR: dataset_name is required');\n\n// Phase routing: determines which RAG workflow to call\nconst PHASE_CONFIG = {\n  'retrieval': {\n    phase: 'phase_2',\n    rag_endpoint: '/webhook/rag-v6-query',\n    metrics: ['recall_at_5', 'recall_at_10', 'mrr_at_10', 'ndcg_at_10'],\n    default_batch_size: 20\n  },\n  'generation': {\n    phase: 'phase_3',\n    rag_endpoint: '/webhook/rag-v6-query',\n    metrics: ['em', 'f1', 'faithfulness', 'rouge_l', 'noise_robustness', 'negative_rejection'],\n    default_batch_size: 10\n  },\n  'e2e': {\n    phase: 'phase_4',\n    rag_endpoint: '/webhook/rag-v6-query',\n    metrics: ['accuracy', 'f1', 'em', 'rouge_l', 'retrieval_precision', 'faithfulness'],\n    default_batch_size: 10\n  },\n  'domain': {\n    phase: 'phase_5',\n    rag_endpoint: '/webhook/rag-v6-query',\n    metrics: ['accuracy', 'faithfulness', 'extraction_precision'],\n    default_batch_size: 10\n  },\n  'robustness': {\n    phase: 'phase_7',\n    rag_endpoint: '/webhook/rag-v6-query',\n    metrics: ['hallucination_rate', 'abstention_rate', 'noise_robustness', 'counterfactual_robustness'],\n    default_batch_size: 20\n  },\n  'regression': {\n    phase: 'phase_8',\n    rag_endpoint: '/webhook/rag-v6-query',\n    metrics: ['em', 'f1', 'recall_at_10', 'faithfulness', 'accuracy'],\n    default_batch_size: 20\n  }\n};\n\nconst testType = body.test_type || 'retrieval';\nconst config = PHASE_CONFIG[testType];\nif (!config) throw new Error(`UNKNOWN_TEST_TYPE: ${testType}. Available: ${Object.keys(PHASE_CONFIG).join(', ')}`);\n\nconst runId = `test-${testType}-${body.dataset_name}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;\nconst traceId = `tr-bench-test-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\n// RAG target: which workflow to hit\n// FIX: updated endpoints to match actual active webhook paths on n8n cloud\nconst ragTarget = body.rag_target || 'standard';  // standard, graph, quantitative\nconst baseUrl = $vars.N8N_BASE_URL || 'https://amoret.app.n8n.cloud';\nconst RAG_ENDPOINTS = {\n  'standard': baseUrl + '/webhook/rag-multi-index-v3',\n  'graph': baseUrl + '/webhook/ff622742-6d71-4e91-af71-b5c666088717',\n  'quantitative': baseUrl + '/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9'\n};\n\nreturn {\n  run_id: runId,\n  trace_id: traceId,\n  test_type: testType,\n  phase: config.phase,\n  dataset_name: body.dataset_name,\n  rag_target: ragTarget,\n  rag_endpoint: RAG_ENDPOINTS[ragTarget] || RAG_ENDPOINTS['standard'],\n  metrics_to_compute: body.metrics || config.metrics,\n  batch_size: body.batch_size || config.default_batch_size,\n  sample_size: body.sample_size || 100,\n  tenant_id: body.tenant_id || 'benchmark',\n  thresholds: body.thresholds || {},\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "b2000001-0002-4000-a002-000000000002",
+      "name": "Init Test Session",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT id, dataset_name, question, expected_answer, context, supporting_facts, metadata\nFROM benchmark_datasets\nWHERE dataset_name = '{{ $json.dataset_name }}'\nAND tenant_id = '{{ $json.tenant_id }}'\nORDER BY item_index ASC\nLIMIT {{ $json.sample_size }};"
+      },
+      "id": "b2000001-0003-4000-a002-000000000003",
+      "name": "Fetch Benchmark Q&A",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -2400,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate fetched data and create test batches\nconst initData = $node['Init Test Session'].json;\nconst rows = $input.all().map(item => item.json);\n\nif (!Array.isArray(rows) || rows.length === 0) {\n  throw new Error(`NO_DATA: No benchmark items found for dataset '${initData.dataset_name}'. Run ingestion first.`);\n}\n\nconst batchSize = initData.batch_size;\nconst batches = [];\n\nfor (let i = 0; i < rows.length; i += batchSize) {\n  const batchItems = rows.slice(i, i + batchSize);\n  batches.push({\n    batch_index: Math.floor(i / batchSize),\n    batch_size: batchItems.length,\n    items: batchItems,\n    run_id: initData.run_id,\n    trace_id: initData.trace_id,\n    test_type: initData.test_type,\n    dataset_name: initData.dataset_name,\n    rag_endpoint: initData.rag_endpoint,\n    rag_target: initData.rag_target,\n    metrics_to_compute: initData.metrics_to_compute,\n    tenant_id: initData.tenant_id,\n    total_batches: Math.ceil(rows.length / batchSize),\n    total_items: rows.length\n  });\n}\n\nconsole.log(`[BENCHMARK TEST] ${initData.dataset_name}: ${rows.length} items in ${batches.length} batches of ${batchSize}`);\n\nreturn batches.map(b => ({ json: b }));"
+      },
+      "id": "b2000001-0004-4000-a002-000000000004",
+      "name": "Create Test Batches",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO benchmark_runs (run_id, run_type, phase, workflow_name, dataset_names, config, status, total_items, tenant_id, trace_id)\nVALUES (\n  '{{ $node['Init Test Session'].json.run_id }}',\n  '{{ $node['Init Test Session'].json.test_type }}',\n  '{{ $node['Init Test Session'].json.phase }}',\n  'BENCHMARK - RAG Batch Tester',\n  ARRAY['{{ $node['Init Test Session'].json.dataset_name }}'],\n  '{{ JSON.stringify({ batch_size: $node['Init Test Session'].json.batch_size, rag_target: $node['Init Test Session'].json.rag_target, metrics: $node['Init Test Session'].json.metrics_to_compute }) }}'::jsonb,\n  'running',\n  {{ $node['Init Test Session'].json.sample_size }},\n  '{{ $node['Init Test Session'].json.tenant_id }}',\n  '{{ $node['Init Test Session'].json.trace_id }}'\n)\nON CONFLICT (run_id) DO UPDATE SET status = 'running';"
+      },
+      "id": "b2000001-0005-4000-a002-000000000005",
+      "name": "Log Test Run Start",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -2100,
+        560
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "b2000001-0006-4000-a002-000000000006",
+      "name": "Loop Over Test Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Execute RAG queries for each item in the batch\n// FIX: replaced fetch() with this.helpers.httpRequest() \u2014 fetch is not available in n8n Code sandbox\nconst batch = $json;\nconst items = batch.items;\nconst endpoint = batch.rag_endpoint;\n\nconst results = [];\n\nfor (const item of items) {\n  const startTime = Date.now();\n  let result = {\n    dataset_name: batch.dataset_name,\n    item_index: item.item_index || item.id,\n    question: item.question,\n    expected_answer: item.expected_answer,\n    actual_answer: null,\n    retrieved_docs: null,\n    latency_ms: 0,\n    tokens_used: 0,\n    error: null\n  };\n\n  try {\n    let rawData = await this.helpers.httpRequest({\n      method: 'POST',\n      url: endpoint,\n      headers: {\n        'Content-Type': 'application/json',\n        'Authorization': `Bearer ${$vars.N8N_API_KEY || ''}`\n      },\n      body: {\n        query: item.question,\n        tenant_id: batch.tenant_id,\n        namespace: `benchmark-${batch.dataset_name}`,\n        top_k: 10,\n        include_sources: true,\n        benchmark_mode: true\n      },\n      timeout: 30000,\n      returnFullResponse: false,\n      json: true\n    });\n\n    // Normalize: allIncomingItems returns an array, unwrap first element\n    const data = Array.isArray(rawData) ? (rawData[0] || {}) : rawData;\n\n    // Extract answer \u2014 handle different RAG response formats:\n    // Standard: { response: 'string answer', sources: [...] }\n    // Graph (FIXED): { status: 'SUCCESS', response: 'LLM synthesized answer' }\n    // Graph (legacy): { status, response: { budgeted_context: { ... } } }\n    // Quantitative: { answer, interpretation, sql_result, ... }\n    let answer = '';\n    if (typeof data.response === 'string') {\n      answer = data.response;\n    } else if (typeof data.answer === 'string') {\n      answer = data.answer;\n    } else if (typeof data.text === 'string') {\n      answer = data.text;\n    } else if (typeof data.interpretation === 'string') {\n      answer = data.interpretation;\n    } else if (data.response && typeof data.response === 'object') {\n      // Legacy Graph RAG fallback: extract from metadata or context\n      if (data.response.response && typeof data.response.response === 'string') {\n        answer = data.response.response;\n      } else {\n        const ctx = data.response.budgeted_context || data.response;\n        const reranked = (ctx.reranked && ctx.reranked.length) ? ctx.reranked : [];\n        const vector = (ctx.vector && ctx.vector.length) ? ctx.vector : [];\n        const graph = (ctx.graph && ctx.graph.length) ? ctx.graph : [];\n        const docs = reranked.length ? reranked : (vector.length ? vector : graph);\n        if (docs.length > 0) {\n          answer = docs.slice(0, 3).map(d => d.content || d.text || d.document || '').filter(Boolean).join(' | ');\n        }\n      }\n    }\n    result.actual_answer = answer;\n\n    // Extract sources\n    let sources = [];\n    if (data.sources && data.sources.length) {\n      sources = data.sources;\n    } else if (data.retrieved_documents && data.retrieved_documents.length) {\n      sources = data.retrieved_documents;\n    } else if (data.contexts && data.contexts.length) {\n      sources = data.contexts;\n    } else if (data.response && typeof data.response === 'object') {\n      const ctx = data.response.budgeted_context || {};\n      sources = [...(ctx.reranked || []), ...(ctx.vector || []), ...(ctx.graph || [])];\n    }\n    result.retrieved_docs = sources;\n    result.tokens_used = data.usage?.total_tokens || data.tokens || data.response?.tokens_used || 0;\n  } catch (err) {\n    result.error = err.message || String(err);\n  }\n\n  result.latency_ms = Date.now() - startTime;\n  results.push(result);\n}\n\nreturn {\n  ...batch,\n  results: results,\n  batch_completed: true\n};"
+      },
+      "id": "b2000001-0007-4000-a002-000000000007",
+      "name": "Execute RAG Queries",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Compute metrics for each result in the batch\nconst batch = $json;\nconst results = batch.results;\nconst metricsToCompute = batch.metrics_to_compute;\n\n// === METRIC FUNCTIONS ===\n\n// Exact Match\nfunction exactMatch(predicted, expected) {\n  if (!predicted || !expected) return 0;\n  const norm = s => s.toLowerCase().trim().replace(/[^a-z0-9\\s]/g, '').replace(/\\s+/g, ' ');\n  return norm(predicted) === norm(expected) ? 1 : 0;\n}\n\n// Token-level F1\nfunction tokenF1(predicted, expected) {\n  if (!predicted || !expected) return { f1: 0, precision: 0, recall: 0 };\n  const norm = s => s.toLowerCase().trim().replace(/[^a-z0-9\\s]/g, '').split(/\\s+/);\n  const predTokens = new Set(norm(predicted));\n  const expTokens = new Set(norm(expected));\n  const common = [...predTokens].filter(t => expTokens.has(t));\n  if (common.length === 0) return { f1: 0, precision: 0, recall: 0 };\n  const precision = common.length / predTokens.size;\n  const recall = common.length / expTokens.size;\n  const f1 = 2 * precision * recall / (precision + recall);\n  return { f1, precision, recall };\n}\n\n// Recall@k for retrieved documents\nfunction recallAtK(retrieved, expected, k) {\n  if (!retrieved || !expected) return 0;\n  const topK = retrieved.slice(0, k);\n  const expectedNorm = expected.toLowerCase().trim();\n  for (const doc of topK) {\n    const content = (doc.content || doc.text || doc.pageContent || JSON.stringify(doc)).toLowerCase();\n    if (content.includes(expectedNorm) || expectedNorm.includes(content.substring(0, 50))) return 1;\n  }\n  return 0;\n}\n\n// MRR@k\nfunction mrrAtK(retrieved, expected, k) {\n  if (!retrieved || !expected) return 0;\n  const expectedNorm = expected.toLowerCase().trim();\n  const topK = retrieved.slice(0, k);\n  for (let i = 0; i < topK.length; i++) {\n    const content = (topK[i].content || topK[i].text || topK[i].pageContent || '').toLowerCase();\n    if (content.includes(expectedNorm)) return 1 / (i + 1);\n  }\n  return 0;\n}\n\n// ROUGE-L (simplified)\nfunction rougeL(predicted, expected) {\n  if (!predicted || !expected) return 0;\n  const pred = predicted.toLowerCase().split(/\\s+/);\n  const exp = expected.toLowerCase().split(/\\s+/);\n  // LCS length\n  const m = pred.length, n = exp.length;\n  const dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));\n  for (let i = 1; i <= m; i++) {\n    for (let j = 1; j <= n; j++) {\n      dp[i][j] = pred[i-1] === exp[j-1] ? dp[i-1][j-1] + 1 : Math.max(dp[i-1][j], dp[i][j-1]);\n    }\n  }\n  const lcs = dp[m][n];\n  if (lcs === 0) return 0;\n  const p = lcs / m, r = lcs / n;\n  return 2 * p * r / (p + r);\n}\n\n// Hallucination detection (basic: answer claims not in retrieved docs)\nfunction hallucinationRate(answer, retrieved) {\n  if (!answer || !retrieved || retrieved.length === 0) return 1;\n  const allContext = retrieved.map(d => (d.content || d.text || '').toLowerCase()).join(' ');\n  const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 10);\n  if (sentences.length === 0) return 0;\n  let unsupported = 0;\n  for (const sent of sentences) {\n    const words = sent.toLowerCase().trim().split(/\\s+/).filter(w => w.length > 3);\n    const supported = words.filter(w => allContext.includes(w)).length;\n    if (supported / words.length < 0.3) unsupported++;\n  }\n  return unsupported / sentences.length;\n}\n\n// Abstention detection\nfunction abstentionDetected(answer) {\n  if (!answer) return false;\n  const lower = answer.toLowerCase();\n  const patterns = ['i don\\'t know', 'je ne sais pas', 'cannot answer', 'no relevant', 'insufficient information', 'unable to answer', 'not enough context'];\n  return patterns.some(p => lower.includes(p));\n}\n\n// Compute metrics per result\nconst enrichedResults = results.map(r => {\n  const metrics = {};\n  const f1Data = tokenF1(r.actual_answer, r.expected_answer);\n\n  if (metricsToCompute.includes('em')) metrics.em = exactMatch(r.actual_answer, r.expected_answer);\n  if (metricsToCompute.includes('f1')) metrics.f1 = f1Data.f1;\n  if (metricsToCompute.includes('recall_at_5')) metrics.recall_at_5 = recallAtK(r.retrieved_docs, r.expected_answer, 5);\n  if (metricsToCompute.includes('recall_at_10')) metrics.recall_at_10 = recallAtK(r.retrieved_docs, r.expected_answer, 10);\n  if (metricsToCompute.includes('mrr_at_10')) metrics.mrr_at_10 = mrrAtK(r.retrieved_docs, r.expected_answer, 10);\n  if (metricsToCompute.includes('rouge_l')) metrics.rouge_l = rougeL(r.actual_answer, r.expected_answer);\n  if (metricsToCompute.includes('accuracy')) {\n    const em = metrics.em !== undefined ? metrics.em : exactMatch(r.actual_answer, r.expected_answer);\n    const f1Score = metrics.f1 !== undefined ? metrics.f1 : tokenF1(r.actual_answer, r.expected_answer).f1;\n    // accuracy = 1 if exact match, or if F1 > 0.6 (answer contains the key info)\n    metrics.accuracy = em === 1 ? 1 : (f1Score >= 0.6 ? 1 : (f1Score >= 0.3 ? 0.5 : 0));\n  }\n  if (metricsToCompute.includes('faithfulness')) metrics.faithfulness = 1 - hallucinationRate(r.actual_answer, r.retrieved_docs);\n  if (metricsToCompute.includes('hallucination_rate')) metrics.hallucination_rate = hallucinationRate(r.actual_answer, r.retrieved_docs);\n  if (metricsToCompute.includes('abstention_rate')) metrics.abstention_rate = abstentionDetected(r.actual_answer) ? 1 : 0;\n  if (metricsToCompute.includes('noise_robustness')) metrics.noise_robustness = f1Data.f1;  // proxy\n  if (metricsToCompute.includes('negative_rejection')) metrics.negative_rejection = (!r.expected_answer && abstentionDetected(r.actual_answer)) ? 1 : 0;\n  if (metricsToCompute.includes('retrieval_precision')) {\n    const relevant = (r.retrieved_docs || []).filter(d => {\n      const content = (d.content || d.text || '').toLowerCase();\n      return content.includes((r.expected_answer || '').toLowerCase().substring(0, 30));\n    });\n    metrics.retrieval_precision = r.retrieved_docs?.length ? relevant.length / r.retrieved_docs.length : 0;\n  }\n\n  return {\n    ...r,\n    metrics: metrics\n  };\n});\n\nreturn {\n  ...batch,\n  results: enrichedResults\n};"
+      },
+      "id": "b2000001-0008-4000-a002-000000000008",
+      "name": "Compute Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Store per-query results in Supabase\nconst batch = $json;\nconst results = batch.results;\n\nconst values = results.map(r => {\n  const q = (r.question || '').replace(/'/g, \"''\");\n  const ea = (r.expected_answer || '').replace(/'/g, \"''\");\n  const aa = (r.actual_answer || '').replace(/'/g, \"''\");\n  const err = r.error ? `'${r.error.replace(/'/g, \"''\")}'` : 'NULL';\n  return `('${batch.run_id}', '${batch.dataset_name}', ${r.item_index}, '${q}', '${ea}', '${aa}', '${JSON.stringify(r.retrieved_docs || []).replace(/'/g, \"''\")}'::jsonb, '${JSON.stringify(r.metrics).replace(/'/g, \"''\")}'::jsonb, ${r.latency_ms}, ${r.tokens_used || 0}, ${err}, '${batch.tenant_id}')`;\n}).join(',\\n');\n\nconst sql = `INSERT INTO benchmark_results (run_id, dataset_name, item_index, question, expected_answer, actual_answer, retrieved_docs, metrics, latency_ms, tokens_used, error, tenant_id)\nVALUES ${values};`;\n\nreturn {\n  ...batch,\n  store_sql: sql\n};"
+      },
+      "id": "b2000001-0009-4000-a002-000000000009",
+      "name": "Prepare Results Insert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.store_sql }}"
+      },
+      "id": "b2000001-0010-4000-a002-000000000010",
+      "name": "Supabase: Store Results",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -600,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log batch progress\nconst batch = $json;\nconst batchIdx = batch.batch_index || 0;\nconst totalBatches = batch.total_batches || 1;\nconst pct = Math.round(((batchIdx + 1) / totalBatches) * 100);\n\n// Compute batch-level aggregate metrics\nconst results = batch.results || batch.batch_results || [];\nconst metricKeys = results.length > 0 ? Object.keys(results[0]?.metrics || {}) : [];\nconst batchMetrics = {};\nfor (const key of metricKeys) {\n  const vals = results.map(r => r.metrics[key]).filter(v => v !== undefined && v !== null);\n  batchMetrics[key] = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;\n}\n\nconst avgLatency = results.length > 0 ? results.reduce((sum, r) => sum + (r.latency_ms || 0), 0) / results.length : 0;\nconst errorCount = results.filter(r => r.error).length;\n\nconsole.log(`[BENCHMARK TEST] ${batch.dataset_name} \u2014 Batch ${batchIdx + 1}/${totalBatches} (${pct}%)`);\nconsole.log(`  Avg Latency: ${Math.round(avgLatency)}ms | Errors: ${errorCount}`);\nfor (const [k, v] of Object.entries(batchMetrics)) {\n  console.log(`  ${k}: ${(v * 100).toFixed(1)}%`);\n}\n\nreturn {\n  batch_index: batchIdx,\n  total_batches: totalBatches,\n  progress_pct: pct,\n  batch_metrics: batchMetrics,\n  avg_latency_ms: avgLatency,\n  error_count: errorCount,\n  run_id: batch.run_id,\n  dataset_name: batch.dataset_name\n};"
+      },
+      "id": "b2000001-0011-4000-a002-000000000011",
+      "name": "Batch Progress Logger",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Final aggregation of all batch results\nconst initData = $node['Init Test Session'].json;\n\n// Aggregate all metrics from all stored results\nconst allBatchMetrics = [];  // collected during loop\n\n// Compute final summary\nconst summary = {\n  run_id: initData.run_id,\n  trace_id: initData.trace_id,\n  test_type: initData.test_type,\n  phase: initData.phase,\n  dataset_name: initData.dataset_name,\n  rag_target: initData.rag_target,\n  total_items: initData.sample_size,\n  metrics_computed: initData.metrics_to_compute,\n  status: 'completed',\n  completed_at: new Date().toISOString(),\n  started_at: initData.timestamp\n};\n\nconst startMs = new Date(summary.started_at).getTime();\nconst endMs = new Date(summary.completed_at).getTime();\nsummary.duration_ms = endMs - startMs;\nsummary.duration_human = `${Math.round(summary.duration_ms / 1000)}s`;\n\nreturn summary;"
+      },
+      "id": "b2000001-0012-4000-a002-000000000012",
+      "name": "Final Aggregation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=WITH agg AS (\n  SELECT\n    run_id,\n    COUNT(*) AS total,\n    COUNT(*) FILTER (WHERE error IS NULL) AS success,\n    COUNT(*) FILTER (WHERE error IS NOT NULL) AS errors,\n    AVG(latency_ms) AS avg_latency,\n    jsonb_object_agg(\n      key,\n      avg_val\n    ) AS avg_metrics\n  FROM (\n    SELECT\n      run_id,\n      error,\n      latency_ms,\n      key,\n      AVG(value::float) AS avg_val\n    FROM benchmark_results,\n    LATERAL jsonb_each_text(metrics) AS m(key, value)\n    WHERE run_id = '{{ $json.run_id }}'\n    GROUP BY run_id, error, latency_ms, key\n  ) sub\n  GROUP BY run_id\n)\nUPDATE benchmark_runs SET\n  status = '{{ $json.status }}',\n  processed_items = (SELECT total FROM agg),\n  error_count = (SELECT errors FROM agg),\n  completed_at = NOW(),\n  duration_ms = {{ $json.duration_ms }},\n  config = config || jsonb_build_object('final_metrics', (SELECT avg_metrics FROM agg))\nWHERE run_id = '{{ $json.run_id }}';"
+      },
+      "id": "b2000001-0013-4000-a002-000000000013",
+      "name": "Update Run Status",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        300,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check thresholds and generate alerts if needed\nconst initData = $node['Init Test Session'].json;\nconst summary = $node['Final Aggregation'].json;\nconst thresholds = initData.thresholds || {};\n\n// Default thresholds per test type\nconst DEFAULT_THRESHOLDS = {\n  'retrieval': { recall_at_10: 0.75, mrr_at_10: 0.40 },\n  'generation': { faithfulness: 0.80, f1: 0.60 },\n  'e2e': { accuracy: 0.50, perfect_rate: 0.30 },\n  'domain': { accuracy: 0.55 },\n  'robustness': { hallucination_rate: 0.15 },  // max threshold\n  'regression': {}  // compared to baseline, not absolute thresholds\n};\n\nconst activeThresholds = { ...DEFAULT_THRESHOLDS[initData.test_type], ...thresholds };\n\nreturn {\n  ...summary,\n  thresholds: activeThresholds,\n  check_alerts: Object.keys(activeThresholds).length > 0\n};"
+      },
+      "id": "b2000001-0014-4000-a002-000000000014",
+      "name": "Check Thresholds",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"resourceSpans\": [{\n    \"resource\": { \"attributes\": [{ \"key\": \"service.name\", \"value\": { \"stringValue\": \"benchmark-rag-tester\" } }] },\n    \"scopeSpans\": [{\n      \"spans\": [{\n        \"traceId\": \"{{ $json.trace_id }}\",\n        \"spanId\": \"{{ $json.run_id }}\",\n        \"name\": \"benchmark.test.{{ $json.test_type }}.{{ $json.dataset_name }}\",\n        \"kind\": 1,\n        \"startTimeUnixNano\": \"{{ new Date($json.started_at).getTime() * 1000000 }}\",\n        \"endTimeUnixNano\": \"{{ Date.now() * 1000000 }}\",\n        \"attributes\": [\n          { \"key\": \"test_type\", \"value\": { \"stringValue\": \"{{ $json.test_type }}\" } },\n          { \"key\": \"dataset\", \"value\": { \"stringValue\": \"{{ $json.dataset_name }}\" } },\n          { \"key\": \"rag_target\", \"value\": { \"stringValue\": \"{{ $json.rag_target }}\" } },\n          { \"key\": \"duration_ms\", \"value\": { \"intValue\": {{ $json.duration_ms }} } },\n          { \"key\": \"status\", \"value\": { \"stringValue\": \"{{ $json.status }}\" } }\n        ],\n        \"status\": { \"code\": 1 }\n      }]\n    }]\n  }]\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "b2000001-0015-4000-a002-000000000015",
+      "name": "Export Trace OTEL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        300
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, run_id: $json.run_id, test_type: $json.test_type, dataset: $json.dataset_name, rag_target: $json.rag_target, total_items: $json.total_items, duration: $json.duration_human, status: $json.status }) }}"
+      },
+      "id": "b2000001-0016-4000-a002-000000000016",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook: Start RAG Test": {
+      "main": [
+        [
+          {
+            "node": "Init Test Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init Test Session": {
+      "main": [
+        [
+          {
+            "node": "Fetch Benchmark Q&A",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Test Run Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Benchmark Q&A": {
+      "main": [
+        [
+          {
+            "node": "Create Test Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Test Batches": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Test Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Test Batches": {
+      "main": [
+        [
+          {
+            "node": "Final Aggregation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute RAG Queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute RAG Queries": {
+      "main": [
+        [
+          {
+            "node": "Compute Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute Metrics": {
+      "main": [
+        [
+          {
+            "node": "Prepare Results Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Results Insert": {
+      "main": [
+        [
+          {
+            "node": "Supabase: Store Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase: Store Results": {
+      "main": [
+        [
+          {
+            "node": "Batch Progress Logger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Progress Logger": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Test Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Aggregation": {
+      "main": [
+        [
+          {
+            "node": "Update Run Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Run Status": {
+      "main": [
+        [
+          {
+            "node": "Check Thresholds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Thresholds": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Export Trace OTEL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "59c00f4c-677d-49ab-8c53-617bcd2239bf",
+  "activeVersionId": "59c00f4c-677d-49ab-8c53-617bcd2239bf",
+  "versionCounter": 44,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-06T13:14:46.007Z",
+      "createdAt": "2026-02-06T13:14:46.007Z",
+      "role": "workflow:owner",
+      "workflowId": "QCHKdqnTIEwEN1Ng",
+      "projectId": "JV7MbqBbWPTstXIo",
+      "project": {
+        "updatedAt": "2026-01-07T13:20:26.996Z",
+        "createdAt": "2026-01-07T13:20:21.870Z",
+        "id": "JV7MbqBbWPTstXIo",
+        "name": "Alexis Moret <alexis.moret6@outlook.fr>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "215767e0-958a-4c74-a67a-e335807eba64",
+        "projectRelations": [
+          {
+            "updatedAt": "2026-01-07T13:20:21.870Z",
+            "createdAt": "2026-01-07T13:20:21.870Z",
+            "userId": "215767e0-958a-4c74-a67a-e335807eba64",
+            "projectId": "JV7MbqBbWPTstXIo",
+            "user": {
+              "updatedAt": "2026-02-09T23:01:37.000Z",
+              "createdAt": "2026-01-07T13:20:20.003Z",
+              "id": "215767e0-958a-4c74-a67a-e335807eba64",
+              "email": "alexis.moret6@outlook.fr",
+              "firstName": "Alexis",
+              "lastName": "Moret",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "userClaimedAiCredits": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "e3_89vptJG7PPA-OHyAg3",
+                "userActivatedAt": 1767837780144,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1768407850905
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-02-09",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-02-06T18:49:47.548Z",
+    "createdAt": "2026-02-06T18:49:47.548Z",
+    "versionId": "59c00f4c-677d-49ab-8c53-617bcd2239bf",
+    "workflowId": "QCHKdqnTIEwEN1Ng",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "benchmark-test-rag",
+          "options": {
+            "rawBody": true
+          },
+          "responseMode": "responseNode"
+        },
+        "id": "b2000001-0001-4000-a002-000000000001",
+        "name": "Webhook: Start RAG Test",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -3000,
+          300
+        ],
+        "webhookId": "bench-test-rag-001"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Init RAG Test Session\nconst body = $json.body || $json || {};\n\nif (!body.dataset_name) throw new Error('VALIDATION_ERROR: dataset_name is required');\n\n// Phase routing: determines which RAG workflow to call\nconst PHASE_CONFIG = {\n  'retrieval': {\n    phase: 'phase_2',\n    rag_endpoint: '/webhook/rag-v6-query',\n    metrics: ['recall_at_5', 'recall_at_10', 'mrr_at_10', 'ndcg_at_10'],\n    default_batch_size: 20\n  },\n  'generation': {\n    phase: 'phase_3',\n    rag_endpoint: '/webhook/rag-v6-query',\n    metrics: ['em', 'f1', 'faithfulness', 'rouge_l', 'noise_robustness', 'negative_rejection'],\n    default_batch_size: 10\n  },\n  'e2e': {\n    phase: 'phase_4',\n    rag_endpoint: '/webhook/rag-v6-query',\n    metrics: ['accuracy', 'f1', 'em', 'rouge_l', 'retrieval_precision', 'faithfulness'],\n    default_batch_size: 10\n  },\n  'domain': {\n    phase: 'phase_5',\n    rag_endpoint: '/webhook/rag-v6-query',\n    metrics: ['accuracy', 'faithfulness', 'extraction_precision'],\n    default_batch_size: 10\n  },\n  'robustness': {\n    phase: 'phase_7',\n    rag_endpoint: '/webhook/rag-v6-query',\n    metrics: ['hallucination_rate', 'abstention_rate', 'noise_robustness', 'counterfactual_robustness'],\n    default_batch_size: 20\n  },\n  'regression': {\n    phase: 'phase_8',\n    rag_endpoint: '/webhook/rag-v6-query',\n    metrics: ['em', 'f1', 'recall_at_10', 'faithfulness', 'accuracy'],\n    default_batch_size: 20\n  }\n};\n\nconst testType = body.test_type || 'retrieval';\nconst config = PHASE_CONFIG[testType];\nif (!config) throw new Error(`UNKNOWN_TEST_TYPE: ${testType}. Available: ${Object.keys(PHASE_CONFIG).join(', ')}`);\n\nconst runId = `test-${testType}-${body.dataset_name}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;\nconst traceId = `tr-bench-test-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\n// RAG target: which workflow to hit\n// FIX: updated endpoints to match actual active webhook paths on n8n cloud\nconst ragTarget = body.rag_target || 'standard';  // standard, graph, quantitative\nconst baseUrl = $vars.N8N_BASE_URL || 'https://amoret.app.n8n.cloud';\nconst RAG_ENDPOINTS = {\n  'standard': baseUrl + '/webhook/rag-multi-index-v3',\n  'graph': baseUrl + '/webhook/ff622742-6d71-4e91-af71-b5c666088717',\n  'quantitative': baseUrl + '/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9'\n};\n\nreturn {\n  run_id: runId,\n  trace_id: traceId,\n  test_type: testType,\n  phase: config.phase,\n  dataset_name: body.dataset_name,\n  rag_target: ragTarget,\n  rag_endpoint: RAG_ENDPOINTS[ragTarget] || RAG_ENDPOINTS['standard'],\n  metrics_to_compute: body.metrics || config.metrics,\n  batch_size: body.batch_size || config.default_batch_size,\n  sample_size: body.sample_size || 100,\n  tenant_id: body.tenant_id || 'benchmark',\n  thresholds: body.thresholds || {},\n  timestamp: new Date().toISOString()\n};"
+        },
+        "id": "b2000001-0002-4000-a002-000000000002",
+        "name": "Init Test Session",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -2700,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "=SELECT id, dataset_name, question, expected_answer, context, supporting_facts, metadata\nFROM benchmark_datasets\nWHERE dataset_name = '{{ $json.dataset_name }}'\nAND tenant_id = '{{ $json.tenant_id }}'\nORDER BY item_index ASC\nLIMIT {{ $json.sample_size }};"
+        },
+        "id": "b2000001-0003-4000-a002-000000000003",
+        "name": "Fetch Benchmark Q&A",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -2400,
+          300
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Validate fetched data and create test batches\nconst initData = $node['Init Test Session'].json;\nconst rows = $input.all().map(item => item.json);\n\nif (!Array.isArray(rows) || rows.length === 0) {\n  throw new Error(`NO_DATA: No benchmark items found for dataset '${initData.dataset_name}'. Run ingestion first.`);\n}\n\nconst batchSize = initData.batch_size;\nconst batches = [];\n\nfor (let i = 0; i < rows.length; i += batchSize) {\n  const batchItems = rows.slice(i, i + batchSize);\n  batches.push({\n    batch_index: Math.floor(i / batchSize),\n    batch_size: batchItems.length,\n    items: batchItems,\n    run_id: initData.run_id,\n    trace_id: initData.trace_id,\n    test_type: initData.test_type,\n    dataset_name: initData.dataset_name,\n    rag_endpoint: initData.rag_endpoint,\n    rag_target: initData.rag_target,\n    metrics_to_compute: initData.metrics_to_compute,\n    tenant_id: initData.tenant_id,\n    total_batches: Math.ceil(rows.length / batchSize),\n    total_items: rows.length\n  });\n}\n\nconsole.log(`[BENCHMARK TEST] ${initData.dataset_name}: ${rows.length} items in ${batches.length} batches of ${batchSize}`);\n\nreturn batches.map(b => ({ json: b }));"
+        },
+        "id": "b2000001-0004-4000-a002-000000000004",
+        "name": "Create Test Batches",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -2100,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "=INSERT INTO benchmark_runs (run_id, run_type, phase, workflow_name, dataset_names, config, status, total_items, tenant_id, trace_id)\nVALUES (\n  '{{ $node['Init Test Session'].json.run_id }}',\n  '{{ $node['Init Test Session'].json.test_type }}',\n  '{{ $node['Init Test Session'].json.phase }}',\n  'BENCHMARK - RAG Batch Tester',\n  ARRAY['{{ $node['Init Test Session'].json.dataset_name }}'],\n  '{{ JSON.stringify({ batch_size: $node['Init Test Session'].json.batch_size, rag_target: $node['Init Test Session'].json.rag_target, metrics: $node['Init Test Session'].json.metrics_to_compute }) }}'::jsonb,\n  'running',\n  {{ $node['Init Test Session'].json.sample_size }},\n  '{{ $node['Init Test Session'].json.tenant_id }}',\n  '{{ $node['Init Test Session'].json.trace_id }}'\n)\nON CONFLICT (run_id) DO UPDATE SET status = 'running';"
+        },
+        "id": "b2000001-0005-4000-a002-000000000005",
+        "name": "Log Test Run Start",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -2100,
+          560
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "batchSize": 1,
+          "options": {}
+        },
+        "id": "b2000001-0006-4000-a002-000000000006",
+        "name": "Loop Over Test Batches",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          -1800,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Execute RAG queries for each item in the batch\n// FIX: replaced fetch() with this.helpers.httpRequest() \u2014 fetch is not available in n8n Code sandbox\nconst batch = $json;\nconst items = batch.items;\nconst endpoint = batch.rag_endpoint;\n\nconst results = [];\n\nfor (const item of items) {\n  const startTime = Date.now();\n  let result = {\n    dataset_name: batch.dataset_name,\n    item_index: item.item_index || item.id,\n    question: item.question,\n    expected_answer: item.expected_answer,\n    actual_answer: null,\n    retrieved_docs: null,\n    latency_ms: 0,\n    tokens_used: 0,\n    error: null\n  };\n\n  try {\n    let rawData = await this.helpers.httpRequest({\n      method: 'POST',\n      url: endpoint,\n      headers: {\n        'Content-Type': 'application/json',\n        'Authorization': `Bearer ${$vars.N8N_API_KEY || ''}`\n      },\n      body: {\n        query: item.question,\n        tenant_id: batch.tenant_id,\n        namespace: `benchmark-${batch.dataset_name}`,\n        top_k: 10,\n        include_sources: true,\n        benchmark_mode: true\n      },\n      timeout: 30000,\n      returnFullResponse: false,\n      json: true\n    });\n\n    // Normalize: allIncomingItems returns an array, unwrap first element\n    const data = Array.isArray(rawData) ? (rawData[0] || {}) : rawData;\n\n    // Extract answer \u2014 handle different RAG response formats:\n    // Standard: { response: 'string answer', sources: [...] }\n    // Graph (FIXED): { status: 'SUCCESS', response: 'LLM synthesized answer' }\n    // Graph (legacy): { status, response: { budgeted_context: { ... } } }\n    // Quantitative: { answer, interpretation, sql_result, ... }\n    let answer = '';\n    if (typeof data.response === 'string') {\n      answer = data.response;\n    } else if (typeof data.answer === 'string') {\n      answer = data.answer;\n    } else if (typeof data.text === 'string') {\n      answer = data.text;\n    } else if (typeof data.interpretation === 'string') {\n      answer = data.interpretation;\n    } else if (data.response && typeof data.response === 'object') {\n      // Legacy Graph RAG fallback: extract from metadata or context\n      if (data.response.response && typeof data.response.response === 'string') {\n        answer = data.response.response;\n      } else {\n        const ctx = data.response.budgeted_context || data.response;\n        const reranked = (ctx.reranked && ctx.reranked.length) ? ctx.reranked : [];\n        const vector = (ctx.vector && ctx.vector.length) ? ctx.vector : [];\n        const graph = (ctx.graph && ctx.graph.length) ? ctx.graph : [];\n        const docs = reranked.length ? reranked : (vector.length ? vector : graph);\n        if (docs.length > 0) {\n          answer = docs.slice(0, 3).map(d => d.content || d.text || d.document || '').filter(Boolean).join(' | ');\n        }\n      }\n    }\n    result.actual_answer = answer;\n\n    // Extract sources\n    let sources = [];\n    if (data.sources && data.sources.length) {\n      sources = data.sources;\n    } else if (data.retrieved_documents && data.retrieved_documents.length) {\n      sources = data.retrieved_documents;\n    } else if (data.contexts && data.contexts.length) {\n      sources = data.contexts;\n    } else if (data.response && typeof data.response === 'object') {\n      const ctx = data.response.budgeted_context || {};\n      sources = [...(ctx.reranked || []), ...(ctx.vector || []), ...(ctx.graph || [])];\n    }\n    result.retrieved_docs = sources;\n    result.tokens_used = data.usage?.total_tokens || data.tokens || data.response?.tokens_used || 0;\n  } catch (err) {\n    result.error = err.message || String(err);\n  }\n\n  result.latency_ms = Date.now() - startTime;\n  results.push(result);\n}\n\nreturn {\n  ...batch,\n  results: results,\n  batch_completed: true\n};"
+        },
+        "id": "b2000001-0007-4000-a002-000000000007",
+        "name": "Execute RAG Queries",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1500,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Compute metrics for each result in the batch\nconst batch = $json;\nconst results = batch.results;\nconst metricsToCompute = batch.metrics_to_compute;\n\n// === METRIC FUNCTIONS ===\n\n// Exact Match\nfunction exactMatch(predicted, expected) {\n  if (!predicted || !expected) return 0;\n  const norm = s => s.toLowerCase().trim().replace(/[^a-z0-9\\s]/g, '').replace(/\\s+/g, ' ');\n  return norm(predicted) === norm(expected) ? 1 : 0;\n}\n\n// Token-level F1\nfunction tokenF1(predicted, expected) {\n  if (!predicted || !expected) return { f1: 0, precision: 0, recall: 0 };\n  const norm = s => s.toLowerCase().trim().replace(/[^a-z0-9\\s]/g, '').split(/\\s+/);\n  const predTokens = new Set(norm(predicted));\n  const expTokens = new Set(norm(expected));\n  const common = [...predTokens].filter(t => expTokens.has(t));\n  if (common.length === 0) return { f1: 0, precision: 0, recall: 0 };\n  const precision = common.length / predTokens.size;\n  const recall = common.length / expTokens.size;\n  const f1 = 2 * precision * recall / (precision + recall);\n  return { f1, precision, recall };\n}\n\n// Recall@k for retrieved documents\nfunction recallAtK(retrieved, expected, k) {\n  if (!retrieved || !expected) return 0;\n  const topK = retrieved.slice(0, k);\n  const expectedNorm = expected.toLowerCase().trim();\n  for (const doc of topK) {\n    const content = (doc.content || doc.text || doc.pageContent || JSON.stringify(doc)).toLowerCase();\n    if (content.includes(expectedNorm) || expectedNorm.includes(content.substring(0, 50))) return 1;\n  }\n  return 0;\n}\n\n// MRR@k\nfunction mrrAtK(retrieved, expected, k) {\n  if (!retrieved || !expected) return 0;\n  const expectedNorm = expected.toLowerCase().trim();\n  const topK = retrieved.slice(0, k);\n  for (let i = 0; i < topK.length; i++) {\n    const content = (topK[i].content || topK[i].text || topK[i].pageContent || '').toLowerCase();\n    if (content.includes(expectedNorm)) return 1 / (i + 1);\n  }\n  return 0;\n}\n\n// ROUGE-L (simplified)\nfunction rougeL(predicted, expected) {\n  if (!predicted || !expected) return 0;\n  const pred = predicted.toLowerCase().split(/\\s+/);\n  const exp = expected.toLowerCase().split(/\\s+/);\n  // LCS length\n  const m = pred.length, n = exp.length;\n  const dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));\n  for (let i = 1; i <= m; i++) {\n    for (let j = 1; j <= n; j++) {\n      dp[i][j] = pred[i-1] === exp[j-1] ? dp[i-1][j-1] + 1 : Math.max(dp[i-1][j], dp[i][j-1]);\n    }\n  }\n  const lcs = dp[m][n];\n  if (lcs === 0) return 0;\n  const p = lcs / m, r = lcs / n;\n  return 2 * p * r / (p + r);\n}\n\n// Hallucination detection (basic: answer claims not in retrieved docs)\nfunction hallucinationRate(answer, retrieved) {\n  if (!answer || !retrieved || retrieved.length === 0) return 1;\n  const allContext = retrieved.map(d => (d.content || d.text || '').toLowerCase()).join(' ');\n  const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 10);\n  if (sentences.length === 0) return 0;\n  let unsupported = 0;\n  for (const sent of sentences) {\n    const words = sent.toLowerCase().trim().split(/\\s+/).filter(w => w.length > 3);\n    const supported = words.filter(w => allContext.includes(w)).length;\n    if (supported / words.length < 0.3) unsupported++;\n  }\n  return unsupported / sentences.length;\n}\n\n// Abstention detection\nfunction abstentionDetected(answer) {\n  if (!answer) return false;\n  const lower = answer.toLowerCase();\n  const patterns = ['i don\\'t know', 'je ne sais pas', 'cannot answer', 'no relevant', 'insufficient information', 'unable to answer', 'not enough context'];\n  return patterns.some(p => lower.includes(p));\n}\n\n// Compute metrics per result\nconst enrichedResults = results.map(r => {\n  const metrics = {};\n  const f1Data = tokenF1(r.actual_answer, r.expected_answer);\n\n  if (metricsToCompute.includes('em')) metrics.em = exactMatch(r.actual_answer, r.expected_answer);\n  if (metricsToCompute.includes('f1')) metrics.f1 = f1Data.f1;\n  if (metricsToCompute.includes('recall_at_5')) metrics.recall_at_5 = recallAtK(r.retrieved_docs, r.expected_answer, 5);\n  if (metricsToCompute.includes('recall_at_10')) metrics.recall_at_10 = recallAtK(r.retrieved_docs, r.expected_answer, 10);\n  if (metricsToCompute.includes('mrr_at_10')) metrics.mrr_at_10 = mrrAtK(r.retrieved_docs, r.expected_answer, 10);\n  if (metricsToCompute.includes('rouge_l')) metrics.rouge_l = rougeL(r.actual_answer, r.expected_answer);\n  if (metricsToCompute.includes('accuracy')) {\n    const em = metrics.em !== undefined ? metrics.em : exactMatch(r.actual_answer, r.expected_answer);\n    const f1Score = metrics.f1 !== undefined ? metrics.f1 : tokenF1(r.actual_answer, r.expected_answer).f1;\n    // accuracy = 1 if exact match, or if F1 > 0.6 (answer contains the key info)\n    metrics.accuracy = em === 1 ? 1 : (f1Score >= 0.6 ? 1 : (f1Score >= 0.3 ? 0.5 : 0));\n  }\n  if (metricsToCompute.includes('faithfulness')) metrics.faithfulness = 1 - hallucinationRate(r.actual_answer, r.retrieved_docs);\n  if (metricsToCompute.includes('hallucination_rate')) metrics.hallucination_rate = hallucinationRate(r.actual_answer, r.retrieved_docs);\n  if (metricsToCompute.includes('abstention_rate')) metrics.abstention_rate = abstentionDetected(r.actual_answer) ? 1 : 0;\n  if (metricsToCompute.includes('noise_robustness')) metrics.noise_robustness = f1Data.f1;  // proxy\n  if (metricsToCompute.includes('negative_rejection')) metrics.negative_rejection = (!r.expected_answer && abstentionDetected(r.actual_answer)) ? 1 : 0;\n  if (metricsToCompute.includes('retrieval_precision')) {\n    const relevant = (r.retrieved_docs || []).filter(d => {\n      const content = (d.content || d.text || '').toLowerCase();\n      return content.includes((r.expected_answer || '').toLowerCase().substring(0, 30));\n    });\n    metrics.retrieval_precision = r.retrieved_docs?.length ? relevant.length / r.retrieved_docs.length : 0;\n  }\n\n  return {\n    ...r,\n    metrics: metrics\n  };\n});\n\nreturn {\n  ...batch,\n  results: enrichedResults\n};"
+        },
+        "id": "b2000001-0008-4000-a002-000000000008",
+        "name": "Compute Metrics",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1200,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Store per-query results in Supabase\nconst batch = $json;\nconst results = batch.results;\n\nconst values = results.map(r => {\n  const q = (r.question || '').replace(/'/g, \"''\");\n  const ea = (r.expected_answer || '').replace(/'/g, \"''\");\n  const aa = (r.actual_answer || '').replace(/'/g, \"''\");\n  const err = r.error ? `'${r.error.replace(/'/g, \"''\")}'` : 'NULL';\n  return `('${batch.run_id}', '${batch.dataset_name}', ${r.item_index}, '${q}', '${ea}', '${aa}', '${JSON.stringify(r.retrieved_docs || []).replace(/'/g, \"''\")}'::jsonb, '${JSON.stringify(r.metrics).replace(/'/g, \"''\")}'::jsonb, ${r.latency_ms}, ${r.tokens_used || 0}, ${err}, '${batch.tenant_id}')`;\n}).join(',\\n');\n\nconst sql = `INSERT INTO benchmark_results (run_id, dataset_name, item_index, question, expected_answer, actual_answer, retrieved_docs, metrics, latency_ms, tokens_used, error, tenant_id)\nVALUES ${values};`;\n\nreturn {\n  ...batch,\n  store_sql: sql\n};"
+        },
+        "id": "b2000001-0009-4000-a002-000000000009",
+        "name": "Prepare Results Insert",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -900,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "={{ $json.store_sql }}"
+        },
+        "id": "b2000001-0010-4000-a002-000000000010",
+        "name": "Supabase: Store Results",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -600,
+          300
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Log batch progress\nconst batch = $json;\nconst batchIdx = batch.batch_index || 0;\nconst totalBatches = batch.total_batches || 1;\nconst pct = Math.round(((batchIdx + 1) / totalBatches) * 100);\n\n// Compute batch-level aggregate metrics\nconst results = batch.results || batch.batch_results || [];\nconst metricKeys = results.length > 0 ? Object.keys(results[0]?.metrics || {}) : [];\nconst batchMetrics = {};\nfor (const key of metricKeys) {\n  const vals = results.map(r => r.metrics[key]).filter(v => v !== undefined && v !== null);\n  batchMetrics[key] = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;\n}\n\nconst avgLatency = results.length > 0 ? results.reduce((sum, r) => sum + (r.latency_ms || 0), 0) / results.length : 0;\nconst errorCount = results.filter(r => r.error).length;\n\nconsole.log(`[BENCHMARK TEST] ${batch.dataset_name} \u2014 Batch ${batchIdx + 1}/${totalBatches} (${pct}%)`);\nconsole.log(`  Avg Latency: ${Math.round(avgLatency)}ms | Errors: ${errorCount}`);\nfor (const [k, v] of Object.entries(batchMetrics)) {\n  console.log(`  ${k}: ${(v * 100).toFixed(1)}%`);\n}\n\nreturn {\n  batch_index: batchIdx,\n  total_batches: totalBatches,\n  progress_pct: pct,\n  batch_metrics: batchMetrics,\n  avg_latency_ms: avgLatency,\n  error_count: errorCount,\n  run_id: batch.run_id,\n  dataset_name: batch.dataset_name\n};"
+        },
+        "id": "b2000001-0011-4000-a002-000000000011",
+        "name": "Batch Progress Logger",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -300,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Final aggregation of all batch results\nconst initData = $node['Init Test Session'].json;\n\n// Aggregate all metrics from all stored results\nconst allBatchMetrics = [];  // collected during loop\n\n// Compute final summary\nconst summary = {\n  run_id: initData.run_id,\n  trace_id: initData.trace_id,\n  test_type: initData.test_type,\n  phase: initData.phase,\n  dataset_name: initData.dataset_name,\n  rag_target: initData.rag_target,\n  total_items: initData.sample_size,\n  metrics_computed: initData.metrics_to_compute,\n  status: 'completed',\n  completed_at: new Date().toISOString(),\n  started_at: initData.timestamp\n};\n\nconst startMs = new Date(summary.started_at).getTime();\nconst endMs = new Date(summary.completed_at).getTime();\nsummary.duration_ms = endMs - startMs;\nsummary.duration_human = `${Math.round(summary.duration_ms / 1000)}s`;\n\nreturn summary;"
+        },
+        "id": "b2000001-0012-4000-a002-000000000012",
+        "name": "Final Aggregation",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          0,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "=WITH agg AS (\n  SELECT\n    run_id,\n    COUNT(*) AS total,\n    COUNT(*) FILTER (WHERE error IS NULL) AS success,\n    COUNT(*) FILTER (WHERE error IS NOT NULL) AS errors,\n    AVG(latency_ms) AS avg_latency,\n    jsonb_object_agg(\n      key,\n      avg_val\n    ) AS avg_metrics\n  FROM (\n    SELECT\n      run_id,\n      error,\n      latency_ms,\n      key,\n      AVG(value::float) AS avg_val\n    FROM benchmark_results,\n    LATERAL jsonb_each_text(metrics) AS m(key, value)\n    WHERE run_id = '{{ $json.run_id }}'\n    GROUP BY run_id, error, latency_ms, key\n  ) sub\n  GROUP BY run_id\n)\nUPDATE benchmark_runs SET\n  status = '{{ $json.status }}',\n  processed_items = (SELECT total FROM agg),\n  error_count = (SELECT errors FROM agg),\n  completed_at = NOW(),\n  duration_ms = {{ $json.duration_ms }},\n  config = config || jsonb_build_object('final_metrics', (SELECT avg_metrics FROM agg))\nWHERE run_id = '{{ $json.run_id }}';"
+        },
+        "id": "b2000001-0013-4000-a002-000000000013",
+        "name": "Update Run Status",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          300,
+          300
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Check thresholds and generate alerts if needed\nconst initData = $node['Init Test Session'].json;\nconst summary = $node['Final Aggregation'].json;\nconst thresholds = initData.thresholds || {};\n\n// Default thresholds per test type\nconst DEFAULT_THRESHOLDS = {\n  'retrieval': { recall_at_10: 0.75, mrr_at_10: 0.40 },\n  'generation': { faithfulness: 0.80, f1: 0.60 },\n  'e2e': { accuracy: 0.50, perfect_rate: 0.30 },\n  'domain': { accuracy: 0.55 },\n  'robustness': { hallucination_rate: 0.15 },  // max threshold\n  'regression': {}  // compared to baseline, not absolute thresholds\n};\n\nconst activeThresholds = { ...DEFAULT_THRESHOLDS[initData.test_type], ...thresholds };\n\nreturn {\n  ...summary,\n  thresholds: activeThresholds,\n  check_alerts: Object.keys(activeThresholds).length > 0\n};"
+        },
+        "id": "b2000001-0014-4000-a002-000000000014",
+        "name": "Check Thresholds",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          600,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"resourceSpans\": [{\n    \"resource\": { \"attributes\": [{ \"key\": \"service.name\", \"value\": { \"stringValue\": \"benchmark-rag-tester\" } }] },\n    \"scopeSpans\": [{\n      \"spans\": [{\n        \"traceId\": \"{{ $json.trace_id }}\",\n        \"spanId\": \"{{ $json.run_id }}\",\n        \"name\": \"benchmark.test.{{ $json.test_type }}.{{ $json.dataset_name }}\",\n        \"kind\": 1,\n        \"startTimeUnixNano\": \"{{ new Date($json.started_at).getTime() * 1000000 }}\",\n        \"endTimeUnixNano\": \"{{ Date.now() * 1000000 }}\",\n        \"attributes\": [\n          { \"key\": \"test_type\", \"value\": { \"stringValue\": \"{{ $json.test_type }}\" } },\n          { \"key\": \"dataset\", \"value\": { \"stringValue\": \"{{ $json.dataset_name }}\" } },\n          { \"key\": \"rag_target\", \"value\": { \"stringValue\": \"{{ $json.rag_target }}\" } },\n          { \"key\": \"duration_ms\", \"value\": { \"intValue\": {{ $json.duration_ms }} } },\n          { \"key\": \"status\", \"value\": { \"stringValue\": \"{{ $json.status }}\" } }\n        ],\n        \"status\": { \"code\": 1 }\n      }]\n    }]\n  }]\n}",
+          "options": {
+            "timeout": 10000
+          }
+        },
+        "id": "b2000001-0015-4000-a002-000000000015",
+        "name": "Export Trace OTEL",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          900,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify({ success: true, run_id: $json.run_id, test_type: $json.test_type, dataset: $json.dataset_name, rag_target: $json.rag_target, total_items: $json.total_items, duration: $json.duration_human, status: $json.status }) }}"
+        },
+        "id": "b2000001-0016-4000-a002-000000000016",
+        "name": "Respond Success",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1200,
+          300
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook: Start RAG Test": {
+        "main": [
+          [
+            {
+              "node": "Init Test Session",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Init Test Session": {
+        "main": [
+          [
+            {
+              "node": "Fetch Benchmark Q&A",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Log Test Run Start",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Benchmark Q&A": {
+        "main": [
+          [
+            {
+              "node": "Create Test Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Test Batches": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Test Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Test Batches": {
+        "main": [
+          [
+            {
+              "node": "Final Aggregation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Execute RAG Queries",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute RAG Queries": {
+        "main": [
+          [
+            {
+              "node": "Compute Metrics",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Compute Metrics": {
+        "main": [
+          [
+            {
+              "node": "Prepare Results Insert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Results Insert": {
+        "main": [
+          [
+            {
+              "node": "Supabase: Store Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase: Store Results": {
+        "main": [
+          [
+            {
+              "node": "Batch Progress Logger",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Batch Progress Logger": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Test Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Final Aggregation": {
+        "main": [
+          [
+            {
+              "node": "Update Run Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Run Status": {
+        "main": [
+          [
+            {
+              "node": "Check Thresholds",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Thresholds": {
+        "main": [
+          [
+            {
+              "node": "Respond Success",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Export Trace OTEL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Alexis Moret",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-06T18:49:47.728Z",
+        "id": 549,
+        "workflowId": "QCHKdqnTIEwEN1Ng",
+        "versionId": "59c00f4c-677d-49ab-8c53-617bcd2239bf",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T18:50:20.335Z",
+        "id": 556,
+        "workflowId": "QCHKdqnTIEwEN1Ng",
+        "versionId": "59c00f4c-677d-49ab-8c53-617bcd2239bf",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T20:35:06.405Z",
+        "id": 576,
+        "workflowId": "QCHKdqnTIEwEN1Ng",
+        "versionId": "59c00f4c-677d-49ab-8c53-617bcd2239bf",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      }
+    ]
+  }
+}
