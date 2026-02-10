@@ -215,37 +215,23 @@ ALLOWED_SETTINGS = {"executionOrder", "callerPolicy", "saveManualExecutions", "s
 
 ## Root Cause Analysis (from Phase 1 iterations)
 
-### Orchestrator — CRITICAL
+### Orchestrator
 - Cascading timeouts: broadcasts to ALL 3 sub-pipelines, waits for slowest
 - Response Builder crash on empty `task_results`
 - Query Router bug: leading space in `" direct_llm"` causes misrouting
 - Cache Hit bug: compares against string `"Null"` instead of boolean
-- 11 fixes in apply.py (Router, Cache, Response Builder, continueOnFail, Intent Analyzer)
 
 ### Graph RAG
 - Entity extraction failures: HyDE extracts wrong names
 - Missing entities: historical figures not matched
-- 7 fixes in apply.py (fuzzy matching, entity rules, answer compression)
 
 ### Quantitative RAG
 - SQL edge cases: multi-table JOINs, period filtering, entity name mismatch
-- 8 fixes in apply.py (SQL hints, ILIKE, zero-row detection, Phase 2 tables)
 
 ### Standard RAG
 - "No item to return" from Pinecone
 - Verbose answers lower F1
-- 6 fixes in apply.py (answer compression, topK increase, HyDE improvement)
 
----
-
-## Workflow Patches (`workflows/improved/apply.py`)
-
-| Pipeline | Fixes | Key Changes |
-|---|---|---|
-| Orchestrator | 11 | Timeout cascade, routing, Response Builder, continueOnFail |
-| Graph | 7 | Entity extraction, fuzzy matching, answer conciseness |
-| Standard | 6 | Answer compression, topK, HyDE prompts |
-| Quantitative | 8 | SQL generation, ILIKE, zero-row detection, Phase 2 tables |
-
-Deploy: `python3 workflows/improved/apply.py --deploy`
-Dry-run: `python3 workflows/improved/apply.py`
+> All fixes have been applied directly in n8n. The workflows in `workflows/live/`
+> are the current tested versions. See `docs/technical/n8n-endpoints.md` for the
+> API pattern to make further changes.
