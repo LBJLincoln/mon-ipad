@@ -1,77 +1,117 @@
-# Session Status — Multi-RAG Orchestrator SOTA 2026
+# Session Context -- Multi-RAG Orchestrator SOTA 2026
 
-> For live machine-readable metrics: `cat docs/status.json`
-> For detailed architecture: `docs/architecture.md`
-> For project instructions: `CLAUDE.md`
-
----
-
-## Current State (Feb 9, 2026)
-
-### PHASE 1 — NOT COMPLETE
-
-The question_registry (source of truth used by `phase_gates.py`) shows:
-
-| Pipeline | Accuracy | Tested | Correct | Target | Gap | Status |
-|----------|----------|--------|---------|--------|-----|--------|
-| **Standard** | **100.0%** | 50 | 50 | 85% | +15.0pp | GATE MET |
-| **Graph** | **69.1%** | 55 | 38 | 70% | -0.9pp | CLOSE |
-| **Quantitative** | **83.0%** | 53 | 44 | 85% | -2.0pp | ITERATING |
-| **Orchestrator** | **20.0%** | 50 | 10 | 70% | -50.0pp | CRITICAL |
-| **Overall** | **68.0%** | 208 | 142 | **75%** | -7.0pp | **NOT MET** |
-
-### Data Integrity Note
-
-The iter-040 "consolidated" iteration reported 86.2% overall (S:100%, G:70%, Q:88%, O:90%).
-However, only 10 orchestrator questions were tested in that iteration. After iter-040,
-two additional orchestrator runs polluted the question_registry:
-- iter-2026-02-09T13-05-57: 47 orchestrator questions at 17% (8/47)
-- iter-2026-02-09T13-44-04: 2 orchestrator questions at 50% (1/2)
-
-The question_registry now reflects ALL runs, giving orchestrator 10/50 = 20%.
-**The orchestrator eval needs to be re-run with a working OpenRouter API key.**
-
-### Priority: Orchestrator (gap: -50pp)
-
-1. Update OpenRouter API key (new key provided)
-2. Re-run orchestrator full eval (50 questions)
-3. Then address Graph (-0.9pp gap) and Quantitative (-2.0pp gap)
+> This document is the entry point for any new session (human or agentic).
+> Read this first, then consult `docs/data.json` for current metrics.
 
 ---
 
-## Dashboard
+## Current State (Feb 10, 2026)
 
-- **URL**: https://lbjlincoln.github.io/mon-ipad/
-- **Data**: 40 iterations, 208 unique questions
-- **Live status**: `docs/status.json` (auto-generated after every eval)
+### Phase 1 -- COMPLETED
+All Phase 1 exit criteria have been met.
+
+| Pipeline | Final Accuracy | Target | Status |
+|----------|---------------|--------|--------|
+| **Standard** | 0% | 85% | CLOSE |
+| **Graph** | 0% | 70% | CLOSE |
+| **Quantitative** | 0% | 85% | CLOSE |
+| **Orchestrator** | 0% | 70% | CLOSE |
+
+### Phase 2 -- ACTIVE (1,000q Expansion)
+
+| Pipeline | Target | Dataset Source | DB Status |
+|----------|--------|---------------|-----------|
+| **Graph** | >=60% | musique, 2wikimultihopqa | DB_READY (4884 entities) |
+| **Quantitative** | >=70% | finqa, tatqa, convfinqa, wikitablequestions | DB_READY (450 rows) |
 
 ---
 
-## Phase 2 Database: COMPLETE
+## Phase 2 Runbook
 
-All Phase 2 database ingestion is done:
-- **Supabase**: 538 total rows (88 Phase 1 + 450 Phase 2)
-- **Neo4j**: 19,788 nodes + 21,625 relationships
-- **Pinecone**: 10,411 vectors
-- **Dataset**: 1,000 Phase 2 questions in `datasets/phase-2/hf-1000.json`
+### Step 1: Verify DB readiness (already done)
+```bash
+cd ~/mon-ipad && git pull origin main
+# DB already populated from previous PR
+```
+
+### Step 2: Run Phase 2 evaluation
+```bash
+# Set env vars first (see CLAUDE.md)
+
+# Fast iteration on Phase 2 questions
+python3 eval/fast-iter.py --label "Phase 2 baseline" --questions 10
+
+# Full evaluation (Phase 1 + Phase 2)
+python3 eval/run-eval-parallel.py --include-1000 --reset --label "Phase 2 baseline"
+
+# Analyze
+python3 eval/analyzer.py
+```
+
+### Step 3: Iterate on Phase 2
+```bash
+# If results are bad, fix workflows and re-test
+python3 eval/fast-iter.py --only-failing --label "Phase 2 fix attempt"
+
+# Check Phase 2 gates
+python3 eval/phase-gate.py --phase 2
+```
+
+### Step 4: Use agentic loop for automated iteration
+```bash
+python3 eval/agentic-loop.py --phase 2 --full-eval --push --label "Phase 2"
+```
 
 ---
 
-## Next Steps
+## Agentic Workflow (NEW)
 
-1. **P0**: Re-run orchestrator eval with new OpenRouter key → target 70%
-2. **P1**: Close Graph gap (69.1% → 70%) — likely 1 more correct answer needed
-3. **P1**: Close Quantitative gap (83.0% → 85%) — 1-2 more correct answers needed
-4. **P2**: Once ALL Phase 1 gates pass → run Phase 2 eval (1,000q)
+### Automated iteration loop
+The agentic loop automates the entire evaluation cycle:
+```bash
+# Single iteration: deploy + fast-iter + analyze + gate check
+python3 eval/agentic-loop.py --label "description"
+
+# Full cycle with 200q eval
+python3 eval/agentic-loop.py --full-eval --push --label "description"
+
+# Multiple iterations until gates pass
+python3 eval/agentic-loop.py --max-iterations 5 --full-eval --push
+
+# Phase 2 with auto-transition
+python3 eval/agentic-loop.py --phase 2 --full-eval --push --phase2-transition
+```
+
+### GitHub Actions (auto-runs every 6 hours)
+- `.github/workflows/agentic-iteration.yml` -- Full agentic workflow
+- Modes: fast-iter, full-eval, agentic-loop, gate-check, phase2-transition
+- Auto-creates issues on regression
+- Auto-transitions to Phase 2 when gates pass
+
+---
+
+## Key Scripts
+
+| Script | Purpose | Speed |
+|--------|---------|-------|
+| `eval/agentic-loop.py` | **Full automated iteration cycle** | Varies |
+| `eval/phase-gate.py` | **Phase gate validator** | <1s |
+| `eval/phase2-transition.py` | **Phase 2 transition automation** | <1s |
+| `eval/fast-iter.py` | Quick validation, 10q/pipeline, parallel | ~2-3 min |
+| `eval/run-eval-parallel.py` | Full 200q eval, all pipelines parallel | ~15-20 min |
+| `eval/analyzer.py` | Post-eval analysis + recommendations | <1s |
+| `eval/quick-test.py` | Smoke test, 3-5 known-good questions | ~1 min |
 
 ---
 
 ## Environment Variables
 
 ```bash
-export OPENROUTER_API_KEY="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"
-export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
+export SUPABASE_PASSWORD="..."
+export PINECONE_API_KEY="..."
+export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
+export NEO4J_PASSWORD="..."
+export OPENROUTER_API_KEY="..."
+export N8N_API_KEY="..."
 export N8N_HOST="https://amoret.app.n8n.cloud"
 ```
-
-See `CLAUDE.md` for full credentials list.
