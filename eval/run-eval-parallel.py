@@ -218,7 +218,7 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
             custom_delay = getattr(run_pipeline, '_delay', None)
             if custom_delay is not None:
                 time.sleep(custom_delay)
-            elif has_error and error_str and ("429" in error_str or "rate" in error_str.lower() or "credit" in error_str.lower()):
+            elif has_error and resp["error"] and ("429" in resp["error"] or "rate" in resp["error"].lower() or "credit" in resp["error"].lower()):
                 time.sleep(3)  # Back off on rate limit
             elif rag_type == "orchestrator":
                 time.sleep(1)  # Minimal spacing for sub-workflow contention

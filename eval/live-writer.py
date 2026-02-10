@@ -746,9 +746,29 @@ def finish(event="eval_complete"):
 def git_push(message="Update dashboard data"):
     """Commit and push data.json + logs to GitHub."""
     repo_root = os.path.dirname(DOCS_DIR)
-    subprocess.run(["git", "add", "docs/data.json", "docs/tested-questions.json", "logs/"], cwd=repo_root)
-    subprocess.run(["git", "commit", "-m", message], cwd=repo_root)
-    subprocess.run(["git", "push"], cwd=repo_root)
+    # Stage all evaluation-related files
+    subprocess.run(["git", "add",
+                    "docs/data.json", "docs/status.json", "docs/tested-questions.json",
+                    "STATUS.md", "logs/"], cwd=repo_root)
+    result = subprocess.run(["git", "commit", "-m", message], cwd=repo_root, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"  git commit: {result.stdout.strip() or result.stderr.strip()}")
+        return
+    # Push to current branch with retry
+    branch = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                            cwd=repo_root, capture_output=True, text=True).stdout.strip()
+    for attempt in range(4):
+        push_result = subprocess.run(["git", "push", "-u", "origin", branch],
+                                     cwd=repo_root, capture_output=True, text=True)
+        if push_result.returncode == 0:
+            print(f"  git push: OK (branch: {branch})")
+            return
+        delay = 2 ** (attempt + 1)
+        print(f"  git push failed (attempt {attempt+1}/4): {push_result.stderr.strip()}")
+        if attempt < 3:
+            print(f"  retrying in {delay}s...")
+            time.sleep(delay)
+    print("  git push: FAILED after 4 attempts")
 
 
 # ============================================================

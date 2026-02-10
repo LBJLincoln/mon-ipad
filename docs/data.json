@@ -1,18 +1,1369 @@
 {
   "meta": {
     "version": "2.0",
-    "generated_at": "2026-02-09T23:05:24.387172Z",
-    "status": "reset",
+    "generated_at": "2026-02-10T00:14:34.497015Z",
+    "status": "running",
     "project": "Multi-RAG Orchestrator SOTA 2026",
-    "phase": "Phase 1 \u2014 Baseline (200q)",
-    "total_unique_questions": 0,
-    "total_test_runs": 0,
-    "total_iterations": 0,
+    "phase": "Phase 2 — Expand (1,000q)",
+    "total_unique_questions": 25,
+    "total_test_runs": 32,
+    "total_iterations": 2,
     "total_cost_usd": 0,
-    "current_session": null
+    "current_session": "2026-02-10T00-07-21",
+    "phase_transition": {
+      "from": 1,
+      "to": 2,
+      "timestamp": "2026-02-10T00:03:00.938538Z",
+      "phase1_final_accuracy": 0
+    }
   },
-  "iterations": [],
-  "question_registry": {},
+  "iterations": [
+    {
+      "id": "iter-2026-02-10T00-03-49",
+      "number": 1,
+      "timestamp_start": "2026-02-10T00:03:49.294031Z",
+      "timestamp_end": "2026-02-10T00:06:52.136220Z",
+      "label": "Phase 2 smoke test (5q)",
+      "description": "Dataset: phase-2, Parallel: standard,graph,quantitative,orchestrator, Max: 5, Reset: True",
+      "changes_applied": [],
+      "results_summary": {
+        "graph": {
+          "tested": 5,
+          "correct": 4,
+          "errors": 0,
+          "accuracy_pct": 80.0,
+          "avg_latency_ms": 35203,
+          "p95_latency_ms": 56929,
+          "avg_f1": 1.0
+        },
+        "quantitative": {
+          "tested": 2,
+          "correct": 0,
+          "errors": 1,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 49096,
+          "p95_latency_ms": 60041,
+          "avg_f1": 0
+        }
+      },
+      "total_tested": 7,
+      "total_correct": 4,
+      "overall_accuracy_pct": 57.1,
+      "questions": [
+        {
+          "id": "graph-musique-0",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 20969,
+          "answer": "Mr. Lawrence",
+          "expected": "Mr. Lawrence",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:04:13.504425Z"
+        },
+        {
+          "id": "quantitative-finqa-0",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 38151,
+          "answer": "The SQL query executed to determine the percentage of Brazilian paper sales in the printing papers category for 2005 returned no results. This indicates that there is no data available for this specific query in the database. The warning message suggests that the WHERE filter may have been too restrictive, possibly due to inexact entity names or no matching rows for the specified criteria (tenant_id = 'benchmark', category = 'printing papers', and fiscal_year = 2005).\n\nTo provide a more accurate",
+          "expected": "6%",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:04:30.688249Z"
+        },
+        {
+          "id": "graph-musique-1",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 18760,
+          "answer": "Styria",
+          "expected": "Senica District",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:04:32.272616Z"
+        },
+        {
+          "id": "graph-musique-2",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 45147,
+          "answer": "1572",
+          "expected": "1572",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:05:17.427993Z"
+        },
+        {
+          "id": "quantitative-finqa-1",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60041,
+          "answer": "",
+          "expected": "1.08",
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-10T00:05:30.737939Z"
+        },
+        {
+          "id": "graph-musique-3",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 56929,
+          "answer": "1572",
+          "expected": "1572",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:06:14.366791Z"
+        },
+        {
+          "id": "graph-musique-4",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 34211,
+          "answer": "1572",
+          "expected": "1572",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:06:48.587064Z"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-10T00-07-21",
+      "number": 2,
+      "timestamp_start": "2026-02-10T00:07:21.264140Z",
+      "timestamp_end": "2026-02-10T00:14:34.489412Z",
+      "label": "Phase 2 full eval v1",
+      "description": "Dataset: phase-2, Parallel: standard,graph,quantitative,orchestrator, Max: None, Reset: True",
+      "changes_applied": [],
+      "results_summary": {
+        "graph": {
+          "tested": 17,
+          "correct": 13,
+          "errors": 0,
+          "accuracy_pct": 76.5,
+          "avg_latency_ms": 23396,
+          "p95_latency_ms": 53843,
+          "avg_f1": 0.6496
+        },
+        "quantitative": {
+          "tested": 8,
+          "correct": 0,
+          "errors": 6,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 48962,
+          "p95_latency_ms": 60061,
+          "avg_f1": 0
+        }
+      },
+      "total_tested": 25,
+      "total_correct": 13,
+      "overall_accuracy_pct": 52.0,
+      "questions": [
+        {
+          "id": "graph-musique-0",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 21165,
+          "answer": "Carolyn Lawrence",
+          "expected": "Mr. Lawrence",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:07:45.719243Z"
+        },
+        {
+          "id": "quantitative-finqa-0",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 29726,
+          "answer": "The SQL query returned no results, indicating that there were no sales data matching the specified criteria for Brazilian paper sales in the printing papers category for the year 2005. This could be due to several reasons:\n\n1. There were no sales of printing papers from Brazil in 2005 in the database.\n2. The data might not be available for that specific year.\n3. There could be an issue with the data entry or categorization of the sales records.\n\nTo provide a more accurate answer, we would need t",
+          "expected": "6%",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:07:54.281202Z"
+        },
+        {
+          "id": "graph-musique-1",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 18280,
+          "answer": "Styria",
+          "expected": "Senica District",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:08:06.010372Z"
+        },
+        {
+          "id": "graph-musique-2",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 19083,
+          "answer": "1572",
+          "expected": "1572",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:08:27.104448Z"
+        },
+        {
+          "id": "quantitative-finqa-1",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60051,
+          "answer": "",
+          "expected": "1.08",
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-10T00:08:56.344131Z"
+        },
+        {
+          "id": "graph-musique-3",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 53843,
+          "answer": "1572",
+          "expected": "1572",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:09:22.958087Z"
+        },
+        {
+          "id": "graph-musique-4",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 17292,
+          "answer": "1572",
+          "expected": "1572",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:09:42.261977Z"
+        },
+        {
+          "id": "quantitative-finqa-2",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60061,
+          "answer": "",
+          "expected": "15.7%",
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-10T00:09:58.416814Z"
+        },
+        {
+          "id": "graph-musique-5",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 16499,
+          "answer": "September",
+          "expected": "October",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:10:00.773584Z"
+        },
+        {
+          "id": "graph-musique-6",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 9942,
+          "answer": "1588",
+          "expected": "1572",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:10:12.727413Z"
+        },
+        {
+          "id": "quantitative-finqa-3",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 12779,
+          "answer": "The SQL query executed returned \"No data available,\" indicating that there is no data in the database for the price of shares purchased by employees from 2006 to 2007. Therefore, it is not possible to calculate the growth rate for this period based on the available data.",
+          "expected": "35.8%",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:10:13.209007Z"
+        },
+        {
+          "id": "graph-musique-7",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 20808,
+          "answer": "1185",
+          "expected": "1191",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:10:35.547021Z"
+        },
+        {
+          "id": "graph-musique-8",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.5714,
+          "latency_ms": 30855,
+          "answer": "Rooster Cogburn",
+          "expected": "U.S. Marshal Rooster Cogburn",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:11:08.413830Z"
+        },
+        {
+          "id": "quantitative-finqa-4",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60040,
+          "answer": "",
+          "expected": "78",
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-10T00:11:15.262871Z"
+        },
+        {
+          "id": "graph-musique-9",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.3077,
+          "latency_ms": 28294,
+          "answer": "John Wayne played Rooster Cogburn in True Grit.",
+          "expected": "U.S. Marshal Rooster Cogburn",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:11:38.720561Z"
+        },
+        {
+          "id": "graph-musique-10",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.25,
+          "latency_ms": 29254,
+          "answer": "John Wayne played Rooster Cogburn in the 1969 film \"True Grit.\"",
+          "expected": "U.S. Marshal Rooster Cogburn",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:12:09.986443Z"
+        },
+        {
+          "id": "quantitative-finqa-5",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "answer": "",
+          "expected": "4%",
+          "match_type": "NO_ANSWER",
+          "error": "HTTP 500: {\"code\":0,\"message\":\"No item to return was found\"}",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-10T00:12:14.781960Z"
+        },
+        {
+          "id": "graph-musique-11",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.2667,
+          "latency_ms": 23082,
+          "answer": "John Wayne played Reuben J. \"Rooster\" Cogburn in True Grit.",
+          "expected": "U.S. Marshal Rooster Cogburn",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:12:35.081338Z"
+        },
+        {
+          "id": "graph-musique-12",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 17302,
+          "answer": "Pacific Ocean",
+          "expected": "River Thames",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:12:54.395794Z"
+        },
+        {
+          "id": "graph-musique-13",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 14373,
+          "answer": "Thames River",
+          "expected": "River Thames",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:13:10.782052Z"
+        },
+        {
+          "id": "quantitative-finqa-6",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60041,
+          "answer": "",
+          "expected": "55.3",
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-10T00:13:16.836446Z"
+        },
+        {
+          "id": "graph-musique-14",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 37922,
+          "answer": "River Thames",
+          "expected": "River Thames",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:13:50.717007Z"
+        },
+        {
+          "id": "graph-musique-15",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9743,
+          "answer": "Bristol Channel",
+          "expected": "River Thames",
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:14:02.473991Z"
+        },
+        {
+          "id": "quantitative-finqa-7",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60042,
+          "answer": "",
+          "expected": "32%",
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-10T00:14:18.892384Z"
+        },
+        {
+          "id": "graph-musique-16",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.25,
+          "latency_ms": 30002,
+          "answer": "16th century",
+          "expected": "as early as the 3rd century BC",
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-10T00:14:34.489402Z"
+        }
+      ]
+    }
+  ],
+  "question_registry": {
+    "graph-musique-0": {
+      "id": "graph-musique-0",
+      "question": "Who voices the character in Spongebob Squarepants who is named after a glowing species found in some beaches in Portugal?",
+      "expected": "Mr. Lawrence",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-03-49",
+          "iteration_number": 1,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 20969,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Mr. Lawrence",
+          "timestamp": "2026-02-10T00:04:13.504462Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 21165,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Carolyn Lawrence",
+          "timestamp": "2026-02-10T00:07:45.719279Z"
+        }
+      ],
+      "total_runs": 2,
+      "pass_count": 2,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:07:45.719279Z",
+      "best_f1": 1.0,
+      "trend": "stable"
+    },
+    "quantitative-finqa-0": {
+      "id": "quantitative-finqa-0",
+      "question": "brazilian paper sales represented what percentage of printing papers in 2005?",
+      "expected": "6%",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-03-49",
+          "iteration_number": 1,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 38151,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "The SQL query executed to determine the percentage of Brazilian paper sales in the printing papers category for 2005 returned no results. This indicates that there is no data available for this specific query in the database. The warning message suggests that the WHERE filter may have been too restrictive, possibly due to inexact entity names or no matching rows for the specified criteria (tenant_id = 'benchmark', category = 'printing papers', and fiscal_year = 2005).\n\nTo provide a more accurate",
+          "timestamp": "2026-02-10T00:04:30.688317Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 29726,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "The SQL query returned no results, indicating that there were no sales data matching the specified criteria for Brazilian paper sales in the printing papers category for the year 2005. This could be due to several reasons:\n\n1. There were no sales of printing papers from Brazil in 2005 in the database.\n2. The data might not be available for that specific year.\n3. There could be an issue with the data entry or categorization of the sales records.\n\nTo provide a more accurate answer, we would need t",
+          "timestamp": "2026-02-10T00:07:54.281252Z"
+        }
+      ],
+      "total_runs": 2,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-10T00:07:54.281252Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-musique-1": {
+      "id": "graph-musique-1",
+      "question": "What administrative territorial entity does Heinrich Gross's birth place located?",
+      "expected": "Senica District",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-03-49",
+          "iteration_number": 1,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 18760,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Styria",
+          "timestamp": "2026-02-10T00:04:32.272689Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 18280,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Styria",
+          "timestamp": "2026-02-10T00:08:06.010430Z"
+        }
+      ],
+      "total_runs": 2,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-10T00:08:06.010430Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-musique-2": {
+      "id": "graph-musique-2",
+      "question": "In what year did the founder of the Presbyterian Church die?",
+      "expected": "1572",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-03-49",
+          "iteration_number": 1,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 45147,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1572",
+          "timestamp": "2026-02-10T00:05:17.428047Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 19083,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1572",
+          "timestamp": "2026-02-10T00:08:27.104493Z"
+        }
+      ],
+      "total_runs": 2,
+      "pass_count": 2,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:08:27.104493Z",
+      "best_f1": 1.0,
+      "trend": "stable"
+    },
+    "quantitative-finqa-1": {
+      "id": "quantitative-finqa-1",
+      "question": "what was the ratio of the company contribution in 2011 to the amount in 2013 to the us pension contributions",
+      "expected": "1.08",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-03-49",
+          "iteration_number": 1,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60041,
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-10T00:05:30.737989Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60051,
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-10T00:08:56.344182Z"
+        }
+      ],
+      "total_runs": 2,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "error",
+      "last_tested": "2026-02-10T00:08:56.344182Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-musique-3": {
+      "id": "graph-musique-3",
+      "question": "What year did the author of History of the Reformation in Scotland die?",
+      "expected": "1572",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-03-49",
+          "iteration_number": 1,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 56929,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1572",
+          "timestamp": "2026-02-10T00:06:14.366837Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 53843,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1572",
+          "timestamp": "2026-02-10T00:09:22.958131Z"
+        }
+      ],
+      "total_runs": 2,
+      "pass_count": 2,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:09:22.958131Z",
+      "best_f1": 1.0,
+      "trend": "stable"
+    },
+    "graph-musique-4": {
+      "id": "graph-musique-4",
+      "question": "What year did the author of The First Blast of the Trumpet Against the Monstruous Regiment of Women die?",
+      "expected": "1572",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-03-49",
+          "iteration_number": 1,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 34211,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1572",
+          "timestamp": "2026-02-10T00:06:48.587119Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 17292,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1572",
+          "timestamp": "2026-02-10T00:09:42.262026Z"
+        }
+      ],
+      "total_runs": 2,
+      "pass_count": 2,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:09:42.262026Z",
+      "best_f1": 1.0,
+      "trend": "stable"
+    },
+    "quantitative-finqa-2": {
+      "id": "quantitative-finqa-2",
+      "question": "what is the percent of americans labor-related deemed claim as a part of the total claims and other bankruptcy settlement obligations as of december2013",
+      "expected": "15.7%",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60061,
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-10T00:09:58.416876Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "error",
+      "last_tested": "2026-02-10T00:09:58.416876Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-musique-5": {
+      "id": "graph-musique-5",
+      "question": "What month did the person with whom Henry fought a short war in 1183 go away from the holy land?",
+      "expected": "October",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 16499,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "September",
+          "timestamp": "2026-02-10T00:10:00.773632Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-10T00:10:00.773632Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-musique-6": {
+      "id": "graph-musique-6",
+      "question": "In what year did Margaret Knox's spouse pass away?",
+      "expected": "1572",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 9942,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1588",
+          "timestamp": "2026-02-10T00:10:12.727462Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:10:12.727462Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "quantitative-finqa-3": {
+      "id": "quantitative-finqa-3",
+      "question": "what is the growth rate in the price of shares purchased by employees from 2006 to 2007?",
+      "expected": "35.8%",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 12779,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "The SQL query executed returned \"No data available,\" indicating that there is no data in the database for the price of shares purchased by employees from 2006 to 2007. Therefore, it is not possible to calculate the growth rate for this period based on the available data.",
+          "timestamp": "2026-02-10T00:10:13.209050Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-10T00:10:13.209050Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-musique-7": {
+      "id": "graph-musique-7",
+      "question": "What year did the storm hit the fleet of the person that Henry fought a short war with in 1183?",
+      "expected": "1191",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 0.0,
+          "latency_ms": 20808,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1185",
+          "timestamp": "2026-02-10T00:10:35.547068Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:10:35.547068Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-musique-8": {
+      "id": "graph-musique-8",
+      "question": "In True Grit, who did the star play?",
+      "expected": "U.S. Marshal Rooster Cogburn",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 0.5714,
+          "latency_ms": 30855,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Rooster Cogburn",
+          "timestamp": "2026-02-10T00:11:08.413878Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:11:08.413878Z",
+      "best_f1": 0.5714,
+      "trend": "stable"
+    },
+    "quantitative-finqa-4": {
+      "id": "quantitative-finqa-4",
+      "question": "the stock repurchase program reduced shares outstanding by how many million shares in the period?",
+      "expected": "78",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60040,
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-10T00:11:15.262928Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "error",
+      "last_tested": "2026-02-10T00:11:15.262928Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-musique-9": {
+      "id": "graph-musique-9",
+      "question": "Who did the producer of Big Jim McLain play in True Grit?",
+      "expected": "U.S. Marshal Rooster Cogburn",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 0.3077,
+          "latency_ms": 28294,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "John Wayne played Rooster Cogburn in True Grit.",
+          "timestamp": "2026-02-10T00:11:38.720620Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:11:38.720620Z",
+      "best_f1": 0.3077,
+      "trend": "stable"
+    },
+    "graph-musique-10": {
+      "id": "graph-musique-10",
+      "question": "Who did the cast member of Rooster Cogburn play in True Grit?",
+      "expected": "U.S. Marshal Rooster Cogburn",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 0.25,
+          "latency_ms": 29254,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "John Wayne played Rooster Cogburn in the 1969 film \"True Grit.\"",
+          "timestamp": "2026-02-10T00:12:09.986495Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:12:09.986495Z",
+      "best_f1": 0.25,
+      "trend": "stable"
+    },
+    "quantitative-finqa-5": {
+      "id": "quantitative-finqa-5",
+      "question": "what was the percentage change in diluted earnings per common share from continuing operations from 2014 to 2015?",
+      "expected": "4%",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 0,
+          "match_type": "NO_ANSWER",
+          "error": "HTTP 500: {\"code\":0,\"message\":\"No item to return was found\"}",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-10T00:12:14.782010Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "error",
+      "last_tested": "2026-02-10T00:12:14.782010Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-musique-11": {
+      "id": "graph-musique-11",
+      "question": "Who did the actor in Advernture's End play in True Grit?",
+      "expected": "U.S. Marshal Rooster Cogburn",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 0.2667,
+          "latency_ms": 23082,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "John Wayne played Reuben J. \"Rooster\" Cogburn in True Grit.",
+          "timestamp": "2026-02-10T00:12:35.081392Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:12:35.081392Z",
+      "best_f1": 0.2667,
+      "trend": "stable"
+    },
+    "graph-musique-12": {
+      "id": "graph-musique-12",
+      "question": "Which is the body of water by Leo Bennett's place of death?",
+      "expected": "River Thames",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 17302,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Pacific Ocean",
+          "timestamp": "2026-02-10T00:12:54.395851Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-10T00:12:54.395851Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-musique-13": {
+      "id": "graph-musique-13",
+      "question": "What is the body of water by the area where Athlete was formed?",
+      "expected": "River Thames",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 14373,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Thames River",
+          "timestamp": "2026-02-10T00:13:10.782108Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:13:10.782108Z",
+      "best_f1": 1.0,
+      "trend": "stable"
+    },
+    "quantitative-finqa-6": {
+      "id": "quantitative-finqa-6",
+      "question": "what was the average rental expense in millions for 2000 through 2002?",
+      "expected": "55.3",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60041,
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-10T00:13:16.836508Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "error",
+      "last_tested": "2026-02-10T00:13:16.836508Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-musique-14": {
+      "id": "graph-musique-14",
+      "question": "Which is the body of water by the village which borders Long Ditton?",
+      "expected": "River Thames",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 37922,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "River Thames",
+          "timestamp": "2026-02-10T00:13:50.717069Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:13:50.717069Z",
+      "best_f1": 1.0,
+      "trend": "stable"
+    },
+    "graph-musique-15": {
+      "id": "graph-musique-15",
+      "question": "Which is the body of water near George Mills' place of birth?",
+      "expected": "River Thames",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9743,
+          "match_type": "PARTIAL",
+          "error": null,
+          "error_type": null,
+          "answer": "Bristol Channel",
+          "timestamp": "2026-02-10T00:14:02.474055Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-10T00:14:02.474055Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "quantitative-finqa-7": {
+      "id": "quantitative-finqa-7",
+      "question": "what percent of the gross total property and equipment values in 2006 are related to computers?",
+      "expected": "32%",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60042,
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-10T00:14:18.892443Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "error",
+      "last_tested": "2026-02-10T00:14:18.892443Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-musique-16": {
+      "id": "graph-musique-16",
+      "question": "When was the celestial body that transforms nuclear potential energy to other forms of energy discovered to be the center of the solar system?",
+      "expected": "as early as the 3rd century BC",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "correct": true,
+          "f1": 0.25,
+          "latency_ms": 30002,
+          "match_type": "ENTITY_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "16th century",
+          "timestamp": "2026-02-10T00:14:34.489454Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-10T00:14:34.489454Z",
+      "best_f1": 0.25,
+      "trend": "stable"
+    }
+  },
   "pipelines": {
     "standard": {
       "endpoint": "https://amoret.app.n8n.cloud/webhook/rag-multi-index-v3",
@@ -22,12 +1373,48 @@
     "graph": {
       "endpoint": "https://amoret.app.n8n.cloud/webhook/ff622742-2082-4b47-9435-01550c68595a",
       "target_accuracy": 70.0,
-      "trend": []
+      "trend": [
+        {
+          "iteration_id": "iter-2026-02-10T00-03-49",
+          "iteration_number": 1,
+          "accuracy_pct": 80.0,
+          "tested": 5,
+          "errors": 0,
+          "avg_latency_ms": 35203
+        },
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "accuracy_pct": 76.5,
+          "tested": 17,
+          "errors": 0,
+          "avg_latency_ms": 23396
+        }
+      ],
+      "phase2_target_accuracy": 60.0
     },
     "quantitative": {
       "endpoint": "https://amoret.app.n8n.cloud/webhook/3e0f8010-3b81-46da-9a69-60a0db78064e",
       "target_accuracy": 85.0,
-      "trend": []
+      "trend": [
+        {
+          "iteration_id": "iter-2026-02-10T00-03-49",
+          "iteration_number": 1,
+          "accuracy_pct": 0.0,
+          "tested": 2,
+          "errors": 1,
+          "avg_latency_ms": 49096
+        },
+        {
+          "iteration_id": "iter-2026-02-10T00-07-21",
+          "iteration_number": 2,
+          "accuracy_pct": 0.0,
+          "tested": 8,
+          "errors": 6,
+          "avg_latency_ms": 48962
+        }
+      ],
+      "phase2_target_accuracy": 70.0
     },
     "orchestrator": {
       "endpoint": "https://amoret.app.n8n.cloud/webhook/92217bb8-eee3-48fb-8a42-da37a5caabf8",
@@ -38,14 +1425,61 @@
   "workflow_changes": [],
   "databases": {
     "pinecone": {
-      "total_vectors": 0,
-      "namespaces": {}
+      "total_vectors": 10411,
+      "namespaces": {
+        "benchmark-popqa": 1000,
+        "benchmark-frames": 824,
+        "benchmark-msmarco": 1000,
+        "benchmark-narrativeqa": 1000,
+        "benchmark-hotpotqa": 1000,
+        "benchmark-natural_questions": 1000,
+        "benchmark-triviaqa": 1000,
+        "benchmark-pubmedqa": 500,
+        "benchmark-squad_v2": 1000,
+        "": 639,
+        "benchmark-asqa": 948,
+        "benchmark-finqa": 500
+      }
     },
     "neo4j": {
-      "total_nodes": 0,
-      "total_relationships": 0,
-      "labels": [],
-      "relationship_types": []
+      "total_nodes": 19788,
+      "total_relationships": 76532,
+      "labels": {
+        "Person": 8531,
+        "Entity": 8331,
+        "Organization": 1775,
+        "City": 840,
+        "Technology": 139,
+        "Museum": 62,
+        "Country": 54,
+        "Disease": 22,
+        "Concept": 12,
+        "Rate": 4,
+        "Molecule": 3,
+        "Award": 3,
+        "Artwork": 2,
+        "Law": 2,
+        "Discovery": 2,
+        "Agreement": 1,
+        "Treatment": 1,
+        "Article": 1,
+        "Monument": 1,
+        "Theory": 1,
+        "Element": 1
+      },
+      "relationship_types": {
+        "CONNECTE": 75205,
+        "SOUS_ENSEMBLE_DE": 554,
+        "A_CREE": 497,
+        "UTILISE": 99,
+        "ETEND": 66,
+        "CIBLE": 52,
+        "ETUDIE": 38,
+        "CAUSE_PAR": 7,
+        "PROTEGE_CONTRE": 6,
+        "VISE_A_LIMITER": 4,
+        "EXPOSE_A": 4
+      }
     },
     "supabase": {
       "tables": [],
@@ -53,15 +1487,614 @@
       "companies": []
     }
   },
-  "db_snapshots": [],
-  "execution_logs": [],
+  "db_snapshots": [
+    {
+      "snapshot_id": "snap-2026-02-10T00-03-49",
+      "timestamp": "2026-02-10T00:03:49.323675Z",
+      "trigger": "pre-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 19788,
+      "neo4j_relationships": 76532,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-10T00-03-49.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-10T00-06-48",
+      "timestamp": "2026-02-10T00:06:48.597525Z",
+      "trigger": "post-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 19788,
+      "neo4j_relationships": 76532,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-10T00-06-48.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-10T00-07-21",
+      "timestamp": "2026-02-10T00:07:21.298712Z",
+      "trigger": "pre-eval",
+      "pinecone_vectors": 10411,
+      "neo4j_nodes": 19788,
+      "neo4j_relationships": 76532,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-10T00-07-21.json"
+    }
+  ],
+  "execution_logs": [
+    {
+      "timestamp": "2026-02-10T00:04:13.507408Z",
+      "question_id": "graph-musique-0",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 20969,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Mr. Lawrence",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:04:30.691175Z",
+      "question_id": "quantitative-finqa-0",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 38151,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The SQL query executed to determine the percentage of Brazilian paper sales in the printing papers c",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT (SUM(CASE WHEN country = 'Brazil' THEN amount ELSE 0 END) * 100.0 / SUM(amount)) AS brazilian_paper_percentage FROM sales_data WHERE tenant_id = 'benchmark' AND category = 'printing papers' AND",
+        "sql_status": "NULL_AGGREGATION",
+        "result_count": 0,
+        "null_agg": true
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:04:32.275685Z",
+      "question_id": "graph-musique-1",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 18760,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Styria",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:05:17.431159Z",
+      "question_id": "graph-musique-2",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 45147,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1572",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:05:30.741551Z",
+      "question_id": "quantitative-finqa-1",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60041,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-10T00:06:14.369982Z",
+      "question_id": "graph-musique-3",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 56929,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1572",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:06:48.591373Z",
+      "question_id": "graph-musique-4",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 34211,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1572",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:07:45.722672Z",
+      "question_id": "graph-musique-0",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.5,
+      "latency_ms": 21165,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Carolyn Lawrence",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:07:54.285335Z",
+      "question_id": "quantitative-finqa-0",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 29726,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The SQL query returned no results, indicating that there were no sales data matching the specified c",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT (SUM(CASE WHEN country = 'Brazil' THEN amount ELSE 0 END) * 100.0 / SUM(amount)) AS brazilian_paper_percentage FROM sales_data WHERE tenant_id = 'benchmark' AND category ILIKE '%printing papers",
+        "sql_status": "NULL_AGGREGATION",
+        "result_count": 0,
+        "null_agg": true
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:08:06.014140Z",
+      "question_id": "graph-musique-1",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 18280,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Styria",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:08:27.108206Z",
+      "question_id": "graph-musique-2",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 19083,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1572",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:08:56.348623Z",
+      "question_id": "quantitative-finqa-1",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60051,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-10T00:09:22.961971Z",
+      "question_id": "graph-musique-3",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 53843,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1572",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:09:42.266696Z",
+      "question_id": "graph-musique-4",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 17292,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1572",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:09:58.421325Z",
+      "question_id": "quantitative-finqa-2",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60061,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-10T00:10:00.777823Z",
+      "question_id": "graph-musique-5",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 16499,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "September",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:10:12.731451Z",
+      "question_id": "graph-musique-6",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 9942,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1588",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:10:13.213157Z",
+      "question_id": "quantitative-finqa-3",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 12779,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The SQL query executed returned \"No data available,\" indicating that there is no data in the databas",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": "SELECT 'No data available' AS result LIMIT 1000",
+        "sql_status": "PASSED",
+        "result_count": 1,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:10:35.551010Z",
+      "question_id": "graph-musique-7",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.0,
+      "latency_ms": 20808,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1185",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:11:08.418164Z",
+      "question_id": "graph-musique-8",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.5714,
+      "latency_ms": 30855,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Rooster Cogburn",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:11:15.267294Z",
+      "question_id": "quantitative-finqa-4",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60040,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-10T00:11:38.725015Z",
+      "question_id": "graph-musique-9",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.3077,
+      "latency_ms": 28294,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "John Wayne played Rooster Cogburn in True Grit.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:12:09.991088Z",
+      "question_id": "graph-musique-10",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.25,
+      "latency_ms": 29254,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "John Wayne played Rooster Cogburn in the 1969 film \"True Grit.\"",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:12:14.786502Z",
+      "question_id": "quantitative-finqa-5",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 0,
+      "error_type": "SERVER_ERROR",
+      "error_preview": "HTTP 500: {\"code\":0,\"message\":\"No item to return was found\"}",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-10T00:12:35.085861Z",
+      "question_id": "graph-musique-11",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.2667,
+      "latency_ms": 23082,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "John Wayne played Reuben J. \"Rooster\" Cogburn in True Grit.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:12:54.401449Z",
+      "question_id": "graph-musique-12",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 17302,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Pacific Ocean",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:13:10.786869Z",
+      "question_id": "graph-musique-13",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 14373,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Thames River",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:13:16.841167Z",
+      "question_id": "quantitative-finqa-6",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60041,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-10T00:13:50.721916Z",
+      "question_id": "graph-musique-14",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 37922,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "River Thames",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:14:02.478826Z",
+      "question_id": "graph-musique-15",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 9743,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Bristol Channel",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-10T00:14:18.897046Z",
+      "question_id": "quantitative-finqa-7",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60042,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-10T00:14:34.495569Z",
+      "question_id": "graph-musique-16",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.25,
+      "latency_ms": 30002,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "16th century",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    }
+  ],
   "quick_tests": [],
-  "history": [],
+  "history": [
+    {
+      "timestamp": "2026-02-10T00:06:52.136230Z",
+      "event": "eval_complete",
+      "total_tested": 7,
+      "graph": 80.0,
+      "quantitative": 0.0
+    }
+  ],
   "workflow_versions": {
     "standard": {},
     "graph": {},
     "quantitative": {},
     "orchestrator": {}
   },
-  "workflow_history": []
+  "workflow_history": [],
+  "evaluation_phases": {
+    "phase_1": {
+      "status": "COMPLETED",
+      "completed_at": "2026-02-10T00:03:00.938561Z",
+      "final_accuracy": 0
+    },
+    "phase_2": {
+      "status": "ACTIVE",
+      "started_at": "2026-02-10T00:03:00.938564Z",
+      "targets": {
+        "graph": 60.0,
+        "quantitative": 70.0,
+        "overall": 65.0,
+        "no_phase1_regression": true
+      }
+    }
+  },
+  "current_phase": 2
 }

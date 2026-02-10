@@ -78,11 +78,25 @@ STAGES = [
     # min_accuracy=None means use pipeline-specific target
 ]
 
+# Extended stages for Phase 2 (500 questions per pipeline)
+PHASE2_STAGES = [
+    {"name": "Stage 1: Smoke (5q)",    "questions": 5,   "min_accuracy": 50.0, "max_errors_pct": 60.0},
+    {"name": "Stage 2: Quick (10q)",   "questions": 10,  "min_accuracy": 55.0, "max_errors_pct": 40.0},
+    {"name": "Stage 3: Medium (50q)",  "questions": 50,  "min_accuracy": None, "max_errors_pct": 20.0},
+    {"name": "Stage 4: Large (200q)",  "questions": 200, "min_accuracy": None, "max_errors_pct": 15.0},
+    {"name": "Stage 5: Full (500q)",   "questions": 500, "min_accuracy": None, "max_errors_pct": 10.0},
+]
+
 PIPELINE_TARGETS = {
     "standard": 85.0,
     "graph": 70.0,
     "quantitative": 85.0,
     "orchestrator": 70.0,
+}
+
+PHASE2_PIPELINE_TARGETS = {
+    "graph": 60.0,
+    "quantitative": 70.0,
 }
 
 
@@ -558,11 +572,20 @@ def main():
         pipelines = ["graph", "quantitative"]
         tprint("  NOTE: Phase 2 tests graph + quantitative only. Auto-adjusted.")
 
+    # Use Phase 2 targets and stages when running Phase 2 dataset
+    active_stages = STAGES
+    if args.dataset == "phase-2":
+        PIPELINE_TARGETS.update(PHASE2_PIPELINE_TARGETS)
+        active_stages = PHASE2_STAGES
+        tprint(f"  NOTE: Using Phase 2 targets: {PHASE2_PIPELINE_TARGETS}")
+        tprint(f"  NOTE: Using Phase 2 stages (5 → 10 → 50 → 200 → 500)")
+
     print("=" * 70)
     print("  ITERATIVE PIPELINE EVALUATION — Progressive Stage Gates")
     print(f"  Started: {start_time.isoformat()}")
     print(f"  Pipelines: {', '.join(pipelines)}")
     print(f"  Starting stage: {args.stage}")
+    print(f"  Stages: {len(active_stages)}")
     print(f"  Gate enforcement: {'OFF' if args.no_gate else 'ON'}")
     if args.label:
         print(f"  Label: {args.label}")
@@ -571,7 +594,7 @@ def main():
     # Init writer
     writer.init(
         label=args.label or f"Iterative eval ({len(pipelines)} pipes, stage {args.stage}+)",
-        description=f"Iterative evaluation: stages {args.stage}-3, pipelines: {','.join(pipelines)}",
+        description=f"Iterative evaluation: stages {args.stage}-{len(active_stages)}, pipelines: {','.join(pipelines)}",
     )
 
     # Load questions
@@ -585,8 +608,8 @@ def main():
     all_stage_results = {p: [] for p in pipelines}
     pipeline_status = {p: "pending" for p in pipelines}
 
-    for stage_idx in range(start_stage, len(STAGES)):
-        stage = STAGES[stage_idx]
+    for stage_idx in range(start_stage, len(active_stages)):
+        stage = active_stages[stage_idx]
         stage_name = stage["name"]
         n_questions = stage["questions"]
 
