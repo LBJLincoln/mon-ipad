@@ -1,10 +1,10 @@
 {
   "versions": {
     "standard": {
-      "version": 4,
-      "hash": "2badcdb4d87f7a8e",
-      "timestamp": "2026-02-10T11:02:05.513758Z",
-      "snapshot_file": "standard-2026-02-10T11-02-04-2badcdb4d87f7a8e.json",
+      "version": 5,
+      "hash": "464d7ee07ad9c20d",
+      "timestamp": "2026-02-10T12:36:35.746955Z",
+      "snapshot_file": "standard-2026-02-10T12-36-35-464d7ee07ad9c20d.json",
       "name": "WF5 Standard RAG V3.4",
       "webhook": "/webhook/rag-multi-index-v3",
       "summary": {
@@ -52,57 +52,62 @@
         "removed_nodes": [],
         "modified_nodes": [
           {
-            "node": "HyDE Generator",
+            "node": "HyDE Embedding",
             "changes": [
+              {
+                "param": "url",
+                "old": "={{ $vars.EMBEDDING_API_URL || 'https://openrouter.ai/api/v1/embeddings' }}",
+                "new": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}"
+              },
               {
                 "param": "jsonBody",
-                "old": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots ",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100"
-              }
-            ]
-          },
-          {
-            "node": "LLM Generation",
-            "changes": [
-              {
-                "param": "jsonBody",
-                "old": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere pr",
-                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question"
-              }
-            ]
-          },
-          {
-            "node": "Response Formatter",
-            "changes": [
-              {
-                "param": "jsCode",
-                "old": "// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generati",
-                "new": "// Response Formatter - Standard RAG V3.4 (FIXED)\ntry {\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmCon"
-              }
-            ]
-          },
-          {
-            "node": "Cohere Reranker",
-            "changes": [
-              {
-                "param": "sendHeaders",
-                "old": "",
-                "new": "True"
+                "old": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4']",
+                "new": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4'].js"
               },
               {
                 "param": "headerParameters",
-                "old": "",
+                "old": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}",
                 "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.COHERE_API_KEY }}'}]}"
+              }
+            ]
+          },
+          {
+            "node": "HTTP Pinecone Query Original",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+                "new": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.embeddings?.float?.[0] || $node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V"
+              }
+            ]
+          },
+          {
+            "node": "HTTP Pinecone Query HyDE",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+                "new": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.embeddings?.float?.[0] || $node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].js"
+              }
+            ]
+          },
+          {
+            "node": "Original Embedding",
+            "changes": [
+              {
+                "param": "url",
+                "old": "={{ $vars.EMBEDDING_API_URL || 'https://openrouter.ai/api/v1/embeddings' }}",
+                "new": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}"
               },
               {
-                "param": "authentication",
-                "old": "genericCredentialType",
-                "new": "none"
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n}",
+                "new": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embeddi"
               },
               {
-                "param": "genericAuthType",
-                "old": "httpHeaderAuth",
-                "new": ""
+                "param": "headerParameters",
+                "old": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.COHERE_API_KEY }}'}]}"
               }
             ]
           }
@@ -112,10 +117,10 @@
       }
     },
     "graph": {
-      "version": 7,
-      "hash": "401f8db56efe4195",
-      "timestamp": "2026-02-10T11:02:05.758033Z",
-      "snapshot_file": "graph-2026-02-10T11-02-04-401f8db56efe4195.json",
+      "version": 8,
+      "hash": "29549c0af7f5761b",
+      "timestamp": "2026-02-10T12:36:35.985369Z",
+      "snapshot_file": "graph-2026-02-10T12-36-35-29549c0af7f5761b.json",
       "name": "WF2 Graph RAG V3.3",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
       "summary": {
@@ -166,12 +171,67 @@
         "removed_nodes": [],
         "modified_nodes": [
           {
-            "node": "Extract HyDE Document",
+            "node": "Merge Graph + Vector + Community (Deep)",
             "changes": [
               {
                 "param": "jsCode",
-                "old": "let hydeDocument = '';\n\ntry {\n  const hydeResponse = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n  hydeDocument = hydeResponse.hyde_document || '';\n} catch (e) {\n  console.error('Failed ",
-                "new": "// Extract HyDE Document - handles both JSON and plain text responses\nlet hydeDocument = '';\nconst rawContent = $json.choices?.[0]?.message?.content || '';\n\n// Strategy 1: Try JSON parse (model may ou"
+                "old": "// Enhanced Merge for Deep Traversal Results - CONFIRMÉ\n// Handles paths up to 4 hops with intelligent deduplication\n\n// === COLLECT ALL SOURCES ===\nlet graphResults = [];\nlet vectorResults = [];\nlet ",
+                "new": "// Enhanced Merge for Deep Traversal Results - CONFIRMÉ\n// Handles paths up to 4 hops with intelligent deduplication\n\n// === COLLECT ALL SOURCES ===\nlet graphResults = [];\nlet vectorResults = [];\nlet "
+              }
+            ]
+          },
+          {
+            "node": "WF3: Pinecone HyDE Search",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"vector\": {{ JSON.stringify($node['Generate HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['OTEL Init'].json.topK || 100 }},\n  \"includeMetadata\": true\n}",
+                "new": "={\n  \"vector\": {{ JSON.stringify($node['Validate Embedding'].json.embedding || $node['Generate HyDE Embedding'].json.embeddings?.float?.[0] || []) }},\n  \"topK\": {{ $node['OTEL Init'].json.topK || 100 "
+              }
+            ]
+          },
+          {
+            "node": "Generate HyDE Embedding",
+            "changes": [
+              {
+                "param": "url",
+                "old": "={{ $vars.EMBEDDING_API_URL || 'https://openrouter.ai/api/v1/embeddings' }}",
+                "new": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}"
+              },
+              {
+                "param": "jsonBody",
+                "old": "={{ { \"model\": ($vars.EMBEDDING_MODEL || 'text-embedding-3-small'), \"input\": $json.hyde_document } }}",
+                "new": "={{ { \"model\": ($vars.EMBEDDING_MODEL || 'embed-english-v3.0'), \"texts\": [$json.hyde_document], \"input_type\": \"search_query\", \"embedding_types\": [\"float\"] } }}"
+              },
+              {
+                "param": "headerParameters",
+                "old": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.OPENROUTER_API_KEY }}'}]}",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.COHERE_API_KEY }}'}]}"
+              }
+            ]
+          },
+          {
+            "node": "WF3: Cohere Reranker",
+            "changes": [
+              {
+                "param": "authentication",
+                "old": "genericCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "genericAuthType",
+                "old": "httpHeaderAuth",
+                "new": ""
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.COHERE_API_KEY }}'}]}"
               }
             ]
           },
@@ -180,24 +240,24 @@
             "changes": [
               {
                 "param": "jsCode",
-                "old": "// CORRECTED Neo4j Query Builder - Neo4j 5.x syntax compatible\n// Fixed: EXISTS() -> IS NOT NULL\n\nconst initData = $node['OTEL Init'].json;\nlet hydeResponse = {};\ntry {\n  hydeResponse = JSON.parse($js",
+                "old": "// Neo4j Query Builder (Deep Traversal V2) - with NLP entity extraction fallback\nconst initData = $node['OTEL Init'].json;\nconst rawContent = $json.choices?.[0]?.message?.content || '';\n\nlet hydeDocum",
                 "new": "// Neo4j Query Builder (Deep Traversal V2) - with NLP entity extraction fallback\nconst initData = $node['OTEL Init'].json;\nconst rawContent = $json.choices?.[0]?.message?.content || '';\n\nlet hydeDocum"
               }
             ]
           },
           {
-            "node": "Answer Formatter",
+            "node": "Validate Embedding",
             "changes": [
               {
                 "param": "jsCode",
-                "old": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract parti",
-                "new": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract parti"
+                "old": "const embeddingData = $json;\n\n// Check if we have a valid embedding\nlet embedding = [];\n\n// Try different response formats\nif (embeddingData.data?.[0]?.embedding) {\n  embedding = embeddingData.data[0]",
+                "new": "const embeddingData = $json;\n\n// Check if we have a valid embedding - handle both Cohere and OpenRouter formats\nlet embedding = [];\n\n// Cohere v2 format: embeddings.float[0]\nif (embeddingData.embeddin"
               }
             ]
           }
         ],
         "has_changes": true,
-        "summary": "+0 -0 ~3 nodes"
+        "summary": "+0 -0 ~6 nodes"
       }
     },
     "quantitative": {
@@ -611,6 +671,22 @@
       "hash": "f932cc410686acaa",
       "diff_summary": "+0 -0 ~7 nodes",
       "snapshot_file": "orchestrator-2026-02-10T11-02-36-f932cc410686acaa.json"
+    },
+    {
+      "timestamp": "2026-02-10T12:36:35.746965Z",
+      "pipeline": "standard",
+      "version": 5,
+      "hash": "464d7ee07ad9c20d",
+      "diff_summary": "+0 -0 ~4 nodes",
+      "snapshot_file": "standard-2026-02-10T12-36-35-464d7ee07ad9c20d.json"
+    },
+    {
+      "timestamp": "2026-02-10T12:36:35.985377Z",
+      "pipeline": "graph",
+      "version": 8,
+      "hash": "29549c0af7f5761b",
+      "diff_summary": "+0 -0 ~6 nodes",
+      "snapshot_file": "graph-2026-02-10T12-36-35-29549c0af7f5761b.json"
     }
   ]
 }
