@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "2.0",
-    "generated_at": "2026-02-10T09:51:55.958072Z",
+    "generated_at": "2026-02-10T11:02:38.247277Z",
     "status": "running",
     "project": "Multi-RAG Orchestrator SOTA 2026",
     "phase": "Phase 2 — Expand (1,000q)",
@@ -1422,7 +1422,60 @@
       "trend": []
     }
   },
-  "workflow_changes": [],
+  "workflow_changes": [
+    {
+      "timestamp": "2026-02-10T11:02:05.515040Z",
+      "description": "standard workflow updated (v4, hash 2badcdb4d87f7a8e) — +0 -0 ~4 nodes",
+      "change_type": "workflow-sync",
+      "files_changed": [
+        "standard-2026-02-10T11-02-04-2badcdb4d87f7a8e.json"
+      ],
+      "affected_pipelines": [
+        "standard"
+      ],
+      "before_metrics": null,
+      "after_metrics": null
+    },
+    {
+      "timestamp": "2026-02-10T11:02:05.759018Z",
+      "description": "graph workflow updated (v7, hash 401f8db56efe4195) — +0 -0 ~3 nodes",
+      "change_type": "workflow-sync",
+      "files_changed": [
+        "graph-2026-02-10T11-02-04-401f8db56efe4195.json"
+      ],
+      "affected_pipelines": [
+        "graph"
+      ],
+      "before_metrics": null,
+      "after_metrics": null
+    },
+    {
+      "timestamp": "2026-02-10T11:02:37.604734Z",
+      "description": "quantitative workflow updated (v4, hash 771524670b6fa68f) — +0 -0 ~0 nodes",
+      "change_type": "workflow-sync",
+      "files_changed": [
+        "quantitative-2026-02-10T11-02-36-771524670b6fa68f.json"
+      ],
+      "affected_pipelines": [
+        "quantitative"
+      ],
+      "before_metrics": null,
+      "after_metrics": null
+    },
+    {
+      "timestamp": "2026-02-10T11:02:38.247261Z",
+      "description": "orchestrator workflow updated (v6, hash f932cc410686acaa) — +0 -0 ~7 nodes",
+      "change_type": "workflow-sync",
+      "files_changed": [
+        "orchestrator-2026-02-10T11-02-36-f932cc410686acaa.json"
+      ],
+      "affected_pipelines": [
+        "orchestrator"
+      ],
+      "before_metrics": null,
+      "after_metrics": null
+    }
+  ],
   "databases": {
     "pinecone": {
       "total_vectors": 10411,
@@ -2064,182 +2117,502 @@
   ],
   "quick_tests": [
     {
-      "timestamp": "2026-02-10T09:43:21.541037Z",
-      "pipeline": "standard",
-      "query": "What is the capital of Japan?",
-      "status": "pass",
-      "latency_ms": 12322,
-      "response_preview": "The capital of Japan is Tokyo.",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-10T09:43:38.626674Z",
-      "pipeline": "standard",
-      "query": "Where is Normandy located?",
-      "status": "pass",
-      "latency_ms": 17079,
-      "response_preview": "Normandy is located in the northwestern part of France, along the English Channel.",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-10T09:43:56.002103Z",
-      "pipeline": "standard",
-      "query": "Who painted the Mona Lisa?",
-      "status": "pass",
-      "latency_ms": 17368,
-      "response_preview": "Leonardo da Vinci painted the Mona Lisa.",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-10T09:44:08.059491Z",
-      "pipeline": "standard",
-      "query": "What is the largest ocean?",
-      "status": "pass",
-      "latency_ms": 12051,
-      "response_preview": "The Pacific Ocean is the largest ocean, covering approximately 63.8 million square miles (165.25 million square kilometers).",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-10T09:44:19.911140Z",
-      "pipeline": "standard",
-      "query": "What year did World War II end?",
-      "status": "pass",
-      "latency_ms": 11844,
-      "response_preview": "World War II ended in 1945.",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-10T09:44:56.280654Z",
-      "pipeline": "graph",
-      "query": "What did Marie Curie win Nobel Prizes for?",
-      "status": "fail",
-      "latency_ms": 32272,
-      "response_preview": "Physics (1903) and Chemistry (1911)",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-10T09:45:32.175375Z",
-      "pipeline": "graph",
-      "query": "What did Alexander Fleming discover?",
-      "status": "pass",
-      "latency_ms": 35888,
-      "response_preview": "Penicillin",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-10T09:45:55.970368Z",
-      "pipeline": "graph",
-      "query": "Who founded Microsoft?",
-      "status": "pass",
-      "latency_ms": 23788,
-      "response_preview": "Bill Gates and Paul Allen.",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-10T09:46:56.025879Z",
-      "pipeline": "graph",
-      "query": "What is the WHO?",
-      "status": "error",
-      "latency_ms": 0,
-      "response_preview": "",
-      "trigger": "manual",
-      "error": "The read operation timed out"
-    },
-    {
-      "timestamp": "2026-02-10T09:47:23.488306Z",
-      "pipeline": "graph",
-      "query": "What disease is caused by mosquitoes?",
-      "status": "pass",
-      "latency_ms": 27453,
-      "response_preview": "Malaria, dengue fever, Zika virus, West Nile virus, chikungunya",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-10T09:47:58.583639Z",
+      "timestamp": "2026-02-10T10:25:23.829603Z",
       "pipeline": "quantitative",
       "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
-      "status": "fail",
-      "latency_ms": 26791,
+      "status": "pass",
+      "latency_ms": 25638,
       "response_preview": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
       "trigger": "manual",
       "error": null
     },
     {
-      "timestamp": "2026-02-10T09:48:58.629260Z",
+      "timestamp": "2026-02-10T10:25:40.186385Z",
       "pipeline": "quantitative",
-      "query": "How many employees does GreenEnergy Corp have?",
-      "status": "error",
-      "latency_ms": 0,
-      "response_preview": "",
+      "query": "What was GreenEnergy Corp's total revenue in 2023?",
+      "status": "pass",
+      "latency_ms": 16349,
+      "response_preview": "GreenEnergy Corp's total revenue in 2023 was $7,300,000,000.00.",
       "trigger": "manual",
-      "error": "The read operation timed out"
+      "error": null
     },
     {
-      "timestamp": "2026-02-10T09:49:11.089042Z",
+      "timestamp": "2026-02-10T10:26:00.885188Z",
       "pipeline": "quantitative",
       "query": "What is the total number of products across all companies?",
       "status": "pass",
-      "latency_ms": 12452,
+      "latency_ms": 20692,
       "response_preview": "The total number of products across all companies is 18.",
       "trigger": "manual",
       "error": null
     },
     {
-      "timestamp": "2026-02-10T09:49:26.963127Z",
+      "timestamp": "2026-02-10T10:26:16.176355Z",
       "pipeline": "quantitative",
       "query": "What was HealthPlus Labs' net income in 2022?",
       "status": "pass",
-      "latency_ms": 15866,
+      "latency_ms": 15283,
       "response_preview": "HealthPlus Labs' net income in 2022 was $88,638,000.",
       "trigger": "manual",
       "error": null
     },
     {
-      "timestamp": "2026-02-10T09:49:58.137702Z",
+      "timestamp": "2026-02-10T10:26:47.017751Z",
       "pipeline": "quantitative",
       "query": "What was TechVision's revenue in Q1 2023?",
       "status": "pass",
-      "latency_ms": 31167,
+      "latency_ms": 30833,
       "response_preview": "TechVision's revenue in Q1 2023 was $1,552,350,000.00.",
       "trigger": "manual",
       "error": null
     },
     {
-      "timestamp": "2026-02-10T09:50:37.632630Z",
+      "timestamp": "2026-02-10T10:27:31.114179Z",
       "pipeline": "orchestrator",
       "query": "What is the capital of Japan?",
       "status": "pass",
-      "latency_ms": 30885,
+      "latency_ms": 34901,
       "response_preview": "Tokyo is the capital city of Japan.",
       "trigger": "manual",
       "error": null
     },
     {
-      "timestamp": "2026-02-10T09:51:10.722885Z",
+      "timestamp": "2026-02-10T10:28:12.118179Z",
+      "pipeline": "orchestrator",
+      "query": "What was TechVision Inc's total revenue in 2023?",
+      "status": "pass",
+      "latency_ms": 40996,
+      "response_preview": "TechVision Inc's total revenue for 2023 is $6,745,000,000.\n\n---\n**Sources:**\n[1] SQL Result 1",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:28:44.080285Z",
+      "pipeline": "orchestrator",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "pass",
+      "latency_ms": 31955,
+      "response_preview": "Marie Curie won Nobel Prizes in Physics (1903) for her work on radioactivity and in Chemistry (1911) for discovering radium and polonium.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:29:21.273499Z",
+      "pipeline": "orchestrator",
+      "query": "Who painted the Mona Lisa?",
+      "status": "pass",
+      "latency_ms": 37186,
+      "response_preview": "Leonardo da Vinci painted the Mona Lisa.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:29:43.673228Z",
+      "pipeline": "orchestrator",
+      "query": "What is the largest ocean?",
+      "status": "pass",
+      "latency_ms": 22392,
+      "response_preview": "The Pacific Ocean is the largest ocean by size, covering approximately 165.25 million square kilometers.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:30:03.512290Z",
+      "pipeline": "standard",
+      "query": "What is the capital of Japan?",
+      "status": "pass",
+      "latency_ms": 10054,
+      "response_preview": "The capital of Japan is Tokyo.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:30:17.585081Z",
+      "pipeline": "standard",
+      "query": "Where is Normandy located?",
+      "status": "pass",
+      "latency_ms": 14065,
+      "response_preview": "Normandy is located in the northwestern region of France, along the English Channel.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:30:29.999033Z",
+      "pipeline": "standard",
+      "query": "Who painted the Mona Lisa?",
+      "status": "pass",
+      "latency_ms": 12405,
+      "response_preview": "Leonardo da Vinci painted the Mona Lisa.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:30:42.877158Z",
+      "pipeline": "standard",
+      "query": "What is the largest ocean?",
+      "status": "pass",
+      "latency_ms": 12871,
+      "response_preview": "The Pacific Ocean is the largest ocean, covering approximately 63.8 million square miles.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:30:53.357215Z",
+      "pipeline": "standard",
+      "query": "What year did World War II end?",
+      "status": "pass",
+      "latency_ms": 10470,
+      "response_preview": "World War II ended in 1945.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:31:29.509837Z",
+      "pipeline": "graph",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "pass",
+      "latency_ms": 36142,
+      "response_preview": "Physics and Chemistry",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:31:39.811626Z",
+      "pipeline": "graph",
+      "query": "What did Alexander Fleming discover?",
+      "status": "pass",
+      "latency_ms": 10292,
+      "response_preview": "Penicillin.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:31:55.040356Z",
+      "pipeline": "graph",
+      "query": "Who founded Microsoft?",
+      "status": "pass",
+      "latency_ms": 15219,
+      "response_preview": "Bill Gates and Paul Allen",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:32:14.569003Z",
+      "pipeline": "graph",
+      "query": "What is the WHO?",
+      "status": "pass",
+      "latency_ms": 19520,
+      "response_preview": "The World Health Organization (WHO) is a specialized agency of the United Nations responsible for international public health.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:32:37.494385Z",
+      "pipeline": "graph",
+      "query": "What disease is caused by mosquitoes?",
+      "status": "pass",
+      "latency_ms": 22917,
+      "response_preview": "Malaria",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:32:56.763118Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "status": "pass",
+      "latency_ms": 19261,
+      "response_preview": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.00.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:33:09.315864Z",
+      "pipeline": "quantitative",
+      "query": "What was GreenEnergy Corp's total revenue in 2023?",
+      "status": "pass",
+      "latency_ms": 12545,
+      "response_preview": "GreenEnergy Corp's total revenue in 2023 was $3,650,000,000.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:33:22.173247Z",
+      "pipeline": "quantitative",
+      "query": "What is the total number of products across all companies?",
+      "status": "pass",
+      "latency_ms": 12849,
+      "response_preview": "The total number of products across all companies is 18.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:33:36.694205Z",
+      "pipeline": "quantitative",
+      "query": "What was HealthPlus Labs' net income in 2022?",
+      "status": "pass",
+      "latency_ms": 14514,
+      "response_preview": "HealthPlus Labs' net income in 2022 was $88,638,000.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:33:52.225206Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision's revenue in Q1 2023?",
+      "status": "pass",
+      "latency_ms": 15523,
+      "response_preview": "TechVision's revenue in Q1 2023 was $1,552,350,000.00.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:34:07.138814Z",
+      "pipeline": "orchestrator",
+      "query": "What is the capital of Japan?",
+      "status": "pass",
+      "latency_ms": 14904,
+      "response_preview": "Tokyo is the capital city of Japan.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:34:28.708567Z",
       "pipeline": "orchestrator",
       "query": "What was TechVision Inc's total revenue in 2023?",
       "status": "fail",
-      "latency_ms": 33082,
+      "latency_ms": 21562,
+      "response_preview": "TechVision Inc's total revenue for 2023 was $13,490,000,000.\n\n---\n**Sources:**\n[1] SQL Result 1",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:34:51.089981Z",
+      "pipeline": "orchestrator",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "pass",
+      "latency_ms": 22374,
+      "response_preview": "Marie Curie won Nobel Prizes in Physics (1903) for her work on radioactivity and in Chemistry (1911) for discovering radium and polonium.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:35:12.670523Z",
+      "pipeline": "orchestrator",
+      "query": "Who painted the Mona Lisa?",
+      "status": "pass",
+      "latency_ms": 21573,
+      "response_preview": "Leonardo da Vinci painted the Mona Lisa.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:35:33.969805Z",
+      "pipeline": "orchestrator",
+      "query": "What is the largest ocean?",
+      "status": "pass",
+      "latency_ms": 21292,
+      "response_preview": "The Pacific Ocean is the largest ocean by size, covering approximately 165.25 million square kilometers.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:56:02.923078Z",
+      "pipeline": "standard",
+      "query": "What is the capital of Japan?",
+      "status": "pass",
+      "latency_ms": 8225,
+      "response_preview": "The capital of Japan is Tokyo.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:56:13.069042Z",
+      "pipeline": "standard",
+      "query": "Where is Normandy located?",
+      "status": "pass",
+      "latency_ms": 10138,
+      "response_preview": "Normandy is located in the northern part of France, along the English Channel coast.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:56:27.066490Z",
+      "pipeline": "standard",
+      "query": "Who painted the Mona Lisa?",
+      "status": "pass",
+      "latency_ms": 13989,
+      "response_preview": "The Mona Lisa was painted by Leonardo da Vinci.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:56:36.617634Z",
+      "pipeline": "standard",
+      "query": "What is the largest ocean?",
+      "status": "pass",
+      "latency_ms": 9543,
+      "response_preview": "The Pacific Ocean is the largest ocean, covering more than 30% of the Earth's surface.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:56:48.285377Z",
+      "pipeline": "standard",
+      "query": "What year did World War II end?",
+      "status": "pass",
+      "latency_ms": 11660,
+      "response_preview": "World War II ended in 1945.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:56:59.798786Z",
+      "pipeline": "graph",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "pass",
+      "latency_ms": 11506,
+      "response_preview": "Physics, Chemistry",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:57:40.716814Z",
+      "pipeline": "graph",
+      "query": "What did Alexander Fleming discover?",
+      "status": "pass",
+      "latency_ms": 40910,
+      "response_preview": "Penicillin",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:58:19.271101Z",
+      "pipeline": "graph",
+      "query": "Who founded Microsoft?",
+      "status": "pass",
+      "latency_ms": 38547,
+      "response_preview": "Bill Gates",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:58:39.047487Z",
+      "pipeline": "graph",
+      "query": "What is the WHO?",
+      "status": "pass",
+      "latency_ms": 19769,
+      "response_preview": "World Health Organization",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:58:49.492661Z",
+      "pipeline": "graph",
+      "query": "What disease is caused by mosquitoes?",
+      "status": "pass",
+      "latency_ms": 10437,
+      "response_preview": "Malaria",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:59:03.564432Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "status": "pass",
+      "latency_ms": 14064,
+      "response_preview": "TechVision Inc's total revenue in fiscal year 2023 was $6,745,000,000.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:59:17.843682Z",
+      "pipeline": "quantitative",
+      "query": "What was GreenEnergy Corp's total revenue in 2023?",
+      "status": "pass",
+      "latency_ms": 14272,
+      "response_preview": "GreenEnergy Corp's total revenue in 2023 was $3,650,000,000.00.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:59:27.564978Z",
+      "pipeline": "quantitative",
+      "query": "What is the total number of products across all companies?",
+      "status": "pass",
+      "latency_ms": 9714,
+      "response_preview": "The total number of products across all companies is 18.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:59:42.106584Z",
+      "pipeline": "quantitative",
+      "query": "What was HealthPlus Labs' net income in 2022?",
+      "status": "pass",
+      "latency_ms": 14534,
+      "response_preview": "HealthPlus Labs' net income in 2022 was $88,638,000.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T10:59:57.481626Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision's revenue in Q1 2023?",
+      "status": "pass",
+      "latency_ms": 15367,
+      "response_preview": "TechVision's revenue in Q1 2023 was $1,552,350,000.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T11:00:17.603782Z",
+      "pipeline": "orchestrator",
+      "query": "What is the capital of Japan?",
+      "status": "pass",
+      "latency_ms": 20114,
+      "response_preview": "Tokyo is the capital city of Japan.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T11:00:45.671219Z",
+      "pipeline": "orchestrator",
+      "query": "What was TechVision Inc's total revenue in 2023?",
+      "status": "pass",
+      "latency_ms": 28059,
       "response_preview": "TechVision Inc's total revenue for 2023 was $6,745,000,000.\n\n---\n**Sources:**\n[1] SQL Result 1",
       "trigger": "manual",
       "error": null
     },
     {
-      "timestamp": "2026-02-10T09:51:55.958054Z",
+      "timestamp": "2026-02-10T11:01:09.743838Z",
       "pipeline": "orchestrator",
       "query": "What did Marie Curie win Nobel Prizes for?",
       "status": "pass",
-      "latency_ms": 45227,
-      "response_preview": "Marie Curie won Nobel Prizes in Physics (1903) for her work on radioactivity and in Chemistry (1911) for discovering radium and polonium.",
+      "latency_ms": 24065,
+      "response_preview": "Marie Curie won Nobel Prizes in Physics in 1903 for her work on radioactivity and in Chemistry in 1911 for discovering radium and polonium.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T11:01:27.462737Z",
+      "pipeline": "orchestrator",
+      "query": "Who painted the Mona Lisa?",
+      "status": "pass",
+      "latency_ms": 17711,
+      "response_preview": "Leonardo da Vinci painted the Mona Lisa.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-10T11:01:49.674189Z",
+      "pipeline": "orchestrator",
+      "query": "What is the largest ocean?",
+      "status": "pass",
+      "latency_ms": 22204,
+      "response_preview": "The Pacific Ocean is the largest ocean by size, covering approximately 165.25 million square kilometers.",
       "trigger": "manual",
       "error": null
     }
@@ -2254,12 +2627,405 @@
     }
   ],
   "workflow_versions": {
-    "standard": {},
-    "graph": {},
-    "quantitative": {},
-    "orchestrator": {}
+    "standard": {
+      "version": 4,
+      "hash": "2badcdb4d87f7a8e",
+      "timestamp": "2026-02-10T11:02:05.513758Z",
+      "name": "WF5 Standard RAG V3.4",
+      "webhook": "/webhook/rag-multi-index-v3",
+      "total_nodes": 23,
+      "models_used": [],
+      "snapshot_file": "standard-2026-02-10T11-02-04-2badcdb4d87f7a8e.json",
+      "diff_from_previous": {
+        "added_nodes": [],
+        "removed_nodes": [],
+        "modified_nodes": [
+          {
+            "node": "HyDE Generator",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots ",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100"
+              }
+            ]
+          },
+          {
+            "node": "LLM Generation",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere pr",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question"
+              }
+            ]
+          },
+          {
+            "node": "Response Formatter",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generati",
+                "new": "// Response Formatter - Standard RAG V3.4 (FIXED)\ntry {\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmCon"
+              }
+            ]
+          },
+          {
+            "node": "Cohere Reranker",
+            "changes": [
+              {
+                "param": "sendHeaders",
+                "old": "",
+                "new": "True"
+              },
+              {
+                "param": "headerParameters",
+                "old": "",
+                "new": "{'parameters': [{'name': 'Authorization', 'value': '=Bearer {{ $vars.COHERE_API_KEY }}'}]}"
+              },
+              {
+                "param": "authentication",
+                "old": "genericCredentialType",
+                "new": "none"
+              },
+              {
+                "param": "genericAuthType",
+                "old": "httpHeaderAuth",
+                "new": ""
+              }
+            ]
+          }
+        ],
+        "has_changes": true,
+        "summary": "+0 -0 ~4 nodes"
+      }
+    },
+    "graph": {
+      "version": 7,
+      "hash": "401f8db56efe4195",
+      "timestamp": "2026-02-10T11:02:05.758033Z",
+      "name": "WF2 Graph RAG V3.3",
+      "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+      "total_nodes": 26,
+      "models_used": [],
+      "snapshot_file": "graph-2026-02-10T11-02-04-401f8db56efe4195.json",
+      "diff_from_previous": {
+        "added_nodes": [],
+        "removed_nodes": [],
+        "modified_nodes": [
+          {
+            "node": "Extract HyDE Document",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "let hydeDocument = '';\n\ntry {\n  const hydeResponse = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n  hydeDocument = hydeResponse.hyde_document || '';\n} catch (e) {\n  console.error('Failed ",
+                "new": "// Extract HyDE Document - handles both JSON and plain text responses\nlet hydeDocument = '';\nconst rawContent = $json.choices?.[0]?.message?.content || '';\n\n// Strategy 1: Try JSON parse (model may ou"
+              }
+            ]
+          },
+          {
+            "node": "Neo4j Query Builder (Deep Traversal V2)",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// CORRECTED Neo4j Query Builder - Neo4j 5.x syntax compatible\n// Fixed: EXISTS() -> IS NOT NULL\n\nconst initData = $node['OTEL Init'].json;\nlet hydeResponse = {};\ntry {\n  hydeResponse = JSON.parse($js",
+                "new": "// Neo4j Query Builder (Deep Traversal V2) - with NLP entity extraction fallback\nconst initData = $node['OTEL Init'].json;\nconst rawContent = $json.choices?.[0]?.message?.content || '';\n\nlet hydeDocum"
+              }
+            ]
+          },
+          {
+            "node": "Answer Formatter",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract parti",
+                "new": "// Extract LLM answer and format final response\n// Handle rate limit errors gracefully\nconst llmResponse = $json;\nlet answer = '';\n\nif (llmResponse.error) {\n  // LLM call failed - try to extract parti"
+              }
+            ]
+          }
+        ],
+        "has_changes": true,
+        "summary": "+0 -0 ~3 nodes"
+      }
+    },
+    "quantitative": {
+      "version": 4,
+      "hash": "771524670b6fa68f",
+      "timestamp": "2026-02-10T11:02:37.602745Z",
+      "name": "WF4 Quantitative V2.0",
+      "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+      "total_nodes": 25,
+      "models_used": [],
+      "snapshot_file": "quantitative-2026-02-10T11-02-36-771524670b6fa68f.json",
+      "diff_from_previous": {
+        "added_nodes": [],
+        "removed_nodes": [],
+        "modified_nodes": [],
+        "has_changes": false,
+        "summary": "+0 -0 ~0 nodes"
+      }
+    },
+    "orchestrator": {
+      "version": 6,
+      "hash": "f932cc410686acaa",
+      "timestamp": "2026-02-10T11:02:38.245931Z",
+      "name": "V10.1 Orchestrator",
+      "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+      "total_nodes": 68,
+      "models_used": [],
+      "snapshot_file": "orchestrator-2026-02-10T11-02-36-f932cc410686acaa.json",
+      "diff_from_previous": {
+        "added_nodes": [],
+        "removed_nodes": [],
+        "modified_nodes": [
+          {
+            "node": "🎯 LLM 3: Agent Harness (Opus 4.5)",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={{ {\n  \"model\": $vars.LLM_AGENT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  \"max_tokens\": 2000,\n  \"temperature\": 0.3,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are ",
+                "new": "={{ {\n  \"model\": $vars.LLM_AGENT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  \"max_tokens\": 500,\n  \"temperature\": 0.3,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are t"
+              },
+              {
+                "param": "options",
+                "old": "{'timeout': 10000, 'retry': {'maxTries': 3, 'waitBetweenTries': 2000}}",
+                "new": "{'timeout': 8000, 'retry': {'maxTries': 1, 'waitBetweenTries': 1000}}"
+              }
+            ]
+          },
+          {
+            "node": "📥 Task Result Handler",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// ============================================\n// PATCH - Task Result Handler V10.1.3\n// FIX: Parsing robuste multi-format + fallback_response\n// ============================================\n//\n// PR",
+                "new": "// ============================================\n// PATCH - Task Result Handler V10.1.3\n// FIX: Parsing robuste multi-format + fallback_response\n// ============================================\n//\n// PR"
+              }
+            ]
+          },
+          {
+            "node": "Invoke WF4: Quantitative",
+            "changes": [
+              {
+                "param": "workflowId",
+                "old": "{'__rl': True, 'value': 'LjUz8fxQZ03G9IsU', 'mode': 'id'}",
+                "new": "{'__rl': True, 'value': 'E19NZG9WfM7FNsxr', 'mode': 'id'}"
+              }
+            ]
+          },
+          {
+            "node": "🔄 Fallback Monitor V10",
+            "changes": [
+              {
+                "param": "jsCode",
+                "old": "// === FALLBACK MONITOR V10.1.6 - FIXED: Read from correct source ===\nconst traceId = $node['Init V8 Security & Analysis'].json.trace_id;\n\n// CORRECTION: Lire depuis Task Result Handler, PAS depuis $j",
+                "new": "// === FALLBACK MONITOR V10.2 - SIMPLIFIED: Accept any response with content ===\nconst traceId = $node['Init V8 Security & Analysis'].json.trace_id;\nconst taskHandlerData = $node['📥 Task Result Handle"
+              }
+            ]
+          },
+          {
+            "node": "🧠 LLM 1: Intent Analyzer",
+            "changes": [
+              {
+                "param": "options",
+                "old": "{'timeout': 12000, 'retry': {'maxTries': 3, 'waitBetweenTries': 2000}}",
+                "new": "{'timeout': 8000, 'retry': {'maxTries': 1, 'waitBetweenTries': 1000}}"
+              }
+            ]
+          },
+          {
+            "node": "HTTP Request",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es l'INTENT ANALYZER d'un système RAG multi-moteurs sophi",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated multi-engine "
+              }
+            ]
+          },
+          {
+            "node": "🎯 LLM 2: Task Planner",
+            "changes": [
+              {
+                "param": "jsonBody",
+                "old": "={\n  \"model\": \"{{ $vars.LLM_PLANNER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"temperature\": 0.2,\n  \"max_tokens\": 2000,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ J",
+                "new": "={\n  \"model\": \"{{ $vars.LLM_PLANNER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"temperature\": 0.2,\n  \"max_tokens\": 500,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ JS"
+              },
+              {
+                "param": "options",
+                "old": "{'timeout': 20000, 'retry': {'maxTries': 3, 'waitBetweenTries': 2000}}",
+                "new": "{'timeout': 10000, 'retry': {'maxTries': 1, 'waitBetweenTries': 1000}}"
+              }
+            ]
+          }
+        ],
+        "has_changes": true,
+        "summary": "+0 -0 ~7 nodes"
+      }
+    }
   },
-  "workflow_history": [],
+  "workflow_history": [
+    {
+      "timestamp": "2026-02-08T10:13:54.464328Z",
+      "pipeline": "graph",
+      "version": 1,
+      "hash": "0d8b93db1b973437",
+      "diff_summary": "initial",
+      "snapshot_file": "graph-2026-02-08T10-13-53-0d8b93db1b973437.json"
+    },
+    {
+      "timestamp": "2026-02-08T10:13:55.077914Z",
+      "pipeline": "quantitative",
+      "version": 1,
+      "hash": "be29c6eb1f039f56",
+      "diff_summary": "initial",
+      "snapshot_file": "quantitative-2026-02-08T10-13-53-be29c6eb1f039f56.json"
+    },
+    {
+      "timestamp": "2026-02-08T10:13:55.548007Z",
+      "pipeline": "orchestrator",
+      "version": 1,
+      "hash": "fe3f79014b73ce12",
+      "diff_summary": "initial",
+      "snapshot_file": "orchestrator-2026-02-08T10-13-53-fe3f79014b73ce12.json"
+    },
+    {
+      "timestamp": "2026-02-08T19:49:21.514634Z",
+      "pipeline": "standard",
+      "version": 2,
+      "hash": "d578dc6a4d9df340",
+      "diff_summary": "+0 -0 ~1 nodes",
+      "snapshot_file": "standard-2026-02-08T19-49-20-d578dc6a4d9df340.json"
+    },
+    {
+      "timestamp": "2026-02-08T19:49:22.116594Z",
+      "pipeline": "graph",
+      "version": 2,
+      "hash": "45d303db74b3ad80",
+      "diff_summary": "+0 -0 ~3 nodes",
+      "snapshot_file": "graph-2026-02-08T19-49-20-45d303db74b3ad80.json"
+    },
+    {
+      "timestamp": "2026-02-08T19:49:23.483108Z",
+      "pipeline": "orchestrator",
+      "version": 2,
+      "hash": "23998b9e1fa8a7e2",
+      "diff_summary": "+0 -0 ~2 nodes",
+      "snapshot_file": "orchestrator-2026-02-08T19-49-20-23998b9e1fa8a7e2.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:03:49.655716Z",
+      "pipeline": "graph",
+      "version": 3,
+      "hash": "d7076662382217d6",
+      "diff_summary": "+0 -0 ~2 nodes",
+      "snapshot_file": "graph-2026-02-08T20-03-49-d7076662382217d6.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:03:49.904409Z",
+      "pipeline": "quantitative",
+      "version": 2,
+      "hash": "c9e99a05d63f0e47",
+      "diff_summary": "+0 -0 ~3 nodes",
+      "snapshot_file": "quantitative-2026-02-08T20-03-49-c9e99a05d63f0e47.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:03:50.279220Z",
+      "pipeline": "orchestrator",
+      "version": 3,
+      "hash": "c55e6aa96654944a",
+      "diff_summary": "+0 -0 ~4 nodes",
+      "snapshot_file": "orchestrator-2026-02-08T20-03-49-c55e6aa96654944a.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:19:31.853822Z",
+      "pipeline": "graph",
+      "version": 4,
+      "hash": "d6ab9804916d48c4",
+      "diff_summary": "+0 -0 ~5 nodes",
+      "snapshot_file": "graph-2026-02-08T20-19-30-d6ab9804916d48c4.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:31:37.765813Z",
+      "pipeline": "graph",
+      "version": 5,
+      "hash": "3bf32010e221159c",
+      "diff_summary": "+0 -0 ~2 nodes",
+      "snapshot_file": "graph-2026-02-08T20-31-37-3bf32010e221159c.json"
+    },
+    {
+      "timestamp": "2026-02-08T20:34:16.702700Z",
+      "pipeline": "orchestrator",
+      "version": 4,
+      "hash": "b43d039e4e56ccec",
+      "diff_summary": "+0 -0 ~2 nodes",
+      "snapshot_file": "orchestrator-2026-02-08T20-34-15-b43d039e4e56ccec.json"
+    },
+    {
+      "timestamp": "2026-02-09T03:09:06.601574Z",
+      "pipeline": "standard",
+      "version": 3,
+      "hash": "77ce11e45b64537e",
+      "diff_summary": "+0 -0 ~7 nodes",
+      "snapshot_file": "standard-2026-02-09T03-09-06-77ce11e45b64537e.json"
+    },
+    {
+      "timestamp": "2026-02-09T03:09:06.935968Z",
+      "pipeline": "graph",
+      "version": 6,
+      "hash": "fc7f35d4da4f1140",
+      "diff_summary": "+0 -0 ~3 nodes",
+      "snapshot_file": "graph-2026-02-09T03-09-06-fc7f35d4da4f1140.json"
+    },
+    {
+      "timestamp": "2026-02-09T03:09:07.540690Z",
+      "pipeline": "quantitative",
+      "version": 3,
+      "hash": "ba83b107d0984014",
+      "diff_summary": "+0 -0 ~6 nodes",
+      "snapshot_file": "quantitative-2026-02-09T03-09-06-ba83b107d0984014.json"
+    },
+    {
+      "timestamp": "2026-02-09T03:09:08.143793Z",
+      "pipeline": "orchestrator",
+      "version": 5,
+      "hash": "0c2b1440cb8034e4",
+      "diff_summary": "+0 -0 ~4 nodes",
+      "snapshot_file": "orchestrator-2026-02-09T03-09-06-0c2b1440cb8034e4.json"
+    },
+    {
+      "timestamp": "2026-02-10T11:02:05.513773Z",
+      "pipeline": "standard",
+      "version": 4,
+      "hash": "2badcdb4d87f7a8e",
+      "diff_summary": "+0 -0 ~4 nodes",
+      "snapshot_file": "standard-2026-02-10T11-02-04-2badcdb4d87f7a8e.json"
+    },
+    {
+      "timestamp": "2026-02-10T11:02:05.758049Z",
+      "pipeline": "graph",
+      "version": 7,
+      "hash": "401f8db56efe4195",
+      "diff_summary": "+0 -0 ~3 nodes",
+      "snapshot_file": "graph-2026-02-10T11-02-04-401f8db56efe4195.json"
+    },
+    {
+      "timestamp": "2026-02-10T11:02:37.602765Z",
+      "pipeline": "quantitative",
+      "version": 4,
+      "hash": "771524670b6fa68f",
+      "diff_summary": "+0 -0 ~0 nodes",
+      "snapshot_file": "quantitative-2026-02-10T11-02-36-771524670b6fa68f.json"
+    },
+    {
+      "timestamp": "2026-02-10T11:02:38.245947Z",
+      "pipeline": "orchestrator",
+      "version": 6,
+      "hash": "f932cc410686acaa",
+      "diff_summary": "+0 -0 ~7 nodes",
+      "snapshot_file": "orchestrator-2026-02-10T11-02-36-f932cc410686acaa.json"
+    }
+  ],
   "evaluation_phases": {
     "phase_1": {
       "status": "COMPLETED",
