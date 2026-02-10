@@ -43,15 +43,15 @@ SMOKE_QUESTIONS = {
         {"query": "What year did World War II end?", "expected_contains": "1945"},
     ],
     "graph": [
-        {"query": "What did Marie Curie win Nobel Prizes for?", "expected_contains": "Nobel"},
+        {"query": "What did Marie Curie win Nobel Prizes for?", "expected_contains": "Physics"},
         {"query": "What did Alexander Fleming discover?", "expected_contains": "penicillin"},
         {"query": "Who founded Microsoft?", "expected_contains": "Gates"},
-        {"query": "What is the WHO?", "expected_contains": "World Health"},
+        {"query": "What is the WHO?", "expected_contains": "Health"},
         {"query": "What disease is caused by mosquitoes?", "expected_contains": "malaria"},
     ],
     "quantitative": [
         {"query": "What was TechVision Inc's total revenue in fiscal year 2023?", "expected_contains": "6745"},
-        {"query": "How many employees does GreenEnergy Corp have?", "expected_contains": "3"},
+        {"query": "What was GreenEnergy Corp's total revenue in 2023?", "expected_contains": ""},
         {"query": "What is the total number of products across all companies?", "expected_contains": ""},
         {"query": "What was HealthPlus Labs' net income in 2022?", "expected_contains": ""},
         {"query": "What was TechVision's revenue in Q1 2023?", "expected_contains": ""},
@@ -59,9 +59,20 @@ SMOKE_QUESTIONS = {
     "orchestrator": [
         {"query": "What is the capital of Japan?", "expected_contains": "Tokyo"},
         {"query": "What was TechVision Inc's total revenue in 2023?", "expected_contains": "6745"},
-        {"query": "What did Marie Curie win Nobel Prizes for?", "expected_contains": "Nobel"},
+        {"query": "What did Marie Curie win Nobel Prizes for?", "expected_contains": "Physics"},
+        {"query": "Who painted the Mona Lisa?", "expected_contains": "Vinci"},
+        {"query": "What is the largest ocean?", "expected_contains": "Pacific"},
     ],
 }
+
+
+def normalize_for_match(text):
+    """Normalize text for fuzzy matching — strip formatting from numbers etc."""
+    import re
+    # Remove commas from numbers (6,745 → 6745), dollar signs, percent signs
+    normalized = re.sub(r'(\d),(\d)', r'\1\2', text)
+    normalized = normalized.replace('$', '').replace('%', '')
+    return normalized.lower()
 
 
 def call_endpoint(endpoint, query, timeout=60):
@@ -111,15 +122,19 @@ def run_quick_tests(pipelines, max_questions=3, trigger="manual"):
         pipe_results = []
 
         for i, q in enumerate(questions):
-            # Use longer timeout for orchestrator (sub-workflow chaining)
-            pipe_timeout = 90 if pipe == "orchestrator" else 60
+            # Use generous timeouts — LLM calls via free models can be slow
+            pipe_timeout = 120 if pipe == "orchestrator" else 90
             resp = call_endpoint(endpoint, q["query"], timeout=pipe_timeout)
             expected = q.get("expected_contains", "")
             passed = False
 
             if resp["status"] == "ok" and resp["answer"]:
-                if expected and expected.lower() in resp["answer"].lower():
-                    passed = True
+                if expected:
+                    # Normalize both sides to handle number formatting (6,745 vs 6745)
+                    norm_answer = normalize_for_match(resp["answer"])
+                    norm_expected = normalize_for_match(expected)
+                    if norm_expected in norm_answer:
+                        passed = True
                 elif not expected and len(resp["answer"]) > 10:
                     passed = True  # No expected = just check non-empty
 

@@ -1,0 +1,114 @@
+{
+  "generated_at": "2026-02-10T09:53:44.086887Z",
+  "title": "Comprehensive Pipeline Diagnostics - Post OpenRouter Key Fix",
+  "executive_summary": {
+    "root_cause": "OpenRouter API key was expired (401 User not found). All LLM and embedding calls were failing across all pipelines.",
+    "fix_applied": "Updated OPENROUTER_API_KEY in n8n variables with new key provided by user.",
+    "current_state": "All 4 pipelines now respond. LLM calls work. Embeddings still fail (402 Payment Required) - using fallback mode.",
+    "remaining_blocker": "Vector retrieval disabled (embedding API requires OpenRouter credits). Standard RAG operates in LLM-only fallback."
+  },
+  "pipeline_status": {
+    "standard": {
+      "status": "FUNCTIONAL (fallback mode)",
+      "smoke_test": "5/5 pass",
+      "issues": [
+        "ZERO_RETRIEVAL: No Pinecone results (embeddings fail with 402)",
+        "Operates in LLM-only fallback - correct but no RAG augmentation",
+        "Slow: Query Decomposer avg 6.8s, HyDE Generator avg 5.3s"
+      ],
+      "fix_needed": "Switch to free embedding provider (Jina AI) or add OpenRouter credits"
+    },
+    "graph": {
+      "status": "FUNCTIONAL (partial)",
+      "smoke_test": "3/5 pass (1 strict validation, 1 timeout)",
+      "accuracy_previous": "76.5% (Phase 2 eval)",
+      "issues": [
+        "Pinecone HyDE search fails (same embedding 402 issue)",
+        "Neo4j entity traversal works - main retrieval path still functional",
+        "HyDE & Entity Extraction very verbose (2758 chars avg, 37.6s avg)",
+        "Some timeouts on complex queries"
+      ],
+      "fix_needed": "Reduce HyDE verbosity, fix embedding for Pinecone hybrid search"
+    },
+    "quantitative": {
+      "status": "FUNCTIONAL",
+      "smoke_test": "3/5 pass (1 number formatting validation bug, 1 timeout)",
+      "issues": [
+        "Text-to-SQL Generator slow (18s avg, 920 chars output)",
+        "Some SQL queries return no data (schema mismatch?)",
+        "Timeouts on complex queries"
+      ],
+      "fix_needed": "Fix smoke test validation for formatted numbers, optimize SQL generation"
+    },
+    "orchestrator": {
+      "status": "FUNCTIONAL",
+      "smoke_test": "2/3 pass (1 number formatting validation bug)",
+      "issues": [
+        "Intent Analyzer verbose (637 chars avg, 9.1s avg)",
+        "Routes correctly to sub-pipelines",
+        "Inherits issues from sub-pipelines (standard fallback, quantitative timeouts)"
+      ],
+      "fix_needed": "Fix sub-pipeline issues, reduce Intent Analyzer verbosity"
+    }
+  },
+  "node_level_analysis": {
+    "critical_nodes": {
+      "embedding_nodes": {
+        "affected": [
+          "HyDE Embedding",
+          "Original Embedding",
+          "Generate HyDE Embedding"
+        ],
+        "error": "402 Payment Required on OpenRouter embeddings API",
+        "impact": "No vector search in Pinecone - all pipelines using fallback",
+        "fix": "Switch to Jina AI free embeddings (requires JINA_API_KEY + Pinecone re-index)"
+      },
+      "verbose_llm_nodes": {
+        "WF3: HyDE & Entity Extraction": {
+          "avg_chars": 2758,
+          "avg_ms": 37646
+        },
+        "Text-to-SQL Generator (CoT Enhanced)": {
+          "avg_chars": 920,
+          "avg_ms": 18049
+        },
+        "Intent Analyzer": {
+          "avg_chars": 637,
+          "avg_ms": 9149
+        },
+        "Query Decomposer (V.3.4)": {
+          "avg_chars": 321,
+          "avg_ms": 6867
+        }
+      }
+    },
+    "healthy_nodes": [
+      "Init & ACL Pre-Filter V3.4",
+      "Needs Decomposition?",
+      "Query Merger V3.4",
+      "RRF Merge & Rank V3.4",
+      "Response Formatter",
+      "Shield #4: Neo4j Guardian Traversal"
+    ]
+  },
+  "action_plan": [
+    {
+      "priority": 1,
+      "action": "Set up free Jina AI embeddings",
+      "details": "Get JINA_API_KEY from https://jina.ai/api-dashboard/key-manager, run setup_embeddings.py --provider jina to re-index Pinecone at 1024 dims and update n8n variables",
+      "impact": "Enables vector retrieval for Standard and Graph pipelines"
+    },
+    {
+      "priority": 2,
+      "action": "Fix smoke test validation for number formatting",
+      "details": "The expected_contains check fails when numbers have commas (6,745 vs 6745)",
+      "impact": "Quantitative and Orchestrator will score higher"
+    },
+    {
+      "priority": 3,
+      "action": "Reduce LLM verbosity in Graph and Orchestrator nodes",
+      "details": "Add max_tokens constraints to HyDE & Entity Extraction, Intent Analyzer",
+      "impact": "Faster execution, fewer timeouts"
+    }
+  ]
+}
