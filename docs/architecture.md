@@ -6,12 +6,31 @@
 
 ## n8n Cloud Workflows (host: amoret.app.n8n.cloud)
 
-| Workflow | Webhook Path | DB | Nodes | n8n Link |
+| Workflow | Webhook Path | DB | Nodes | n8n ID |
 |---|---|---|---|---|
-| WF5 Standard RAG V3.4 | `/webhook/rag-multi-index-v3` | Pinecone | 23 | [Open](https://amoret.app.n8n.cloud/workflow/LnTqRX4LZlI009Ks-3Jnp) |
-| WF2 Graph RAG V3.3 | `/webhook/ff622742-...` | Neo4j + Supabase | 26 | [Open](https://amoret.app.n8n.cloud/workflow/95x2BBAbJlLWZtWEJn6rb) |
-| WF4 Quantitative V2.0 | `/webhook/3e0f8010-...` | Supabase SQL | 25 | [Open](https://amoret.app.n8n.cloud/workflow/LjUz8fxQZ03G9IsU) |
-| V10.1 Orchestrator | `/webhook/92217bb8-...` | Routes to above | 68 | [Open](https://amoret.app.n8n.cloud/workflow/FZxkpldDbgV8AD_cg7IWG) |
+| Standard RAG V3.4 | `/webhook/rag-multi-index-v3` | Pinecone | 23 | `IgQeo5svGlIAPkBc` |
+| Graph RAG V3.3 | `/webhook/ff622742-...` | Neo4j + Supabase | 26 | `95x2BBAbJlLWZtWEJn6rb` |
+| Quantitative V2.0 | `/webhook/3e0f8010-...` | Supabase SQL | 25 | `E19NZG9WfM7FNsxr` |
+| Orchestrator V10.1 | `/webhook/92217bb8-...` | Routes to above | 68 | `ALd4gOEqiKL5KR1p` |
+
+### Ingestion/Enrichment Workflows (imported to workflows/live/)
+
+| Workflow | Nodes | n8n ID |
+|---|---|---|
+| Ingestion V3.1 | 28 | `nh1D4Up0wBZhuQbp` |
+| Enrichissement V3.1 | 29 | `ORa01sX4xI0iRCJ8` |
+| Feedback V3.1 | 13 | `iVsj6dq8UpX5Dk7c` |
+| Benchmark V3.0 | 9 | `qUm28nhq62SxVWHe` |
+
+### Benchmark/Support Workflows
+
+| Workflow | Nodes | n8n ID |
+|---|---|---|
+| Dataset Ingestion Pipeline | 23 | `L8irkzSrfLlgt2Bt` |
+| Monitoring & Alerting | 19 | `8a72LTsYvsH2X79d` |
+| Orchestrator Tester | 15 | `7UMkzbjkkYZAUzPD` |
+| RAG Batch Tester | 16 | `QCHKdqnTIEwEN1Ng` |
+| SQL Executor Utility | 2 | `3O2xcKuloLnZB5dH` |
 
 ---
 

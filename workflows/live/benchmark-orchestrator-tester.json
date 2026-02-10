@@ -1,0 +1,905 @@
+{
+  "updatedAt": "2026-02-06T20:35:07.150Z",
+  "createdAt": "2026-02-06T13:14:46.541Z",
+  "id": "7UMkzbjkkYZAUzPD",
+  "name": "BENCHMARK - Orchestrator Tester",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "benchmark-test-orchestrator",
+        "options": {
+          "rawBody": true
+        },
+        "responseMode": "responseNode"
+      },
+      "id": "b3000001-0001-4000-a003-000000000001",
+      "name": "Webhook: Start Orchestrator Test",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3000,
+        300
+      ],
+      "webhookId": "bench-test-orch-001"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Init Orchestrator Test Session\nconst body = $json.body || $json || {};\n\nif (!body.dataset_name) throw new Error('VALIDATION_ERROR: dataset_name is required');\n\n// Orchestrator test types\nconst TEST_MODES = {\n  'single_query': {\n    description: 'Single queries routed through orchestrator',\n    batch_size: 10,\n    metrics: ['accuracy', 'tool_selection_accuracy', 'routing_correctness', 'latency_ms']\n  },\n  'multi_turn': {\n    description: 'Multi-turn conversations (MTRAG-style)',\n    batch_size: 5,\n    metrics: ['turn_accuracy', 'conversation_coherence', 'context_retention', 'tool_selection_accuracy']\n  },\n  'stress_test': {\n    description: 'Concurrent queries to test orchestrator resilience',\n    batch_size: 20,\n    metrics: ['accuracy', 'latency_p50', 'latency_p95', 'error_rate', 'timeout_rate']\n  },\n  'routing_eval': {\n    description: 'Evaluate orchestrator routing decisions',\n    batch_size: 15,\n    metrics: ['routing_correctness', 'tool_selection_accuracy', 'fallback_rate']\n  }\n};\n\nconst testMode = body.test_mode || 'single_query';\nconst modeConfig = TEST_MODES[testMode];\nif (!modeConfig) throw new Error(`UNKNOWN_TEST_MODE: ${testMode}. Available: ${Object.keys(TEST_MODES).join(', ')}`);\n\n// Expected routing per dataset category\nconst EXPECTED_ROUTING = {\n  'single_hop_qa': 'standard_rag',\n  'multi_hop_qa': 'graph_rag',\n  'rag_benchmark': 'standard_rag',\n  'retrieval': 'standard_rag',\n  'domain_medical': 'standard_rag',\n  'domain_finance': 'quantitative_rag',\n  'domain_legal': 'standard_rag',\n  'domain_technical': 'standard_rag',\n  'long_form_qa': 'standard_rag',\n  'robustness': 'standard_rag'\n};\n\nconst runId = `orch-${testMode}-${body.dataset_name}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;\nconst traceId = `tr-bench-orch-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\nreturn {\n  run_id: runId,\n  trace_id: traceId,\n  test_mode: testMode,\n  mode_config: modeConfig,\n  phase: 'phase_6',\n  dataset_name: body.dataset_name,\n  orchestrator_endpoint: ($vars.N8N_BASE_URL || 'https://amoret.app.n8n.cloud') + '/webhook/orchestrator-v10-query',\n  expected_routing: EXPECTED_ROUTING,\n  metrics_to_compute: body.metrics || modeConfig.metrics,\n  batch_size: body.batch_size || modeConfig.batch_size,\n  sample_size: body.sample_size || 50,\n  tenant_id: body.tenant_id || 'benchmark',\n  concurrency: body.concurrency || (testMode === 'stress_test' ? 10 : 1),\n  timeout_ms: body.timeout_ms || 60000,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "b3000001-0002-4000-a003-000000000002",
+      "name": "Init Orchestrator Test",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT bd.id, bd.dataset_name, bd.category, bd.question, bd.expected_answer, bd.context, bd.supporting_facts, bd.metadata\nFROM benchmark_datasets bd\nWHERE bd.dataset_name = '{{ $json.dataset_name }}'\nAND bd.tenant_id = '{{ $json.tenant_id }}'\nORDER BY bd.item_index ASC\nLIMIT {{ $json.sample_size }};"
+      },
+      "id": "b3000001-0003-4000-a003-000000000003",
+      "name": "Fetch Benchmark Data",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -2400,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Create orchestrator test batches\nconst initData = $node['Init Orchestrator Test'].json;\nconst rows = $input.all().map(item => item.json);\n\nif (!Array.isArray(rows) || rows.length === 0) {\n  throw new Error(`NO_DATA: No benchmark items for '${initData.dataset_name}'. Run ingestion first.`);\n}\n\nconst batchSize = initData.batch_size;\nconst batches = [];\n\nfor (let i = 0; i < rows.length; i += batchSize) {\n  const batchItems = rows.slice(i, i + batchSize);\n  batches.push({\n    batch_index: Math.floor(i / batchSize),\n    batch_size: batchItems.length,\n    items: batchItems,\n    run_id: initData.run_id,\n    trace_id: initData.trace_id,\n    test_mode: initData.test_mode,\n    dataset_name: initData.dataset_name,\n    orchestrator_endpoint: initData.orchestrator_endpoint,\n    expected_routing: initData.expected_routing,\n    metrics_to_compute: initData.metrics_to_compute,\n    tenant_id: initData.tenant_id,\n    concurrency: initData.concurrency,\n    timeout_ms: initData.timeout_ms,\n    total_batches: Math.ceil(rows.length / batchSize),\n    total_items: rows.length\n  });\n}\n\nreturn batches.map(b => ({ json: b }));"
+      },
+      "id": "b3000001-0004-4000-a003-000000000004",
+      "name": "Create Orchestrator Batches",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO benchmark_runs (run_id, run_type, phase, workflow_name, dataset_names, config, status, total_items, tenant_id, trace_id)\nVALUES (\n  '{{ $node['Init Orchestrator Test'].json.run_id }}',\n  'orchestrator',\n  'phase_6',\n  'BENCHMARK - Orchestrator Tester',\n  ARRAY['{{ $node['Init Orchestrator Test'].json.dataset_name }}'],\n  '{{ JSON.stringify({ test_mode: $node['Init Orchestrator Test'].json.test_mode, concurrency: $node['Init Orchestrator Test'].json.concurrency }) }}'::jsonb,\n  'running',\n  {{ $node['Init Orchestrator Test'].json.sample_size }},\n  '{{ $node['Init Orchestrator Test'].json.tenant_id }}',\n  '{{ $node['Init Orchestrator Test'].json.trace_id }}'\n);"
+      },
+      "id": "b3000001-0005-4000-a003-000000000005",
+      "name": "Log Orch Run Start",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -2100,
+        560
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "b3000001-0006-4000-a003-000000000006",
+      "name": "Loop Over Orch Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Execute orchestrator queries \u2014 captures routing decisions\n// FIX: replaced fetch() with this.helpers.httpRequest() \u2014 fetch is not available in n8n Code sandbox\nconst batch = $json;\nconst items = batch.items;\nconst endpoint = batch.orchestrator_endpoint;\nconst concurrency = batch.concurrency;\nconst timeoutMs = batch.timeout_ms;\nconst helpers = this.helpers;\n\nasync function executeQuery(item) {\n  const startTime = Date.now();\n  let result = {\n    dataset_name: batch.dataset_name,\n    item_index: item.item_index || item.id,\n    question: item.question,\n    expected_answer: item.expected_answer,\n    category: item.category,\n    actual_answer: null,\n    retrieved_docs: null,\n    routing_decision: null,\n    tools_used: null,\n    latency_ms: 0,\n    tokens_used: 0,\n    error: null\n  };\n\n  try {\n    const data = await helpers.httpRequest({\n      method: 'POST',\n      url: endpoint,\n      headers: {\n        'Content-Type': 'application/json',\n        'Authorization': `Bearer ${$vars.N8N_API_KEY || ''}`\n      },\n      body: {\n        query: item.question,\n        tenant_id: batch.tenant_id,\n        benchmark_mode: true,\n        include_routing_info: true,\n        include_tool_trace: true,\n        context: item.context || null\n      },\n      timeout: timeoutMs,\n      returnFullResponse: false,\n      json: true\n    });\n\n    result.actual_answer = data.answer || data.response || '';\n    result.retrieved_docs = data.sources || data.contexts || [];\n    result.routing_decision = data.routing || data.tool_selection || data.workflow_used || null;\n    result.tools_used = data.tools_used || data.agents_used || [];\n    result.tokens_used = data.usage?.total_tokens || 0;\n  } catch (err) {\n    result.error = err.message || String(err);\n  }\n\n  result.latency_ms = Date.now() - startTime;\n  return result;\n}\n\n// Execute with concurrency control\nconst results = [];\nfor (let i = 0; i < items.length; i += concurrency) {\n  const batchItems = items.slice(i, i + concurrency);\n  const batchResults = await Promise.all(batchItems.map(executeQuery));\n  results.push(...batchResults);\n}\n\nreturn {\n  ...batch,\n  results: results\n};"
+      },
+      "id": "b3000001-0007-4000-a003-000000000007",
+      "name": "Execute Orchestrator Queries",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Compute orchestrator-specific metrics\nconst batch = $json;\nconst results = batch.results;\nconst expectedRouting = batch.expected_routing;\nconst metricsToCompute = batch.metrics_to_compute;\n\n// Metric functions\nfunction exactMatch(pred, exp) {\n  if (!pred || !exp) return 0;\n  const norm = s => s.toLowerCase().trim().replace(/[^a-z0-9\\s]/g, '').replace(/\\s+/g, ' ');\n  return norm(pred) === norm(exp) ? 1 : 0;\n}\n\nfunction tokenF1(pred, exp) {\n  if (!pred || !exp) return 0;\n  const pTokens = new Set(pred.toLowerCase().split(/\\s+/));\n  const eTokens = new Set(exp.toLowerCase().split(/\\s+/));\n  const common = [...pTokens].filter(t => eTokens.has(t));\n  if (common.length === 0) return 0;\n  const p = common.length / pTokens.size;\n  const r = common.length / eTokens.size;\n  return 2 * p * r / (p + r);\n}\n\nconst enrichedResults = results.map(r => {\n  const metrics = {};\n\n  // Accuracy\n  if (metricsToCompute.includes('accuracy') || metricsToCompute.includes('turn_accuracy')) {\n    metrics.accuracy = exactMatch(r.actual_answer, r.expected_answer);\n    metrics.f1 = tokenF1(r.actual_answer, r.expected_answer);\n  }\n\n  // Routing correctness: did the orchestrator route to the expected workflow?\n  if (metricsToCompute.includes('routing_correctness')) {\n    const expectedRoute = expectedRouting[r.category] || 'standard_rag';\n    const actualRoute = (r.routing_decision || '').toLowerCase();\n    metrics.routing_correctness = actualRoute.includes(expectedRoute) ? 1 : 0;\n  }\n\n  // Tool selection accuracy\n  if (metricsToCompute.includes('tool_selection_accuracy')) {\n    const tools = r.tools_used || [];\n    // Heuristic: multi-hop should use graph, finance should use quantitative, etc.\n    const expectedTools = {\n      'multi_hop_qa': ['graph_rag', 'neo4j'],\n      'domain_finance': ['quantitative', 'sql'],\n      'single_hop_qa': ['standard_rag', 'pinecone']\n    };\n    const expected = expectedTools[r.category] || ['standard_rag'];\n    const toolStr = tools.join(' ').toLowerCase();\n    metrics.tool_selection_accuracy = expected.some(t => toolStr.includes(t)) ? 1 : 0;\n  }\n\n  // Latency\n  metrics.latency_ms = r.latency_ms;\n\n  // Conversation coherence (for multi-turn \u2014 simplified)\n  if (metricsToCompute.includes('conversation_coherence')) {\n    metrics.conversation_coherence = r.actual_answer && r.actual_answer.length > 20 ? 1 : 0;\n  }\n\n  // Context retention\n  if (metricsToCompute.includes('context_retention')) {\n    metrics.context_retention = r.actual_answer && !r.error ? 1 : 0;\n  }\n\n  // Fallback rate\n  if (metricsToCompute.includes('fallback_rate')) {\n    const routing = (r.routing_decision || '').toLowerCase();\n    metrics.fallback_rate = routing.includes('fallback') || routing.includes('default') ? 1 : 0;\n  }\n\n  // Error/timeout tracking\n  metrics.error = r.error ? 1 : 0;\n  metrics.timeout = r.error && r.error.includes('timeout') ? 1 : 0;\n\n  return { ...r, metrics };\n});\n\n// Compute batch aggregates\nconst metricKeys = Object.keys(enrichedResults[0]?.metrics || {});\nconst batchAgg = {};\nfor (const key of metricKeys) {\n  const vals = enrichedResults.map(r => r.metrics[key]).filter(v => v !== undefined);\n  batchAgg[key] = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;\n}\n\n// Latency percentiles\nconst latencies = enrichedResults.map(r => r.latency_ms).sort((a, b) => a - b);\nbatchAgg.latency_p50 = latencies[Math.floor(latencies.length * 0.5)] || 0;\nbatchAgg.latency_p95 = latencies[Math.floor(latencies.length * 0.95)] || 0;\nbatchAgg.latency_p99 = latencies[Math.floor(latencies.length * 0.99)] || 0;\n\nconsole.log(`[ORCH TEST] Batch ${batch.batch_index + 1}/${batch.total_batches}`);\nfor (const [k, v] of Object.entries(batchAgg)) {\n  if (k.startsWith('latency_p')) console.log(`  ${k}: ${Math.round(v)}ms`);\n  else console.log(`  ${k}: ${(v * 100).toFixed(1)}%`);\n}\n\nreturn {\n  ...batch,\n  results: enrichedResults,\n  batch_aggregates: batchAgg\n};"
+      },
+      "id": "b3000001-0008-4000-a003-000000000008",
+      "name": "Compute Orchestrator Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Store orchestrator test results\nconst batch = $json;\nconst results = batch.results;\n\nconst values = results.map(r => {\n  const q = (r.question || '').replace(/'/g, \"''\");\n  const ea = (r.expected_answer || '').replace(/'/g, \"''\");\n  const aa = (r.actual_answer || '').replace(/'/g, \"''\");\n  const err = r.error ? `'${r.error.replace(/'/g, \"''\")}'` : 'NULL';\n  const meta = JSON.stringify({\n    routing_decision: r.routing_decision,\n    tools_used: r.tools_used,\n    category: r.category,\n    test_mode: batch.test_mode\n  }).replace(/'/g, \"''\");\n  return `('${batch.run_id}', '${batch.dataset_name}', ${r.item_index}, '${q}', '${ea}', '${aa}', '${JSON.stringify(r.retrieved_docs || []).replace(/'/g, \"''\")}'::jsonb, '${JSON.stringify(r.metrics).replace(/'/g, \"''\")}'::jsonb, ${r.latency_ms}, ${r.tokens_used || 0}, ${err}, '${meta}'::jsonb, '${batch.tenant_id}')`;\n}).join(',\\n');\n\nreturn {\n  ...batch,\n  store_sql: `INSERT INTO benchmark_results (run_id, dataset_name, item_index, question, expected_answer, actual_answer, retrieved_docs, metrics, latency_ms, tokens_used, error, metadata, tenant_id) VALUES ${values};`\n};"
+      },
+      "id": "b3000001-0009-4000-a003-000000000009",
+      "name": "Prepare Orch Results Insert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.store_sql }}"
+      },
+      "id": "b3000001-0010-4000-a003-000000000010",
+      "name": "Supabase: Store Orch Results",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -600,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Update progress and loop back\nconst batch = $json;\nconsole.log(`[ORCH TEST] Progress: ${batch.batch_index + 1}/${batch.total_batches} (${Math.round(((batch.batch_index + 1) / batch.total_batches) * 100)}%)`);\nreturn batch;"
+      },
+      "id": "b3000001-0011-4000-a003-000000000011",
+      "name": "Orch Batch Progress",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Final orchestrator test summary\nconst initData = $node['Init Orchestrator Test'].json;\n\nconst summary = {\n  run_id: initData.run_id,\n  trace_id: initData.trace_id,\n  test_mode: initData.test_mode,\n  phase: 'phase_6',\n  dataset_name: initData.dataset_name,\n  total_items: initData.sample_size,\n  concurrency: initData.concurrency,\n  status: 'completed',\n  completed_at: new Date().toISOString(),\n  started_at: initData.timestamp\n};\n\nconst startMs = new Date(summary.started_at).getTime();\nconst endMs = new Date(summary.completed_at).getTime();\nsummary.duration_ms = endMs - startMs;\nsummary.duration_human = `${Math.round(summary.duration_ms / 1000)}s`;\n\nreturn summary;"
+      },
+      "id": "b3000001-0012-4000-a003-000000000012",
+      "name": "Orch Final Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE benchmark_runs SET\n  status = 'completed',\n  processed_items = {{ $json.total_items }},\n  completed_at = NOW(),\n  duration_ms = {{ $json.duration_ms }}\nWHERE run_id = '{{ $json.run_id }}';"
+      },
+      "id": "b3000001-0013-4000-a003-000000000013",
+      "name": "Update Orch Run Status",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        300,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"resourceSpans\": [{\n    \"resource\": { \"attributes\": [{ \"key\": \"service.name\", \"value\": { \"stringValue\": \"benchmark-orchestrator-tester\" } }] },\n    \"scopeSpans\": [{\n      \"spans\": [{\n        \"traceId\": \"{{ $json.trace_id }}\",\n        \"spanId\": \"{{ $json.run_id }}\",\n        \"name\": \"benchmark.orchestrator.{{ $json.test_mode }}.{{ $json.dataset_name }}\",\n        \"kind\": 1,\n        \"startTimeUnixNano\": \"{{ new Date($json.started_at).getTime() * 1000000 }}\",\n        \"endTimeUnixNano\": \"{{ Date.now() * 1000000 }}\",\n        \"attributes\": [\n          { \"key\": \"test_mode\", \"value\": { \"stringValue\": \"{{ $json.test_mode }}\" } },\n          { \"key\": \"dataset\", \"value\": { \"stringValue\": \"{{ $json.dataset_name }}\" } },\n          { \"key\": \"concurrency\", \"value\": { \"intValue\": {{ $json.concurrency }} } },\n          { \"key\": \"duration_ms\", \"value\": { \"intValue\": {{ $json.duration_ms }} } }\n        ],\n        \"status\": { \"code\": 1 }\n      }]\n    }]\n  }]\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "b3000001-0014-4000-a003-000000000014",
+      "name": "Export Trace OTEL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        600,
+        300
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, run_id: $json.run_id, test_mode: $json.test_mode, dataset: $json.dataset_name, total_items: $json.total_items, concurrency: $json.concurrency, duration: $json.duration_human, status: $json.status }) }}"
+      },
+      "id": "b3000001-0015-4000-a003-000000000015",
+      "name": "Respond Orch Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook: Start Orchestrator Test": {
+      "main": [
+        [
+          {
+            "node": "Init Orchestrator Test",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init Orchestrator Test": {
+      "main": [
+        [
+          {
+            "node": "Fetch Benchmark Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Orch Run Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Benchmark Data": {
+      "main": [
+        [
+          {
+            "node": "Create Orchestrator Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Orchestrator Batches": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Orch Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Orch Batches": {
+      "main": [
+        [
+          {
+            "node": "Orch Final Summary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute Orchestrator Queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Orchestrator Queries": {
+      "main": [
+        [
+          {
+            "node": "Compute Orchestrator Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute Orchestrator Metrics": {
+      "main": [
+        [
+          {
+            "node": "Prepare Orch Results Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Orch Results Insert": {
+      "main": [
+        [
+          {
+            "node": "Supabase: Store Orch Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase: Store Orch Results": {
+      "main": [
+        [
+          {
+            "node": "Orch Batch Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orch Batch Progress": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Orch Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orch Final Summary": {
+      "main": [
+        [
+          {
+            "node": "Update Orch Run Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Orch Run Status": {
+      "main": [
+        [
+          {
+            "node": "Respond Orch Success",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Export Trace OTEL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "335c8d55-62e9-465e-8ad3-a2589a78fada",
+  "activeVersionId": "335c8d55-62e9-465e-8ad3-a2589a78fada",
+  "versionCounter": 28,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-06T13:14:46.543Z",
+      "createdAt": "2026-02-06T13:14:46.543Z",
+      "role": "workflow:owner",
+      "workflowId": "7UMkzbjkkYZAUzPD",
+      "projectId": "JV7MbqBbWPTstXIo",
+      "project": {
+        "updatedAt": "2026-01-07T13:20:26.996Z",
+        "createdAt": "2026-01-07T13:20:21.870Z",
+        "id": "JV7MbqBbWPTstXIo",
+        "name": "Alexis Moret <alexis.moret6@outlook.fr>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "215767e0-958a-4c74-a67a-e335807eba64",
+        "projectRelations": [
+          {
+            "updatedAt": "2026-01-07T13:20:21.870Z",
+            "createdAt": "2026-01-07T13:20:21.870Z",
+            "userId": "215767e0-958a-4c74-a67a-e335807eba64",
+            "projectId": "JV7MbqBbWPTstXIo",
+            "user": {
+              "updatedAt": "2026-02-09T23:01:37.000Z",
+              "createdAt": "2026-01-07T13:20:20.003Z",
+              "id": "215767e0-958a-4c74-a67a-e335807eba64",
+              "email": "alexis.moret6@outlook.fr",
+              "firstName": "Alexis",
+              "lastName": "Moret",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "userClaimedAiCredits": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "e3_89vptJG7PPA-OHyAg3",
+                "userActivatedAt": 1767837780144,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1768407850905
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-02-09",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-02-06T15:43:46.786Z",
+    "createdAt": "2026-02-06T15:43:46.786Z",
+    "versionId": "335c8d55-62e9-465e-8ad3-a2589a78fada",
+    "workflowId": "7UMkzbjkkYZAUzPD",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "benchmark-test-orchestrator",
+          "options": {
+            "rawBody": true
+          },
+          "responseMode": "responseNode"
+        },
+        "id": "b3000001-0001-4000-a003-000000000001",
+        "name": "Webhook: Start Orchestrator Test",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -3000,
+          300
+        ],
+        "webhookId": "bench-test-orch-001"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Init Orchestrator Test Session\nconst body = $json.body || $json || {};\n\nif (!body.dataset_name) throw new Error('VALIDATION_ERROR: dataset_name is required');\n\n// Orchestrator test types\nconst TEST_MODES = {\n  'single_query': {\n    description: 'Single queries routed through orchestrator',\n    batch_size: 10,\n    metrics: ['accuracy', 'tool_selection_accuracy', 'routing_correctness', 'latency_ms']\n  },\n  'multi_turn': {\n    description: 'Multi-turn conversations (MTRAG-style)',\n    batch_size: 5,\n    metrics: ['turn_accuracy', 'conversation_coherence', 'context_retention', 'tool_selection_accuracy']\n  },\n  'stress_test': {\n    description: 'Concurrent queries to test orchestrator resilience',\n    batch_size: 20,\n    metrics: ['accuracy', 'latency_p50', 'latency_p95', 'error_rate', 'timeout_rate']\n  },\n  'routing_eval': {\n    description: 'Evaluate orchestrator routing decisions',\n    batch_size: 15,\n    metrics: ['routing_correctness', 'tool_selection_accuracy', 'fallback_rate']\n  }\n};\n\nconst testMode = body.test_mode || 'single_query';\nconst modeConfig = TEST_MODES[testMode];\nif (!modeConfig) throw new Error(`UNKNOWN_TEST_MODE: ${testMode}. Available: ${Object.keys(TEST_MODES).join(', ')}`);\n\n// Expected routing per dataset category\nconst EXPECTED_ROUTING = {\n  'single_hop_qa': 'standard_rag',\n  'multi_hop_qa': 'graph_rag',\n  'rag_benchmark': 'standard_rag',\n  'retrieval': 'standard_rag',\n  'domain_medical': 'standard_rag',\n  'domain_finance': 'quantitative_rag',\n  'domain_legal': 'standard_rag',\n  'domain_technical': 'standard_rag',\n  'long_form_qa': 'standard_rag',\n  'robustness': 'standard_rag'\n};\n\nconst runId = `orch-${testMode}-${body.dataset_name}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;\nconst traceId = `tr-bench-orch-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\nreturn {\n  run_id: runId,\n  trace_id: traceId,\n  test_mode: testMode,\n  mode_config: modeConfig,\n  phase: 'phase_6',\n  dataset_name: body.dataset_name,\n  orchestrator_endpoint: ($vars.N8N_BASE_URL || 'https://amoret.app.n8n.cloud') + '/webhook/orchestrator-v10-query',\n  expected_routing: EXPECTED_ROUTING,\n  metrics_to_compute: body.metrics || modeConfig.metrics,\n  batch_size: body.batch_size || modeConfig.batch_size,\n  sample_size: body.sample_size || 50,\n  tenant_id: body.tenant_id || 'benchmark',\n  concurrency: body.concurrency || (testMode === 'stress_test' ? 10 : 1),\n  timeout_ms: body.timeout_ms || 60000,\n  timestamp: new Date().toISOString()\n};"
+        },
+        "id": "b3000001-0002-4000-a003-000000000002",
+        "name": "Init Orchestrator Test",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -2700,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "=SELECT bd.id, bd.dataset_name, bd.category, bd.question, bd.expected_answer, bd.context, bd.supporting_facts, bd.metadata\nFROM benchmark_datasets bd\nWHERE bd.dataset_name = '{{ $json.dataset_name }}'\nAND bd.tenant_id = '{{ $json.tenant_id }}'\nORDER BY bd.item_index ASC\nLIMIT {{ $json.sample_size }};"
+        },
+        "id": "b3000001-0003-4000-a003-000000000003",
+        "name": "Fetch Benchmark Data",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -2400,
+          300
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Create orchestrator test batches\nconst initData = $node['Init Orchestrator Test'].json;\nconst rows = $input.all().map(item => item.json);\n\nif (!Array.isArray(rows) || rows.length === 0) {\n  throw new Error(`NO_DATA: No benchmark items for '${initData.dataset_name}'. Run ingestion first.`);\n}\n\nconst batchSize = initData.batch_size;\nconst batches = [];\n\nfor (let i = 0; i < rows.length; i += batchSize) {\n  const batchItems = rows.slice(i, i + batchSize);\n  batches.push({\n    batch_index: Math.floor(i / batchSize),\n    batch_size: batchItems.length,\n    items: batchItems,\n    run_id: initData.run_id,\n    trace_id: initData.trace_id,\n    test_mode: initData.test_mode,\n    dataset_name: initData.dataset_name,\n    orchestrator_endpoint: initData.orchestrator_endpoint,\n    expected_routing: initData.expected_routing,\n    metrics_to_compute: initData.metrics_to_compute,\n    tenant_id: initData.tenant_id,\n    concurrency: initData.concurrency,\n    timeout_ms: initData.timeout_ms,\n    total_batches: Math.ceil(rows.length / batchSize),\n    total_items: rows.length\n  });\n}\n\nreturn batches.map(b => ({ json: b }));"
+        },
+        "id": "b3000001-0004-4000-a003-000000000004",
+        "name": "Create Orchestrator Batches",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -2100,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "=INSERT INTO benchmark_runs (run_id, run_type, phase, workflow_name, dataset_names, config, status, total_items, tenant_id, trace_id)\nVALUES (\n  '{{ $node['Init Orchestrator Test'].json.run_id }}',\n  'orchestrator',\n  'phase_6',\n  'BENCHMARK - Orchestrator Tester',\n  ARRAY['{{ $node['Init Orchestrator Test'].json.dataset_name }}'],\n  '{{ JSON.stringify({ test_mode: $node['Init Orchestrator Test'].json.test_mode, concurrency: $node['Init Orchestrator Test'].json.concurrency }) }}'::jsonb,\n  'running',\n  {{ $node['Init Orchestrator Test'].json.sample_size }},\n  '{{ $node['Init Orchestrator Test'].json.tenant_id }}',\n  '{{ $node['Init Orchestrator Test'].json.trace_id }}'\n);"
+        },
+        "id": "b3000001-0005-4000-a003-000000000005",
+        "name": "Log Orch Run Start",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -2100,
+          560
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "batchSize": 1,
+          "options": {}
+        },
+        "id": "b3000001-0006-4000-a003-000000000006",
+        "name": "Loop Over Orch Batches",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          -1800,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Execute orchestrator queries \u2014 captures routing decisions\n// FIX: replaced fetch() with this.helpers.httpRequest() \u2014 fetch is not available in n8n Code sandbox\nconst batch = $json;\nconst items = batch.items;\nconst endpoint = batch.orchestrator_endpoint;\nconst concurrency = batch.concurrency;\nconst timeoutMs = batch.timeout_ms;\nconst helpers = this.helpers;\n\nasync function executeQuery(item) {\n  const startTime = Date.now();\n  let result = {\n    dataset_name: batch.dataset_name,\n    item_index: item.item_index || item.id,\n    question: item.question,\n    expected_answer: item.expected_answer,\n    category: item.category,\n    actual_answer: null,\n    retrieved_docs: null,\n    routing_decision: null,\n    tools_used: null,\n    latency_ms: 0,\n    tokens_used: 0,\n    error: null\n  };\n\n  try {\n    const data = await helpers.httpRequest({\n      method: 'POST',\n      url: endpoint,\n      headers: {\n        'Content-Type': 'application/json',\n        'Authorization': `Bearer ${$vars.N8N_API_KEY || ''}`\n      },\n      body: {\n        query: item.question,\n        tenant_id: batch.tenant_id,\n        benchmark_mode: true,\n        include_routing_info: true,\n        include_tool_trace: true,\n        context: item.context || null\n      },\n      timeout: timeoutMs,\n      returnFullResponse: false,\n      json: true\n    });\n\n    result.actual_answer = data.answer || data.response || '';\n    result.retrieved_docs = data.sources || data.contexts || [];\n    result.routing_decision = data.routing || data.tool_selection || data.workflow_used || null;\n    result.tools_used = data.tools_used || data.agents_used || [];\n    result.tokens_used = data.usage?.total_tokens || 0;\n  } catch (err) {\n    result.error = err.message || String(err);\n  }\n\n  result.latency_ms = Date.now() - startTime;\n  return result;\n}\n\n// Execute with concurrency control\nconst results = [];\nfor (let i = 0; i < items.length; i += concurrency) {\n  const batchItems = items.slice(i, i + concurrency);\n  const batchResults = await Promise.all(batchItems.map(executeQuery));\n  results.push(...batchResults);\n}\n\nreturn {\n  ...batch,\n  results: results\n};"
+        },
+        "id": "b3000001-0007-4000-a003-000000000007",
+        "name": "Execute Orchestrator Queries",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1500,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Compute orchestrator-specific metrics\nconst batch = $json;\nconst results = batch.results;\nconst expectedRouting = batch.expected_routing;\nconst metricsToCompute = batch.metrics_to_compute;\n\n// Metric functions\nfunction exactMatch(pred, exp) {\n  if (!pred || !exp) return 0;\n  const norm = s => s.toLowerCase().trim().replace(/[^a-z0-9\\s]/g, '').replace(/\\s+/g, ' ');\n  return norm(pred) === norm(exp) ? 1 : 0;\n}\n\nfunction tokenF1(pred, exp) {\n  if (!pred || !exp) return 0;\n  const pTokens = new Set(pred.toLowerCase().split(/\\s+/));\n  const eTokens = new Set(exp.toLowerCase().split(/\\s+/));\n  const common = [...pTokens].filter(t => eTokens.has(t));\n  if (common.length === 0) return 0;\n  const p = common.length / pTokens.size;\n  const r = common.length / eTokens.size;\n  return 2 * p * r / (p + r);\n}\n\nconst enrichedResults = results.map(r => {\n  const metrics = {};\n\n  // Accuracy\n  if (metricsToCompute.includes('accuracy') || metricsToCompute.includes('turn_accuracy')) {\n    metrics.accuracy = exactMatch(r.actual_answer, r.expected_answer);\n    metrics.f1 = tokenF1(r.actual_answer, r.expected_answer);\n  }\n\n  // Routing correctness: did the orchestrator route to the expected workflow?\n  if (metricsToCompute.includes('routing_correctness')) {\n    const expectedRoute = expectedRouting[r.category] || 'standard_rag';\n    const actualRoute = (r.routing_decision || '').toLowerCase();\n    metrics.routing_correctness = actualRoute.includes(expectedRoute) ? 1 : 0;\n  }\n\n  // Tool selection accuracy\n  if (metricsToCompute.includes('tool_selection_accuracy')) {\n    const tools = r.tools_used || [];\n    // Heuristic: multi-hop should use graph, finance should use quantitative, etc.\n    const expectedTools = {\n      'multi_hop_qa': ['graph_rag', 'neo4j'],\n      'domain_finance': ['quantitative', 'sql'],\n      'single_hop_qa': ['standard_rag', 'pinecone']\n    };\n    const expected = expectedTools[r.category] || ['standard_rag'];\n    const toolStr = tools.join(' ').toLowerCase();\n    metrics.tool_selection_accuracy = expected.some(t => toolStr.includes(t)) ? 1 : 0;\n  }\n\n  // Latency\n  metrics.latency_ms = r.latency_ms;\n\n  // Conversation coherence (for multi-turn \u2014 simplified)\n  if (metricsToCompute.includes('conversation_coherence')) {\n    metrics.conversation_coherence = r.actual_answer && r.actual_answer.length > 20 ? 1 : 0;\n  }\n\n  // Context retention\n  if (metricsToCompute.includes('context_retention')) {\n    metrics.context_retention = r.actual_answer && !r.error ? 1 : 0;\n  }\n\n  // Fallback rate\n  if (metricsToCompute.includes('fallback_rate')) {\n    const routing = (r.routing_decision || '').toLowerCase();\n    metrics.fallback_rate = routing.includes('fallback') || routing.includes('default') ? 1 : 0;\n  }\n\n  // Error/timeout tracking\n  metrics.error = r.error ? 1 : 0;\n  metrics.timeout = r.error && r.error.includes('timeout') ? 1 : 0;\n\n  return { ...r, metrics };\n});\n\n// Compute batch aggregates\nconst metricKeys = Object.keys(enrichedResults[0]?.metrics || {});\nconst batchAgg = {};\nfor (const key of metricKeys) {\n  const vals = enrichedResults.map(r => r.metrics[key]).filter(v => v !== undefined);\n  batchAgg[key] = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;\n}\n\n// Latency percentiles\nconst latencies = enrichedResults.map(r => r.latency_ms).sort((a, b) => a - b);\nbatchAgg.latency_p50 = latencies[Math.floor(latencies.length * 0.5)] || 0;\nbatchAgg.latency_p95 = latencies[Math.floor(latencies.length * 0.95)] || 0;\nbatchAgg.latency_p99 = latencies[Math.floor(latencies.length * 0.99)] || 0;\n\nconsole.log(`[ORCH TEST] Batch ${batch.batch_index + 1}/${batch.total_batches}`);\nfor (const [k, v] of Object.entries(batchAgg)) {\n  if (k.startsWith('latency_p')) console.log(`  ${k}: ${Math.round(v)}ms`);\n  else console.log(`  ${k}: ${(v * 100).toFixed(1)}%`);\n}\n\nreturn {\n  ...batch,\n  results: enrichedResults,\n  batch_aggregates: batchAgg\n};"
+        },
+        "id": "b3000001-0008-4000-a003-000000000008",
+        "name": "Compute Orchestrator Metrics",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1200,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Store orchestrator test results\nconst batch = $json;\nconst results = batch.results;\n\nconst values = results.map(r => {\n  const q = (r.question || '').replace(/'/g, \"''\");\n  const ea = (r.expected_answer || '').replace(/'/g, \"''\");\n  const aa = (r.actual_answer || '').replace(/'/g, \"''\");\n  const err = r.error ? `'${r.error.replace(/'/g, \"''\")}'` : 'NULL';\n  const meta = JSON.stringify({\n    routing_decision: r.routing_decision,\n    tools_used: r.tools_used,\n    category: r.category,\n    test_mode: batch.test_mode\n  }).replace(/'/g, \"''\");\n  return `('${batch.run_id}', '${batch.dataset_name}', ${r.item_index}, '${q}', '${ea}', '${aa}', '${JSON.stringify(r.retrieved_docs || []).replace(/'/g, \"''\")}'::jsonb, '${JSON.stringify(r.metrics).replace(/'/g, \"''\")}'::jsonb, ${r.latency_ms}, ${r.tokens_used || 0}, ${err}, '${meta}'::jsonb, '${batch.tenant_id}')`;\n}).join(',\\n');\n\nreturn {\n  ...batch,\n  store_sql: `INSERT INTO benchmark_results (run_id, dataset_name, item_index, question, expected_answer, actual_answer, retrieved_docs, metrics, latency_ms, tokens_used, error, metadata, tenant_id) VALUES ${values};`\n};"
+        },
+        "id": "b3000001-0009-4000-a003-000000000009",
+        "name": "Prepare Orch Results Insert",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -900,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "={{ $json.store_sql }}"
+        },
+        "id": "b3000001-0010-4000-a003-000000000010",
+        "name": "Supabase: Store Orch Results",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -600,
+          300
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Update progress and loop back\nconst batch = $json;\nconsole.log(`[ORCH TEST] Progress: ${batch.batch_index + 1}/${batch.total_batches} (${Math.round(((batch.batch_index + 1) / batch.total_batches) * 100)}%)`);\nreturn batch;"
+        },
+        "id": "b3000001-0011-4000-a003-000000000011",
+        "name": "Orch Batch Progress",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -300,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Final orchestrator test summary\nconst initData = $node['Init Orchestrator Test'].json;\n\nconst summary = {\n  run_id: initData.run_id,\n  trace_id: initData.trace_id,\n  test_mode: initData.test_mode,\n  phase: 'phase_6',\n  dataset_name: initData.dataset_name,\n  total_items: initData.sample_size,\n  concurrency: initData.concurrency,\n  status: 'completed',\n  completed_at: new Date().toISOString(),\n  started_at: initData.timestamp\n};\n\nconst startMs = new Date(summary.started_at).getTime();\nconst endMs = new Date(summary.completed_at).getTime();\nsummary.duration_ms = endMs - startMs;\nsummary.duration_human = `${Math.round(summary.duration_ms / 1000)}s`;\n\nreturn summary;"
+        },
+        "id": "b3000001-0012-4000-a003-000000000012",
+        "name": "Orch Final Summary",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          0,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "=UPDATE benchmark_runs SET\n  status = 'completed',\n  processed_items = {{ $json.total_items }},\n  completed_at = NOW(),\n  duration_ms = {{ $json.duration_ms }}\nWHERE run_id = '{{ $json.run_id }}';"
+        },
+        "id": "b3000001-0013-4000-a003-000000000013",
+        "name": "Update Orch Run Status",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          300,
+          300
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $vars.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"resourceSpans\": [{\n    \"resource\": { \"attributes\": [{ \"key\": \"service.name\", \"value\": { \"stringValue\": \"benchmark-orchestrator-tester\" } }] },\n    \"scopeSpans\": [{\n      \"spans\": [{\n        \"traceId\": \"{{ $json.trace_id }}\",\n        \"spanId\": \"{{ $json.run_id }}\",\n        \"name\": \"benchmark.orchestrator.{{ $json.test_mode }}.{{ $json.dataset_name }}\",\n        \"kind\": 1,\n        \"startTimeUnixNano\": \"{{ new Date($json.started_at).getTime() * 1000000 }}\",\n        \"endTimeUnixNano\": \"{{ Date.now() * 1000000 }}\",\n        \"attributes\": [\n          { \"key\": \"test_mode\", \"value\": { \"stringValue\": \"{{ $json.test_mode }}\" } },\n          { \"key\": \"dataset\", \"value\": { \"stringValue\": \"{{ $json.dataset_name }}\" } },\n          { \"key\": \"concurrency\", \"value\": { \"intValue\": {{ $json.concurrency }} } },\n          { \"key\": \"duration_ms\", \"value\": { \"intValue\": {{ $json.duration_ms }} } }\n        ],\n        \"status\": { \"code\": 1 }\n      }]\n    }]\n  }]\n}",
+          "options": {
+            "timeout": 10000
+          }
+        },
+        "id": "b3000001-0014-4000-a003-000000000014",
+        "name": "Export Trace OTEL",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          600,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify({ success: true, run_id: $json.run_id, test_mode: $json.test_mode, dataset: $json.dataset_name, total_items: $json.total_items, concurrency: $json.concurrency, duration: $json.duration_human, status: $json.status }) }}"
+        },
+        "id": "b3000001-0015-4000-a003-000000000015",
+        "name": "Respond Orch Success",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          900,
+          300
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook: Start Orchestrator Test": {
+        "main": [
+          [
+            {
+              "node": "Init Orchestrator Test",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Init Orchestrator Test": {
+        "main": [
+          [
+            {
+              "node": "Fetch Benchmark Data",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Log Orch Run Start",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Benchmark Data": {
+        "main": [
+          [
+            {
+              "node": "Create Orchestrator Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Orchestrator Batches": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Orch Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Orch Batches": {
+        "main": [
+          [
+            {
+              "node": "Orch Final Summary",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Execute Orchestrator Queries",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute Orchestrator Queries": {
+        "main": [
+          [
+            {
+              "node": "Compute Orchestrator Metrics",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Compute Orchestrator Metrics": {
+        "main": [
+          [
+            {
+              "node": "Prepare Orch Results Insert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Orch Results Insert": {
+        "main": [
+          [
+            {
+              "node": "Supabase: Store Orch Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase: Store Orch Results": {
+        "main": [
+          [
+            {
+              "node": "Orch Batch Progress",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Orch Batch Progress": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Orch Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Orch Final Summary": {
+        "main": [
+          [
+            {
+              "node": "Update Orch Run Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Orch Run Status": {
+        "main": [
+          [
+            {
+              "node": "Respond Orch Success",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Export Trace OTEL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Alexis Moret",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-06T15:43:46.949Z",
+        "id": 530,
+        "workflowId": "7UMkzbjkkYZAUzPD",
+        "versionId": "335c8d55-62e9-465e-8ad3-a2589a78fada",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T20:35:07.311Z",
+        "id": 577,
+        "workflowId": "7UMkzbjkkYZAUzPD",
+        "versionId": "335c8d55-62e9-465e-8ad3-a2589a78fada",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      }
+    ]
+  }
+}

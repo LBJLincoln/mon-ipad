@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-02-09T03:20:45.961Z",
-  "createdAt": "2026-01-30T16:51:51.530Z",
-  "id": "LnTqRX4LZlI009Ks-3Jnp",
+  "updatedAt": "2026-02-10T13:06:02.888Z",
+  "createdAt": "2026-02-10T13:06:02.888Z",
+  "id": "IgQeo5svGlIAPkBc",
   "name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
   "description": null,
   "active": true,
-  "isArchived": true,
+  "isArchived": false,
   "nodes": [
     {
       "parameters": {},
@@ -57,7 +57,7 @@
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots qui repondrait parfaitement a la question.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
         "options": {
           "batching": {
             "batch": {
@@ -94,12 +94,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.EMBEDDING_API_URL || 'https://openrouter.ai/api/v1/embeddings' }}",
+        "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embedding_types\": [\"float\"]\n}",
         "options": {
           "batching": {
             "batch": {
@@ -117,7 +117,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
             }
           ]
         }
@@ -141,7 +141,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.embeddings?.float?.[0] || $node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
         "options": {
           "batching": {
             "batch": {
@@ -170,12 +170,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.EMBEDDING_API_URL || 'https://openrouter.ai/api/v1/embeddings' }}",
+        "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embedding_types\": [\"float\"]\n}",
         "options": {
           "batching": {
             "batch": {
@@ -193,7 +193,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
             }
           ]
         }
@@ -217,7 +217,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.embeddings?.float?.[0] || $node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
         "options": {
           "batching": {
             "batch": {
@@ -301,8 +301,7 @@
       "parameters": {
         "method": "POST",
         "url": "={{ $vars.RERANKER_API_URL || 'https://api.cohere.ai/v1/rerank' }}",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
+        "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"model\": \"{{ $vars.RERANKER_MODEL || 'rerank-v3.5' }}\",\n  \"query\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }},\n  \"documents\": {{ $json.skip_reranker ? '[\"placeholder\"]' : JSON.stringify(($json.results || []).map(r => r.content || '').filter(c => c.length > 0).slice(0, 25)) }},\n  \"top_n\": 10\n}",
@@ -313,6 +312,15 @@
             }
           },
           "timeout": 15000
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
+            }
+          ]
         }
       },
       "id": "dd352491-9109-477d-8c93-d8b4576d238d",
@@ -323,12 +331,6 @@
         4080,
         3040
       ],
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "7UPUQvFQVksMajPL",
-          "name": "Cohere API Key"
-        }
-      },
       "onError": "continueRegularOutput"
     },
     {
@@ -353,7 +355,7 @@
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere precise et factuelle en citant tes sources entre crochets [1], [2], etc.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 1500\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
         "options": {
           "batching": {
             "batch": {
@@ -389,7 +391,7 @@
     },
     {
       "parameters": {
-        "jsCode": "\n// PHASE-1 FIX: Handle empty Pinecone results gracefully\nif (!response || (typeof response === 'string' && response.trim() === '')) {\n  response = 'Unable to find a specific answer for this question in the knowledge base.';\n}\n// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n\n  // Try to get reranked sources\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n\n  // Try to get init data\n  let initData = {};\n  try {\n    initData = $node['Init & ACL Pre-Filter V3.4'].json;\n  } catch(e) {}\n\n  if (llmContent) {\n    return [{\n      json: {\n        response: llmContent,\n        trace_id: initData.trace_id || 'tr-' + Date.now(),\n        sources: sources.slice(0, 5),\n        model: $vars.LLM_STANDARD_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n        embedding_fallback: sources.length === 0,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  // No LLM answer - return fallback\n  return [{\n    json: {\n      response: 'Unable to generate answer - retrieval and LLM both unavailable',\n      trace_id: initData.trace_id || 'tr-' + Date.now(),\n      error: true,\n      embedding_fallback: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} catch(e) {\n  return [{\n    json: {\n      response: 'Error in response formatting: ' + e.message,\n      error: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
+        "jsCode": "// Response Formatter - Standard RAG V3.4 (FIXED)\ntry {\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n  if (!llmContent) {\n    try {\n      const skipData = $node['Skip LLM?'].json;\n      if (skipData?.fallback_response?.response) {\n        llmContent = skipData.fallback_response.response;\n      }\n    } catch(e) {}\n  }\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n  let initData = {};\n  try { initData = $node['Init & ACL Pre-Filter V3.4'].json; } catch(e) {}\n  if (llmContent) {\n    return [{ json: { response: llmContent, trace_id: initData.trace_id || 'tr-'+Date.now(), sources: sources.slice(0,5), model: 'meta-llama/llama-3.3-70b-instruct:free', embedding_fallback: sources.length===0, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n  }\n  return [{ json: { response: 'Unable to generate answer', trace_id: initData.trace_id || 'tr-'+Date.now(), error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n} catch(e) {\n  return [{ json: { response: 'Error: '+e.message, error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n}"
       },
       "id": "66bf2956-117a-4408-b218-cf96cb317529",
       "name": "Response Formatter",
@@ -842,25 +844,22 @@
   },
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false,
-    "timeSavedMode": "fixed",
-    "callerPolicy": "workflowsFromSameOwner"
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "pinData": {},
-  "versionId": "8c12df80-4ded-41ab-8cbd-a6f0756d7fd3",
-  "activeVersionId": "8c12df80-4ded-41ab-8cbd-a6f0756d7fd3",
-  "versionCounter": 105,
+  "meta": null,
+  "pinData": null,
+  "versionId": "8677f287-4417-45c9-97e9-4890e11ed29a",
+  "activeVersionId": "8677f287-4417-45c9-97e9-4890e11ed29a",
+  "versionCounter": 3,
   "triggerCount": 2,
   "shared": [
     {
-      "updatedAt": "2026-01-30T16:51:51.532Z",
-      "createdAt": "2026-01-30T16:51:51.532Z",
+      "updatedAt": "2026-02-10T13:06:02.890Z",
+      "createdAt": "2026-02-10T13:06:02.890Z",
       "role": "workflow:owner",
-      "workflowId": "LnTqRX4LZlI009Ks-3Jnp",
+      "workflowId": "IgQeo5svGlIAPkBc",
       "projectId": "JV7MbqBbWPTstXIo",
       "project": {
         "updatedAt": "2026-01-07T13:20:26.996Z",
@@ -878,7 +877,7 @@
             "userId": "215767e0-958a-4c74-a67a-e335807eba64",
             "projectId": "JV7MbqBbWPTstXIo",
             "user": {
-              "updatedAt": "2026-02-08T23:36:29.000Z",
+              "updatedAt": "2026-02-09T23:01:37.000Z",
               "createdAt": "2026-01-07T13:20:20.003Z",
               "id": "215767e0-958a-4c74-a67a-e335807eba64",
               "email": "alexis.moret6@outlook.fr",
@@ -898,7 +897,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2026-02-08",
+              "lastActiveAt": "2026-02-09",
               "isPending": false
             }
           }
@@ -908,10 +907,10 @@
   ],
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-02-09T03:20:45.962Z",
-    "createdAt": "2026-02-09T03:20:45.962Z",
-    "versionId": "8c12df80-4ded-41ab-8cbd-a6f0756d7fd3",
-    "workflowId": "LnTqRX4LZlI009Ks-3Jnp",
+    "updatedAt": "2026-02-10T13:06:02.918Z",
+    "createdAt": "2026-02-10T13:06:02.918Z",
+    "versionId": "8677f287-4417-45c9-97e9-4890e11ed29a",
+    "workflowId": "IgQeo5svGlIAPkBc",
     "nodes": [
       {
         "parameters": {},
@@ -963,7 +962,7 @@
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere un document hypothetique de 150-200 mots qui repondrait parfaitement a la question.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1000,12 +999,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.EMBEDDING_API_URL || 'https://openrouter.ai/api/v1/embeddings' }}",
+          "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embedding_types\": [\"float\"]\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1023,7 +1022,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+                "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
               }
             ]
           }
@@ -1047,7 +1046,7 @@
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.embeddings?.float?.[0] || $node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1076,12 +1075,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.EMBEDDING_API_URL || 'https://openrouter.ai/api/v1/embeddings' }}",
+          "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embedding_types\": [\"float\"]\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1099,7 +1098,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+                "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
               }
             ]
           }
@@ -1123,7 +1122,7 @@
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.embeddings?.float?.[0] || $node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1207,8 +1206,7 @@
         "parameters": {
           "method": "POST",
           "url": "={{ $vars.RERANKER_API_URL || 'https://api.cohere.ai/v1/rerank' }}",
-          "authentication": "genericCredentialType",
-          "genericAuthType": "httpHeaderAuth",
+          "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={\n  \"model\": \"{{ $vars.RERANKER_MODEL || 'rerank-v3.5' }}\",\n  \"query\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }},\n  \"documents\": {{ $json.skip_reranker ? '[\"placeholder\"]' : JSON.stringify(($json.results || []).map(r => r.content || '').filter(c => c.length > 0).slice(0, 25)) }},\n  \"top_n\": 10\n}",
@@ -1219,6 +1217,15 @@
               }
             },
             "timeout": 15000
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
+              }
+            ]
           }
         },
         "id": "dd352491-9109-477d-8c93-d8b4576d238d",
@@ -1229,12 +1236,6 @@
           4080,
           3040
         ],
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "7UPUQvFQVksMajPL",
-            "name": "Cohere API Key"
-          }
-        },
         "onError": "continueRegularOutput"
       },
       {
@@ -1259,7 +1260,7 @@
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un assistant expert. Reponds de maniere precise et factuelle en citant tes sources entre crochets [1], [2], etc.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 1500\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1295,7 +1296,7 @@
       },
       {
         "parameters": {
-          "jsCode": "\n// PHASE-1 FIX: Handle empty Pinecone results gracefully\nif (!response || (typeof response === 'string' && response.trim() === '')) {\n  response = 'Unable to find a specific answer for this question in the knowledge base.';\n}\n// Response Formatter - Standard RAG\n// Fixed: removed undefined 'response' reference\ntry {\n  // Try to get LLM generation output\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n\n  // Try to get reranked sources\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n\n  // Try to get init data\n  let initData = {};\n  try {\n    initData = $node['Init & ACL Pre-Filter V3.4'].json;\n  } catch(e) {}\n\n  if (llmContent) {\n    return [{\n      json: {\n        response: llmContent,\n        trace_id: initData.trace_id || 'tr-' + Date.now(),\n        sources: sources.slice(0, 5),\n        model: $vars.LLM_STANDARD_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n        embedding_fallback: sources.length === 0,\n        timestamp: new Date().toISOString()\n      }\n    }];\n  }\n\n  // No LLM answer - return fallback\n  return [{\n    json: {\n      response: 'Unable to generate answer - retrieval and LLM both unavailable',\n      trace_id: initData.trace_id || 'tr-' + Date.now(),\n      error: true,\n      embedding_fallback: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} catch(e) {\n  return [{\n    json: {\n      response: 'Error in response formatting: ' + e.message,\n      error: true,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
+          "jsCode": "// Response Formatter - Standard RAG V3.4 (FIXED)\ntry {\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n  if (!llmContent) {\n    try {\n      const skipData = $node['Skip LLM?'].json;\n      if (skipData?.fallback_response?.response) {\n        llmContent = skipData.fallback_response.response;\n      }\n    } catch(e) {}\n  }\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n  let initData = {};\n  try { initData = $node['Init & ACL Pre-Filter V3.4'].json; } catch(e) {}\n  if (llmContent) {\n    return [{ json: { response: llmContent, trace_id: initData.trace_id || 'tr-'+Date.now(), sources: sources.slice(0,5), model: 'meta-llama/llama-3.3-70b-instruct:free', embedding_fallback: sources.length===0, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n  }\n  return [{ json: { response: 'Unable to generate answer', trace_id: initData.trace_id || 'tr-'+Date.now(), error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n} catch(e) {\n  return [{ json: { response: 'Error: '+e.message, error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n}"
         },
         "id": "66bf2956-117a-4408-b218-cf96cb317529",
         "name": "Response Formatter",
@@ -1752,10 +1753,10 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-02-09T03:20:46.957Z",
-        "id": 758,
-        "workflowId": "LnTqRX4LZlI009Ks-3Jnp",
-        "versionId": "8c12df80-4ded-41ab-8cbd-a6f0756d7fd3",
+        "createdAt": "2026-02-10T13:06:03.347Z",
+        "id": 864,
+        "workflowId": "IgQeo5svGlIAPkBc",
+        "versionId": "8677f287-4417-45c9-97e9-4890e11ed29a",
         "event": "activated",
         "userId": "215767e0-958a-4c74-a67a-e335807eba64"
       }

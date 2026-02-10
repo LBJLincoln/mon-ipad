@@ -1,0 +1,572 @@
+{
+  "updatedAt": "2026-01-25T14:33:42.228Z",
+  "createdAt": "2026-01-25T13:18:49.869Z",
+  "id": "qUm28nhq62SxVWHe",
+  "name": "TEST - SOTA 2026 - Benchmark V3.0",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "benchmark-v2",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -800,
+        300
+      ],
+      "webhookId": "benchmark-v2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || {};\nconst limit = body.limit || 5;\nconst traceId = 'bench-' + Date.now();\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.results = [];\n\nconst QUESTIONS = [\n  {id:'qa-fr-001',q:'D\u00e9lai paiement B2B France?',e:'60 jours',c:'french_business'},\n  {id:'qa-fr-002',q:'Taux TVA France?',e:'20%',c:'french_business'},\n  {id:'qa-gen-001',q:'Einstein birth year?',e:'1879',c:'general_knowledge'},\n  {id:'qa-gen-002',q:'Python creator?',e:'Guido',c:'general_knowledge'},\n  {id:'qa-trivia-001',q:'Australia capital?',e:'Canberra',c:'factoid_qa'}\n];\n\nreturn QUESTIONS.slice(0, limit).map((q, i) => ({\n  json: {index: i, id: q.id, query: q.q, expected: q.e, category: q.c, trace_id: traceId}\n}));"
+      },
+      "id": "init",
+      "name": "Init",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "loop",
+      "name": "Loop",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 20,
+        "unit": "seconds"
+      },
+      "id": "wait",
+      "name": "Wait 20s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -80,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://amoret.app.n8n.cloud/webhook/rag-v6",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({query: $json.query, tenant_id: 'benchmark', conversation_id: $json.trace_id + '-' + $json.index}) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "http",
+      "name": "Call RAG",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        160,
+        200
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst question = $('Loop').first().json;\nconst httpResponse = $json;\n\nconst responseText = httpResponse.response || httpResponse.data || httpResponse.message || 'NO_RESPONSE';\n\nstaticData.results.push({\n  index: question.index, id: question.id, query: question.query,\n  expected: question.expected, category: question.category, response: responseText\n});\n\nreturn [{json: {stored: staticData.results.length}}];"
+      },
+      "id": "store",
+      "name": "Store",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// V3.0: RAGAS-style Evaluation\nconst results = $node['Store'].json.results || [];\nconst groundTruth = $node['Init'].json.ground_truth || {};\n\n// === RAGAS METRICS CALCULATION ===\n\n// 1. Faithfulness: Is the response supported by the context?\nconst calculateFaithfulness = (response, context) => {\n  if (!context || context.length === 0) return 0;\n  \n  // Simple heuristic: check if key terms from response are in context\n  const responseTerms = response.toLowerCase().split(/\\s+/).filter(t => t.length > 4);\n  const contextText = context.map(c => c.content || c).join(' ').toLowerCase();\n  \n  let supportedTerms = 0;\n  for (const term of responseTerms) {\n    if (contextText.includes(term)) supportedTerms++;\n  }\n  \n  return responseTerms.length > 0 ? supportedTerms / responseTerms.length : 0;\n};\n\n// 2. Answer Relevance: Does the response answer the question?\nconst calculateAnswerRelevance = (query, response) => {\n  // Simple heuristic: keyword overlap\n  const queryTerms = query.toLowerCase().split(/\\s+/).filter(t => t.length > 3);\n  const responseText = response.toLowerCase();\n  \n  let relevantTerms = 0;\n  for (const term of queryTerms) {\n    if (responseText.includes(term)) relevantTerms++;\n  }\n  \n  return queryTerms.length > 0 ? relevantTerms / queryTerms.length : 0;\n};\n\n// 3. Context Relevance: Is the retrieved context relevant to the query?\nconst calculateContextRelevance = (query, context) => {\n  if (!context || context.length === 0) return 0;\n  \n  const queryTerms = query.toLowerCase().split(/\\s+/).filter(t => t.length > 3);\n  let totalRelevance = 0;\n  \n  for (const chunk of context) {\n    const chunkText = (chunk.content || chunk).toLowerCase();\n    let chunkRelevance = 0;\n    \n    for (const term of queryTerms) {\n      if (chunkText.includes(term)) chunkRelevance++;\n    }\n    \n    totalRelevance += queryTerms.length > 0 ? chunkRelevance / queryTerms.length : 0;\n  }\n  \n  return context.length > 0 ? totalRelevance / context.length : 0;\n};\n\n// 4. Context Precision: Are useful chunks ranked higher?\nconst calculateContextPrecision = (context, groundTruthContext) => {\n  if (!context || context.length === 0) return 0;\n  if (!groundTruthContext || groundTruthContext.length === 0) return 0.5; // Default if no ground truth\n  \n  // Check if relevant chunks are in top positions\n  let precisionSum = 0;\n  let relevantCount = 0;\n  \n  for (let i = 0; i < context.length; i++) {\n    const isRelevant = groundTruthContext.some(gt => \n      (context[i].content || context[i]).includes(gt) || gt.includes(context[i].content || context[i])\n    );\n    \n    if (isRelevant) {\n      relevantCount++;\n      precisionSum += relevantCount / (i + 1); // Precision at k\n    }\n  }\n  \n  return relevantCount > 0 ? precisionSum / relevantCount : 0;\n};\n\n// 5. Context Recall: Are all relevant chunks retrieved?\nconst calculateContextRecall = (context, groundTruthContext) => {\n  if (!groundTruthContext || groundTruthContext.length === 0) return 0.5;\n  if (!context || context.length === 0) return 0;\n  \n  const contextText = context.map(c => c.content || c).join(' ').toLowerCase();\n  let recalledCount = 0;\n  \n  for (const gt of groundTruthContext) {\n    if (contextText.includes(gt.toLowerCase())) {\n      recalledCount++;\n    }\n  }\n  \n  return recalledCount / groundTruthContext.length;\n};\n\n// === EVALUATE ALL RESULTS ===\nconst evaluatedResults = results.map((result, idx) => {\n  const query = result.query || '';\n  const response = result.response || '';\n  const context = result.sources || result.context || [];\n  const gtContext = groundTruth[query]?.relevant_context || [];\n  const gtAnswer = groundTruth[query]?.expected_answer || '';\n  \n  // Calculate RAGAS metrics\n  const faithfulness = calculateFaithfulness(response, context);\n  const answerRelevance = calculateAnswerRelevance(query, response);\n  const contextRelevance = calculateContextRelevance(query, context);\n  const contextPrecision = calculateContextPrecision(context, gtContext);\n  const contextRecall = calculateContextRecall(context, gtContext);\n  \n  // Overall RAGAS score (average of all metrics)\n  const ragasScore = (faithfulness + answerRelevance + contextRelevance + contextPrecision + contextRecall) / 5;\n  \n  // Answer correctness (if ground truth available)\n  let answerCorrectness = null;\n  if (gtAnswer) {\n    const responseClean = response.toLowerCase().replace(/[^a-z0-9]/g, '');\n    const gtClean = gtAnswer.toLowerCase().replace(/[^a-z0-9]/g, '');\n    answerCorrectness = responseClean.includes(gtClean) || gtClean.includes(responseClean) ? 1 : 0;\n  }\n  \n  return {\n    query: query,\n    response: response.substring(0, 500),\n    sources_count: context.length,\n    latency_ms: result.latency_ms || 0,\n    \n    // RAGAS Metrics\n    ragas: {\n      faithfulness: Math.round(faithfulness * 100) / 100,\n      answer_relevance: Math.round(answerRelevance * 100) / 100,\n      context_relevance: Math.round(contextRelevance * 100) / 100,\n      context_precision: Math.round(contextPrecision * 100) / 100,\n      context_recall: Math.round(contextRecall * 100) / 100,\n      overall: Math.round(ragasScore * 100) / 100\n    },\n    \n    // Ground truth comparison\n    answer_correctness: answerCorrectness,\n    has_ground_truth: gtAnswer !== ''\n  };\n});\n\n// === AGGREGATE STATISTICS ===\nconst avgRagas = evaluatedResults.reduce((sum, r) => sum + r.ragas.overall, 0) / evaluatedResults.length;\nconst avgFaithfulness = evaluatedResults.reduce((sum, r) => sum + r.ragas.faithfulness, 0) / evaluatedResults.length;\nconst avgAnswerRelevance = evaluatedResults.reduce((sum, r) => sum + r.ragas.answer_relevance, 0) / evaluatedResults.length;\nconst avgContextRelevance = evaluatedResults.reduce((sum, r) => sum + r.ragas.context_relevance, 0) / evaluatedResults.length;\nconst avgLatency = evaluatedResults.reduce((sum, r) => sum + r.latency_ms, 0) / evaluatedResults.length;\n\nconst correctAnswers = evaluatedResults.filter(r => r.answer_correctness === 1).length;\nconst totalWithGT = evaluatedResults.filter(r => r.has_ground_truth).length;\n\nreturn {\n  evaluated_results: evaluatedResults,\n  \n  // Aggregate RAGAS metrics\n  aggregate: {\n    ragas_overall: Math.round(avgRagas * 100) / 100,\n    faithfulness: Math.round(avgFaithfulness * 100) / 100,\n    answer_relevance: Math.round(avgAnswerRelevance * 100) / 100,\n    context_relevance: Math.round(avgContextRelevance * 100) / 100,\n    avg_latency_ms: Math.round(avgLatency),\n    total_queries: evaluatedResults.length,\n    accuracy: totalWithGT > 0 ? Math.round(correctAnswers / totalWithGT * 100) / 100 : null\n  },\n  \n  // Quality buckets\n  quality_distribution: {\n    excellent: evaluatedResults.filter(r => r.ragas.overall >= 0.8).length,\n    good: evaluatedResults.filter(r => r.ragas.overall >= 0.6 && r.ragas.overall < 0.8).length,\n    fair: evaluatedResults.filter(r => r.ragas.overall >= 0.4 && r.ragas.overall < 0.6).length,\n    poor: evaluatedResults.filter(r => r.ragas.overall < 0.4).length\n  },\n  \n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "eval",
+      "name": "RAGAS Evaluate V3.0",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# \ud83d\udd27 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `DEEPSEEK_API_KEY` - API key DeepSeek (api.deepseek.com)\n- `ANTHROPIC_API_KEY` - API key Anthropic (pour planning)\n- `GOOGLE_API_KEY` - API key Google (Gemini Flash)\n\n## LLM URLs (optionnel - d\u00e9fauts inclus)\n- `SQL_GENERATION_API_URL` - URL API pour SQL\n- `INTENT_ANALYSIS_API_URL` - URL API pour intent\n- `PLANNING_API_URL` - URL API pour planning\n- `GENERATION_API_URL` - URL API pour g\u00e9n\u00e9ration\n\n## LLM Models (optionnel)\n- `SQL_GENERATION_MODEL` = deepseek-chat\n- `INTENT_ANALYSIS_MODEL` = deepseek-chat\n- `PLANNING_MODEL` = claude-sonnet-4-5-20250929\n- `GENERATION_MODEL` = deepseek-chat\n\n## Embedding (RECOMMAND\u00c9: self-hosted)\n- `EMBEDDING_API_URL` - URL embedding (d\u00e9faut: OpenAI)\n- `EMBEDDING_MODEL` - text-embedding-3-small \u2192 Qwen3-Embedding-8B\n\n## Reranking (RECOMMAND\u00c9: self-hosted)\n- `RERANKER_API_URL` - URL reranker (d\u00e9faut: Cohere)\n- `RERANKER_MODEL` - rerank-v3 \u2192 Qwen3-Reranker-8B\n\n## Impact estim\u00e9 (selon research):\n- -89% co\u00fbt ingestion\n- -95% co\u00fbt requ\u00eates\n- +3% accuracy SQL (BIRD-SQL)\n- +15 pts MTEB (embedding)\n",
+        "width": 400,
+        "height": 600
+      },
+      "id": "env-vars-note",
+      "name": "\ud83d\udccb Configuration SOTA 2026",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1300,
+        200
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Init",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop": {
+      "main": [
+        [
+          {
+            "node": "Wait 20s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RAGAS Evaluate V3.0",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 20s": {
+      "main": [
+        [
+          {
+            "node": "Call RAG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call RAG": {
+      "main": [
+        [
+          {
+            "node": "Store",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAGAS Evaluate V3.0": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true,
+    "executionTimeout": 600,
+    "timeSavedMode": "fixed"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "08c9b5fe-bc89-4bc5-8a40-9bf9fc6db619",
+  "activeVersionId": "08c9b5fe-bc89-4bc5-8a40-9bf9fc6db619",
+  "versionCounter": 13,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-25T13:18:49.871Z",
+      "createdAt": "2026-01-25T13:18:49.871Z",
+      "role": "workflow:owner",
+      "workflowId": "qUm28nhq62SxVWHe",
+      "projectId": "JV7MbqBbWPTstXIo",
+      "project": {
+        "updatedAt": "2026-01-07T13:20:26.996Z",
+        "createdAt": "2026-01-07T13:20:21.870Z",
+        "id": "JV7MbqBbWPTstXIo",
+        "name": "Alexis Moret <alexis.moret6@outlook.fr>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "215767e0-958a-4c74-a67a-e335807eba64",
+        "projectRelations": [
+          {
+            "updatedAt": "2026-01-07T13:20:21.870Z",
+            "createdAt": "2026-01-07T13:20:21.870Z",
+            "userId": "215767e0-958a-4c74-a67a-e335807eba64",
+            "projectId": "JV7MbqBbWPTstXIo",
+            "user": {
+              "updatedAt": "2026-02-09T23:01:37.000Z",
+              "createdAt": "2026-01-07T13:20:20.003Z",
+              "id": "215767e0-958a-4c74-a67a-e335807eba64",
+              "email": "alexis.moret6@outlook.fr",
+              "firstName": "Alexis",
+              "lastName": "Moret",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "userClaimedAiCredits": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "e3_89vptJG7PPA-OHyAg3",
+                "userActivatedAt": 1767837780144,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1768407850905
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-02-09",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-01-25T14:33:24.000Z",
+    "createdAt": "2026-01-25T13:18:49.900Z",
+    "versionId": "08c9b5fe-bc89-4bc5-8a40-9bf9fc6db619",
+    "workflowId": "qUm28nhq62SxVWHe",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "benchmark-v2",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "webhook",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -800,
+          300
+        ],
+        "webhookId": "benchmark-v2"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body = $json.body || {};\nconst limit = body.limit || 5;\nconst traceId = 'bench-' + Date.now();\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.results = [];\n\nconst QUESTIONS = [\n  {id:'qa-fr-001',q:'D\u00e9lai paiement B2B France?',e:'60 jours',c:'french_business'},\n  {id:'qa-fr-002',q:'Taux TVA France?',e:'20%',c:'french_business'},\n  {id:'qa-gen-001',q:'Einstein birth year?',e:'1879',c:'general_knowledge'},\n  {id:'qa-gen-002',q:'Python creator?',e:'Guido',c:'general_knowledge'},\n  {id:'qa-trivia-001',q:'Australia capital?',e:'Canberra',c:'factoid_qa'}\n];\n\nreturn QUESTIONS.slice(0, limit).map((q, i) => ({\n  json: {index: i, id: q.id, query: q.q, expected: q.e, category: q.c, trace_id: traceId}\n}));"
+        },
+        "id": "init",
+        "name": "Init",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -560,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "batchSize": 1,
+          "options": {}
+        },
+        "id": "loop",
+        "name": "Loop",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 2,
+        "position": [
+          -320,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "amount": 20,
+          "unit": "seconds"
+        },
+        "id": "wait",
+        "name": "Wait 20s",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          -80,
+          200
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://amoret.app.n8n.cloud/webhook/rag-v6",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({query: $json.query, tenant_id: 'benchmark', conversation_id: $json.trace_id + '-' + $json.index}) }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "id": "http",
+        "name": "Call RAG",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          160,
+          200
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst question = $('Loop').first().json;\nconst httpResponse = $json;\n\nconst responseText = httpResponse.response || httpResponse.data || httpResponse.message || 'NO_RESPONSE';\n\nstaticData.results.push({\n  index: question.index, id: question.id, query: question.query,\n  expected: question.expected, category: question.category, response: responseText\n});\n\nreturn [{json: {stored: staticData.results.length}}];"
+        },
+        "id": "store",
+        "name": "Store",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          400,
+          200
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// V3.0: RAGAS-style Evaluation\nconst results = $node['Store'].json.results || [];\nconst groundTruth = $node['Init'].json.ground_truth || {};\n\n// === RAGAS METRICS CALCULATION ===\n\n// 1. Faithfulness: Is the response supported by the context?\nconst calculateFaithfulness = (response, context) => {\n  if (!context || context.length === 0) return 0;\n  \n  // Simple heuristic: check if key terms from response are in context\n  const responseTerms = response.toLowerCase().split(/\\s+/).filter(t => t.length > 4);\n  const contextText = context.map(c => c.content || c).join(' ').toLowerCase();\n  \n  let supportedTerms = 0;\n  for (const term of responseTerms) {\n    if (contextText.includes(term)) supportedTerms++;\n  }\n  \n  return responseTerms.length > 0 ? supportedTerms / responseTerms.length : 0;\n};\n\n// 2. Answer Relevance: Does the response answer the question?\nconst calculateAnswerRelevance = (query, response) => {\n  // Simple heuristic: keyword overlap\n  const queryTerms = query.toLowerCase().split(/\\s+/).filter(t => t.length > 3);\n  const responseText = response.toLowerCase();\n  \n  let relevantTerms = 0;\n  for (const term of queryTerms) {\n    if (responseText.includes(term)) relevantTerms++;\n  }\n  \n  return queryTerms.length > 0 ? relevantTerms / queryTerms.length : 0;\n};\n\n// 3. Context Relevance: Is the retrieved context relevant to the query?\nconst calculateContextRelevance = (query, context) => {\n  if (!context || context.length === 0) return 0;\n  \n  const queryTerms = query.toLowerCase().split(/\\s+/).filter(t => t.length > 3);\n  let totalRelevance = 0;\n  \n  for (const chunk of context) {\n    const chunkText = (chunk.content || chunk).toLowerCase();\n    let chunkRelevance = 0;\n    \n    for (const term of queryTerms) {\n      if (chunkText.includes(term)) chunkRelevance++;\n    }\n    \n    totalRelevance += queryTerms.length > 0 ? chunkRelevance / queryTerms.length : 0;\n  }\n  \n  return context.length > 0 ? totalRelevance / context.length : 0;\n};\n\n// 4. Context Precision: Are useful chunks ranked higher?\nconst calculateContextPrecision = (context, groundTruthContext) => {\n  if (!context || context.length === 0) return 0;\n  if (!groundTruthContext || groundTruthContext.length === 0) return 0.5; // Default if no ground truth\n  \n  // Check if relevant chunks are in top positions\n  let precisionSum = 0;\n  let relevantCount = 0;\n  \n  for (let i = 0; i < context.length; i++) {\n    const isRelevant = groundTruthContext.some(gt => \n      (context[i].content || context[i]).includes(gt) || gt.includes(context[i].content || context[i])\n    );\n    \n    if (isRelevant) {\n      relevantCount++;\n      precisionSum += relevantCount / (i + 1); // Precision at k\n    }\n  }\n  \n  return relevantCount > 0 ? precisionSum / relevantCount : 0;\n};\n\n// 5. Context Recall: Are all relevant chunks retrieved?\nconst calculateContextRecall = (context, groundTruthContext) => {\n  if (!groundTruthContext || groundTruthContext.length === 0) return 0.5;\n  if (!context || context.length === 0) return 0;\n  \n  const contextText = context.map(c => c.content || c).join(' ').toLowerCase();\n  let recalledCount = 0;\n  \n  for (const gt of groundTruthContext) {\n    if (contextText.includes(gt.toLowerCase())) {\n      recalledCount++;\n    }\n  }\n  \n  return recalledCount / groundTruthContext.length;\n};\n\n// === EVALUATE ALL RESULTS ===\nconst evaluatedResults = results.map((result, idx) => {\n  const query = result.query || '';\n  const response = result.response || '';\n  const context = result.sources || result.context || [];\n  const gtContext = groundTruth[query]?.relevant_context || [];\n  const gtAnswer = groundTruth[query]?.expected_answer || '';\n  \n  // Calculate RAGAS metrics\n  const faithfulness = calculateFaithfulness(response, context);\n  const answerRelevance = calculateAnswerRelevance(query, response);\n  const contextRelevance = calculateContextRelevance(query, context);\n  const contextPrecision = calculateContextPrecision(context, gtContext);\n  const contextRecall = calculateContextRecall(context, gtContext);\n  \n  // Overall RAGAS score (average of all metrics)\n  const ragasScore = (faithfulness + answerRelevance + contextRelevance + contextPrecision + contextRecall) / 5;\n  \n  // Answer correctness (if ground truth available)\n  let answerCorrectness = null;\n  if (gtAnswer) {\n    const responseClean = response.toLowerCase().replace(/[^a-z0-9]/g, '');\n    const gtClean = gtAnswer.toLowerCase().replace(/[^a-z0-9]/g, '');\n    answerCorrectness = responseClean.includes(gtClean) || gtClean.includes(responseClean) ? 1 : 0;\n  }\n  \n  return {\n    query: query,\n    response: response.substring(0, 500),\n    sources_count: context.length,\n    latency_ms: result.latency_ms || 0,\n    \n    // RAGAS Metrics\n    ragas: {\n      faithfulness: Math.round(faithfulness * 100) / 100,\n      answer_relevance: Math.round(answerRelevance * 100) / 100,\n      context_relevance: Math.round(contextRelevance * 100) / 100,\n      context_precision: Math.round(contextPrecision * 100) / 100,\n      context_recall: Math.round(contextRecall * 100) / 100,\n      overall: Math.round(ragasScore * 100) / 100\n    },\n    \n    // Ground truth comparison\n    answer_correctness: answerCorrectness,\n    has_ground_truth: gtAnswer !== ''\n  };\n});\n\n// === AGGREGATE STATISTICS ===\nconst avgRagas = evaluatedResults.reduce((sum, r) => sum + r.ragas.overall, 0) / evaluatedResults.length;\nconst avgFaithfulness = evaluatedResults.reduce((sum, r) => sum + r.ragas.faithfulness, 0) / evaluatedResults.length;\nconst avgAnswerRelevance = evaluatedResults.reduce((sum, r) => sum + r.ragas.answer_relevance, 0) / evaluatedResults.length;\nconst avgContextRelevance = evaluatedResults.reduce((sum, r) => sum + r.ragas.context_relevance, 0) / evaluatedResults.length;\nconst avgLatency = evaluatedResults.reduce((sum, r) => sum + r.latency_ms, 0) / evaluatedResults.length;\n\nconst correctAnswers = evaluatedResults.filter(r => r.answer_correctness === 1).length;\nconst totalWithGT = evaluatedResults.filter(r => r.has_ground_truth).length;\n\nreturn {\n  evaluated_results: evaluatedResults,\n  \n  // Aggregate RAGAS metrics\n  aggregate: {\n    ragas_overall: Math.round(avgRagas * 100) / 100,\n    faithfulness: Math.round(avgFaithfulness * 100) / 100,\n    answer_relevance: Math.round(avgAnswerRelevance * 100) / 100,\n    context_relevance: Math.round(avgContextRelevance * 100) / 100,\n    avg_latency_ms: Math.round(avgLatency),\n    total_queries: evaluatedResults.length,\n    accuracy: totalWithGT > 0 ? Math.round(correctAnswers / totalWithGT * 100) / 100 : null\n  },\n  \n  // Quality buckets\n  quality_distribution: {\n    excellent: evaluatedResults.filter(r => r.ragas.overall >= 0.8).length,\n    good: evaluatedResults.filter(r => r.ragas.overall >= 0.6 && r.ragas.overall < 0.8).length,\n    fair: evaluatedResults.filter(r => r.ragas.overall >= 0.4 && r.ragas.overall < 0.6).length,\n    poor: evaluatedResults.filter(r => r.ragas.overall < 0.4).length\n  },\n  \n  timestamp: new Date().toISOString()\n};"
+        },
+        "id": "eval",
+        "name": "RAGAS Evaluate V3.0",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          160,
+          420
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify($json) }}",
+          "options": {}
+        },
+        "id": "respond",
+        "name": "Respond",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          400,
+          420
+        ]
+      },
+      {
+        "parameters": {
+          "content": "# \ud83d\udd27 VARIABLES D'ENVIRONNEMENT REQUISES (SOTA 2026)\n\n## LLM APIs\n- `DEEPSEEK_API_KEY` - API key DeepSeek (api.deepseek.com)\n- `ANTHROPIC_API_KEY` - API key Anthropic (pour planning)\n- `GOOGLE_API_KEY` - API key Google (Gemini Flash)\n\n## LLM URLs (optionnel - d\u00e9fauts inclus)\n- `SQL_GENERATION_API_URL` - URL API pour SQL\n- `INTENT_ANALYSIS_API_URL` - URL API pour intent\n- `PLANNING_API_URL` - URL API pour planning\n- `GENERATION_API_URL` - URL API pour g\u00e9n\u00e9ration\n\n## LLM Models (optionnel)\n- `SQL_GENERATION_MODEL` = deepseek-chat\n- `INTENT_ANALYSIS_MODEL` = deepseek-chat\n- `PLANNING_MODEL` = claude-sonnet-4-5-20250929\n- `GENERATION_MODEL` = deepseek-chat\n\n## Embedding (RECOMMAND\u00c9: self-hosted)\n- `EMBEDDING_API_URL` - URL embedding (d\u00e9faut: OpenAI)\n- `EMBEDDING_MODEL` - text-embedding-3-small \u2192 Qwen3-Embedding-8B\n\n## Reranking (RECOMMAND\u00c9: self-hosted)\n- `RERANKER_API_URL` - URL reranker (d\u00e9faut: Cohere)\n- `RERANKER_MODEL` - rerank-v3 \u2192 Qwen3-Reranker-8B\n\n## Impact estim\u00e9 (selon research):\n- -89% co\u00fbt ingestion\n- -95% co\u00fbt requ\u00eates\n- +3% accuracy SQL (BIRD-SQL)\n- +15 pts MTEB (embedding)\n",
+          "width": 400,
+          "height": 600
+        },
+        "id": "env-vars-note",
+        "name": "\ud83d\udccb Configuration SOTA 2026",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -1300,
+          200
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Init",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Init": {
+        "main": [
+          [
+            {
+              "node": "Loop",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop": {
+        "main": [
+          [
+            {
+              "node": "Wait 20s",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "RAGAS Evaluate V3.0",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 20s": {
+        "main": [
+          [
+            {
+              "node": "Call RAG",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call RAG": {
+        "main": [
+          [
+            {
+              "node": "Store",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Store",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Store": {
+        "main": [
+          [
+            {
+              "node": "Loop",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RAGAS Evaluate V3.0": {
+        "main": [
+          [
+            {
+              "node": "Respond",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Alexis Moret",
+    "name": "Version 08c9b5fe",
+    "description": "",
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-01-25T14:33:24.071Z",
+        "id": 265,
+        "workflowId": "qUm28nhq62SxVWHe",
+        "versionId": "08c9b5fe-bc89-4bc5-8a40-9bf9fc6db619",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-01-25T14:33:29.567Z",
+        "id": 266,
+        "workflowId": "qUm28nhq62SxVWHe",
+        "versionId": "08c9b5fe-bc89-4bc5-8a40-9bf9fc6db619",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-01-25T14:33:42.370Z",
+        "id": 267,
+        "workflowId": "qUm28nhq62SxVWHe",
+        "versionId": "08c9b5fe-bc89-4bc5-8a40-9bf9fc6db619",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      }
+    ]
+  }
+}
