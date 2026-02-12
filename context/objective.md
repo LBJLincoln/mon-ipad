@@ -112,3 +112,45 @@ Voir `context/stack.md` pour le detail complet.
 - **CI/CD** : GitHub Actions
 - **Dev** : Claude Code (Max plan) via terminal ou web
 - **Terminal** : Termius / GCloud Console / Oracle Cloud (iPad)
+
+---
+
+## Workflow IDs n8n (verifies via API)
+
+| Pipeline | Workflow ID | Statut |
+|----------|-------------|--------|
+| **Standard** | `IgQeo5svGlIAPkBc` | ✅ Verifie via API |
+| **Graph** | `95x2BBAbJlLWZtWEJn6rb` | ✅ Verifie via API |
+| **Quantitative** | `E19NZG9WfM7FNsxr` | ✅ Verifie via API |
+| **Orchestrator** | `ALd4gOEqiKL5KR1p` | ✅ Verifie via API |
+
+---
+
+## Analyse Nodulaire Double - OBLIGATOIRE
+
+**⚠️ MODIFICATION ESSENTIELLE :** A chaque fois qu'une question est testee, il faut effectuer **LES DEUX ANALYSES** suivantes :
+
+### 1. Analyse via node-analyzer.py (existante)
+```bash
+python3 eval/node-analyzer.py --execution-id <ID>
+```
+
+### 2. Analyse via analyze_n8n_executions.py (NOUVEAU - OBLIGATOIRE)
+```bash
+python3 analyze_n8n_executions.py --execution-id <ID>
+```
+
+### Ou analyse par pipeline (pour les tests multiples)
+```bash
+# Analyser les 5 dernieres executions d'un pipeline
+python3 analyze_n8n_executions.py --pipeline <standard|graph|quantitative|orchestrator> --limit 5
+```
+
+### Pourquoi les deux analyses ?
+
+| Outil | Donnees fournies | Usage |
+|-------|------------------|-------|
+| **node-analyzer.py** | Diagnostics automatiques, detection d'issues, recommandations | Vue d'ensemble rapide, identification des problemes |
+| **analyze_n8n_executions.py** | Donnees brutes completes (input/output), extraction LLM detaillee, flags de routage | Analyse profonde, debugging complexe |
+
+**Les deux outils sont complementaires et DOIVENT etre utilises systematiquement.**
