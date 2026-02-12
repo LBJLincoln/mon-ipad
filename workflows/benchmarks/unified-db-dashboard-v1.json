@@ -1,0 +1,168 @@
+{
+  "name": "BENCHMARK - Unified Database Dashboard V1.0",
+  "nodes": [
+    {
+      "id": "webhook-trigger",
+      "name": "Webhook: Unified Dashboard API",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300],
+      "webhookId": "benchmark-db-dashboard",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "benchmark-db-dashboard",
+        "responseMode": "responseNode"
+      }
+    },
+    {
+      "id": "parse-request",
+      "name": "Parse Request",
+      "type": "n8n-nodes-base.code",
+      "position": [450, 300],
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\nconst report_type = body.report_type || 'full_summary';\n\nconst validReports = [\n  'full_summary',\n  'pinecone_only',\n  'neo4j_only',\n  'supabase_only',\n  'cross_db_analysis',\n  'data_quality_check',\n  'embedding_analysis',\n  'missing_data_report'\n];\n\nif (!validReports.includes(report_type)) {\n  return [{\n    json: {\n      error: `Invalid report_type: ${report_type}`,\n      valid_reports: validReports\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    report_type,\n    include_stats: body.include_stats !== false,\n    include_samples: body.include_samples === true,\n    check_embeddings: body.check_embeddings !== false\n  }\n}];"
+      }
+    },
+    {
+      "id": "router",
+      "name": "Route by Report Type",
+      "type": "n8n-nodes-base.switch",
+      "position": [650, 300],
+      "parameters": {
+        "rules": {
+          "rules": [
+            {"value": "full_summary", "output": 0},
+            {"value": "pinecone_only", "output": 1},
+            {"value": "neo4j_only", "output": 2},
+            {"value": "supabase_only", "output": 3},
+            {"value": "cross_db_analysis", "output": 4},
+            {"value": "data_quality_check", "output": 5},
+            {"value": "embedding_analysis", "output": 6},
+            {"value": "missing_data_report", "output": 7}
+          ]
+        }
+      }
+    },
+    {
+      "id": "fetch-pinecone",
+      "name": "Fetch Pinecone Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [850, 100],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://' + $vars.PINECONE_HOST + '/describe_index_stats' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "body": {},
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "pinecone-api-key",
+          "name": "Pinecone API Key"
+        }
+      }
+    },
+    {
+      "id": "fetch-neo4j",
+      "name": "Fetch Neo4j Stats",
+      "type": "n8n-nodes-base.neo4j",
+      "position": [850, 200],
+      "parameters": {
+        "query": "CALL apoc.meta.stats() YIELD labels, relTypesCount\nRETURN {\n  total_nodes: apoc.coll.sum(apoc.map.values(labels)),\n  total_relationships: apoc.coll.sum(apoc.map.values(relTypesCount)),\n  labels: labels,\n  relationships: relTypesCount\n} as stats",
+        "options": {}
+      }
+    },
+    {
+      "id": "fetch-supabase",
+      "name": "Fetch Supabase Stats",
+      "type": "n8n-nodes-base.postgres",
+      "position": [850, 300],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  (SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public') as total_tables,\n  (SELECT pg_size_pretty(pg_database_size(current_database()))) as database_size;"
+      }
+    },
+    {
+      "id": "fetch-supabase-tables",
+      "name": "Fetch Table Row Counts",
+      "type": "n8n-nodes-base.postgres",
+      "position": [850, 400],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  schemaname,\n  relname as table_name,\n  n_live_tup as row_count\nFROM pg_stat_user_tables\nORDER BY n_live_tup DESC;"
+      }
+    },
+    {
+      "id": "aggregate-results",
+      "name": "Aggregate Results",
+      "type": "n8n-nodes-base.code",
+      "position": [1100, 300],
+      "parameters": {
+        "jsCode": "const inputs = $input.all();\nconst reportType = $vars.report_type || 'full_summary';\n\nlet pineconeData = {};\nlet neo4jData = {};\nlet supabaseData = {};\n\ninputs.forEach(input => {\n  const json = input.json;\n  if (json.namespaces || json.dimension) {\n    pineconeData = json;\n  } else if (json.stats && json.stats.labels) {\n    neo4jData = json.stats;\n  } else if (Array.isArray(json) && json[0]?.table_name) {\n    supabaseData.tables = json;\n  } else if (json.total_tables !== undefined) {\n    supabaseData.stats = json;\n  }\n});\n\n// Calculate health scores\nconst pineconeHealth = pineconeData.totalVectorCount > 0 ? 'healthy' : 'empty';\nconst neo4jHealth = (neo4jData.total_nodes || 0) > 0 ? 'healthy' : 'empty';\nconst supabaseHealth = (supabaseData.stats?.total_tables || 0) > 0 ? 'healthy' : 'empty';\n\nconst summary = {\n  timestamp: new Date().toISOString(),\n  report_type: reportType,\n  overall_status: 'complete',\n  databases: {\n    pinecone: {\n      status: pineconeHealth,\n      total_vectors: pineconeData.totalVectorCount || 0,\n      dimension: pineconeData.dimension || null,\n      namespaces: pineconeData.namespaces ? Object.keys(pineconeData.namespaces) : [],\n      namespace_count: pineconeData.namespaces ? Object.keys(pineconeData.namespaces).length : 0\n    },\n    neo4j: {\n      status: neo4jHealth,\n      total_nodes: neo4jData.total_nodes || 0,\n      total_relationships: neo4jData.total_relationships || 0,\n      labels: neo4jData.labels ? Object.keys(neo4jData.labels) : [],\n      relationships: neo4jData.relationships ? Object.keys(neo4jData.relationships) : []\n    },\n    supabase: {\n      status: supabaseHealth,\n      total_tables: supabaseData.stats?.total_tables || 0,\n      database_size: supabaseData.stats?.database_size || 'unknown',\n      tables: supabaseData.tables || []\n    }\n  },\n  cross_db_analysis: {\n    total_entities_across_dbs: (pineconeData.totalVectorCount || 0) + (neo4jData.total_nodes || 0) + (supabaseData.tables?.reduce((a, t) => a + (t.row_count || 0), 0) || 0),\n    embedding_dimension_match: pineconeData.dimension === 1024 || pineconeData.dimension === 1536 ? 'ok' : 'mismatch'\n  }\n};\n\nreturn [{ json: summary }];"
+      }
+    },
+    {
+      "id": "respond",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1300, 300],
+      "parameters": {
+        "respondWith": "json",
+        "json": "={{ JSON.stringify($json) }}"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Unified Dashboard API": {
+      "main": [[{"node": "Parse Request", "type": "main", "index": 0}]]
+    },
+    "Parse Request": {
+      "main": [[{"node": "Route by Report Type", "type": "main", "index": 0}]]
+    },
+    "Route by Report Type": {
+      "main": [
+        [{"node": "Fetch Pinecone Stats", "type": "main", "index": 0}, {"node": "Fetch Neo4j Stats", "type": "main", "index": 0}, {"node": "Fetch Supabase Stats", "type": "main", "index": 0}, {"node": "Fetch Table Row Counts", "type": "main", "index": 0}],
+        [{"node": "Fetch Pinecone Stats", "type": "main", "index": 0}],
+        [{"node": "Fetch Neo4j Stats", "type": "main", "index": 0}],
+        [{"node": "Fetch Supabase Stats", "type": "main", "index": 0}, {"node": "Fetch Table Row Counts", "type": "main", "index": 0}],
+        [{"node": "Fetch Pinecone Stats", "type": "main", "index": 0}, {"node": "Fetch Neo4j Stats", "type": "main", "index": 0}, {"node": "Fetch Supabase Stats", "type": "main", "index": 0}, {"node": "Fetch Table Row Counts", "type": "main", "index": 0}],
+        [{"node": "Fetch Pinecone Stats", "type": "main", "index": 0}, {"node": "Fetch Neo4j Stats", "type": "main", "index": 0}, {"node": "Fetch Supabase Stats", "type": "main", "index": 0}, {"node": "Fetch Table Row Counts", "type": "main", "index": 0}],
+        [{"node": "Fetch Pinecone Stats", "type": "main", "index": 0}],
+        [{"node": "Fetch Pinecone Stats", "type": "main", "index": 0}, {"node": "Fetch Neo4j Stats", "type": "main", "index": 0}, {"node": "Fetch Supabase Stats", "type": "main", "index": 0}, {"node": "Fetch Table Row Counts", "type": "main", "index": 0}]
+      ]
+    },
+    "Fetch Pinecone Stats": {
+      "main": [[{"node": "Aggregate Results", "type": "main", "index": 0}]]
+    },
+    "Fetch Neo4j Stats": {
+      "main": [[{"node": "Aggregate Results", "type": "main", "index": 0}]]
+    },
+    "Fetch Supabase Stats": {
+      "main": [[{"node": "Aggregate Results", "type": "main", "index": 0}]]
+    },
+    "Fetch Table Row Counts": {
+      "main": [[{"node": "Aggregate Results", "type": "main", "index": 0}]]
+    },
+    "Aggregate Results": {
+      "main": [[{"node": "Respond to Webhook", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "benchmark",
+      "color": "#ff0000"
+    },
+    {
+      "name": "dashboard",
+      "color": "#ffff00"
+    },
+    {
+      "name": "admin",
+      "color": "#0000ff"
+    }
+  ]
+}

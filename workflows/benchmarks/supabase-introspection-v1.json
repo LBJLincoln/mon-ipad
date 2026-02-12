@@ -1,0 +1,234 @@
+{
+  "name": "BENCHMARK - Supabase Introspection & Manager V1.0",
+  "nodes": [
+    {
+      "id": "webhook-trigger",
+      "name": "Webhook: API Endpoint",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300],
+      "webhookId": "benchmark-supabase-admin",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "benchmark-supabase-admin",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "parse-request",
+      "name": "Parse Request",
+      "type": "n8n-nodes-base.code",
+      "position": [450, 300],
+      "parameters": {
+        "jsCode": "// Parse incoming request\nconst body = $input.first().json.body || {};\nconst action = body.action || 'list_tables';\n\nconst validActions = [\n  'list_tables',\n  'describe_table',\n  'list_columns',\n  'get_stats',\n  'sample_data',\n  'search_tables',\n  'get_row_counts',\n  'list_constraints',\n  'list_indexes',\n  'create_table',\n  'drop_table',\n  'truncate_table',\n  'execute_sql'\n];\n\nif (!validActions.includes(action)) {\n  return [{\n    json: {\n      error: `Invalid action: ${action}. Valid actions: ${validActions.join(', ')}`,\n      status: 'error'\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    action: action,\n    table_name: body.table_name || null,\n    schema: body.schema || 'public',\n    limit: body.limit || 10,\n    sql: body.sql || null,\n    table_definition: body.table_definition || null,\n    search_term: body.search_term || null,\n    status: 'ok'\n  }\n}];"
+      }
+    },
+    {
+      "id": "router",
+      "name": "Route by Action",
+      "type": "n8n-nodes-base.switch",
+      "position": [650, 300],
+      "parameters": {
+        "rules": {
+          "rules": [
+            {"value": "list_tables", "output": 0},
+            {"value": "describe_table", "output": 1},
+            {"value": "list_columns", "output": 2},
+            {"value": "get_stats", "output": 3},
+            {"value": "sample_data", "output": 4},
+            {"value": "search_tables", "output": 5},
+            {"value": "get_row_counts", "output": 6},
+            {"value": "list_constraints", "output": 7},
+            {"value": "list_indexes", "output": 8},
+            {"value": "create_table", "output": 9},
+            {"value": "drop_table", "output": 10},
+            {"value": "truncate_table", "output": 11},
+            {"value": "execute_sql", "output": 12}
+          ]
+        }
+      }
+    },
+    {
+      "id": "list-tables",
+      "name": "List All Tables",
+      "type": "n8n-nodes-base.postgres",
+      "position": [850, 50],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  schemaname,\n  tablename,\n  pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size\nFROM pg_tables \nWHERE schemaname = '{{$json.schema}}' \nORDER BY tablename;"
+      }
+    },
+    {
+      "id": "describe-table",
+      "name": "Describe Table Structure",
+      "type": "n8n-nodes-base.postgres",
+      "position": [850, 150],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  column_name,\n  data_type,\n  is_nullable,\n  column_default,\n  character_maximum_length\nFROM information_schema.columns \nWHERE table_schema = '{{$json.schema}}' \nAND table_name = '{{$json.table_name}}' \nORDER BY ordinal_position;"
+      }
+    },
+    {
+      "id": "get-stats",
+      "name": "Get Database Stats",
+      "type": "n8n-nodes-base.postgres",
+      "position": [850, 250],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  (SELECT count(*) FROM information_schema.tables WHERE table_schema = '{{$json.schema}}') as total_tables,\n  (SELECT pg_size_pretty(pg_database_size(current_database()))) as database_size,\n  (SELECT count(*) FROM pg_stat_user_tables) as active_tables;"
+      }
+    },
+    {
+      "id": "sample-data",
+      "name": "Get Sample Data",
+      "type": "n8n-nodes-base.postgres",
+      "position": [850, 350],
+      "parameters": {
+        "operation": "select",
+        "schema": "={{ $json.schema }}",
+        "table": "={{ $json.table_name }}",
+        "limit": "={{ $json.limit }}"
+      }
+    },
+    {
+      "id": "row-counts",
+      "name": "Get Row Counts",
+      "type": "n8n-nodes-base.postgres",
+      "position": [850, 450],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  schemaname,\n  relname as table_name,\n  n_live_tup as row_count\nFROM pg_stat_user_tables \nWHERE schemaname = '{{$json.schema}}' \nORDER BY n_live_tup DESC;"
+      }
+    },
+    {
+      "id": "list-constraints",
+      "name": "List Constraints",
+      "type": "n8n-nodes-base.postgres",
+      "position": [850, 550],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  tc.constraint_name,\n  tc.constraint_type,\n  tc.table_name,\n  kcu.column_name\nFROM information_schema.table_constraints tc\nLEFT JOIN information_schema.key_column_usage kcu\n  ON tc.constraint_name = kcu.constraint_name\nWHERE tc.table_schema = '{{$json.schema}}'\n{{ $json.table_name ? \"AND tc.table_name = '\" + $json.table_name + \"'\" : '' }}\nORDER BY tc.table_name, tc.constraint_type;"
+      }
+    },
+    {
+      "id": "execute-sql",
+      "name": "Execute Custom SQL",
+      "type": "n8n-nodes-base.postgres",
+      "position": [850, 650],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.sql }}"
+      }
+    },
+    {
+      "id": "format-response",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "position": [1100, 300],
+      "parameters": {
+        "jsCode": "// Format the response based on action\nconst input = $input.first().json;\nconst action = $vars.action || 'unknown';\n\nreturn [{\n  json: {\n    timestamp: new Date().toISOString(),\n    action: action,\n    schema: $vars.schema || 'public',\n    data: input,\n    row_count: Array.isArray(input) ? input.length : 0\n  }\n}];"
+      }
+    },
+    {
+      "id": "respond",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1300, 300],
+      "parameters": {
+        "options": {},
+        "respondWith": "json",
+        "json": "={{ JSON.stringify($json) }}"
+      }
+    },
+    {
+      "id": "error-handler",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.code",
+      "position": [450, 500],
+      "parameters": {
+        "jsCode": "const error = $input.first().json;\nreturn [{\n  json: {\n    timestamp: new Date().toISOString(),\n    status: 'error',\n    error: error.message || 'Unknown error',\n    hint: 'Check table_name exists and user has permissions'\n  }\n}];"
+      }
+    },
+    {
+      "id": "error-respond",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [650, 500],
+      "parameters": {
+        "options": {},
+        "respondWith": "json",
+        "json": "={{ JSON.stringify($json) }}"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: API Endpoint": {
+      "main": [[{"node": "Parse Request", "type": "main", "index": 0}]]
+    },
+    "Parse Request": {
+      "main": [[{"node": "Route by Action", "type": "main", "index": 0}]]
+    },
+    "Route by Action": {
+      "main": [
+        [{"node": "List All Tables", "type": "main", "index": 0}],
+        [{"node": "Describe Table Structure", "type": "main", "index": 0}],
+        [{"node": "Describe Table Structure", "type": "main", "index": 0}],
+        [{"node": "Get Database Stats", "type": "main", "index": 0}],
+        [{"node": "Get Sample Data", "type": "main", "index": 0}],
+        [{"node": "List All Tables", "type": "main", "index": 0}],
+        [{"node": "Get Row Counts", "type": "main", "index": 0}],
+        [{"node": "List Constraints", "type": "main", "index": 0}],
+        [{"node": "List Constraints", "type": "main", "index": 0}],
+        [{"node": "Execute Custom SQL", "type": "main", "index": 0}],
+        [{"node": "Execute Custom SQL", "type": "main", "index": 0}],
+        [{"node": "Execute Custom SQL", "type": "main", "index": 0}],
+        [{"node": "Execute Custom SQL", "type": "main", "index": 0}]
+      ]
+    },
+    "List All Tables": {
+      "main": [[{"node": "Format Response", "type": "main", "index": 0}]]
+    },
+    "Describe Table Structure": {
+      "main": [[{"node": "Format Response", "type": "main", "index": 0}]]
+    },
+    "Get Database Stats": {
+      "main": [[{"node": "Format Response", "type": "main", "index": 0}]]
+    },
+    "Get Sample Data": {
+      "main": [[{"node": "Format Response", "type": "main", "index": 0}]]
+    },
+    "Get Row Counts": {
+      "main": [[{"node": "Format Response", "type": "main", "index": 0}]]
+    },
+    "List Constraints": {
+      "main": [[{"node": "Format Response", "type": "main", "index": 0}]]
+    },
+    "Execute Custom SQL": {
+      "main": [[{"node": "Format Response", "type": "main", "index": 0}]]
+    },
+    "Format Response": {
+      "main": [[{"node": "Respond to Webhook", "type": "main", "index": 0}]]
+    },
+    "Error Handler": {
+      "main": [[{"node": "Error Response", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "benchmark",
+      "color": "#ff0000"
+    },
+    {
+      "name": "supabase",
+      "color": "#00ff00"
+    },
+    {
+      "name": "admin",
+      "color": "#0000ff"
+    }
+  ]
+}
