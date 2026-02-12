@@ -8,8 +8,8 @@
         "PINECONE_HOST": "https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io",
         "OPENROUTER_API_KEY": "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",
         "JINA_API_KEY": "jina_f1348176dc7a4f0da9996cfa6cfa6eecasLHpAw7iEXFqU6eHi9SQBuxqT0F",
-        "N8N_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A",
-        "N8N_HOST": "https://amoret.app.n8n.cloud"
+        "N8N_API_KEY": "",
+        "N8N_HOST": "http://34.136.180.66:5678"
       }
     },
     "neo4j": {
@@ -34,11 +34,25 @@
     "n8n": {
       "command": "n8n-mcp-server",
       "env": {
-        "N8N_API_URL": "https://amoret.app.n8n.cloud/api/v1",
-        "N8N_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A",
+        "N8N_API_URL": "http://34.136.180.66:5678/api/v1",
+        "N8N_API_KEY": "",
         "N8N_WEBHOOK_USERNAME": "",
         "N8N_WEBHOOK_PASSWORD": "",
         "DEBUG": "false"
+      }
+    },
+    "huggingface": {
+      "command": "/home/termius/mon-ipad/.venv/bin/python3",
+      "args": ["/home/termius/mcp-servers/custom/huggingface-mcp-server.py"],
+      "env": {
+        "HF_TOKEN": "${HF_TOKEN}"
+      }
+    },
+    "cohere": {
+      "command": "/home/termius/mon-ipad/.venv/bin/python3",
+      "args": ["/home/termius/mcp-servers/custom/cohere-mcp-server.py"],
+      "env": {
+        "COHERE_API_KEY": "nqQv1HevJMecJrN00Hpjk5JFbOT3UtXJCTJRuIRu"
       }
     },
     "supabase": {

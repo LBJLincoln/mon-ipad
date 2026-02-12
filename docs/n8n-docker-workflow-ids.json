@@ -1,0 +1,106 @@
+{
+  "_comment": "Ce fichier sera mis à jour après l'import des workflows dans n8n Docker",
+  "host": "http://34.136.180.66:5678",
+  "api_key": "",
+  "status": "En attente de configuration initiale",
+  "workflows": {
+    "standard": {
+      "expected_id": "",
+      "webhook_path": "/webhook/rag-multi-index-v3",
+      "description": "Standard RAG Pipeline V3.4 - Pinecone vector search"
+    },
+    "graph": {
+      "expected_id": "",
+      "webhook_path": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+      "description": "Graph RAG V3.3 - Neo4j entity graph"
+    },
+    "quantitative": {
+      "expected_id": "",
+      "webhook_path": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+      "description": "Quantitative RAG V2.0 - Supabase SQL"
+    },
+    "orchestrator": {
+      "expected_id": "",
+      "webhook_path": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+      "description": "Orchestrator V10.1 - Routes to all pipelines"
+    },
+    "ingestion": {
+      "expected_id": "",
+      "description": "Ingestion V3.1 - Data ingestion pipeline"
+    },
+    "enrichment": {
+      "expected_id": "",
+      "description": "Enrichissement V3.1 - Data enrichment"
+    },
+    "feedback": {
+      "expected_id": "",
+      "description": "Feedback V3.1 - Feedback processing"
+    },
+    "benchmark": {
+      "expected_id": "",
+      "description": "Benchmark V3.0 - Evaluation pipeline"
+    },
+    "benchmark-dataset-ingestion": {
+      "expected_id": "",
+      "description": "Dataset Ingestion Pipeline"
+    },
+    "benchmark-monitoring": {
+      "expected_id": "",
+      "description": "Monitoring & Alerting"
+    },
+    "benchmark-orchestrator-tester": {
+      "expected_id": "",
+      "description": "Orchestrator Tester"
+    },
+    "benchmark-rag-tester": {
+      "expected_id": "",
+      "description": "RAG Batch Tester"
+    },
+    "benchmark-sql-executor": {
+      "expected_id": "",
+      "description": "SQL Executor Utility"
+    }
+  },
+  "credentials_to_configure": [
+    {
+      "name": "OpenRouter API",
+      "type": "httpHeaderAuth",
+      "value": "Bearer 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"
+    },
+    {
+      "name": "Pinecone API",
+      "type": "pineconeApi",
+      "value": "pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
+    },
+    {
+      "name": "Cohere API",
+      "type": "cohereApi",
+      "value": "nqQv1HevJMecJrN00Hpjk5JFbOT3UtXJCTJRuIRu"
+    },
+    {
+      "name": "Neo4j",
+      "type": "neo4jApi",
+      "host": "bolt://localhost:7687",
+      "password": "jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
+    },
+    {
+      "name": "Supabase",
+      "type": "supabaseApi",
+      "password": "udVECdcSnkMCAPiY"
+    }
+  ],
+  "variables_to_set": {
+    "EMBEDDING_MODEL": "jina-embeddings-v3",
+    "EMBEDDING_DIM": "1024",
+    "OPENROUTER_API_KEY": "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",
+    "PINECONE_URL": "https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io",
+    "COHERE_API_KEY": "nqQv1HevJMecJrN00Hpjk5JFbOT3UtXJCTJRuIRu"
+  },
+  "setup_instructions": {
+    "step1": "Ouvrir http://34.136.180.66:5678 (après ouverture firewall GCP)",
+    "step2": "Créer un compte admin",
+    "step3": "Générer une API Key dans Settings > API",
+    "step4": "Exécuter: bash /home/termius/mon-ipad/scripts/setup-n8n-docker.sh",
+    "step5": "Vérifier l'import des workflows dans l'interface"
+  }
+}
