@@ -156,3 +156,9 @@ echo "════════════════════════�
 
 # Export du PATH pour les MCP
 export PATH="/usr/local/bin:/usr/bin:$PATH"
+
+# Alias pour lancer Kimi avec MCP
+echo ""
+echo -e "${BLUE}🚀 Pour lancer Kimi:${NC}"
+echo -e "${GREEN}  kimi-start${NC}   → Lancer Kimi Code dans le projet"
+alias kimi-start='cd /home/termius/mon-ipad && kimi'
