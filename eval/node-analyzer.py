@@ -39,7 +39,7 @@ N8N_HOST = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")
 N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 
 WORKFLOW_IDS = {
-    "standard": "LnTqRX4LZlI009Ks-3Jnp",
+    "standard": "IgQeo5svGlIAPkBc",
     "graph": "95x2BBAbJlLWZtWEJn6rb",
     "quantitative": "E19NZG9WfM7FNsxr",
     "orchestrator": "ALd4gOEqiKL5KR1p",
@@ -832,6 +832,7 @@ def main():
     parser.add_argument("--all", action="store_true", help="Analyze all pipelines")
     parser.add_argument("--last", type=int, default=5, help="Number of recent executions to analyze")
     parser.add_argument("--execution-id", type=str, default=None, help="Analyze a specific execution")
+
     args = parser.parse_args()
 
     if args.execution_id:
@@ -859,6 +860,7 @@ def main():
                 for iss in issues:
                     print(f"        ⚠ [{iss['severity'].upper()}] {iss['type']}: {iss['detail'][:100]}")
         return
+
 
     pipelines = ["standard", "graph", "quantitative", "orchestrator"] if args.all else [args.pipeline]
     pipelines = [p for p in pipelines if p]
