@@ -180,77 +180,114 @@ def fetch_and_parse_execution(exec_id):
     return execution_data
 
 # --- Main execution loop ---
-execution_ids_to_analyze = ["19305", "19306", "19311"]
 output_dir = "n8n_analysis_results"
 os.makedirs(output_dir, exist_ok=True)
 
-for exec_id in execution_ids_to_analyze:
-    print(f"\n{'='*80}")
-    print(f"Analyzing N8n Execution ID: {exec_id}")
-    print(f"{'='*80}")
+if __name__ == "__main__":
+    import argparse
+    from importlib.machinery import SourceFileLoader
 
-    execution_details = fetch_and_parse_execution(exec_id)
+    # Dynamically load node-analyzer.py to access WORKFLOW_IDS and fetch functions
+    EVAL_DIR = os.path.join(os.path.dirname(__file__), 'eval')
+    sys.path.insert(0, EVAL_DIR)
+    try:
+        node_analyzer = SourceFileLoader("node_analyzer", os.path.join(EVAL_DIR, "node-analyzer.py")).load_module()
+    except Exception as e:
+        print(f"Error loading node-analyzer.py: {e}")
+        sys.exit(1)
 
-    if execution_details:
-        output_filepath = os.path.join(output_dir, f"execution_{exec_id}.json")
-        with open(output_filepath, 'w', encoding='utf-8') as f:
-            json.dump(execution_details, f, ensure_ascii=False, indent=2)
-        print(f"  Details saved to {output_filepath}")
+    parser = argparse.ArgumentParser(description="Analyze N8n Executions")
+    parser.add_argument("--pipeline", type=str, choices=node_analyzer.WORKFLOW_IDS.keys(),
+                        help="Specify a pipeline to analyze (e.g., 'standard', 'graph'). Fetches recent executions.")
+    parser.add_argument("--limit", type=int, default=5,
+                        help="Number of recent executions to fetch for the specified pipeline. Defaults to 5.")
+    parser.add_argument("--execution-id", type=str, help="Specify a single execution ID to analyze (overrides --pipeline and --limit)")
+    args = parser.parse_args()
 
-        print(f"  Workflow Name: {execution_details.get('workflow_name', 'N/A')}")
-        print(f"  Status: {execution_details.get('status', 'N/A')}")
-        print(f"  Duration: {execution_details.get('duration_ms', 0)}ms")
-        print(f"  Trigger Query: {execution_details.get('trigger_query', 'N/A')}")
-        print(f"  Nodes in execution: {execution_details.get('node_count', 0)}")
-
-        for node in execution_details["nodes"]:
-            print(f"\n    --- Node: {node.get('name', 'Unnamed Node')} ---")
-            print(f"      Status: {node.get('status', 'N/A')}")
-            print(f"      Duration: {node.get('duration_ms', 0)}ms")
-            if node.get('error'):
-                print(f"      Error: {node['error']}")
-
-            # Check if full_input_data is not empty before printing its presence
-            if node.get('full_input_data') and len(node['full_input_data']) > 0:
-                print(f"      Full Input Data: (present, see JSON file for details)")
-            else:
-                print(f"      Full Input Data: (empty or N/A)")
-
-            # Check if full_output_data is not empty before printing its presence
-            if node.get('full_output_data') and len(node['full_output_data']) > 0:
-                print(f"      Full Output Data: (present, see JSON file for details)")
-            else:
-                print(f"      Full Output Data: (empty or N/A)")
-
-
-            if node.get('llm_output'):
-                llm_out = node['llm_output']
-                print(f"      LLM Output Chars: {llm_out.get('length_chars', 0)}")
-                print(f"      LLM Output Content: {llm_out.get('content', '')[:500]}... (full content in JSON)")
-            if node.get('llm_tokens'):
-                llm_tokens = node['llm_tokens']
-                print(f"      LLM Tokens (Prompt/Completion/Total): "
-                      f"{llm_tokens.get('prompt_tokens', 0)}/"
-                      f"{llm_tokens.get('completion_tokens', 0)}/"
-                      f"{llm_tokens.get('total_tokens', 0)}")
-            if node.get('llm_model'):
-                print(f"      LLM Model: {node['llm_model']}")
-            if node.get('llm_provider'):
-                print(f"      LLM Provider: {node['llm_provider']}")
-
-            if node.get('routing_flags'):
-                print(f"      Routing Flags: {json.dumps(node['routing_flags'])}")
-
-            if node.get('items_in') is not None:
-                print(f"      Items In: {node['items_in']}")
-            if node.get('items_out') is not None:
-                print(f"      Items Out: {node['items_out']}")
-            if node.get('retrieval_count') is not None:
-                print(f"      Retrieval Count: {node['retrieval_count']}")
-            if node.get('active_branches') is not None:
-                print(f"      Active Branches: {node['active_branches']} out of {node['total_branches']}")
+    exec_ids_to_process = []
+    if args.execution_id:
+        exec_ids_to_process.append(args.execution_id)
+    elif args.pipeline:
+        print(f"Fetching last {args.limit} executions for pipeline '{args.pipeline}'...")
+        # fetch_rich_executions returns parsed executions, we need their IDs
+        recent_executions = node_analyzer.fetch_rich_executions(args.pipeline, limit=args.limit)
+        if recent_executions:
+            exec_ids_to_process = [ex["execution_id"] for ex in recent_executions]
+            print(f"Found {len(exec_ids_to_process)} executions: {', '.join(exec_ids_to_process)}")
+        else:
+            print(f"No recent executions found for pipeline '{args.pipeline}'.")
+            sys.exit(0)
     else:
-        print(f"  Could not fetch execution details for ID {exec_id}. Check N8n API key or execution ID.")
+        print("Please specify either --pipeline or --execution-id.")
+        sys.exit(1)
+
+    for exec_id in exec_ids_to_process:
+        print(f"\\n{'='*80}")
+        print(f"Analyzing N8n Execution ID: {exec_id}")
+        print(f"{'='*80}")
+
+        execution_details = fetch_and_parse_execution(exec_id)
+
+        if execution_details:
+            output_filepath = os.path.join(output_dir, f"execution_{exec_id}.json")
+            with open(output_filepath, 'w', encoding='utf-8') as f:
+                json.dump(execution_details, f, ensure_ascii=False, indent=2)
+            print(f"  Details saved to {output_filepath}")
+
+            print(f"  Workflow Name: {execution_details.get('workflow_name', 'N/A')}")
+            print(f"  Status: {execution_details.get('status', 'N/A')}")
+            print(f"  Duration: {execution_details.get('duration_ms', 0)}ms")
+            print(f"  Trigger Query: {execution_details.get('trigger_query', 'N/A')}")
+            print(f"  Nodes in execution: {execution_details.get('node_count', 0)}")
+
+            for node in execution_details["nodes"]:
+                print(f"\\n    --- Node: {node.get('name', 'Unnamed Node')} ---")
+                print(f"      Status: {node.get('status', 'N/A')}")
+                print(f"      Duration: {node.get('duration_ms', 0)}ms")
+                if node.get('error'):
+                    print(f"      Error: {node['error']}")
+
+                # Check if full_input_data is not empty before printing its presence
+                if node.get('full_input_data') and len(node['full_input_data']) > 0:
+                    print(f"      Full Input Data: (present, see JSON file for details)")
+                else:
+                    print(f"      Full Input Data: (empty or N/A)")
+
+                # Check if full_output_data is not empty before printing its presence
+                if node.get('full_output_data') and len(node['full_output_data']) > 0:
+                    print(f"      Full Output Data: (present, see JSON file for details)")
+                else:
+                    print(f"      Full Output Data: (empty or N/A)")
+
+
+                if node.get('llm_output'):
+                    llm_out = node['llm_output']
+                    print(f"      LLM Output Chars: {llm_out.get('length_chars', 0)}")
+                    print(f"      LLM Output Content: {llm_out.get('content', '')[:500]}... (full content in JSON)")
+                if node.get('llm_tokens'):
+                    llm_tokens = node['llm_tokens']
+                    print(f"      LLM Tokens (Prompt/Completion/Total): "
+                          f"{llm_tokens.get('prompt_tokens', 0)}/"
+                          f"{llm_tokens.get('completion_tokens', 0)}/"
+                          f"{llm_tokens.get('total_tokens', 0)}")
+                if node.get('llm_model'):
+                    print(f"      LLM Model: {node['llm_model']}")
+                if node.get('llm_provider'):
+                    print(f"      LLM Provider: {node['llm_provider']}")
+
+                if node.get('routing_flags'):
+                    print(f"      Routing Flags: {json.dumps(node['routing_flags'])}")
+
+                if node.get('items_in') is not None:
+                    print(f"      Items In: {node['items_in']}")
+                if node.get('items_out') is not None:
+                    print(f"      Items Out: {node['items_out']}")
+                if node.get('retrieval_count') is not None:
+                    print(f"      Retrieval Count: {node['retrieval_count']}")
+                if node.get('active_branches') is not None:
+                    print(f"      Active Branches: {node['active_branches']} out of {node['total_branches']}")
+        else:
+            print(f"  Could not fetch execution details for ID {exec_id}. Check N8n API key or execution ID.")
 print(f"\n{'='*80}")
 print("N8n Execution Analysis Complete.")
 print(f"\n{'='*80}\n")
