@@ -129,7 +129,7 @@
 ```bash
 # Configuration requise
 export PINECONE_API_KEY="pcsk_..."
-export COHERE_API_KEY="votre_cle_cohere"
+export COHERE_API_KEY="nqQv1HevJMecJrN00Hpjk5JFbOT3UtXJCTJRuIRu"
 export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
 
 # Dry run (prévisualisation)
@@ -189,7 +189,7 @@ import json
 
 ### ÉTAPE 3: Exécuter Migration
 ```bash
-export COHERE_API_KEY="votre_nouvelle_cle"
+export COHERE_API_KEY="nqQv1HevJMecJrN00Hpjk5JFbOT3UtXJCTJRuIRu"
 export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 
 cd /home/termius/mon-ipad

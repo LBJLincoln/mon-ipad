@@ -56,8 +56,8 @@ export N8N_HOST="https://amoret.app.n8n.cloud"
 export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
 export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-cohere-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
-export OPENROUTER_API_KEY="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"
-export COHERE_API_KEY="votre_cle_cohere_ici"
+export OPENROUTER_API_KEY="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"
+export COHERE_API_KEY="nqQv1HevJMecJrN00Hpjk5JFbOT3UtXJCTJRuIRu"
 export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
 export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
 export JINA_API_KEY="jina_f1348176dc7a4f0da9996cfa6cfa6eecasLHpAw7iEXFqU6eHi9SQBuxqT0F"
@@ -72,8 +72,8 @@ export N8N_HOST="https://amoret.app.n8n.cloud"
 export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
 export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-cohere-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
-export OPENROUTER_API_KEY="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"
-export COHERE_API_KEY="votre_cle_cohere_ici"
+export OPENROUTER_API_KEY="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"
+export COHERE_API_KEY="nqQv1HevJMecJrN00Hpjk5JFbOT3UtXJCTJRuIRu"
 export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
 export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
 export JINA_API_KEY="jina_f1348176dc7a4f0da9996cfa6cfa6eecasLHpAw7iEXFqU6eHi9SQBuxqT0F"
@@ -105,7 +105,7 @@ Le fichier `.claude/settings.json` doit contenir :
       "env": {
         "PINECONE_API_KEY": "pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY",
         "PINECONE_HOST": "https://sota-rag-cohere-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io",
-        "OPENROUTER_API_KEY": "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",
+        "OPENROUTER_API_KEY": "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",
         "JINA_API_KEY": "jina_f1348176dc7a4f0da9996cfa6cfa6eecasLHpAw7iEXFqU6eHi9SQBuxqT0F",
         "N8N_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A",
         "N8N_HOST": "https://amoret.app.n8n.cloud"
