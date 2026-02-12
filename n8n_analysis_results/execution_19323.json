@@ -1,0 +1,2247 @@
+{
+  "execution_id": "19323",
+  "status": "success",
+  "started_at": "2026-02-10T13:01:20.411Z",
+  "stopped_at": "2026-02-10T13:02:22.615Z",
+  "duration_ms": 62204,
+  "workflow_name": "V10.1 orchestrator copy",
+  "nodes": [
+    {
+      "name": "Webhook V8",
+      "duration_ms": 0,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "headers": {
+                "host": "amoret.app.n8n.cloud",
+                "user-agent": "Python-urllib/3.11",
+                "content-length": "130",
+                "accept-encoding": "gzip, br",
+                "cdn-loop": "cloudflare; loops=1; subreqs=1",
+                "cf-connecting-ip": "34.28.104.80",
+                "cf-ew-via": "15",
+                "cf-ipcountry": "US",
+                "cf-ray": "9cbbcb681cce1151-ORD",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "cf-worker": "n8n.cloud",
+                "content-type": "application/json",
+                "x-forwarded-for": "34.28.104.80, 172.69.58.89",
+                "x-forwarded-host": "amoret.app.n8n.cloud",
+                "x-forwarded-port": "443",
+                "x-forwarded-proto": "https",
+                "x-forwarded-server": "traefik-prod-users-gwc-3-6db8488cf7-n8pcb",
+                "x-is-trusted": "yes",
+                "x-real-ip": "34.28.104.80"
+              },
+              "params": {},
+              "query": {},
+              "body": {
+                "query": "What is the capital of Japan?",
+                "tenant_id": "benchmark",
+                "top_k": 10,
+                "include_sources": true,
+                "benchmark_mode": true
+              },
+              "webhookUrl": "https://amoret.app.n8n.cloud/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+              "executionMode": "production"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Input Merger V8",
+      "duration_ms": 65,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "source": "webhook",
+              "body": {
+                "query": "What is the capital of Japan?",
+                "tenant_id": "benchmark",
+                "top_k": 10,
+                "include_sources": true,
+                "benchmark_mode": true
+              },
+              "query": "What is the capital of Japan?",
+              "is_chat": false,
+              "is_webhook": true,
+              "_perf": {
+                "start_time": 1770728480511
+              }
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Init V8 Security & Analysis",
+      "duration_ms": 71,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "trace_id": "trace-1770728480585-y0k96j",
+              "query": "What is the capital of Japan?",
+              "query_hash": "d5fe4ac7a938bed7",
+              "conversation_id": "trace-1770728480585-y0k96j",
+              "session_id": "trace-1770728480585-y0k96j",
+              "tenant_id": "benchmark",
+              "user_groups": [
+                "default"
+              ],
+              "metadata": {},
+              "is_suspicious": false,
+              "is_empty": false,
+              "timestamp": 1770728480585,
+              "source": "webhook"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Postgres L2/L3 Memory",
+      "duration_ms": 192,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": null,
+      "llm_provider": null,
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 0,
+      "full_input_data": null,
+      "full_output_data": [
+        [],
+        []
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Redis: Fetch Conversation",
+      "duration_ms": 140,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "propertyName": null
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ],
+        []
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "🛡️ Redis Failure Handler V10.1",
+      "duration_ms": 43,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "conversation_history": [],
+              "context_status": "NEW",
+              "redis_available": true,
+              "trace_id": "trace-1770728480585-y0k96j"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "🛡️ Rate Limit Guard",
+      "duration_ms": 36,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "rate_limited": false,
+              "conversation_history": [],
+              "context_status": "NEW",
+              "redis_available": true,
+              "trace_id": "trace-1770728480585-y0k96j"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "IF: Rate Limited?",
+      "duration_ms": 1,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "rate_limited": false,
+              "conversation_history": [],
+              "context_status": "NEW",
+              "redis_available": true,
+              "trace_id": "trace-1770728480585-y0k96j"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ],
+        []
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "🧠 Memory Merger (Redis + Postgres)",
+      "duration_ms": 42,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "recent_messages": [],
+              "user_profile": {},
+              "user_preferences": {},
+              "entities_of_interest": {},
+              "last_intent": "UNKNOWN",
+              "conversation_id": "trace-1770728480585-y0k96j",
+              "session_id": "trace-1770728480585-y0k96j",
+              "trace_id": "trace-1770728480585-y0k96j",
+              "query": "What is the capital of Japan?",
+              "query_hash": "d5fe4ac7a938bed7",
+              "redis_available": true,
+              "postgres_available": false,
+              "context_status": "NEW"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "📦 Context Compression V10.1",
+      "duration_ms": 39,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "recent_messages": [],
+              "user_profile": {},
+              "user_preferences": {},
+              "entities_of_interest": {},
+              "last_intent": "UNKNOWN",
+              "conversation_id": "trace-1770728480585-y0k96j",
+              "session_id": "trace-1770728480585-y0k96j",
+              "trace_id": "trace-1770728480585-y0k96j",
+              "query": "What is the capital of Japan?",
+              "query_hash": "d5fe4ac7a938bed7",
+              "redis_available": true,
+              "postgres_available": false,
+              "context_status": "NEW",
+              "compressed_history": [],
+              "compressed_summary": "",
+              "full_history_length": 0,
+              "intention_shift": false,
+              "tokens_saved": 0
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "🛡️ Advanced Guardrails",
+      "duration_ms": 42,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "recent_messages": [],
+              "user_profile": {},
+              "user_preferences": {},
+              "entities_of_interest": {},
+              "last_intent": "UNKNOWN",
+              "conversation_id": "trace-1770728480585-y0k96j",
+              "session_id": "trace-1770728480585-y0k96j",
+              "trace_id": "trace-1770728480585-y0k96j",
+              "query": "What is the capital of Japan?",
+              "query_hash": "d5fe4ac7a938bed7",
+              "redis_available": true,
+              "postgres_available": false,
+              "context_status": "NEW",
+              "compressed_history": [],
+              "compressed_summary": "",
+              "full_history_length": 0,
+              "intention_shift": false,
+              "tokens_saved": 0,
+              "guardrail_passed": true,
+              "guardrail_blocked": false,
+              "block_reason": null,
+              "injection_detected": false,
+              "jailbreak_detected": false,
+              "sensitive_detected": false
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "IF: Guardrail Passed?",
+      "duration_ms": 1,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "recent_messages": [],
+              "user_profile": {},
+              "user_preferences": {},
+              "entities_of_interest": {},
+              "last_intent": "UNKNOWN",
+              "conversation_id": "trace-1770728480585-y0k96j",
+              "session_id": "trace-1770728480585-y0k96j",
+              "trace_id": "trace-1770728480585-y0k96j",
+              "query": "What is the capital of Japan?",
+              "query_hash": "d5fe4ac7a938bed7",
+              "redis_available": true,
+              "postgres_available": false,
+              "context_status": "NEW",
+              "compressed_history": [],
+              "compressed_summary": "",
+              "full_history_length": 0,
+              "intention_shift": false,
+              "tokens_saved": 0,
+              "guardrail_passed": true,
+              "guardrail_blocked": false,
+              "block_reason": null,
+              "injection_detected": false,
+              "jailbreak_detected": false,
+              "sensitive_detected": false
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ],
+        []
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "🔍 Query Classifier V10.1",
+      "duration_ms": 47,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "recent_messages": [],
+              "user_profile": {},
+              "user_preferences": {},
+              "entities_of_interest": {},
+              "last_intent": "UNKNOWN",
+              "conversation_id": "trace-1770728480585-y0k96j",
+              "session_id": "trace-1770728480585-y0k96j",
+              "trace_id": "trace-1770728480585-y0k96j",
+              "query": "What is the capital of Japan?",
+              "query_hash": "d5fe4ac7a938bed7",
+              "redis_available": true,
+              "postgres_available": false,
+              "context_status": "NEW",
+              "compressed_history": [],
+              "compressed_summary": "",
+              "full_history_length": 0,
+              "intention_shift": false,
+              "tokens_saved": 0,
+              "guardrail_passed": true,
+              "guardrail_blocked": false,
+              "block_reason": null,
+              "injection_detected": false,
+              "jailbreak_detected": false,
+              "sensitive_detected": false,
+              "query_route": "cache_check",
+              "is_conversational": false,
+              "should_check_cache": true,
+              "needs_retrieval": true,
+              "retrieval_reason": "DEFAULT"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "🔀 Query Router",
+      "duration_ms": 2,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": null,
+      "llm_provider": null,
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [],
+        [
+          {
+            "json": {
+              "recent_messages": [],
+              "user_profile": {},
+              "user_preferences": {},
+              "entities_of_interest": {},
+              "last_intent": "UNKNOWN",
+              "conversation_id": "trace-1770728480585-y0k96j",
+              "session_id": "trace-1770728480585-y0k96j",
+              "trace_id": "trace-1770728480585-y0k96j",
+              "query": "What is the capital of Japan?",
+              "query_hash": "d5fe4ac7a938bed7",
+              "redis_available": true,
+              "postgres_available": false,
+              "context_status": "NEW",
+              "compressed_history": [],
+              "compressed_summary": "",
+              "full_history_length": 0,
+              "intention_shift": false,
+              "tokens_saved": 0,
+              "guardrail_passed": true,
+              "guardrail_blocked": false,
+              "block_reason": null,
+              "injection_detected": false,
+              "jailbreak_detected": false,
+              "sensitive_detected": false,
+              "query_route": "cache_check",
+              "is_conversational": false,
+              "should_check_cache": true,
+              "needs_retrieval": true,
+              "retrieval_reason": "DEFAULT"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ],
+        [],
+        []
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "🔎 Cache Semantic Search",
+      "duration_ms": 45,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "recent_messages": [],
+              "user_profile": {},
+              "user_preferences": {},
+              "entities_of_interest": {},
+              "last_intent": "UNKNOWN",
+              "conversation_id": "trace-1770728480585-y0k96j",
+              "session_id": "trace-1770728480585-y0k96j",
+              "trace_id": "trace-1770728480585-y0k96j",
+              "query": "What is the capital of Japan?",
+              "query_hash": "d5fe4ac7a938bed7",
+              "redis_available": true,
+              "postgres_available": false,
+              "context_status": "NEW",
+              "compressed_history": [],
+              "compressed_summary": "",
+              "full_history_length": 0,
+              "intention_shift": false,
+              "tokens_saved": 0,
+              "guardrail_passed": true,
+              "guardrail_blocked": false,
+              "block_reason": null,
+              "injection_detected": false,
+              "jailbreak_detected": false,
+              "sensitive_detected": false,
+              "query_route": "cache_check",
+              "is_conversational": false,
+              "should_check_cache": true,
+              "needs_retrieval": true,
+              "retrieval_reason": "DEFAULT",
+              "cache_search_query": "d5fe4ac7a938bed7",
+              "semantic_search_enabled": true
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Redis: Cache + Generator",
+      "duration_ms": 169,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "propertyName": "{\"response\":\"Tokyo is the capital city of Japan.\\n\\n---\\n**Sources:**\\n[1] wikihop (100%)\\n[2] triviaqa (96%)\\n[3] musique (90%)\",\"timestamp\":1770726587251,\"query\":\"What is the capital of Japan?\"}"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Cache Parser",
+      "duration_ms": 43,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "cache_hit": false,
+              "cached_response": null,
+              "query": "What is the capital of Japan?",
+              "query_hash": "d5fe4ac7a938bed7",
+              "trace_id": "trace-1770728480585-y0k96j"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "IF: Cache Hit?",
+      "duration_ms": 0,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": null,
+      "llm_provider": null,
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [],
+        [
+          {
+            "json": {
+              "cache_hit": false,
+              "cached_response": null,
+              "query": "What is the capital of Japan?",
+              "query_hash": "d5fe4ac7a938bed7",
+              "trace_id": "trace-1770728480585-y0k96j"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "🧠 LLM 1: Intent Analyzer",
+      "duration_ms": 30219,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "id": "gen-1770728481-XkMHhF2DwXcoPDpviaUI",
+              "provider": "Arcee AI",
+              "model": "arcee-ai/trinity-large-preview:free",
+              "object": "chat.completion",
+              "created": 1770728481,
+              "choices": [
+                {
+                  "logprobs": null,
+                  "finish_reason": "stop",
+                  "native_finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "role": "assistant",
+                    "content": "{\n  \"reasoning\": \"This is a simple factual lookup question asking for the capital of Japan. It requires a single direct answer without any multi-hop reasoning or quantitative analysis. The answer is a straightforward fact that can be retrieved from standard document retrieval.\",\n  \"intents\": [\n    {\n      \"id\": \"intent-1\",\n      \"description\": \"Find the capital city of Japan\",\n      \"type\": \"FACTUAL\",\n      \"suggested_rag\": \"STANDARD\",\n      \"priority\": 1,\n      \"depends_on\": [],\n      \"can_parallelize_with\": []\n    }\n  ],\n  \"execution_order\": [\"intent-1\"],\n  \"has_parallel_intents\": false,\n  \"complexity\": \"SIMPLE\"\n}",
+                    "refusal": null,
+                    "reasoning": null
+                  }
+                }
+              ],
+              "system_fingerprint": null,
+              "usage": {
+                "prompt_tokens": 783,
+                "completion_tokens": 150,
+                "total_tokens": 933,
+                "cost": 0,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "audio_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0,
+                  "upstream_inference_prompt_cost": 0,
+                  "upstream_inference_completions_cost": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Intent Parser V9",
+      "duration_ms": 50,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "trace_id": "trace-1770728480585-y0k96j",
+              "original_query": "What is the capital of Japan?",
+              "intents": [
+                {
+                  "id": "intent-1",
+                  "description": "Find the capital city of Japan",
+                  "type": "FACTUAL",
+                  "suggested_rag": "STANDARD",
+                  "priority": 1,
+                  "depends_on": [],
+                  "can_parallelize_with": []
+                }
+              ],
+              "execution_order": [
+                "intent-1"
+              ],
+              "reasoning": "This is a simple factual lookup question asking for the capital of Japan. It requires a single direct answer without any multi-hop reasoning or quantitative analysis. The answer is a straightforward fact that can be retrieved from standard document retrieval.",
+              "complexity": "SIMPLE",
+              "has_parallel_intents": false,
+              "is_chat": false,
+              "is_webhook": true,
+              "conversation_id": "trace-1770728480585-y0k96j"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Postgres: Init Tasks Table",
+      "duration_ms": 193,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "success": true
+            },
+            "pairedItem": [
+              {
+                "item": 0
+              }
+            ]
+          }
+        ],
+        []
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "📝 Format & Dispatch (Plan→DB)",
+      "duration_ms": 52,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "trace_id": "trace-1770728480585-y0k96j",
+              "tasks_to_insert": [
+                {
+                  "trace_id": "trace-1770728480585-y0k96j",
+                  "task_id": 1,
+                  "intent_id": "intent-1",
+                  "status": "pending",
+                  "rag_called": "STANDARD",
+                  "attempt": 1,
+                  "query": "Find the capital city of Japan",
+                  "response": null,
+                  "error_message": null,
+                  "sources": null,
+                  "confidence": 0.8
+                }
+              ],
+              "total_tasks": 1,
+              "execution_mode": "SEQUENTIAL",
+              "parallel_groups": [],
+              "_debug": {
+                "parser_success": false,
+                "fallback_used": false,
+                "original_task_count": 1
+              }
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Postgres: Insert Tasks",
+      "duration_ms": 28,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "success": true
+            },
+            "pairedItem": [
+              {
+                "item": 0
+              }
+            ]
+          }
+        ],
+        []
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Postgres : Get Current Tasks",
+      "duration_ms": 186,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "task_id": 1,
+              "intent_id": "intent-1",
+              "status": "pending",
+              "rag_called": "STANDARD",
+              "attempt": 1,
+              "query": "Find the capital city of Japan",
+              "response": null,
+              "confidence": 0.8
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "⚙️ Execution Engine V10",
+      "duration_ms": 68,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "all_complete": false,
+              "trace_id": "trace-1770728480585-y0k96j",
+              "is_chat": false,
+              "original_query": "What is the capital of Japan?",
+              "current_task": {
+                "task_id": 1,
+                "intent_id": "intent-1",
+                "status": "pending",
+                "rag_called": "STANDARD",
+                "attempt": 1,
+                "query": "Find the capital city of Japan",
+                "response": null,
+                "confidence": 0.8,
+                "trace_id": "trace-1770728480585-y0k96j"
+              },
+              "route_to": "STANDARD",
+              "task_id": 1,
+              "task_query": "Find the capital city of Japan",
+              "attempt": 1,
+              "is_fallback": false,
+              "iteration": 1
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "If",
+      "duration_ms": 1,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": null,
+      "llm_provider": null,
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [],
+        [
+          {
+            "json": {
+              "all_complete": false,
+              "trace_id": "trace-1770728480585-y0k96j",
+              "is_chat": false,
+              "original_query": "What is the capital of Japan?",
+              "current_task": {
+                "task_id": 1,
+                "intent_id": "intent-1",
+                "status": "pending",
+                "rag_called": "STANDARD",
+                "attempt": 1,
+                "query": "Find the capital city of Japan",
+                "response": null,
+                "confidence": 0.8,
+                "trace_id": "trace-1770728480585-y0k96j"
+              },
+              "route_to": "STANDARD",
+              "task_id": 1,
+              "task_query": "Find the capital city of Japan",
+              "attempt": 1,
+              "is_fallback": false,
+              "iteration": 1
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "🔀 Dynamic Switch V10",
+      "duration_ms": 1,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "all_complete": false,
+              "trace_id": "trace-1770728480585-y0k96j",
+              "is_chat": false,
+              "original_query": "What is the capital of Japan?",
+              "current_task": {
+                "task_id": 1,
+                "intent_id": "intent-1",
+                "status": "pending",
+                "rag_called": "STANDARD",
+                "attempt": 1,
+                "query": "Find the capital city of Japan",
+                "response": null,
+                "confidence": 0.8,
+                "trace_id": "trace-1770728480585-y0k96j"
+              },
+              "route_to": "STANDARD",
+              "task_id": 1,
+              "task_query": "Find the capital city of Japan",
+              "attempt": 1,
+              "is_fallback": false,
+              "iteration": 1
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ],
+        [],
+        []
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Invoke WF5: Standard",
+      "duration_ms": 29470,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "response": "Tokyo is the capital city of Japan.",
+              "trace_id": "trace-1770728480585-y0k96j",
+              "sources": [
+                {
+                  "id": "wikihop-00015-7238f5cc-chunk-0",
+                  "content": "WikiHop Query: capital :: Japan\nAnswer: Tokyo\nSupporting facts: Japan is an island country | Tokyo is the capital and largest city",
+                  "source": "wikihop",
+                  "rrf_score": 1,
+                  "raw_rrf_score": 0.041,
+                  "pinecone_score": 0.653954923,
+                  "sources_used": [
+                    "hyde",
+                    "original"
+                  ],
+                  "combined_score": 1,
+                  "rerank_score": null
+                },
+                {
+                  "id": "trivia-00037-1561aa97-chunk-0",
+                  "content": "Trivia Question: What is the capital of South Korea?\nAnswer: Seoul",
+                  "source": "triviaqa",
+                  "rrf_score": 0.9497,
+                  "raw_rrf_score": 0.0396,
+                  "pinecone_score": 0.409712851,
+                  "sources_used": [
+                    "hyde",
+                    "original"
+                  ],
+                  "combined_score": 0.9497,
+                  "rerank_score": null
+                },
+                {
+                  "id": "trivia-00030-078209fd-chunk-0",
+                  "content": "Trivia Question: In which city were the 2020 Summer Olympics held?\nAnswer: Tokyo",
+                  "source": "triviaqa",
+                  "rrf_score": 0.9202,
+                  "raw_rrf_score": 0.0387,
+                  "pinecone_score": 0.432175457,
+                  "sources_used": [
+                    "hyde",
+                    "original"
+                  ],
+                  "combined_score": 0.9202,
+                  "rerank_score": null
+                },
+                {
+                  "id": "musique-00009-8741b3b0-chunk-0",
+                  "content": "Multi-hop Question: What is the population of the city where the Olympics were held in 2020?\nAnswer: About 14 million (Tokyo)\nReasoning chain: 2020 Olympics were in Tokyo → Tokyo has about 14 million people",
+                  "source": "musique",
+                  "rrf_score": 0.897,
+                  "raw_rrf_score": 0.0381,
+                  "pinecone_score": 0.45755142,
+                  "sources_used": [
+                    "hyde",
+                    "original"
+                  ],
+                  "combined_score": 0.897,
+                  "rerank_score": null
+                },
+                {
+                  "id": "wikihop-00023-f5698b70-chunk-0",
+                  "content": "WikiHop Query: capital :: Italy\nAnswer: Rome\nSupporting facts: Italy is a country in Southern Europe | Rome is the capital and largest city",
+                  "source": "wikihop",
+                  "rrf_score": 0.8714,
+                  "raw_rrf_score": 0.0374,
+                  "pinecone_score": 0.405991197,
+                  "sources_used": [
+                    "hyde",
+                    "original"
+                  ],
+                  "combined_score": 0.8714,
+                  "rerank_score": null
+                }
+              ],
+              "model": "meta-llama/llama-3.3-70b-instruct:free",
+              "embedding_fallback": false,
+              "engine": "STANDARD",
+              "timestamp": "2026-02-10T13:02:21.649Z"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "📥 Task Result Handler",
+      "duration_ms": 54,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "task": {
+                "task_id": 1,
+                "intent_id": "intent-1",
+                "status": "pending",
+                "rag_called": "STANDARD",
+                "attempt": 1,
+                "query": "Find the capital city of Japan",
+                "response": null,
+                "confidence": 0.8,
+                "trace_id": "trace-1770728480585-y0k96j"
+              },
+              "success": true,
+              "response": "Tokyo is the capital city of Japan.",
+              "sources": [
+                {
+                  "source": "wikihop",
+                  "content": "WikiHop Query: capital :: Japan\nAnswer: Tokyo\nSupporting facts: Japan is an island country | Tokyo is the capital and largest city",
+                  "score": 1
+                },
+                {
+                  "source": "triviaqa",
+                  "content": "Trivia Question: What is the capital of South Korea?\nAnswer: Seoul",
+                  "score": 0.9497
+                },
+                {
+                  "source": "triviaqa",
+                  "content": "Trivia Question: In which city were the 2020 Summer Olympics held?\nAnswer: Tokyo",
+                  "score": 0.9202
+                },
+                {
+                  "source": "musique",
+                  "content": "Multi-hop Question: What is the population of the city where the Olympics were held in 2020?\nAnswer: About 14 million (Tokyo)\nReasoning chain: 2020 Olympics were in Tokyo → Tokyo has about 14 million people",
+                  "score": 0.897
+                },
+                {
+                  "source": "wikihop",
+                  "content": "WikiHop Query: capital :: Italy\nAnswer: Rome\nSupporting facts: Italy is a country in Southern Europe | Rome is the capital and largest city",
+                  "score": 0.8714
+                }
+              ],
+              "confidence": 0.5,
+              "error_message": null,
+              "trace_id": "trace-1770728480585-y0k96j",
+              "format_detected": "standard_rag",
+              "raw_result": {
+                "response": "Tokyo is the capital city of Japan.",
+                "trace_id": "trace-1770728480585-y0k96j",
+                "sources": [
+                  {
+                    "id": "wikihop-00015-7238f5cc-chunk-0",
+                    "content": "WikiHop Query: capital :: Japan\nAnswer: Tokyo\nSupporting facts: Japan is an island country | Tokyo is the capital and largest city",
+                    "source": "wikihop",
+                    "rrf_score": 1,
+                    "raw_rrf_score": 0.041,
+                    "pinecone_score": 0.653954923,
+                    "sources_used": [
+                      "hyde",
+                      "original"
+                    ],
+                    "combined_score": 1,
+                    "rerank_score": null
+                  },
+                  {
+                    "id": "trivia-00037-1561aa97-chunk-0",
+                    "content": "Trivia Question: What is the capital of South Korea?\nAnswer: Seoul",
+                    "source": "triviaqa",
+                    "rrf_score": 0.9497,
+                    "raw_rrf_score": 0.0396,
+                    "pinecone_score": 0.409712851,
+                    "sources_used": [
+                      "hyde",
+                      "original"
+                    ],
+                    "combined_score": 0.9497,
+                    "rerank_score": null
+                  },
+                  {
+                    "id": "trivia-00030-078209fd-chunk-0",
+                    "content": "Trivia Question: In which city were the 2020 Summer Olympics held?\nAnswer: Tokyo",
+                    "source": "triviaqa",
+                    "rrf_score": 0.9202,
+                    "raw_rrf_score": 0.0387,
+                    "pinecone_score": 0.432175457,
+                    "sources_used": [
+                      "hyde",
+                      "original"
+                    ],
+                    "combined_score": 0.9202,
+                    "rerank_score": null
+                  },
+                  {
+                    "id": "musique-00009-8741b3b0-chunk-0",
+                    "content": "Multi-hop Question: What is the population of the city where the Olympics were held in 2020?\nAnswer: About 14 million (Tokyo)\nReasoning chain: 2020 Olympics were in Tokyo → Tokyo has about 14 million people",
+                    "source": "musique",
+                    "rrf_score": 0.897,
+                    "raw_rrf_score": 0.0381,
+                    "pinecone_score": 0.45755142,
+                    "sources_used": [
+                      "hyde",
+                      "original"
+                    ],
+                    "combined_score": 0.897,
+                    "rerank_score": null
+                  },
+                  {
+                    "id": "wikihop-00023-f5698b70-chunk-0",
+                    "content": "WikiHop Query: capital :: Italy\nAnswer: Rome\nSupporting facts: Italy is a country in Southern Europe | Rome is the capital and largest city",
+                    "source": "wikihop",
+                    "rrf_score": 0.8714,
+                    "raw_rrf_score": 0.0374,
+                    "pinecone_score": 0.405991197,
+                    "sources_used": [
+                      "hyde",
+                      "original"
+                    ],
+                    "combined_score": 0.8714,
+                    "rerank_score": null
+                  }
+                ],
+                "model": "meta-llama/llama-3.3-70b-instruct:free",
+                "embedding_fallback": false,
+                "engine": "STANDARD",
+                "timestamp": "2026-02-10T13:02:21.649Z"
+              }
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Postgres: Update Task",
+      "duration_ms": 196,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "success": true
+            },
+            "pairedItem": [
+              {
+                "item": 0
+              }
+            ]
+          }
+        ],
+        []
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "🔄 Fallback Monitor V10",
+      "duration_ms": 43,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "fallback_needed": false,
+              "task_id": 1,
+              "current_rag": "STANDARD",
+              "response": "Tokyo is the capital city of Japan.",
+              "confidence": 0.5,
+              "trace_id": "trace-1770728480585-y0k96j",
+              "task": {
+                "task_id": 1,
+                "intent_id": "intent-1",
+                "status": "pending",
+                "rag_called": "STANDARD",
+                "attempt": 1,
+                "query": "Find the capital city of Japan",
+                "response": null,
+                "confidence": 0.8,
+                "trace_id": "trace-1770728480585-y0k96j"
+              }
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "IF: Fallback Needed?",
+      "duration_ms": 1,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": null,
+      "llm_provider": null,
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [],
+        [
+          {
+            "json": {
+              "fallback_needed": false,
+              "task_id": 1,
+              "current_rag": "STANDARD",
+              "response": "Tokyo is the capital city of Japan.",
+              "confidence": 0.5,
+              "trace_id": "trace-1770728480585-y0k96j",
+              "task": {
+                "task_id": 1,
+                "intent_id": "intent-1",
+                "status": "pending",
+                "rag_called": "STANDARD",
+                "attempt": 1,
+                "query": "Find the capital city of Japan",
+                "response": null,
+                "confidence": 0.8,
+                "trace_id": "trace-1770728480585-y0k96j"
+              }
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "📊 Task Status Aggregator",
+      "duration_ms": 69,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "trace_id": "trace-1770728480585-y0k96j",
+              "completed_tasks": [
+                {
+                  "task_id": 1,
+                  "rag_called": "STANDARD",
+                  "response": "Tokyo is the capital city of Japan.",
+                  "sources": [
+                    {
+                      "source": "wikihop",
+                      "content": "WikiHop Query: capital :: Japan\nAnswer: Tokyo\nSupporting facts: Japan is an island country | Tokyo is the capital and largest city",
+                      "score": 1
+                    },
+                    {
+                      "source": "triviaqa",
+                      "content": "Trivia Question: What is the capital of South Korea?\nAnswer: Seoul",
+                      "score": 0.9497
+                    },
+                    {
+                      "source": "triviaqa",
+                      "content": "Trivia Question: In which city were the 2020 Summer Olympics held?\nAnswer: Tokyo",
+                      "score": 0.9202
+                    },
+                    {
+                      "source": "musique",
+                      "content": "Multi-hop Question: What is the population of the city where the Olympics were held in 2020?\nAnswer: About 14 million (Tokyo)\nReasoning chain: 2020 Olympics were in Tokyo → Tokyo has about 14 million people",
+                      "score": 0.897
+                    },
+                    {
+                      "source": "wikihop",
+                      "content": "WikiHop Query: capital :: Italy\nAnswer: Rome\nSupporting facts: Italy is a country in Southern Europe | Rome is the capital and largest city",
+                      "score": 0.8714
+                    }
+                  ],
+                  "confidence": 0.5
+                }
+              ],
+              "pending_tasks": [],
+              "error_tasks": [],
+              "accumulated_results": [
+                {
+                  "task_id": 1,
+                  "rag_called": "STANDARD",
+                  "response": "Tokyo is the capital city of Japan.",
+                  "sources": [
+                    {
+                      "source": "wikihop",
+                      "content": "WikiHop Query: capital :: Japan\nAnswer: Tokyo\nSupporting facts: Japan is an island country | Tokyo is the capital and largest city",
+                      "score": 1
+                    },
+                    {
+                      "source": "triviaqa",
+                      "content": "Trivia Question: What is the capital of South Korea?\nAnswer: Seoul",
+                      "score": 0.9497
+                    },
+                    {
+                      "source": "triviaqa",
+                      "content": "Trivia Question: In which city were the 2020 Summer Olympics held?\nAnswer: Tokyo",
+                      "score": 0.9202
+                    },
+                    {
+                      "source": "musique",
+                      "content": "Multi-hop Question: What is the population of the city where the Olympics were held in 2020?\nAnswer: About 14 million (Tokyo)\nReasoning chain: 2020 Olympics were in Tokyo → Tokyo has about 14 million people",
+                      "score": 0.897
+                    },
+                    {
+                      "source": "wikihop",
+                      "content": "WikiHop Query: capital :: Italy\nAnswer: Rome\nSupporting facts: Italy is a country in Southern Europe | Rome is the capital and largest city",
+                      "score": 0.8714
+                    }
+                  ],
+                  "confidence": 0.5
+                }
+              ],
+              "all_responses": [
+                {
+                  "task_id": 1,
+                  "rag": "STANDARD",
+                  "response": "Tokyo is the capital city of Japan.",
+                  "confidence": 0.5
+                }
+              ],
+              "total_tasks": 1,
+              "completion_rate": 1,
+              "average_confidence": 0.5,
+              "has_failures": false,
+              "has_pending": false,
+              "is_complete": true,
+              "summary": {
+                "completed": 1,
+                "pending": 0,
+                "errors": 0,
+                "total": 1,
+                "completion_percentage": 100
+              },
+              "_debug": {
+                "results_key": "results_trace-1770728480585-y0k96j",
+                "staticData_has_key": true,
+                "responses_accumulated": 1
+              }
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Response Builder V9",
+      "duration_ms": 56,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "final_response": "Tokyo is the capital city of Japan.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] triviaqa (95%)\n[3] musique (90%)",
+              "chat_message": "Tokyo is the capital city of Japan.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] triviaqa (95%)\n[3] musique (90%)",
+              "confidence": 0.5,
+              "sources": [
+                {
+                  "source": "wikihop",
+                  "content": "WikiHop Query: capital :: Japan\nAnswer: Tokyo\nSupporting facts: Japan is an island country | Tokyo is the capital and largest city",
+                  "score": 1
+                },
+                {
+                  "source": "triviaqa",
+                  "content": "Trivia Question: What is the capital of South Korea?\nAnswer: Seoul",
+                  "score": 0.9497
+                },
+                {
+                  "source": "musique",
+                  "content": "Multi-hop Question: What is the population of the city where the Olympics were held in 2020?\nAnswer: About 14 million (Tokyo)\nReasoning chain: 2020 Olympics were in Tokyo → Tokyo has about 14 million people",
+                  "score": 0.897
+                }
+              ],
+              "sources_count": 3,
+              "trace_id": "trace-1770728480585-y0k96j",
+              "is_chat": false,
+              "original_query": "What is the capital of Japan?",
+              "tasks_completed": 1,
+              "responses_merged": 1,
+              "_debug": {
+                "input_had_final_response": false,
+                "input_completed_count": 1,
+                "input_responses_count": 1
+              }
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Execution Summary (orchestrator)",
+      "duration_ms": 40,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "timestamp": "2026-02-10T13:02:22.158Z",
+              "pipeline": "orchestrator",
+              "question_id": "trace-1770728480585-y0k96j",
+              "query": "What is the capital of Japan?",
+              "success": true,
+              "response_length": 109,
+              "confidence": 0.5,
+              "latency_ms": 0,
+              "engine": "orchestrator",
+              "n8n_context": {
+                "workflow_id": "ALd4gOEqiKL5KR1p",
+                "execution_id": "19323"
+              }
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Redis: Store Conv V8",
+      "duration_ms": 129,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "final_response": "Tokyo is the capital city of Japan.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] triviaqa (95%)\n[3] musique (90%)",
+              "chat_message": "Tokyo is the capital city of Japan.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] triviaqa (95%)\n[3] musique (90%)",
+              "confidence": 0.5,
+              "sources": [
+                {
+                  "source": "wikihop",
+                  "content": "WikiHop Query: capital :: Japan\nAnswer: Tokyo\nSupporting facts: Japan is an island country | Tokyo is the capital and largest city",
+                  "score": 1
+                },
+                {
+                  "source": "triviaqa",
+                  "content": "Trivia Question: What is the capital of South Korea?\nAnswer: Seoul",
+                  "score": 0.9497
+                },
+                {
+                  "source": "musique",
+                  "content": "Multi-hop Question: What is the population of the city where the Olympics were held in 2020?\nAnswer: About 14 million (Tokyo)\nReasoning chain: 2020 Olympics were in Tokyo → Tokyo has about 14 million people",
+                  "score": 0.897
+                }
+              ],
+              "sources_count": 3,
+              "trace_id": "trace-1770728480585-y0k96j",
+              "is_chat": false,
+              "original_query": "What is the capital of Japan?",
+              "tasks_completed": 1,
+              "responses_merged": 1,
+              "_debug": {
+                "input_had_final_response": false,
+                "input_completed_count": 1,
+                "input_responses_count": 1
+              }
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Postgres: Update Context V8",
+      "duration_ms": 27,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "success": true
+            },
+            "pairedItem": [
+              {
+                "item": 0
+              }
+            ]
+          }
+        ],
+        []
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Store RLHF Data V8",
+      "duration_ms": 58,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "success": true
+            },
+            "pairedItem": [
+              {
+                "item": 0
+              }
+            ]
+          }
+        ],
+        []
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "💾 Cache Storage",
+      "duration_ms": 44,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "cache_key": "faq:d5fe4ac7a938bed7",
+              "cache_value": "{\"response\":\"Tokyo is the capital city of Japan.\\n\\n---\\n**Sources:**\\n[1] wikihop (100%)\\n[2] triviaqa (95%)\\n[3] musique (90%)\",\"timestamp\":1770728542417,\"query\":\"What is the capital of Japan?\"}",
+              "ttl": 3600,
+              "trace_id": "trace-1770728480585-y0k96j"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Redis: Set Cache",
+      "duration_ms": 155,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "cache_key": "faq:d5fe4ac7a938bed7",
+              "cache_value": "{\"response\":\"Tokyo is the capital city of Japan.\\n\\n---\\n**Sources:**\\n[1] wikihop (100%)\\n[2] triviaqa (95%)\\n[3] musique (90%)\",\"timestamp\":1770728542417,\"query\":\"What is the capital of Japan?\"}",
+              "ttl": 3600,
+              "trace_id": "trace-1770728480585-y0k96j"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Merge",
+      "duration_ms": 1,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 4,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "success": true
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          },
+          {
+            "json": {
+              "success": true
+            },
+            "pairedItem": {
+              "item": 0,
+              "input": 1
+            }
+          },
+          {
+            "json": {
+              "cache_key": "faq:d5fe4ac7a938bed7",
+              "cache_value": "{\"response\":\"Tokyo is the capital city of Japan.\\n\\n---\\n**Sources:**\\n[1] wikihop (100%)\\n[2] triviaqa (95%)\\n[3] musique (90%)\",\"timestamp\":1770728542417,\"query\":\"What is the capital of Japan?\"}",
+              "ttl": 3600,
+              "trace_id": "trace-1770728480585-y0k96j"
+            },
+            "pairedItem": {
+              "item": 0,
+              "input": 2
+            }
+          },
+          {
+            "json": {
+              "final_response": "Tokyo is the capital city of Japan.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] triviaqa (95%)\n[3] musique (90%)",
+              "chat_message": "Tokyo is the capital city of Japan.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] triviaqa (95%)\n[3] musique (90%)",
+              "confidence": 0.5,
+              "sources": [
+                {
+                  "source": "wikihop",
+                  "content": "WikiHop Query: capital :: Japan\nAnswer: Tokyo\nSupporting facts: Japan is an island country | Tokyo is the capital and largest city",
+                  "score": 1
+                },
+                {
+                  "source": "triviaqa",
+                  "content": "Trivia Question: What is the capital of South Korea?\nAnswer: Seoul",
+                  "score": 0.9497
+                },
+                {
+                  "source": "musique",
+                  "content": "Multi-hop Question: What is the population of the city where the Olympics were held in 2020?\nAnswer: About 14 million (Tokyo)\nReasoning chain: 2020 Olympics were in Tokyo → Tokyo has about 14 million people",
+                  "score": 0.897
+                }
+              ],
+              "sources_count": 3,
+              "trace_id": "trace-1770728480585-y0k96j",
+              "is_chat": false,
+              "original_query": "What is the capital of Japan?",
+              "tasks_completed": 1,
+              "responses_merged": 1,
+              "_debug": {
+                "input_had_final_response": false,
+                "input_completed_count": 1,
+                "input_responses_count": 1
+              }
+            },
+            "pairedItem": {
+              "item": 0,
+              "input": 3
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Output Router (Final)",
+      "duration_ms": 15,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": null,
+      "llm_provider": null,
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 4,
+      "full_input_data": null,
+      "full_output_data": [
+        [],
+        [
+          {
+            "json": {
+              "success": true
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          },
+          {
+            "json": {
+              "success": true
+            },
+            "pairedItem": {
+              "item": 1
+            }
+          },
+          {
+            "json": {
+              "cache_key": "faq:d5fe4ac7a938bed7",
+              "cache_value": "{\"response\":\"Tokyo is the capital city of Japan.\\n\\n---\\n**Sources:**\\n[1] wikihop (100%)\\n[2] triviaqa (95%)\\n[3] musique (90%)\",\"timestamp\":1770728542417,\"query\":\"What is the capital of Japan?\"}",
+              "ttl": 3600,
+              "trace_id": "trace-1770728480585-y0k96j"
+            },
+            "pairedItem": {
+              "item": 2
+            }
+          },
+          {
+            "json": {
+              "final_response": "Tokyo is the capital city of Japan.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] triviaqa (95%)\n[3] musique (90%)",
+              "chat_message": "Tokyo is the capital city of Japan.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] triviaqa (95%)\n[3] musique (90%)",
+              "confidence": 0.5,
+              "sources": [
+                {
+                  "source": "wikihop",
+                  "content": "WikiHop Query: capital :: Japan\nAnswer: Tokyo\nSupporting facts: Japan is an island country | Tokyo is the capital and largest city",
+                  "score": 1
+                },
+                {
+                  "source": "triviaqa",
+                  "content": "Trivia Question: What is the capital of South Korea?\nAnswer: Seoul",
+                  "score": 0.9497
+                },
+                {
+                  "source": "musique",
+                  "content": "Multi-hop Question: What is the population of the city where the Olympics were held in 2020?\nAnswer: About 14 million (Tokyo)\nReasoning chain: 2020 Olympics were in Tokyo → Tokyo has about 14 million people",
+                  "score": 0.897
+                }
+              ],
+              "sources_count": 3,
+              "trace_id": "trace-1770728480585-y0k96j",
+              "is_chat": false,
+              "original_query": "What is the capital of Japan?",
+              "tasks_completed": 1,
+              "responses_merged": 1,
+              "_debug": {
+                "input_had_final_response": false,
+                "input_completed_count": 1,
+                "input_responses_count": 1
+              }
+            },
+            "pairedItem": {
+              "item": 3
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "Return Response V8",
+      "duration_ms": 25,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 4,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "success": true
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          },
+          {
+            "json": {
+              "success": true
+            },
+            "pairedItem": {
+              "item": 1
+            }
+          },
+          {
+            "json": {
+              "cache_key": "faq:d5fe4ac7a938bed7",
+              "cache_value": "{\"response\":\"Tokyo is the capital city of Japan.\\n\\n---\\n**Sources:**\\n[1] wikihop (100%)\\n[2] triviaqa (95%)\\n[3] musique (90%)\",\"timestamp\":1770728542417,\"query\":\"What is the capital of Japan?\"}",
+              "ttl": 3600,
+              "trace_id": "trace-1770728480585-y0k96j"
+            },
+            "pairedItem": {
+              "item": 2
+            }
+          },
+          {
+            "json": {
+              "final_response": "Tokyo is the capital city of Japan.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] triviaqa (95%)\n[3] musique (90%)",
+              "chat_message": "Tokyo is the capital city of Japan.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] triviaqa (95%)\n[3] musique (90%)",
+              "confidence": 0.5,
+              "sources": [
+                {
+                  "source": "wikihop",
+                  "content": "WikiHop Query: capital :: Japan\nAnswer: Tokyo\nSupporting facts: Japan is an island country | Tokyo is the capital and largest city",
+                  "score": 1
+                },
+                {
+                  "source": "triviaqa",
+                  "content": "Trivia Question: What is the capital of South Korea?\nAnswer: Seoul",
+                  "score": 0.9497
+                },
+                {
+                  "source": "musique",
+                  "content": "Multi-hop Question: What is the population of the city where the Olympics were held in 2020?\nAnswer: About 14 million (Tokyo)\nReasoning chain: 2020 Olympics were in Tokyo → Tokyo has about 14 million people",
+                  "score": 0.897
+                }
+              ],
+              "sources_count": 3,
+              "trace_id": "trace-1770728480585-y0k96j",
+              "is_chat": false,
+              "original_query": "What is the capital of Japan?",
+              "tasks_completed": 1,
+              "responses_merged": 1,
+              "_debug": {
+                "input_had_final_response": false,
+                "input_completed_count": 1,
+                "input_responses_count": 1
+              }
+            },
+            "pairedItem": {
+              "item": 3
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    }
+  ],
+  "trigger_query": "N/A",
+  "node_count": 43
+}

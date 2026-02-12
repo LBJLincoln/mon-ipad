@@ -1,0 +1,200 @@
+{
+  "execution_id": "19479",
+  "status": "canceled",
+  "started_at": "2026-02-12T11:22:36.452Z",
+  "stopped_at": "2026-02-12T11:24:06.480Z",
+  "duration_ms": 90028,
+  "workflow_name": "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED",
+  "nodes": [
+    {
+      "name": "Webhook",
+      "duration_ms": 0,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "headers": {
+                "host": "amoret.app.n8n.cloud",
+                "user-agent": "Python-urllib/3.11",
+                "content-length": "143",
+                "accept-encoding": "gzip, br",
+                "cdn-loop": "cloudflare; loops=1; subreqs=1",
+                "cf-connecting-ip": "34.136.180.66",
+                "cf-ew-via": "15",
+                "cf-ipcountry": "US",
+                "cf-ray": "9ccbb588d18850d3-ORD",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "cf-worker": "n8n.cloud",
+                "content-type": "application/json",
+                "x-forwarded-for": "34.136.180.66, 172.70.126.79",
+                "x-forwarded-host": "amoret.app.n8n.cloud",
+                "x-forwarded-port": "443",
+                "x-forwarded-proto": "https",
+                "x-forwarded-server": "traefik-prod-users-gwc-3-6db8488cf7-vdndp",
+                "x-is-trusted": "yes",
+                "x-real-ip": "34.136.180.66"
+              },
+              "params": {},
+              "query": {},
+              "body": {
+                "query": "What did Marie Curie win Nobel Prizes for?",
+                "tenant_id": "benchmark",
+                "top_k": 10,
+                "include_sources": true,
+                "benchmark_mode": true
+              },
+              "webhookUrl": "https://amoret.app.n8n.cloud/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+              "executionMode": "production"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "OTEL Init",
+      "duration_ms": 60003,
+      "status": "error",
+      "error": "Task request timed out after 60 seconds",
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "headers": {
+                "host": "amoret.app.n8n.cloud",
+                "user-agent": "Python-urllib/3.11",
+                "content-length": "143",
+                "accept-encoding": "gzip, br",
+                "cdn-loop": "cloudflare; loops=1; subreqs=1",
+                "cf-connecting-ip": "34.136.180.66",
+                "cf-ew-via": "15",
+                "cf-ipcountry": "US",
+                "cf-ray": "9ccbb588d18850d3-ORD",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "cf-worker": "n8n.cloud",
+                "content-type": "application/json",
+                "x-forwarded-for": "34.136.180.66, 172.70.126.79",
+                "x-forwarded-host": "amoret.app.n8n.cloud",
+                "x-forwarded-port": "443",
+                "x-forwarded-proto": "https",
+                "x-forwarded-server": "traefik-prod-users-gwc-3-6db8488cf7-vdndp",
+                "x-is-trusted": "yes",
+                "x-real-ip": "34.136.180.66"
+              },
+              "params": {},
+              "query": {},
+              "body": {
+                "query": "What did Marie Curie win Nobel Prizes for?",
+                "tenant_id": "benchmark",
+                "top_k": 10,
+                "include_sources": true,
+                "benchmark_mode": true
+              },
+              "webhookUrl": "https://amoret.app.n8n.cloud/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+              "executionMode": "production"
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    },
+    {
+      "name": "WF3: HyDE & Entity Extraction",
+      "duration_ms": 11529,
+      "status": "success",
+      "error": null,
+      "llm_output": null,
+      "llm_tokens": null,
+      "llm_model": "",
+      "llm_provider": "",
+      "routing_flags": {},
+      "items_in": 0,
+      "items_out": 1,
+      "full_input_data": null,
+      "full_output_data": [
+        [
+          {
+            "json": {
+              "id": "gen-1770895416-ODupsSnqcYoDygkFyIZ7",
+              "provider": "Arcee AI",
+              "model": "arcee-ai/trinity-large-preview:free",
+              "object": "chat.completion",
+              "created": 1770895416,
+              "choices": [
+                {
+                  "logprobs": null,
+                  "finish_reason": "stop",
+                  "native_finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "role": "assistant",
+                    "content": "The process of implementing the new ERP system at Acme Corporation was a complex and multifaceted undertaking that required careful planning and execution. The project began with a thorough analysis of the company's existing business processes and systems, conducted by a team of consultants from Deloitte. This analysis revealed several areas where the current systems were inefficient or outdated, particularly in inventory management and financial reporting.\n\nBased on these findings, the decision was made to implement SAP S/4HANA, a comprehensive ERP solution that would integrate all of Acme's core business functions. The implementation process was divided into several phases:\n\n1. Planning and Preparation (Months 1-3):\n   - Formation of a cross-functional project team\n   - Development of a detailed project plan and timeline\n   - Selection of key personnel for training as SAP super-users\n   - Creation of a data migration strategy\n\n2. System Design and Configuration (Months 4-6):\n   - Customization of SAP modules to fit Acme's specific needs\n   - Integration with existing legacy systems\n   - Development of interfaces for key business partners\n\n3. Testing and Training (Months 7-9):\n   - Rigorous testing of all system components\n   - Creation of comprehensive training materials\n   - Conduct of training sessions for all end-users\n\n4. Go-Live and Post-Implementation Support (Months 10-12):\n   - Phased rollout of the new system across different departments\n   - Close monitoring of system performance and user adoption\n   - Provision of ongoing support and troubleshooting\n\nThroughout the implementation, the project team faced several challenges, including data quality issues, resistance to change from some employees, and the complexity of integrating the new system with existing processes. However, through effective change management strategies and close collaboration between Acme's internal team and the Deloitte consultants, these challenges were successfully overcome.\n\nThe result was a fully integrated ERP system that streamlined Acme's operations, improved data accuracy, and provided real-time insights into the company's performance. The successful implementation of SAP S/4HANA positioned Acme Corporation for future growth and increased competitiveness in its industry.",
+                    "refusal": null,
+                    "reasoning": null
+                  }
+                }
+              ],
+              "system_fingerprint": null,
+              "usage": {
+                "prompt_tokens": 77,
+                "completion_tokens": 417,
+                "total_tokens": 494,
+                "cost": 0,
+                "is_byok": false,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "audio_tokens": 0
+                },
+                "cost_details": {
+                  "upstream_inference_cost": 0,
+                  "upstream_inference_prompt_cost": 0,
+                  "upstream_inference_completions_cost": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "audio_tokens": 0
+                }
+              }
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          }
+        ]
+      ],
+      "retrieval_count": null,
+      "active_branches": null,
+      "total_branches": null
+    }
+  ],
+  "trigger_query": "N/A",
+  "node_count": 3
+}

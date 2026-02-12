@@ -1,23 +1,23 @@
 {
-  "timestamp": "2026-02-12T11:19:49.010968Z",
+  "timestamp": "2026-02-12T11:16:12.870085Z",
   "pipeline": "standard",
   "stage": "manual-analysis",
   "label": "",
-  "questions_tested": 3,
-  "executions_analyzed": 3,
-  "total_issues": 33,
+  "questions_tested": 5,
+  "executions_analyzed": 5,
+  "total_issues": 55,
   "issues_by_severity": {
     "critical": 0,
-    "high": 33,
+    "high": 55,
     "medium": 0,
     "low": 0
   },
   "node_analysis": {
     "Webhook": {
       "name": "Webhook",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
-      "avg_duration_ms": 1,
+      "avg_duration_ms": 0,
       "total_duration_ms": 3,
       "is_llm": false,
       "is_retrieval": false,
@@ -28,10 +28,10 @@
     },
     "Init & ACL Pre-Filter V3.4": {
       "name": "Init & ACL Pre-Filter V3.4",
-      "executions": 3,
-      "errors": 3,
+      "executions": 5,
+      "errors": 5,
       "avg_duration_ms": 60002,
-      "total_duration_ms": 180006,
+      "total_duration_ms": 300010,
       "is_llm": false,
       "is_retrieval": false,
       "is_routing": false,
@@ -40,9 +40,9 @@
           "type": "VERY_SLOW_NODE",
           "severity": "high",
           "node": "Init & ACL Pre-Filter V3.4",
-          "detail": "Node took 60003ms (>15000ms threshold)",
+          "detail": "Node took 60002ms (>15000ms threshold)",
           "metric": {
-            "duration_ms": 60003
+            "duration_ms": 60002
           },
           "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
         },
@@ -59,10 +59,10 @@
     },
     "Needs Decomposition?": {
       "name": "Needs Decomposition?",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
       "avg_duration_ms": 1,
-      "total_duration_ms": 3,
+      "total_duration_ms": 6,
       "is_llm": false,
       "is_retrieval": false,
       "is_routing": true,
@@ -72,10 +72,10 @@
     },
     "Query Decomposer (V.3.4)": {
       "name": "Query Decomposer (V.3.4)",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
-      "avg_duration_ms": 173,
-      "total_duration_ms": 519,
+      "avg_duration_ms": 144,
+      "total_duration_ms": 723,
       "is_llm": true,
       "is_retrieval": true,
       "is_routing": false,
@@ -85,10 +85,10 @@
     },
     "Query Merger V3.4": {
       "name": "Query Merger V3.4",
-      "executions": 3,
-      "errors": 3,
+      "executions": 5,
+      "errors": 5,
       "avg_duration_ms": 60002,
-      "total_duration_ms": 180007,
+      "total_duration_ms": 300010,
       "is_llm": false,
       "is_retrieval": true,
       "is_routing": true,
@@ -97,9 +97,9 @@
           "type": "VERY_SLOW_NODE",
           "severity": "high",
           "node": "Query Merger V3.4",
-          "detail": "Node took 60003ms (>15000ms threshold)",
+          "detail": "Node took 60002ms (>15000ms threshold)",
           "metric": {
-            "duration_ms": 60003
+            "duration_ms": 60002
           },
           "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
         },
@@ -116,10 +116,10 @@
     },
     "HyDE Generator": {
       "name": "HyDE Generator",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
-      "avg_duration_ms": 172,
-      "total_duration_ms": 517,
+      "avg_duration_ms": 127,
+      "total_duration_ms": 639,
       "is_llm": true,
       "is_retrieval": false,
       "is_routing": false,
@@ -129,10 +129,10 @@
     },
     "HyDE Embedding": {
       "name": "HyDE Embedding",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
-      "avg_duration_ms": 175,
-      "total_duration_ms": 527,
+      "avg_duration_ms": 169,
+      "total_duration_ms": 845,
       "is_llm": true,
       "is_retrieval": true,
       "is_routing": false,
@@ -142,10 +142,10 @@
     },
     "HTTP Pinecone Query HyDE": {
       "name": "HTTP Pinecone Query HyDE",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
-      "avg_duration_ms": 442,
-      "total_duration_ms": 1326,
+      "avg_duration_ms": 420,
+      "total_duration_ms": 2102,
       "is_llm": true,
       "is_retrieval": true,
       "is_routing": false,
@@ -155,10 +155,10 @@
     },
     "BM25 Search Postgres": {
       "name": "BM25 Search Postgres",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
-      "avg_duration_ms": 199,
-      "total_duration_ms": 598,
+      "avg_duration_ms": 208,
+      "total_duration_ms": 1040,
       "is_llm": false,
       "is_retrieval": true,
       "is_routing": false,
@@ -176,10 +176,10 @@
     },
     "Original Embedding": {
       "name": "Original Embedding",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
-      "avg_duration_ms": 160,
-      "total_duration_ms": 481,
+      "avg_duration_ms": 188,
+      "total_duration_ms": 942,
       "is_llm": false,
       "is_retrieval": true,
       "is_routing": false,
@@ -189,10 +189,10 @@
     },
     "HTTP Pinecone Query Original": {
       "name": "HTTP Pinecone Query Original",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
-      "avg_duration_ms": 417,
-      "total_duration_ms": 1253,
+      "avg_duration_ms": 412,
+      "total_duration_ms": 2062,
       "is_llm": false,
       "is_retrieval": true,
       "is_routing": false,
@@ -202,10 +202,10 @@
     },
     "Wait All Branches": {
       "name": "Wait All Branches",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
       "avg_duration_ms": 2,
-      "total_duration_ms": 8,
+      "total_duration_ms": 12,
       "is_llm": false,
       "is_retrieval": false,
       "is_routing": true,
@@ -215,10 +215,10 @@
     },
     "RRF Merge & Rank V3.4": {
       "name": "RRF Merge & Rank V3.4",
-      "executions": 3,
-      "errors": 3,
+      "executions": 5,
+      "errors": 5,
       "avg_duration_ms": 60002,
-      "total_duration_ms": 180007,
+      "total_duration_ms": 300012,
       "is_llm": false,
       "is_retrieval": false,
       "is_routing": true,
@@ -246,10 +246,10 @@
     },
     "Cohere Reranker": {
       "name": "Cohere Reranker",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
-      "avg_duration_ms": 166,
-      "total_duration_ms": 500,
+      "avg_duration_ms": 171,
+      "total_duration_ms": 856,
       "is_llm": false,
       "is_retrieval": false,
       "is_routing": false,
@@ -259,10 +259,10 @@
     },
     "Rerank Merger": {
       "name": "Rerank Merger",
-      "executions": 3,
-      "errors": 3,
+      "executions": 5,
+      "errors": 5,
       "avg_duration_ms": 60002,
-      "total_duration_ms": 180007,
+      "total_duration_ms": 300014,
       "is_llm": false,
       "is_retrieval": false,
       "is_routing": true,
@@ -290,10 +290,10 @@
     },
     "Skip LLM?": {
       "name": "Skip LLM?",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
       "avg_duration_ms": 2,
-      "total_duration_ms": 6,
+      "total_duration_ms": 10,
       "is_llm": true,
       "is_retrieval": false,
       "is_routing": false,
@@ -303,23 +303,23 @@
     },
     "LLM Generation": {
       "name": "LLM Generation",
-      "executions": 3,
+      "executions": 5,
       "errors": 0,
-      "avg_duration_ms": 1855,
-      "total_duration_ms": 5565,
+      "avg_duration_ms": 1628,
+      "total_duration_ms": 8140,
       "is_llm": true,
       "is_retrieval": false,
       "is_routing": false,
       "issues": [],
-      "llm_avg_output_chars": 86,
-      "llm_avg_tokens": 13
+      "llm_avg_output_chars": 71,
+      "llm_avg_tokens": 14
     },
     "Response Formatter": {
       "name": "Response Formatter",
-      "executions": 3,
-      "errors": 3,
+      "executions": 5,
+      "errors": 5,
       "avg_duration_ms": 60002,
-      "total_duration_ms": 180007,
+      "total_duration_ms": 300013,
       "is_llm": false,
       "is_retrieval": false,
       "is_routing": false,
@@ -328,9 +328,9 @@
           "type": "VERY_SLOW_NODE",
           "severity": "high",
           "node": "Response Formatter",
-          "detail": "Node took 60002ms (>15000ms threshold)",
+          "detail": "Node took 60003ms (>15000ms threshold)",
           "metric": {
-            "duration_ms": 60002
+            "duration_ms": 60003
           },
           "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
         },
@@ -342,117 +342,117 @@
           "suggestion": "Review error details for 'Response Formatter' and check if upstream nodes are producing expected output."
         }
       ],
-      "llm_avg_output_chars": 86,
-      "llm_avg_tokens": 13
+      "llm_avg_output_chars": 71,
+      "llm_avg_tokens": 14
     }
   },
   "cross_execution_patterns": {
     "node_health": {
       "Webhook": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "Init & ACL Pre-Filter V3.4": {
-        "total_runs": 3,
-        "errors": 3,
+        "total_runs": 5,
+        "errors": 5,
         "error_rate_pct": 100.0,
         "health": "critical"
       },
       "Needs Decomposition?": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "Query Decomposer (V.3.4)": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "Query Merger V3.4": {
-        "total_runs": 3,
-        "errors": 3,
+        "total_runs": 5,
+        "errors": 5,
         "error_rate_pct": 100.0,
         "health": "critical"
       },
       "HyDE Generator": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "HyDE Embedding": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "HTTP Pinecone Query HyDE": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "BM25 Search Postgres": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "Original Embedding": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "HTTP Pinecone Query Original": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "Wait All Branches": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "RRF Merge & Rank V3.4": {
-        "total_runs": 3,
-        "errors": 3,
+        "total_runs": 5,
+        "errors": 5,
         "error_rate_pct": 100.0,
         "health": "critical"
       },
       "Cohere Reranker": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "Rerank Merger": {
-        "total_runs": 3,
-        "errors": 3,
+        "total_runs": 5,
+        "errors": 5,
         "error_rate_pct": 100.0,
         "health": "critical"
       },
       "Skip LLM?": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "LLM Generation": {
-        "total_runs": 3,
+        "total_runs": 5,
         "errors": 0,
         "error_rate_pct": 0.0,
         "health": "healthy"
       },
       "Response Formatter": {
-        "total_runs": 3,
-        "errors": 3,
+        "total_runs": 5,
+        "errors": 5,
         "error_rate_pct": 100.0,
         "health": "critical"
       }
@@ -463,50 +463,50 @@
         "avg_ms": 60002,
         "p95_ms": 60003,
         "max_ms": 60003,
-        "samples": 3
+        "samples": 5
       },
       {
         "node": "Query Merger V3.4",
         "avg_ms": 60002,
         "p95_ms": 60003,
         "max_ms": 60003,
-        "samples": 3
+        "samples": 5
       },
       {
         "node": "RRF Merge & Rank V3.4",
         "avg_ms": 60002,
         "p95_ms": 60003,
         "max_ms": 60003,
-        "samples": 3
+        "samples": 5
       },
       {
         "node": "Rerank Merger",
         "avg_ms": 60002,
-        "p95_ms": 60003,
-        "max_ms": 60003,
-        "samples": 3
+        "p95_ms": 60004,
+        "max_ms": 60004,
+        "samples": 5
       },
       {
         "node": "Response Formatter",
         "avg_ms": 60002,
-        "p95_ms": 60003,
-        "max_ms": 60003,
-        "samples": 3
+        "p95_ms": 60004,
+        "max_ms": 60004,
+        "samples": 5
       }
     ],
     "verbosity_report": {
       "LLM Generation": {
-        "avg_chars": 86,
-        "max_chars": 109,
+        "avg_chars": 71,
+        "max_chars": 85,
         "min_chars": 64,
-        "samples": 3,
+        "samples": 5,
         "verdict": "ok"
       },
       "Response Formatter": {
-        "avg_chars": 86,
-        "max_chars": 109,
+        "avg_chars": 71,
+        "max_chars": 85,
         "min_chars": 64,
-        "samples": 3,
+        "samples": 5,
         "verdict": "ok"
       }
     },
@@ -517,9 +517,9 @@
       "type": "VERY_SLOW_NODE",
       "severity": "high",
       "node": "Init & ACL Pre-Filter V3.4",
-      "detail": "Node took 60003ms (>15000ms threshold)",
+      "detail": "Node took 60002ms (>15000ms threshold)",
       "metric": {
-        "duration_ms": 60003
+        "duration_ms": 60002
       },
       "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
     },
@@ -534,9 +534,9 @@
       "type": "VERY_SLOW_NODE",
       "severity": "high",
       "node": "Query Merger V3.4",
-      "detail": "Node took 60003ms (>15000ms threshold)",
+      "detail": "Node took 60002ms (>15000ms threshold)",
       "metric": {
-        "duration_ms": 60003
+        "duration_ms": 60002
       },
       "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
     },
@@ -592,9 +592,9 @@
       "type": "VERY_SLOW_NODE",
       "severity": "high",
       "node": "Response Formatter",
-      "detail": "Node took 60002ms (>15000ms threshold)",
+      "detail": "Node took 60003ms (>15000ms threshold)",
       "metric": {
-        "duration_ms": 60002
+        "duration_ms": 60003
       },
       "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
     },
@@ -615,7 +615,7 @@
       ],
       "description": "Node 'Init & ACL Pre-Filter V3.4' avg 60002ms (p95: 60003ms)",
       "action": "Consider caching, parallelization, or model optimization.",
-      "occurrences": 3
+      "occurrences": 5
     },
     {
       "priority": "MEDIUM",
@@ -625,7 +625,7 @@
       ],
       "description": "Node 'Query Merger V3.4' avg 60002ms (p95: 60003ms)",
       "action": "Consider caching, parallelization, or model optimization.",
-      "occurrences": 3
+      "occurrences": 5
     },
     {
       "priority": "MEDIUM",
@@ -635,12 +635,14 @@
       ],
       "description": "Node 'RRF Merge & Rank V3.4' avg 60002ms (p95: 60003ms)",
       "action": "Consider caching, parallelization, or model optimization.",
-      "occurrences": 3
+      "occurrences": 5
     }
   ],
   "execution_ids": [
-    "19476",
     "19475",
-    "19467"
+    "19467",
+    "19466",
+    "19465",
+    "19464"
   ]
 }
