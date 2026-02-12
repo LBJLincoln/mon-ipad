@@ -1,15 +1,15 @@
 {
   "meta": {
     "version": "2.0",
-    "generated_at": "2026-02-10T12:36:35.986577Z",
+    "generated_at": "2026-02-12T09:38:29.601254Z",
     "status": "running",
     "project": "Multi-RAG Orchestrator SOTA 2026",
     "phase": "Phase 2 — Expand (1,000q)",
-    "total_unique_questions": 25,
-    "total_test_runs": 32,
-    "total_iterations": 2,
+    "total_unique_questions": 33,
+    "total_test_runs": 56,
+    "total_iterations": 9,
     "total_cost_usd": 0,
-    "current_session": "2026-02-10T00-07-21",
+    "current_session": "2026-02-12T09-35-24",
     "phase_transition": {
       "from": 1,
       "to": 2,
@@ -499,6 +499,482 @@
           "error": null,
           "error_type": null,
           "timestamp": "2026-02-10T00:14:34.489402Z"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-12T02-32-21",
+      "number": 3,
+      "timestamp_start": "2026-02-12T02:32:22.000301Z",
+      "timestamp_end": "2026-02-12T02:33:50.723057Z",
+      "label": "Standard 5/5 Test 1",
+      "description": "Initial test for standard pipeline 5/5 pass criteria",
+      "changes_applied": [],
+      "results_summary": {
+        "standard": {
+          "tested": 5,
+          "correct": 0,
+          "errors": 0,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 17456,
+          "p95_latency_ms": 20866,
+          "avg_f1": 0.5
+        }
+      },
+      "total_tested": 5,
+      "total_correct": 0,
+      "overall_accuracy_pct": 0.0,
+      "questions": [
+        {
+          "id": "std-01",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 20056,
+          "answer": "",
+          "expected": "France",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T02:32:42.094379Z"
+        },
+        {
+          "id": "std-02",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 15833,
+          "answer": "",
+          "expected": "May 1, 1999",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T02:32:57.991169Z"
+        },
+        {
+          "id": "std-03",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 18026,
+          "answer": "",
+          "expected": "Tokyo",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T02:33:16.039407Z"
+        },
+        {
+          "id": "std-04",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 20866,
+          "answer": "",
+          "expected": "William Shakespeare",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T02:33:36.961640Z"
+        },
+        {
+          "id": "std-05",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 12501,
+          "answer": "",
+          "expected": "An antibiotic discovered by Alexander Fleming",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T02:33:49.720854Z"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-12T03-13-31",
+      "number": 4,
+      "timestamp_start": "2026-02-12T03:13:31.604823Z",
+      "timestamp_end": "2026-02-12T03:13:31.619932Z",
+      "label": "Initial standard pipeline evaluation",
+      "description": "Iterative evaluation: stages 1-3, pipelines: standard",
+      "changes_applied": [],
+      "results_summary": {},
+      "total_tested": 0,
+      "total_correct": 0,
+      "overall_accuracy_pct": 0,
+      "questions": []
+    },
+    {
+      "id": "iter-2026-02-12T03-14-18",
+      "number": 5,
+      "timestamp_start": "2026-02-12T03:14:18.266652Z",
+      "timestamp_end": "2026-02-12T03:15:24.009082Z",
+      "label": "Initial standard pipeline evaluation",
+      "description": "Iterative evaluation: stages 1-3, pipelines: standard",
+      "changes_applied": [],
+      "results_summary": {
+        "standard": {
+          "tested": 5,
+          "correct": 0,
+          "errors": 0,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 12999,
+          "p95_latency_ms": 16625,
+          "avg_f1": 0.5
+        }
+      },
+      "total_tested": 5,
+      "total_correct": 0,
+      "overall_accuracy_pct": 0.0,
+      "questions": [
+        {
+          "id": "std-01",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 12548,
+          "answer": "",
+          "expected": "France",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:14:30.837959Z"
+        },
+        {
+          "id": "std-02",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 14236,
+          "answer": "",
+          "expected": "May 1, 1999",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:14:45.100173Z"
+        },
+        {
+          "id": "std-03",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 9361,
+          "answer": "",
+          "expected": "Tokyo",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:14:54.484168Z"
+        },
+        {
+          "id": "std-06",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 16625,
+          "answer": "",
+          "expected": "Einstein's theory describing gravity and spacetime",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:15:11.136401Z"
+        },
+        {
+          "id": "std-04",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 12227,
+          "answer": "",
+          "expected": "William Shakespeare",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:15:23.459461Z"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-12T03-15-56",
+      "number": 6,
+      "timestamp_start": "2026-02-12T03:15:56.696605Z",
+      "timestamp_end": "2026-02-12T03:17:11.886660Z",
+      "label": "Initial standard pipeline evaluation",
+      "description": "Iterative evaluation: stages 1-3, pipelines: standard",
+      "changes_applied": [],
+      "results_summary": {
+        "standard": {
+          "tested": 5,
+          "correct": 0,
+          "errors": 0,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 14555,
+          "p95_latency_ms": 20485,
+          "avg_f1": 0.5
+        }
+      },
+      "total_tested": 5,
+      "total_correct": 0,
+      "overall_accuracy_pct": 0.0,
+      "questions": [
+        {
+          "id": "std-01",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 20485,
+          "answer": "",
+          "expected": "France",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:16:17.200260Z"
+        },
+        {
+          "id": "std-02",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 13785,
+          "answer": "",
+          "expected": "May 1, 1999",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:16:31.033737Z"
+        },
+        {
+          "id": "std-03",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 9349,
+          "answer": "",
+          "expected": "Tokyo",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:16:40.458287Z"
+        },
+        {
+          "id": "std-07",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 10131,
+          "answer": "",
+          "expected": "Pacific Ocean",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:16:50.634191Z"
+        },
+        {
+          "id": "std-04",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 19026,
+          "answer": "",
+          "expected": "William Shakespeare",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:17:09.921924Z"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-12T03-17-37",
+      "number": 7,
+      "timestamp_start": "2026-02-12T03:17:37.747165Z",
+      "timestamp_end": "2026-02-12T03:19:11.484867Z",
+      "label": "Initial standard pipeline evaluation",
+      "description": "Iterative evaluation: stages 1-3, pipelines: standard",
+      "changes_applied": [],
+      "results_summary": {
+        "standard": {
+          "tested": 5,
+          "correct": 0,
+          "errors": 0,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 17389,
+          "p95_latency_ms": 20476,
+          "avg_f1": 0.5
+        }
+      },
+      "total_tested": 5,
+      "total_correct": 0,
+      "overall_accuracy_pct": 0.0,
+      "questions": [
+        {
+          "id": "std-01",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 12994,
+          "answer": "",
+          "expected": "France",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:17:51.238085Z"
+        },
+        {
+          "id": "std-02",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 20476,
+          "answer": "",
+          "expected": "May 1, 1999",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:18:12.992951Z"
+        },
+        {
+          "id": "std-03",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 14241,
+          "answer": "",
+          "expected": "Tokyo",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:18:27.730304Z"
+        },
+        {
+          "id": "std-08",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 19502,
+          "answer": "",
+          "expected": "Leonardo da Vinci",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:18:48.231081Z"
+        },
+        {
+          "id": "std-04",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 19734,
+          "answer": "",
+          "expected": "William Shakespeare",
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-12T03:19:08.480602Z"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-12T09-30-40",
+      "number": 8,
+      "timestamp_start": "2026-02-12T09:30:40.370998Z",
+      "timestamp_end": "2026-02-12T09:31:40.581583Z",
+      "label": "Initial 5/5 attempt",
+      "description": "Iterative evaluation: stages 1-3, pipelines: standard",
+      "changes_applied": [],
+      "results_summary": {
+        "standard": {
+          "tested": 1,
+          "correct": 0,
+          "errors": 1,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 60171,
+          "p95_latency_ms": 60171,
+          "avg_f1": 0
+        }
+      },
+      "total_tested": 1,
+      "total_correct": 0,
+      "overall_accuracy_pct": 0.0,
+      "questions": [
+        {
+          "id": "std-01",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60171,
+          "answer": "",
+          "expected": "France",
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-12T09:31:40.581566Z"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-12T09-35-24",
+      "number": 9,
+      "timestamp_start": "2026-02-12T09:35:24.124219Z",
+      "timestamp_end": "2026-02-12T09:38:29.338338Z",
+      "label": "Initial 5/5 attempt",
+      "description": "Iterative evaluation: stages 1-3, pipelines: standard",
+      "changes_applied": [],
+      "results_summary": {
+        "standard": {
+          "tested": 3,
+          "correct": 0,
+          "errors": 3,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 61309,
+          "p95_latency_ms": 62749,
+          "avg_f1": 0
+        }
+      },
+      "total_tested": 3,
+      "total_correct": 0,
+      "overall_accuracy_pct": 0.0,
+      "questions": [
+        {
+          "id": "std-01",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60185,
+          "answer": "",
+          "expected": "France",
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-12T09:36:24.337969Z"
+        },
+        {
+          "id": "std-02",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60994,
+          "answer": "",
+          "expected": "May 1, 1999",
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-12T09:37:26.084369Z"
+        },
+        {
+          "id": "std-03",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 62749,
+          "answer": "",
+          "expected": "Tokyo",
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-12T09:38:29.338312Z"
         }
       ]
     }
@@ -1362,13 +1838,502 @@
       "last_tested": "2026-02-10T00:14:34.489454Z",
       "best_f1": 0.25,
       "trend": "stable"
+    },
+    "std-01": {
+      "id": "std-01",
+      "question": "In what country is Normandy located?",
+      "expected": "France",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-12T02-32-21",
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 20056,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T02:32:42.094441Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-14-18",
+          "iteration_number": 5,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 12548,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:14:30.838030Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-15-56",
+          "iteration_number": 6,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 20485,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:16:17.200345Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-17-37",
+          "iteration_number": 7,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 12994,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:17:51.474914Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T09-30-40",
+          "iteration_number": 8,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60171,
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-12T09:31:40.581627Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T09-35-24",
+          "iteration_number": 9,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60185,
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-12T09:36:24.338046Z"
+        }
+      ],
+      "total_runs": 6,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "error",
+      "last_tested": "2026-02-12T09:36:24.338046Z",
+      "best_f1": 0.5,
+      "trend": "stable"
+    },
+    "std-02": {
+      "id": "std-02",
+      "question": "When was the first season of SpongeBob SquarePants aired?",
+      "expected": "May 1, 1999",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-12T02-32-21",
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 15833,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T02:32:57.991232Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-14-18",
+          "iteration_number": 5,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 14236,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:14:45.100236Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-15-56",
+          "iteration_number": 6,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 13785,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:16:31.033814Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-17-37",
+          "iteration_number": 7,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 20476,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:18:12.993041Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T09-35-24",
+          "iteration_number": 9,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60994,
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-12T09:37:26.084446Z"
+        }
+      ],
+      "total_runs": 5,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "error",
+      "last_tested": "2026-02-12T09:37:26.084446Z",
+      "best_f1": 0.5,
+      "trend": "stable"
+    },
+    "std-03": {
+      "id": "std-03",
+      "question": "What is the capital of Japan?",
+      "expected": "Tokyo",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-12T02-32-21",
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 18026,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T02:33:16.039494Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-14-18",
+          "iteration_number": 5,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 9361,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:14:54.484234Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-15-56",
+          "iteration_number": 6,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 9349,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:16:40.458369Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-17-37",
+          "iteration_number": 7,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 14241,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:18:27.730387Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T09-35-24",
+          "iteration_number": 9,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 62749,
+          "match_type": "NO_ANSWER",
+          "error": "The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-12T09:38:29.338424Z"
+        }
+      ],
+      "total_runs": 5,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "error",
+      "last_tested": "2026-02-12T09:38:29.338424Z",
+      "best_f1": 0.5,
+      "trend": "stable"
+    },
+    "std-04": {
+      "id": "std-04",
+      "question": "Who wrote Romeo and Juliet?",
+      "expected": "William Shakespeare",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-12T02-32-21",
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 20866,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T02:33:36.961733Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-14-18",
+          "iteration_number": 5,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 12227,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:15:23.459541Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-15-56",
+          "iteration_number": 6,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 19026,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:17:09.921984Z"
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-17-37",
+          "iteration_number": 7,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 19734,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:19:08.480690Z"
+        }
+      ],
+      "total_runs": 4,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-12T03:19:08.480690Z",
+      "best_f1": 0.5,
+      "trend": "stable"
+    },
+    "std-05": {
+      "id": "std-05",
+      "question": "What is penicillin?",
+      "expected": "An antibiotic discovered by Alexander Fleming",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-12T02-32-21",
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 12501,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T02:33:49.720950Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-12T02:33:49.720950Z",
+      "best_f1": 0.5,
+      "trend": "stable"
+    },
+    "std-06": {
+      "id": "std-06",
+      "question": "What is the theory of relativity?",
+      "expected": "Einstein's theory describing gravity and spacetime",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-12T03-14-18",
+          "iteration_number": 5,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 16625,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:15:11.136483Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-12T03:15:11.136483Z",
+      "best_f1": 0.5,
+      "trend": "stable"
+    },
+    "std-07": {
+      "id": "std-07",
+      "question": "What is the largest ocean on Earth?",
+      "expected": "Pacific Ocean",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-12T03-15-56",
+          "iteration_number": 6,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 10131,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:16:50.634267Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-12T03:16:50.634267Z",
+      "best_f1": 0.5,
+      "trend": "stable"
+    },
+    "std-08": {
+      "id": "std-08",
+      "question": "Who painted the Mona Lisa?",
+      "expected": "Leonardo da Vinci",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-02-12T03-17-37",
+          "iteration_number": 7,
+          "correct": false,
+          "f1": 0.5,
+          "latency_ms": 19502,
+          "match_type": "PARTIAL_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-02-12T03:18:48.231218Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-12T03:18:48.231218Z",
+      "best_f1": 0.5,
+      "trend": "stable"
     }
   },
   "pipelines": {
     "standard": {
       "endpoint": "https://amoret.app.n8n.cloud/webhook/rag-multi-index-v3",
       "target_accuracy": 85.0,
-      "trend": []
+      "trend": [
+        {
+          "iteration_id": "iter-2026-02-12T02-32-21",
+          "iteration_number": 3,
+          "accuracy_pct": 0.0,
+          "tested": 5,
+          "errors": 0,
+          "avg_latency_ms": 17456
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-14-18",
+          "iteration_number": 5,
+          "accuracy_pct": 0.0,
+          "tested": 5,
+          "errors": 0,
+          "avg_latency_ms": 12999
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-15-56",
+          "iteration_number": 6,
+          "accuracy_pct": 0.0,
+          "tested": 5,
+          "errors": 0,
+          "avg_latency_ms": 14555
+        },
+        {
+          "iteration_id": "iter-2026-02-12T03-17-37",
+          "iteration_number": 7,
+          "accuracy_pct": 0.0,
+          "tested": 5,
+          "errors": 0,
+          "avg_latency_ms": 17389
+        },
+        {
+          "iteration_id": "iter-2026-02-12T09-30-40",
+          "iteration_number": 8,
+          "accuracy_pct": 0.0,
+          "tested": 1,
+          "errors": 1,
+          "avg_latency_ms": 60171
+        },
+        {
+          "iteration_id": "iter-2026-02-12T09-35-24",
+          "iteration_number": 9,
+          "accuracy_pct": 0.0,
+          "tested": 3,
+          "errors": 3,
+          "avg_latency_ms": 61309
+        }
+      ]
     },
     "graph": {
       "endpoint": "https://amoret.app.n8n.cloud/webhook/ff622742-2082-4b47-9435-01550c68595a",
@@ -1596,6 +2561,26 @@
       "neo4j_relationships": 76532,
       "supabase_rows": 0,
       "file": "logs/db-snapshots/snap-2026-02-10T00-07-21.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-12T02-32-22",
+      "timestamp": "2026-02-12T02:32:22.010824Z",
+      "trigger": "pre-eval",
+      "pinecone_vectors": 0,
+      "neo4j_nodes": 0,
+      "neo4j_relationships": 0,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-12T02-32-22.json"
+    },
+    {
+      "snapshot_id": "snap-2026-02-12T02-33-50",
+      "timestamp": "2026-02-12T02:33:50.227972Z",
+      "trigger": "post-eval",
+      "pinecone_vectors": 0,
+      "neo4j_nodes": 0,
+      "neo4j_relationships": 0,
+      "supabase_rows": 0,
+      "file": "logs/db-snapshots/snap-2026-02-12T02-33-50.json"
     }
   ],
   "execution_logs": [
@@ -2139,6 +3124,378 @@
         "traversal_depth": 0,
         "community_matches": 0
       }
+    },
+    {
+      "timestamp": "2026-02-12T02:32:42.102998Z",
+      "question_id": "std-01",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 20056,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T02:32:57.997415Z",
+      "question_id": "std-02",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 15833,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T02:33:16.055626Z",
+      "question_id": "std-03",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 18026,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T02:33:36.973772Z",
+      "question_id": "std-04",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 20866,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T02:33:49.734082Z",
+      "question_id": "std-05",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 12501,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:14:30.847128Z",
+      "question_id": "std-01",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 12548,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:14:45.106742Z",
+      "question_id": "std-02",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 14236,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:14:54.495680Z",
+      "question_id": "std-03",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 9361,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:15:11.172160Z",
+      "question_id": "std-06",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 16625,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:15:23.467600Z",
+      "question_id": "std-04",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 12227,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:16:17.214351Z",
+      "question_id": "std-01",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 20485,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:16:31.046154Z",
+      "question_id": "std-02",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 13785,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:16:40.471236Z",
+      "question_id": "std-03",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 9349,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:16:50.878600Z",
+      "question_id": "std-07",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 10131,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:17:10.136429Z",
+      "question_id": "std-04",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 19026,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:17:51.744164Z",
+      "question_id": "std-01",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 12994,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:18:13.229258Z",
+      "question_id": "std-02",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 20476,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:18:27.995864Z",
+      "question_id": "std-03",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 14241,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:18:48.245494Z",
+      "question_id": "std-08",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 19502,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T03:19:08.493045Z",
+      "question_id": "std-04",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.5,
+      "latency_ms": 19734,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-12T09:31:40.589838Z",
+      "question_id": "std-01",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60171,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-12T09:36:24.354774Z",
+      "question_id": "std-01",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60185,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-12T09:37:26.103467Z",
+      "question_id": "std-02",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60994,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-12T09:38:29.357919Z",
+      "question_id": "std-03",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 62749,
+      "error_type": "TIMEOUT",
+      "error_preview": "The read operation timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
     }
   ],
   "quick_tests": [
@@ -2650,6 +4007,35 @@
       "total_tested": 7,
       "graph": 80.0,
       "quantitative": 0.0
+    },
+    {
+      "timestamp": "2026-02-12T02:33:50.723080Z",
+      "event": "eval_complete",
+      "total_tested": 37,
+      "standard": 0.0
+    },
+    {
+      "timestamp": "2026-02-12T03:13:31.619947Z",
+      "event": "iterative_eval_complete",
+      "total_tested": 37
+    },
+    {
+      "timestamp": "2026-02-12T03:15:24.009095Z",
+      "event": "iterative_eval_complete",
+      "total_tested": 42,
+      "standard": 0.0
+    },
+    {
+      "timestamp": "2026-02-12T03:17:11.886682Z",
+      "event": "iterative_eval_complete",
+      "total_tested": 47,
+      "standard": 0.0
+    },
+    {
+      "timestamp": "2026-02-12T03:19:11.484884Z",
+      "event": "iterative_eval_complete",
+      "total_tested": 52,
+      "standard": 0.0
     }
   ],
   "workflow_versions": {

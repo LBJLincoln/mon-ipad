@@ -1,0 +1,177 @@
+{
+  "timestamp": "2026-02-12T03:19:11.480596Z",
+  "label": "Initial standard pipeline evaluation",
+  "pipelines": {
+    "standard": {
+      "status": "blocked",
+      "stages": [
+        {
+          "name": "Stage 1: Smoke (5q)",
+          "accuracy": 0.0,
+          "error_rate": 0.0,
+          "correct": 0,
+          "total": 5,
+          "errors": 0,
+          "elapsed_s": 90,
+          "results": [
+            {
+              "id": "std-01",
+              "question": "In what country is Normandy located?",
+              "expected": "France",
+              "answer": "",
+              "correct": false,
+              "f1": 0.5,
+              "latency_ms": 12994,
+              "method": "PARTIAL_MATCH",
+              "error": null,
+              "error_type": null,
+              "rag_type": "standard"
+            },
+            {
+              "id": "std-02",
+              "question": "When was the first season of SpongeBob SquarePants aired?",
+              "expected": "May 1, 1999",
+              "answer": "",
+              "correct": false,
+              "f1": 0.5,
+              "latency_ms": 20476,
+              "method": "PARTIAL_MATCH",
+              "error": null,
+              "error_type": null,
+              "rag_type": "standard"
+            },
+            {
+              "id": "std-03",
+              "question": "What is the capital of Japan?",
+              "expected": "Tokyo",
+              "answer": "",
+              "correct": false,
+              "f1": 0.5,
+              "latency_ms": 14241,
+              "method": "PARTIAL_MATCH",
+              "error": null,
+              "error_type": null,
+              "rag_type": "standard"
+            },
+            {
+              "id": "std-08",
+              "question": "Who painted the Mona Lisa?",
+              "expected": "Leonardo da Vinci",
+              "answer": "",
+              "correct": false,
+              "f1": 0.5,
+              "latency_ms": 19502,
+              "method": "PARTIAL_MATCH",
+              "error": null,
+              "error_type": null,
+              "rag_type": "standard"
+            },
+            {
+              "id": "std-04",
+              "question": "Who wrote Romeo and Juliet?",
+              "expected": "William Shakespeare",
+              "answer": "",
+              "correct": false,
+              "f1": 0.5,
+              "latency_ms": 19734,
+              "method": "PARTIAL_MATCH",
+              "error": null,
+              "error_type": null,
+              "rag_type": "standard"
+            }
+          ],
+          "diagnostics": {
+            "total_issues": 17,
+            "issues_by_severity": {
+              "critical": 0,
+              "high": 5,
+              "medium": 6,
+              "low": 6
+            },
+            "top_issues": [
+              {
+                "type": "EMPTY_RETRIEVAL",
+                "severity": "high",
+                "node": "BM25 Search Postgres",
+                "detail": "Retrieval node returned 0 items",
+                "suggestion": "Check query formation, index configuration, or embedding quality."
+              },
+              {
+                "type": "VERBOSE_LLM",
+                "severity": "medium",
+                "node": "Query Decomposer (V.3.4)",
+                "detail": "LLM output is 1189 chars — may be overly detailed for an intermediate step",
+                "metric": {
+                  "output_chars": 1189
+                },
+                "suggestion": "Consider adding max_tokens constraint or simplifying the prompt."
+              },
+              {
+                "type": "VERBOSE_LLM",
+                "severity": "medium",
+                "node": "HyDE Generator",
+                "detail": "LLM output is 1319 chars — may be overly detailed for an intermediate step",
+                "metric": {
+                  "output_chars": 1319
+                },
+                "suggestion": "Consider adding max_tokens constraint or simplifying the prompt."
+              },
+              {
+                "type": "SLOW_NODE",
+                "severity": "low",
+                "node": "Query Decomposer (V.3.4)",
+                "detail": "Node took 14287ms (>5000ms threshold)",
+                "metric": {
+                  "duration_ms": 14287
+                },
+                "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+              },
+              {
+                "type": "SLOW_NODE",
+                "severity": "low",
+                "node": "HyDE Generator",
+                "detail": "Node took 6781ms (>5000ms threshold)",
+                "metric": {
+                  "duration_ms": 6781
+                },
+                "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+              }
+            ],
+            "recommendations": [
+              {
+                "priority": "MEDIUM",
+                "type": "VERBOSE_LLM",
+                "affected_nodes": [
+                  "Query Decomposer (V.3.4)"
+                ],
+                "description": "LLM node 'Query Decomposer (V.3.4)' avg output: 1057 chars (max: 1199)",
+                "action": "Constrain system prompt to output only required intermediate data. Add max_tokens parameter.",
+                "occurrences": 5
+              },
+              {
+                "priority": "MEDIUM",
+                "type": "VERBOSE_LLM",
+                "affected_nodes": [
+                  "HyDE Generator"
+                ],
+                "description": "LLM node 'HyDE Generator' avg output: 518 chars (max: 1319)",
+                "action": "Constrain system prompt to output only required intermediate data. Add max_tokens parameter.",
+                "occurrences": 5
+              },
+              {
+                "priority": "MEDIUM",
+                "type": "LATENCY_BOTTLENECK",
+                "affected_nodes": [
+                  "Query Decomposer (V.3.4)"
+                ],
+                "description": "Node 'Query Decomposer (V.3.4)' avg 7682ms (p95: 14287ms)",
+                "action": "Consider caching, parallelization, or model optimization.",
+                "occurrences": 5
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
