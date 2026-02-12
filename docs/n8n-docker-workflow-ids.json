@@ -1,106 +1,120 @@
 {
-  "_comment": "Ce fichier sera mis à jour après l'import des workflows dans n8n Docker",
+  "_comment": "Workflow IDs après import dans n8n Docker - Google Cloud VM",
   "host": "http://34.136.180.66:5678",
-  "api_key": "",
-  "status": "En attente de configuration initiale",
+  "api_key": "n8n_api_a8f7d3a2722637f0a11979f6982e401d3fa145b92955df424fafd23295bbc87421e657c6050a04e1",
+  "imported_at": "2026-02-12T15:30:00Z",
+  "status": "✅ Tous les workflows importés et activés",
   "workflows": {
     "standard": {
-      "expected_id": "",
-      "webhook_path": "/webhook/rag-multi-index-v3",
-      "description": "Standard RAG Pipeline V3.4 - Pinecone vector search"
+      "id": "mYO4oJe97VryJyZ0",
+      "name": "Standard RAG Pipeline",
+      "webhook": "http://34.136.180.66:5678/webhook/rag-multi-index-v3",
+      "description": "Standard RAG Pipeline V3.4 - Pinecone vector search",
+      "status": "active"
     },
     "graph": {
-      "expected_id": "",
-      "webhook_path": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
-      "description": "Graph RAG V3.3 - Neo4j entity graph"
+      "id": "fSnZgZd3I39AYfX8",
+      "name": "Graph RAG Pipeline",
+      "webhook": "http://34.136.180.66:5678/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+      "description": "Graph RAG V3.3 - Neo4j entity graph",
+      "status": "active"
     },
     "quantitative": {
-      "expected_id": "",
-      "webhook_path": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
-      "description": "Quantitative RAG V2.0 - Supabase SQL"
+      "id": "c8OMXCs0jVqMd7pw",
+      "name": "Quantitative RAG Pipeline",
+      "webhook": "http://34.136.180.66:5678/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+      "description": "Quantitative RAG V2.0 - Supabase SQL",
+      "status": "active"
     },
     "orchestrator": {
-      "expected_id": "",
-      "webhook_path": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
-      "description": "Orchestrator V10.1 - Routes to all pipelines"
+      "id": "owuuB9JRmnm6skcg",
+      "name": "Orchestrator Pipeline",
+      "webhook": "http://34.136.180.66:5678/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+      "description": "Orchestrator V10.1 - Routes to all pipelines",
+      "status": "active"
     },
     "ingestion": {
-      "expected_id": "",
-      "description": "Ingestion V3.1 - Data ingestion pipeline"
+      "id": "ar38Lc6B2FGi29QL",
+      "name": "Ingestion Pipeline",
+      "description": "Ingestion V3.1 - Data ingestion",
+      "status": "active"
     },
     "enrichment": {
-      "expected_id": "",
-      "description": "Enrichissement V3.1 - Data enrichment"
+      "id": "O7YQ4bj4xujz6OMU",
+      "name": "Enrichment Pipeline",
+      "description": "Enrichissement V3.1 - Data enrichment",
+      "status": "active"
     },
     "feedback": {
-      "expected_id": "",
-      "description": "Feedback V3.1 - Feedback processing"
+      "id": "jUxX95UHblSwoaHp",
+      "name": "Feedback Pipeline",
+      "description": "Feedback V3.1 - Feedback processing",
+      "status": "active"
     },
     "benchmark": {
-      "expected_id": "",
-      "description": "Benchmark V3.0 - Evaluation pipeline"
+      "id": "m5bVEsWdw7sPT23Q",
+      "name": "Benchmark Pipeline",
+      "description": "Benchmark V3.0 - Evaluation pipeline",
+      "status": "active"
     },
     "benchmark-dataset-ingestion": {
-      "expected_id": "",
-      "description": "Dataset Ingestion Pipeline"
+      "id": "QVXmY5Hc4ZSSLBoG",
+      "name": "Dataset Ingestion Pipeline",
+      "description": "Dataset Ingestion Pipeline",
+      "status": "active"
     },
     "benchmark-monitoring": {
-      "expected_id": "",
-      "description": "Monitoring & Alerting"
+      "id": "XRw5hXNI0Eanwc1C",
+      "name": "Monitoring & Alerting",
+      "description": "Monitoring & Alerting",
+      "status": "active"
     },
     "benchmark-orchestrator-tester": {
-      "expected_id": "",
-      "description": "Orchestrator Tester"
+      "id": "41d1REfSQsGb3d7k",
+      "name": "Orchestrator Tester",
+      "description": "Orchestrator Tester",
+      "status": "active"
     },
     "benchmark-rag-tester": {
-      "expected_id": "",
-      "description": "RAG Batch Tester"
+      "id": "eQzEAwAGvTny44ix",
+      "name": "RAG Batch Tester",
+      "description": "RAG Batch Tester",
+      "status": "active"
     },
     "benchmark-sql-executor": {
-      "expected_id": "",
-      "description": "SQL Executor Utility"
+      "id": "GNPCinBXQkXzYCKN",
+      "name": "SQL Executor Utility",
+      "description": "SQL Executor Utility",
+      "status": "active"
     }
   },
-  "credentials_to_configure": [
+  "credentials_configured": [
     {
       "name": "OpenRouter API",
       "type": "httpHeaderAuth",
-      "value": "Bearer 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"
+      "status": "configured"
     },
     {
       "name": "Pinecone API",
       "type": "pineconeApi",
-      "value": "pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
+      "status": "configured"
     },
     {
       "name": "Cohere API",
       "type": "cohereApi",
-      "value": "nqQv1HevJMecJrN00Hpjk5JFbOT3UtXJCTJRuIRu"
-    },
-    {
-      "name": "Neo4j",
-      "type": "neo4jApi",
-      "host": "bolt://localhost:7687",
-      "password": "jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
-    },
-    {
-      "name": "Supabase",
-      "type": "supabaseApi",
-      "password": "udVECdcSnkMCAPiY"
+      "status": "configured"
     }
   ],
-  "variables_to_set": {
+  "variables_configured": {
     "EMBEDDING_MODEL": "jina-embeddings-v3",
     "EMBEDDING_DIM": "1024",
     "OPENROUTER_API_KEY": "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",
-    "PINECONE_URL": "https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io",
-    "COHERE_API_KEY": "nqQv1HevJMecJrN00Hpjk5JFbOT3UtXJCTJRuIRu"
+    "PINECONE_URL": "https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
   },
-  "setup_instructions": {
-    "step1": "Ouvrir http://34.136.180.66:5678 (après ouverture firewall GCP)",
-    "step2": "Créer un compte admin",
-    "step3": "Générer une API Key dans Settings > API",
-    "step4": "Exécuter: bash /home/termius/mon-ipad/scripts/setup-n8n-docker.sh",
-    "step5": "Vérifier l'import des workflows dans l'interface"
+  "endpoints": {
+    "standard": "http://34.136.180.66:5678/webhook/rag-multi-index-v3",
+    "graph": "http://34.136.180.66:5678/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+    "quantitative": "http://34.136.180.66:5678/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+    "orchestrator": "http://34.136.180.66:5678/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0"
   }
 }
