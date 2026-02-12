@@ -30,7 +30,7 @@ curl -X POST "https://amoret.app.n8n.cloud/webhook/benchmark-sql-exec" \
 ```
 
 ### Pinecone (Vector DB)
-**Dimension:** 1536 (ancienne dimension OpenAI - migration Cohere 1024 à prévoir)  
+**Dimension:** 1024 (✅ Migration Cohere EFFECTUÉE - Index: sota-rag-cohere-1024)  
 **Total vectors:** 10,411
 
 #### Namespaces confirmés:
@@ -152,9 +152,10 @@ python3 eval/node-analyzer.py --pipeline standard --last 5
    - Action: Test avec requête simple
 
 ### MOYEN (Phase 2 Preparation)
-4. **Migration Cohere**: Embeddings toujours en 1536d (OpenAI)
-   - Action: Exécuter `db/populate/migrate_to_cohere.py`
-   - Cible: 1024d avec Cohere embed-english-v3.0
+4. **Migration Cohere**: ✅ EFFECTUÉE
+   - Index: sota-rag-cohere-1024 (10,411 vecteurs, 1024d)
+   - Workflows n8n: Configurés correctement (EMBEDDING_MODEL=embed-english-v3.0)
+   - Problème réel: Qualité HyDE / Pertinence des résultats (pas la dimension)
 
 5. **MCP Servers**: Installer les MCP manquants
    - Action: Suivre `docs/technical/mcp-setup.md`
@@ -184,8 +185,9 @@ python3 eval/node-analyzer.py --pipeline standard --last 5
 1. **SQL Executor**: Utiliser le workflow existant `BENCHMARK - SQL Executor Utility` (testé et fonctionnel) plutôt que des solutions custom
 
 2. **Dimensions Embeddings**: 
-   - Actuel: 1536d (OpenAI legacy)
-   - Cible: 1024d (Cohere)
+   - ✅ MIGRATION EFFECTUÉE: 1024d (Cohere embed-english-v3.0)
+   - Index actif: sota-rag-cohere-1024
+   - Index legacy: sota-rag (1536d, conservé en backup)
    - Impact: Les requêtes HyDE peuvent ne pas matcher correctement
 
 3. **n8n Cloud**:
