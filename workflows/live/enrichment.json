@@ -165,12 +165,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+        "url": "={{ $env.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json).substring(0, 30000) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+        "jsonBody": "{\n  \"model\": \"{{ $env.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json).substring(0, 30000) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
         "options": {
           "timeout": 30000
         }
@@ -209,7 +209,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.PINECONE_URL }}/vectors/upsert",
+        "url": "={{ $env.PINECONE_URL }}/vectors/upsert",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -302,7 +302,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+        "url": "={{ $env.NEO4J_URL }}/db/neo4j/tx/commit",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBasicAuth",
         "sendBody": true,
@@ -331,7 +331,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.NEO4J_URL }}/community-detection/trigger",
+        "url": "={{ $env.NEO4J_URL }}/community-detection/trigger",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBasicAuth",
         "sendBody": true,
@@ -406,7 +406,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
+        "url": "={{ $env.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"enrichment_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"timestamp\": \"{{ $json.timestamp }}\"\n}",
@@ -503,12 +503,12 @@
       },
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+        "url": "={{ $env.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json._chunk_content }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+        "jsonBody": "{\n  \"model\": \"{{ $env.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json._chunk_content }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
         "options": {
           "timeout": 30000
         }
@@ -558,7 +558,7 @@
       "onError": "continueErrorOutput",
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+        "url": "={{ $env.NEO4J_URL }}/db/neo4j/tx/commit",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBasicAuth",
         "sendBody": true,
@@ -589,12 +589,12 @@
       },
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+        "url": "={{ $env.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en analyse de communautes dans un graphe de connaissances.\\nPour chaque communaute, genere:\\n1. Un titre descriptif (max 10 mots)\\n2. Un resume de 2-3 phrases expliquant le theme commun\\n3. Les entites cles (max 5)\\n4. Les relations dominantes\\n\\nFormat JSON:\\n{\\n  \\\"title\\\": string,\\n  \\\"summary\\\": string,\\n  \\\"key_entities\\\": [string],\\n  \\\"dominant_relations\\\": [string],\\n  \\\"importance_score\\\": 0.0-1.0\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 2000\n}",
+        "jsonBody": "{\n  \"model\": \"{{ $env.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en analyse de communautes dans un graphe de connaissances.\\nPour chaque communaute, genere:\\n1. Un titre descriptif (max 10 mots)\\n2. Un resume de 2-3 phrases expliquant le theme commun\\n3. Les entites cles (max 5)\\n4. Les relations dominantes\\n\\nFormat JSON:\\n{\\n  \\\"title\\\": string,\\n  \\\"summary\\\": string,\\n  \\\"key_entities\\\": [string],\\n  \\\"dominant_relations\\\": [string],\\n  \\\"importance_score\\\": 0.0-1.0\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 2000\n}",
         "options": {
           "timeout": 30000
         }
@@ -618,7 +618,7 @@
       "onError": "continueErrorOutput",
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+        "url": "={{ $env.NEO4J_URL }}/db/neo4j/tx/commit",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBasicAuth",
         "sendBody": true,
@@ -1237,12 +1237,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+          "url": "={{ $env.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json).substring(0, 30000) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+          "jsonBody": "{\n  \"model\": \"{{ $env.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json).substring(0, 30000) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
           "options": {
             "timeout": 30000
           }
@@ -1281,7 +1281,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.PINECONE_URL }}/vectors/upsert",
+          "url": "={{ $env.PINECONE_URL }}/vectors/upsert",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
@@ -1374,7 +1374,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+          "url": "={{ $env.NEO4J_URL }}/db/neo4j/tx/commit",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpBasicAuth",
           "sendBody": true,
@@ -1403,7 +1403,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.NEO4J_URL }}/community-detection/trigger",
+          "url": "={{ $env.NEO4J_URL }}/community-detection/trigger",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpBasicAuth",
           "sendBody": true,
@@ -1478,7 +1478,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
+          "url": "={{ $env.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"enrichment_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"timestamp\": \"{{ $json.timestamp }}\"\n}",
@@ -1575,12 +1575,12 @@
         },
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+          "url": "={{ $env.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json._chunk_content }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+          "jsonBody": "{\n  \"model\": \"{{ $env.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json._chunk_content }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
           "options": {
             "timeout": 30000
           }
@@ -1630,7 +1630,7 @@
         "onError": "continueErrorOutput",
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+          "url": "={{ $env.NEO4J_URL }}/db/neo4j/tx/commit",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpBasicAuth",
           "sendBody": true,
@@ -1661,12 +1661,12 @@
         },
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+          "url": "={{ $env.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "{\n  \"model\": \"{{ $vars.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en analyse de communautes dans un graphe de connaissances.\\nPour chaque communaute, genere:\\n1. Un titre descriptif (max 10 mots)\\n2. Un resume de 2-3 phrases expliquant le theme commun\\n3. Les entites cles (max 5)\\n4. Les relations dominantes\\n\\nFormat JSON:\\n{\\n  \\\"title\\\": string,\\n  \\\"summary\\\": string,\\n  \\\"key_entities\\\": [string],\\n  \\\"dominant_relations\\\": [string],\\n  \\\"importance_score\\\": 0.0-1.0\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 2000\n}",
+          "jsonBody": "{\n  \"model\": \"{{ $env.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en analyse de communautes dans un graphe de connaissances.\\nPour chaque communaute, genere:\\n1. Un titre descriptif (max 10 mots)\\n2. Un resume de 2-3 phrases expliquant le theme commun\\n3. Les entites cles (max 5)\\n4. Les relations dominantes\\n\\nFormat JSON:\\n{\\n  \\\"title\\\": string,\\n  \\\"summary\\\": string,\\n  \\\"key_entities\\\": [string],\\n  \\\"dominant_relations\\\": [string],\\n  \\\"importance_score\\\": 0.0-1.0\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 2000\n}",
           "options": {
             "timeout": 30000
           }
@@ -1690,7 +1690,7 @@
         "onError": "continueErrorOutput",
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.NEO4J_URL }}/db/neo4j/tx/commit",
+          "url": "={{ $env.NEO4J_URL }}/db/neo4j/tx/commit",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpBasicAuth",
           "sendBody": true,

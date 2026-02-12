@@ -48,7 +48,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Merge both triggers and init monitoring session\nconst body = $json?.body || $json || {};\nconst monitorId = `mon-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;\n\nreturn {\n  monitor_id: monitorId,\n  triggered_by: body.dataset_name ? 'manual' : 'scheduled',\n  filter_dataset: body.dataset_name || null,\n  filter_phase: body.phase || null,\n  lookback_hours: body.lookback_hours || 24,\n  regression_threshold_pct: body.regression_threshold_pct || 5,\n  slack_webhook: $vars.SLACK_BENCHMARK_WEBHOOK || null,\n  timestamp: new Date().toISOString()\n};"
+        "jsCode": "// Merge both triggers and init monitoring session\nconst body = $json?.body || $json || {};\nconst monitorId = `mon-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;\n\nreturn {\n  monitor_id: monitorId,\n  triggered_by: body.dataset_name ? 'manual' : 'scheduled',\n  filter_dataset: body.dataset_name || null,\n  filter_phase: body.phase || null,\n  lookback_hours: body.lookback_hours || 24,\n  regression_threshold_pct: body.regression_threshold_pct || 5,\n  slack_webhook: $env.SLACK_BENCHMARK_WEBHOOK || null,\n  timestamp: new Date().toISOString()\n};"
       },
       "id": "b4000001-0003-4000-a004-000000000003",
       "name": "Init Monitor Session",
@@ -314,7 +314,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
+        "url": "={{ $env.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -692,7 +692,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Merge both triggers and init monitoring session\nconst body = $json?.body || $json || {};\nconst monitorId = `mon-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;\n\nreturn {\n  monitor_id: monitorId,\n  triggered_by: body.dataset_name ? 'manual' : 'scheduled',\n  filter_dataset: body.dataset_name || null,\n  filter_phase: body.phase || null,\n  lookback_hours: body.lookback_hours || 24,\n  regression_threshold_pct: body.regression_threshold_pct || 5,\n  slack_webhook: $vars.SLACK_BENCHMARK_WEBHOOK || null,\n  timestamp: new Date().toISOString()\n};"
+          "jsCode": "// Merge both triggers and init monitoring session\nconst body = $json?.body || $json || {};\nconst monitorId = `mon-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;\n\nreturn {\n  monitor_id: monitorId,\n  triggered_by: body.dataset_name ? 'manual' : 'scheduled',\n  filter_dataset: body.dataset_name || null,\n  filter_phase: body.phase || null,\n  lookback_hours: body.lookback_hours || 24,\n  regression_threshold_pct: body.regression_threshold_pct || 5,\n  slack_webhook: $env.SLACK_BENCHMARK_WEBHOOK || null,\n  timestamp: new Date().toISOString()\n};"
         },
         "id": "b4000001-0003-4000-a004-000000000003",
         "name": "Init Monitor Session",
@@ -958,7 +958,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
+          "url": "={{ $env.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [

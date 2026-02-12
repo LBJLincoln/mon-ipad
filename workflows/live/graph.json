@@ -24,12 +24,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer the question. This document will be used for semantic search. Format: dense, factual text, 200-300 words. Also extract key entities as JSON: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": string}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 800\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $env.LLM_HYDE_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer the question. This document will be used for semantic search. Format: dense, factual text, 200-300 words. Also extract key entities as JSON: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": string}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 800\n}",
         "options": {
           "timeout": 25000,
           "retry": {
@@ -42,7 +42,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
             }
           ]
         }
@@ -78,7 +78,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.NEO4J_URL }}",
+        "url": "={{ $env.NEO4J_URL }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBasicAuth",
         "sendBody": true,
@@ -107,7 +107,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.PINECONE_URL }}/query",
+        "url": "={{ $env.PINECONE_URL }}/query",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -172,11 +172,11 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.RERANKER_API_URL || 'https://api.cohere.ai/v1/rerank' }}",
+        "url": "={{ $env.RERANKER_API_URL || 'https://api.cohere.ai/v1/rerank' }}",
         "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.RERANKER_MODEL || 'rerank-multilingual-v3.0' }}\",\n  \"query\": \"{{ $node['OTEL Init'].json.query }}\",\n  \"documents\": {{ JSON.stringify(($json.merged_results || []).map(d => d.content || '').filter(c => c.length > 0).slice(0, 25)) }},\n  \"top_n\": 10\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $env.RERANKER_MODEL || 'rerank-multilingual-v3.0' }}\",\n  \"query\": \"{{ $node['OTEL Init'].json.query }}\",\n  \"documents\": {{ JSON.stringify(($json.merged_results || []).map(d => d.content || '').filter(c => c.length > 0).slice(0, 25)) }},\n  \"top_n\": 10\n}",
         "options": {
           "batching": {
             "batch": {
@@ -191,7 +191,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
+              "value": "=Bearer {{ $env.COHERE_API_KEY }}"
             }
           ]
         }
@@ -251,7 +251,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
+        "url": "={{ $env.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"traceId\": \"={{ $json.trace_id }}\",\n  \"spanName\": \"graph_rag_complete\",\n  \"status\": \"={{ $json.status }}\"\n}",
@@ -334,12 +334,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
+        "url": "={{ $env.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ { \"model\": ($vars.EMBEDDING_MODEL || 'embed-english-v3.0'), \"texts\": [$json.hyde_document], \"input_type\": \"search_query\", \"embedding_types\": [\"float\"] } }}",
+        "jsonBody": "={{ { \"model\": ($env.EMBEDDING_MODEL || 'embed-english-v3.0'), \"texts\": [$json.hyde_document], \"input_type\": \"search_query\", \"embedding_types\": [\"float\"] } }}",
         "options": {
           "retry": {
             "maxTries": 3,
@@ -351,7 +351,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
+              "value": "=Bearer {{ $env.COHERE_API_KEY }}"
             }
           ]
         }
@@ -397,7 +397,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const embeddingData = $json;\n\n// Check if we have a valid embedding - handle both Cohere and OpenRouter formats\nlet embedding = [];\n\n// Cohere v2 format: embeddings.float[0]\nif (embeddingData.embeddings?.float?.[0]) {\n  embedding = embeddingData.embeddings.float[0];\n}\n// OpenRouter/OpenAI format: data[0].embedding\nelse if (embeddingData.data?.[0]?.embedding) {\n  embedding = embeddingData.data[0].embedding;\n}\n// Body wrapper variants\nelse if (embeddingData.body?.embeddings?.float?.[0]) {\n  embedding = embeddingData.body.embeddings.float[0];\n}\nelse if (embeddingData.body?.data?.[0]?.embedding) {\n  embedding = embeddingData.body.data[0].embedding;\n}\nelse if (Array.isArray(embeddingData.embedding)) {\n  embedding = embeddingData.embedding;\n}\n\n// Validate embedding dimensions (1024 for Cohere, 1536 for OpenAI)\nconst expectedDims = parseInt($vars.EMBEDDING_DIMS || '1024');\nconst isValid = embedding.length >= 384; // Accept any reasonable dimension\n\nif (!isValid) {\n  return [{\n    json: {\n      valid: false,\n      error: `Invalid embedding: got ${embedding.length}, expected ${expectedDims}`,\n      embedding: [],\n      fallback: true\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    embedding: embedding,\n    dimensions: embedding.length\n  }\n}];"
+        "jsCode": "const embeddingData = $json;\n\n// Check if we have a valid embedding - handle both Cohere and OpenRouter formats\nlet embedding = [];\n\n// Cohere v2 format: embeddings.float[0]\nif (embeddingData.embeddings?.float?.[0]) {\n  embedding = embeddingData.embeddings.float[0];\n}\n// OpenRouter/OpenAI format: data[0].embedding\nelse if (embeddingData.data?.[0]?.embedding) {\n  embedding = embeddingData.data[0].embedding;\n}\n// Body wrapper variants\nelse if (embeddingData.body?.embeddings?.float?.[0]) {\n  embedding = embeddingData.body.embeddings.float[0];\n}\nelse if (embeddingData.body?.data?.[0]?.embedding) {\n  embedding = embeddingData.body.data[0].embedding;\n}\nelse if (Array.isArray(embeddingData.embedding)) {\n  embedding = embeddingData.embedding;\n}\n\n// Validate embedding dimensions (1024 for Cohere, 1536 for OpenAI)\nconst expectedDims = parseInt($env.EMBEDDING_DIMS || '1024');\nconst isValid = embedding.length >= 384; // Accept any reasonable dimension\n\nif (!isValid) {\n  return [{\n    json: {\n      valid: false,\n      error: `Invalid embedding: got ${embedding.length}, expected ${expectedDims}`,\n      embedding: [],\n      fallback: true\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    embedding: embedding,\n    dimensions: embedding.length\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -428,7 +428,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
@@ -446,7 +446,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
             }
           ]
         }
@@ -878,12 +878,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+          "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer the question. This document will be used for semantic search. Format: dense, factual text, 200-300 words. Also extract key entities as JSON: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": string}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 800\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $env.LLM_HYDE_MODEL || 'google/gemma-3-27b-it:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer the question. This document will be used for semantic search. Format: dense, factual text, 200-300 words. Also extract key entities as JSON: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": string}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 800\n}",
           "options": {
             "timeout": 25000,
             "retry": {
@@ -896,7 +896,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+                "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
               }
             ]
           }
@@ -932,7 +932,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.NEO4J_URL }}",
+          "url": "={{ $env.NEO4J_URL }}",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpBasicAuth",
           "sendBody": true,
@@ -961,7 +961,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.PINECONE_URL }}/query",
+          "url": "={{ $env.PINECONE_URL }}/query",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
@@ -1026,11 +1026,11 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.RERANKER_API_URL || 'https://api.cohere.ai/v1/rerank' }}",
+          "url": "={{ $env.RERANKER_API_URL || 'https://api.cohere.ai/v1/rerank' }}",
           "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.RERANKER_MODEL || 'rerank-multilingual-v3.0' }}\",\n  \"query\": \"{{ $node['OTEL Init'].json.query }}\",\n  \"documents\": {{ JSON.stringify(($json.merged_results || []).map(d => d.content || '').filter(c => c.length > 0).slice(0, 25)) }},\n  \"top_n\": 10\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $env.RERANKER_MODEL || 'rerank-multilingual-v3.0' }}\",\n  \"query\": \"{{ $node['OTEL Init'].json.query }}\",\n  \"documents\": {{ JSON.stringify(($json.merged_results || []).map(d => d.content || '').filter(c => c.length > 0).slice(0, 25)) }},\n  \"top_n\": 10\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1045,7 +1045,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
+                "value": "=Bearer {{ $env.COHERE_API_KEY }}"
               }
             ]
           }
@@ -1105,7 +1105,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
+          "url": "={{ $env.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={\n  \"traceId\": \"={{ $json.trace_id }}\",\n  \"spanName\": \"graph_rag_complete\",\n  \"status\": \"={{ $json.status }}\"\n}",
@@ -1188,12 +1188,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
+          "url": "={{ $env.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { \"model\": ($vars.EMBEDDING_MODEL || 'embed-english-v3.0'), \"texts\": [$json.hyde_document], \"input_type\": \"search_query\", \"embedding_types\": [\"float\"] } }}",
+          "jsonBody": "={{ { \"model\": ($env.EMBEDDING_MODEL || 'embed-english-v3.0'), \"texts\": [$json.hyde_document], \"input_type\": \"search_query\", \"embedding_types\": [\"float\"] } }}",
           "options": {
             "retry": {
               "maxTries": 3,
@@ -1205,7 +1205,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
+                "value": "=Bearer {{ $env.COHERE_API_KEY }}"
               }
             ]
           }
@@ -1251,7 +1251,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const embeddingData = $json;\n\n// Check if we have a valid embedding - handle both Cohere and OpenRouter formats\nlet embedding = [];\n\n// Cohere v2 format: embeddings.float[0]\nif (embeddingData.embeddings?.float?.[0]) {\n  embedding = embeddingData.embeddings.float[0];\n}\n// OpenRouter/OpenAI format: data[0].embedding\nelse if (embeddingData.data?.[0]?.embedding) {\n  embedding = embeddingData.data[0].embedding;\n}\n// Body wrapper variants\nelse if (embeddingData.body?.embeddings?.float?.[0]) {\n  embedding = embeddingData.body.embeddings.float[0];\n}\nelse if (embeddingData.body?.data?.[0]?.embedding) {\n  embedding = embeddingData.body.data[0].embedding;\n}\nelse if (Array.isArray(embeddingData.embedding)) {\n  embedding = embeddingData.embedding;\n}\n\n// Validate embedding dimensions (1024 for Cohere, 1536 for OpenAI)\nconst expectedDims = parseInt($vars.EMBEDDING_DIMS || '1024');\nconst isValid = embedding.length >= 384; // Accept any reasonable dimension\n\nif (!isValid) {\n  return [{\n    json: {\n      valid: false,\n      error: `Invalid embedding: got ${embedding.length}, expected ${expectedDims}`,\n      embedding: [],\n      fallback: true\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    embedding: embedding,\n    dimensions: embedding.length\n  }\n}];"
+          "jsCode": "const embeddingData = $json;\n\n// Check if we have a valid embedding - handle both Cohere and OpenRouter formats\nlet embedding = [];\n\n// Cohere v2 format: embeddings.float[0]\nif (embeddingData.embeddings?.float?.[0]) {\n  embedding = embeddingData.embeddings.float[0];\n}\n// OpenRouter/OpenAI format: data[0].embedding\nelse if (embeddingData.data?.[0]?.embedding) {\n  embedding = embeddingData.data[0].embedding;\n}\n// Body wrapper variants\nelse if (embeddingData.body?.embeddings?.float?.[0]) {\n  embedding = embeddingData.body.embeddings.float[0];\n}\nelse if (embeddingData.body?.data?.[0]?.embedding) {\n  embedding = embeddingData.body.data[0].embedding;\n}\nelse if (Array.isArray(embeddingData.embedding)) {\n  embedding = embeddingData.embedding;\n}\n\n// Validate embedding dimensions (1024 for Cohere, 1536 for OpenAI)\nconst expectedDims = parseInt($env.EMBEDDING_DIMS || '1024');\nconst isValid = embedding.length >= 384; // Accept any reasonable dimension\n\nif (!isValid) {\n  return [{\n    json: {\n      valid: false,\n      error: `Invalid embedding: got ${embedding.length}, expected ${expectedDims}`,\n      embedding: [],\n      fallback: true\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    embedding: embedding,\n    dimensions: embedding.length\n  }\n}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -1282,7 +1282,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+          "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
@@ -1300,7 +1300,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+                "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
               }
             ]
           }

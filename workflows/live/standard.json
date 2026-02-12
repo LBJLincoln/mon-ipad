@@ -52,12 +52,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $env.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
         "options": {
           "batching": {
             "batch": {
@@ -75,7 +75,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
             }
           ]
         }
@@ -94,12 +94,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
+        "url": "={{ $env.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embedding_types\": [\"float\"]\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $env.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embedding_types\": [\"float\"]\n}",
         "options": {
           "batching": {
             "batch": {
@@ -117,7 +117,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
+              "value": "=Bearer {{ $env.COHERE_API_KEY }}"
             }
           ]
         }
@@ -136,7 +136,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.PINECONE_URL }}/query",
+        "url": "={{ $env.PINECONE_URL }}/query",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -170,12 +170,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
+        "url": "={{ $env.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embedding_types\": [\"float\"]\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $env.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embedding_types\": [\"float\"]\n}",
         "options": {
           "batching": {
             "batch": {
@@ -193,7 +193,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
+              "value": "=Bearer {{ $env.COHERE_API_KEY }}"
             }
           ]
         }
@@ -212,7 +212,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.PINECONE_URL }}/query",
+        "url": "={{ $env.PINECONE_URL }}/query",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -300,11 +300,11 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.RERANKER_API_URL || 'https://api.cohere.ai/v1/rerank' }}",
+        "url": "={{ $env.RERANKER_API_URL || 'https://api.cohere.ai/v1/rerank' }}",
         "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.RERANKER_MODEL || 'rerank-v3.5' }}\",\n  \"query\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }},\n  \"documents\": {{ $json.skip_reranker ? '[\"placeholder\"]' : JSON.stringify(($json.results || []).map(r => r.content || '').filter(c => c.length > 0).slice(0, 25)) }},\n  \"top_n\": 10\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $env.RERANKER_MODEL || 'rerank-v3.5' }}\",\n  \"query\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }},\n  \"documents\": {{ $json.skip_reranker ? '[\"placeholder\"]' : JSON.stringify(($json.results || []).map(r => r.content || '').filter(c => c.length > 0).slice(0, 25)) }},\n  \"top_n\": 10\n}",
         "options": {
           "batching": {
             "batch": {
@@ -318,7 +318,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
+              "value": "=Bearer {{ $env.COHERE_API_KEY }}"
             }
           ]
         }
@@ -350,12 +350,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $env.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
         "options": {
           "batching": {
             "batch": {
@@ -373,7 +373,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
             }
           ]
         }
@@ -522,12 +522,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $env.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
         "options": {
           "batching": {
             "batch": {
@@ -545,7 +545,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
             }
           ]
         }
@@ -957,12 +957,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+          "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $env.LLM_HYDE_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
           "options": {
             "batching": {
               "batch": {
@@ -980,7 +980,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+                "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
               }
             ]
           }
@@ -999,12 +999,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
+          "url": "={{ $env.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embedding_types\": [\"float\"]\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $env.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embedding_types\": [\"float\"]\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1022,7 +1022,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
+                "value": "=Bearer {{ $env.COHERE_API_KEY }}"
               }
             ]
           }
@@ -1041,7 +1041,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.PINECONE_URL }}/query",
+          "url": "={{ $env.PINECONE_URL }}/query",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
@@ -1075,12 +1075,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
+          "url": "={{ $env.EMBEDDING_API_URL || 'https://api.cohere.com/v2/embed' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embedding_types\": [\"float\"]\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $env.EMBEDDING_MODEL || 'embed-english-v3.0' }}\",\n  \"texts\": [{{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"input_type\": \"search_query\",\n  \"embedding_types\": [\"float\"]\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1098,7 +1098,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
+                "value": "=Bearer {{ $env.COHERE_API_KEY }}"
               }
             ]
           }
@@ -1117,7 +1117,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.PINECONE_URL }}/query",
+          "url": "={{ $env.PINECONE_URL }}/query",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
@@ -1205,11 +1205,11 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.RERANKER_API_URL || 'https://api.cohere.ai/v1/rerank' }}",
+          "url": "={{ $env.RERANKER_API_URL || 'https://api.cohere.ai/v1/rerank' }}",
           "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.RERANKER_MODEL || 'rerank-v3.5' }}\",\n  \"query\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }},\n  \"documents\": {{ $json.skip_reranker ? '[\"placeholder\"]' : JSON.stringify(($json.results || []).map(r => r.content || '').filter(c => c.length > 0).slice(0, 25)) }},\n  \"top_n\": 10\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $env.RERANKER_MODEL || 'rerank-v3.5' }}\",\n  \"query\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }},\n  \"documents\": {{ $json.skip_reranker ? '[\"placeholder\"]' : JSON.stringify(($json.results || []).map(r => r.content || '').filter(c => c.length > 0).slice(0, 25)) }},\n  \"top_n\": 10\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1223,7 +1223,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.COHERE_API_KEY }}"
+                "value": "=Bearer {{ $env.COHERE_API_KEY }}"
               }
             ]
           }
@@ -1255,12 +1255,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+          "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $env.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1278,7 +1278,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+                "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
               }
             ]
           }
@@ -1427,12 +1427,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+          "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $env.LLM_FAST_MODEL || 'meta-llama/llama-3.3-70b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1450,7 +1450,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+                "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
               }
             ]
           }

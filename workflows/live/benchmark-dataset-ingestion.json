@@ -48,7 +48,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer {{ $vars.HF_TOKEN }}"
+              "value": "Bearer {{ $env.HF_TOKEN }}"
             }
           ]
         },
@@ -206,13 +206,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.openai.com/v1/embeddings' }}",
+        "url": "={{ $env.EMBEDDING_API_URL || 'https://api.openai.com/v1/embeddings' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY || $vars.EMBEDDING_API_KEY || '' }}"
+              "value": "=Bearer {{ $env.OPENROUTER_API_KEY || $env.EMBEDDING_API_KEY || '' }}"
             },
             {
               "name": "Content-Type",
@@ -222,7 +222,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify($json.embed_texts) }}\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $env.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify($json.embed_texts) }}\n}",
         "options": {
           "timeout": 60000
         }
@@ -253,13 +253,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($vars.PINECONE_URL || $vars.PINECONE_HOST || 'https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io') + '/vectors/upsert' }}",
+        "url": "={{ ($env.PINECONE_URL || $env.PINECONE_HOST || 'https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io') + '/vectors/upsert' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Api-Key",
-              "value": "={{ $vars.PINECONE_API_KEY }}"
+              "value": "={{ $env.PINECONE_API_KEY }}"
             },
             {
               "name": "Content-Type",
@@ -329,13 +329,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.NEO4J_URL || 'https://38c949a2.databases.neo4j.io/db/neo4j/query/v2' }}",
+        "url": "={{ $env.NEO4J_URL || 'https://38c949a2.databases.neo4j.io/db/neo4j/query/v2' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Basic {{ Buffer.from(($vars.NEO4J_USER || 'neo4j') + ':' + ($vars.NEO4J_PASSWORD || '')).toString('base64') }}"
+              "value": "=Basic {{ Buffer.from(($env.NEO4J_USER || 'neo4j') + ':' + ($env.NEO4J_PASSWORD || '')).toString('base64') }}"
             },
             {
               "name": "Content-Type",
@@ -409,7 +409,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
+        "url": "={{ $env.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -844,7 +844,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "Bearer {{ $vars.HF_TOKEN }}"
+                "value": "Bearer {{ $env.HF_TOKEN }}"
               }
             ]
           },
@@ -1002,13 +1002,13 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.openai.com/v1/embeddings' }}",
+          "url": "={{ $env.EMBEDDING_API_URL || 'https://api.openai.com/v1/embeddings' }}",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY || $vars.EMBEDDING_API_KEY || '' }}"
+                "value": "=Bearer {{ $env.OPENROUTER_API_KEY || $env.EMBEDDING_API_KEY || '' }}"
               },
               {
                 "name": "Content-Type",
@@ -1018,7 +1018,7 @@
           },
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify($json.embed_texts) }}\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $env.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify($json.embed_texts) }}\n}",
           "options": {
             "timeout": 60000
           }
@@ -1049,13 +1049,13 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ ($vars.PINECONE_URL || $vars.PINECONE_HOST || 'https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io') + '/vectors/upsert' }}",
+          "url": "={{ ($env.PINECONE_URL || $env.PINECONE_HOST || 'https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io') + '/vectors/upsert' }}",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
               {
                 "name": "Api-Key",
-                "value": "={{ $vars.PINECONE_API_KEY }}"
+                "value": "={{ $env.PINECONE_API_KEY }}"
               },
               {
                 "name": "Content-Type",
@@ -1125,13 +1125,13 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.NEO4J_URL || 'https://38c949a2.databases.neo4j.io/db/neo4j/query/v2' }}",
+          "url": "={{ $env.NEO4J_URL || 'https://38c949a2.databases.neo4j.io/db/neo4j/query/v2' }}",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Basic {{ Buffer.from(($vars.NEO4J_USER || 'neo4j') + ':' + ($vars.NEO4J_PASSWORD || '')).toString('base64') }}"
+                "value": "=Basic {{ Buffer.from(($env.NEO4J_USER || 'neo4j') + ':' + ($env.NEO4J_PASSWORD || '')).toString('base64') }}"
               },
               {
                 "name": "Content-Type",
@@ -1205,7 +1205,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
+          "url": "={{ $env.OTEL_EXPORTER_URL || 'https://otel-collector.internal:4318' }}/v1/traces",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [

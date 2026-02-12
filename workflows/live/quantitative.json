@@ -57,7 +57,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
@@ -75,7 +75,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
             }
           ]
         }
@@ -143,7 +143,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
@@ -161,7 +161,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
             }
           ]
         }
@@ -194,7 +194,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
+        "url": "={{ $env.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"quantitative_rag_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"attributes\": {\n    \"result_count\": {{ $json.result_count }},\n    \"sql_length\": {{ $json.sql_executed?.length || 0 }}\n  }\n}",
@@ -253,7 +253,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
         "authentication": "none",
         "nodeCredentialType": "openRouterApi",
         "sendBody": true,
@@ -271,7 +271,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+              "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
             }
           ]
         }
@@ -393,7 +393,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n!!!! CRITICAL DATA MODEL WARNING !!!!\nThe financials table contains BOTH quarterly rows (period='Q1','Q2','Q3','Q4') AND a full-year aggregate row (period='FY') for each company/year.\n- For annual totals: ALWAYS use period = 'FY'. NEVER SUM() without period filter or you get DOUBLE the real value.\n- For quarterly data: filter by the specific quarter (period = 'Q1', etc.).\n- SUM() is only valid across different companies or fiscal_years, NOT across periods within the same company/year.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER / DOUBLE-COUNTING PREVENTION:\n  The financials table contains BOTH period-level rows (Q1, Q2, Q3, Q4) AND full-year aggregate rows (period = 'FY').\n  * For annual/total revenue queries: ALWAYS filter with period = 'FY' to get the pre-computed annual total. Do NOT use SUM() across all periods as this will double-count (giving 2x the real value).\n  * For quarterly queries: filter by the specific period (e.g., period = 'Q1').\n  * Only use SUM() when aggregating across different companies or fiscal_years, NOT across periods within the same company/year.\n  * Example CORRECT query: SELECT revenue FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023 AND period = 'FY'\n  * Example WRONG query: SELECT SUM(revenue) FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023  -- This sums FY + Q1+Q2+Q3+Q4 = 2x!\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
+        "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $env.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n!!!! CRITICAL DATA MODEL WARNING !!!!\nThe financials table contains BOTH quarterly rows (period='Q1','Q2','Q3','Q4') AND a full-year aggregate row (period='FY') for each company/year.\n- For annual totals: ALWAYS use period = 'FY'. NEVER SUM() without period filter or you get DOUBLE the real value.\n- For quarterly data: filter by the specific quarter (period = 'Q1', etc.).\n- SUM() is only valid across different companies or fiscal_years, NOT across periods within the same company/year.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER / DOUBLE-COUNTING PREVENTION:\n  The financials table contains BOTH period-level rows (Q1, Q2, Q3, Q4) AND full-year aggregate rows (period = 'FY').\n  * For annual/total revenue queries: ALWAYS filter with period = 'FY' to get the pre-computed annual total. Do NOT use SUM() across all periods as this will double-count (giving 2x the real value).\n  * For quarterly queries: filter by the specific period (e.g., period = 'Q1').\n  * Only use SUM() when aggregating across different companies or fiscal_years, NOT across periods within the same company/year.\n  * Example CORRECT query: SELECT revenue FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023 AND period = 'FY'\n  * Example WRONG query: SELECT SUM(revenue) FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023  -- This sums FY + Q1+Q2+Q3+Q4 = 2x!\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -406,7 +406,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
+        "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $env.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -419,7 +419,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"meta-llama/llama-3.3-70b-instruct:free\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
+        "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"meta-llama/llama-3.3-70b-instruct:free\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: $env.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -10084,7 +10084,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+          "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
@@ -10102,7 +10102,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+                "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
               }
             ]
           }
@@ -10170,7 +10170,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+          "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
@@ -10188,7 +10188,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+                "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
               }
             ]
           }
@@ -10221,7 +10221,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
+          "url": "={{ $env.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"quantitative_rag_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"attributes\": {\n    \"result_count\": {{ $json.result_count }},\n    \"sql_length\": {{ $json.sql_executed?.length || 0 }}\n  }\n}",
@@ -10280,7 +10280,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+          "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
           "authentication": "none",
           "nodeCredentialType": "openRouterApi",
           "sendBody": true,
@@ -10298,7 +10298,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{ $vars.OPENROUTER_API_KEY }}"
+                "value": "=Bearer {{ $env.OPENROUTER_API_KEY }}"
               }
             ]
           }
@@ -10420,7 +10420,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n!!!! CRITICAL DATA MODEL WARNING !!!!\nThe financials table contains BOTH quarterly rows (period='Q1','Q2','Q3','Q4') AND a full-year aggregate row (period='FY') for each company/year.\n- For annual totals: ALWAYS use period = 'FY'. NEVER SUM() without period filter or you get DOUBLE the real value.\n- For quarterly data: filter by the specific quarter (period = 'Q1', etc.).\n- SUM() is only valid across different companies or fiscal_years, NOT across periods within the same company/year.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER / DOUBLE-COUNTING PREVENTION:\n  The financials table contains BOTH period-level rows (Q1, Q2, Q3, Q4) AND full-year aggregate rows (period = 'FY').\n  * For annual/total revenue queries: ALWAYS filter with period = 'FY' to get the pre-computed annual total. Do NOT use SUM() across all periods as this will double-count (giving 2x the real value).\n  * For quarterly queries: filter by the specific period (e.g., period = 'Q1').\n  * Only use SUM() when aggregating across different companies or fiscal_years, NOT across periods within the same company/year.\n  * Example CORRECT query: SELECT revenue FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023 AND period = 'FY'\n  * Example WRONG query: SELECT SUM(revenue) FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023  -- This sums FY + Q1+Q2+Q3+Q4 = 2x!\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
+          "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: $env.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n!!!! CRITICAL DATA MODEL WARNING !!!!\nThe financials table contains BOTH quarterly rows (period='Q1','Q2','Q3','Q4') AND a full-year aggregate row (period='FY') for each company/year.\n- For annual totals: ALWAYS use period = 'FY'. NEVER SUM() without period filter or you get DOUBLE the real value.\n- For quarterly data: filter by the specific quarter (period = 'Q1', etc.).\n- SUM() is only valid across different companies or fiscal_years, NOT across periods within the same company/year.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER / DOUBLE-COUNTING PREVENTION:\n  The financials table contains BOTH period-level rows (Q1, Q2, Q3, Q4) AND full-year aggregate rows (period = 'FY').\n  * For annual/total revenue queries: ALWAYS filter with period = 'FY' to get the pre-computed annual total. Do NOT use SUM() across all periods as this will double-count (giving 2x the real value).\n  * For quarterly queries: filter by the specific period (e.g., period = 'Q1').\n  * Only use SUM() when aggregating across different companies or fiscal_years, NOT across periods within the same company/year.\n  * Example CORRECT query: SELECT revenue FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023 AND period = 'FY'\n  * Example WRONG query: SELECT SUM(revenue) FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023  -- This sums FY + Q1+Q2+Q3+Q4 = 2x!\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -10433,7 +10433,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $vars.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
+          "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: $env.LLM_FAST_MODEL || 'google/gemma-3-27b-it:free',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -10446,7 +10446,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"meta-llama/llama-3.3-70b-instruct:free\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: $vars.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
+          "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"meta-llama/llama-3.3-70b-instruct:free\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: $env.LLM_SQL_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,

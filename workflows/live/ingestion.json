@@ -184,12 +184,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.LLM_API_URL || 'https://api.openai.com/v1/chat/completions' }}",
+        "url": "={{ $env.LLM_API_URL || 'https://api.openai.com/v1/chat/completions' }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.CHUNKING_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decoupe semantique adaptative.\\n\\n=== STRATEGIE SELON TYPE DE CONTENU ===\\n\\nNARRATIF (rapports, articles):\\n- Chunks de 300-500 mots\\n- Decoupe aux changements de sujet/ton\\n\\nTECHNIQUE (documentation, specs):\\n- Chunks de 200-400 mots\\n- Decoupe aux sections logiques\\n\\nTABULAIRE (donnees, listes):\\n- Garder les tableaux entiers si possible\\n- Sinon, grouper les lignes liees\\n\\nLEGAL (contrats, policies):\\n- Chunks plus longs (500-800 mots)\\n- Ne jamais couper une clause\\n\\n=== REGLES ===\\n1. Detecte le type de contenu\\n2. Applique la strategie appropriee\\n3. Chaque chunk doit etre coherent et auto-suffisant\\n4. Indique le topic de chaque chunk\\n\\nReponds JSON: {\\\"content_type\\\": \\\"narrative|technical|tabular|legal\\\", \\\"chunks\\\": [{\\\"content\\\": string, \\\"topic\\\": string, \\\"start_index\\\": number}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Type MIME: {{ $node['MIME Type Detector'].json.mime_type }}\\nNom fichier: {{ $node['MIME Type Detector'].json.objectKey }}\\n\\nContenu:\\n{{ $json.processed_content?.substring(0, 15000) || '' }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 4000,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $env.CHUNKING_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decoupe semantique adaptative.\\n\\n=== STRATEGIE SELON TYPE DE CONTENU ===\\n\\nNARRATIF (rapports, articles):\\n- Chunks de 300-500 mots\\n- Decoupe aux changements de sujet/ton\\n\\nTECHNIQUE (documentation, specs):\\n- Chunks de 200-400 mots\\n- Decoupe aux sections logiques\\n\\nTABULAIRE (donnees, listes):\\n- Garder les tableaux entiers si possible\\n- Sinon, grouper les lignes liees\\n\\nLEGAL (contrats, policies):\\n- Chunks plus longs (500-800 mots)\\n- Ne jamais couper une clause\\n\\n=== REGLES ===\\n1. Detecte le type de contenu\\n2. Applique la strategie appropriee\\n3. Chaque chunk doit etre coherent et auto-suffisant\\n4. Indique le topic de chaque chunk\\n\\nReponds JSON: {\\\"content_type\\\": \\\"narrative|technical|tabular|legal\\\", \\\"chunks\\\": [{\\\"content\\\": string, \\\"topic\\\": string, \\\"start_index\\\": number}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Type MIME: {{ $node['MIME Type Detector'].json.mime_type }}\\nNom fichier: {{ $node['MIME Type Detector'].json.objectKey }}\\n\\nContenu:\\n{{ $json.processed_content?.substring(0, 15000) || '' }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 4000,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
         "options": {
           "timeout": 60000
         }
@@ -253,12 +253,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.LLM_API_URL || 'https://api.openai.com/v1/chat/completions' }}",
+        "url": "={{ $env.LLM_API_URL || 'https://api.openai.com/v1/chat/completions' }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.QA_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere exactement 3 questions auxquelles ce paragraphe repond. Format JSON: {\\\"questions\\\": [\\\"Q1?\\\", \\\"Q2?\\\", \\\"Q3?\\\"]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json.chunks?.slice(0, 5).map(c => c.content.substring(0, 500))) }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $env.QA_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere exactement 3 questions auxquelles ce paragraphe repond. Format JSON: {\\\"questions\\\": [\\\"Q1?\\\", \\\"Q2?\\\", \\\"Q3?\\\"]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json.chunks?.slice(0, 5).map(c => c.content.substring(0, 500))) }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
         "options": {
           "timeout": 30000
         }
@@ -298,12 +298,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.openai.com/v1/embeddings' }}",
+        "url": "={{ $env.EMBEDDING_API_URL || 'https://api.openai.com/v1/embeddings' }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify(($json.chunks || []).slice(0, 100).map(c => c.contextual_content || c.content)) }}\n}",
+        "jsonBody": "={\n  \"model\": \"{{ $env.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify(($json.chunks || []).slice(0, 100).map(c => c.contextual_content || c.content)) }}\n}",
         "options": {
           "timeout": 30000
         }
@@ -342,7 +342,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.PINECONE_URL }}/vectors/upsert",
+        "url": "={{ $env.PINECONE_URL }}/vectors/upsert",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -564,7 +564,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/export",
+        "url": "={{ $env.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/export",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"trace_id\": \"{{ $json.trace_id }}\",\n  \"span_name\": \"INGESTION_V3_COMPLETE\",\n  \"status\": \"SUCCESS\"\n}",
@@ -624,7 +624,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// P01: Prepare Contextual Prompts\n// Splits chunks into individual items for SplitInBatches processing\n\nconst chunks = $json.chunks || [];\nconst fullDocument = $json.full_document_text || '';\nconst documentTitle = $json.document_title || '';\n\nconst API_URL = '{{ $vars.CONTEXTUAL_RETRIEVAL_API_URL || \"https://api.deepseek.com/v1/chat/completions\" }}';\nconst MODEL = '{{ $vars.CONTEXTUAL_RETRIEVAL_MODEL || \"deepseek-chat\" }}';\n\nconst MAX_DOC_CHARS = 60000;\nlet docContext = fullDocument;\nif (docContext.length > MAX_DOC_CHARS) {\n  const half = Math.floor(MAX_DOC_CHARS / 2);\n  docContext = docContext.substring(0, half) + '\\n[...]\\n' + docContext.substring(docContext.length - half);\n}\n\nconst items = chunks.map((chunk, idx) => ({\n  json: {\n    ...chunk,\n    _contextual_prompt: JSON.stringify({\n      model: MODEL,\n      messages: [\n        {\n          role: 'system',\n          content: 'Tu recois un document complet et un chunk. Genere 1-2 phrases qui situent ce chunk dans le contexte du document. Reponds UNIQUEMENT avec les phrases de contexte.'\n        },\n        {\n          role: 'user',\n          content: `<document>\\n${docContext}\\n</document>\\n<chunk>\\n${chunk.content}\\n</chunk>\\nSitue ce chunk dans le contexte du document \"${documentTitle}\".`\n        }\n      ],\n      temperature: 0.0,\n      max_tokens: 200\n    }),\n    _chunk_index: idx,\n    _parent_data: {\n      parent_id: $json.parent_id,\n      parent_filename: $json.parent_filename,\n      document_title: $json.document_title,\n      total_chunks: chunks.length,\n      trace_id: $json.trace_id,\n      tenant_id: $json.tenant_id,\n      lock_key: $json.lock_key,\n      lock_value: $json.lock_value\n    }\n  }\n}));\n\nreturn items;"
+        "jsCode": "// P01: Prepare Contextual Prompts\n// Splits chunks into individual items for SplitInBatches processing\n\nconst chunks = $json.chunks || [];\nconst fullDocument = $json.full_document_text || '';\nconst documentTitle = $json.document_title || '';\n\nconst API_URL = '{{ $env.CONTEXTUAL_RETRIEVAL_API_URL || \"https://api.deepseek.com/v1/chat/completions\" }}';\nconst MODEL = '{{ $env.CONTEXTUAL_RETRIEVAL_MODEL || \"deepseek-chat\" }}';\n\nconst MAX_DOC_CHARS = 60000;\nlet docContext = fullDocument;\nif (docContext.length > MAX_DOC_CHARS) {\n  const half = Math.floor(MAX_DOC_CHARS / 2);\n  docContext = docContext.substring(0, half) + '\\n[...]\\n' + docContext.substring(docContext.length - half);\n}\n\nconst items = chunks.map((chunk, idx) => ({\n  json: {\n    ...chunk,\n    _contextual_prompt: JSON.stringify({\n      model: MODEL,\n      messages: [\n        {\n          role: 'system',\n          content: 'Tu recois un document complet et un chunk. Genere 1-2 phrases qui situent ce chunk dans le contexte du document. Reponds UNIQUEMENT avec les phrases de contexte.'\n        },\n        {\n          role: 'user',\n          content: `<document>\\n${docContext}\\n</document>\\n<chunk>\\n${chunk.content}\\n</chunk>\\nSitue ce chunk dans le contexte du document \"${documentTitle}\".`\n        }\n      ],\n      temperature: 0.0,\n      max_tokens: 200\n    }),\n    _chunk_index: idx,\n    _parent_data: {\n      parent_id: $json.parent_id,\n      parent_filename: $json.parent_filename,\n      document_title: $json.document_title,\n      total_chunks: chunks.length,\n      trace_id: $json.trace_id,\n      tenant_id: $json.tenant_id,\n      lock_key: $json.lock_key,\n      lock_value: $json.lock_value\n    }\n  }\n}));\n\nreturn items;"
       },
       "id": "contextual-retrieval-prep",
       "name": "Prepare Contextual Prompts",
@@ -652,7 +652,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.CONTEXTUAL_RETRIEVAL_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+        "url": "={{ $env.CONTEXTUAL_RETRIEVAL_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -1243,12 +1243,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.LLM_API_URL || 'https://api.openai.com/v1/chat/completions' }}",
+          "url": "={{ $env.LLM_API_URL || 'https://api.openai.com/v1/chat/completions' }}",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.CHUNKING_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decoupe semantique adaptative.\\n\\n=== STRATEGIE SELON TYPE DE CONTENU ===\\n\\nNARRATIF (rapports, articles):\\n- Chunks de 300-500 mots\\n- Decoupe aux changements de sujet/ton\\n\\nTECHNIQUE (documentation, specs):\\n- Chunks de 200-400 mots\\n- Decoupe aux sections logiques\\n\\nTABULAIRE (donnees, listes):\\n- Garder les tableaux entiers si possible\\n- Sinon, grouper les lignes liees\\n\\nLEGAL (contrats, policies):\\n- Chunks plus longs (500-800 mots)\\n- Ne jamais couper une clause\\n\\n=== REGLES ===\\n1. Detecte le type de contenu\\n2. Applique la strategie appropriee\\n3. Chaque chunk doit etre coherent et auto-suffisant\\n4. Indique le topic de chaque chunk\\n\\nReponds JSON: {\\\"content_type\\\": \\\"narrative|technical|tabular|legal\\\", \\\"chunks\\\": [{\\\"content\\\": string, \\\"topic\\\": string, \\\"start_index\\\": number}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Type MIME: {{ $node['MIME Type Detector'].json.mime_type }}\\nNom fichier: {{ $node['MIME Type Detector'].json.objectKey }}\\n\\nContenu:\\n{{ $json.processed_content?.substring(0, 15000) || '' }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 4000,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $env.CHUNKING_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decoupe semantique adaptative.\\n\\n=== STRATEGIE SELON TYPE DE CONTENU ===\\n\\nNARRATIF (rapports, articles):\\n- Chunks de 300-500 mots\\n- Decoupe aux changements de sujet/ton\\n\\nTECHNIQUE (documentation, specs):\\n- Chunks de 200-400 mots\\n- Decoupe aux sections logiques\\n\\nTABULAIRE (donnees, listes):\\n- Garder les tableaux entiers si possible\\n- Sinon, grouper les lignes liees\\n\\nLEGAL (contrats, policies):\\n- Chunks plus longs (500-800 mots)\\n- Ne jamais couper une clause\\n\\n=== REGLES ===\\n1. Detecte le type de contenu\\n2. Applique la strategie appropriee\\n3. Chaque chunk doit etre coherent et auto-suffisant\\n4. Indique le topic de chaque chunk\\n\\nReponds JSON: {\\\"content_type\\\": \\\"narrative|technical|tabular|legal\\\", \\\"chunks\\\": [{\\\"content\\\": string, \\\"topic\\\": string, \\\"start_index\\\": number}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Type MIME: {{ $node['MIME Type Detector'].json.mime_type }}\\nNom fichier: {{ $node['MIME Type Detector'].json.objectKey }}\\n\\nContenu:\\n{{ $json.processed_content?.substring(0, 15000) || '' }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 4000,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
           "options": {
             "timeout": 60000
           }
@@ -1312,12 +1312,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.LLM_API_URL || 'https://api.openai.com/v1/chat/completions' }}",
+          "url": "={{ $env.LLM_API_URL || 'https://api.openai.com/v1/chat/completions' }}",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.QA_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere exactement 3 questions auxquelles ce paragraphe repond. Format JSON: {\\\"questions\\\": [\\\"Q1?\\\", \\\"Q2?\\\", \\\"Q3?\\\"]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json.chunks?.slice(0, 5).map(c => c.content.substring(0, 500))) }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $env.QA_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere exactement 3 questions auxquelles ce paragraphe repond. Format JSON: {\\\"questions\\\": [\\\"Q1?\\\", \\\"Q2?\\\", \\\"Q3?\\\"]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json.chunks?.slice(0, 5).map(c => c.content.substring(0, 500))) }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
           "options": {
             "timeout": 30000
           }
@@ -1357,12 +1357,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.EMBEDDING_API_URL || 'https://api.openai.com/v1/embeddings' }}",
+          "url": "={{ $env.EMBEDDING_API_URL || 'https://api.openai.com/v1/embeddings' }}",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ $vars.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify(($json.chunks || []).slice(0, 100).map(c => c.contextual_content || c.content)) }}\n}",
+          "jsonBody": "={\n  \"model\": \"{{ $env.EMBEDDING_MODEL || 'text-embedding-3-small' }}\",\n  \"input\": {{ JSON.stringify(($json.chunks || []).slice(0, 100).map(c => c.contextual_content || c.content)) }}\n}",
           "options": {
             "timeout": 30000
           }
@@ -1401,7 +1401,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.PINECONE_URL }}/vectors/upsert",
+          "url": "={{ $env.PINECONE_URL }}/vectors/upsert",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
@@ -1623,7 +1623,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/export",
+          "url": "={{ $env.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/export",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={\n  \"trace_id\": \"{{ $json.trace_id }}\",\n  \"span_name\": \"INGESTION_V3_COMPLETE\",\n  \"status\": \"SUCCESS\"\n}",
@@ -1683,7 +1683,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// P01: Prepare Contextual Prompts\n// Splits chunks into individual items for SplitInBatches processing\n\nconst chunks = $json.chunks || [];\nconst fullDocument = $json.full_document_text || '';\nconst documentTitle = $json.document_title || '';\n\nconst API_URL = '{{ $vars.CONTEXTUAL_RETRIEVAL_API_URL || \"https://api.deepseek.com/v1/chat/completions\" }}';\nconst MODEL = '{{ $vars.CONTEXTUAL_RETRIEVAL_MODEL || \"deepseek-chat\" }}';\n\nconst MAX_DOC_CHARS = 60000;\nlet docContext = fullDocument;\nif (docContext.length > MAX_DOC_CHARS) {\n  const half = Math.floor(MAX_DOC_CHARS / 2);\n  docContext = docContext.substring(0, half) + '\\n[...]\\n' + docContext.substring(docContext.length - half);\n}\n\nconst items = chunks.map((chunk, idx) => ({\n  json: {\n    ...chunk,\n    _contextual_prompt: JSON.stringify({\n      model: MODEL,\n      messages: [\n        {\n          role: 'system',\n          content: 'Tu recois un document complet et un chunk. Genere 1-2 phrases qui situent ce chunk dans le contexte du document. Reponds UNIQUEMENT avec les phrases de contexte.'\n        },\n        {\n          role: 'user',\n          content: `<document>\\n${docContext}\\n</document>\\n<chunk>\\n${chunk.content}\\n</chunk>\\nSitue ce chunk dans le contexte du document \"${documentTitle}\".`\n        }\n      ],\n      temperature: 0.0,\n      max_tokens: 200\n    }),\n    _chunk_index: idx,\n    _parent_data: {\n      parent_id: $json.parent_id,\n      parent_filename: $json.parent_filename,\n      document_title: $json.document_title,\n      total_chunks: chunks.length,\n      trace_id: $json.trace_id,\n      tenant_id: $json.tenant_id,\n      lock_key: $json.lock_key,\n      lock_value: $json.lock_value\n    }\n  }\n}));\n\nreturn items;"
+          "jsCode": "// P01: Prepare Contextual Prompts\n// Splits chunks into individual items for SplitInBatches processing\n\nconst chunks = $json.chunks || [];\nconst fullDocument = $json.full_document_text || '';\nconst documentTitle = $json.document_title || '';\n\nconst API_URL = '{{ $env.CONTEXTUAL_RETRIEVAL_API_URL || \"https://api.deepseek.com/v1/chat/completions\" }}';\nconst MODEL = '{{ $env.CONTEXTUAL_RETRIEVAL_MODEL || \"deepseek-chat\" }}';\n\nconst MAX_DOC_CHARS = 60000;\nlet docContext = fullDocument;\nif (docContext.length > MAX_DOC_CHARS) {\n  const half = Math.floor(MAX_DOC_CHARS / 2);\n  docContext = docContext.substring(0, half) + '\\n[...]\\n' + docContext.substring(docContext.length - half);\n}\n\nconst items = chunks.map((chunk, idx) => ({\n  json: {\n    ...chunk,\n    _contextual_prompt: JSON.stringify({\n      model: MODEL,\n      messages: [\n        {\n          role: 'system',\n          content: 'Tu recois un document complet et un chunk. Genere 1-2 phrases qui situent ce chunk dans le contexte du document. Reponds UNIQUEMENT avec les phrases de contexte.'\n        },\n        {\n          role: 'user',\n          content: `<document>\\n${docContext}\\n</document>\\n<chunk>\\n${chunk.content}\\n</chunk>\\nSitue ce chunk dans le contexte du document \"${documentTitle}\".`\n        }\n      ],\n      temperature: 0.0,\n      max_tokens: 200\n    }),\n    _chunk_index: idx,\n    _parent_data: {\n      parent_id: $json.parent_id,\n      parent_filename: $json.parent_filename,\n      document_title: $json.document_title,\n      total_chunks: chunks.length,\n      trace_id: $json.trace_id,\n      tenant_id: $json.tenant_id,\n      lock_key: $json.lock_key,\n      lock_value: $json.lock_value\n    }\n  }\n}));\n\nreturn items;"
         },
         "id": "contextual-retrieval-prep",
         "name": "Prepare Contextual Prompts",
@@ -1711,7 +1711,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $vars.CONTEXTUAL_RETRIEVAL_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+          "url": "={{ $env.CONTEXTUAL_RETRIEVAL_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
