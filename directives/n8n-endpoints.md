@@ -1,15 +1,58 @@
-# n8n API Endpoints & Commandes Fonctionnelles
+# n8n API Endpoints & Reference Complete
 
-> **Ce fichier DOIT être mis à jour** après chaque découverte d'endpoint ou technique qui marche.
-> Dernière mise à jour : 2026-02-10
+> **Ce fichier est la reference unique** pour les scripts Python de test.
+> Les scripts doivent s'y referer pour formater les requetes et utiliser les bons points d'entree.
+> Derniere mise a jour : 2026-02-13 (session reorganisation)
 
 ---
 
 ## Configuration
 
 ```bash
-export N8N_HOST="https://amoret.app.n8n.cloud"  # Changer après migration self-hosted
+export N8N_HOST="https://amoret.app.n8n.cloud"
 export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
+```
+
+---
+
+## Format de Requete pour Scripts Python (REFERENCE)
+
+### Format de body webhook (VERIFIE FONCTIONNEL)
+
+```python
+# Format qui FONCTIONNE — verifie le 2026-02-12 a 11:19:49 CET (Paris)
+payload = {"question": "Your question here"}
+# Content-Type: application/json
+# Method: POST
+```
+
+### Timestamps — Fuseau horaire Paris (CET/CEST)
+
+| Champ | Format | Exemple |
+|-------|--------|---------|
+| `startedAt` (n8n API) | ISO 8601 UTC | `2026-02-12T10:19:49.123Z` |
+| Conversion Paris (CET = UTC+1) | +1h | `2026-02-12T11:19:49.123 CET` |
+| Conversion Paris (CEST = UTC+2) | +2h | (ete uniquement) |
+| Format pour logs | ISO local | `2026-02-12T11-19-49` |
+
+### Pattern Python pour appeler un webhook
+
+```python
+import urllib.request, json
+from datetime import datetime, timezone, timedelta
+
+N8N_HOST = "https://amoret.app.n8n.cloud"
+PARIS_TZ = timezone(timedelta(hours=1))  # CET (hiver), +2 pour CEST (ete)
+
+def call_webhook(path, question, timeout=120):
+    """Appel webhook n8n avec timestamp Paris."""
+    url = f"{N8N_HOST}{path}"
+    payload = json.dumps({"question": question}).encode()
+    req = urllib.request.Request(url, data=payload, method="POST",
+        headers={"Content-Type": "application/json"})
+    timestamp_paris = datetime.now(PARIS_TZ).strftime("%Y-%m-%dT%H:%M:%S")
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.loads(resp.read()), timestamp_paris
 ```
 
 ---
@@ -152,13 +195,47 @@ n8n_api("POST", f"/api/v1/workflows/{WF_ID}/activate")
 
 ---
 
-## Workflow IDs actuels
+## Workflow IDs actuels (DOUBLE SOURCE — verifier coherence)
 
+### Source 1 : IDs dans les scripts Python (WORKFLOW_IDS dans node-analyzer.py)
+| Pipeline | Workflow ID | Verifie API |
+|----------|-------------|-------------|
+| Standard | `IgQeo5svGlIAPkBc` | Oui (2026-02-12) |
+| Graph | `95x2BBAbJlLWZtWEJn6rb` | Oui (2026-02-12) |
+| Quantitative | `E19NZG9WfM7FNsxr` | Oui (2026-02-12) |
+| Orchestrator | `ALd4gOEqiKL5KR1p` | Oui (2026-02-12) |
+
+### Source 2 : IDs historiques (anciennes versions)
 | Pipeline | Workflow ID | Notes |
 |----------|-------------|-------|
-| Standard | `LnTqRX4LZlI009Ks-3Jnp` | V3.4 |
-| Graph | `95x2BBAbJlLWZtWEJn6rb` | V3.3 |
-| Quantitative | `LjUz8fxQZ03G9IsU` | V2.0 |
-| Orchestrator | `FZxkpldDbgV8AD_cg7IWG` | V10.1 |
+| Standard | `LnTqRX4LZlI009Ks-3Jnp` | V3.4 (peut etre obsolete) |
+| Quantitative | `LjUz8fxQZ03G9IsU` | V2.0 (peut etre obsolete) |
+| Orchestrator | `FZxkpldDbgV8AD_cg7IWG` | V10.1 (peut etre obsolete) |
 
-> **IMPORTANT** : Ces IDs changeront après migration self-hosted. Mettre à jour ce fichier.
+> **IMPORTANT** : Toujours utiliser les IDs de la Source 1 (verifies via API).
+> Ces IDs changeront apres migration self-hosted.
+
+---
+
+## Webhook Paths (VERIFIE FONCTIONNEL)
+
+| Pipeline | Path | Dernier test OK | Timestamp Paris |
+|----------|------|-----------------|-----------------|
+| Standard | `/webhook/rag-multi-index-v3` | 2026-02-12 | 11:19:49 CET |
+| Graph | `/webhook/ff622742-6d71-4e91-af71-b5c666088717` | 2026-02-12 | 09:27:03 CET |
+| Quantitative | `/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9` | 2026-02-12 | 11:11:36 CET |
+| Orchestrator | `/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0` | 2026-02-10 | — |
+
+---
+
+## Chemins des scripts de test (POST-REORGANISATION)
+
+| Script | Chemin | Usage |
+|--------|--------|-------|
+| Quick test (1-5q) | `eval/quick-test.py` | Smoke test |
+| Iterative eval | `eval/iterative-eval.py` | Progressif 5→10→50 |
+| Parallel eval (200q) | `eval/run-eval-parallel.py` | Full eval |
+| Node analyzer | `eval/node-analyzer.py` | Analyse node-par-node |
+| N8n execution analyzer | `scripts/analyze_n8n_executions.py` | Analyse brute complete |
+| Status generator | `eval/generate_status.py` | Regenere status.json |
+| Phase gates | `eval/phase_gates.py` | Verification gates |

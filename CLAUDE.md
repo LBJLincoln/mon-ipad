@@ -1,198 +1,129 @@
-# Multi-RAG Orchestrator — SOTA 2026
+# Multi-RAG Orchestrator — Tour de Controle
 
-## Session Start — LIRE EN PREMIER
+> Ce fichier est le point d'entree unique. Il existe en symlink dans `directives/claude.md`.
+> Il structure la session en 3 phases : LIRE, UTILISER, PRODUIRE.
 
+---
+
+## PHASE 1 — LIRE (dans cet ordre exact)
+
+### 1.1 Etat actuel (TOUJOURS en premier)
 ```bash
-cat docs/status.json                    # Metriques live, blockers, prochaine action
-cat context/session-state.md            # Ce qui a ete fait, ce qui reste
+cat docs/status.json                    # Metriques live : accuracy, gaps, blockers, next_action
+cat directives/status.md                # Resume de la derniere session : fichiers modifies, analyse
 ```
 
-Puis : identifier le pipeline avec le plus gros gap -> analyser node-par-node -> fixer dans n8n -> verifier -> sync GitHub.
+### 1.2 Comprendre le projet
+Lire `directives/objective.md` :
+- Objectif final (Multi-RAG SOTA, 4 pipelines, 1M+ questions)
+- Situation actuelle (quel pipeline bloque, etat des BDD)
+- Workflow IDs n8n verifies
+
+### 1.3 Comprendre le processus
+Lire `directives/workflow-process.md` :
+- Boucle d'iteration : 1/1 → 5/5 → 10/10 → 200q
+- Double analyse OBLIGATOIRE (node-analyzer + analyze_n8n_executions)
+- Checklist d'analyse par noeud
+- Regles avant tout fix
+
+### 1.4 Reference technique des endpoints
+Lire `directives/n8n-endpoints.md` UNIQUEMENT quand tu dois :
+- Appeler un webhook (formats verifies, timestamps Paris a la seconde)
+- Modifier un workflow via API REST
+- Verifier un Workflow ID ou Webhook Path
+
+### 1.5 References techniques supplementaires (AU BESOIN seulement)
+- `technicals/architecture.md` — Architecture detaillee des 4 pipelines + 9 workflows
+- `technicals/stack.md` — Stack technique complete
+- `technicals/credentials.md` — Cles API
+- `technicals/phases-overview.md` — Strategie 5 phases et gates
+- `technicals/knowledge-base.json` — Patterns d'erreurs connus
+
+**NE PAS lire** les autres fichiers technicals/ sauf besoin specifique (migration, MCP, embeddings).
 
 ---
 
-## Structure du Repo
+## PHASE 2 — UTILISER (outils et commandes)
+
+### 2.1 MCP Servers (configures dans `.claude/settings.json`)
+| MCP | Usage |
+|-----|-------|
+| `n8n` | Executer et inspecter des workflows n8n |
+| `pinecone` | Interroger le vector store (10K+ vecteurs) |
+| `neo4j` | Interroger le graph (110 entites) |
+
+### 2.2 Commandes d'evaluation (dossier `eval/`)
+| Commande | Usage |
+|----------|-------|
+| `python3 eval/quick-test.py --questions 1 --pipeline <cible>` | Smoke test 1 question |
+| `python3 eval/quick-test.py --questions 5 --pipeline <cible>` | Test 5 questions |
+| `python3 eval/iterative-eval.py --label "..."` | Eval progressive 5→10→50 |
+| `python3 eval/run-eval-parallel.py --reset --label "..."` | Full eval 200q |
+| `python3 eval/node-analyzer.py --execution-id <ID>` | Analyse node-par-node (diagnostics auto) |
+| `python3 eval/node-analyzer.py --pipeline <cible> --last 5` | Dernieres 5 executions |
+| `python3 eval/generate_status.py` | Regenerer docs/status.json |
+| `python3 eval/phase_gates.py` | Verifier les gates de phase |
+
+### 2.3 Commandes d'analyse (dossier `scripts/`)
+| Commande | Usage |
+|----------|-------|
+| `python3 scripts/analyze_n8n_executions.py --execution-id <ID>` | Analyse brute complete (JSON integral) |
+| `python3 scripts/analyze_n8n_executions.py --pipeline <cible> --limit 5` | Analyse par pipeline |
+
+### 2.4 Commandes n8n (dossier `n8n/`)
+| Commande | Usage |
+|----------|-------|
+| `python3 n8n/sync.py` | Sync n8n → GitHub |
+
+### 2.5 Reference complete des commandes
+Voir `utilisation/commands.md` pour la liste exhaustive avec tous les arguments.
+
+### 2.6 Modification de workflows n8n (CRITIQUE)
+
+**n8n = source de verite. GitHub = copie.**
 
 ```
-mon-ipad/
-├── CLAUDE.md                          <- CE FICHIER (lire en premier)
-├── context/                           <- CONTEXTE SESSION
-│   ├── objective.md                   # Objectif final + situation actuelle
-│   ├── stack.md                       # Stack technique complete
-│   ├── workflow-process.md            # Processus d'iteration standard
-│   └── session-state.md              # Etat de la derniere session (a mettre a jour)
-├── docs/
-│   ├── technical/                     <- DOCS TECHNIQUES (a maintenir a jour)
-│   │   ├── n8n-endpoints.md           # Endpoints n8n, patterns API, pieges
-│   │   ├── python-techniques.md       # Limites Python, contournements
-│   │   ├── credentials.md             # Toutes les cles API (a actualiser)
-│   │   ├── n8n-skills.md              # Noeuds communautaires, repos GitHub
-│   │   └── mcp-setup.md              # Configuration MCP servers
-│   ├── migration/                     <- GUIDE MIGRATION
-│   │   └── n8n-self-hosted.md         # Cloud -> self-hosted Oracle
-│   ├── architecture.md                # Architecture detaillee
-│   ├── status.json                    # Status compact auto-genere
-│   ├── data.json                      # Donnees d'eval completes
-│   ├── index.html                     # Dashboard
-│   └── knowledge-base.json            # Patterns d'erreurs connus
-├── eval/                              <- SCRIPTS D'EVALUATION
-│   ├── quick-test.py                  # Test 1-5 questions (smoke test)
-│   ├── fast-iter.py                   # Test 10q/pipeline
-│   ├── iterative-eval.py             # Progressif 5->10->50
-│   ├── run-eval-parallel.py           # Full 200q
-│   ├── node-analyzer.py              # Analyse granulaire node-par-node
-│   ├── live-writer.py                # Ecriture resultats -> data.json
-│   └── generate_status.py            # Regenere status.json
-├── workflows/
-│   ├── live/                          # Workflows actifs (sync depuis n8n)
-│   ├── validated/                     # Workflows ayant passe 5/5 (archives)
-│   ├── snapshots/                     # Backups horodates
-│   └── sync.py                       # Sync n8n -> GitHub
-├── mcp/                              # Serveurs MCP
-├── datasets/                          # Questions par phase
-├── db/                               # Schemas & scripts de peuplement
-├── scripts/                          # Scripts utilitaires
-│   ├── session-start.py              # Setup automatique de session
-│   └── session-end.py               # Sauvegarde fin de session
-├── phases/overview.md                # Strategie 5 phases
-└── logs/                             # Traces d'execution
+1. DIAGNOSTIQUER  → eval/node-analyzer.py + scripts/analyze_n8n_executions.py
+2. FIXER          → API REST n8n (voir directives/n8n-endpoints.md)
+3. VERIFIER       → eval/quick-test.py --questions 5 minimum
+4. SYNC           → n8n/sync.py
+5. ARCHIVER       → copier vers n8n/validated/ si 5/5 passe
+6. COMMIT         → git push
 ```
+
+**JAMAIS** : editer les JSON workflow dans le repo, fixer plusieurs noeuds a la fois, deployer sans 5q de verification.
 
 ---
 
-## Credentials (copier-coller rapide)
+## PHASE 3 — PRODUIRE (outputs obligatoires)
 
+### 3.1 Apres chaque test
+- Logs d'execution → `logs/` (auto-genere par les scripts)
+- Diagnostics → `logs/diagnostics/`
+
+### 3.2 Apres chaque fix reussi (5/5 passe)
+- Sync workflow : `python3 n8n/sync.py`
+- Regenerer status : `python3 eval/generate_status.py`
+- Commit + push
+
+### 3.3 En fin de session (OBLIGATOIRE)
+Mettre a jour `directives/status.md` avec :
+1. **Liste exhaustive** de TOUS les fichiers modifies ou crees durant cette session uniquement
+2. **Analyse concrete** de l'etat d'avancement (metriques, gaps, blockers)
+3. **Prochaine action** recommandee
+
+### 3.4 Outputs dates (archives)
+Tout output de session non-structurel → `outputs/` avec prefixe `JJ-mmm-description.ext`
+Exemple : `13-fev-standard-debug-analysis.md`
+
+### 3.5 Reinitialisation data.json (chaque session)
 ```bash
-export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
-export SUPABASE_API_KEY="sb_publishable_xUcuBcYYUO2G9Mkq_McdeQ_ocFjgonm"
-export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
-export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
-export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
-export OPENROUTER_API_KEY="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"
-export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
-export N8N_HOST="https://amoret.app.n8n.cloud"
-export JINA_API_KEY="jina_f1348176dc7a4f0da9996cfa6cfa6eecasLHpAw7iEXFqU6eHi9SQBuxqT0F"
+python3 scripts/analyze_n8n_executions.py --pipeline standard --limit 1
+python3 scripts/analyze_n8n_executions.py --pipeline graph --limit 1
+python3 scripts/analyze_n8n_executions.py --pipeline quantitative --limit 1
+python3 scripts/analyze_n8n_executions.py --pipeline orchestrator --limit 1
 ```
-
----
-
-## Commandes Essentielles
-
-| Action | Commande |
-|--------|---------|
-| **Status live** | `cat docs/status.json` |
-| **Setup session** | `python3 scripts/session-start.py` |
-| **Test 1q** | `python3 eval/quick-test.py --questions 1 --pipeline <cible>` |
-| **Test 5q** | `python3 eval/quick-test.py --questions 5` |
-| **Test 10q** | `python3 eval/fast-iter.py --label "..." --questions 10` |
-| **Analyse node-par-node** | `python3 eval/node-analyzer.py --pipeline <cible> --last 5` |
-| **Analyse execution** | `python3 eval/node-analyzer.py --execution-id <ID>` |
-| **Eval progressive** | `python3 eval/iterative-eval.py --label "..."` |
-| **Full eval 200q** | `python3 eval/run-eval-parallel.py --reset --label "..."` |
-| **Phase 2 eval** | `python3 eval/run-eval-parallel.py --dataset phase-2 --reset --label "..."` |
-| **Sync workflows** | `python3 workflows/sync.py` |
-| **Regenerer status** | `python3 eval/generate_status.py` |
-| **Phase gates** | `python3 eval/phase_gates.py` |
-| **Fin de session** | `python3 scripts/session-end.py` |
-
----
-
-## Processus d'Iteration (OBLIGATOIRE)
-
-### Boucle : 1/1 -> 5/5 -> 10/10
-
-1. **Test 1/1** sur le pipeline prioritaire (plus gros gap)
-2. **Si echec** : analyse node-par-node -> identifier le noeud casse -> fixer UN noeud dans n8n
-3. **Test 5/5** : analyse granulaire de CHAQUE execution
-4. **Si >= 3/5** : passer a 10/10
-5. **Si < 3/5** : iterer (retour a l'analyse)
-6. **Test 10/10** : si >= 7/10, pipeline valide
-7. **Sync + commit** apres chaque fix reussi
-8. **Quand tous les pipelines passent 10/10** : lancer full 200q
-
-### Analyse granulaire OBLIGATOIRE (CHAQUE test)
-
-Pour CHAQUE question testee, inspecter CHAQUE noeud :
-```bash
-python3 eval/node-analyzer.py --execution-id <ID>
-```
-
-Verifier pour chaque noeud :
-- **Input** : quelles donnees entrent ?
-- **Output** : quelles donnees sortent ?
-- **Duree** : combien de temps ?
-- **Erreur** : echec ? quel message ?
-- **Transformation** : information perdue ou corrompue ?
-
-Types de noeuds a verifier :
-- **LLM** (Intent Analyzer, Answer Synthesis) : longueur prompt, verbosite, hallucination
-- **Routing** (Query Router, Dynamic Switch) : decision correcte ?
-- **Retrieval** (Pinecone, Neo4j, Supabase) : nb documents, scores, resultats vides ?
-- **Handler** (Task Result Handler, Fallback) : determination succes/echec correcte ?
-- **Builder** (Response Builder) : reponse finale fidele aux sous-reponses ?
-
-### Avant TOUT fix :
-1. Quel noeud exact cause le probleme ?
-2. Qu'est-ce qu'il recoit en input ?
-3. Qu'est-ce qu'il produit en output ?
-4. Pourquoi c'est faux ?
-5. Quel changement precis va corriger ca ?
-
-Voir `context/workflow-process.md` pour le detail complet.
-
----
-
-## Modification de Workflows (CRITIQUE)
-
-**n8n est la source de verite. GitHub est la copie.**
-
-1. **DIAGNOSTIQUER** -> `python3 eval/node-analyzer.py`
-2. **FIXER dans n8n** -> API REST (voir `docs/technical/n8n-endpoints.md`) :
-   ```python
-   wf = n8n_api("GET", f"/api/v1/workflows/{WF_ID}")
-   for node in wf["nodes"]:
-       if node["name"] == "Target Node":
-           node["parameters"]["jsCode"] = NEW_CODE
-   n8n_api("POST", f"/api/v1/workflows/{WF_ID}/deactivate")
-   n8n_api("PUT", f"/api/v1/workflows/{WF_ID}", clean_payload)
-   n8n_api("POST", f"/api/v1/workflows/{WF_ID}/activate")
-   ```
-3. **VERIFIER** -> test 5q minimum
-4. **SYNC** -> `python3 workflows/sync.py`
-5. **ARCHIVER** -> copier vers `workflows/validated/` si 5/5 passe
-6. **COMMIT** -> push vers GitHub
-
-**JAMAIS** :
-- Editer les JSON workflow directement dans le repo
-- Utiliser apply.py (DEPRECATED, reference historique uniquement)
-- Fixer plusieurs noeuds en meme temps
-- Deployer sans verifier avec au moins 5 questions
-
----
-
-## Architecture (bref)
-
-4 workflows n8n RAG sur `amoret.app.n8n.cloud` :
-
-| Pipeline | Webhook Path | DB |
-|----------|-------------|-----|
-| **Standard** (Pinecone vector) | `/webhook/rag-multi-index-v3` | Pinecone |
-| **Graph** (Neo4j entity graph) | `/webhook/ff622742-...` | Neo4j + Supabase |
-| **Quantitative** (Supabase SQL) | `/webhook/3e0f8010-...` | Supabase |
-| **Orchestrator** (route vers les 3) | `/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0` | Meta |
-
-Tous les LLMs : `arcee-ai/trinity-large-preview:free` via OpenRouter ($0).
-Details complets : `docs/architecture.md`
-
----
-
-## Acces
-
-| Ressource | Acces | Note |
-|-----------|-------|------|
-| n8n Webhooks + REST API | DIRECT | `amoret.app.n8n.cloud` |
-| GitHub, Pinecone | DIRECT | git + HTTPS API |
-| Supabase, Neo4j | BLOQUE | Proxy 403 -> passer par n8n |
+Puis integrer dans `docs/data.json`.
 
 ---
 
@@ -200,47 +131,69 @@ Details complets : `docs/architecture.md`
 
 1. **UN fix par iteration** — jamais plusieurs noeuds simultanement
 2. **n8n = source de verite** — editer dans n8n, sync vers GitHub
-3. **Analyse granulaire AVANT chaque fix** — pas de fix aveugle
-4. **Verifier AVANT de sync** — 5/5 doit passer
+3. **Double analyse AVANT chaque fix** — node-analyzer.py + analyze_n8n_executions.py
+4. **Verifier AVANT de sync** — 5/5 minimum
 5. **Commit + push apres chaque fix reussi**
-6. **`docs/status.json` est auto-genere** — ne pas editer
-7. **Si 3+ regressions -> REVERT immediat**
-8. **Mettre a jour `docs/technical/` apres chaque decouverte**
-9. **Mettre a jour `context/session-state.md` en fin de session**
-10. **Toujours travailler depuis `main`**, merger les branches feature
+6. **`docs/status.json` est auto-genere** — ne pas editer manuellement
+7. **Si 3+ regressions → REVERT immediat**
+8. **Mettre a jour `technicals/` apres chaque decouverte technique**
+9. **Mettre a jour `directives/status.md` en fin de session**
+10. **Toujours travailler depuis `main`**
 
 ---
 
-## Fichiers a maintenir a jour
+## Credentials
 
-| Fichier | Quand le mettre a jour |
-|---------|----------------------|
-| `context/session-state.md` | Fin de chaque session |
-| `docs/technical/credentials.md` | Rotation de cle, nouveau service |
-| `docs/technical/n8n-endpoints.md` | Nouveau endpoint decouvert |
-| `docs/technical/python-techniques.md` | Nouveau contournement trouve |
-| `docs/status.json` | Auto-genere par `generate_status.py` |
+```bash
+export N8N_HOST="https://amoret.app.n8n.cloud"
+export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
+export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
+export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
+export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
+export OPENROUTER_API_KEY="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"
+export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
+export SUPABASE_API_KEY="sb_publishable_xUcuBcYYUO2G9Mkq_McdeQ_ocFjgonm"
+export JINA_API_KEY="jina_f1348176dc7a4f0da9996cfa6cfa6eecasLHpAw7iEXFqU6eHi9SQBuxqT0F"
+```
 
 ---
 
-## Phase Roadmap
+## Architecture — 13 dossiers
 
-Phase 1 (200q) -> Phase 2 (1,000q) -> Phase 3 (~10Kq) -> Phase 4 (~100Kq) -> Phase 5 (1M+q)
+| # | Dossier | Role |
+|---|---------|------|
+| 1 | `directives/` | Mission control (objective, workflow-process, n8n-endpoints, status) |
+| 2 | `technicals/` | Documentation technique de reference |
+| 3 | `eval/` | Scripts d'evaluation (quick-test, iterative-eval, node-analyzer) |
+| 4 | `scripts/` | Scripts utilitaires Python |
+| 5 | `n8n/` | Workflows n8n (live, validated, analysis, sync) |
+| 6 | `datasets/` | Donnees de test (phase-1, phase-2) |
+| 7 | `db/` | Database (migrations, populate, readiness) |
+| 8 | `mcp/` | Serveurs MCP |
+| 9 | `snapshot/` | Snapshots historiques (workflows + DB) |
+| 10 | `logs/` | Logs d'execution bruts |
+| 11 | `outputs/` | Archives de sessions datees |
+| 12 | `docs/` | Dashboard (data.json, status.json, index.html) |
+| 13 | `utilisation/` | Guide d'utilisation et reference commandes |
 
-### Gate thresholds :
-| Stage | Accuracy | Error Rate |
-|-------|----------|-----------|
-| 5 questions | >=60% | <=40% |
-| 10 questions | >=65% | <=20% |
-| 50 questions | pipeline target | <=10% |
+---
 
-### Phase 1 targets :
-| Pipeline | Target |
-|----------|--------|
-| Standard | >=85% |
-| Graph | >=70% |
-| Quantitative | >=85% |
-| Orchestrator | >=70% |
-| **Overall** | **>=75%** |
+## Pipelines
 
-Details : `phases/overview.md`
+| Pipeline | Webhook Path | DB | Target Phase 1 |
+|----------|-------------|-----|----------------|
+| Standard | `/webhook/rag-multi-index-v3` | Pinecone | >= 85% |
+| Graph | `/webhook/ff622742-...` | Neo4j + Supabase | >= 70% |
+| Quantitative | `/webhook/3e0f8010-...` | Supabase | >= 85% |
+| Orchestrator | `/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0` | Meta | >= 70% |
+| **Overall** | | | **>= 75%** |
+
+LLM : `arcee-ai/trinity-large-preview:free` via OpenRouter ($0).
+
+## Acces
+
+| Ressource | Acces | Note |
+|-----------|-------|------|
+| n8n Webhooks + REST API | DIRECT | `amoret.app.n8n.cloud` |
+| GitHub, Pinecone | DIRECT | git + HTTPS API |
+| Supabase, Neo4j | BLOQUE | Proxy 403 → passer par n8n |
