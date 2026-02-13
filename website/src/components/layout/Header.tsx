@@ -23,7 +23,7 @@ export function Header() {
             Fonctionnement
           </a>
           <a
-            href="https://github.com"
+            href="https://github.com/LBJLincoln/mon-ipad"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-tx transition-colors duration-200 flex items-center gap-1.5"
