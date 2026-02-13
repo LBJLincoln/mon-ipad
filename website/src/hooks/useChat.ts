@@ -44,6 +44,12 @@ export function useChat({ sectorId, conversationId }: UseChatOptions) {
           content: res.answer,
           sources: sources.length > 0 ? sources : undefined,
           confidence: res.confidence,
+          version: res.version,
+          trace_id: res.trace_id,
+          sources_count: res.sources_count,
+          pipeline: res.pipeline,
+          metrics: res.metrics,
+          trace: res.trace,
           timestamp: Date.now(),
         }
         addMessage(sectorId, conversationId, assistantMsg)

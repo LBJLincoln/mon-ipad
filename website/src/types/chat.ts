@@ -1,3 +1,5 @@
+import type { PipelineInfo, MetricsInfo, TraceStep } from './api'
+
 export interface ChatMessage {
   id: string
   role: 'user' | 'assistant'
@@ -5,6 +7,12 @@ export interface ChatMessage {
   sources?: Source[]
   confidence?: number
   timestamp: number
+  version?: string
+  trace_id?: string
+  sources_count?: number
+  pipeline?: PipelineInfo
+  metrics?: MetricsInfo
+  trace?: TraceStep[]
 }
 
 export interface Source {
