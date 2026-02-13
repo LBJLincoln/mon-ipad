@@ -1,36 +1,42 @@
 # Architecture Reference — Multi-RAG Orchestrator SOTA 2026
 
-> Detailed reference for the project. For quick session start, use `docs/status.json`.
+> Reference detaillee. Pour demarrage rapide, utiliser `docs/status.json`.
 
 ---
 
-## n8n Cloud Workflows (host: 34.136.180.66:5678)
+## n8n Docker Workflows (host: 34.136.180.66:5678)
 
-| Workflow | Webhook Path | DB | Nodes | n8n ID |
-|---|---|---|---|---|
-| Standard RAG V3.4 | `/webhook/rag-multi-index-v3` | Pinecone | 23 | `IgQeo5svGlIAPkBc` |
-| Graph RAG V3.3 | `/webhook/ff622742-...` | Neo4j + Supabase | 26 | `95x2BBAbJlLWZtWEJn6rb` |
-| Quantitative V2.0 | `/webhook/3e0f8010-...` | Supabase SQL | 25 | `E19NZG9WfM7FNsxr` |
-| Orchestrator V10.1 | `/webhook/92217bb8-...` | Routes to above | 68 | `ALd4gOEqiKL5KR1p` |
+### Pipelines RAG (4)
 
-### Ingestion/Enrichment Workflows (imported to workflows/live/)
+| Workflow | Webhook Path | DB | Docker ID |
+|---|---|---|---|
+| Standard RAG V3.4 | `/webhook/rag-multi-index-v3` | Pinecone | `M12n4cmiVBoBusUe` |
+| Graph RAG V3.3 | `/webhook/ff622742-...` | Neo4j + Supabase | `Vxm4TDdOLdb7j3Jy` |
+| Quantitative V2.0 | `/webhook/3e0f8010-...` | Supabase SQL | `nQnAJyT06NTbEQ3y` |
+| Orchestrator V10.1 | `/webhook/92217bb8-...` | Routes to above | `P1no6VZkNtnRdlBi` |
 
-| Workflow | Nodes | n8n ID |
+### Support Workflows (9)
+
+| Workflow | Docker ID |
+|---|---|
+| Ingestion V3.1 | `6lPMHEYyWh1v34ro` |
+| Enrichissement V3.1 | `KXnQKuKw8ZUbyZUl` |
+| Feedback V3.1 | `cMlr32Qq7Sgy6Xq8` |
+| Benchmark V3.0 | `tygzgU4i67FU6vm2` |
+| Dataset Ingestion Pipeline | `S4FFbvx9Mn7DRkgk` |
+| Monitoring & Alerting | `xFAcxnFS5ISnlytH` |
+| Orchestrator Tester | `R0HRiLQmL3FoCNKg` |
+| RAG Batch Tester | `k7jHXRTypXAQOreJ` |
+| SQL Executor Utility | `Dq83aCiXCfymsgCV` |
+
+### Trace Cloud (OBSOLETE — reference uniquement)
+
+| Pipeline | Cloud ID | Execution reussie |
 |---|---|---|
-| Ingestion V3.1 | 28 | `nh1D4Up0wBZhuQbp` |
-| Enrichissement V3.1 | 29 | `ORa01sX4xI0iRCJ8` |
-| Feedback V3.1 | 13 | `iVsj6dq8UpX5Dk7c` |
-| Benchmark V3.0 | 9 | `qUm28nhq62SxVWHe` |
-
-### Benchmark/Support Workflows
-
-| Workflow | Nodes | n8n ID |
-|---|---|---|
-| Dataset Ingestion Pipeline | 23 | `L8irkzSrfLlgt2Bt` |
-| Monitoring & Alerting | 19 | `8a72LTsYvsH2X79d` |
-| Orchestrator Tester | 15 | `7UMkzbjkkYZAUzPD` |
-| RAG Batch Tester | 16 | `QCHKdqnTIEwEN1Ng` |
-| SQL Executor Utility | 2 | `3O2xcKuloLnZB5dH` |
+| Standard | `IgQeo5svGlIAPkBc` | #19404 |
+| Graph | `95x2BBAbJlLWZtWEJn6rb` | #19305 |
+| Quantitative | `E19NZG9WfM7FNsxr` | #19326 |
+| Orchestrator | `ALd4gOEqiKL5KR1p` | #19323 |
 
 ---
 
@@ -38,39 +44,37 @@
 
 | DB | Content | Phase 1 | Phase 2 |
 |---|---|---|---|
-| **Pinecone** | Vector embeddings (configurable via `setup_embeddings.py`) | 10,411 vectors, 12 namespaces | Embedding model configurable via n8n `$vars` |
-| **Neo4j** | Entity graph (Person, Org, Tech, City, Museum, Disease) | 110 nodes, 151 relationships | +4,884 entities, 21,625 total relationships |
-| **Supabase** | Financial tables + benchmark_datasets + HF tables | 88 rows, 5 tables | +450 rows (finqa/tatqa/convfinqa), 538 total |
+| **Pinecone** | Vector embeddings | 10,411 vectors, 12 namespaces | Configurable via n8n |
+| **Neo4j** | Entity graph | 110 nodes, 151 relationships | +4,884 entities |
+| **Supabase** | Financial tables | 88 rows, 5 tables | +450 rows |
 
 ---
 
 ## LLM Model Registry
 
-All LLM models FREE via OpenRouter (`arcee-ai/trinity-large-preview:free`).
-Rate limits: 20 req/min, 1000 req/day (with $10+ credit), 50 req/day (without).
+Modeles gratuits via OpenRouter.
 
-| Workflow | Node | Model |
+### Docker Env Vars (models configured in n8n)
+
+| Variable | Model | Usage |
 |---|---|---|
-| Standard | HyDE Generator | arcee-ai/trinity-large-preview:free |
-| Standard | LLM Generation | arcee-ai/trinity-large-preview:free |
-| Standard | Cohere Rerank | rerank-multilingual-v3.0 ($0.002/1K) |
-| Standard | Pinecone Query | n8n `$vars.EMBEDDING_MODEL` (configurable) |
-| Graph | HyDE Entity Extraction | arcee-ai/trinity-large-preview:free |
-| Graph | Answer Synthesis | arcee-ai/trinity-large-preview:free |
-| Quantitative | Text-to-SQL | arcee-ai/trinity-large-preview:free |
-| Quantitative | SQL Validator | arcee-ai/trinity-large-preview:free |
-| Orchestrator | Intent Analyzer | arcee-ai/trinity-large-preview:free |
-| Orchestrator | Task Planner | arcee-ai/trinity-large-preview:free |
-| Orchestrator | Response Builder | arcee-ai/trinity-large-preview:free |
+| `LLM_SQL_MODEL` | meta-llama/llama-3.3-70b-instruct:free | SQL generation |
+| `LLM_FAST_MODEL` | google/gemma-3-27b-it:free | Fast operations |
+| `LLM_INTENT_MODEL` | meta-llama/llama-3.3-70b-instruct:free | Intent classification |
+| `LLM_PLANNER_MODEL` | meta-llama/llama-3.3-70b-instruct:free | Task planning |
+| `LLM_AGENT_MODEL` | meta-llama/llama-3.3-70b-instruct:free | Agent reasoning |
+| `LLM_HYDE_MODEL` | meta-llama/llama-3.3-70b-instruct:free | HyDE generation |
+| `LLM_EXTRACTION_MODEL` | arcee-ai/trinity-large-preview:free | Entity extraction |
+| `LLM_COMMUNITY_MODEL` | arcee-ai/trinity-large-preview:free | Community summaries |
+| `LLM_LITE_MODEL` | google/gemma-3-27b-it:free | Lightweight tasks |
 
-### Free Alternatives (if needed)
-| Model | Params | Context | Best For |
-|---|---|---|---|
-| `google/gemma-3-27b-it:free` | 27B | 131K | Faster, lighter |
-| `deepseek/deepseek-chat-v3-0324:free` | 671B MoE | 164K | Strong SQL |
-| `qwen/qwen3-coder:free` | 480B MoE | 262K | SQL specialist |
-| `meta-llama/llama-4-maverick:free` | Large MoE | 131K | Newest Llama |
-| `deepseek/deepseek-r1:free` | 671B MoE | 164K | Reasoning |
+### Embeddings & Reranking
+
+| Provider | Model | Dimensions |
+|---|---|---|
+| **Cohere** (primary) | embed-english-v3.0 | 1024 |
+| **Cohere** (reranker) | rerank-multilingual-v3.0 | N/A |
+| **Jina AI** (backup) | jina-embeddings-v3 | 1024 |
 
 ---
 
@@ -78,42 +82,41 @@ Rate limits: 20 req/min, 1000 req/day (with $10+ credit), 50 req/day (without).
 
 | Capability | Access | How |
 |---|---|---|
-| **n8n Webhooks** (eval pipelines) | DIRECT | HTTPS to `34.136.180.66:5678/webhook/*` |
-| **n8n REST API** (sync/deploy workflows) | DIRECT | HTTPS to `34.136.180.66:5678/api/v1/*` |
-| **GitHub** (push, PR, issues) | DIRECT | `git push` + `gh` CLI |
-| **OpenRouter** (LLM via n8n) | DIRECT | Proxied through n8n webhooks |
-| **Pinecone** (vector stats) | DIRECT | HTTPS REST API |
-| **Code, files, git, analysis** | DIRECT | Full filesystem + git access |
-| **Supabase** (PostgreSQL) | BLOCKED | Proxy 403 — use n8n Quantitative pipeline |
-| **Neo4j** (graph queries) | BLOCKED | Proxy 403 — use n8n Graph pipeline |
+| **n8n Webhooks** | DIRECT | HTTPS to `34.136.180.66:5678/webhook/*` |
+| **n8n REST API** | DIRECT | HTTPS to `34.136.180.66:5678/api/v1/*` |
+| **n8n MCP** | DIRECT | streamableHttp to `34.136.180.66:5678/mcp-server/http` |
+| **GitHub** | DIRECT | `git push` + `gh` CLI |
+| **Pinecone** | DIRECT | HTTPS REST API |
+| **Neo4j** | VIA n8n | Docker bolt://localhost:7687 |
+| **Supabase** | VIA n8n | Docker direct access |
+| **OpenRouter** | VIA n8n | Proxied through n8n workflows |
 
 ---
 
 ## Data Flow
 
 ```
-eval/fast-iter.py (10q)  ─┐
-eval/run-eval-parallel.py ─┤── phase_gates.py check ──► 4 parallel threads
-eval/run-eval.py (legacy) ─┘
-          │
-          ├── Standard Pipeline (n8n webhook)
-          ├── Graph RAG Pipeline (n8n webhook)
-          ├── Quantitative Pipeline (n8n webhook)
-          └── Orchestrator Pipeline (n8n webhook)
-                    │
-          eval/live-writer.py (thread-safe)
-                    │
-          ┌────────┼────────────────────────────┐
-          ↓        ↓                            ↓
-    docs/data.json  logs/executions/   logs/pipeline-results/
-          ↓                                     ↓
-    eval/generate_status.py           logs/fast-iter/
-          ↓
-    docs/status.json (compact, <3KB)
-          ↓
-    docs/index.html (7-tab dashboard)
-          ↓
-    GitHub Pages (auto-deploy)
+eval/quick-test.py (1-5q)   -+
+eval/iterative-eval.py       -+-- 4 pipelines (n8n webhooks)
+eval/run-eval-parallel.py    -+
+          |
+          +-- Standard Pipeline  --> Pinecone
+          +-- Graph RAG Pipeline --> Neo4j + Supabase
+          +-- Quantitative       --> Supabase SQL
+          +-- Orchestrator       --> Routes to above
+                    |
+          eval/node-analyzer.py  (diagnostics)
+          scripts/analyze_n8n_executions.py (raw data)
+                    |
+          +--------+--------------------+
+          v        v                    v
+    docs/data.json  logs/diagnostics/  n8n/analysis/
+          v
+    eval/generate_status.py
+          v
+    docs/status.json
+          v
+    docs/index.html (dashboard)
 ```
 
 ---
@@ -122,57 +125,22 @@ eval/run-eval.py (legacy) ─┘
 
 ```
 mon-ipad/
-├── CLAUDE.md                          # Session bootstrap (<120 lines)
-├── STATUS.md                          # Human-readable status
-│
-├── eval/                              # Evaluation scripts
-│   ├── generate_status.py             # STATUS GENERATOR — docs/status.json from data.json
-│   ├── phase_gates.py                 # PHASE GATE VALIDATOR — enforces phase transitions
-│   ├── run-eval-parallel.py           # PARALLEL eval runner (~4x faster, gate-enforced)
-│   ├── fast-iter.py                   # Fast iteration: 10q/pipeline, parallel, gate-enforced
-│   ├── run-eval.py                    # Sequential eval runner (legacy/debug)
-│   ├── live-writer.py                 # Writes results to docs/data.json + logs/ (thread-safe)
-│   ├── quick-test.py                  # Smoke tests (5q/pipeline)
-│   ├── analyzer.py                    # Post-eval analysis + recommendations
-│   └── iterate.sh                     # Run eval + auto-commit + push
-│
-├── datasets/                          # Question datasets by phase
-│   ├── manifest.json                  # 16 HF datasets metadata
-│   ├── phase-1/                       # 200q: 50 per pipeline type
-│   └── phase-2/                       # 1,000q: HuggingFace datasets
-│
-├── workflows/                         # n8n workflow management
-│   ├── manifest.json                  # Version tracking
-│   ├── sync.py                        # Pull workflows from n8n
-│   ├── deploy/deploy.py               # Deploy workflow JSON to n8n
-│   ├── source/                        # Source workflow JSONs
-│   ├── improved/apply.py              # 30+ patches + deploy
-│   └── snapshots/                     # Timestamped snapshots
-│
-├── db/                                # Database schemas & population
-│   ├── populate/                      # DB population scripts
-│   └── readiness/                     # DB readiness checks
-│
-├── docs/                              # Dashboard + data
-│   ├── index.html                     # Interactive dashboard (7 tabs)
-│   ├── data.json                      # Full evaluation data (1MB+, v2 format)
-│   ├── status.json                    # COMPACT STATUS (<3KB, auto-generated)
-│   ├── architecture.md                # THIS FILE — detailed reference
-│   └── tested-questions.json          # Dedup manifest
-│
-├── logs/                              # Execution traces
-│   ├── executions/                    # Per-session JSONL
-│   ├── errors/                        # Error trace files
-│   ├── pipeline-results/              # Per-pipeline JSON
-│   └── fast-iter/                     # Fast iteration snapshots
-│
-├── phases/overview.md                 # Full 5-phase strategy
-│
-└── .github/workflows/
-    ├── rag-eval.yml                   # Scheduled + manual eval
-    ├── agentic-eval.yml               # Post-eval AI analysis
-    ├── n8n-error-log.yml              # Error receiver
-    └── dashboard-deploy.yml           # Auto-deploy dashboard
++-- CLAUDE.md                    # Session bootstrap
++-- directives/                  # Mission control
++-- technicals/                  # Reference docs (architecture, stack, credentials, phases, knowledge-base)
++-- eval/                        # Evaluation scripts
++-- scripts/                     # Utility scripts
++-- n8n/                         # Workflows (live, validated, sync)
++-- mcp/                         # MCP servers & docs
++-- website/                     # Next.js frontend
++-- site/                        # Website reference (copies)
++-- datasets/                    # Test questions
++-- db/                          # Database management
++-- docs/                        # Dashboard + status
++-- logs/                        # Execution logs
++-- snapshot/                    # Historical backups
++-- outputs/                     # Dated session archives
++-- utilisation/                 # Usage guides
 ```
 
 ---
@@ -180,58 +148,33 @@ mon-ipad/
 ## Phase Gates (Targets)
 
 ### Phase 1 — Baseline (200q) — CURRENT
-| Pipeline | Target | Additional |
-|---|---|---|
-| Standard | >=85% | |
-| Graph | >=70% | |
-| Quantitative | >=85% | |
-| Orchestrator | >=70% | P95 latency <15s, error rate <5% |
-| **Overall** | **>=75%** | 3 consecutive stable iterations |
+| Pipeline | Target |
+|---|---|
+| Standard | >=85% |
+| Graph | >=70% |
+| Quantitative | >=85% |
+| Orchestrator | >=70% (P95 latency <15s, error rate <5%) |
+| **Overall** | **>=75%** (3 consecutive stable iterations) |
 
-### Phase 2 — Expand (1,000q)
-Requires Phase 1 ALL gates passed. Graph >=60%, Quantitative >=70%. No Phase 1 regression.
-
-### Phase 3-5
-See `phases/overview.md` for full gate definitions.
+### Phase 2-5
+See `technicals/phases-overview.md` for full gate definitions.
 
 ---
 
-## n8n API Access Pattern
-
-```python
-import urllib.request, json, os
-api_key = os.environ["N8N_API_KEY"]
-host = "https://34.136.180.66:5678"
-
-# GET workflow
-req = urllib.request.Request(f"{host}/api/v1/workflows/{wf_id}",
-    headers={"X-N8N-API-KEY": api_key})
-
-# PUT workflow (deploy) — must filter settings
-ALLOWED_SETTINGS = {"executionOrder", "callerPolicy", "saveManualExecutions", "saveExecutionProgress"}
-```
-
----
-
-## Root Cause Analysis (from Phase 1 iterations)
+## Root Cause Analysis (from previous iterations)
 
 ### Orchestrator
-- Cascading timeouts: broadcasts to ALL 3 sub-pipelines, waits for slowest
+- Cascading timeouts: broadcasts to ALL 3 sub-pipelines
 - Response Builder crash on empty `task_results`
 - Query Router bug: leading space in `" direct_llm"` causes misrouting
-- Cache Hit bug: compares against string `"Null"` instead of boolean
 
 ### Graph RAG
 - Entity extraction failures: HyDE extracts wrong names
 - Missing entities: historical figures not matched
 
 ### Quantitative RAG
-- SQL edge cases: multi-table JOINs, period filtering, entity name mismatch
+- SQL edge cases: multi-table JOINs, period filtering
 
 ### Standard RAG
 - "No item to return" from Pinecone
 - Verbose answers lower F1
-
-> All fixes have been applied directly in n8n. The workflows in `workflows/live/`
-> are the current tested versions. See `docs/technical/n8n-endpoints.md` for the
-> API pattern to make further changes.

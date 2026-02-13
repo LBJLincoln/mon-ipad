@@ -6,7 +6,7 @@
 1. cat docs/status.json                          # Etat actuel
 2. python3 eval/phase_gates.py                   # Gates passees ?
 3. Identifier le pipeline avec le plus gros gap  # Priorite
-4. Lire context/objective.md si besoin           # Rappel objectif
+4. Lire directives/objective.md si besoin        # Rappel objectif
 ```
 
 ---
@@ -29,23 +29,23 @@ python3 eval/quick-test.py --questions 5 --pipeline <cible>
   ```bash
   # Analyse 1 : node-analyzer.py (diagnostics automatiques)
   python3 eval/node-analyzer.py --execution-id <ID>
-  
+
   # Analyse 2 : analyze_n8n_executions.py (donnees brutes completes) - OBLIGATOIRE
-  python3 analyze_n8n_executions.py --execution-id <ID>
+  python3 scripts/analyze_n8n_executions.py --execution-id <ID>
   ```
-- Documenter : quel nœud, quel input, quel output, pourquoi c'est faux
+- Documenter : quel noeud, quel input, quel output, pourquoi c'est faux
 - Si >= 3/5 correct → passer a 10/10
-- Si < 3/5 → fixer UN nœud → retester 5/5
+- Si < 3/5 → fixer UN noeud → retester 5/5
 
 ### Etape 3 : Test 10/10
 ```bash
-python3 eval/fast-iter.py --label "fix-description" --questions 10
+python3 eval/iterative-eval.py --label "fix-description" --questions 10
 ```
 - **OBLIGATOIRE** : Analyse granulaire node-par-node avec **LES DEUX OUTILS**
 - Pour chaque execution ID retournee :
   ```bash
   python3 eval/node-analyzer.py --execution-id <ID>
-  python3 analyze_n8n_executions.py --execution-id <ID>
+  python3 scripts/analyze_n8n_executions.py --execution-id <ID>
   ```
 - Si >= 7/10 → session validee pour ce pipeline
 - Si < 7/10 → iterer (retour etape 2)
@@ -54,17 +54,17 @@ python3 eval/fast-iter.py --label "fix-description" --questions 10
 ```bash
 # Analyse complete des executions avec les deux outils
 python3 eval/node-analyzer.py --pipeline <cible> --last 10
-python3 analyze_n8n_executions.py --pipeline <cible> --limit 10
+python3 scripts/analyze_n8n_executions.py --pipeline <cible> --limit 10
 
 # Sync workflow depuis n8n
-python3 workflows/sync.py
+python3 n8n/sync.py
 
 # Copier vers validated/
-cp workflows/live/<pipeline>.json workflows/validated/<pipeline>-$(date +%Y%m%d-%H%M).json
+cp n8n/live/<pipeline>.json n8n/validated/<pipeline>-$(date +%Y%m%d-%H%M).json
 
 # Commit
 git add -A && git commit -m "fix: <pipeline> passes 10/10 - <description>"
-git push -u origin <branch>
+git push
 ```
 
 ---
@@ -72,10 +72,10 @@ git push -u origin <branch>
 ## Fin de Session
 
 ### Preparation pour la session suivante
-1. **Sync workflows** : `python3 workflows/sync.py`
+1. **Sync workflows** : `python3 n8n/sync.py`
 2. **Mettre a jour status** : `python3 eval/generate_status.py`
 3. **Commit etat final** : commit + push tout ce qui a change
-4. **Note dans context/session-state.md** : ce qui a ete fait, ce qui reste
+4. **Note dans directives/status.md** : ce qui a ete fait, ce qui reste
 
 ### Pret pour le test 200q (si tous les pipelines passent 10/10)
 ```bash
@@ -84,13 +84,7 @@ python3 eval/run-eval-parallel.py --reset --label "Phase 1 full eval"
 
 ---
 
-## Analyse Granulaire Node-par-Node (OBLIGATOIRE - DOUBLE ANALYSE)
-
-### ⚠️ MODIFICATION ESSENTIELLE
-
-Pour **CHAQUE question testee**, il est **OBLIGATOIRE** d'executer **LES DEUX ANALYSES** suivantes :
-
----
+## Analyse Granulaire Node-par-Node (OBLIGATOIRE — DOUBLE ANALYSE)
 
 ### ANALYSE 1 : node-analyzer.py (Diagnostics automatiques)
 
@@ -113,14 +107,14 @@ python3 eval/node-analyzer.py --all --last 5
 
 ---
 
-### ANALYSE 2 : analyze_n8n_executions.py (Donnees brutes completes) ⭐ NOUVEAU OBLIGATOIRE
+### ANALYSE 2 : analyze_n8n_executions.py (Donnees brutes completes) — OBLIGATOIRE
 
 ```bash
 # Execution specifique (OBLIGATOIRE pour chaque question)
-python3 analyze_n8n_executions.py --execution-id <ID>
+python3 scripts/analyze_n8n_executions.py --execution-id <ID>
 
 # Dernieres executions d'un pipeline
-python3 analyze_n8n_executions.py --pipeline <cible> --limit 5
+python3 scripts/analyze_n8n_executions.py --pipeline <cible> --limit 5
 
 # Pipelines disponibles : standard, graph, quantitative, orchestrator
 ```
@@ -138,11 +132,11 @@ python3 analyze_n8n_executions.py --pipeline <cible> --limit 5
 | Aspect | node-analyzer.py | analyze_n8n_executions.py |
 |--------|------------------|---------------------------|
 | **Type** | Diagnostic automatique | Extraction brute complete |
-| **Issues detectees** | ✅ Auto (verbose, slow, errors) | ❌ Manuelle |
-| **Donnees brutes** | Preview tronquee (1000-2000 chars) | ✅ Complete (JSON intégral) |
-| **Recommandations** | ✅ Auto-generees | ❌ Non |
-| **LLM content** | Preview 3000 chars | ✅ Complet |
-| **Fichier de sortie** | logs/diagnostics/ | n8n_analysis_results/ |
+| **Issues detectees** | Auto (verbose, slow, errors) | Manuelle |
+| **Donnees brutes** | Preview tronquee | Complete (JSON integral) |
+| **Recommandations** | Auto-generees | Non |
+| **LLM content** | Preview 3000 chars | Complet |
+| **Fichier de sortie** | logs/diagnostics/ | n8n/analysis/ |
 | **Usage principal** | Vue d'ensemble rapide | Debugging profond |
 
 ---
@@ -177,11 +171,11 @@ python3 analyze_n8n_executions.py --pipeline <cible> --limit 5
 ---
 
 ### Avant TOUT fix, repondre a :
-- [ ] Quel nœud exact cause le probleme ? **(confirme par les DEUX outils)**
-- [ ] Qu'est-ce que le nœud recoit en input ? **(via analyze_n8n_executions.py)**
+- [ ] Quel noeud exact cause le probleme ? **(confirme par les DEUX outils)**
+- [ ] Qu'est-ce que le noeud recoit en input ? **(via analyze_n8n_executions.py)**
 - [ ] Qu'est-ce qu'il produit en output ? **(via analyze_n8n_executions.py)**
 - [ ] Pourquoi cet output est-il faux ?
-- [ ] Quel changement de code dans ce nœud va corriger le probleme ?
+- [ ] Quel changement de code dans ce noeud va corriger le probleme ?
 
 ---
 
@@ -191,20 +185,20 @@ python3 analyze_n8n_executions.py --pipeline <cible> --limit 5
 ```bash
 # Pour une execution specifique
 python3 eval/node-analyzer.py --execution-id <ID> && \
-python3 analyze_n8n_executions.py --execution-id <ID>
+python3 scripts/analyze_n8n_executions.py --execution-id <ID>
 
 # Pour un pipeline (5 dernieres)
 python3 eval/node-analyzer.py --pipeline <cible> --last 5 && \
-python3 analyze_n8n_executions.py --pipeline <cible> --limit 5
+python3 scripts/analyze_n8n_executions.py --pipeline <cible> --limit 5
 ```
 
-### Workflow IDs verifies (via API n8n)
+### Workflow IDs Docker (source de verite)
 ```python
 WORKFLOW_IDS = {
-    "standard": "IgQeo5svGlIAPkBc",
-    "graph": "95x2BBAbJlLWZtWEJn6rb",
-    "quantitative": "E19NZG9WfM7FNsxr",
-    "orchestrator": "ALd4gOEqiKL5KR1p",
+    "standard": "M12n4cmiVBoBusUe",
+    "graph": "Vxm4TDdOLdb7j3Jy",
+    "quantitative": "nQnAJyT06NTbEQ3y",
+    "orchestrator": "P1no6VZkNtnRdlBi",
 }
 ```
 
@@ -212,7 +206,7 @@ WORKFLOW_IDS = {
 
 ## Regles d'Or
 
-1. **UN fix par iteration** — jamais plusieurs nœuds/pipelines en meme temps
+1. **UN fix par iteration** — jamais plusieurs noeuds/pipelines en meme temps
 2. **n8n est la source de verite** — editer dans n8n, sync vers GitHub
 3. **Analyse granulaire AVANT chaque fix** — **LES DEUX OUTILS sont OBLIGATOIRES**
 4. **Verifier AVANT de sync** — 5/5 doit passer avant de commit

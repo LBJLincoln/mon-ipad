@@ -1,88 +1,114 @@
-# Status de Session — 13 Fevrier 2026
+# Status de Session — 13 Fevrier 2026 (Soir)
 
-> Resume final de la session de reorganisation du repo.
+> Reorganisation majeure du repo + mise a jour credentials Docker
 
 ---
 
-## Fichiers modifies ou crees UNIQUEMENT lors de cette session
+## Fichiers modifies ou crees lors de cette session
 
-### Fichiers crees (4)
+### Fichiers crees (12)
 | Fichier | Type | Description |
 |---------|------|-------------|
-| `directives/status.md` | NOUVEAU | Ce fichier — resume de session |
-| `directives/claude.md` | NOUVEAU (symlink) | Symlink vers ../CLAUDE.md |
-| `utilisation/commands.md` | NOUVEAU | Reference complete des commandes |
-| `docs/data.json` | REINITIALISE | 37 executions, 4 pipelines, timestamps detailles |
+| `site/README.md` | NOUVEAU | Reference complete du site web |
+| `site/brief.md` | COPIE | Brief creatif website (depuis root) |
+| `site/n8n-artifacts-integration.md` | COPIE | Spec integration n8n |
+| `site/package.json` | COPIE | Dependances Next.js |
+| `site/vercel.json` | COPIE | Config Vercel |
+| `site/tailwind.config.ts` | COPIE | Config Tailwind |
+| `site/tsconfig.json` | COPIE | Config TypeScript |
+| `site/dashboard.html` | COPIE | Dashboard HTML |
+| `site/13-fev-website-session.md` | COPIE | Notes session website |
+| `mcp/README.md` | NOUVEAU | Status et config des 7 MCP servers |
+| `mcp/cohere-mcp-server.py` | COPIE | Serveur MCP Cohere |
+| `mcp/huggingface-mcp-server.py` | COPIE | Serveur MCP HuggingFace |
 
-### Fichiers modifies (2)
+### Fichiers deplace vers mcp/ (4)
+| Fichier | Ancien emplacement |
+|---------|-------------------|
+| `mcp/setup.md` | `technicals/mcp-setup.md` |
+| `mcp/servers-status.md` | `technicals/mcp-servers-status.md` |
+| `mcp/analysis-complete.md` | `technicals/MCP_ANALYSIS_COMPLETE.md` |
+| `mcp/termius-setup.md` | `technicals/termius-mcp-setup.md` |
+
+### Fichiers modifies (8)
 | Fichier | Modification |
 |---------|-------------|
-| `CLAUDE.md` | Reecrit en tour de controle (LIRE → UTILISER → PRODUIRE) |
-| `directives/n8n-endpoints.md` | Enrichi : timestamps Paris/seconde, formats verifies, chemins post-reorg, double source Workflow IDs |
+| `CLAUDE.md` | Credentials retires (renvoi vers .env.local), 7 MCP documentes, 14 dossiers |
+| `directives/objective.md` | Docker IDs, trace Cloud preservee, situation clean reset |
+| `directives/workflow-process.md` | Chemins corriges (scripts/, n8n/), IDs Docker |
+| `directives/status.md` | Ce fichier — resume session |
+| `technicals/architecture.md` | IDs Docker, LLM registry detaille, repo structure mise a jour |
+| `technicals/stack.md` | Docker era, 7 MCP, Cohere primary embedding |
+| `technicals/credentials.md` | Cles retirees (renvoi .env.local), workflow IDs Docker |
+| `docs/data.json` | Clean reset — 4 executions Cloud de reference uniquement |
 
-### Fichiers deplaces (159 mouvements)
-| Destination | Origine | Nb |
-|-------------|---------|-----|
-| `directives/` | `context/`, `docs/technical/` | 3 |
-| `technicals/` | `docs/technical/`, `docs/`, `context/`, `directives/` | 16 |
-| `eval/` | `eval/` (ancienne position) via `utilisation/eval/` | 8 |
-| `scripts/` | root + `scripts/` via `utilisation/scripts/` | 13 |
-| `n8n/analysis/` | `n8n_analysis_results/` | 36 |
-| `n8n/live/` + `n8n/validated/` + `n8n/sync.py` | `workflows/` | 15 |
-| `datasets/` | `datasets/` via `utilisation/datasets/` | 4 |
-| `db/` | `db/` via `utilisation/db/` | 24 |
-| `mcp/` | `mcp/` via `utilisation/mcp/` | 1 |
-| `snapshot/` | `workflows/snapshots/` + `logs/db-snapshots/` | 11 |
-| `logs/` | `logs/` via `outputs/` | 45 |
-| `outputs/` | `docs/`, root, `context/` | 5 |
-| `docs/` | reste en place (3 fichiers) | 0 |
-
-### Fichiers supprimes (8)
+### Fichiers supprimes (11)
 | Fichier | Raison |
 |---------|--------|
-| `scripts/install-mcp-servers.sh` | Shell script — consigne user |
-| `scripts/n8n-oracle-setup.sh` | Shell script — consigne user |
-| `scripts/setup-n8n-docker.sh` | Shell script — consigne user |
-| `start-next-session.sh` | Shell script — consigne user |
-| `start-session.sh` | Shell script — consigne user |
-| `start-sota-session.sh` | Shell script — consigne user |
-| `logs/db-snapshots/.gitkeep` | Dossier deplace vers snapshot/db/ |
-| `logs/errors/.gitkeep` | Dossier deplace vers logs/ (reconstruit) |
+| `Site internet` (root) | Copie dans site/brief.md |
+| `modifs archi souhiaté...` (root) | Instructions executees |
+| `technicals/mcp-setup.md` | Deplace vers mcp/ |
+| `technicals/mcp-servers-status.md` | Deplace vers mcp/ |
+| `technicals/MCP_ANALYSIS_COMPLETE.md` | Deplace vers mcp/ |
+| `technicals/termius-mcp-setup.md` | Deplace vers mcp/ |
+| `technicals/embedding-migration-diagnostic.md` | Obsolete (migration terminee) |
+| `technicals/embedding-migration-CORRECTED.md` | Obsolete |
+| `technicals/MIGRATION_N8N_DOCKER_COMPLETE.md` | Obsolete |
+| `technicals/n8n-skills.md` | Non necessaire |
+| `technicals/python-techniques.md` | Non necessaire |
 
-### Dossiers supprimes (anciens, vides apres deplacements)
-`context/`, `eval/` (ancien), `scripts/` (ancien), `phases/`, `mcp/` (ancien), `datasets/` (ancien), `db/` (ancien), `n8n_analysis_results/`, `workflows/`, `logs/` (ancien), `docs/technical/`, `docs/migration/`, `utilisation/` (intermediaire)
+### Dossiers supprimes
+`technicals/migration/` (migration terminee)
+
+### Logs nettoyes
+- `logs/errors/` — vide (gitkeep)
+- `logs/diagnostics/` — vide (gitkeep)
+- `logs/iterative-eval/` — vide (gitkeep)
+- `logs/pipeline-results/` — vide (gitkeep)
+- `logs/executions/` — vide (gitkeep)
 
 ---
 
-## Analyse concrete de l'etat d'avancement
+## Actions sur la VM (hors repo)
 
-### Metriques live (docs/status.json du 2026-02-12)
+| Action | Detail |
+|--------|--------|
+| `.bashrc` mise a jour | Toutes les env vars exportees (OPENROUTER, HF_TOKEN, etc.) |
+| `.env.local` mise a jour | Nouvelle cle OpenRouter + nouveau HF token |
+| `docker-compose.yml` mise a jour | OPENROUTER_API_KEY + HF_TOKEN + workflow IDs corrects |
+| n8n Docker redemarre | Containers recreated avec nouvelles credentials |
+| `.claude/settings.json` mise a jour | Nouvelle cle OpenRouter + HF token pour MCP servers |
 
-| Pipeline | Accuracy | Tested | Target | Gap | Status |
-|----------|----------|--------|--------|-----|--------|
-| Standard | 0.0% | 8 | 85% | -85pp | BLOQUE |
-| Graph | 76.5% | 17 | 70% | +6.5pp | PASSE |
-| Quantitative | 0.0% | 8 | 85% | -85pp | BLOQUE |
-| Orchestrator | 0% | 0 | 70% | -70pp | NON TESTE |
-| **Overall** | **25.5%** | **33** | **75%** | **-49.5pp** | **BLOQUE** |
+---
 
-### Bilan
-- **1 pipeline passe** : Graph (76.5% > 70% cible)
-- **2 pipelines bloques** : Standard (0%) et Quantitative (0%)
-- **1 pipeline non teste** : Orchestrator
-- **Infrastructure** : reorganisation complete, 13 dossiers, architecture agentic loop
-- **data.json** : reinitialise avec 37 executions (28 standard, 4 quant, 3 graph, 1 orch, 1 unknown)
-- **Derniere execution par pipeline** : standard #19476, graph #19479, quantitative #19457, orchestrator #19323
+## Analyse de l'etat d'avancement
 
-### Blockers
-1. Standard : requetes retournent erreurs/timeouts — noeud a diagnostiquer
-2. Quantitative : 6 timeouts sur 8 tests — webhook timeout probable (30s)
-3. Orchestrator : depend de Standard + Quantitative fonctionnels
+### Clean Reset
+- **Toutes les executions Docker precedentes supprimees** (etaient toutes en erreur)
+- **4 executions Cloud conservees comme reference** : #19404, #19326, #19323, #19305
+- **Tests Docker a reprendre de zero** avec les nouvelles credentials
 
-### Prochaine action
+### Infrastructure
+- n8n Docker : **OPERATIONNEL** (3 containers: n8n, postgres, redis)
+- Nouvelle cle OpenRouter : **ACTIVE** dans Docker
+- Nouveau token HF : **ACTIF** dans Docker
+- 7 MCP servers : **CONFIGURES** (n8n confirme actif, 6 a valider)
+- 13 workflows Docker : **ACTIFS**
+
+### Repo
+- **14 dossiers** organises (nouveau: site/, mcp/ etoffe)
+- **technicals/** nettoye (5 fichiers essentiels)
+- **Pas de credentials en clair dans GitHub**
+- **data.json** clean avec trace Cloud
+
+---
+
+## Prochaine action
+
 ```
 1. python3 eval/quick-test.py --questions 1 --pipeline standard
 2. python3 eval/node-analyzer.py --execution-id <ID>
 3. python3 scripts/analyze_n8n_executions.py --execution-id <ID>
-4. Identifier le noeud defaillant → fixer dans n8n → retester 5/5
+4. Comparer avec execution Cloud de reference #19404
+5. Iterer pipeline par pipeline : standard → graph → quantitative → orchestrator
 ```

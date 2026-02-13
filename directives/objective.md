@@ -21,11 +21,11 @@ PHASE C : Ingestion & Enrichment (post-analyse SOTA)
   Analyse des workflows existants -> Nouvelles BDD -> Tests iteratifs
 ```
 
-Details complets : `phases/overview.md`
+Details complets : `technicals/phases-overview.md`
 
 ---
 
-## Pipelines RAG (4)
+## Pipelines RAG (4) — Docker n8n (34.136.180.66:5678)
 
 | Pipeline | Role | Base de donnees | Webhook | Cible Phase 1 |
 |----------|------|-----------------|---------|---------------|
@@ -34,19 +34,37 @@ Details complets : `phases/overview.md`
 | **Quantitative** | RAG SQL sur tables financieres | Supabase (88 lignes) | `/webhook/3e0f8010-...` | >= 85% |
 | **Orchestrator** | Route vers les 3 pipelines | Aucune (meta-pipeline) | `/webhook/92217bb8-...` | >= 70% |
 
+## Workflow IDs — Docker (source de verite)
+
+| Pipeline | Docker ID | Verifie |
+|----------|-----------|---------|
+| **Standard** | `M12n4cmiVBoBusUe` | 2026-02-13 via API |
+| **Graph** | `Vxm4TDdOLdb7j3Jy` | 2026-02-13 via API |
+| **Quantitative** | `nQnAJyT06NTbEQ3y` | 2026-02-13 via API |
+| **Orchestrator** | `P1no6VZkNtnRdlBi` | 2026-02-13 via API |
+
+### Trace Cloud (anciens IDs — OBSOLETE, reference uniquement)
+
+| Pipeline | Cloud ID | Executions reussies |
+|----------|----------|---------------------|
+| Standard | `IgQeo5svGlIAPkBc` | #19404 |
+| Graph | `95x2BBAbJlLWZtWEJn6rb` | #19305 |
+| Quantitative | `E19NZG9WfM7FNsxr` | #19326 |
+| Orchestrator | `ALd4gOEqiKL5KR1p` | #19323 |
+
 ## Workflows supplementaires (9)
 
-| Workflow | Role | Phase d'utilisation |
-|----------|------|---------------------|
-| **Ingestion V3.1** | Ingestion de documents dans les BDD | Phase C |
-| **Enrichissement V3.1** | Enrichissement des donnees existantes | Phase C |
-| **Feedback V3.1** | Boucle de feedback des resultats | Phase C |
-| **Benchmark V3.0** | Benchmark automatise | Toutes phases |
-| **Dataset Ingestion Pipeline** | Ingestion de datasets HF | Phase 2+ |
-| **Monitoring & Alerting** | Monitoring des workflows | Toutes phases |
-| **Orchestrator Tester** | Tests de l'orchestrateur | Phase A |
-| **RAG Batch Tester** | Tests batch des pipelines RAG | Phase A |
-| **SQL Executor Utility** | Execution SQL utilitaire | Debug |
+| Workflow | Role | Docker ID |
+|----------|------|-----------|
+| **Ingestion V3.1** | Ingestion de documents | `6lPMHEYyWh1v34ro` |
+| **Enrichissement V3.1** | Enrichissement donnees | `KXnQKuKw8ZUbyZUl` |
+| **Feedback V3.1** | Boucle de feedback | `cMlr32Qq7Sgy6Xq8` |
+| **Benchmark V3.0** | Benchmark automatise | `tygzgU4i67FU6vm2` |
+| **Dataset Ingestion** | Ingestion datasets HF | `S4FFbvx9Mn7DRkgk` |
+| **Monitoring** | Monitoring workflows | `xFAcxnFS5ISnlytH` |
+| **Orchestrator Tester** | Tests orchestrateur | `R0HRiLQmL3FoCNKg` |
+| **RAG Batch Tester** | Tests batch RAG | `k7jHXRTypXAQOreJ` |
+| **SQL Executor** | Execution SQL | `Dq83aCiXCfymsgCV` |
 
 ---
 
@@ -54,22 +72,15 @@ Details complets : `phases/overview.md`
 
 > **Lire `docs/status.json` pour les metriques live.**
 
-### Ce qui marche
-- Graph RAG : 76.5% (17q testees) - PASSE la gate Phase 1
-- Infrastructure d'eval complete (quick-test, fast-iter, iterative-eval, parallel eval)
-- Analyse granulaire node-par-node fonctionnelle
-- Sync n8n <-> GitHub operationnel (13 workflows importes)
-- MCP embeddings + Pinecone fonctionnel
-
-### Ce qui bloque
-- Standard : 0% (pas teste recemment)
-- Quantitative : 0% sur 8q testees (6 erreurs)
-- Orchestrator : 0% (pas teste)
-- Overall : 38.2% vs 75% cible
+### Clean reset (13 fev 2026)
+- Migration Docker terminee (12 fev)
+- Repo nettoye et reorganise
+- 4 executions cloud de reference conservees : #19404, #19326, #19323, #19305
+- Tests Docker a recommencer de zero
 
 ### Prochaine action prioritaire
-**Fixer le pipeline Standard** (plus gros gap : -85pp), puis Quantitative, puis Orchestrator.
-Suivre le processus : `context/workflow-process.md`
+**Tester chaque pipeline 1/1 sur Docker**, analyser avec les deux outils, puis iterer.
+Suivre le processus : `directives/workflow-process.md`
 
 ---
 
@@ -77,80 +88,47 @@ Suivre le processus : `context/workflow-process.md`
 
 ### Pinecone
 - 10,411 vecteurs, 12 namespaces, dimension 1536
-- Couverture : Phase 1 + donnees partielles Phase 3 (vecteurs Tier 3)
-- **Attention** : dimension 1536, verifier coherence avec le modele d'embedding
+- Index Docker : `sota-rag-cohere-1024` (Cohere 1024-dim)
+- **Attention** : verifier coherence dimension embedding vs index
 
 ### Neo4j
 - 110 entites, 151 relations
-- Couverture : Phase 1 uniquement
-- Phase 2 necessite ~2,500 nouvelles entites (extraction depuis HF)
+- Acces : via n8n Docker (bolt://localhost:7687 sur la VM)
 
 ### Supabase
 - 88 lignes, 5 tables
-- Couverture : Phase 1 uniquement
-- Phase 2 necessite ~10,000 lignes (tables financieres HF)
-
-### Datasets locaux
-- Phase 1 : 200q (PRET)
-- Phase 2 : 1,000q (PRET)
-- Phase 3-5 : A generer via `db/populate/push-datasets.py`
+- Acces : direct via n8n Docker
 
 ---
 
 ## Stack Technique
 
-Voir `context/stack.md` pour le detail complet.
+Voir `technicals/stack.md` pour le detail complet.
 
 **Resume** :
-- **Workflows** : n8n (cloud actuel, migration self-hosted prevue)
-- **LLM** : arcee-ai/trinity-large-preview:free via OpenRouter ($0)
-- **Embeddings** : Jina AI (free, 1024-dim) ou Cohere (free, 1024-dim)
+- **Workflows** : n8n Docker self-hosted (34.136.180.66:5678)
+- **LLM** : Modeles gratuits via OpenRouter ($0)
+- **Embeddings** : Cohere embed-english-v3.0 (1024-dim) + Jina (backup)
 - **Vector DB** : Pinecone (free tier, serverless)
-- **Graph DB** : Neo4j (via n8n)
+- **Graph DB** : Neo4j (via n8n Docker)
 - **SQL DB** : Supabase (free tier)
 - **Eval** : Python scripts locaux
-- **CI/CD** : GitHub Actions
-- **Dev** : Claude Code (Max plan) via terminal ou web
-- **Terminal** : Termius / GCloud Console / Oracle Cloud (iPad)
+- **Dev** : Claude Code (Max plan) via Termius
 
 ---
 
-## Workflow IDs n8n (verifies via API)
+## Analyse Nodulaire Double — OBLIGATOIRE
 
-| Pipeline | Workflow ID | Statut |
-|----------|-------------|--------|
-| **Standard** | `IgQeo5svGlIAPkBc` | ✅ Verifie via API |
-| **Graph** | `95x2BBAbJlLWZtWEJn6rb` | ✅ Verifie via API |
-| **Quantitative** | `E19NZG9WfM7FNsxr` | ✅ Verifie via API |
-| **Orchestrator** | `ALd4gOEqiKL5KR1p` | ✅ Verifie via API |
+A chaque question testee, executer **LES DEUX ANALYSES** :
 
----
-
-## Analyse Nodulaire Double - OBLIGATOIRE
-
-**⚠️ MODIFICATION ESSENTIELLE :** A chaque fois qu'une question est testee, il faut effectuer **LES DEUX ANALYSES** suivantes :
-
-### 1. Analyse via node-analyzer.py (existante)
+### 1. node-analyzer.py (diagnostics auto)
 ```bash
 python3 eval/node-analyzer.py --execution-id <ID>
 ```
 
-### 2. Analyse via analyze_n8n_executions.py (NOUVEAU - OBLIGATOIRE)
+### 2. analyze_n8n_executions.py (donnees brutes)
 ```bash
-python3 analyze_n8n_executions.py --execution-id <ID>
+python3 scripts/analyze_n8n_executions.py --execution-id <ID>
 ```
 
-### Ou analyse par pipeline (pour les tests multiples)
-```bash
-# Analyser les 5 dernieres executions d'un pipeline
-python3 analyze_n8n_executions.py --pipeline <standard|graph|quantitative|orchestrator> --limit 5
-```
-
-### Pourquoi les deux analyses ?
-
-| Outil | Donnees fournies | Usage |
-|-------|------------------|-------|
-| **node-analyzer.py** | Diagnostics automatiques, detection d'issues, recommandations | Vue d'ensemble rapide, identification des problemes |
-| **analyze_n8n_executions.py** | Donnees brutes completes (input/output), extraction LLM detaillee, flags de routage | Analyse profonde, debugging complexe |
-
-**Les deux outils sont complementaires et DOIVENT etre utilises systematiquement.**
+Les deux outils sont complementaires et DOIVENT etre utilises systematiquement.

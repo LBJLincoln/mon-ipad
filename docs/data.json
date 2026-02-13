@@ -1,462 +1,63 @@
 {
   "meta": {
-    "generated_at": "2026-02-13T17:31:18.291976+00:00",
-    "description": "Reinitialized data.json - execution analysis per pipeline",
-    "source": "analyze_n8n_executions.py outputs"
+    "generated_at": "2026-02-13T22:00:00+01:00",
+    "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
+    "source": "Manual cleanup session 13-fev"
   },
-  "latest_per_pipeline": {
-    "standard": {
-      "execution_id": "19476",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "error",
-      "started_at": "2026-02-12T11:14:33.079Z",
-      "stopped_at": "2026-02-12T11:19:36.570Z",
-      "duration_ms": 303491,
-      "trigger_query": "N/A",
-      "node_count": 18
+  "reference_cloud_executions": {
+    "note": "Executions reussies sur n8n Cloud (avant migration Docker). Servent de reference uniquement.",
+    "cloud_host": "amoret.app.n8n.cloud",
+    "cloud_workflow_ids": {
+      "standard": "IgQeo5svGlIAPkBc",
+      "graph": "95x2BBAbJlLWZtWEJn6rb",
+      "quantitative": "E19NZG9WfM7FNsxr",
+      "orchestrator": "ALd4gOEqiKL5KR1p"
     },
-    "graph": {
-      "execution_id": "19479",
-      "workflow_name": "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED",
-      "pipeline": "graph",
-      "status": "canceled",
-      "started_at": "2026-02-12T11:22:36.452Z",
-      "stopped_at": "2026-02-12T11:24:06.480Z",
-      "duration_ms": 90028,
-      "trigger_query": "N/A",
-      "node_count": 3
-    },
-    "quantitative": {
-      "execution_id": "19457",
-      "workflow_name": "TEST - SOTA 2026 - WF4 Quantitative V2.0",
-      "pipeline": "quantitative",
-      "status": "success",
-      "started_at": "2026-02-12T08:04:11.639Z",
-      "stopped_at": "2026-02-12T08:04:21.608Z",
-      "duration_ms": 9969,
-      "trigger_query": "N/A",
-      "node_count": 12
-    },
-    "orchestrator": {
-      "execution_id": "19323",
-      "workflow_name": "V10.1 orchestrator copy",
-      "pipeline": "orchestrator",
-      "status": "success",
-      "started_at": "2026-02-10T13:01:20.411Z",
-      "stopped_at": "2026-02-10T13:02:22.615Z",
-      "duration_ms": 62204,
-      "trigger_query": "N/A",
-      "node_count": 43
-    }
+    "executions": [
+      {
+        "execution_id": "19404",
+        "pipeline": "standard",
+        "status": "success",
+        "started_at": "2026-02-12T01:16:23.615Z",
+        "duration_ms": 7923,
+        "note": "Standard RAG cloud reference"
+      },
+      {
+        "execution_id": "19326",
+        "pipeline": "quantitative",
+        "status": "success",
+        "started_at": "2026-02-10T13:02:58.684Z",
+        "duration_ms": 33301,
+        "note": "Quantitative RAG cloud reference"
+      },
+      {
+        "execution_id": "19323",
+        "pipeline": "orchestrator",
+        "status": "success",
+        "started_at": "2026-02-10T13:01:20.411Z",
+        "duration_ms": 62204,
+        "note": "Orchestrator cloud reference"
+      },
+      {
+        "execution_id": "19305",
+        "pipeline": "graph",
+        "status": "success",
+        "started_at": "2026-02-10T12:25:39.561Z",
+        "duration_ms": 36514,
+        "note": "Graph RAG cloud reference"
+      }
+    ]
   },
-  "all_executions": [
-    {
-      "execution_id": "19479",
-      "workflow_name": "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED",
-      "pipeline": "graph",
-      "status": "canceled",
-      "started_at": "2026-02-12T11:22:36.452Z",
-      "stopped_at": "2026-02-12T11:24:06.480Z",
-      "duration_ms": 90028,
-      "trigger_query": "N/A",
-      "node_count": 3
+  "docker_testing": {
+    "host": "http://34.136.180.66:5678",
+    "workflow_ids": {
+      "standard": "M12n4cmiVBoBusUe",
+      "graph": "Vxm4TDdOLdb7j3Jy",
+      "quantitative": "nQnAJyT06NTbEQ3y",
+      "orchestrator": "P1no6VZkNtnRdlBi"
     },
-    {
-      "execution_id": "19476",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "error",
-      "started_at": "2026-02-12T11:14:33.079Z",
-      "stopped_at": "2026-02-12T11:19:36.570Z",
-      "duration_ms": 303491,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19475",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "error",
-      "started_at": "2026-02-12T11:03:11.043Z",
-      "stopped_at": "2026-02-12T11:08:15.893Z",
-      "duration_ms": 304850,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19467",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "error",
-      "started_at": "2026-02-12T09:42:49.396Z",
-      "stopped_at": "2026-02-12T09:47:52.505Z",
-      "duration_ms": 303109,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19466",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "error",
-      "started_at": "2026-02-12T09:41:19.111Z",
-      "stopped_at": "2026-02-12T09:46:22.184Z",
-      "duration_ms": 303073,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19465",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "error",
-      "started_at": "2026-02-12T09:38:32.087Z",
-      "stopped_at": "2026-02-12T09:43:35.480Z",
-      "duration_ms": 303393,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19464",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "error",
-      "started_at": "2026-02-12T09:37:29.369Z",
-      "stopped_at": "2026-02-12T09:42:32.579Z",
-      "duration_ms": 303210,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19457",
-      "workflow_name": "TEST - SOTA 2026 - WF4 Quantitative V2.0",
-      "pipeline": "quantitative",
-      "status": "success",
-      "started_at": "2026-02-12T08:04:11.639Z",
-      "stopped_at": "2026-02-12T08:04:21.608Z",
-      "duration_ms": 9969,
-      "trigger_query": "N/A",
-      "node_count": 12
-    },
-    {
-      "execution_id": "19456",
-      "workflow_name": "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED",
-      "pipeline": "graph",
-      "status": "success",
-      "started_at": "2026-02-12T08:03:51.947Z",
-      "stopped_at": "2026-02-12T08:04:11.178Z",
-      "duration_ms": 19231,
-      "trigger_query": "N/A",
-      "node_count": 21
-    },
-    {
-      "execution_id": "19455",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T08:03:37.235Z",
-      "stopped_at": "2026-02-12T08:03:51.672Z",
-      "duration_ms": 14437,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19449",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:18:49.910Z",
-      "stopped_at": "2026-02-12T03:19:08.262Z",
-      "duration_ms": 18352,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19448",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:18:31.383Z",
-      "stopped_at": "2026-02-12T03:18:47.995Z",
-      "duration_ms": 16612,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19447",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:18:15.245Z",
-      "stopped_at": "2026-02-12T03:18:27.609Z",
-      "duration_ms": 12364,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19446",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:17:56.390Z",
-      "stopped_at": "2026-02-12T03:18:12.632Z",
-      "duration_ms": 16242,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19445",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:17:40.411Z",
-      "stopped_at": "2026-02-12T03:17:50.962Z",
-      "duration_ms": 10551,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19444",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:16:53.798Z",
-      "stopped_at": "2026-02-12T03:17:09.808Z",
-      "duration_ms": 16010,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19443",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:16:41.018Z",
-      "stopped_at": "2026-02-12T03:16:50.392Z",
-      "duration_ms": 9374,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19442",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:16:31.738Z",
-      "stopped_at": "2026-02-12T03:16:40.356Z",
-      "duration_ms": 8618,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19441",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:16:17.637Z",
-      "stopped_at": "2026-02-12T03:16:30.931Z",
-      "duration_ms": 13294,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19440",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:15:57.225Z",
-      "stopped_at": "2026-02-12T03:16:17.091Z",
-      "duration_ms": 19866,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19439",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:15:11.597Z",
-      "stopped_at": "2026-02-12T03:15:23.352Z",
-      "duration_ms": 11755,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19438",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:14:54.832Z",
-      "stopped_at": "2026-02-12T03:15:11.025Z",
-      "duration_ms": 16193,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19437",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:14:45.651Z",
-      "stopped_at": "2026-02-12T03:14:54.297Z",
-      "duration_ms": 8646,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19436",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:14:31.404Z",
-      "stopped_at": "2026-02-12T03:14:44.991Z",
-      "duration_ms": 13587,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19435",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T03:14:18.925Z",
-      "stopped_at": "2026-02-12T03:14:30.729Z",
-      "duration_ms": 11804,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19433",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T02:33:38.825Z",
-      "stopped_at": "2026-02-12T02:33:49.517Z",
-      "duration_ms": 10692,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19432",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T02:33:16.557Z",
-      "stopped_at": "2026-02-12T02:33:36.835Z",
-      "duration_ms": 20278,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19431",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T02:32:58.569Z",
-      "stopped_at": "2026-02-12T02:33:15.922Z",
-      "duration_ms": 17353,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19430",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T02:32:42.733Z",
-      "stopped_at": "2026-02-12T02:32:57.889Z",
-      "duration_ms": 15156,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19429",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T02:32:22.694Z",
-      "stopped_at": "2026-02-12T02:32:41.976Z",
-      "duration_ms": 19282,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19404",
-      "workflow_name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
-      "pipeline": "standard",
-      "status": "success",
-      "started_at": "2026-02-12T01:16:23.615Z",
-      "stopped_at": "2026-02-12T01:16:31.538Z",
-      "duration_ms": 7923,
-      "trigger_query": "N/A",
-      "node_count": 18
-    },
-    {
-      "execution_id": "19374",
-      "workflow_name": "TEST - SOTA 2026 - WF4 Quantitative V2.0",
-      "pipeline": "quantitative",
-      "status": "success",
-      "started_at": "2026-02-11T08:07:06.830Z",
-      "stopped_at": "2026-02-11T08:07:06.892Z",
-      "duration_ms": 62,
-      "trigger_query": "N/A",
-      "node_count": 2
-    },
-    {
-      "execution_id": "19372",
-      "workflow_name": "TEST - SOTA 2026 - WF4 Quantitative V2.0",
-      "pipeline": "quantitative",
-      "status": "canceled",
-      "started_at": "2026-02-11T08:06:06.467Z",
-      "stopped_at": "2026-02-11T08:07:06.492Z",
-      "duration_ms": 60025,
-      "trigger_query": "N/A",
-      "node_count": 1114
-    },
-    {
-      "execution_id": "19337",
-      "workflow_name": "BENCHMARK - SQL Executor Utility",
-      "pipeline": "unknown",
-      "status": "success",
-      "started_at": "2026-02-10T13:10:25.951Z",
-      "stopped_at": "2026-02-10T13:10:26.013Z",
-      "duration_ms": 62,
-      "trigger_query": "N/A",
-      "node_count": 2
-    },
-    {
-      "execution_id": "19326",
-      "workflow_name": "TEST - SOTA 2026 - WF4 Quantitative V2.0",
-      "pipeline": "quantitative",
-      "status": "success",
-      "started_at": "2026-02-10T13:02:58.684Z",
-      "stopped_at": "2026-02-10T13:03:31.985Z",
-      "duration_ms": 33301,
-      "trigger_query": "N/A",
-      "node_count": 12
-    },
-    {
-      "execution_id": "19323",
-      "workflow_name": "V10.1 orchestrator copy",
-      "pipeline": "orchestrator",
-      "status": "success",
-      "started_at": "2026-02-10T13:01:20.411Z",
-      "stopped_at": "2026-02-10T13:02:22.615Z",
-      "duration_ms": 62204,
-      "trigger_query": "N/A",
-      "node_count": 43
-    },
-    {
-      "execution_id": "19305",
-      "workflow_name": "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED",
-      "pipeline": "graph",
-      "status": "success",
-      "started_at": "2026-02-10T12:25:39.561Z",
-      "stopped_at": "2026-02-10T12:26:16.075Z",
-      "duration_ms": 36514,
-      "trigger_query": "N/A",
-      "node_count": 21
-    }
-  ]
+    "executions": []
+  },
+  "latest_per_pipeline": {},
+  "all_executions": []
 }

@@ -17,7 +17,7 @@ cat directives/status.md                # Resume de la derniere session : fichie
 Lire `directives/objective.md` :
 - Objectif final (Multi-RAG SOTA, 4 pipelines, 1M+ questions)
 - Situation actuelle (quel pipeline bloque, etat des BDD)
-- Workflow IDs n8n verifies
+- Workflow IDs Docker verifies
 
 ### 1.3 Comprendre le processus
 Lire `directives/workflow-process.md` :
@@ -35,11 +35,10 @@ Lire `directives/n8n-endpoints.md` UNIQUEMENT quand tu dois :
 ### 1.5 References techniques supplementaires (AU BESOIN seulement)
 - `technicals/architecture.md` — Architecture detaillee des 4 pipelines + 9 workflows
 - `technicals/stack.md` — Stack technique complete
-- `technicals/credentials.md` — Cles API
+- `technicals/credentials.md` — Configuration des services (cles dans .env.local)
 - `technicals/phases-overview.md` — Strategie 5 phases et gates
 - `technicals/knowledge-base.json` — Patterns d'erreurs connus
-
-**NE PAS lire** les autres fichiers technicals/ sauf besoin specifique (migration, MCP, embeddings).
+- `mcp/README.md` — Status des 7 MCP servers
 
 ---
 
@@ -48,9 +47,13 @@ Lire `directives/n8n-endpoints.md` UNIQUEMENT quand tu dois :
 ### 2.1 MCP Servers (configures dans `.claude/settings.json`)
 | MCP | Usage |
 |-----|-------|
-| `n8n` | Executer et inspecter des workflows n8n |
+| `n8n` | Executer et inspecter des workflows n8n (Docker natif) |
 | `pinecone` | Interroger le vector store (10K+ vecteurs) |
 | `neo4j` | Interroger le graph (110 entites) |
+| `jina-embeddings` | Embeddings + Pinecone CRUD |
+| `supabase` | SQL queries directes |
+| `cohere` | Embeddings + Reranking |
+| `huggingface` | Recherche modeles/datasets |
 
 ### 2.2 Commandes d'evaluation (dossier `eval/`)
 | Commande | Usage |
@@ -144,43 +147,38 @@ Puis integrer dans `docs/data.json`.
 
 ## Credentials — Docker era (post-migration 2026-02-12)
 
+> **Les cles API sont dans `.env.local` (gitignore) et dans les env vars Docker.**
+> Ne PAS mettre de cles en clair dans le repo GitHub.
+
 ```bash
 # n8n Docker self-hosted sur Google Cloud VM
-export N8N_HOST="http://34.136.180.66:5678"
-export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2M2ZhN2FjNS1lOTJkLTQ2MjAtOGZkYS05Zjg0MWI1Y2VjZjYiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiNzc0NzYyNmItNTNjYi00ZDU0LTkxYmItYjZkYmE1NjdmZGVmIiwiaWF0IjoxNzcwOTM4NDExfQ.77sRd0mK_ShypXUibu4GpKbyKFXTzCE9mLa7940nUAw"
+N8N_HOST="http://34.136.180.66:5678"
+# N8N_API_KEY → voir .env.local
 
-# LLM & Embeddings
-export OPENROUTER_API_KEY="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"
-export JINA_API_KEY="jina_f1348176dc7a4f0da9996cfa6cfa6eecasLHpAw7iEXFqU6eHi9SQBuxqT0F"
-
-# Databases
-export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
-export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
-export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
-export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
-export SUPABASE_API_KEY="sb_publishable_xUcuBcYYUO2G9Mkq_McdeQ_ocFjgonm"
-export SUPABASE_URL="https://ayqviqmxifzmhphiqfmj.supabase.co"
+# Services : OpenRouter, Jina, Cohere, Pinecone, Neo4j, Supabase, HuggingFace
+# Toutes les cles → voir .env.local
 ```
 
 ---
 
-## Architecture — 13 dossiers
+## Architecture — 14 dossiers
 
 | # | Dossier | Role |
 |---|---------|------|
 | 1 | `directives/` | Mission control (objective, workflow-process, n8n-endpoints, status) |
-| 2 | `technicals/` | Documentation technique de reference |
+| 2 | `technicals/` | Documentation technique (architecture, stack, credentials, phases, knowledge-base) |
 | 3 | `eval/` | Scripts d'evaluation (quick-test, iterative-eval, node-analyzer) |
 | 4 | `scripts/` | Scripts utilitaires Python |
 | 5 | `n8n/` | Workflows n8n (live, validated, analysis, sync) |
-| 6 | `datasets/` | Donnees de test (phase-1, phase-2) |
-| 7 | `db/` | Database (migrations, populate, readiness) |
-| 8 | `mcp/` | Serveurs MCP |
-| 9 | `snapshot/` | Snapshots historiques (workflows + DB) |
-| 10 | `logs/` | Logs d'execution bruts |
-| 11 | `outputs/` | Archives de sessions datees |
-| 12 | `docs/` | Dashboard (data.json, status.json, index.html) |
-| 13 | `utilisation/` | Guide d'utilisation et reference commandes |
+| 6 | `mcp/` | Serveurs MCP et documentation (7 servers) |
+| 7 | `website/` | Code source Next.js |
+| 8 | `site/` | Reference website (copies pour vision complete) |
+| 9 | `datasets/` | Donnees de test (phase-1, phase-2) |
+| 10 | `db/` | Database (migrations, populate, readiness) |
+| 11 | `snapshot/` | Snapshots historiques (workflows + DB) |
+| 12 | `logs/` | Logs d'execution bruts |
+| 13 | `outputs/` | Archives de sessions datees |
+| 14 | `docs/` | Dashboard (data.json, status.json, index.html) |
 
 ---
 
@@ -194,13 +192,13 @@ export SUPABASE_URL="https://ayqviqmxifzmhphiqfmj.supabase.co"
 | Orchestrator | `/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0` | Meta | >= 70% |
 | **Overall** | | | **>= 75%** |
 
-LLM : `arcee-ai/trinity-large-preview:free` via OpenRouter ($0).
+LLM : Modeles gratuits via OpenRouter ($0).
 
 ## Acces
 
 | Ressource | Acces | Note |
 |-----------|-------|------|
-| n8n Webhooks + REST API | DIRECT | `34.136.180.66:5678` (Docker self-hosted) |
+| n8n Webhooks + REST API + MCP | DIRECT | `34.136.180.66:5678` (Docker self-hosted) |
 | GitHub, Pinecone | DIRECT | git + HTTPS API |
-| Supabase | DIRECT | `ayqviqmxifzmhphiqfmj.supabase.co` |
-| Neo4j | DIRECT | `bolt://localhost:7687` (via VM) |
+| Supabase | VIA n8n | `ayqviqmxifzmhphiqfmj.supabase.co` |
+| Neo4j | VIA n8n | `bolt://localhost:7687` (Docker VM) |

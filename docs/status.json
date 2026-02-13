@@ -1,40 +1,41 @@
 {
-  "generated_at": "2026-02-12T11:24:06.467632Z",
+  "generated_at": "2026-02-13T22:00:00+01:00",
   "phase": {
     "current": 1,
     "name": "Baseline (200q)",
     "gates_passed": false
   },
+  "note": "Clean reset - Docker testing starts from scratch. Cloud reference executions: 19404, 19326, 19323, 19305.",
   "pipelines": {
     "standard": {
       "accuracy": 0.0,
-      "tested": 8,
+      "tested": 0,
       "correct": 0,
-      "errors": 3,
+      "errors": 0,
       "target": 85.0,
       "met": false,
       "gap": -85.0
     },
     "graph": {
-      "accuracy": 76.5,
-      "tested": 17,
-      "correct": 13,
+      "accuracy": 0.0,
+      "tested": 0,
+      "correct": 0,
       "errors": 0,
       "target": 70.0,
-      "met": true,
-      "gap": 6.5
+      "met": false,
+      "gap": -70.0
     },
     "quantitative": {
       "accuracy": 0.0,
-      "tested": 8,
+      "tested": 0,
       "correct": 0,
-      "errors": 6,
+      "errors": 0,
       "target": 85.0,
       "met": false,
       "gap": -85.0
     },
     "orchestrator": {
-      "accuracy": 0,
+      "accuracy": 0.0,
       "tested": 0,
       "correct": 0,
       "errors": 0,
@@ -44,34 +45,12 @@
     }
   },
   "overall": {
-    "accuracy": 25.5,
+    "accuracy": 0.0,
     "target": 75.0,
     "met": false
   },
   "blockers": [
-    "standard: 0.0% < 85.0% (gap: -85.0pp)",
-    "quantitative: 0.0% < 85.0% (gap: -85.0pp)",
-    "orchestrator: 0% < 70.0% (gap: -70.0pp)",
-    "overall: 25.5% < 75.0%"
+    "Clean reset - all pipelines need Docker testing from scratch"
   ],
-  "next_action": "Fix standard pipeline (0.0% vs 85.0% target, gap: -85.0pp)",
-  "last_iteration": {
-    "id": "iter-2026-02-12T09-35-24",
-    "label": "Initial 5/5 attempt",
-    "timestamp": "2026-02-12T09:35:24.124219Z",
-    "total_tested": 3,
-    "overall_accuracy_pct": 0.0,
-    "pipelines": {
-      "standard": {
-        "tested": 3,
-        "correct": 0,
-        "accuracy": 0.0
-      }
-    }
-  },
-  "totals": {
-    "unique_questions": 33,
-    "test_runs": 56,
-    "iterations": 9
-  }
+  "next_action": "Test each pipeline 1/1 on Docker, then analyze with node-analyzer + analyze_n8n_executions"
 }
