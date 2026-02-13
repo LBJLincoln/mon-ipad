@@ -50,12 +50,14 @@ export function TermiusModal({ sector, onClose }: TermiusModalProps) {
     conversationId,
   })
 
-  const lastAssistantSources = useMemo(() => {
-    const lastAssistant = [...messages]
+  // Extract last assistant message with enriched data
+  const lastAssistantMessage = useMemo(() => {
+    return [...messages]
       .reverse()
-      .find((m) => m.role === 'assistant' && m.sources?.length)
-    return lastAssistant?.sources ?? []
+      .find((m) => m.role === 'assistant' && (m.sources?.length || m.pipeline || m.content))
   }, [messages])
+
+  const lastAssistantSources = lastAssistantMessage?.sources ?? []
 
   const {
     activeSourceIndex,
@@ -94,6 +96,17 @@ export function TermiusModal({ sector, onClose }: TermiusModalProps) {
     (index: number) => {
       setActiveSourceIndex(index)
       setArtifactsOpen(true)
+
+      // Scroll-to-highlight: find the mark element in chat and flash it
+      requestAnimationFrame(() => {
+        const marks = modalRef.current?.querySelectorAll(`mark[data-source-index="${index}"]`)
+        if (marks && marks.length > 0) {
+          const mark = marks[0] as HTMLElement
+          mark.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          mark.classList.add('flash')
+          setTimeout(() => mark.classList.remove('flash'), 800)
+        }
+      })
     },
     [setActiveSourceIndex]
   )
@@ -130,23 +143,32 @@ export function TermiusModal({ sector, onClose }: TermiusModalProps) {
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Top bar — Apple style */}
+            {/* Top bar — macOS style */}
             <div className="h-12 flex items-center justify-between px-4 border-b border-white/[0.06] bg-white/[0.02]">
-              {/* Left: sector info */}
-              <div className="flex items-center gap-2.5">
-                <div
-                  className="w-7 h-7 rounded-lg flex items-center justify-center"
-                  style={{ backgroundColor: `${sector.color}15` }}
-                >
-                  <Bot className="w-4 h-4" style={{ color: sector.color }} />
+              {/* Left: traffic lights + sector info */}
+              <div className="flex items-center gap-3">
+                {/* Traffic lights (decorative) */}
+                <div className="hidden md:flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+                  <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+                  <div className="w-3 h-3 rounded-full bg-[#28c840]" />
                 </div>
-                <div>
-                  <span className="text-[13px] font-medium text-tx">{sector.name}</span>
-                  <span className="text-[11px] text-tx3 ml-2">Multi-RAG</span>
+
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="w-7 h-7 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: `${sector.color}15` }}
+                  >
+                    <Bot className="w-4 h-4" style={{ color: sector.color }} />
+                  </div>
+                  <div>
+                    <span className="text-[13px] font-medium text-tx">{sector.name}</span>
+                    <span className="text-[11px] text-tx3 ml-2">Multi-RAG</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Center: status */}
+              {/* Center: title (macOS style) */}
               <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gn/8 border border-gn/15">
                 <div className="w-1.5 h-1.5 rounded-full bg-gn animate-pulse" />
                 <span className="text-[10px] text-gn font-medium tracking-wide">CONNECTE</span>
@@ -217,6 +239,12 @@ export function TermiusModal({ sector, onClose }: TermiusModalProps) {
                       onNext={nextSource}
                       onPrev={prevSource}
                       sectorColor={sector.color}
+                      pipeline={lastAssistantMessage?.pipeline}
+                      metrics={lastAssistantMessage?.metrics}
+                      trace={lastAssistantMessage?.trace}
+                      confidence={lastAssistantMessage?.confidence}
+                      version={lastAssistantMessage?.version}
+                      sourcesCount={lastAssistantMessage?.sources_count}
                     />
                   </motion.div>
                 )}

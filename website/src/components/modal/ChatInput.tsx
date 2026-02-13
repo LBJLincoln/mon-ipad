@@ -17,6 +17,7 @@ export function ChatInput({
   placeholder = 'Posez votre question...',
 }: ChatInputProps) {
   const [value, setValue] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const handleSend = useCallback(() => {
@@ -48,13 +49,20 @@ export function ChatInput({
 
   return (
     <div className="relative">
-      <div className="rounded-2xl bg-white/[0.04] border border-white/[0.08] focus-within:border-white/[0.14] focus-within:bg-white/[0.05] transition-all duration-200">
+      <div
+        className="rounded-2xl bg-white/[0.04] border border-white/[0.08] focus-within:border-white/[0.14] focus-within:bg-white/[0.05] transition-all duration-200"
+        style={{
+          boxShadow: isFocused ? `0 0 0 1px ${sectorColor}20, 0 0 20px ${sectorColor}08` : 'none',
+        }}
+      >
         <textarea
           ref={textareaRef}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
           onInput={handleInput}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
           rows={1}
           disabled={isLoading}
@@ -64,9 +72,12 @@ export function ChatInput({
 
         {/* Bottom bar inside input */}
         <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-3 py-2.5">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="text-[10px] text-tx3 font-mono">
               Multi-RAG
+            </span>
+            <span className="hidden sm:inline text-[10px] text-tx3/60">
+              Shift+Enter nouvelle ligne
             </span>
           </div>
           <button

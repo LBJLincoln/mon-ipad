@@ -8,6 +8,8 @@ interface ChatState {
 
   getOrCreateConversation: (sectorId: string) => Conversation
   addMessage: (sectorId: string, conversationId: string, message: ChatMessage) => void
+  updateMessageContent: (sectorId: string, conversationId: string, messageId: string, content: string) => void
+  updateMessageFull: (sectorId: string, conversationId: string, messageId: string, updates: Partial<ChatMessage>) => void
   getConversation: (sectorId: string, conversationId: string) => Conversation | undefined
   getConversations: (sectorId: string) => Conversation[]
   setActiveConversation: (id: string | null) => void
@@ -59,6 +61,49 @@ export const useChatStore = create<ChatState>()(
                   ? {
                       ...c,
                       messages: [...c.messages, message],
+                      updatedAt: Date.now(),
+                    }
+                  : c
+              ),
+            },
+          }
+        })
+      },
+
+      updateMessageContent(sectorId, conversationId, messageId, content) {
+        set((state) => {
+          const sectorConvs = state.conversations[sectorId] ?? []
+          return {
+            conversations: {
+              ...state.conversations,
+              [sectorId]: sectorConvs.map((c) =>
+                c.id === conversationId
+                  ? {
+                      ...c,
+                      messages: c.messages.map((m) =>
+                        m.id === messageId ? { ...m, content } : m
+                      ),
+                    }
+                  : c
+              ),
+            },
+          }
+        })
+      },
+
+      updateMessageFull(sectorId, conversationId, messageId, updates) {
+        set((state) => {
+          const sectorConvs = state.conversations[sectorId] ?? []
+          return {
+            conversations: {
+              ...state.conversations,
+              [sectorId]: sectorConvs.map((c) =>
+                c.id === conversationId
+                  ? {
+                      ...c,
+                      messages: c.messages.map((m) =>
+                        m.id === messageId ? { ...m, ...updates } : m
+                      ),
                       updatedAt: Date.now(),
                     }
                   : c

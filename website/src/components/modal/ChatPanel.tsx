@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { ChatMessageBubble } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { TypingIndicator } from '@/components/ui/TypingIndicator'
@@ -37,6 +38,7 @@ export function ChatPanel({
       {/* Messages — centered like claude.ai */}
       <div
         ref={scrollRef}
+        data-chat-scroll
         className="flex-1 overflow-y-auto"
       >
         <div className="max-w-3xl mx-auto px-6 py-6 flex flex-col gap-5">
@@ -61,15 +63,24 @@ export function ChatPanel({
           )}
 
           {messages.map((msg) => (
-            <ChatMessageBubble
+            <motion.div
               key={msg.id}
-              message={msg}
-              sectorColor={sectorColor}
-              onSourceClick={onSourceClick}
-            />
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            >
+              <ChatMessageBubble
+                message={msg}
+                sectorColor={sectorColor}
+                onSourceClick={onSourceClick}
+              />
+            </motion.div>
           ))}
 
-          {isLoading && <TypingIndicator color={sectorColor} />}
+          {isLoading && messages[messages.length - 1]?.content === '' && null}
+          {isLoading && messages[messages.length - 1]?.content !== '' && (
+            <TypingIndicator color={sectorColor} />
+          )}
         </div>
       </div>
 
