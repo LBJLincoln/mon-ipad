@@ -1,4 +1,4 @@
-import { Bot } from 'lucide-react'
+import { Bot, Database, GitBranch, Layers, Cpu } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -14,14 +14,26 @@ export function Footer() {
             </span>
             <span className="text-[11px] text-tx3 font-mono">v1.0</span>
           </div>
-          <div className="flex items-center gap-6 text-[11px] text-tx3">
-            <span>4 pipelines</span>
+          <div className="flex items-center gap-4 text-[11px] text-tx3">
+            <span className="flex items-center gap-1">
+              <Layers className="w-3 h-3" />
+              4 pipelines
+            </span>
             <span className="w-[3px] h-[3px] rounded-full bg-tx3/50" />
-            <span>10K+ vecteurs</span>
+            <span className="flex items-center gap-1">
+              <Database className="w-3 h-3" />
+              10K+ vecteurs
+            </span>
             <span className="w-[3px] h-[3px] rounded-full bg-tx3/50" />
-            <span>110 entites</span>
+            <span className="flex items-center gap-1">
+              <GitBranch className="w-3 h-3" />
+              110 entites
+            </span>
             <span className="w-[3px] h-[3px] rounded-full bg-tx3/50" />
-            <span>3 bases</span>
+            <span className="flex items-center gap-1">
+              <Cpu className="w-3 h-3" />
+              3 bases
+            </span>
           </div>
         </div>
       </div>
