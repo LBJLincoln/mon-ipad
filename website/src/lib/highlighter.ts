@@ -5,9 +5,14 @@ export interface HighlightSegment {
   sourceIndex: number | null
 }
 
+/** Normalize text: strip diacritics for accent-insensitive matching */
+function normalize(text: string): string {
+  return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+}
+
 /**
- * Extracts phrases (4+ words) from source content,
- * then finds fuzzy matches in the answer text.
+ * Extracts phrases (3+ words) from source content,
+ * then finds matches in the answer text with accent normalization.
  */
 export function highlightAnswer(
   answer: string,
@@ -16,16 +21,18 @@ export function highlightAnswer(
   if (!sources.length) return [{ text: answer, sourceIndex: null }]
 
   const matches: { start: number; end: number; sourceIndex: number }[] = []
+  const normalizedAnswer = normalize(answer)
 
   sources.forEach((source, sIdx) => {
-    const phrases = extractPhrases(source.content, 4)
+    // Truncate source content to 500 chars for performance
+    const content = source.content.slice(0, 500)
+    const phrases = extractPhrases(content, 3)
     for (const phrase of phrases) {
-      const lowerAnswer = answer.toLowerCase()
-      const lowerPhrase = phrase.toLowerCase()
-      let pos = lowerAnswer.indexOf(lowerPhrase)
+      const normalizedPhrase = normalize(phrase)
+      let pos = normalizedAnswer.indexOf(normalizedPhrase)
       while (pos !== -1) {
         matches.push({ start: pos, end: pos + phrase.length, sourceIndex: sIdx })
-        pos = lowerAnswer.indexOf(lowerPhrase, pos + 1)
+        pos = normalizedAnswer.indexOf(normalizedPhrase, pos + 1)
       }
     }
   })
@@ -60,22 +67,28 @@ export function highlightAnswer(
 function extractPhrases(text: string, minWords: number): string[] {
   const sentences = text.split(/[.!?;\n]+/).filter((s) => s.trim().length > 0)
   const phrases: string[] = []
+  const seen = new Set<string>()
 
   for (const sentence of sentences) {
     const words = sentence.trim().split(/\s+/)
     if (words.length >= minWords) {
-      // Take sliding windows of minWords..maxWords
-      const maxLen = Math.min(words.length, 12)
+      // Take sliding windows of minWords..maxWords (cap at 8)
+      const maxLen = Math.min(words.length, 8)
       for (let len = minWords; len <= maxLen; len++) {
         for (let i = 0; i <= words.length - len; i++) {
-          phrases.push(words.slice(i, i + len).join(' '))
+          const phrase = words.slice(i, i + len).join(' ')
+          const key = normalize(phrase)
+          if (!seen.has(key)) {
+            seen.add(key)
+            phrases.push(phrase)
+          }
         }
       }
     }
   }
 
-  // Deduplicate and sort by length descending (prefer longer matches)
-  return [...new Set(phrases)].sort((a, b) => b.length - a.length).slice(0, 50)
+  // Sort by length descending (prefer longer matches), cap at 30
+  return phrases.sort((a, b) => b.length - a.length).slice(0, 30)
 }
 
 function mergeOverlapping(
