@@ -48,7 +48,7 @@ from urllib import request, error
 # ============================================================
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY", "")
 PINECONE_MGMT_URL = "https://api.pinecone.io"
-N8N_HOST = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")
+N8N_HOST = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
 N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 
 REPO_ROOT = os.path.join(os.path.dirname(__file__), "..", "..")

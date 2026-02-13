@@ -19,7 +19,7 @@ Environment:
     OPENROUTER_API_KEY   — Fallback. Paid embeddings via OpenRouter.
     PINECONE_API_KEY     — For vector operations
     N8N_API_KEY          — For updating n8n workflow variables
-    N8N_HOST             — n8n cloud URL (default: https://amoret.app.n8n.cloud)
+    N8N_HOST             — n8n Docker URL (default: http://34.136.180.66:5678)
 """
 import json
 import os
@@ -39,7 +39,7 @@ JINA_API_KEY = os.environ.get("JINA_API_KEY", "")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY", "")
 PINECONE_MGMT_URL = "https://api.pinecone.io"
-N8N_HOST = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")
+N8N_HOST = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
 N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 
 JINA_EMBEDDING_URL = "https://api.jina.ai/v1/embeddings"

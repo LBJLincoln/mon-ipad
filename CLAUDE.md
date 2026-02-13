@@ -142,18 +142,24 @@ Puis integrer dans `docs/data.json`.
 
 ---
 
-## Credentials
+## Credentials — Docker era (post-migration 2026-02-12)
 
 ```bash
-export N8N_HOST="https://amoret.app.n8n.cloud"
-export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
+# n8n Docker self-hosted sur Google Cloud VM
+export N8N_HOST="http://34.136.180.66:5678"
+export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2M2ZhN2FjNS1lOTJkLTQ2MjAtOGZkYS05Zjg0MWI1Y2VjZjYiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiNzc0NzYyNmItNTNjYi00ZDU0LTkxYmItYjZkYmE1NjdmZGVmIiwiaWF0IjoxNzcwOTM4NDExfQ.77sRd0mK_ShypXUibu4GpKbyKFXTzCE9mLa7940nUAw"
+
+# LLM & Embeddings
+export OPENROUTER_API_KEY="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"
+export JINA_API_KEY="jina_f1348176dc7a4f0da9996cfa6cfa6eecasLHpAw7iEXFqU6eHi9SQBuxqT0F"
+
+# Databases
 export PINECONE_API_KEY="pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY"
 export PINECONE_HOST="https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
 export NEO4J_PASSWORD="jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak"
-export OPENROUTER_API_KEY="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"
 export SUPABASE_PASSWORD="udVECdcSnkMCAPiY"
 export SUPABASE_API_KEY="sb_publishable_xUcuBcYYUO2G9Mkq_McdeQ_ocFjgonm"
-export JINA_API_KEY="jina_f1348176dc7a4f0da9996cfa6cfa6eecasLHpAw7iEXFqU6eHi9SQBuxqT0F"
+export SUPABASE_URL="https://ayqviqmxifzmhphiqfmj.supabase.co"
 ```
 
 ---
@@ -194,6 +200,7 @@ LLM : `arcee-ai/trinity-large-preview:free` via OpenRouter ($0).
 
 | Ressource | Acces | Note |
 |-----------|-------|------|
-| n8n Webhooks + REST API | DIRECT | `amoret.app.n8n.cloud` |
+| n8n Webhooks + REST API | DIRECT | `34.136.180.66:5678` (Docker self-hosted) |
 | GitHub, Pinecone | DIRECT | git + HTTPS API |
-| Supabase, Neo4j | BLOQUE | Proxy 403 → passer par n8n |
+| Supabase | DIRECT | `ayqviqmxifzmhphiqfmj.supabase.co` |
+| Neo4j | DIRECT | `bolt://localhost:7687` (via VM) |

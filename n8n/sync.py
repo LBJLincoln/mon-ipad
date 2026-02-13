@@ -25,8 +25,8 @@ from urllib import request, error
 from importlib.machinery import SourceFileLoader
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-WORKFLOWS_DIR = os.path.join(REPO_ROOT, "workflows")
-SNAPSHOTS_DIR = os.path.join(WORKFLOWS_DIR, "snapshots")
+WORKFLOWS_DIR = os.path.join(REPO_ROOT, "n8n")
+SNAPSHOTS_DIR = os.path.join(REPO_ROOT, "snapshot", "workflows")
 MANIFEST_FILE = os.path.join(WORKFLOWS_DIR, "manifest.json")
 DATA_FILE = os.path.join(REPO_ROOT, "docs", "data.json")
 
@@ -35,28 +35,28 @@ os.makedirs(SNAPSHOTS_DIR, exist_ok=True)
 # Load writer for recording changes
 writer = SourceFileLoader("w", os.path.join(REPO_ROOT, "eval", "live-writer.py")).load_module()
 
-# n8n API config
-N8N_HOST = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")
-N8N_API_KEY = os.environ.get("N8N_API_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A")
+# n8n API config — Docker self-hosted (post-migration 2026-02-12)
+N8N_HOST = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
+N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 
 WORKFLOW_IDS = {
     "standard": {
-        "id": "LnTqRX4LZlI009Ks-3Jnp",
+        "id": "M12n4cmiVBoBusUe",
         "name": "WF5 Standard RAG V3.4",
         "webhook": "/webhook/rag-multi-index-v3",
     },
     "graph": {
-        "id": "95x2BBAbJlLWZtWEJn6rb",
+        "id": "Vxm4TDdOLdb7j3Jy",
         "name": "WF2 Graph RAG V3.3",
         "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
     },
     "quantitative": {
-        "id": "E19NZG9WfM7FNsxr",
+        "id": "nQnAJyT06NTbEQ3y",
         "name": "WF4 Quantitative V2.0",
         "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
     },
     "orchestrator": {
-        "id": "ALd4gOEqiKL5KR1p",
+        "id": "P1no6VZkNtnRdlBi",
         "name": "V10.1 Orchestrator",
         "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
     },

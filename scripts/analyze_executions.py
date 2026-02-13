@@ -8,8 +8,8 @@ REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 EVAL_DIR = REPO_ROOT
 sys.path.append(EVAL_DIR) # Add eval directory to Python path
 
-N8N_HOST = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")
-N8N_API_KEY = os.environ.get("N8N_API_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A")
+N8N_HOST = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
+N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 os.environ["N8N_API_KEY"] = N8N_API_KEY # Ensure it's set for imported modules
 
 # Load node-analyzer as a module

@@ -1,7 +1,64 @@
 {
-  "host": "http://localhost:5678",
-  "api_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2M2ZhN2FjNS1lOTJkLTQ2MjAtOGZkYS05Zjg0MWI1Y2VjZjYiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiNzc0NzYyNmItNTNjYi00ZDU0LTkxYmItYjZkYmE1NjdmZGVmIiwiaWF0IjoxNzcwOTM4NDExfQ.77sRd0mK_ShypXUibu4GpKbyKFXTzCE9mLa7940nUAw",
+  "host": "http://34.136.180.66:5678",
+  "api_key_ref": ".env.local:N8N_API_KEY",
+  "migrated_from": "amoret.app.n8n.cloud",
+  "migration_date": "2026-02-12",
   "workflows": {
-
+    "standard": {
+      "id": "M12n4cmiVBoBusUe",
+      "name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
+      "webhook": "/webhook/rag-multi-index-v3"
+    },
+    "graph": {
+      "id": "Vxm4TDdOLdb7j3Jy",
+      "name": "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED",
+      "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717"
+    },
+    "quantitative": {
+      "id": "nQnAJyT06NTbEQ3y",
+      "name": "TEST - SOTA 2026 - WF4 Quantitative V2.0",
+      "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9"
+    },
+    "orchestrator": {
+      "id": "P1no6VZkNtnRdlBi",
+      "name": "V10.1 orchestrator copy",
+      "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0"
+    },
+    "ingestion": {
+      "id": "6lPMHEYyWh1v34ro",
+      "name": "TEST - SOTA 2026 - Ingestion V3.1"
+    },
+    "enrichment": {
+      "id": "KXnQKuKw8ZUbyZUl",
+      "name": "TEST - SOTA 2026 - Enrichissement V3.1"
+    },
+    "feedback": {
+      "id": "cMlr32Qq7Sgy6Xq8",
+      "name": "TEST - SOTA 2026 - Feedback V3.1"
+    },
+    "benchmark": {
+      "id": "tygzgU4i67FU6vm2",
+      "name": "TEST - SOTA 2026 - Benchmark V3.0"
+    },
+    "dataset_ingestion": {
+      "id": "S4FFbvx9Mn7DRkgk",
+      "name": "BENCHMARK - Dataset Ingestion Pipeline"
+    },
+    "monitoring": {
+      "id": "xFAcxnFS5ISnlytH",
+      "name": "BENCHMARK - Monitoring & Alerting Dashboard"
+    },
+    "orchestrator_tester": {
+      "id": "R0HRiLQmL3FoCNKg",
+      "name": "BENCHMARK - Orchestrator Tester"
+    },
+    "rag_batch_tester": {
+      "id": "k7jHXRTypXAQOreJ",
+      "name": "BENCHMARK - RAG Batch Tester"
+    },
+    "sql_executor": {
+      "id": "Dq83aCiXCfymsgCV",
+      "name": "BENCHMARK - SQL Executor Utility"
+    }
   }
 }

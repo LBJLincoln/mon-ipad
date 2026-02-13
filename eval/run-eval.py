@@ -11,11 +11,12 @@ DATASETS_DIR = os.path.join(REPO_ROOT, "datasets")
 TESTED_IDS_FILE = os.path.join(REPO_ROOT, "docs", "tested_ids.json")
 
 # RAG Endpoints from live-writer.py _default_data
+N8N_HOST = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
 RAG_ENDPOINTS = {
-    "standard": "https://amoret.app.n8n.cloud/webhook/rag-multi-index-v3",
-    "graph": "https://amoret.app.n8n.cloud/webhook/ff622742-6d71-4e91-af71-b5c666088717",
-    "quantitative": "https://amoret.app.n8n.cloud/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
-    "orchestrator": "https://amoret.app.n8n.cloud/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+    "standard": f"{N8N_HOST}/webhook/rag-multi-index-v3",
+    "graph": f"{N8N_HOST}/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+    "quantitative": f"{N8N_HOST}/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+    "orchestrator": f"{N8N_HOST}/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
 }
 
 # --- Functions ---

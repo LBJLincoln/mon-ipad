@@ -28,14 +28,14 @@ N8N_LIVE_DIR = os.path.join(REPO_ROOT, "logs", "n8n-live")
 LATEST_FILE = os.path.join(N8N_LIVE_DIR, "latest.json")
 os.makedirs(N8N_LIVE_DIR, exist_ok=True)
 
-N8N_HOST = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")
+N8N_HOST = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
 N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 
 WORKFLOW_IDS = {
-    "standard": "LnTqRX4LZlI009Ks-3Jnp",
-    "graph": "95x2BBAbJlLWZtWEJn6rb",
-    "quantitative": "E19NZG9WfM7FNsxr",
-    "orchestrator": "ALd4gOEqiKL5KR1p",
+    "standard": "M12n4cmiVBoBusUe",
+    "graph": "Vxm4TDdOLdb7j3Jy",
+    "quantitative": "nQnAJyT06NTbEQ3y",
+    "orchestrator": "P1no6VZkNtnRdlBi",
 }
 
 WORKFLOW_NAMES = {v: k for k, v in WORKFLOW_IDS.items()}

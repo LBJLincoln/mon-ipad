@@ -43,7 +43,7 @@ def check_env():
 def check_n8n():
     try:
         import urllib.request
-        host = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")
+        host = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
         api_key = os.environ.get("N8N_API_KEY", "")
         req = urllib.request.Request(
             f"{host}/api/v1/workflows",

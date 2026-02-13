@@ -4,8 +4,8 @@ import json
 from importlib.machinery import SourceFileLoader
 
 # Set N8n credentials from the user's prompt BEFORE importing node_analyzer
-os.environ["N8N_HOST"] = "https://amoret.app.n8n.cloud"
-os.environ["N8N_API_KEY"] = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
+os.environ.setdefault("N8N_HOST", "http://34.136.180.66:5678")
+# N8N_API_KEY must be set via .env.local or environment
 
 # Add the 'eval' directory to the Python path to import node_analyzer
 EVAL_DIR = os.path.join(os.path.dirname(__file__), 'eval')

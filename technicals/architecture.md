@@ -4,7 +4,7 @@
 
 ---
 
-## n8n Cloud Workflows (host: amoret.app.n8n.cloud)
+## n8n Cloud Workflows (host: 34.136.180.66:5678)
 
 | Workflow | Webhook Path | DB | Nodes | n8n ID |
 |---|---|---|---|---|
@@ -78,8 +78,8 @@ Rate limits: 20 req/min, 1000 req/day (with $10+ credit), 50 req/day (without).
 
 | Capability | Access | How |
 |---|---|---|
-| **n8n Webhooks** (eval pipelines) | DIRECT | HTTPS to `amoret.app.n8n.cloud/webhook/*` |
-| **n8n REST API** (sync/deploy workflows) | DIRECT | HTTPS to `amoret.app.n8n.cloud/api/v1/*` |
+| **n8n Webhooks** (eval pipelines) | DIRECT | HTTPS to `34.136.180.66:5678/webhook/*` |
+| **n8n REST API** (sync/deploy workflows) | DIRECT | HTTPS to `34.136.180.66:5678/api/v1/*` |
 | **GitHub** (push, PR, issues) | DIRECT | `git push` + `gh` CLI |
 | **OpenRouter** (LLM via n8n) | DIRECT | Proxied through n8n webhooks |
 | **Pinecone** (vector stats) | DIRECT | HTTPS REST API |
@@ -201,7 +201,7 @@ See `phases/overview.md` for full gate definitions.
 ```python
 import urllib.request, json, os
 api_key = os.environ["N8N_API_KEY"]
-host = "https://amoret.app.n8n.cloud"
+host = "https://34.136.180.66:5678"
 
 # GET workflow
 req = urllib.request.Request(f"{host}/api/v1/workflows/{wf_id}",

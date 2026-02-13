@@ -6,9 +6,9 @@
       "env": {
         "PINECONE_API_KEY": "pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY",
         "PINECONE_HOST": "https://sota-rag-a4mkzmz.svc.aped-4627-b74a.pinecone.io",
-        "OPENROUTER_API_KEY": "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",
+        "OPENROUTER_API_KEY": "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",
         "JINA_API_KEY": "jina_f1348176dc7a4f0da9996cfa6cfa6eecasLHpAw7iEXFqU6eHi9SQBuxqT0F",
-        "N8N_API_KEY": "n8n_api_a8f7d3a2722637f0a11979f6982e401d3fa145b92955df424fafd23295bbc87421e657c6050a04e1",
+        "N8N_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2M2ZhN2FjNS1lOTJkLTQ2MjAtOGZkYS05Zjg0MWI1Y2VjZjYiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiNzc0NzYyNmItNTNjYi00ZDU0LTkxYmItYjZkYmE1NjdmZGVmIiwiaWF0IjoxNzcwOTM4NDExfQ.77sRd0mK_ShypXUibu4GpKbyKFXTzCE9mLa7940nUAw",
         "N8N_HOST": "http://34.136.180.66:5678"
       }
     },
@@ -32,13 +32,10 @@
       }
     },
     "n8n": {
-      "command": "n8n-mcp-server",
-      "env": {
-        "N8N_API_URL": "http://34.136.180.66:5678/api/v1",
-        "N8N_API_KEY": "n8n_api_a8f7d3a2722637f0a11979f6982e401d3fa145b92955df424fafd23295bbc87421e657c6050a04e1",
-        "N8N_WEBHOOK_USERNAME": "",
-        "N8N_WEBHOOK_PASSWORD": "",
-        "DEBUG": "false"
+      "type": "streamableHttp",
+      "url": "http://34.136.180.66:5678/mcp-server/http",
+      "headers": {
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2M2ZhN2FjNS1lOTJkLTQ2MjAtOGZkYS05Zjg0MWI1Y2VjZjYiLCJpc3MiOiJuOG4iLCJhdWQiOiJtY3Atc2VydmVyLWFwaSIsImp0aSI6IjQzMjI3MTBlLWRiMDktNDZmNy1hY2Q2LTM2MDFlMzE1NzNkZiIsImlhdCI6MTc3MTAwMTE0M30.h_qpN8XD10SG5Tw8BVzbRW-z9qHPQNX6g16OFi9mfA4"
       }
     },
     "huggingface": {
@@ -57,7 +54,7 @@
     },
     "supabase": {
       "type": "http",
-      "url": "https://mcp.supabase.com/mcp?project_ref=YOUR_PROJECT_REF&read_only=true&features=database,docs,debugging,development"
+      "url": "https://mcp.supabase.com/mcp?project_ref=ayqviqmxifzmhphiqfmj&read_only=true&features=database,docs,debugging,development"
     }
   }
 }

@@ -6,11 +6,11 @@
 
 ---
 
-## Configuration
+## Configuration — Docker self-hosted (post-migration 2026-02-12)
 
 ```bash
-export N8N_HOST="https://amoret.app.n8n.cloud"
-export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
+export N8N_HOST="http://34.136.180.66:5678"
+export N8N_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2M2ZhN2FjNS1lOTJkLTQ2MjAtOGZkYS05Zjg0MWI1Y2VjZjYiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiNzc0NzYyNmItNTNjYi00ZDU0LTkxYmItYjZkYmE1NjdmZGVmIiwiaWF0IjoxNzcwOTM4NDExfQ.77sRd0mK_ShypXUibu4GpKbyKFXTzCE9mLa7940nUAw"
 ```
 
 ---
@@ -41,7 +41,7 @@ payload = {"question": "Your question here"}
 import urllib.request, json
 from datetime import datetime, timezone, timedelta
 
-N8N_HOST = "https://amoret.app.n8n.cloud"
+N8N_HOST = "http://34.136.180.66:5678"
 PARIS_TZ = timezone(timedelta(hours=1))  # CET (hiver), +2 pour CEST (ete)
 
 def call_webhook(path, question, timeout=120):
@@ -195,25 +195,26 @@ n8n_api("POST", f"/api/v1/workflows/{WF_ID}/activate")
 
 ---
 
-## Workflow IDs actuels (DOUBLE SOURCE — verifier coherence)
+## Workflow IDs — Docker self-hosted (verifie 2026-02-13)
 
-### Source 1 : IDs dans les scripts Python (WORKFLOW_IDS dans node-analyzer.py)
+### IDs actifs (n8n Docker sur 34.136.180.66:5678)
 | Pipeline | Workflow ID | Verifie API |
 |----------|-------------|-------------|
-| Standard | `IgQeo5svGlIAPkBc` | Oui (2026-02-12) |
-| Graph | `95x2BBAbJlLWZtWEJn6rb` | Oui (2026-02-12) |
-| Quantitative | `E19NZG9WfM7FNsxr` | Oui (2026-02-12) |
-| Orchestrator | `ALd4gOEqiKL5KR1p` | Oui (2026-02-12) |
+| Standard | `M12n4cmiVBoBusUe` | Oui (2026-02-13) |
+| Graph | `Vxm4TDdOLdb7j3Jy` | Oui (2026-02-13) |
+| Quantitative | `nQnAJyT06NTbEQ3y` | Oui (2026-02-13) |
+| Orchestrator | `P1no6VZkNtnRdlBi` | Oui (2026-02-13) |
 
-### Source 2 : IDs historiques (anciennes versions)
+### IDs anciens (n8n Cloud — OBSOLETE, ne plus utiliser)
 | Pipeline | Workflow ID | Notes |
 |----------|-------------|-------|
-| Standard | `LnTqRX4LZlI009Ks-3Jnp` | V3.4 (peut etre obsolete) |
-| Quantitative | `LjUz8fxQZ03G9IsU` | V2.0 (peut etre obsolete) |
-| Orchestrator | `FZxkpldDbgV8AD_cg7IWG` | V10.1 (peut etre obsolete) |
+| Standard | `IgQeo5svGlIAPkBc` / `LnTqRX4LZlI009Ks-3Jnp` | Cloud, obsolete |
+| Graph | `95x2BBAbJlLWZtWEJn6rb` | Cloud, obsolete |
+| Quantitative | `E19NZG9WfM7FNsxr` | Cloud, obsolete |
+| Orchestrator | `ALd4gOEqiKL5KR1p` | Cloud, obsolete |
 
-> **IMPORTANT** : Toujours utiliser les IDs de la Source 1 (verifies via API).
-> Ces IDs changeront apres migration self-hosted.
+> **IMPORTANT** : Toujours utiliser les IDs Docker (premiere table).
+> Mapping complet des 13 workflows : `n8n/docker-workflow-ids.json`.
 
 ---
 

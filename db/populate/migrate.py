@@ -289,22 +289,22 @@ def migrate():
         "question_registry": question_registry,
         "pipelines": {
             "standard": {
-                "endpoint": "https://amoret.app.n8n.cloud/webhook/rag-multi-index-v3",
+                "endpoint": "http://34.136.180.66:5678/webhook/rag-multi-index-v3",
                 "target_accuracy": 85.0,
                 "trend": pipeline_trends.get("standard", []),
             },
             "graph": {
-                "endpoint": "https://amoret.app.n8n.cloud/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+                "endpoint": "http://34.136.180.66:5678/webhook/ff622742-6d71-4e91-af71-b5c666088717",
                 "target_accuracy": 70.0,
                 "trend": pipeline_trends.get("graph", []),
             },
             "quantitative": {
-                "endpoint": "https://amoret.app.n8n.cloud/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+                "endpoint": "http://34.136.180.66:5678/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
                 "target_accuracy": 85.0,
                 "trend": pipeline_trends.get("quantitative", []),
             },
             "orchestrator": {
-                "endpoint": "https://amoret.app.n8n.cloud/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+                "endpoint": "http://34.136.180.66:5678/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
                 "target_accuracy": 70.0,
                 "trend": pipeline_trends.get("orchestrator", []),
             },

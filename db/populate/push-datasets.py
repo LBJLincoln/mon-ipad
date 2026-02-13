@@ -20,8 +20,8 @@ from urllib import request, error, parse
 # ============================================================
 # Configuration
 # ============================================================
-N8N_HOST = "https://amoret.app.n8n.cloud"
-N8N_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A"
+N8N_HOST = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
+N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 WORKFLOWS_DIR = os.path.join(REPO_ROOT, "workflows")

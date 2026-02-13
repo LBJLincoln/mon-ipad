@@ -21,7 +21,7 @@ from importlib.machinery import SourceFileLoader
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EVAL_DIR = os.path.dirname(os.path.abspath(__file__))
-N8N_HOST = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")
+N8N_HOST = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
 
 # Load writer
 writer = SourceFileLoader("w", os.path.join(EVAL_DIR, "live-writer.py")).load_module()

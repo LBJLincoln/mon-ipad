@@ -4,10 +4,10 @@ import json
 from urllib import request, error
 
 # --- N8n Credentials (from user's prompt) ---
-N8N_HOST = os.environ.get("N8N_HOST", "https://amoret.app.n8n.cloud")
-N8N_API_KEY = os.environ.get("N8N_API_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTU3NjdlMC05NThhLTRjNzQtYTY3YS1lMzM1ODA3ZWJhNjQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5MDQ2NTExLCJleHAiOjE3NzE2Mjg0MDB9.fyOBVwb32HlzwQhSxCxoKsmMlYcxppTFGbj6S01AX2A")
+N8N_HOST = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
+N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 
-WF_ID = "IgQeo5svGlIAPkBc"
+WF_ID = "M12n4cmiVBoBusUe"
 NODE_NAME = "Init & ACL Pre-Filter V3.4"
 WORKFLOW_FILE = "workflows/live/standard.json"
 
