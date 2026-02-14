@@ -1,0 +1,122 @@
+{
+  "pipeline": "orchestrator",
+  "timestamp": "2026-02-14T11:11:54.787868Z",
+  "label": "10q-orchestrator-v2",
+  "total_tested": 10,
+  "correct": 10,
+  "errors": 0,
+  "accuracy_pct": 100.0,
+  "avg_latency_ms": 163893,
+  "results": [
+    {
+      "id": "orch-01",
+      "question": "What was TechVision Inc's revenue in 2023 and who created the Theory of Relativity?",
+      "expected": "",
+      "answer": "Based on the SQL query results, TechVision Inc's revenue for the year 2023 was **$1,250,000,000** (1.25 billion dollars).\n\nThe query successfully retrieved this information from the financials table by filtering for:\n- Tenant ID: 'benchmark'\n- Company name containing 'TechVision Inc' (case-insensiti",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 149488,
+      "method": "NON_EMPTY",
+      "error": null
+    },
+    {
+      "id": "orch-02",
+      "question": "Who discovered penicillin?",
+      "expected": "Alexander Fleming",
+      "answer": "Alexander Fleming discovered penicillin.\n\n---\n**Sources:**\n[1] natural_questions (100%)\n[2] triviaqa (91%)\n[3] msmarco (83%)\n[4] pubmed (75%)",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 140992,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "orch-03",
+      "question": "What is the relationship between Marie Curie and the Nobel Prize?",
+      "expected": "Nobel Prize",
+      "answer": "Marie Curie won two Nobel Prizes: Physics in 1903 and Chemistry in 1911.\n\n---\n**Sources:**\n[1] graph_rag_llm_synthesis",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 168492,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "orch-04",
+      "question": "How much revenue did GreenEnergy Corp generate in Q4 2023?",
+      "expected": "",
+      "answer": "The Q4 2023 revenue for GreenEnergy Corp is **$1,250,000,000**.\n\n---\n**Sources:**\n[1] SQL Result 1",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 180747,
+      "method": "NON_EMPTY",
+      "error": null
+    },
+    {
+      "id": "orch-05",
+      "question": "Which scientists are connected to the University of Cambridge and what is the total employee count at TechVision?",
+      "expected": "",
+      "answer": "Isaac Newton, Charles Darwin, Stephen Hawking, Rosalind Franklin, James Watson, Francis Crick\n\n---\n**Sources:**\n[1] graph_rag_llm_synthesis",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 191992,
+      "method": "NON_EMPTY",
+      "error": null
+    },
+    {
+      "id": "orch-06",
+      "question": "What is the capital of France?",
+      "expected": "Paris",
+      "answer": "The capital city of France is Paris.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] hotpotqa (91%)\n[3] musique (83%)\n[4] natural_questions (75%)",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 131014,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "orch-07",
+      "question": "What was the gross profit margin of HealthPlus Labs in 2023?",
+      "expected": "",
+      "answer": "The gross profit margin for HealthPlus Labs in 2023 is **0.00%**.\n\nThis result indicates that either:\n1. The company had zero gross profit (gross_profit = 0), or\n2. The company had zero revenue (revenue = 0), or\n3. Both gross profit and revenue were zero\n\nA gross profit margin of 0.00% is unusual fo",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 236230,
+      "method": "NON_EMPTY",
+      "error": null
+    },
+    {
+      "id": "orch-08",
+      "question": "Who created Artificial Intelligence as a field and which companies use it?",
+      "expected": "",
+      "answer": "Artificial Intelligence as a field was founded by John McCarthy, who coined the term “artificial intelligence” in 1956.\n\n---\n**Sources:**\n[1] hotpotqa (100%)\n[2] wikihop (67%)",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 138732,
+      "method": "NON_EMPTY",
+      "error": null
+    },
+    {
+      "id": "orch-09",
+      "question": "What is machine learning?",
+      "expected": "artificial intelligence",
+      "answer": "Machine learning is a branch of artificial intelligence that enables systems to automatically learn patterns from data and improve their performance on tasks without explicit programming.\n\n---\n**Sources:**\n[1] msmarco (100%)\n[2] squad (91%)\n[3] hotpotqa (75%)",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 142745,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "orch-10",
+      "question": "Compare the R&D spending of the three companies in 2023 and explain which museums are in Paris",
+      "expected": "",
+      "answer": "Based on the SQL query results, I can see that the query successfully executed to compare R&D spending of three companies in 2023. However, the results show only 1 row, which suggests that data for only one of the three companies is available in the database.\n\nThe query filtered for:\n- Fiscal year 2",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 158506,
+      "method": "NON_EMPTY",
+      "error": null
+    }
+  ]
+}

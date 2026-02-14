@@ -1,0 +1,122 @@
+{
+  "pipeline": "graph",
+  "timestamp": "2026-02-14T08:58:17.039829Z",
+  "label": "10q-graph-v3",
+  "total_tested": 10,
+  "correct": 8,
+  "errors": 1,
+  "accuracy_pct": 80.0,
+  "avg_latency_ms": 47974,
+  "results": [
+    {
+      "id": "graph-01",
+      "question": "What is the relationship between Marie Curie and the Nobel Prize?",
+      "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry, connected to Nobel Foundation",
+      "answer": "Marie Curie was the first woman to win a Nobel Prize and the first person to win Nobel Prizes in two different scientific fields.",
+      "correct": false,
+      "f1": 0.4516,
+      "latency_ms": 60247,
+      "method": "TOKEN_F1",
+      "error": null
+    },
+    {
+      "id": "graph-02",
+      "question": "Who created the Theory of Relativity?",
+      "expected": "Albert Einstein",
+      "answer": "Albert Einstein",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 52751,
+      "method": "EXACT_MATCH",
+      "error": null
+    },
+    {
+      "id": "graph-03",
+      "question": "What did Alexander Fleming discover?",
+      "expected": "Penicillin",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60254,
+      "method": "NO_ANSWER",
+      "error": "timed out"
+    },
+    {
+      "id": "graph-04",
+      "question": "Which disease does Penicillin protect against?",
+      "expected": "",
+      "answer": "Streptococcal infections, pneumococcal infections, syphilis, tetanus, anthrax, diphtheria",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 50762,
+      "method": "NON_EMPTY",
+      "error": null
+    },
+    {
+      "id": "graph-05",
+      "question": "Where did Alan Turing study?",
+      "expected": "Cambridge",
+      "answer": "Sherborne School, King's College Cambridge, Princeton University",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 36494,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "graph-06",
+      "question": "What is the connection between Nikola Tesla and Thomas Edison?",
+      "expected": "rival",
+      "answer": "They were rivals in the \"War of the Currents\" over electrical systems.",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 41251,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "graph-07",
+      "question": "Which scientists are connected to the University of Cambridge?",
+      "expected": "Newton Darwin Turing",
+      "answer": "Isaac Newton, Charles Darwin, James Clerk Maxwell, Ernest Rutherford, Alan Turing, Stephen Hawking, Rosalind Franklin, Francis Crick, Frederick Sanger",
+      "correct": true,
+      "f1": 0.2727,
+      "latency_ms": 34509,
+      "method": "TOKEN_F1",
+      "error": null
+    },
+    {
+      "id": "graph-08",
+      "question": "What is the World Wide Web and where was it created?",
+      "expected": "CERN",
+      "answer": "The World Wide Web is a global information system created at CERN in Geneva, Switzerland.",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 56495,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "graph-09",
+      "question": "Which organizations use Artificial Intelligence?",
+      "expected": "",
+      "answer": "Google, Microsoft, Amazon, IBM, Meta, Mayo Clinic, Pfizer, Babylon Health, JPMorgan Chase, Mastercard, Goldman Sachs",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 52744,
+      "method": "NON_EMPTY",
+      "error": null
+    },
+    {
+      "id": "graph-10",
+      "question": "What city is the Louvre Museum located in?",
+      "expected": "Paris",
+      "answer": "Paris",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 34234,
+      "method": "EXACT_MATCH",
+      "error": null
+    }
+  ]
+}

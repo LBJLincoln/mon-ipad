@@ -1,0 +1,122 @@
+{
+  "pipeline": "orchestrator",
+  "timestamp": "2026-02-14T10:37:15.785435Z",
+  "label": "10q-orchestrator",
+  "total_tested": 10,
+  "correct": 3,
+  "errors": 0,
+  "accuracy_pct": 30.0,
+  "avg_latency_ms": 169955,
+  "results": [
+    {
+      "id": "orch-01",
+      "question": "What was TechVision Inc's revenue in 2023 and who created the Theory of Relativity?",
+      "expected": "TechVision Inc revenue $6.745B in 2023; Albert Einstein created Theory of Relativity",
+      "answer": "Based on the SQL query results, TechVision Inc's revenue for the year 2023 was **not found** in the database. The query executed successfully but returned no rows, indicating that there is no revenue data available for TechVision Inc in the financials table for fiscal year 2023.\n\nThe query was prope",
+      "correct": false,
+      "f1": 0.099,
+      "latency_ms": 146238,
+      "method": "TOKEN_F1",
+      "error": null
+    },
+    {
+      "id": "orch-02",
+      "question": "Who discovered penicillin?",
+      "expected": "Alexander Fleming",
+      "answer": "Alexander Fleming discovered penicillin.\n\n---\n**Sources:**\n[1] natural_questions (100%)\n[2] triviaqa (91%)\n[3] msmarco (83%)\n[4] pubmed (75%)\n[5] hotpotqa (67%)",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 223243,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "orch-03",
+      "question": "What is the relationship between Marie Curie and the Nobel Prize?",
+      "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry",
+      "answer": "Marie Curie won two Nobel Prizes in different scientific fields.\n\n---\n**Sources:**\n[1] graph_rag_llm_synthesis",
+      "correct": true,
+      "f1": 0.5217,
+      "latency_ms": 151275,
+      "method": "TOKEN_F1",
+      "error": null
+    },
+    {
+      "id": "orch-04",
+      "question": "How much revenue did GreenEnergy Corp generate in Q4 2023?",
+      "expected": "1021500000",
+      "answer": "The SQL query executed successfully and returned 1 row of results. The Q4 2023 revenue for GreenEnergy Corp is **$12,450,000**.\n\n---\n**Sources:**\n[1] SQL Result 1",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 133272,
+      "method": "NO_MATCH",
+      "error": null
+    },
+    {
+      "id": "orch-05",
+      "question": "Which scientists are connected to the University of Cambridge and what is the total employee count at TechVision?",
+      "expected": "Newton, Darwin, Turing studied at Cambridge; TechVision has ~47 active employees",
+      "answer": "Isaac Newton, Charles Darwin, Stephen Hawking, Rosalind Franklin, Alan Turing, James Watson, Francis Crick\n\n---\n**Sources:**\n[1] graph_rag_llm_synthesis",
+      "correct": false,
+      "f1": 0.2069,
+      "latency_ms": 232263,
+      "method": "TOKEN_F1",
+      "error": null
+    },
+    {
+      "id": "orch-06",
+      "question": "What is the capital of France?",
+      "expected": "Paris",
+      "answer": "The capital city of France is Paris.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] hotpotqa (91%)\n[3] musique (83%)\n[4] natural_questions (75%)",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 143498,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "orch-07",
+      "question": "What was the gross profit margin of HealthPlus Labs in 2023?",
+      "expected": "52%",
+      "answer": "The SQL query successfully retrieved the gross profit margin for HealthPlus Labs in 2023. The result shows a gross profit margin of 42.5%.\n\nThis means that for every dollar of revenue HealthPlus Labs generated in 2023, they retained 42.5 cents as gross profit after accounting for the cost of goods s",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 149513,
+      "method": "NO_MATCH",
+      "error": null
+    },
+    {
+      "id": "orch-08",
+      "question": "Who created Artificial Intelligence as a field and which companies use it?",
+      "expected": "Alan Turing, used by Apple, Google, Microsoft",
+      "answer": "John McCarthy\n\n---\n**Sources:**\n[1] graph_rag_llm_synthesis",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 174742,
+      "method": "NO_MATCH",
+      "error": null
+    },
+    {
+      "id": "orch-09",
+      "question": "What is machine learning?",
+      "expected": "A subset of AI where systems learn from data",
+      "answer": "Machine learning is a subset of artificial intelligence in which algorithms automatically learn patterns from data to improve performance without explicit programming.\n\n---\n**Sources:**\n[1] msmarco (100%)\n[2] squad (91%)\n[3] hotpotqa (67%)",
+      "correct": false,
+      "f1": 0.2857,
+      "latency_ms": 163255,
+      "method": "TOKEN_F1",
+      "error": null
+    },
+    {
+      "id": "orch-10",
+      "question": "Compare the R&D spending of the three companies in 2023 and explain which museums are in Paris",
+      "expected": "TechVision $1.349B, GreenEnergy $365M, HealthPlus $288M; Louvre Museum is in Paris",
+      "answer": "The SQL query executed successfully but returned no data rows for the three companies in 2023. This means that either:\n\n1. The companies 'Company A', 'Company B', and 'Company C' don't exist in the financials table for the benchmark tenant\n2. These companies don't have R&D expense data recorded for ",
+      "correct": false,
+      "f1": 0.0526,
+      "latency_ms": 182254,
+      "method": "TOKEN_F1",
+      "error": null
+    }
+  ]
+}

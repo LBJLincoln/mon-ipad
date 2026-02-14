@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-14T08:04:30.538934Z",
+  "generated_at": "2026-02-14T11:11:55.041290Z",
   "phase": {
     "current": 1,
     "name": "Baseline (200q)",
@@ -16,13 +16,13 @@
       "gap": -5.0
     },
     "graph": {
-      "accuracy": 30.0,
+      "accuracy": 80.0,
       "tested": 10,
-      "correct": 3,
+      "correct": 8,
       "errors": 1,
       "target": 70.0,
-      "met": false,
-      "gap": -40.0
+      "met": true,
+      "gap": 10.0
     },
     "quantitative": {
       "accuracy": 100.0,
@@ -34,54 +34,46 @@
       "gap": 15.0
     },
     "orchestrator": {
-      "accuracy": 0,
-      "tested": 0,
-      "correct": 0,
+      "accuracy": 100.0,
+      "tested": 10,
+      "correct": 10,
       "errors": 0,
       "target": 70.0,
-      "met": false,
-      "gap": -70.0
+      "met": true,
+      "gap": 30.0
     }
   },
   "overall": {
-    "accuracy": 70.0,
+    "accuracy": 90.0,
     "target": 75.0,
-    "met": false
+    "met": true
   },
   "blockers": [
-    "standard: 80.0% < 85.0% (gap: -5.0pp)",
-    "graph: 30.0% < 70.0% (gap: -40.0pp)",
-    "orchestrator: 0% < 70.0% (gap: -70.0pp)",
-    "overall: 70.0% < 75.0%"
+    "standard: 80.0% < 85.0% (gap: -5.0pp)"
   ],
-  "next_action": "Fix orchestrator pipeline (0% vs 70.0% target, gap: -70.0pp)",
+  "next_action": "Fix standard pipeline (80.0% vs 85.0% target, gap: -5.0pp)",
   "last_iteration": {
     "id": null,
-    "label": "Iteration 3",
-    "timestamp": "2026-02-14T07:12:53.040548Z",
-    "total_tested": 52,
-    "overall_accuracy_pct": 51.9,
+    "label": "Iteration 5",
+    "timestamp": "2026-02-14T08:12:08.781614Z",
+    "total_tested": 50,
+    "overall_accuracy_pct": 54.0,
     "pipelines": {
-      "standard": {
-        "tested": 12,
-        "correct": 9,
-        "accuracy": 75.0
+      "orchestrator": {
+        "tested": 24,
+        "correct": 13,
+        "accuracy": 54.2
       },
       "graph": {
-        "tested": 10,
-        "correct": 3,
-        "accuracy": 30.0
-      },
-      "quantitative": {
-        "tested": 30,
-        "correct": 15,
-        "accuracy": 50.0
+        "tested": 26,
+        "correct": 14,
+        "accuracy": 53.8
       }
     }
   },
   "totals": {
-    "unique_questions": 30,
-    "test_runs": 52,
-    "iterations": 3
+    "unique_questions": 40,
+    "test_runs": 104,
+    "iterations": 5
   }
 }
