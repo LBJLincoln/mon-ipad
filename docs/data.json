@@ -1,11 +1,11 @@
 {
   "meta": {
-    "generated_at": "2026-02-14T07:39:40.278824Z",
+    "generated_at": "2026-02-14T08:04:28.789051Z",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
     "total_unique_questions": 30,
-    "total_test_runs": 32,
+    "total_test_runs": 52,
     "total_iterations": 3,
     "status": "running",
     "current_session": "2026-02-14T07-11-06"
@@ -99,7 +99,7 @@
       "id": null,
       "number": 3,
       "timestamp_start": "2026-02-14T07:12:53.040548Z",
-      "timestamp_end": "2026-02-14T07:34:30.024331Z",
+      "timestamp_end": "2026-02-14T08:04:28.040807Z",
       "label": "Iteration 3",
       "description": "",
       "changes_applied": [],
@@ -123,18 +123,18 @@
           "avg_f1": 0.5288
         },
         "quantitative": {
-          "tested": 10,
-          "correct": 0,
-          "errors": 1,
-          "accuracy_pct": 0.0,
-          "avg_latency_ms": 33550,
+          "tested": 30,
+          "correct": 15,
+          "errors": 2,
+          "accuracy_pct": 50.0,
+          "avg_latency_ms": 36548,
           "p95_latency_ms": 60740,
-          "avg_f1": 0
+          "avg_f1": 0.98
         }
       },
-      "total_tested": 32,
-      "total_correct": 12,
-      "overall_accuracy_pct": 37.5,
+      "total_tested": 52,
+      "total_correct": 27,
+      "overall_accuracy_pct": 51.9,
       "questions": [
         {
           "id": "std-01",
@@ -551,6 +551,266 @@
           "error": null,
           "error_type": null,
           "timestamp": "2026-02-14T07:34:30.024315Z"
+        },
+        {
+          "id": "quant-01",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 45495,
+          "answer": "TechVision Inc's total revenue in fiscal year 2023 was $2,450,000,000.",
+          "expected": "1250000000",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:50:25.775958Z"
+        },
+        {
+          "id": "quant-02",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 45262,
+          "answer": "GreenEnergy Corp's net income in 2023 was $1,250,000,000.",
+          "expected": "125000000",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:51:11.787582Z"
+        },
+        {
+          "id": "quant-03",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 27742,
+          "answer": "The revenue of HealthPlus Labs in Q4 2023 was **$12,500,000**.",
+          "expected": "12500000",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:51:40.023620Z"
+        },
+        {
+          "id": "quant-04",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 41729,
+          "answer": "The SQL query executed successfully but returned only 1 row of data, which is insufficient to compare the gross profit of both TechVision Inc and GreenEnergy Corp for FY 2023. \n\nThe query filtered for:\n- Tenant ID: 'default'\n- Company names containing \"TechVision Inc\" or \"GreenEnergy Corp\"\n- Fiscal year: 2023\n- Period: 'FY' (full year)\n\nSince only 1 row was returned, this suggests that data for only one of the two companies is available in the financials table for FY 2023. To provide a complete ",
+          "expected": "gross_profit",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:52:22.046965Z"
+        },
+        {
+          "id": "quant-05",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 29995,
+          "answer": "TechVision Inc's R&D spending in 2023 was $125,000,000.",
+          "expected": "",
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:52:55.275634Z"
+        },
+        {
+          "id": "quant-06",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 35516,
+          "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was **$2.15**.",
+          "expected": "0",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:53:31.523862Z"
+        },
+        {
+          "id": "quant-07",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 26773,
+          "answer": "Based on the SQL query results, TechVision Inc had **$0** in cash and equivalents at the end of 2023.\n\nThe query successfully retrieved the cash_and_equivalents value for TechVision Inc for fiscal year 2023, and the result shows a value of 0.",
+          "expected": "2500000",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:53:59.279213Z"
+        },
+        {
+          "id": "quant-08",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 24749,
+          "answer": "Based on the SQL query results, GreenEnergy Corp's total assets at the end of fiscal year 2023 were **$2,450,000,000** (2.45 billion dollars).\n\nThe query successfully retrieved this information from the financials table by filtering for:\n- Company name containing \"GreenEnergy Corp\"\n- Fiscal year 2023\n- Period 'FY' (fiscal year)\n- Tenant ID 'default'\n\nThe result shows a single row with the total_assets value of 2,450,000,000, which represents the company's total assets at the end of their fiscal ",
+          "expected": "",
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:54:24.777637Z"
+        },
+        {
+          "id": "quant-09",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 28751,
+          "answer": "The total stockholders equity for HealthPlus Labs at the end of 2023 was **$12,450,000**. This value was retrieved from the financials table by filtering for the company name, fiscal year 2023, and period 'FY' (full year) to ensure we captured the year-end total equity figure.",
+          "expected": "1250000000",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:54:54.540651Z"
+        },
+        {
+          "id": "quant-10",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60754,
+          "answer": "",
+          "expected": "45000000",
+          "match_type": "NO_ANSWER",
+          "error": "timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-14T07:55:57.290214Z"
+        },
+        {
+          "id": "quant-01",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 58738,
+          "answer": "TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,000.",
+          "expected": "",
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:58:41.286199Z"
+        },
+        {
+          "id": "quant-02",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 30991,
+          "answer": "GreenEnergy Corp's net income in 2023 was $1,250,000.",
+          "expected": "",
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:59:15.034464Z"
+        },
+        {
+          "id": "quant-03",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 33255,
+          "answer": "The revenue of HealthPlus Labs in Q4 2023 was $12,500,000.",
+          "expected": "",
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:59:49.048800Z"
+        },
+        {
+          "id": "quant-04",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 58248,
+          "answer": "The SQL query executed successfully but returned only 1 row of data, which is insufficient to compare the gross profit of both TechVision Inc and GreenEnergy Corp for FY 2023. The query was designed to retrieve gross profit data for both companies, but it appears that data for only one company is available in the database for the specified fiscal year.\n\nTo provide a meaningful comparison, we would need data for both companies. The current result shows that either:\n1. Data for one of the companie",
+          "expected": "",
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T08:00:49.024446Z"
+        },
+        {
+          "id": "quant-05",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 30498,
+          "answer": "TechVision Inc's R&D spending in 2023 was $45,000,000.",
+          "expected": "",
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T08:01:23.052014Z"
+        },
+        {
+          "id": "quant-06",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 22224,
+          "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was **0.45**.",
+          "expected": "",
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T08:01:45.527045Z"
+        },
+        {
+          "id": "quant-07",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 44750,
+          "answer": "Based on the SQL query results, TechVision Inc had **$12,500,000** in cash and equivalents at the end of 2023.",
+          "expected": "",
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T08:02:30.802217Z"
+        },
+        {
+          "id": "quant-08",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 48986,
+          "answer": "Based on the SQL query results, GreenEnergy Corp's total assets at the end of fiscal year 2023 were **$12,450,000,000** (12.45 billion dollars).\n\nThe query successfully retrieved this information from the financials table by filtering for:\n- Company name containing \"GreenEnergy Corp\"\n- Fiscal year 2023\n- Period = 'FY' (fiscal year)\n- Tenant ID = 'default'\n\nThe result shows a single row with the total_assets value of 12,450,000,000, which represents the company's total assets at the end of their ",
+          "expected": "",
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T08:03:20.534237Z"
+        },
+        {
+          "id": "quant-09",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 39761,
+          "answer": "The total stockholders equity for HealthPlus Labs at the end of 2023 was **$1,250,000,000** (1.25 billion dollars).",
+          "expected": "",
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T08:04:01.023518Z"
+        },
+        {
+          "id": "quant-10",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 26746,
+          "answer": "TechVision Inc's operating income in Q3 2023 was **$12,500,000**.",
+          "expected": "",
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T08:04:28.040021Z"
         }
       ]
     }
@@ -1221,15 +1481,39 @@
           "error_type": null,
           "answer": "Based on the SQL query results, TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,000 (1.25 billion dollars). The query successfully retrieved this information by filtering for TechVision Inc in the financials table for fiscal year 2023 with period set to 'FY' to get the annual total.",
           "timestamp": "2026-02-14T07:29:18.549153Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 45495,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's total revenue in fiscal year 2023 was $2,450,000,000.",
+          "timestamp": "2026-02-14T07:50:25.776863Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 58738,
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,000.",
+          "timestamp": "2026-02-14T07:58:41.288294Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-02-14T07:29:18.549153Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 3,
+      "pass_count": 1,
+      "pass_rate": 0.333,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:58:41.288294Z",
+      "best_f1": 1.0,
+      "trend": "improving"
     },
     "quant-02": {
       "id": "quant-02",
@@ -1252,15 +1536,39 @@
           "error_type": null,
           "answer": "Based on the SQL query results, GreenEnergy Corp's net income in 2023 was $1,250,000.",
           "timestamp": "2026-02-14T07:29:39.033264Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 45262,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "GreenEnergy Corp's net income in 2023 was $1,250,000,000.",
+          "timestamp": "2026-02-14T07:51:11.791025Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 30991,
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "answer": "GreenEnergy Corp's net income in 2023 was $1,250,000.",
+          "timestamp": "2026-02-14T07:59:15.036482Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-02-14T07:29:39.033264Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 3,
+      "pass_count": 2,
+      "pass_rate": 0.667,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:59:15.036482Z",
+      "best_f1": 1.0,
+      "trend": "improving"
     },
     "quant-03": {
       "id": "quant-03",
@@ -1283,15 +1591,39 @@
           "error_type": null,
           "answer": "The revenue of HealthPlus Labs in Q4 2023 was **$12,500,000**.",
           "timestamp": "2026-02-14T07:30:13.048959Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 27742,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The revenue of HealthPlus Labs in Q4 2023 was **$12,500,000**.",
+          "timestamp": "2026-02-14T07:51:40.023829Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 33255,
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "answer": "The revenue of HealthPlus Labs in Q4 2023 was $12,500,000.",
+          "timestamp": "2026-02-14T07:59:49.049974Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-02-14T07:30:13.048959Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 3,
+      "pass_count": 2,
+      "pass_rate": 0.667,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:59:49.049974Z",
+      "best_f1": 1.0,
+      "trend": "improving"
     },
     "quant-04": {
       "id": "quant-04",
@@ -1314,15 +1646,39 @@
           "error_type": null,
           "answer": "The SQL query executed successfully but returned only 1 row of results, which is insufficient to compare the gross profit of both TechVision Inc and GreenEnergy Corp. This suggests that either:\n\n1. Only one of the companies has financial data for FY 2023 in the database\n2. The company names in the database don't exactly match the search patterns used\n\nTo get a proper comparison, we would need to see data for both companies. The query is correctly structured to find both companies' gross profit f",
           "timestamp": "2026-02-14T07:31:02.520648Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 41729,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The SQL query executed successfully but returned only 1 row of data, which is insufficient to compare the gross profit of both TechVision Inc and GreenEnergy Corp for FY 2023. \n\nThe query filtered for:\n- Tenant ID: 'default'\n- Company names containing \"TechVision Inc\" or \"GreenEnergy Corp\"\n- Fiscal year: 2023\n- Period: 'FY' (full year)\n\nSince only 1 row was returned, this suggests that data for only one of the two companies is available in the financials table for FY 2023. To provide a complete ",
+          "timestamp": "2026-02-14T07:52:22.050828Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 58248,
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "answer": "The SQL query executed successfully but returned only 1 row of data, which is insufficient to compare the gross profit of both TechVision Inc and GreenEnergy Corp for FY 2023. The query was designed to retrieve gross profit data for both companies, but it appears that data for only one company is available in the database for the specified fiscal year.\n\nTo provide a meaningful comparison, we would need data for both companies. The current result shows that either:\n1. Data for one of the companie",
+          "timestamp": "2026-02-14T08:00:49.026474Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-02-14T07:31:02.520648Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 3,
+      "pass_count": 1,
+      "pass_rate": 0.333,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T08:00:49.026474Z",
+      "best_f1": 1.0,
+      "trend": "improving"
     },
     "quant-05": {
       "id": "quant-05",
@@ -1345,15 +1701,39 @@
           "error_type": null,
           "answer": "TechVision Inc's R&D spending in 2023 was $45,000,000.",
           "timestamp": "2026-02-14T07:31:24.024443Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 29995,
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's R&D spending in 2023 was $125,000,000.",
+          "timestamp": "2026-02-14T07:52:55.275781Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 30498,
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's R&D spending in 2023 was $45,000,000.",
+          "timestamp": "2026-02-14T08:01:23.273089Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-02-14T07:31:24.024443Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 3,
+      "pass_count": 2,
+      "pass_rate": 0.667,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T08:01:23.273089Z",
+      "best_f1": 1.0,
+      "trend": "improving"
     },
     "quant-06": {
       "id": "quant-06",
@@ -1376,15 +1756,39 @@
           "error_type": null,
           "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was $2.15.",
           "timestamp": "2026-02-14T07:31:52.547468Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 35516,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was **$2.15**.",
+          "timestamp": "2026-02-14T07:53:31.526964Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 22224,
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was **0.45**.",
+          "timestamp": "2026-02-14T08:01:45.527229Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-02-14T07:31:52.547468Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 3,
+      "pass_count": 2,
+      "pass_rate": 0.667,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T08:01:45.527229Z",
+      "best_f1": 1.0,
+      "trend": "improving"
     },
     "quant-07": {
       "id": "quant-07",
@@ -1407,15 +1811,39 @@
           "error_type": null,
           "answer": "Based on the SQL query results, TechVision Inc had **$0** in cash and equivalents at the end of 2023.",
           "timestamp": "2026-02-14T07:32:25.032805Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 26773,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Based on the SQL query results, TechVision Inc had **$0** in cash and equivalents at the end of 2023.\n\nThe query successfully retrieved the cash_and_equivalents value for TechVision Inc for fiscal year 2023, and the result shows a value of 0.",
+          "timestamp": "2026-02-14T07:53:59.281913Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 44750,
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "answer": "Based on the SQL query results, TechVision Inc had **$12,500,000** in cash and equivalents at the end of 2023.",
+          "timestamp": "2026-02-14T08:02:31.027029Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-02-14T07:32:25.032805Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 3,
+      "pass_count": 1,
+      "pass_rate": 0.333,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T08:02:31.027029Z",
+      "best_f1": 1.0,
+      "trend": "improving"
     },
     "quant-08": {
       "id": "quant-08",
@@ -1438,15 +1866,39 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-14T07:33:26.287583Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 24749,
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "answer": "Based on the SQL query results, GreenEnergy Corp's total assets at the end of fiscal year 2023 were **$2,450,000,000** (2.45 billion dollars).\n\nThe query successfully retrieved this information from the financials table by filtering for:\n- Company name containing \"GreenEnergy Corp\"\n- Fiscal year 2023\n- Period 'FY' (fiscal year)\n- Tenant ID 'default'\n\nThe result shows a single row with the total_assets value of 2,450,000,000, which represents the company's total assets at the end of their fiscal ",
+          "timestamp": "2026-02-14T07:54:24.783501Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 48986,
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "answer": "Based on the SQL query results, GreenEnergy Corp's total assets at the end of fiscal year 2023 were **$12,450,000,000** (12.45 billion dollars).\n\nThe query successfully retrieved this information from the financials table by filtering for:\n- Company name containing \"GreenEnergy Corp\"\n- Fiscal year 2023\n- Period = 'FY' (fiscal year)\n- Tenant ID = 'default'\n\nThe result shows a single row with the total_assets value of 12,450,000,000, which represents the company's total assets at the end of their ",
+          "timestamp": "2026-02-14T08:03:20.534437Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-02-14T07:33:26.287583Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 3,
+      "pass_count": 2,
+      "pass_rate": 0.667,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T08:03:20.534437Z",
+      "best_f1": 1.0,
+      "trend": "improving"
     },
     "quant-09": {
       "id": "quant-09",
@@ -1469,15 +1921,39 @@
           "error_type": null,
           "answer": "The SQL query executed successfully and returned 1 row of results. The total stockholders equity for HealthPlus Labs at the end of 2023 was **$2,450,000,000**.",
           "timestamp": "2026-02-14T07:34:06.540846Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 28751,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The total stockholders equity for HealthPlus Labs at the end of 2023 was **$12,450,000**. This value was retrieved from the financials table by filtering for the company name, fiscal year 2023, and period 'FY' (full year) to ensure we captured the year-end total equity figure.",
+          "timestamp": "2026-02-14T07:54:54.542436Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 39761,
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "answer": "The total stockholders equity for HealthPlus Labs at the end of 2023 was **$1,250,000,000** (1.25 billion dollars).",
+          "timestamp": "2026-02-14T08:04:01.025606Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-02-14T07:34:06.540846Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 3,
+      "pass_count": 1,
+      "pass_rate": 0.333,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T08:04:01.025606Z",
+      "best_f1": 1.0,
+      "trend": "improving"
     },
     "quant-10": {
       "id": "quant-10",
@@ -1500,15 +1976,39 @@
           "error_type": null,
           "answer": "Based on the SQL query results, TechVision Inc's operating income in Q3 2023 was not provided in the response. The query executed successfully but the actual operating income value is missing from the results. To get the specific operating income figure, you would need to run the query again or check if there are any data availability issues with the financials table for TechVision Inc in Q3 2023.",
           "timestamp": "2026-02-14T07:34:30.026002Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60754,
+          "match_type": "NO_ANSWER",
+          "error": "timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-14T07:55:57.294725Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 26746,
+          "match_type": "NON_EMPTY",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's operating income in Q3 2023 was **$12,500,000**.",
+          "timestamp": "2026-02-14T08:04:28.041709Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-02-14T07:34:30.026002Z",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 3,
+      "pass_count": 1,
+      "pass_rate": 0.333,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T08:04:28.041709Z",
+      "best_f1": 1.0,
+      "trend": "improving"
     }
   },
   "quick_tests": [
@@ -2548,6 +3048,361 @@
       "error_type": null,
       "error_preview": null,
       "answer_preview": "Based on the SQL query results, TechVision Inc's operating income in Q3 2023 was not provided in the",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:50:26.021674Z",
+      "question_id": "quant-01",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 45495,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's total revenue in fiscal year 2023 was $2,450,000,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:51:12.035491Z",
+      "question_id": "quant-02",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 45262,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "GreenEnergy Corp's net income in 2023 was $1,250,000,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:51:40.045538Z",
+      "question_id": "quant-03",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 27742,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The revenue of HealthPlus Labs in Q4 2023 was **$12,500,000**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:52:22.522559Z",
+      "question_id": "quant-04",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 41729,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The SQL query executed successfully but returned only 1 row of data, which is insufficient to compar",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:52:55.295538Z",
+      "question_id": "quant-05",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 29995,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's R&D spending in 2023 was $125,000,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:53:31.776097Z",
+      "question_id": "quant-06",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 35516,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was **$2.15**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:53:59.529310Z",
+      "question_id": "quant-07",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 26773,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Based on the SQL query results, TechVision Inc had **$0** in cash and equivalents at the end of 2023",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:54:25.271685Z",
+      "question_id": "quant-08",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 24749,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Based on the SQL query results, GreenEnergy Corp's total assets at the end of fiscal year 2023 were ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:54:55.520643Z",
+      "question_id": "quant-09",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 28751,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The total stockholders equity for HealthPlus Labs at the end of 2023 was **$12,450,000**. This value",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:55:59.288147Z",
+      "question_id": "quant-10",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60754,
+      "error_type": "TIMEOUT",
+      "error_preview": "timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-14T07:58:42.539188Z",
+      "question_id": "quant-01",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 58738,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:59:15.280725Z",
+      "question_id": "quant-02",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 30991,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "GreenEnergy Corp's net income in 2023 was $1,250,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:59:49.536895Z",
+      "question_id": "quant-03",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 33255,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The revenue of HealthPlus Labs in Q4 2023 was $12,500,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T08:00:52.274955Z",
+      "question_id": "quant-04",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 58248,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The SQL query executed successfully but returned only 1 row of data, which is insufficient to compar",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T08:01:23.285759Z",
+      "question_id": "quant-05",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 30498,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's R&D spending in 2023 was $45,000,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T08:01:45.549594Z",
+      "question_id": "quant-06",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 22224,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was **0.45**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T08:02:31.298057Z",
+      "question_id": "quant-07",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 44750,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Based on the SQL query results, TechVision Inc had **$12,500,000** in cash and equivalents at the en",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T08:03:20.774124Z",
+      "question_id": "quant-08",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 48986,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Based on the SQL query results, GreenEnergy Corp's total assets at the end of fiscal year 2023 were ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T08:04:01.049592Z",
+      "question_id": "quant-09",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 39761,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The total stockholders equity for HealthPlus Labs at the end of 2023 was **$1,250,000,000** (1.25 bi",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T08:04:28.787156Z",
+      "question_id": "quant-10",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 26746,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's operating income in Q3 2023 was **$12,500,000**.",
       "confidence": null,
       "pipeline_details_summary": {
         "sql": null,

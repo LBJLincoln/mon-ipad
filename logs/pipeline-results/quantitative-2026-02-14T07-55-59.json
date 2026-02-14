@@ -1,0 +1,122 @@
+{
+  "pipeline": "quantitative",
+  "timestamp": "2026-02-14T07:55:59.546995Z",
+  "label": "10q-quant-schema-fix",
+  "total_tested": 10,
+  "correct": 5,
+  "errors": 1,
+  "accuracy_pct": 50.0,
+  "avg_latency_ms": 36676,
+  "results": [
+    {
+      "id": "quant-01",
+      "question": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "expected": "1250000000",
+      "answer": "TechVision Inc's total revenue in fiscal year 2023 was $2,450,000,000.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 45495,
+      "method": "NO_MATCH",
+      "error": null
+    },
+    {
+      "id": "quant-02",
+      "question": "What was GreenEnergy Corp's net income in 2023?",
+      "expected": "125000000",
+      "answer": "GreenEnergy Corp's net income in 2023 was $1,250,000,000.",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 45262,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "quant-03",
+      "question": "What was the revenue of HealthPlus Labs in Q4 2023?",
+      "expected": "12500000",
+      "answer": "The revenue of HealthPlus Labs in Q4 2023 was **$12,500,000**.",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 27742,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "quant-04",
+      "question": "Compare the gross profit of TechVision Inc and GreenEnergy Corp in FY 2023",
+      "expected": "gross_profit",
+      "answer": "The SQL query executed successfully but returned only 1 row of data, which is insufficient to compare the gross profit of both TechVision Inc and GreenEnergy Corp for FY 2023. \n\nThe query filtered for:\n- Tenant ID: 'default'\n- Company names containing \"TechVision Inc\" or \"GreenEnergy Corp\"\n- Fiscal ",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 41729,
+      "method": "NO_MATCH",
+      "error": null
+    },
+    {
+      "id": "quant-05",
+      "question": "What was TechVision Inc's R&D spending in 2023?",
+      "expected": "",
+      "answer": "TechVision Inc's R&D spending in 2023 was $125,000,000.",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 29995,
+      "method": "NON_EMPTY",
+      "error": null
+    },
+    {
+      "id": "quant-06",
+      "question": "What was the diluted EPS for HealthPlus Labs in fiscal year 2023?",
+      "expected": "0",
+      "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was **$2.15**.",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 35516,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "quant-07",
+      "question": "How much cash and equivalents did TechVision Inc have at end of 2023?",
+      "expected": "2500000",
+      "answer": "Based on the SQL query results, TechVision Inc had **$0** in cash and equivalents at the end of 2023.\n\nThe query successfully retrieved the cash_and_equivalents value for TechVision Inc for fiscal year 2023, and the result shows a value of 0.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 26773,
+      "method": "NO_MATCH",
+      "error": null
+    },
+    {
+      "id": "quant-08",
+      "question": "What were GreenEnergy Corp's total assets at the end of fiscal year 2023?",
+      "expected": "",
+      "answer": "Based on the SQL query results, GreenEnergy Corp's total assets at the end of fiscal year 2023 were **$2,450,000,000** (2.45 billion dollars).\n\nThe query successfully retrieved this information from the financials table by filtering for:\n- Company name containing \"GreenEnergy Corp\"\n- Fiscal year 202",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 24749,
+      "method": "NON_EMPTY",
+      "error": null
+    },
+    {
+      "id": "quant-09",
+      "question": "What was the total stockholders equity for HealthPlus Labs at end of 2023?",
+      "expected": "1250000000",
+      "answer": "The total stockholders equity for HealthPlus Labs at the end of 2023 was **$12,450,000**. This value was retrieved from the financials table by filtering for the company name, fiscal year 2023, and period 'FY' (full year) to ensure we captured the year-end total equity figure.",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 28751,
+      "method": "NO_MATCH",
+      "error": null
+    },
+    {
+      "id": "quant-10",
+      "question": "What was TechVision Inc's operating income in Q3 2023?",
+      "expected": "45000000",
+      "answer": "",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60754,
+      "method": "NO_ANSWER",
+      "error": "timed out"
+    }
+  ]
+}
