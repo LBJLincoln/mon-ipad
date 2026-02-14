@@ -1,11 +1,11 @@
 {
   "meta": {
-    "generated_at": "2026-02-14T07:13:31.038748Z",
+    "generated_at": "2026-02-14T07:20:39.293214Z",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
-    "total_unique_questions": 2,
-    "total_test_runs": 2,
+    "total_unique_questions": 10,
+    "total_test_runs": 12,
     "total_iterations": 3,
     "status": "running",
     "current_session": "2026-02-14T07-11-06"
@@ -99,24 +99,24 @@
       "id": null,
       "number": 3,
       "timestamp_start": "2026-02-14T07:12:53.040548Z",
-      "timestamp_end": "2026-02-14T07:13:30.791920Z",
+      "timestamp_end": "2026-02-14T07:20:38.549348Z",
       "label": "Iteration 3",
       "description": "",
       "changes_applied": [],
       "results_summary": {
         "standard": {
-          "tested": 2,
-          "correct": 1,
+          "tested": 12,
+          "correct": 9,
           "errors": 0,
-          "accuracy_pct": 50.0,
-          "avg_latency_ms": 43757,
+          "accuracy_pct": 75.0,
+          "avg_latency_ms": 33163,
           "p95_latency_ms": 50240,
-          "avg_f1": 0.5928
+          "avg_f1": 0.725
         }
       },
-      "total_tested": 2,
-      "total_correct": 1,
-      "overall_accuracy_pct": 50.0,
+      "total_tested": 12,
+      "total_correct": 9,
+      "overall_accuracy_pct": 75.0,
       "questions": [
         {
           "id": "std-01",
@@ -143,6 +143,136 @@
           "error": null,
           "error_type": null,
           "timestamp": "2026-02-14T07:13:30.791890Z"
+        },
+        {
+          "id": "std-01",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 43498,
+          "answer": "Normandy is located in France, specifically in its northern region.",
+          "expected": "France",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:16:08.043961Z"
+        },
+        {
+          "id": "std-02",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 28740,
+          "answer": "The first season of *SpongeBob SquarePants* premiered on May 1, 1999.",
+          "expected": "May 1, 1999",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:16:37.024073Z"
+        },
+        {
+          "id": "std-03",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 49246,
+          "answer": "The capital of Japan is Tokyo.",
+          "expected": "Tokyo",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:17:27.046434Z"
+        },
+        {
+          "id": "std-04",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 23234,
+          "answer": "William Shakespeare wrote *Romeo and Juliet*.",
+          "expected": "William Shakespeare",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:17:50.799407Z"
+        },
+        {
+          "id": "std-05",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.4545,
+          "latency_ms": 31241,
+          "answer": "Penicillin is a natural antibiotic discovered by Alexander Fleming that kills bacteria by inhibiting their cell‑wall synthesis.",
+          "expected": "An antibiotic discovered by Alexander Fleming",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:18:22.296308Z"
+        },
+        {
+          "id": "std-06",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.2143,
+          "latency_ms": 23747,
+          "answer": "The theory of relativity, formulated by Albert Einstein, describes how space, time, and gravity are interrelated, encompassing special relativity (1905) and general relativity (1915).",
+          "expected": "Einstein's theory describing gravity and spacetime",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:18:46.284639Z"
+        },
+        {
+          "id": "std-07",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 22513,
+          "answer": "The largest ocean on Earth is the Pacific Ocean.",
+          "expected": "Pacific Ocean",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:19:09.036539Z"
+        },
+        {
+          "id": "std-08",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 32733,
+          "answer": "Leonardo da Vinci painted the Mona Lisa.",
+          "expected": "Leonardo da Vinci",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:19:42.034109Z"
+        },
+        {
+          "id": "std-09",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.5455,
+          "latency_ms": 32509,
+          "answer": "Photosynthesis is the process by which green plants convert light energy into chemical energy, using chlorophyll to transform carbon dioxide and water into glucose and oxygen.",
+          "expected": "Process by which plants convert light energy into chemical energy",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:20:15.048744Z"
+        },
+        {
+          "id": "std-10",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 22984,
+          "answer": "The speed of light in a vacuum is exactly 299,792,458 meters per second (approximately 299,792 kilometers per second).",
+          "expected": "approximately 299,792 kilometers per second",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:20:38.549329Z"
         }
       ]
     }
@@ -169,13 +299,25 @@
           "error_type": null,
           "answer": "Normandy is located in France.",
           "timestamp": "2026-02-14T07:12:53.040696Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 43498,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Normandy is located in France, specifically in its northern region.",
+          "timestamp": "2026-02-14T07:16:08.044999Z"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 1,
+      "total_runs": 2,
+      "pass_count": 2,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-14T07:12:53.040696Z",
+      "last_tested": "2026-02-14T07:16:08.044999Z",
       "best_f1": 0.9,
       "trend": "stable"
     },
@@ -200,14 +342,274 @@
           "error_type": null,
           "answer": "The first season of *SpongeBob SquarePants* premiered on May 1, 1999.",
           "timestamp": "2026-02-14T07:13:30.791990Z"
+        },
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 28740,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The first season of *SpongeBob SquarePants* premiered on May 1, 1999.",
+          "timestamp": "2026-02-14T07:16:37.024161Z"
+        }
+      ],
+      "total_runs": 2,
+      "pass_count": 1,
+      "pass_rate": 0.5,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:16:37.024161Z",
+      "best_f1": 0.9,
+      "trend": "improving"
+    },
+    "std-03": {
+      "id": "std-03",
+      "question": "What is the capital of Japan?",
+      "expected": "Tokyo",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 49246,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The capital of Japan is Tokyo.",
+          "timestamp": "2026-02-14T07:17:27.271360Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:17:27.271360Z",
+      "best_f1": 0.9,
+      "trend": "stable"
+    },
+    "std-04": {
+      "id": "std-04",
+      "question": "Who wrote Romeo and Juliet?",
+      "expected": "William Shakespeare",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 23234,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "William Shakespeare wrote *Romeo and Juliet*.",
+          "timestamp": "2026-02-14T07:17:51.020705Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:17:51.020705Z",
+      "best_f1": 0.9,
+      "trend": "stable"
+    },
+    "std-05": {
+      "id": "std-05",
+      "question": "What is penicillin?",
+      "expected": "An antibiotic discovered by Alexander Fleming",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.4545,
+          "latency_ms": 31241,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "Penicillin is a natural antibiotic discovered by Alexander Fleming that kills bacteria by inhibiting their cell‑wall synthesis.",
+          "timestamp": "2026-02-14T07:18:22.298429Z"
         }
       ],
       "total_runs": 1,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-14T07:13:30.791990Z",
-      "best_f1": 0.2857,
+      "last_tested": "2026-02-14T07:18:22.298429Z",
+      "best_f1": 0.4545,
+      "trend": "stable"
+    },
+    "std-06": {
+      "id": "std-06",
+      "question": "What is the theory of relativity?",
+      "expected": "Einstein's theory describing gravity and spacetime",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.2143,
+          "latency_ms": 23747,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "The theory of relativity, formulated by Albert Einstein, describes how space, time, and gravity are interrelated, encompassing special relativity (1905) and general relativity (1915).",
+          "timestamp": "2026-02-14T07:18:46.284715Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:18:46.284715Z",
+      "best_f1": 0.2143,
+      "trend": "stable"
+    },
+    "std-07": {
+      "id": "std-07",
+      "question": "What is the largest ocean on Earth?",
+      "expected": "Pacific Ocean",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 22513,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The largest ocean on Earth is the Pacific Ocean.",
+          "timestamp": "2026-02-14T07:19:09.036618Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:19:09.036618Z",
+      "best_f1": 0.9,
+      "trend": "stable"
+    },
+    "std-08": {
+      "id": "std-08",
+      "question": "Who painted the Mona Lisa?",
+      "expected": "Leonardo da Vinci",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 32733,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Leonardo da Vinci painted the Mona Lisa.",
+          "timestamp": "2026-02-14T07:19:42.034205Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:19:42.034205Z",
+      "best_f1": 0.9,
+      "trend": "stable"
+    },
+    "std-09": {
+      "id": "std-09",
+      "question": "What is photosynthesis?",
+      "expected": "Process by which plants convert light energy into chemical energy",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.5455,
+          "latency_ms": 32509,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "Photosynthesis is the process by which green plants convert light energy into chemical energy, using chlorophyll to transform carbon dioxide and water into glucose and oxygen.",
+          "timestamp": "2026-02-14T07:20:15.048844Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:20:15.048844Z",
+      "best_f1": 0.5455,
+      "trend": "stable"
+    },
+    "std-10": {
+      "id": "std-10",
+      "question": "What is the speed of light?",
+      "expected": "approximately 299,792 kilometers per second",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 22984,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The speed of light in a vacuum is exactly 299,792,458 meters per second (approximately 299,792 kilometers per second).",
+          "timestamp": "2026-02-14T07:20:38.549476Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:20:38.549476Z",
+      "best_f1": 0.9,
       "trend": "stable"
     }
   },
@@ -740,6 +1142,166 @@
       "error_type": null,
       "error_preview": null,
       "answer_preview": "The first season of *SpongeBob SquarePants* premiered on May 1, 1999.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:16:08.273533Z",
+      "question_id": "std-01",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 43498,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Normandy is located in France, specifically in its northern region.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:16:37.035202Z",
+      "question_id": "std-02",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 28740,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The first season of *SpongeBob SquarePants* premiered on May 1, 1999.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:17:27.544332Z",
+      "question_id": "std-03",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 49246,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The capital of Japan is Tokyo.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:17:51.033553Z",
+      "question_id": "std-04",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 23234,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "William Shakespeare wrote *Romeo and Juliet*.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:18:22.529745Z",
+      "question_id": "std-05",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.4545,
+      "latency_ms": 31241,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Penicillin is a natural antibiotic discovered by Alexander Fleming that kills bacteria by inhibiting",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:18:46.289027Z",
+      "question_id": "std-06",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.2143,
+      "latency_ms": 23747,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The theory of relativity, formulated by Albert Einstein, describes how space, time, and gravity are ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:19:09.279310Z",
+      "question_id": "std-07",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 22513,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The largest ocean on Earth is the Pacific Ocean.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:19:42.043672Z",
+      "question_id": "std-08",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 32733,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Leonardo da Vinci painted the Mona Lisa.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:20:15.522129Z",
+      "question_id": "std-09",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.5455,
+      "latency_ms": 32509,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Photosynthesis is the process by which green plants convert light energy into chemical energy, using",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:20:39.291641Z",
+      "question_id": "std-10",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 22984,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The speed of light in a vacuum is exactly 299,792,458 meters per second (approximately 299,792 kilom",
       "confidence": null,
       "pipeline_details_summary": {
         "topK": null,
