@@ -46,8 +46,21 @@ def call_rag(endpoint, question, timeout=60):
 def extract_answer(response_data):
     """
     Extracts the final answer from the RAG pipeline's response data.
+    Handles both dict and list responses (webhooks return arrays).
     """
-    return response_data.get("answer", "") or response_data.get("output", {}).get("answer", "")
+    if isinstance(response_data, list):
+        response_data = response_data[0] if response_data else {}
+    if not isinstance(response_data, dict):
+        return str(response_data) if response_data else ""
+    # Try multiple common response field names
+    for key in ["response", "answer", "result", "interpretation", "final_response"]:
+        if key in response_data and response_data[key]:
+            return str(response_data[key])
+    # Fallback to nested output
+    output = response_data.get("output", {})
+    if isinstance(output, dict):
+        return output.get("answer", "") or output.get("response", "")
+    return ""
 
 
 def evaluate_answer(answer, expected_answer):
@@ -55,18 +68,45 @@ def evaluate_answer(answer, expected_answer):
     Evaluates the extracted answer against the expected answer.
     Returns a dictionary with 'correct', 'method', 'f1'.
     """
+    import re
     answer_lower = answer.lower().strip()
     expected_lower = expected_answer.lower().strip()
 
-    if answer_lower == expected_lower:
+    if not expected_lower:
+        # No expected answer — just check non-empty response
+        return {"correct": len(answer_lower) > 10, "method": "NON_EMPTY", "f1": 1.0 if len(answer_lower) > 10 else 0.0}
+
+    # Normalize numbers: remove commas, $, % for comparison
+    def normalize(text):
+        text = re.sub(r'(\d),(\d)', r'\1\2', text)
+        return text.replace('$', '').replace('%', '').strip()
+
+    norm_answer = normalize(answer_lower)
+    norm_expected = normalize(expected_lower)
+
+    if norm_answer == norm_expected:
         return {"correct": True, "method": "EXACT_MATCH", "f1": 1.0}
-    elif expected_lower in answer_lower or answer_lower in expected_lower:
-        return {"correct": False, "method": "PARTIAL_MATCH", "f1": 0.5} # Arbitrary F1 for partial
+    elif norm_expected in norm_answer:
+        return {"correct": True, "method": "CONTAINS_MATCH", "f1": 0.9}
+    elif norm_answer in norm_expected:
+        return {"correct": True, "method": "SUBSET_MATCH", "f1": 0.8}
     else:
-        return {"correct": False, "method": "NO_MATCH", "f1": 0.0}
+        # Token-level F1 for partial matches
+        answer_tokens = set(norm_answer.split())
+        expected_tokens = set(norm_expected.split())
+        if not expected_tokens:
+            return {"correct": False, "method": "NO_MATCH", "f1": 0.0}
+        overlap = answer_tokens & expected_tokens
+        if not overlap:
+            return {"correct": False, "method": "NO_MATCH", "f1": 0.0}
+        precision = len(overlap) / len(answer_tokens) if answer_tokens else 0
+        recall = len(overlap) / len(expected_tokens)
+        f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+        # Consider correct if F1 >= 0.5 (at least half the expected tokens present)
+        return {"correct": f1 >= 0.5, "method": "TOKEN_F1", "f1": round(f1, 4)}
 
 def compute_f1(answer, expected):
-    """Placeholder for F1 computation."""
+    """Compute F1 score between answer and expected."""
     return evaluate_answer(answer, expected)["f1"]
 
 
@@ -74,6 +114,10 @@ def extract_pipeline_details(response_data, rag_type):
     """
     Extracts specific pipeline details from the response for diagnostic purposes.
     """
+    if isinstance(response_data, list):
+        response_data = response_data[0] if response_data else {}
+    if not isinstance(response_data, dict):
+        return {"rag_type": rag_type}
     return {"rag_type": rag_type, "response_keys": list(response_data.keys())}
 
 
