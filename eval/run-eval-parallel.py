@@ -145,7 +145,7 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
 
     for i, q in enumerate(untested):
         qid = q["id"]
-        rag_timeout = 120 if rag_type == "orchestrator" else 60
+        rag_timeout = 300 if rag_type == "orchestrator" else 90
         resp = call_rag(endpoint, q["question"], timeout=rag_timeout)
 
         if resp["error"]:
