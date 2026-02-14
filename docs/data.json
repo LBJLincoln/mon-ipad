@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-02-13T23:39:36.972902Z",
+    "generated_at": "2026-02-14T06:36:14.501860Z",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
@@ -68,14 +68,504 @@
   "question_registry": {},
   "quick_tests": [
     {
-      "timestamp": "2026-02-13T23:39:36.972773Z",
+      "timestamp": "2026-02-14T05:48:49.931800Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "status": "fail",
+      "latency_ms": 57243,
+      "response_preview": "Based on the SQL query results, TechVision Inc's total revenue in fiscal year 2023 was **$12,450,000**. The query successfully retrieved this figure by filtering for the company name, fiscal year 2023",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T05:49:02.924171Z",
+      "pipeline": "orchestrator",
+      "query": "What is the capital of Japan?",
+      "status": "error",
+      "latency_ms": 12741,
+      "response_preview": "",
+      "trigger": "manual",
+      "error": "Empty response"
+    },
+    {
+      "timestamp": "2026-02-14T05:54:41.917671Z",
       "pipeline": "standard",
+      "query": "What is the capital of Japan?",
+      "status": "pass",
+      "latency_ms": 38248,
+      "response_preview": "The capital of Japan is Tokyo.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T05:55:28.193117Z",
+      "pipeline": "graph",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "pass",
+      "latency_ms": 46258,
+      "response_preview": "Physics and Chemistry",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T05:56:01.426942Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "status": "fail",
+      "latency_ms": 33011,
+      "response_preview": "Based on the SQL query results, TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,000.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T05:56:47.180605Z",
+      "pipeline": "orchestrator",
+      "query": "What is the capital of Japan?",
+      "status": "error",
+      "latency_ms": 45745,
+      "response_preview": "",
+      "trigger": "manual",
+      "error": "Empty response"
+    },
+    {
+      "timestamp": "2026-02-14T06:00:28.682653Z",
+      "pipeline": "standard",
+      "query": "What is the capital of Japan?",
+      "status": "pass",
+      "latency_ms": 33497,
+      "response_preview": "The capital of Japan is Tokyo.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:01:06.939979Z",
+      "pipeline": "graph",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "pass",
+      "latency_ms": 38024,
+      "response_preview": "Physics in 1903 for radioactivity research, Chemistry in 1911 for discovering radium and polonium.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:02:08.431859Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "status": "pass",
+      "latency_ms": 61239,
+      "response_preview": "Based on the SQL query results, TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,000.",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:04:08.931780Z",
+      "pipeline": "orchestrator",
       "query": "What is the capital of Japan?",
       "status": "error",
       "latency_ms": 0,
       "response_preview": "",
       "trigger": "manual",
-      "error": "HTTP Error 404: Not Found"
+      "error": "timed out"
+    },
+    {
+      "timestamp": "2026-02-14T06:11:22.951386Z",
+      "pipeline": "standard",
+      "query": "What is the capital of Japan?",
+      "status": "pass",
+      "latency_ms": 60644,
+      "response_preview": "The capital of Japan is Tokyo.",
+      "trigger": "5q-validation",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:11:30.707914Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "status": "pass",
+      "latency_ms": 61482,
+      "response_preview": "Based on the SQL query results, TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,000 (1.25 billion dollars). The query successfully retrieved this information by filtering for TechVis",
+      "trigger": "5q-validation",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:11:57.229433Z",
+      "pipeline": "graph",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "timed out"
+    },
+    {
+      "timestamp": "2026-02-14T06:12:13.214100Z",
+      "pipeline": "quantitative",
+      "query": "What was GreenEnergy Corp's total revenue in 2023?",
+      "status": "pass",
+      "latency_ms": 42495,
+      "response_preview": "Based on the SQL query results, GreenEnergy Corp's total revenue in 2023 was $1,250,000,000 (1.25 billion).",
+      "trigger": "5q-validation",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:12:15.211575Z",
+      "pipeline": "standard",
+      "query": "Where is Normandy located?",
+      "status": "pass",
+      "latency_ms": 52239,
+      "response_preview": "Normandy is located in northern France.",
+      "trigger": "5q-validation",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:13:25.969044Z",
+      "pipeline": "quantitative",
+      "query": "What is the total number of products across all companies?",
+      "status": "pass",
+      "latency_ms": 72011,
+      "response_preview": "The SQL query executed successfully and returned a result showing the total number of products across all companies for the 'benchmark' tenant. The query counted all rows in the products table where t",
+      "trigger": "5q-validation",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:13:30.215105Z",
+      "pipeline": "graph",
+      "query": "What did Alexander Fleming discover?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "timed out"
+    },
+    {
+      "timestamp": "2026-02-14T06:13:32.460820Z",
+      "pipeline": "orchestrator",
+      "query": "What is the capital of Japan?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "timed out"
+    },
+    {
+      "timestamp": "2026-02-14T06:13:41.463699Z",
+      "pipeline": "quantitative",
+      "query": "What was HealthPlus Labs' net income in 2022?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "timestamp": "2026-02-14T06:13:42.727341Z",
+      "pipeline": "graph",
+      "query": "Who founded Microsoft?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "timestamp": "2026-02-14T06:13:43.728138Z",
+      "pipeline": "orchestrator",
+      "query": "What was TechVision Inc's total revenue in 2023?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "timestamp": "2026-02-14T06:13:46.219310Z",
+      "pipeline": "standard",
+      "query": "Who painted the Mona Lisa?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "timed out"
+    },
+    {
+      "timestamp": "2026-02-14T06:13:47.456675Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision's revenue in Q1 2023?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "timestamp": "2026-02-14T06:13:49.954276Z",
+      "pipeline": "graph",
+      "query": "What is the WHO?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "timestamp": "2026-02-14T06:13:50.228527Z",
+      "pipeline": "orchestrator",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "timestamp": "2026-02-14T06:13:51.474095Z",
+      "pipeline": "standard",
+      "query": "What is the largest ocean?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "timestamp": "2026-02-14T06:13:53.981664Z",
+      "pipeline": "graph",
+      "query": "What disease is caused by mosquitoes?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "timestamp": "2026-02-14T06:13:54.711506Z",
+      "pipeline": "orchestrator",
+      "query": "Who painted the Mona Lisa?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "timestamp": "2026-02-14T06:14:00.705309Z",
+      "pipeline": "standard",
+      "query": "What year did World War II end?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "timestamp": "2026-02-14T06:14:01.473945Z",
+      "pipeline": "orchestrator",
+      "query": "What is the largest ocean?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-validation",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "timestamp": "2026-02-14T06:14:55.207000Z",
+      "pipeline": "standard",
+      "query": "What is the capital of Japan?",
+      "status": "pass",
+      "latency_ms": 20768,
+      "response_preview": "The capital of Japan is Tokyo.",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:15:17.477358Z",
+      "pipeline": "standard",
+      "query": "Where is Normandy located?",
+      "status": "pass",
+      "latency_ms": 22257,
+      "response_preview": "Normandy is a region in northern France, situated in the north‑west of the country.",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:15:44.479915Z",
+      "pipeline": "standard",
+      "query": "Who painted the Mona Lisa?",
+      "status": "pass",
+      "latency_ms": 26747,
+      "response_preview": "Leonardo da Vinci painted the Mona Lisa.",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:16:02.242544Z",
+      "pipeline": "standard",
+      "query": "What is the largest ocean?",
+      "status": "pass",
+      "latency_ms": 17528,
+      "response_preview": "The largest ocean is the Pacific Ocean.",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:16:24.738652Z",
+      "pipeline": "standard",
+      "query": "What year did World War II end?",
+      "status": "pass",
+      "latency_ms": 22487,
+      "response_preview": "World War II ended in 1945.",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:17:12.579201Z",
+      "pipeline": "graph",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "pass",
+      "latency_ms": 30831,
+      "response_preview": "Physics and Chemistry",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:18:15.004322Z",
+      "pipeline": "graph",
+      "query": "What did Alexander Fleming discover?",
+      "status": "pass",
+      "latency_ms": 61685,
+      "response_preview": "Penicillin, the world's first antibiotic.",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:18:57.267956Z",
+      "pipeline": "graph",
+      "query": "Who founded Microsoft?",
+      "status": "pass",
+      "latency_ms": 41274,
+      "response_preview": "Bill Gates and Paul Allen",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:19:40.508085Z",
+      "pipeline": "graph",
+      "query": "What is the WHO?",
+      "status": "pass",
+      "latency_ms": 42983,
+      "response_preview": "A specialized agency of the United Nations responsible for international public health.",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:20:17.012726Z",
+      "pipeline": "graph",
+      "query": "What disease is caused by mosquitoes?",
+      "status": "pass",
+      "latency_ms": 36266,
+      "response_preview": "Malaria, Dengue Fever, Zika Virus, West Nile Virus",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:21:09.014732Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "status": "pass",
+      "latency_ms": 37507,
+      "response_preview": "Based on the SQL query results, TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,000.",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:21:40.747098Z",
+      "pipeline": "quantitative",
+      "query": "What was GreenEnergy Corp's total revenue in 2023?",
+      "status": "pass",
+      "latency_ms": 31491,
+      "response_preview": "Based on the SQL query results, GreenEnergy Corp's total revenue in 2023 was **$1,250,000,000** (1.25 billion USD). The query successfully retrieved this figure by filtering for the company name, fisc",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:22:02.512138Z",
+      "pipeline": "quantitative",
+      "query": "What is the total number of products across all companies?",
+      "status": "pass",
+      "latency_ms": 21752,
+      "response_preview": "The SQL query executed successfully and returned a result showing the total number of products across all companies. The query counted all products in the products table where the tenant_id is 'benchm",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:23:22.266362Z",
+      "pipeline": "quantitative",
+      "query": "What was HealthPlus Labs' net income in 2022?",
+      "status": "pass",
+      "latency_ms": 79242,
+      "response_preview": "Based on the SQL query results, HealthPlus Labs' net income in 2022 was $1,250,000.",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:23:53.998570Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision's revenue in Q1 2023?",
+      "status": "pass",
+      "latency_ms": 30738,
+      "response_preview": "Based on the SQL query results, TechVision's revenue in Q1 2023 was not found in the database. The query executed successfully but returned no rows, indicating that there is no financial data for Tech",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:26:11.775562Z",
+      "pipeline": "orchestrator",
+      "query": "What is the capital of Japan?",
+      "status": "error",
+      "latency_ms": 125238,
+      "response_preview": "",
+      "trigger": "5q-sequential",
+      "error": "Empty response"
+    },
+    {
+      "timestamp": "2026-02-14T06:27:58.004638Z",
+      "pipeline": "orchestrator",
+      "query": "What was TechVision Inc's total revenue in 2023?",
+      "status": "fail",
+      "latency_ms": 105001,
+      "response_preview": "The SQL query executed successfully and returned the total revenue for TechVision Inc in 2023. The result shows that TechVision Inc's total revenue for the fiscal year 2023 was $1,250,000,000 (1.25 bi",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:31:02.000375Z",
+      "pipeline": "orchestrator",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-sequential",
+      "error": "timed out"
+    },
+    {
+      "timestamp": "2026-02-14T06:34:07.008006Z",
+      "pipeline": "orchestrator",
+      "query": "Who painted the Mona Lisa?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-sequential",
+      "error": "timed out"
+    },
+    {
+      "timestamp": "2026-02-14T06:36:14.498744Z",
+      "pipeline": "orchestrator",
+      "query": "What is the largest ocean?",
+      "status": "error",
+      "latency_ms": 125741,
+      "response_preview": "",
+      "trigger": "5q-sequential",
+      "error": "Empty response"
     }
   ]
 }

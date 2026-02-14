@@ -39,5 +39,1036 @@
     "recommendations": [],
     "execution_ids": []
   },
-  "_updated_at": "2026-02-14T05:33:17.193466Z"
+  "_updated_at": "2026-02-14T06:37:38.498947Z",
+  "orchestrator": {
+    "timestamp": "2026-02-14T06:37:38.260123Z",
+    "pipeline": "orchestrator",
+    "stage": "manual-analysis",
+    "label": "",
+    "questions_tested": 3,
+    "executions_analyzed": 3,
+    "success_rate_pct": 100.0,
+    "total_issues": 58,
+    "issues_by_severity": {
+      "critical": 9,
+      "high": 36,
+      "medium": 6,
+      "low": 7
+    },
+    "execution_timeline": {
+      "avg_total_ms": 159156,
+      "min_total_ms": 120743,
+      "max_total_ms": 178726,
+      "avg_time_by_category": {
+        "http": 80,
+        "routing": 2089,
+        "other": 115444,
+        "retrieval": 15328,
+        "llm": 11559
+      },
+      "avg_time_by_category_pct": {
+        "http": 0.1,
+        "routing": 1.3,
+        "other": 72.5,
+        "retrieval": 9.6,
+        "llm": 7.3
+      },
+      "critical_path_nodes": [
+        [
+          "Invoke WF5: Standard",
+          6
+        ],
+        [
+          "🧠 LLM 1: Intent Analyzer",
+          6
+        ],
+        [
+          "📦 Context Compression V10.1",
+          5
+        ],
+        [
+          "⚙️ Execution Engine V10",
+          5
+        ],
+        [
+          "🧠 Memory Merger (Redis + Postgres)",
+          4
+        ]
+      ],
+      "slowest_nodes": [
+        {
+          "node": "Invoke WF5: Standard",
+          "avg_ms": 39331,
+          "max_ms": 69252,
+          "samples": 6
+        },
+        {
+          "node": "🧠 LLM 1: Intent Analyzer",
+          "avg_ms": 5779,
+          "max_ms": 11243,
+          "samples": 6
+        },
+        {
+          "node": "🧠 Memory Merger (Redis + Postgres)",
+          "avg_ms": 4605,
+          "max_ms": 8260,
+          "samples": 5
+        },
+        {
+          "node": "📦 Context Compression V10.1",
+          "avg_ms": 3910,
+          "max_ms": 11742,
+          "samples": 6
+        },
+        {
+          "node": "Init V8 Security & Analysis",
+          "avg_ms": 3654,
+          "max_ms": 6985,
+          "samples": 3
+        },
+        {
+          "node": "🛡️ Redis Failure Handler V10.1",
+          "avg_ms": 3073,
+          "max_ms": 4253,
+          "samples": 3
+        },
+        {
+          "node": "🛡️ Advanced Guardrails",
+          "avg_ms": 3051,
+          "max_ms": 6759,
+          "samples": 5
+        },
+        {
+          "node": "🔎 Cache Semantic Search",
+          "avg_ms": 2668,
+          "max_ms": 3263,
+          "samples": 3
+        },
+        {
+          "node": "⚙️ Execution Engine V10",
+          "avg_ms": 2600,
+          "max_ms": 3745,
+          "samples": 5
+        },
+        {
+          "node": "📝 Format & Dispatch (Plan→DB)",
+          "avg_ms": 2309,
+          "max_ms": 3743,
+          "samples": 4
+        }
+      ],
+      "executions_analyzed": 3
+    },
+    "error_chain_analysis": {
+      "total_with_errors": 0,
+      "root_causes": [],
+      "cascade_patterns": []
+    },
+    "data_flow_analysis": {
+      "avg_items_created": 46.0,
+      "avg_items_lost": 0.0,
+      "consistent_bottlenecks": [],
+      "executions_analyzed": 3
+    },
+    "success_vs_failure": {
+      "total_success": 3,
+      "total_failed": 0,
+      "success_rate_pct": 100.0,
+      "differentiators": [],
+      "note": "Need both successful and failed executions to compare"
+    },
+    "node_analysis": {
+      "Webhook V8": {
+        "name": "Webhook V8",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 0,
+        "total_duration_ms": 1,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Input Merger V8": {
+        "name": "Input Merger V8",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 1588,
+        "total_duration_ms": 4764,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Init V8 Security & Analysis": {
+        "name": "Init V8 Security & Analysis",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 3654,
+        "total_duration_ms": 10964,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "ZERO_RETRIEVAL",
+            "severity": "critical",
+            "node": "Init V8 Security & Analysis",
+            "detail": "0 documents retrieved. Warnings: []",
+            "suggestion": "Check embedding generation, vector index, and query formation."
+          },
+          {
+            "type": "SLOW_NODE",
+            "severity": "low",
+            "node": "Init V8 Security & Analysis",
+            "detail": "Node took 6985ms (>5000ms threshold)",
+            "metric": {
+              "duration_ms": 6985
+            },
+            "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Postgres L2/L3 Memory": {
+        "name": "Postgres L2/L3 Memory",
+        "executions": 3,
+        "errors": 3,
+        "avg_duration_ms": 84,
+        "total_duration_ms": 253,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "NODE_ERROR",
+            "severity": "high",
+            "node": "Postgres L2/L3 Memory",
+            "detail": "Credential with ID \"zEr7jPswZNv6lWKu\" does not exist for type \"postgres\".",
+            "suggestion": "Review error details for 'Postgres L2/L3 Memory' and check if upstream nodes are producing expected output."
+          },
+          {
+            "type": "ZERO_RETRIEVAL",
+            "severity": "critical",
+            "node": "Postgres L2/L3 Memory",
+            "detail": "0 documents retrieved. Warnings: []",
+            "suggestion": "Check embedding generation, vector index, and query formation."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🧠 Memory Merger (Redis + Postgres)": {
+        "name": "🧠 Memory Merger (Redis + Postgres)",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 4002,
+        "total_duration_ms": 24015,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": true,
+        "issues": [
+          {
+            "type": "SLOW_NODE",
+            "severity": "low",
+            "node": "🧠 Memory Merger (Redis + Postgres)",
+            "detail": "Node took 6745ms (>5000ms threshold)",
+            "metric": {
+              "duration_ms": 6745
+            },
+            "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "📦 Context Compression V10.1": {
+        "name": "📦 Context Compression V10.1",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 3910,
+        "total_duration_ms": 23463,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "SLOW_NODE",
+            "severity": "low",
+            "node": "📦 Context Compression V10.1",
+            "detail": "Node took 11742ms (>5000ms threshold)",
+            "metric": {
+              "duration_ms": 11742
+            },
+            "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🛡️ Advanced Guardrails": {
+        "name": "🛡️ Advanced Guardrails",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 2668,
+        "total_duration_ms": 16012,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "SLOW_NODE",
+            "severity": "low",
+            "node": "🛡️ Advanced Guardrails",
+            "detail": "Node took 6759ms (>5000ms threshold)",
+            "metric": {
+              "duration_ms": 6759
+            },
+            "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "IF: Guardrail Passed?": {
+        "name": "IF: Guardrail Passed?",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 75,
+        "total_duration_ms": 450,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🔍 Query Classifier V10.1": {
+        "name": "🔍 Query Classifier V10.1",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 1371,
+        "total_duration_ms": 8231,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🔀 Query Router": {
+        "name": "🔀 Query Router",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 87,
+        "total_duration_ms": 526,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🔎 Cache Semantic Search": {
+        "name": "🔎 Cache Semantic Search",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 1868,
+        "total_duration_ms": 11212,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Redis: Cache + Generator": {
+        "name": "Redis: Cache + Generator",
+        "executions": 6,
+        "errors": 6,
+        "avg_duration_ms": 44,
+        "total_duration_ms": 266,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "NODE_ERROR",
+            "severity": "high",
+            "node": "Redis: Cache + Generator",
+            "detail": "Credential with ID \"O2KEPiv7VzgDG5ZX\" does not exist for type \"redis\".",
+            "suggestion": "Review error details for 'Redis: Cache + Generator' and check if upstream nodes are producing expected output."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Cache Parser": {
+        "name": "Cache Parser",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 1576,
+        "total_duration_ms": 9458,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "IF: Cache Hit?": {
+        "name": "IF: Cache Hit?",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 2,
+        "total_duration_ms": 13,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🧠 LLM 1: Intent Analyzer": {
+        "name": "🧠 LLM 1: Intent Analyzer",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 5779,
+        "total_duration_ms": 34677,
+        "is_llm": true,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "VERBOSE_LLM",
+            "severity": "medium",
+            "node": "🧠 LLM 1: Intent Analyzer",
+            "detail": "LLM output is 566 chars — may be overly detailed for an intermediate step",
+            "metric": {
+              "output_chars": 566
+            },
+            "suggestion": "Consider adding max_tokens constraint or simplifying the prompt."
+          },
+          {
+            "type": "SLOW_NODE",
+            "severity": "low",
+            "node": "🧠 LLM 1: Intent Analyzer",
+            "detail": "Node took 11243ms (>5000ms threshold)",
+            "metric": {
+              "duration_ms": 11243
+            },
+            "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+          }
+        ],
+        "llm_avg_output_chars": 618,
+        "llm_avg_tokens": 165
+      },
+      "Intent Parser V9": {
+        "name": "Intent Parser V9",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 1409,
+        "total_duration_ms": 8458,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Postgres: Init Tasks Table": {
+        "name": "Postgres: Init Tasks Table",
+        "executions": 6,
+        "errors": 6,
+        "avg_duration_ms": 163,
+        "total_duration_ms": 981,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "NODE_ERROR",
+            "severity": "high",
+            "node": "Postgres: Init Tasks Table",
+            "detail": "Credential with ID \"zEr7jPswZNv6lWKu\" does not exist for type \"postgres\".",
+            "suggestion": "Review error details for 'Postgres: Init Tasks Table' and check if upstream nodes are producing expected output."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "📝 Format & Dispatch (Plan→DB)": {
+        "name": "📝 Format & Dispatch (Plan→DB)",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 1915,
+        "total_duration_ms": 11495,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Postgres: Insert Tasks": {
+        "name": "Postgres: Insert Tasks",
+        "executions": 6,
+        "errors": 6,
+        "avg_duration_ms": 42,
+        "total_duration_ms": 252,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "NODE_ERROR",
+            "severity": "high",
+            "node": "Postgres: Insert Tasks",
+            "detail": "Credential with ID \"zEr7jPswZNv6lWKu\" does not exist for type \"postgres\".",
+            "suggestion": "Review error details for 'Postgres: Insert Tasks' and check if upstream nodes are producing expected output."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Postgres : Get Current Tasks": {
+        "name": "Postgres : Get Current Tasks",
+        "executions": 6,
+        "errors": 6,
+        "avg_duration_ms": 85,
+        "total_duration_ms": 515,
+        "is_llm": false,
+        "is_retrieval": true,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "NODE_ERROR",
+            "severity": "high",
+            "node": "Postgres : Get Current Tasks",
+            "detail": "Credential with ID \"zEr7jPswZNv6lWKu\" does not exist for type \"postgres\".",
+            "suggestion": "Review error details for 'Postgres : Get Current Tasks' and check if upstream nodes are producing expected output."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "⚙️ Execution Engine V10": {
+        "name": "⚙️ Execution Engine V10",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 2374,
+        "total_duration_ms": 14244,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "If": {
+        "name": "If",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 124,
+        "total_duration_ms": 749,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🔀 Dynamic Switch V10": {
+        "name": "🔀 Dynamic Switch V10",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 46,
+        "total_duration_ms": 280,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Invoke WF5: Standard": {
+        "name": "Invoke WF5: Standard",
+        "executions": 6,
+        "errors": 0,
+        "avg_duration_ms": 39331,
+        "total_duration_ms": 235991,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "VERY_SLOW_NODE",
+            "severity": "high",
+            "node": "Invoke WF5: Standard",
+            "detail": "Node took 22260ms (>15000ms threshold)",
+            "metric": {
+              "duration_ms": 22260
+            },
+            "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "Redis: Fetch Conversation": {
+        "name": "Redis: Fetch Conversation",
+        "executions": 3,
+        "errors": 3,
+        "avg_duration_ms": 80,
+        "total_duration_ms": 240,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [
+          {
+            "type": "NODE_ERROR",
+            "severity": "high",
+            "node": "Redis: Fetch Conversation",
+            "detail": "Credential with ID \"O2KEPiv7VzgDG5ZX\" does not exist for type \"redis\".",
+            "suggestion": "Review error details for 'Redis: Fetch Conversation' and check if upstream nodes are producing expected output."
+          },
+          {
+            "type": "ZERO_RETRIEVAL",
+            "severity": "critical",
+            "node": "Redis: Fetch Conversation",
+            "detail": "0 documents retrieved. Warnings: []",
+            "suggestion": "Check embedding generation, vector index, and query formation."
+          }
+        ],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🛡️ Redis Failure Handler V10.1": {
+        "name": "🛡️ Redis Failure Handler V10.1",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 3073,
+        "total_duration_ms": 9219,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "🛡️ Rate Limit Guard": {
+        "name": "🛡️ Rate Limit Guard",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 2254,
+        "total_duration_ms": 6764,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": false,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      },
+      "IF: Rate Limited?": {
+        "name": "IF: Rate Limited?",
+        "executions": 3,
+        "errors": 0,
+        "avg_duration_ms": 4,
+        "total_duration_ms": 13,
+        "is_llm": false,
+        "is_retrieval": false,
+        "is_routing": true,
+        "issues": [],
+        "llm_avg_output_chars": 0,
+        "llm_avg_tokens": 0
+      }
+    },
+    "cross_execution_patterns": {
+      "node_health": {
+        "Webhook V8": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Input Merger V8": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Init V8 Security & Analysis": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Postgres L2/L3 Memory": {
+          "total_runs": 3,
+          "errors": 3,
+          "error_rate_pct": 100.0,
+          "health": "critical"
+        },
+        "🧠 Memory Merger (Redis + Postgres)": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "📦 Context Compression V10.1": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🛡️ Advanced Guardrails": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "IF: Guardrail Passed?": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🔍 Query Classifier V10.1": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🔀 Query Router": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🔎 Cache Semantic Search": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Redis: Cache + Generator": {
+          "total_runs": 6,
+          "errors": 6,
+          "error_rate_pct": 100.0,
+          "health": "critical"
+        },
+        "Cache Parser": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "IF: Cache Hit?": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🧠 LLM 1: Intent Analyzer": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Intent Parser V9": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Postgres: Init Tasks Table": {
+          "total_runs": 6,
+          "errors": 6,
+          "error_rate_pct": 100.0,
+          "health": "critical"
+        },
+        "📝 Format & Dispatch (Plan→DB)": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Postgres: Insert Tasks": {
+          "total_runs": 6,
+          "errors": 6,
+          "error_rate_pct": 100.0,
+          "health": "critical"
+        },
+        "Postgres : Get Current Tasks": {
+          "total_runs": 6,
+          "errors": 6,
+          "error_rate_pct": 100.0,
+          "health": "critical"
+        },
+        "⚙️ Execution Engine V10": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "If": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🔀 Dynamic Switch V10": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Invoke WF5: Standard": {
+          "total_runs": 6,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "Redis: Fetch Conversation": {
+          "total_runs": 3,
+          "errors": 3,
+          "error_rate_pct": 100.0,
+          "health": "critical"
+        },
+        "🛡️ Redis Failure Handler V10.1": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "🛡️ Rate Limit Guard": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        },
+        "IF: Rate Limited?": {
+          "total_runs": 3,
+          "errors": 0,
+          "error_rate_pct": 0.0,
+          "health": "healthy"
+        }
+      },
+      "latency_bottlenecks": [
+        {
+          "node": "Invoke WF5: Standard",
+          "avg_ms": 39331,
+          "p95_ms": 69252,
+          "max_ms": 69252,
+          "samples": 6
+        },
+        {
+          "node": "🧠 LLM 1: Intent Analyzer",
+          "avg_ms": 5779,
+          "p95_ms": 11243,
+          "max_ms": 11243,
+          "samples": 6
+        }
+      ],
+      "verbosity_report": {
+        "🧠 LLM 1: Intent Analyzer": {
+          "avg_chars": 618,
+          "max_chars": 707,
+          "min_chars": 566,
+          "samples": 6,
+          "verdict": "warning"
+        }
+      },
+      "routing_summary": {}
+    },
+    "top_issues": [
+      {
+        "type": "ZERO_RETRIEVAL",
+        "severity": "critical",
+        "node": "Init V8 Security & Analysis",
+        "detail": "0 documents retrieved. Warnings: []",
+        "suggestion": "Check embedding generation, vector index, and query formation."
+      },
+      {
+        "type": "ZERO_RETRIEVAL",
+        "severity": "critical",
+        "node": "Postgres L2/L3 Memory",
+        "detail": "0 documents retrieved. Warnings: []",
+        "suggestion": "Check embedding generation, vector index, and query formation."
+      },
+      {
+        "type": "ZERO_RETRIEVAL",
+        "severity": "critical",
+        "node": "Redis: Fetch Conversation",
+        "detail": "0 documents retrieved. Warnings: []",
+        "suggestion": "Check embedding generation, vector index, and query formation."
+      },
+      {
+        "type": "NODE_ERROR",
+        "severity": "high",
+        "node": "Postgres L2/L3 Memory",
+        "detail": "Credential with ID \"zEr7jPswZNv6lWKu\" does not exist for type \"postgres\".",
+        "suggestion": "Review error details for 'Postgres L2/L3 Memory' and check if upstream nodes are producing expected output."
+      },
+      {
+        "type": "NODE_ERROR",
+        "severity": "high",
+        "node": "Redis: Cache + Generator",
+        "detail": "Credential with ID \"O2KEPiv7VzgDG5ZX\" does not exist for type \"redis\".",
+        "suggestion": "Review error details for 'Redis: Cache + Generator' and check if upstream nodes are producing expected output."
+      },
+      {
+        "type": "NODE_ERROR",
+        "severity": "high",
+        "node": "Postgres: Init Tasks Table",
+        "detail": "Credential with ID \"zEr7jPswZNv6lWKu\" does not exist for type \"postgres\".",
+        "suggestion": "Review error details for 'Postgres: Init Tasks Table' and check if upstream nodes are producing expected output."
+      },
+      {
+        "type": "NODE_ERROR",
+        "severity": "high",
+        "node": "Postgres: Insert Tasks",
+        "detail": "Credential with ID \"zEr7jPswZNv6lWKu\" does not exist for type \"postgres\".",
+        "suggestion": "Review error details for 'Postgres: Insert Tasks' and check if upstream nodes are producing expected output."
+      },
+      {
+        "type": "NODE_ERROR",
+        "severity": "high",
+        "node": "Postgres : Get Current Tasks",
+        "detail": "Credential with ID \"zEr7jPswZNv6lWKu\" does not exist for type \"postgres\".",
+        "suggestion": "Review error details for 'Postgres : Get Current Tasks' and check if upstream nodes are producing expected output."
+      },
+      {
+        "type": "VERY_SLOW_NODE",
+        "severity": "high",
+        "node": "Invoke WF5: Standard",
+        "detail": "Node took 22260ms (>15000ms threshold)",
+        "metric": {
+          "duration_ms": 22260
+        },
+        "suggestion": "Check if this node is making external API calls that could be cached or parallelized."
+      },
+      {
+        "type": "NODE_ERROR",
+        "severity": "high",
+        "node": "Redis: Fetch Conversation",
+        "detail": "Credential with ID \"O2KEPiv7VzgDG5ZX\" does not exist for type \"redis\".",
+        "suggestion": "Review error details for 'Redis: Fetch Conversation' and check if upstream nodes are producing expected output."
+      },
+      {
+        "type": "VERBOSE_LLM",
+        "severity": "medium",
+        "node": "🧠 LLM 1: Intent Analyzer",
+        "detail": "LLM output is 566 chars — may be overly detailed for an intermediate step",
+        "metric": {
+          "output_chars": 566
+        },
+        "suggestion": "Consider adding max_tokens constraint or simplifying the prompt."
+      },
+      {
+        "type": "SLOW_NODE",
+        "severity": "low",
+        "node": "🧠 Memory Merger (Redis + Postgres)",
+        "detail": "Node took 6745ms (>5000ms threshold)",
+        "metric": {
+          "duration_ms": 6745
+        },
+        "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+      },
+      {
+        "type": "SLOW_NODE",
+        "severity": "low",
+        "node": "📦 Context Compression V10.1",
+        "detail": "Node took 11742ms (>5000ms threshold)",
+        "metric": {
+          "duration_ms": 11742
+        },
+        "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+      },
+      {
+        "type": "SLOW_NODE",
+        "severity": "low",
+        "node": "🛡️ Advanced Guardrails",
+        "detail": "Node took 6759ms (>5000ms threshold)",
+        "metric": {
+          "duration_ms": 6759
+        },
+        "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+      },
+      {
+        "type": "SLOW_NODE",
+        "severity": "low",
+        "node": "Init V8 Security & Analysis",
+        "detail": "Node took 6985ms (>5000ms threshold)",
+        "metric": {
+          "duration_ms": 6985
+        },
+        "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+      },
+      {
+        "type": "SLOW_NODE",
+        "severity": "low",
+        "node": "🧠 LLM 1: Intent Analyzer",
+        "detail": "Node took 11243ms (>5000ms threshold)",
+        "metric": {
+          "duration_ms": 11243
+        },
+        "suggestion": "Monitor — may be acceptable for LLM/embedding calls."
+      }
+    ],
+    "recommendations": [
+      {
+        "priority": "CRITICAL",
+        "type": "ZERO_RETRIEVAL",
+        "affected_nodes": [
+          "Postgres L2/L3 Memory",
+          "Init V8 Security & Analysis",
+          "Redis: Fetch Conversation"
+        ],
+        "description": "0 documents retrieved. Warnings: []",
+        "action": "Check embedding generation, vector index, and query formation.",
+        "occurrences": 9
+      },
+      {
+        "priority": "HIGH",
+        "type": "TIME_BOTTLENECK",
+        "affected_nodes": [
+          "Invoke WF5: Standard"
+        ],
+        "description": "'Invoke WF5: Standard' takes 39331ms avg (25.0% of total). Max: 69252ms",
+        "action": "This is the #1 time sink. Optimize: cache results, reduce context, switch to faster model, or parallelize.",
+        "occurrences": 6
+      },
+      {
+        "priority": "HIGH",
+        "type": "TIME_BOTTLENECK",
+        "affected_nodes": [
+          "🧠 LLM 1: Intent Analyzer"
+        ],
+        "description": "'🧠 LLM 1: Intent Analyzer' takes 5779ms avg (4.0% of total). Max: 11243ms",
+        "action": "This is the #1 time sink. Optimize: cache results, reduce context, switch to faster model, or parallelize.",
+        "occurrences": 6
+      },
+      {
+        "priority": "MEDIUM",
+        "type": "VERBOSE_LLM",
+        "affected_nodes": [
+          "🧠 LLM 1: Intent Analyzer"
+        ],
+        "description": "LLM node '🧠 LLM 1: Intent Analyzer' avg output: 618 chars (max: 707)",
+        "action": "Constrain system prompt to output only required intermediate data. Add max_tokens parameter.",
+        "occurrences": 6
+      }
+    ],
+    "execution_ids": [
+      "82",
+      "79",
+      "75"
+    ]
+  }
 }

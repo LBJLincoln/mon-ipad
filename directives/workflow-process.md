@@ -22,8 +22,14 @@ python3 eval/quick-test.py --questions 1 --pipeline <cible>
 
 ### Etape 2 : Test 5/5
 ```bash
-python3 eval/quick-test.py --questions 5 --pipeline <cible>
+# Pipeline specifique :
+python3 eval/quick-test.py --questions 5 --pipelines <cible>
+
+# Tous les pipelines (sequentiel dans le meme process, evite les 503) :
+python3 eval/quick-test.py --questions 5 --pipelines standard,graph,quantitative,orchestrator
 ```
+**IMPORTANT** : Ne JAMAIS lancer plusieurs instances de quick-test.py en parallele → 503 n8n overload.
+Utiliser `--pipelines p1,p2,p3` dans un seul appel (execution sequentielle interne).
 - **OBLIGATOIRE** : Analyse granulaire de CHAQUE execution avec **LES DEUX OUTILS**
 - Pour chaque question, executer **LES DEUX commandes** :
   ```bash
@@ -39,6 +45,12 @@ python3 eval/quick-test.py --questions 5 --pipeline <cible>
 
 ### Etape 3 : Test 10/10
 ```bash
+# Eval progressive avec tous les pipelines :
+python3 eval/run-eval-parallel.py --max 10 --reset --label "fix-description"
+# ↑ Lance standard/graph/quantitative en parallele, orchestrator apres.
+#   Questions sequentielles au sein de chaque pipeline → pas de 503.
+
+# OU eval iterative (plus lent mais plus detaille) :
 python3 eval/iterative-eval.py --label "fix-description" --questions 10
 ```
 - **OBLIGATOIRE** : Analyse granulaire node-par-node avec **LES DEUX OUTILS**
@@ -212,3 +224,31 @@ WORKFLOW_IDS = {
 4. **Verifier AVANT de sync** — 5/5 doit passer avant de commit
 5. **Commit + push apres chaque fix reussi** — garder les agents en sync
 6. **Si 3+ regressions → REVERT immediat**
+
+---
+
+## Strategie de Test Parallele (Team-Agentic)
+
+### Principe
+n8n Docker supporte ~2-3 requetes simultanees. Au-dela → 503 Service Unavailable.
+
+### Approche correcte par phase de test
+
+| Phase | Methode | Script |
+|-------|---------|--------|
+| **1/1 smoke** | UN pipeline a la fois | `quick-test.py --questions 1 --pipelines <cible>` |
+| **5/5 validation** | Tous pipelines, sequentiel | `quick-test.py --questions 5 --pipelines standard,graph,quantitative,orchestrator` |
+| **10/10 gate** | Parallele stagger | `run-eval-parallel.py --max 10 --reset --label "..."` |
+| **200q full** | Parallele stagger | `run-eval-parallel.py --reset --label "..."` |
+
+### Parallele stagger (run-eval-parallel.py)
+- Standard, Graph, Quantitative → threads paralleles (questions sequentielles par pipeline)
+- Orchestrator → apres les 3 autres (il appelle les sub-workflows)
+- Rate-limit backoff automatique (3s sur 429)
+- `--workers 1` pour forcer sequentiel si necessaire
+- `--delay 10` pour espacement entre questions si free models rate-limitent
+
+### Ce qui NE FONCTIONNE PAS
+- Lancer plusieurs instances de quick-test.py en parallele (bash background) → 503
+- Lancer `--pipelines standard --questions 5 &` en meme temps que `--pipelines graph --questions 5 &` → 503
+- Tester l'orchestrator en meme temps qu'un autre pipeline → contention sub-workflow
