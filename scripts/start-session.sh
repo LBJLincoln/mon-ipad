@@ -159,14 +159,18 @@ export HF_TOKEN="$(cfg "d['mcpServers']['huggingface']['env']['HF_TOKEN']")"
 hf_script="$(cfg "d['mcpServers']['huggingface']['args'][0]")"
 test_stdio "huggingface" "$VENV_PYTHON" "$hf_script"
 
-# --- 7. supabase ---
+# --- 7. supabase (HTTP/OAuth — tested via curl) ---
 echo -n "  supabase"
-supa_token="$(cfg "d['mcpServers']['supabase']['env'].get('SUPABASE_ACCESS_TOKEN','')")"
-if [[ -z "$supa_token" || "$supa_token" == "REPLACE_WITH_YOUR_PAT" ]]; then
-    warn "supabase" "PAT needed — supabase.com/dashboard/account/tokens"
+supa_url="$(cfg "d['mcpServers']['supabase'].get('url','')")"
+if [[ -n "$supa_url" ]]; then
+    supa_code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$supa_url" 2>&1) || supa_code="000"
+    if [[ "$supa_code" == "200" || "$supa_code" == "401" || "$supa_code" == "405" ]]; then
+        ok "supabase (HTTP $supa_code — OAuth via Claude)"
+    else
+        fail "supabase" "HTTP $supa_code at $supa_url"
+    fi
 else
-    export SUPABASE_ACCESS_TOKEN="$supa_token"
-    test_stdio "supabase" npx -y @supabase/mcp-server-supabase@latest --read-only --project-ref=ayqviqmxifzmhphiqfmj
+    warn "supabase" "no URL configured"
 fi
 
 
