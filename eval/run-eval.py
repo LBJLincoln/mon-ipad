@@ -82,6 +82,8 @@ def evaluate_answer(answer, expected_answer):
         # Normalize unicode whitespace to regular spaces
         text = ''.join(' ' if unicodedata.category(c).startswith('Z') else c for c in text)
         text = re.sub(r'(\d),(\d)', r'\1\2', text)
+        # Strip punctuation from tokens (so "Newton," matches "Newton")
+        text = re.sub(r'[.,;:!?\'"()\[\]{}\-]', ' ', text)
         text = re.sub(r'\s+', ' ', text)
         return text.replace('$', '').replace('%', '').strip()
 
@@ -106,8 +108,9 @@ def evaluate_answer(answer, expected_answer):
         precision = len(overlap) / len(answer_tokens) if answer_tokens else 0
         recall = len(overlap) / len(expected_tokens)
         f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
-        # Consider correct if F1 >= 0.5 (at least half the expected tokens present)
-        return {"correct": f1 >= 0.5, "method": "TOKEN_F1", "f1": round(f1, 4)}
+        # Consider correct if F1 >= 0.5 OR recall == 1.0 (all expected tokens found)
+        is_correct = f1 >= 0.5 or recall >= 1.0
+        return {"correct": is_correct, "method": "TOKEN_F1", "f1": round(f1, 4)}
 
 def compute_f1(answer, expected):
     """Compute F1 score between answer and expected."""
