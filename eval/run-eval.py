@@ -78,7 +78,11 @@ def evaluate_answer(answer, expected_answer):
 
     # Normalize numbers: remove commas, $, % for comparison
     def normalize(text):
+        import unicodedata
+        # Normalize unicode whitespace to regular spaces
+        text = ''.join(' ' if unicodedata.category(c).startswith('Z') else c for c in text)
         text = re.sub(r'(\d),(\d)', r'\1\2', text)
+        text = re.sub(r'\s+', ' ', text)
         return text.replace('$', '').replace('%', '').strip()
 
     norm_answer = normalize(answer_lower)

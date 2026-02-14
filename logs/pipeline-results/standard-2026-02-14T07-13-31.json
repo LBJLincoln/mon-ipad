@@ -1,0 +1,34 @@
+{
+  "pipeline": "standard",
+  "timestamp": "2026-02-14T07:13:31.530841Z",
+  "label": "debug",
+  "total_tested": 2,
+  "correct": 1,
+  "errors": 0,
+  "accuracy_pct": 50.0,
+  "avg_latency_ms": 43757,
+  "results": [
+    {
+      "id": "std-01",
+      "question": "In what country is Normandy located?",
+      "expected": "France",
+      "answer": "Normandy is located in France.",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 50240,
+      "method": "CONTAINS_MATCH",
+      "error": null
+    },
+    {
+      "id": "std-02",
+      "question": "When was the first season of SpongeBob SquarePants aired?",
+      "expected": "May 1, 1999",
+      "answer": "The first season of *SpongeBob SquarePants* premiered on May 1, 1999.",
+      "correct": false,
+      "f1": 0.2857,
+      "latency_ms": 37275,
+      "method": "TOKEN_F1",
+      "error": null
+    }
+  ]
+}

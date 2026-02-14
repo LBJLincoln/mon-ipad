@@ -1,12 +1,14 @@
 {
   "meta": {
-    "generated_at": "2026-02-14T06:56:43.288266Z",
+    "generated_at": "2026-02-14T07:13:31.038748Z",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
-    "total_unique_questions": 0,
-    "total_test_runs": 0,
-    "total_iterations": 0
+    "total_unique_questions": 2,
+    "total_test_runs": 2,
+    "total_iterations": 3,
+    "status": "running",
+    "current_session": "2026-02-14T07-11-06"
   },
   "reference_cloud_executions": {
     "note": "Executions reussies sur n8n Cloud (avant migration Docker). Servent de reference uniquement.",
@@ -64,59 +66,152 @@
   },
   "latest_per_pipeline": {},
   "all_executions": [],
-  "iterations": [],
-  "question_registry": {},
+  "iterations": [
+    {
+      "id": "iter-2026-02-14T06-59-59",
+      "number": 1,
+      "timestamp_start": "2026-02-14T06:59:59.044897Z",
+      "timestamp_end": null,
+      "label": "10q-standard-5/5-pass",
+      "description": "Dataset: phase-1, Parallel: standard, Max: 10, Reset: True",
+      "changes_applied": [],
+      "results_summary": {},
+      "total_tested": 0,
+      "total_correct": 0,
+      "overall_accuracy_pct": 0,
+      "questions": []
+    },
+    {
+      "id": "iter-2026-02-14T07-11-06",
+      "number": 2,
+      "timestamp_start": "2026-02-14T07:11:06.530645Z",
+      "timestamp_end": null,
+      "label": "10q-standard-post-fix",
+      "description": "Dataset: phase-1, Parallel: standard, Max: 10, Reset: True",
+      "changes_applied": [],
+      "results_summary": {},
+      "total_tested": 0,
+      "total_correct": 0,
+      "overall_accuracy_pct": 0,
+      "questions": []
+    },
+    {
+      "id": null,
+      "number": 3,
+      "timestamp_start": "2026-02-14T07:12:53.040548Z",
+      "timestamp_end": "2026-02-14T07:13:30.791920Z",
+      "label": "Iteration 3",
+      "description": "",
+      "changes_applied": [],
+      "results_summary": {
+        "standard": {
+          "tested": 2,
+          "correct": 1,
+          "errors": 0,
+          "accuracy_pct": 50.0,
+          "avg_latency_ms": 43757,
+          "p95_latency_ms": 50240,
+          "avg_f1": 0.5928
+        }
+      },
+      "total_tested": 2,
+      "total_correct": 1,
+      "overall_accuracy_pct": 50.0,
+      "questions": [
+        {
+          "id": "std-01",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 50240,
+          "answer": "Normandy is located in France.",
+          "expected": "France",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:12:53.040615Z"
+        },
+        {
+          "id": "std-02",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.2857,
+          "latency_ms": 37275,
+          "answer": "The first season of *SpongeBob SquarePants* premiered on May 1, 1999.",
+          "expected": "May 1, 1999",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:13:30.791890Z"
+        }
+      ]
+    }
+  ],
+  "question_registry": {
+    "std-01": {
+      "id": "std-01",
+      "question": "In what country is Normandy located?",
+      "expected": "France",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 50240,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Normandy is located in France.",
+          "timestamp": "2026-02-14T07:12:53.040696Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:12:53.040696Z",
+      "best_f1": 0.9,
+      "trend": "stable"
+    },
+    "std-02": {
+      "id": "std-02",
+      "question": "When was the first season of SpongeBob SquarePants aired?",
+      "expected": "May 1, 1999",
+      "expected_detail": "",
+      "rag_type": "standard",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.2857,
+          "latency_ms": 37275,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "The first season of *SpongeBob SquarePants* premiered on May 1, 1999.",
+          "timestamp": "2026-02-14T07:13:30.791990Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:13:30.791990Z",
+      "best_f1": 0.2857,
+      "trend": "stable"
+    }
+  },
   "quick_tests": [
-    {
-      "timestamp": "2026-02-14T05:54:41.917671Z",
-      "pipeline": "standard",
-      "query": "What is the capital of Japan?",
-      "status": "pass",
-      "latency_ms": 38248,
-      "response_preview": "The capital of Japan is Tokyo.",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-14T05:55:28.193117Z",
-      "pipeline": "graph",
-      "query": "What did Marie Curie win Nobel Prizes for?",
-      "status": "pass",
-      "latency_ms": 46258,
-      "response_preview": "Physics and Chemistry",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-14T05:56:01.426942Z",
-      "pipeline": "quantitative",
-      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
-      "status": "fail",
-      "latency_ms": 33011,
-      "response_preview": "Based on the SQL query results, TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,000.",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-14T05:56:47.180605Z",
-      "pipeline": "orchestrator",
-      "query": "What is the capital of Japan?",
-      "status": "error",
-      "latency_ms": 45745,
-      "response_preview": "",
-      "trigger": "manual",
-      "error": "Empty response"
-    },
-    {
-      "timestamp": "2026-02-14T06:00:28.682653Z",
-      "pipeline": "standard",
-      "query": "What is the capital of Japan?",
-      "status": "pass",
-      "latency_ms": 33497,
-      "response_preview": "The capital of Japan is Tokyo.",
-      "trigger": "manual",
-      "error": null
-    },
     {
       "timestamp": "2026-02-14T06:01:06.939979Z",
       "pipeline": "graph",
@@ -566,6 +661,90 @@
       "response_preview": "The capital city of Japan is Tokyo.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] musique (91%)\n[3] hotpotqa (83%)\n[4] triviaqa (67%)",
       "trigger": "orch-http-fix",
       "error": null
+    },
+    {
+      "timestamp": "2026-02-14T06:58:48.534498Z",
+      "pipeline": "orchestrator",
+      "query": "What is the capital of Japan?",
+      "status": "pass",
+      "latency_ms": 83999,
+      "response_preview": "The capital city of Japan is Tokyo.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] triviaqa (91%)\n[3] natural_questions (83%)",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T07:01:28.048793Z",
+      "pipeline": "orchestrator",
+      "query": "What was TechVision Inc's total revenue in 2023?",
+      "status": "fail",
+      "latency_ms": 158503,
+      "response_preview": "Based on the SQL query results, TechVision Inc's total revenue for 2023 is **not available** in the dataset. The query executed successfully but returned no rows, indicating that there is no matching ",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T07:04:33.043703Z",
+      "pipeline": "orchestrator",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "error",
+      "latency_ms": 0,
+      "response_preview": "",
+      "trigger": "5q-sequential",
+      "error": "timed out"
+    },
+    {
+      "timestamp": "2026-02-14T07:07:15.294239Z",
+      "pipeline": "orchestrator",
+      "query": "Who painted the Mona Lisa?",
+      "status": "pass",
+      "latency_ms": 158996,
+      "response_preview": "Leonardo da Vinci painted the Mona Lisa.\n\n---\n**Sources:**\n[1] natural_questions (100%)\n[2] triviaqa (91%)\n[3] wikihop (83%)\n[4] musique (75%)",
+      "trigger": "5q-sequential",
+      "error": null
+    },
+    {
+      "timestamp": "2026-02-14T07:09:57.275857Z",
+      "pipeline": "orchestrator",
+      "query": "What is the largest ocean?",
+      "status": "pass",
+      "latency_ms": 159515,
+      "response_preview": "The largest ocean by size is the Pacific Ocean.\n\n---\n**Sources:**\n[1] natural_questions (100%)\n[2] triviaqa (91%)\n[3] musique (83%)\n[4] squad (75%)\n[5] climatefever (67%)",
+      "trigger": "5q-sequential",
+      "error": null
+    }
+  ],
+  "execution_logs": [
+    {
+      "timestamp": "2026-02-14T07:12:53.047795Z",
+      "question_id": "std-01",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 50240,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Normandy is located in France.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:13:31.037477Z",
+      "question_id": "std-02",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.2857,
+      "latency_ms": 37275,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The first season of *SpongeBob SquarePants* premiered on May 1, 1999.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
     }
   ]
 }
