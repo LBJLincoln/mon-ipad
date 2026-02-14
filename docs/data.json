@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-02-14T06:36:14.501860Z",
+    "generated_at": "2026-02-14T06:56:43.288266Z",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
@@ -67,26 +67,6 @@
   "iterations": [],
   "question_registry": {},
   "quick_tests": [
-    {
-      "timestamp": "2026-02-14T05:48:49.931800Z",
-      "pipeline": "quantitative",
-      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
-      "status": "fail",
-      "latency_ms": 57243,
-      "response_preview": "Based on the SQL query results, TechVision Inc's total revenue in fiscal year 2023 was **$12,450,000**. The query successfully retrieved this figure by filtering for the company name, fiscal year 2023",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-02-14T05:49:02.924171Z",
-      "pipeline": "orchestrator",
-      "query": "What is the capital of Japan?",
-      "status": "error",
-      "latency_ms": 12741,
-      "response_preview": "",
-      "trigger": "manual",
-      "error": "Empty response"
-    },
     {
       "timestamp": "2026-02-14T05:54:41.917671Z",
       "pipeline": "standard",
@@ -566,6 +546,26 @@
       "response_preview": "",
       "trigger": "5q-sequential",
       "error": "Empty response"
+    },
+    {
+      "timestamp": "2026-02-14T06:49:01.979224Z",
+      "pipeline": "orchestrator",
+      "query": "What is the capital of Japan?",
+      "status": "error",
+      "latency_ms": 174275,
+      "response_preview": "",
+      "trigger": "orch-fix-test",
+      "error": "Empty response"
+    },
+    {
+      "timestamp": "2026-02-14T06:56:43.285456Z",
+      "pipeline": "orchestrator",
+      "query": "What is the capital of Japan?",
+      "status": "pass",
+      "latency_ms": 130487,
+      "response_preview": "The capital city of Japan is Tokyo.\n\n---\n**Sources:**\n[1] wikihop (100%)\n[2] musique (91%)\n[3] hotpotqa (83%)\n[4] triviaqa (67%)",
+      "trigger": "orch-http-fix",
+      "error": null
     }
   ]
 }
