@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-14T07:20:41.025391Z",
+  "generated_at": "2026-02-14T07:39:42.044023Z",
   "phase": {
     "current": 1,
     "name": "Baseline (200q)",
@@ -16,19 +16,19 @@
       "gap": -5.0
     },
     "graph": {
-      "accuracy": 0,
-      "tested": 0,
-      "correct": 0,
-      "errors": 0,
+      "accuracy": 30.0,
+      "tested": 10,
+      "correct": 3,
+      "errors": 1,
       "target": 70.0,
       "met": false,
-      "gap": -70.0
+      "gap": -40.0
     },
     "quantitative": {
-      "accuracy": 0,
-      "tested": 0,
+      "accuracy": 0.0,
+      "tested": 10,
       "correct": 0,
-      "errors": 0,
+      "errors": 1,
       "target": 85.0,
       "met": false,
       "gap": -85.0
@@ -44,34 +44,45 @@
     }
   },
   "overall": {
-    "accuracy": 80.0,
+    "accuracy": 36.7,
     "target": 75.0,
-    "met": true
+    "met": false
   },
   "blockers": [
     "standard: 80.0% < 85.0% (gap: -5.0pp)",
-    "graph: 0% < 70.0% (gap: -70.0pp)",
-    "quantitative: 0% < 85.0% (gap: -85.0pp)",
-    "orchestrator: 0% < 70.0% (gap: -70.0pp)"
+    "graph: 30.0% < 70.0% (gap: -40.0pp)",
+    "quantitative: 0.0% < 85.0% (gap: -85.0pp)",
+    "orchestrator: 0% < 70.0% (gap: -70.0pp)",
+    "overall: 36.7% < 75.0%"
   ],
-  "next_action": "Fix quantitative pipeline (0% vs 85.0% target, gap: -85.0pp)",
+  "next_action": "Fix quantitative pipeline (0.0% vs 85.0% target, gap: -85.0pp)",
   "last_iteration": {
     "id": null,
     "label": "Iteration 3",
     "timestamp": "2026-02-14T07:12:53.040548Z",
-    "total_tested": 12,
-    "overall_accuracy_pct": 75.0,
+    "total_tested": 32,
+    "overall_accuracy_pct": 37.5,
     "pipelines": {
       "standard": {
         "tested": 12,
         "correct": 9,
         "accuracy": 75.0
+      },
+      "graph": {
+        "tested": 10,
+        "correct": 3,
+        "accuracy": 30.0
+      },
+      "quantitative": {
+        "tested": 10,
+        "correct": 0,
+        "accuracy": 0.0
       }
     }
   },
   "totals": {
-    "unique_questions": 10,
-    "test_runs": 12,
+    "unique_questions": 30,
+    "test_runs": 32,
     "iterations": 3
   }
 }

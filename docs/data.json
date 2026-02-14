@@ -1,11 +1,11 @@
 {
   "meta": {
-    "generated_at": "2026-02-14T07:20:39.293214Z",
+    "generated_at": "2026-02-14T07:39:40.278824Z",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
-    "total_unique_questions": 10,
-    "total_test_runs": 12,
+    "total_unique_questions": 30,
+    "total_test_runs": 32,
     "total_iterations": 3,
     "status": "running",
     "current_session": "2026-02-14T07-11-06"
@@ -99,7 +99,7 @@
       "id": null,
       "number": 3,
       "timestamp_start": "2026-02-14T07:12:53.040548Z",
-      "timestamp_end": "2026-02-14T07:20:38.549348Z",
+      "timestamp_end": "2026-02-14T07:34:30.024331Z",
       "label": "Iteration 3",
       "description": "",
       "changes_applied": [],
@@ -112,11 +112,29 @@
           "avg_latency_ms": 33163,
           "p95_latency_ms": 50240,
           "avg_f1": 0.725
+        },
+        "graph": {
+          "tested": 10,
+          "correct": 3,
+          "errors": 1,
+          "accuracy_pct": 30.0,
+          "avg_latency_ms": 41701,
+          "p95_latency_ms": 60273,
+          "avg_f1": 0.5288
+        },
+        "quantitative": {
+          "tested": 10,
+          "correct": 0,
+          "errors": 1,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 33550,
+          "p95_latency_ms": 60740,
+          "avg_f1": 0
         }
       },
-      "total_tested": 12,
-      "total_correct": 9,
-      "overall_accuracy_pct": 75.0,
+      "total_tested": 32,
+      "total_correct": 12,
+      "overall_accuracy_pct": 37.5,
       "questions": [
         {
           "id": "std-01",
@@ -273,6 +291,266 @@
           "error": null,
           "error_type": null,
           "timestamp": "2026-02-14T07:20:38.549329Z"
+        },
+        {
+          "id": "graph-01",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.5714,
+          "latency_ms": 38490,
+          "answer": "Marie Curie won two Nobel Prizes in different sciences.",
+          "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry, connected to Nobel Foundation",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:21:42.286283Z"
+        },
+        {
+          "id": "graph-02",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 52991,
+          "answer": "Albert Einstein",
+          "expected": "Albert Einstein",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:22:36.286731Z"
+        },
+        {
+          "id": "graph-03",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60273,
+          "answer": "",
+          "expected": "Penicillin",
+          "match_type": "NO_ANSWER",
+          "error": "timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-14T07:23:38.022729Z"
+        },
+        {
+          "id": "graph-04",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 35001,
+          "answer": "Bacterial infections",
+          "expected": "Tuberculosis",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:24:13.047448Z"
+        },
+        {
+          "id": "graph-05",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.2,
+          "latency_ms": 36251,
+          "answer": "Sherborne School, King's College Cambridge, Princeton University",
+          "expected": "University of Cambridge",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:24:49.791116Z"
+        },
+        {
+          "id": "graph-06",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.1538,
+          "latency_ms": 35244,
+          "answer": "They were rival inventors in the \"War of the Currents\" over AC vs DC electrical systems.",
+          "expected": "They are connected, both worked on electricity in New York City",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:25:25.290983Z"
+        },
+        {
+          "id": "graph-07",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.4762,
+          "latency_ms": 33995,
+          "answer": "Isaac Newton, Charles Darwin, James Clerk Maxwell, Ernest Rutherford, Alan Turing, Stephen Hawking, Rosalind Franklin",
+          "expected": "Isaac Newton, Charles Darwin, Alan Turing",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:26:01.776859Z"
+        },
+        {
+          "id": "graph-08",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.3,
+          "latency_ms": 37018,
+          "answer": "The World Wide Web is a global information system created at CERN in Switzerland.",
+          "expected": "Created at CERN, extends the Internet",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:26:39.044584Z"
+        },
+        {
+          "id": "graph-09",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 54997,
+          "answer": "Tech giants, financial institutions, healthcare organizations, automotive industry, retail and e-commerce companies.",
+          "expected": "Apple Inc, Google, Microsoft",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:27:34.533298Z"
+        },
+        {
+          "id": "graph-10",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 32757,
+          "answer": "Paris",
+          "expected": "Paris",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:28:07.550226Z"
+        },
+        {
+          "id": "quant-01",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 31261,
+          "answer": "Based on the SQL query results, TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,000 (1.25 billion dollars). The query successfully retrieved this information by filtering for TechVision Inc in the financials table for fiscal year 2023 with period set to 'FY' to get the annual total.",
+          "expected": "6745000000",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:29:18.548068Z"
+        },
+        {
+          "id": "quant-02",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 20009,
+          "answer": "Based on the SQL query results, GreenEnergy Corp's net income in 2023 was $1,250,000.",
+          "expected": "664400000",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:29:39.033138Z"
+        },
+        {
+          "id": "quant-03",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 33741,
+          "answer": "The revenue of HealthPlus Labs in Q4 2023 was **$12,500,000**.",
+          "expected": "322560000",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:30:13.045533Z"
+        },
+        {
+          "id": "quant-04",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 48508,
+          "answer": "The SQL query executed successfully but returned only 1 row of results, which is insufficient to compare the gross profit of both TechVision Inc and GreenEnergy Corp. This suggests that either:\n\n1. Only one of the companies has financial data for FY 2023 in the database\n2. The company names in the database don't exactly match the search patterns used\n\nTo get a proper comparison, we would need to see data for both companies. The query is correctly structured to find both companies' gross profit f",
+          "expected": "TechVision: 4586600000, GreenEnergy: 1715000000",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:31:02.298794Z"
+        },
+        {
+          "id": "quant-05",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 20505,
+          "answer": "TechVision Inc's R&D spending in 2023 was $45,000,000.",
+          "expected": "1349000000",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:31:24.022259Z"
+        },
+        {
+          "id": "quant-06",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 25996,
+          "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was $2.15.",
+          "expected": "6.71",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:31:52.547328Z"
+        },
+        {
+          "id": "quant-07",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 31994,
+          "answer": "Based on the SQL query results, TechVision Inc had **$0** in cash and equivalents at the end of 2023.",
+          "expected": "2200000000",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:32:25.029947Z"
+        },
+        {
+          "id": "quant-08",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60740,
+          "answer": "",
+          "expected": "4460000000",
+          "match_type": "NO_ANSWER",
+          "error": "timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-14T07:33:26.285017Z"
+        },
+        {
+          "id": "quant-09",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 39748,
+          "answer": "The SQL query executed successfully and returned 1 row of results. The total stockholders equity for HealthPlus Labs at the end of 2023 was **$2,450,000,000**.",
+          "expected": "795000000",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:34:06.540650Z"
+        },
+        {
+          "id": "quant-10",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 23000,
+          "answer": "Based on the SQL query results, TechVision Inc's operating income in Q3 2023 was not provided in the response. The query executed successfully but the actual operating income value is missing from the results. To get the specific operating income figure, you would need to run the query again or check if there are any data availability issues with the financials table for TechVision Inc in Q3 2023.",
+          "expected": "516525000",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-14T07:34:30.024315Z"
         }
       ]
     }
@@ -611,19 +889,629 @@
       "last_tested": "2026-02-14T07:20:38.549476Z",
       "best_f1": 0.9,
       "trend": "stable"
+    },
+    "graph-01": {
+      "id": "graph-01",
+      "question": "What is the relationship between Marie Curie and the Nobel Prize?",
+      "expected": "Marie Curie won Nobel Prizes in Physics and Chemistry, connected to Nobel Foundation",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 0.5714,
+          "latency_ms": 38490,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "Marie Curie won two Nobel Prizes in different sciences.",
+          "timestamp": "2026-02-14T07:21:42.286420Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:21:42.286420Z",
+      "best_f1": 0.5714,
+      "trend": "stable"
+    },
+    "graph-02": {
+      "id": "graph-02",
+      "question": "Who created the Theory of Relativity?",
+      "expected": "Albert Einstein",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 52991,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Albert Einstein",
+          "timestamp": "2026-02-14T07:22:36.300914Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:22:36.300914Z",
+      "best_f1": 1.0,
+      "trend": "stable"
+    },
+    "graph-03": {
+      "id": "graph-03",
+      "question": "What did Alexander Fleming discover?",
+      "expected": "Penicillin",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60273,
+          "match_type": "NO_ANSWER",
+          "error": "timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-14T07:23:38.023685Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "error",
+      "last_tested": "2026-02-14T07:23:38.023685Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-04": {
+      "id": "graph-04",
+      "question": "Which disease does Penicillin protect against?",
+      "expected": "Tuberculosis",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 35001,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Bacterial infections",
+          "timestamp": "2026-02-14T07:24:13.048001Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:24:13.048001Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-05": {
+      "id": "graph-05",
+      "question": "Where did Alan Turing study?",
+      "expected": "University of Cambridge",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.2,
+          "latency_ms": 36251,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "Sherborne School, King's College Cambridge, Princeton University",
+          "timestamp": "2026-02-14T07:24:49.791223Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:24:49.791223Z",
+      "best_f1": 0.2,
+      "trend": "stable"
+    },
+    "graph-06": {
+      "id": "graph-06",
+      "question": "What is the connection between Nikola Tesla and Thomas Edison?",
+      "expected": "They are connected, both worked on electricity in New York City",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.1538,
+          "latency_ms": 35244,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "They were rival inventors in the \"War of the Currents\" over AC vs DC electrical systems.",
+          "timestamp": "2026-02-14T07:25:25.291089Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:25:25.291089Z",
+      "best_f1": 0.1538,
+      "trend": "stable"
+    },
+    "graph-07": {
+      "id": "graph-07",
+      "question": "Which scientists are connected to the University of Cambridge?",
+      "expected": "Isaac Newton, Charles Darwin, Alan Turing",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.4762,
+          "latency_ms": 33995,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "Isaac Newton, Charles Darwin, James Clerk Maxwell, Ernest Rutherford, Alan Turing, Stephen Hawking, Rosalind Franklin",
+          "timestamp": "2026-02-14T07:26:01.776972Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:26:01.776972Z",
+      "best_f1": 0.4762,
+      "trend": "stable"
+    },
+    "graph-08": {
+      "id": "graph-08",
+      "question": "What is the World Wide Web and where was it created?",
+      "expected": "Created at CERN, extends the Internet",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.3,
+          "latency_ms": 37018,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "The World Wide Web is a global information system created at CERN in Switzerland.",
+          "timestamp": "2026-02-14T07:26:39.044705Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:26:39.044705Z",
+      "best_f1": 0.3,
+      "trend": "stable"
+    },
+    "graph-09": {
+      "id": "graph-09",
+      "question": "Which organizations use Artificial Intelligence?",
+      "expected": "Apple Inc, Google, Microsoft",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 54997,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Tech giants, financial institutions, healthcare organizations, automotive industry, retail and e-commerce companies.",
+          "timestamp": "2026-02-14T07:27:34.535644Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:27:34.535644Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "graph-10": {
+      "id": "graph-10",
+      "question": "What city is the Louvre Museum located in?",
+      "expected": "Paris",
+      "expected_detail": "",
+      "rag_type": "graph",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 32757,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Paris",
+          "timestamp": "2026-02-14T07:28:07.550380Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-02-14T07:28:07.550380Z",
+      "best_f1": 1.0,
+      "trend": "stable"
+    },
+    "quant-01": {
+      "id": "quant-01",
+      "question": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "expected": "6745000000",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 31261,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Based on the SQL query results, TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,000 (1.25 billion dollars). The query successfully retrieved this information by filtering for TechVision Inc in the financials table for fiscal year 2023 with period set to 'FY' to get the annual total.",
+          "timestamp": "2026-02-14T07:29:18.549153Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:29:18.549153Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "quant-02": {
+      "id": "quant-02",
+      "question": "What was GreenEnergy Corp's net income in 2023?",
+      "expected": "664400000",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 20009,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Based on the SQL query results, GreenEnergy Corp's net income in 2023 was $1,250,000.",
+          "timestamp": "2026-02-14T07:29:39.033264Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:29:39.033264Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "quant-03": {
+      "id": "quant-03",
+      "question": "What was the revenue of HealthPlus Labs in Q4 2023?",
+      "expected": "322560000",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 33741,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The revenue of HealthPlus Labs in Q4 2023 was **$12,500,000**.",
+          "timestamp": "2026-02-14T07:30:13.048959Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:30:13.048959Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "quant-04": {
+      "id": "quant-04",
+      "question": "Compare the gross profit of TechVision Inc and GreenEnergy Corp in FY 2023",
+      "expected": "TechVision: 4586600000, GreenEnergy: 1715000000",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 48508,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The SQL query executed successfully but returned only 1 row of results, which is insufficient to compare the gross profit of both TechVision Inc and GreenEnergy Corp. This suggests that either:\n\n1. Only one of the companies has financial data for FY 2023 in the database\n2. The company names in the database don't exactly match the search patterns used\n\nTo get a proper comparison, we would need to see data for both companies. The query is correctly structured to find both companies' gross profit f",
+          "timestamp": "2026-02-14T07:31:02.520648Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:31:02.520648Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "quant-05": {
+      "id": "quant-05",
+      "question": "What was TechVision Inc's R&D spending in 2023?",
+      "expected": "1349000000",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 20505,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "TechVision Inc's R&D spending in 2023 was $45,000,000.",
+          "timestamp": "2026-02-14T07:31:24.024443Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:31:24.024443Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "quant-06": {
+      "id": "quant-06",
+      "question": "What was the diluted EPS for HealthPlus Labs in fiscal year 2023?",
+      "expected": "6.71",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 25996,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was $2.15.",
+          "timestamp": "2026-02-14T07:31:52.547468Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:31:52.547468Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "quant-07": {
+      "id": "quant-07",
+      "question": "How much cash and equivalents did TechVision Inc have at end of 2023?",
+      "expected": "2200000000",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 31994,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Based on the SQL query results, TechVision Inc had **$0** in cash and equivalents at the end of 2023.",
+          "timestamp": "2026-02-14T07:32:25.032805Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:32:25.032805Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "quant-08": {
+      "id": "quant-08",
+      "question": "What were GreenEnergy Corp's total assets at the end of fiscal year 2023?",
+      "expected": "4460000000",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 60740,
+          "match_type": "NO_ANSWER",
+          "error": "timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-14T07:33:26.287583Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "error",
+      "last_tested": "2026-02-14T07:33:26.287583Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "quant-09": {
+      "id": "quant-09",
+      "question": "What was the total stockholders equity for HealthPlus Labs at end of 2023?",
+      "expected": "795000000",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 39748,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The SQL query executed successfully and returned 1 row of results. The total stockholders equity for HealthPlus Labs at the end of 2023 was **$2,450,000,000**.",
+          "timestamp": "2026-02-14T07:34:06.540846Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:34:06.540846Z",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "quant-10": {
+      "id": "quant-10",
+      "question": "What was TechVision Inc's operating income in Q3 2023?",
+      "expected": "516525000",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": null,
+          "iteration_number": 3,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 23000,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Based on the SQL query results, TechVision Inc's operating income in Q3 2023 was not provided in the response. The query executed successfully but the actual operating income value is missing from the results. To get the specific operating income figure, you would need to run the query again or check if there are any data availability issues with the financials table for TechVision Inc in Q3 2023.",
+          "timestamp": "2026-02-14T07:34:30.026002Z"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-02-14T07:34:30.026002Z",
+      "best_f1": 0.0,
+      "trend": "stable"
     }
   },
   "quick_tests": [
-    {
-      "timestamp": "2026-02-14T06:01:06.939979Z",
-      "pipeline": "graph",
-      "query": "What did Marie Curie win Nobel Prizes for?",
-      "status": "pass",
-      "latency_ms": 38024,
-      "response_preview": "Physics in 1903 for radioactivity research, Chemistry in 1911 for discovering radium and polonium.",
-      "trigger": "manual",
-      "error": null
-    },
     {
       "timestamp": "2026-02-14T06:02:08.431859Z",
       "pipeline": "quantitative",
@@ -1113,6 +2001,16 @@
       "response_preview": "The largest ocean by size is the Pacific Ocean.\n\n---\n**Sources:**\n[1] natural_questions (100%)\n[2] triviaqa (91%)\n[3] musique (83%)\n[4] squad (75%)\n[5] climatefever (67%)",
       "trigger": "5q-sequential",
       "error": null
+    },
+    {
+      "timestamp": "2026-02-14T07:39:40.277997Z",
+      "pipeline": "quantitative",
+      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "status": "pass",
+      "latency_ms": 31767,
+      "response_preview": "TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,000.",
+      "trigger": "schema-fix-test",
+      "error": null
     }
   ],
   "execution_logs": [
@@ -1306,6 +2204,356 @@
       "pipeline_details_summary": {
         "topK": null,
         "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:21:42.525174Z",
+      "question_id": "graph-01",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.5714,
+      "latency_ms": 38490,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Marie Curie won two Nobel Prizes in different sciences.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:22:37.283808Z",
+      "question_id": "graph-02",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 52991,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Albert Einstein",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:23:38.031584Z",
+      "question_id": "graph-03",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60273,
+      "error_type": "TIMEOUT",
+      "error_preview": "timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-14T07:24:13.293915Z",
+      "question_id": "graph-04",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 35001,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Bacterial infections",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:24:50.025528Z",
+      "question_id": "graph-05",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.2,
+      "latency_ms": 36251,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Sherborne School, King's College Cambridge, Princeton University",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:25:27.536888Z",
+      "question_id": "graph-06",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.1538,
+      "latency_ms": 35244,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "They were rival inventors in the \"War of the Currents\" over AC vs DC electrical systems.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:26:01.782805Z",
+      "question_id": "graph-07",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.4762,
+      "latency_ms": 33995,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Isaac Newton, Charles Darwin, James Clerk Maxwell, Ernest Rutherford, Alan Turing, Stephen Hawking, ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:26:39.279707Z",
+      "question_id": "graph-08",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.3,
+      "latency_ms": 37018,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The World Wide Web is a global information system created at CERN in Switzerland.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:27:34.551021Z",
+      "question_id": "graph-09",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 54997,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Tech giants, financial institutions, healthcare organizations, automotive industry, retail and e-com",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:28:07.793057Z",
+      "question_id": "graph-10",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 32757,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Paris",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:29:18.793578Z",
+      "question_id": "quant-01",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 31261,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Based on the SQL query results, TechVision Inc's total revenue in fiscal year 2023 was $1,250,000,00",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:29:39.270517Z",
+      "question_id": "quant-02",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 20009,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Based on the SQL query results, GreenEnergy Corp's net income in 2023 was $1,250,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:30:13.288561Z",
+      "question_id": "quant-03",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 33741,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The revenue of HealthPlus Labs in Q4 2023 was **$12,500,000**.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:31:03.049547Z",
+      "question_id": "quant-04",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 48508,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The SQL query executed successfully but returned only 1 row of results, which is insufficient to com",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:31:24.275232Z",
+      "question_id": "quant-05",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 20505,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "TechVision Inc's R&D spending in 2023 was $45,000,000.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:31:52.789385Z",
+      "question_id": "quant-06",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 25996,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The diluted EPS for HealthPlus Labs in fiscal year 2023 was $2.15.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:32:25.044824Z",
+      "question_id": "quant-07",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 31994,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Based on the SQL query results, TechVision Inc had **$0** in cash and equivalents at the end of 2023",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:33:26.522564Z",
+      "question_id": "quant-08",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 60740,
+      "error_type": "TIMEOUT",
+      "error_preview": "timed out",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-14T07:34:06.780782Z",
+      "question_id": "quant-09",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 39748,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The SQL query executed successfully and returned 1 row of results. The total stockholders equity for",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-14T07:34:30.033886Z",
+      "question_id": "quant-10",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 23000,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Based on the SQL query results, TechVision Inc's operating income in Q3 2023 was not provided in the",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
       }
     }
   ]
