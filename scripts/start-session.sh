@@ -129,14 +129,12 @@ export NEO4J_DATABASE="$(cfg "d['mcpServers']['neo4j']['env']['NEO4J_DATABASE']"
 export NEO4J_READ_ONLY="true" NEO4J_TELEMETRY="false" NEO4J_TRANSPORT_MODE="stdio"
 test_stdio "neo4j" neo4j-mcp
 
-# --- 3. pinecone (npx — run in background, slow) ---
-echo -n "  pinecone (background)"
-(
-    export PINECONE_API_KEY="$(cfg "d['mcpServers']['pinecone']['env']['PINECONE_API_KEY']")"
-    timeout 40 python3 "$MCP_TESTER" --timeout 35 npx -y @pinecone-database/mcp > "$tmpdir/pinecone.json" 2>/dev/null
-) &
-pid_pinecone=$!
-echo -e " ${Y}...${N}"
+# --- 3. pinecone (node direct) ---
+echo -n "  pinecone"
+export PINECONE_API_KEY="$(cfg "d['mcpServers']['pinecone']['env']['PINECONE_API_KEY']")"
+pc_cmd="$(cfg "d['mcpServers']['pinecone']['command']")"
+pc_args="$(cfg "d['mcpServers']['pinecone']['args'][0]")"
+test_stdio "pinecone" "$pc_cmd" "$pc_args"
 
 # --- 4. jina-embeddings (python custom) ---
 echo -n "  jina-embeddings"
@@ -171,17 +169,6 @@ else
     test_stdio "supabase" npx -y @supabase/mcp-server-supabase@latest --read-only --project-ref=ayqviqmxifzmhphiqfmj
 fi
 
-# --- Wait for pinecone ---
-echo -n "  pinecone (result)"
-wait "$pid_pinecone" 2>/dev/null || true
-if [[ -s "$tmpdir/pinecone.json" ]]; then
-    pc_result=$(cat "$tmpdir/pinecone.json")
-    pc_ok=$(echo "$pc_result" | python3 -c "import sys,json; print(json.load(sys.stdin).get('ok',False))" 2>/dev/null)
-    pc_tc=$(echo "$pc_result" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tools_count',0))" 2>/dev/null)
-    [[ "$pc_ok" == "True" ]] && ok "pinecone ($pc_tc tools)" || fail "pinecone" "$(echo "$pc_result" | python3 -c "import sys,json; print(json.load(sys.stdin).get('error','unknown'))" 2>/dev/null)"
-else
-    fail "pinecone" "no output (timeout?)"
-fi
 
 # ── [3/4] External services ──────────────────────────────────────────────────
 echo ""
