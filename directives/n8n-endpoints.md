@@ -2,7 +2,7 @@
 
 > **Ce fichier est la reference unique** pour les scripts Python de test.
 > Les scripts doivent s'y referer pour formater les requetes et utiliser les bons points d'entree.
-> Derniere mise a jour : 2026-02-13 (session reorganisation)
+> Derniere mise a jour : 2026-02-14 (session Docker fixes + workflow IDs corriges)
 
 ---
 
@@ -192,6 +192,13 @@ n8n_api("POST", f"/api/v1/workflows/{WF_ID}/activate")
 | Timeout webhook (30s par défaut) | Configurer `responseTimeoutMs` dans le nœud Webhook |
 | Variables n8n pas visibles dans le code | Utiliser `$vars.NOM_VARIABLE` dans les expressions |
 | Exécution sans données | Ajouter `?includeData=true` au GET execution |
+| `$env.X` bloqué en Docker self-hosted | Remplacer par valeurs hardcodées dans les nœuds |
+| Credentials n8n inexistantes après migration | Mettre `authentication: "none"` + headers manuels |
+| `require('crypto')` bloqué dans Code nodes | Utiliser fonction hash custom (bitwise) |
+| Pinecone dim 1024 (Cohere) vs 1536 (ancien) | Utiliser index `sota-rag-cohere-1024` |
+| Cohere Reranker v2 échoue | Utiliser `https://api.cohere.ai/v1/rerank` |
+| Tests parallèles → 503 n8n overload | Toujours tester les pipelines séquentiellement |
+| Free models OpenRouter changent souvent | Vérifier disponibilité avant de fixer le modèle |
 
 ---
 
@@ -200,10 +207,10 @@ n8n_api("POST", f"/api/v1/workflows/{WF_ID}/activate")
 ### IDs actifs (n8n Docker sur 34.136.180.66:5678)
 | Pipeline | Workflow ID | Verifie API |
 |----------|-------------|-------------|
-| Standard | `M12n4cmiVBoBusUe` | Oui (2026-02-13) |
-| Graph | `Vxm4TDdOLdb7j3Jy` | Oui (2026-02-13) |
-| Quantitative | `nQnAJyT06NTbEQ3y` | Oui (2026-02-13) |
-| Orchestrator | `P1no6VZkNtnRdlBi` | Oui (2026-02-13) |
+| Standard | `TmgyRP20N4JFd9CB` | Oui (2026-02-14) |
+| Graph | `6257AfT1l4FMC6lY` | Oui (2026-02-14) |
+| Quantitative | `e465W7V9Q8uK6zJE` | Oui (2026-02-14) |
+| Orchestrator | `aGsYnJY9nNCaTM82` | Oui (2026-02-14) |
 
 ### IDs anciens (n8n Cloud — OBSOLETE, ne plus utiliser)
 | Pipeline | Workflow ID | Notes |

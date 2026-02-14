@@ -103,23 +103,49 @@ Voir `utilisation/commands.md` pour la liste exhaustive avec tous les arguments.
 ### 3.1 Apres chaque test
 - Logs d'execution → `logs/` (auto-genere par les scripts)
 - Diagnostics → `logs/diagnostics/`
+- Copier les resultats dans `logs/tests/<Nq>/` selon le nombre de questions
 
 ### 3.2 Apres chaque fix reussi (5/5 passe)
 - Sync workflow : `python3 n8n/sync.py`
+- Copier workflow actuel → `snapshot/current/`
 - Regenerer status : `python3 eval/generate_status.py`
-- Commit + push
+- **Commit + push** (IMMEDIATEMENT, ne pas attendre la fin de session)
 
-### 3.3 En fin de session (OBLIGATOIRE)
-Mettre a jour `directives/status.md` avec :
-1. **Liste exhaustive** de TOUS les fichiers modifies ou crees durant cette session uniquement
-2. **Analyse concrete** de l'etat d'avancement (metriques, gaps, blockers)
-3. **Prochaine action** recommandee
+### 3.3 Pushes reguliers (OBLIGATOIRE)
+- **Push apres chaque fix reussi** (5/5 passe)
+- **Push apres chaque milestone** (pipeline passe 10/10)
+- **Push toutes les 30 minutes** minimum si des modifications existent
+- **Push avant toute operation risquee** (modification workflow, changement de modele)
 
-### 3.4 Outputs dates (archives)
-Tout output de session non-structurel → `outputs/` avec prefixe `JJ-mmm-description.ext`
-Exemple : `13-fev-standard-debug-analysis.md`
+### 3.4 Comparaison avec les references (OBLIGATOIRE)
+Toujours comparer les tests actuels avec les **dernieres executions confirmees comme reussies** :
+- Les references sont dans `snapshot/good/` (workflows + executions JSON)
+- Utiliser `scripts/analyze_n8n_executions.py --execution-id <ID>` pour comparer les donnees brutes
+- Utiliser `eval/node-analyzer.py --execution-id <ID>` pour comparer les diagnostics
+- NE remplacer les references dans `snapshot/good/` QUE si les nouveaux tests sont confirmes superieurs
 
-### 3.5 Reinitialisation data.json (chaque session)
+### 3.5 En fin de session — Checklist OBLIGATOIRE (dans cet ordre)
+
+#### Etape 1 — Outputs obligatoires (toujours)
+1. **`technicals/`** — Mettre a jour architecture.md, stack.md si changements decouverts
+2. **`utilisation/commands.md`** — Ajouter commandes echouees, mettre a jour commandes
+3. **`snapshot/current/`** — Sync des workflows actuels depuis n8n
+4. **`docs/data.json`** — Regenerer avec les resultats de la session
+5. **`directives/status.md`** — EN DERNIER : resume session, fichiers modifies, prochaine action
+
+#### Etape 2 — Outputs conditionnels (si necessaire)
+6. **`directives/n8n-endpoints.md`** — Si workflow IDs ou endpoints ont change
+7. **`n8n/live/`** — Sync via `python3 n8n/sync.py`
+8. **`snapshot/good/`** — Remplacer les references UNIQUEMENT si nouveaux tests superieurs
+9. **`eval/`** — Si scripts de test ont ete modifies
+
+#### Etape 3 — Commit final
+```bash
+git add -A && git commit -m "session: <date> - <resume>"
+git push
+```
+
+### 3.6 Reinitialisation data.json (chaque session)
 ```bash
 python3 scripts/analyze_n8n_executions.py --pipeline standard --limit 1
 python3 scripts/analyze_n8n_executions.py --pipeline graph --limit 1
@@ -128,7 +154,25 @@ python3 scripts/analyze_n8n_executions.py --pipeline orchestrator --limit 1
 ```
 Puis integrer dans `docs/data.json`.
 
+### 3.7 Outputs dates (archives)
+Tout output de session non-structurel → `outputs/` avec prefixe `JJ-mmm-description.ext`
+Exemple : `14-fev-docker-fixes-analysis.md`
+
 ---
+
+## Processus Team-Agentic (OBLIGATOIRE)
+
+Toutes les taches complexes doivent etre executees en mode **team-agentic** :
+
+1. **Parallelisation** : Lancer les taches independantes en parallele via le Task tool
+   - Exemple : tests de 4 pipelines → 4 agents paralleles (sauf si n8n overload → sequentiel)
+   - Exemple : restructuration repo + tests → agents paralleles
+2. **Delegation specialisee** : Chaque sous-tache a un agent dedie
+   - Agent d'analyse : lit les executions, identifie les patterns
+   - Agent de fix : modifie le workflow via API REST
+   - Agent de test : execute les tests et reporte
+3. **Coordination** : L'agent principal coordonne, ne duplique pas le travail des sous-agents
+4. **Reference-based testing** : Toujours comparer avec `snapshot/good/` avant de conclure
 
 ## Regles d'Or
 
@@ -136,12 +180,15 @@ Puis integrer dans `docs/data.json`.
 2. **n8n = source de verite** — editer dans n8n, sync vers GitHub
 3. **Double analyse AVANT chaque fix** — node-analyzer.py + analyze_n8n_executions.py
 4. **Verifier AVANT de sync** — 5/5 minimum
-5. **Commit + push apres chaque fix reussi**
+5. **Commit + push apres chaque fix reussi** (ne pas attendre la fin de session)
 6. **`docs/status.json` est auto-genere** — ne pas editer manuellement
 7. **Si 3+ regressions → REVERT immediat**
 8. **Mettre a jour `technicals/` apres chaque decouverte technique**
-9. **Mettre a jour `directives/status.md` en fin de session**
+9. **Mettre a jour `directives/status.md` en fin de session** (EN DERNIER)
 10. **Toujours travailler depuis `main`**
+11. **Push reguliers** — toutes les 30 minutes minimum
+12. **Tests sequentiels** — ne JAMAIS tester plusieurs pipelines en parallele (503 overload)
+13. **Comparer avec les references** — toujours partir des `snapshot/good/` pour evaluer
 
 ---
 
@@ -175,8 +222,8 @@ N8N_HOST="http://34.136.180.66:5678"
 | 8 | `site/` | Reference website (copies pour vision complete) |
 | 9 | `datasets/` | Donnees de test (phase-1, phase-2) |
 | 10 | `db/` | Database (migrations, populate, readiness) |
-| 11 | `snapshot/` | Snapshots historiques (workflows + DB) |
-| 12 | `logs/` | Logs d'execution bruts |
+| 11 | `snapshot/` | Snapshots : `good/` (references OK), `current/` (session), `workflows/`, `db/` |
+| 12 | `logs/` | Logs d'execution + `tests/1q/`, `tests/5q/`, `tests/10q/`, `tests/20q/` |
 | 13 | `outputs/` | Archives de sessions datees |
 | 14 | `docs/` | Dashboard (data.json, status.json, index.html) |
 

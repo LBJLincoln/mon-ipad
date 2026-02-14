@@ -38,10 +38,10 @@ Details complets : `technicals/phases-overview.md`
 
 | Pipeline | Docker ID | Verifie |
 |----------|-----------|---------|
-| **Standard** | `M12n4cmiVBoBusUe` | 2026-02-13 via API |
-| **Graph** | `Vxm4TDdOLdb7j3Jy` | 2026-02-13 via API |
-| **Quantitative** | `nQnAJyT06NTbEQ3y` | 2026-02-13 via API |
-| **Orchestrator** | `P1no6VZkNtnRdlBi` | 2026-02-13 via API |
+| **Standard** | `TmgyRP20N4JFd9CB` | 2026-02-14 via API |
+| **Graph** | `6257AfT1l4FMC6lY` | 2026-02-14 via API |
+| **Quantitative** | `e465W7V9Q8uK6zJE` | 2026-02-14 via API |
+| **Orchestrator** | `aGsYnJY9nNCaTM82` | 2026-02-14 via API |
 
 ### Trace Cloud (anciens IDs — OBSOLETE, reference uniquement)
 

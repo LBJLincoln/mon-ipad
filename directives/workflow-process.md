@@ -195,10 +195,10 @@ python3 scripts/analyze_n8n_executions.py --pipeline <cible> --limit 5
 ### Workflow IDs Docker (source de verite)
 ```python
 WORKFLOW_IDS = {
-    "standard": "M12n4cmiVBoBusUe",
-    "graph": "Vxm4TDdOLdb7j3Jy",
-    "quantitative": "nQnAJyT06NTbEQ3y",
-    "orchestrator": "P1no6VZkNtnRdlBi",
+    "standard": "TmgyRP20N4JFd9CB",
+    "graph": "6257AfT1l4FMC6lY",
+    "quantitative": "e465W7V9Q8uK6zJE",
+    "orchestrator": "aGsYnJY9nNCaTM82",
 }
 ```
 

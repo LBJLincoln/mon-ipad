@@ -90,3 +90,42 @@ python3 n8n/sync.py
 | DB analyzer | `db/analyze_db.py` | Analyse BDD |
 | Pinecone dims | `scripts/verify_pinecone_dims.py` | Verifier dimensions |
 | Single question | `scripts/test_single_question.py` | Test unitaire |
+
+---
+
+## Commandes echouees — NE PAS reproduire
+
+| Commande | Erreur | Solution |
+|----------|--------|----------|
+| `python3 eval/quick-test.py --pipelines standard,graph,quantitative,orchestrator --questions 5` | 503 Service Unavailable apres 2-3 questions | Tester UN pipeline a la fois, sequentiellement |
+| `$env.OPENROUTER_API_KEY` dans n8n Code nodes | Access denied en Docker self-hosted | Hardcoder les valeurs directement |
+| `require('crypto')` dans n8n Code nodes | Module bloque par securite | Utiliser fonction hash custom |
+| `meta-llama/llama-3.3-70b-instruct:free` via OpenRouter | 429 — plus dans le free tier | Utiliser `arcee-ai/trinity-large-preview:free` |
+| `google/gemma-3-27b-it:free` via OpenRouter | 429 — plus dans le free tier | Utiliser `nvidia/nemotron-3-nano-30b-a3b:free` |
+| Pinecone avec credential `httpHeaderAuth` ID `3DEiHDwB09D65919` | Credential inexistante en Docker | `authentication: "none"` + header `Api-Key` manuel |
+| `https://api.cohere.ai/v2/rerank` | Erreur 404/400 | Utiliser `/v1/rerank` |
+
+---
+
+## Modeles LLM gratuits disponibles (fevrier 2026)
+
+| Modele | Usage recommande |
+|--------|-----------------|
+| `arcee-ai/trinity-large-preview:free` | HyDE, decomposition, general |
+| `nvidia/nemotron-3-nano-30b-a3b:free` | Generation LLM, synthese |
+| `stepfun/step-3.5-flash:free` | Backup rapide |
+| `upstage/solar-pro-3:free` | Backup |
+| `arcee-ai/trinity-mini:free` | Leger, classification |
+
+---
+
+## Repertoires de test
+
+| Repertoire | Usage |
+|------------|-------|
+| `logs/tests/1q/` | Resultats tests 1 question |
+| `logs/tests/5q/` | Resultats tests 5 questions |
+| `logs/tests/10q/` | Resultats tests 10 questions |
+| `logs/tests/20q/` | Resultats tests 20 questions |
+| `snapshot/good/` | Workflows et executions de reference (confirmes OK) |
+| `snapshot/current/` | Workflows de la session actuelle |
