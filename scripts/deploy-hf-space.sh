@@ -107,7 +107,7 @@ git init
 git config user.email "alexis.moret6@outlook.fr"
 git config user.name "LBJLincoln"
 git add -A
-git commit -m "fix: v5.2 — 2-pass activation, remove dup quantitative, better sub-wf remapping"
+git commit -m "fix: v5.3 — per-pipeline OpenRouter keys (6 keys, 3 accounts) + 2-pass activation"
 
 REMOTE_URL="https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_USER}/${SPACE_NAME}"
 git remote add space "$REMOTE_URL" 2>/dev/null || git remote set-url space "$REMOTE_URL"

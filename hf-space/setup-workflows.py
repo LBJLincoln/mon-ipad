@@ -90,18 +90,38 @@ def create_all_credentials():
     else:
         print("  SKIP: Supabase PostgreSQL (no SUPABASE_PASSWORD)")
 
-    # --- OpenRouter httpHeaderAuth ---
+    # --- OpenRouter httpHeaderAuth (per-pipeline keys) ---
     or_key = os.environ.get("OPENROUTER_API_KEY", "")
     if or_key:
-        new_id = create_credential("OpenRouter API", "httpHeaderAuth", {
+        # Create per-pipeline credentials using different API keys
+        pipeline_keys = {
+            "Standard": os.environ.get("OPENROUTER_KEY_STANDARD", or_key),
+            "Graph": os.environ.get("OPENROUTER_KEY_GRAPH", or_key),
+            "Quantitative": os.environ.get("OPENROUTER_KEY_QUANTITATIVE", or_key),
+            "Orchestrator": os.environ.get("OPENROUTER_KEY_ORCHESTRATOR", or_key),
+            "PME": os.environ.get("OPENROUTER_KEY_PME", or_key),
+        }
+        or_cred_ids = {}  # pipeline_label -> credential_id
+        for label, key in pipeline_keys.items():
+            cid = create_credential(f"OpenRouter API ({label})", "httpHeaderAuth", {
+                "name": "Authorization",
+                "value": f"Bearer {key}",
+            })
+            if cid:
+                or_cred_ids[label] = cid
+
+        # Also create a default/main credential for unmapped workflows
+        main_id = create_credential("OpenRouter API (Main)", "httpHeaderAuth", {
             "name": "Authorization",
             "value": f"Bearer {or_key}",
         })
-        if new_id:
-            # Map all OpenRouter-style credential IDs
-            id_map["OPENROUTER_HEADER_AUTH"] = new_id
-            id_map["LLM_API_CREDENTIAL_ID"] = new_id  # PME workflows use this
-            type_map["httpHeaderAuth"] = new_id  # Fallback for type-based matching
+        if main_id:
+            id_map["OPENROUTER_HEADER_AUTH"] = main_id
+            id_map["LLM_API_CREDENTIAL_ID"] = main_id
+            type_map["httpHeaderAuth"] = main_id
+        # Store per-pipeline IDs for later assignment
+        type_map["_or_pipeline_creds"] = or_cred_ids
+        print(f"  Created {len(or_cred_ids)} per-pipeline OpenRouter credentials")
     else:
         print("  SKIP: OpenRouter httpHeaderAuth (no OPENROUTER_API_KEY)")
 
@@ -299,6 +319,88 @@ def restore_credentials_and_update(id_map, type_map):
     return updated
 
 
+def assign_per_pipeline_openrouter(type_map):
+    """Override OpenRouter credentials per pipeline for key rotation.
+
+    Each pipeline gets its own OpenRouter API key to distribute rate limits
+    across multiple accounts (7 keys, 3 accounts → ~140 req/min aggregate).
+    """
+    or_creds = type_map.get("_or_pipeline_creds", {})
+    if not or_creds:
+        print("  No per-pipeline OpenRouter credentials available")
+        return 0
+
+    # Map workflow name patterns to pipeline labels
+    pipeline_patterns = {
+        "Standard": ["standard", "wf5"],
+        "Graph": ["graph", "wf2"],
+        "Quantitative": ["quantitative", "wf4"],
+        "Orchestrator": ["orchestrator"],
+        "PME": ["pme", "gateway", "multi-canal", "action executor", "whatsapp"],
+    }
+
+    result = api("GET", "workflows?limit=100")
+    if not result:
+        return 0
+
+    wfs = result.get("data", result)
+    if isinstance(wfs, dict) and "data" in wfs:
+        wfs = wfs["data"]
+
+    assigned = 0
+    for wf in wfs:
+        wid = wf.get("id", "")
+        wname = wf.get("name", "?")
+        wname_lower = wname.lower()
+
+        # Determine which pipeline this workflow belongs to
+        target_label = None
+        for label, patterns in pipeline_patterns.items():
+            if any(p in wname_lower for p in patterns):
+                target_label = label
+                break
+
+        if not target_label or target_label not in or_creds:
+            continue
+
+        target_cred_id = or_creds[target_label]
+
+        # Get full workflow
+        full = api("GET", f"workflows/{wid}")
+        if not full:
+            continue
+        wf_data = full.get("data", full)
+        if isinstance(wf_data, dict) and "data" in wf_data:
+            wf_data = wf_data["data"]
+
+        # Update all httpHeaderAuth credentials in this workflow's nodes
+        changed = False
+        for node in wf_data.get("nodes", []):
+            creds = node.get("credentials", {})
+            if "httpHeaderAuth" in creds:
+                creds["httpHeaderAuth"] = {
+                    "id": target_cred_id,
+                    "name": f"OpenRouter API ({target_label})",
+                }
+                changed = True
+
+        if changed:
+            upd = api("PATCH", f"workflows/{wid}", {
+                "nodes": wf_data.get("nodes", []),
+                "connections": wf_data.get("connections", {}),
+                "settings": wf_data.get("settings", {}),
+                "name": wname,
+            })
+            if upd:
+                print(f"  Assigned OpenRouter ({target_label}) key to: {wname}")
+                assigned += 1
+            else:
+                print(f"  FAILED to assign key for: {wname}")
+
+    print(f"  Per-pipeline key assignment: {assigned} workflows updated")
+    return assigned
+
+
 def activate_single(wid, wname):
     """Activate a single workflow. Returns True if successful."""
     # Deactivate first (reset state)
@@ -467,6 +569,9 @@ if __name__ == "__main__":
 
     print("\n=== [B] Restoring credential references from original JSONs ===")
     restore_credentials_and_update(id_map, type_map)
+
+    print("\n=== [B2] Assigning per-pipeline OpenRouter keys (rate limit distribution) ===")
+    assign_per_pipeline_openrouter(type_map)
 
     print("\n=== [C] Publishing & activating workflows ===")
     time.sleep(3)  # Let n8n settle
