@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
-HF Space n8n Setup — Create credentials, import workflows, activate.
-Called by entrypoint.sh after n8n is healthy and logged in.
+HF Space n8n Setup v3 — Create credentials, update workflows, activate.
+
+Works with CLI-pre-imported workflows (entrypoint.sh imports via n8n CLI
+BEFORE n8n starts). This script:
+  1. Creates credentials (Supabase, OpenRouter, Pinecone, Neo4j, Redis)
+  2. Updates existing workflows to use new credential IDs
+  3. Activates all workflows
 
 Usage: python3 setup-workflows.py <cookie> <base_url>
 """
@@ -12,6 +17,7 @@ import urllib.error
 COOKIE = sys.argv[1] if len(sys.argv) > 1 else ""
 BASE = sys.argv[2] if len(sys.argv) > 2 else "http://127.0.0.1:7860"
 WF_DIR = "/app/n8n-workflows"
+
 
 def api(method, path, data=None):
     """Make authenticated n8n REST API call."""
@@ -52,7 +58,7 @@ def create_all_credentials():
     """Create all required n8n credentials. Returns mapping old_id -> new_id."""
     id_map = {}
 
-    # --- Supabase PostgreSQL (Pooler) — used by standard, graph, quantitative ---
+    # --- Supabase PostgreSQL ---
     supabase_host = os.environ.get("SUPABASE_HOST", "aws-0-eu-west-1.pooler.supabase.com")
     supabase_port = int(os.environ.get("SUPABASE_PORT", "6543"))
     supabase_db = os.environ.get("SUPABASE_DB", "postgres")
@@ -69,15 +75,12 @@ def create_all_credentials():
             "ssl": "allow",
         })
         if new_id:
-            # Map all old Supabase credential IDs to the new one
-            id_map["USU8ngVzsUbED3mn"] = new_id  # Supabase Postgres (Pooler)
-            id_map["zEr7jPswZNv6lWKu"] = new_id  # Supabase PostgreSQL
-            id_map["FZUFrHg9RgDR3MAB"] = new_id  # Postgres Production
-            id_map["0bf5AHN9S8qJTBr8"] = new_id  # Postgres account
+            for old in ["USU8ngVzsUbED3mn", "zEr7jPswZNv6lWKu", "FZUFrHg9RgDR3MAB", "0bf5AHN9S8qJTBr8"]:
+                id_map[old] = new_id
     else:
         print("  SKIP: Supabase PostgreSQL (no SUPABASE_PASSWORD)")
 
-    # --- OpenRouter httpHeaderAuth — for PME workflows ---
+    # --- OpenRouter httpHeaderAuth ---
     or_key = os.environ.get("OPENROUTER_API_KEY", "")
     if or_key:
         new_id = create_credential("OpenRouter API", "httpHeaderAuth", {
@@ -97,15 +100,16 @@ def create_all_credentials():
             "value": pc_key,
         })
         if new_id:
-            id_map["pHqLK3RCesLssL6j"] = new_id
-            id_map["3DEiHDwB09D65919"] = new_id
+            for old in ["pHqLK3RCesLssL6j", "3DEiHDwB09D65919"]:
+                id_map[old] = new_id
     else:
         print("  SKIP: Pinecone (no PINECONE_API_KEY)")
 
     # --- Neo4j Aura ---
     neo4j_auth = os.environ.get("NEO4J_AUTH", "")
-    if neo4j_auth and ":" in neo4j_auth:
-        neo4j_user, neo4j_pass = neo4j_auth.split(":", 1)
+    if neo4j_auth and (":" in neo4j_auth or "/" in neo4j_auth):
+        sep = ":" if ":" in neo4j_auth else "/"
+        neo4j_user, neo4j_pass = neo4j_auth.split(sep, 1)
         new_id = create_credential("Neo4j Aura", "httpBasicAuth", {
             "user": neo4j_user,
             "password": neo4j_pass,
@@ -115,9 +119,8 @@ def create_all_credentials():
     else:
         print("  SKIP: Neo4j (no NEO4J_AUTH)")
 
-    # --- Redis (needed by Orchestrator for conversation caching) ---
-    # Create credential even if Redis isn't running — allows workflow activation
-    new_id = create_credential("Redis Upstash", "redis", {
+    # --- Redis ---
+    new_id = create_credential("Redis", "redis", {
         "host": os.environ.get("REDIS_HOST", "127.0.0.1"),
         "port": int(os.environ.get("REDIS_PORT", "6379")),
         "password": os.environ.get("REDIS_PASSWORD", ""),
@@ -126,52 +129,75 @@ def create_all_credentials():
         id_map["O2KEPiv7VzgDG5ZX"] = new_id
 
     print(f"  Credential ID mapping: {len(id_map)} entries")
+    for old, new in id_map.items():
+        print(f"    {old} -> {new}")
     return id_map
 
 
-def remap_and_import_workflows(id_map):
-    """Import workflow JSONs with credential IDs remapped.
+def update_existing_workflows(id_map):
+    """Update credential IDs in all existing workflows (already in DB from CLI import)."""
+    result = api("GET", "workflows?limit=100")
+    if not result:
+        print("  Could not list workflows for credential update")
+        return 0
 
-    Import order matters: Standard/Graph/Quantitative first,
-    then Orchestrator (which references them as sub-workflows).
-    """
-    imported = 0
-    failed = 0
+    wfs = result.get("data", result)
+    if isinstance(wfs, dict) and "data" in wfs:
+        wfs = wfs["data"]
+    if not isinstance(wfs, list):
+        print(f"  Unexpected workflow list format: {type(wfs)}")
+        return 0
+
+    updated = 0
     wf_id_map = {}  # old_workflow_id -> new_workflow_id (for sub-workflow remapping)
 
-    wf_files = sorted(glob.glob(os.path.join(WF_DIR, "*.json")))
+    # Build workflow ID map from what's in the database
+    # Read original IDs from the JSON files to build the mapping
+    for wf_path in sorted(glob.glob(os.path.join(WF_DIR, "*.json"))):
+        try:
+            with open(wf_path) as f:
+                orig = json.load(f)
+            orig_id = orig.get("id", "")
+            orig_name = orig.get("name", "")
+            # Find the matching workflow in the database by name
+            for db_wf in wfs:
+                if db_wf.get("name") == orig_name and orig_id:
+                    wf_id_map[orig_id] = db_wf.get("id", "")
+                    break
+        except Exception:
+            pass
 
-    # Import orchestrator LAST (it references other workflows)
-    orchestrator_files = []
-    other_files = []
-    for wf_path in wf_files:
-        fname = os.path.basename(wf_path)
-        if 'orchestrator' in fname.lower():
-            orchestrator_files.append(wf_path)
-        else:
-            other_files.append(wf_path)
+    print(f"  Workflow ID mapping (orig->db): {len(wf_id_map)} entries")
+    for old, new in wf_id_map.items():
+        print(f"    {old} -> {new}")
 
-    ordered_files = other_files + orchestrator_files
+    for wf in wfs:
+        wid = wf.get("id", "")
+        wname = wf.get("name", "?")
 
-    for wf_path in ordered_files:
-        fname = os.path.basename(wf_path)
-        with open(wf_path) as f:
-            wf_data = json.load(f)
+        # Get full workflow details (nodes included)
+        full_wf = api("GET", f"workflows/{wid}")
+        if not full_wf:
+            print(f"  Could not get details for: {wname}")
+            continue
 
-        old_wf_id = wf_data.get("id", "")
+        wf_data = full_wf.get("data", full_wf)
+        if isinstance(wf_data, dict) and "data" in wf_data:
+            wf_data = wf_data["data"]
 
-        # Remap credential IDs in all nodes
-        remapped = 0
-        for node in wf_data.get("nodes", []):
+        # Remap credential IDs
+        needs_update = False
+        nodes = wf_data.get("nodes", [])
+        for node in nodes:
             creds = node.get("credentials", {})
             for ctype, cval in creds.items():
                 if isinstance(cval, dict):
                     old_id = cval.get("id", "")
                     if old_id in id_map:
                         cval["id"] = id_map[old_id]
-                        remapped += 1
+                        needs_update = True
 
-            # Remap sub-workflow references (executeWorkflow nodes)
+            # Remap sub-workflow references
             if node.get("type") == "n8n-nodes-base.executeWorkflow":
                 params = node.get("parameters", {})
                 wf_ref = params.get("workflowId", {})
@@ -179,27 +205,32 @@ def remap_and_import_workflows(id_map):
                     old_sub_id = wf_ref.get("value", "")
                     if old_sub_id in wf_id_map:
                         wf_ref["value"] = wf_id_map[old_sub_id]
-                        print(f"    Remapped sub-workflow: {old_sub_id} -> {wf_id_map[old_sub_id]}")
+                        needs_update = True
+                        print(f"    Remapped sub-workflow in {wname}: {old_sub_id} -> {wf_id_map[old_sub_id]}")
+                elif isinstance(wf_ref, str) and wf_ref in wf_id_map:
+                    params["workflowId"] = wf_id_map[wf_ref]
+                    needs_update = True
+                    print(f"    Remapped sub-workflow (str) in {wname}: {wf_ref} -> {wf_id_map[wf_ref]}")
 
-        # Import via REST API
-        result = api("POST", "workflows", wf_data)
-        if result:
-            new_wf = result.get("data", result)
-            new_wf_id = new_wf.get("id", "?")
-            wf_name = new_wf.get("name", fname)
-            print(f"    Imported: {wf_name} (id={new_wf_id}, {remapped} creds remapped)")
-            imported += 1
-
-            # Record ID mapping for sub-workflow remapping
-            if old_wf_id:
-                wf_id_map[old_wf_id] = new_wf_id
+        if needs_update:
+            # Update the workflow via REST API
+            update_data = {
+                "nodes": nodes,
+                "connections": wf_data.get("connections", {}),
+                "settings": wf_data.get("settings", {}),
+                "name": wname,
+            }
+            upd_result = api("PATCH", f"workflows/{wid}", update_data)
+            if upd_result:
+                print(f"  Updated credentials in: {wname}")
+                updated += 1
+            else:
+                print(f"  FAILED to update: {wname}")
         else:
-            print(f"    FAILED: {fname}")
-            failed += 1
+            print(f"  No credential changes needed: {wname}")
 
-    print(f"  Import complete: {imported} OK, {failed} failed")
-    print(f"  Workflow ID mapping: {len(wf_id_map)} entries")
-    return imported
+    print(f"  Credential update: {updated} workflows updated")
+    return updated
 
 
 def activate_all_workflows():
@@ -217,23 +248,29 @@ def activate_all_workflows():
         return 0
 
     activated = 0
+    already = 0
+    failed = 0
     for wf in wfs:
         wid = wf.get("id", "")
         wname = wf.get("name", "?")
         wactive = wf.get("active", False)
-        wversion = wf.get("versionId", "")
 
-        if not wactive:
-            act_result = api("POST", f"workflows/{wid}/activate", {"versionId": wversion})
-            if act_result:
-                print(f"    Activated: {wname}")
-                activated += 1
-            else:
-                print(f"    FAILED to activate: {wname}")
-        else:
+        if wactive:
             print(f"    Already active: {wname}")
+            already += 1
+            continue
 
-    print(f"  Activation complete: {activated} newly activated, {len(wfs)} total")
+        # n8n 2.8.4 requires versionId for activation
+        version_id = wf.get("versionId", "")
+        act_result = api("POST", f"workflows/{wid}/activate", {"versionId": version_id})
+        if act_result:
+            print(f"    Activated: {wname}")
+            activated += 1
+        else:
+            print(f"    FAILED to activate: {wname}")
+            failed += 1
+
+    print(f"  Activation: {activated} new, {already} already, {failed} failed")
     return activated
 
 
@@ -260,6 +297,7 @@ def verify_webhooks():
         except:
             code = 0
 
+        # 200 or 405 (method not allowed = webhook exists but expects POST)
         status = "OK" if code in (200, 405) else "FAIL"
         if status == "OK":
             ok += 1
@@ -277,8 +315,8 @@ if __name__ == "__main__":
     print("\n=== [A] Creating credentials ===")
     id_map = create_all_credentials()
 
-    print("\n=== [B] Importing workflows (with credential remap) ===")
-    imported = remap_and_import_workflows(id_map)
+    print("\n=== [B] Updating workflows with new credential IDs ===")
+    update_existing_workflows(id_map)
 
     print("\n=== [C] Activating workflows ===")
     time.sleep(3)  # Let n8n settle
