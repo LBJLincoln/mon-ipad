@@ -735,12 +735,111 @@ def run_autonomous(pipeline, max_questions, batch_size):
 
 ---
 
+---
+
+## 14. USER-DRIVEN IMPROVEMENTS (Session 45)
+
+> User-generated ideas from 2026-02-23 (ajd23feb file)
+
+### 14.1 New LLM Chatbot Repo — Website Error Replacement
+
+| # | Detail | Value |
+|---|--------|-------|
+| **Title** | **New LLM Chatbot Repo for Website Endpoints** | |
+| **Description** | Create new dedicated repository containing n8n workflows that serve as chatbot backend for all website endpoints. Knowledge base: executive summaries (docs/executive-summary.md) + CLAUDE.md files from all repos. Use free OpenRouter LLMs (Llama 3.3 70B, Gemma 3 27B). Replace all broken website chatbot endpoints (rag-website, rag-pme-connectors) with working ones. PME-connectors site must be kept up-to-date but doesn't need immediate re-deployment. | |
+| **Priority** | **HIGH** | User-facing errors blocking website credibility |
+| **Blocked By** | None | Can start immediately |
+| **Estimated Complexity** | **MEDIUM** | New repo + 2-3 n8n workflows + website endpoint updates |
+| **Estimated Effort** | 4-6 hours | Repo setup (1h) + n8n workflows (2h) + endpoint migration (1-2h) + testing (1h) |
+| **Status** | **NOT STARTED** | User requested 2026-02-23 20:28 |
+| **Impact** | Fix user-facing chatbot errors, improve website credibility, decouple chatbot from main RAG pipelines | |
+| **Dependencies** | - Free OpenRouter API keys (already have 7)<br>- Executive summaries up-to-date (done)<br>- CLAUDE.md files accessible | |
+| **Implementation Notes** | - Repo name: `rag-chatbot-backend` or `nomos-chatbot-engine`<br>- Workflows: 1 per site (website, pme-connectors) + shared knowledge base loader<br>- Knowledge base indexing: Pinecone or simple vector search<br>- Rate limiting: use multiple OpenRouter keys for load balancing<br>- Deployment: HF Space or GitHub Actions self-hosted runner | |
+
+### 14.2 Ingestion Test Workflow — Document Quality Verification
+
+| # | Detail | Value |
+|---|--------|-------|
+| **Title** | **n8n Workflow for Testing Ingested Documents** | |
+| **Description** | Create n8n workflow in rag-data-ingestion repo that tests ingested documents with targeted questions to verify ingestion quality. Must include: (1) Automated test suite with pre-defined questions per document type (2) Manual test mode allowing user to upload random files and test them with custom questions (3) Quality metrics: retrieval accuracy, answer relevance, context precision (4) Report generation with pass/fail results. | |
+| **Priority** | **MEDIUM** | Improves data quality assurance, prevents bad ingestions from reaching production |
+| **Blocked By** | None | Can start after HF Space is fixed |
+| **Estimated Complexity** | **MEDIUM** | n8n workflow + test question database + metrics calculation |
+| **Estimated Effort** | 3-5 hours | Workflow design (1h) + test questions (1h) + metrics (1-2h) + manual upload UI (1h) |
+| **Status** | **NOT STARTED** | User requested 2026-02-23 20:28 |
+| **Impact** | Catch ingestion errors early, verify document quality before indexing, improve data pipeline reliability | |
+| **Dependencies** | - rag-data-ingestion workflows functional<br>- Test question database (JSON format)<br>- Metrics library (Ragas or custom) | |
+| **Implementation Notes** | - Workflow triggers: (a) webhook POST with file upload (b) scheduled test of recent ingestions<br>- Store test results in Supabase `ingestion_tests` table<br>- Integration with CI/CD: fail pipeline if ingestion test accuracy < 80%<br>- Manual mode: web UI with drag-drop file upload + question input field | |
+
+### 14.3 Sub-Agents as Restrictors — Prevent Repeated Failures
+
+| # | Detail | Value |
+|---|--------|-------|
+| **Title** | **Sub-Agents as Debug Restrictors + VM Monitoring** | |
+| **Description** | Modify the 2 startup sub-agents (Session Analyzer, Repo Health Inspector) to act as restrictors: BEFORE any debug attempt, check fixes-library.md for documented failed fixes and BLOCK Opus from repeating them. Add warning if fix was attempted >3 times with no success. ALSO add third sub-agent: VM Monitoring Agent 24/7 that tracks RAM, disk, CPU, n8n status, and alerts on anomalies (OOM, disk >90%, process crashes). | |
+| **Priority** | **HIGH** | Prevents wasted time on known-failed fixes, improves VM reliability |
+| **Blocked By** | None | Can start immediately |
+| **Estimated Complexity** | **MEDIUM** | Modify existing sub-agents + add VM monitoring agent + alert system |
+| **Estimated Effort** | 4-6 hours | Sub-agent modifications (2h) + VM monitoring agent (2h) + alert integration (1-2h) |
+| **Status** | **NOT STARTED** | User requested 2026-02-23 20:39 |
+| **Impact** | Stop infinite debug loops, improve agent efficiency, prevent VM crashes, early warning system for infrastructure failures | |
+| **Dependencies** | - fixes-library.md up-to-date and structured<br>- VM monitoring tools (psutil, docker stats)<br>- Alert mechanism (webhook to n8n, Discord, or email) | |
+| **Implementation Notes** | - Session Analyzer: add pre-flight check that reads fixes-library.md, extracts failed fix patterns, compares against planned actions, warns Opus if match found<br>- VM Monitoring Agent: Python daemon running 24/7, collects metrics every 60s, stores in time-series DB (Supabase or local SQLite), triggers webhook if threshold exceeded<br>- Alert thresholds: RAM >95% (5 min), disk >90%, CPU >90% (10 min), n8n down (1 min), process crash (immediate)<br>- Integration: VM monitoring webhook → n8n workflow → Discord alert + auto-action (restart service, kill process) | |
+
+### 14.4 CLAUDE.md Cleanup — Simplification and Restructuring
+
+| # | Detail | Value |
+|---|--------|-------|
+| **Title** | **CLAUDE.md Massive Cleanup and Restructuring** | |
+| **Description** | Current CLAUDE.md has 40+ rules and too many files to read (15+ directives, 20+ technical docs). User frustrated that rules aren't followed. Restructure: (1) Reduce to essential rules only (<20 rules) (2) Better ordering: critical rules first, nice-to-haves last (3) Consolidate multi-file documentation (merge related docs) (4) Add quick-reference section at top (5) Remove redundant/outdated rules. ALSO update all satellite repo CLAUDE.md files accordingly. | |
+| **Priority** | **MEDIUM** | Improves agent effectiveness, reduces cognitive load, increases rule adherence |
+| **Blocked By** | Requires analysis of which rules are actually followed vs ignored | Session 46+ |
+| **Estimated Complexity** | **HIGH** | Requires deep analysis + consensus on what's essential + rewrite + sync to 7 repos |
+| **Estimated Effort** | 8-12 hours | Analysis (2h) + restructuring (3-4h) + consolidation (2-3h) + satellite sync (1-2h) + testing (1-2h) |
+| **Status** | **NOT STARTED** | User requested 2026-02-23 20:41 |
+| **Impact** | Better agent performance, clearer onboarding for new agents, reduced session startup time, higher rule compliance | |
+| **Dependencies** | - Session log analysis (which rules are followed?)<br>- User feedback on which rules are critical<br>- Sub-agent to analyze rule adherence over 10+ sessions | |
+| **Implementation Notes** | - Create CLAUDE-v2.md with restructured content, keep v1 for comparison<br>- Essential rules categories: (1) Infrastructure & Safety (credentials, VM limits) (2) Testing & Evaluation (sequential, validation) (3) Commit & Sync (frequency, multi-repo) (4) Documentation (staleness, updates) (5) Process (bottlenecks, prioritization)<br>- Quick reference: 1-page cheatsheet with top 10 rules + common commands<br>- Deprecate: verbose explanations (move to separate doc), example code snippets (move to knowledge-base.md)<br>- Validation: Run 3 sessions with v2, compare performance vs v1 | |
+
+### 14.5 OpenRouter Key Rotation in n8n — Bypass Rate Limits
+
+| # | Detail | Value |
+|---|--------|-------|
+| **Title** | **OpenRouter Key Turnover Within n8n Workflows** | |
+| **Description** | Implement key rotation mechanism within n8n workflows to bypass OpenRouter rate limit (20 req/min/key). System has 7 OpenRouter keys available. Rotation strategies: (1) Round-robin per request (2) Sticky per pipeline (Standard uses key1, Graph uses key2, etc.) (3) Failover on 429 (switch to next key) (4) Load balancing based on usage counters. Goal: achieve ~140 req/min aggregate (7 keys × 20 req/min). Store key usage state in Redis or Supabase. | |
+| **Priority** | **HIGH** | Unblocks 1000q Phase 2+ testing, 7x throughput increase |
+| **Blocked By** | None | All 7 keys already configured in .env.local |
+| **Estimated Complexity** | **MEDIUM** | n8n workflow modifications + state management + retry logic |
+| **Estimated Effort** | 3-5 hours | Design (1h) + n8n implementation (2-3h) + testing (1h) |
+| **Status** | **NOT STARTED** | User requested 2026-02-23 21:34 |
+| **Impact** | 7x throughput for LLM-heavy pipelines (Quantitative, Orchestrator), faster Phase 2+ testing, no single-key bottleneck | |
+| **Dependencies** | - 7 OpenRouter keys verified working<br>- Redis or Supabase table for key usage state<br>- n8n workflow nodes updated to use dynamic key selection | |
+| **Implementation Notes** | - **Strategy 1 (Simplest)**: Sticky per pipeline — Standard uses OPENROUTER_KEY_STANDARD, Graph uses _GRAPH, etc. Already configured, just verify all workflows use correct env var<br>- **Strategy 2 (Best for burst)**: Round-robin — n8n workflow reads counter from Redis (GET pipeline:standard:key_index), increments, uses key[index % 7], writes back. Add retry on 429: switch to (index+1) % 7<br>- **Strategy 3 (Future)**: Load balancing — track requests per key per minute in Redis, select key with lowest usage<br>- Implementation: Add "Select OpenRouter Key" node at start of each LLM call in n8n workflows, replace hardcoded credential with dynamic lookup<br>- Testing: Rapid-fire 100 requests to single pipeline, verify 429 errors disappear, measure throughput increase | |
+
+### 14.6 User Willing to Create Credentials — Expose Bottleneck Actions
+
+| # | Detail | Value |
+|---|--------|-------|
+| **Title** | **User-Actionable Bottlenecks in Executive Summary** | |
+| **Description** | User willing to create new accounts/credentials to resolve bottlenecks or simplify agent operations. Examples: second HF account, additional API keys, new Pinecone indexes, paid tiers for rate limits. TASK: Maintain a section in docs/executive-summary.md titled "USER ACTION REQUIRED" that lists concrete actions user can take to unblock progress. Each item must include: (1) What to create (2) Why it's needed (3) Estimated impact (4) Step-by-step instructions (5) Where to paste the credential. Update this section REAL-TIME as bottlenecks emerge. | |
+| **Priority** | **MEDIUM** | Empowers user to unblock progress, reduces dependency on agent capabilities |
+| **Blocked By** | None | Executive summary already exists |
+| **Estimated Complexity** | **LOW** | Documentation + process discipline |
+| **Estimated Effort** | 1-2 hours | Initial section creation (30 min) + process documentation (30 min) + testing (30 min) |
+| **Status** | **NOT STARTED** | User requested 2026-02-23 21:34 |
+| **Impact** | Faster bottleneck resolution, better user-agent collaboration, leverage paid services when free tier blocks progress | |
+| **Dependencies** | - Executive summary kept up-to-date (Rule 38)<br>- Agent discipline to update USER ACTION REQUIRED section whenever bottleneck identified | |
+| **Implementation Notes** | - Add section to docs/executive-summary.md after "Current Bottlenecks"<br>- Format: Checkbox list with priority (HIGH/MEDIUM/LOW)<br>- Example entry: "[ ] **HIGH**: Create second HF account (parallel n8n execution). Why: Current HF Space at capacity, second Space = 2x throughput. Impact: +50% faster Phase 2 testing. Steps: (1) Go to huggingface.co/join (2) Verify email (3) Settings → Access Tokens → New token (write) (4) Paste token in .env.local as HF_TOKEN_2"<br>- Update triggers: (1) Any rate-limit error (2) Resource exhaustion (RAM, disk, API quota) (3) New bottleneck identified in session-state.md<br>- Agent must CHECK this section at session start and ask user if actions completed | |
+
+---
+
 ## HISTORIQUE DES AJOUTS
 
 | Session | Ajouts | Date |
 |---------|--------|------|
 | 25 | Creation du document, 50+ ameliorations listees | 2026-02-19 |
 | 42 | Repo health inspection: 70+ nouveaux items (sections 10-13) | 2026-02-22 |
+| 45 | User-driven improvements: 6 ideas from ajd23feb file (section 14) | 2026-02-23 |
 
 ---
 
