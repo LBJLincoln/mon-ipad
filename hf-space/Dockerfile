@@ -1,8 +1,8 @@
-FROM node:20-slim
+FROM node:22-slim
 
 # Install minimal dependencies (sqlite3 for direct DB access if needed)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash curl python3 python3-pip procps sqlite3 \
+    bash curl python3 procps sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install n8n globally
