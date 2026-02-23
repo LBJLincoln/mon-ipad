@@ -34,7 +34,7 @@ export QUEUE_BULL_REDIS_PORT=6379
 
 # n8n Network config
 export N8N_HOST=0.0.0.0
-export N8N_PORT=5678
+export N8N_PORT=7860
 export N8N_PROTOCOL=http
 export WEBHOOK_URL=https://lbjlincoln-nomos-rag-engine.hf.space
 
@@ -90,7 +90,7 @@ echo ""
 echo "[3/4] Waiting for n8n to become healthy..."
 N8N_READY=false
 for i in $(seq 1 180); do
-    if curl -sf http://127.0.0.1:5678/healthz > /dev/null 2>&1; then
+    if curl -sf http://127.0.0.1:7860/healthz > /dev/null 2>&1; then
         echo "  n8n healthy after ${i}s"
         N8N_READY=true
         break
@@ -125,10 +125,10 @@ setup_workflows() {
 
     # First check if n8n needs initial setup (fresh Supabase schema)
     local SETUP_CHECK
-    SETUP_CHECK=$(curl -s http://127.0.0.1:5678/rest/settings 2>/dev/null || echo "")
+    SETUP_CHECK=$(curl -s http://127.0.0.1:7860/rest/settings 2>/dev/null || echo "")
     if echo "$SETUP_CHECK" | python3 -c "import sys,json; d=json.load(sys.stdin); sys.exit(0 if d.get('data',d).get('userManagement',{}).get('showSetupOnFirstLoad',False) else 1)" 2>/dev/null; then
         echo "  First boot detected — creating owner account..."
-        curl -s -o /dev/null -X POST http://127.0.0.1:5678/rest/owner/setup \
+        curl -s -o /dev/null -X POST http://127.0.0.1:7860/rest/owner/setup \
             -H "Content-Type: application/json" \
             -d "{\"email\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\",\"firstName\":\"CI\",\"lastName\":\"Bot\"}" 2>/dev/null || true
         echo "  Owner account created (or attempted)"
@@ -139,7 +139,7 @@ setup_workflows() {
     for attempt in $(seq 1 10); do
         local RESP
         RESP=$(curl -s -o /tmp/login-resp.json -w "%{http_code}" \
-            -X POST http://127.0.0.1:5678/rest/login \
+            -X POST http://127.0.0.1:7860/rest/login \
             -H "Content-Type: application/json" \
             -d "{\"email\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\"}" \
             -c /tmp/n8n-cookies.txt 2>/dev/null || echo "000")
@@ -171,7 +171,7 @@ setup_workflows() {
 
         local IMPORT_RESP
         IMPORT_RESP=$(curl -s -o /tmp/import-resp.json -w "%{http_code}" \
-            -X POST http://127.0.0.1:5678/rest/workflows \
+            -X POST http://127.0.0.1:7860/rest/workflows \
             -H "Content-Type: application/json" \
             -b "n8n-auth=$COOKIE" \
             -d @"$wf" 2>/dev/null || echo "000")
@@ -185,12 +185,67 @@ setup_workflows() {
     done
     echo "  Imported: $IMPORT_OK workflows"
 
+    # Create n8n credentials from environment variables
+    echo ""
+    echo "  Creating credentials..."
+    create_credential() {
+        local CRED_NAME="$1" CRED_TYPE="$2" CRED_DATA="$3"
+        local CRED_RESP
+        CRED_RESP=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST http://127.0.0.1:7860/rest/credentials \
+            -H "Content-Type: application/json" \
+            -b "n8n-auth=$COOKIE" \
+            -d "{\"name\":\"$CRED_NAME\",\"type\":\"$CRED_TYPE\",\"data\":$CRED_DATA}" 2>/dev/null || echo "000")
+        if [ "$CRED_RESP" = "200" ]; then
+            echo "    OK: $CRED_NAME ($CRED_TYPE)"
+        else
+            echo "    $CRED_RESP: $CRED_NAME (may already exist)"
+        fi
+    }
+
+    # OpenRouter httpHeaderAuth credentials (per-pipeline)
+    for PIPELINE in STANDARD GRAPH QUANTITATIVE ORCHESTRATOR PME; do
+        local KEY_VAR="OPENROUTER_KEY_${PIPELINE}"
+        local KEY_VAL="${!KEY_VAR:-}"
+        [ -z "$KEY_VAL" ] && continue
+        create_credential \
+            "OpenRouter ${PIPELINE}" \
+            "httpHeaderAuth" \
+            "{\"name\":\"Authorization\",\"value\":\"Bearer ${KEY_VAL}\"}"
+    done
+
+    # Main OpenRouter key
+    if [ -n "${OPENROUTER_API_KEY:-}" ]; then
+        create_credential \
+            "OpenRouter Main" \
+            "httpHeaderAuth" \
+            "{\"name\":\"Authorization\",\"value\":\"Bearer ${OPENROUTER_API_KEY}\"}"
+    fi
+
+    # Pinecone
+    if [ -n "${PINECONE_API_KEY:-}" ]; then
+        create_credential \
+            "Pinecone" \
+            "pineconeApi" \
+            "{\"apiKey\":\"${PINECONE_API_KEY}\"}"
+    fi
+
+    # Neo4j
+    if [ -n "${NEO4J_URI:-}" ]; then
+        create_credential \
+            "Neo4j" \
+            "neo4jApi" \
+            "{\"uri\":\"${NEO4J_URI}\",\"username\":\"neo4j\",\"password\":\"${NEO4J_PASSWORD:-}\"}"
+    fi
+
+    echo "  Credentials setup done"
+
     # Activate all inactive workflows
     echo ""
     echo "  Activating workflows..."
 
     local ALL_WFS
-    ALL_WFS=$(curl -s "http://127.0.0.1:5678/rest/workflows?limit=50" \
+    ALL_WFS=$(curl -s "http://127.0.0.1:7860/rest/workflows?limit=50" \
         -b "n8n-auth=$COOKIE" 2>/dev/null || echo "")
 
     [ -z "$ALL_WFS" ] && { echo "  WARNING: Could not fetch workflows"; return 1; }
@@ -215,7 +270,7 @@ except Exception as e:
         if [ "$wactive" = "False" ]; then
             local ACT_RESP
             ACT_RESP=$(curl -s -o /dev/null -w "%{http_code}" \
-                -X POST "http://127.0.0.1:5678/rest/workflows/$wid/activate" \
+                -X POST "http://127.0.0.1:7860/rest/workflows/$wid/activate" \
                 -H "Content-Type: application/json" \
                 -b "n8n-auth=$COOKIE" \
                 -d "{\"versionId\":\"$wversion\"}" 2>/dev/null || echo "000")
@@ -234,7 +289,7 @@ except Exception as e:
     echo ""
     echo "  Checking webhook registrations (lightweight)..."
     local WH_CHECK
-    WH_CHECK=$(curl -s "http://127.0.0.1:5678/rest/active-webhooks" \
+    WH_CHECK=$(curl -s "http://127.0.0.1:7860/rest/active-webhooks" \
         -b "n8n-auth=$COOKIE" 2>/dev/null || echo "")
     if [ -n "$WH_CHECK" ]; then
         echo "  Active webhooks:"

@@ -1,8 +1,8 @@
 FROM node:20-slim
 
-# Install system dependencies
+# Install system dependencies (no nginx — n8n listens directly on 7860)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash curl python3 redis-server nginx supervisor procps \
+    bash curl python3 redis-server supervisor procps \
     && rm -rf /var/lib/apt/lists/*
 
 # Install n8n globally
@@ -12,21 +12,16 @@ WORKDIR /app
 
 # Copy configuration files
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY nginx.conf /etc/nginx/nginx.conf
 COPY entrypoint.sh /app/entrypoint.sh
 COPY healthcheck.py /app/healthcheck.py
 COPY n8n-workflows/ /app/n8n-workflows/
-
-# Make sure nginx dirs exist and are writable
-RUN mkdir -p /var/log/nginx /var/lib/nginx/body /var/run \
-    && chmod 755 /var/log/nginx /var/lib/nginx /var/run
 
 RUN chmod +x /app/entrypoint.sh
 
 # Create n8n data directory
 RUN mkdir -p /home/node/.n8n && chown -R 1000:1000 /home/node/.n8n
 
-# HF Spaces requires port 7860
+# HF Spaces requires port 7860 — n8n listens directly on this port
 EXPOSE 7860
 
 CMD ["/app/entrypoint.sh"]
