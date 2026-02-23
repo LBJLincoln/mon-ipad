@@ -1,6 +1,6 @@
 # EXECUTIVE SUMMARY — Nomos AI Multi-RAG Orchestrator
 
-> Last updated: 2026-02-22T21:45:00+01:00
+> Last updated: 2026-02-23T21:45:00+01:00
 > **Ce fichier DOIT etre consulte et mis a jour a CHAQUE session.**
 > Il est la reference unique pour comprendre tout le projet en langage clair.
 
@@ -50,7 +50,7 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
 | Lignes dans Supabase | ~17,600 |
 | Datasets telecharges | 7,609 sectoriels + 669MB HuggingFace |
 | Commits depuis le debut | 200+ |
-| Sessions Claude Code | **40** |
+| Sessions Claude Code | **48** |
 | Sites web live | **4** (ETI + PME connectors + PME use cases + Dashboard) |
 
 ---
@@ -65,28 +65,27 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
                            |
               VM GOOGLE CLOUD (34.136.180.66)
               Machine permanente e2-micro
-              970 MB RAM | 30 GB disque
+              970 MB RAM (~400 MB disponibles)
+              30 GB disque | PILOTAGE ONLY
+                           |
+                    CLAUDE CODE CLI
+                    Modele: Opus 4.6
+                    Tour de controle
+                    Repo: mon-ipad
+                    (n8n REMOVED — VM cleaned)
                            |
          +-----------------+-----------------+
          |                                   |
-    CLAUDE CODE CLI                    n8n (Docker)
-    Modele: Opus 4.6                   Port 5678
-    Tour de controle                   9+3 PME workflows (ALL 404)
-    Repo: mon-ipad                     Webhooks ouverts
-         |                                   |
-         +-----------------------------------+
-                           |
-         +-----------------+-----------------+
-         |                 |                 |
-    PINECONE          NEO4J AURA        SUPABASE
-    Vector DB          Graph DB          SQL DB
-    22K vecteurs       19K nodes         40 tables
-    3 indexes          76K relations     17K lignes
-         |                 |                 |
-         +-----------------+-----------------+
+    HF SPACE                          BASES DE DONNEES
+    n8n (16GB RAM)               Pinecone + Neo4j + Supabase
+    9+3 PME workflows                    |
+    ALL 404 (activation broken)          |
+    Execution layer                      |
+         |                                |
+         +--------------------------------+
                            |
                      OPENROUTER
-                     LLM gratuits
+                     7 keys (multi-rotation)
                      Llama 70B + Gemma 27B
 ```
 
@@ -162,22 +161,22 @@ mon-ipad (PILOTE)
 | **IP** | 34.136.180.66 |
 | **OS** | Debian 11 (Bullseye) |
 | **CPU** | 1 vCPU Intel Xeon @ 2.20GHz |
-| **RAM** | 970 MB total (~100 MB disponibles) |
+| **RAM** | 970 MB total (~400 MB disponibles) |
 | **Disque** | 30 GB (12 GB utilises) |
 | **Acces** | SSH via Termius (iPad) |
-| **Docker** | n8n + Redis + PostgreSQL |
-| **Usage** | PILOTAGE UNIQUEMENT — pas de tests, pas de modifications workflow |
+| **Docker** | NO containers running — n8n REMOVED (Session 42, freed ~270MB RAM) |
+| **Usage** | PILOTAGE UNIQUEMENT — tour de controle, git, MCP servers. NO eval scripts, NO n8n. |
 
 ### HF Space (execution — 16 GB RAM, gratuit)
 | Element | Detail |
 |---------|--------|
 | **URL** | https://lbjlincoln-nomos-rag-engine.hf.space |
 | **RAM** | 16 GB (cpu-basic) |
-| **n8n** | Version 2.8.3 (latest) |
-| **DB interne** | SQLite + Redis |
+| **n8n** | Version 2.8.4 (pinned) |
+| **DB interne** | Supabase PostgreSQL + Redis (queue mode: 1 main + 2 workers) |
 | **Usage** | Execution des pipelines RAG pour les tests |
-| **Status** | **ALL WEBHOOKS 404** — rebuild (session 39) wiped n8n activations. entrypoint.sh activation broken. |
-| **Workflows** | 9 RAG + 3 PME importes. **TOUS 404** apres rebuild. Needs entrypoint.sh fix with retry + verify |
+| **Status** | **ALL WEBHOOKS 404** — entrypoint.sh activation broken (sessions 39-48). Multiple fix attempts (v1-v3.1): CLI import, credential stripping, PATCH activation, sqlite3 direct activation. |
+| **Workflows** | 9 RAG + 3 PME importes. **TOUS 404** apres rebuild. entrypoint v4.0 needed (publish system bypass). |
 
 ### Codespaces GitHub (ephemeres — 60h/mois)
 | Element | Detail |
@@ -312,13 +311,13 @@ Supabase stocke les donnees structurees (tableaux, chiffres, listes).
 ### Services connectes
 | Service | Usage | Plan | Limite |
 |---------|-------|------|--------|
-| OpenRouter | LLM (Llama 70B, Gemma 27B) | Free | $0 illimite |
-| Jina AI | Embeddings + Reranking | Free | 1M tokens/mois |
+| OpenRouter | LLM (Llama 70B, Gemma 27B) | Free | 7 keys configured (pipeline-specific rotation) |
+| Jina AI | Embeddings + Reranking | Free | 2 keys configured, 1M tokens/mois each |
 | Pinecone | Vector DB | Free | 100K vecteurs |
 | Neo4j Aura | Graph DB | Free | 200K nodes |
 | Supabase | SQL DB | Free | 500 MB |
 | Cohere | Reranking (backup) | Trial | Quasi-epuise |
-| HuggingFace | Datasets + HF Space | Free | 60h Codespace/mois |
+| HuggingFace | Datasets + HF Space | Free | 2 accounts, 2 tokens configured |
 | GitHub | 7 repos prives | Free | Illimite |
 | Vercel | 4 sites deployes | Free | Illimite |
 
@@ -540,19 +539,20 @@ git push origin main
 | Orchestrator | 57 | 1000 | 0% | **BROKEN** — 404/empty on every question |
 | PME Gateway | 0 | — | — | NOT ACTIVATED (404 after rebuild) |
 
-### Bloqueur critique : HF Space ALL WEBHOOKS 404
-- **Cause** : HF Space rebuild (triggered by PME workflow push in session 39) wiped n8n database
+### Bloqueur critique : HF Space ALL WEBHOOKS 404 (sessions 39-48)
+- **Cause** : HF Space rebuild (session 39) wiped n8n database. Multiple fix attempts (v1-v3.1) failed: CLI import has foreign key issues, REST API activation requires versionId that doesn't exist, PATCH activation still broken.
+- **Latest attempt** : entrypoint v4.0 (session 48) — direct sqlite3 activation bypassing n8n publish system. Strips shared/activeVersion/tags, auto-generates missing IDs, forces activation via UPDATE query. Deployed but not yet verified.
 - **Impact** : ALL workflow activations lost → ALL webhooks return 404 → NO pipeline can run
 - **Data safe** : ALL test results stored on VM (docs/tested_ids.json, logs/pipeline-results/)
 - **What was lost** : n8n runtime state (activations, credentials, execution history) — reconstructible from git
-- **Fix needed** : entrypoint.sh retry logic + activation verification step
+- **Fix needed** : Verify entrypoint v4.0 works, add retry logic + activation verification step
 
 ### Fixes documentes (35+ au total)
 Les 35+ bugs documentes sont dans `technicals/debug/fixes-library.md`.
 Highlights recents :
 - FIX-36 : Phase 1 gate calculation (excluded Phase 2 questions)
 - FIX-29 to FIX-35 : Quantitative + Orchestrator fixes (sessions 27-28)
-- Session 39 : HF Space wipeout root cause identified (entrypoint.sh)
+- Sessions 39-48 : HF Space activation broken — multiple attempts (CLI import, credential stripping, PATCH activation, sqlite3 direct activation). entrypoint v4.0 uses direct sqlite3 UPDATE to bypass n8n publish system.
 
 ### Tests de concurrence (session 27)
 | Config | Pipelines | Concurrency | Standard | Graph | Orchestrator |
@@ -567,13 +567,21 @@ Highlights recents :
 
 ## 12. PROCHAINES ETAPES
 
-### Session 40 — PRIORITIES (ordre)
-1. **FIX HF SPACE ACTIVATION** — #0 priority. ALL webhooks 404. Debug entrypoint.sh, add retry + verify. CROSS-PIPELINE bottleneck: unblocks Standard + Orchestrator + PME (Rule 36).
-2. **FIX ORCHESTRATOR** — Returns 0% on Phase 2. Debug intent classifier + sub-pipeline routing.
-3. **RELAUNCH STANDARD** — batch-size 5, on fixed HF Space. Complete remaining 421/1000 questions.
-4. **ACTIVATE PME WORKFLOWS** — Configure Google API key as credential, test gateway webhook.
-5. **Complete data-ingestion** — musique + finqa downloads, start actual ingestion pipeline.
-6. **Update ALL stale files** — executive-summary (this), CLAUDE.md, technicals, directives.
+### Sessions 42-48 — PROGRESS (what was done)
+1. **Session 42**: VM n8n REMOVED (freed ~270MB RAM). VM is pilotage-only now. Anti-VM guards added to all eval scripts.
+2. **Session 43**: HF Space rebuilt with queue mode (3 workers), Supabase PostgreSQL, 7 OpenRouter keys.
+3. **Sessions 44-45**: entrypoint.sh v2-v3.1 attempts. Credential stripping, versionId fixes, CLI import debugging.
+4. **Sessions 46-47**: PATCH activation instead of POST, sqlite3 direct activation attempts. Session 46 prompt optimization.
+5. **Session 48**: entrypoint v4.0 — direct sqlite3 activation (bypasses n8n publish system), credential leak fixes, auto-generate missing IDs.
+6. **User ideas captured** (5 total): New chatbot repo, ingestion test workflow, sub-agents as restrictors, CLAUDE.md cleanup, visible 8-10 step plan.
+
+### Next sessions — PRIORITIES (ordre)
+1. **FIX HF SPACE ACTIVATION** — #0 priority. ALL webhooks 404. entrypoint v4.0 deployed (sqlite3 direct activation). Needs verification + retry logic. CROSS-PIPELINE bottleneck: unblocks Standard + Orchestrator + PME (Rule 36).
+2. **USER IDEAS** — Implement 5 user ideas captured in session-state.md (chatbot repo, ingestion test, sub-agent restrictors, CLAUDE.md cleanup, visible plan).
+3. **FIX ORCHESTRATOR** — Returns 0% on Phase 2. Debug intent classifier + sub-pipeline routing.
+4. **RELAUNCH STANDARD** — batch-size 5, on fixed HF Space. Complete remaining 421/1000 questions.
+5. **ACTIVATE PME WORKFLOWS** — Configure Google API key as credential, test gateway webhook.
+6. **Complete data-ingestion** — musique + finqa downloads, start actual ingestion pipeline.
 
 ### Phase 2 completion targets
 - Graph : DONE (500/500)
