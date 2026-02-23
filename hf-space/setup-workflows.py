@@ -234,7 +234,12 @@ def update_existing_workflows(id_map):
 
 
 def activate_all_workflows():
-    """Activate all inactive workflows."""
+    """Activate all workflows via PATCH. Forces re-activation even if already active.
+
+    n8n 2.9.x requires workflows to be PUBLISHED (not just active in DB).
+    PATCH via REST API creates the published version, enabling webhook registration.
+    SQLite active=1 alone creates "draft" workflows — webhooks won't register.
+    """
     result = api("GET", "workflows?limit=100")
     if not result:
         print("  Could not list workflows")
@@ -248,19 +253,15 @@ def activate_all_workflows():
         return 0
 
     activated = 0
-    already = 0
     failed = 0
     for wf in wfs:
         wid = wf.get("id", "")
         wname = wf.get("name", "?")
-        wactive = wf.get("active", False)
 
-        if wactive:
-            print(f"    Already active: {wname}")
-            already += 1
-            continue
-
-        # Use PATCH to set active=true — avoids versionId requirement of POST /activate
+        # ALWAYS PATCH — even if already active. This ensures the published version
+        # is created, which is required for webhook registration in n8n 2.9.x.
+        # First deactivate, then activate (forces n8n to create published version)
+        api("PATCH", f"workflows/{wid}", {"active": False})
         act_result = api("PATCH", f"workflows/{wid}", {"active": True})
         if act_result:
             is_active = act_result.get("data", act_result).get("active", False)
