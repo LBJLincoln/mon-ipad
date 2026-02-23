@@ -108,7 +108,7 @@ git init
 git config user.email "alexis.moret6@outlook.fr"
 git config user.name "LBJLincoln"
 git add -A
-git commit -m "fix: v5.4 — fix env var syntax ={{.VAR}} → ={{\$env.VAR}} (broken Standard+Graph auth)"
+git commit -m "fix: v5.5 — remove nodeCredentialType + fix Cohere API key"
 
 REMOTE_URL="https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_USER}/${SPACE_NAME}"
 git remote add space "$REMOTE_URL" 2>/dev/null || git remote set-url space "$REMOTE_URL"
