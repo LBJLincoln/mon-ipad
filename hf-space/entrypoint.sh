@@ -1,14 +1,16 @@
 #!/bin/bash
 # =================================================================
-# HF Space Entrypoint — n8n Engine v3.1
+# HF Space Entrypoint — n8n Engine v4.0
 # =================================================================
-# NUCLEAR APPROACH:
-# 1. Start n8n to create initial database
-# 2. Wait for healthy
-# 3. Setup owner account
-# 4. Import workflows via REST API with auth
-# 5. Activate all workflows
-# 6. NEVER stop trying — retry until it works
+# SQLITE-DIRECT APPROACH (no REST API login needed):
+# 1. Strip credential refs from workflows → clean JSONs
+# 2. CLI import cleaned workflows (creates SQLite entries)
+# 3. sqlite3: SET active=true on ALL workflows
+# 4. Start n8n → reads active=true → registers webhooks → DONE
+# 5. After n8n healthy: create credentials + update workflows via REST
+#
+# WHY: REST API login from inside container is fragile (timing, auth).
+#       Direct SQLite manipulation before n8n starts is 100% reliable.
 #
 # RESILIENCE: No set -e. Container stays alive even if setup fails.
 # Last updated: 2026-02-23
@@ -17,14 +19,14 @@
 SETUP_LOG="/tmp/setup-workflows.log"
 exec > >(tee -a "$SETUP_LOG") 2>&1
 
-echo "=== NOMOS RAG ENGINE — HF Space Boot v3.1 ==="
+echo "=== NOMOS RAG ENGINE — HF Space Boot v4.0 ==="
 echo "Boot started at $(date -u)"
 
 trap 'echo "SIGNAL received"; wait' SIGTERM SIGINT
 
 # ---- 1. Environment setup ----
 echo ""
-echo "[1/4] Setting up environment..."
+echo "[1/5] Setting up environment..."
 
 export N8N_HOST=0.0.0.0
 export N8N_PORT=7860
@@ -78,53 +80,85 @@ echo "  === ENV CHECK ==="
 [ -n "$N8N_ENCRYPTION_KEY" ] && echo "  N8N_ENCRYPTION_KEY: SET" || echo "  N8N_ENCRYPTION_KEY: UNSET"
 echo "  ================="
 
-# ---- 2. Start n8n ----
+# ---- 2. Strip credentials + CLI import ----
 echo ""
-echo "[2/4] Starting n8n..."
+echo "[2/5] Importing workflows via CLI..."
 
-# Strip credential references from workflow JSONs to prevent FOREIGN KEY errors
-# during CLI import (credentials will be re-added by setup-workflows.py later)
-echo "  Stripping credential references from workflow JSONs..."
+mkdir -p /home/node/.n8n
+
+# Strip credential references to prevent FOREIGN KEY errors
+echo "  Stripping credential references..."
 mkdir -p /tmp/n8n-clean-workflows
+CLEANED=0
 for wf in /app/n8n-workflows/*.json; do
     [ -f "$wf" ] || continue
     WFNAME=$(basename "$wf")
     python3 -c "
-import json, sys
+import json
 with open('$wf') as f:
     d = json.load(f)
 for node in d.get('nodes', []):
     node.pop('credentials', None)
-# Set active=false to prevent activation errors during import
 d['active'] = False
 with open('/tmp/n8n-clean-workflows/$WFNAME', 'w') as f:
     json.dump(d, f)
 print('  Cleaned: $WFNAME')
 " 2>&1
+    CLEANED=$((CLEANED + 1))
 done
+echo "  Cleaned $CLEANED workflow files"
 
-# CLI import the cleaned workflows (no credential refs = no FOREIGN KEY errors)
-echo "  CLI importing cleaned workflows..."
-CLI_IMPORTED=0
+# CLI import (n8n creates SQLite DB on first import)
+echo "  CLI importing..."
+CLI_OK=0
+CLI_FAIL=0
 for wf in /tmp/n8n-clean-workflows/*.json; do
     [ -f "$wf" ] || continue
     WFNAME=$(basename "$wf")
     if n8n import:workflow --input="$wf" 2>&1; then
-        CLI_IMPORTED=$((CLI_IMPORTED + 1))
+        CLI_OK=$((CLI_OK + 1))
+        echo "  OK: $WFNAME"
     else
-        echo "  CLI FAIL: $WFNAME"
+        CLI_FAIL=$((CLI_FAIL + 1))
+        echo "  FAIL: $WFNAME"
     fi
 done
-echo "  CLI import: $CLI_IMPORTED workflows"
+echo "  CLI import: $CLI_OK OK, $CLI_FAIL failed"
 
-mkdir -p /home/node/.n8n
+# ---- 3. SQLite: Activate ALL workflows directly ----
+echo ""
+echo "[3/5] Activating workflows via SQLite..."
+
+DB_PATH="/home/node/.n8n/database.sqlite"
+if [ -f "$DB_PATH" ]; then
+    # Count workflows before activation
+    WF_COUNT=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM workflow_entity;" 2>/dev/null || echo "0")
+    echo "  Workflows in DB: $WF_COUNT"
+
+    # Activate ALL workflows
+    sqlite3 "$DB_PATH" "UPDATE workflow_entity SET active = 1;" 2>/dev/null
+    ACTIVE_COUNT=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM workflow_entity WHERE active = 1;" 2>/dev/null || echo "0")
+    echo "  Activated: $ACTIVE_COUNT workflows"
+
+    # List all workflows
+    echo "  Workflow list:"
+    sqlite3 "$DB_PATH" "SELECT id, name, active FROM workflow_entity;" 2>/dev/null | while read -r line; do
+        echo "    $line"
+    done
+else
+    echo "  WARNING: Database not found at $DB_PATH"
+    echo "  n8n will create it on first start"
+fi
+
+# ---- 4. Start n8n ----
+echo ""
+echo "[4/5] Starting n8n..."
 n8n start &
 N8N_PID=$!
 echo "  n8n PID: $N8N_PID"
 
-# ---- 3. Wait for healthy ----
-echo ""
-echo "[3/4] Waiting for n8n to become healthy..."
+# Wait for healthy
+echo "  Waiting for n8n to become healthy..."
 N8N_READY=false
 for i in $(seq 1 120); do
     if curl -sf http://127.0.0.1:7860/healthz > /dev/null 2>&1; then
@@ -136,17 +170,18 @@ for i in $(seq 1 120); do
 done
 
 if [ "$N8N_READY" != "true" ]; then
-    echo "WARNING: n8n not healthy after 120s"
+    echo "  WARNING: n8n not healthy after 120s"
     echo "  PID: $N8N_PID ($(ps -p $N8N_PID -o comm= 2>/dev/null || echo 'DEAD'))"
+    # Don't exit — try to keep container alive
     wait $N8N_PID
     exit 0
 fi
 
-# ---- 4. Full setup: owner + credentials + workflows + activation ----
+# ---- 5. Post-start: Owner setup + credentials ----
 echo ""
-echo "[4/4] Full setup..."
+echo "[5/5] Post-start setup (owner + credentials)..."
 
-# Wait for REST API to be fully ready
+# Wait for REST API
 echo "  Waiting for REST API..."
 for i in $(seq 1 30); do
     if curl -s http://127.0.0.1:7860/rest/settings 2>/dev/null | python3 -c "import sys,json; json.load(sys.stdin)" 2>/dev/null; then
@@ -159,10 +194,8 @@ done
 CI_EMAIL="${CI_EMAIL:-ci@nomos.ai}"
 CI_PASSWORD="${CI_PASSWORD:-CI-Nomos-2026!}"
 
-# Check settings
+# Check if first boot
 SETTINGS=$(curl -s http://127.0.0.1:7860/rest/settings 2>/dev/null || echo "{}")
-echo "  Settings response (first 200 chars): ${SETTINGS:0:200}"
-
 IS_FIRST_BOOT=$(echo "$SETTINGS" | python3 -c "
 import sys,json
 try:
@@ -175,20 +208,19 @@ except:
 " 2>/dev/null || echo "error")
 echo "  First boot: $IS_FIRST_BOOT"
 
-# Owner setup (if first boot)
+# Owner setup
 if [ "$IS_FIRST_BOOT" = "yes" ]; then
     echo "  Creating owner account..."
-    OWNER_RESP=$(curl -s -w "\n_HTTP_%{http_code}" -X POST http://127.0.0.1:7860/rest/owner/setup \
+    curl -s -X POST http://127.0.0.1:7860/rest/owner/setup \
         -H "Content-Type: application/json" \
-        -d "{\"email\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\",\"firstName\":\"CI\",\"lastName\":\"Bot\"}" 2>/dev/null)
-    echo "  Owner setup response: $OWNER_RESP"
-    sleep 5
+        -d "{\"email\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\",\"firstName\":\"CI\",\"lastName\":\"Bot\"}" 2>/dev/null | head -5
+    sleep 3
 fi
 
-# Login — try multiple times with different approaches
+# Login and create credentials (best-effort — webhooks work even without this)
 COOKIE=""
 echo "  Attempting login..."
-for attempt in $(seq 1 15); do
+for attempt in $(seq 1 5); do
     LOGIN_RESP=$(curl -s -w "\n_HTTP_%{http_code}" \
         -X POST http://127.0.0.1:7860/rest/login \
         -H "Content-Type: application/json" \
@@ -196,61 +228,38 @@ for attempt in $(seq 1 15); do
         -c /tmp/n8n-cookies.txt 2>/dev/null)
     HTTP_CODE=$(echo "$LOGIN_RESP" | grep "^_HTTP_" | head -1 | sed 's/_HTTP_//')
     echo "  Login attempt $attempt: HTTP $HTTP_CODE"
-    echo "  Login body: $(echo "$LOGIN_RESP" | grep -v '^_HTTP_' | head -3)"
 
     if [ "$HTTP_CODE" = "200" ]; then
         COOKIE=$(grep n8n-auth /tmp/n8n-cookies.txt 2>/dev/null | awk '{print $NF}')
         if [ -n "$COOKIE" ]; then
-            echo "  Login SUCCESS (cookie=${COOKIE:0:10}...)"
+            echo "  Login SUCCESS"
             break
-        else
-            echo "  Login 200 but no cookie in jar. Cookie jar contents:"
-            cat /tmp/n8n-cookies.txt 2>/dev/null || echo "  (empty)"
         fi
     fi
 
-    # If we get 401, try creating owner again
-    if [ "$HTTP_CODE" = "401" ] && [ "$attempt" -le 3 ]; then
-        echo "  Got 401 — retrying owner setup..."
+    # If 401, try owner setup again
+    if [ "$HTTP_CODE" = "401" ] && [ "$attempt" -le 2 ]; then
         curl -s -X POST http://127.0.0.1:7860/rest/owner/setup \
             -H "Content-Type: application/json" \
-            -d "{\"email\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\",\"firstName\":\"CI\",\"lastName\":\"Bot\"}" 2>/dev/null | head -3
+            -d "{\"email\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\",\"firstName\":\"CI\",\"lastName\":\"Bot\"}" 2>/dev/null > /dev/null
         sleep 3
     fi
-
     sleep 2
 done
 
-if [ -z "$COOKIE" ]; then
-    echo "  CRITICAL: Cannot login after 15 attempts"
-    echo "  Attempting n8n CLI import as last resort..."
-
-    # CLI import as fallback
-    for wf in /app/n8n-workflows/*.json; do
-        [ -f "$wf" ] || continue
-        WFNAME=$(basename "$wf")
-        echo "  CLI import: $WFNAME"
-        n8n import:workflow --input="$wf" 2>&1 || echo "  CLI FAILED: $WFNAME"
-    done
-    echo "  CLI import done. Workflows may not be activated."
-    echo "  Restarting n8n to pick up imported workflows..."
-    kill $N8N_PID 2>/dev/null
-    sleep 5
-    n8n start &
-    N8N_PID=$!
-    echo "  New n8n PID: $N8N_PID"
-else
-    # We have auth — run the full setup
-    echo ""
-    echo "  Running setup-workflows.py..."
+if [ -n "$COOKIE" ]; then
+    echo "  Running setup-workflows.py for credentials..."
     python3 /app/setup-workflows.py "$COOKIE" "http://127.0.0.1:7860" 2>&1
     echo "  setup-workflows.py exit code: $?"
+else
+    echo "  Login failed — skipping credential setup."
+    echo "  Webhooks will still work (workflows use \$env expressions)."
 fi
 
 # ---- Final: Verify webhooks ----
 echo ""
 echo "=== WEBHOOK VERIFICATION ==="
-sleep 5
+sleep 3
 WEBHOOKS_OK=0
 for wh in debug-status rag-multi-index-v3 ff622742-6d71-4e91-af71-b5c666088717 3e0f8010-39e0-4bca-9d19-35e5094391a9 92217bb8-ffc8-459a-8331-3f553812c3d0 pme-assistant-gateway; do
     WH_CODE=$(curl -s -o /tmp/wh-resp.txt -w "%{http_code}" -X POST \
@@ -268,8 +277,7 @@ echo "=== BOOT COMPLETE ==="
 echo "  n8n PID: $N8N_PID"
 echo "  n8n version: $(n8n --version 2>/dev/null || echo '?')"
 echo "  Webhooks working: $WEBHOOKS_OK"
-echo "  Auth: ${COOKIE:+OK}${COOKIE:-FAILED}"
-echo "  Setup log: /tmp/setup-workflows.log ($(wc -l < /tmp/setup-workflows.log 2>/dev/null || echo 0) lines)"
+echo "  Auth: ${COOKIE:+OK}${COOKIE:-SKIPPED}"
 echo "  Boot complete at $(date -u)"
 echo ""
 echo "==================================================================="
