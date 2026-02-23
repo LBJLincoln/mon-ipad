@@ -101,6 +101,7 @@ def create_all_credentials():
             # Map all OpenRouter-style credential IDs
             id_map["OPENROUTER_HEADER_AUTH"] = new_id
             id_map["LLM_API_CREDENTIAL_ID"] = new_id  # PME workflows use this
+            type_map["httpHeaderAuth"] = new_id  # Fallback for type-based matching
     else:
         print("  SKIP: OpenRouter httpHeaderAuth (no OPENROUTER_API_KEY)")
 
@@ -190,6 +191,8 @@ def restore_credentials_and_update(id_map, type_map):
 
     print(f"  Original workflows loaded: {len(orig_by_name)}")
     print(f"  Workflow ID mapping: {len(wf_id_map)} entries")
+    for old_id, new_id in wf_id_map.items():
+        print(f"    {old_id} -> {new_id}")
 
     updated = 0
     for wf in wfs:
@@ -267,9 +270,14 @@ def restore_credentials_and_update(id_map, type_map):
                         wf_ref["value"] = wf_id_map[old_sub_id]
                         needs_update = True
                         print(f"    Remapped sub-workflow in {wname}: {old_sub_id} -> {wf_id_map[old_sub_id]}")
+                    elif old_sub_id:
+                        print(f"    WARNING: No mapping for sub-workflow {old_sub_id} in {wname}/{node_name}")
+                        print(f"    Available mappings: {list(wf_id_map.keys())}")
                 elif isinstance(wf_ref, str) and wf_ref in wf_id_map:
                     params["workflowId"] = wf_id_map[wf_ref]
                     needs_update = True
+                elif isinstance(wf_ref, str) and wf_ref:
+                    print(f"    WARNING: No mapping for sub-workflow {wf_ref} in {wname}/{node_name}")
 
         if needs_update:
             update_data = {
@@ -291,12 +299,59 @@ def restore_credentials_and_update(id_map, type_map):
     return updated
 
 
-def activate_all_workflows():
-    """Activate all workflows via POST /activate with versionId.
+def activate_single(wid, wname):
+    """Activate a single workflow. Returns True if successful."""
+    # Deactivate first (reset state)
+    api("PATCH", f"workflows/{wid}", {"active": False})
+    time.sleep(0.5)
 
-    n8n 2.8+ requires POST /workflows/{id}/activate with a versionId
-    to properly publish the workflow and register webhooks.
-    PATCH {active: true} sets the DB flag but does NOT register webhooks.
+    # Get fresh versionId
+    full = api("GET", f"workflows/{wid}")
+    if not full:
+        print(f"    Could not get: {wname}")
+        return False
+
+    wf_data = full.get("data", full)
+    if isinstance(wf_data, dict) and "data" in wf_data:
+        wf_data = wf_data["data"]
+    version_id = wf_data.get("versionId", "")
+
+    # Method 1: POST /activate with versionId (n8n 2.8+)
+    if version_id:
+        act_result = api("POST", f"workflows/{wid}/activate", {"versionId": version_id})
+        if act_result:
+            d = act_result.get("data", act_result)
+            if d.get("active", False):
+                print(f"    POST /activate OK: {wname}")
+                return True
+            err = str(act_result.get("message", ""))[:150]
+            print(f"    POST /activate not active: {wname} — {err}")
+    else:
+        print(f"    No versionId for: {wname}")
+
+    # Method 2: PATCH {active: true} — fallback
+    fb = api("PATCH", f"workflows/{wid}", {"active": True})
+    if fb:
+        d = fb.get("data", fb)
+        if isinstance(d, dict) and "data" in d:
+            d = d["data"]
+        if d.get("active", False):
+            print(f"    PATCH active OK: {wname}")
+            return True
+        err = str(fb.get("message", ""))[:150]
+        print(f"    PATCH not active: {wname} — {err}")
+
+    print(f"    FAILED to activate: {wname}")
+    return False
+
+
+def activate_all_workflows():
+    """Activate all workflows in 2 passes.
+
+    Pass 1: Base workflows (Standard, Graph, Quantitative, support, etc.)
+    Pass 2: Orchestrator + gateway (depend on sub-workflows being active first)
+
+    Workflows that need Google OAuth or messaging creds we don't have are skipped.
     """
     result = api("GET", "workflows?limit=100")
     if not result:
@@ -310,62 +365,57 @@ def activate_all_workflows():
         print(f"  Unexpected workflow list format: {type(wfs)}")
         return 0
 
-    # Sort: orchestrator LAST (it references sub-workflows that must be published first)
-    wfs_sorted = sorted(wfs, key=lambda w: 1 if "orchestrator" in w.get("name", "").lower() else 0)
+    # Skip workflows that need OAuth/messaging creds we can't create
+    skip_keywords = ["action executor", "whatsapp"]
+    # Orchestrator + gateway in pass 2 (they reference sub-workflows)
+    pass2_keywords = ["orchestrator", "gateway", "multi-canal"]
+
+    pass1 = []
+    pass2 = []
+    skipped = 0
+    for wf in wfs:
+        wname_lower = wf.get("name", "").lower()
+        if any(k in wname_lower for k in skip_keywords):
+            print(f"  SKIP (missing OAuth/messaging creds): {wf.get('name', '?')}")
+            skipped += 1
+            continue
+        if any(k in wname_lower for k in pass2_keywords):
+            pass2.append(wf)
+        else:
+            pass1.append(wf)
 
     activated = 0
     failed = 0
-    for wf in wfs_sorted:
-        wid = wf.get("id", "")
-        wname = wf.get("name", "?")
 
-        # Deactivate first (reset state)
-        api("PATCH", f"workflows/{wid}", {"active": False})
-        time.sleep(0.3)
-
-        # Get fresh versionId
-        full = api("GET", f"workflows/{wid}")
-        if not full:
-            print(f"    Could not get: {wname}")
+    # Pass 1: Base workflows
+    print(f"  === Pass 1: {len(pass1)} base workflows ===")
+    for wf in pass1:
+        if activate_single(wf.get("id", ""), wf.get("name", "?")):
+            activated += 1
+        else:
             failed += 1
-            continue
+        time.sleep(0.5)
 
-        wf_data = full.get("data", full)
-        if isinstance(wf_data, dict) and "data" in wf_data:
-            wf_data = wf_data["data"]
-        version_id = wf_data.get("versionId", "")
-
-        if not version_id:
-            print(f"    No versionId for: {wname}")
-            failed += 1
-            continue
-
-        # POST /activate with versionId (registers webhooks)
-        act_result = api("POST", f"workflows/{wid}/activate", {"versionId": version_id})
-        if act_result and "error" not in str(act_result.get("code", "")):
-            d = act_result.get("data", act_result)
-            is_active = d.get("active", False)
-            if is_active:
-                print(f"    Published+Activated: {wname}")
+    # Pass 2: Orchestrator + gateway (after base workflows are active)
+    if pass2:
+        print(f"  === Pass 2: {len(pass2)} orchestrator/gateway workflows ===")
+        time.sleep(3)  # Let n8n settle after pass 1
+        for wf in pass2:
+            wid = wf.get("id", "")
+            wname = wf.get("name", "?")
+            success = False
+            for attempt in range(1, 4):
+                if activate_single(wid, wname):
+                    success = True
+                    break
+                print(f"    Retry {attempt}/3 for: {wname}")
+                time.sleep(3)
+            if success:
                 activated += 1
             else:
-                print(f"    POST OK but not active: {wname}")
                 failed += 1
-        else:
-            # Fallback: try PATCH activation (may not register webhooks but at least sets active)
-            err_msg = ""
-            if act_result:
-                err_msg = str(act_result.get("message", ""))[:100]
-            print(f"    Publish FAILED: {wname} — {err_msg}")
-            print(f"    Trying PATCH fallback...")
-            fb = api("PATCH", f"workflows/{wid}", {"active": True})
-            if fb:
-                print(f"    PATCH fallback OK (webhooks may not work): {wname}")
-            failed += 1
 
-        time.sleep(0.3)
-
-    print(f"  Activation: {activated} published, {failed} failed")
+    print(f"  Activation: {activated} OK, {failed} failed, {skipped} skipped")
     return activated
 
 

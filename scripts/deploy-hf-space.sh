@@ -42,6 +42,8 @@ mkdir -p "$HF_SPACE_DIR/n8n-workflows"
 WF_COUNT=0
 for wf in "$REPO_ROOT/n8n/live/"*.json; do
     [ -f "$wf" ] || continue
+    # Skip duplicate quantitative (same webhook path as quantitative.json)
+    [[ "$(basename "$wf")" == "quantitative-v2-template-fix.json" ]] && continue
     cp "$wf" "$HF_SPACE_DIR/n8n-workflows/"
     echo "  Copied: $(basename "$wf")"
     WF_COUNT=$((WF_COUNT + 1))
@@ -105,7 +107,7 @@ git init
 git config user.email "alexis.moret6@outlook.fr"
 git config user.name "LBJLincoln"
 git add -A
-git commit -m "feat: n8n engine v5.1 — SQLite + REST API activation with diagnostics"
+git commit -m "fix: v5.2 — 2-pass activation, remove dup quantitative, better sub-wf remapping"
 
 REMOTE_URL="https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_USER}/${SPACE_NAME}"
 git remote add space "$REMOTE_URL" 2>/dev/null || git remote set-url space "$REMOTE_URL"
