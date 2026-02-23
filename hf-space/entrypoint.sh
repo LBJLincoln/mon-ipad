@@ -45,7 +45,8 @@ export DB_POSTGRESDB_PORT=6543
 export DB_POSTGRESDB_DATABASE=postgres
 export DB_POSTGRESDB_USER=postgres.ayqviqmxifzmhphiqfmj
 export DB_POSTGRESDB_PASSWORD="${SUPABASE_PASSWORD:-}"
-export DB_POSTGRESDB_SSL_ENABLED=false
+export DB_POSTGRESDB_SSL_ENABLED=true
+export DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED=false
 export DB_POSTGRESDB_SCHEMA=n8n_engine
 
 # n8n execution settings
