@@ -260,12 +260,16 @@ def activate_all_workflows():
             already += 1
             continue
 
-        # n8n 2.8.4 requires versionId for activation
-        version_id = wf.get("versionId", "")
-        act_result = api("POST", f"workflows/{wid}/activate", {"versionId": version_id})
+        # Use PATCH to set active=true — avoids versionId requirement of POST /activate
+        act_result = api("PATCH", f"workflows/{wid}", {"active": True})
         if act_result:
-            print(f"    Activated: {wname}")
-            activated += 1
+            is_active = act_result.get("data", act_result).get("active", False)
+            if is_active:
+                print(f"    Activated: {wname}")
+                activated += 1
+            else:
+                print(f"    PATCH OK but not active: {wname}")
+                failed += 1
         else:
             print(f"    FAILED to activate: {wname}")
             failed += 1
