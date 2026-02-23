@@ -1,41 +1,46 @@
-# Session State — 2026-02-23T21:45:00Z
+# Session State — 23 Fevrier 2026 (Session 49-50)
 
-## Objectif de session
-Fix rag-dashboard Vercel deployment — static serving configuration
+> Last updated: 2026-02-23T22:15:00+01:00
 
-## Tâches complétées
-1. ✅ Cloned rag-dashboard repo
-2. ✅ Created `vercel.json` with:
-   - `buildCommand: ""` (no build, just static)
-   - `outputDirectory: "."` (serve root)
-   - `framework: null` (no Next.js)
-   - rewrites for `/` → control-panel.html and `/dashboard` → docs/index.html
-3. ✅ Copied `control-panel.html` to `index.html` as Vercel root fallback
-4. ✅ Committed and pushed to origin main
+## HF Space: 4/5 webhooks registered (was 0/5)
 
-## Décisions prises
-- Vercel must serve static HTML, not rebuild Next.js app (cache issue)
-- index.html as fallback for Vercel root path
-- rewrites handle dashboard link routing
+| Webhook | HTTP | Notes |
+|---------|------|-------|
+| Standard | 200 | Registered but "Unable to generate answer" — internal error, NOT 429 |
+| Graph | 200 | Registered but timeout/empty — internal error |
+| Quantitative | **200** | **WORKING** |
+| Orchestrator | **200** | **Registered** (was 404, fixed by 2-pass activation) |
+| PME Gateway | 404 | Not registered |
 
-## Dernière action
-Push to rag-dashboard:
-```
-Commit: 20c3911 "fix: add vercel.json for static serving + index.html"
-Files: +index.html, +vercel.json
-```
+**Next session priority**: Debug Standard/Graph internal errors (likely Pinecone credential mapping issue, NOT rate limit).
 
-## Prochaine action
-Monitor Vercel deployment (should rebuild within 1-2 min):
-- Check https://nomos-dashboard-alexis-morets-projects.vercel.app
-- Verify serving control-panel.html (not Next.js cached app)
-- Test /dashboard route
+## Deployed versions
+- entrypoint.sh v5.1 (SQLite + REST API activation + 10-retry login)
+- setup-workflows.py v4 (2-pass activation + per-pipeline OpenRouter keys)
+- v5.3 pushed to HF Space (per-pipeline keys: 6 creds, 3 accounts)
 
-## Commits
-- 20c3911: fix vercel.json + index.html
+## Running sub-agents (may complete after compact)
+- ad91fb4: Comprehensive dashboard HTML (multi-repo, architecture, exec summary)
+- a43b041: rag-storage migration (datasets/snapshots/logs from mon-ipad)
+- a40020d: Satellite repos cleanup (rag-tests, rag-data-ingestion, rag-website, rag-pme-connectors)
 
-## Repos impactés
-- rag-dashboard ✅
+## TODO next session
+1. Debug Standard pipeline internal error (Pinecone cred? Supabase connection?)
+2. Fix PME Gateway activation
+3. Verify dashboard deployed correctly
+4. Verify rag-storage migration completed
+5. Start data ingestion (create Codespace for rag-data-ingestion)
+6. CLAUDE.md cleanup (too many rules)
+7. OpenRouter key maximization workflow
 
-## Status
-**COMPLETE** — Vercel reconfigured for static serving. Awaiting Vercel rebuild (typical: 30-60s).
+## Commits this session
+- e35960f, 057fcca, ae71e05 (entrypoint fixes + per-pipeline keys)
+- Sub-agent commits: rag-dashboard cleanup, exec summary, vercel.json
+
+## Phase 2 eval
+| Pipeline | Done | Accuracy | Status |
+|----------|------|----------|--------|
+| Standard | 579/1000 | ~36% | Internal error (webhook works) |
+| Graph | 500/500 | 78.0% | COMPLETE |
+| Quantitative | 500/500 | 92.0% | COMPLETE |
+| Orchestrator | 57/1000 | 0% | Webhook now works, can resume |
