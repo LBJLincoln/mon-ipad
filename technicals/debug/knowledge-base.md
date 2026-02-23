@@ -1,6 +1,6 @@
 # Knowledge Base — Cerveau Persistant Multi-RAG
 
-> Last updated: 2026-02-23T09:30:00+01:00 (Session 40g — overnight self-healing #6)
+> Last updated: 2026-02-23T23:18:00+01:00 (Session 43 — OpenRouter key rotation system)
 > **Ce document est VIVANT.** Il s'enrichit a CHAQUE session avec les solutions, patterns
 > et connaissances techniques decouvertes. A lire EN PREMIER avec `fixes-library.md`.
 > Objectif : ameliorer la performance de l'agent a chaque session.
@@ -185,9 +185,43 @@ CHECKLIST PRE-TEST :
 - **Limite globale** : ~20 req/min par API key (tous modeles confondus)
 - **429 response** : `{"error":{"message":"Rate limit exceeded","type":"rate_limit_error"}}`
 - **Headers utiles** : `x-ratelimit-remaining`, `x-ratelimit-reset`
-- **Contournement** : delai 8s entre requetes quantitatives (3 calls LLM par question)
+- **Contournement OLD** : delai 8s entre requetes quantitatives (3 calls LLM par question)
 - **Impact** : Le Quantitative fait 2-3 calls LLM par question (SQL gen + validation/repair + interpretation). A 20 req/min, max ~7 questions/minute.
-- **Multi-key** : Possible d'avoir plusieurs API keys OpenRouter pour multiplier le quota (pas encore fait).
+- **Multi-key IMPLEMENTED** : **7 keys (3 accounts) → ~140 req/min aggregate** (Session 43)
+
+**Key Rotation System (NEW — Session 43)**:
+```python
+from openrouter_key_rotation import get_rotator
+
+rotator = get_rotator()  # Loads all keys from env
+api_key = rotator.get_next_key()  # Returns least-used key
+# ... make request ...
+rotator.record_usage(api_key)  # Track usage
+```
+
+**Environment vars**:
+```bash
+OPENROUTER_API_KEY=sk-or-v1-xxxxx          # Main (Account 1)
+OPENROUTER_KEY_STANDARD=sk-or-v1-xxxxx    # Standard pipeline
+OPENROUTER_KEY_GRAPH=sk-or-v1-xxxxx       # Graph pipeline
+OPENROUTER_KEY_QUANTITATIVE=sk-or-v1-xxxxx  # Quantitative (Account 2)
+OPENROUTER_KEY_ORCHESTRATOR=sk-or-v1-xxxxx  # Orchestrator (Account 2)
+OPENROUTER_KEY_PME=sk-or-v1-xxxxx           # PME (Account 3)
+OPENROUTER_KEY_ACCOUNT3=sk-or-v1-xxxxx      # Additional key
+```
+
+**Features**:
+- Automatic load distribution (least-recently-used algorithm)
+- Rate limit protection (warns at 80%, waits if all keys at 100%)
+- Thread-safe for parallel eval scripts
+- Usage tracking and statistics (`rotator.print_status()`)
+
+**Files**:
+- `/home/termius/mon-ipad/scripts/openrouter-key-rotation.py` — Core implementation
+- `/home/termius/mon-ipad/scripts/openrouter-key-rotation-README.md` — Full documentation
+- `/home/termius/mon-ipad/scripts/openrouter-key-rotation-example.py` — Integration examples
+
+**Result**: 7x throughput increase (20 req/min → 140 req/min)
 
 ---
 
@@ -471,14 +505,36 @@ services:
 ## 4. APIS EXTERNES
 
 ### 4.1 OpenRouter
+
+**Basic info**:
 - **URL** : `https://openrouter.ai/api/v1/chat/completions`
 - **Auth** : `Authorization: Bearer sk-or-v1-...`
-- **Rate limit** : ~20 req/min (free tier)
+- **Rate limit** : ~20 req/min per key (free tier)
 - **Erreurs courantes** :
-  - 429 : Rate limit → retry avec backoff 8s
+  - 429 : Rate limit → use key rotation system (see below)
   - 400 : JSON parsing failed → verifier le body
   - 502/503 : Serveur temporairement indisponible → retry
 - **Quota** : Illimite en requetes/jour, mais rate-limited par minute
+
+**Key Rotation System (Session 43)**:
+- **7 keys across 3 accounts** → **~140 req/min aggregate throughput**
+- **Implementation**: `/home/termius/mon-ipad/scripts/openrouter-key-rotation.py`
+- **Usage**:
+  ```python
+  from openrouter_key_rotation import get_rotator
+
+  rotator = get_rotator()
+  api_key = rotator.get_next_key()  # Automatic load balancing
+  # ... make request ...
+  rotator.record_usage(api_key)
+  ```
+- **Features**:
+  - Least-recently-used selection algorithm
+  - Automatic rate limit protection (warns at 80%, waits at 100%)
+  - Thread-safe for parallel execution
+  - Real-time statistics: `python3 scripts/openrouter-key-rotation.py --status`
+- **Integration**: See `scripts/openrouter-key-rotation-README.md` for full guide
+- **Testing**: `python3 scripts/openrouter-key-rotation.py --test 50`
 
 ### 4.2 Jina AI
 - **Embeddings** : `https://api.jina.ai/v1/embeddings` (model: `jina-embeddings-v3`, dim 1024)
