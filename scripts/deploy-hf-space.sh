@@ -27,6 +27,7 @@ WORK_DIR="/tmp/hf-space-deploy"
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'; CYAN='\033[0;36m'; NC='\033[0m'
 
 # Checks
+# HF_TOKEN_2 is optional for secondary HF Space deployment (redundancy)
 for var in HF_TOKEN SUPABASE_PASSWORD OPENROUTER_API_KEY; do
     if [ -z "${!var:-}" ]; then
         echo -e "${RED}ERROR: $var not set. Run: source .env.local${NC}"
@@ -107,7 +108,7 @@ git init
 git config user.email "alexis.moret6@outlook.fr"
 git config user.name "LBJLincoln"
 git add -A
-git commit -m "fix: v5.3 — per-pipeline OpenRouter keys (6 keys, 3 accounts) + 2-pass activation"
+git commit -m "fix: v5.4 — fix env var syntax ={{.VAR}} → ={{\$env.VAR}} (broken Standard+Graph auth)"
 
 REMOTE_URL="https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_USER}/${SPACE_NAME}"
 git remote add space "$REMOTE_URL" 2>/dev/null || git remote set-url space "$REMOTE_URL"
@@ -157,3 +158,82 @@ echo "  To add new OpenRouter keys:"
 echo "    export OPENROUTER_KEY_STANDARD=sk-or-v1-xxx"
 echo "    export OPENROUTER_KEY_GRAPH=sk-or-v1-yyy"
 echo "    bash scripts/deploy-hf-space.sh  # re-deploy with new keys"
+
+# ---- SECONDARY HF SPACE DEPLOYMENT (OPTIONAL) ----
+# Secondary HF account for redundancy. Set HF_TOKEN_2 to deploy to a second HF Space.
+if [ -n "${HF_TOKEN_2:-}" ]; then
+    echo ""
+    echo -e "${CYAN}=== SECONDARY HF SPACE DEPLOYMENT ===${NC}"
+    echo "  HF_TOKEN_2 detected — deploying to secondary account..."
+
+    SPACE_NAME_2="nomos-rag-engine-2"
+    read -p "  Secondary space name (default: $SPACE_NAME_2): " INPUT_SPACE
+    SPACE_NAME_2="${INPUT_SPACE:-$SPACE_NAME_2}"
+
+    echo -e "${CYAN}  Deploying to ${HF_USER}/${SPACE_NAME_2}...${NC}"
+
+    # Set secrets on secondary space
+    echo "  Setting secrets on secondary space..."
+    set_secret_2() {
+        local key="$1" value="$2"
+        HTTP=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "https://huggingface.co/api/spaces/${HF_USER}/${SPACE_NAME_2}/secrets" \
+            -H "Authorization: Bearer ${HF_TOKEN_2}" \
+            -H "Content-Type: application/json" \
+            -d "{\"key\":\"$key\",\"value\":\"$value\"}" 2>/dev/null || echo "ERR")
+        if [ "$HTTP" = "200" ] || [ "$HTTP" = "409" ]; then
+            echo -e "    ${GREEN}OK${NC} $key"
+        else
+            echo -e "    ${YELLOW}$HTTP${NC} $key (may need manual update)"
+        fi
+    }
+
+    set_secret_2 "SUPABASE_PASSWORD" "$SUPABASE_PASSWORD"
+    set_secret_2 "SUPABASE_HOST" "${SUPABASE_HOST:-aws-0-eu-west-1.pooler.supabase.com}"
+    set_secret_2 "SUPABASE_PORT" "${SUPABASE_PORT:-6543}"
+    set_secret_2 "SUPABASE_DB" "${SUPABASE_DB:-postgres}"
+    set_secret_2 "SUPABASE_USER" "${SUPABASE_USER:-postgres.kfyrtsmdolgioyxsglbz}"
+    set_secret_2 "OPENROUTER_API_KEY" "$OPENROUTER_API_KEY"
+    set_secret_2 "JINA_API_KEY" "${JINA_API_KEY:-}"
+    set_secret_2 "PINECONE_API_KEY" "${PINECONE_API_KEY:-}"
+    set_secret_2 "PINECONE_HOST" "${PINECONE_HOST:-}"
+    set_secret_2 "NEO4J_URI" "${NEO4J_URI:-}"
+    set_secret_2 "NEO4J_AUTH" "${NEO4J_AUTH:-neo4j/${NEO4J_PASSWORD:-}}"
+    set_secret_2 "N8N_ENCRYPTION_KEY" "${N8N_ENCRYPTION_KEY:-sota-rag-2026-hf-space-key-2}"
+    set_secret_2 "COHERE_API_KEY" "${COHERE_API_KEY:-}"
+    set_secret_2 "GOOGLE_API_KEY" "${GOOGLE_API_KEY:-}"
+    set_secret_2 "OPENROUTER_KEY_STANDARD" "${OPENROUTER_KEY_STANDARD:-${OPENROUTER_API_KEY}}"
+    set_secret_2 "OPENROUTER_KEY_GRAPH" "${OPENROUTER_KEY_GRAPH:-${OPENROUTER_API_KEY}}"
+    set_secret_2 "OPENROUTER_KEY_QUANTITATIVE" "${OPENROUTER_KEY_QUANTITATIVE:-${OPENROUTER_API_KEY}}"
+    set_secret_2 "OPENROUTER_KEY_ORCHESTRATOR" "${OPENROUTER_KEY_ORCHESTRATOR:-${OPENROUTER_API_KEY}}"
+    set_secret_2 "OPENROUTER_KEY_PME" "${OPENROUTER_KEY_PME:-${OPENROUTER_API_KEY}}"
+
+    # Push to secondary HF Space
+    echo -e "${CYAN}  Pushing to secondary HF Space...${NC}"
+    WORK_DIR_2="/tmp/hf-space-deploy-2"
+    rm -rf "$WORK_DIR_2"
+    cp -r "$HF_SPACE_DIR" "$WORK_DIR_2"
+    cd "$WORK_DIR_2"
+
+    git init
+    git config user.email "alexis.moret6@outlook.fr"
+    git config user.name "LBJLincoln"
+    git add -A
+    git commit -m "fix: v5.4 — secondary HF Space deployment"
+
+    REMOTE_URL_2="https://${HF_USER}:${HF_TOKEN_2}@huggingface.co/spaces/${HF_USER}/${SPACE_NAME_2}"
+    git remote add space2 "$REMOTE_URL_2" 2>/dev/null || git remote set-url space2 "$REMOTE_URL_2"
+    git push -f space2 main 2>&1 || git push -f space2 master:main 2>&1
+
+    cd "$REPO_ROOT"
+    rm -rf "$WORK_DIR_2"
+
+    echo -e "${GREEN}  Secondary deployment complete!${NC}"
+    echo "  Space URL: https://huggingface.co/spaces/${HF_USER}/${SPACE_NAME_2}"
+    echo "  Build takes 5-10 min. Check status at the Space URL."
+else
+    echo ""
+    echo "  Tip: For redundancy, set HF_TOKEN_2 to deploy to a secondary HF Space:"
+    echo "    export HF_TOKEN_2=hf_..."
+    echo "    bash scripts/deploy-hf-space.sh"
+fi

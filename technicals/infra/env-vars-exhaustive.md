@@ -1,6 +1,6 @@
 # Environment Variables & Credentials — Document Exhaustif
 
-> Last updated: 2026-02-19T00:15:00+01:00
+> Last updated: 2026-02-23T17:45:00+01:00
 > Ce fichier documente TOUTES les variables d'environnement, credentials et connexions
 > utilisees par le projet Multi-RAG. Les valeurs sont masquees (`.env.local` = source).
 
@@ -118,6 +118,7 @@ Variables definies dans `.env.local` pour les scripts Python et outils locaux.
 | `SUPABASE_API_KEY` | Service role key Supabase | MCP supabase |
 | `SUPABASE_PASSWORD` | Password PostgreSQL Supabase | MCP supabase |
 | `HF_TOKEN` | Token HuggingFace | MCP huggingface, Docker |
+| `HF_TOKEN_2` | Secondary HuggingFace token for redundant HF Space deployment | `scripts/deploy-hf-space.sh` (optional) |
 | `VERCEL_TOKEN` | Token Vercel deploy | Deployment |
 | `N8N_UI_EMAIL` | `admin@mon-ipad.com` | n8n login |
 | `N8N_UI_PASSWORD` | Password UI n8n | n8n login |
@@ -247,6 +248,7 @@ Tableau croisant les 13 workflows actifs avec les variables d'environnement qu'i
 | 2026-02-18 | `.mcp.json` OPENROUTER_API_KEY | Aligne sur .env.local | Audit session 24 |
 | 2026-02-18 | `.mcp.json` COHERE_API_KEY | Aligne sur .env.local | Audit session 24 |
 | 2026-02-18 | 16 HF Space secrets | Crees | Deploiement HF Space nomos-rag-engine |
+| 2026-02-23 | `HF_TOKEN_2` | Ajoutee | Secondary HF account support for redundant deployment |
 
 ---
 
