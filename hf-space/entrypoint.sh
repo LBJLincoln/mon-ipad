@@ -110,7 +110,7 @@ if [ "$N8N_READY" = "true" ]; then
         RESP=$(curl -s -o /dev/null -w "%{http_code}" \
             -X POST http://127.0.0.1:7860/rest/login \
             -H "Content-Type: application/json" \
-            -d "{\"email\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\"}" \
+            -d "{\"emailOrLdapLoginId\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\"}" \
             -c /tmp/n8n-cookies.txt 2>/dev/null || echo "000")
         if [ "$RESP" = "200" ]; then
             COOKIE=$(grep n8n-auth /tmp/n8n-cookies.txt 2>/dev/null | awk '{print $NF}')
