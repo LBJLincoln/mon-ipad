@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOMOS Multi-RAG Control Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .top-bar {
+            background: rgba(22, 27, 34, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .top-bar h1 {
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #58a6ff, #79c0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .datetime {
+            font-size: 14px;
+            color: #8b949e;
+        }
+
+        .refresh-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .refresh-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3fb950;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .section {
+            background: rgba(22, 27, 34, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #58a6ff;
+        }
+
+        .repo-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .repo-tab {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 8px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .repo-tab:hover {
+            background: rgba(48, 54, 61, 0.4);
+            border-color: #58a6ff;
+        }
+
+        .repo-tab.active {
+            background: rgba(88, 166, 255, 0.15);
+            border-color: #58a6ff;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .status-dot.green { background: #3fb950; }
+        .status-dot.yellow { background: #d29922; }
+        .status-dot.red { background: #f85149; }
+
+        .repo-detail {
+            display: none;
+        }
+
+        .repo-detail.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .repo-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #8b949e;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.deployed { background: rgba(63, 185, 80, 0.2); color: #3fb950; }
+        .badge.active { background: rgba(88, 166, 255, 0.2); color: #58a6ff; }
+        .badge.idle { background: rgba(210, 153, 34, 0.2); color: #d29922; }
+        .badge.pending { background: rgba(139, 148, 158, 0.2); color: #8b949e; }
+        .badge.error { background: rgba(248, 81, 73, 0.2); color: #f85149; }
+
+        .pipeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .pipeline-card {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .pipeline-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: capitalize;
+        }
+
+        .gauge-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+        }
+
+        .gauge-bg {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(#58a6ff 0deg, #58a6ff var(--progress), rgba(88, 166, 255, 0.1) var(--progress));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gauge-inner {
+            width: 85%;
+            height: 85%;
+            border-radius: 50%;
+            background: rgba(13, 17, 23, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .gauge-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #58a6ff;
+        }
+
+        .gauge-label {
+            font-size: 11px;
+            color: #8b949e;
+            text-transform: uppercase;
+        }
+
+        .pipeline-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .stat-label { color: #8b949e; }
+        .stat-value { font-weight: 600; }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(88, 166, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #58a6ff, #79c0ff);
+            transition: width 0.5s ease;
+        }
+
+        .badge.pass {
+            background: rgba(63, 185, 80, 0.2);
+            color: #3fb950;
+            margin-top: 10px;
+        }
+
+        .badge.fail {
+            background: rgba(248, 81, 73, 0.2);
+            color: #f85149;
+            margin-top: 10px;
+        }
+
+        .phase-indicator {
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.15), rgba(121, 192, 255, 0.05));
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .phase-text {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .infrastructure-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .infra-card {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .infra-title {
+            font-size: 13px;
+            color: #8b949e;
+            margin-bottom: 8px;
+        }
+
+        .infra-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .fixes-timeline {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .fix-item {
+            background: rgba(13, 17, 23, 0.6);
+            border-left: 3px solid #58a6ff;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+        }
+
+        .fix-date {
+            font-size: 11px;
+            color: #8b949e;
+            margin-bottom: 5px;
+        }
+
+        .fix-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .fix-desc {
+            font-size: 13px;
+            color: #8b949e;
+        }
+
+        .code-block {
+            background: rgba(13, 17, 23, 0.9);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        .hf-status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .hf-card {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .session-objectives {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .objectives-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #c9d1d9;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(13, 17, 23, 0.6);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(88, 166, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(88, 166, 255, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .pipeline-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .repo-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1>🎯 NOMOS Multi-RAG Control Panel</h1>
+            <div class="top-bar-right">
+                <div class="datetime" id="datetime"></div>
+                <div class="refresh-indicator">
+                    <div class="refresh-dot"></div>
+                    <span id="refresh-text">Auto-refresh: 30s</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Repo Selector -->
+        <div class="section">
+            <div class="section-title">Repository Selector</div>
+            <div class="repo-tabs" id="repo-tabs"></div>
+            <div id="repo-details"></div>
+        </div>
+
+        <!-- Pipeline Status -->
+        <div class="section">
+            <div class="section-title">Pipeline Status</div>
+            <div class="pipeline-grid" id="pipeline-grid"></div>
+        </div>
+
+        <!-- Phase Gate Status -->
+        <div class="section">
+            <div class="section-title">Phase Gate Status</div>
+            <div class="phase-indicator">
+                <div class="phase-text">Current Phase: <span id="current-phase">Phase 2</span></div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="phase-progress" style="width: 0%"></div>
+                </div>
+                <div class="stat-row" style="margin-top: 15px;">
+                    <span class="stat-label">Overall Accuracy</span>
+                    <span class="stat-value" id="overall-accuracy">78.1%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- HF Space Status -->
+        <div class="section">
+            <div class="section-title">HuggingFace Space Status</div>
+            <div class="hf-status-grid" id="hf-status"></div>
+        </div>
+
+        <!-- Session History -->
+        <div class="section">
+            <div class="section-title">Session History & Objectives</div>
+            <div class="session-objectives">
+                <div class="stat-row">
+                    <span class="stat-label">Current Session</span>
+                    <span class="stat-value" id="session-number">Loading...</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Last Updated</span>
+                    <span class="stat-value" id="last-updated">Loading...</span>
+                </div>
+                <div class="objectives-text" id="objectives-text"></div>
+            </div>
+            <div class="section-title" style="margin-top: 20px;">Recent Fixes Timeline</div>
+            <div class="fixes-timeline" id="fixes-timeline"></div>
+        </div>
+
+        <!-- Infrastructure -->
+        <div class="section">
+            <div class="section-title">Infrastructure Status</div>
+            <div class="infrastructure-grid" id="infrastructure"></div>
+        </div>
+    </div>
+
+    <script>
+        const REPOS = {
+            'mon-ipad': {
+                label: 'Control Center',
+                description: 'Tour de pilotage — scripts, directives, workflow definitions',
+                runtime: 'VM Google Cloud',
+                status: 'active',
+                url: 'https://github.com/LBJLincoln/mon-ipad',
+                metrics: { tracked_files: 957, directives: 15, scripts: 12 },
+                commands: `cat directives/session-state.md
+python3 eval/quick-test.py --questions 5
+python3 n8n/sync.py
+git push origin main`
+            },
+            'rag-tests': {
+                label: 'Tests RAG',
+                description: '4-pipeline evaluation — Phase 1 PASSED, Phase 2 in progress',
+                runtime: 'Codespace (ephemeral)',
+                status: 'idle',
+                url: 'https://github.com/LBJLincoln/rag-tests',
+                metrics: { questions_tested: 2308, iterations: 578, phase: '2' },
+                commands: `gh codespace ssh --codespace nomos-rag-tests-5g6g5q9vjjwjf5g4
+docker compose up -d
+python3 eval/iterative-eval.py --label "Phase2-relaunch"`
+            },
+            'rag-website': {
+                label: 'Website Business',
+                description: 'Next.js 14 — 4 sectors (BTP, Finance, Industrie, Juridique)',
+                runtime: 'Vercel',
+                status: 'deployed',
+                vercel_url: 'https://nomos-ai-pied.vercel.app',
+                url: 'https://github.com/LBJLincoln/rag-website',
+                metrics: { pages: 6, sectors: 4 },
+                commands: `git push rag-website main
+# Auto-deploy to Vercel`
+            },
+            'rag-dashboard': {
+                label: 'Dashboard',
+                description: 'Static HTML/JS monitoring dashboard',
+                runtime: 'Vercel/GitHub Pages',
+                status: 'deployed',
+                vercel_url: 'https://nomos-dashboard-alexis-morets-projects.vercel.app',
+                url: 'https://github.com/LBJLincoln/rag-dashboard',
+                metrics: {},
+                commands: `git push rag-dashboard main
+# Auto-deploy to Vercel`
+            },
+            'rag-data-ingestion': {
+                label: 'Ingestion BDD',
+                description: 'Pinecone + Neo4j + Supabase ingestion pipelines',
+                runtime: 'Codespace (not created)',
+                status: 'pending',
+                url: 'https://github.com/LBJLincoln/rag-data-ingestion',
+                metrics: { pinecone: '10,411 vectors', neo4j: '19,788 nodes', supabase: '17,000 rows' },
+                commands: `gh codespace create --repo LBJLincoln/rag-data-ingestion
+gh codespace ssh --codespace <name>
+docker compose up -d`
+            },
+            'rag-pme-connectors': {
+                label: 'PME Connectors',
+                description: 'Next.js 15 — 15 app integrations (WhatsApp, Slack, etc.)',
+                runtime: 'Vercel',
+                status: 'deployed',
+                vercel_url: 'https://nomos-pme-connectors-alexis-morets-projects.vercel.app',
+                url: 'https://github.com/LBJLincoln/rag-pme-connectors',
+                metrics: { connectors: 15, categories: 5 },
+                commands: `git push rag-pme-connectors main
+# Auto-deploy to Vercel`
+            },
+            'rag-pme-usecases': {
+                label: 'PME Use Cases',
+                description: 'Next.js 14 — 200 use case catalog',
+                runtime: 'Vercel',
+                status: 'deployed',
+                vercel_url: 'https://nomos-pme-usecases-alexis-morets-projects.vercel.app',
+                url: 'https://github.com/LBJLincoln/rag-pme-usecases',
+                metrics: { use_cases: 200 },
+                commands: `git push rag-pme-usecases main
+# Auto-deploy to Vercel`
+            },
+            'rag-storage': {
+                label: 'Central Archive',
+                description: 'All outputs/data from every repo — centralized storage',
+                runtime: 'GitHub',
+                status: 'active',
+                url: 'https://github.com/LBJLincoln/rag-storage',
+                metrics: { repos_mirrored: 7 },
+                commands: `# Automatic sync from satellites
+# No manual commands needed`
+            }
+        };
+
+        const PIPELINES_FALLBACK = {
+            standard: { accuracy: 92.0, tested: 50, target: 85, phase2: { tested: 579, total: 1000, accuracy: 36 } },
+            graph: { accuracy: 78.0, tested: 50, target: 70, phase2: { tested: 500, total: 500, accuracy: 78 } },
+            quantitative: { accuracy: 92.0, tested: 50, target: 85, phase2: { tested: 500, total: 500, accuracy: 92 } },
+            orchestrator: { accuracy: 80.0, tested: 50, target: 70, phase2: { tested: 57, total: 1000, accuracy: 0 } }
+        };
+
+        let currentRepo = 'mon-ipad';
+        let pipelinesData = PIPELINES_FALLBACK;
+        let refreshCounter = 30;
+
+        // Initialize
+        function init() {
+            renderRepoTabs();
+            renderRepoDetail(currentRepo);
+            renderPipelines();
+            renderHFStatus();
+            renderInfrastructure();
+            updateDateTime();
+            fetchData();
+
+            setInterval(updateDateTime, 1000);
+            setInterval(() => {
+                refreshCounter--;
+                document.getElementById('refresh-text').textContent = `Auto-refresh: ${refreshCounter}s`;
+                if (refreshCounter <= 0) {
+                    fetchData();
+                    refreshCounter = 30;
+                }
+            }, 1000);
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            const formatted = now.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            document.getElementById('datetime').textContent = formatted;
+        }
+
+        function renderRepoTabs() {
+            const container = document.getElementById('repo-tabs');
+            container.innerHTML = Object.keys(REPOS).map(key => {
+                const repo = REPOS[key];
+                const statusClass = repo.status === 'active' || repo.status === 'deployed' ? 'green' :
+                                  repo.status === 'idle' ? 'yellow' :
+                                  repo.status === 'pending' ? 'yellow' : 'red';
+                return `
+                    <div class="repo-tab ${key === currentRepo ? 'active' : ''}" onclick="selectRepo('${key}')">
+                        <div class="status-dot ${statusClass}"></div>
+                        <span>${repo.label}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectRepo(repoKey) {
+            currentRepo = repoKey;
+            renderRepoTabs();
+            renderRepoDetail(repoKey);
+        }
+
+        function renderRepoDetail(repoKey) {
+            const repo = REPOS[repoKey];
+            const container = document.getElementById('repo-details');
+
+            const metricsHtml = Object.keys(repo.metrics).length > 0 ?
+                Object.entries(repo.metrics).map(([key, value]) => `
+                    <div class="info-card">
+                        <div class="info-label">${key.replace(/_/g, ' ')}</div>
+                        <div class="info-value">${value}</div>
+                    </div>
+                `).join('') : '<div class="info-card"><div class="info-value">No metrics available</div></div>';
+
+            container.innerHTML = `
+                <div class="repo-detail active">
+                    <div class="repo-info">
+                        <div class="info-card">
+                            <div class="info-label">Repository</div>
+                            <div class="info-value">${repo.label}</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-label">Runtime</div>
+                            <div class="info-value">${repo.runtime}</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-label">Status</div>
+                            <div class="info-value"><span class="badge ${repo.status}">${repo.status.toUpperCase()}</span></div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-label">GitHub</div>
+                            <div class="info-value"><a href="${repo.url}" target="_blank" style="color: #58a6ff;">View Repo</a></div>
+                        </div>
+                        ${repo.vercel_url ? `
+                        <div class="info-card">
+                            <div class="info-label">Live URL</div>
+                            <div class="info-value"><a href="${repo.vercel_url}" target="_blank" style="color: #58a6ff;">View Site</a></div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Description</div>
+                        <div class="info-value" style="font-size: 14px;">${repo.description}</div>
+                    </div>
+                    <div class="info-card" style="margin-top: 15px;">
+                        <div class="info-label">Key Metrics</div>
+                        <div class="repo-info" style="margin-top: 10px;">
+                            ${metricsHtml}
+                        </div>
+                    </div>
+                    ${repo.commands ? `
+                    <div class="code-block">${repo.commands.replace(/\n/g, '<br>')}</div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function renderPipelines() {
+            const container = document.getElementById('pipeline-grid');
+            container.innerHTML = Object.entries(pipelinesData).map(([name, data]) => {
+                const progress = (data.accuracy / 100) * 360;
+                const tested = data.phase2 ? data.phase2.tested : data.tested;
+                const total = data.phase2 ? data.phase2.total : 1000;
+                const accuracy = data.phase2 ? data.phase2.accuracy : data.accuracy;
+                const targetProgress = (tested / total) * 100;
+                const passStatus = accuracy >= data.target ? 'pass' : 'fail';
+
+                return `
+                    <div class="pipeline-card">
+                        <div class="pipeline-name">${name}</div>
+                        <div class="gauge-container">
+                            <div class="gauge-bg" style="--progress: ${progress}deg;">
+                                <div class="gauge-inner">
+                                    <div class="gauge-value">${accuracy.toFixed(1)}%</div>
+                                    <div class="gauge-label">Accuracy</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pipeline-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Tested</span>
+                                <span class="stat-value">${tested} / ${total}</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Target</span>
+                                <span class="stat-value">${data.target}%</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: ${targetProgress}%"></div>
+                        </div>
+                        <span class="badge ${passStatus}">${passStatus.toUpperCase()}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderHFStatus() {
+            const container = document.getElementById('hf-status');
+            const webhooks = [
+                { name: 'Standard RAG', status: 'red' },
+                { name: 'Graph RAG', status: 'green' },
+                { name: 'Quantitative', status: 'green' },
+                { name: 'Orchestrator', status: 'red' }
+            ];
+
+            container.innerHTML = `
+                <div class="hf-card">
+                    <div>
+                        <div class="info-label">Healthz</div>
+                        <div class="info-value">Space Active</div>
+                    </div>
+                    <div class="status-dot yellow"></div>
+                </div>
+                ${webhooks.map(wh => `
+                    <div class="hf-card">
+                        <div>
+                            <div class="info-label">${wh.name}</div>
+                            <div class="info-value">Webhook</div>
+                        </div>
+                        <div class="status-dot ${wh.status}"></div>
+                    </div>
+                `).join('')}
+                <div class="hf-card">
+                    <div>
+                        <div class="info-label">Workers</div>
+                        <div class="info-value">3 Active</div>
+                    </div>
+                    <div class="status-dot green"></div>
+                </div>
+                <div class="hf-card">
+                    <div>
+                        <div class="info-label">Last Deploy</div>
+                        <div class="info-value" style="font-size: 12px;">2026-02-23</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderInfrastructure() {
+            const container = document.getElementById('infrastructure');
+            container.innerHTML = `
+                <div class="infra-card">
+                    <div class="infra-title">VM Status</div>
+                    <div class="infra-value">34.136.180.66</div>
+                    <div style="font-size: 12px; color: #8b949e; margin-top: 5px;">104 MB RAM free</div>
+                </div>
+                <div class="infra-card">
+                    <div class="infra-title">Pinecone Vectors</div>
+                    <div class="infra-value">10,411</div>
+                    <div style="font-size: 12px; color: #8b949e; margin-top: 5px;">3 indexes</div>
+                </div>
+                <div class="infra-card">
+                    <div class="infra-title">Neo4j Nodes</div>
+                    <div class="infra-value">19,788</div>
+                    <div style="font-size: 12px; color: #8b949e; margin-top: 5px;">76,717 relations</div>
+                </div>
+                <div class="infra-card">
+                    <div class="infra-title">Supabase Rows</div>
+                    <div class="infra-value">~17,000</div>
+                    <div style="font-size: 12px; color: #8b949e; margin-top: 5px;">40 tables</div>
+                </div>
+                <div class="infra-card">
+                    <div class="infra-title">OpenRouter Keys</div>
+                    <div class="infra-value">7 Active</div>
+                    <div style="font-size: 12px; color: #8b949e; margin-top: 5px;">Free tier</div>
+                </div>
+                <div class="infra-card">
+                    <div class="infra-title">n8n Workflows</div>
+                    <div class="infra-value">9 Active</div>
+                    <div style="font-size: 12px; color: #8b949e; margin-top: 5px;">Target: 16</div>
+                </div>
+            `;
+        }
+
+        async function fetchData() {
+            try {
+                // Fetch status.json
+                const statusRes = await fetch('https://raw.githubusercontent.com/LBJLincoln/rag-storage/main/global/status/status.json');
+                if (statusRes.ok) {
+                    const statusData = await statusRes.json();
+                    if (statusData.pipelines) {
+                        pipelinesData = statusData.pipelines;
+                        renderPipelines();
+
+                        // Update overall accuracy
+                        if (statusData.phase_gates && statusData.phase_gates.overall_accuracy) {
+                            document.getElementById('overall-accuracy').textContent =
+                                statusData.phase_gates.overall_accuracy.toFixed(1) + '%';
+                        }
+
+                        // Update phase progress
+                        const totalTested = Object.values(statusData.pipelines).reduce((sum, p) =>
+                            sum + (p.phase2 ? p.phase2.tested : 0), 0);
+                        const totalTarget = Object.keys(statusData.pipelines).length * 1000;
+                        const phaseProgress = (totalTested / totalTarget) * 100;
+                        document.getElementById('phase-progress').style.width = phaseProgress + '%';
+                    }
+                }
+
+                // Fetch executive summary
+                const summaryRes = await fetch('https://raw.githubusercontent.com/LBJLincoln/rag-storage/main/global/executive-summary/executive-summary.md');
+                if (summaryRes.ok) {
+                    const summaryText = await summaryRes.text();
+                    const objectivesMatch = summaryText.match(/## Current Objectives\n([\s\S]*?)(?=\n##|\n---|\Z)/);
+                    if (objectivesMatch) {
+                        document.getElementById('objectives-text').innerHTML =
+                            objectivesMatch[1].trim().replace(/\n/g, '<br>');
+                    }
+
+                    const sessionMatch = summaryText.match(/Session:\s*(\d+)/i);
+                    if (sessionMatch) {
+                        document.getElementById('session-number').textContent = 'Session ' + sessionMatch[1];
+                    }
+
+                    const dateMatch = summaryText.match(/Last updated:\s*([\d-T:+]+)/i);
+                    if (dateMatch) {
+                        document.getElementById('last-updated').textContent = dateMatch[1];
+                    }
+                }
+
+                // Fetch fixes library
+                const fixesRes = await fetch('https://raw.githubusercontent.com/LBJLincoln/rag-storage/main/global/fixes-timeline/fixes-library.md');
+                if (fixesRes.ok) {
+                    const fixesText = await fixesRes.text();
+                    const fixMatches = [...fixesText.matchAll(/###\s*FIX-(\d+)[^\n]*\n[\s\S]*?Date:\s*([^\n]+)\n[\s\S]*?Symptom:\s*([^\n]+)\n[\s\S]*?Solution:\s*([^\n]+)/g)];
+
+                    const fixes = fixMatches.slice(-10).reverse().map(match => ({
+                        number: match[1],
+                        date: match[2].trim(),
+                        symptom: match[3].trim(),
+                        solution: match[4].trim()
+                    }));
+
+                    document.getElementById('fixes-timeline').innerHTML = fixes.map(fix => `
+                        <div class="fix-item">
+                            <div class="fix-date">${fix.date} — FIX-${fix.number}</div>
+                            <div class="fix-title">${fix.symptom}</div>
+                            <div class="fix-desc">${fix.solution}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
