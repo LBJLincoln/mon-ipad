@@ -275,7 +275,7 @@ def activate_all_workflows():
             print(f"    FAILED to activate: {wname}")
             failed += 1
 
-    print(f"  Activation: {activated} new, {already} already, {failed} failed")
+    print(f"  Activation: {activated} activated, {failed} failed")
     return activated
 
 

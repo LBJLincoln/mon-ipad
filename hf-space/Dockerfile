@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install n8n globally
-RUN npm install -g n8n@latest
+RUN npm install -g n8n@2.8.4
 
 WORKDIR /app
 
