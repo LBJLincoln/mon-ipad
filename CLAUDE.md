@@ -1,6 +1,6 @@
 # Multi-RAG Orchestrator — Tour de Contrôle Centrale
 
-> Last updated: 2026-02-22T21:45:00+01:00
+> Last updated: 2026-02-23T16:30:00+01:00
 
 > **CE REPO (`mon-ipad`) EST LA TOUR DE CONTRÔLE.**
 > VM Google Cloud permanente · Claude Code via Termius · Pilote 6 repos satellites
@@ -16,10 +16,10 @@
 | Composant | Adresse | État |
 |-----------|---------|------|
 | VM SSH | 34.136.180.66 | Permanent |
-| **n8n VM** | localhost:5678 | **Up** (webhooks + orchestration, RAM ~104MB dispo) |
-| Redis | localhost:6379 | Up (queue) |
-| PostgreSQL | localhost:5432 | Up (n8n DB) |
+| **n8n VM** | — | **REMOVED** (2026-02-23, freed ~270MB RAM) |
 | Claude Code | Termius terminal | Ce repo — **pilotage UNIQUEMENT** |
+
+**n8n REMOVED from VM (Session 42)**: Docker containers (n8n + Redis + PostgreSQL) stopped and removed. All eval scripts now default to HF Space. Guard blocks prevent accidental use of VM localhost for evals. VM has ~400MB+ RAM available now.
 
 ### HF Space — n8n distant (16 GB RAM, execution)
 | Composant | Adresse | État |
@@ -33,14 +33,10 @@
 
 **CRITICAL (Session 39)** : HF Space rebuild (triggered by PME workflow push) wiped n8n database. ALL workflow activations lost. ALL webhooks return 404. No pipelines can run on HF Space until entrypoint.sh is fixed with retry logic + activation verification.
 
-**DECISION SESSION 25** : VM = pilotage UNIQUEMENT. ZERO modification workflow sur VM (Task Runner cache le code compile — Pattern 2.11). Modifications → HF Space ou Codespace.
+**DECISION SESSION 42** : VM = pilotage UNIQUEMENT. n8n REMOVED from VM. All n8n workloads run on HF Space (16GB RAM) or Codespaces (8GB). Eval scripts have hard guards blocking localhost/VM usage.
 
-**Principe : VM = pilotage + n8n permanent (stockage). Tests → HF Space (16GB) ou Codespaces (8GB).**
-VM RAM limitée (~100MB dispo) → jamais run tests directement dessus.
-
-**Architecture n8n clarifiée (session 23)** : PAS besoin d'un n8n Docker séparé pour les 16+ workflows.
-Les définitions de workflows pèsent ~500KB dans PostgreSQL — aucun impact RAM.
-Le n8n VM stocke + expose les webhooks. L'exécution lourde se fait sur HF Space ou Codespaces.
+**Principe : VM = pilotage ONLY (zero n8n). Evals → HF Space (16GB) ou Codespaces (8GB).**
+VM RAM ~400MB+ disponible maintenant (was ~100MB with n8n). Guard anti-VM dans tous les scripts eval.
 
 **MCP Servers** : Empreinte mémoire negligeable (~6MB total). neo4j 2.5MB, pinecone 1.4MB, huggingface 0.8MB, jina 0.7MB, cohere 0.6MB. PAS un problème RAM.
 
@@ -299,7 +295,7 @@ Tu es Claude Code (`claude-opus-4-6`) exécuté dans **Termius** connecté à la
 |--------|-------|--------|
 | Lire/écrire les fichiers de ce repo | Outils natifs Claude Code | `/home/termius/mon-ipad/` |
 | Exécuter des scripts Python | `Bash` | `source .env.local && python3 eval/...` |
-| Modifier des workflows n8n | MCP `n8n` + REST API | Port 5678 localhost |
+| Modifier des workflows n8n | MCP `n8n` + REST API | HF Space (VM n8n removed) |
 | Interroger Pinecone | MCP `pinecone` | API HTTPS serverless |
 | Interroger Neo4j | MCP `neo4j` | HTTPS API graph DB |
 | Interroger Supabase | MCP `supabase` | SQL via pooler |
@@ -312,11 +308,11 @@ Tu es Claude Code (`claude-opus-4-6`) exécuté dans **Termius** connecté à la
 
 ### Ce à quoi tu AS accès
 - **Filesystem local complet** : `/home/termius/mon-ipad/` (et `/home/termius/`)
-- **n8n Docker (VM)** : n8n tourne sur la VM port 5678, API REST + MCP disponibles
+- **n8n HF Space** : n8n on HF Space (VM n8n removed), MCP via HF Space endpoint
 - **Bases de données cloud** : Pinecone, Neo4j Aura, Supabase (via MCP + env vars)
 - **APIs externes** : OpenRouter (LLM), Jina (embeddings), Cohere (reranking), HuggingFace
 - **GitHub** : 5 repos via HTTPS + token (ghp_... dans remotes)
-- **Docker** : `docker ps`, `docker logs`, accès aux containers n8n/redis/postgres
+- **Docker** : `docker ps`, `docker logs` (no containers running — n8n removed from VM)
 - **gh CLI** : Authentifié en LBJLincoln, scopes complets (codespace, repo, workflow)
 
 ### Ce à quoi tu N'AS PAS accès directement
@@ -335,25 +331,23 @@ Machine    : e2-micro (Google Cloud, us-central1)
 IP         : 34.136.180.66
 OS         : Linux Debian 11 (Bullseye)
 CPU        : 1 vCPU Intel Xeon @ 2.20GHz
-RAM        : 969 MB total | ~865 MB utilisé | ~104 MB disponible
+RAM        : 969 MB total | ~556 MB utilisé | ~413 MB disponible (n8n removed)
 Swap       : 2047 MB total | ~1084 MB utilisé (VM souvent en swap !)
 Disque     : 30 GB total | 12 GB utilisé | 17 GB libres (43% plein)
 Uptime     : Permanent (pas de coupure planifiée)
 ```
 
-**Contrainte critique** : RAM limitée à ~970MB. Claude Code seul consomme ~297MB. Avec n8n actif, la VM swap régulièrement. Les scripts Python lourds peuvent échouer par OOM.
+**RAM améliorée (session 42)** : n8n removed → ~413MB disponible (was ~104MB). Claude Code seul consomme ~297MB. VM ne swap plus en utilisation normale.
 
-### Containers Docker actifs (sur la VM)
+### Containers Docker (sur la VM) — REMOVED
 ```
-CONTAINER          IMAGE                 STATUS       PORTS
-n8n-n8n-1          n8nio/n8n:2.7.4       Up (stable)  0.0.0.0:5678->5678/tcp
-n8n-redis-1        redis:7-alpine        Up (healthy)  0.0.0.0:6379->6379/tcp
-n8n-postgres-1     postgres:15-alpine    Up (healthy)  0.0.0.0:5432->5432/tcp
+NO CONTAINERS RUNNING — n8n removed from VM 2026-02-23 (Session 42)
+All n8n workloads moved to HF Space / Codespaces / GitHub Actions CI
 ```
-- **n8n** : Workflow engine, port 5678 (admin: `admin@mon-ipad.com`)
-- **Redis** : Queue mode pour n8n (mode worker distribué)
-- **PostgreSQL** : Base interne n8n (historique executions, credentials)
-- **Fix critique appliqué** : `task-broker-auth.service.js` TTL 15s→120s (volume monté)
+- **n8n**: REMOVED — was consuming ~270MB RAM, causing eval fallback issues
+- **Redis**: REMOVED — was n8n dependency
+- **PostgreSQL**: REMOVED — was n8n dependency
+- Docker compose file preserved at `/home/termius/n8n/docker-compose.yml` for reference
 
 ### n8n — Workflows actifs (9 apres audit session 18, cible 16)
 
@@ -397,7 +391,7 @@ Feedback V3.1, Monitoring Dashboard, Orchestrator Tester, RAG Batch Tester — r
 ### MCP Servers configurés (`.mcp.json`)
 | MCP | Endpoint | Capacités | Limite |
 |-----|----------|-----------|--------|
-| `n8n` | localhost:5678 | **OK** — n8n Docker up, API REST + MCP disponibles | — |
+| `n8n` | HF Space | Points to HF Space MCP endpoint (VM n8n removed) | HF proxy issues possible |
 | `pinecone` | API HTTPS | Upsert, query, delete vecteurs ; gestion indexes | Free tier |
 | `neo4j` | HTTPS API | Cypher queries, lecture/écriture graph | Free (200K nodes) |
 | `supabase` | Pooler AWS eu-west-1:6543 | SQL SELECT/INSERT/UPDATE/DELETE | Free (500MB) |
@@ -638,7 +632,7 @@ bash scripts/check-staleness.sh  # Verifier staleness
 ### 2.1 MCP Servers
 | MCP | Usage | Status |
 |-----|-------|--------|
-| `n8n` | Exécuter et inspecter workflows (Docker localhost:5678) | OK |
+| `n8n` | Inspecter workflows (HF Space MCP endpoint) | HF proxy issues possible |
 | `pinecone` | Vector store (22K+ vecteurs, 3 indexes) | OK |
 | `neo4j` | Graph (19K+ nodes) | OK |
 | `jina-embeddings` | Embeddings Jina + Pinecone CRUD | OK |
@@ -955,7 +949,7 @@ MATRICE DE DÉCISION :
 25. **NO operations VM** — aucun test (eval, quick-test) ne tourne sur la VM. Tests → HF Space ou Codespaces uniquement
 26. **Session max 2h** — chaque session Claude Code limitée à 2h pour conserver l'efficacité. A 1h45 : finaliser, push, MAJ session-state.md et status.md
 27. **Kill old processes** — au démarrage, vérifier `ps aux | grep claude | grep -v grep` et tuer les anciennes sessions Claude qui consomment de la RAM
-28. **ZERO modification workflow sur VM** — le Task Runner cache le code compilé même après restart. Modifier les workflows UNIQUEMENT sur HF Space (16 GB RAM, API REST fonctionnelle). VM = pilotage UNIQUEMENT.
+28. **n8n REMOVED from VM** — Docker containers stopped and removed (Session 42). All n8n operations on HF Space or Codespaces. Eval scripts have hard guards blocking localhost/VM usage. VM = pilotage UNIQUEMENT.
 29. **Pre-vol checklist** — AVANT tout test webhook, consulter `technicals/debug/knowledge-base.md` Section 0 (webhook paths, field names, auth)
 30. **Agent Continuation** — Sous-agents (Sonnet/Haiku) continuent automatiquement apres succes (5q→10q→50q). Auto-stop sur 3 echecs consecutifs. Rapport structure a Opus pour analyse et decision. Details : `technicals/project/team-agentic-process.md` Section 3b.
 31. **Push regulier GitHub** — commit + push toutes les 15-20 minutes minimum, pour chaque agent actif. Resultats JAMAIS perdus.
@@ -973,11 +967,10 @@ MATRICE DE DÉCISION :
 
 ## Infrastructure
 
-### VM Google Cloud (permanent)
+### VM Google Cloud (permanent — pilotage only, NO n8n)
 ```
 IP externe    : 34.136.180.66
-N8N_HOST      : http://localhost:5678 (interne)
-N8N_WEBHOOK   : http://34.136.180.66:5678 (externe)
+N8N_HOST      : https://lbjlincoln-nomos-rag-engine.hf.space (HF Space — VM n8n REMOVED)
 Credentials   → .env.local (jamais dans git)
 ```
 
@@ -1034,8 +1027,8 @@ Details complets : `technicals/infra/env-vars-exhaustive.md` (Section 2 : LLM Mo
 ### Accès
 | Ressource | Accès |
 |-----------|-------|
-| n8n API + MCP | localhost:5678 |
-| n8n Webhooks | 34.136.180.66:5678 |
+| n8n API + MCP | HF Space (VM n8n removed) |
+| n8n Webhooks | HF Space webhooks |
 | Pinecone | HTTPS API |
 | Neo4j | https://38c949a2.databases.neo4j.io |
 | Supabase | aws-1-eu-west-1.pooler.supabase.com:6543 |

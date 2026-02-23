@@ -4,7 +4,7 @@ import json
 from importlib.machinery import SourceFileLoader
 
 # Set N8n credentials from the user's prompt BEFORE importing node_analyzer
-os.environ.setdefault("N8N_HOST", "http://34.136.180.66:5678")
+os.environ.setdefault("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space")
 # N8N_API_KEY must be set via .env.local or environment
 
 # Add the 'eval' directory to the Python path to import node_analyzer

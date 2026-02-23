@@ -41,6 +41,14 @@ else
     N8N_HOST="https://lbjlincoln-nomos-rag-engine.hf.space"  # Default: HF Space
 fi
 
+# HARD BLOCK: Never use VM/localhost for evals (Rule 25)
+if echo "$N8N_HOST" | grep -qE 'localhost|127\.0\.0\.1|34\.136\.180\.66'; then
+    echo "FATAL: N8N_HOST points to VM ($N8N_HOST). This is BLOCKED."
+    echo "Evals MUST run on HF Space or Codespaces. Set N8N_HOST properly."
+    echo "Default: https://lbjlincoln-nomos-rag-engine.hf.space"
+    exit 1
+fi
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -239,13 +247,7 @@ done
 # PREFLIGHT — Clean stuck executions + Check webhooks
 # ============================================================
 echo ""
-echo "  Preflight: cleaning stuck executions (FIX-42/43)..."
-if docker exec n8n-postgres-1 psql -U n8n -d n8n -t -A -c "DELETE FROM execution_entity WHERE status IN ('new', 'running');" 2>/dev/null; then
-    echo -e "    ${GREEN}OK${NC} Stuck executions cleaned"
-    sleep 5  # Wait for n8n to re-register webhooks
-else
-    echo -e "    ${YELLOW}SKIP${NC} No local n8n DB (running against HF Space?)"
-fi
+echo "  Preflight: n8n runs on HF Space (VM n8n removed 2026-02-23)"
 
 echo ""
 echo "  Preflight webhook checks..."
@@ -286,13 +288,13 @@ for PIPELINE in standard graph quantitative orchestrator; do
         python3 eval/run-eval-parallel.py \
             --dataset $DATASET \
             --types $PIPELINE \
-            --batch-size 1 \
+            --batch-size 5 \
             --early-stop 15 \
-            --delay 2 \
+            --delay 1 \
             --all-parallel \
             --label '${LABEL}-${PIPELINE}' \
             --force \
-            --workers 1
+            --workers 3
     " >> "$LOG_FILE" 2>&1 &
 
     echo $! > "$PID_FILE"
@@ -483,13 +485,13 @@ while true; do
                     python3 eval/run-eval-parallel.py \
                         --dataset $DATASET \
                         --types $PIPELINE \
-                        --batch-size 1 \
+                        --batch-size 5 \
                         --early-stop 15 \
-                        --delay 5 \
+                        --delay 1 \
                         --all-parallel \
                         --label '${LABEL}-${PIPELINE}-r$((RESTART_COUNT+1))' \
                         --force \
-                        --workers 1
+                        --workers 3
                 " >> "$LOG_FILE" 2>&1 &
 
                 echo $! > "$PID_FILE"

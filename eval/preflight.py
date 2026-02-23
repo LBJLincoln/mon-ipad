@@ -37,7 +37,7 @@ def check_env_vars():
     # N8N_HOST
     n8n_host = os.environ.get("N8N_HOST", "")
     if not n8n_host:
-        issues.append("N8N_HOST not set (will default to http://34.136.180.66:5678)")
+        issues.append("N8N_HOST not set (will default to https://lbjlincoln-nomos-rag-engine.hf.space)")
 
     # OpenRouter API key (for local LLM fallback)
     or_key = os.environ.get("OPENROUTER_API_KEY", "")
@@ -51,7 +51,7 @@ def check_n8n_connectivity(host=None):
     """Check if n8n is reachable."""
     from urllib import request, error
 
-    host = host or os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
+    host = host or os.environ.get("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space")
     try:
         req = request.Request(f"{host}/healthz", method="GET")
         with request.urlopen(req, timeout=10) as resp:

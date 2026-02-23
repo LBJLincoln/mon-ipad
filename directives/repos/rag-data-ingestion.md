@@ -1,6 +1,6 @@
 # rag-data-ingestion — CLAUDE.md
 
-> Last updated: 2026-02-20T21:30:00+01:00
+> Last updated: 2026-02-23T17:00:00+01:00
 > **Ce repo s'exécute dans un Codespace GitHub éphémère.**
 > Tu es un agent Claude Code specialise dans l'INGESTION et l'ENRICHISSEMENT des BDD.
 > **MODELE PRINCIPAL : `claude-opus-4-6`** — Strategie ingestion, analyse qualite, decisions.
@@ -13,15 +13,16 @@
 
 ---
 
-## ÉTAT ACTUEL — 20 fév 2026
+## ÉTAT ACTUEL — 23 fév 2026
 
 | | |
 |-|-|
-| **Dernier commit** | Session 31 — 20 fév 2026 |
+| **Dernier commit** | Session 39 — 22 fév 2026 |
 | **Déployé / en cours** | Workflows Ingestion V4.0 + Enrichissement V4.0 (SOTA 2026 upgrades) |
-| **Phase 1** | PASSED (83.9% overall, session 30) |
-| **Codespace** | Non créé — à créer pour ingestion massive (~5.4 GB total) |
-| **Prochain objectif immédiat** | Déployer V4.0 workflows sur HF Space + ingérer 500 file types × 4 sectors |
+| **Phase 2** | Graph 500/500 DONE (78.0%), Quant 500/500 DONE (92.0%), Standard 579/1000 STOPPED, Orch 57/1000 BROKEN |
+| **Codespace** | Not currently running — 3/5 datasets downloaded (669MB) |
+| **Datasets downloaded** | squad_v2, triviaqa, hotpotqa (669MB total) — Missing: musique + finqa (deprecated loading scripts) |
+| **Prochain objectif immédiat** | Fix remaining dataset downloads + deploy V4.0 workflows on HF Space + ingest 500 file types × 4 sectors |
 
 ### SOTA V4.0 Improvements Applied (Session 31)
 | Technique | Impact | Status |
@@ -222,20 +223,22 @@ EOF
 ```
 Type        : GitHub Codespace (éphémère)
 CPU         : 2 cores | RAM : 8 GB | Disque : 32 GB
-n8n local   : OUI — docker-compose COMPLET
-              n8n + 2 workers (queue mode) + postgres + redis
+n8n local   : NON — utilise HF Space
+              Tous les workflows pointent vers HF Space (lbjlincoln-nomos-rag-engine.hf.space)
 ```
 
-### Containers Docker locaux (démarrés par setup.sh)
+### HF Space Architecture (Session 42+)
 ```
-rag-ingestion-n8n-1      n8nio/n8n:latest     Port 5678 (orchestrator)
-rag-ingestion-worker-1   n8nio/n8n:latest     Worker 1 (queue)
-rag-ingestion-worker-2   n8nio/n8n:latest     Worker 2 (queue)
-rag-ingestion-postgres-1 postgres:15           Port 5432 (interne)
-rag-ingestion-redis-1    redis:7-alpine        Port 6379 (queue)
+n8n HF Space  : https://lbjlincoln-nomos-rag-engine.hf.space
+n8n mode      : Queue (3 workers: main + 2 workers)
+Database      : Supabase PostgreSQL (not SQLite) — 40 tables, 17K+ rows
+Queue         : Redis (external, cloud-hosted)
+OpenRouter    : 7 API keys configured (5 pipelines + 1 main + 1 spare)
+Webhooks      : Currently ALL 404 (rebuild wipeout) — needs entrypoint.sh fix
 ```
 
 **Queue mode** : permet l'ingestion parallèle de multiples documents.
+**VM n8n REMOVED** : VM no longer runs n8n (freed ~270MB RAM). All workflows now on HF Space only.
 
 ---
 
@@ -421,6 +424,8 @@ Orchestrator : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/92217bb8-ffc
 ```
 Appel : `curl -X POST "<url>" -H "Content-Type: application/json" -d '{"query": "..."}'`
 **IMPORTANT** : Le champ est `query` (PAS `question`).
+
+**CRITICAL (Session 39-42)** : ALL WEBHOOKS RETURN 404 after HF Space rebuild. The entrypoint.sh activation script is broken. Workflows exist in git repo but are not activated. This is THE #1 blocker for ALL pipelines.
 ```
 
 ---

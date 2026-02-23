@@ -10,7 +10,7 @@ import sys
 import copy
 import requests
 
-N8N_HOST = "http://localhost:5678"
+N8N_HOST = os.environ.get("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space")
 
 CREDENTIAL_MAP = {
     "O2KEPiv7VzgDG5ZX": "CWih07lwPxfwFeY6",

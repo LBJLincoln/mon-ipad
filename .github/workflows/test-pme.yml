@@ -1,0 +1,135 @@
+# PME Connectors - Gateway & Action Tests
+# Last updated: 2026-02-23
+# Tests PME multi-canal assistant workflows (Gateway, Action Executor)
+# Uses n8n docker-compose with 3 workers + imports RAG + PME workflows
+
+name: PME Connectors Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - gateway
+          - intent
+          - actions
+
+env:
+  N8N_HOST: http://localhost:5678
+  N8N_WEBHOOK_HOST: http://localhost:5678
+  N8N_API_KEY: rag-ci-nomos-2026-b7f8a91d2e3c4f5a6b7c8d9e0f1a2b3c4d5e6f7
+
+jobs:
+  test-pme-connectors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install requests python-dotenv aiohttp bcrypt psycopg2-binary
+
+      - name: Create logs directory
+        run: mkdir -p logs
+
+      - name: Copy rag-tests docker-compose
+        run: cp rag-tests-docker-compose.yml docker-compose.yml
+
+      - name: Start n8n stack
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_HOST: ${{ secrets.PINECONE_HOST }}
+          NEO4J_URI: ${{ secrets.NEO4J_URI }}
+          NEO4J_AUTH: ${{ secrets.NEO4J_AUTH }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
+          N8N_API_KEY: rag-ci-nomos-2026-b7f8a91d2e3c4f5a6b7c8d9e0f1a2b3c4d5e6f7
+          N8N_ENCRYPTION_KEY: sota-rag-2026-encryption-key-change-me
+        run: |
+          docker compose up -d
+          echo "Waiting for n8n..."
+          for i in $(seq 1 36); do
+            if curl -sf http://localhost:5678/healthz > /dev/null 2>&1; then
+              echo "n8n ready after $((i*5))s"; break
+            fi
+            sleep 5
+          done
+          curl -sf http://localhost:5678/healthz || (docker compose logs n8n-main && exit 1)
+          sleep 10
+          docker compose ps
+
+      - name: Initialize n8n DB (create CI owner user + project)
+        run: python3 scripts/ci_init_n8n_db.py
+
+      - name: Full n8n setup (login + credentials + import RAG + PME workflows + activate)
+        env:
+          SUPABASE_PASSWORD: ${{ secrets.SUPABASE_PASSWORD }}
+          N8N_API_KEY: rag-ci-nomos-2026-b7f8a91d2e3c4f5a6b7c8d9e0f1a2b3c4d5e6f7
+        run: |
+          python3 scripts/ci_full_setup.py --supabase-password "$SUPABASE_PASSWORD" --include-pme
+
+      - name: Create .env.local
+        run: |
+          printf 'N8N_HOST=http://localhost:5678\nN8N_API_KEY=rag-ci-nomos-2026-b7f8a91d2e3c4f5a6b7c8d9e0f1a2b3c4d5e6f7\n' > .env.local
+          printf 'OPENROUTER_API_KEY=%s\n' "${{ secrets.OPENROUTER_API_KEY }}" >> .env.local
+
+      - name: Smoke PME webhooks
+        continue-on-error: true
+        run: |
+          echo "=== PME Webhook diagnostics ==="
+          for wh in pme-assistant-gateway pme-action-executor; do
+            echo "--- $wh ---"
+            HTTP_CODE=$(curl -s -o /tmp/wh-$wh.json -w "%{http_code}" \
+              -X POST -H 'Content-Type: application/json' \
+              -d '{"query":"test health","channel":"api"}' \
+              --max-time 60 "http://localhost:5678/webhook/$wh" 2>&1 || echo "CURL_ERR_$?")
+            echo "HTTP $HTTP_CODE"
+            cat /tmp/wh-$wh.json | head -c 500
+            echo ""
+          done
+
+      - name: Run PME connector tests
+        id: tests
+        run: |
+          set -o allexport; source .env.local; set +o allexport
+          SUITE="${{ inputs.test_suite }}"
+          if [ "$SUITE" = "all" ]; then
+            python3 eval/test-pme-connectors.py --allow-local 2>&1 | tee logs/test-pme.log
+          else
+            python3 eval/test-pme-connectors.py --only "$SUITE" --allow-local 2>&1 | tee logs/test-pme.log
+          fi
+
+      - name: Upload test logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pme-test-logs-${{ github.run_id }}
+          path: |
+            logs/*.log
+            logs/*.json
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Debug n8n execution errors (always)
+        if: always()
+        run: python3 scripts/ci_debug_executions.py --allow-local || echo "Could not fetch execution logs"
+
+      - name: n8n logs (always)
+        if: always()
+        run: |
+          echo "=== n8n-main logs ===" && docker compose logs n8n-main --tail 80
+          echo "=== n8n-worker-1 logs ===" && docker compose logs n8n-worker-1 --tail 40

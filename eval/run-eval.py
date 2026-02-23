@@ -22,7 +22,17 @@ DATASETS_DIR = os.path.join(REPO_ROOT, "datasets")
 TESTED_IDS_FILE = os.path.join(REPO_ROOT, "docs", "tested_ids.json")
 
 # RAG + PME Endpoints
-N8N_HOST = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
+N8N_HOST = os.environ.get("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space")
+
+# Guard: block accidental use of VM n8n for evals
+def _check_n8n_host():
+    import re
+    if re.search(r'localhost|127\.0\.0\.1|34\.136\.180\.66', N8N_HOST):
+        if "--allow-local" not in sys.argv:
+            print(f"FATAL: N8N_HOST points to local/VM ({N8N_HOST}).")
+            print("Evals MUST run on HF Space. Set N8N_HOST or pass --allow-local.")
+            sys.exit(1)
+_check_n8n_host()
 RAG_ENDPOINTS = {
     # Core RAG pipelines
     "standard": f"{N8N_HOST}/webhook/rag-multi-index-v3",

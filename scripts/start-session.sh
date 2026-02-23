@@ -179,7 +179,7 @@ echo ""
 echo -e "${B}[3/4] Testing external services${N}"
 
 echo -n "  n8n Docker health"
-n8n_h="${N8N_HOST:-http://34.136.180.66:5678}"
+n8n_h="${N8N_HOST:-https://lbjlincoln-nomos-rag-engine.hf.space}"
 hcode=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "$n8n_h/healthz" 2>&1) || hcode="000"
 [[ "$hcode" == "200" ]] && ok "n8n Docker ($n8n_h)" || fail "n8n Docker" "HTTP $hcode"
 

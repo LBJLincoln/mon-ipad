@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Debug helper: fetch n8n execution statuses with full error details per node."""
 import json
+import os
 import urllib.request
 import urllib.error
 
-N8N_HOST = "http://localhost:5678"
+N8N_HOST = os.environ.get("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space")
 CI_EMAIL = "ci@nomos.ai"
 CI_PASSWORD = "CI-Nomos-2026!"
 

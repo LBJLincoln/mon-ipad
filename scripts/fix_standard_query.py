@@ -4,7 +4,7 @@ import json
 from urllib import request, error
 
 # --- N8n Credentials (from user's prompt) ---
-N8N_HOST = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
+N8N_HOST = os.environ.get("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space")
 N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 
 WF_ID = "M12n4cmiVBoBusUe"

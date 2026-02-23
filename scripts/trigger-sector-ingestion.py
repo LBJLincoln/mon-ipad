@@ -38,7 +38,7 @@ class IngestionTrigger:
 
     def __init__(
         self,
-        n8n_host: str = "http://localhost:5678",
+        n8n_host: str = "https://lbjlincoln-nomos-rag-engine.hf.space",
         batch_dir: str = "/home/termius/mon-ipad/outputs/sector-batches",
         max_concurrent: int = 2,
         delay_seconds: int = 3,
@@ -421,8 +421,8 @@ def main():
 
     parser.add_argument(
         "--n8n-host",
-        default="http://localhost:5678",
-        help="n8n base URL (default: http://localhost:5678)"
+        default=os.environ.get("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space"),
+        help="n8n base URL (default: HF Space)"
     )
 
     parser.add_argument(

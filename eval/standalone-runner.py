@@ -32,7 +32,7 @@ Usage:
     --types standard,graph --batch-size 5 --dataset phase-2
 
 Environment variables required:
-  N8N_HOST — n8n base URL (default: http://localhost:5678)
+  N8N_HOST — n8n base URL (default: https://lbjlincoln-nomos-rag-engine.hf.space)
              For HF Space: https://lbjlincoln-nomos-rag-engine.hf.space
   OPENROUTER_API_KEY — for local LLM fallback
 
@@ -258,7 +258,7 @@ def main():
     with open(PID_FILE, "w") as f:
         f.write(str(os.getpid()))
 
-    n8n_host = args.n8n_host or os.environ.get("N8N_HOST", "http://localhost:5678")
+    n8n_host = args.n8n_host or os.environ.get("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space")
     types = [t.strip() for t in args.types.split(",")]
 
     log("=" * 60)

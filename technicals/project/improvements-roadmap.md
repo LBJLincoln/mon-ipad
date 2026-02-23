@@ -1,6 +1,6 @@
 # Improvements Roadmap — Centralized
 
-> Last updated: 2026-02-22T18:30:00+01:00 (Session Analyzer enrichment)
+> Last updated: 2026-02-23T17:00:00+01:00 (Session 42 — Major infra deployment)
 > **Document centralisé de TOUTES les améliorations possibles**, classées par catégorie et priorité.
 > Référencé par CLAUDE.md. Mis à jour à chaque session.
 
@@ -67,9 +67,9 @@
 
 | Composant | Actuel | Cible 1000q | Cible 10Kq | Action |
 |-----------|--------|------------|------------|--------|
-| **n8n concurrency** | 1 (VM) / 1 (HF) | 5 workers | 10 workers | Ajouter workers dans docker-compose |
-| **OpenRouter rate** | ~20 req/min | ~60 req/min | ~200 req/min | Multi-key OU modeles payants |
-| **RAM** | 969MB (VM) / 16GB (HF) | 16GB | 32GB | HF Space gpu-basic ($0.60/h) |
+| **n8n concurrency** | **3 workers (queue mode)** | 5 workers | 10 workers | **DEPLOYED Session 42** |
+| **OpenRouter rate** | ~20 req/min (1 key) → **~100 req/min (5 keys)** | ~100 req/min | ~200 req/min | **Multi-key DEPLOYED Session 42** |
+| **RAM** | **~400MB (VM, n8n removed)** / 16GB (HF) | 16GB | 32GB | **VM n8n removed Session 42** |
 | **PostgreSQL** | Supabase free | Supabase free | Supabase Pro | OK pour 1000q |
 | **Pinecone** | 10K vecteurs | 50K vecteurs | 100K vecteurs | Ingestion Phase 2 |
 | **Neo4j** | 19K nodes | 50K nodes | 200K nodes (max free) | Ingestion secteurs |
@@ -79,16 +79,16 @@
 
 | # | Amélioration | Impact | Effort | Statut | Session |
 |---|-------------|--------|--------|--------|---------|
-| H1 | Connecter Supabase depuis HF Space (env vars) | Quantitative fonctionne | Faible | A FAIRE | — |
-| H2 | Ajouter 3 workers n8n dans le Dockerfile | 3x throughput | Moyen | A FAIRE | — |
-| H3 | Migrer SQLite → PostgreSQL persistant (Supabase externe) | **CRITICAL** — Pas de perte au reboot | Moyen | **PRIORITE 1 (Session 40)** | 39 |
-| H4 | Exporter les fixes VM vers HF Space | Workflow a jour | Faible | A FAIRE | — |
-| H5 | Multi-API-key OpenRouter | 3x rate limit | Faible | A FAIRE | — |
+| H1 | Connecter Supabase depuis HF Space (env vars) | Quantitative fonctionne | Faible | **FAIT Session 42** | 42 |
+| H2 | Ajouter 3 workers n8n dans le Dockerfile | 3x throughput | Moyen | **FAIT Session 42** | 42 |
+| H3 | Migrer SQLite → PostgreSQL persistant (Supabase externe) | **CRITICAL** — Pas de perte au reboot | Moyen | **FAIT Session 42** (schema `n8n_engine`) | 42 |
+| H4 | Exporter les fixes VM vers HF Space | Workflow a jour | Faible | **FAIT Session 42** (13 workflows) | 42 |
+| H5 | Multi-API-key OpenRouter (5 per-pipeline keys) | 5x rate limit | Faible | **FAIT Session 42** (env vars ready) | 42 |
 | H6 | Keep-alive plus fiable (webhook interne) | Uptime 99.9% | Faible | FAIT (cron VM) | — |
-| **H7** | **HF /data persistent volume activation** | Survit aux rebuilds (alternative à H3) | Faible | **ALTERNATIVE H3** | 39 |
-| **H8** | **Robust entrypoint.sh avec verification** | Detect failed activations | Faible | **PRIORITE 1 (Session 40)** | 39 |
-| **H9** | **Activation health check POST-deploy** | Test webhooks before marking success | Faible | **PRIORITE 1** | 39 |
-| **H10** | **Queue mode (3 workers)** | 7x throughput (23→162 req/s) | Moyen | Phase 2+ (1000q) | Session analyzer |
+| H7 | HF /data persistent volume activation | Survit aux rebuilds (alternative à H3) | Faible | **SUPERSEDED by H3** | 39 |
+| **H8** | **Robust entrypoint.sh avec verification** | Detect failed activations | Faible | **FAIT Session 42** (import+activate+verify) | 42 |
+| **H9** | **Activation health check POST-deploy** | Test webhooks before marking success | Faible | **FAIT Session 42** (9 webhooks verified) | 42 |
+| **H10** | **Queue mode (3 workers, concurrency=3 each)** | 7x throughput (23→162 req/s) | Moyen | **FAIT Session 42** | 42 |
 | **H11** | **Worker concurrency tuning** | Optimize per-workflow type (I/O vs CPU) | Faible | Phase 2+ | Session analyzer |
 
 ### 2.3 Estimation temps pour 1000q par pipeline

@@ -96,7 +96,7 @@ check_url() {
 
 check_url "rag-website" "https://nomos-ai-pied.vercel.app"
 check_url "rag-dashboard" "https://nomos-dashboard.vercel.app"
-check_url "n8n external" "http://34.136.180.66:5678/healthz"
+check_url "n8n external" "https://lbjlincoln-nomos-rag-engine.hf.space/healthz"
 
 # ── [4/5] Codespace Status ───────────────────────────────────────────────────
 echo ""

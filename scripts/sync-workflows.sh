@@ -5,7 +5,7 @@
 # =============================================================================
 set -euo pipefail
 
-N8N_HOST="${N8N_HOST:-http://localhost:5678}"
+N8N_HOST="${N8N_HOST:-https://lbjlincoln-nomos-rag-engine.hf.space}"
 LIVE_DIR="/home/termius/mon-ipad/n8n/live"
 SNAPSHOT_DIR="/home/termius/mon-ipad/snapshot/current"
 

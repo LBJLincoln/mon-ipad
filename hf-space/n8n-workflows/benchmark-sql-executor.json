@@ -1,0 +1,209 @@
+{
+  "updatedAt": "2026-02-06T13:23:57.616Z",
+  "createdAt": "2026-02-06T13:23:38.537Z",
+  "id": "3O2xcKuloLnZB5dH",
+  "name": "BENCHMARK - SQL Executor Utility",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "benchmark-sql-exec",
+        "options": {
+          "rawBody": true
+        },
+        "responseMode": "lastNode"
+      },
+      "id": "sql-exec-001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        300
+      ],
+      "webhookId": "bench-sql-exec"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.body.sql || $json.sql }}"
+      },
+      "id": "sql-exec-002",
+      "name": "Execute SQL",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -100,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zEr7jPswZNv6lWKu",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Execute SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "dcd4f255-38fd-4480-ac41-d2d027be01cf",
+  "activeVersionId": "dcd4f255-38fd-4480-ac41-d2d027be01cf",
+  "versionCounter": 9,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-06T13:23:38.539Z",
+      "createdAt": "2026-02-06T13:23:38.539Z",
+      "role": "workflow:owner",
+      "workflowId": "3O2xcKuloLnZB5dH",
+      "projectId": "JV7MbqBbWPTstXIo",
+      "project": {
+        "updatedAt": "2026-01-07T13:20:26.996Z",
+        "createdAt": "2026-01-07T13:20:21.870Z",
+        "id": "JV7MbqBbWPTstXIo",
+        "name": "Alexis Moret <alexis.moret6@outlook.fr>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "215767e0-958a-4c74-a67a-e335807eba64",
+        "projectRelations": [
+          {
+            "updatedAt": "2026-01-07T13:20:21.870Z",
+            "createdAt": "2026-01-07T13:20:21.870Z",
+            "userId": "215767e0-958a-4c74-a67a-e335807eba64",
+            "projectId": "JV7MbqBbWPTstXIo",
+            "user": {
+              "updatedAt": "2026-02-09T23:01:37.000Z",
+              "createdAt": "2026-01-07T13:20:20.003Z",
+              "id": "215767e0-958a-4c74-a67a-e335807eba64",
+              "email": "alexis.moret6@outlook.fr",
+              "firstName": "Alexis",
+              "lastName": "Moret",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "userClaimedAiCredits": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "e3_89vptJG7PPA-OHyAg3",
+                "userActivatedAt": 1767837780144,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1768407850905
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-02-09",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-02-06T13:23:38.565Z",
+    "createdAt": "2026-02-06T13:23:38.565Z",
+    "versionId": "dcd4f255-38fd-4480-ac41-d2d027be01cf",
+    "workflowId": "3O2xcKuloLnZB5dH",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "benchmark-sql-exec",
+          "options": {
+            "rawBody": true
+          },
+          "responseMode": "lastNode"
+        },
+        "id": "sql-exec-001",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -400,
+          300
+        ],
+        "webhookId": "bench-sql-exec"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "={{ $json.body.sql || $json.sql }}"
+        },
+        "id": "sql-exec-002",
+        "name": "Execute SQL",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          -100,
+          300
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "zEr7jPswZNv6lWKu",
+            "name": "Supabase PostgreSQL"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Execute SQL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Alexis Moret",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-06T13:24:57.971Z",
+        "id": 503,
+        "workflowId": "3O2xcKuloLnZB5dH",
+        "versionId": "dcd4f255-38fd-4480-ac41-d2d027be01cf",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      },
+      {
+        "createdAt": "2026-02-06T13:25:14.068Z",
+        "id": 504,
+        "workflowId": "3O2xcKuloLnZB5dH",
+        "versionId": "dcd4f255-38fd-4480-ac41-d2d027be01cf",
+        "event": "activated",
+        "userId": "215767e0-958a-4c74-a67a-e335807eba64"
+      }
+    ]
+  }
+}

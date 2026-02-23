@@ -35,8 +35,8 @@ os.makedirs(SNAPSHOTS_DIR, exist_ok=True)
 # Load writer for recording changes
 writer = SourceFileLoader("w", os.path.join(REPO_ROOT, "eval", "live-writer.py")).load_module()
 
-# n8n API config — Docker self-hosted (post-migration 2026-02-12)
-N8N_HOST = os.environ.get("N8N_HOST", "http://34.136.180.66:5678")
+# n8n API config — HF Space (VM n8n removed 2026-02-23)
+N8N_HOST = os.environ.get("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space")
 N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 
 WORKFLOW_IDS = {
