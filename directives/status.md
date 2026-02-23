@@ -1,6 +1,22 @@
-# Status — 23 Fevrier 2026 (Session 42)
+# Status — 23 Fevrier 2026 (Session 51)
 
-> Last updated: 2026-02-23T17:00:00+01:00
+> Last updated: 2026-02-23T23:30:00+01:00
+
+### Session 51 — 23 fevrier 2026 (23:30+)
+- **Objectif**: Fix broken pipelines (env var syntax), redeploy HF Space v5.4
+- **Root cause found**: Standard + Graph workflow JSONs used `={{.VAR}}` instead of `={{$env.VAR}}` — caused Bearer null on all API calls
+- **Actions**: Fixed 17 instances across 6 JSON files, updated entrypoint to v5.4, redeploying HF Space
+- **Resultat**: Fix applied, deploy in progress
+
+### Session 50 — 23 fevrier 2026 (~21:00)
+- **Objectif**: Deploy v5.3 with per-pipeline OpenRouter keys
+- **Actions**: Added 6 per-pipeline credential creation in setup-workflows.py, 7 env vars for key rotation
+- **Resultat**: Deployed but Standard/Graph still broken (root cause was env var syntax, not keys)
+
+### Session 49 — 23 fevrier 2026 (~19:00)
+- **Objectif**: Deploy v5.2 with 2-pass activation
+- **Actions**: Fixed httpHeaderAuth type mapping, removed duplicate quantitative workflow
+- **Resultat**: 4/5 webhooks responding but Standard/Graph return empty answers
 
 ## Session 42 = VM Cleanup, HF Space Rebuild, Anti-VM Guards, Multi-Key OpenRouter
 

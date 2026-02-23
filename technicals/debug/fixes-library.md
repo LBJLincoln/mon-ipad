@@ -1,9 +1,9 @@
 # Fixes Library — Multi-RAG Orchestrator
 
-> Last updated: 2026-02-23T18:30:00+01:00
+> Last updated: 2026-02-23T23:30:00+01:00
 
 > **Bibliotheque permanente de tous les bugs resolus.** A consulter EN PREMIER avant tout debug.
-> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 43 (2026-02-23).
+> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 51 (2026-02-23).
 
 ---
 
@@ -64,6 +64,8 @@
 | 51 | HF Space | set -e kills container on any transient failure in entrypoint.sh | 42 | CRITIQUE |
 | 52 | n8n Workflows | Hardcoded API keys in workflow JSONs expire and cause 401 errors | 43 | CRITIQUE |
 | 53 | n8n Workflows | Credential ID mismatch after fresh import (non-existent IDs) | 43 | CRITIQUE |
+| 54 | n8n Workflows | Broken expression syntax `={{.VAR}}` instead of `={{$env.VAR}}` | 51 | CRITIQUE |
+| 55 | Infrastructure | mon-ipad repo growing too large (datasets/snapshots/logs) | 51 | IMPORTANT |
 
 ---
 
@@ -1065,5 +1067,22 @@ for node in workflow['nodes']:
 **RULE** : NEVER directly import workflows without credential remapping. Always: 1) Create credentials, 2) Get new IDs, 3) Remap workflow JSONs, 4) Import, 5) Activate.
 **Alternative** : Use generic credentials with fixed names and modify workflow export to reference credential names instead of IDs (more complex, less reliable).
 **Fichiers impactes** : `hf-space/setup-workflows.py`, `hf-space/entrypoint.sh` (calls setup-workflows.py)
+
+---
+
+### FIX-54: Broken n8n expression syntax `={{.VAR}}` → `={{$env.VAR}}`
+- **Date**: 2026-02-23 (Session 51)
+- **Symptome**: Standard + Graph pipelines return "Unable to generate answer" on every question. Quantitative works fine.
+- **Cause racine**: Workflow JSONs (standard.json, graph.json, benchmark-dataset-ingestion.json) used broken n8n expression syntax `={{.OPENROUTER_KEY_STANDARD}}` instead of correct `={{$env.OPENROUTER_KEY_STANDARD}}`. The `={{.VAR}}` syntax is NOT valid in n8n — it evaluates to `null`, causing all HTTP headers to send `Bearer null` for OpenRouter, Jina, and Pinecone API calls.
+- **Pourquoi Quantitative marchait**: quantitative.json already used correct `={{$env.VAR}}` syntax. Also uses `credentials.httpHeaderAuth` approach in some nodes.
+- **Solution**: `sed -i 's/={{\\./={{$env./g'` across all affected JSONs (n8n/live/ + hf-space/n8n-workflows/). Total: 17 instances fixed (8 standard, 5 graph, 1 benchmark, 3 quantitative-template).
+- **Verification**: `grep -r '={{\\.' n8n/live/ hf-space/n8n-workflows/` returns zero matches.
+- **Lecon**: When a pipeline returns empty/error answers while another works, CHECK THE EXPRESSION SYNTAX before debugging activation or credentials. Compare working vs broken workflow JSONs.
+
+### FIX-55: rag-storage migration (datasets/snapshots/logs/outputs)
+- **Date**: 2026-02-23 (Session 51)
+- **Symptome**: mon-ipad repo growing too large with datasets, snapshots, logs, outputs
+- **Solution**: Created rag-storage repo, moved large data directories there
+- **Commit**: 965ffc3
 
 ---

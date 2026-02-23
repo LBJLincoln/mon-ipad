@@ -1,6 +1,6 @@
 # EXECUTIVE SUMMARY — Nomos AI Multi-RAG Orchestrator
 
-> Last updated: 2026-02-23T21:45:00+01:00
+> Last updated: 2026-02-23T23:30:00+01:00
 > **Ce fichier DOIT etre consulte et mis a jour a CHAQUE session.**
 > Il est la reference unique pour comprendre tout le projet en langage clair.
 
@@ -35,7 +35,7 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
 ### Ou en est-on ?
 - **Phase 1** (200 questions) : **PASSED** (83.9% overall, 20 fev 2026, session 30). Tous les 4 pipelines au-dessus de leurs cibles.
 - **Phase 2** (1,000q par pipeline) : **EN COURS** — Graph DONE (500/500, 78%), Quant DONE (500/500, 92%), Standard partial (579/1000, ~36%), Orchestrator BROKEN (57/1000, 0%)
-- **Bloqueur critique** : HF Space ALL WEBHOOKS 404 apres rebuild (session 39). Aucun pipeline ne peut tourner tant que entrypoint.sh n'est pas repare.
+- **Bloqueur critique RESOLU** : Root cause identifiee (session 51) — Broken n8n expression syntax `={{.VAR}}` au lieu de `={{$env.VAR}}` dans Standard + Graph workflow JSONs causait tous les appels API (OpenRouter, Pinecone, Jina) a envoyer `Bearer null`. Fix applique (17 instances corrigees), HF Space v5.4 deploiement en cours.
 - **PME** : 3 workflows importes (multi-canal-gateway, action-executor, whatsapp-telegram-bridge) mais PAS actives (404).
 - **Data ingestion** : Demarree — 3/5 datasets HuggingFace telecharges (669MB).
 
@@ -50,7 +50,7 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
 | Lignes dans Supabase | ~17,600 |
 | Datasets telecharges | 7,609 sectoriels + 669MB HuggingFace |
 | Commits depuis le debut | 200+ |
-| Sessions Claude Code | **48** |
+| Sessions Claude Code | **51** |
 | Sites web live | **4** (ETI + PME connectors + PME use cases + Dashboard) |
 
 ---
@@ -164,7 +164,7 @@ mon-ipad (PILOTE)
 | **RAM** | 970 MB total (~400 MB disponibles) |
 | **Disque** | 30 GB (12 GB utilises) |
 | **Acces** | SSH via Termius (iPad) |
-| **Docker** | NO containers running — n8n REMOVED (Session 42, freed ~270MB RAM) |
+| **Docker** | NO containers running — n8n REMOVED (Session 42, freed ~270MB RAM). All n8n operations on HF Space. |
 | **Usage** | PILOTAGE UNIQUEMENT — tour de controle, git, MCP servers. NO eval scripts, NO n8n. |
 
 ### HF Space (execution — 16 GB RAM, gratuit)
@@ -175,8 +175,8 @@ mon-ipad (PILOTE)
 | **n8n** | Version 2.8.4 (pinned) |
 | **DB interne** | Supabase PostgreSQL + Redis (queue mode: 1 main + 2 workers) |
 | **Usage** | Execution des pipelines RAG pour les tests |
-| **Status** | **ALL WEBHOOKS 404** — entrypoint.sh activation broken (sessions 39-48). Multiple fix attempts (v1-v3.1): CLI import, credential stripping, PATCH activation, sqlite3 direct activation. |
-| **Workflows** | 9 RAG + 3 PME importes. **TOUS 404** apres rebuild. entrypoint v4.0 needed (publish system bypass). |
+| **Status** | **v5.4 deploying** — Root cause fix: broken env var syntax (={{.VAR}} → ={{$env.VAR}}) in Standard + Graph JSONs caused all API calls to fail. 17 instances corrected. |
+| **Workflows** | 9 RAG + 3 PME importes. Standard/Graph were broken due to syntax issue (fixed v5.4). Quantitative works. |
 
 ### Codespaces GitHub (ephemeres — 60h/mois)
 | Element | Detail |
@@ -539,20 +539,22 @@ git push origin main
 | Orchestrator | 57 | 1000 | 0% | **BROKEN** — 404/empty on every question |
 | PME Gateway | 0 | — | — | NOT ACTIVATED (404 after rebuild) |
 
-### Bloqueur critique : HF Space ALL WEBHOOKS 404 (sessions 39-48)
-- **Cause** : HF Space rebuild (session 39) wiped n8n database. Multiple fix attempts (v1-v3.1) failed: CLI import has foreign key issues, REST API activation requires versionId that doesn't exist, PATCH activation still broken.
-- **Latest attempt** : entrypoint v4.0 (session 48) — direct sqlite3 activation bypassing n8n publish system. Strips shared/activeVersion/tags, auto-generates missing IDs, forces activation via UPDATE query. Deployed but not yet verified.
-- **Impact** : ALL workflow activations lost → ALL webhooks return 404 → NO pipeline can run
-- **Data safe** : ALL test results stored on VM (docs/tested_ids.json, logs/pipeline-results/)
-- **What was lost** : n8n runtime state (activations, credentials, execution history) — reconstructible from git
-- **Fix needed** : Verify entrypoint v4.0 works, add retry logic + activation verification step
+### Bloqueur critique RESOLU : Broken n8n env var syntax (sessions 39-51)
+- **Root cause found (Session 51)** : Standard + Graph workflow JSONs used broken syntax `={{.OPENROUTER_KEY_STANDARD}}` instead of correct `={{$env.OPENROUTER_KEY_STANDARD}}`. The `={{.VAR}}` syntax is NOT valid in n8n — evaluates to `null`, causing all HTTP headers to send `Bearer null` for OpenRouter, Jina, and Pinecone API calls.
+- **Why Quantitative worked** : quantitative.json already used correct `={{$env.VAR}}` syntax. Also uses `credentials.httpHeaderAuth` approach in some nodes.
+- **Previous fix attempts (v1-v4.0)** : Addressed wrong problem (activation issues, entrypoint retry logic, credential stripping). The real issue was expression syntax in workflow JSONs.
+- **Fix applied (v5.4)** : `sed -i 's/={{\\./={{$env./g'` across all affected JSONs (n8n/live/ + hf-space/n8n-workflows/). Total: 17 instances fixed (8 standard, 5 graph, 1 benchmark, 3 quantitative-template).
+- **Verification** : `grep -r '={{\\.' n8n/live/ hf-space/n8n-workflows/` returns zero matches.
+- **Deployment status** : v5.4 deploying to HF Space
 
-### Fixes documentes (35+ au total)
-Les 35+ bugs documentes sont dans `technicals/debug/fixes-library.md`.
+### Fixes documentes (55+ au total)
+Les 55+ bugs documentes sont dans `technicals/debug/fixes-library.md`.
 Highlights recents :
+- FIX-54 : Broken n8n expression syntax `={{.VAR}}` → `={{$env.VAR}}` (Session 51, CRITICAL)
+- FIX-55 : rag-storage migration (datasets/snapshots/logs/outputs) (Session 51)
 - FIX-36 : Phase 1 gate calculation (excluded Phase 2 questions)
 - FIX-29 to FIX-35 : Quantitative + Orchestrator fixes (sessions 27-28)
-- Sessions 39-48 : HF Space activation broken — multiple attempts (CLI import, credential stripping, PATCH activation, sqlite3 direct activation). entrypoint v4.0 uses direct sqlite3 UPDATE to bypass n8n publish system.
+- Sessions 39-50 : HF Space activation issues — root cause was env var syntax, not activation
 
 ### Tests de concurrence (session 27)
 | Config | Pipelines | Concurrency | Standard | Graph | Orchestrator |
@@ -567,20 +569,23 @@ Highlights recents :
 
 ## 12. PROCHAINES ETAPES
 
-### Sessions 42-48 — PROGRESS (what was done)
+### Sessions 42-51 — PROGRESS (what was done)
 1. **Session 42**: VM n8n REMOVED (freed ~270MB RAM). VM is pilotage-only now. Anti-VM guards added to all eval scripts.
 2. **Session 43**: HF Space rebuilt with queue mode (3 workers), Supabase PostgreSQL, 7 OpenRouter keys.
 3. **Sessions 44-45**: entrypoint.sh v2-v3.1 attempts. Credential stripping, versionId fixes, CLI import debugging.
 4. **Sessions 46-47**: PATCH activation instead of POST, sqlite3 direct activation attempts. Session 46 prompt optimization.
 5. **Session 48**: entrypoint v4.0 — direct sqlite3 activation (bypasses n8n publish system), credential leak fixes, auto-generate missing IDs.
-6. **User ideas captured** (5 total): New chatbot repo, ingestion test workflow, sub-agents as restrictors, CLAUDE.md cleanup, visible 8-10 step plan.
+6. **Session 49**: Deployed v5.2 with 2-pass activation, fixed httpHeaderAuth type mapping, removed duplicate quantitative workflow.
+7. **Session 50**: Deployed v5.3 with per-pipeline OpenRouter keys (6 credentials across 3 accounts, 7 env vars for key rotation).
+8. **Session 51**: ROOT CAUSE FOUND — broken env var syntax `={{.VAR}}` instead of `={{$env.VAR}}` in workflow JSONs. Fixed 17 instances, deploying v5.4.
+9. **User ideas captured** (5 total): New chatbot repo, ingestion test workflow, sub-agents as restrictors, CLAUDE.md cleanup, visible 8-10 step plan.
 
 ### Next sessions — PRIORITIES (ordre)
-1. **FIX HF SPACE ACTIVATION** — #0 priority. ALL webhooks 404. entrypoint v4.0 deployed (sqlite3 direct activation). Needs verification + retry logic. CROSS-PIPELINE bottleneck: unblocks Standard + Orchestrator + PME (Rule 36).
-2. **USER IDEAS** — Implement 5 user ideas captured in session-state.md (chatbot repo, ingestion test, sub-agent restrictors, CLAUDE.md cleanup, visible plan).
+1. **VERIFY HF SPACE v5.4** — Env var syntax fix deployed. Test all 4 pipelines (Standard, Graph, Quant, Orch) confirm they return valid responses, not empty/404.
+2. **RELAUNCH STANDARD** — batch-size 5, on fixed HF Space. Complete remaining 421/1000 questions.
 3. **FIX ORCHESTRATOR** — Returns 0% on Phase 2. Debug intent classifier + sub-pipeline routing.
-4. **RELAUNCH STANDARD** — batch-size 5, on fixed HF Space. Complete remaining 421/1000 questions.
-5. **ACTIVATE PME WORKFLOWS** — Configure Google API key as credential, test gateway webhook.
+4. **ACTIVATE PME WORKFLOWS** — Configure Google API key as credential, test gateway webhook.
+5. **USER IDEAS** — Implement 5 user ideas captured in session-state.md (chatbot repo, ingestion test, sub-agent restrictors, CLAUDE.md cleanup, visible plan).
 6. **Complete data-ingestion** — musique + finqa downloads, start actual ingestion pipeline.
 
 ### Phase 2 completion targets

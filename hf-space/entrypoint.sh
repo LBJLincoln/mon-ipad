@@ -1,6 +1,6 @@
 #!/bin/bash
 # =================================================================
-# HF Space Entrypoint — n8n Engine v5.1
+# HF Space Entrypoint — n8n Engine v5.4
 # =================================================================
 # SQLITE + POST /activate APPROACH:
 # 1. Strip credential refs from workflows → clean JSONs
@@ -22,7 +22,7 @@
 SETUP_LOG="/tmp/setup-workflows.log"
 exec > >(tee -a "$SETUP_LOG") 2>&1
 
-echo "=== NOMOS RAG ENGINE — HF Space Boot v5.1 ==="
+echo "=== NOMOS RAG ENGINE — HF Space Boot v5.4 ==="
 echo "Boot started at $(date -u)"
 
 trap 'echo "SIGNAL received"; wait' SIGTERM SIGINT

@@ -1,0 +1,212 @@
+{
+  "name": "Chatbot Knowledge Base",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatbot-knowledge",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "chatbot-knowledge-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse and sanitize input\nconst body = $input.item.json.body || {};\nconst query = (body.query || '').trim();\nconst sessionId = body.sessionId || 'anonymous';\n\nif (!query) {\n  throw new Error('Missing required field: query');\n}\n\n// Basic sanitization\nconst sanitized = query\n  .replace(/<[^>]*>/g, '') // Remove HTML tags\n  .replace(/[^\\w\\s\\u00C0-\\u017F?.,!-]/g, '') // Keep alphanumeric + accents + basic punctuation\n  .substring(0, 500); // Max 500 chars\n\nreturn {\n  query: sanitized,\n  sessionId: sessionId,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "name": "Parse Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Embedded knowledge base from executive-summary.md and CLAUDE.md\nconst KNOWLEDGE_BASE = `\n## About Nomos AI\nNomos AI is a Multi-RAG Orchestrator — an AI system that answers complex questions by searching multiple databases simultaneously. It uses 4 different search methods (pipelines) and an orchestrator that chooses the best method for each question.\n\n## Project Goal\nBuild a response engine capable of handling 1 million+ questions across 4 business sectors (Construction, Industry, Finance, Legal) with 85%+ accuracy and <2.5s response time.\n\n## Current Status (Phase 2)\n- Phase 1 (200 questions): PASSED with 83.9% overall accuracy (Feb 20, 2026)\n- Phase 2 (1,000 questions per pipeline): IN PROGRESS\n  - Graph: COMPLETE (500/500, 78%)\n  - Quantitative: COMPLETE (500/500, 92%)\n  - Standard: PARTIAL (579/1000, ~36%)\n  - Orchestrator: BROKEN (57/1000, 0%)\n- Critical issue RESOLVED (Session 51): Root cause found — broken n8n expression syntax {{.VAR}} instead of {{$env.VAR}} in workflow JSONs. Fixed 17 instances, v5.4 deploying.\n\n## Architecture\nThe system runs across multiple machines:\n- VM Google Cloud (34.136.180.66): Control tower, permanent, 970MB RAM, piloting only\n- HF Space (16GB RAM): n8n execution layer, running 9 RAG + 3 PME workflows\n- GitHub Codespaces (8GB RAM, ephemeral): Heavy testing, data ingestion\n- Vercel: 4 live production websites\n\n## The 4 RAG Pipelines\n\n### 1. Standard Pipeline (textual search)\n- Database: Pinecone (10,411 vectors, 1024-dim)\n- Process: HyDE → Pinecone search → Jina reranking → LLM response\n- Accuracy: Phase 1: 85.5%, Phase 2: ~36% (degradation under investigation)\n- Webhook: /webhook/rag-multi-index-v3\n\n### 2. Graph Pipeline (entities and relationships)\n- Database: Neo4j (19,788 entities, 76,717 relations)\n- Process: Entity extraction → Neo4j search → Subgraph retrieval → LLM synthesis\n- Accuracy: Phase 1: 78.0%, Phase 2: 78.0% (500/500 COMPLETE)\n- Webhook: /webhook/ff622742-6d71-4e91-af71-b5c666088717\n\n### 3. Quantitative Pipeline (numbers and tables)\n- Database: Supabase (40 tables, ~17,600 rows)\n- Process: Financial intent → SQL generation → SQL execution → LLM interpretation\n- Accuracy: Phase 1: 92.0%, Phase 2: 92.0% (500/500 COMPLETE)\n- Webhook: /webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9\n\n### 4. Orchestrator Pipeline (combines all 3)\n- Database: All (Pinecone + Neo4j + Supabase)\n- Process: Intent classification → Task planning → Sub-pipeline execution → Result aggregation\n- Accuracy: Phase 1: 80.0%, Phase 2: 0% (BROKEN)\n- Webhook: /webhook/92217bb8-ffc8-459a-8331-3f553812c3d0\n\n## Databases\n- Pinecone: 22,070 vectors across 3 indexes (sota-rag-jina-1024, sota-rag-phase2-graph, sota-rag-cohere-1024)\n- Neo4j Aura: 19,788 nodes, 76,717 relationships (people, organizations, cities, generic entities)\n- Supabase: 40 tables, ~17,600 rows (financials, sales_data, employees, benchmark datasets)\n\n## GitHub Repositories (7 total, all private)\n1. mon-ipad: Control tower (directives, eval scripts, MCP configs, CLAUDE.md master)\n2. rag-tests: Tests for 4 pipelines (Python eval scripts, results JSON)\n3. rag-website: ETI showcase site (Next.js 14, 4 sectors, chatbots) — Live at nomos-ai-pied.vercel.app\n4. rag-dashboard: Metrics dashboard (static HTML/JS) — Live at nomos-dashboard-alexis-morets-projects.vercel.app\n5. rag-data-ingestion: Data ingestion (download scripts, ingestion workflows)\n6. rag-pme-connectors: PME connectors site (15 app integrations) — Live at nomos-pme-connectors-alexis-morets-projects.vercel.app\n7. rag-pme-usecases: PME use cases site (200 use cases catalog) — Live at nomos-pme-usecases-alexis-morets-projects.vercel.app\n\n## Technology Stack\n- Workflow Engine: n8n 2.8.4 (on HF Space)\n- LLMs: Llama 70B, Gemma 27B (via OpenRouter, 7 keys configured for rotation)\n- Embeddings: Jina AI (embeddings-v3, 2 keys, 1M tokens/month each)\n- Vector DB: Pinecone (Free tier, 100K vectors)\n- Graph DB: Neo4j Aura (Free tier, 200K nodes)\n- SQL DB: Supabase (Free tier, 500MB)\n- Reranking: Jina (primary), Cohere (backup, trial almost exhausted)\n- Control: Claude Code (Opus 4.6) on VM via Termius\n\n## Key Metrics\n- Questions tested to date: 1,520+ (Phase 1 + Phase 2)\n- Phase 1 accuracy (baseline): 83.9% PASSED\n- Phase 2 accuracy (partial): Graph 78%, Quant 92%, Std ~36%, Orch 0%\n- Commits since start: 200+\n- Sessions: 51\n- Live websites: 4\n\n## Recent Progress (Sessions 42-51)\n- Session 42: VM n8n REMOVED (freed ~270MB RAM). VM is piloting-only now.\n- Session 43: HF Space rebuilt with queue mode (3 workers), Supabase PostgreSQL, 7 OpenRouter keys.\n- Sessions 44-50: Multiple entrypoint.sh fix attempts, credential management, activation debugging.\n- Session 51: ROOT CAUSE FOUND — broken env var syntax {{.VAR}} instead of {{$env.VAR}} in workflow JSONs. Fixed 17 instances, deploying v5.4.\n\n## Next Priorities\n1. VERIFY HF SPACE v5.4: Test all 4 pipelines confirm valid responses\n2. RELAUNCH STANDARD: Complete remaining 421/1000 questions\n3. FIX ORCHESTRATOR: Debug intent classifier + routing (0% accuracy)\n4. ACTIVATE PME WORKFLOWS: Configure Google API credentials\n5. Complete data-ingestion: musique + finqa downloads\n\n## Technical Details\n- VM: Google Cloud e2-micro (1 vCPU, 970MB RAM, 30GB disk, Debian 11)\n- HF Space URL: https://lbjlincoln-nomos-rag-engine.hf.space\n- n8n Configuration: SQLite + Redis, queue mode (1 main + 2 workers)\n- MCP Servers: 7 configured (n8n, pinecone, neo4j, supabase, jina-embeddings, cohere, huggingface)\n- All credentials stored in .env.local (NEVER in git)\n\n## Calling the Pipelines\nAll 4 pipelines use identical POST format:\ncurl -X POST \"https://lbjlincoln-nomos-rag-engine.hf.space/webhook/<path>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"query\": \"Your question here\", \"sessionId\": \"optional\"}'\n\nIMPORTANT: The field is \"query\" (NOT \"question\").\n\n## Multi-Model Strategy\n- Opus 4.6: Brain — analysis, decisions, piloting (primary model)\n- Sonnet 4.5: Arms — web research, batch commands (delegated when relevant)\n- Haiku 4.5: Sprint — fast codebase exploration (delegated for simple searches)\n- Opus decides WHEN to delegate. Never the reverse.\n`;\n\nconst query = $input.item.json.query.toLowerCase();\n\n// Split knowledge into paragraphs\nconst paragraphs = KNOWLEDGE_BASE.split('\\n\\n').filter(p => p.trim());\n\n// Simple keyword scoring\nconst queryWords = query\n  .split(/\\s+/)\n  .filter(w => w.length > 3)\n  .map(w => w.replace(/[^\\w]/g, ''));\n\nconst scoredParagraphs = paragraphs.map(para => {\n  const paraLower = para.toLowerCase();\n  let score = 0;\n  \n  queryWords.forEach(word => {\n    const regex = new RegExp(word, 'gi');\n    const matches = paraLower.match(regex);\n    if (matches) {\n      score += matches.length;\n    }\n  });\n  \n  return { text: para, score };\n});\n\n// Get top 5 most relevant paragraphs\nconst topParagraphs = scoredParagraphs\n  .filter(p => p.score > 0)\n  .sort((a, b) => b.score - a.score)\n  .slice(0, 5)\n  .map(p => p.text);\n\nconst context = topParagraphs.length > 0 \n  ? topParagraphs.join('\\n\\n')\n  : KNOWLEDGE_BASE.substring(0, 2000); // Fallback to first 2000 chars\n\nreturn {\n  query: $input.item.json.query,\n  sessionId: $input.item.json.sessionId,\n  context: context,\n  paragraphsFound: topParagraphs.length\n};"
+      },
+      "id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+      "name": "Knowledge Search",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.OPENROUTER_API_KEY}}"
+            },
+            {
+              "name": "HTTP-Referer",
+              "value": "https://nomos-ai.com"
+            },
+            {
+              "name": "X-Title",
+              "value": "Nomos AI Chatbot"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "meta-llama/llama-3.3-70b-instruct:free"
+            },
+            {
+              "name": "messages",
+              "value": "={{ JSON.stringify([\n  {\n    role: 'system',\n    content: `You are a helpful assistant for Nomos AI, a Multi-RAG Orchestrator project. Answer questions based on the provided context. Be concise, accurate, and helpful.\\n\\nContext:\\n${$json.context}`\n  },\n  {\n    role: 'user',\n    content: $json.query\n  }\n]) }}"
+            },
+            {
+              "name": "temperature",
+              "value": "0.3"
+            },
+            {
+              "name": "max_tokens",
+              "value": "800"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d4e5f6a7-b8c9-0123-def0-123456789013",
+      "name": "LLM Answer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract answer from LLM response\nconst response = $input.item.json;\nlet answer = 'Sorry, I could not generate a response.';\nlet sources = ['Knowledge Base: executive-summary.md', 'Knowledge Base: CLAUDE.md'];\n\ntry {\n  if (response.choices && response.choices[0] && response.choices[0].message) {\n    answer = response.choices[0].message.content;\n  }\n} catch (error) {\n  answer = 'Error processing response: ' + error.message;\n}\n\n// Format final response\nreturn {\n  answer: answer,\n  sources: sources,\n  pipeline: 'chatbot-knowledge',\n  sessionId: $('Parse Input').item.json.sessionId,\n  timestamp: new Date().toISOString(),\n  paragraphsUsed: $('Knowledge Search').item.json.paragraphsFound,\n  model: 'meta-llama/llama-3.3-70b-instruct:free'\n};"
+      },
+      "id": "e5f6a7b8-c9d0-1234-ef01-234567890124",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json, null, 2) }}",
+        "options": {}
+      },
+      "id": "f6a7b8c9-d0e1-2345-f012-345678901235",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Error handler\nconst error = $input.item.json.error || 'Unknown error';\nconst message = typeof error === 'string' ? error : error.message || 'An error occurred';\n\nreturn {\n  error: true,\n  message: message,\n  pipeline: 'chatbot-knowledge',\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "a7b8c9d0-e1f2-3456-0123-456789012346",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 500]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json, null, 2) }}",
+        "responseCode": 500,
+        "options": {}
+      },
+      "id": "b8c9d0e1-f2a3-4567-1234-567890123457",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1050, 500]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Input": {
+      "main": [
+        [
+          {
+            "node": "Knowledge Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Knowledge Search": {
+      "main": [
+        [
+          {
+            "node": "LLM Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Answer": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-02-23T23:00:00.000Z",
+  "versionId": "chatbot-knowledge-v1"
+}

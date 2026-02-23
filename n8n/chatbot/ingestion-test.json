@@ -1,0 +1,600 @@
+{
+  "name": "Ingestion Test V1.0",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ingestion-test",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "ingestion-test"
+    },
+    {
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "rules": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": ""
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.mode }}",
+                    "rightValue": "upload-and-test",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "upload_and_test"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": ""
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.mode }}",
+                    "rightValue": "test-existing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "test_existing"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000002",
+      "name": "Route by Mode",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "documents",
+              "value": "={{ $json.documents }}",
+              "type": "array"
+            },
+            {
+              "id": "a2",
+              "name": "questions",
+              "value": "={{ $json.questions }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000003",
+      "name": "Extract Documents",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000004",
+      "name": "Split Documents",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://api.jina.ai/v1/embeddings",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.JINA_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"jina-embeddings-v3\",\n  \"task\": \"retrieval.passage\",\n  \"dimensions\": 1024,\n  \"late_chunking\": false,\n  \"embedding_type\": \"float\",\n  \"input\": [{{ $json.documents[$itemIndex].text }}]\n}",
+        "options": {}
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000005",
+      "name": "Generate Embeddings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare vector for Pinecone upsert\nconst documents = $input.first().json.documents;\nconst embedding = $json.data[0].embedding;\nconst docIndex = $node[\"Split Documents\"].context.currentRunIndex;\nconst doc = documents[docIndex];\n\n// Generate unique ID\nconst vectorId = `test-doc-${Date.now()}-${docIndex}`;\n\n// Prepare metadata\nconst metadata = {\n  text: doc.text,\n  source: doc.metadata?.source || 'ingestion-test',\n  created_at: new Date().toISOString(),\n  ...doc.metadata\n};\n\nreturn {\n  vectorId,\n  embedding,\n  metadata,\n  namespace: 'ingestion-test'\n};"
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000006",
+      "name": "Prepare Vector",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.PINECONE_HOST }}/vectors/upsert",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Api-Key",
+              "value": "={{ $env.PINECONE_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"vectors\": [\n    {\n      \"id\": \"{{ $json.vectorId }}\",\n      \"values\": {{ JSON.stringify($json.embedding) }},\n      \"metadata\": {{ JSON.stringify($json.metadata) }}\n    }\n  ],\n  \"namespace\": \"{{ $json.namespace }}\"\n}",
+        "options": {}
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000007",
+      "name": "Upsert to Pinecone",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "upserted",
+              "value": "={{ $json.upsertedCount }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000008",
+      "name": "Track Upsert",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1780, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Aggregate all document upserts and prepare for testing\nconst items = $input.all();\nconst totalUpserted = items.reduce((sum, item) => sum + (item.json.upserted || 0), 0);\nconst questions = $input.first().json.questions;\n\nreturn {\n  uploadComplete: true,\n  totalDocuments: items.length,\n  totalUpserted,\n  questions,\n  startTime: new Date().toISOString()\n};"
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000009",
+      "name": "Aggregate Upload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 200]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "questions",
+              "value": "={{ $json.questions }}",
+              "type": "array"
+            },
+            {
+              "id": "a2",
+              "name": "startTime",
+              "value": "={{ new Date().toISOString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000010",
+      "name": "Prepare Test Existing",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {},
+      "id": "f3e8c8a0-1234-4567-89ab-000000000011",
+      "name": "Merge Paths",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [2220, 300]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000012",
+      "name": "Split Questions",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [2440, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract current question for testing\nconst questions = $input.first().json.questions;\nconst currentIndex = $node[\"Split Questions\"].context.currentRunIndex;\nconst currentQuestion = questions[currentIndex];\n\nreturn {\n  query: currentQuestion.query,\n  expected: currentQuestion.expected,\n  questionIndex: currentIndex,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000013",
+      "name": "Extract Question",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2660, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/rag-multi-index-v3",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"{{ $json.query }}\",\n  \"namespace\": \"ingestion-test\"\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000014",
+      "name": "Query RAG Pipeline",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2880, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Score the RAG answer against expected answer\nconst query = $json.query || $input.first().json.query;\nconst expected = $json.expected || $input.first().json.expected;\nconst ragResponse = $json;\n\n// Extract answer from RAG response\nlet ragAnswer = '';\nif (ragResponse.answer) {\n  ragAnswer = ragResponse.answer;\n} else if (ragResponse.text) {\n  ragAnswer = ragResponse.text;\n} else if (ragResponse.response) {\n  ragAnswer = ragResponse.response;\n} else {\n  // Fallback: use the whole JSON as string\n  ragAnswer = JSON.stringify(ragResponse);\n}\n\n// Normalize strings for comparison\nconst normalize = (str) => {\n  return String(str).toLowerCase().trim().replace(/[^a-z0-9\\s]/g, '');\n};\n\nconst normalizedAnswer = normalize(ragAnswer);\nconst normalizedExpected = normalize(expected);\n\n// Scoring logic\nlet isCorrect = false;\nlet score = 0;\nlet scoringMethod = 'none';\n\n// Method 1: Exact match (case-insensitive, punctuation-removed)\nif (normalizedAnswer === normalizedExpected) {\n  isCorrect = true;\n  score = 1.0;\n  scoringMethod = 'exact_match';\n} \n// Method 2: Substring containment (expected answer is contained in RAG answer)\nelse if (normalizedAnswer.includes(normalizedExpected)) {\n  isCorrect = true;\n  score = 0.9;\n  scoringMethod = 'substring_match';\n}\n// Method 3: Keyword overlap (at least 70% of expected keywords present)\nelse {\n  const expectedWords = normalizedExpected.split(/\\s+/).filter(w => w.length > 3);\n  const answerWords = new Set(normalizedAnswer.split(/\\s+/));\n  \n  if (expectedWords.length > 0) {\n    const matchedWords = expectedWords.filter(w => answerWords.has(w));\n    const overlapRatio = matchedWords.length / expectedWords.length;\n    \n    if (overlapRatio >= 0.7) {\n      isCorrect = true;\n      score = overlapRatio * 0.8; // Max 0.8 for keyword match\n      scoringMethod = 'keyword_overlap';\n    } else {\n      isCorrect = false;\n      score = overlapRatio * 0.5; // Partial credit\n      scoringMethod = 'partial_overlap';\n    }\n  }\n}\n\nreturn {\n  query,\n  expected,\n  ragAnswer,\n  isCorrect,\n  score,\n  scoringMethod,\n  questionIndex: $input.first().json.questionIndex,\n  latency: ragResponse.latency || null,\n  sources: ragResponse.sources || [],\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000015",
+      "name": "Score Answer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3100, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "result",
+              "value": "={{ $json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000016",
+      "name": "Track Result",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [3320, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Aggregate all test results\nconst items = $input.all();\nconst results = items.map(item => item.json.result || item.json);\n\nconst total = results.length;\nconst correct = results.filter(r => r.isCorrect).length;\nconst accuracy = total > 0 ? (correct / total) : 0;\n\n// Calculate average score\nconst avgScore = total > 0 \n  ? results.reduce((sum, r) => sum + (r.score || 0), 0) / total \n  : 0;\n\n// Calculate average latency (if available)\nconst latencies = results.filter(r => r.latency !== null).map(r => r.latency);\nconst avgLatency = latencies.length > 0\n  ? latencies.reduce((sum, l) => sum + l, 0) / latencies.length\n  : null;\n\n// Group by scoring method\nconst scoringMethods = {};\nresults.forEach(r => {\n  const method = r.scoringMethod || 'unknown';\n  if (!scoringMethods[method]) {\n    scoringMethods[method] = 0;\n  }\n  scoringMethods[method]++;\n});\n\n// Detailed breakdown\nconst details = results.map((r, idx) => ({\n  questionIndex: r.questionIndex ?? idx,\n  query: r.query,\n  expected: r.expected,\n  ragAnswer: r.ragAnswer,\n  isCorrect: r.isCorrect,\n  score: r.score,\n  scoringMethod: r.scoringMethod,\n  latency: r.latency,\n  sources: r.sources?.length || 0\n}));\n\nreturn {\n  summary: {\n    total,\n    correct,\n    incorrect: total - correct,\n    accuracy: Math.round(accuracy * 10000) / 100, // Percentage with 2 decimals\n    avgScore: Math.round(avgScore * 1000) / 1000,\n    avgLatency: avgLatency ? Math.round(avgLatency * 100) / 100 : null\n  },\n  scoringMethods,\n  details,\n  metadata: {\n    testCompleted: new Date().toISOString(),\n    namespace: 'ingestion-test',\n    pipeline: 'Standard RAG V3.4'\n  }\n};"
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000017",
+      "name": "Aggregate Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3540, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json, null, 2) }}",
+        "options": {}
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000018",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [3760, 300]
+    },
+    {
+      "parameters": {
+        "content": "## Ingestion Test Workflow\n\n**Mode: upload-and-test**\n- Generate embeddings for documents\n- Upsert to Pinecone (namespace: ingestion-test)\n- Run test questions\n\n**Mode: test-existing**\n- Skip upload\n- Run test questions against existing vectors\n\n**Scoring Methods:**\n1. Exact match (score: 1.0)\n2. Substring match (score: 0.9)\n3. Keyword overlap >=70% (score: 0.5-0.8)\n4. Partial overlap <70% (score: 0.0-0.5)",
+        "height": 340,
+        "width": 380,
+        "color": 4
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000019",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [220, 460]
+    },
+    {
+      "parameters": {
+        "content": "## Example Request\n\n```json\n{\n  \"mode\": \"upload-and-test\",\n  \"documents\": [\n    {\n      \"text\": \"Paris is the capital of France.\",\n      \"metadata\": {\n        \"source\": \"geography-facts\",\n        \"topic\": \"capitals\"\n      }\n    }\n  ],\n  \"questions\": [\n    {\n      \"query\": \"What is the capital of France?\",\n      \"expected\": \"Paris\"\n    }\n  ]\n}\n```",
+        "height": 400,
+        "width": 420,
+        "color": 5
+      },
+      "id": "f3e8c8a0-1234-4567-89ab-000000000020",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [220, 840]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Route by Mode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Mode": {
+      "main": [
+        [
+          {
+            "node": "Extract Documents",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Test Existing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Documents": {
+      "main": [
+        [
+          {
+            "node": "Split Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Documents": {
+      "main": [
+        [
+          {
+            "node": "Generate Embeddings",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Embeddings": {
+      "main": [
+        [
+          {
+            "node": "Prepare Vector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Vector": {
+      "main": [
+        [
+          {
+            "node": "Upsert to Pinecone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert to Pinecone": {
+      "main": [
+        [
+          {
+            "node": "Track Upsert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Track Upsert": {
+      "main": [
+        [
+          {
+            "node": "Split Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Upload": {
+      "main": [
+        [
+          {
+            "node": "Merge Paths",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Test Existing": {
+      "main": [
+        [
+          {
+            "node": "Merge Paths",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Paths": {
+      "main": [
+        [
+          {
+            "node": "Split Questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Questions": {
+      "main": [
+        [
+          {
+            "node": "Extract Question",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Question": {
+      "main": [
+        [
+          {
+            "node": "Query RAG Pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query RAG Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Score Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score Answer": {
+      "main": [
+        [
+          {
+            "node": "Track Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Track Result": {
+      "main": [
+        [
+          {
+            "node": "Split Questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Results": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-02-23T00:00:00.000Z",
+  "versionId": "ingestion-test-v1"
+}
