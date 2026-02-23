@@ -120,15 +120,35 @@ def create_all_credentials():
 
 
 def remap_and_import_workflows(id_map):
-    """Import workflow JSONs with credential IDs remapped."""
+    """Import workflow JSONs with credential IDs remapped.
+
+    Import order matters: Standard/Graph/Quantitative first,
+    then Orchestrator (which references them as sub-workflows).
+    """
     imported = 0
     failed = 0
+    wf_id_map = {}  # old_workflow_id -> new_workflow_id (for sub-workflow remapping)
+
     wf_files = sorted(glob.glob(os.path.join(WF_DIR, "*.json")))
 
+    # Import orchestrator LAST (it references other workflows)
+    orchestrator_files = []
+    other_files = []
     for wf_path in wf_files:
+        fname = os.path.basename(wf_path)
+        if 'orchestrator' in fname.lower():
+            orchestrator_files.append(wf_path)
+        else:
+            other_files.append(wf_path)
+
+    ordered_files = other_files + orchestrator_files
+
+    for wf_path in ordered_files:
         fname = os.path.basename(wf_path)
         with open(wf_path) as f:
             wf_data = json.load(f)
+
+        old_wf_id = wf_data.get("id", "")
 
         # Remap credential IDs in all nodes
         remapped = 0
@@ -141,18 +161,34 @@ def remap_and_import_workflows(id_map):
                         cval["id"] = id_map[old_id]
                         remapped += 1
 
+            # Remap sub-workflow references (executeWorkflow nodes)
+            if node.get("type") == "n8n-nodes-base.executeWorkflow":
+                params = node.get("parameters", {})
+                wf_ref = params.get("workflowId", {})
+                if isinstance(wf_ref, dict):
+                    old_sub_id = wf_ref.get("value", "")
+                    if old_sub_id in wf_id_map:
+                        wf_ref["value"] = wf_id_map[old_sub_id]
+                        print(f"    Remapped sub-workflow: {old_sub_id} -> {wf_id_map[old_sub_id]}")
+
         # Import via REST API
         result = api("POST", "workflows", wf_data)
         if result:
-            wf_id = result.get("data", result).get("id", "?")
-            wf_name = result.get("data", result).get("name", fname)
-            print(f"    Imported: {wf_name} (id={wf_id}, {remapped} creds remapped)")
+            new_wf = result.get("data", result)
+            new_wf_id = new_wf.get("id", "?")
+            wf_name = new_wf.get("name", fname)
+            print(f"    Imported: {wf_name} (id={new_wf_id}, {remapped} creds remapped)")
             imported += 1
+
+            # Record ID mapping for sub-workflow remapping
+            if old_wf_id:
+                wf_id_map[old_wf_id] = new_wf_id
         else:
             print(f"    FAILED: {fname}")
             failed += 1
 
     print(f"  Import complete: {imported} OK, {failed} failed")
+    print(f"  Workflow ID mapping: {len(wf_id_map)} entries")
     return imported
 
 
