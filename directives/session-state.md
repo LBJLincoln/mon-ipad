@@ -78,7 +78,9 @@
 
 ### Git Commits This Session
 - `ab7235a` fix: use emailOrLdapLoginId for n8n login (newer API field name)
-- (pending) feat: env var migration + setup-workflows.py + credential auto-creation
+- `7b63fb2` feat: env var migration + setup-workflows.py + credential auto-creation
+- `30c7c8c` fix: remap sub-workflow IDs in setup-workflows.py (Orchestrator fix)
+- `fae0318` fix: add Redis credential creation for Orchestrator activation
 
 ---
 
