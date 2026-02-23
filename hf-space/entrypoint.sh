@@ -106,47 +106,164 @@ fi
 # ---- 4. Setup: credentials, workflows, activation ----
 echo ""
 echo "[4/4] Setting up credentials and workflows..."
-sleep 5  # Let REST API fully initialize
+SETUP_LOG="/tmp/setup-workflows.log"
+echo "Setup started at $(date -u)" > "$SETUP_LOG"
+
+# Wait for REST API to be fully ready (not just healthz)
+echo "  Waiting for REST API..."
+for i in $(seq 1 30); do
+    SETTINGS=$(curl -s http://127.0.0.1:7860/rest/settings 2>/dev/null || echo "")
+    if echo "$SETTINGS" | python3 -c "import sys,json; json.load(sys.stdin)" 2>/dev/null; then
+        echo "  REST API ready after ${i}s"
+        break
+    fi
+    sleep 2
+done
 
 CI_EMAIL="${CI_EMAIL:-ci@nomos.ai}"
 CI_PASSWORD="${CI_PASSWORD:-CI-Nomos-2026!}"
 
 # Check for first boot
 SETUP_CHECK=$(curl -s http://127.0.0.1:7860/rest/settings 2>/dev/null || echo "")
-if echo "$SETUP_CHECK" | python3 -c "import sys,json; d=json.load(sys.stdin); sys.exit(0 if d.get('data',d).get('userManagement',{}).get('showSetupOnFirstLoad',False) else 1)" 2>/dev/null; then
+IS_FIRST_BOOT=$(echo "$SETUP_CHECK" | python3 -c "
+import sys,json
+try:
+    d=json.load(sys.stdin)
+    setup = d.get('data',d).get('userManagement',{}).get('showSetupOnFirstLoad',False)
+    print('yes' if setup else 'no')
+except:
+    print('error')
+" 2>/dev/null)
+echo "  First boot check: $IS_FIRST_BOOT" | tee -a "$SETUP_LOG"
+
+if [ "$IS_FIRST_BOOT" = "yes" ]; then
     echo "  First boot — creating owner account..."
-    curl -s -o /dev/null -X POST http://127.0.0.1:7860/rest/owner/setup \
+    OWNER_RESP=$(curl -s -w "\nHTTP:%{http_code}" -X POST http://127.0.0.1:7860/rest/owner/setup \
         -H "Content-Type: application/json" \
-        -d "{\"email\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\",\"firstName\":\"CI\",\"lastName\":\"Bot\"}" 2>/dev/null || true
+        -d "{\"email\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\",\"firstName\":\"CI\",\"lastName\":\"Bot\"}" 2>/dev/null || echo "ERROR")
+    echo "  Owner setup response: $OWNER_RESP" >> "$SETUP_LOG"
+    echo "  Owner setup: $(echo "$OWNER_RESP" | grep HTTP | head -1)"
     sleep 3
 fi
 
 # Login with retry
 COOKIE=""
-for attempt in $(seq 1 5); do
-    RESP=$(curl -s -o /dev/null -w "%{http_code}" \
+for attempt in $(seq 1 10); do
+    LOGIN_RESP=$(curl -s -w "\nHTTP:%{http_code}" \
         -X POST http://127.0.0.1:7860/rest/login \
         -H "Content-Type: application/json" \
         -d "{\"emailOrLdapLoginId\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\"}" \
-        -c /tmp/n8n-cookies.txt 2>/dev/null || echo "000")
-    if [ "$RESP" = "200" ]; then
+        -c /tmp/n8n-cookies.txt 2>/dev/null || echo "ERROR")
+    HTTP_CODE=$(echo "$LOGIN_RESP" | grep "^HTTP:" | head -1 | cut -d: -f2)
+    if [ "$HTTP_CODE" = "200" ]; then
         COOKIE=$(grep n8n-auth /tmp/n8n-cookies.txt 2>/dev/null | awk '{print $NF}')
-        [ -n "$COOKIE" ] && echo "  Login OK (attempt $attempt)" && break
+        if [ -n "$COOKIE" ]; then
+            echo "  Login OK (attempt $attempt, cookie=${COOKIE:0:10}...)" | tee -a "$SETUP_LOG"
+            break
+        fi
     fi
-    echo "  Login attempt $attempt (HTTP $RESP)"
+    echo "  Login attempt $attempt (HTTP $HTTP_CODE)" | tee -a "$SETUP_LOG"
+    echo "  Response: $(echo "$LOGIN_RESP" | head -3)" >> "$SETUP_LOG"
     sleep 3
 done
 
 # Run Python setup script (credential creation + workflow import + activation)
 if [ -n "$COOKIE" ]; then
     if [ -f /app/setup-workflows.py ]; then
-        python3 /app/setup-workflows.py "$COOKIE" "http://127.0.0.1:7860" 2>&1
+        echo "  Running setup-workflows.py..." | tee -a "$SETUP_LOG"
+        python3 /app/setup-workflows.py "$COOKIE" "http://127.0.0.1:7860" 2>&1 | tee -a "$SETUP_LOG"
+        SETUP_EXIT=$?
+        echo "  setup-workflows.py exit code: $SETUP_EXIT" | tee -a "$SETUP_LOG"
     else
-        echo "  WARNING: setup-workflows.py not found — manual setup required"
+        echo "  WARNING: setup-workflows.py not found — manual setup required" | tee -a "$SETUP_LOG"
     fi
 else
-    echo "  WARNING: Login failed — workflows not imported"
+    echo "  WARNING: Login failed after 10 attempts — workflows not imported" | tee -a "$SETUP_LOG"
 fi
+
+# Verify webhooks are actually working
+echo "" | tee -a "$SETUP_LOG"
+echo "  Post-setup webhook verification:" | tee -a "$SETUP_LOG"
+for wh in rag-multi-index-v3 3e0f8010-39e0-4bca-9d19-35e5094391a9 92217bb8-ffc8-459a-8331-3f553812c3d0; do
+    WH_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+        "http://127.0.0.1:7860/webhook/$wh" \
+        -H "Content-Type: application/json" \
+        -d '{"query":"boot-verify"}' --max-time 5 2>/dev/null || echo "000")
+    echo "    $wh: HTTP $WH_CODE" | tee -a "$SETUP_LOG"
+done
+
+# Write setup log to a GET-able location
+echo "Setup complete at $(date -u)" >> "$SETUP_LOG"
+
+# If setup failed (all webhooks 404), try n8n CLI import as fallback
+WORKING=0
+for wh in rag-multi-index-v3 3e0f8010-39e0-4bca-9d19-35e5094391a9; do
+    WH_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+        "http://127.0.0.1:7860/webhook/$wh" \
+        -H "Content-Type: application/json" \
+        -d '{"query":"fallback-check"}' --max-time 5 2>/dev/null || echo "000")
+    [ "$WH_CODE" != "404" ] && WORKING=$((WORKING + 1))
+done
+
+if [ "$WORKING" = "0" ]; then
+    echo "" | tee -a "$SETUP_LOG"
+    echo "  FALLBACK: API setup failed. Trying n8n CLI import..." | tee -a "$SETUP_LOG"
+    for wf in /app/n8n-workflows/*.json; do
+        [ -f "$wf" ] || continue
+        WFNAME=$(basename "$wf")
+        n8n import:workflow --input="$wf" 2>&1 | tee -a "$SETUP_LOG" || true
+        echo "    CLI imported: $WFNAME" | tee -a "$SETUP_LOG"
+    done
+
+    # Activate all via REST API (need cookie for this)
+    if [ -n "$COOKIE" ]; then
+        echo "  Activating all workflows..." | tee -a "$SETUP_LOG"
+        WF_LIST=$(curl -s "http://127.0.0.1:7860/rest/workflows?limit=100" \
+            -H "Cookie: n8n-auth=$COOKIE" 2>/dev/null || echo "")
+        echo "$WF_LIST" | python3 -c "
+import json, sys, urllib.request
+cookie = '$COOKIE'
+try:
+    data = json.load(sys.stdin)
+    wfs = data.get('data', [])
+    if isinstance(wfs, dict) and 'data' in wfs:
+        wfs = wfs['data']
+    for wf in wfs:
+        wid = wf.get('id', '')
+        wname = wf.get('name', '?')
+        if not wf.get('active', False):
+            req = urllib.request.Request(
+                f'http://127.0.0.1:7860/rest/workflows/{wid}/activate',
+                data=json.dumps({'versionId': wf.get('versionId', '')}).encode(),
+                method='POST'
+            )
+            req.add_header('Content-Type', 'application/json')
+            req.add_header('Cookie', f'n8n-auth={cookie}')
+            try:
+                resp = urllib.request.urlopen(req, timeout=10)
+                print(f'    Activated: {wname} (id={wid})')
+            except Exception as e:
+                print(f'    FAILED: {wname} — {e}')
+        else:
+            print(f'    Already active: {wname}')
+except Exception as e:
+    print(f'    Error: {e}')
+" 2>&1 | tee -a "$SETUP_LOG"
+    fi
+
+    # Re-verify
+    echo "  Post-fallback webhook check:" | tee -a "$SETUP_LOG"
+    for wh in rag-multi-index-v3 3e0f8010-39e0-4bca-9d19-35e5094391a9 92217bb8-ffc8-459a-8331-3f553812c3d0; do
+        WH_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            "http://127.0.0.1:7860/webhook/$wh" \
+            -H "Content-Type: application/json" \
+            -d '{"query":"fallback-verify"}' --max-time 5 2>/dev/null || echo "000")
+        echo "    $wh: HTTP $WH_CODE" | tee -a "$SETUP_LOG"
+    done
+fi
+
+echo "Setup log:" | tee -a "$SETUP_LOG"
+echo "$(cat $SETUP_LOG)" >> /proc/1/fd/1 2>/dev/null || true
 
 echo ""
 echo "==================================================================="
