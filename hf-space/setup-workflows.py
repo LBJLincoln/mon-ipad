@@ -115,6 +115,16 @@ def create_all_credentials():
     else:
         print("  SKIP: Neo4j (no NEO4J_AUTH)")
 
+    # --- Redis (needed by Orchestrator for conversation caching) ---
+    # Create credential even if Redis isn't running — allows workflow activation
+    new_id = create_credential("Redis Upstash", "redis", {
+        "host": os.environ.get("REDIS_HOST", "127.0.0.1"),
+        "port": int(os.environ.get("REDIS_PORT", "6379")),
+        "password": os.environ.get("REDIS_PASSWORD", ""),
+    })
+    if new_id:
+        id_map["O2KEPiv7VzgDG5ZX"] = new_id
+
     print(f"  Credential ID mapping: {len(id_map)} entries")
     return id_map
 
