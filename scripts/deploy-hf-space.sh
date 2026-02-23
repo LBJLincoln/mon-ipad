@@ -105,7 +105,7 @@ git init
 git config user.email "alexis.moret6@outlook.fr"
 git config user.name "LBJLincoln"
 git add -A
-git commit -m "feat: n8n engine v4.1 — SQLite + POST /activate webhook registration"
+git commit -m "feat: n8n engine v5.1 — SQLite + REST API activation with diagnostics"
 
 REMOTE_URL="https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_USER}/${SPACE_NAME}"
 git remote add space "$REMOTE_URL" 2>/dev/null || git remote set-url space "$REMOTE_URL"

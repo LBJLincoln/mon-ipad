@@ -310,9 +310,12 @@ def activate_all_workflows():
         print(f"  Unexpected workflow list format: {type(wfs)}")
         return 0
 
+    # Sort: orchestrator LAST (it references sub-workflows that must be published first)
+    wfs_sorted = sorted(wfs, key=lambda w: 1 if "orchestrator" in w.get("name", "").lower() else 0)
+
     activated = 0
     failed = 0
-    for wf in wfs:
+    for wf in wfs_sorted:
         wid = wf.get("id", "")
         wname = wf.get("name", "?")
 
