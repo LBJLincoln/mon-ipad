@@ -664,20 +664,21 @@ python3 scripts/analyze_n8n_executions.py --execution-id <ID>
 python3 scripts/analyze_n8n_executions.py --pipeline <cible> --limit 5
 ```
 
-### 2.4 Commandes multi-repo (push)
+### 2.4 Commandes push
 ```bash
-# Push vers un repo satellite
-git push rag-tests main
-git push rag-website main
-git push rag-dashboard main
-git push rag-data-ingestion main
+# Push mon-ipad (CE repo uniquement)
+git push origin main
 
-# Push vers tous les repos
-for R in origin rag-tests rag-website rag-dashboard rag-data-ingestion rag-pme-connectors rag-pme-usecases; do git push $R main; done
+# Sync CLAUDE.md directives vers les satellites
+bash scripts/push-directives.sh
 
 # Sync n8n workflows
 python3 n8n/sync.py
 ```
+
+**IMPORTANT** : Les repos satellites sont SÉPARÉS depuis session 41. Ne JAMAIS
+`git push rag-tests main` depuis mon-ipad — ça écraserait le contenu propre du satellite.
+Les satellites ont leur propre code. Seuls les CLAUDE.md sont synchés via `push-directives.sh`.
 
 ### 2.5 Pousser les directives vers les repos satellites
 ```bash

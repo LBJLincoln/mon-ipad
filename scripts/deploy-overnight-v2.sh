@@ -1,11 +1,12 @@
 #!/bin/bash
 # ============================================================
-# DEPLOY OVERNIGHT V2 — Self-Healing Pipeline Runner
+# DEPLOY OVERNIGHT V2.1 — Self-Healing Pipeline Runner
 # ============================================================
-# Monitors ALL 16 workflows (9 ON + 7 OFF) across ALL repos.
-# When a pipeline dies, calls `claude -p --dangerously-skip-permissions`
-# with full error context. Claude (Opus) diagnoses and fixes.
-# The script fixes NOTHING itself — only monitors, detects, calls Claude.
+# Monitors ALL workflows across ALL repos.
+# When a pipeline dies, auto-restarts if webhook is alive.
+# When HF Space is down, auto-restarts via HF API.
+# NO Claude CLI calls — pure bash self-healing.
+# V2.1: Removed claude -p calls (were useless — couldn't fix real issues).
 #
 # Covers all repos:
 #   - rag-tests: 4 RAG pipeline evals (Standard, Graph, Quant, Orchestrator)
@@ -19,7 +20,7 @@
 #   bash scripts/deploy-overnight-v2.sh --status         # Check status
 #   bash scripts/deploy-overnight-v2.sh --kill           # Kill everything
 #
-# Last updated: 2026-02-23T03:00:00+01:00
+# Last updated: 2026-02-23T09:00:00+01:00
 # ============================================================
 
 cd "$(dirname "$0")/.."
@@ -58,7 +59,7 @@ mkdir -p "$PID_DIR" "$LOG_DIR" "$CLAUDE_LOG_DIR"
 _USER_HOST="${N8N_HOST:-}"
 DATASET="${DATASET:-phase-2}"
 LABEL="overnight-$(date +%Y%m%d-%H%M)"
-MAX_CLAUDE_RETRIES=3
+MAX_RESTART_RETRIES=3
 WATCHDOG_INTERVAL=300  # 5 min
 AUTO_PUSH_INTERVAL=900  # 15 min
 
@@ -117,6 +118,7 @@ if [ "$MODE" = "kill" ]; then
         fi
         rm -f "$pidfile"
     done
+    # Legacy cleanup (Claude CLI calls removed in v2.1)
     pkill -f "claude.*overnight-fix" 2>/dev/null || true
     echo "Done."
     exit 0
@@ -167,12 +169,16 @@ if [ "$MODE" = "status" ]; then
     done
 
     echo ""
-    echo "  --- Claude Fix History ---"
-    FIX_COUNT=$(ls "$CLAUDE_LOG_DIR"/*.log 2>/dev/null | wc -l 2>/dev/null || echo 0)
-    echo "  Total fixes attempted: $FIX_COUNT"
-    ls -t "$CLAUDE_LOG_DIR"/*.log 2>/dev/null | head -3 | while read f; do
-        echo "    $(basename "$f")"
-    done
+    echo "  --- Failure/Restart History ---"
+    if [ -f "$LOG_DIR/pipeline-failures.log" ]; then
+        FAIL_COUNT=$(grep -c "PIPELINE_FAIL" "$LOG_DIR/pipeline-failures.log" 2>/dev/null || echo 0)
+        echo "  Total pipeline failures: $FAIL_COUNT"
+        grep "PIPELINE_FAIL" "$LOG_DIR/pipeline-failures.log" 2>/dev/null | tail -3
+    fi
+    if [ -f "$LOG_DIR/infra-issues.log" ]; then
+        INFRA_COUNT=$(grep -c "INFRA_DOWN" "$LOG_DIR/infra-issues.log" 2>/dev/null || echo 0)
+        echo "  Total infra incidents: $INFRA_COUNT"
+    fi
 
     echo ""
     echo "  --- Tested IDs ---"
@@ -216,7 +222,7 @@ echo "  PME Webhooks: pme-gateway, pme-action"
 echo "  Support: dashboard-api, benchmark, sql-exec"
 echo "  Watchdog: every ${WATCHDOG_INTERVAL}s + auto Claude on failure"
 echo "  Auto-push: every ${AUTO_PUSH_INTERVAL}s"
-echo "  Claude: --dangerously-skip-permissions (autonomous fixes)"
+echo "  Self-healing: auto-restart (no Claude CLI calls)"
 echo "============================================"
 
 # Kill existing
@@ -310,11 +316,9 @@ nohup bash -c "
 
         git add docs/ logs/pipeline-results/ website/public/ 2>/dev/null || true
         git commit -m \"auto: overnight push \$(date +%H:%M) — $LABEL\" 2>/dev/null || true
-        for REMOTE in origin rag-tests rag-website rag-dashboard rag-data-ingestion rag-pme-connectors rag-pme-usecases; do
-            git push \$REMOTE main 2>/dev/null || true
-        done
+        git push origin main 2>/dev/null || true
 
-        echo \"[\$(date)] Auto-push done (all 7 repos)\"
+        echo \"[\$(date)] Auto-push done (origin only)\"
     done
 " >> "$LOG_DIR/auto-push.log" 2>&1 &
 
@@ -340,7 +344,7 @@ CLAUDE_LOG_DIR="__CLAUDE_LOG_DIR__"
 N8N_HOST="__N8N_HOST__"
 DATASET="__DATASET__"
 LABEL="__LABEL__"
-MAX_RETRIES=__MAX_RETRIES__
+MAX_RESTART_RETRIES=__MAX_RETRIES__
 WATCHDOG_INTERVAL=__WATCHDOG_INTERVAL__
 
 cd "$REPO_ROOT"
@@ -361,8 +365,8 @@ ALL_WEBHOOKS[sql-exec]="/webhook/benchmark-sql-exec"
 # RAG pipelines that get eval restarts
 RAG_PIPELINES="standard graph quantitative orchestrator"
 
-# Claude retry counters
-declare -A CLAUDE_CALLS
+# Restart attempt counters (no more Claude CLI calls)
+declare -A RESTART_ATTEMPTS
 CYCLE=0
 
 while true; do
@@ -394,34 +398,33 @@ while true; do
         fi
     done
 
-    # If multiple webhooks down = likely HF Space issue → call Claude once
+    # If multiple webhooks down = likely HF Space issue → attempt auto-restart
     DEAD_COUNT=$(echo "$DEAD_WEBHOOKS" | wc -w)
     if [ "$DEAD_COUNT" -ge 3 ]; then
         echo "[$(date)] $DEAD_COUNT+ webhooks down — likely HF Space infrastructure issue"
+        echo "[$(date)] Dead: $DEAD_WEBHOOKS"
 
-        FIX_LOG="$CLAUDE_LOG_DIR/fix-infra-cycle${CYCLE}-$(date +%H%M%S).log"
+        # Auto-fix: try restarting HF Space if token available
+        if [ -n "$HF_TOKEN" ]; then
+            echo "[$(date)] Attempting HF Space restart..."
+            RESTART_HTTP=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+                "https://huggingface.co/api/spaces/lbjlincoln/nomos-rag-engine/restart" \
+                -H "Authorization: Bearer $HF_TOKEN" --max-time 30 2>/dev/null || echo "ERR")
+            echo "[$(date)] HF Space restart response: HTTP $RESTART_HTTP"
+            if [ "$RESTART_HTTP" = "200" ]; then
+                echo "[$(date)] HF Space restart triggered — waiting 120s for boot..."
+                sleep 120
+            fi
+        fi
 
-        claude -p "You are the OVERNIGHT SELF-HEALING AGENT for Nomos AI.
-CRITICAL: Read /home/termius/mon-ipad/CLAUDE.md first. Follow ALL 40 rules.
-Read /home/termius/mon-ipad/technicals/debug/fixes-library.md for known fixes.
-Read /home/termius/mon-ipad/technicals/debug/knowledge-base.md for patterns.
+        # Also clean stuck executions on VM n8n (common cause)
+        docker exec n8n-postgres-1 psql -U n8n -d n8n -t -A -c \
+            "DELETE FROM execution_entity WHERE status IN ('new', 'running');" 2>/dev/null \
+            && echo "[$(date)] VM stuck executions cleaned" || true
 
-INFRASTRUCTURE PROBLEM: $DEAD_COUNT webhooks are DOWN on HF Space ($N8N_HOST).
-Dead webhooks: $DEAD_WEBHOOKS
-This is a CROSS-PIPELINE bottleneck (Rule 36).
-
-YOUR TASK:
-1. Check HF Space status: curl -s https://huggingface.co/api/spaces/lbjlincoln/nomos-rag-engine
-2. If Space is down, restart it: curl -X POST https://huggingface.co/api/spaces/lbjlincoln/nomos-rag-engine/restart -H 'Authorization: Bearer \$HF_TOKEN'
-3. If Space is up but webhooks 404, the workflows need reactivation
-4. Verify fix with curl to each webhook
-5. Document fix in technicals/debug/knowledge-base.md
-6. Commit and push
-
-DO NOT run full evaluations. Just fix infrastructure and verify webhooks respond 200.
-Be concise." --dangerously-skip-permissions > "$FIX_LOG" 2>&1 || true
-
-        echo "[$(date)] Claude infra fix done: $(tail -2 "$FIX_LOG" | head -c 200)"
+        # Log to file for review
+        echo "[$(date)] INFRA_DOWN dead=$DEAD_COUNT webhooks=$DEAD_WEBHOOKS" \
+            >> "$LOG_DIR/infra-issues.log"
         continue  # Skip individual pipeline checks this cycle
     fi
 
@@ -443,83 +446,36 @@ Be concise." --dangerously-skip-permissions > "$FIX_LOG" 2>&1 || true
                 continue
             fi
 
-            # Early-stopped? (too many failures but not a crash)
+            # Classify the failure
             if grep -qE "early.stop|Early.stop|consecutive failures" "$LOG_FILE" 2>/dev/null; then
-                echo "[$(date)] $PIPELINE EARLY-STOPPED (PID $PID) — calling Claude"
+                echo "[$(date)] $PIPELINE EARLY-STOPPED (PID $PID)"
             else
-                echo "[$(date)] $PIPELINE CRASHED (PID $PID) — calling Claude"
+                echo "[$(date)] $PIPELINE CRASHED (PID $PID)"
             fi
 
-            # Check retry budget
-            CALL_COUNT="${CLAUDE_CALLS[$PIPELINE]:-0}"
-            if [ "$CALL_COUNT" -ge "$MAX_RETRIES" ]; then
-                echo "[$(date)] $PIPELINE: Claude already tried $MAX_RETRIES times. Skipping until reset."
+            # Check restart budget
+            RESTART_COUNT="${RESTART_ATTEMPTS[$PIPELINE]:-0}"
+            if [ "$RESTART_COUNT" -ge "$MAX_RESTART_RETRIES" ]; then
+                echo "[$(date)] $PIPELINE: already restarted $MAX_RESTART_RETRIES times. Waiting for hourly reset."
                 rm -f "$PID_FILE"
                 continue
             fi
 
-            # Collect context
-            ERROR_TAIL="$(tail -100 "$LOG_FILE" 2>/dev/null || echo "no logs")"
-            TESTED="$(python3 -c "
-import json
-with open('$REPO_ROOT/docs/tested_ids.json') as f:
-    d = json.load(f)
-for k, v in d.items(): print(f'{k}: {len(v)}')
-" 2>/dev/null || echo "unknown")"
+            # Log last error for diagnosis
+            echo "[$(date)] PIPELINE_FAIL pipeline=$PIPELINE restart=$((RESTART_COUNT+1))" >> "$LOG_DIR/pipeline-failures.log"
+            tail -20 "$LOG_FILE" >> "$LOG_DIR/pipeline-failures.log" 2>/dev/null
 
-            FIX_LOG="$CLAUDE_LOG_DIR/fix-${PIPELINE}-cycle${CYCLE}-$(date +%H%M%S).log"
-
-            echo "[$(date)] Calling Claude for $PIPELINE (attempt $((CALL_COUNT+1))/$MAX_RETRIES)..."
-
-            claude -p "You are the OVERNIGHT SELF-HEALING AGENT for Nomos AI.
-CRITICAL: Read /home/termius/mon-ipad/CLAUDE.md first. Follow ALL 40 rules.
-Read /home/termius/mon-ipad/technicals/debug/fixes-library.md for known fixes.
-Read /home/termius/mon-ipad/technicals/debug/knowledge-base.md for patterns.
-
-PIPELINE FAILURE: $PIPELINE eval process (PID $PID) died.
-N8N_HOST: $N8N_HOST | DATASET: $DATASET
-
-LAST 100 LINES OF LOG:
-$ERROR_TAIL
-
-TESTED STATUS:
-$TESTED
-
-RULES TO FOLLOW:
-- Rule 36: Cross-pipeline bottleneck — does this fix help other pipelines too?
-- Rule 37: Low-hanging fruit — is there a quick-win?
-- Rule 1: ONE fix at a time
-- Rule 11: Consulter knowledge-base.md Section 0 AVANT test webhook
-- Rule 21: Document fix in fixes-library.md
-- Rule 24: Update knowledge-base.md
-
-YOUR TASK:
-1. Diagnose why $PIPELINE died (rate limit? crash? data issue? n8n error?)
-2. Check fixes-library.md — is this a known issue?
-3. Apply the fix (if possible)
-4. Verify with: python3 eval/quick-test.py --questions 1 --pipeline $PIPELINE
-5. If fix works, commit and push
-6. Write a 1-line summary to stdout
-
-DO NOT modify CLAUDE.md or session-state.md.
-DO NOT run full evaluations. Fix, verify 1 question, commit.
-If you CANNOT fix it, explain why in knowledge-base.md and exit." --dangerously-skip-permissions > "$FIX_LOG" 2>&1 || true
-
-            echo "[$(date)] Claude done for $PIPELINE: $(tail -3 "$FIX_LOG" | head -c 200)"
-            CLAUDE_CALLS[$PIPELINE]=$((CALL_COUNT+1))
-
-            # Verify and restart
-            sleep 5
+            # Check webhook is alive before restarting
             WH="${ALL_WEBHOOKS[$PIPELINE]}"
             VERIFY=$(curl -s -o /dev/null -w "%{http_code}" -X POST "${N8N_HOST}${WH}" \
                 -H "Content-Type: application/json" \
-                -d '{"query":"verify fix","sessionId":"watchdog-verify"}' \
-                --max-time 30 2>/dev/null || echo "ERR")
+                -d '{"query":"watchdog verify","sessionId":"watchdog-verify"}' \
+                --max-time 60 2>/dev/null || echo "ERR")
 
-            if [ "$VERIFY" = "200" ]; then
-                echo "[$(date)] Fix verified ($PIPELINE HTTP 200) — RESTARTING eval"
+            if [ "$VERIFY" = "200" ] || [ "$VERIFY" = "500" ]; then
+                echo "[$(date)] Webhook alive ($PIPELINE HTTP $VERIFY) — RESTARTING eval"
 
-                echo "=== RESTARTED $(date) by watchdog ===" >> "$LOG_FILE"
+                echo "=== RESTARTED $(date) by watchdog (attempt $((RESTART_COUNT+1))) ===" >> "$LOG_FILE"
                 nohup bash -c "
                     cd '$REPO_ROOT'
                     set -a; . .env.local 2>/dev/null; set +a
@@ -529,30 +485,30 @@ If you CANNOT fix it, explain why in knowledge-base.md and exit." --dangerously-
                         --types $PIPELINE \
                         --batch-size 1 \
                         --early-stop 15 \
-                        --delay 2 \
+                        --delay 5 \
                         --all-parallel \
-                        --label '${LABEL}-${PIPELINE}-r$((CALL_COUNT+1))' \
+                        --label '${LABEL}-${PIPELINE}-r$((RESTART_COUNT+1))' \
                         --force \
                         --workers 1
                 " >> "$LOG_FILE" 2>&1 &
 
                 echo $! > "$PID_FILE"
                 echo "[$(date)] $PIPELINE RESTARTED (new PID $(cat "$PID_FILE"))"
-                CLAUDE_CALLS[$PIPELINE]=0  # Reset on success
+                RESTART_ATTEMPTS[$PIPELINE]=$((RESTART_COUNT+1))
             else
-                echo "[$(date)] Fix NOT verified ($PIPELINE HTTP $VERIFY) — retry next cycle"
+                echo "[$(date)] Webhook dead ($PIPELINE HTTP $VERIFY) — skipping restart, will retry next cycle"
             fi
         fi
     done
 
     # -----------------------------------------------
-    # CHECK 3: Reset counters every hour
+    # CHECK 3: Reset restart counters every hour
     # -----------------------------------------------
     if [ $((CYCLE % 12)) -eq 0 ]; then
-        for k in "${!CLAUDE_CALLS[@]}"; do
-            CLAUDE_CALLS[$k]=0
+        for k in "${!RESTART_ATTEMPTS[@]}"; do
+            RESTART_ATTEMPTS[$k]=0
         done
-        echo "[$(date)] Reset Claude retry counters (hourly)"
+        echo "[$(date)] Reset restart counters (hourly)"
     fi
 
     # -----------------------------------------------
@@ -607,18 +563,17 @@ echo "    4 Vercel site checks every 30 min"
 echo "    Auto-push to GitHub every 15 min"
 echo ""
 echo "  Self-healing:"
-echo "    Pipeline dies → Claude called automatically"
-echo "    Claude reads CLAUDE.md (40 rules) + fixes-library + knowledge-base"
-echo "    Claude fixes + verifies + commits"
-echo "    Watchdog restarts the pipeline if fix works"
-echo "    Max $MAX_CLAUDE_RETRIES retries per pipeline per hour"
+echo "    Pipeline dies → watchdog auto-restarts if webhook alive"
+echo "    HF Space down → auto-restart via HF API"
+echo "    Stuck VM execs → auto-cleanup via PostgreSQL"
+echo "    Max $MAX_RESTART_RETRIES restarts per pipeline per hour"
 echo ""
 echo "  Commands:"
 echo "    bash scripts/deploy-overnight-v2.sh --status"
 echo "    bash scripts/deploy-overnight-v2.sh --kill"
 echo "    tail -f $LOG_DIR/watchdog.log"
 echo "    tail -f $LOG_DIR/standard.log"
-echo "    ls $CLAUDE_LOG_DIR/"
+echo "    cat $LOG_DIR/pipeline-failures.log"
 echo ""
 echo "  Safe to close terminal now."
 echo "============================================"

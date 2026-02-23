@@ -32,6 +32,7 @@ REPOS["rag-tests"]="rag-tests.md"
 REPOS["rag-website"]="rag-website.md"
 REPOS["rag-dashboard"]="rag-dashboard.md"
 REPOS["rag-data-ingestion"]="rag-data-ingestion.md"
+REPOS["rag-pme-connectors"]="rag-pme-connectors.md"
 
 push_directive() {
     local repo="$1"
@@ -87,7 +88,7 @@ if [[ -n "$TARGET_REPO" ]]; then
 else
     echo "Pushing vers tous les repos satellites..."
     echo ""
-    for repo in rag-tests rag-website rag-dashboard rag-data-ingestion; do
+    for repo in rag-tests rag-website rag-dashboard rag-data-ingestion rag-pme-connectors; do
         push_directive "$repo"
         echo ""
     done
