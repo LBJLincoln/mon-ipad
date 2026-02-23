@@ -73,6 +73,10 @@ set_secret() {
 }
 
 set_secret "SUPABASE_PASSWORD" "$SUPABASE_PASSWORD"
+set_secret "SUPABASE_HOST" "${SUPABASE_HOST:-aws-0-eu-west-1.pooler.supabase.com}"
+set_secret "SUPABASE_PORT" "${SUPABASE_PORT:-6543}"
+set_secret "SUPABASE_DB" "${SUPABASE_DB:-postgres}"
+set_secret "SUPABASE_USER" "${SUPABASE_USER:-postgres.kfyrtsmdolgioyxsglbz}"
 set_secret "OPENROUTER_API_KEY" "$OPENROUTER_API_KEY"
 set_secret "JINA_API_KEY" "${JINA_API_KEY:-}"
 set_secret "PINECONE_API_KEY" "${PINECONE_API_KEY:-}"

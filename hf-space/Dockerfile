@@ -12,6 +12,7 @@ WORKDIR /app
 
 # Copy files
 COPY entrypoint.sh /app/entrypoint.sh
+COPY setup-workflows.py /app/setup-workflows.py
 COPY healthcheck.py /app/healthcheck.py
 COPY n8n-workflows/ /app/n8n-workflows/
 

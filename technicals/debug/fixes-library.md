@@ -1,9 +1,9 @@
 # Fixes Library — Multi-RAG Orchestrator
 
-> Last updated: 2026-02-23T09:30:00+01:00
+> Last updated: 2026-02-23T18:30:00+01:00
 
 > **Bibliotheque permanente de tous les bugs resolus.** A consulter EN PREMIER avant tout debug.
-> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 40 (2026-02-23).
+> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 43 (2026-02-23).
 
 ---
 
@@ -58,6 +58,12 @@
 | 45 | Monitoring | deploy-overnight false positive: curl timeout <30s reports webhooks DOWN when they need 40-120s | 40e | IMPORTANT |
 | 46 | VM Infrastructure | Stuck exec cleanup only — 5 execs cleared, webhooks restored without restart | 40f | IMPORTANT |
 | 47 | VM Infrastructure | Stuck execs + n8n restart required — cleanup alone insufficient when webhooks timeout despite healthz OK | 40g | CRITIQUE |
+| 48 | HF Space | nginx reverse proxy causes persistent 502 (n8n must listen directly on 7860) | 42 | CRITIQUE |
+| 49 | HF Space | n8n SQLite minimal boot (strip PostgreSQL+Redis to break race conditions) | 42 | IMPORTANT |
+| 50 | n8n API | v2.8+ login field change: emailOrLdapLoginId (not email) | 42 | IMPORTANT |
+| 51 | HF Space | set -e kills container on any transient failure in entrypoint.sh | 42 | CRITIQUE |
+| 52 | n8n Workflows | Hardcoded API keys in workflow JSONs expire and cause 401 errors | 43 | CRITIQUE |
+| 53 | n8n Workflows | Credential ID mismatch after fresh import (non-existent IDs) | 43 | CRITIQUE |
 
 ---
 
@@ -871,3 +877,193 @@ UPDATE workflow_entity SET active = false WHERE id IN ('EaB5iHZsHBCBzFk2', 'Iipw
 SELECT DISTINCT node->'credentials'->>key FROM jsonb_array_elements(nodes::jsonb) AS node, LATERAL jsonb_object_keys(COALESCE(node->'credentials', '{}'::jsonb)) AS key;
 ```
 **Fichiers impactes** : None (runtime — DB deactivation)
+
+---
+
+### FIX-48 — HF Space nginx reverse proxy causes persistent 502
+**Session** : 42 (2026-02-23)
+**Composant** : HF Space infrastructure
+**Symptome** : HF Space returns HTTP 502 despite n8n container running and healthz showing OK internally. nginx inside container can't bind properly or route to n8n.
+**Root cause** : nginx as reverse proxy in HF Space container doesn't work reliably. The HF proxy at the edge expects the container to listen directly on port 7860 (HF's standard port). Running nginx → n8n creates an extra layer that fails unpredictably.
+**Fix** : Remove nginx entirely from the stack. Set `N8N_PORT=7860` so n8n listens directly on HF's required port. Remove nginx from:
+- Dockerfile (apt-get install)
+- supervisord.conf (nginx program)
+- entrypoint.sh (nginx config generation)
+- nginx.conf (deprecated file)
+```bash
+# entrypoint.sh - BEFORE
+nginx -g 'daemon off;' &
+NGINX_PID=$!
+
+# entrypoint.sh - AFTER (nginx removed completely)
+export N8N_PORT=7860
+n8n start &
+N8N_PID=$!
+```
+**RULE** : HF Space containers MUST expose services directly on port 7860. NO reverse proxy layer.
+**Fichiers impactes** : `hf-space/Dockerfile`, `hf-space/entrypoint.sh`, `hf-space/nginx.conf` (deprecated)
+
+---
+
+### FIX-49 — n8n SQLite minimal boot for HF Space
+**Session** : 42 (2026-02-23)
+**Composant** : HF Space n8n configuration
+**Symptome** : n8n fails to start with PostgreSQL + queue mode on HF Space. Returns 500 errors, timeouts, or never becomes ready even after waiting 120s.
+**Root cause** : Too many dependencies at once (Supabase PostgreSQL external connection, Redis queue, supervisord managing multiple processes, worker processes) create race conditions and connection failures on cold boot. PostgreSQL connection over network can timeout, Redis might not be ready, workers start before main process is ready.
+**Fix** : Strip to minimal boot configuration:
+- SQLite database (no external PostgreSQL connection)
+- Single process mode (no queue, no workers)
+- Direct n8n start (no supervisord complexity)
+```bash
+# Minimal n8n environment
+export DB_TYPE=sqlite
+export DB_SQLITE_DATABASE=/app/n8n-data/database.sqlite
+export EXECUTIONS_MODE=regular  # NOT queue
+export N8N_DIAGNOSTICS_ENABLED=false
+export N8N_PERSONALIZATION_ENABLED=false
+
+# NO Redis, NO workers, NO PostgreSQL
+n8n start &
+N8N_PID=$!
+```
+Add dependencies one at a time AFTER confirming boot is stable. Test each addition separately.
+**RULE** : Always start with minimal viable configuration. Add complexity incrementally once stability is proven.
+**Fichiers impactes** : `hf-space/entrypoint.sh`, `hf-space/Dockerfile`
+
+---
+
+### FIX-50 — n8n v2.8+ login field change (emailOrLdapLoginId)
+**Session** : 42 (2026-02-23)
+**Composant** : n8n REST API authentication
+**Symptome** : Login to n8n REST API returns HTTP 400 with error message "emailOrLdapLoginId is required"
+**Root cause** : n8n v2.8+ changed the login endpoint POST body schema. The field `email` was renamed to `emailOrLdapLoginId` to support both email and LDAP login identifiers.
+**Fix** : Change POST body for `/rest/login`:
+```bash
+# n8n < 2.8 (OLD)
+curl -X POST http://localhost:5678/rest/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"..."}'
+
+# n8n >= 2.8 (NEW)
+curl -X POST http://localhost:5678/rest/login \
+  -H "Content-Type: application/json" \
+  -d '{"emailOrLdapLoginId":"admin@example.com","password":"..."}'
+```
+**Note** : This is different from FIX-17 which was discovered in Session 24 but applies to the same API change. Documenting separately as Session 42 encountered it in HF Space context.
+**Fichiers impactes** : `hf-space/entrypoint.sh`, any scripts calling n8n login API
+
+---
+
+### FIX-51 — set -e kills HF Space container on any failure
+**Session** : 42 (2026-02-23)
+**Composant** : HF Space entrypoint.sh
+**Symptome** : Container exits immediately after any transient failure in entrypoint.sh (DNS timeout, API 500, temporary network glitch, missing env var, etc.). HF Space shows "Runtime error" and container never stays alive.
+**Root cause** : `set -e` at top of entrypoint.sh causes bash to exit on any non-zero return code. In cloud environments (HF Space), transient failures are common: DNS can timeout, external APIs can return 500, network can glitch. With `set -e`, ANY of these causes immediate container death.
+**Fix** : Remove `set -e`. Wrap setup logic in best-effort blocks with `|| true` for non-critical operations. The container MUST always reach the final `wait $N8N_PID` to stay alive, even if setup partially fails.
+```bash
+# entrypoint.sh - BEFORE
+#!/bin/bash
+set -e  # ← KILLS CONTAINER on any error
+
+# entrypoint.sh - AFTER
+#!/bin/bash
+# NO set -e
+
+# Best-effort operations
+curl -s http://example.com/setup || echo "Setup failed but continuing..."
+python3 setup.py || true  # Non-critical, continue even if it fails
+
+# Critical operation - check explicitly
+n8n start &
+N8N_PID=$!
+if [ -z "$N8N_PID" ]; then
+  echo "FATAL: n8n failed to start"
+  exit 1
+fi
+
+# MUST reach this line to keep container alive
+wait $N8N_PID
+```
+**RULE** : NEVER use `set -e` in container entrypoints for cloud environments. Handle failures explicitly and keep the main process alive.
+**Fichiers impactes** : `hf-space/entrypoint.sh`
+
+---
+
+### FIX-52 — Hardcoded API keys in n8n workflow JSONs
+**Session** : 43 (2026-02-23)
+**Pipelines** : Standard, Graph, Quantitative
+**Symptome** : Workflows fail with HTTP 401 from OpenRouter because hardcoded API key expired. Also major security risk (API keys committed to git, visible in JSON exports).
+**Root cause** : HTTP Request nodes had API keys (OpenRouter, Pinecone, Jina) hardcoded directly in two places:
+1. `headerParameters` field: `{"name":"Authorization","value":"Bearer sk-or-v1-..."}`
+2. `jsCode` expressions: `headers['Authorization'] = 'Bearer sk-or-v1-...'`
+When keys rotate or expire, ALL workflow JSONs need manual editing. Keys are also exposed in git commits and exports.
+**Fix** : Replace all hardcoded keys with n8n environment variable expressions. Each pipeline gets its own OpenRouter key env var for per-pipeline rate limit isolation:
+```javascript
+// HTTP Request node - headerParameters (BEFORE)
+"headerParameters": {
+  "parameters": [{"name":"Authorization","value":"Bearer sk-or-v1-abc123..."}]
+}
+
+// HTTP Request node - headerParameters (AFTER)
+"headerParameters": {
+  "parameters": [{"name":"Authorization","value":"={{$env.OPENROUTER_KEY_STANDARD}}"}]
+}
+
+// Code node - jsCode (BEFORE)
+headers['Authorization'] = 'Bearer sk-or-v1-abc123...';
+
+// Code node - jsCode (AFTER)
+headers['Authorization'] = `Bearer ${$env.OPENROUTER_KEY_STANDARD}`;
+```
+**Environment variables created**:
+- `OPENROUTER_KEY_STANDARD` — Standard RAG pipeline
+- `OPENROUTER_KEY_GRAPH` — Graph RAG pipeline
+- `OPENROUTER_KEY_QUANTITATIVE` — Quantitative pipeline
+- `OPENROUTER_KEY_ORCHESTRATOR` — Orchestrator pipeline
+- `PINECONE_API_KEY` — All pipelines
+- `JINA_API_KEY` — All pipelines
+**RULE** : NEVER hardcode API keys in workflow JSONs. Always use `={{$env.VAR_NAME}}` expressions. This applies to ALL HTTP Request nodes and Code nodes making external API calls.
+**Security benefit** : Keys no longer visible in git. Can rotate keys by changing env vars without touching workflow code.
+**Fichiers impactes** : `hf-space/n8n-workflows/standard.json`, `graph.json`, `quantitative-v2-template-fix.json`
+
+---
+
+### FIX-53 — n8n credential ID mismatch after fresh import
+**Session** : 43 (2026-02-23)
+**Composant** : n8n workflow import process
+**Symptome** : Imported workflows reference credential IDs (e.g., `USU8ngVzsUbED3mn`, `CWih07lwPxfwFeY6`) that don't exist in the fresh n8n instance. Nodes silently fail or show "Credential does not exist" errors.
+**Root cause** : Credential IDs are auto-generated by n8n at credential creation time. When workflows are exported from one n8n instance (VM) and imported to another (HF Space), the credential IDs in the workflow JSON reference the OLD instance's credentials. The fresh instance has different auto-generated IDs. n8n doesn't automatically remap credential references during import.
+**Fix** : Created `setup-workflows.py` that orchestrates the entire import process:
+1. **Create credentials first** via REST API: Postgres (x4), OpenRouter httpHeaderAuth (x4), Pinecone (x2), Neo4j
+2. **Get new credential IDs** from the fresh instance
+3. **Build mapping** of old IDs → new IDs (e.g., `USU8ngVzsUbED3mn` → `abc123xyz`)
+4. **Remap all credential references** in workflow JSONs before import:
+```python
+# Credential remapping
+CREDENTIAL_MAP = {
+    'USU8ngVzsUbED3mn': new_postgres_id,
+    'CWih07lwPxfwFeY6': new_redis_id,
+    # ... etc
+}
+
+for node in workflow['nodes']:
+    if 'credentials' in node:
+        for cred_type, cred_ref in node['credentials'].items():
+            old_id = cred_ref['id']
+            if old_id in CREDENTIAL_MAP:
+                cred_ref['id'] = CREDENTIAL_MAP[old_id]
+                cred_ref['name'] = NEW_CREDENTIAL_NAMES[CREDENTIAL_MAP[old_id]]
+```
+5. **Import workflows** via REST API with remapped credentials
+6. **Activate all workflows** using the new activation endpoint
+**Credentials created** (12 total):
+- 4 Postgres (Quant, Orch Agent, Orch Metadata, Ingestion)
+- 4 OpenRouter httpHeaderAuth (Standard, Graph, Quant, Orch)
+- 2 Pinecone (Standard, Graph)
+- 1 Neo4j
+- 1 Redis (optional)
+**RULE** : NEVER directly import workflows without credential remapping. Always: 1) Create credentials, 2) Get new IDs, 3) Remap workflow JSONs, 4) Import, 5) Activate.
+**Alternative** : Use generic credentials with fixed names and modify workflow export to reference credential names instead of IDs (more complex, less reliable).
+**Fichiers impactes** : `hf-space/setup-workflows.py`, `hf-space/entrypoint.sh` (calls setup-workflows.py)
+
+---
