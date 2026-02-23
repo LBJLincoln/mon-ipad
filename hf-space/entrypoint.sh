@@ -94,11 +94,19 @@ for wf in /app/n8n-workflows/*.json; do
     [ -f "$wf" ] || continue
     WFNAME=$(basename "$wf")
     python3 -c "
-import json
+import json, uuid
 with open('$wf') as f:
     d = json.load(f)
+# Strip credential references from nodes
 for node in d.get('nodes', []):
     node.pop('credentials', None)
+# Strip FK-causing fields (reference old DB objects that don't exist)
+for key in ['shared', 'tags', 'activeVersion', 'activeVersionId', 'versionId',
+            'versionCounter', 'triggerCount', 'pinData', 'meta', 'staticData']:
+    d.pop(key, None)
+# Ensure required fields
+if not d.get('id'):
+    d['id'] = str(uuid.uuid4())[:20].replace('-','')
 d['active'] = False
 with open('/tmp/n8n-clean-workflows/$WFNAME', 'w') as f:
     json.dump(d, f)
