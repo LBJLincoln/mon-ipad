@@ -12,13 +12,14 @@ WORKDIR /app
 
 # Copy configuration files
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY entrypoint.sh /app/entrypoint.sh
 COPY healthcheck.py /app/healthcheck.py
 COPY n8n-workflows/ /app/n8n-workflows/
 
-# Remove default nginx site
-RUN rm -f /etc/nginx/sites-enabled/default
+# Make sure nginx dirs exist and are writable
+RUN mkdir -p /var/log/nginx /var/lib/nginx/body /var/run \
+    && chmod 755 /var/log/nginx /var/lib/nginx /var/run
 
 RUN chmod +x /app/entrypoint.sh
 
