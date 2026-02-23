@@ -1,11 +1,11 @@
 FROM node:22-slim
 
-# Install minimal dependencies (sqlite3 for direct DB access if needed)
+# Install minimal dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash curl python3 procps sqlite3 \
+    bash curl python3 procps \
     && rm -rf /var/lib/apt/lists/*
 
-# Install n8n globally
+# Install n8n globally (pinned to 2.8.4 — 2.9.x has publish system that breaks automation)
 RUN npm install -g n8n@2.8.4
 
 WORKDIR /app

@@ -77,6 +77,7 @@ set_secret "SUPABASE_HOST" "${SUPABASE_HOST:-aws-0-eu-west-1.pooler.supabase.com
 set_secret "SUPABASE_PORT" "${SUPABASE_PORT:-6543}"
 set_secret "SUPABASE_DB" "${SUPABASE_DB:-postgres}"
 set_secret "SUPABASE_USER" "${SUPABASE_USER:-postgres.kfyrtsmdolgioyxsglbz}"
+set_secret "DB_POSTGRESDB_SCHEMA" "public"
 set_secret "OPENROUTER_API_KEY" "$OPENROUTER_API_KEY"
 set_secret "JINA_API_KEY" "${JINA_API_KEY:-}"
 set_secret "PINECONE_API_KEY" "${PINECONE_API_KEY:-}"
@@ -105,7 +106,7 @@ git init
 git config user.email "alexis.moret6@outlook.fr"
 git config user.name "LBJLincoln"
 git add -A
-git commit -m "feat: n8n engine v2 — queue mode, Supabase PG, multi-key OR, activation fix"
+git commit -m "feat: n8n engine v5.0 — PostgreSQL + REST API activation (no more SQLite)"
 
 REMOTE_URL="https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_USER}/${SPACE_NAME}"
 git remote add space "$REMOTE_URL" 2>/dev/null || git remote set-url space "$REMOTE_URL"
