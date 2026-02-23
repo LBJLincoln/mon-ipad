@@ -1,6 +1,6 @@
 #!/bin/bash
 # =================================================================
-# HF Space Entrypoint — n8n Engine v4.1
+# HF Space Entrypoint — n8n Engine v5.1
 # =================================================================
 # SQLITE + POST /activate APPROACH:
 # 1. Strip credential refs from workflows → clean JSONs
@@ -22,7 +22,7 @@
 SETUP_LOG="/tmp/setup-workflows.log"
 exec > >(tee -a "$SETUP_LOG") 2>&1
 
-echo "=== NOMOS RAG ENGINE — HF Space Boot v4.1 ==="
+echo "=== NOMOS RAG ENGINE — HF Space Boot v5.1 ==="
 echo "Boot started at $(date -u)"
 
 trap 'echo "SIGNAL received"; wait' SIGTERM SIGINT
@@ -203,35 +203,50 @@ if [ "$IS_FIRST_BOOT" = "yes" ]; then
     sleep 3
 fi
 
-# Login and create credentials
+# Login with extensive retry + diagnostics
 COOKIE=""
-echo "  Attempting login..."
-for attempt in $(seq 1 5); do
-    LOGIN_RESP=$(curl -s -w "\n_HTTP_%{http_code}" \
+echo "  Attempting login (10 attempts with diagnostics)..."
+for attempt in $(seq 1 10); do
+    LOGIN_RAW=$(curl -s -w "\nHTTP_CODE:%{http_code}" \
         -X POST http://127.0.0.1:7860/rest/login \
         -H "Content-Type: application/json" \
         -d "{\"emailOrLdapLoginId\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\"}" \
         -c /tmp/n8n-cookies.txt 2>/dev/null)
-    HTTP_CODE=$(echo "$LOGIN_RESP" | grep "^_HTTP_" | head -1 | sed 's/_HTTP_//')
-    echo "  Login attempt $attempt: HTTP $HTTP_CODE"
+    HTTP_CODE=$(echo "$LOGIN_RAW" | grep "^HTTP_CODE:" | head -1 | sed 's/HTTP_CODE://')
+    LOGIN_BODY=$(echo "$LOGIN_RAW" | grep -v "^HTTP_CODE:" | head -c 300)
+    echo "  Attempt $attempt: HTTP $HTTP_CODE | Body: ${LOGIN_BODY:0:150}"
 
     if [ "$HTTP_CODE" = "200" ]; then
         COOKIE=$(grep n8n-auth /tmp/n8n-cookies.txt 2>/dev/null | awk '{print $NF}')
         if [ -n "$COOKIE" ]; then
-            echo "  Login SUCCESS"
+            echo "  LOGIN SUCCESS (cookie: ${#COOKIE} chars)"
             break
+        else
+            echo "  HTTP 200 but no n8n-auth cookie. Cookie jar:"
+            cat /tmp/n8n-cookies.txt 2>/dev/null
         fi
     fi
 
-    # If 401, try owner setup again
-    if [ "$HTTP_CODE" = "401" ] && [ "$attempt" -le 2 ]; then
-        curl -s -X POST http://127.0.0.1:7860/rest/owner/setup \
+    # If 401, try owner setup again (may need multiple attempts)
+    if [ "$HTTP_CODE" = "401" ] && [ "$attempt" -le 5 ]; then
+        echo "  401 → retrying owner setup..."
+        OWNER_RESP=$(curl -s -w "\nHTTP_CODE:%{http_code}" \
+            -X POST http://127.0.0.1:7860/rest/owner/setup \
             -H "Content-Type: application/json" \
-            -d "{\"email\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\",\"firstName\":\"CI\",\"lastName\":\"Bot\"}" 2>/dev/null > /dev/null
+            -d "{\"email\":\"$CI_EMAIL\",\"password\":\"$CI_PASSWORD\",\"firstName\":\"CI\",\"lastName\":\"Bot\"}" 2>/dev/null)
+        OWNER_HTTP=$(echo "$OWNER_RESP" | grep "^HTTP_CODE:" | head -1 | sed 's/HTTP_CODE://')
+        echo "  Owner setup: HTTP $OWNER_HTTP"
         sleep 3
     fi
     sleep 2
 done
+
+if [ -z "$COOKIE" ]; then
+    echo ""
+    echo "  ============================================"
+    echo "  CRITICAL: LOGIN FAILED AFTER 10 ATTEMPTS"
+    echo "  ============================================"
+fi
 
 # ---- 5. Credential restore + publish/activate ----
 echo ""
