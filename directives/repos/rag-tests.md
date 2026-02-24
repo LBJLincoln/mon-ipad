@@ -1,6 +1,6 @@
 # rag-tests — CLAUDE.md
 
-> Last updated: 2026-02-22T13:30:00+01:00
+> Last updated: 2026-02-24T21:30:00+01:00
 > **Ce repo s'exécute dans un Codespace GitHub éphémère OU sur HF Space (16GB RAM).**
 > Tu es un agent Claude Code specialise dans les TESTS des 4 pipelines RAG.
 > **MODELE PRINCIPAL : `claude-opus-4-6`** — Analyse, decisions, evaluation des resultats.
@@ -9,14 +9,17 @@
 > Tu suis le même workflow-process que mon-ipad, adapté à ton rôle de testeur.
 > Processus team-agentic multi-model : voir `technicals/project/team-agentic-process.md` (dans mon-ipad).
 
-### REGLES CRITIQUES (Session 25+31)
+### REGLES CRITIQUES (Session 25+31+57)
 - **Pre-vol checklist OBLIGATOIRE** : Consulter knowledge-base.md Section 0 avant tout test webhook
 - **ZERO test sur la VM** : Tests → HF Space (16GB) ou Codespace (8GB)
 - **Field name = `query`** (PAS `question`) pour les 4 pipelines
-- **35 fixes documentes** dans `technicals/debug/fixes-library.md` — consulter AVANT tout debug
-- **Background testing** : Les tests qui passent tournent en `nohup` background avec auto-commit toutes les 15 min. L'agent se concentre sur la résolution des pipelines bloqués.
-- **Bottleneck-first** : Toujours résoudre le blocage principal avant d'optimiser ce qui fonctionne. Prioriser : Infrastructure > Rate-limits > Code > Data > Modèle.
-- **Pipeline isolation** : Si un pipeline est bloqué, l'exclure et lancer les autres en parallèle. Ne JAMAIS bloquer tous les tests pour un seul pipeline.
+- **55+ fixes documentes** dans `technicals/debug/fixes-library.md` — consulter AVANT tout debug
+- **Background testing** : Les tests qui passent tournent en `nohup` background avec auto-commit toutes les 15 min
+- **Bottleneck-first** : Toujours résoudre le blocage principal avant d'optimiser ce qui fonctionne
+- **Pipeline isolation** : Si un pipeline est bloqué, l'exclure et lancer les autres en parallèle
+- **Multi-endpoint** : Chaque pipeline peut cibler un HF Space différent via N8N_HOST_STANDARD, N8N_HOST_GRAPH, etc.
+- **Per-pipeline batch sizes** : `--batch-size 0` = auto (std=10, graph=5, quant=3, orch=2)
+- **Per-pipeline API keys** : Chaque pipeline utilise sa propre clé OpenRouter (OPENROUTER_KEY_STANDARD, etc.)
 
 ---
 
