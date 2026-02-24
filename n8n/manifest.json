@@ -1,10 +1,10 @@
 {
   "versions": {
     "standard": {
-      "version": 6,
-      "hash": "fd27c3e0d75c22ae",
-      "timestamp": "2026-02-17T21:23:28.922904Z",
-      "snapshot_file": "standard-2026-02-17T21-23-26-fd27c3e0d75c22ae.json",
+      "version": 7,
+      "hash": "c1939b5587d0a884",
+      "timestamp": "2026-02-24T18:31:46.445251Z",
+      "snapshot_file": "standard-2026-02-24T18-31-45-c1939b5587d0a884.json",
       "name": "WF5 Standard RAG V3.4",
       "webhook": "/webhook/rag-multi-index-v3",
       "summary": {
@@ -49,50 +49,13 @@
           "Respond to Webhook"
         ]
       },
-      "diff_from_previous": {
-        "added_nodes": [],
-        "removed_nodes": [],
-        "modified_nodes": [
-          {
-            "node": "LLM Generation",
-            "changes": [
-              {
-                "param": "headerParameters",
-                "old": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer [REDACTED]'}]}",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer [REDACTED]'}]}"
-              }
-            ]
-          },
-          {
-            "node": "HyDE Generator",
-            "changes": [
-              {
-                "param": "headerParameters",
-                "old": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer [REDACTED]'}]}",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer [REDACTED]'}]}"
-              }
-            ]
-          },
-          {
-            "node": "Query Decomposer (V.3.4)",
-            "changes": [
-              {
-                "param": "headerParameters",
-                "old": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer [REDACTED]'}]}",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer [REDACTED]'}]}"
-              }
-            ]
-          }
-        ],
-        "has_changes": true,
-        "summary": "+0 -0 ~3 nodes"
-      }
+      "diff_from_previous": null
     },
     "graph": {
-      "version": 8,
-      "hash": "7025aefa948cb6eb",
-      "timestamp": "2026-02-21T05:50:59.602938Z",
-      "snapshot_file": "graph-2026-02-21T05-50-58-7025aefa948cb6eb.json",
+      "version": 9,
+      "hash": "c521bc2a35af88db",
+      "timestamp": "2026-02-24T18:31:58.449621Z",
+      "snapshot_file": "graph-2026-02-24T18-31-45-c521bc2a35af88db.json",
       "name": "WF2 Graph RAG V3.3",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
       "summary": {
@@ -138,34 +101,7 @@
           "Entity Extraction Logger"
         ]
       },
-      "diff_from_previous": {
-        "added_nodes": [],
-        "removed_nodes": [],
-        "modified_nodes": [
-          {
-            "node": "WF3: HyDE & Entity Extraction",
-            "changes": [
-              {
-                "param": "jsonBody",
-                "old": "={\n  \"model\": \"arcee-ai/trinity-large-preview:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"IMPORTANT: Respond ONLY with valid JSON, no prose or markdown.\\n\\nGenerate a hypoth",
-                "new": "={\n  \"model\": \"arcee-ai/trinity-large-preview:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a hypothetical document that would perfectly answer the question. This doc"
-              }
-            ]
-          },
-          {
-            "node": "Neo4j Query Builder (Deep Traversal V2)",
-            "changes": [
-              {
-                "param": "jsCode",
-                "old": "// Neo4j Query Builder (Deep Traversal V2) - with NLP entity extraction fallback\nconst initData = $node['OTEL Init'].json;\nconst rawContent = $json.choices?.[0]?.message?.content || '';\n\nlet hydeDocum",
-                "new": "// Neo4j Query Builder (Deep Traversal V2) - with NLP entity extraction fallback\nconst initData = $node['OTEL Init'].json;\nconst rawContent = $json.choices?.[0]?.message?.content || '';\n\nlet hydeDocum"
-              }
-            ]
-          }
-        ],
-        "has_changes": true,
-        "summary": "+0 -0 ~2 nodes"
-      }
+      "diff_from_previous": null
     },
     "quantitative": {
       "version": 11,
@@ -558,11 +494,11 @@
       }
     },
     "orchestrator": {
-      "version": 5,
-      "hash": "f9b161f90ba19093",
-      "timestamp": "2026-02-17T21:23:44.433699Z",
-      "snapshot_file": "orchestrator-2026-02-17T21-23-26-f9b161f90ba19093.json",
-      "name": "V10.1 Orchestrator",
+      "version": 6,
+      "hash": "93ecd08c073e3010",
+      "timestamp": "2026-02-24T18:33:16.008201Z",
+      "snapshot_file": "orchestrator-2026-02-24T18-33-08-93ecd08c073e3010.json",
+      "name": "V10.1 orchestrator copy",
       "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
       "summary": {
         "total_nodes": 68,
@@ -652,54 +588,7 @@
           "Execution Summary (orchestrator)"
         ]
       },
-      "diff_from_previous": {
-        "added_nodes": [],
-        "removed_nodes": [],
-        "modified_nodes": [
-          {
-            "node": "🧠 LLM 1: Intent Analyzer",
-            "changes": [
-              {
-                "param": "headerParameters",
-                "old": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer sk-or-v1-REDACTED'}]}",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer [REDACTED]'}]}"
-              }
-            ]
-          },
-          {
-            "node": "HTTP Request",
-            "changes": [
-              {
-                "param": "headerParameters",
-                "old": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer sk-or-v1-REDACTED'}]}",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer [REDACTED]'}]}"
-              }
-            ]
-          },
-          {
-            "node": "🎯 LLM 2: Task Planner",
-            "changes": [
-              {
-                "param": "headerParameters",
-                "old": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer sk-or-v1-REDACTED'}]}",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer [REDACTED]'}]}"
-              }
-            ]
-          },
-          {
-            "node": "🎯 LLM 3: Agent Harness (Opus 4.5)",
-            "changes": [
-              {
-                "param": "headerParameters",
-                "old": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer sk-or-v1-REDACTED'}]}",
-                "new": "{'parameters': [{'name': 'Authorization', 'value': 'Bearer [REDACTED]'}]}"
-              }
-            ]
-          }
-        ],
-        "has_changes": true,
-        "summary": "+0 -0 ~4 nodes"
-      }
+      "diff_from_previous": null
     }
   },
   "history": [
@@ -942,6 +831,30 @@
       "hash": "4a55fe6d31f190cf",
       "diff_summary": "+0 -1 ~16 nodes",
       "snapshot_file": "quantitative-2026-02-21T05-50-58-4a55fe6d31f190cf.json"
+    },
+    {
+      "timestamp": "2026-02-24T18:31:46.445277Z",
+      "pipeline": "standard",
+      "version": 7,
+      "hash": "c1939b5587d0a884",
+      "diff_summary": "initial",
+      "snapshot_file": "standard-2026-02-24T18-31-45-c1939b5587d0a884.json"
+    },
+    {
+      "timestamp": "2026-02-24T18:31:58.449646Z",
+      "pipeline": "graph",
+      "version": 9,
+      "hash": "c521bc2a35af88db",
+      "diff_summary": "initial",
+      "snapshot_file": "graph-2026-02-24T18-31-45-c521bc2a35af88db.json"
+    },
+    {
+      "timestamp": "2026-02-24T18:33:16.008225Z",
+      "pipeline": "orchestrator",
+      "version": 6,
+      "hash": "93ecd08c073e3010",
+      "diff_summary": "initial",
+      "snapshot_file": "orchestrator-2026-02-24T18-33-08-93ecd08c073e3010.json"
     }
   ]
 }

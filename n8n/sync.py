@@ -56,8 +56,8 @@ WORKFLOW_IDS = {
         "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
     },
     "orchestrator": {
-        "id": "aGsYnJY9nNCaTM82",
-        "name": "V10.1 Orchestrator",
+        "id": "ALd4gOEqiKL5KR1p",
+        "name": "V10.1 orchestrator copy",
         "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
     },
 }

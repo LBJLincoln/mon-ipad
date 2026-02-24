@@ -117,176 +117,67 @@
       "onError": "continueErrorOutput"
     },
     {
-      "parameters": {
-        "workflowId": {
-          "__rl": true,
-          "value": "TmgyRP20N4JFd9CB",
-          "mode": "id"
-        },
-        "workflowInputs": {
-          "value": {
-            "query": "={{ $node['\u2699\ufe0f Execution Engine V10'].json.current_task?.query || $node['\u2699\ufe0f Execution Engine V10'].json.task_query || $node['Init V8 Security & Analysis'].json.query }}",
-            "trace_id": "={{ $node['Init V8 Security & Analysis'].json.trace_id }}",
-            "user_context": "={{ JSON.stringify({ tenant_id: $node['Init V8 Security & Analysis'].json.tenant_id || 'default', groups: $node['Init V8 Security & Analysis'].json.user_groups || ['default'] }) }}",
-            "topK": 20
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "query",
-              "displayName": "query",
-              "type": "string"
-            },
-            {
-              "id": "trace_id",
-              "displayName": "trace_id",
-              "type": "string"
-            },
-            {
-              "id": "user_context",
-              "displayName": "user_context",
-              "type": "string"
-            },
-            {
-              "id": "topK",
-              "displayName": "topK",
-              "type": "number"
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": true,
-          "mappingMode": "defineBelow"
-        },
-        "options": {
-          "waitForSubWorkflow": true
-        }
-      },
       "id": "72c191ac-677e-4f9c-a64f-1cc328680e31",
       "name": "Invoke WF5: Standard",
-      "type": "n8n-nodes-base.executeWorkflow",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         21840,
         22224
       ],
-      "typeVersion": 1.2,
-      "alwaysOutputData": false,
-      "continueOnFail": true,
-      "onError": "continueRegularOutput"
+      "parameters": {
+        "method": "POST",
+        "url": "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/rag-multi-index-v3",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"query\": $json.task_query } }}",
+        "options": {
+          "timeout": 30000
+        }
+      }
     },
     {
-      "parameters": {
-        "workflowId": {
-          "__rl": true,
-          "value": "6257AfT1l4FMC6lY",
-          "mode": "id",
-          "cachedResultUrl": "/workflow/6257AfT1l4FMC6lY"
-        },
-        "workflowInputs": {
-          "value": {
-            "query": "={{ $node['\u2699\ufe0f Execution Engine V10'].json.current_task?.query || $node['\u2699\ufe0f Execution Engine V10'].json.task_query || $node['Init V8 Security & Analysis'].json.query }}",
-            "trace_id": "={{ $node['Init V8 Security & Analysis'].json.trace_id }}",
-            "user_context": "={{ JSON.stringify({ tenant_id: $node['Init V8 Security & Analysis'].json.tenant_id || 'default', groups: $node['Init V8 Security & Analysis'].json.user_groups || ['default'] }) }}",
-            "topK": 20
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "query",
-              "displayName": "query",
-              "type": "string"
-            },
-            {
-              "id": "trace_id",
-              "displayName": "trace_id",
-              "type": "string"
-            },
-            {
-              "id": "user_context",
-              "displayName": "user_context",
-              "type": "string"
-            },
-            {
-              "id": "topK",
-              "displayName": "topK",
-              "type": "number"
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": true,
-          "mappingMode": "defineBelow"
-        },
-        "options": {
-          "waitForSubWorkflow": true
-        }
-      },
       "id": "e3d043ea-96ab-4413-a1a5-683b090596a4",
       "name": "Invoke WF2: Graph",
-      "type": "n8n-nodes-base.executeWorkflow",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         21840,
         22656
       ],
-      "typeVersion": 1.2,
-      "alwaysOutputData": true,
-      "continueOnFail": true,
-      "onError": "continueRegularOutput"
+      "parameters": {
+        "method": "POST",
+        "url": "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"query\": $json.task_query } }}",
+        "options": {
+          "timeout": 30000
+        }
+      }
     },
     {
-      "parameters": {
-        "workflowId": {
-          "__rl": true,
-          "value": "E19NZG9WfM7FNsxr",
-          "mode": "id"
-        },
-        "workflowInputs": {
-          "value": {
-            "query": "={{ $node['\u2699\ufe0f Execution Engine V10'].json.current_task?.query || $node['\u2699\ufe0f Execution Engine V10'].json.task_query || $node['Init V8 Security & Analysis'].json.query }}",
-            "trace_id": "={{ $node['Init V8 Security & Analysis'].json.trace_id }}",
-            "user_context": "={{ JSON.stringify({ tenant_id: $node['Init V8 Security & Analysis'].json.tenant_id || 'default', groups: $node['Init V8 Security & Analysis'].json.user_groups || ['default'] }) }}",
-            "topK": 20
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "query",
-              "displayName": "query",
-              "type": "string"
-            },
-            {
-              "id": "trace_id",
-              "displayName": "trace_id",
-              "type": "string"
-            },
-            {
-              "id": "user_context",
-              "displayName": "user_context",
-              "type": "string"
-            },
-            {
-              "id": "topK",
-              "displayName": "topK",
-              "type": "number"
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": true,
-          "mappingMode": "defineBelow"
-        },
-        "options": {
-          "waitForSubWorkflow": true
-        }
-      },
       "id": "8d682938-416e-4a7c-915e-b9a02cca209a",
       "name": "Invoke WF4: Quantitative",
-      "type": "n8n-nodes-base.executeWorkflow",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         21856,
         22416
       ],
-      "typeVersion": 1.2,
-      "alwaysOutputData": true,
-      "continueOnFail": true,
-      "onError": "continueRegularOutput"
+      "parameters": {
+        "method": "POST",
+        "url": "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"query\": $json.task_query } }}",
+        "options": {
+          "timeout": 30000
+        }
+      }
     },
     {
       "parameters": {
@@ -11069,176 +10960,67 @@
         "onError": "continueErrorOutput"
       },
       {
-        "parameters": {
-          "workflowId": {
-            "__rl": true,
-            "value": "TmgyRP20N4JFd9CB",
-            "mode": "id"
-          },
-          "workflowInputs": {
-            "value": {
-              "query": "={{ $node['\u2699\ufe0f Execution Engine V10'].json.current_task?.query || $node['\u2699\ufe0f Execution Engine V10'].json.task_query || $node['Init V8 Security & Analysis'].json.query }}",
-              "trace_id": "={{ $node['Init V8 Security & Analysis'].json.trace_id }}",
-              "user_context": "={{ JSON.stringify({ tenant_id: $node['Init V8 Security & Analysis'].json.tenant_id || 'default', groups: $node['Init V8 Security & Analysis'].json.user_groups || ['default'] }) }}",
-              "topK": 20
-            },
-            "matchingColumns": [],
-            "schema": [
-              {
-                "id": "query",
-                "displayName": "query",
-                "type": "string"
-              },
-              {
-                "id": "trace_id",
-                "displayName": "trace_id",
-                "type": "string"
-              },
-              {
-                "id": "user_context",
-                "displayName": "user_context",
-                "type": "string"
-              },
-              {
-                "id": "topK",
-                "displayName": "topK",
-                "type": "number"
-              }
-            ],
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": true,
-            "mappingMode": "defineBelow"
-          },
-          "options": {
-            "waitForSubWorkflow": true
-          }
-        },
         "id": "72c191ac-677e-4f9c-a64f-1cc328680e31",
         "name": "Invoke WF5: Standard",
-        "type": "n8n-nodes-base.executeWorkflow",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
         "position": [
           21840,
           22224
         ],
-        "typeVersion": 1.2,
-        "alwaysOutputData": false,
-        "continueOnFail": true,
-        "onError": "continueRegularOutput"
+        "parameters": {
+          "method": "POST",
+          "url": "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/rag-multi-index-v3",
+          "authentication": "none",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { \"query\": $json.task_query } }}",
+          "options": {
+            "timeout": 30000
+          }
+        }
       },
       {
-        "parameters": {
-          "workflowId": {
-            "__rl": true,
-            "value": "6257AfT1l4FMC6lY",
-            "mode": "id",
-            "cachedResultUrl": "/workflow/6257AfT1l4FMC6lY"
-          },
-          "workflowInputs": {
-            "value": {
-              "query": "={{ $node['\u2699\ufe0f Execution Engine V10'].json.current_task?.query || $node['\u2699\ufe0f Execution Engine V10'].json.task_query || $node['Init V8 Security & Analysis'].json.query }}",
-              "trace_id": "={{ $node['Init V8 Security & Analysis'].json.trace_id }}",
-              "user_context": "={{ JSON.stringify({ tenant_id: $node['Init V8 Security & Analysis'].json.tenant_id || 'default', groups: $node['Init V8 Security & Analysis'].json.user_groups || ['default'] }) }}",
-              "topK": 20
-            },
-            "matchingColumns": [],
-            "schema": [
-              {
-                "id": "query",
-                "displayName": "query",
-                "type": "string"
-              },
-              {
-                "id": "trace_id",
-                "displayName": "trace_id",
-                "type": "string"
-              },
-              {
-                "id": "user_context",
-                "displayName": "user_context",
-                "type": "string"
-              },
-              {
-                "id": "topK",
-                "displayName": "topK",
-                "type": "number"
-              }
-            ],
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": true,
-            "mappingMode": "defineBelow"
-          },
-          "options": {
-            "waitForSubWorkflow": true
-          }
-        },
         "id": "e3d043ea-96ab-4413-a1a5-683b090596a4",
         "name": "Invoke WF2: Graph",
-        "type": "n8n-nodes-base.executeWorkflow",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
         "position": [
           21840,
           22656
         ],
-        "typeVersion": 1.2,
-        "alwaysOutputData": true,
-        "continueOnFail": true,
-        "onError": "continueRegularOutput"
+        "parameters": {
+          "method": "POST",
+          "url": "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+          "authentication": "none",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { \"query\": $json.task_query } }}",
+          "options": {
+            "timeout": 30000
+          }
+        }
       },
       {
-        "parameters": {
-          "workflowId": {
-            "__rl": true,
-            "value": "E19NZG9WfM7FNsxr",
-            "mode": "id"
-          },
-          "workflowInputs": {
-            "value": {
-              "query": "={{ $node['\u2699\ufe0f Execution Engine V10'].json.current_task?.query || $node['\u2699\ufe0f Execution Engine V10'].json.task_query || $node['Init V8 Security & Analysis'].json.query }}",
-              "trace_id": "={{ $node['Init V8 Security & Analysis'].json.trace_id }}",
-              "user_context": "={{ JSON.stringify({ tenant_id: $node['Init V8 Security & Analysis'].json.tenant_id || 'default', groups: $node['Init V8 Security & Analysis'].json.user_groups || ['default'] }) }}",
-              "topK": 20
-            },
-            "matchingColumns": [],
-            "schema": [
-              {
-                "id": "query",
-                "displayName": "query",
-                "type": "string"
-              },
-              {
-                "id": "trace_id",
-                "displayName": "trace_id",
-                "type": "string"
-              },
-              {
-                "id": "user_context",
-                "displayName": "user_context",
-                "type": "string"
-              },
-              {
-                "id": "topK",
-                "displayName": "topK",
-                "type": "number"
-              }
-            ],
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": true,
-            "mappingMode": "defineBelow"
-          },
-          "options": {
-            "waitForSubWorkflow": true
-          }
-        },
         "id": "8d682938-416e-4a7c-915e-b9a02cca209a",
         "name": "Invoke WF4: Quantitative",
-        "type": "n8n-nodes-base.executeWorkflow",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
         "position": [
           21856,
           22416
         ],
-        "typeVersion": 1.2,
-        "alwaysOutputData": true,
-        "continueOnFail": true,
-        "onError": "continueRegularOutput"
+        "parameters": {
+          "method": "POST",
+          "url": "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+          "authentication": "none",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { \"query\": $json.task_query } }}",
+          "options": {
+            "timeout": 30000
+          }
+        }
       },
       {
         "parameters": {
