@@ -76,14 +76,32 @@ def _load():
 
 
 def _save(data):
-    """Save data.json atomically, then regenerate docs/status.json and sync eval-data.json."""
+    """Save data.json atomically, then regenerate docs/status.json and sync eval-data.json.
+    Uses PID+thread+counter for unique tmp filenames to avoid race conditions."""
     data["meta"]["generated_at"] = paris_iso()
-    tmp = DATA_FILE + f".tmp.{threading.get_ident()}"
-    with open(tmp, "w") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-    os.replace(tmp, DATA_FILE)
+    _save._counter = getattr(_save, '_counter', 0) + 1
+    tmp = DATA_FILE + f".tmp.{os.getpid()}.{threading.get_ident()}.{_save._counter}"
+    try:
+        with open(tmp, "w") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        os.replace(tmp, DATA_FILE)
+    except OSError:
+        # Retry once on filesystem error
+        try:
+            with open(tmp, "w") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            os.replace(tmp, DATA_FILE)
+        except OSError:
+            pass  # Non-fatal — next save will succeed
+    finally:
+        # Clean up any leftover tmp files
+        try:
+            if os.path.exists(tmp):
+                os.unlink(tmp)
+        except OSError:
+            pass
     _sync_eval_data()
-    _regenerate_status()
+    _debounced_regenerate_status()
 
 
 def _sync_eval_data():
@@ -108,6 +126,21 @@ def _regenerate_status():
             )
     except Exception:
         pass  # Never block eval on status generation failure
+
+
+# Debounce status regeneration — at most once every 10 seconds
+_last_status_regen = 0
+_status_regen_lock = threading.Lock()
+
+def _debounced_regenerate_status():
+    """Debounced status regeneration — avoids spawning generate_status.py on every single question."""
+    global _last_status_regen
+    now = time.time()
+    with _status_regen_lock:
+        if now - _last_status_regen < 10:
+            return
+        _last_status_regen = now
+    _regenerate_status()
 
 
 def _default_data():
