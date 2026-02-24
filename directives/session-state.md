@@ -1,73 +1,65 @@
-# Session State — 24 Fevrier 2026 (Session 55)
+# Session State — 24 Fevrier 2026 (Session 56)
 
-> Last updated: 2026-02-24T03:30:00+01:00
+> Last updated: 2026-02-24T11:45:00+01:00
 
-## Current Status: HF Space Running, Webhooks HTTP 200 — Pipelines Returning Application Errors
+## Current Status: 1000q Eval RUNNING — Standard Active, 3 Pipelines Early-Stopped
 
-### Critical Blockers
-| API | Status | Impact | Fix |
-|-----|--------|--------|-----|
-| **Jina API** | NEW KEY PUSHED to HF Space | Was blocking Standard + Graph embeddings | Key deployed, but pipelines still returning errors |
-| **Cohere API** | NEW KEY PUSHED to HF Space | Was blocking reranking | Key deployed, but pipelines still returning errors |
-| **OpenRouter free** | Llama 70B + Gemma 27B rate-limited | Swapped to Mistral Small + StepFun Flash | DONE |
+### Running Processes
+| Process | Location | PID | Status |
+|---------|----------|-----|--------|
+| 1000q Parallel Eval | VM | 400635 | Standard ~41/1000 (~62%), Graph/Quant/Orch early-stopped |
+| Iterative Eval | CS rag-tests | — | Stage 2 running (--no-gate) |
 
-### Pipeline Status
-| Pipeline | Status | Issue |
-|----------|--------|-------|
-| Standard | **HTTP 200 — APP ERROR** | Webhook responds but returns "Unable to generate answer" |
-| Graph | **HTTP 200 — APP ERROR** | Webhook responds but returns "Information not available" |
-| Quantitative | **HTTP 200 — APP ERROR** | Webhook responds but returns "NO_ANSWER" |
-| Orchestrator | **HTTP 200 — APP ERROR** | Webhook responds but returns empty response |
-| PME Gateway | **NOT REGISTERED** | Webhook 404 |
-| **Project Chatbot** | **LIVE** | 7/7 tests passing, bilingual FR/EN |
+### Pipeline Status (Phase 2 — Session 56 Run)
+| Pipeline | Tested | Passed | Accuracy | Status |
+|----------|--------|--------|----------|--------|
+| Standard | 41/1000 | ~25 | ~62% | **RUNNING** — VM eval PID 400635 |
+| Graph | 33/500 | 17 | 51.5% | **EARLY STOP** (4 consecutive failures) |
+| Quantitative | 5/500 | 0 | 0% | **EARLY STOP** (5 consecutive failures) |
+| Orchestrator | 5/1000 | 0 | 0% | **EARLY STOP** (5 consecutive failures, all NO_ANSWER) |
 
-### Fixes Applied This Session (Session 55)
-1. **New Cohere + Jina API keys**: Pushed to HF Space environment variables, space restarted
-2. **HF Space restarted**: All 4 core webhooks now responding HTTP 200 (previously 404)
-3. **project-chatbot.json**: New n8n workflow — keyword-based Q&A about project progress (9 topics, FR/EN)
-   - Webhook: `/webhook/project-chatbot` — POST `{"query":"...", "lang":"fr|en"}`
-   - Zero external dependencies (no LLM, no Jina, no Cohere)
-   - Deployed to HF Space, tested 7/7 passing, <100ms response time
-   - 3 iterations: v1 (LLM with credentials — failed), v2 (LLM with fetch — failed), v3 (keyword-based — works)
-4. **ingest-quick-test.py**: New test script for ingestion + chatbot + database health
-   - Tests: debug-status, ingestion webhook, chatbot, Pinecone/Supabase
-   - All tests passing (ingestion webhook reachable, chatbot 3/3, Pinecone 10,411 vectors)
+### Session 56 Actions Completed
+1. **Aggressive cleanup** — 150→117 tracked files, 12,414 lines removed, 35 stale snapshots deleted
+2. **HF Space API key renewed** — Login with CI creds, created new JWT via REST API
+3. **All 4 webhooks HTTP 200** — No longer 404 (HF Space n8n responsive)
+4. **Restored eval/run-eval.py + eval/live-writer.py** — Accidentally deleted in session 55 cleanup
+5. **Fixed eval/quick-test.py** — Made live-writer import optional with NullWriter fallback
+6. **Launched 1000q parallel eval** — All 4 pipelines concurrent, batch-size 1
+7. **Infrastructure created** — docker-compose (n8n + 3 workers), GH Actions eval-1000q.yml, auto-launch setup.sh
+8. **Started 2 Codespaces** — rag-tests (iterative-eval running), data-ingestion (no Docker)
+9. **Committed + pushed** — All infra files, cleanup
 
-### What Works
-- **Project Chatbot**: LIVE on HF Space `/webhook/project-chatbot` — 9 topics, bilingual
-- HF Space: RUNNING (cpu-basic, n8n 2.8.4, 14 workflows including chatbot)
-- All 4 Vercel sites: Live (HTTP 200)
-- Pinecone: 10,411 vectors across 12 namespaces
-- Neo4j: 19,788 nodes / 76,717 rels
-- Supabase: 65 tables, accessible via MCP
-- OpenRouter: 5+ free models available
-- All satellite repos: Clean
+### Infrastructure State
+| Component | Status | Note |
+|-----------|--------|------|
+| HF Space | **RUNNING** | n8n 2.8.4, all 4 webhooks HTTP 200 |
+| VM | **PILOTAGE ONLY** | Eval running (PID 400635), MCP servers active |
+| CS rag-tests | **AVAILABLE** | Iterative eval running |
+| CS data-ingestion | **AVAILABLE** | NO Docker (needs devcontainer from mon-ipad) |
+| CS pme-connectors | **SHUTDOWN** | Free tier limit (2 max simultaneous) |
+| GH Actions eval-1000q | **READY** | Needs GitHub secrets configured |
 
-### Previously Built (Session 54)
-- FIX-58: Pushed 13 API secrets to HF Space
-- FIX-59: Replaced rate-limited models
-- FIX-60: Fixed HF Space CONFIG_ERROR
-- Cleanup: mon-ipad 973 → 299 tracked files
+### Key Observations
+- **Standard pipeline works** — ~62% accuracy, matching expected Phase 2 levels
+- **Graph pipeline degraded** — 51.5% (was 78% Phase 1). Multi-hop musique questions harder
+- **Quantitative broken** — 0/5, all FinQA NO_MATCH. Likely SQL generation or data issue
+- **Orchestrator broken** — 0/5, all NO_ANSWER/empty. Meta-router not dispatching
 
-### Missing/Not Yet Built
-1. ~~User-facing chatbot for progress queries~~ — **DONE** (Session 55)
-2. ~~Ingestion quick-test scripts~~ — **DONE** (Session 55)
-3. **rag-storage live mirror architecture** — basic structure exists, needs automation
-4. **CLAUDE.md for rag-dashboard, rag-pme-usecases, rag-storage** — NOT CREATED
-5. **LLM-powered chatbot upgrade** — keyword chatbot works but LLM version blocked by n8n credential stripping. Future: fix setup-workflows.py to handle chatbot credentials
+### Environment (.env.local)
+- N8N_HOST: https://lbjlincoln-nomos-rag-engine.hf.space
+- N8N_API_KEY: Renewed JWT (293 chars, created 2026-02-24)
+- OPENROUTER_API_KEY + 4 per-pipeline keys: Set
+- JINA_API_KEY: Set
+- PINECONE_API_KEY: Set
+- NEO4J_URI: Set (NEO4J_AUTH unset locally, available on HF Space)
+- SUPABASE_PASSWORD: Set
+- COHERE_API_KEY: Set
 
-### Phase 2 Eval (unchanged — blocked by API credits)
-| Pipeline | Done | Accuracy | Status |
-|----------|------|----------|--------|
-| Standard | 579/1000 | ~36% | BLOCKED — Jina credits exhausted |
-| Graph | 500/500 | 78.0% | COMPLETE |
-| Quantitative | 500/500 | 92.0% | COMPLETE |
-| Orchestrator | 57/1000 | 0% | BLOCKED — depends on other pipelines |
-
-### Next Steps (Priority Order)
-1. **Get Jina API credits** — Top up account or create new key (BLOCKS Standard + Graph)
-2. **Get Cohere Production key** — Upgrade from trial (BLOCKS reranking)
-3. **Fix Quant SQL generation** — Test with different models or adjust prompt
-4. **Complete PME Gateway activation** — Needs working HF Space
-5. **Integrate chatbot into Vercel websites** — Add chatbot widget calling `/webhook/project-chatbot`
-6. **Prepare 10K infrastructure** — Codespaces + parallel scripts
+### Next Steps (Priority)
+1. **Monitor Standard eval** — Let it run to 1000q or early-stop
+2. **Debug Orchestrator** — Investigate empty responses (meta-router config?)
+3. **Debug Quantitative** — FinQA SQL generation failing
+4. **Increase Graph early-stop threshold** — 4 consecutive too aggressive for multi-hop
+5. **Configure GH Actions secrets** — Enable eval-1000q.yml workflow
+6. **Fix data-ingestion Codespace** — Recreate with Docker-in-Docker devcontainer
+7. **Push directives to all repos** — Sync CLAUDE.md
