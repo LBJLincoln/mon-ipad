@@ -168,19 +168,9 @@ def _process_question(rag_type, q, i, total, endpoint, rag_timeout):
     else:
         answer = extract_answer(resp["data"])
 
-    # Hybrid fallback: if HF Space returned empty/error/wrong, try local LLM
-    if not used_local and rag_type in ("quantitative", "graph", "standard"):
-        hf_eval = evaluate_answer(answer, q["expected"]) if answer else {"f1": 0}
-        if not answer or len(answer.strip()) < 3 or hf_eval["f1"] < 0.3:
-            local_resp = call_local_reasoning(q["question"], rag_type=rag_type, timeout=60)
-            if not local_resp["error"]:
-                local_answer = extract_answer(local_resp["data"])
-                if local_answer and len(local_answer.strip()) >= 3:
-                    local_eval = evaluate_answer(local_answer, q["expected"])
-                    if local_eval["f1"] > hf_eval["f1"]:
-                        resp = local_resp
-                        answer = local_answer
-                        used_local = True
+    # LOCAL FALLBACK DISABLED (Session 57) — VM is pilotage ONLY, no local LLM calls.
+    # All results must come from HF Space n8n pipelines. Local fallback was masking
+    # real pipeline failures by calling OpenRouter directly, producing fake accuracy.
 
     if resp["error"]:
         answer = ""
@@ -466,11 +456,12 @@ def main():
     run_pipeline._early_stop = args.early_stop if args.early_stop > 0 else 999
     run_pipeline._batch_size = args.batch_size
 
-    # Set up local pipelines (bypass HF Space for rate-limited pipelines)
-    global _local_pipelines
+    # LOCAL pipelines DISABLED (Session 57) — VM is pilotage ONLY
+    # All eval must go through HF Space n8n pipelines
     if args.local_pipelines:
-        _local_pipelines = set(t.strip() for t in args.local_pipelines.split(","))
-        print(f"  LOCAL LLM mode for: {', '.join(_local_pipelines)} (OpenRouter direct from VM)")
+        print("  WARNING: --local-pipelines is DISABLED. VM is pilotage only.")
+        print("  All evaluation must go through HF Space n8n pipelines.")
+        print("  Ignoring --local-pipelines flag.")
 
     # Phase gate enforcement
     if not args.force and not check_phase_gate(args.dataset):

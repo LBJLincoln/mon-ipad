@@ -1,62 +1,65 @@
-# Status — 24 Fevrier 2026 (Session 56)
+# Status — 24 Fevrier 2026 (Session 57)
 
-> Last updated: 2026-02-24T11:45:00+01:00
+> Last updated: 2026-02-24T17:00:00+01:00
+
+### Session 57 — 24 fevrier 2026 (14:00+)
+- **Objectif**: Fix eval scripts, disable LOCAL fallback, debug all 4 pipelines
+- **Actions**:
+  - DISABLED LOCAL fallback in run-eval-parallel.py (was masking pipeline failures with fake accuracy)
+  - DISABLED --local-pipelines flag with guard
+  - Fixed .env.local: added `export` to all 28 vars (child process inheritance)
+  - Fixed live-writer.py: race condition with PID+thread+counter tmp filenames
+  - Killed eval PID 426220 (was using LOCAL fallback)
+  - Ran 5 background debug agents: Quantitative, Orchestrator, CS rag-tests, CS data-ingestion, API keys
+  - Committed + pushed (commit 2a72686)
+- **Resultat**: ALL 4 HF Space webhooks unreachable. HF Space healthz HTTP 000 (completely down at session end). LOCAL fallback permanently disabled. Root causes identified for all 4 pipeline failures.
+- **Key Discovery**: Phase 1 and Phase 2 accuracy numbers (~65%, ~62%) were INFLATED by LOCAL fallback calling OpenRouter directly, bypassing the entire n8n RAG pipeline. Real pipeline accuracy is much lower.
 
 ### Session 56 — 24 fevrier 2026 (10:30+)
 - **Objectif**: Cleanup + launch full 1000q parallel eval + create max infra
-- **Actions**:
-  - Aggressive cleanup (150→117 files, -12K lines)
-  - Renewed HF Space API key (old JWT invalid after rebuild)
-  - Restored deleted eval scripts (run-eval.py, live-writer.py)
-  - Launched 1000q parallel eval (4 pipelines, VM PID 400635)
-  - Created docker-compose (n8n + 3 workers), GH Actions eval-1000q.yml
-  - Updated devcontainer + setup.sh for auto-launch
-  - Started 2 Codespaces (rag-tests, data-ingestion)
+- **Actions**: Aggressive cleanup, renewed HF API key, launched 1000q eval, created docker-compose + GH Actions
 - **Resultat**: Standard running ~62%, Graph early-stopped 51.5%, Quant+Orch early-stopped 0%
 
 ### Session 55 — 24 fevrier 2026 (03:00+)
 - **Objectif**: Fix API credits (Cohere + Jina) and launch 1000q eval
-- **Actions**: Pushed new Cohere + Jina API keys to HF Space, created project-chatbot workflow
-- **Resultat**: Webhooks reachable (HTTP 200) but application errors. Chatbot LIVE 7/7 tests passing.
+- **Resultat**: Webhooks reachable but application errors. Chatbot LIVE 7/7 tests passing.
 
-### Session 51 — 23 fevrier 2026 (23:30+)
-- **Objectif**: Fix broken pipelines (env var syntax), redeploy HF Space v5.4
-- **Root cause found**: Standard + Graph workflow JSONs used `={{.VAR}}` instead of `={{$env.VAR}}`
-- **Resultat**: Fix applied, deploy in progress
+### Phase 2 cumulative results (Session 57 — CORRECTED)
+| Pipeline | Tested | Total | Real Accuracy | Status |
+|----------|--------|-------|---------------|--------|
+| Standard | ~600 | 1000 | **~36%** (no fallback) | **BLOCKED** — HF Space DOWN |
+| Graph | **500** | 500 | **78%** (Phase 1 only) | **COMPLETE** (Phase 1) |
+| Quantitative | **500** | 500 | **92%** (Phase 1 only) | **COMPLETE** (Phase 1) |
+| Orchestrator | 57 | 1000 | **0%** | **BROKEN** — empty/timeout |
 
-### Phase 2 cumulative results (Session 56)
-| Pipeline | Tested | Total | Accuracy | Status |
-|----------|--------|-------|----------|--------|
-| Standard | 41+ | 1000 | ~62% | **RUNNING** (VM eval) |
-| Graph | 33 | 500 | 51.5% | **EARLY STOP** (4 consecutive failures) |
-| Quantitative | 5 | 500 | 0% | **EARLY STOP** (5 consecutive failures) |
-| Orchestrator | 5 | 1000 | 0% | **EARLY STOP** (5 consecutive failures) |
+**NOTE**: Graph 78% and Quant 92% are Phase 1 numbers (200q baseline). Phase 2 (1000q) re-evaluation pending HF Space recovery.
 
-### Architecture (Session 56)
+### CRITICAL BLOCKERS
+1. **HF Space DOWN** — healthz HTTP 000, all webhooks unreachable
+2. **Quantitative n8n workflow** — doesn't read table_data/context from webhook body
+3. **Orchestrator n8n workflow** — executeWorkflow returns empty (FIX-34)
+4. **Standard dataset mismatch** — Phase 2 questions are general trivia, not in Pinecone KB
+5. **LOCAL fallback was masking ALL failures** — Now permanently disabled
+
+### Architecture (Session 57)
 ```
-VM (34.136.180.66) — PILOTAGE + EVAL
+VM (34.136.180.66) — PILOTAGE ONLY (NO n8n, NO local eval)
   - Claude Code (Termius)
   - Git repos (mon-ipad + 6 satellites)
   - MCP servers (Pinecone, Neo4j, Supabase, Jina, Cohere, HF)
-  - Eval running (PID 400635) — Standard pipeline active
+  - LOCAL fallback: PERMANENTLY DISABLED in code
+  - .env.local: All vars exported
   - RAM: ~400MB available
 
-HF Space (lbjlincoln-nomos-rag-engine.hf.space) — EXECUTION
-  - n8n 2.8.4 (all 4 webhooks HTTP 200)
+HF Space — DOWN (healthz 000)
+  - n8n 2.8.4 (was running, now unreachable)
   - All credentials imported (12/12)
-  - 14 workflows active
+  - 18 workflows (11 active)
   - 16GB RAM
 
-Codespaces (ephemeral — 2/2 active)
-  - rag-tests: iterative-eval running
-  - data-ingestion: Available, no Docker
+Codespaces — 2 attempted
+  - rag-tests: Docker broken (iptables)
+  - data-ingestion: Was provisioning
 
-GitHub Actions — READY
-  - eval-1000q.yml: Matrix 4 pipelines, needs secrets configured
+OpenRouter API Keys — 6/7 working (~120 req/min)
 ```
-
-### Infrastructure created (Session 56)
-- `.devcontainer/rag-tests/docker-compose.yml` — n8n + 3 workers queue mode
-- `.github/workflows/eval-1000q.yml` — Matrix 4 parallel pipeline jobs
-- `.devcontainer/rag-tests/setup.sh` — Auto-launch eval with early-stop
-- `.devcontainer/rag-tests/devcontainer.json` — Docker-in-Docker, HF Space target
