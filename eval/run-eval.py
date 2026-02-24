@@ -503,7 +503,7 @@ def _load_dataset_file(filepath, questions, embed_context=False):
     skipped = 0
     for q in data.get("questions", []):
         rag_target = q.get("rag_target", "unknown")
-        if rag_target not in ("standard", "graph", "quantitative", "orchestrator"):
+        if rag_target not in ("standard", "graph", "quantitative", "orchestrator", "pme-gateway"):
             skipped += 1
             continue
 
@@ -561,10 +561,18 @@ def load_questions(include_1000=False, dataset="phase-1"):
         _load_dataset_file(
             os.path.join(DATASETS_DIR, "phase-2", "hf-1000.json"),
             questions, embed_context=True)
+        # Expansion: +500 graph + 500 quantitative from HF raw
+        _load_dataset_file(
+            os.path.join(DATASETS_DIR, "phase-2", "graph-quant-expansion-500x2.json"),
+            questions, embed_context=True)
         # Standard + orchestrator: knowledge questions (no context)
         _load_dataset_file(
             os.path.join(DATASETS_DIR, "phase-2", "standard-orch-1000x2.json"),
             questions, embed_context=False)
+        # PME Gateway: project management questions
+        pme_file = os.path.join(DATASETS_DIR, "phase-2", "pme-gateway-1000.json")
+        if os.path.exists(pme_file):
+            _load_dataset_file(pme_file, questions, embed_context=False)
 
     elif dataset == "all":
         phase1_q = load_questions(dataset="phase-1")

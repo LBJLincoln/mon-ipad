@@ -18,7 +18,7 @@ on:
         type: string
       pipelines:
         description: "Pipelines to run (comma-separated or 'all')"
-        default: "standard,graph,quantitative,orchestrator"
+        default: "standard,graph,quantitative,orchestrator,pme-gateway"
         type: string
       early_stop:
         description: "Stop after N consecutive failures"
@@ -33,6 +33,7 @@ env:
   N8N_HOST_GRAPH: ${{ secrets.N8N_HOST_GRAPH || secrets.N8N_HOST || 'https://lbjlincoln-nomos-rag-engine.hf.space' }}
   N8N_HOST_QUANTITATIVE: ${{ secrets.N8N_HOST_QUANTITATIVE || secrets.N8N_HOST || 'https://lbjlincoln-nomos-rag-engine.hf.space' }}
   N8N_HOST_ORCHESTRATOR: ${{ secrets.N8N_HOST_ORCHESTRATOR || secrets.N8N_HOST || 'https://lbjlincoln-nomos-rag-engine.hf.space' }}
+  N8N_HOST_PME_GATEWAY: ${{ secrets.N8N_HOST_PME_GATEWAY || secrets.N8N_HOST || 'https://lbjlincoln-nomos-rag-engine.hf.space' }}
   # API keys — per-pipeline rotation
   OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
   OPENROUTER_KEY_STANDARD: ${{ secrets.OPENROUTER_KEY_STANDARD }}
@@ -51,7 +52,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pipeline: [standard, graph, quantitative, orchestrator]
+        pipeline: [standard, graph, quantitative, orchestrator, pme-gateway]
     runs-on: ubuntu-latest
     timeout-minutes: 180
     name: "Eval ${{ matrix.pipeline }}"
