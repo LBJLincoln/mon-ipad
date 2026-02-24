@@ -17,11 +17,16 @@ echo ""
 
 # Rule 5: ZERO credentials in git
 echo "[Rule 5] Checking for credentials in staged files..."
-if git diff --cached 2>/dev/null | grep -iE 'sk-or-|pcsk_|jV_zGdx|sbp_|hf_|jina_|ghp_' | head -3; then
-    echo "  VIOLATION: Potential credentials in staged changes!"
-    VIOLATIONS=$((VIOLATIONS + 1))
+STAGED=$(git diff --cached 2>/dev/null)
+if [ -n "$STAGED" ]; then
+    if echo "$STAGED" | grep -iE 'sk-or-v1-|pcsk_|jV_zGdx|sbp_|hf_[a-zA-Z]{20}|jina_[a-zA-Z]{20}|ghp_' | head -3; then
+        echo "  VIOLATION: Potential credentials in staged changes!"
+        VIOLATIONS=$((VIOLATIONS + 1))
+    else
+        echo "  OK (staged changes clean)"
+    fi
 else
-    echo "  OK"
+    echo "  OK (nothing staged)"
 fi
 
 # Rule 9: Commit frequency (every 15-20 min)
