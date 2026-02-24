@@ -139,6 +139,42 @@ CHECKLIST PRE-TEST :
 [ ] 5. Workflow est actif : docker exec n8n-postgres-1 psql -U n8n -d n8n -t -A -c "SELECT active FROM workflow_entity WHERE id = '<ID>';"
 ```
 
+### 0.5 PME Gateway Activation — RECURRENT FIX (Session 58+)
+
+> **PROBLEM**: PME Gateway (Multi-Canal Gateway) workflow is ALWAYS inactive after HF Space rebuild/restart.
+> It must be re-activated every session. The n8n 2.8+ API does NOT support `PATCH {active: true}` — the
+> `active` field is read-only on PUT, and POST /activate returns "Could not find property option".
+>
+> **ROOT CAUSE**: n8n 2.8+ requires publishing a new `versionId` to activate. The import process creates
+> the workflow but doesn't publish it (FIX-19). The API key auth doesn't support the internal `/rest/`
+> endpoints needed for publish.
+>
+> **WORKAROUND** (until entrypoint.sh is fixed):
+> ```python
+> # Use the n8n internal API via session cookie (not API key)
+> import requests, os
+> host = os.environ['N8N_HOST']
+> # Step 1: Login to get session cookie
+> sess = requests.Session()
+> login = sess.post(f'{host}/rest/login', json={
+>     'emailOrLdapLoginId': 'admin@nomos.ai',
+>     'password': os.environ.get('N8N_ADMIN_PASSWORD', 'changeme')
+> })
+> # Step 2: Activate via internal REST (requires session, not API key)
+> resp = sess.post(f'{host}/rest/workflows/fbaf7121afe243eab/activate')
+> print(resp.json())
+> ```
+>
+> **PERMANENT FIX NEEDED**: Update entrypoint.sh to auto-activate ALL workflows including PME Gateway
+> after n8n boot. Tracked in: technicals/debug/fixes-library.md FIX-16/FIX-19.
+>
+> **Workflow details**:
+> - Name: Multi-Canal Gateway
+> - HF Space ID: `fbaf7121afe243eab`
+> - Webhook path: `/webhook/pme-assistant-gateway`
+> - 10 nodes: Webhook → Channel Detector → Intent Classifier → Switch Router → RAG/Action/Report → Response
+> - Requires: OpenRouter credential (available on HF Space, 12 creds imported)
+
 ---
 
 ## TABLE DES MATIERES

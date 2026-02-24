@@ -580,12 +580,35 @@ Highlights recents :
 8. **Session 51**: ROOT CAUSE FOUND — broken env var syntax `={{.VAR}}` instead of `={{$env.VAR}}` in workflow JSONs. Fixed 17 instances, deploying v5.4.
 9. **User ideas captured** (5 total): New chatbot repo, ingestion test workflow, sub-agents as restrictors, CLAUDE.md cleanup, visible 8-10 step plan.
 
+### Session 58 — INFRASTRUCTURE COMPLETE
+
+**5000 questions prets** : 5 pipelines x 1000 questions (Standard, Graph, Quantitative, Orchestrator, PME Gateway)
+**Multi-endpoint architecture** : Per-pipeline routing (N8N_HOST_STANDARD, etc.), per-pipeline API keys, per-pipeline batch sizes
+**GitHub Actions** : 5-pipeline matrix configuree (eval-1000q.yml), 15 secrets
+**Dashboard live** : Pushed to rag-dashboard (Vercel auto-deploy)
+**Scaling doc** : `technicals/project/scaling-bottlenecks.md` — plan x2 a x100
+
+**BLOCKERS** : 0% accuracy Phase 2 sur les 5 pipelines (questions ≠ donnees indexees + bugs workflow specifiques)
+
+### Scaling — Comment accelerer (resume)
+
+| Niveau | Questions/heure | Cout | Action requise |
+|--------|----------------|------|----------------|
+| Actuel | ~30 | $0 | - |
+| **x2** | ~120 | **$0** | 2eme HF Space (Alexis: 10 min) |
+| **x5** | ~600 | **$0** | Codespace Docker + GH Actions matrix |
+| **x10** | ~6,000 | ~$50/mois | OpenRouter Pro + n8n multi-worker |
+| **x20** | ~12,000 | ~$100/mois | VPS Hetzner (3 workers) + GPU HF Space |
+| **x100** | ~120,000 | ~$500/mois | K8s cluster + self-hosted LLM |
+
+**Doc complet** : `technicals/project/scaling-bottlenecks.md`
+
 ### Next sessions — PRIORITIES (ordre)
-1. **VERIFY HF SPACE v5.4** — Env var syntax fix deployed. Test all 4 pipelines (Standard, Graph, Quant, Orch) confirm they return valid responses, not empty/404.
-2. **RELAUNCH STANDARD** — batch-size 5, on fixed HF Space. Complete remaining 421/1000 questions.
-3. **FIX ORCHESTRATOR** — Returns 0% on Phase 2. Debug intent classifier + sub-pipeline routing.
-4. **ACTIVATE PME WORKFLOWS** — Configure Google API key as credential, test gateway webhook.
-5. **USER IDEAS** — Implement 5 user ideas captured in session-state.md (chatbot repo, ingestion test, sub-agent restrictors, CLAUDE.md cleanup, visible plan).
+1. **FIX 5 PIPELINES** (accuracy > 0%) — Quantitative (quick-win, 1 noeud n8n) → Orchestrator (FIX-34) → Standard (data mismatch) → Graph (Neo4j) → PME Gateway (activation)
+2. **2eme HF Space** — Creer + configurer endpoints (Alexis : 10 min → x2 throughput)
+3. **RELAUNCH 5000q eval** — `python3 eval/run-eval-parallel.py --dataset phase-2 --reset --force --all-parallel`
+4. **Phase 2 gate** — Tous les pipelines a leur target (Std 85%, Graph 70%, Quant 85%, Orch 70%)
+5. **Phase 3 preparation** — Scale to 10K questions with x5-x10 infra
 6. **Complete data-ingestion** — musique + finqa downloads, start actual ingestion pipeline.
 
 ### Phase 2 completion targets
