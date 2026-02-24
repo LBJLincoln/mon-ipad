@@ -1,6 +1,6 @@
 # Knowledge Base — Cerveau Persistant Multi-RAG
 
-> Last updated: 2026-02-24T03:10:00+01:00 (Session 55 — Chatbot live, n8n Code node lessons, ingestion tests)
+> Last updated: 2026-02-24T14:30:00+01:00 (Session 54 — n8n credentials fix, Jina+Cohere added)
 > **Ce document est VIVANT.** Il s'enrichit a CHAQUE session avec les solutions, patterns
 > et connaissances techniques decouvertes. A lire EN PREMIER avec `fixes-library.md`.
 > Objectif : ameliorer la performance de l'agent a chaque session.
@@ -501,6 +501,71 @@ services:
 - Performance benchmarks: https://docs.n8n.io/hosting/scaling/performance-benchmarking/
 - Worker concurrency guide: https://evalics.com/blog/n8n-queue-mode-explained-scale-workers-and-avoid-pitfalls
 - Production setup: https://nextgrowth.ai/scaling-n8n-queue-mode-docker-compose/
+
+### 3.8 n8n Credentials Management (Session 54)
+
+**HF Space n8n Credentials** (as of 2026-02-24):
+
+Total credentials: **12**
+
+| Credential Name | Type | ID | Purpose |
+|----------------|------|-----|---------|
+| Supabase Postgres (Pooler) | postgres | hPJ2R1Zyt0n8RGMi | Database |
+| OpenRouter API (Standard) | httpHeaderAuth | NN3smXmLK9VKcxAa | Standard pipeline LLM |
+| OpenRouter API (Graph) | httpHeaderAuth | B6jgZltoQGLL0ONv | Graph pipeline LLM |
+| OpenRouter API (Quantitative) | httpHeaderAuth | 7ndsO94GBLtQ5jPz | Quantitative pipeline LLM |
+| OpenRouter API (Orchestrator) | httpHeaderAuth | mSdujNfhyPqjrm1L | Orchestrator pipeline LLM |
+| OpenRouter API (PME) | httpHeaderAuth | CqLJFNeg9IjsIlPX | PME pipeline LLM |
+| OpenRouter API (Main) | httpHeaderAuth | 1AX60VQHURolLRtJ | Default/fallback LLM |
+| Pinecone API Key | httpHeaderAuth | dIdkbIl69fQjOpra | Vector DB |
+| Neo4j Aura | httpBasicAuth | iCwY3wmoJiZmtBzY | Graph DB |
+| Redis | redis | gK5zlD9gcROqFKHm | Cache/queue |
+| **Jina API Key** | httpHeaderAuth | gwQvKQzF2kN4PqsO | Embeddings (added Session 54) |
+| **Cohere API Key** | httpHeaderAuth | s2ZLvkU1znR0lfvu | Reranking (added Session 54) |
+
+**n8n Variables**:
+- **NOT AVAILABLE** on free/community n8n plan
+- Attempting to create variables returns: `403 - Plan lacks license for this feature`
+- **Workaround**: Use credentials (for secrets) or hardcode values in workflow JSON
+
+**Credential Creation via API** (Python example):
+```python
+import urllib.request
+import json
+
+# Login first to get session cookie
+login_data = {"emailOrLdapLoginId": "ci@nomos.ai", "password": "CI-Nomos-2026!"}
+req = urllib.request.Request(
+    "https://lbjlincoln-nomos-rag-engine.hf.space/rest/login",
+    data=json.dumps(login_data).encode('utf-8'),
+    headers={'Content-Type': 'application/json'},
+    method='POST'
+)
+
+# Create credential
+cred_data = {
+    "name": "Jina API Key",
+    "type": "httpHeaderAuth",
+    "data": {
+        "name": "Authorization",
+        "value": "Bearer jina_..."
+    }
+}
+req = urllib.request.Request(
+    "https://lbjlincoln-nomos-rag-engine.hf.space/rest/credentials",
+    data=json.dumps(cred_data).encode('utf-8'),
+    headers={'Content-Type': 'application/json'},
+    method='POST'
+)
+```
+
+**Accessing Credentials in Workflows**:
+- In HTTP Request nodes: Select credential from dropdown → auto-injects header
+- In Code nodes: NOT directly accessible (by design for security)
+- In Set nodes: NOT accessible
+- **Best practice**: Configure credentials at node level, not via expressions
+
+**Script**: `/home/termius/mon-ipad/scripts/fix-n8n-credentials.py` — automated credential creation/verification
 
 ---
 

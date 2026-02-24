@@ -1,6 +1,6 @@
 # Fixes Library — Multi-RAG Orchestrator
 
-> Last updated: 2026-02-24T02:45:00+01:00
+> Last updated: 2026-02-24T14:35:00+01:00
 
 > **Bibliotheque permanente de tous les bugs resolus.** A consulter EN PREMIER avant tout debug.
 > Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 54 (2026-02-24).
@@ -42,6 +42,7 @@
 | 59 | OpenRouter | Free models rate-limited — swap Llama/Gemma → Mistral/StepFun | 54 | CRITIQUE |
 | 60 | HF Space | CONFIG_ERROR from duplicate secret+variable names | 54 | CRITIQUE |
 | 61 | Jina/Cohere | API credits exhausted — embeddings + reranking blocked | 54 | CRITIQUE |
+| 62 | n8n Credentials | Jina + Cohere credentials missing on HF Space | 54 | IMPORTANT |
 | 29 | Quantitative + Orchestrator | HF Space TCP port 6543 bloque + require('crypto') + API key type | 27 | CRITIQUE |
 | 30 | Orchestrator | PostgreSQL local pour HF Space (port 6543 bloque) | 27 | IMPORTANT |
 | 31 | Infrastructure | Live diagnostic server (diag-server.py) sur port 7861 | 27 | IMPORTANT |
@@ -1134,5 +1135,23 @@ for node in workflow['nodes']:
 - **Solution needed**: Top up Jina account at https://jina.ai/api-dashboard/key-manager OR create new account for fresh free credits.
 - **Also**: Cohere trial key exceeded (1000 calls/month) → reranking broken.
 - **Lecon**: Monitor API credit usage during large-scale testing. Phase 2 (1000q × 4 pipelines) can exhaust free tier credits in 1-2 days. Budget for paid API keys for 10K testing.
+
+### FIX-62: n8n Jina + Cohere credentials missing on HF Space
+- **Date**: 2026-02-24 (Session 54)
+- **Symptome**: Workflows using Jina or Cohere APIs fail because no credentials exist in n8n
+- **Cause racine**: Jina and Cohere credentials were not imported to HF Space n8n during initial setup
+- **Impact**: Cannot use Jina embeddings or Cohere reranking from workflow HTTP Request nodes
+- **Solution**:
+  1. Login to HF Space n8n via REST API: `POST /rest/login` with `{"emailOrLdapLoginId": "ci@nomos.ai", "password": "CI-Nomos-2026!"}`
+  2. Create httpHeaderAuth credentials via `POST /rest/credentials`:
+     - **Jina API Key**: `{"name": "Jina API Key", "type": "httpHeaderAuth", "data": {"name": "Authorization", "value": "Bearer jina_..."}}`
+     - **Cohere API Key**: `{"name": "Cohere API Key", "type": "httpHeaderAuth", "data": {"name": "Authorization", "value": "Bearer tBM0vcH3l9j6EXsl3BEZBsWMdr0Bsjx2IpGoM9kP"}}`
+  3. Verify with `GET /rest/credentials`
+- **Credentials created**:
+  - Jina API Key (ID: gwQvKQzF2kN4PqsO)
+  - Cohere API Key (ID: s2ZLvkU1znR0lfvu)
+- **Note**: n8n Variables NOT available on free plan (403 - "Plan lacks license for this feature"). Use credentials instead.
+- **Script**: `/home/termius/mon-ipad/scripts/fix-n8n-credentials.py` — automated setup
+- **Lecon**: Always verify all required credentials exist when deploying workflows to new n8n instance. Use `GET /rest/credentials` to list.
 
 ---
