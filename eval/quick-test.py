@@ -33,8 +33,13 @@ def _check_n8n_host():
             sys.exit(1)
 _check_n8n_host()
 
-# Load writer
-writer = SourceFileLoader("w", os.path.join(EVAL_DIR, "live-writer.py")).load_module()
+# Load writer (optional — only for dashboard logging)
+try:
+    writer = SourceFileLoader("w", os.path.join(EVAL_DIR, "live-writer.py")).load_module()
+except FileNotFoundError:
+    class _NullWriter:
+        def record_quick_test(self, **kw): pass
+    writer = _NullWriter()
 
 RAG_ENDPOINTS = {
     "standard":     f"{N8N_HOST}/webhook/rag-multi-index-v3",
