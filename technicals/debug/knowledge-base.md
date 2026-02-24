@@ -1,6 +1,6 @@
 # Knowledge Base — Cerveau Persistant Multi-RAG
 
-> Last updated: 2026-02-24T02:50:00+01:00 (Session 54 — API credits exhausted, model swaps, repo cleanup)
+> Last updated: 2026-02-24T03:10:00+01:00 (Session 55 — Chatbot live, n8n Code node lessons, ingestion tests)
 > **Ce document est VIVANT.** Il s'enrichit a CHAQUE session avec les solutions, patterns
 > et connaissances techniques decouvertes. A lire EN PREMIER avec `fixes-library.md`.
 > Objectif : ameliorer la performance de l'agent a chaque session.
@@ -29,6 +29,8 @@
 | **Benchmark V3.0** | `LKZO1QQY9jvBltP0` | `/webhook/benchmark-v2` | POST | Active (hangs ~90s) |
 | **SQL Executor** | `22k9541l9mHENlLD` | `/webhook/benchmark-sql-exec` | POST | Active (returns 500 — app-level) |
 | **PME Gateway** | `IipwYgPoWqM3axwY` | `/webhook/pme-assistant-gateway` | POST | **DEACTIVATED** — needs OpenRouter credential (VM has none) |
+| **Project Chatbot** | `chatbot-webhook` | `/webhook/project-chatbot` | POST | **LIVE** — keyword Q&A, no external API needed, bilingual FR/EN |
+| **Ingestion** | `nh1D4Up0wBZhuQbp` | `/webhook/rag-v6-ingestion` | POST | Reachable but processing needs real documents |
 | **PME Action** | `EaB5iHZsHBCBzFk2` | `/webhook/pme-action-executor` | POST | **DEACTIVATED** — needs OpenRouter + Google OAuth2 creds |
 
 > **FIX-43 (Session 40c)**: PME workflows set `active=true` in DB but n8n silently fails to register webhooks when credentials are missing. Deactivated PME on VM — they work only on HF Space (12 creds).
@@ -1151,6 +1153,31 @@ class AutonomousEvaluator:
 - OLD/wrong host in some configs: `sota-rag-jina-1024-czwk7da.svc.aped-4627-b74a.pinecone.io`
 - The workflow JSONs have the CORRECT host hardcoded. The `.env.local` PINECONE_HOST may be stale.
 - Pinecone SDK (MCP) auto-discovers correct host. REST API requires exact match.
+
+## SECTION 12 — N8N CODE NODE LIMITATIONS (Session 55)
+
+### 12.1 Code Node v2 — What Works and What Doesn't
+- **Works**: `return { ... }` (sync), `$json`, `$input.item.json`, `$node['Name'].json`, `$env.VAR`, `new Date()`, `Math.*`, `JSON.*`, `require('crypto')`
+- **Does NOT work**: `fetch()` (not available in sandbox), `await` at top level (may silently fail), `require('https')` (limited)
+- **Workaround for external API calls**: Use HTTP Request node instead of Code node. If credentials are stripped by entrypoint, use `$env.API_KEY` in header expression.
+
+### 12.2 Credential Stripping + Restoration Flow
+1. `entrypoint.sh` strips ALL `credentials` fields from nodes during CLI import (to avoid FK errors with fresh SQLite)
+2. `setup-workflows.py` restores credentials by matching original JSON → DB workflow by name
+3. New workflows added to `n8n-workflows/` are auto-imported but may fail credential restoration if their credential IDs aren't in the `id_map`
+4. **The `OPENROUTER_HEADER_AUTH` ID IS mapped** (line 119 of setup-workflows.py) → new workflows using this ID should get credentials restored
+5. **If credentials fail**: Use `$env.VAR` expressions in HTTP Request header parameters instead. Format: `"value": "=Bearer {{$env.OPENROUTER_API_KEY}}"`
+
+### 12.3 Webhook responseMode: "responseNode"
+- If workflow errors BEFORE reaching a respondToWebhook node, n8n returns HTTP 200 with empty body or generic error
+- **Always add error handling** (onError, try/catch) between webhook and respondToWebhook
+- For simple workflows: use a single Code node between webhook and respondToWebhook to avoid routing issues
+
+### 12.4 Project Chatbot Architecture Decision
+- **v1 (failed)**: LLM call via HTTP Request + httpHeaderAuth credential → credential stripped, 401
+- **v2 (failed)**: LLM call via fetch() in Code node → fetch() not available in n8n sandbox
+- **v3 (works)**: Pure keyword-based Q&A in Code node → zero external dependencies, <100ms, bilingual
+- **Future LLM upgrade path**: Fix setup-workflows.py to handle chatbot credential, or use HTTP Request with `$env.OPENROUTER_API_KEY` expression
 
 ---
 

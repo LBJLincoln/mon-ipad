@@ -1,51 +1,58 @@
-# Session State — 24 Fevrier 2026 (Session 54)
+# Session State — 24 Fevrier 2026 (Session 55)
 
-> Last updated: 2026-02-24T02:30:00+01:00
+> Last updated: 2026-02-24T03:10:00+01:00
 
-## Current Status: API Credits Exhausted — 2 of 3 Embedding/Reranking APIs Down
+## Current Status: Chatbot LIVE + Ingestion Tests Built — RAG Pipelines Still Blocked by API Credits
 
-### Critical Blockers
+### Critical Blockers (unchanged)
 | API | Status | Impact | Fix |
 |-----|--------|--------|-----|
 | **Jina API** | NO BALANCE | Standard + Graph pipelines blocked (embeddings) | Top up or new account |
 | **Cohere API** | TRIAL EXCEEDED (1000/month) | Reranking blocked | Upgrade to Production key |
 | **OpenRouter free** | Llama 70B + Gemma 27B rate-limited | Swapped to Mistral Small + StepFun Flash | DONE |
 
-### Pipeline Status After Session 54 Fixes
+### Pipeline Status
 | Pipeline | Status | Issue |
 |----------|--------|-------|
-| Standard | **BROKEN** | Jina embedding API has no balance → no vector search → "Unable to generate answer" |
-| Graph | **BROKEN** | Same Jina issue → no HyDE embeddings → "Information not available" |
-| Quantitative | **BROKEN** | SQL generation fails with new model (Mistral Small) — returns NO_ANSWER |
-| Orchestrator | **BROKEN** | Empty response (depends on other pipelines) |
-| PME Gateway | **NOT REGISTERED** | Webhook 404 — needs activation |
+| Standard | **BROKEN** | Jina embedding API has no balance |
+| Graph | **BROKEN** | Same Jina issue |
+| Quantitative | **BROKEN** | SQL generation fails with Mistral Small |
+| Orchestrator | **BROKEN** | Depends on other pipelines |
+| PME Gateway | **NOT REGISTERED** | Webhook 404 |
+| **Project Chatbot** | **LIVE** | 7/7 tests passing, bilingual FR/EN |
 
-### Fixes Applied This Session
-1. **FIX-58**: Pushed 13 API secrets to HF Space (was missing ALL keys)
-2. **FIX-59**: Replaced rate-limited models (Llama 70B → Mistral Small, Gemma 27B → StepFun Flash)
-3. **FIX-60**: Fixed HF Space CONFIG_ERROR (caused by adding model env vars as both secrets + variables)
-4. **Cleanup**: Removed 674 files from mon-ipad (973 → 299 tracked files). Moved logs, db, snapshots, junk to rag-storage
+### Fixes Applied This Session (Session 55)
+1. **project-chatbot.json**: New n8n workflow — keyword-based Q&A about project progress (9 topics, FR/EN)
+   - Webhook: `/webhook/project-chatbot` — POST `{"query":"...", "lang":"fr|en"}`
+   - Zero external dependencies (no LLM, no Jina, no Cohere)
+   - Deployed to HF Space, tested 7/7 passing, <100ms response time
+   - 3 iterations: v1 (LLM with credentials — failed), v2 (LLM with fetch — failed), v3 (keyword-based — works)
+2. **ingest-quick-test.py**: New test script for ingestion + chatbot + database health
+   - Tests: debug-status, ingestion webhook, chatbot, Pinecone/Supabase
+   - All tests passing (ingestion webhook reachable, chatbot 3/3, Pinecone 10,411 vectors)
 
 ### What Works
-- HF Space: RUNNING (cpu-basic, n8n 2.8.4, 13 secrets, updated workflows)
+- **Project Chatbot**: LIVE on HF Space `/webhook/project-chatbot` — 9 topics, bilingual
+- HF Space: RUNNING (cpu-basic, n8n 2.8.4, 14 workflows including chatbot)
 - All 4 Vercel sites: Live (HTTP 200)
-- Pinecone: 10,411 vectors, accessible via MCP and REST API
+- Pinecone: 10,411 vectors across 12 namespaces
 - Neo4j: 19,788 nodes / 76,717 rels
 - Supabase: 65 tables, accessible via MCP
-- OpenRouter: 5+ free models available (Mistral Small, StepFun Flash, Trinity, Hermes 405B, GPT-OSS 120B)
-- All satellite repos: Clean (9-79 files each)
+- OpenRouter: 5+ free models available
+- All satellite repos: Clean
 
-### mon-ipad Cleanup Done
-- Before: 973 tracked files
-- After: 299 tracked files
-- Removed: logs/ (572), db/ (27), snapshot/current+workflows/ (51), n8n_analysis_results/ (26), 6 junk root files
-- All archived to `/home/termius/rag-storage/repos/mon-ipad/`
+### Previously Built (Session 54)
+- FIX-58: Pushed 13 API secrets to HF Space
+- FIX-59: Replaced rate-limited models
+- FIX-60: Fixed HF Space CONFIG_ERROR
+- Cleanup: mon-ipad 973 → 299 tracked files
 
 ### Missing/Not Yet Built
-1. **User-facing chatbot for progress queries** — NOT STARTED (planned in improvements-roadmap Section 14.1)
-2. **Ingestion quick-test scripts** — `ingest-quick-test.py`, `verify-ingestion.py` NOT BUILT
+1. ~~User-facing chatbot for progress queries~~ — **DONE** (Session 55)
+2. ~~Ingestion quick-test scripts~~ — **DONE** (Session 55)
 3. **rag-storage live mirror architecture** — basic structure exists, needs automation
 4. **CLAUDE.md for rag-dashboard, rag-pme-usecases, rag-storage** — NOT CREATED
+5. **LLM-powered chatbot upgrade** — keyword chatbot works but LLM version blocked by n8n credential stripping. Future: fix setup-workflows.py to handle chatbot credentials
 
 ### Phase 2 Eval (unchanged — blocked by API credits)
 | Pipeline | Done | Accuracy | Status |
@@ -60,6 +67,5 @@
 2. **Get Cohere Production key** — Upgrade from trial (BLOCKS reranking)
 3. **Fix Quant SQL generation** — Test with different models or adjust prompt
 4. **Complete PME Gateway activation** — Needs working HF Space
-5. **Build user-facing chatbot workflow** — New n8n workflow for project progress queries
-6. **Build ingestion test scripts** — `ingest-quick-test.py` for validation
-7. **Prepare 10K infrastructure** — Codespaces + parallel scripts
+5. **Integrate chatbot into Vercel websites** — Add chatbot widget calling `/webhook/project-chatbot`
+6. **Prepare 10K infrastructure** — Codespaces + parallel scripts
