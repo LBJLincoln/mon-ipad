@@ -1,0 +1,110 @@
+# 1000q Parallel Evaluation — All 4 RAG Pipelines
+# Matrix strategy: 4 parallel jobs (1 per pipeline)
+# Each tests 1000 questions against HF Space n8n
+# Auto-stop on 10 consecutive failures
+name: "Eval 1000q Parallel"
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_questions:
+        description: "Max questions per pipeline"
+        default: "1000"
+        type: string
+      batch_size:
+        description: "Batch size per pipeline"
+        default: "1"
+        type: string
+
+env:
+  N8N_HOST: https://lbjlincoln-nomos-rag-engine.hf.space
+  OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+  OPENROUTER_KEY_STANDARD: ${{ secrets.OPENROUTER_KEY_STANDARD }}
+  OPENROUTER_KEY_GRAPH: ${{ secrets.OPENROUTER_KEY_GRAPH }}
+  OPENROUTER_KEY_QUANTITATIVE: ${{ secrets.OPENROUTER_KEY_QUANTITATIVE }}
+  OPENROUTER_KEY_ORCHESTRATOR: ${{ secrets.OPENROUTER_KEY_ORCHESTRATOR }}
+  JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
+  PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+  NEO4J_URI: ${{ secrets.NEO4J_URI }}
+  NEO4J_AUTH: ${{ secrets.NEO4J_AUTH }}
+  SUPABASE_PASSWORD: ${{ secrets.SUPABASE_PASSWORD }}
+  COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
+
+jobs:
+  eval-pipeline:
+    strategy:
+      fail-fast: false
+      matrix:
+        pipeline: [standard, graph, quantitative, orchestrator]
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    name: "Eval ${{ matrix.pipeline }}"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests numpy python-dotenv
+
+      - name: Run evaluation (${{ matrix.pipeline }})
+        run: |
+          python3 eval/run-eval-parallel.py \
+            --dataset phase-2 \
+            --types ${{ matrix.pipeline }} \
+            --max ${{ inputs.max_questions || '1000' }} \
+            --batch-size ${{ inputs.batch_size || '1' }} \
+            --reset \
+            --early-stop 10 \
+            --label "gha-${{ matrix.pipeline }}-$(date +%Y%m%d)" \
+            2>&1 | tee /tmp/eval-${{ matrix.pipeline }}.log
+        timeout-minutes: 300
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-${{ matrix.pipeline }}
+          path: |
+            logs/pipeline-results/*.json
+            docs/data.json
+            /tmp/eval-${{ matrix.pipeline }}.log
+
+  summary:
+    needs: eval-pipeline
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: results/
+
+      - name: Aggregate and commit
+        run: |
+          echo "=== EVALUATION SUMMARY ==="
+          for f in results/eval-results-*/logs/pipeline-results/*.json; do
+            [ -f "$f" ] || continue
+            pipeline=$(basename "$f" | cut -d'-' -f1)
+            python3 -c "
+          import json
+          with open('$f') as fh: d = json.load(fh)
+          t = d.get('total_tested', 0)
+          p = d.get('total_passed', 0)
+          a = (p/t*100) if t > 0 else 0
+          print(f'  $pipeline: {t} tested | {p} passed | {a:.1f}%')
+          " 2>/dev/null || echo "  $pipeline: parse error"
+          done
+
+          git config user.email "alexis.moret6@outlook.fr"
+          git config user.name "GitHub Actions"
+          cp results/eval-results-*/docs/data.json docs/data.json 2>/dev/null || true
+          mkdir -p logs/pipeline-results
+          cp results/eval-results-*/logs/pipeline-results/*.json logs/pipeline-results/ 2>/dev/null || true
+          git add docs/ logs/ 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "eval: 1000q GHA results — $(date +%Y-%m-%d) [skip ci]"
+          git push || echo "Push failed"

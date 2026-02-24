@@ -1,24 +1,61 @@
 #!/bin/bash
 # rag-tests Codespace bootstrap
-# No local n8n — uses VM remote n8n via SSH tunnel
-# Installs: Claude Code CLI + eval scripts + MCP
-set -euo pipefail
+# Supports 2 modes:
+#   1. HF Space (default) — uses remote HF Space n8n
+#   2. Local Docker — starts n8n + 3 workers via docker-compose
+# Auto-launches 1000q eval after setup (unattended)
+set -uo pipefail
 
 echo "=== Nomos AI — rag-tests Codespace Setup ==="
 
 REPO_ROOT="/workspaces/${localWorkspaceFolderBasename:-.}"
-VM_HOST="${VM_HOST:-34.136.180.66}"
-N8N_URL="http://${VM_HOST}:5678"
-MAX_WAIT=60
+N8N_HOST="${N8N_HOST:-https://lbjlincoln-nomos-rag-engine.hf.space}"
+EVAL_MODE="${EVAL_MODE:-hf-space}"  # hf-space or local-docker
 
-# --- 1. Verify VM connectivity ---
-echo "[1/7] Checking VM connectivity (${VM_HOST})..."
-if curl -sf --connect-timeout 10 "${N8N_URL}/healthz" > /dev/null 2>&1; then
-  echo "  VM n8n reachable directly"
+# --- 1. Check n8n target ---
+echo "[1/7] Checking n8n target (mode: ${EVAL_MODE})..."
+if [ "$EVAL_MODE" = "local-docker" ]; then
+  echo "  Starting local n8n Docker stack..."
+  if [ -f "${REPO_ROOT}/.devcontainer/rag-tests/docker-compose.yml" ] && which docker >/dev/null 2>&1; then
+    docker compose -f "${REPO_ROOT}/.devcontainer/rag-tests/docker-compose.yml" up -d 2>&1 | tail -5
+    echo "  Waiting for local n8n..."
+    for i in $(seq 1 60); do
+      if curl -sf http://localhost:5678/healthz > /dev/null 2>&1; then
+        echo "  Local n8n healthy after $((i*3))s"
+        N8N_HOST="http://localhost:5678"
+        break
+      fi
+      sleep 3
+    done
+    # Import workflows from n8n/live/
+    echo "  Importing workflows..."
+    for wf in "${REPO_ROOT}/n8n/live/"*.json; do
+      [ -f "$wf" ] || continue
+      # Strip credentials for clean import
+      python3 -c "
+import json
+with open('$wf') as f: d = json.load(f)
+for n in d.get('nodes',[]): n.pop('credentials',None)
+for k in ['shared','tags','activeVersion','activeVersionId','versionId','versionCounter','triggerCount','pinData','meta','staticData']: d.pop(k,None)
+d['active'] = False
+with open('/tmp/$(basename $wf)', 'w') as f: json.dump(d, f)
+" 2>/dev/null && docker exec -i $(docker ps -q -f name=n8n-1 2>/dev/null || echo "none") n8n import:workflow --input="/tmp/$(basename $wf)" 2>/dev/null && echo "    OK: $(basename $wf)" || echo "    SKIP: $(basename $wf)"
+    done
+  else
+    echo "  WARN: Docker not available — falling back to HF Space"
+    EVAL_MODE="hf-space"
+    N8N_HOST="https://lbjlincoln-nomos-rag-engine.hf.space"
+  fi
 else
-  echo "  WARN: VM n8n not reachable directly"
-  echo "  From the VM, run: bash scripts/deploy-codespaces.sh tunnel rag-tests"
+  echo "  Using HF Space: ${N8N_HOST}"
+  CODE=$(curl -s -o /dev/null -w "%{http_code}" "${N8N_HOST}/healthz" --max-time 15 2>/dev/null || echo "000")
+  if [ "$CODE" = "200" ]; then
+    echo "  HF Space reachable (HTTP 200)"
+  else
+    echo "  WARN: HF Space returned HTTP $CODE"
+  fi
 fi
+export N8N_HOST
 
 # --- 2. Install Python deps ---
 echo "[2/7] Installing Python dependencies..."
@@ -26,7 +63,7 @@ pip install -q requests python-dotenv numpy 2>/dev/null || true
 
 # --- 3. Verify eval scripts ---
 echo "[3/7] Verifying eval scripts..."
-for script in eval/quick-test.py eval/iterative-eval.py eval/run-eval-parallel.py eval/node-analyzer.py; do
+for script in eval/quick-test.py eval/iterative-eval.py eval/run-eval-parallel.py eval/run-eval.py eval/live-writer.py; do
   if [ -f "${REPO_ROOT}/${script}" ]; then
     echo "  OK: ${script}"
   else
@@ -39,85 +76,57 @@ echo "[4/7] Checking datasets..."
 dataset_count=$(find "${REPO_ROOT}/datasets" -name "*.json" 2>/dev/null | wc -l)
 echo "  Found ${dataset_count} dataset files"
 
-# --- 5. Install Claude Code CLI + MCP ---
+# --- 5. Install Claude Code CLI ---
 echo "[5/7] Installing Claude Code CLI..."
 npm install -g @anthropic-ai/claude-code 2>/dev/null && echo "  claude installed" || echo "  WARN: claude install failed"
-npm install -g neo4j-mcp 2>/dev/null || true
-npm install @pinecone-database/mcp 2>/dev/null || true
 
-# --- 6. Generate MCP config ---
-echo "[6/7] Configuring MCP servers..."
-cat > "${REPO_ROOT}/.mcp.json" << MCPEOF
-{
-  "mcpServers": {
-    "n8n": {
-      "type": "http",
-      "url": "http://${VM_HOST}:5678/mcp-server/http",
-      "headers": {
-        "Authorization": "Bearer ${N8N_MCP_TOKEN:-}"
-      }
-    },
-    "neo4j": {
-      "type": "stdio",
-      "command": "neo4j-mcp",
-      "args": [],
-      "env": {
-        "NEO4J_URI": "${NEO4J_URI:-neo4j+s://38c949a2.databases.neo4j.io}",
-        "NEO4J_USERNAME": "neo4j",
-        "NEO4J_PASSWORD": "${NEO4J_PASSWORD:-}",
-        "NEO4J_DATABASE": "neo4j",
-        "NEO4J_READ_ONLY": "true"
-      }
-    },
-    "pinecone": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["${REPO_ROOT}/node_modules/@pinecone-database/mcp/dist/index.js"],
-      "env": {
-        "PINECONE_API_KEY": "${PINECONE_API_KEY:-}"
-      }
-    },
-    "supabase": {
-      "type": "http",
-      "url": "https://mcp.supabase.com/mcp?project_ref=ayqviqmxifzmhphiqfmj",
-      "headers": {
-        "Authorization": "Bearer ${SUPABASE_MCP_TOKEN:-}"
-      }
-    },
-    "jina-embeddings": {
-      "type": "stdio",
-      "command": "python3",
-      "args": ["${REPO_ROOT}/mcp/jina-embeddings-server.py"],
-      "env": {
-        "JINA_API_KEY": "${JINA_API_KEY:-}",
-        "PINECONE_API_KEY": "${PINECONE_API_KEY:-}",
-        "PINECONE_HOST": "${PINECONE_HOST:-}",
-        "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY:-}",
-        "N8N_API_KEY": "${N8N_API_KEY:-}",
-        "N8N_HOST": "http://${VM_HOST}:5678"
-      }
-    }
-  }
-}
-MCPEOF
-echo "  .mcp.json generated (n8n → VM remote)"
-
-# --- 7. Check environment ---
-echo "[7/7] Checking environment..."
+# --- 6. Check environment ---
+echo "[6/7] Checking environment variables..."
 python3 -c "
 import os
-for key in ['N8N_HOST', 'OPENROUTER_API_KEY', 'JINA_API_KEY', 'PINECONE_API_KEY', 'NEO4J_URI', 'SUPABASE_URL']:
+required = ['N8N_HOST', 'OPENROUTER_API_KEY', 'JINA_API_KEY', 'PINECONE_API_KEY']
+optional = ['NEO4J_URI', 'SUPABASE_PASSWORD', 'COHERE_API_KEY']
+for key in required:
     val = os.environ.get(key, '')
-    status = 'OK' if val else 'MISSING (set as Codespace secret)'
+    status = 'OK' if val else 'MISSING (required!)'
+    print(f'  {key}: {status}')
+for key in optional:
+    val = os.environ.get(key, '')
+    status = 'OK' if val else 'optional'
     print(f'  {key}: {status}')
 " 2>/dev/null || true
 
+# --- 7. Auto-launch eval (unattended mode) ---
+echo "[7/7] Auto-launch evaluation..."
+if [ "${AUTO_EVAL:-true}" = "true" ]; then
+  echo "  Launching 1000q eval in background (auto-stop on 10 consecutive failures)..."
+  cd "${REPO_ROOT}"
+  source .env.local 2>/dev/null || true
+  export N8N_HOST
+  nohup python3 eval/run-eval-parallel.py \
+    --dataset phase-2 \
+    --all-parallel \
+    --workers 4 \
+    --batch-size 1 \
+    --max "${MAX_QUESTIONS:-1000}" \
+    --early-stop 10 \
+    --reset \
+    --label "codespace-$(hostname)-$(date +%Y%m%d-%H%M)" \
+    > /tmp/eval-run.log 2>&1 &
+  echo $! > /tmp/eval-run.pid
+  echo "  Eval PID: $(cat /tmp/eval-run.pid)"
+  echo "  Log: /tmp/eval-run.log"
+  echo "  Auto-stop: 10 consecutive failures per pipeline"
+else
+  echo "  AUTO_EVAL=false — skipping auto-launch"
+  echo "  Run manually: python3 eval/run-eval-parallel.py --dataset phase-2 --all-parallel --workers 4"
+fi
+
 echo ""
 echo "=== Setup complete ==="
-echo "  VM n8n:      http://${VM_HOST}:5678"
-echo "  Claude Code: claude (run from ${REPO_ROOT})"
-echo "  Mode:        Remote tests (no local n8n)"
+echo "  N8N target: ${N8N_HOST}"
+echo "  Mode:       ${EVAL_MODE}"
+echo "  Eval:       $([ -f /tmp/eval-run.pid ] && echo 'RUNNING (PID '$(cat /tmp/eval-run.pid)')' || echo 'NOT STARTED')"
 echo ""
-echo "Next steps:"
-echo "  1. source .env.local (if exists)"
-echo "  2. claude  (launches Claude Code with CLAUDE.md)"
+echo "Monitor: tail -f /tmp/eval-run.log"
+echo "Stop:    kill \$(cat /tmp/eval-run.pid)"
