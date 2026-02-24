@@ -603,35 +603,63 @@ Highlights recents :
 
 **Doc complet** : `technicals/project/scaling-bottlenecks.md`
 
-### Next sessions — PRIORITIES (ordre)
-1. **FIX 5 PIPELINES** (accuracy > 0%) — Quantitative (quick-win, 1 noeud n8n) → Orchestrator (FIX-34) → Standard (data mismatch) → Graph (Neo4j) → PME Gateway (activation)
-2. **2eme HF Space** — Creer + configurer endpoints (Alexis : 10 min → x2 throughput)
-3. **RELAUNCH 5000q eval** — `python3 eval/run-eval-parallel.py --dataset phase-2 --reset --force --all-parallel`
-4. **Phase 2 gate** — Tous les pipelines a leur target (Std 85%, Graph 70%, Quant 85%, Orch 70%)
-5. **Phase 3 preparation** — Scale to 10K questions with x5-x10 infra
-6. **Complete data-ingestion** — musique + finqa downloads, start actual ingestion pipeline.
+### PRIORITY #1 — Project Chatbot on ALL websites (Session 59b)
 
-### Phase 2 completion targets
-- Graph : DONE (500/500)
-- Quantitative : DONE (500/500)
-- Standard : 421 questions remaining (need HF Space fix first)
-- Orchestrator : 943 questions remaining (need workflow fix first)
+**Concept** : Chatbot client-facing sur chaque site, connecte a mon-ipad (source de verite unique). Repond a TOUTE question sur Nomos AI : projet, capacites, repos, deployments, use cases.
 
-### Phase 2 → Phase 3
-- Phase 2 completion : ~2-3 sessions if HF Space fixed
-- Phase 3 : ~10,000 questions → objectifs encore relaxes
-- Phase 4 : ~100K questions (infrastructure payante requise)
-- Phase 5 : 1M+ questions (production)
+**Architecture** :
+- Knowledge source : repo mon-ipad (directives/, technicals/, docs/)
+- n8n workflow : 1 workflow dedie (~8 noeuds) — webhook → RAG over mon-ipad → LLM → response
+- Frontend : Copier pattern TermiusModal (deja fonctionnel dans rag-pme-connectors) sur chaque site
+- 3 categories utilisateurs : ETI (entreprises), PME (petites), Individus
 
-### Strategie multi-model
-- **Opus 4.6** : Cerveau — analyse, decisions, pilotage (modele principal)
-- **Sonnet 4.5** : Bras — recherches web, batch commands (delegue quand pertinent)
-- **Haiku 4.5** : Sprint — exploration codebase rapide (delegue pour recherches simples)
-- Opus decide QUAND deleguer. Jamais l'inverse.
+**Dataset test 1000 questions** :
+| Categorie | Facile | Moyen | Complexe | Total |
+|-----------|--------|-------|----------|-------|
+| ETI | 100 | 100 | 130 | 330 |
+| PME | 100 | 100 | 130 | 330 |
+| Individus | 130 | 100 | 110 | 340 |
+| **Total** | **330** | **300** | **370** | **1000** |
 
-### Principes de priorisation (Rules 36-37)
-- **Rule 36 — Cross-pipeline bottleneck** : Quel fix debloque le PLUS de pipelines ? Toujours prioriser les fixes a impact transversal.
-- **Rule 37 — Low-hanging fruit** : A impact egal, commencer par le quick-win. Ne jamais s'enliser dans un fix complexe quand des quick-wins sont disponibles.
+### PRIORITY #2 — Browser Credential Creator (BLOQUEUR depuis 2 jours)
+
+**Probleme** : Les credentials n8n (OAuth, API keys) ne peuvent etre creees que via le navigateur n8n. Claude Code sur Termius n'a pas d'acces navigateur. Cela BLOQUE la configuration de tous les connecteurs PME et l'activation de certains workflows.
+
+**Solution requise** : Installer un outil de browser automation accessible depuis Termius (OpenClaw, Playwright, Puppeteer headless, ou n8n API credential endpoints) pour creer des credentials via ligne de commande. Alternatives :
+1. **n8n REST API** : `POST /api/v1/credentials` — creer credentials via API directement
+2. **Playwright headless** : `npx playwright` sur la VM pour piloter le navigateur n8n
+3. **SSH tunnel + navigateur local** : `ssh -L 5678:localhost:5678` et ouvrir depuis iPad
+4. Tous les credentials bloquantes : Telegram Bot, WhatsApp Cloud API, Google Calendar/Gmail/Drive OAuth2
+
+### PRIORITY #3 — Scaling Architecture (1000 q/min target)
+
+**Infrastructure disponible** : 2 HF Spaces (16GB each) + 5 Codespaces (8GB each) + 7 repos GH Actions + VM pilotage
+
+**Partition des pipelines** :
+```
+HF SPACE #1 (16GB) : Standard (3 workers) + Graph (2 workers) + Project Chatbot (1 worker)
+HF SPACE #2 (16GB) : Quantitative (3 workers) + Orchestrator (2 workers) + PME Gateway (1 worker)
+CODESPACE rag-tests (8GB)          : Eval runner (envoie questions)
+CODESPACE rag-data-ingestion (8GB) : n8n + 3 workers (Standard duplicate)
+CODESPACE rag-website (8GB)        : n8n + 3 workers (Graph + Quant duplicate)
+CODESPACE rag-pme-connectors (8GB) : n8n + 2 workers (Orchestrator + PME duplicate)
+CODESPACE rag-dashboard (8GB)      : n8n + 3 workers (Standard + Chatbot duplicate)
+GH ACTIONS (7 repos)               : 35 parallel eval streams (7 repos × 5 jobs)
+```
+Total : **31 workers** across 7 compute nodes
+
+**Bottleneck reel** : OpenRouter free tier (6 keys ≈ 120 req/min). Pour 1000q/min : besoin de credits payes (~$50/mois) OU 40+ cles free.
+
+### Other priorities
+1. **FIX 5 PIPELINES** — Accuracy > 0% on all
+2. **2eme HF Space** — Configurer + deployer
+3. **Complete data-ingestion** — Fix enrichment.json (DONE), build 500-filetype scripts
+
+### Audit honnete des repos (Session 59b)
+
+**rag-pme-connectors** : SHOWCASE SITE ONLY — 15 connecteurs = landing page (zero code integration, zero OAuth, zero SDK). 1 seul chatbot fonctionnel (proxy Orchestrator). A CONSTRUIRE ou RECLASSIFIER.
+
+**rag-data-ingestion** : 40% REEL / 60% FICTION — ingestion.json = vrai code (30 noeuds) mais jamais teste. enrichment.json = casse (URLs placeholder — FIXED Session 59b). "500 file types" = inexistant (11 types reels). 4 scripts download FONCTIONNELS. Docker FONCTIONNEL.
 
 ---
 

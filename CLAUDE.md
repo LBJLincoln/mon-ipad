@@ -78,7 +78,7 @@ cat logs/session-intelligence-report.json | python3 -c "import sys,json; [print(
 
 ---
 
-## 4. 26 CORE RULES
+## 4. 27 CORE RULES
 
 1. **Read before debug** — `fixes-library.md` avant tout debug (symptôme connu ?)
 2. **Read before webhook test** — `knowledge-base.md` Section 0 AVANT tout test webhook
@@ -106,6 +106,7 @@ cat logs/session-intelligence-report.json | python3 -c "import sys,json; [print(
 24. **Session Intelligence FIRST** — TOUJOURS exécuter `python3 scripts/session-intelligence.py` + `python3 scripts/node-tracker.py` en début de session. Lire les recommandations AVANT tout travail. Ne JAMAIS ignorer un "recurring_issue" dans le rapport.
 25. **Snapshot after EVERY fix** — Après chaque pipeline fix validé (5/5), sauver le workflow fonctionnel dans `snapshot/working-session{N}/`. Permet rollback en <1 min au lieu de rebuild 10+ min.
 26. **Hot-patch via REST API** — Modifier les workflows via PUT/PATCH /rest/workflows/{id} au lieu de rebuild HF Space. Rebuild = DERNIER recours uniquement si hot-patch impossible.
+27. **Browser credential creator** — Pour créer des credentials n8n (OAuth, API keys) depuis Termius, utiliser `POST /api/v1/credentials` sur l'API REST n8n OU Playwright headless. JAMAIS attendre un accès navigateur manuel. C'est un BLOQUEUR CRITIQUE pour les connecteurs PME et les workflows nécessitant des credentials externes.
 
 ### Token budget management
 - Réserver 40K tokens pour le nettoyage de fin de session (commits, docs, handoff)
@@ -432,4 +433,8 @@ rag-storage        → github.com/LBJLincoln/rag-storage.git
 **Data** : rag-storage repo created for large datasets/snapshots/logs
 **Critical blocker** : HF Space entrypoint.sh activation broken — ALL webhooks 404
 
-**Prochain objectif** : Fix HF Space entrypoint.sh → relaunch Standard + Orchestrator Phase 2 → complete 1000q per pipeline → Phase Gate 2
+**Prochain objectif** :
+1. Build project chatbot (n8n workflow + TermiusModal on all sites) + 1000q test dataset (ETI/PME/Individus)
+2. Setup browser credential creator (n8n REST API POST /api/v1/credentials ou Playwright headless)
+3. Deploy scaling architecture: 2 HF Spaces + 5 Codespaces = 31 workers → target 1000q/min
+4. Fix pipelines + relaunch Phase 2
