@@ -78,11 +78,36 @@
 
 8. **All repos committed + pushed + CLAUDE.md synced**
 
-### Next Steps
-1. **rag-pme-connectors**: Build REAL connector integrations (OAuth flows, API routes, SDK imports) or reclassify as showcase-only
-2. **rag-data-ingestion**: Fix enrichment.json placeholder URLs, build 500-filetype scripts, add workflow import to setup.sh, add tests
-3. **HF Space**: Test webhooks (healthz was 200 but webhooks still timing out)
-4. **Phase 2**: Unblock Standard + Orchestrator pipelines
+### PRIORITY #1 NEXT SESSION — Project Chatbot (all sites)
+
+**Concept** : Un chatbot client-facing sur chaque site web, connecté au repo mon-ipad (source de vérité unique). Le chatbot peut répondre à toute question sur le projet Nomos AI, ses capacités, les repos, les déploiements.
+
+**Architecture** :
+- **Knowledge source** : repo mon-ipad (directives/, technicals/, docs/, CLAUDE.md)
+- **n8n workflow** : 1 workflow dédié (~8 noeuds) — webhook → RAG over mon-ipad content → LLM → response
+- **Frontend** : Copier le pattern TermiusModal (déjà fonctionnel dans rag-pme-connectors) sur chaque site
+- **Déploiement** : 1 webhook, répliqué sur ETI site, PME Connectors, PME Use Cases, Dashboard
+
+**Dataset de test : 1000 questions** (à créer) :
+- Range : des plus basiques ("C'est quoi Nomos AI?") aux plus complexes ("Quelle est l'architecture de réplication cross-index entre Pinecone et Neo4j pour le pipeline Graph?")
+- **3 catégories d'utilisateurs** :
+  - **ETI** (grandes entreprises) — questions stratégiques, ROI, intégration SI, conformité, scale
+  - **PME** (petites/moyennes) — questions pratiques, connecteurs, automatisation, coût, simplicité
+  - **Individus** — questions basiques, démo, curiosité, cas d'usage personnel
+- Couvre : tous les 7 repos, finalité du projet, déploiements possibles, capacités par secteur (BTP, Finance, Juridique, Industrie)
+
+**Structure 1000q** :
+| Catégorie | Facile | Moyen | Complexe | Total |
+|-----------|--------|-------|----------|-------|
+| ETI | 100 | 100 | 130 | 330 |
+| PME | 100 | 100 | 130 | 330 |
+| Individus | 130 | 100 | 110 | 340 |
+| **Total** | **330** | **300** | **370** | **1000** |
+
+### Other Next Steps
+1. **rag-data-ingestion**: enrichment.json placeholder nodes disabled (DONE), build 500-filetype scripts, add tests
+2. **HF Space**: Test webhooks (healthz was 200 but webhooks still timing out)
+3. **Phase 2**: Unblock Standard + Orchestrator pipelines
 
 ### Dataset Files (unchanged)
 | File | Pipelines | Questions |
