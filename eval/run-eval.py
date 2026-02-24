@@ -21,28 +21,63 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATASETS_DIR = os.path.join(REPO_ROOT, "datasets")
 TESTED_IDS_FILE = os.path.join(REPO_ROOT, "docs", "tested_ids.json")
 
-# RAG + PME Endpoints
+# RAG + PME Endpoints — Multi-endpoint support
+# Per-pipeline hosts: N8N_HOST_STANDARD, N8N_HOST_GRAPH, etc. override N8N_HOST
 N8N_HOST = os.environ.get("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space")
 
 # Guard: block accidental use of VM n8n for evals
 def _check_n8n_host():
     import re
-    if re.search(r'localhost|127\.0\.0\.1|34\.136\.180\.66', N8N_HOST):
-        if "--allow-local" not in sys.argv:
-            print(f"FATAL: N8N_HOST points to local/VM ({N8N_HOST}).")
-            print("Evals MUST run on HF Space. Set N8N_HOST or pass --allow-local.")
-            sys.exit(1)
+    hosts_to_check = [N8N_HOST]
+    for key in os.environ:
+        if key.startswith("N8N_HOST_"):
+            hosts_to_check.append(os.environ[key])
+    for host in hosts_to_check:
+        if re.search(r'localhost|127\.0\.0\.1|34\.136\.180\.66', host):
+            if "--allow-local" not in sys.argv:
+                print(f"FATAL: N8N_HOST points to local/VM ({host}).")
+                print("Evals MUST run on HF Space. Set N8N_HOST or pass --allow-local.")
+                sys.exit(1)
 _check_n8n_host()
-RAG_ENDPOINTS = {
-    # Core RAG pipelines
-    "standard": f"{N8N_HOST}/webhook/rag-multi-index-v3",
-    "graph": f"{N8N_HOST}/webhook/ff622742-6d71-4e91-af71-b5c666088717",
-    "quantitative": f"{N8N_HOST}/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
-    "orchestrator": f"{N8N_HOST}/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
-    # PME workflows
-    "pme-gateway": f"{N8N_HOST}/webhook/pme-assistant-gateway",
-    "pme-action": f"{N8N_HOST}/webhook/pme-action-executor",
-    "pme-whatsapp": f"{N8N_HOST}/webhook/whatsapp-incoming",
+
+def _host_for(pipeline):
+    """Get n8n host for a specific pipeline. Supports per-pipeline routing."""
+    return os.environ.get(f"N8N_HOST_{pipeline.upper().replace('-','_')}", N8N_HOST)
+
+# Webhook paths (host-independent)
+WEBHOOK_PATHS = {
+    "standard": "/webhook/rag-multi-index-v3",
+    "graph": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+    "quantitative": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+    "orchestrator": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+    "pme-gateway": "/webhook/pme-assistant-gateway",
+    "pme-action": "/webhook/pme-action-executor",
+    "pme-whatsapp": "/webhook/whatsapp-incoming",
+}
+
+# Build endpoints with per-pipeline hosts
+RAG_ENDPOINTS = {k: f"{_host_for(k)}{v}" for k, v in WEBHOOK_PATHS.items()}
+
+# Per-pipeline optimal batch sizes (from Session 27 concurrency tests)
+PIPELINE_BATCH_SIZES = {
+    "standard": 10,
+    "graph": 5,
+    "quantitative": 3,
+    "orchestrator": 2,
+    "pme-gateway": 1,
+    "pme-action": 1,
+    "pme-whatsapp": 1,
+}
+
+# Per-pipeline optimal timeouts
+PIPELINE_TIMEOUTS = {
+    "standard": 90,
+    "graph": 90,
+    "quantitative": 120,
+    "orchestrator": 180,
+    "pme-gateway": 60,
+    "pme-action": 60,
+    "pme-whatsapp": 60,
 }
 
 # --- Functions ---

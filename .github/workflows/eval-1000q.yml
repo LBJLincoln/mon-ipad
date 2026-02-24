@@ -1,7 +1,8 @@
-# 1000q Parallel Evaluation — All 4 RAG Pipelines
-# Matrix strategy: 4 parallel jobs (1 per pipeline)
-# Each tests 1000 questions against HF Space n8n
-# Auto-stop on 10 consecutive failures
+# 1000q Parallel Evaluation — All 4+ RAG Pipelines
+# Matrix strategy: 4+ parallel jobs (1 per pipeline)
+# Each pipeline routed to its optimal HF Space endpoint
+# Per-pipeline batch sizes, auto-stop on consecutive failures
+# Multi-endpoint: N8N_HOST_STANDARD, N8N_HOST_GRAPH, etc.
 name: "Eval 1000q Parallel"
 
 on:
@@ -12,12 +13,27 @@ on:
         default: "1000"
         type: string
       batch_size:
-        description: "Batch size per pipeline"
-        default: "1"
+        description: "Batch size (0=auto per-pipeline optimal)"
+        default: "0"
+        type: string
+      pipelines:
+        description: "Pipelines to run (comma-separated or 'all')"
+        default: "standard,graph,quantitative,orchestrator"
+        type: string
+      early_stop:
+        description: "Stop after N consecutive failures"
+        default: "15"
         type: string
 
 env:
-  N8N_HOST: https://lbjlincoln-nomos-rag-engine.hf.space
+  # Default endpoint (HF Space #1)
+  N8N_HOST: ${{ secrets.N8N_HOST || 'https://lbjlincoln-nomos-rag-engine.hf.space' }}
+  # Per-pipeline endpoints — set these to route to HF Space #2 if available
+  N8N_HOST_STANDARD: ${{ secrets.N8N_HOST_STANDARD || secrets.N8N_HOST || 'https://lbjlincoln-nomos-rag-engine.hf.space' }}
+  N8N_HOST_GRAPH: ${{ secrets.N8N_HOST_GRAPH || secrets.N8N_HOST || 'https://lbjlincoln-nomos-rag-engine.hf.space' }}
+  N8N_HOST_QUANTITATIVE: ${{ secrets.N8N_HOST_QUANTITATIVE || secrets.N8N_HOST || 'https://lbjlincoln-nomos-rag-engine.hf.space' }}
+  N8N_HOST_ORCHESTRATOR: ${{ secrets.N8N_HOST_ORCHESTRATOR || secrets.N8N_HOST || 'https://lbjlincoln-nomos-rag-engine.hf.space' }}
+  # API keys — per-pipeline rotation
   OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
   OPENROUTER_KEY_STANDARD: ${{ secrets.OPENROUTER_KEY_STANDARD }}
   OPENROUTER_KEY_GRAPH: ${{ secrets.OPENROUTER_KEY_GRAPH }}
@@ -37,7 +53,7 @@ jobs:
       matrix:
         pipeline: [standard, graph, quantitative, orchestrator]
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 180
     name: "Eval ${{ matrix.pipeline }}"
 
     steps:
@@ -56,14 +72,14 @@ jobs:
             --dataset phase-2 \
             --types ${{ matrix.pipeline }} \
             --max ${{ inputs.max_questions || '1000' }} \
-            --batch-size ${{ inputs.batch_size || '10' }} \
+            --batch-size ${{ inputs.batch_size || '0' }} \
             --reset \
             --force \
-            --early-stop 15 \
+            --early-stop ${{ inputs.early_stop || '15' }} \
             --all-parallel \
             --label "gha-${{ matrix.pipeline }}-$(date +%Y%m%d)" \
             2>&1 | tee /tmp/eval-${{ matrix.pipeline }}.log
-        timeout-minutes: 300
+        timeout-minutes: 150
 
       - name: Upload results
         if: always()

@@ -66,7 +66,7 @@ bash scripts/check-staleness.sh    # Vérifier dates obsolètes
 
 ---
 
-## 4. 20 CORE RULES
+## 4. 23 CORE RULES
 
 1. **Read before debug** — `fixes-library.md` avant tout debug (symptôme connu ?)
 2. **Read before webhook test** — `knowledge-base.md` Section 0 AVANT tout test webhook
@@ -88,6 +88,15 @@ bash scripts/check-staleness.sh    # Vérifier dates obsolètes
 18. **Low-hanging fruit first** — À impact égal, quick-win (5min) AVANT fix complexe (2h). Réévaluer après chaque quick-win
 19. **Background testing** — Tests qui passent → nohup + auto-commit. Agent se concentre sur résolution bottlenecks
 20. **Auto-stop on 3 consecutive failures** — Rapport structuré à Opus pour décision. Détails : `team-agentic-process.md`
+21. **User Scale Override** — Quand l'utilisateur demande infra à max scale 2+ fois dans une session, TRAITER COMME PRIORITÉ BLOQUANTE. Déployer l'architecture d'abord, debug pipelines ensuite. Ne PAS reporter à "Phase N+1". L'utilisateur préfère "80% à l'échelle" plutôt que "100% à petite échelle"
+22. **Message Acknowledgment** — Après 2+ messages utilisateur en séquence, produire une liste numérotée AVANT de commencer le travail. Format: "Reçu N messages. Actions: 1. [action]..."
+23. **Workflow Definition-of-Done** — Un workflow n'est PAS terminé tant que: importé → activé → testé (5q) → documenté → utilisateur notifié avec URL. Créer un JSON = Étape 1 sur 6. Si une étape échoue, statut = BLOQUÉ (pas TERMINÉ)
+
+### Token budget management
+- Réserver 40K tokens pour le nettoyage de fin de session (commits, docs, handoff)
+- À <30K restants: sauver état, arrêter agents, notifier utilisateur
+- Auto-sauver session-state.md toutes les 30 minutes, pas seulement aux milestones
+- Scripts: `bash scripts/session-startup-hook.sh` et `bash scripts/check-protocol-compliance.sh`
 
 ---
 
@@ -105,15 +114,35 @@ N8N_HOST   : https://lbjlincoln-nomos-rag-engine.hf.space (HF Space)
 
 **n8n REMOVED from VM (Session 42)** : Docker containers stopped + removed. All n8n → HF Space (16GB) ou Codespaces (8GB). VM RAM ~400MB+ disponible maintenant.
 
-### HF Space — n8n distant (16 GB RAM)
-| Composant | État | Note |
-|-----------|------|------|
-| n8n 2.8.3 | **ALL WEBHOOKS 404** | entrypoint.sh activation broken after rebuild (Session 39) |
-| Credentials | 12/12 importées | postgres x4, redis, neo4j, pinecone x2, openrouter x4 |
-| Workflows | 9+3 PME importés | **Rebuild wiped activations** — needs retry + verify |
-| Keep-alive | Cron VM */30 min | Empêche HF sleep |
+### HF Spaces — n8n distributed (2 instances, 16 GB each)
 
-**CRITICAL BLOCKER** : HF Space rebuild wiped n8n DB. NO pipelines can run until entrypoint.sh fixed. #1 cross-pipeline bottleneck (fixes 3+ pipelines).
+**Architecture multi-endpoint** (Session 57) : Pipelines répartis sur 2 HF Spaces pour doubler le throughput.
+
+| Space | Account | Pipelines | URL | Status |
+|-------|---------|-----------|-----|--------|
+| **Primary (#1)** | LBJLincoln | Standard, Graph | lbjlincoln-nomos-rag-engine.hf.space | v5.5 deploying |
+| **Secondary (#2)** | À vérifier | Quantitative, Orchestrator | À configurer | PENDING — user must provide valid HF_TOKEN_2 |
+
+**Env vars multi-endpoint** :
+```bash
+N8N_HOST=https://lbjlincoln-nomos-rag-engine.hf.space              # Default (Space #1)
+N8N_HOST_STANDARD=https://lbjlincoln-nomos-rag-engine.hf.space      # Space #1
+N8N_HOST_GRAPH=https://lbjlincoln-nomos-rag-engine.hf.space         # Space #1
+N8N_HOST_QUANTITATIVE=<SPACE_2_URL>                                  # Space #2 (when ready)
+N8N_HOST_ORCHESTRATOR=<SPACE_2_URL>                                  # Space #2 (when ready)
+```
+
+**Per-pipeline API keys** (6 keys, 3 accounts — Session 50+57) :
+- Core pipelines: `OPENROUTER_KEY_STANDARD`, `OPENROUTER_KEY_GRAPH`, `OPENROUTER_KEY_QUANTITATIVE`, `OPENROUTER_KEY_ORCHESTRATOR`
+- Generic `OPENROUTER_API_KEY` **removed from core workflow JSONs** (Session 57). Only non-core (benchmark, chatbot) use fallback.
+
+**Per-pipeline batch sizes** (auto mode, from Session 27 benchmarks) :
+| Pipeline | Batch size | Concurrency max | Timeout |
+|----------|-----------|----------------|---------|
+| Standard | 10 | 5 concurrent | 90s |
+| Graph | 5 | 3 concurrent | 90s |
+| Quantitative | 3 | 1 concurrent | 120s |
+| Orchestrator | 2 | 1 concurrent | 180s |
 
 ### Codespaces GitHub (éphémères — 60h/mois)
 ```

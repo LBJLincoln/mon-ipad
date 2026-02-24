@@ -68,6 +68,9 @@ load_questions = run_eval_mod.load_questions
 load_tested_ids_by_type = run_eval_mod.load_tested_ids_by_type
 save_tested_ids = run_eval_mod.save_tested_ids
 RAG_ENDPOINTS = run_eval_mod.RAG_ENDPOINTS
+PIPELINE_BATCH_SIZES = getattr(run_eval_mod, 'PIPELINE_BATCH_SIZES', {})
+PIPELINE_TIMEOUTS = getattr(run_eval_mod, 'PIPELINE_TIMEOUTS', {})
+WEBHOOK_PATHS = getattr(run_eval_mod, 'WEBHOOK_PATHS', {})
 
 # Pipelines that should use local LLM reasoning instead of HF Space
 _local_pipelines = set()
@@ -220,7 +223,11 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
         "orchestrator": 90,
     }
     EARLY_STOP_THRESHOLD = getattr(run_pipeline, '_early_stop', 4)
-    BATCH_SIZE = getattr(run_pipeline, '_batch_size', 1)
+    _bs_auto = getattr(run_pipeline, '_batch_size_auto', False)
+    if _bs_auto:
+        BATCH_SIZE = PIPELINE_BATCH_SIZES.get(rag_type, 1)
+    else:
+        BATCH_SIZE = getattr(run_pipeline, '_batch_size', 1) or PIPELINE_BATCH_SIZES.get(rag_type, 1)
 
     endpoint = RAG_ENDPOINTS[rag_type]
     already_tested = tested_ids_by_type.get(rag_type, set())
@@ -440,10 +447,11 @@ def main():
     parser.add_argument("--local-pipelines", type=str, default="",
                         help="Comma-separated pipelines to run via local LLM (OpenRouter direct from VM). "
                              "Bypasses HF Space n8n for rate-limited pipelines. E.g.: quantitative,graph")
-    parser.add_argument("--batch-size", type=int, default=1,
-                        help="Questions processed in parallel WITHIN each pipeline (E5 improvement). "
-                             "Default: 1 (sequential). Use 3-5 for local LLM pipelines. "
-                             "Caution: HF Space n8n has 1 worker, so batch>1 queues there.")
+    parser.add_argument("--batch-size", type=int, default=0,
+                        help="Questions processed in parallel WITHIN each pipeline. "
+                             "Default: 0 = auto (uses per-pipeline optimal from PIPELINE_BATCH_SIZES: "
+                             "standard=10, graph=5, quantitative=3, orchestrator=2). "
+                             "Explicit value overrides auto for ALL pipelines.")
     parser.add_argument("--all-parallel", action="store_true",
                         help="Run ALL pipelines concurrently (including orchestrator). "
                              "Removes the orchestrator-sequential constraint. "
@@ -454,7 +462,9 @@ def main():
     if args.delay is not None:
         run_pipeline._delay = args.delay
     run_pipeline._early_stop = args.early_stop if args.early_stop > 0 else 999
-    run_pipeline._batch_size = args.batch_size
+    # batch-size: 0 = auto (per-pipeline optimal), >0 = explicit override
+    run_pipeline._batch_size = args.batch_size  # 0 means "use per-pipeline default"
+    run_pipeline._batch_size_auto = (args.batch_size == 0)
 
     # LOCAL pipelines DISABLED (Session 57) — VM is pilotage ONLY
     # All eval must go through HF Space n8n pipelines
@@ -509,7 +519,14 @@ def main():
     print(f"  Dataset: {dataset_label}")
     print(f"  Types: {', '.join(requested_types)}")
     print(f"  Max per pipeline: {args.max or 'all'}")
-    print(f"  Batch size: {args.batch_size} (questions in parallel per pipeline)")
+    if args.batch_size == 0:
+        bs_info = ", ".join(f"{p}={PIPELINE_BATCH_SIZES.get(p, 1)}" for p in requested_types)
+        print(f"  Batch size: auto ({bs_info})")
+    else:
+        print(f"  Batch size: {args.batch_size} (override for all pipelines)")
+    # Show per-pipeline endpoints
+    for p in requested_types:
+        print(f"  [{p.upper()}] → {RAG_ENDPOINTS.get(p, 'UNKNOWN')}")
     print(f"  Reset dedup: {args.reset}")
     print("=" * 70)
 
