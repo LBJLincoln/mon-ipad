@@ -1,14 +1,14 @@
 {
   "meta": {
-    "generated_at": "2026-02-24T14:31:09+01:00",
+    "generated_at": "2026-02-24T15:11:31+01:00",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
     "total_unique_questions": 2308,
-    "total_test_runs": 6862,
-    "total_iterations": 582,
+    "total_test_runs": 6919,
+    "total_iterations": 584,
     "status": "running",
-    "current_session": "2026-02-24T12-58-39"
+    "current_session": "2026-02-24T15-01-19"
   },
   "reference_cloud_executions": {
     "note": "Executions reussies sur n8n Cloud (avant migration Docker). Servent de reference uniquement.",
@@ -104602,7 +104602,7 @@
       "id": "iter-2026-02-24T12-58-39",
       "number": 582,
       "timestamp_start": "2026-02-24T12:58:43+01:00",
-      "timestamp_end": "2026-02-24T14:31:09+01:00",
+      "timestamp_end": "2026-02-24T14:38:28+01:00",
       "label": "Phase2-max-batch10-20260224-1158",
       "description": "Dataset: phase-2, Parallel: standard,graph,quantitative,orchestrator, Max: 1000, Reset: True",
       "changes_applied": [],
@@ -104617,36 +104617,36 @@
           "avg_f1": 0
         },
         "quantitative": {
-          "tested": 43,
-          "correct": 13,
+          "tested": 47,
+          "correct": 14,
           "errors": 0,
-          "accuracy_pct": 30.2,
-          "avg_latency_ms": 11954,
+          "accuracy_pct": 29.8,
+          "avg_latency_ms": 11861,
           "p95_latency_ms": 24249,
-          "avg_f1": 0.8231
+          "avg_f1": 0.8286
         },
         "graph": {
-          "tested": 42,
-          "correct": 18,
+          "tested": 45,
+          "correct": 19,
           "errors": 0,
-          "accuracy_pct": 42.9,
-          "avg_latency_ms": 26221,
+          "accuracy_pct": 42.2,
+          "avg_latency_ms": 26105,
           "p95_latency_ms": 46516,
-          "avg_f1": 0.7186
+          "avg_f1": 0.6997
         },
         "standard": {
-          "tested": 41,
-          "correct": 25,
+          "tested": 44,
+          "correct": 27,
           "errors": 0,
-          "accuracy_pct": 61.0,
-          "avg_latency_ms": 24393,
+          "accuracy_pct": 61.4,
+          "avg_latency_ms": 24276,
           "p95_latency_ms": 51246,
-          "avg_f1": 0.9367
+          "avg_f1": 0.9414
         }
       },
-      "total_tested": 146,
-      "total_correct": 56,
-      "overall_accuracy_pct": 38.4,
+      "total_tested": 156,
+      "total_correct": 60,
+      "overall_accuracy_pct": 38.5,
       "questions": [
         {
           "id": "orch-0",
@@ -106545,6 +106545,815 @@
           "error": null,
           "error_type": null,
           "timestamp": "2026-02-24T14:31:09+01:00"
+        },
+        {
+          "id": "quantitative-finqa-43",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8518,
+          "answer": "NO_ANSWER",
+          "expected": "18525000",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:31:30+01:00"
+        },
+        {
+          "id": "p2-std-41",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 10763,
+          "answer": "1921",
+          "expected": "1929",
+          "match_type": "FUZZY_RECALL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:32:49+01:00"
+        },
+        {
+          "id": "graph-musique-42",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0833,
+          "latency_ms": 13738,
+          "answer": "Friedrich Hayek was hired by Ludwig von Mises, the author of \"Human Action,\" to work at the Austrian Institute for Business Cycle Research.",
+          "expected": "the Austrian government",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:33:09+01:00"
+        },
+        {
+          "id": "quantitative-finqa-44",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 16993,
+          "answer": "$10 million",
+          "expected": "10",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:33:38+01:00"
+        },
+        {
+          "id": "p2-std-42",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 11980,
+          "answer": "Chuck Yeager",
+          "expected": "Chuck Yeager",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:35:18+01:00"
+        },
+        {
+          "id": "graph-musique-43",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 17491,
+          "answer": "The author of Bureaucracy is Ludwig von Mises. The context states that Hayek was hired by Ludwig von Mises on the recommendation of Wieser as a specialist for the Austrian government working on the legal and economic details of the Treaty of Saint Germain. Therefore, Hayek worked for the Austrian government upon being hired by Ludwig von Mises.",
+          "expected": "the Austrian government",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:35:37+01:00"
+        },
+        {
+          "id": "quantitative-finqa-45",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 7723,
+          "answer": "NO_ANSWER",
+          "expected": "1.44",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:35:49+01:00"
+        },
+        {
+          "id": "p2-std-43",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 45263,
+          "answer": "Unable to generate answer",
+          "expected": "Nixon",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:37:39+01:00"
+        },
+        {
+          "id": "graph-musique-44",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 42242,
+          "answer": "Information not available in the knowledge graph.",
+          "expected": "November 5",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:38:14+01:00"
+        },
+        {
+          "id": "quantitative-finqa-46",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 10228,
+          "answer": "NO_ANSWER",
+          "expected": "-2.6%",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:38:28+01:00"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-24T14-42-38",
+      "number": 583,
+      "timestamp_start": "2026-02-24T14:42:42+01:00",
+      "timestamp_end": "2026-02-24T15:00:16+01:00",
+      "label": "Phase2-batch20-stdgraph-20260224-1342",
+      "description": "Dataset: phase-2, Parallel: standard,graph, Max: 1000, Reset: False",
+      "changes_applied": [],
+      "results_summary": {
+        "standard": {
+          "tested": 16,
+          "correct": 13,
+          "errors": 0,
+          "accuracy_pct": 81.2,
+          "avg_latency_ms": 26435,
+          "p95_latency_ms": 52752,
+          "avg_f1": 0.9385
+        },
+        "graph": {
+          "tested": 16,
+          "correct": 11,
+          "errors": 0,
+          "accuracy_pct": 68.8,
+          "avg_latency_ms": 31137,
+          "p95_latency_ms": 57241,
+          "avg_f1": 0.8492
+        }
+      },
+      "total_tested": 32,
+      "total_correct": 24,
+      "overall_accuracy_pct": 75.0,
+      "questions": [
+        {
+          "id": "std-0",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 28998,
+          "answer": "The Crow",
+          "expected": "The Crow",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:44:58+01:00"
+        },
+        {
+          "id": "graph-musique-0",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 32019,
+          "answer": "The character named after a glowing species found in some beaches in Portugal is Plankton. In the SpongeBob SquarePants series, Plankton is voiced by Mr. Lawrence. This information is confirmed in the provided context, which lists Mr. Lawrence as the voice of Plankton in the show.",
+          "expected": "Mr. Lawrence",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:45:12+01:00"
+        },
+        {
+          "id": "std-1",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 5246,
+          "answer": "The Staple Singers",
+          "expected": "The Staple Singers",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:45:59+01:00"
+        },
+        {
+          "id": "graph-musique-1",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 42734,
+          "answer": "Information not available in the knowledge graph.",
+          "expected": "Senica District",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:46:17+01:00"
+        },
+        {
+          "id": "std-2",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 29743,
+          "answer": "MC Hammer",
+          "expected": "MC Hammer",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:47:49+01:00"
+        },
+        {
+          "id": "graph-musique-2",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 38487,
+          "answer": "Information not available in the knowledge graph.",
+          "expected": "1572",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:48:06+01:00"
+        },
+        {
+          "id": "std-3",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 8494,
+          "answer": "Triumph and Disaster",
+          "expected": "Triumph and Disaster",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:48:37+01:00"
+        },
+        {
+          "id": "graph-musique-3",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 25507,
+          "answer": "1572",
+          "expected": "1572",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:48:50+01:00"
+        },
+        {
+          "id": "std-4",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 22745,
+          "answer": "The Full Monty",
+          "expected": "The Full Monty",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:49:28+01:00"
+        },
+        {
+          "id": "graph-musique-4",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 24489,
+          "answer": "John Knox wrote \"The First Blast of the Trumpet Against the Monstruous Regiment of Women.\" The context states that John Knox lived from 1505 to 1572. Therefore, he died in 1572.",
+          "expected": "1572",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:49:42+01:00"
+        },
+        {
+          "id": "std-5",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 52752,
+          "answer": "Unable to generate answer",
+          "expected": "Crawford",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:50:39+01:00"
+        },
+        {
+          "id": "graph-musique-5",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 32515,
+          "answer": "Henry II of England fought a short war in 1183 against his son, Henry the Young King. Henry the Young King died in June 1183, but the question refers to someone who went away from the Holy Land. That would be Richard I, who left the Holy Land in October 1192 after the Third Crusade.",
+          "expected": "October",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:50:54+01:00"
+        },
+        {
+          "id": "std-6",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 46999,
+          "answer": "Unable to generate answer",
+          "expected": "James Stewart",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:51:35+01:00"
+        },
+        {
+          "id": "graph-musique-6",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 25754,
+          "answer": "John Knox died in 1572. Margaret Knox was his second wife, and he passed away in that year.",
+          "expected": "1572",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:51:48+01:00"
+        },
+        {
+          "id": "std-7",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 27997,
+          "answer": "Fred Astaire",
+          "expected": "Fred Astaire",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:52:31+01:00"
+        },
+        {
+          "id": "graph-musique-7",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 25751,
+          "answer": "The person Henry fought a short war with in 1183 was Richard. Richard's fleet was hit by a storm in 1191.",
+          "expected": "1191",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:52:43+01:00"
+        },
+        {
+          "id": "std-8",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 27258,
+          "answer": "The Chicken Ranch",
+          "expected": "Chicken Ranch",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:53:21+01:00"
+        },
+        {
+          "id": "graph-musique-8",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 19760,
+          "answer": "John Wayne played U.S. Marshal Rooster Cogburn in True Grit.",
+          "expected": "U.S. Marshal Rooster Cogburn",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:53:33+01:00"
+        },
+        {
+          "id": "std-9",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 5499,
+          "answer": "Peter O'Toole",
+          "expected": "Peter O'Toole",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:54:14+01:00"
+        },
+        {
+          "id": "graph-musique-9",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.1905,
+          "latency_ms": 27488,
+          "answer": "John Wayne was the producer of Big Jim McLain and he played Rooster Cogburn in True Grit.",
+          "expected": "U.S. Marshal Rooster Cogburn",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:54:31+01:00"
+        },
+        {
+          "id": "p2-std-10",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 27512,
+          "answer": "Daughter",
+          "expected": "Daughter",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:55:08+01:00"
+        },
+        {
+          "id": "graph-musique-10",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 55740,
+          "answer": "Information not available in the knowledge graph.",
+          "expected": "U.S. Marshal Rooster Cogburn",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:55:20+01:00"
+        },
+        {
+          "id": "p2-std-11",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 21725,
+          "answer": "Martina Hingis",
+          "expected": "Martina Hingis",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:55:55+01:00"
+        },
+        {
+          "id": "graph-musique-11",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 57241,
+          "answer": "Information not available in the knowledge graph.",
+          "expected": "U.S. Marshal Rooster Cogburn",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:56:10+01:00"
+        },
+        {
+          "id": "p2-std-12",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 26510,
+          "answer": "Belgium",
+          "expected": "Belgium",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:57:24+01:00"
+        },
+        {
+          "id": "graph-musique-12",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 23231,
+          "answer": "Thames Ditton is located on the River Thames.",
+          "expected": "River Thames",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:57:40+01:00"
+        },
+        {
+          "id": "p2-std-13",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.4,
+          "latency_ms": 22230,
+          "answer": "April 30, 1945",
+          "expected": "April 30th",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:58:17+01:00"
+        },
+        {
+          "id": "graph-musique-13",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 18999,
+          "answer": "Thames River",
+          "expected": "River Thames",
+          "match_type": "FUZZY_RECALL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:58:28+01:00"
+        },
+        {
+          "id": "p2-std-14",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 21991,
+          "answer": "Colorado River",
+          "expected": "Colorado",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:59:12+01:00"
+        },
+        {
+          "id": "graph-musique-14",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.8,
+          "latency_ms": 24999,
+          "answer": "Thames",
+          "expected": "River Thames",
+          "match_type": "SUBSET_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T14:59:27+01:00"
+        },
+        {
+          "id": "p2-std-15",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 47266,
+          "answer": "Unable to generate answer",
+          "expected": "Ryder Cup",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:00:02+01:00"
+        },
+        {
+          "id": "graph-musique-15",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 23490,
+          "answer": "George Mills was born in Deptford. Deptford borders the River Thames. The River Thames is a body of water near Deptford.",
+          "expected": "River Thames",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:00:16+01:00"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-24T15-01-19",
+      "number": 584,
+      "timestamp_start": "2026-02-24T15:01:23+01:00",
+      "timestamp_end": "2026-02-24T15:11:31+01:00",
+      "label": "Phase2-batch5-stdgraph-20260224-1401",
+      "description": "Dataset: phase-2, Parallel: standard,graph, Max: 1000, Reset: False",
+      "changes_applied": [],
+      "results_summary": {
+        "standard": {
+          "tested": 8,
+          "correct": 6,
+          "errors": 0,
+          "accuracy_pct": 75.0,
+          "avg_latency_ms": 16715,
+          "p95_latency_ms": 45742,
+          "avg_f1": 1.0
+        },
+        "graph": {
+          "tested": 7,
+          "correct": 4,
+          "errors": 0,
+          "accuracy_pct": 57.1,
+          "avg_latency_ms": 28533,
+          "p95_latency_ms": 81743,
+          "avg_f1": 0.95
+        }
+      },
+      "total_tested": 15,
+      "total_correct": 10,
+      "overall_accuracy_pct": 66.7,
+      "questions": [
+        {
+          "id": "std-0",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 6999,
+          "answer": "The Crow",
+          "expected": "The Crow",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:03:42+01:00"
+        },
+        {
+          "id": "std-1",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 6498,
+          "answer": "The Staple Singers",
+          "expected": "The Staple Singers",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:04:15+01:00"
+        },
+        {
+          "id": "graph-musique-0",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 10481,
+          "answer": "The character named after a glowing species found in some beaches in Portugal is Plankton. Plankton is voiced by Mr. Lawrence.",
+          "expected": "Mr. Lawrence",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:04:28+01:00"
+        },
+        {
+          "id": "std-2",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 8250,
+          "answer": "MC Hammer",
+          "expected": "MC Hammer",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:05:18+01:00"
+        },
+        {
+          "id": "graph-musique-1",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 45268,
+          "answer": "Information not available in the knowledge graph.",
+          "expected": "Senica District",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:05:30+01:00"
+        },
+        {
+          "id": "std-3",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 8250,
+          "answer": "Triumph and Disaster",
+          "expected": "Triumph and Disaster",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:06:18+01:00"
+        },
+        {
+          "id": "graph-musique-2",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 81743,
+          "answer": "Information not available in the knowledge graph.",
+          "expected": "1572",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:06:41+01:00"
+        },
+        {
+          "id": "std-4",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 5503,
+          "answer": "The Full Monty",
+          "expected": "The Full Monty",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:07:39+01:00"
+        },
+        {
+          "id": "graph-musique-3",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 8488,
+          "answer": "1572",
+          "expected": "1572",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:07:50+01:00"
+        },
+        {
+          "id": "graph-musique-4",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 12016,
+          "answer": "John Knox wrote \"The First Blast of the Trumpet Against the Monstruous Regiment of Women.\" The context states that John Knox lived from 1505 to 1572. Therefore, the year of his death was 1572.",
+          "expected": "1572",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:08:46+01:00"
+        },
+        {
+          "id": "std-5",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 45742,
+          "answer": "Unable to generate answer",
+          "expected": "Crawford",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:09:30+01:00"
+        },
+        {
+          "id": "std-6",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 42754,
+          "answer": "Unable to generate answer",
+          "expected": "James Stewart",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:09:53+01:00"
+        },
+        {
+          "id": "graph-musique-5",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 37490,
+          "answer": "Information not available in the knowledge graph.",
+          "expected": "October",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:10:31+01:00"
+        },
+        {
+          "id": "std-7",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 9724,
+          "answer": "Fred Astaire",
+          "expected": "Fred Astaire",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:10:47+01:00"
+        },
+        {
+          "id": "graph-musique-6",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 4251,
+          "answer": "1572",
+          "expected": "1572",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-24T15:11:31+01:00"
         }
       ]
     }
@@ -120955,15 +121764,39 @@
           "error_type": null,
           "answer": "Information not available in the knowledge graph.",
           "timestamp": "2026-02-24T13:01:22+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 32019,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The character named after a glowing species found in some beaches in Portugal is Plankton. In the SpongeBob SquarePants series, Plankton is voiced by Mr. Lawrence. This information is confirmed in the provided context, which lists Mr. Lawrence as the voice of Plankton in the show.",
+          "timestamp": "2026-02-24T14:45:12+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 10481,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The character named after a glowing species found in some beaches in Portugal is Plankton. Plankton is voiced by Mr. Lawrence.",
+          "timestamp": "2026-02-24T15:04:28+01:00"
         }
       ],
-      "total_runs": 15,
-      "pass_count": 3,
-      "pass_rate": 0.2,
-      "current_status": "fail",
-      "last_tested": "2026-02-24T13:01:22+01:00",
+      "total_runs": 17,
+      "pass_count": 5,
+      "pass_rate": 0.294,
+      "current_status": "pass",
+      "last_tested": "2026-02-24T15:04:28+01:00",
       "best_f1": 0.9,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "graph-musique-1": {
       "id": "graph-musique-1",
@@ -121154,13 +121987,37 @@
           "error_type": null,
           "answer": "Information not available in the knowledge graph.",
           "timestamp": "2026-02-24T13:03:27+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 42734,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Information not available in the knowledge graph.",
+          "timestamp": "2026-02-24T14:46:17+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 45268,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Information not available in the knowledge graph.",
+          "timestamp": "2026-02-24T15:05:30+01:00"
         }
       ],
-      "total_runs": 15,
+      "total_runs": 17,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-24T13:03:27+01:00",
+      "last_tested": "2026-02-24T15:05:30+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -121353,13 +122210,37 @@
           "error_type": null,
           "answer": "Information not available in the knowledge graph.",
           "timestamp": "2026-02-24T13:05:22+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 38487,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Information not available in the knowledge graph.",
+          "timestamp": "2026-02-24T14:48:06+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 81743,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Information not available in the knowledge graph.",
+          "timestamp": "2026-02-24T15:06:41+01:00"
         }
       ],
-      "total_runs": 15,
+      "total_runs": 17,
       "pass_count": 1,
-      "pass_rate": 0.067,
+      "pass_rate": 0.059,
       "current_status": "fail",
-      "last_tested": "2026-02-24T13:05:22+01:00",
+      "last_tested": "2026-02-24T15:06:41+01:00",
       "best_f1": 1.0,
       "trend": "regressing"
     },
@@ -121552,13 +122433,37 @@
           "error_type": null,
           "answer": "1572",
           "timestamp": "2026-02-24T13:08:06+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 25507,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1572",
+          "timestamp": "2026-02-24T14:48:50+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 8488,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1572",
+          "timestamp": "2026-02-24T15:07:50+01:00"
         }
       ],
-      "total_runs": 15,
-      "pass_count": 8,
-      "pass_rate": 0.533,
+      "total_runs": 17,
+      "pass_count": 10,
+      "pass_rate": 0.588,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:08:06+01:00",
+      "last_tested": "2026-02-24T15:07:50+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -121739,13 +122644,37 @@
           "error_type": null,
           "answer": "John Knox wrote \"The First Blast of the Trumpet Against the Monstruous Regiment of Women.\" The context states that John Knox lived from 1505 to 1572. Therefore, he died in 1572.",
           "timestamp": "2026-02-24T13:10:50+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 24489,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "John Knox wrote \"The First Blast of the Trumpet Against the Monstruous Regiment of Women.\" The context states that John Knox lived from 1505 to 1572. Therefore, he died in 1572.",
+          "timestamp": "2026-02-24T14:49:42+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 12016,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "John Knox wrote \"The First Blast of the Trumpet Against the Monstruous Regiment of Women.\" The context states that John Knox lived from 1505 to 1572. Therefore, the year of his death was 1572.",
+          "timestamp": "2026-02-24T15:08:46+01:00"
         }
       ],
-      "total_runs": 14,
-      "pass_count": 9,
-      "pass_rate": 0.643,
+      "total_runs": 16,
+      "pass_count": 11,
+      "pass_rate": 0.688,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:10:50+01:00",
+      "last_tested": "2026-02-24T15:08:46+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -121914,15 +122843,39 @@
           "error_type": null,
           "answer": "Henry II of England fought a short war in 1183 against his son, Richard the Lionheart. Richard later went away from the Holy Land in October 1192 after the Third Crusade.",
           "timestamp": "2026-02-24T13:13:14+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 32515,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Henry II of England fought a short war in 1183 against his son, Henry the Young King. Henry the Young King died in June 1183, but the question refers to someone who went away from the Holy Land. That would be Richard I, who left the Holy Land in October 1192 after the Third Crusade.",
+          "timestamp": "2026-02-24T14:50:54+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 37490,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Information not available in the knowledge graph.",
+          "timestamp": "2026-02-24T15:10:31+01:00"
         }
       ],
-      "total_runs": 13,
-      "pass_count": 5,
-      "pass_rate": 0.385,
-      "current_status": "pass",
-      "last_tested": "2026-02-24T13:13:14+01:00",
+      "total_runs": 15,
+      "pass_count": 6,
+      "pass_rate": 0.4,
+      "current_status": "fail",
+      "last_tested": "2026-02-24T15:10:31+01:00",
       "best_f1": 1.0,
-      "trend": "improving"
+      "trend": "stable"
     },
     "graph-musique-6": {
       "id": "graph-musique-6",
@@ -122089,13 +123042,37 @@
           "error_type": null,
           "answer": "1572",
           "timestamp": "2026-02-24T13:15:21+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 25754,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "John Knox died in 1572. Margaret Knox was his second wife, and he passed away in that year.",
+          "timestamp": "2026-02-24T14:51:48+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 4251,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1572",
+          "timestamp": "2026-02-24T15:11:31+01:00"
         }
       ],
-      "total_runs": 13,
-      "pass_count": 5,
-      "pass_rate": 0.385,
+      "total_runs": 15,
+      "pass_count": 7,
+      "pass_rate": 0.467,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:15:21+01:00",
+      "last_tested": "2026-02-24T15:11:31+01:00",
       "best_f1": 1.0,
       "trend": "improving"
     },
@@ -122252,15 +123229,27 @@
           "error_type": null,
           "answer": "Information not available in the knowledge graph.",
           "timestamp": "2026-02-24T13:18:05+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 25751,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The person Henry fought a short war with in 1183 was Richard. Richard's fleet was hit by a storm in 1191.",
+          "timestamp": "2026-02-24T14:52:43+01:00"
         }
       ],
-      "total_runs": 12,
-      "pass_count": 2,
-      "pass_rate": 0.167,
-      "current_status": "fail",
-      "last_tested": "2026-02-24T13:18:05+01:00",
+      "total_runs": 13,
+      "pass_count": 3,
+      "pass_rate": 0.231,
+      "current_status": "pass",
+      "last_tested": "2026-02-24T14:52:43+01:00",
       "best_f1": 1.0,
-      "trend": "stable"
+      "trend": "improving"
     },
     "graph-musique-8": {
       "id": "graph-musique-8",
@@ -122415,13 +123404,25 @@
           "error_type": null,
           "answer": "John Wayne played U.S. Marshal Rooster Cogburn in True Grit.",
           "timestamp": "2026-02-24T13:20:03+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 19760,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "John Wayne played U.S. Marshal Rooster Cogburn in True Grit.",
+          "timestamp": "2026-02-24T14:53:33+01:00"
         }
       ],
-      "total_runs": 12,
-      "pass_count": 8,
-      "pass_rate": 0.667,
+      "total_runs": 13,
+      "pass_count": 9,
+      "pass_rate": 0.692,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:20:03+01:00",
+      "last_tested": "2026-02-24T14:53:33+01:00",
       "best_f1": 0.9,
       "trend": "stable"
     },
@@ -122578,15 +123579,27 @@
           "error_type": null,
           "answer": "John Wayne was the producer of Big Jim McLain and also starred as U.S. Marshal Rooster Cogburn in True Grit.",
           "timestamp": "2026-02-24T13:22:31+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": false,
+          "f1": 0.1905,
+          "latency_ms": 27488,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "John Wayne was the producer of Big Jim McLain and he played Rooster Cogburn in True Grit.",
+          "timestamp": "2026-02-24T14:54:31+01:00"
         }
       ],
-      "total_runs": 12,
+      "total_runs": 13,
       "pass_count": 3,
-      "pass_rate": 0.25,
-      "current_status": "pass",
-      "last_tested": "2026-02-24T13:22:31+01:00",
+      "pass_rate": 0.231,
+      "current_status": "fail",
+      "last_tested": "2026-02-24T14:54:31+01:00",
       "best_f1": 0.9,
-      "trend": "improving"
+      "trend": "stable"
     },
     "graph-musique-10": {
       "id": "graph-musique-10",
@@ -122765,13 +123778,25 @@
           "error_type": null,
           "answer": "Information not available in the knowledge graph.",
           "timestamp": "2026-02-24T13:25:36+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 55740,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Information not available in the knowledge graph.",
+          "timestamp": "2026-02-24T14:55:20+01:00"
         }
       ],
-      "total_runs": 14,
+      "total_runs": 15,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-24T13:25:36+01:00",
+      "last_tested": "2026-02-24T14:55:20+01:00",
       "best_f1": 0.3333,
       "trend": "stable"
     },
@@ -122940,13 +123965,25 @@
           "error_type": null,
           "answer": "Information not available in the knowledge graph.",
           "timestamp": "2026-02-24T13:28:41+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 57241,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Information not available in the knowledge graph.",
+          "timestamp": "2026-02-24T14:56:10+01:00"
         }
       ],
-      "total_runs": 13,
+      "total_runs": 14,
       "pass_count": 2,
-      "pass_rate": 0.154,
+      "pass_rate": 0.143,
       "current_status": "fail",
-      "last_tested": "2026-02-24T13:28:41+01:00",
+      "last_tested": "2026-02-24T14:56:10+01:00",
       "best_f1": 0.9,
       "trend": "regressing"
     },
@@ -123115,13 +124152,25 @@
           "error_type": null,
           "answer": "River Thames",
           "timestamp": "2026-02-24T13:31:42+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 23231,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Thames Ditton is located on the River Thames.",
+          "timestamp": "2026-02-24T14:57:40+01:00"
         }
       ],
-      "total_runs": 13,
-      "pass_count": 6,
-      "pass_rate": 0.462,
+      "total_runs": 14,
+      "pass_count": 7,
+      "pass_rate": 0.5,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:31:42+01:00",
+      "last_tested": "2026-02-24T14:57:40+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -123314,15 +124363,27 @@
           "error_type": null,
           "answer": "Information not available in the knowledge graph.",
           "timestamp": "2026-02-24T13:33:51+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 18999,
+          "match_type": "FUZZY_RECALL",
+          "error": null,
+          "error_type": null,
+          "answer": "Thames River",
+          "timestamp": "2026-02-24T14:58:28+01:00"
         }
       ],
-      "total_runs": 15,
-      "pass_count": 7,
-      "pass_rate": 0.467,
-      "current_status": "fail",
-      "last_tested": "2026-02-24T13:33:51+01:00",
+      "total_runs": 16,
+      "pass_count": 8,
+      "pass_rate": 0.5,
+      "current_status": "pass",
+      "last_tested": "2026-02-24T14:58:28+01:00",
       "best_f1": 1.0,
-      "trend": "stable"
+      "trend": "improving"
     },
     "graph-musique-14": {
       "id": "graph-musique-14",
@@ -123513,15 +124574,27 @@
           "error_type": null,
           "answer": "Information not available in the knowledge graph.",
           "timestamp": "2026-02-24T13:35:58+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 0.8,
+          "latency_ms": 24999,
+          "match_type": "SUBSET_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Thames",
+          "timestamp": "2026-02-24T14:59:27+01:00"
         }
       ],
-      "total_runs": 15,
-      "pass_count": 2,
-      "pass_rate": 0.133,
-      "current_status": "fail",
-      "last_tested": "2026-02-24T13:35:58+01:00",
+      "total_runs": 16,
+      "pass_count": 3,
+      "pass_rate": 0.188,
+      "current_status": "pass",
+      "last_tested": "2026-02-24T14:59:27+01:00",
       "best_f1": 0.8,
-      "trend": "stable"
+      "trend": "improving"
     },
     "graph-musique-15": {
       "id": "graph-musique-15",
@@ -123712,13 +124785,25 @@
           "error_type": null,
           "answer": "River Thames",
           "timestamp": "2026-02-24T13:38:49+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 23490,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "George Mills was born in Deptford. Deptford borders the River Thames. The River Thames is a body of water near Deptford.",
+          "timestamp": "2026-02-24T15:00:16+01:00"
         }
       ],
-      "total_runs": 15,
-      "pass_count": 7,
-      "pass_rate": 0.467,
+      "total_runs": 16,
+      "pass_count": 8,
+      "pass_rate": 0.5,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:38:49+01:00",
+      "last_tested": "2026-02-24T15:00:16+01:00",
       "best_f1": 1.0,
       "trend": "improving"
     },
@@ -127198,13 +128283,37 @@
           "error_type": null,
           "answer": "The Crow",
           "timestamp": "2026-02-24T13:01:53+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 28998,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Crow",
+          "timestamp": "2026-02-24T14:44:58+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 6999,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Crow",
+          "timestamp": "2026-02-24T15:03:43+01:00"
         }
       ],
-      "total_runs": 15,
-      "pass_count": 15,
+      "total_runs": 17,
+      "pass_count": 17,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:01:53+01:00",
+      "last_tested": "2026-02-24T15:03:43+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -127385,13 +128494,37 @@
           "error_type": null,
           "answer": "The Staple Singers",
           "timestamp": "2026-02-24T13:03:53+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 5246,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Staple Singers",
+          "timestamp": "2026-02-24T14:45:59+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 6498,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Staple Singers",
+          "timestamp": "2026-02-24T15:04:15+01:00"
         }
       ],
-      "total_runs": 14,
-      "pass_count": 14,
+      "total_runs": 16,
+      "pass_count": 16,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:03:53+01:00",
+      "last_tested": "2026-02-24T15:04:15+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -127572,13 +128705,37 @@
           "error_type": null,
           "answer": "MC Hammer",
           "timestamp": "2026-02-24T13:05:57+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 29743,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "MC Hammer",
+          "timestamp": "2026-02-24T14:47:49+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 8250,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "MC Hammer",
+          "timestamp": "2026-02-24T15:05:18+01:00"
         }
       ],
-      "total_runs": 14,
-      "pass_count": 14,
+      "total_runs": 16,
+      "pass_count": 16,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:05:57+01:00",
+      "last_tested": "2026-02-24T15:05:18+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -127747,13 +128904,37 @@
           "error_type": null,
           "answer": "Triumph and Disaster",
           "timestamp": "2026-02-24T13:08:34+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 8494,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Triumph and Disaster",
+          "timestamp": "2026-02-24T14:48:37+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 8250,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Triumph and Disaster",
+          "timestamp": "2026-02-24T15:06:18+01:00"
         }
       ],
-      "total_runs": 13,
-      "pass_count": 13,
+      "total_runs": 15,
+      "pass_count": 15,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:08:34+01:00",
+      "last_tested": "2026-02-24T15:06:18+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -127910,13 +129091,37 @@
           "error_type": null,
           "answer": "The Full Monty",
           "timestamp": "2026-02-24T13:11:25+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 22745,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Full Monty",
+          "timestamp": "2026-02-24T14:49:28+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 5503,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Full Monty",
+          "timestamp": "2026-02-24T15:07:39+01:00"
         }
       ],
-      "total_runs": 12,
-      "pass_count": 10,
-      "pass_rate": 0.833,
+      "total_runs": 14,
+      "pass_count": 12,
+      "pass_rate": 0.857,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:11:25+01:00",
+      "last_tested": "2026-02-24T15:07:39+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -128492,13 +129697,37 @@
           "error_type": null,
           "answer": "Unable to generate answer",
           "timestamp": "2026-02-24T13:13:43+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 52752,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer",
+          "timestamp": "2026-02-24T14:50:39+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 45742,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer",
+          "timestamp": "2026-02-24T15:09:30+01:00"
         }
       ],
-      "total_runs": 13,
+      "total_runs": 15,
       "pass_count": 8,
-      "pass_rate": 0.615,
+      "pass_rate": 0.533,
       "current_status": "fail",
-      "last_tested": "2026-02-24T13:13:43+01:00",
+      "last_tested": "2026-02-24T15:09:30+01:00",
       "best_f1": 0.9,
       "trend": "regressing"
     },
@@ -128655,13 +129884,37 @@
           "error_type": null,
           "answer": "Unable to generate answer",
           "timestamp": "2026-02-24T13:15:48+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 46999,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer",
+          "timestamp": "2026-02-24T14:51:35+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 42754,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer",
+          "timestamp": "2026-02-24T15:09:53+01:00"
         }
       ],
-      "total_runs": 12,
+      "total_runs": 14,
       "pass_count": 9,
-      "pass_rate": 0.75,
+      "pass_rate": 0.643,
       "current_status": "fail",
-      "last_tested": "2026-02-24T13:15:48+01:00",
+      "last_tested": "2026-02-24T15:09:53+01:00",
       "best_f1": 1.0,
       "trend": "regressing"
     },
@@ -128818,13 +130071,37 @@
           "error_type": null,
           "answer": "Fred Astaire",
           "timestamp": "2026-02-24T13:18:36+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 27997,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Fred Astaire",
+          "timestamp": "2026-02-24T14:52:31+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T15-01-19",
+          "iteration_number": 584,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 9724,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Fred Astaire",
+          "timestamp": "2026-02-24T15:10:47+01:00"
         }
       ],
-      "total_runs": 12,
-      "pass_count": 11,
-      "pass_rate": 0.917,
+      "total_runs": 14,
+      "pass_count": 13,
+      "pass_rate": 0.929,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:18:36+01:00",
+      "last_tested": "2026-02-24T15:10:47+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -128969,13 +130246,25 @@
           "error_type": null,
           "answer": "Chicken Ranch",
           "timestamp": "2026-02-24T13:20:38+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 27258,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Chicken Ranch",
+          "timestamp": "2026-02-24T14:53:21+01:00"
         }
       ],
-      "total_runs": 11,
-      "pass_count": 11,
+      "total_runs": 12,
+      "pass_count": 12,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:20:38+01:00",
+      "last_tested": "2026-02-24T14:53:21+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -129132,13 +130421,25 @@
           "error_type": null,
           "answer": "Peter O'Toole",
           "timestamp": "2026-02-24T13:23:00+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 5499,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Peter O'Toole",
+          "timestamp": "2026-02-24T14:54:14+01:00"
         }
       ],
-      "total_runs": 12,
-      "pass_count": 12,
+      "total_runs": 13,
+      "pass_count": 13,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:23:00+01:00",
+      "last_tested": "2026-02-24T14:54:14+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -129307,13 +130608,25 @@
           "error_type": null,
           "answer": "Daughter",
           "timestamp": "2026-02-24T13:27:15+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 27512,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Daughter",
+          "timestamp": "2026-02-24T14:55:08+01:00"
         }
       ],
-      "total_runs": 13,
-      "pass_count": 9,
-      "pass_rate": 0.692,
+      "total_runs": 14,
+      "pass_count": 10,
+      "pass_rate": 0.714,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:27:15+01:00",
+      "last_tested": "2026-02-24T14:55:08+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -129482,15 +130795,27 @@
           "error_type": null,
           "answer": "Unable to generate answer",
           "timestamp": "2026-02-24T13:29:53+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 21725,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Martina Hingis",
+          "timestamp": "2026-02-24T14:55:55+01:00"
         }
       ],
-      "total_runs": 13,
-      "pass_count": 12,
-      "pass_rate": 0.923,
-      "current_status": "fail",
-      "last_tested": "2026-02-24T13:29:53+01:00",
+      "total_runs": 14,
+      "pass_count": 13,
+      "pass_rate": 0.929,
+      "current_status": "pass",
+      "last_tested": "2026-02-24T14:55:55+01:00",
       "best_f1": 1.0,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "p2-std-12": {
       "id": "p2-std-12",
@@ -129657,13 +130982,25 @@
           "error_type": null,
           "answer": "Belgium",
           "timestamp": "2026-02-24T13:32:34+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 26510,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Belgium",
+          "timestamp": "2026-02-24T14:57:24+01:00"
         }
       ],
-      "total_runs": 13,
-      "pass_count": 12,
-      "pass_rate": 0.923,
+      "total_runs": 14,
+      "pass_count": 13,
+      "pass_rate": 0.929,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:32:34+01:00",
+      "last_tested": "2026-02-24T14:57:24+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -129832,13 +131169,25 @@
           "error_type": null,
           "answer": "April 30, 1945",
           "timestamp": "2026-02-24T13:34:42+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 0.4,
+          "latency_ms": 22230,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "April 30, 1945",
+          "timestamp": "2026-02-24T14:58:17+01:00"
         }
       ],
-      "total_runs": 13,
-      "pass_count": 4,
-      "pass_rate": 0.308,
+      "total_runs": 14,
+      "pass_count": 5,
+      "pass_rate": 0.357,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:34:42+01:00",
+      "last_tested": "2026-02-24T14:58:17+01:00",
       "best_f1": 0.4,
       "trend": "improving"
     },
@@ -130019,13 +131368,25 @@
           "error_type": null,
           "answer": "Colorado River",
           "timestamp": "2026-02-24T13:37:15+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 21991,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Colorado River",
+          "timestamp": "2026-02-24T14:59:12+01:00"
         }
       ],
-      "total_runs": 14,
-      "pass_count": 13,
-      "pass_rate": 0.929,
+      "total_runs": 15,
+      "pass_count": 14,
+      "pass_rate": 0.933,
       "current_status": "pass",
-      "last_tested": "2026-02-24T13:37:15+01:00",
+      "last_tested": "2026-02-24T14:59:12+01:00",
       "best_f1": 0.9,
       "trend": "stable"
     },
@@ -130194,13 +131555,25 @@
           "error_type": null,
           "answer": "Unable to generate answer",
           "timestamp": "2026-02-24T13:39:25+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T14-42-38",
+          "iteration_number": 583,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 47266,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer",
+          "timestamp": "2026-02-24T15:00:02+01:00"
         }
       ],
-      "total_runs": 13,
+      "total_runs": 14,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-24T13:39:25+01:00",
+      "last_tested": "2026-02-24T15:00:02+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -136401,15 +137774,27 @@
           "error_type": null,
           "answer": "Unable to generate answer",
           "timestamp": "2026-02-24T12:44:05+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T12-58-39",
+          "iteration_number": 582,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 10763,
+          "match_type": "FUZZY_RECALL",
+          "error": null,
+          "error_type": null,
+          "answer": "1921",
+          "timestamp": "2026-02-24T14:32:49+01:00"
         }
       ],
-      "total_runs": 10,
-      "pass_count": 8,
-      "pass_rate": 0.8,
-      "current_status": "fail",
-      "last_tested": "2026-02-24T12:44:05+01:00",
+      "total_runs": 11,
+      "pass_count": 9,
+      "pass_rate": 0.818,
+      "current_status": "pass",
+      "last_tested": "2026-02-24T14:32:49+01:00",
       "best_f1": 1.0,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "graph-musique-41": {
       "id": "graph-musique-41",
@@ -136643,13 +138028,25 @@
           "error_type": null,
           "answer": "Chuck Yeager",
           "timestamp": "2026-02-24T12:45:11+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T12-58-39",
+          "iteration_number": 582,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 11980,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Chuck Yeager",
+          "timestamp": "2026-02-24T14:35:18+01:00"
         }
       ],
-      "total_runs": 10,
-      "pass_count": 10,
+      "total_runs": 11,
+      "pass_count": 11,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-24T12:45:11+01:00",
+      "last_tested": "2026-02-24T14:35:18+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -136758,14 +138155,26 @@
           "error_type": null,
           "answer": "London School of Economics",
           "timestamp": "2026-02-21T19:55:27+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T12-58-39",
+          "iteration_number": 582,
+          "correct": false,
+          "f1": 0.0833,
+          "latency_ms": 13738,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "Friedrich Hayek was hired by Ludwig von Mises, the author of \"Human Action,\" to work at the Austrian Institute for Business Cycle Research.",
+          "timestamp": "2026-02-24T14:33:09+01:00"
         }
       ],
-      "total_runs": 8,
+      "total_runs": 9,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-21T19:55:27+01:00",
-      "best_f1": 0.0,
+      "last_tested": "2026-02-24T14:33:09+01:00",
+      "best_f1": 0.0833,
       "trend": "stable"
     },
     "p2-std-43": {
@@ -136861,15 +138270,27 @@
           "error_type": null,
           "answer": "Richard Nixon",
           "timestamp": "2026-02-24T12:46:38+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T12-58-39",
+          "iteration_number": 582,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 45263,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Unable to generate answer",
+          "timestamp": "2026-02-24T14:37:39+01:00"
         }
       ],
-      "total_runs": 7,
+      "total_runs": 8,
       "pass_count": 4,
-      "pass_rate": 0.571,
-      "current_status": "pass",
-      "last_tested": "2026-02-24T12:46:38+01:00",
+      "pass_rate": 0.5,
+      "current_status": "fail",
+      "last_tested": "2026-02-24T14:37:39+01:00",
       "best_f1": 0.9,
-      "trend": "improving"
+      "trend": "stable"
     },
     "graph-musique-43": {
       "id": "graph-musique-43",
@@ -136976,13 +138397,25 @@
           "error_type": null,
           "answer": "The author of Bureaucracy is Ludwig von Mises. The context states that Hayek was hired by Ludwig von Mises on the recommendation of Friedrich von Wieser as a specialist for the Austrian government working on the legal and economic details of the Treaty of Saint Germain. Therefore, Hayek worked for the Austrian government upon being hired by Ludwig von Mises.",
           "timestamp": "2026-02-21T19:56:54+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T12-58-39",
+          "iteration_number": 582,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 17491,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The author of Bureaucracy is Ludwig von Mises. The context states that Hayek was hired by Ludwig von Mises on the recommendation of Wieser as a specialist for the Austrian government working on the legal and economic details of the Treaty of Saint Germain. Therefore, Hayek worked for the Austrian government upon being hired by Ludwig von Mises.",
+          "timestamp": "2026-02-24T14:35:37+01:00"
         }
       ],
-      "total_runs": 8,
-      "pass_count": 1,
-      "pass_rate": 0.125,
+      "total_runs": 9,
+      "pass_count": 2,
+      "pass_rate": 0.222,
       "current_status": "pass",
-      "last_tested": "2026-02-21T19:56:54+01:00",
+      "last_tested": "2026-02-24T14:35:37+01:00",
       "best_f1": 0.9,
       "trend": "improving"
     },
@@ -137297,15 +138730,27 @@
           "error_type": null,
           "answer": "November 5",
           "timestamp": "2026-02-21T19:58:12+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T12-58-39",
+          "iteration_number": 582,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 42242,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Information not available in the knowledge graph.",
+          "timestamp": "2026-02-24T14:38:15+01:00"
         }
       ],
-      "total_runs": 9,
+      "total_runs": 10,
       "pass_count": 2,
-      "pass_rate": 0.222,
-      "current_status": "pass",
-      "last_tested": "2026-02-21T19:58:12+01:00",
+      "pass_rate": 0.2,
+      "current_status": "fail",
+      "last_tested": "2026-02-24T14:38:15+01:00",
       "best_f1": 1.0,
-      "trend": "improving"
+      "trend": "stable"
     },
     "p2-std-45": {
       "id": "p2-std-45",
@@ -173443,13 +174888,25 @@
           "error_type": null,
           "answer": "Context reasoning failed: {\"message\":\"Try spacing your requests out using the batching settings under 'Options'\",\"name\":\"AxiosError\",\"stack\":\"AxiosError: Request failed with status code 429\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/axios/lib/adapters/http.js:565:9)\\n    at RedirectableRequest.emit (node:events:536:35)\\n    at RedirectableRequest._processResp",
           "timestamp": "2026-02-21T20:41:48+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T12-58-39",
+          "iteration_number": 582,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8518,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-24T14:31:30+01:00"
         }
       ],
-      "total_runs": 8,
+      "total_runs": 9,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-21T20:41:48+01:00",
+      "last_tested": "2026-02-24T14:31:30+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -173558,13 +175015,25 @@
           "error_type": null,
           "answer": "Context reasoning failed: {\"message\":\"Try spacing your requests out using the batching settings under 'Options'\",\"name\":\"AxiosError\",\"stack\":\"AxiosError: Request failed with status code 429\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/axios/lib/adapters/http.js:565:9)\\n    at RedirectableRequest.emit (node:events:536:35)\\n    at RedirectableRequest._processResp",
           "timestamp": "2026-02-21T20:42:19+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T12-58-39",
+          "iteration_number": 582,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 16993,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$10 million",
+          "timestamp": "2026-02-24T14:33:38+01:00"
         }
       ],
-      "total_runs": 8,
-      "pass_count": 8,
+      "total_runs": 9,
+      "pass_count": 9,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-21T20:42:19+01:00",
+      "last_tested": "2026-02-24T14:33:38+01:00",
       "best_f1": 0.9,
       "trend": "stable"
     },
@@ -173673,13 +175142,25 @@
           "error_type": null,
           "answer": "Context reasoning failed: {\"message\":\"Try spacing your requests out using the batching settings under 'Options'\",\"name\":\"AxiosError\",\"stack\":\"AxiosError: Request failed with status code 429\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/axios/lib/adapters/http.js:565:9)\\n    at RedirectableRequest.emit (node:events:536:35)\\n    at RedirectableRequest._processResp",
           "timestamp": "2026-02-21T20:43:06+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T12-58-39",
+          "iteration_number": 582,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 7723,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-24T14:35:49+01:00"
         }
       ],
-      "total_runs": 8,
+      "total_runs": 9,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-21T20:43:06+01:00",
+      "last_tested": "2026-02-24T14:35:49+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -173788,13 +175269,25 @@
           "error_type": null,
           "answer": "Context reasoning failed: {\"message\":\"Try spacing your requests out using the batching settings under 'Options'\",\"name\":\"AxiosError\",\"stack\":\"AxiosError: Request failed with status code 429\\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/axios/lib/core/settle.js:19:12)\\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/axios/lib/adapters/http.js:565:9)\\n    at RedirectableRequest.emit (node:events:536:35)\\n    at RedirectableRequest._processResp",
           "timestamp": "2026-02-21T20:43:26+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-24T12-58-39",
+          "iteration_number": 582,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 10228,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-24T14:38:28+01:00"
         }
       ],
-      "total_runs": 8,
+      "total_runs": 9,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-21T20:43:26+01:00",
+      "last_tested": "2026-02-24T14:38:28+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -233251,908 +234744,6 @@
   ],
   "execution_logs": [
     {
-      "timestamp": "2026-02-24T12:02:07+01:00",
-      "question_id": "p2-std-13",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.4,
-      "latency_ms": 7490,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "April 30, 1945",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:02:39+01:00",
-      "question_id": "graph-musique-14",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 44504,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Information not available in the knowledge graph.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:03:40+01:00",
-      "question_id": "p2-std-14",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 2247,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Colorado River",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:04:17+01:00",
-      "question_id": "graph-musique-15",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 18524,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "George Mills was born in Deptford. Deptford borders the River Thames. The River Thames is a body of ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:05:19+01:00",
-      "question_id": "p2-std-15",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 47978,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:05:34+01:00",
-      "question_id": "graph-musique-16",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.8,
-      "latency_ms": 3740,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "3rd century BC",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:07:10+01:00",
-      "question_id": "p2-std-16",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 2518,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Vienna",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:07:28+01:00",
-      "question_id": "graph-musique-17",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 35503,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Information not available in the knowledge graph.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:08:53+01:00",
-      "question_id": "p2-std-17",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 42982,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:09:06+01:00",
-      "question_id": "graph-musique-18",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 9753,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Kate Bronfenbrenner is the author of \"Ravenswood: The Steelworkers' Victory and the Revival of Ameri",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:10:16+01:00",
-      "question_id": "p2-std-18",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 2228,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Guess Who's Coming to Dinner",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:10:32+01:00",
-      "question_id": "graph-musique-19",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.8,
-      "latency_ms": 8513,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "3rd century BC",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:11:58+01:00",
-      "question_id": "p2-std-19",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 43486,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:12:12+01:00",
-      "question_id": "graph-musique-20",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 23259,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The celestial body that all objects focus on according to Kepler's laws is the Sun. The context stat",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:13:24+01:00",
-      "question_id": "p2-std-20",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 1750,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Sweden",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:13:53+01:00",
-      "question_id": "graph-musique-21",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0606,
-      "latency_ms": 18004,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Robert Peel is considered the father of modern policing, having established the Metropolitan Police ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:14:42+01:00",
-      "question_id": "p2-std-21",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 4509,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "New Zealand",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:15:10+01:00",
-      "question_id": "graph-musique-22",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 14231,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Tamworth manifesto was issued by Sir Robert Peel, 2nd Baronet. He was the son of Sir Robert Peel",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:16:19+01:00",
-      "question_id": "p2-std-22",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 58239,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:16:44+01:00",
-      "question_id": "graph-musique-23",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 46256,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Information not available in the knowledge graph.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:18:12+01:00",
-      "question_id": "p2-std-23",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.5,
-      "latency_ms": 4750,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Baby stroller",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:19:07+01:00",
-      "question_id": "graph-musique-24",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.1143,
-      "latency_ms": 31242,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The person who came up with the concept of the \"new\" police is Robert Peel. The reference context do",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:19:51+01:00",
-      "question_id": "p2-std-24",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 53984,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:20:27+01:00",
-      "question_id": "graph-musique-25",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 39508,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Information not available in the knowledge graph.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:21:11+01:00",
-      "question_id": "p2-std-25",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 40015,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:21:48+01:00",
-      "question_id": "graph-musique-26",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.6667,
-      "latency_ms": 3734,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "June 30, 2013",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:22:31+01:00",
-      "question_id": "p2-std-26",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 1756,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Harrison Ford",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:23:06+01:00",
-      "question_id": "graph-musique-27",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 38494,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Information not available in the knowledge graph.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:23:47+01:00",
-      "question_id": "p2-std-27",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 5749,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Roger Maris",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:24:23+01:00",
-      "question_id": "graph-musique-28",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.5,
-      "latency_ms": 7725,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Paterson River",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:25:18+01:00",
-      "question_id": "p2-std-28",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 48487,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:25:37+01:00",
-      "question_id": "graph-musique-29",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 34500,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Information not available in the knowledge graph.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:27:32+01:00",
-      "question_id": "p2-std-29",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 55491,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:27:51+01:00",
-      "question_id": "graph-musique-30",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 35524,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Information not available in the knowledge graph.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:29:22+01:00",
-      "question_id": "p2-std-30",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 6250,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Gothenburg, Sweden",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:29:36+01:00",
-      "question_id": "graph-musique-31",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0444,
-      "latency_ms": 10991,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Kansas-Nebraska Act of 1854 led to the creation of the Republican Party, which became the main o",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:30:50+01:00",
-      "question_id": "p2-std-31",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 1737,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Baltimore, Maryland",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:31:21+01:00",
-      "question_id": "graph-musique-32",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 37503,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Information not available in the knowledge graph.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:32:18+01:00",
-      "question_id": "p2-std-32",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.3333,
-      "latency_ms": 3997,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Basketball",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:33:34+01:00",
-      "question_id": "p2-std-33",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 40726,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:34:59+01:00",
-      "question_id": "p2-std-34",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.4,
-      "latency_ms": 4987,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Florence of Arabia",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:36:41+01:00",
-      "question_id": "p2-std-35",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 44753,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:38:08+01:00",
-      "question_id": "p2-std-36",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 4723,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "1905",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:39:20+01:00",
-      "question_id": "p2-std-37",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 4994,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Frank Harris",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:40:32+01:00",
-      "question_id": "p2-std-38",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 39976,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:41:41+01:00",
-      "question_id": "p2-std-39",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 2998,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Yasser Arafat",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:43:07+01:00",
-      "question_id": "p2-std-40",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 49530,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:44:12+01:00",
-      "question_id": "p2-std-41",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 39565,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:45:25+01:00",
-      "question_id": "p2-std-42",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 2742,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Chuck Yeager",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:46:56+01:00",
-      "question_id": "p2-std-43",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 3745,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Richard Nixon",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:48:20+01:00",
-      "question_id": "p2-std-44",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 41248,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Unable to generate answer",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:49:32+01:00",
-      "question_id": "p2-std-45",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 1971,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Ornithology",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:50:43+01:00",
-      "question_id": "p2-std-46",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 1.0,
-      "latency_ms": 4982,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Alligator",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-24T12:52:25+01:00",
-      "question_id": "p2-std-47",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 4999,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Giant kelp (Macrocystis pyrifera)",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
       "timestamp": "2026-02-24T12:53:47+01:00",
       "question_id": "p2-std-48",
       "rag_type": "standard",
@@ -236594,6 +237185,924 @@
         "sql_status": null,
         "result_count": 0,
         "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:30:43+01:00",
+      "question_id": "p2-std-40",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 46240,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:31:17+01:00",
+      "question_id": "graph-musique-41",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 43727,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Information not available in the knowledge graph.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:31:40+01:00",
+      "question_id": "quantitative-finqa-43",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 8518,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:32:56+01:00",
+      "question_id": "p2-std-41",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 10763,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1921",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:33:20+01:00",
+      "question_id": "graph-musique-42",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0833,
+      "latency_ms": 13738,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Friedrich Hayek was hired by Ludwig von Mises, the author of \"Human Action,\" to work at the Austrian",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:33:55+01:00",
+      "question_id": "quantitative-finqa-44",
+      "rag_type": "quantitative",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 16993,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "$10 million",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:35:26+01:00",
+      "question_id": "p2-std-42",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 11980,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Chuck Yeager",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:35:43+01:00",
+      "question_id": "graph-musique-43",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 17491,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The author of Bureaucracy is Ludwig von Mises. The context states that Hayek was hired by Ludwig von",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:35:55+01:00",
+      "question_id": "quantitative-finqa-45",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 7723,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:37:52+01:00",
+      "question_id": "p2-std-43",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 45263,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:45:07+01:00",
+      "question_id": "std-0",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 28998,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Crow",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:45:19+01:00",
+      "question_id": "graph-musique-0",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 32019,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The character named after a glowing species found in some beaches in Portugal is Plankton. In the Sp",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:46:08+01:00",
+      "question_id": "std-1",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 5246,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Staple Singers",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:46:31+01:00",
+      "question_id": "graph-musique-1",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 42734,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Information not available in the knowledge graph.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:47:56+01:00",
+      "question_id": "std-2",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 29743,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "MC Hammer",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:48:11+01:00",
+      "question_id": "graph-musique-2",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 38487,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Information not available in the knowledge graph.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:48:43+01:00",
+      "question_id": "std-3",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 8494,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Triumph and Disaster",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:48:55+01:00",
+      "question_id": "graph-musique-3",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 25507,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1572",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:49:35+01:00",
+      "question_id": "std-4",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 22745,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Full Monty",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:49:49+01:00",
+      "question_id": "graph-musique-4",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 24489,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "John Knox wrote \"The First Blast of the Trumpet Against the Monstruous Regiment of Women.\" The conte",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:50:46+01:00",
+      "question_id": "std-5",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 52752,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:51:02+01:00",
+      "question_id": "graph-musique-5",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 32515,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Henry II of England fought a short war in 1183 against his son, Henry the Young King. Henry the Youn",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:51:41+01:00",
+      "question_id": "std-6",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 46999,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:51:56+01:00",
+      "question_id": "graph-musique-6",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 25754,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "John Knox died in 1572. Margaret Knox was his second wife, and he passed away in that year.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:52:39+01:00",
+      "question_id": "std-7",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 27997,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Fred Astaire",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:52:53+01:00",
+      "question_id": "graph-musique-7",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 25751,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The person Henry fought a short war with in 1183 was Richard. Richard's fleet was hit by a storm in ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:53:29+01:00",
+      "question_id": "std-8",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 27258,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Chicken Ranch",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:53:40+01:00",
+      "question_id": "graph-musique-8",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 19760,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "John Wayne played U.S. Marshal Rooster Cogburn in True Grit.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:54:19+01:00",
+      "question_id": "std-9",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 5499,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Peter O'Toole",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:54:39+01:00",
+      "question_id": "graph-musique-9",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.1905,
+      "latency_ms": 27488,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "John Wayne was the producer of Big Jim McLain and he played Rooster Cogburn in True Grit.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:55:15+01:00",
+      "question_id": "p2-std-10",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 27512,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Daughter",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:55:26+01:00",
+      "question_id": "graph-musique-10",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 55740,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Information not available in the knowledge graph.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:56:03+01:00",
+      "question_id": "p2-std-11",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 21725,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Martina Hingis",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:56:23+01:00",
+      "question_id": "graph-musique-11",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 57241,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Information not available in the knowledge graph.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:57:33+01:00",
+      "question_id": "p2-std-12",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 26510,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Belgium",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:57:48+01:00",
+      "question_id": "graph-musique-12",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 23231,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Thames Ditton is located on the River Thames.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:58:24+01:00",
+      "question_id": "p2-std-13",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.4,
+      "latency_ms": 22230,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "April 30, 1945",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:58:35+01:00",
+      "question_id": "graph-musique-13",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 18999,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Thames River",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:59:19+01:00",
+      "question_id": "p2-std-14",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 21991,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Colorado River",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T14:59:33+01:00",
+      "question_id": "graph-musique-14",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.8,
+      "latency_ms": 24999,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Thames",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:03:51+01:00",
+      "question_id": "std-0",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 6999,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Crow",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:04:22+01:00",
+      "question_id": "std-1",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 6498,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Staple Singers",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:04:36+01:00",
+      "question_id": "graph-musique-0",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 10481,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The character named after a glowing species found in some beaches in Portugal is Plankton. Plankton ",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:05:24+01:00",
+      "question_id": "std-2",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 8250,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "MC Hammer",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:05:37+01:00",
+      "question_id": "graph-musique-1",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 45268,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Information not available in the knowledge graph.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:06:31+01:00",
+      "question_id": "std-3",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 8250,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Triumph and Disaster",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:06:52+01:00",
+      "question_id": "graph-musique-2",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 81743,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Information not available in the knowledge graph.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:07:46+01:00",
+      "question_id": "std-4",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 5503,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Full Monty",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:07:59+01:00",
+      "question_id": "graph-musique-3",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 8488,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1572",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:08:55+01:00",
+      "question_id": "graph-musique-4",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 12016,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "John Knox wrote \"The First Blast of the Trumpet Against the Monstruous Regiment of Women.\" The conte",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:09:36+01:00",
+      "question_id": "std-5",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 45742,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:10:05+01:00",
+      "question_id": "std-6",
+      "rag_type": "standard",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 42754,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Unable to generate answer",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:10:39+01:00",
+      "question_id": "graph-musique-5",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 37490,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Information not available in the knowledge graph.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-24T15:10:59+01:00",
+      "question_id": "std-7",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 9724,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Fred Astaire",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
       }
     }
   ],
