@@ -1085,4 +1085,24 @@ for node in workflow['nodes']:
 - **Solution**: Created rag-storage repo, moved large data directories there
 - **Commit**: 965ffc3
 
+### FIX-56: Removed nodeCredentialType from 43 nodes across 9 JSONs
+- **Date**: 2026-02-23 (Session 52)
+- **Symptome**: Standard pipeline still returning "Unable to generate answer" after FIX-54
+- **Solution**: Removed `nodeCredentialType:"openRouterApi"` from all HTTP request nodes
+- **Resultat**: Did NOT fix the problem — root cause was FIX-58
+
+### FIX-57: Cohere Reranker wrong API key (JINA_API_KEY → COHERE_API_KEY)
+- **Date**: 2026-02-23 (Session 52)
+- **Symptome**: Standard pipeline Cohere Reranker using wrong env var
+- **Solution**: Changed `$env.JINA_API_KEY` to `$env.COHERE_API_KEY` in Cohere Reranker node
+
+### FIX-58: HF Space secrets NOT CONFIGURED — ALL API keys empty (CRITICAL)
+- **Date**: 2026-02-24 (Session 53)
+- **Symptome**: ALL 4 pipelines return errors/empty answers. Standard: "Unable to generate answer". Graph: "Information not available" (0 context sources). Quantitative: "NO_ANSWER". Orchestrator: empty/timeout.
+- **Cause racine**: HF Space had ZERO API key secrets configured. Only 2 variables existed (LLM_SQL_MODEL, LLM_SQL_FALLBACK_MODEL). The entrypoint.sh correctly exports `OPENROUTER_KEY_STANDARD`, `PINECONE_API_KEY`, `JINA_API_KEY`, etc. BUT these default to `${HF_SECRET:-}` which is empty if the HF Space secret doesn't exist. Result: all `$env.VAR` expressions in workflows resolve to empty string → `Bearer ` (no key) → all API calls fail.
+- **Pourquoi personne n'a vu**: Sessions 42-52 focused on activation bugs, env var syntax, credential types. Nobody checked if the actual HF Space secrets were configured. The entrypoint.sh logs said "OPENROUTER_API_KEY: UNSET" but this was buried in build logs nobody read.
+- **Solution**: `huggingface_hub.add_space_secret()` to push 13 secrets from `.env.local` to HF Space. Then `restart_space(factory_reboot=True)` to trigger full Docker rebuild with new secrets.
+- **Secrets pushed**: OPENROUTER_API_KEY, OPENROUTER_KEY_STANDARD, OPENROUTER_KEY_GRAPH, OPENROUTER_KEY_QUANTITATIVE, OPENROUTER_KEY_ORCHESTRATOR, OPENROUTER_KEY_PME, PINECONE_API_KEY, JINA_API_KEY, SUPABASE_PASSWORD, COHERE_API_KEY, N8N_ENCRYPTION_KEY, NEO4J_AUTH, NEO4J_URI
+- **Lecon**: ALWAYS verify HF Space secrets exist after any rebuild/reconfiguration. Use `api.get_space_variables()` to check. The entrypoint.sh ENV CHECK section logs tell you if vars are set — check build logs after deploy.
+
 ---

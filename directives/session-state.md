@@ -1,52 +1,61 @@
-# Session State — 24 Fevrier 2026 (Session 52, continuation)
+# Session State — 24 Fevrier 2026 (Session 53)
 
-> Last updated: 2026-02-24T01:55:00+01:00
+> Last updated: 2026-02-24T01:30:00+01:00
 
-## v5.5 Deployed — Same webhook results as v5.4
+## FIX-58: ROOT CAUSE FOUND — HF Space Secrets Missing
 
-| Webhook | HTTP | Notes |
-|---------|------|-------|
-| Standard | 200 | "Unable to generate answer" (39s) — NOT env vars, NOT nodeCredentialType |
-| Graph | 200 | "Information not available" (33s) |
-| Quantitative | **200** | **WORKING** (1.2s) |
-| Orchestrator | **200** | Empty response (1.5s) |
-| PME Gateway | 404 | Not activated |
+**ALL 4 pipelines broken because HF Space had ZERO API key secrets.**
+Only 2 variables existed (LLM_SQL_MODEL, LLM_SQL_FALLBACK_MODEL).
+All env vars ($env.OPENROUTER_KEY_STANDARD, etc.) resolved to empty → Bearer null → all API calls failed.
 
-## Key Findings This Session
-- FIX-56: Removed `nodeCredentialType:"openRouterApi"` from 43 nodes across 9 JSONs — did NOT fix Standard
-- FIX-57: Fixed Cohere Reranker JINA_API_KEY → COHERE_API_KEY
-- OpenRouter API works directly (Trinity model responds in 1.5s)
-- Standard pipeline takes 39s → something inside n8n is failing silently
+### Fix Applied
+- Pushed 13 secrets to HF Space via `huggingface_hub.add_space_secret()`
+- Factory rebooted Space — Docker rebuilding with secrets injected
+- Build status: RUNNING_APP_STARTING (build done, app booting)
 
-## Root Cause Still Unknown for Standard Pipeline
-Tested hypotheses:
-1. ~~Broken env var syntax `={{.VAR}}`~~ → Fixed (FIX-54), not the cause
-2. ~~Invalid nodeCredentialType~~ → Removed (FIX-56), not the cause
-3. ~~Wrong Cohere API key~~ → Fixed (FIX-57), has fallback anyway
-4. **UNTESTED**: n8n container logs — need to check actual node execution errors
-5. **UNTESTED**: Is n8n resolving `$env.OPENROUTER_KEY_STANDARD` correctly?
-6. **UNTESTED**: REST API inaccessible from outside (HF proxy strips POST body)
+### Secrets Pushed (13)
+OPENROUTER_API_KEY, OPENROUTER_KEY_STANDARD, OPENROUTER_KEY_GRAPH,
+OPENROUTER_KEY_QUANTITATIVE, OPENROUTER_KEY_ORCHESTRATOR, OPENROUTER_KEY_PME,
+PINECONE_API_KEY, JINA_API_KEY, SUPABASE_PASSWORD, COHERE_API_KEY,
+N8N_ENCRYPTION_KEY, NEO4J_AUTH, NEO4J_URI
 
-## Next Approach: Check Container Logs
-The n8n REST API returns "Failed to parse request body" from outside (FIX-15 known issue).
-Need to either:
-- Add a debug workflow that reads env vars and returns them
-- Check HF Space build logs via `huggingface_hub` Python library
-- Or modify entrypoint.sh to log env var presence at boot
+### Infrastructure Audit
+| Site | Status | Note |
+|------|--------|------|
+| Vercel ETI | HTTP 200 | Live |
+| Vercel PME Connectors | HTTP 200 | Live |
+| Vercel PME Use Cases | HTTP 200 | Live |
+| Vercel Dashboard | HTTP 200 | Live |
+| HF Space | REBUILDING | Factory reboot with 13 secrets |
+| All 3 Codespaces | Shutdown | Need restart for 10K |
 
-## ajd23feb Completion: 12/14 done
-- DONE: Sub-agent security, per-pipeline keys, 2nd HF account, chatbot, ingestion test, key rotation, repo cleanup, CLAUDE.md, exec summary quick
-- NOT DONE: Dashboard live per-repo, PME Gateway 404
+### Repos Health
+| Repo | Commits | CLAUDE.md | Issue |
+|------|---------|-----------|-------|
+| mon-ipad | 645 | YES | - |
+| rag-tests | 600 | YES | - |
+| rag-website | 599 | YES | - |
+| rag-dashboard | 601 | NO | Needs CLAUDE.md |
+| rag-data-ingestion | 599 | YES | - |
+| rag-pme-connectors | 599 | YES | - |
+| rag-pme-usecases | 1 | NO | Quasi-vide |
+| rag-storage | 4 | NO | Needs CLAUDE.md |
 
-## Commits this session (52)
-- 9589d11: v5.5 — remove nodeCredentialType + fix Cohere API key
-- 65aa5e7: deploy script fix + exec summary quick + v5.5 strings
-- (from session 51): f1b5770, b03e9ee, 1fd73ec
+### ajd23feb Completion: 12/14 → pending pipeline fix to finish
+- DONE: 12 items (security, keys, chatbot, ingestion, rotation, cleanup, CLAUDE.md, exec summary...)
+- PENDING: Dashboard live per-repo (item 13), PME Gateway (item 14, needs HF Space secrets → DONE)
+- FIX-58 unblocks EVERYTHING — all 4 pipelines + PME Gateway
 
-## Phase 2 eval (unchanged)
+### Phase 2 eval (waiting on HF Space rebuild)
 | Pipeline | Done | Accuracy | Status |
 |----------|------|----------|--------|
-| Standard | 579/1000 | ~36% | Broken — "Unable to generate answer" |
+| Standard | 579/1000 | ~36% | WAITING — secrets fix should restore |
 | Graph | 500/500 | 78.0% | COMPLETE |
 | Quantitative | 500/500 | 92.0% | COMPLETE |
-| Orchestrator | 57/1000 | 0% | Empty responses |
+| Orchestrator | 57/1000 | 0% | WAITING — secrets fix should restore |
+
+### Next Steps
+1. Verify HF Space rebuild succeeds with secrets
+2. Test all 5 pipelines (Standard, Graph, Quant, Orch, PME)
+3. Complete jd23feb: Dashboard per-repo + PME Gateway
+4. Prepare 10K infrastructure (Codespaces + parallel scripts)
