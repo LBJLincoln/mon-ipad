@@ -18,98 +18,25 @@
     },
     {
       "parameters": {
-        "jsCode": "// Parse user query and build context\nconst body = $input.item.json.body || $input.item.json;\nconst query = body.query || body.message || body.question || '';\nconst lang = (body.lang || 'fr').toLowerCase();\nconst sessionId = body.sessionId || body.session_id || 'anonymous';\n\nif (!query || query.trim().length < 2) {\n  return {\n    error: true,\n    response: lang === 'fr' \n      ? 'Veuillez poser une question (champ \"query\" requis).'\n      : 'Please provide a question (field \"query\" required).',\n    timestamp: new Date().toISOString()\n  };\n}\n\n// Project context — self-contained (no external API needed)\nconst PROJECT_CONTEXT = `\n# Nomos AI — Multi-RAG Orchestrator (SOTA 2026)\n\n## What is Nomos AI?\nNomos AI is an advanced AI system that answers complex questions by searching multiple databases simultaneously. It uses 4 search pipelines and an orchestrator that picks the best method for each question.\n\n## Target\nProcess 1M+ questions across 4 sectors (Construction/BTP, Industry, Finance, Legal) with 85%+ accuracy and <2.5s response time.\n\n## Current Phase Status\n- Phase 1 (200 questions): PASSED — 83.9% overall accuracy (20 Feb 2026)\n- Phase 2 (1000q per pipeline): IN PROGRESS\n  - Graph pipeline: COMPLETE (500/500, 78.0% accuracy)\n  - Quantitative pipeline: COMPLETE (500/500, 92.0% accuracy)  \n  - Standard pipeline: PAUSED at 579/1000 (~36% — API credits depleted)\n  - Orchestrator: PAUSED at 57/1000 (depends on other pipelines)\n- Phase 3 (10,000q): Next — requires Phase 2 completion\n- Phase 4 (100K): Planned\n- Phase 5 (1M+): Production target\n\n## The 4 Pipelines\n1. **Standard** (text search): Question → HyDE generation → Pinecone vector search (10,411 vectors) → Jina reranking → LLM answer. Phase 1: 85.5%\n2. **Graph** (entity search): Question → Entity extraction → Neo4j traversal (19,788 nodes, 76,717 relations) → LLM synthesis. Phase 1: 78.0%\n3. **Quantitative** (SQL/numbers): Question → Intent analysis → SQL generation → Supabase query → LLM interpretation. Phase 1: 92.0%\n4. **Orchestrator** (combines all): Question → Intent classification → Route to best pipeline(s) → Aggregate results. Phase 1: 80.0%\n\n## Infrastructure\n- VM Google Cloud: Control plane (Claude Code CLI, git, MCP servers)\n- HuggingFace Space: n8n execution (16GB RAM, 12 workflows)\n- GitHub Codespaces: Heavy testing (8GB RAM, ephemeral)\n- 4 Vercel websites: Production (ETI 4 sectors, PME Connectors, PME Use Cases, Dashboard)\n- Databases: Pinecone (10,411 vectors), Neo4j (19,788 nodes), Supabase (65 tables)\n\n## Capabilities\n- Answer factual questions from text documents (Standard pipeline)\n- Navigate entity relationships and knowledge graphs (Graph pipeline)\n- Query financial data with auto-generated SQL (Quantitative pipeline)\n- Smart routing to pick the best pipeline per question (Orchestrator)\n- Multi-channel support planned: WhatsApp, Telegram, Gmail, Slack (PME Gateway)\n- 4-sector coverage: BTP/Construction, Industry, Finance, Legal\n\n## What's Coming Next\n1. Complete Phase 2 testing (Standard + Orchestrator remaining)\n2. Phase 3: Scale to 10,000 questions per pipeline\n3. Activate PME multi-channel gateway (WhatsApp, Telegram, Email)\n4. Sector-specific data ingestion (7,600+ documents ready)\n5. Production deployment targeting 1M+ questions\n\n## Technology Stack\n- LLMs: Free models via OpenRouter (Mistral Small, Trinity, StepFun Flash)\n- Embeddings: Jina AI (1024-dim vectors)\n- Vector DB: Pinecone (serverless)\n- Graph DB: Neo4j Aura\n- SQL DB: Supabase PostgreSQL\n- Workflow Engine: n8n (self-hosted on HuggingFace Space)\n- Websites: Next.js on Vercel\n- Orchestration: Claude Code (Opus 4.6) on Google Cloud VM\n`;\n\nreturn {\n  query: query.trim(),\n  lang,\n  sessionId,\n  context: PROJECT_CONTEXT,\n  timestamp: new Date().toISOString(),\n  error: false\n};"
+        "jsCode": "// Project Chatbot — keyword-based Q&A (no external API needed)\nconst body = $input.item.json.body || $input.item.json;\nconst query = (body.query || body.message || body.question || '').trim().toLowerCase();\nconst lang = (body.lang || 'fr').toLowerCase();\n\nif (!query || query.length < 2) {\n  return {\n    status: 'ERROR',\n    response: lang === 'fr'\n      ? 'Veuillez poser une question (champ \"query\" requis).'\n      : 'Please provide a question (field \"query\" required).',\n    engine: 'PROJECT_CHATBOT',\n    timestamp: new Date().toISOString()\n  };\n}\n\n// Knowledge base — structured project information\nconst KB = {\n  project: {\n    fr: 'Nomos AI est un systeme d\\'intelligence artificielle avance qui repond a des questions complexes en cherchant dans plusieurs bases de donnees simultanement. Il utilise 4 pipelines de recherche (Standard, Graph, Quantitatif, Orchestrateur) et un orchestrateur qui choisit la meilleure methode pour chaque question. Objectif final : traiter 1M+ questions dans 4 secteurs (BTP, Industrie, Finance, Juridique) avec 85%+ de precision.',\n    en: 'Nomos AI is an advanced AI system that answers complex questions by searching multiple databases simultaneously. It uses 4 search pipelines (Standard, Graph, Quantitative, Orchestrator) that pick the best method for each question. Final target: process 1M+ questions across 4 sectors (Construction, Industry, Finance, Legal) with 85%+ accuracy.'\n  },\n  phase: {\n    fr: 'Phase 1 (200 questions) : REUSSIE — 83.9% de precision globale (20 fev 2026). Phase 2 (1000q par pipeline) : EN COURS — Graph TERMINE (500/500, 78.0%), Quantitatif TERMINE (500/500, 92.0%), Standard EN PAUSE (579/1000, credits API epuises), Orchestrateur EN PAUSE (57/1000). Phase 3 (10,000q) : Prochaine etape. Phase 4 (100K) et Phase 5 (1M+) planifiees.',\n    en: 'Phase 1 (200 questions): PASSED — 83.9% overall accuracy (20 Feb 2026). Phase 2 (1000q per pipeline): IN PROGRESS — Graph COMPLETE (500/500, 78.0%), Quantitative COMPLETE (500/500, 92.0%), Standard PAUSED (579/1000, API credits depleted), Orchestrator PAUSED (57/1000). Phase 3 (10,000q): Next. Phase 4 (100K) and Phase 5 (1M+) planned.'\n  },\n  pipelines: {\n    fr: 'Les 4 pipelines RAG :\\n1. Standard (recherche textuelle) : Question → generation HyDE → recherche vectorielle Pinecone (10,411 vecteurs) → reranking Jina → reponse LLM. Phase 1: 85.5%\\n2. Graph (entites et relations) : Question → extraction entites → traversee Neo4j (19,788 noeuds, 76,717 relations) → synthese LLM. Phase 1: 78.0%\\n3. Quantitatif (SQL/chiffres) : Question → analyse intention → generation SQL → requete Supabase → interpretation LLM. Phase 1: 92.0%\\n4. Orchestrateur (combine les 3) : Question → classification intention → routage vers pipeline(s) → aggregation. Phase 1: 80.0%',\n    en: 'The 4 RAG pipelines:\\n1. Standard (text search): Question → HyDE generation → Pinecone vector search (10,411 vectors) → Jina reranking → LLM answer. Phase 1: 85.5%\\n2. Graph (entity search): Question → entity extraction → Neo4j traversal (19,788 nodes, 76,717 relations) → LLM synthesis. Phase 1: 78.0%\\n3. Quantitative (SQL/numbers): Question → intent analysis → SQL generation → Supabase query → LLM interpretation. Phase 1: 92.0%\\n4. Orchestrator (combines all): Question → intent classification → route to best pipeline(s) → aggregate results. Phase 1: 80.0%'\n  },\n  infrastructure: {\n    fr: 'Infrastructure : VM Google Cloud (pilotage), HuggingFace Space (n8n 16GB RAM, 14 workflows), GitHub Codespaces (tests lourds), 4 sites Vercel (production). Bases de donnees : Pinecone (10,411 vecteurs), Neo4j (19,788 noeuds), Supabase (65 tables). 7 repos GitHub prives.',\n    en: 'Infrastructure: Google Cloud VM (control plane), HuggingFace Space (n8n 16GB RAM, 14 workflows), GitHub Codespaces (heavy testing), 4 Vercel websites (production). Databases: Pinecone (10,411 vectors), Neo4j (19,788 nodes), Supabase (65 tables). 7 private GitHub repos.'\n  },\n  capabilities: {\n    fr: 'Capacites actuelles : Reponse a des questions factuelles (Standard), navigation dans un graphe de connaissances (Graph), requetes SQL automatiques sur donnees financieres (Quantitatif), routage intelligent (Orchestrateur). A venir : support multi-canal (WhatsApp, Telegram, Gmail, Slack), couverture 4 secteurs (BTP, Industrie, Finance, Juridique), ingestion sectorielle (7,600+ documents prets).',\n    en: 'Current capabilities: Factual Q&A from text (Standard), knowledge graph navigation (Graph), auto-generated SQL on financial data (Quantitative), smart routing (Orchestrator). Coming: multi-channel support (WhatsApp, Telegram, Gmail, Slack), 4-sector coverage (Construction, Industry, Finance, Legal), sector data ingestion (7,600+ documents ready).'\n  },\n  accuracy: {\n    fr: 'Precision Phase 1 (baseline 200q) : Standard 85.5%, Graph 78.0%, Quantitatif 92.0%, Orchestrateur 80.0%, Global 83.9%. Phase 2 (1000q) : Graph 78.0% (TERMINE), Quantitatif 92.0% (TERMINE), Standard ~36% (EN PAUSE), Orchestrateur 0% (EN PAUSE).',\n    en: 'Phase 1 accuracy (200q baseline): Standard 85.5%, Graph 78.0%, Quantitative 92.0%, Orchestrator 80.0%, Overall 83.9%. Phase 2 (1000q): Graph 78.0% (COMPLETE), Quantitative 92.0% (COMPLETE), Standard ~36% (PAUSED), Orchestrator 0% (PAUSED).'\n  },\n  tech: {\n    fr: 'Stack technique : LLMs gratuits via OpenRouter (Mistral Small, Trinity, StepFun Flash), embeddings Jina AI (1024 dimensions), Pinecone (base vectorielle), Neo4j Aura (graphe), Supabase PostgreSQL (SQL), n8n (moteur de workflows), Next.js sur Vercel (sites web), Claude Code Opus 4.6 (orchestration).',\n    en: 'Tech stack: Free LLMs via OpenRouter (Mistral Small, Trinity, StepFun Flash), Jina AI embeddings (1024-dim), Pinecone (vector DB), Neo4j Aura (graph DB), Supabase PostgreSQL (SQL DB), n8n (workflow engine), Next.js on Vercel (websites), Claude Code Opus 4.6 (orchestration).'\n  },\n  next: {\n    fr: 'Prochaines etapes : 1) Obtenir credits API Jina (debloque Standard + Graph). 2) Completer Phase 2 (Standard + Orchestrateur). 3) Phase 3 : 10,000 questions par pipeline. 4) Activer la passerelle PME multi-canal. 5) Ingestion donnees sectorielles. 6) Deploiement production 1M+ questions.',\n    en: 'Next steps: 1) Get Jina API credits (unblocks Standard + Graph). 2) Complete Phase 2 (Standard + Orchestrator). 3) Phase 3: 10,000 questions per pipeline. 4) Activate PME multi-channel gateway. 5) Sector data ingestion. 6) Production deployment targeting 1M+ questions.'\n  },\n  sectors: {\n    fr: 'Les 4 secteurs cibles : BTP/Construction (reglementations, DTU, normes), Industrie (maintenance, qualite, production), Finance (bilans, CA, analyse), Juridique (contrats, conformite, RGPD). 7,600+ documents sectoriels prets pour ingestion.',\n    en: 'The 4 target sectors: Construction/BTP (regulations, standards), Industry (maintenance, quality, production), Finance (balance sheets, revenue, analysis), Legal (contracts, compliance, GDPR). 7,600+ sector documents ready for ingestion.'\n  }\n};\n\n// Keyword matching\nconst topics = [\n  { keys: ['nomos', 'what is', 'qu\\'est', 'c\\'est quoi', 'describe', 'decri', 'present'], topic: 'project' },\n  { keys: ['phase', 'progress', 'avancement', 'etape', 'ou en', 'status', 'etat'], topic: 'phase' },\n  { keys: ['pipeline', 'standard', 'graph', 'quantit', 'orchestr', 'rag'], topic: 'pipelines' },\n  { keys: ['infra', 'server', 'machine', 'cloud', 'hf space', 'vercel', 'database', 'base de donn'], topic: 'infrastructure' },\n  { keys: ['capab', 'capacit', 'peut faire', 'can do', 'feature', 'fonctionnalit'], topic: 'capabilities' },\n  { keys: ['accura', 'precis', 'performance', 'score', 'result'], topic: 'accuracy' },\n  { keys: ['tech', 'stack', 'outil', 'tool', 'llm', 'model', 'openrouter', 'pinecone', 'neo4j', 'supabase'], topic: 'tech' },\n  { keys: ['next', 'prochain', 'futur', 'plan', 'coming', 'roadmap', 'suite'], topic: 'next' },\n  { keys: ['sector', 'secteur', 'btp', 'industri', 'financ', 'juridique', 'legal', 'construction'], topic: 'sectors' }\n];\n\nlet matchedTopic = null;\nlet maxMatches = 0;\nfor (const t of topics) {\n  const matches = t.keys.filter(k => query.includes(k)).length;\n  if (matches > maxMatches) {\n    maxMatches = matches;\n    matchedTopic = t.topic;\n  }\n}\n\nlet response;\nif (matchedTopic && KB[matchedTopic]) {\n  response = KB[matchedTopic][lang] || KB[matchedTopic]['en'];\n} else {\n  // Default: give overview\n  response = KB.project[lang] || KB.project['en'];\n  response += '\\n\\n' + (lang === 'fr'\n    ? 'Pour plus de details, posez une question sur : les pipelines, la phase actuelle, l\\'infrastructure, les capacites, la precision, la technologie, les prochaines etapes, ou les secteurs.'\n    : 'For more details, ask about: pipelines, current phase, infrastructure, capabilities, accuracy, technology, next steps, or sectors.');\n}\n\nreturn {\n  status: 'SUCCESS',\n  response,\n  query: body.query || body.message || body.question || '',\n  topic: matchedTopic || 'overview',\n  lang,\n  engine: 'PROJECT_CHATBOT',\n  timestamp: new Date().toISOString()\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [450, 300],
-      "id": "chatbot-parse-query",
-      "name": "Parse Query & Context"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": { "caseSensitive": true, "typeValidation": "strict" },
-          "conditions": [
-            {
-              "id": "has-error",
-              "leftValue": "={{ $json.error }}",
-              "rightValue": true,
-              "operator": { "type": "boolean", "operation": "equals" }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [650, 300],
-      "id": "chatbot-error-check",
-      "name": "Has Error?"
+      "id": "chatbot-main",
+      "name": "Chatbot Engine"
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ status: 'ERROR', response: $json.response, timestamp: $json.timestamp }) }}",
+        "responseBody": "={{ JSON.stringify($json) }}",
         "options": {}
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [900, 200],
-      "id": "chatbot-error-respond",
-      "name": "Error Response"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "Content-Type", "value": "application/json" }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: 'arcee-ai/trinity-large-preview:free', temperature: 0.3, max_tokens: 800, messages: [ { role: 'system', content: ($json.lang === 'fr' ? 'Tu es l\\'assistant Nomos AI. Reponds aux questions des utilisateurs sur le projet, ses capacites, son avancement et ses objectifs. Reponds en francais, de maniere claire et concise. Utilise le contexte ci-dessous pour tes reponses. Si la question est hors-sujet du projet, reponds poliment que tu es specialise dans les informations sur Nomos AI.' : 'You are the Nomos AI assistant. Answer user questions about the project, its capabilities, progress, and goals. Be clear and concise. Use the context below. If the question is off-topic, politely redirect to Nomos AI topics.') + '\\n\\n' + $json.context }, { role: 'user', content: $json.query } ] }) }}",
-        "options": {
-          "response": { "response": { "responseFormat": "json" } },
-          "timeout": 30000
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [900, 400],
-      "id": "chatbot-llm-call",
-      "name": "LLM Generate Answer",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "OPENROUTER_HEADER_AUTH",
-          "name": "OpenRouter API"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// Extract LLM response safely\nconst raw = $input.item.json;\nconst queryData = $node['Parse Query & Context'].json;\n\nlet answer = '';\ntry {\n  answer = raw.choices?.[0]?.message?.content || '';\n} catch (e) {\n  answer = queryData.lang === 'fr'\n    ? 'Desole, une erreur est survenue. Veuillez reessayer.'\n    : 'Sorry, an error occurred. Please try again.';\n}\n\nreturn {\n  status: 'SUCCESS',\n  response: answer.trim(),\n  query: queryData.query,\n  lang: queryData.lang,\n  session_id: queryData.sessionId,\n  model: raw.model || 'trinity',\n  tokens_used: raw.usage?.total_tokens || 0,\n  timestamp: new Date().toISOString(),\n  engine: 'PROJECT_CHATBOT'\n};"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [1150, 400],
-      "id": "chatbot-format-response",
-      "name": "Format Response"
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ status: $json.status, response: $json.response, query: $json.query, engine: $json.engine, model: $json.model, tokens_used: $json.tokens_used, timestamp: $json.timestamp }) }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [1400, 400],
-      "id": "chatbot-success-respond",
-      "name": "Success Response"
+      "position": [700, 300],
+      "id": "chatbot-respond",
+      "name": "Respond"
     }
   ],
   "connections": {
@@ -117,58 +44,18 @@
       "main": [
         [
           {
-            "node": "Parse Query & Context",
+            "node": "Chatbot Engine",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Parse Query & Context": {
+    "Chatbot Engine": {
       "main": [
         [
           {
-            "node": "Has Error?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Has Error?": {
-      "main": [
-        [
-          {
-            "node": "Error Response",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "LLM Generate Answer",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "LLM Generate Answer": {
-      "main": [
-        [
-          {
-            "node": "Format Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format Response": {
-      "main": [
-        [
-          {
-            "node": "Success Response",
+            "node": "Respond",
             "type": "main",
             "index": 0
           }
