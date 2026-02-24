@@ -1,6 +1,6 @@
 # Knowledge Base — Cerveau Persistant Multi-RAG
 
-> Last updated: 2026-02-23T23:18:00+01:00 (Session 43 — OpenRouter key rotation system)
+> Last updated: 2026-02-24T02:50:00+01:00 (Session 54 — API credits exhausted, model swaps, repo cleanup)
 > **Ce document est VIVANT.** Il s'enrichit a CHAQUE session avec les solutions, patterns
 > et connaissances techniques decouvertes. A lire EN PREMIER avec `fixes-library.md`.
 > Objectif : ameliorer la performance de l'agent a chaque session.
@@ -1111,6 +1111,46 @@ class AutonomousEvaluator:
 | 27 | Concurrent load testing results (7.4), Orchestrator concurrency limits | 2026-02-19 |
 | 30 | Phase1 vs Phase2 question filtering (6.4), FIX-36 | 2026-02-20 |
 | 35 | Neo4j data quality analysis (8.1-8.4), 98% generic relationships critical issue | 2026-02-21 |
+| 54 | HF Space secrets management, API credit monitoring, model availability, repo cleanup | 2026-02-24 |
+
+---
+
+## SECTION 11 — HF SPACE SECRETS & API CREDIT MANAGEMENT (Session 54)
+
+### 11.1 HF Space Secrets vs Variables
+- **Secrets**: Injected as env vars at container runtime. Not visible in UI. Use `api.add_space_secret()`.
+- **Variables**: Visible in UI and settings. Use `api.add_space_variable()`.
+- **CRITICAL**: NEVER set same key as both secret AND variable — causes CONFIG_ERROR with `Hardware: None`.
+- **After any rebuild**: Verify secrets with `api.get_space_variables()` (only shows variables, not secrets). Check entrypoint ENV CHECK logs.
+
+### 11.2 API Credit Monitoring
+| API | Free Tier | Monthly Reset | Phase 2 Usage (est.) |
+|-----|-----------|---------------|---------------------|
+| Jina Embeddings | 1M tokens/month | Monthly | ~2M tokens (1000q × 2 embeddings × 1K tokens) |
+| Cohere Reranker | 1000 calls/month | Monthly | ~2000 calls (1000q × 2 reranks) |
+| OpenRouter Free | 20 req/min per model | Rolling | N/A (rate-limited, not quota) |
+
+**Rule**: Before starting any >200 question eval run, check API credit balances. Phase 2 (1000q) WILL exhaust Jina free tier. Plan for paid keys for Phase 3 (10K).
+
+### 11.3 OpenRouter Free Model Availability (Feb 2026)
+| Model | Status | Use Case |
+|-------|--------|----------|
+| `arcee-ai/trinity-large-preview:free` | AVAILABLE | Extraction, generation |
+| `mistralai/mistral-small-3.1-24b-instruct:free` | AVAILABLE | SQL, instruction following |
+| `stepfun/step-3.5-flash:free` | AVAILABLE | Fast inference |
+| `nousresearch/hermes-3-llama-3.1-405b:free` | AVAILABLE | Heavy reasoning |
+| `openai/gpt-oss-120b:free` | AVAILABLE | General purpose |
+| `qwen/qwen3-coder:free` | AVAILABLE | Code/SQL generation |
+| `meta-llama/llama-3.3-70b-instruct:free` | RATE-LIMITED | Was primary SQL/reasoning model |
+| `google/gemma-3-27b-it:free` | RATE-LIMITED | Was primary fast model |
+
+**Note**: Model availability fluctuates. Test before committing to large runs. Models are HARDCODED in workflow JSONs (not env vars).
+
+### 11.4 Pinecone Host Naming
+- Correct host: `sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io`
+- OLD/wrong host in some configs: `sota-rag-jina-1024-czwk7da.svc.aped-4627-b74a.pinecone.io`
+- The workflow JSONs have the CORRECT host hardcoded. The `.env.local` PINECONE_HOST may be stale.
+- Pinecone SDK (MCP) auto-discovers correct host. REST API requires exact match.
 
 ---
 
