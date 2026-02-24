@@ -1,61 +1,65 @@
-# Session State — 24 Fevrier 2026 (Session 53)
+# Session State — 24 Fevrier 2026 (Session 54)
 
-> Last updated: 2026-02-24T01:30:00+01:00
+> Last updated: 2026-02-24T02:30:00+01:00
 
-## FIX-58: ROOT CAUSE FOUND — HF Space Secrets Missing
+## Current Status: API Credits Exhausted — 2 of 3 Embedding/Reranking APIs Down
 
-**ALL 4 pipelines broken because HF Space had ZERO API key secrets.**
-Only 2 variables existed (LLM_SQL_MODEL, LLM_SQL_FALLBACK_MODEL).
-All env vars ($env.OPENROUTER_KEY_STANDARD, etc.) resolved to empty → Bearer null → all API calls failed.
+### Critical Blockers
+| API | Status | Impact | Fix |
+|-----|--------|--------|-----|
+| **Jina API** | NO BALANCE | Standard + Graph pipelines blocked (embeddings) | Top up or new account |
+| **Cohere API** | TRIAL EXCEEDED (1000/month) | Reranking blocked | Upgrade to Production key |
+| **OpenRouter free** | Llama 70B + Gemma 27B rate-limited | Swapped to Mistral Small + StepFun Flash | DONE |
 
-### Fix Applied
-- Pushed 13 secrets to HF Space via `huggingface_hub.add_space_secret()`
-- Factory rebooted Space — Docker rebuilding with secrets injected
-- Build status: RUNNING_APP_STARTING (build done, app booting)
+### Pipeline Status After Session 54 Fixes
+| Pipeline | Status | Issue |
+|----------|--------|-------|
+| Standard | **BROKEN** | Jina embedding API has no balance → no vector search → "Unable to generate answer" |
+| Graph | **BROKEN** | Same Jina issue → no HyDE embeddings → "Information not available" |
+| Quantitative | **BROKEN** | SQL generation fails with new model (Mistral Small) — returns NO_ANSWER |
+| Orchestrator | **BROKEN** | Empty response (depends on other pipelines) |
+| PME Gateway | **NOT REGISTERED** | Webhook 404 — needs activation |
 
-### Secrets Pushed (13)
-OPENROUTER_API_KEY, OPENROUTER_KEY_STANDARD, OPENROUTER_KEY_GRAPH,
-OPENROUTER_KEY_QUANTITATIVE, OPENROUTER_KEY_ORCHESTRATOR, OPENROUTER_KEY_PME,
-PINECONE_API_KEY, JINA_API_KEY, SUPABASE_PASSWORD, COHERE_API_KEY,
-N8N_ENCRYPTION_KEY, NEO4J_AUTH, NEO4J_URI
+### Fixes Applied This Session
+1. **FIX-58**: Pushed 13 API secrets to HF Space (was missing ALL keys)
+2. **FIX-59**: Replaced rate-limited models (Llama 70B → Mistral Small, Gemma 27B → StepFun Flash)
+3. **FIX-60**: Fixed HF Space CONFIG_ERROR (caused by adding model env vars as both secrets + variables)
+4. **Cleanup**: Removed 674 files from mon-ipad (973 → 299 tracked files). Moved logs, db, snapshots, junk to rag-storage
 
-### Infrastructure Audit
-| Site | Status | Note |
-|------|--------|------|
-| Vercel ETI | HTTP 200 | Live |
-| Vercel PME Connectors | HTTP 200 | Live |
-| Vercel PME Use Cases | HTTP 200 | Live |
-| Vercel Dashboard | HTTP 200 | Live |
-| HF Space | REBUILDING | Factory reboot with 13 secrets |
-| All 3 Codespaces | Shutdown | Need restart for 10K |
+### What Works
+- HF Space: RUNNING (cpu-basic, n8n 2.8.4, 13 secrets, updated workflows)
+- All 4 Vercel sites: Live (HTTP 200)
+- Pinecone: 10,411 vectors, accessible via MCP and REST API
+- Neo4j: 19,788 nodes / 76,717 rels
+- Supabase: 65 tables, accessible via MCP
+- OpenRouter: 5+ free models available (Mistral Small, StepFun Flash, Trinity, Hermes 405B, GPT-OSS 120B)
+- All satellite repos: Clean (9-79 files each)
 
-### Repos Health
-| Repo | Commits | CLAUDE.md | Issue |
-|------|---------|-----------|-------|
-| mon-ipad | 645 | YES | - |
-| rag-tests | 600 | YES | - |
-| rag-website | 599 | YES | - |
-| rag-dashboard | 601 | NO | Needs CLAUDE.md |
-| rag-data-ingestion | 599 | YES | - |
-| rag-pme-connectors | 599 | YES | - |
-| rag-pme-usecases | 1 | NO | Quasi-vide |
-| rag-storage | 4 | NO | Needs CLAUDE.md |
+### mon-ipad Cleanup Done
+- Before: 973 tracked files
+- After: 299 tracked files
+- Removed: logs/ (572), db/ (27), snapshot/current+workflows/ (51), n8n_analysis_results/ (26), 6 junk root files
+- All archived to `/home/termius/rag-storage/repos/mon-ipad/`
 
-### ajd23feb Completion: 12/14 → pending pipeline fix to finish
-- DONE: 12 items (security, keys, chatbot, ingestion, rotation, cleanup, CLAUDE.md, exec summary...)
-- PENDING: Dashboard live per-repo (item 13), PME Gateway (item 14, needs HF Space secrets → DONE)
-- FIX-58 unblocks EVERYTHING — all 4 pipelines + PME Gateway
+### Missing/Not Yet Built
+1. **User-facing chatbot for progress queries** — NOT STARTED (planned in improvements-roadmap Section 14.1)
+2. **Ingestion quick-test scripts** — `ingest-quick-test.py`, `verify-ingestion.py` NOT BUILT
+3. **rag-storage live mirror architecture** — basic structure exists, needs automation
+4. **CLAUDE.md for rag-dashboard, rag-pme-usecases, rag-storage** — NOT CREATED
 
-### Phase 2 eval (waiting on HF Space rebuild)
+### Phase 2 Eval (unchanged — blocked by API credits)
 | Pipeline | Done | Accuracy | Status |
 |----------|------|----------|--------|
-| Standard | 579/1000 | ~36% | WAITING — secrets fix should restore |
+| Standard | 579/1000 | ~36% | BLOCKED — Jina credits exhausted |
 | Graph | 500/500 | 78.0% | COMPLETE |
 | Quantitative | 500/500 | 92.0% | COMPLETE |
-| Orchestrator | 57/1000 | 0% | WAITING — secrets fix should restore |
+| Orchestrator | 57/1000 | 0% | BLOCKED — depends on other pipelines |
 
-### Next Steps
-1. Verify HF Space rebuild succeeds with secrets
-2. Test all 5 pipelines (Standard, Graph, Quant, Orch, PME)
-3. Complete jd23feb: Dashboard per-repo + PME Gateway
-4. Prepare 10K infrastructure (Codespaces + parallel scripts)
+### Next Steps (Priority Order)
+1. **Get Jina API credits** — Top up account or create new key (BLOCKS Standard + Graph)
+2. **Get Cohere Production key** — Upgrade from trial (BLOCKS reranking)
+3. **Fix Quant SQL generation** — Test with different models or adjust prompt
+4. **Complete PME Gateway activation** — Needs working HF Space
+5. **Build user-facing chatbot workflow** — New n8n workflow for project progress queries
+6. **Build ingestion test scripts** — `ingest-quick-test.py` for validation
+7. **Prepare 10K infrastructure** — Codespaces + parallel scripts
