@@ -1,10 +1,24 @@
 # Directive — rag-pme-connectors
 
-> Last updated: 2026-02-22T19:20:00+01:00
+> Last updated: 2026-02-25T00:20:00+01:00
 
 ## Rôle de ce repo
 
-Site vitrine PME (15 connecteurs apps) + workflows n8n PME (3 workflows: gateway, action-executor, bridge).
+**ÉTAT RÉEL (audit Session 59b)** : Site vitrine/showcase Next.js 15 déployé sur Vercel + 1 chatbot RAG fonctionnel (proxy vers Orchestrator n8n).
+
+### CE QUI EXISTE vs CE QUI EST ANNONCÉ
+| Claim | Réalité | Status |
+|-------|---------|--------|
+| 15 connecteurs apps | **LANDING PAGE ONLY** — icônes/texte statiques dans `constants-pme.ts`, zéro code d'intégration | À CONSTRUIRE |
+| Chatbot IA | **FONCTIONNEL** — proxy vers Orchestrator RAG via `/api/chat` | OK |
+| OAuth flows | **INEXISTANT** — zéro flow OAuth, zéro SDK externe | À CONSTRUIRE |
+| 3 workflows n8n PME | **PAS DANS CE REPO** — zéro JSON workflow | Dans mon-ipad |
+| API routes connecteurs | **1 SEULE ROUTE** — `/api/chat` (proxy n8n) | À CONSTRUIRE |
+
+### Priorité next session
+1. Décider : construire les vraies intégrations OU reclassifier comme showcase-only
+2. Si intégrations : ajouter SDKs (googleapis, @slack/web-api, stripe), OAuth routes, webhook handlers
+3. Les 3 workflows PME n8n sont dans mon-ipad, pas ici
 
 ## Architecture PME Workflows
 

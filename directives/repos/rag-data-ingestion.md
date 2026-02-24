@@ -13,16 +13,29 @@
 
 ---
 
-## ÉTAT ACTUEL — 23 fév 2026
+## ÉTAT ACTUEL — 25 fév 2026 (audit Session 59b)
 
 | | |
 |-|-|
 | **Dernier commit** | Session 39 — 22 fév 2026 |
-| **Déployé / en cours** | Workflows Ingestion V4.0 + Enrichissement V4.0 (SOTA 2026 upgrades) |
-| **Phase 2** | Graph 500/500 DONE (78.0%), Quant 500/500 DONE (92.0%), Standard 579/1000 STOPPED, Orch 57/1000 BROKEN |
-| **Codespace** | Not currently running — 3/5 datasets downloaded (669MB) |
-| **Datasets downloaded** | squad_v2, triviaqa, hotpotqa (669MB total) — Missing: musique + finqa (deprecated loading scripts) |
-| **Prochain objectif immédiat** | Fix remaining dataset downloads + deploy V4.0 workflows on HF Space + ingest 500 file types × 4 sectors |
+| **Déployé / en cours** | Workflows Ingestion V4.0 + Enrichissement V4.0 (JSON dans n8n/live/) |
+| **Codespace** | Not currently running |
+| **Datasets downloaded** | squad_v2, triviaqa, hotpotqa (669MB total) — Missing: musique + finqa |
+
+### AUDIT HONNÊTE (Session 59b)
+| Composant | Réalité | Status |
+|-----------|---------|--------|
+| **ingestion.json** | VRAI CODE (30 noeuds, BM25, NER, chunking) — jamais exécuté en prod | UNTESTED |
+| **enrichment.json** | **CASSÉ** — URLs placeholder `internal-api.company.com` et `external-data-provider.com` | BROKEN |
+| **500 file types** | **INEXISTANT** — les 5 scripts référencés dans CLAUDE.md n'existent PAS. MIME detector = 11 types | MISSING |
+| **Scripts download** | 4 scripts Python FONCTIONNELS (download-benchmarks, download-sectors, etc.) | OK |
+| **Docker/Codespace** | FONCTIONNEL (n8n + 2 workers + postgres + redis) mais PAS d'import workflow | PARTIAL |
+| **Tests** | ZÉRO — pas de pytest, pas de CI, pas de test data | MISSING |
+
+### Priorité next session
+1. **FIX enrichment.json** — remplacer les 2 URLs placeholder par des vrais endpoints (ou les supprimer)
+2. **Ajouter import workflow** dans setup.sh (importer les JSON dans n8n au démarrage)
+3. **Décider 500 file types** — construire les 5 scripts manquants OU réduire le scope au 11 types réels
 
 ### SOTA V4.0 Improvements Applied (Session 31)
 | Technique | Impact | Status |
