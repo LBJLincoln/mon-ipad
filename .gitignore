@@ -27,10 +27,8 @@ final-workflows/
 # Logs (generic)
 *.log
 
-# Structured logs - tracked for monitoring
-# logs/ directory is tracked (execution traces, error files, DB snapshots)
-# Only ignore large/generated JSONL execution logs
-logs/executions/*.jsonl
+# Logs — moved to rag-storage (Session 54)
+logs/
 
 # OS
 .DS_Store
@@ -47,7 +45,11 @@ __pycache__/
 # Temp
 *.tmp
 *.temp
+# Snapshots and DB — moved to rag-storage (Session 54)
+snapshot/current/
+snapshot/workflows/
 snapshot/pre-jina-migration/
+db/
 
 # Large HF dataset files (>100MB — re-downloadable)
 datasets/hf/natural_questions.jsonl
@@ -60,3 +62,4 @@ website-pme-usecases/.next/
 website/
 website-pme-connectors/
 website-pme-usecases/
+n8n_analysis_results/
