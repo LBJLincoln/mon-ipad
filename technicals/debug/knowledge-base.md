@@ -1,9 +1,52 @@
 # Knowledge Base — Cerveau Persistant Multi-RAG
 
-> Last updated: 2026-02-24T14:30:00+01:00 (Session 54 — n8n credentials fix, Jina+Cohere added)
+> Last updated: 2026-02-24T17:15:00+01:00 (Session 57 — IRON RULES added, LOCAL fallback killed)
 > **Ce document est VIVANT.** Il s'enrichit a CHAQUE session avec les solutions, patterns
 > et connaissances techniques decouvertes. A lire EN PREMIER avec `fixes-library.md`.
 > Objectif : ameliorer la performance de l'agent a chaque session.
+
+---
+
+## SECTION -1 — IRON RULES (NEVER VIOLATE — READ FIRST EVERY SESSION)
+
+> **These rules are ABSOLUTE. They override everything else. They exist because the same
+> mistakes kept recurring across sessions 40-57. ZERO exceptions.**
+
+### RULE 1: VM Google Cloud = PILOTAGE ONLY
+- **NO n8n on VM** (removed Session 42, never reinstall)
+- **NO local eval** (no calling OpenRouter directly from VM to answer questions)
+- **NO LOCAL fallback** (DISABLED in code Session 57 — was masking pipeline failures)
+- VM runs ONLY: Claude Code, git repos, MCP servers, eval scripts (that POST to HF Space)
+- Guard in `run-eval.py:28-35` blocks localhost/VM IP — NEVER bypass it
+
+### RULE 2: HF Space = EXECUTION (2 instances)
+- **2 HF Spaces** planned (HF_TOKEN + HF_TOKEN_2)
+- ALL n8n pipelines run on HF Space (16GB RAM each)
+- ALL webhook calls go to HF Space URLs, NEVER localhost
+- rag-tests eval: VM scripts POST to `$N8N_HOST` (HF Space URL)
+- If HF Space is down → FIX IT, don't create local workarounds
+
+### RULE 3: Codespaces + GitHub Actions = ADDITIONAL INFRA
+- **Codespaces**: data-ingestion, pme-connectors (Docker broken in Alpine — use HF Space remote)
+- **GitHub Actions**: eval-1000q.yml matrix jobs for parallel pipeline eval
+- **Docker-in-Docker DOES NOT WORK** in GitHub Codespaces Alpine (iptables permission denied)
+- Codespaces can run eval scripts pointing to HF Space
+
+### RULE 4: SCOPE — What we work on
+- **ACTIVE**: rag-tests, rag-data-ingestion, rag-dashboard, rag-pme-connectors, rag-storage, mon-ipad
+- **EXCLUDED FOR NOW**: rag-website, rag-pme-usecases (Vercel static, not priority)
+
+### RULE 5: .env.local — ALWAYS EXPORT
+- Every variable in `.env.local` MUST have `export` keyword
+- After session compaction, child processes lose env vars if not exported
+- Fixed permanently Session 57 — if someone removes `export`, ADD IT BACK
+
+### RULE 6: NO LOCAL FALLBACK — EVER
+- `call_local_reasoning()` in `run-eval.py` calls OpenRouter directly, bypassing n8n
+- This was producing FAKE accuracy (65%+ when real pipeline accuracy was ~36%)
+- Hybrid fallback block in `run-eval-parallel.py:171-183` is PERMANENTLY DISABLED
+- `--local-pipelines` flag is PERMANENTLY DISABLED with warning
+- If pipelines fail → FIX THE PIPELINES, don't mask with local calls
 
 ---
 
