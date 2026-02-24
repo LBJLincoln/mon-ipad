@@ -1,13 +1,13 @@
 {
   "meta": {
-    "generated_at": "2026-02-24T19:03:57+01:00",
+    "generated_at": "2026-02-24T19:04:53+01:00",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
     "total_unique_questions": 2309,
     "total_test_runs": 7054,
     "total_iterations": 595,
-    "status": "running",
+    "status": "complete",
     "current_session": "2026-02-24T18-21-36"
   },
   "reference_cloud_executions": {
@@ -109319,7 +109319,7 @@
       "id": "iter-2026-02-24T18-21-36",
       "number": 595,
       "timestamp_start": "2026-02-24T18:59:52+01:00",
-      "timestamp_end": "2026-02-24T19:03:57+01:00",
+      "timestamp_end": "2026-02-24T19:04:53+01:00",
       "label": "Iteration 595",
       "description": "",
       "changes_applied": [],
@@ -238431,24 +238431,6 @@
   ],
   "execution_logs": [
     {
-      "timestamp": "2026-02-24T14:20:19+01:00",
-      "question_id": "graph-musique-35",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 13001,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Mila Kunis voices Meg Griffin on Family Guy. The original voice of Meg Griffin was Lacey Chabert.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
       "timestamp": "2026-02-24T14:21:18+01:00",
       "question_id": "p2-std-35",
       "rag_type": "standard",
@@ -241888,6 +241870,24 @@
         "traversal_depth": 0,
         "community_matches": 0
       }
+    },
+    {
+      "timestamp": "2026-02-24T19:04:17+01:00",
+      "question_id": "graph-musique-19",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 39247,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Information not available in the knowledge graph.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
     }
   ],
   "history": [
@@ -242131,6 +242131,12 @@
       "event": "eval_complete",
       "total_tested": 6474,
       "standard": 36.1
+    },
+    {
+      "timestamp": "2026-02-24T19:04:53+01:00",
+      "event": "eval_complete",
+      "total_tested": 7054,
+      "graph": 0.0
     }
   ],
   "workflow_versions": {
