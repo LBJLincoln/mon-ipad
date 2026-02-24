@@ -156,7 +156,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: 'meta-llama/llama-3.3-70b-instruct:free', temperature: 0.3, max_tokens: 1000, messages: [{ role: 'system', content: 'Tu es un assistant qui résume des emails de manière concise. Liste les points clés et les actions requises.' }, { role: 'user', content: 'Résume ces emails:\\n' + JSON.stringify($input.all().map(item => ({ from: item.json.from, subject: item.json.subject, snippet: (item.json.snippet || '').substring(0, 300) }))) }] }) }}",
+        "jsonBody": "={{ JSON.stringify({ model: 'mistralai/mistral-small-3.1-24b-instruct:free', temperature: 0.3, max_tokens: 1000, messages: [{ role: 'system', content: 'Tu es un assistant qui résume des emails de manière concise. Liste les points clés et les actions requises.' }, { role: 'user', content: 'Résume ces emails:\\n' + JSON.stringify($input.all().map(item => ({ from: item.json.from, subject: item.json.subject, snippet: (item.json.snippet || '').substring(0, 300) }))) }] }) }}",
         "options": {
           "response": { "response": { "responseFormat": "json" } },
           "timeout": 30000
