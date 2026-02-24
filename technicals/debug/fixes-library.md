@@ -1,9 +1,9 @@
 # Fixes Library — Multi-RAG Orchestrator
 
-> Last updated: 2026-02-23T23:30:00+01:00
+> Last updated: 2026-02-24T02:45:00+01:00
 
 > **Bibliotheque permanente de tous les bugs resolus.** A consulter EN PREMIER avant tout debug.
-> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 51 (2026-02-23).
+> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 54 (2026-02-24).
 
 ---
 
@@ -39,6 +39,9 @@
 | 26 | Agent Process | Webhook path/field name incorrects — pre-vol checklist obligatoire | 25 | CRITIQUE |
 | 27 | n8n API | REST API 401 — pas de cle API configuree dans Docker | 25 | IMPORTANT |
 | 28 | HF Space | n8n $env vars non resolus — Quant+Orch 500 (OPENROUTER_API_KEY vide) | 26 | CRITIQUE |
+| 59 | OpenRouter | Free models rate-limited — swap Llama/Gemma → Mistral/StepFun | 54 | CRITIQUE |
+| 60 | HF Space | CONFIG_ERROR from duplicate secret+variable names | 54 | CRITIQUE |
+| 61 | Jina/Cohere | API credits exhausted — embeddings + reranking blocked | 54 | CRITIQUE |
 | 29 | Quantitative + Orchestrator | HF Space TCP port 6543 bloque + require('crypto') + API key type | 27 | CRITIQUE |
 | 30 | Orchestrator | PostgreSQL local pour HF Space (port 6543 bloque) | 27 | IMPORTANT |
 | 31 | Infrastructure | Live diagnostic server (diag-server.py) sur port 7861 | 27 | IMPORTANT |
@@ -1104,5 +1107,32 @@ for node in workflow['nodes']:
 - **Solution**: `huggingface_hub.add_space_secret()` to push 13 secrets from `.env.local` to HF Space. Then `restart_space(factory_reboot=True)` to trigger full Docker rebuild with new secrets.
 - **Secrets pushed**: OPENROUTER_API_KEY, OPENROUTER_KEY_STANDARD, OPENROUTER_KEY_GRAPH, OPENROUTER_KEY_QUANTITATIVE, OPENROUTER_KEY_ORCHESTRATOR, OPENROUTER_KEY_PME, PINECONE_API_KEY, JINA_API_KEY, SUPABASE_PASSWORD, COHERE_API_KEY, N8N_ENCRYPTION_KEY, NEO4J_AUTH, NEO4J_URI
 - **Lecon**: ALWAYS verify HF Space secrets exist after any rebuild/reconfiguration. Use `api.get_space_variables()` to check. The entrypoint.sh ENV CHECK section logs tell you if vars are set — check build logs after deploy.
+
+### FIX-59: OpenRouter free models rate-limited — swap to alternatives
+- **Date**: 2026-02-24 (Session 54)
+- **Symptome**: Pipelines respond but LLM calls return empty/fallback. OpenRouter 429 "temporarily rate-limited upstream" for Llama 70B, Gemma 27B.
+- **Cause racine**: `meta-llama/llama-3.3-70b-instruct:free` and `google/gemma-3-27b-it:free` globally rate-limited on OpenRouter free tier. Model names HARDCODED in workflow JSONs (NOT using `$env.LLM_*_MODEL`).
+- **Solution**: sed replace in `hf-space/n8n-workflows/*.json` + `n8n/live/*.json`:
+  - `meta-llama/llama-3.3-70b-instruct:free` → `mistralai/mistral-small-3.1-24b-instruct:free` (11 refs)
+  - `google/gemma-3-27b-it:free` → `stepfun/step-3.5-flash:free` (5 refs)
+  - `arcee-ai/trinity-large-preview:free` kept (17 refs, still available)
+- **Upload**: `huggingface_hub.upload_file()` to push 13 updated workflow JSONs to HF Space
+- **Lecon**: Model names are HARDCODED in n8n workflow JSONs, not env vars. To switch models, must edit JSONs + redeploy. Consider migrating to `$env.LLM_*_MODEL` expressions for dynamic switching.
+
+### FIX-60: HF Space CONFIG_ERROR from duplicate secret+variable names
+- **Date**: 2026-02-24 (Session 54)
+- **Symptome**: HF Space stuck in `CONFIG_ERROR`, `Hardware: None`. Triggered by adding LLM_MAIN_MODEL, LLM_FAST_MODEL, LLM_EXTRACT_MODEL as BOTH secrets AND variables.
+- **Cause racine**: Setting a key as both a HF Space secret and a variable causes CONFIG_ERROR. The Space loses its hardware assignment.
+- **Solution**: `api.delete_space_variable()` + `api.delete_space_secret()` for the conflicting keys, then `api.request_space_hardware("cpu-basic")` + `factory_reboot=True`.
+- **Lecon**: NEVER set the same key as both a secret AND a variable on HF Spaces. Use secrets for sensitive values, variables for non-sensitive config.
+
+### FIX-61: Jina API credits exhausted — Standard + Graph pipelines blocked
+- **Date**: 2026-02-24 (Session 54)
+- **Symptome**: Standard: "Unable to generate answer". Graph: "Information not available" (traversal_depth=0). Both use Jina for query embeddings.
+- **Cause racine**: Jina API key has $0 balance. `AUTHZ_INSUFFICIENT_BALANCE` error. Phase 2 testing (579+ Standard + 500 Graph questions) exhausted the free 1M tokens/month.
+- **Impact**: WITHOUT Jina embeddings, no vector search possible → no context for LLM → all embedding-dependent pipelines fail.
+- **Solution needed**: Top up Jina account at https://jina.ai/api-dashboard/key-manager OR create new account for fresh free credits.
+- **Also**: Cohere trial key exceeded (1000 calls/month) → reranking broken.
+- **Lecon**: Monitor API credit usage during large-scale testing. Phase 2 (1000q × 4 pipelines) can exhaust free tier credits in 1-2 days. Budget for paid API keys for 10K testing.
 
 ---
