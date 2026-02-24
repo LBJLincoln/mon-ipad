@@ -56,9 +56,11 @@ jobs:
             --dataset phase-2 \
             --types ${{ matrix.pipeline }} \
             --max ${{ inputs.max_questions || '1000' }} \
-            --batch-size ${{ inputs.batch_size || '1' }} \
+            --batch-size ${{ inputs.batch_size || '10' }} \
             --reset \
-            --early-stop 10 \
+            --force \
+            --early-stop 15 \
+            --all-parallel \
             --label "gha-${{ matrix.pipeline }}-$(date +%Y%m%d)" \
             2>&1 | tee /tmp/eval-${{ matrix.pipeline }}.log
         timeout-minutes: 300
