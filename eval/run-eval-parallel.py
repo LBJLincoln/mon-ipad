@@ -224,10 +224,10 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
     Early-stop: halts after N consecutive failures (default 4).
     Batch-size: processes N questions in parallel within the pipeline (E5 improvement)."""
     PIPELINE_TIMEOUTS = {
-        "standard": 120,
-        "graph": 180,
-        "quantitative": 180,
-        "orchestrator": 360,
+        "standard": 60,
+        "graph": 90,
+        "quantitative": 60,
+        "orchestrator": 90,
     }
     EARLY_STOP_THRESHOLD = getattr(run_pipeline, '_early_stop', 4)
     BATCH_SIZE = getattr(run_pipeline, '_batch_size', 1)
