@@ -1,6 +1,11 @@
-# Status — 23 Fevrier 2026 (Session 51)
+# Status — 24 Fevrier 2026 (Session 55)
 
-> Last updated: 2026-02-23T23:30:00+01:00
+> Last updated: 2026-02-24T03:30:00+01:00
+
+### Session 55 — 24 fevrier 2026 (03:30+)
+- **Objectif**: Fix API credits (Cohere + Jina) and launch 1000q eval
+- **Actions**: Pushed new Cohere + Jina API keys to HF Space environment, restarted space, all 4 core webhooks now responding HTTP 200
+- **Resultat**: Webhooks reachable but pipelines returning application-level errors (Standard: "Unable to generate answer", Graph: "Information not available", Quantitative: "NO_ANSWER", Orchestrator: empty response). Root cause under investigation — likely credential wiring or workflow configuration issue within n8n.
 
 ### Session 51 — 23 fevrier 2026 (23:30+)
 - **Objectif**: Fix broken pipelines (env var syntax), redeploy HF Space v5.4

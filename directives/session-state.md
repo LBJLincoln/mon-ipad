@@ -1,33 +1,35 @@
 # Session State — 24 Fevrier 2026 (Session 55)
 
-> Last updated: 2026-02-24T03:10:00+01:00
+> Last updated: 2026-02-24T03:30:00+01:00
 
-## Current Status: Chatbot LIVE + Ingestion Tests Built — RAG Pipelines Still Blocked by API Credits
+## Current Status: HF Space Running, Webhooks HTTP 200 — Pipelines Returning Application Errors
 
-### Critical Blockers (unchanged)
+### Critical Blockers
 | API | Status | Impact | Fix |
 |-----|--------|--------|-----|
-| **Jina API** | NO BALANCE | Standard + Graph pipelines blocked (embeddings) | Top up or new account |
-| **Cohere API** | TRIAL EXCEEDED (1000/month) | Reranking blocked | Upgrade to Production key |
+| **Jina API** | NEW KEY PUSHED to HF Space | Was blocking Standard + Graph embeddings | Key deployed, but pipelines still returning errors |
+| **Cohere API** | NEW KEY PUSHED to HF Space | Was blocking reranking | Key deployed, but pipelines still returning errors |
 | **OpenRouter free** | Llama 70B + Gemma 27B rate-limited | Swapped to Mistral Small + StepFun Flash | DONE |
 
 ### Pipeline Status
 | Pipeline | Status | Issue |
 |----------|--------|-------|
-| Standard | **BROKEN** | Jina embedding API has no balance |
-| Graph | **BROKEN** | Same Jina issue |
-| Quantitative | **BROKEN** | SQL generation fails with Mistral Small |
-| Orchestrator | **BROKEN** | Depends on other pipelines |
+| Standard | **HTTP 200 — APP ERROR** | Webhook responds but returns "Unable to generate answer" |
+| Graph | **HTTP 200 — APP ERROR** | Webhook responds but returns "Information not available" |
+| Quantitative | **HTTP 200 — APP ERROR** | Webhook responds but returns "NO_ANSWER" |
+| Orchestrator | **HTTP 200 — APP ERROR** | Webhook responds but returns empty response |
 | PME Gateway | **NOT REGISTERED** | Webhook 404 |
 | **Project Chatbot** | **LIVE** | 7/7 tests passing, bilingual FR/EN |
 
 ### Fixes Applied This Session (Session 55)
-1. **project-chatbot.json**: New n8n workflow — keyword-based Q&A about project progress (9 topics, FR/EN)
+1. **New Cohere + Jina API keys**: Pushed to HF Space environment variables, space restarted
+2. **HF Space restarted**: All 4 core webhooks now responding HTTP 200 (previously 404)
+3. **project-chatbot.json**: New n8n workflow — keyword-based Q&A about project progress (9 topics, FR/EN)
    - Webhook: `/webhook/project-chatbot` — POST `{"query":"...", "lang":"fr|en"}`
    - Zero external dependencies (no LLM, no Jina, no Cohere)
    - Deployed to HF Space, tested 7/7 passing, <100ms response time
    - 3 iterations: v1 (LLM with credentials — failed), v2 (LLM with fetch — failed), v3 (keyword-based — works)
-2. **ingest-quick-test.py**: New test script for ingestion + chatbot + database health
+4. **ingest-quick-test.py**: New test script for ingestion + chatbot + database health
    - Tests: debug-status, ingestion webhook, chatbot, Pinecone/Supabase
    - All tests passing (ingestion webhook reachable, chatbot 3/3, Pinecone 10,411 vectors)
 
