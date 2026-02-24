@@ -1,8 +1,8 @@
 # Session State — 24 Fevrier 2026 (Session 59)
 
-> Last updated: 2026-02-24T22:30:00+01:00
+> Last updated: 2026-02-25T00:15:00+01:00
 
-## Current Status: HF SPACE REBUILDING — All webhooks down, GH Actions eval completed
+## Current Status: POST-RECOMPOSITION AUDIT COMPLETE — Critical gaps identified in pme-connectors + data-ingestion
 
 ### Session 59 Progress
 
@@ -60,13 +60,29 @@
 3. **Quantitative still broken** — 0% despite hot-patch fix
 4. **Orchestrator empty body** — Sub-workflow execution mechanism broken
 
+### Session 59b — Post-Recomposition Audit (Feb 25)
+
+6. **Deep audit of rag-pme-connectors**:
+   - 15 connectors = LANDING PAGE ONLY (static icons, zero integration code, zero SDKs)
+   - Chatbot = REAL (proxies to Orchestrator RAG, works)
+   - 1 API route only (n8n proxy). No OAuth, no connector backends
+   - n8n PME workflows NOT in this repo (zero JSON files)
+
+7. **Deep audit of rag-data-ingestion**:
+   - ingestion.json = REAL CODE (30 nodes, BM25, NER, chunking) but handles 11 file types NOT 500
+   - enrichment.json = BROKEN (placeholder URLs: internal-api.company.com)
+   - "500 file types x 4 sectors" = MISSING (5 referenced scripts DO NOT EXIST)
+   - Dataset download scripts = FUNCTIONAL (4 real Python scripts)
+   - Docker/Codespace infra = FUNCTIONAL but no workflow import script
+   - Test environment = MISSING (no pytest, no CI, no test data)
+
+8. **All repos committed + pushed + CLAUDE.md synced**
+
 ### Next Steps
-1. **Wait for HF Space rebuild** → Test all 5 webhooks
-2. **If webhooks still timeout**: Deploy n8n on Codespace as fallback
-3. **Investigate Graph regression**: Compare Phase 1 vs Phase 2 question formats
-4. **Debug Quantitative**: Examine execution traces for Init & ACL node behavior
-5. **Fix Orchestrator**: Agent ad840d6 working on empty body issue
-6. **Deploy 2nd HF Space**: Requires user's HF_TOKEN_2
+1. **rag-pme-connectors**: Build REAL connector integrations (OAuth flows, API routes, SDK imports) or reclassify as showcase-only
+2. **rag-data-ingestion**: Fix enrichment.json placeholder URLs, build 500-filetype scripts, add workflow import to setup.sh, add tests
+3. **HF Space**: Test webhooks (healthz was 200 but webhooks still timing out)
+4. **Phase 2**: Unblock Standard + Orchestrator pipelines
 
 ### Dataset Files (unchanged)
 | File | Pipelines | Questions |
