@@ -1,6 +1,6 @@
 # Fixes Library — Multi-RAG Orchestrator
 
-> Last updated: 2026-02-24T14:35:00+01:00
+> Last updated: 2026-02-24T19:30:00+01:00
 
 > **Bibliotheque permanente de tous les bugs resolus.** A consulter EN PREMIER avant tout debug.
 > Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 54 (2026-02-24).
@@ -70,6 +70,7 @@
 | 53 | n8n Workflows | Credential ID mismatch after fresh import (non-existent IDs) | 43 | CRITIQUE |
 | 54 | n8n Workflows | Broken expression syntax `={{.VAR}}` instead of `={{$env.VAR}}` | 51 | CRITIQUE |
 | 55 | Infrastructure | mon-ipad repo growing too large (datasets/snapshots/logs) | 51 | IMPORTANT |
+| 63 | HF Space | N8N_BLOCK_ENV_ACCESS_IN_NODE missing — $env returns "access to env vars denied" | 58 | CRITIQUE |
 
 ---
 
@@ -83,8 +84,8 @@
 | AP-4 | Redebugger un probleme deja resolu dans cette librairie | OCCASIONAL | Lire ce fichier EN PREMIER |
 | AP-5 | Modifier plusieurs noeuds a la fois | OCCASIONAL | Regle 10 : 1 fix par iteration |
 | AP-6 | Patcher nodes[] mais pas activeVersion.nodes[] | CHAQUE FIX | Toujours patcher BOTH (FIX-29, FIX-32) |
-| AP-7 | Utiliser $env dans un Code node n8n 2.7+ | CRITIQUE | $env bloque par Task Runner — hardcoder (FIX-32) |
-| AP-8 | Utiliser $env dans N'IMPORTE QUEL noeud n8n 2.8+ | CRITIQUE | $env bloque PARTOUT — injecter a l'import (FIX-33) |
+| AP-7 | Utiliser $env sans N8N_BLOCK_ENV_ACCESS_IN_NODE=false | CRITIQUE | Verifier entrypoint.sh inclut export N8N_BLOCK_ENV_ACCESS_IN_NODE=false (FIX-63) |
+| AP-8 | Deployer HF Space sans N8N_BLOCK_ENV_ACCESS_IN_NODE=false | CRITIQUE | Sans ce flag, TOUS les $env retournent "access to env vars denied" (FIX-63) |
 | AP-9 | Utiliser executeWorkflow quand sub-wf a respondToWebhook | CRITIQUE | executeWorkflow retourne vide — utiliser httpRequest (FIX-34) |
 | AP-10 | URL OpenRouter sans /chat/completions | CRITIQUE | API retourne HTML au lieu de JSON (FIX-35) |
 | AP-11 | Melanger questions Phase 2 dans les gates Phase 1 | CRITIQUE | Chaque phase filtre ses propres questions (FIX-36) |
@@ -1153,5 +1154,22 @@ for node in workflow['nodes']:
 - **Note**: n8n Variables NOT available on free plan (403 - "Plan lacks license for this feature"). Use credentials instead.
 - **Script**: `/home/termius/mon-ipad/scripts/fix-n8n-credentials.py` — automated setup
 - **Lecon**: Always verify all required credentials exist when deploying workflows to new n8n instance. Use `GET /rest/credentials` to list.
+
+---
+
+### FIX-63: N8N_BLOCK_ENV_ACCESS_IN_NODE missing — ALL $env references return "access to env vars denied"
+- **Date**: 2026-02-24 (Session 58)
+- **Composant**: HF Space — ALL workflows using $env.*
+- **Symptome**: ALL pipelines return "Unable to generate answer" or "NO_ANSWER". Execution data shows `Context Reasoning LLM` output = `{"error": "access to env vars denied"}`. Standard returns "Unable to generate answer", Quantitative returns "NO_ANSWER", Graph returns "Information not available", Orchestrator returns empty body.
+- **Cause racine**: n8n 2.8.3 blocks `$env.*` access in ALL node types by default. The entrypoint.sh was missing `N8N_BLOCK_ENV_ACCESS_IN_NODE=false`. Despite 20 HF secrets being correctly set (OPENROUTER_KEY_STANDARD, JINA_API_KEY, etc.), n8n refused to resolve them in workflow expressions. The Standard workflow has 12+ Authorization headers using `Bearer ={{$env.OPENROUTER_KEY_STANDARD}}`, `Bearer ={{$env.JINA_API_KEY}}`, `Bearer ={{$env.COHERE_API_KEY}}` — ALL returning empty/denied.
+- **Diagnostic**: `GET /rest/executions/25` → dehydrated data → `Context Reasoning LLM` node → output json → `{"error": "access to env vars denied"}`. Also `interpretation: "NO_ANSWER"`, `status: "ERROR"`.
+- **Relation FIX-33**: FIX-33 (Session 27) documented the same root cause but the fix was to replace $env refs at import time. That approach was fragile and broke on subsequent rebuilds/imports.
+- **Fix permanent**:
+  1. Added `export N8N_BLOCK_ENV_ACCESS_IN_NODE=false` to entrypoint.sh (committed to HF Space repo)
+  2. Added `N8N_BLOCK_ENV_ACCESS_IN_NODE=false` as HF Space secret
+  3. This allows n8n to resolve `$env.*` natively from container env vars
+- **Impact**: CROSS-PIPELINE — fixes ALL 5 pipelines simultaneously (Standard, Graph, Quantitative, Orchestrator, PME Gateway)
+- **REGLE MISE A JOUR**: AP-7 et AP-8 sont obsoletes. Avec `N8N_BLOCK_ENV_ACCESS_IN_NODE=false`, `$env.*` fonctionne normalement. La config doit TOUJOURS etre presente dans entrypoint.sh.
+- **Fichiers impactes**: `entrypoint.sh` (HF Space repo)
 
 ---

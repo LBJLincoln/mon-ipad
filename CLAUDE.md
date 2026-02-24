@@ -33,22 +33,31 @@ Tu es Claude Code (`claude-opus-4-6`) exécuté dans **Termius** connecté à la
 
 ## 2. QUICK START — SESSION CHECKLIST
 
-### Au démarrage (OBLIGATOIRE)
+### Au démarrage (OBLIGATOIRE — dans cet ordre)
 ```bash
+# Phase 1: Lire l'état (30s)
 cat directives/session-state.md    # Mémoire session
-cat docs/status.json                # Métriques live
 cat directives/status.md            # Résumé session précédente
 bash scripts/check-staleness.sh    # Vérifier dates obsolètes
+
+# Phase 2: Intelligence session (1 min) — CRITIQUE: évite de répéter les erreurs
+python3 scripts/session-intelligence.py   # Analyse mathématique des sessions passées
+python3 scripts/node-tracker.py           # Historique succès/échec par noeud n8n
+
+# Phase 3: Appliquer les recommandations du rapport AVANT de commencer
+cat logs/session-intelligence-report.json | python3 -c "import sys,json; [print(f'  [{r[\"priority\"]}] {r[\"action\"]}') for r in json.load(sys.stdin).get('recommendations',[])]"
 ```
 
-### Lancer agents de démarrage (background)
-- **Agent 1 : Session Log Analyzer** — Sonnet, analyse outputs/session-<N-1>-log.md + web search best practices
+### Lancer agents de démarrage (background — PARALLELE)
+- **Agent 1 : Session Intelligence** — Sonnet, analyse logs/session-intelligence-report.json + recommandations
 - **Agent 2 : Repo Health Inspector** — Sonnet, scan staleness + 7 repos via gh api
-
-**Détails** : `technicals/project/team-agentic-process.md` Section 0.1b
+- **Agent 3 : Pipeline Health Check** — Haiku, test rapide 5 webhooks (curl POST + check HTTP code)
+- **Agent 4 : Background Evals** — Sonnet, lancer eval sur pipelines fonctionnels (nohup)
 
 ### Pre-vol checklist (AVANT tout test webhook)
 **Consulter `technicals/debug/knowledge-base.md` Section 0** — webhook paths, field names, auth
+**Consulter `logs/node-tracker-report.json`** — noeuds en échec récent, régressions détectées
+**Consulter `snapshot/working-session58/`** — workflows fonctionnels de référence pour rollback rapide
 
 ---
 
@@ -63,10 +72,13 @@ bash scripts/check-staleness.sh    # Vérifier dates obsolètes
 | `technicals/debug/knowledge-base.md` | **CERVEAU PERSISTANT** | PENDANT session (pas en fin) |
 | `docs/document-index.md` | INDEX fichiers projet | Quand structure change |
 | `docs/executive-summary.md` | Résumé global projet | Après chaque milestone |
+| `logs/session-intelligence-report.json` | **INTELLIGENCE SESSION** — analyse mathématique | Auto (script startup) |
+| `logs/node-tracker-report.json` | **HISTORIQUE NOEUDS** — succès/échec timestampé | Auto (script startup) |
+| `snapshot/working-session58/` | **SNAPSHOTS FONCTIONNELS** — rollback rapide | Après chaque pipeline fix |
 
 ---
 
-## 4. 23 CORE RULES
+## 4. 26 CORE RULES
 
 1. **Read before debug** — `fixes-library.md` avant tout debug (symptôme connu ?)
 2. **Read before webhook test** — `knowledge-base.md` Section 0 AVANT tout test webhook
@@ -91,6 +103,9 @@ bash scripts/check-staleness.sh    # Vérifier dates obsolètes
 21. **User Scale Override** — Quand l'utilisateur demande infra à max scale 2+ fois dans une session, TRAITER COMME PRIORITÉ BLOQUANTE. Déployer l'architecture d'abord, debug pipelines ensuite. Ne PAS reporter à "Phase N+1". L'utilisateur préfère "80% à l'échelle" plutôt que "100% à petite échelle"
 22. **Message Acknowledgment** — Après 2+ messages utilisateur en séquence, produire une liste numérotée AVANT de commencer le travail. Format: "Reçu N messages. Actions: 1. [action]..."
 23. **Workflow Definition-of-Done** — Un workflow n'est PAS terminé tant que: importé → activé → testé (5q) → documenté → utilisateur notifié avec URL. Créer un JSON = Étape 1 sur 6. Si une étape échoue, statut = BLOQUÉ (pas TERMINÉ)
+24. **Session Intelligence FIRST** — TOUJOURS exécuter `python3 scripts/session-intelligence.py` + `python3 scripts/node-tracker.py` en début de session. Lire les recommandations AVANT tout travail. Ne JAMAIS ignorer un "recurring_issue" dans le rapport.
+25. **Snapshot after EVERY fix** — Après chaque pipeline fix validé (5/5), sauver le workflow fonctionnel dans `snapshot/working-session{N}/`. Permet rollback en <1 min au lieu de rebuild 10+ min.
+26. **Hot-patch via REST API** — Modifier les workflows via PUT/PATCH /rest/workflows/{id} au lieu de rebuild HF Space. Rebuild = DERNIER recours uniquement si hot-patch impossible.
 
 ### Token budget management
 - Réserver 40K tokens pour le nettoyage de fin de session (commits, docs, handoff)
