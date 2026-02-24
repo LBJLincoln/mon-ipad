@@ -1,0 +1,182 @@
+{
+  "name": "Project Chatbot — User-Facing Progress API",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "project-chatbot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 300],
+      "id": "chatbot-webhook",
+      "name": "Chatbot Webhook",
+      "webhookId": "project-chatbot"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse user query and build context\nconst body = $input.item.json.body || $input.item.json;\nconst query = body.query || body.message || body.question || '';\nconst lang = (body.lang || 'fr').toLowerCase();\nconst sessionId = body.sessionId || body.session_id || 'anonymous';\n\nif (!query || query.trim().length < 2) {\n  return {\n    error: true,\n    response: lang === 'fr' \n      ? 'Veuillez poser une question (champ \"query\" requis).'\n      : 'Please provide a question (field \"query\" required).',\n    timestamp: new Date().toISOString()\n  };\n}\n\n// Project context — self-contained (no external API needed)\nconst PROJECT_CONTEXT = `\n# Nomos AI — Multi-RAG Orchestrator (SOTA 2026)\n\n## What is Nomos AI?\nNomos AI is an advanced AI system that answers complex questions by searching multiple databases simultaneously. It uses 4 search pipelines and an orchestrator that picks the best method for each question.\n\n## Target\nProcess 1M+ questions across 4 sectors (Construction/BTP, Industry, Finance, Legal) with 85%+ accuracy and <2.5s response time.\n\n## Current Phase Status\n- Phase 1 (200 questions): PASSED — 83.9% overall accuracy (20 Feb 2026)\n- Phase 2 (1000q per pipeline): IN PROGRESS\n  - Graph pipeline: COMPLETE (500/500, 78.0% accuracy)\n  - Quantitative pipeline: COMPLETE (500/500, 92.0% accuracy)  \n  - Standard pipeline: PAUSED at 579/1000 (~36% — API credits depleted)\n  - Orchestrator: PAUSED at 57/1000 (depends on other pipelines)\n- Phase 3 (10,000q): Next — requires Phase 2 completion\n- Phase 4 (100K): Planned\n- Phase 5 (1M+): Production target\n\n## The 4 Pipelines\n1. **Standard** (text search): Question → HyDE generation → Pinecone vector search (10,411 vectors) → Jina reranking → LLM answer. Phase 1: 85.5%\n2. **Graph** (entity search): Question → Entity extraction → Neo4j traversal (19,788 nodes, 76,717 relations) → LLM synthesis. Phase 1: 78.0%\n3. **Quantitative** (SQL/numbers): Question → Intent analysis → SQL generation → Supabase query → LLM interpretation. Phase 1: 92.0%\n4. **Orchestrator** (combines all): Question → Intent classification → Route to best pipeline(s) → Aggregate results. Phase 1: 80.0%\n\n## Infrastructure\n- VM Google Cloud: Control plane (Claude Code CLI, git, MCP servers)\n- HuggingFace Space: n8n execution (16GB RAM, 12 workflows)\n- GitHub Codespaces: Heavy testing (8GB RAM, ephemeral)\n- 4 Vercel websites: Production (ETI 4 sectors, PME Connectors, PME Use Cases, Dashboard)\n- Databases: Pinecone (10,411 vectors), Neo4j (19,788 nodes), Supabase (65 tables)\n\n## Capabilities\n- Answer factual questions from text documents (Standard pipeline)\n- Navigate entity relationships and knowledge graphs (Graph pipeline)\n- Query financial data with auto-generated SQL (Quantitative pipeline)\n- Smart routing to pick the best pipeline per question (Orchestrator)\n- Multi-channel support planned: WhatsApp, Telegram, Gmail, Slack (PME Gateway)\n- 4-sector coverage: BTP/Construction, Industry, Finance, Legal\n\n## What's Coming Next\n1. Complete Phase 2 testing (Standard + Orchestrator remaining)\n2. Phase 3: Scale to 10,000 questions per pipeline\n3. Activate PME multi-channel gateway (WhatsApp, Telegram, Email)\n4. Sector-specific data ingestion (7,600+ documents ready)\n5. Production deployment targeting 1M+ questions\n\n## Technology Stack\n- LLMs: Free models via OpenRouter (Mistral Small, Trinity, StepFun Flash)\n- Embeddings: Jina AI (1024-dim vectors)\n- Vector DB: Pinecone (serverless)\n- Graph DB: Neo4j Aura\n- SQL DB: Supabase PostgreSQL\n- Workflow Engine: n8n (self-hosted on HuggingFace Space)\n- Websites: Next.js on Vercel\n- Orchestration: Claude Code (Opus 4.6) on Google Cloud VM\n`;\n\nreturn {\n  query: query.trim(),\n  lang,\n  sessionId,\n  context: PROJECT_CONTEXT,\n  timestamp: new Date().toISOString(),\n  error: false\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300],
+      "id": "chatbot-parse-query",
+      "name": "Parse Query & Context"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "has-error",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "equals" }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [650, 300],
+      "id": "chatbot-error-check",
+      "name": "Has Error?"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'ERROR', response: $json.response, timestamp: $json.timestamp }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [900, 200],
+      "id": "chatbot-error-respond",
+      "name": "Error Response"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'arcee-ai/trinity-large-preview:free', temperature: 0.3, max_tokens: 800, messages: [ { role: 'system', content: ($json.lang === 'fr' ? 'Tu es l\\'assistant Nomos AI. Reponds aux questions des utilisateurs sur le projet, ses capacites, son avancement et ses objectifs. Reponds en francais, de maniere claire et concise. Utilise le contexte ci-dessous pour tes reponses. Si la question est hors-sujet du projet, reponds poliment que tu es specialise dans les informations sur Nomos AI.' : 'You are the Nomos AI assistant. Answer user questions about the project, its capabilities, progress, and goals. Be clear and concise. Use the context below. If the question is off-topic, politely redirect to Nomos AI topics.') + '\\n\\n' + $json.context }, { role: 'user', content: $json.query } ] }) }}",
+        "options": {
+          "response": { "response": { "responseFormat": "json" } },
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 400],
+      "id": "chatbot-llm-call",
+      "name": "LLM Generate Answer",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "OPENROUTER_HEADER_AUTH",
+          "name": "OpenRouter API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract LLM response safely\nconst raw = $input.item.json;\nconst queryData = $node['Parse Query & Context'].json;\n\nlet answer = '';\ntry {\n  answer = raw.choices?.[0]?.message?.content || '';\n} catch (e) {\n  answer = queryData.lang === 'fr'\n    ? 'Desole, une erreur est survenue. Veuillez reessayer.'\n    : 'Sorry, an error occurred. Please try again.';\n}\n\nreturn {\n  status: 'SUCCESS',\n  response: answer.trim(),\n  query: queryData.query,\n  lang: queryData.lang,\n  session_id: queryData.sessionId,\n  model: raw.model || 'trinity',\n  tokens_used: raw.usage?.total_tokens || 0,\n  timestamp: new Date().toISOString(),\n  engine: 'PROJECT_CHATBOT'\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1150, 400],
+      "id": "chatbot-format-response",
+      "name": "Format Response"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: $json.status, response: $json.response, query: $json.query, engine: $json.engine, model: $json.model, tokens_used: $json.tokens_used, timestamp: $json.timestamp }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1400, 400],
+      "id": "chatbot-success-respond",
+      "name": "Success Response"
+    }
+  ],
+  "connections": {
+    "Chatbot Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Query & Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Query & Context": {
+      "main": [
+        [
+          {
+            "node": "Has Error?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Error?": {
+      "main": [
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "LLM Generate Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Generate Answer": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
