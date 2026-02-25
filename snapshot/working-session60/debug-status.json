@@ -1,0 +1,168 @@
+{
+  "updatedAt": "2026-02-25T03:00:19.934Z",
+  "createdAt": "2026-02-25T02:59:44.805Z",
+  "id": "ee7a0a090fc443a4b",
+  "name": "Debug Status",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "debug-status",
+        "httpMethod": "={{$parameter.httpMethod}}",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "id": "debug-webhook",
+      "name": "Debug Webhook",
+      "webhookId": "debug-status"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'ok', version: 'v3', timestamp: new Date().toISOString(), env: { JINA: jina_4c85f15ab9c2436f87b037065eae41b22VYgmsj_6weB3JMCUsTX6n3Rvcfn ? 'SET' : 'UNSET', PINECONE: pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY ? 'SET' : 'UNSET', SUPABASE: udVECdcSnkMCAPiY ? 'SET' : 'UNSET', OPENROUTER: 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 ? 'SET' : 'UNSET', NEO4J: neo4j/jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak ? 'SET' : 'UNSET' } }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        470,
+        300
+      ],
+      "id": "debug-respond",
+      "name": "Respond"
+    }
+  ],
+  "connections": {
+    "Debug Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "b21b6b81-1635-4ef0-a48c-d44a19c7a026",
+  "activeVersionId": "b21b6b81-1635-4ef0-a48c-d44a19c7a026",
+  "versionCounter": 4,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-25T02:59:44.807Z",
+      "createdAt": "2026-02-25T02:59:44.807Z",
+      "role": "workflow:owner",
+      "workflowId": "ee7a0a090fc443a4b",
+      "projectId": "AnRpBYPiVs5P3sGa",
+      "project": {
+        "updatedAt": "2026-02-25T03:00:11.180Z",
+        "createdAt": "2026-02-25T02:59:34.857Z",
+        "id": "AnRpBYPiVs5P3sGa",
+        "name": "CI Bot <ci@nomos.ai>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ace11d45-92de-449b-9d84-a60baf612173"
+      }
+    }
+  ],
+  "tags": [],
+  "parentFolder": null,
+  "activeVersion": {
+    "updatedAt": "2026-02-25T02:59:44.809Z",
+    "createdAt": "2026-02-25T02:59:44.809Z",
+    "versionId": "b21b6b81-1635-4ef0-a48c-d44a19c7a026",
+    "workflowId": "ee7a0a090fc443a4b",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "debug-status",
+          "httpMethod": "={{$parameter.httpMethod}}",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          250,
+          300
+        ],
+        "id": "debug-webhook",
+        "name": "Debug Webhook",
+        "webhookId": "debug-status"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify({ status: 'ok', version: 'v3', timestamp: new Date().toISOString(), env: { JINA: jina_4c85f15ab9c2436f87b037065eae41b22VYgmsj_6weB3JMCUsTX6n3Rvcfn ? 'SET' : 'UNSET', PINECONE: pcsk_6GzVdD_BbHsYNvpcngMqAHH5EvEa9XLnmFpEK9cx5q5xkMp72z5KFQ1q7dEjp8npWhJGBY ? 'SET' : 'UNSET', SUPABASE: udVECdcSnkMCAPiY ? 'SET' : 'UNSET', OPENROUTER: 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 ? 'SET' : 'UNSET', NEO4J: neo4j/jV_zGdxbu-emQZM-ZSQux19pTZ5QLKejR2IHSzsbVak ? 'SET' : 'UNSET' } }) }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          470,
+          300
+        ],
+        "id": "debug-respond",
+        "name": "Respond"
+      }
+    ],
+    "connections": {
+      "Debug Webhook": {
+        "main": [
+          [
+            {
+              "node": "Respond",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "import",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-25T03:00:20.723Z",
+        "id": 2,
+        "workflowId": "ee7a0a090fc443a4b",
+        "versionId": "b21b6b81-1635-4ef0-a48c-d44a19c7a026",
+        "event": "activated",
+        "userId": "ace11d45-92de-449b-9d84-a60baf612173"
+      }
+    ]
+  },
+  "scopes": [
+    "workflow:create",
+    "workflow:delete",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:update"
+  ],
+  "checksum": "5286d60c737426916a0cf613bed6cc966ef0488652db226d313ab29852fd40f1"
+}
