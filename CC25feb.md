@@ -229,13 +229,33 @@ litellm --model openrouter/meta-llama/llama-3.3-70b-instruct:free --port 4000 &
 
 ---
 
-## 13. NEXT STEPS (for next session)
+## 13. SESSION 63 CONTINUED — REVERT + DIAGNOSIS
 
-1. **Verify all 10 HF Spaces** respond to webhooks: `bash scripts/launch-all.sh`
-2. **Start continuous monitor**: `nohup python3 scripts/continuous-monitor.py &`
-3. **Start live intelligence**: `nohup python3 scripts/live-intelligence.py &`
-4. **Run workflow diff**: `python3 scripts/workflow-diff-engine.py` — verify current matches golden
-5. **Sign up** for Together.ai + Groq (manually, takes 2 min each)
-6. **Push dashboard** to rag-dashboard repo for Vercel deploy
-7. **Resume Phase 2 eval** on working pipelines with deduplication
-8. **Fix Orchestrator** empty body issue (the ONE pipeline that never worked in Phase 2)
+### Actions taken:
+1. **Workflow diff engine dry-run** on all 9 spaces — confirmed diffs consistent
+2. **Reverted Quantitative** (4 wrong API key nodes) to golden on all 9 spaces
+3. **Reverted Orchestrator** (14 node type changes) to golden on all 9 spaces
+4. **Fixed diff engine** — added `activate_workflow` method to N8nClient
+5. **Diagnosed LLM failure**: OpenRouter returning **HTTP 429** for `llama-3.3-70b-instruct:free`
+6. **Verified**: All credentials present (10), all 4 core workflows ACTIVE on primary space
+7. **Conclusion**: Workflows structurally correct. Problem = upstream LLM rate limit, not us.
+
+### Blocking issue:
+**OpenRouter free-tier rate limit** — `meta-llama/llama-3.3-70b-instruct:free` returning 429.
+All pipelines return "Unable to generate answer" or "NO_ANSWER" because the LLM can't respond.
+
+---
+
+## 14. NEXT STEPS (for next session)
+
+1. **PRIORITY: Swap LLM model** — try `google/gemma-3-27b-it:free` or set up LiteLLM multi-provider:
+   ```bash
+   pip3 install litellm
+   litellm --model openrouter/google/gemma-3-27b-it:free --port 4000 &
+   ```
+2. **Sign up** for Together.ai + Groq (manually) — adds fallback providers
+3. **Start continuous monitor**: `nohup python3 scripts/continuous-monitor.py &`
+4. **Start live intelligence**: `nohup python3 scripts/live-intelligence.py &`
+5. **Push dashboard** to rag-dashboard repo for Vercel deploy
+6. **Resume Phase 2 eval** once LLM model is working
+7. **Deploy chatbot** on all 4 Vercel sites (depends on working webhooks)
