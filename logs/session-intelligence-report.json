@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-02-24T20:19:48.248857+00:00",
-  "sessions_analyzed": 40,
-  "total_commits": 1022,
+  "generated_at": "2026-02-25T07:42:42.729380+00:00",
+  "sessions_analyzed": 41,
+  "total_commits": 1035,
   "total_fixes": 59,
   "recurring_issues": [
     {
@@ -222,7 +222,7 @@
       "last_accuracy": 92.0,
       "best_accuracy": 100.0,
       "worst_accuracy": 0.0,
-      "data_points": 108,
+      "data_points": 110,
       "common_errors": [
         "execution_errors (107x)",
         "total_failure_runs (1x)"
@@ -233,21 +233,19 @@
       "last_accuracy": 78.0,
       "best_accuracy": 100.0,
       "worst_accuracy": 0.0,
-      "data_points": 108,
+      "data_points": 96,
       "common_errors": [
-        "execution_errors (21x)",
         "total_failure_runs (1x)"
       ]
     },
     "quantitative": {
-      "trend": "improving",
+      "trend": "degrading",
       "last_accuracy": 92.0,
       "best_accuracy": 100.0,
       "worst_accuracy": 0.0,
-      "data_points": 92,
+      "data_points": 87,
       "common_errors": [
-        "execution_errors (15x)",
-        "total_failure_runs (2x)"
+        "total_failure_runs (1x)"
       ]
     },
     "orchestrator": {
@@ -255,9 +253,9 @@
       "last_accuracy": 80.0,
       "best_accuracy": 100.0,
       "worst_accuracy": 0.0,
-      "data_points": 34,
+      "data_points": 29,
       "common_errors": [
-        "execution_errors (122x)",
+        "execution_errors (93x)",
         "total_failure_runs (3x)"
       ]
     },
@@ -274,640 +272,172 @@
     }
   },
   "node_performance": {
-    "V10.1 orchestrator copy": {
-      "Webhook V8": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 17,
-        "failure_count": 0,
-        "execution_count": 1,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Input Merger V8": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 1487,
-        "failure_count": 0,
-        "execution_count": 1,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Init V8 Security & Analysis": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 3213,
-        "failure_count": 0,
-        "execution_count": 1,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Postgres L2/L3 Memory": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 1879,
-        "failure_count": 0,
-        "execution_count": 1,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "🧠 Memory Merger (Redis + Postgres)": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 1636,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "📦 Context Compression V10.1": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 628,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "🛡️ Advanced Guardrails": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 680,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "IF: Guardrail Passed?": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 5,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "🔍 Query Classifier V10.1": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 746,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "🔀 Query Router": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 22,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "🔎 Cache Semantic Search": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 592,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Redis: Cache + Generator": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 710,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Cache Parser": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 144,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "IF: Cache Hit?": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 2,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "🧠 LLM 1: Intent Analyzer": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 6254,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Intent Parser V9": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 90,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Postgres: Init Tasks Table": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 347,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "📝 Format & Dispatch (Plan→DB)": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 81,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Postgres: Insert Tasks": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 342,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Postgres : Get Current Tasks": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 334,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "⚙️ Execution Engine V10": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 158,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "If": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 2,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "🔀 Dynamic Switch V10": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 2,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Invoke WF5: Standard": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 30423,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "📥 Task Result Handler": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 115,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Postgres: Update Task": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 338,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "🔄 Fallback Monitor V10": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 114,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "IF: Fallback Needed?": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 1,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "📊 Task Status Aggregator": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 165,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Response Builder V9": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 118,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Execution Summary (orchestrator)": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 451,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Redis: Store Conv V8": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 570,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Postgres: Update Context V8": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 327,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Return Response V8": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 58,
-        "failure_count": 0,
-        "execution_count": 4,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Store RLHF Data V8": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 354,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "💾 Cache Storage": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 122,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Redis: Set Cache": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 634,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Merge": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 2,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Output Router (Final)": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 26,
-        "failure_count": 0,
-        "execution_count": 2,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Redis: Fetch Conversation": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 609,
-        "failure_count": 0,
-        "execution_count": 1,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "🛡️ Redis Failure Handler V10.1": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 91,
-        "failure_count": 0,
-        "execution_count": 1,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "🛡️ Rate Limit Guard": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 84,
-        "failure_count": 0,
-        "execution_count": 1,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "IF: Rate Limited?": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 1,
-        "failure_count": 0,
-        "execution_count": 1,
-        "last_failure": null,
-        "last_failure_error": null
-      }
-    },
     "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED": {
       "Webhook": {
         "success_rate": 1.0,
-        "avg_duration_ms": 20,
+        "avg_duration_ms": 0,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "OTEL Init": {
         "success_rate": 1.0,
-        "avg_duration_ms": 747,
+        "avg_duration_ms": 7,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "WF3: HyDE & Entity Extraction": {
         "success_rate": 1.0,
-        "avg_duration_ms": 15689,
+        "avg_duration_ms": 6060,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "Neo4j Query Builder (Deep Traversal V2)": {
         "success_rate": 1.0,
-        "avg_duration_ms": 995,
+        "avg_duration_ms": 10,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "Shield #4: Neo4j Guardian Traversal": {
         "success_rate": 1.0,
-        "avg_duration_ms": 5812,
+        "avg_duration_ms": 5002,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "Validate Neo4j Results": {
         "success_rate": 1.0,
-        "avg_duration_ms": 216,
+        "avg_duration_ms": 9,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "Community Summaries Fetch": {
         "success_rate": 1.0,
-        "avg_duration_ms": 970,
+        "avg_duration_ms": 218,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "Extract HyDE Document": {
         "success_rate": 1.0,
-        "avg_duration_ms": 301,
+        "avg_duration_ms": 14,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "Generate HyDE Embedding": {
         "success_rate": 1.0,
-        "avg_duration_ms": 5298,
+        "avg_duration_ms": 6296,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "Validate Embedding": {
         "success_rate": 1.0,
-        "avg_duration_ms": 136,
+        "avg_duration_ms": 6,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "WF3: Pinecone HyDE Search": {
         "success_rate": 1.0,
-        "avg_duration_ms": 5257,
+        "avg_duration_ms": 6004,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "Merge": {
         "success_rate": 1.0,
-        "avg_duration_ms": 63,
+        "avg_duration_ms": 1,
         "failure_count": 0,
-        "execution_count": 24,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "Merge Graph + Vector + Community (Deep)": {
         "success_rate": 1.0,
-        "avg_duration_ms": 368,
+        "avg_duration_ms": 12,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "WF3: Cohere Reranker": {
         "success_rate": 1.0,
-        "avg_duration_ms": 5067,
+        "avg_duration_ms": 6241,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "Reranker Fallback Handler": {
         "success_rate": 1.0,
-        "avg_duration_ms": 266,
+        "avg_duration_ms": 10,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "JS: Token Budgeting & Map-Reduce": {
         "success_rate": 1.0,
-        "avg_duration_ms": 239,
+        "avg_duration_ms": 7,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "Response Formatter": {
         "success_rate": 1.0,
-        "avg_duration_ms": 329,
+        "avg_duration_ms": 11,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "LLM Answer Synthesis": {
         "success_rate": 1.0,
-        "avg_duration_ms": 3167,
+        "avg_duration_ms": 6157,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "Answer Formatter": {
         "success_rate": 1.0,
-        "avg_duration_ms": 256,
+        "avg_duration_ms": 12,
         "failure_count": 0,
-        "execution_count": 12,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       },
       "Shield #9: Export Trace": {
         "success_rate": 1.0,
+        "avg_duration_ms": 0,
+        "failure_count": 0,
+        "execution_count": 3,
+        "last_failure": null,
+        "last_failure_error": null
+      },
+      "Respond to Webhook": {
+        "success_rate": 1.0,
         "avg_duration_ms": 1,
         "failure_count": 0,
-        "execution_count": 12,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Respond to Webhook": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 105,
-        "failure_count": 0,
-        "execution_count": 12,
-        "last_failure": null,
-        "last_failure_error": null
-      }
-    },
-    "TEST - SOTA 2026 - WF4 Quantitative V2.0": {
-      "Webhook": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 24,
-        "failure_count": 0,
-        "execution_count": 11,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Init & ACL": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 5319,
-        "failure_count": 0,
-        "execution_count": 11,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Schema Introspection": {
-        "success_rate": 0.818,
-        "avg_duration_ms": 2646,
-        "failure_count": 2,
-        "execution_count": 11,
-        "last_failure": "2026-02-18T12:54:12.229Z",
-        "last_failure_error": "self-signed certificate in certificate chain"
-      },
-      "Schema Context Builder": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 3793,
-        "failure_count": 0,
-        "execution_count": 9,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Prepare SQL Request": {
-        "success_rate": 0.444,
-        "avg_duration_ms": 3834,
-        "failure_count": 5,
-        "execution_count": 9,
-        "last_failure": "2026-02-18T13:11:40.246Z",
-        "last_failure_error": "Cannot assign to read only property 'name' of object 'Error: access to env vars denied'"
-      },
-      "Text-to-SQL Generator (CoT Enhanced)": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 10365,
-        "failure_count": 0,
-        "execution_count": 4,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "SQL Validator (Shield #1)": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 4808,
-        "failure_count": 0,
-        "execution_count": 4,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "SQL Executor (Postgres)": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 1613,
-        "failure_count": 0,
-        "execution_count": 4,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Result Aggregator": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 1498,
-        "failure_count": 0,
-        "execution_count": 4,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Prepare Interpretation Request": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 3249,
-        "failure_count": 0,
-        "execution_count": 4,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Interpretation Layer (LLM Analyst)": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 5554,
-        "failure_count": 0,
-        "execution_count": 4,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Response Formatter": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 2116,
-        "failure_count": 0,
-        "execution_count": 4,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Respond to Webhook": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 317,
-        "failure_count": 0,
-        "execution_count": 4,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Error Handler": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 230,
-        "failure_count": 0,
-        "execution_count": 1,
-        "last_failure": null,
-        "last_failure_error": null
-      },
-      "Error Response Builder": {
-        "success_rate": 1.0,
-        "avg_duration_ms": 1764,
-        "failure_count": 0,
-        "execution_count": 1,
+        "execution_count": 3,
         "last_failure": null,
         "last_failure_error": null
       }
@@ -915,105 +445,105 @@
     "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED": {
       "Webhook": {
         "success_rate": 1.0,
-        "avg_duration_ms": 23,
+        "avg_duration_ms": 0,
         "failure_count": 0,
-        "execution_count": 10,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "Init & ACL Pre-Filter V3.4": {
         "success_rate": 1.0,
-        "avg_duration_ms": 6756,
+        "avg_duration_ms": 8,
         "failure_count": 0,
-        "execution_count": 10,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "Needs Decomposition?": {
         "success_rate": 1.0,
-        "avg_duration_ms": 527,
+        "avg_duration_ms": 1,
         "failure_count": 0,
-        "execution_count": 10,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "Query Decomposer (V.3.4)": {
         "success_rate": 1.0,
-        "avg_duration_ms": 18266,
+        "avg_duration_ms": 6108,
         "failure_count": 0,
-        "execution_count": 10,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "Query Merger V3.4": {
-        "success_rate": 0.9,
-        "avg_duration_ms": 180,
-        "failure_count": 1,
-        "execution_count": 10,
-        "last_failure": "2026-02-17T10:17:17.221Z",
-        "last_failure_error": "Execution stopped at this node"
+        "success_rate": 1.0,
+        "avg_duration_ms": 9,
+        "failure_count": 0,
+        "execution_count": 6,
+        "last_failure": null,
+        "last_failure_error": null
       },
       "HyDE Generator": {
         "success_rate": 1.0,
-        "avg_duration_ms": 5400,
+        "avg_duration_ms": 6097,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "HyDE Embedding": {
         "success_rate": 1.0,
-        "avg_duration_ms": 6731,
+        "avg_duration_ms": 6557,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "HTTP Pinecone Query HyDE": {
         "success_rate": 1.0,
-        "avg_duration_ms": 6522,
+        "avg_duration_ms": 6004,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "BM25 Search Postgres": {
         "success_rate": 1.0,
-        "avg_duration_ms": 467,
+        "avg_duration_ms": 222,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "Wait All Branches": {
         "success_rate": 1.0,
-        "avg_duration_ms": 16,
+        "avg_duration_ms": 0,
         "failure_count": 0,
-        "execution_count": 18,
+        "execution_count": 12,
         "last_failure": null,
         "last_failure_error": null
       },
       "RRF Merge & Rank V3.4": {
         "success_rate": 1.0,
-        "avg_duration_ms": 176,
+        "avg_duration_ms": 10,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "Cohere Reranker": {
         "success_rate": 1.0,
-        "avg_duration_ms": 6655,
+        "avg_duration_ms": 6334,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "Rerank Merger": {
         "success_rate": 1.0,
-        "avg_duration_ms": 96,
+        "avg_duration_ms": 10,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
@@ -1021,69 +551,103 @@
         "success_rate": 1.0,
         "avg_duration_ms": 1,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "LLM Generation": {
         "success_rate": 1.0,
-        "avg_duration_ms": 9103,
+        "avg_duration_ms": 6093,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "Response Formatter": {
         "success_rate": 1.0,
-        "avg_duration_ms": 173,
+        "avg_duration_ms": 9,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "Respond to Webhook": {
         "success_rate": 1.0,
-        "avg_duration_ms": 31,
+        "avg_duration_ms": 1,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "Original Embedding": {
         "success_rate": 1.0,
-        "avg_duration_ms": 6824,
+        "avg_duration_ms": 6258,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
       },
       "HTTP Pinecone Query Original": {
         "success_rate": 1.0,
-        "avg_duration_ms": 7055,
+        "avg_duration_ms": 6004,
         "failure_count": 0,
-        "execution_count": 9,
+        "execution_count": 6,
         "last_failure": null,
         "last_failure_error": null
+      }
+    },
+    "TEST - SOTA 2026 - WF4 Quantitative V2.0": {
+      "Webhook": {
+        "success_rate": 1.0,
+        "avg_duration_ms": 3,
+        "failure_count": 0,
+        "execution_count": 1,
+        "last_failure": null,
+        "last_failure_error": null
+      },
+      "Init & ACL": {
+        "success_rate": 1.0,
+        "avg_duration_ms": 3515,
+        "failure_count": 0,
+        "execution_count": 1,
+        "last_failure": null,
+        "last_failure_error": null
+      },
+      "Schema Introspection": {
+        "success_rate": 1.0,
+        "avg_duration_ms": 2760,
+        "failure_count": 0,
+        "execution_count": 1,
+        "last_failure": null,
+        "last_failure_error": null
+      },
+      "Schema Context Builder": {
+        "success_rate": 1.0,
+        "avg_duration_ms": 2988,
+        "failure_count": 0,
+        "execution_count": 1,
+        "last_failure": null,
+        "last_failure_error": null
+      },
+      "Prepare SQL Request": {
+        "success_rate": 0.0,
+        "avg_duration_ms": 1507,
+        "failure_count": 1,
+        "execution_count": 1,
+        "last_failure": "2026-02-18T13:11:40.246Z",
+        "last_failure_error": "Cannot assign to read only property 'name' of object 'Error: access to env vars denied'"
       }
     }
   },
   "database_state": {
-    "changes": [
-      {
-        "metric": "Neo4j relationships",
-        "from": 76532,
-        "to": 76769,
-        "delta": 237,
-        "direction": "increased"
-      }
-    ],
+    "changes": [],
     "current_state": {
       "pinecone_vectors": 10411,
       "neo4j_nodes": 19788,
       "neo4j_relationships": 76769,
       "supabase_rows": 1815,
-      "snapshot_count": 179,
-      "last_snapshot": "2026-02-24T19:04:38+01:00"
+      "snapshot_count": 7,
+      "last_snapshot": "2026-02-25T05:06:10+01:00"
     }
   },
   "recommendations": [
@@ -1096,101 +660,101 @@
     },
     {
       "priority": 2,
+      "action": "Investigate quantitative pipeline degradation",
+      "reason": "quantitative accuracy is trending downward. Last: 92.0%, Best: 100.0%.",
+      "estimated_impact": "Recover 8% accuracy",
+      "category": "regression"
+    },
+    {
+      "priority": 3,
       "action": "Investigate orchestrator pipeline degradation",
       "reason": "orchestrator accuracy is trending downward. Last: 80.0%, Best: 100.0%.",
       "estimated_impact": "Recover 20% accuracy",
       "category": "regression"
     },
     {
-      "priority": 3,
+      "priority": 4,
       "action": "Address systemic issue: HF Space",
       "reason": "This category has 14 separate fixes across sessions [24, 26, 42, 54, 58]. Still recurring — needs architectural solution, not another point fix.",
       "estimated_impact": "Reduce debug time by 30-50% for this category",
       "category": "systemic"
     },
     {
-      "priority": 4,
+      "priority": 5,
       "action": "Address systemic issue: n8n Workflows",
       "reason": "This category has 3 separate fixes across sessions [43, 51]. Still recurring — needs architectural solution, not another point fix.",
       "estimated_impact": "Reduce debug time by 30-50% for this category",
       "category": "systemic"
     },
     {
-      "priority": 5,
+      "priority": 6,
       "action": "Address systemic issue: n8n Credentials",
       "reason": "This category has 2 separate fixes across sessions [15, 54]. Still recurring — needs architectural solution, not another point fix.",
       "estimated_impact": "Reduce debug time by 30-50% for this category",
       "category": "systemic"
     },
     {
-      "priority": 6,
+      "priority": 7,
       "action": "Address systemic issue: Infrastructure",
       "reason": "This category has 2 separate fixes across sessions [27, 51]. Still recurring — needs architectural solution, not another point fix.",
       "estimated_impact": "Reduce debug time by 30-50% for this category",
       "category": "systemic"
     },
     {
-      "priority": 7,
+      "priority": 8,
       "action": "Eliminate anti-pattern AP-1: Tester un webhook avec un path tape de memoire",
       "reason": "Frequency: CHAQUE SESSION. Prevention: Consulter `knowledge-base.md` Section 0.1",
       "estimated_impact": "Avoid 15-30 min wasted per session on known pitfall",
       "category": "anti_pattern"
     },
     {
-      "priority": 8,
+      "priority": 9,
       "action": "Eliminate anti-pattern AP-6: Patcher nodes[] mais pas activeVersion.nodes[]",
       "reason": "Frequency: CHAQUE FIX. Prevention: Toujours patcher BOTH (FIX-29, FIX-32)",
       "estimated_impact": "Avoid 15-30 min wasted per session on known pitfall",
       "category": "anti_pattern"
     },
     {
-      "priority": 9,
+      "priority": 10,
       "action": "Eliminate anti-pattern AP-7: Utiliser $env sans N8N_BLOCK_ENV_ACCESS_IN_NODE=false",
       "reason": "Frequency: CRITIQUE. Prevention: Verifier entrypoint.sh inclut export N8N_BLOCK_ENV_ACCESS_IN_NODE=false (FIX-63)",
       "estimated_impact": "Avoid 15-30 min wasted per session on known pitfall",
       "category": "anti_pattern"
     },
     {
-      "priority": 10,
+      "priority": 11,
       "action": "Eliminate anti-pattern AP-8: Deployer HF Space sans N8N_BLOCK_ENV_ACCESS_IN_NODE=false",
       "reason": "Frequency: CRITIQUE. Prevention: Sans ce flag, TOUS les $env retournent \"access to env vars denied\" (FIX-63)",
       "estimated_impact": "Avoid 15-30 min wasted per session on known pitfall",
       "category": "anti_pattern"
     },
     {
-      "priority": 11,
+      "priority": 12,
       "action": "Eliminate anti-pattern AP-9: Utiliser executeWorkflow quand sub-wf a respondToWebhook",
       "reason": "Frequency: CRITIQUE. Prevention: executeWorkflow retourne vide — utiliser httpRequest (FIX-34)",
       "estimated_impact": "Avoid 15-30 min wasted per session on known pitfall",
       "category": "anti_pattern"
     },
     {
-      "priority": 12,
+      "priority": 13,
       "action": "Eliminate anti-pattern AP-10: URL OpenRouter sans /chat/completions",
       "reason": "Frequency: CRITIQUE. Prevention: API retourne HTML au lieu de JSON (FIX-35)",
       "estimated_impact": "Avoid 15-30 min wasted per session on known pitfall",
       "category": "anti_pattern"
     },
     {
-      "priority": 13,
+      "priority": 14,
       "action": "Eliminate anti-pattern AP-11: Melanger questions Phase 2 dans les gates Phase 1",
       "reason": "Frequency: CRITIQUE. Prevention: Chaque phase filtre ses propres questions (FIX-36)",
       "estimated_impact": "Avoid 15-30 min wasted per session on known pitfall",
       "category": "anti_pattern"
     },
     {
-      "priority": 14,
+      "priority": 15,
       "action": "Eliminate anti-pattern AP-12: Envoyer des questions context-rich au SQL pipeline",
       "reason": "Frequency: CRITIQUE. Prevention: Classifier detecte le format et route vers context reasoning (FIX-37)",
       "estimated_impact": "Avoid 15-30 min wasted per session on known pitfall",
       "category": "anti_pattern"
-    },
-    {
-      "priority": 15,
-      "action": "Fix unreliable node: 'Prepare SQL Request' in 'TEST - SOTA 2026 - WF4 Quantitative V2.0'",
-      "reason": "Success rate: 44% (5 failures / 9 executions). Last error: Cannot assign to read only property 'name' of object 'Error: access to env vars ",
-      "estimated_impact": "Improve pipeline reliability by fixing 5 known failures",
-      "category": "node_reliability"
     }
   ],
   "session_metrics": [
@@ -1585,14 +1149,24 @@
       "end": "2026-02-24T04:11:03+01:00"
     },
     {
-      "session_id": "58",
+      "session_id": "59",
       "date": "2026-02-24",
-      "commits": 34,
+      "commits": 42,
       "fixes_applied": 9,
       "accuracy_delta": "-100.0%",
-      "duration_hours": 10.3,
+      "duration_hours": 12.5,
       "start": "2026-02-24T09:59:42+00:00",
-      "end": "2026-02-24T20:15:12+00:00"
+      "end": "2026-02-24T23:32:00+01:00"
+    },
+    {
+      "session_id": "60",
+      "date": "2026-02-25",
+      "commits": 5,
+      "fixes_applied": 2,
+      "accuracy_delta": "-67.5%",
+      "duration_hours": 1.8,
+      "start": "2026-02-25T02:28:07+00:00",
+      "end": "2026-02-25T04:15:06+00:00"
     }
   ]
 }

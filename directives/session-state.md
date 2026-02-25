@@ -1,10 +1,27 @@
-# Session State — 25 Fevrier 2026 (Session 60)
+# Session State — 25 Fevrier 2026 (Session 61)
 
-> Last updated: 2026-02-25T04:15:00+01:00
+> Last updated: 2026-02-25T09:15:00+00:00
 
-## Current Status: 4/4 PIPELINES WORKING — ALL FIXED
+## Current Status: MASSIVE PARALLEL EVAL RUNNING — ALL SYSTEMS ACTIVE
 
-### Session 60 Progress
+### Session 61 Progress
+
+1. **Phase 2 eval launched** — 4 pipelines × 1000q, 12 workers, auto batch sizes (std=10, graph=5, quant=3, orch=2), PID 42258
+2. **HF Space #2 deployed** — https://lbjlincoln26-nomos-rag-engine-2.hf.space (running but Orchestrator blocked by sub-workflow deps)
+3. **4 new n8n credentials created** — Jina, Cohere, HF Primary, HF Secondary (total 16 on HF Space)
+4. **GH secrets set** — VERCEL_TOKEN, OPENROUTER_API_KEY, N8N_HOST, N8N_API_KEY on rag-tests, rag-data-ingestion, rag-pme-connectors, rag-dashboard
+5. **GH Actions workflows** — Being created for rag-pme-connectors (Vercel deploy), rag-data-ingestion (CI), rag-tests (CI + eval)
+6. **Chatbot workflow** — Active on HF Space (ID: dfb1b9770f4b4a28a)
+7. **Data ingestion workflows** — 3 active: Dataset Ingestion, Ingestion V4.0, Enrichissement V4.0
+
+### Phase 2 Eval Progress (live)
+- Eval PID 42258 running since 08:37 UTC
+- ~50+ questions processed across all 4 pipelines (log buffered)
+- data.json being actively updated
+
+---
+
+### Session 60 Progress (archived)
 
 1. **CLAUDE.md overhaul** — 27 rules → 15 rules, false rules removed (Rule 8 seq tests), Codespace docs corrected
 2. **Chatbot deployed on all 3 sites** — v1 (hardcoded) + v3 (RAG-enhanced) active on HF Space
