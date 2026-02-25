@@ -210,7 +210,26 @@ Kimi and Gemini could run scripts in parallel with Claude for background tasks.
 
 ---
 
-## 12. NEXT STEPS (for next session)
+## 12. LITELLM — RECOMMENDED FOR MULTI-PROVIDER
+
+LiteLLM is a Python proxy that unifies 100+ LLM providers under one API. Perfect for this project:
+- Auto-fallback: OpenRouter 429 -> Together.ai -> Groq -> Fireworks
+- Load balancing across multiple API keys
+- Built-in rate limit handling (retries, queuing, backoff)
+- Cost tracking per request
+
+**Integration option**: Run LiteLLM proxy on VM (~50MB RAM), point n8n HTTP nodes to localhost:4000 instead of OpenRouter directly. All provider switching happens transparently.
+
+```bash
+pip3 install litellm
+litellm --model openrouter/meta-llama/llama-3.3-70b-instruct:free --port 4000 &
+```
+
+**Combined with multi-provider signups** (Together.ai $100 free, Groq free, Fireworks $1), this could push throughput from 5-10 q/min to 50-100 q/min without any OpenRouter account automation.
+
+---
+
+## 13. NEXT STEPS (for next session)
 
 1. **Verify all 10 HF Spaces** respond to webhooks: `bash scripts/launch-all.sh`
 2. **Start continuous monitor**: `nohup python3 scripts/continuous-monitor.py &`
