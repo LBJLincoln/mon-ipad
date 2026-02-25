@@ -1,28 +1,31 @@
-# Session State — 25 Fevrier 2026 (Session 61)
+# Session State — 25 Fevrier 2026 (Session 62)
 
-> Last updated: 2026-02-25T10:15:00+00:00
+> Last updated: 2026-02-25T10:25:00+00:00
 
-## Current Status: MASSIVE PARALLEL EVAL RUNNING — ALL SYSTEMS ACTIVE
+## Current Status: 10-SPACE CLUSTER DEPLOYED — MEGA EVAL RUNNING
 
-### Session 61 Progress
+### Session 62 Progress
 
-1. **Phase 2 eval launched** — 4 pipelines × 1000q, 12 workers, auto batch sizes (std=10, graph=5, quant=3, orch=2), PID 42258
-2. **HF Space #2 deployed** — https://lbjlincoln26-nomos-rag-engine-2.hf.space (running, Orchestrator blocked by sub-workflow deps)
-3. **4 new n8n credentials created** — Jina, Cohere, HF Primary, HF Secondary (total 16 on HF Space)
-4. **GH secrets set** — VERCEL_TOKEN, OPENROUTER_API_KEY, N8N_HOST, N8N_API_KEY on rag-tests, rag-data-ingestion, rag-pme-connectors, rag-dashboard
-5. **GH Actions workflows DEPLOYED + PASSING** — 3 repos active:
-   - rag-pme-connectors: Deploy Website to Vercel (active, run SUCCESS)
-   - rag-data-ingestion: CI - Data Ingestion (active, run SUCCESS)
-   - rag-tests: CI - RAG Tests (active, run SUCCESS)
-6. **Chatbot workflow** — Active on HF Space (ID: dfb1b9770f4b4a28a), 9/12 tests pass (75%)
-7. **Data ingestion workflows** — 3 found: Dataset Ingestion (WORKING), Ingestion V4.0 (BROKEN-Redis), Enrichissement V4.0 (**FIXED** - Redis removed)
-8. **Enrichissement V4.0 FIXED** — Removed 2 Redis nodes (Acquire Lock, Release Lock), bypassed connections (Prepare Lock → Lock Result Handler, Prepare Lock Release → Log Success), workflow active with Chat Trigger
-8. **Git pushes** — Regular pushes to origin (Rule 6 compliance)
+1. **10 HF Spaces DEPLOYED** — all RUNNING, round-robin across 2 accounts:
+   - LBJLincoln: Spaces 1, 3, 5, 7, 9
+   - LBJLincoln26: Spaces 2, 4, 6, 8, 10
+   - All 10 verified HTTP 200 on Standard pipeline
+2. **Mega eval launched** — PID 54740, 50 workers, 10-space round-robin, all 4 pipelines
+3. **6 repair agents launched** for broken workflows:
+   - Status Dashboard: **FIXED** — correct webhook path committed
+   - Enrichissement V4.0: **FIXED** — Redis nodes removed, committed
+   - Action Executor: **FIXED** — simplified 2-node workflow created
+   - WhatsApp Bridge: Active (Telegram disabled, no credentials)
+   - Ingestion V4.0: In progress — Redis removal
+   - Multi-Canal Gateway: In progress — fixing node config
+4. **Dual-space eval completed** — 122 lines, ~70 questions before killed for 10-space upgrade
+5. **scale-hf-spaces.py created** — scripts/scale-hf-spaces.py for HF Space management
+6. **.env.local updated** — 10-space URLs, N8N_ALL_HOSTS, per-pipeline routing
 
-### Phase 2 Eval Progress (live — 09:25 UTC)
-- Eval PID 42258 running since 08:37 UTC (~48 min)
-- **74 results across 4 pipelines** (log: 122 lines)
-- Estimated time remaining: ~35-40 hours at current rate
+### Phase 2 Mega Eval Progress (live — 10:20 UTC)
+- Eval PID 54740 running since ~10:15 UTC
+- **50 workers across 10 HF Spaces** — round-robin load balancing
+- Log: logs/eval-session62-10space.log
 
 | Pipeline | Tested | Total | Pass | Accuracy | Avg F1 |
 |----------|--------|-------|------|----------|--------|

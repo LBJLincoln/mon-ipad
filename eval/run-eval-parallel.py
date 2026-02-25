@@ -25,6 +25,7 @@ import json
 import os
 import sys
 import time
+import signal
 import threading
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -84,6 +85,38 @@ _dedup_lock = threading.Lock()
 
 # Print lock (avoid garbled output)
 _print_lock = threading.Lock()
+
+# Global tested_ids reference for signal handler
+_global_tested_ids = None
+
+# Incremental save counter (save every N questions)
+_INCREMENTAL_SAVE_INTERVAL = 10
+_incremental_counter = 0
+_incremental_lock = threading.Lock()
+
+
+def _incremental_save():
+    """Save tested_ids incrementally to prevent data loss on kill."""
+    global _incremental_counter
+    with _incremental_lock:
+        _incremental_counter += 1
+        if _incremental_counter % _INCREMENTAL_SAVE_INTERVAL == 0 and _global_tested_ids:
+            save_tested_ids({k: v for k, v in _global_tested_ids.items()})
+
+
+def _signal_handler(signum, frame):
+    """Save progress before exit on SIGTERM/SIGINT."""
+    if _global_tested_ids:
+        total = sum(len(v) for v in _global_tested_ids.values())
+        print(f"\n  SIGNAL {signum} received — saving {total} tested IDs before exit...", flush=True)
+        save_tested_ids({k: v for k, v in _global_tested_ids.items()})
+        print(f"  Saved. Exiting.", flush=True)
+    sys.exit(0)
+
+
+# Register signal handlers
+signal.signal(signal.SIGTERM, _signal_handler)
+signal.signal(signal.SIGINT, _signal_handler)
 
 
 def check_phase_gate(requested_dataset):
@@ -402,6 +435,7 @@ def _record_result(rag_type, result, tested_ids_by_type, totals, per_question_re
     )
     with _dedup_lock:
         tested_ids_by_type.setdefault(rag_type, set()).add(result["qid"])
+    _incremental_save()
     totals["tested"] += 1
     if result["is_correct"]:
         totals["correct"] += 1
@@ -460,6 +494,10 @@ def main():
                         help="Run ALL pipelines concurrently (including orchestrator). "
                              "Removes the orchestrator-sequential constraint. "
                              "Use with --workers 12 for maximum throughput.")
+    parser.add_argument("--preflight", type=int, default=0,
+                        help="Run N preflight questions per pipeline before full eval. "
+                             "If any pipeline fails all preflight questions, skip it. "
+                             "Default: 0 (disabled). Recommended: 2-5.")
     args = parser.parse_args()
 
     # Pass delay, early-stop, and batch-size to run_pipeline via function attributes
@@ -558,13 +596,18 @@ def main():
             questions[t] = questions[t][:args.max]
 
     # Load dedup
+    global _global_tested_ids
     if args.reset:
         tested_ids = {t: set() for t in ["standard", "graph", "quantitative", "orchestrator"]}
         print("  Dedup RESET — all questions will be re-tested")
+    elif args.force:
+        tested_ids = {t: set() for t in ["standard", "graph", "quantitative", "orchestrator"]}
+        print("  Force mode — starting fresh (but WILL save incrementally)")
     else:
         tested_ids = load_tested_ids_by_type()
         total_already = sum(len(v) for v in tested_ids.values())
         print(f"  Dedup: {total_already} already tested (will be skipped)")
+    _global_tested_ids = tested_ids
 
     # Start progress reporter
     if _reporter:
@@ -577,6 +620,42 @@ def main():
         writer.snapshot_databases(trigger="pre-eval")
     except Exception as e:
         print(f"  DB snapshot failed (non-fatal): {e}")
+
+    # Preflight check — quick sanity test before full eval
+    if args.preflight and args.preflight > 0:
+        print(f"\n  PREFLIGHT: Testing {args.preflight} questions per pipeline...")
+        failed_pipelines = []
+        for rag_type in list(requested_types):
+            qs = questions.get(rag_type, [])[:args.preflight]
+            if not qs:
+                continue
+            ok_count = 0
+            for q in qs:
+                webhook = WEBHOOK_PATHS.get(rag_type, "")
+                if not webhook:
+                    continue
+                endpoint = run_eval_mod._rr_endpoint(rag_type, webhook)
+                try:
+                    resp = call_rag(endpoint, q["question"], timeout=45)
+                    if not resp.get("error"):
+                        ok_count += 1
+                except:
+                    pass
+            pct = ok_count / len(qs) * 100 if qs else 0
+            status = "PASS" if ok_count > 0 else "FAIL"
+            print(f"    [{rag_type.upper()}] {ok_count}/{len(qs)} preflight OK ({pct:.0f}%) — {status}")
+            if ok_count == 0:
+                failed_pipelines.append(rag_type)
+
+        if failed_pipelines:
+            print(f"\n  PREFLIGHT FAILED for: {', '.join(failed_pipelines)}")
+            print(f"  Removing failed pipelines from eval. Continuing with working ones.")
+            for fp in failed_pipelines:
+                requested_types = [t for t in requested_types if t != fp]
+            if not requested_types:
+                print("  ALL pipelines failed preflight. Aborting.")
+                sys.exit(1)
+        print(f"  PREFLIGHT PASSED — proceeding with: {', '.join(requested_types)}\n")
 
     # Run pipelines
     print("\n  Launching pipeline evaluation...")
