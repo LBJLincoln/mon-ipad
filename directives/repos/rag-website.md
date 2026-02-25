@@ -1,6 +1,6 @@
 # rag-website — CLAUDE.md
 
-> Last updated: 2026-02-22T13:30:00+01:00
+> Last updated: 2026-02-25T11:30:00+00:00
 > **Ce repo s'exécute dans un Codespace GitHub éphémère (dev) + Vercel (prod).**
 > Tu es un agent Claude Code specialise dans le SITE BUSINESS multi-secteurs.
 > **MODELE PRINCIPAL : `claude-opus-4-6`** — Architecture, decisions, evaluation qualite.
@@ -13,14 +13,15 @@
 
 ---
 
-## ÉTAT ACTUEL — 17 fév 2026
+## ÉTAT ACTUEL — 25 fév 2026
 
 | | |
 |-|-|
-| **Dernier commit** | c5a9ec70 — 17 fév 2026 (fix SSE live feed + Apple B2B redesign) |
-| **Déployé / en cours** | Live sur Vercel : https://nomos-ai-pied.vercel.app — dashboard SSE /dashboard actif (932q) |
-| **Codespace** | Shutdown — nomos-rag-website-jr7q9gr69qqfqp6r |
-| **Prochain objectif immédiat** | Intégrer vrais docs sectoriels (BTP/Industrie/Finance/Juridique) dans les démos chatbot |
+| **Status** | Live sur Vercel : https://nomos-ai-pied.vercel.app |
+| **GitHub Action** | Has a known failure that needs fixing (deployment still works) |
+| **Dashboard SSE** | /dashboard route active with real-time updates |
+| **Codespace** | Can be created on-demand for development |
+| **Prochain objectif immédiat** | Fix GitHub Action workflow + Intégrer vrais docs sectoriels dans démos chatbot |
 
 ### Commandes clés pour cette session
 ```bash

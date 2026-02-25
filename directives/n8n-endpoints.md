@@ -1,22 +1,36 @@
 # n8n API Endpoints & Reference Complete
 
-> Last updated: 2026-02-22T13:30:00+01:00
+> Last updated: 2026-02-25T11:30:00+00:00
 
 > **Ce fichier est la reference unique** pour les scripts Python de test.
 > Les scripts doivent s'y referer pour formater les requetes et utiliser les bons points d'entree.
-> Derniere mise a jour : 2026-02-18 (task runner fix, Jina migration validated, webhooks re-verified, pièges bolt+PUT+runners ajoutés)
+> Derniere mise a jour : 2026-02-25 (10 HF Space cluster deployed)
 
 ---
 
-## Configuration — Docker self-hosted (post-migration 2026-02-12)
+## Configuration — 10 HF Space Cluster (deployed 2026-02-25)
 
 ```bash
-export N8N_HOST="http://34.136.180.66:5678"
-# API Key dans .env.local (ne PAS la mettre en clair dans le repo)
-source .env.local  # charge N8N_API_KEY
+# 10 HF Spaces deployed for distributed load
+# Space 1-10 URLs in .env.local
+source .env.local  # charge N8N_HOST, N8N_API_KEY, N8N_HOST_1 through N8N_HOST_10
 ```
 
-> **IMPORTANT** : L'ancienne API key hardcodee ici etait INVALIDE (401). Toujours utiliser `.env.local`.
+### 10 HF Space Endpoints
+| Space | URL | Account | Status |
+|-------|-----|---------|--------|
+| Space 1 | https://lbjlincoln-nomos-rag-engine.hf.space | LBJLincoln | ACTIVE |
+| Space 2 | https://lbjlincoln26-nomos-rag-engine-2.hf.space | LBJLincoln26 | ACTIVE |
+| Space 3 | https://lbjlincoln-nomos-rag-engine-3.hf.space | LBJLincoln | ACTIVE |
+| Space 4 | https://lbjlincoln26-nomos-rag-engine-4.hf.space | LBJLincoln26 | ACTIVE |
+| Space 5 | https://lbjlincoln-nomos-rag-engine-5.hf.space | LBJLincoln | ACTIVE |
+| Space 6 | https://lbjlincoln26-nomos-rag-engine-6.hf.space | LBJLincoln26 | ACTIVE |
+| Space 7 | https://lbjlincoln-nomos-rag-engine-7.hf.space | LBJLincoln | ACTIVE |
+| Space 8 | https://lbjlincoln26-nomos-rag-engine-8.hf.space | LBJLincoln26 | ACTIVE |
+| Space 9 | https://lbjlincoln-nomos-rag-engine-9.hf.space | LBJLincoln | ACTIVE |
+| Space 10 | https://lbjlincoln26-nomos-rag-engine-10.hf.space | LBJLincoln26 | ACTIVE |
+
+> **IMPORTANT** : Load balancing across 10 spaces. Use round-robin or least-loaded strategy.
 
 ---
 

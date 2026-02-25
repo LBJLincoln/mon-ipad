@@ -1,10 +1,24 @@
 # Dataset Rationale — Multi-RAG Orchestrator SOTA 2026
 
-> Last updated: 2026-02-22T13:30:00+01:00
+> Last updated: 2026-02-25T11:30:00+00:00
 
 ## Pourquoi ces datasets ?
 
 Notre systeme Multi-RAG est evalue sur 14 datasets soigneusement selectionnes parmi les benchmarks les plus reconnus en 2024-2026. Ce document explique chaque choix.
+
+## Phase 2 Datasets (NEW — 2026-02-25)
+
+Phase 2 introduces expanded test datasets for comprehensive evaluation:
+
+| Dataset File | Questions | Pipelines | Source |
+|--------------|-----------|-----------|--------|
+| hf-1000.json | 1,000 | All 4 | HuggingFace curated |
+| graph-quant-expansion-500x2.json | 1,000 | Graph + Quantitative | Targeted expansion |
+| standard-orch-1000x2.json | 2,000 | Standard + Orchestrator | Standard + routing |
+| pme-gateway-1000.json | 1,000 | PME Gateway | PME use cases |
+| **Total Phase 2** | **5,000** | | |
+
+Combined with Phase 1 (200q), total available: 5,200 questions across all pipelines.
 
 ## Vue d'ensemble
 

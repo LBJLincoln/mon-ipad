@@ -1,6 +1,6 @@
 # Processus Standard de Session Claude Code
 
-> Last updated: 2026-02-22T13:30:00+01:00
+> Last updated: 2026-02-25T11:30:00+00:00
 
 ## ETAPE 0 — Pre-vol checklist + Bibliotheque de Fixes (OBLIGATOIRE)
 
@@ -71,6 +71,8 @@ Apres chaque fix reussi (5/5 PASS) → ajouter l'entree dans `technicals/debug/f
 ```bash
 python3 eval/quick-test.py --questions 1 --pipeline <cible>
 ```
+- **IMPORTANT** : Use incremental saves with preflight checks (deduplication active by default)
+- **--no-force policy** : Never use --force flag, always preserve existing test results
 - Si erreur → analyser node-par-node AVANT tout fix
 - Si succes → passer a 5/5
 

@@ -1,8 +1,8 @@
 # rag-dashboard — CLAUDE.md
 
-> Last updated: 2026-02-22T13:30:00+01:00
-> **Ce repo est statique — déployé PUBLIQUEMENT sur GitHub Pages.**
-> **URL LIVE : https://lbjlincoln.github.io/rag-dashboard/**
+> Last updated: 2026-02-25T11:30:00+00:00
+> **Ce repo est statique — déployé PUBLIQUEMENT sur Vercel.**
+> **URL LIVE : https://nomos-dashboard-alexis-morets-projects.vercel.app/**
 > Tu es un agent Claude Code specialise dans le DASHBOARD DE MONITORING live.
 > **MODELE PRINCIPAL : `claude-opus-4-6`** — Decisions UI/UX, architecture, evaluation.
 > **DELEGATION** : Haiku 4.5 pour exploration rapide si necessaire.
@@ -43,9 +43,10 @@ Il n'y a pas de n8n local ni de Codespace nécessaire.
 
 ```
 Type        : Site statique (HTML/JS/CSS)
-Deploy      : GitHub Pages (PUBLIC — https://lbjlincoln.github.io/rag-dashboard/)
+Deploy      : Vercel (PUBLIC — https://nomos-dashboard-alexis-morets-projects.vercel.app/)
 n8n local   : AUCUN
 Codespace   : AUCUN nécessaire
+Status      : LIVE — dashboard displaying real-time metrics from status.json
 ```
 
 ---
