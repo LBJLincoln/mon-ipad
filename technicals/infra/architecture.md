@@ -1,42 +1,52 @@
 # Architecture Reference — Multi-RAG Orchestrator SOTA 2026
 
-> Last updated: 2026-02-22T21:45:00+01:00
+> Last updated: 2026-02-25T11:30:00+00:00
 > Reference detaillee. Pour demarrage rapide, utiliser `docs/status.json`.
 
 ---
 
-## Architecture globale (Session 25 — 19 fev 2026)
+## Architecture globale (Session 62 — 25 fev 2026)
 
 ```
 VM Google Cloud (34.136.180.66) — PERMANENT (PILOTAGE UNIQUEMENT)
-  n8n Docker : Up (9 workflows actifs, cible 16) — STOCKAGE + WEBHOOKS
-  Redis : Up (queue mode)
-  PostgreSQL : Up (n8n DB)
-  Claude Code : Termius terminal (pilotage uniquement)
-  ⚠️ ZERO modification workflow sur VM (Task Runner cache — Pattern 2.11)
-  ⚠️ ZERO test eval sur VM (RAM ~100MB dispo)
+  n8n Docker : REMOVED (Session 42) — All n8n moved to HF Spaces
+  Redis : REMOVED (Session 60 — Orchestrator Redis removed)
+  PostgreSQL : REMOVED (Session 42)
+  Claude Code : Termius terminal (pilotage + eval orchestration)
+  ⚠️ Eval runs from VM → HF Space webhooks (round-robin routing)
+  ⚠️ RAM ~413MB available (n8n removed, lightweight only)
   MCP Servers : ~6MB total (negligeable)
 
-HF Space (lbjlincoln-nomos-rag-engine.hf.space) — EXECUTION n8n distant
-  n8n 2.8.3 : 16GB RAM, $0, SQLite + Redis
-  Credentials : 12/12 importes
-  Workflows : 9 importes, 3/4 pipelines FONCTIONNELS (session 27)
-    Standard : 200 OK, 100% accuracy (5/5)
-    Graph : 200 OK, 100% accuracy (5/5)
-    Orchestrator : 200 OK, 100% accuracy (5/5) — FIX-34 httpRequest
-    Quantitative : 200 OK, infra OK mais OpenRouter 429 rate limit
-  REST API : BROKEN (FIX-15 — proxy HF strip POST body pour /api/)
-  Keep-alive : cron VM */30 min
-  Fixes appliques : FIX-33 ($env), FIX-34 (executeWorkflow→httpRequest), FIX-35 (URL)
+HF Spaces (10 deployed — Session 62) — DISTRIBUTED EXECUTION
+  Architecture : 10 spaces across 2 accounts (round-robin routing)
+    - LBJLincoln account : Spaces 1, 3, 5, 7, 9 (odd)
+    - LBJLincoln26 account : Spaces 2, 4, 6, 8, 10 (even)
+
+  Each space :
+    - n8n 2.8.3 : 16GB RAM, SQLite DB
+    - Identical workflow imports (4 RAG pipelines + support)
+    - N8N_BLOCK_ENV_ACCESS_IN_NODE=false (added to entrypoint.sh)
+      ⚠️ CRITICAL FIX pending rebuild — enables $env.VAR_NAME access
+    - Independent credentials (12+ per space)
+
+  Eval strategy :
+    - VM runs eval scripts (quick-test.py, iterative-eval.py)
+    - Round-robin routing to 10 HF Space endpoints
+    - 10x throughput vs single-space architecture
+
+  Status (Session 62) :
+    - All 4 pipelines working : Standard, Graph, Quantitative, Orchestrator
+    - Orchestrator : Redis removed (9 nodes bypassed), Postgres-only mode
+    - Phase 2 eval running across all spaces
 
 GitHub — Source de verite
   n8n/live/     : Workflows Phase 1 (benchmark)
   n8n/website/  : Workflows website (copies Phase 1 + ingestion secteurs)
   n8n/validated/: Snapshots versiones
 
-Codespace rag-tests — Tests Phase 1
+Codespace rag-tests — NOT USED (eval runs from VM)
   n8n LOCAL (3 workers, docker-compose)
-  Import workflows depuis n8n/live/
+  ⚠️ DEPRECATED : Eval moved to VM → HF Spaces architecture
 
 Codespace rag-website — Site + demos secteurs
   n8n LOCAL (docker-compose)

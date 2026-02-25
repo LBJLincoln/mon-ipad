@@ -1,6 +1,6 @@
 # Knowledge Base — Cerveau Persistant Multi-RAG
 
-> Last updated: 2026-02-25T11:05:00+01:00 (Session 61 — Dashboard Status API fixed, webhook path corrected)
+> Last updated: 2026-02-25T13:00:00+01:00 (Session 62 — HF Space rebuild knowledge, credential restore process)
 > **Ce document est VIVANT.** Il s'enrichit a CHAQUE session avec les solutions, patterns
 > et connaissances techniques decouvertes. A lire EN PREMIER avec `fixes-library.md`.
 > Objectif : ameliorer la performance de l'agent a chaque session.
@@ -47,6 +47,14 @@
 - Hybrid fallback block in `run-eval-parallel.py:171-183` is PERMANENTLY DISABLED
 - `--local-pipelines` flag is PERMANENTLY DISABLED with warning
 - If pipelines fail → FIX THE PIPELINES, don't mask with local calls
+
+### RULE 7: HF SPACE REBUILD WIPES CREDENTIALS
+- **CRITICAL**: HF Space rebuild (factory reboot) wipes SQLite database including ALL credential references
+- Workflows persist in JSON but credential IDs become orphaned
+- setup-workflows.py must run during boot to restore credentials
+- Standard workflow uses $env.VAR_NAME (not credential objects) for OpenRouter/Pinecone
+- **MUST HAVE**: N8N_BLOCK_ENV_ACCESS_IN_NODE=false in entrypoint.sh for $env to work
+- After rebuild: run credential restore script on all spaces before testing
 
 ---
 
@@ -1332,14 +1340,14 @@ class AutonomousEvaluator:
 - **Impact**: Workflows using Redis nodes (for distributed locking) fail with connection errors
 - **Solution**: Remove Redis nodes and bypass connections
 
-### 13.2 Redis Removal Pattern (Proven on Orchestrator V10.1 + Enrichissement V4.0)
+### 13.2 Redis Removal Pattern (Proven on Orchestrator V10.1 + Enrichissement V4.0 + Ingestion V4.0)
 
 **Symptoms**:
 - Workflow has `n8n-nodes-base.redis` nodes
 - Executions fail with connection errors or HTTP 500
 - Chat Trigger workflows may be blocked by Redis lock pattern
 
-**Fix Process**:
+**Fix Process** (Session 60-61):
 ```python
 # 1. Login via n8n REST API
 POST /rest/login {"emailOrLdapLoginId": "ci@nomos.ai", "password": "CI-Nomos-2026!"}
@@ -1384,7 +1392,96 @@ POST /rest/workflows/{WORKFLOW_ID}/activate {"versionId": "<version_from_patch>"
 - Chat Trigger workflows don't need webhook activation (no webhook path)
 - Use urllib with CookieJar for session persistence across API calls
 
-**Next Workflow to Fix**: Ingestion V4.0 (ID: `nh1D4Up0wBZhuQbp`) — same pattern
+**Workflows Fixed** (Session 60-62): Orchestrator V10.1 (9 nodes), Enrichissement V4.0 (2 nodes), Ingestion V4.0 (2 nodes)
+
+---
+
+## SECTION 14 — HF SPACE REBUILD & CREDENTIAL RECOVERY (Session 62)
+
+### 14.1 Context: HF Space Factory Reboot Wipes SQLite
+
+**Problem**: Deploying critical env var fix (N8N_BLOCK_ENV_ACCESS_IN_NODE=false) requires factory reboot. Factory reboot wipes ALL data in SQLite database including credential references.
+
+**What gets wiped**:
+- Credential entries in `credentials_entity` table
+- Workflow-credential associations
+- Active workflow registrations
+- Execution history
+
+**What survives**:
+- Workflow JSON definitions (imported from n8n-workflows/)
+- HF Space secrets (env vars)
+- Entrypoint.sh configuration
+
+### 14.2 Credential Restore Process
+
+**Pattern discovered** (Session 62):
+1. **HF Space rebuild** → SQLite wiped → 0 credentials in n8n
+2. **Workflows import** → JSON loaded but credential IDs orphaned
+3. **Credential restore script** → recreate credentials via REST API
+4. **Workflow activation** → register webhooks with restored credentials
+
+**Script**: `setup-workflows.py` must run AFTER every HF Space rebuild:
+```python
+# 1. Login to n8n REST API
+POST /rest/login {"emailOrLdapLoginId": "ci@nomos.ai", "password": "..."}
+
+# 2. Create credentials
+POST /rest/credentials {
+    "name": "OpenRouter API (Standard)",
+    "type": "httpHeaderAuth",
+    "data": {"name": "Authorization", "value": "Bearer {{HF_SECRET}}"}
+}
+
+# 3. Map credential IDs to workflows
+# (complex — see setup-workflows.py full implementation)
+
+# 4. Activate workflows
+POST /rest/workflows/{id}/activate {"versionId": "..."}
+```
+
+### 14.3 Standard Workflow Special Case
+
+**Key insight**: Standard workflow uses `$env.VAR_NAME` expressions in HTTP Request headers, NOT credential objects.
+
+**Example**:
+```json
+"headerParameters": {
+    "parameters": [{
+        "name": "Authorization",
+        "value": "={{$env.OPENROUTER_KEY_STANDARD}}"
+    }]
+}
+```
+
+**Implication**: Standard workflow DOES NOT need credential restore if N8N_BLOCK_ENV_ACCESS_IN_NODE=false is set. The $env expressions resolve directly from container environment.
+
+**Other pipelines**: Graph, Quantitative, Orchestrator use credential objects → need credential restore.
+
+### 14.4 N8N_BLOCK_ENV_ACCESS_IN_NODE=false — CRITICAL
+
+**Without this env var**: ALL `$env.*` expressions return "access to env vars denied" error.
+
+**Must be set in TWO places**:
+1. **entrypoint.sh**: `export N8N_BLOCK_ENV_ACCESS_IN_NODE=false` BEFORE `n8n start`
+2. **HF Space secrets**: Add as HF secret (optional, redundant but safe)
+
+**Verification**:
+```bash
+# Check if env var is active in container
+docker exec <container> env | grep N8N_BLOCK_ENV_ACCESS_IN_NODE
+# Should return: N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+```
+
+### 14.5 Orchestrator Empty Body — Separate Issue
+
+**Observed** (Session 62): After deploying N8N_BLOCK_ENV_ACCESS_IN_NODE=false fix, Orchestrator still returns empty body (HTTP 200, SIZE: 0).
+
+**NOT related to env var fix** — separate root cause.
+
+**Hypothesis**: Orchestrator sub-workflow calls may have different issue (FIX-34 related?).
+
+**Next step**: Diagnose Orchestrator execution flow after credential restore completes.
 
 ---
 

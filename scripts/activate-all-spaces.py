@@ -15,6 +15,8 @@ import time
 
 # Configuration
 SPACES = [
+    "https://lbjlincoln-nomos-rag-engine.hf.space",
+    "https://lbjlincoln26-nomos-rag-engine-2.hf.space",
     "https://lbjlincoln-nomos-rag-engine-3.hf.space",
     "https://lbjlincoln26-nomos-rag-engine-4.hf.space",
     "https://lbjlincoln-nomos-rag-engine-5.hf.space",

@@ -130,6 +130,14 @@ class N8nClient:
         """Update workflow using PATCH"""
         return self._request("PATCH", f"/rest/workflows/{workflow_id}", data)
 
+    def activate_workflow(self, workflow_id: str, version_id: str) -> dict:
+        """Activate workflow using POST /activate with versionId"""
+        return self._request(
+            "POST",
+            f"/rest/workflows/{workflow_id}/activate",
+            {"versionId": version_id},
+        )
+
 
 def load_golden_workflow(filename: str) -> Optional[dict]:
     """Load golden reference workflow from file"""
@@ -564,7 +572,7 @@ def print_summary(results: List[dict]):
     print(f"{Colors.BOLD}{'=' * 80}{Colors.RESET}\n")
 
 
-def revert_workflow(space_url: str, pipeline_name: str, golden_file: str) -> bool:
+def revert_workflow(space_url: str, pipeline_name: str, golden_file: str, dry_run: bool = False) -> bool:
     """Revert a workflow to golden state"""
     try:
         client = N8nClient(space_url)
@@ -582,19 +590,26 @@ def revert_workflow(space_url: str, pipeline_name: str, golden_file: str) -> boo
         # Find current workflow
         workflows = client.get_workflows()
         current_wf_id = None
+        current_wf_name = None
         for wf in workflows:
-            if pipeline_name in wf["name"].lower():
+            if pipeline_name in wf.get("name", "").lower():
                 current_wf_id = wf["id"]
+                current_wf_name = wf["name"]
                 break
 
         if not current_wf_id:
             print(f"{Colors.RED}Workflow not found: {pipeline_name}{Colors.RESET}")
             return False
 
-        # Get credential mapping (reuse existing credentials)
-        credentials = client.get_credentials()
+        if dry_run:
+            print(f"{Colors.CYAN}[DRY-RUN]{Colors.RESET} Would revert '{current_wf_name}' (ID: {current_wf_id})")
+            return True
 
-        # Update workflow with golden state (but keep current credential IDs)
+        # Get current workflow for backup
+        current_wf = client.get_workflow(current_wf_id)
+
+        # Update workflow with golden state
+        # Note: We use golden nodes/connections but preserve the workflow ID
         update_data = {
             "nodes": golden_wf["nodes"],
             "connections": golden_wf.get("connections", {}),
@@ -606,8 +621,8 @@ def revert_workflow(space_url: str, pipeline_name: str, golden_file: str) -> boo
 
         # Reactivate if it was active in golden
         if golden_wf.get("active", False):
-            current_wf = client.get_workflow(current_wf_id)
-            version_id = current_wf.get("versionId", "1")
+            new_current = client.get_workflow(current_wf_id)
+            version_id = new_current.get("versionId", "1")
             client.activate_workflow(current_wf_id, version_id)
             print(f"{Colors.GREEN}✓ Re-activated {pipeline_name}{Colors.RESET}")
 
@@ -615,12 +630,15 @@ def revert_workflow(space_url: str, pipeline_name: str, golden_file: str) -> boo
 
     except Exception as e:
         print(f"{Colors.RED}Failed to revert {pipeline_name}: {e}{Colors.RESET}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
 def main():
     parser = argparse.ArgumentParser(description="Compare live workflows against golden reference")
     parser.add_argument("--revert", action="store_true", help="Revert workflows to golden state")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be reverted without actually reverting")
     parser.add_argument("--space", type=str, help="Check only this space URL")
     parser.add_argument("--pipeline", type=str, choices=list(CORE_PIPELINES.keys()),
                        help="Check only this pipeline")
@@ -690,9 +708,13 @@ def main():
     print(f"{Colors.CYAN}Detailed report saved to: {report_path}{Colors.RESET}\n")
 
     # Revert if requested
-    if args.revert:
-        print(f"{Colors.BOLD}REVERTING workflows to golden state...{Colors.RESET}\n")
+    if args.revert or args.dry_run:
+        if args.dry_run:
+            print(f"{Colors.BOLD}DRY-RUN: Showing what would be reverted...{Colors.RESET}\n")
+        else:
+            print(f"{Colors.BOLD}REVERTING workflows to golden state...{Colors.RESET}\n")
 
+        revert_count = 0
         for result in results:
             if result["status"] != "success":
                 continue
@@ -709,9 +731,14 @@ def main():
                 total_diffs = sum(workflow_data.get("severity_counts", {}).values())
                 if total_diffs > 0:
                     print(f"Reverting {pipeline_name} on {space_url}...")
-                    revert_workflow(space_url, pipeline_name, CORE_PIPELINES[pipeline_name])
+                    success = revert_workflow(space_url, pipeline_name, CORE_PIPELINES[pipeline_name], dry_run=args.dry_run)
+                    if success:
+                        revert_count += 1
 
-        print(f"\n{Colors.GREEN}✓ Revert complete{Colors.RESET}\n")
+        if args.dry_run:
+            print(f"\n{Colors.CYAN}Would revert {revert_count} workflows{Colors.RESET}\n")
+        else:
+            print(f"\n{Colors.GREEN}✓ Reverted {revert_count} workflows{Colors.RESET}\n")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # INDEX DES DOCUMENTS — Ou trouver chaque information
 
-> Last updated: 2026-02-22T18:15:00+01:00
+> Last updated: 2026-02-25T11:30:00+00:00
 
 > **Ce fichier est un INDEX DE RECHERCHE.**
 > Quand tu cherches une information, consulte ce fichier EN PREMIER pour savoir
@@ -32,7 +32,8 @@
 | Information | Document(s) source |
 |-------------|-------------------|
 | **VM Google Cloud** (IP, RAM, CPU, disque) | `CLAUDE.md` Section "Infrastructure reelle" |
-| **HF Space** (URL, RAM, n8n version, status) | `technicals/infra/architecture.md` Section HF Space |
+| **HF Spaces** (10 deployed, 2 accounts, URLs) | `technicals/infra/architecture.md` Section HF Spaces |
+| **HF Space management** (duplicate, activate, test) | `scripts/scale-hf-spaces.py`, `scripts/activate-all-spaces.py` |
 | **Codespaces** (specs, limites, commandes) | `CLAUDE.md` Section "Codespaces" |
 | **Vercel** (4 sites, URLs, status) | `CLAUDE.md` Section "Deployments Vercel" |
 | **Docker containers** (n8n, Redis, PostgreSQL) | `CLAUDE.md` Section "Containers Docker" |
@@ -254,6 +255,7 @@
 | Concurrence (limites) | `technicals/debug/knowledge-base.md` §7.4 | |
 | Credentials BDD | `technicals/infra/credentials.md` | `.env.local` |
 | Datasets benchmarks | `technicals/data/datasets-master.md` | `directives/dataset-rationale.md` |
+| Datasets Phase 2 (1000q+) | `datasets/phase-2/` | `docs/phase2-readiness.md` |
 | Datasets sectoriels | `technicals/data/datasets-4-secteurs.md` | `technicals/data/sector-datasets.md` |
 | Docker containers | `CLAUDE.md` | `technicals/infra/architecture.md` |
 | Env vars (33) | `technicals/infra/env-vars-exhaustive.md` | |
@@ -262,7 +264,7 @@
 | Fixes documentes | `technicals/debug/fixes-library.md` | |
 | Flowchart debug | `technicals/debug/diagnostic-flowchart.md` | |
 | Graph pipeline | `technicals/infra/architecture.md` | `docs/executive-summary.md` §5 |
-| HF Space | `technicals/infra/architecture.md` | `CLAUDE.md` |
+| HF Spaces (10 deployed) | `technicals/infra/architecture.md` | `scripts/scale-hf-spaces.py` |
 | Knowledge base | `technicals/debug/knowledge-base.md` | |
 | LLM modeles | `technicals/infra/llm-models-and-fallbacks.md` | `technicals/infra/env-vars-exhaustive.md` |
 | n8n API REST | `directives/n8n-endpoints.md` | |
@@ -364,7 +366,9 @@ mon-ipad/
 │   ├── push-directives.sh             ← Push CLAUDE.md vers satellites
 │   ├── check-staleness.sh             ← Detecte fichiers obsoletes
 │   ├── setup-claude-opus.sh           ← Configure Opus 4.6
-│   └── analyze_n8n_executions.py      ← Analyse executions n8n
+│   ├── analyze_n8n_executions.py      ← Analyse executions n8n
+│   ├── scale-hf-spaces.py             ← HF Space management (list, duplicate, test)
+│   └── activate-all-spaces.py         ← Bulk workflow activation across spaces
 │
 ├── n8n/                               ← WORKFLOWS N8N
 │   ├── live/                          ← Workflows actifs (JSON)
@@ -372,8 +376,16 @@ mon-ipad/
 │
 ├── datasets/                          ← QUESTIONS DE TEST
 │   ├── phase-1/                       ← 200 questions Phase 1
-│   ├── phase-2/                       ← 1000+ questions Phase 2
+│   ├── phase-2/
+│   │   ├── hf-1000.json               ← Graph+Quant expansion (1000q)
+│   │   ├── graph-quant-expansion-500x2.json ← Graph+Quant (1000q)
+│   │   ├── standard-orch-1000x2.json  ← Standard+Orchestrator (2000q)
+│   │   └── pme-gateway-1000.json      ← PME Gateway (1000q)
 │   └── sectors/                       ← Donnees sectorielles
+│
+├── logs/                              ← EXECUTION LOGS
+│   ├── eval-session62-final.log       ← Phase 2 eval log
+│   └── (autres logs d'execution)
 │
 ├── snapshot/                          ← REFERENCES
 │   ├── current/                       ← Etat actuel des workflows

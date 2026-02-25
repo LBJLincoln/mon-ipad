@@ -44,131 +44,189 @@ def api(method, path, data=None):
 
 def create_credential(name, cred_type, cred_data):
     """Create an n8n credential and return its ID."""
-    result = api("POST", "credentials", {
-        "name": name,
-        "type": cred_type,
-        "data": cred_data,
-    })
-    if result:
-        cid = result.get("data", result).get("id", result.get("id", ""))
-        if cid:
-            print(f"  Created credential: {name} (type={cred_type}, id={cid})")
-            return str(cid)
-    print(f"  FAILED to create credential: {name}")
-    return None
+    try:
+        result = api("POST", "credentials", {
+            "name": name,
+            "type": cred_type,
+            "data": cred_data,
+        })
+        if result:
+            cid = result.get("data", result).get("id", result.get("id", ""))
+            if cid:
+                print(f"  ✓ Created credential: {name} (type={cred_type}, id={cid})")
+                return str(cid)
+        print(f"  ✗ FAILED to create credential: {name}")
+        return None
+    except Exception as e:
+        print(f"  ✗ EXCEPTION creating credential {name}: {e}")
+        return None
 
 
 def create_all_credentials():
-    """Create all required n8n credentials. Returns (id_map, type_map).
+    """Create all required n8n credentials. Returns (id_map, type_map, stats).
 
     id_map: old_credential_id -> new_id (for direct ID remapping)
     type_map: credential_type -> new_id (for type-based assignment)
+    stats: dict with success/failure counts per credential type
     """
     id_map = {}
     type_map = {}
+    stats = {"created": [], "failed": [], "skipped": []}
 
     # --- Supabase PostgreSQL ---
-    supabase_host = os.environ.get("SUPABASE_HOST", "aws-0-eu-west-1.pooler.supabase.com")
-    supabase_port = int(os.environ.get("SUPABASE_PORT", "6543"))
-    supabase_db = os.environ.get("SUPABASE_DB", "postgres")
-    supabase_user = os.environ.get("SUPABASE_USER", "postgres.kfyrtsmdolgioyxsglbz")
-    supabase_pass = os.environ.get("SUPABASE_PASSWORD", "")
+    try:
+        supabase_host = os.environ.get("SUPABASE_HOST", "aws-0-eu-west-1.pooler.supabase.com")
+        supabase_port = int(os.environ.get("SUPABASE_PORT", "6543"))
+        supabase_db = os.environ.get("SUPABASE_DB", "postgres")
+        supabase_user = os.environ.get("SUPABASE_USER", "postgres.kfyrtsmdolgioyxsglbz")
+        supabase_pass = os.environ.get("SUPABASE_PASSWORD", "")
 
-    if supabase_pass:
-        new_id = create_credential("Supabase Postgres (Pooler)", "postgres", {
-            "host": supabase_host,
-            "port": supabase_port,
-            "database": supabase_db,
-            "user": supabase_user,
-            "password": supabase_pass,
-            "ssl": "allow",
-        })
-        if new_id:
-            type_map["postgres"] = new_id
-            for old in ["USU8ngVzsUbED3mn", "zEr7jPswZNv6lWKu", "FZUFrHg9RgDR3MAB", "0bf5AHN9S8qJTBr8"]:
-                id_map[old] = new_id
-    else:
-        print("  SKIP: Supabase PostgreSQL (no SUPABASE_PASSWORD)")
+        if supabase_pass:
+            new_id = create_credential("Supabase Postgres (Pooler)", "postgres", {
+                "host": supabase_host,
+                "port": supabase_port,
+                "database": supabase_db,
+                "user": supabase_user,
+                "password": supabase_pass,
+                "ssl": "allow",
+            })
+            if new_id:
+                type_map["postgres"] = new_id
+                for old in ["USU8ngVzsUbED3mn", "zEr7jPswZNv6lWKu", "FZUFrHg9RgDR3MAB", "0bf5AHN9S8qJTBr8"]:
+                    id_map[old] = new_id
+                stats["created"].append("Supabase PostgreSQL")
+            else:
+                stats["failed"].append("Supabase PostgreSQL")
+        else:
+            print("  SKIP: Supabase PostgreSQL (no SUPABASE_PASSWORD)")
+            stats["skipped"].append("Supabase PostgreSQL")
+    except Exception as e:
+        print(f"  ERROR creating Supabase credential: {e}")
+        stats["failed"].append("Supabase PostgreSQL")
 
     # --- OpenRouter httpHeaderAuth (per-pipeline keys) ---
-    or_key = os.environ.get("OPENROUTER_API_KEY", "")
-    if or_key:
-        # Create per-pipeline credentials using different API keys
-        pipeline_keys = {
-            "Standard": os.environ.get("OPENROUTER_KEY_STANDARD", or_key),
-            "Graph": os.environ.get("OPENROUTER_KEY_GRAPH", or_key),
-            "Quantitative": os.environ.get("OPENROUTER_KEY_QUANTITATIVE", or_key),
-            "Orchestrator": os.environ.get("OPENROUTER_KEY_ORCHESTRATOR", or_key),
-            "PME": os.environ.get("OPENROUTER_KEY_PME", or_key),
-        }
-        or_cred_ids = {}  # pipeline_label -> credential_id
-        for label, key in pipeline_keys.items():
-            cid = create_credential(f"OpenRouter API ({label})", "httpHeaderAuth", {
-                "name": "Authorization",
-                "value": f"Bearer {key}",
-            })
-            if cid:
-                or_cred_ids[label] = cid
+    try:
+        or_key = os.environ.get("OPENROUTER_API_KEY", "")
+        if or_key:
+            # Create per-pipeline credentials using different API keys
+            pipeline_keys = {
+                "Standard": os.environ.get("OPENROUTER_KEY_STANDARD", or_key),
+                "Graph": os.environ.get("OPENROUTER_KEY_GRAPH", or_key),
+                "Quantitative": os.environ.get("OPENROUTER_KEY_QUANTITATIVE", or_key),
+                "Orchestrator": os.environ.get("OPENROUTER_KEY_ORCHESTRATOR", or_key),
+                "PME": os.environ.get("OPENROUTER_KEY_PME", or_key),
+            }
+            or_cred_ids = {}  # pipeline_label -> credential_id
+            for label, key in pipeline_keys.items():
+                cid = create_credential(f"OpenRouter API ({label})", "httpHeaderAuth", {
+                    "name": "Authorization",
+                    "value": f"Bearer {key}",
+                })
+                if cid:
+                    or_cred_ids[label] = cid
+                    stats["created"].append(f"OpenRouter ({label})")
+                else:
+                    stats["failed"].append(f"OpenRouter ({label})")
 
-        # Also create a default/main credential for unmapped workflows
-        main_id = create_credential("OpenRouter API (Main)", "httpHeaderAuth", {
-            "name": "Authorization",
-            "value": f"Bearer {or_key}",
-        })
-        if main_id:
-            id_map["OPENROUTER_HEADER_AUTH"] = main_id
-            id_map["LLM_API_CREDENTIAL_ID"] = main_id
-            type_map["httpHeaderAuth"] = main_id
-        # Store per-pipeline IDs for later assignment
-        type_map["_or_pipeline_creds"] = or_cred_ids
-        print(f"  Created {len(or_cred_ids)} per-pipeline OpenRouter credentials")
-    else:
-        print("  SKIP: OpenRouter httpHeaderAuth (no OPENROUTER_API_KEY)")
+            # Also create a default/main credential for unmapped workflows
+            main_id = create_credential("OpenRouter API (Main)", "httpHeaderAuth", {
+                "name": "Authorization",
+                "value": f"Bearer {or_key}",
+            })
+            if main_id:
+                id_map["OPENROUTER_HEADER_AUTH"] = main_id
+                id_map["LLM_API_CREDENTIAL_ID"] = main_id
+                type_map["httpHeaderAuth"] = main_id
+                stats["created"].append("OpenRouter (Main)")
+            else:
+                stats["failed"].append("OpenRouter (Main)")
+            # Store per-pipeline IDs for later assignment
+            type_map["_or_pipeline_creds"] = or_cred_ids
+            print(f"  Created {len(or_cred_ids)} per-pipeline OpenRouter credentials")
+        else:
+            print("  SKIP: OpenRouter httpHeaderAuth (no OPENROUTER_API_KEY)")
+            stats["skipped"].append("OpenRouter")
+    except Exception as e:
+        print(f"  ERROR creating OpenRouter credentials: {e}")
+        stats["failed"].append("OpenRouter")
 
     # --- Pinecone API Key (separate httpHeaderAuth) ---
-    pc_key = os.environ.get("PINECONE_API_KEY", "")
-    pinecone_cred_id = None
-    if pc_key:
-        pinecone_cred_id = create_credential("Pinecone API Key", "httpHeaderAuth", {
-            "name": "Api-Key",
-            "value": pc_key,
-        })
-        if pinecone_cred_id:
-            for old in ["pHqLK3RCesLssL6j", "3DEiHDwB09D65919"]:
-                id_map[old] = pinecone_cred_id
-    else:
-        print("  SKIP: Pinecone (no PINECONE_API_KEY)")
+    try:
+        pc_key = os.environ.get("PINECONE_API_KEY", "")
+        pinecone_cred_id = None
+        if pc_key:
+            pinecone_cred_id = create_credential("Pinecone API Key", "httpHeaderAuth", {
+                "name": "Api-Key",
+                "value": pc_key,
+            })
+            if pinecone_cred_id:
+                # Store Pinecone separately to avoid confusion with OpenRouter
+                type_map["httpHeaderAuth_pinecone"] = pinecone_cred_id
+                for old in ["pHqLK3RCesLssL6j", "3DEiHDwB09D65919"]:
+                    id_map[old] = pinecone_cred_id
+                stats["created"].append("Pinecone")
+            else:
+                stats["failed"].append("Pinecone")
+        else:
+            print("  SKIP: Pinecone (no PINECONE_API_KEY)")
+            stats["skipped"].append("Pinecone")
+    except Exception as e:
+        print(f"  ERROR creating Pinecone credential: {e}")
+        stats["failed"].append("Pinecone")
 
     # --- Neo4j Aura ---
-    neo4j_auth = os.environ.get("NEO4J_AUTH", "")
-    if neo4j_auth and (":" in neo4j_auth or "/" in neo4j_auth):
-        sep = ":" if ":" in neo4j_auth else "/"
-        neo4j_user, neo4j_pass = neo4j_auth.split(sep, 1)
-        new_id = create_credential("Neo4j Aura", "httpBasicAuth", {
-            "user": neo4j_user,
-            "password": neo4j_pass,
-        })
-        if new_id:
-            type_map["httpBasicAuth"] = new_id
-            id_map["n4K6ZIj6aa0dsiGN"] = new_id
-    else:
-        print("  SKIP: Neo4j (no NEO4J_AUTH)")
+    try:
+        neo4j_auth = os.environ.get("NEO4J_AUTH", "")
+        if neo4j_auth and (":" in neo4j_auth or "/" in neo4j_auth):
+            sep = ":" if ":" in neo4j_auth else "/"
+            neo4j_user, neo4j_pass = neo4j_auth.split(sep, 1)
+            new_id = create_credential("Neo4j Aura", "httpBasicAuth", {
+                "user": neo4j_user,
+                "password": neo4j_pass,
+            })
+            if new_id:
+                type_map["httpBasicAuth"] = new_id
+                id_map["n4K6ZIj6aa0dsiGN"] = new_id
+                stats["created"].append("Neo4j")
+            else:
+                stats["failed"].append("Neo4j")
+        else:
+            print("  SKIP: Neo4j (no NEO4J_AUTH)")
+            stats["skipped"].append("Neo4j")
+    except Exception as e:
+        print(f"  ERROR creating Neo4j credential: {e}")
+        stats["failed"].append("Neo4j")
 
     # --- Redis ---
-    new_id = create_credential("Redis", "redis", {
-        "host": os.environ.get("REDIS_HOST", "127.0.0.1"),
-        "port": int(os.environ.get("REDIS_PORT", "6379")),
-        "password": os.environ.get("REDIS_PASSWORD", ""),
-    })
-    if new_id:
-        type_map["redis"] = new_id
-        id_map["O2KEPiv7VzgDG5ZX"] = new_id
+    try:
+        new_id = create_credential("Redis", "redis", {
+            "host": os.environ.get("REDIS_HOST", "127.0.0.1"),
+            "port": int(os.environ.get("REDIS_PORT", "6379")),
+            "password": os.environ.get("REDIS_PASSWORD", ""),
+        })
+        if new_id:
+            type_map["redis"] = new_id
+            id_map["O2KEPiv7VzgDG5ZX"] = new_id
+            stats["created"].append("Redis")
+        else:
+            stats["failed"].append("Redis")
+    except Exception as e:
+        print(f"  ERROR creating Redis credential: {e}")
+        stats["failed"].append("Redis")
 
     print(f"  Credential ID mapping: {len(id_map)} entries")
     print(f"  Credential TYPE mapping: {len(type_map)} entries")
     for t, cid in type_map.items():
-        print(f"    type={t} -> id={cid}")
-    return id_map, type_map
+        if not t.startswith("_"):  # Skip internal metadata
+            print(f"    type={t} -> id={cid}")
+
+    # Print stats
+    print(f"  Credential creation stats:")
+    print(f"    ✓ Created: {len(stats['created'])} — {', '.join(stats['created'])}")
+    print(f"    ✗ Failed: {len(stats['failed'])} — {', '.join(stats['failed']) if stats['failed'] else 'None'}")
+    print(f"    ⊘ Skipped: {len(stats['skipped'])} — {', '.join(stats['skipped']) if stats['skipped'] else 'None'}")
+
+    return id_map, type_map, stats
 
 
 def restore_credentials_and_update(id_map, type_map):
@@ -248,6 +306,7 @@ def restore_credentials_and_update(id_map, type_map):
         db_nodes = wf_data.get("nodes", [])
         for node in db_nodes:
             node_name = node.get("name", "")
+            node_type = node.get("type", "")
 
             # Restore credentials from original
             if node_name in orig_creds_by_node:
@@ -256,17 +315,33 @@ def restore_credentials_and_update(id_map, type_map):
                 for ctype, cval in orig_creds.items():
                     if isinstance(cval, dict):
                         old_id = cval.get("id", "")
+                        old_name = cval.get("name", "")
                         new_id = id_map.get(old_id)
+
                         if not new_id:
-                            # Fallback: match by credential type
-                            new_id = type_map.get(ctype)
+                            # Special handling for httpHeaderAuth (distinguish Pinecone vs OpenRouter)
+                            if ctype == "httpHeaderAuth":
+                                # Check if this is Pinecone based on credential name or node type
+                                is_pinecone = (
+                                    "pinecone" in old_name.lower() or
+                                    "api-key" in old_name.lower() or
+                                    "pinecone" in node_type.lower()
+                                )
+                                if is_pinecone:
+                                    new_id = type_map.get("httpHeaderAuth_pinecone")
+                                else:
+                                    new_id = type_map.get("httpHeaderAuth")
+                            else:
+                                # Fallback: match by credential type
+                                new_id = type_map.get(ctype)
+
                         if new_id:
                             new_creds[ctype] = {
                                 "id": new_id,
                                 "name": cval.get("name", ctype),
                             }
                         else:
-                            print(f"    No mapping for cred {ctype} (old={old_id}) in {wname}")
+                            print(f"    No mapping for cred {ctype} (old={old_id}, name={old_name}) in {wname}/{node_name}")
                     elif isinstance(cval, str):
                         # Simple string reference
                         new_id = id_map.get(cval) or type_map.get(ctype)
@@ -521,26 +596,75 @@ def activate_all_workflows():
     return activated
 
 
-def verify_webhooks():
-    """Verify webhook endpoints respond."""
+def verify_webhooks_deep():
+    """Verify webhook endpoints respond with actual content (not just HTTP 200)."""
     webhooks = {
-        "Standard": ("webhook/rag-multi-index-v3", "POST"),
-        "Graph": ("webhook/ff622742-6d71-4e91-af71-b5c666088717", "POST"),
-        "Quantitative": ("webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9", "POST"),
-        "Orchestrator": ("webhook/92217bb8-ffc8-459a-8331-3f553812c3d0", "POST"),
-        "PME Gateway": ("webhook/pme-assistant-gateway", "POST"),
+        "Standard": "webhook/rag-multi-index-v3",
+        "Graph": "webhook/ff622742-6d71-4e91-af71-b5c666088717",
+        "Quantitative": "webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+        "Orchestrator": "webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+        "PME Gateway": "webhook/pme-assistant-gateway",
     }
 
-    print("  Webhook verification:")
+    print("  Deep webhook verification (content check):")
     ok = 0
-    for name, (path, method) in webhooks.items():
+    results = {}
+    for name, path in webhooks.items():
         url = f"{BASE}/{path}"
-        if method == "POST":
-            data = json.dumps({"query": "health-check"}).encode()
-            req = urllib.request.Request(url, data=data, method="POST")
-            req.add_header("Content-Type", "application/json")
-        else:
-            req = urllib.request.Request(url, method="GET")
+        data = json.dumps({"query": "health-check", "question": "health-check"}).encode()
+        req = urllib.request.Request(url, data=data, method="POST")
+        req.add_header("Content-Type", "application/json")
+
+        try:
+            resp = urllib.request.urlopen(req, timeout=15)
+            code = resp.status
+            body = resp.read().decode()[:200]
+
+            # Check for actual content (not empty, not just error message)
+            has_content = len(body) > 10 and not body.strip().startswith("<!DOCTYPE")
+
+            if code == 200 and has_content:
+                status = "✓ OK"
+                ok += 1
+            elif code == 200:
+                status = "⚠ Empty"
+            else:
+                status = f"⚠ HTTP {code}"
+
+            results[name] = {"status": status, "code": code, "body": body[:80]}
+            print(f"    {name}: {status} — {body[:80]}")
+        except urllib.error.HTTPError as e:
+            code = e.code
+            body = e.read().decode()[:200] if hasattr(e, 'read') else ""
+            status = f"✗ HTTP {code}"
+            results[name] = {"status": status, "code": code, "body": body[:80]}
+            print(f"    {name}: {status} — {body[:80]}")
+        except Exception as e:
+            status = f"✗ ERROR"
+            results[name] = {"status": status, "code": 0, "error": str(e)[:80]}
+            print(f"    {name}: {status} — {str(e)[:80]}")
+
+    print(f"  Webhooks deep check: {ok}/{len(webhooks)} fully working")
+    return ok, results
+
+
+def verify_webhooks():
+    """Basic webhook verification (checks registration, not content)."""
+    webhooks = {
+        "Standard": "webhook/rag-multi-index-v3",
+        "Graph": "webhook/ff622742-6d71-4e91-af71-b5c666088717",
+        "Quantitative": "webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+        "Orchestrator": "webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+        "PME Gateway": "webhook/pme-assistant-gateway",
+    }
+
+    print("  Basic webhook verification:")
+    ok = 0
+    for name, path in webhooks.items():
+        url = f"{BASE}/{path}"
+        data = json.dumps({"query": "health-check"}).encode()
+        req = urllib.request.Request(url, data=data, method="POST")
+        req.add_header("Content-Type", "application/json")
         try:
             resp = urllib.request.urlopen(req, timeout=10)
             code = resp.status
@@ -555,8 +679,71 @@ def verify_webhooks():
             ok += 1
         print(f"    {name}: HTTP {code} ({status})")
 
-    print(f"  Webhooks: {ok}/{len(webhooks)} responding")
+    print(f"  Webhooks: {ok}/{len(webhooks)} registered")
     return ok
+
+
+def run_full_setup_with_retry(max_retries=2):
+    """Run full setup with retry logic if verification fails."""
+    for attempt in range(1, max_retries + 1):
+        print(f"\n{'=' * 60}")
+        print(f"  SETUP ATTEMPT {attempt}/{max_retries + 1}")
+        print(f"{'=' * 60}")
+
+        print("\n=== [A] Creating credentials ===")
+        id_map, type_map, cred_stats = create_all_credentials()
+
+        # If all credentials failed, no point continuing
+        if not cred_stats["created"]:
+            print("\n  CRITICAL: No credentials created. Cannot proceed.")
+            if attempt < max_retries:
+                print(f"  Retrying in 10s...")
+                time.sleep(10)
+                continue
+            else:
+                return False
+
+        print("\n=== [B] Restoring credential references from original JSONs ===")
+        restored = restore_credentials_and_update(id_map, type_map)
+
+        print("\n=== [B2] Assigning per-pipeline OpenRouter keys (rate limit distribution) ===")
+        assigned = assign_per_pipeline_openrouter(type_map)
+
+        print("\n=== [C] Publishing & activating workflows ===")
+        time.sleep(3)  # Let n8n settle
+        activated = activate_all_workflows()
+
+        print("\n=== [D] Verifying webhooks (basic) ===")
+        time.sleep(2)
+        basic_ok = verify_webhooks()
+
+        print("\n=== [E] Deep verification (content check) ===")
+        time.sleep(3)
+        deep_ok, deep_results = verify_webhooks_deep()
+
+        # Check if we have acceptable results
+        # Success criteria: at least 3/4 core pipelines fully working
+        if deep_ok >= 3:
+            print(f"\n  ✓ SETUP SUCCESSFUL — {deep_ok}/5 pipelines fully working")
+            print(f"  Credentials created: {len(cred_stats['created'])}")
+            print(f"  Workflows restored: {restored}")
+            print(f"  Workflows activated: {activated}")
+            return True
+
+        # If failed and we have retries left
+        if attempt < max_retries:
+            print(f"\n  ⚠ Verification failed ({deep_ok}/5 working). Retrying in 10s...")
+            print(f"  Failed pipelines:")
+            for name, result in deep_results.items():
+                if "✓" not in result["status"]:
+                    print(f"    - {name}: {result['status']}")
+            time.sleep(10)
+        else:
+            print(f"\n  ✗ SETUP FAILED after {max_retries + 1} attempts")
+            print(f"  Only {deep_ok}/5 pipelines working")
+            return False
+
+    return False
 
 
 if __name__ == "__main__":
@@ -564,21 +751,16 @@ if __name__ == "__main__":
         print("ERROR: No auth cookie provided")
         sys.exit(1)
 
-    print("\n=== [A] Creating credentials ===")
-    id_map, type_map = create_all_credentials()
+    success = run_full_setup_with_retry(max_retries=2)
 
-    print("\n=== [B] Restoring credential references from original JSONs ===")
-    restore_credentials_and_update(id_map, type_map)
-
-    print("\n=== [B2] Assigning per-pipeline OpenRouter keys (rate limit distribution) ===")
-    assign_per_pipeline_openrouter(type_map)
-
-    print("\n=== [C] Publishing & activating workflows ===")
-    time.sleep(3)  # Let n8n settle
-    activate_all_workflows()
-
-    print("\n=== [D] Verifying webhooks ===")
-    time.sleep(2)
-    verify_webhooks()
-
-    print("\n=== SETUP COMPLETE ===")
+    if success:
+        print("\n" + "=" * 60)
+        print("  SETUP COMPLETE — ALL SYSTEMS GO")
+        print("=" * 60)
+        sys.exit(0)
+    else:
+        print("\n" + "=" * 60)
+        print("  SETUP INCOMPLETE — SOME SYSTEMS MAY BE DOWN")
+        print("=" * 60)
+        # Exit 0 anyway to keep container alive
+        sys.exit(0)

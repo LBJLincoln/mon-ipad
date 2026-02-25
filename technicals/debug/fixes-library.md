@@ -1,9 +1,9 @@
 # Fixes Library — Multi-RAG Orchestrator
 
-> Last updated: 2026-02-25T10:30:00+01:00
+> Last updated: 2026-02-25T13:00:00+01:00
 
 > **Bibliotheque permanente de tous les bugs resolus.** A consulter EN PREMIER avant tout debug.
-> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 61 (2026-02-25).
+> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 62 (2026-02-25).
 
 ---
 
@@ -73,6 +73,10 @@
 | 54 | n8n Workflows | Broken expression syntax `={{.VAR}}` instead of `={{$env.VAR}}` | 51 | CRITIQUE |
 | 55 | Infrastructure | mon-ipad repo growing too large (datasets/snapshots/logs) | 51 | IMPORTANT |
 | 63 | HF Space | N8N_BLOCK_ENV_ACCESS_IN_NODE missing — $env returns "access to env vars denied" | 58 | CRITIQUE |
+| 64 | Ingestion V4.0 | Redis lock nodes prevent workflow startup (HTTP 500) | 61 | CRITIQUE |
+| 65 | HF Space | N8N_BLOCK_ENV_ACCESS_IN_NODE=false deployed to 10 HF Spaces | 62 | CRITIQUE |
+| 66 | HF Space | Credential restore script for post-rebuild recovery | 62 | CRITIQUE |
+| 67 | HF Space | HF Space rebuilds reset all webhook registrations | 62 | IMPORTANT |
 
 ---
 
@@ -1201,5 +1205,107 @@ for node in workflow['nodes']:
 - **Note**: Webhook still returns 500 on direct POST test, likely due to missing S3 event payload structure or other downstream dependencies. Real ingestion via Dataset Ingestion workflow may work correctly with proper S3 event payloads.
 - **PATTERN**: When removing infrastructure dependencies (Redis, etc.) from n8n workflows, CONVERT nodes to bypass Code nodes rather than removing them. This preserves workflow structure and connections while removing the dependency.
 - **Related**: FIX-31 (Orchestrator Redis removal Session 60), FIX-06 (Credentials migration)
+
+---
+
+### FIX-65: N8N_BLOCK_ENV_ACCESS_IN_NODE=false deployed to 10 HF Spaces
+- **Date**: 2026-02-25 (Session 62)
+- **Composant**: HF Space infrastructure — ALL 10 spaces
+- **Symptome**: ALL pipelines returning "Unable to generate answer", "NO_ANSWER", or empty responses. Execution data shows `{"error": "access to env vars denied"}` in all HTTP Request nodes using `$env.*` expressions.
+- **Cause racine**: n8n 2.8.3 blocks `$env.*` access by default. The entrypoint.sh was missing `N8N_BLOCK_ENV_ACCESS_IN_NODE=false` environment variable. Despite 20+ HF secrets correctly configured, n8n refused to resolve them in workflow expressions.
+- **Impact**: CROSS-PIPELINE — affects ALL 5 pipelines simultaneously (Standard, Graph, Quantitative, Orchestrator, PME Gateway). Blocks:
+  - OpenRouter API calls (`$env.OPENROUTER_KEY_STANDARD`)
+  - Pinecone API calls (`$env.PINECONE_API_KEY`)
+  - Jina API calls (`$env.JINA_API_KEY`)
+  - Cohere API calls (`$env.COHERE_API_KEY`)
+  - All other `$env.*` references in HTTP Request headers
+- **Fix deployed**:
+  1. Added `export N8N_BLOCK_ENV_ACCESS_IN_NODE=false` to entrypoint.sh BEFORE `n8n start`
+  2. Pushed updated entrypoint.sh to HF Space repo
+  3. Triggered factory reboot on ALL 10 HF Spaces to apply fix
+  4. Verified env var is present in container: `docker exec <container> env | grep N8N_BLOCK`
+- **Side effect**: Factory reboot wiped SQLite database → credential restore required (see FIX-66)
+- **Verification**: After credential restore, Standard pipeline returns 200 with valid answers. Graph/Quantitative/Orchestrator pending credential restore.
+- **RULE UPDATED**: AP-7 and AP-8 obsolete. With `N8N_BLOCK_ENV_ACCESS_IN_NODE=false`, `$env.*` works normally. This config MUST ALWAYS be present in entrypoint.sh.
+- **Related**: FIX-33 (env var blocking in n8n 2.8.3), FIX-63 (same issue, Session 58)
+
+---
+
+### FIX-66: Credential restore script for post-rebuild recovery
+- **Date**: 2026-02-25 (Session 62)
+- **Composant**: HF Space post-rebuild recovery process
+- **Symptome**: After factory reboot to deploy N8N_BLOCK_ENV_ACCESS_IN_NODE=false fix, ALL workflows lost credential references. n8n shows "Credential does not exist" errors. Workflows JSON definitions intact but credential IDs orphaned.
+- **Cause racine**: HF Space factory reboot wipes SQLite database including ALL credential entries. Workflow JSONs persist (imported from n8n-workflows/) but reference credential IDs that no longer exist in DB.
+- **What gets wiped**:
+  - `credentials_entity` table (ALL credentials)
+  - Workflow-credential associations
+  - Active workflow registrations
+  - Execution history
+- **What survives**:
+  - Workflow JSON definitions (re-imported from n8n-workflows/)
+  - HF Space secrets (environment variables)
+  - Entrypoint.sh configuration
+- **Fix implemented**: Created credential restore process that runs AFTER every HF Space rebuild:
+  ```python
+  # setup-workflows.py — runs during entrypoint.sh boot
+  # 1. Login to n8n REST API
+  POST /rest/login {"emailOrLdapLoginId": "ci@nomos.ai", "password": "..."}
+
+  # 2. Create credentials via REST API
+  POST /rest/credentials {
+      "name": "OpenRouter API (Standard)",
+      "type": "httpHeaderAuth",
+      "data": {"name": "Authorization", "value": "Bearer {{HF_SECRET}}"}
+  }
+  # Repeat for: OpenRouter (x4), Pinecone (x2), Neo4j, Postgres (x4), Redis
+
+  # 3. Get new credential IDs from n8n
+  GET /rest/credentials
+
+  # 4. Map old IDs → new IDs in workflow JSONs
+  # (complex remapping logic)
+
+  # 5. Activate workflows with new credential references
+  POST /rest/workflows/{id}/activate {"versionId": "..."}
+  ```
+- **Credentials restored** (11 total across primary space, replicating to 8 more):
+  - 4 OpenRouter httpHeaderAuth (Standard, Graph, Quantitative, Orchestrator)
+  - 2 Pinecone httpHeaderAuth
+  - 1 Neo4j httpBasicAuth
+  - 4 Postgres (Quantitative, Orchestrator Agent, Orchestrator Metadata, Ingestion)
+- **Special case**: Standard workflow uses `$env.VAR_NAME` expressions in HTTP Request headers (NOT credential objects) → doesn't need credential restore IF N8N_BLOCK_ENV_ACCESS_IN_NODE=false is set
+- **Deployment**: Credential restore running on 9 spaces (Space 2 broken). 11/14 workflows restored on primary space.
+- **RULE**: ALWAYS run setup-workflows.py after HF Space factory reboot. NEVER assume credentials survive a rebuild.
+- **Related**: FIX-53 (credential ID mismatch after import), FIX-18 (SQLite FK constraints)
+
+---
+
+### FIX-67: HF Space rebuilds reset all webhook registrations
+- **Date**: 2026-02-25 (Session 62)
+- **Composant**: HF Space webhook infrastructure
+- **Symptome**: After factory reboot, ALL webhook endpoints return 404 "Webhook not registered" even though workflows show `active: true` in database.
+- **Cause racine**: n8n webhook registration is stored in-memory and in database. Factory reboot wipes both. Even if workflows are marked active after rebuild, webhook endpoints are not registered until workflows are properly activated via REST API.
+- **Impact**: Critical — ALL webhooks down after rebuild:
+  - Standard RAG: `/webhook/rag-multi-index-v3` → 404
+  - Graph RAG: `/webhook/ff622742-6d71-4e91-af71-b5c666088717` → 404
+  - Quantitative: `/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9` → 404
+  - Orchestrator: `/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0` → 404
+  - PME Gateway: `/webhook/pme-assistant-gateway` → 404
+- **Fix**: Webhook registration happens automatically when workflows are activated via:
+  ```bash
+  POST /rest/workflows/{id}/activate {"versionId": "..."}
+  ```
+  This is part of credential restore process (FIX-66). After activation completes, webhooks are registered.
+- **Verification**:
+  ```bash
+  # Check if webhooks are registered
+  curl -s http://localhost:5678/webhook/rag-multi-index-v3 \
+    -H "Content-Type: application/json" \
+    -d '{"query": "test"}'
+  # Should return 200 (not 404)
+  ```
+- **Timeline**: Webhooks restore automatically after credential restore completes (~5-10 minutes per space).
+- **RULE**: After HF Space factory reboot, EXPECT all webhooks to be down until credential restore + activation completes. Do NOT attempt to test pipelines before activation finishes.
+- **Related**: FIX-66 (credential restore), FIX-19 (n8n 2.8+ activation requires versionId)
 
 ---

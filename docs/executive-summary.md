@@ -1,6 +1,6 @@
 # EXECUTIVE SUMMARY — Nomos AI Multi-RAG Orchestrator
 
-> Last updated: 2026-02-25T12:30:00+00:00
+> Last updated: 2026-02-25T13:00:00+01:00
 > **Ce fichier DOIT etre consulte et mis a jour a CHAQUE session.**
 > Il est la reference unique pour comprendre tout le projet en langage clair.
 
@@ -34,19 +34,20 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
 
 ### Ou en est-on ?
 - **Phase 1** (200 questions) : **PASSED** (83.9% overall, 20 fev 2026, session 30). Tous les 4 pipelines au-dessus de leurs cibles.
-- **Phase 2** (1,000q par pipeline) : **EN COURS** — Session 62 mega eval: 4 pipelines × ~1000q, 50 workers, 10 HF Spaces, 74/3950 tested. Early results: Standard 75%, Graph 20%, Quant 22%, Orch 81%.
+- **Phase 2** (1,000q par pipeline) : **EN COURS** — Session 62 mega eval: 180+ tested IDs saved incrementally, 3 pipelines running (Orchestrator preflight failing).
 - **Session 60 fixes** : Quantitative (API key NaN + Supabase wrong host) + Orchestrator (Redis removed, 9 nodes) + all Postgres credentials.
 - **Session 61** : HF Space #2 deployed, GH Actions on 3 repos (all passing), chatbot active (75% tests), data ingestion audited.
-- **Session 62** : **10 HF Spaces deployed** (LBJLincoln: 1,3,5,7,9 / LBJLincoln26: 2,4,6,8,10), round-robin load balancing, 6 repair agents fixing broken workflows (3 fixed: Status Dashboard, Enrichissement V4.0, Action Executor).
-- **PME** : 3 workflows imported, Action Executor FIXED (simplified 2-node workflow), WhatsApp Bridge active (Telegram disabled).
-- **Data ingestion** : Dataset Ingestion WORKING, Enrichissement V4.0 **FIXED** (Redis removed), Ingestion V4.0 repair in progress.
+- **Session 62** : **10 HF Spaces deployed and rebuilt** with N8N_BLOCK_ENV_ACCESS_IN_NODE=false fix, credential restore running on all spaces.
+- **Current accuracy** (Phase 2, early batch): Standard ~85%, Graph ~20%, Quantitative ~6%, Orchestrator 0% (empty body issue separate from env var fix).
+- **Infrastructure** : 10 HF Spaces (9 working, Space 2 broken), all rebuilt with env var fix, credential restore script running.
+- **Broken endpoints** : Data Ingestion (404), PME Gateway (404), Status Dashboard (404).
 
 ### Chiffres cles
 | Metrique | Valeur |
 |----------|--------|
-| Questions testees a ce jour | **1,600+** (Phase 1 + Phase 2 + Session 62 mega eval running) |
+| Questions testees a ce jour | **1,800+** (Phase 1 + Phase 2 incremental saves) |
 | Precision Phase 1 (baseline) | 83.9% (PASSED) |
-| Precision Phase 2 (Session 62, early) | Std 75%, Graph 20%, Quant 22%, Orch 81% (74/3950 tested) |
+| Precision Phase 2 (Session 62, first batch) | Std ~85%, Graph ~20%, Quant ~6%, Orch 0% (180+ tested IDs) |
 | Vecteurs dans Pinecone | 22,070 |
 | Entites dans Neo4j | 19,788 |
 | Lignes dans Supabase | ~17,600 |
@@ -702,34 +703,32 @@ Each: 16GB RAM, n8n 2.8.4, 14 workflows (11 active, 3 in repair)
 
 ---
 
-## SESSION 62 SUMMARY — 10-SPACE MEGA DEPLOYMENT
+## SESSION 62 SUMMARY — 10-SPACE DEPLOYMENT + ENV VAR FIX
 
 ### Infrastructure Deployed
 - **10 HF Spaces** — all RUNNING across 2 accounts (LBJLincoln: 1,3,5,7,9 / LBJLincoln26: 2,4,6,8,10)
-- **Round-robin load balancing** — N8N_ALL_HOSTS env var, 50 concurrent workers
+- **Critical fix deployed** — N8N_BLOCK_ENV_ACCESS_IN_NODE=false on all 10 spaces (addresses env var access denial)
+- **All spaces rebuilt** — Factory reboot to apply env var fix
+- **Space 2 broken** — Under investigation, 9 spaces operational
 - **Scripts created** — scale-hf-spaces.py, activate-all-spaces.py
-- **All verified** — HTTP 200 on Standard pipeline for all 10 Spaces
 
 ### Eval System Improvements
-- **Incremental saves** — auto-save every 5 minutes (no data loss)
+- **Incremental saves** — auto-save every 5 minutes to tested_ids.json (180+ IDs saved)
 - **Signal handler** — graceful shutdown on Ctrl+C
 - **Preflight checks** — verify all HF Spaces reachable before eval
-- **Deduplication** — skip already-tested questions
-- **Progress**: 74/3950 tested (1.9%), early accuracy: Std 75%, Graph 20%, Quant 22%, Orch 81%
+- **Deduplication** — skip already-tested questions from previous runs
+- **Current status** — Eval PID stopped, accuracy improving after credential restore
 
-### Workflow Repairs
-- ✅ **Status Dashboard API** — webhook path corrected
-- ✅ **Enrichissement V4.0** — Redis removed (9 nodes), 29 active nodes
-- ✅ **Action Executor** — simplified to 2-node workflow
-- 🔄 **WhatsApp Bridge** — active (Telegram disabled, no creds)
-- 🔄 **Ingestion V4.0** — Redis removal in progress
-- 🔄 **Multi-Canal Gateway** — node config fixes in progress
+### Critical Fixes Applied
+- **N8N_BLOCK_ENV_ACCESS_IN_NODE=false** — Deployed to all 10 HF Spaces
+- **Credential restore** — 11/14 workflows on primary space, replicating to 8 more spaces
+- **Orchestrator issue** — Still returning empty body (separate issue from env var fix)
+- **Next step** — Re-run eval after credential restoration completes
 
 ### Chatbot Deployed
 - **Live on all 4 Vercel sites** — ETI, PME Connectors, PME Use Cases, Dashboard
 - **Test results** — 9/12 pass (75%), 2.3s avg response
 - **Dataset** — 984q generic test set created
-- **Remaining** — CORS config for Vercel sites
 
 ---
 
@@ -756,6 +755,17 @@ Each: 16GB RAM, n8n 2.8.4, 14 workflows (11 active, 3 in repair)
 | **Vercel** | Service de deploiement automatique pour les sites web (gratuit) |
 | **Task Runner** | Composant n8n qui execute les noeuds Code dans un processus separe |
 | **Template SQL** | SQL pre-calcule pour des questions connues (bypass le LLM) |
+
+---
+
+## NOTES TECHNIQUES
+
+### Fichiers de donnees
+- **`docs/executive-summary.md`** (ce fichier) — Resume global du projet, mis a jour manuellement chaque session
+- **`docs/status.json`** — Metriques live (auto-genere par `eval/generate_status.py`), NE PAS EDITER manuellement
+- **`docs/data.json`** — Historique complet iterations/executions (auto-genere), NE PAS EDITER manuellement (9.3 MB, 253K+ lignes)
+
+Le fichier `data.json` est automatiquement mis a jour toutes les 5 minutes pendant les evals. L'infrastructure actuelle (10 HF Spaces, 7 OpenRouter keys, 4 Vercel sites) est documentee dans ce fichier executive-summary.md.
 
 ---
 

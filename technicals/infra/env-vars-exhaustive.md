@@ -1,6 +1,6 @@
 # Environment Variables & Credentials — Document Exhaustif
 
-> Last updated: 2026-02-23T17:45:00+01:00
+> Last updated: 2026-02-25T11:30:00+00:00
 > Ce fichier documente TOUTES les variables d'environnement, credentials et connexions
 > utilisees par le projet Multi-RAG. Les valeurs sont masquees (`.env.local` = source).
 
@@ -56,6 +56,22 @@ Variables referencees par `$env.VAR_NAME` dans les workflows n8n (`n8n/live/*.js
 |----------|-------------|---------------------|
 | `N8N_API_KEY` | JWT token | benchmark-orchestrator-tester, benchmark-rag-tester |
 | `N8N_BASE_URL` | `http://localhost:5678` | benchmark-orchestrator-tester, benchmark-rag-tester, feedback |
+| `N8N_BLOCK_ENV_ACCESS_IN_NODE` | `false` | All workflows using $env.VAR_NAME expressions in SQL/Code nodes |
+| `HF_SPACE_1_URL` | `https://lbjlincoln-nomos-rag-engine.hf.space` | Multi-endpoint routing |
+| `HF_SPACE_2_URL` | `https://<space-2>.hf.space` | Multi-endpoint routing |
+| `HF_SPACE_3_URL` | `https://<space-3>.hf.space` | Multi-endpoint routing |
+| `HF_SPACE_4_URL` | `https://<space-4>.hf.space` | Multi-endpoint routing |
+| `HF_SPACE_5_URL` | `https://<space-5>.hf.space` | Multi-endpoint routing |
+| `HF_SPACE_6_URL` | `https://<space-6>.hf.space` | Multi-endpoint routing |
+| `HF_SPACE_7_URL` | `https://<space-7>.hf.space` | Multi-endpoint routing |
+| `HF_SPACE_8_URL` | `https://<space-8>.hf.space` | Multi-endpoint routing |
+| `HF_SPACE_9_URL` | `https://<space-9>.hf.space` | Multi-endpoint routing |
+| `HF_SPACE_10_URL` | `https://<space-10>.hf.space` | Multi-endpoint routing |
+| `N8N_ALL_HOSTS` | Comma-separated list of all 10 HF Space URLs | Round-robin load balancing |
+| `N8N_HOST_STANDARD` | `${N8N_ALL_HOSTS}` | Standard pipeline endpoint (round-robin) |
+| `N8N_HOST_GRAPH` | `${N8N_ALL_HOSTS}` | Graph pipeline endpoint (round-robin) |
+| `N8N_HOST_QUANTITATIVE` | `${N8N_ALL_HOSTS}` | Quantitative pipeline endpoint (round-robin) |
+| `N8N_HOST_ORCHESTRATOR` | `${N8N_ALL_HOSTS}` | Orchestrator pipeline endpoint (round-robin) |
 
 ### Observability & Monitoring
 | Variable | Valeur type | Workflows utilisant |
@@ -249,6 +265,10 @@ Tableau croisant les 13 workflows actifs avec les variables d'environnement qu'i
 | 2026-02-18 | `.mcp.json` COHERE_API_KEY | Aligne sur .env.local | Audit session 24 |
 | 2026-02-18 | 16 HF Space secrets | Crees | Deploiement HF Space nomos-rag-engine |
 | 2026-02-23 | `HF_TOKEN_2` | Ajoutee | Secondary HF account support for redundant deployment |
+| 2026-02-25 | `N8N_BLOCK_ENV_ACCESS_IN_NODE` | Ajoutee | Critical for n8n node expressions to access environment variables. Without this, $env.VAR_NAME expressions in SQL/Code nodes return undefined. Added to entrypoint.sh in session 62 |
+| 2026-02-25 | `HF_SPACE_1_URL` through `HF_SPACE_10_URL` | Ajoutees | Multi-endpoint routing for 10 HF Spaces deployment, round-robin load balancing |
+| 2026-02-25 | `N8N_ALL_HOSTS` | Ajoutee | Comma-separated list of all 10 HF Space URLs for round-robin load balancing |
+| 2026-02-25 | `N8N_HOST_STANDARD`, `N8N_HOST_GRAPH`, `N8N_HOST_QUANTITATIVE`, `N8N_HOST_ORCHESTRATOR` | Ajoutees | Per-pipeline endpoints set to ${N8N_ALL_HOSTS} for round-robin routing |
 
 ---
 

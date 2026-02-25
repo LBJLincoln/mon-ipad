@@ -34,7 +34,18 @@ echo "[1/6] Setting up environment..."
 export N8N_HOST=0.0.0.0
 export N8N_PORT=7860
 export N8N_PROTOCOL=http
-export WEBHOOK_URL=https://lbjlincoln-nomos-rag-engine.hf.space
+
+# Auto-detect WEBHOOK_URL from HF environment
+if [ -n "$SPACE_HOST" ]; then
+    export WEBHOOK_URL="https://${SPACE_HOST}"
+    echo "  WEBHOOK_URL auto-detected: $WEBHOOK_URL (from SPACE_HOST)"
+elif [ -n "$HF_SPACE_URL" ]; then
+    export WEBHOOK_URL="$HF_SPACE_URL"
+    echo "  WEBHOOK_URL auto-detected: $WEBHOOK_URL (from HF_SPACE_URL)"
+else
+    export WEBHOOK_URL=https://lbjlincoln-nomos-rag-engine.hf.space
+    echo "  WEBHOOK_URL fallback (hardcoded): $WEBHOOK_URL"
+fi
 export DB_TYPE=sqlite
 export DB_SQLITE_DATABASE=/home/node/.n8n/database.sqlite
 export EXECUTIONS_MODE=regular
@@ -254,8 +265,33 @@ echo ""
 echo "[5/6] Running setup-workflows.py (credentials + publish + activate)..."
 
 if [ -n "$COOKIE" ]; then
-    python3 /app/setup-workflows.py "$COOKIE" "http://127.0.0.1:7860" 2>&1
-    echo "  setup-workflows.py exit code: $?"
+    SETUP_SUCCESS=false
+    for setup_attempt in 1 2 3; do
+        echo "  === setup-workflows.py attempt $setup_attempt/3 ==="
+        if python3 /app/setup-workflows.py "$COOKIE" "http://127.0.0.1:7860" 2>&1; then
+            SETUP_EXIT=$?
+            echo "  setup-workflows.py exit code: $SETUP_EXIT"
+            if [ $SETUP_EXIT -eq 0 ]; then
+                SETUP_SUCCESS=true
+                break
+            fi
+        else
+            SETUP_EXIT=$?
+            echo "  setup-workflows.py FAILED with exit code: $SETUP_EXIT"
+        fi
+
+        if [ $setup_attempt -lt 3 ]; then
+            echo "  Waiting 10s before retry..."
+            sleep 10
+        fi
+    done
+
+    if [ "$SETUP_SUCCESS" != "true" ]; then
+        echo "  WARNING: setup-workflows.py failed after 3 attempts"
+        echo "  Credentials may not be fully restored. Webhooks may be broken."
+    else
+        echo "  setup-workflows.py completed successfully"
+    fi
 else
     echo "  Login failed — skipping credential setup."
     echo "  Webhooks will NOT work (credentials needed for publish/activate)."

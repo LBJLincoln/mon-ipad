@@ -1,61 +1,80 @@
-# Session State — 25 Fevrier 2026 (Session 62)
+# Session State — 25 Fevrier 2026 (Session 63 continued)
 
-> Last updated: 2026-02-25T11:15:00+00:00
+> Last updated: 2026-02-25T15:50:00+01:00
 
-## Current Status: 10-SPACE CLUSTER DEPLOYED — EVAL RUNNING WITH INCREMENTAL SAVES
+## Current Status: GOLDEN BASELINE REVERTED — LLM RATE-LIMITED
 
-### Session 62 Achievements
+### Session 63 (continued) Achievements
 
-1. **10 HF Spaces DEPLOYED** — all RUNNING, round-robin across 2 accounts:
-   - LBJLincoln: Spaces 1, 3, 5, 7, 9
-   - LBJLincoln26: Spaces 2, 4, 6, 8, 10
-   - All 10 verified HTTP 200 on Standard pipeline
-   - Workflows activated on all 8 new spaces via bulk activation script
-2. **Eval improvements** (no more data loss):
-   - Incremental saves every 10 questions to tested_ids.json
-   - Signal handler (SIGTERM/SIGINT) saves before exit
-   - Preflight check: N questions per pipeline before full eval
-   - Dedup respected (no more --force overriding)
-3. **6 repair agents fixed broken workflows**:
-   - Status Dashboard: **FIXED** — correct webhook path committed
-   - Enrichissement V4.0: **FIXED** — Redis nodes removed, committed
-   - Action Executor: **FIXED** — simplified 2-node workflow created
-   - WhatsApp Bridge: Active (Telegram disabled, no credentials)
-   - Ingestion V4.0: Agent fixed Redis dependency
-   - Multi-Canal Gateway: Agent fixing node config
-4. **N8N_BLOCK_ENV_ACCESS_IN_NODE=false** — added to entrypoint.sh (critical fix from session intelligence)
-5. **Scripts created**:
-   - `scripts/scale-hf-spaces.py` — HF Space management (list, duplicate, test)
+1. **Workflow Diff Engine operational** — compares all 9 spaces vs golden 22-Feb baseline:
+   - Standard + Graph: 100% match on all spaces
+   - Quantitative: 4 diffs (wrong API key nodes) — REVERTED to golden on 9 spaces
+   - Orchestrator: 26 diffs (14 node type changes Code→Postgres/Redis) — REVERTED to golden on 9 spaces
+   - Fixed: added `activate_workflow` method to N8nClient
+2. **Root cause identified: OpenRouter 429 rate limit**:
+   - `meta-llama/llama-3.3-70b-instruct:free` is rate-limited upstream
+   - Workflows are structurally correct (golden baseline)
+   - All 10 credentials present on primary space
+   - All 4 core workflows ACTIVE
+   - LLM calls fail with 429 → "Unable to generate answer" / "NO_ANSWER"
+3. **Golden baseline confirmed** (22 Feb results):
+   - Standard: 55.6% (363q), Graph: 64.0% (400q), Quant: 52.4% (500q)
+   - Workflow JSONs UNCHANGED since 22 Feb — infrastructure broke, not workflows
+4. **Scripts created (session 63)**:
+   - workflow-diff-engine.py (26KB) — diff + revert to golden
+   - continuous-monitor.py (15KB) — daemon, 5-min ping, 15-min deep test
+   - live-intelligence.py (22KB) — continuous math analysis
+   - launch-all.sh (18KB) — one-click restore+activate+verify
+   - auto-remediate.py (28KB) — 67 known fix patterns
+   - dashboard/index.html (38KB) — per-pipeline scrollable + "for dummies" mode
+
+### BLOCKING ISSUE
+- **OpenRouter free-tier rate limit** — need to swap LLM model or set up LiteLLM multi-provider
+- **Next session**: Try `google/gemma-3-27b-it:free` or set up Together.ai/Groq fallback
+   - Orchestrator: 0% (empty body - separate issue)
+6. **Scripts created**:
+   - `scripts/scale-hf-spaces.py` — HF Space management
    - `scripts/activate-all-spaces.py` — Bulk workflow activation
-6. **Executive summary updated** — docs/executive-summary.md current with session 62
+   - `scripts/restore-all-spaces.py` — Parallel credential restoration
+   - **`scripts/launch-all.sh` — ONE-CLICK DEPLOYMENT (NEW)**
+7. **One-click deployment script** — `launch-all.sh`:
+   - Self-contained bash script (18 KB, 600+ lines)
+   - Orchestrates full deployment: restore → activate → test
+   - Tests all 5 webhooks on all 10 spaces (50 tests total)
+   - Color-coded terminal output (French)
+   - Comprehensive logging to `logs/launch-all-YYYY-MM-DD.log`
+   - Results matrix (spaces × pipelines)
+   - **Non-technical user friendly** — just run `bash scripts/launch-all.sh`
+   - Duration: 15-20 minutes for full deployment
+   - Documentation: `scripts/README-launch-all.md`
 
-### Phase 2 Eval Progress (live — 11:10 UTC)
-- Eval PID 57065 running since ~10:45 UTC
-- **20 workers on 2 verified spaces** (10 spaces available, eval uses 2 until upgrade)
-- **Incremental saves: ACTIVE** — tested_ids growing
-- Log: logs/eval-session62-final.log
+### Phase 2 Eval Progress (stopped — credential restore in progress)
+- Eval PID stopped (previous run had credential issues)
+- **180+ tested IDs saved** to tested_ids.json
+- Accuracy improving after credential restore on primary space
+- **Next**: Re-run eval after credential fix completes on all spaces
 
-| Pipeline | Saved IDs | Total Available | Status |
-|----------|-----------|-----------------|--------|
-| Standard | 8 | 1000 | Running |
-| Graph | 28 | 1000 | Running |
-| Quantitative | 36 | 1000 | Running |
-| Orchestrator | 8 | 1000 | Running (some NO_ANSWER) |
-| **TOTAL** | **80** | **4000** | **Incrementing** |
+| Pipeline | Tested IDs | Total Available | Current Accuracy | Status |
+|----------|-----------|-----------------|------------------|--------|
+| Standard | 60+ | 1000 | ~85% | STOPPED - credential restore |
+| Graph | 50+ | 1000 | ~20% | STOPPED - credential restore |
+| Quantitative | 50+ | 1000 | ~6% | STOPPED - credential restore |
+| Orchestrator | 20+ | 1000 | 0% (empty body) | STOPPED - separate issue |
+| **TOTAL** | **180+** | **4000** | **Improving** | **Credential restore** |
 
 ### Infrastructure (10 HF Spaces)
 | Space | Account | URL | Status |
 |-------|---------|-----|--------|
-| 1 (primary) | LBJLincoln | lbjlincoln-nomos-rag-engine.hf.space | RUNNING + VERIFIED |
-| 2 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-2.hf.space | RUNNING + VERIFIED |
-| 3 | LBJLincoln | lbjlincoln-nomos-rag-engine-3.hf.space | RUNNING + ACTIVATED |
-| 4 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-4.hf.space | RUNNING + ACTIVATED |
-| 5 | LBJLincoln | lbjlincoln-nomos-rag-engine-5.hf.space | RUNNING + ACTIVATED |
-| 6 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-6.hf.space | RUNNING + ACTIVATED |
-| 7 | LBJLincoln | lbjlincoln-nomos-rag-engine-7.hf.space | RUNNING + ACTIVATED |
-| 8 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-8.hf.space | RUNNING + ACTIVATED |
-| 9 | LBJLincoln | lbjlincoln-nomos-rag-engine-9.hf.space | RUNNING + ACTIVATED |
-| 10 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-10.hf.space | RUNNING + ACTIVATED |
+| 1 (primary) | LBJLincoln | lbjlincoln-nomos-rag-engine.hf.space | RUNNING + 11/14 workflows |
+| 2 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-2.hf.space | **BROKEN** — under investigation |
+| 3 | LBJLincoln | lbjlincoln-nomos-rag-engine-3.hf.space | RUNNING + credential restore |
+| 4 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-4.hf.space | RUNNING + credential restore |
+| 5 | LBJLincoln | lbjlincoln-nomos-rag-engine-5.hf.space | RUNNING + credential restore |
+| 6 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-6.hf.space | RUNNING + credential restore |
+| 7 | LBJLincoln | lbjlincoln-nomos-rag-engine-7.hf.space | RUNNING + credential restore |
+| 8 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-8.hf.space | RUNNING + credential restore |
+| 9 | LBJLincoln | lbjlincoln-nomos-rag-engine-9.hf.space | RUNNING + credential restore |
+| 10 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-10.hf.space | RUNNING + credential restore |
 
 ### Chatbot: Live on all 4 sites
 - nomos-ai-pied.vercel.app — YES
@@ -64,17 +83,22 @@
 - nomos-dashboard — YES
 
 ### Broken Endpoints (still to fix)
-- Data Ingestion V4.0: 404 (agent fixed Redis, needs HF Space rebuild)
-- PME Gateway: 404 (workflow ID not found — from old VM era)
-- Chatbot n8n webhook: 404 (needs reactivation)
-- Status Dashboard: Fixed webhook path, needs rebuild to register
+- Data Ingestion V4.0: 404
+- PME Gateway: 404
+- Status Dashboard: 404
+
+### Known Issues
+- **Orchestrator returns empty body** — separate issue from env var fix, needs investigation
+- **HF Space rebuild wipes SQLite DB** — credential references lost, restore script running
+- **Standard workflow uses $env.VAR_NAME** — not credential objects for OpenRouter/Pinecone
+- **N8N_BLOCK_ENV_ACCESS_IN_NODE=false REQUIRED** — for $env expressions to work
 
 ### CRITICAL: Next Session Startup
-1. **DO NOT use --force on eval** — use dedup to continue from tested_ids.json (80+ already tested)
-2. **All 10 spaces need HF rebuild** to pick up N8N_BLOCK_ENV_ACCESS_IN_NODE=false fix
-3. **Upgrade eval to 10 spaces** — update .env.local N8N_HOST_* to use N8N_ALL_HOSTS after rebuild
-4. **Run session intelligence** — `python3 scripts/session-intelligence.py` before starting
-5. **Preflight check** — use `--preflight 2` on eval to verify pipelines before full run
+1. **Verify credential restore completed** — check all 10 spaces have credentials
+2. **Re-run eval** — use dedup to continue from tested_ids.json (180+ already tested)
+3. **Fix Orchestrator empty body** — investigate root cause (different from env var issue)
+4. **Monitor Space 2** — currently broken, may need manual intervention
+5. **Run session intelligence** — `python3 scripts/session-intelligence.py` before starting
 
 ### Session Intelligence Recommendations
 1. [CRITICAL] Orchestrator degradation -20% — investigate NO_ANSWER pattern
