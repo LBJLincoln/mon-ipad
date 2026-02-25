@@ -1,14 +1,14 @@
 {
   "meta": {
-    "generated_at": "2026-02-25T11:14:21+01:00",
+    "generated_at": "2026-02-25T11:58:27+01:00",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
     "total_unique_questions": 2309,
-    "total_test_runs": 7358,
-    "total_iterations": 620,
+    "total_test_runs": 7437,
+    "total_iterations": 624,
     "status": "running",
-    "current_session": "2026-02-25T10-43-26"
+    "current_session": "2026-02-25T11-45-21"
   },
   "reference_cloud_executions": {
     "note": "Executions reussies sur n8n Cloud (avant migration Docker). Servent de reference uniquement.",
@@ -114078,6 +114078,1241 @@
           "timestamp": "2026-02-25T11:14:21+01:00"
         }
       ]
+    },
+    {
+      "id": "iter-2026-02-25T11-15-08",
+      "number": 621,
+      "timestamp_start": "2026-02-25T11:15:13+01:00",
+      "timestamp_end": "2026-02-25T11:24:33+01:00",
+      "label": "Session62-10space-cluster",
+      "description": "10 HF Spaces round-robin, 50 workers, max throughput",
+      "changes_applied": [],
+      "results_summary": {
+        "quantitative": {
+          "tested": 6,
+          "correct": 0,
+          "errors": 0,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 9368,
+          "p95_latency_ms": 13762,
+          "avg_f1": 0
+        },
+        "graph": {
+          "tested": 5,
+          "correct": 1,
+          "errors": 0,
+          "accuracy_pct": 20.0,
+          "avg_latency_ms": 24491,
+          "p95_latency_ms": 30500,
+          "avg_f1": 0.8
+        },
+        "standard": {
+          "tested": 5,
+          "correct": 5,
+          "errors": 0,
+          "accuracy_pct": 100.0,
+          "avg_latency_ms": 27096,
+          "p95_latency_ms": 33483,
+          "avg_f1": 0.9
+        },
+        "orchestrator": {
+          "tested": 5,
+          "correct": 0,
+          "errors": 4,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 17294,
+          "p95_latency_ms": 41510,
+          "avg_f1": 0
+        }
+      },
+      "total_tested": 21,
+      "total_correct": 6,
+      "overall_accuracy_pct": 28.6,
+      "questions": [
+        {
+          "id": "quantitative-finqa-30",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 12489,
+          "answer": "0.0%",
+          "expected": "10.5%",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:16:20+01:00"
+        },
+        {
+          "id": "graph-musique-20",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 19729,
+          "answer": "1543",
+          "expected": "as early as the 3rd century BC",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:16:43+01:00"
+        },
+        {
+          "id": "quantitative-finqa-31",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8225,
+          "answer": "NO_ANSWER",
+          "expected": "2061",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:16:56+01:00"
+        },
+        {
+          "id": "std-0",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 27005,
+          "answer": "Brandon Lee died during the making of the movie \"The Crow.\"",
+          "expected": "The Crow",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:17:08+01:00"
+        },
+        {
+          "id": "orch-0",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 27989,
+          "answer": "The song that begins with the line \"The taxman's taken all my dough\" is \"Taxman\" by The Beatles.\n\n---\n**Sources:**\n[1] gsm8k (100%)\n[2] triviaqa (97%)\n[3] bigbench_hard (43%)",
+          "expected": "Sunny Afternoon",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:17:35+01:00"
+        },
+        {
+          "id": "graph-musique-21",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 21498,
+          "answer": "Michel Foucault",
+          "expected": "Arthur Peel",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:18:09+01:00"
+        },
+        {
+          "id": "quantitative-finqa-32",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 13762,
+          "answer": "NO_ANSWER",
+          "expected": "-12%",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:18:33+01:00"
+        },
+        {
+          "id": "std-1",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 24487,
+          "answer": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
+          "expected": "The Staple Singers",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:18:44+01:00"
+        },
+        {
+          "id": "orch-1",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 41510,
+          "answer": "",
+          "expected": "The Blind Beggar",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-25T11:19:04+01:00"
+        },
+        {
+          "id": "graph-musique-22",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.8,
+          "latency_ms": 27500,
+          "answer": "Sir Robert Peel",
+          "expected": "Sir Robert Peel, 1st Baronet",
+          "match_type": "SUBSET_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:19:36+01:00"
+        },
+        {
+          "id": "quantitative-finqa-33",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 13011,
+          "answer": "NO_ANSWER",
+          "expected": "63458",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:20:02+01:00"
+        },
+        {
+          "id": "std-2",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 19760,
+          "answer": "MC Hammer had a Too Legit To Quit Tour.",
+          "expected": "MC Hammer",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:20:12+01:00"
+        },
+        {
+          "id": "orch-2",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3739,
+          "answer": "",
+          "expected": "Henry Mancini",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-25T11:20:30+01:00"
+        },
+        {
+          "id": "graph-musique-23",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 23230,
+          "answer": "Robert Ehrlich",
+          "expected": "Arthur Peel",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:21:02+01:00"
+        },
+        {
+          "id": "quantitative-finqa-34",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4981,
+          "answer": "NO_ANSWER",
+          "expected": "599768",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:21:25+01:00"
+        },
+        {
+          "id": "std-3",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 30749,
+          "answer": "According to Rudyard Kipling, the \"two imposters\" to meet and treat the same day are Triumph and Disaster.",
+          "expected": "Triumph and Disaster",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:21:36+01:00"
+        },
+        {
+          "id": "orch-3",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3240,
+          "answer": "",
+          "expected": "Mr Jinx",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-25T11:21:59+01:00"
+        },
+        {
+          "id": "graph-musique-24",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 30500,
+          "answer": "Patrick Colquhoun",
+          "expected": "Sir Robert Peel, 1st Baronet",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:23:15+01:00"
+        },
+        {
+          "id": "quantitative-finqa-35",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3745,
+          "answer": "NO_ANSWER",
+          "expected": "-32.1",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:23:54+01:00"
+        },
+        {
+          "id": "std-4",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 33483,
+          "answer": "The Oscar-nominated film \"The Full Monty\" had \"You Sexy Thing\" as its theme song.",
+          "expected": "The Full Monty",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:24:09+01:00"
+        },
+        {
+          "id": "orch-4",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9996,
+          "answer": "",
+          "expected": "Meg Ryan",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-25T11:24:33+01:00"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-25T11-25-40",
+      "number": 622,
+      "timestamp_start": "2026-02-25T11:25:43+01:00",
+      "timestamp_end": "2026-02-25T11:31:50+01:00",
+      "label": "Session62-2space-safe",
+      "description": "2 verified spaces, 20 workers, while new spaces activate",
+      "changes_applied": [],
+      "results_summary": {
+        "quantitative": {
+          "tested": 4,
+          "correct": 0,
+          "errors": 0,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 16496,
+          "p95_latency_ms": 20748,
+          "avg_f1": 0
+        },
+        "graph": {
+          "tested": 3,
+          "correct": 1,
+          "errors": 0,
+          "accuracy_pct": 33.3,
+          "avg_latency_ms": 31491,
+          "p95_latency_ms": 37735,
+          "avg_f1": 1.0
+        },
+        "standard": {
+          "tested": 3,
+          "correct": 3,
+          "errors": 0,
+          "accuracy_pct": 100.0,
+          "avg_latency_ms": 34743,
+          "p95_latency_ms": 37481,
+          "avg_f1": 0.9
+        },
+        "orchestrator": {
+          "tested": 3,
+          "correct": 1,
+          "errors": 1,
+          "accuracy_pct": 33.3,
+          "avg_latency_ms": 48081,
+          "p95_latency_ms": 59994,
+          "avg_f1": 0.9
+        }
+      },
+      "total_tested": 13,
+      "total_correct": 5,
+      "overall_accuracy_pct": 38.5,
+      "questions": [
+        {
+          "id": "quantitative-finqa-30",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9753,
+          "answer": "$13.00",
+          "expected": "10.5%",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:27:25+01:00"
+        },
+        {
+          "id": "graph-musique-20",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 37735,
+          "answer": "1543",
+          "expected": "as early as the 3rd century BC",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:27:39+01:00"
+        },
+        {
+          "id": "std-0",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 32261,
+          "answer": "Brandon Lee died during the making of the movie \"The Crow.\"",
+          "expected": "The Crow",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:28:12+01:00"
+        },
+        {
+          "id": "orch-0",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 46982,
+          "answer": "The song that begins with the line \"The taxman's taken all my dough\" is \"Taxman\" by The Beatles.\n\n---\n**Sources:**\n[1] gsm8k (100%)\n[2] triviaqa (91%)",
+          "expected": "Sunny Afternoon",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:28:34+01:00"
+        },
+        {
+          "id": "quantitative-finqa-31",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 20748,
+          "answer": "NO_ANSWER",
+          "expected": "2061",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:28:45+01:00"
+        },
+        {
+          "id": "graph-musique-21",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 37254,
+          "answer": "Michel Foucault",
+          "expected": "Arthur Peel",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:29:07+01:00"
+        },
+        {
+          "id": "std-1",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 34488,
+          "answer": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
+          "expected": "The Staple Singers",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:29:38+01:00"
+        },
+        {
+          "id": "orch-1",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 59994,
+          "answer": "",
+          "expected": "The Blind Beggar",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-25T11:30:01+01:00"
+        },
+        {
+          "id": "quantitative-finqa-32",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 17245,
+          "answer": "282.8%",
+          "expected": "-12%",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:30:13+01:00"
+        },
+        {
+          "id": "graph-musique-22",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 19486,
+          "answer": "Sir Robert Peel, 1st Baronet",
+          "expected": "Sir Robert Peel, 1st Baronet",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:30:38+01:00"
+        },
+        {
+          "id": "std-2",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 37481,
+          "answer": "MC Hammer had a Too Legit To Quit Tour.",
+          "expected": "MC Hammer",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:31:11+01:00"
+        },
+        {
+          "id": "orch-2",
+          "rag_type": "orchestrator",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 37269,
+          "answer": "Henry Mancini composed the musical theme for the Pink Panther.\n\n---\n**Sources:**\n[1] triviaqa (100%)\n[2] bigbench_hard (99%)\n[3] musique (99%)\n[4] hotpotqa (99%)",
+          "expected": "Henry Mancini",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:31:39+01:00"
+        },
+        {
+          "id": "quantitative-finqa-33",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 18238,
+          "answer": "NO_ANSWER",
+          "expected": "63458",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:31:50+01:00"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-25T11-33-03",
+      "number": 623,
+      "timestamp_start": "2026-02-25T11:33:07+01:00",
+      "timestamp_end": "2026-02-25T11:41:36+01:00",
+      "label": "Session62-FULL-10space",
+      "description": "ALL 10 HF Spaces verified, 50 workers, max throughput",
+      "changes_applied": [],
+      "results_summary": {
+        "quantitative": {
+          "tested": 6,
+          "correct": 0,
+          "errors": 0,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 8696,
+          "p95_latency_ms": 10229,
+          "avg_f1": 0
+        },
+        "graph": {
+          "tested": 5,
+          "correct": 1,
+          "errors": 0,
+          "accuracy_pct": 20.0,
+          "avg_latency_ms": 21189,
+          "p95_latency_ms": 22971,
+          "avg_f1": 1.0
+        },
+        "standard": {
+          "tested": 5,
+          "correct": 5,
+          "errors": 0,
+          "accuracy_pct": 100.0,
+          "avg_latency_ms": 30488,
+          "p95_latency_ms": 35247,
+          "avg_f1": 0.9
+        },
+        "orchestrator": {
+          "tested": 5,
+          "correct": 0,
+          "errors": 4,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 21484,
+          "p95_latency_ms": 49219,
+          "avg_f1": 0
+        }
+      },
+      "total_tested": 21,
+      "total_correct": 6,
+      "overall_accuracy_pct": 28.6,
+      "questions": [
+        {
+          "id": "quantitative-finqa-30",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 10229,
+          "answer": "$6.84",
+          "expected": "10.5%",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:34:20+01:00"
+        },
+        {
+          "id": "graph-musique-20",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 21760,
+          "answer": "1543",
+          "expected": "as early as the 3rd century BC",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:34:31+01:00"
+        },
+        {
+          "id": "std-0",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 24726,
+          "answer": "Brandon Lee died during the making of \"The Crow\" in 1993.",
+          "expected": "The Crow",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:35:07+01:00"
+        },
+        {
+          "id": "orch-0",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 39722,
+          "answer": "The song that begins with the line \"The taxman's taken all my dough\" is \"Taxman\" by The Beatles.\n\n---\n**Sources:**\n[1] gsm8k (100%)\n[2] triviaqa (98%)\n[3] bigbench_hard (43%)",
+          "expected": "Sunny Afternoon",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:35:19+01:00"
+        },
+        {
+          "id": "quantitative-finqa-31",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8993,
+          "answer": "NO_ANSWER",
+          "expected": "2061",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:35:31+01:00"
+        },
+        {
+          "id": "graph-musique-21",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 21746,
+          "answer": "Philipp von Hörnigk",
+          "expected": "Arthur Peel",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:35:42+01:00"
+        },
+        {
+          "id": "std-1",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 32749,
+          "answer": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
+          "expected": "The Staple Singers",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:36:37+01:00"
+        },
+        {
+          "id": "orch-1",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 49219,
+          "answer": "",
+          "expected": "The Blind Beggar",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-02-25T11:36:48+01:00"
+        },
+        {
+          "id": "quantitative-finqa-32",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8485,
+          "answer": "NO_ANSWER",
+          "expected": "-12%",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:36:58+01:00"
+        },
+        {
+          "id": "graph-musique-22",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 19226,
+          "answer": "Sir Robert Peel, 1st Baronet",
+          "expected": "Sir Robert Peel, 1st Baronet",
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:37:12+01:00"
+        },
+        {
+          "id": "std-2",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 27741,
+          "answer": "MC Hammer had a Too Legit To Quit Tour.",
+          "expected": "MC Hammer",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:38:05+01:00"
+        },
+        {
+          "id": "orch-2",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9265,
+          "answer": "",
+          "expected": "Henry Mancini",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-25T11:38:15+01:00"
+        },
+        {
+          "id": "quantitative-finqa-33",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 6985,
+          "answer": "NO_ANSWER",
+          "expected": "63458",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:38:25+01:00"
+        },
+        {
+          "id": "graph-musique-23",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 22971,
+          "answer": "Robert Ehrlich",
+          "expected": "Arthur Peel",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:38:39+01:00"
+        },
+        {
+          "id": "std-3",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 35247,
+          "answer": "According to Rudyard Kipling, the \"two imposters\" to meet and treat the same day are Triumph and Disaster.",
+          "expected": "Triumph and Disaster",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:39:34+01:00"
+        },
+        {
+          "id": "orch-3",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3985,
+          "answer": "",
+          "expected": "Mr Jinx",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-25T11:39:46+01:00"
+        },
+        {
+          "id": "quantitative-finqa-34",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8488,
+          "answer": "NO_ANSWER",
+          "expected": "599768",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:40:02+01:00"
+        },
+        {
+          "id": "graph-musique-24",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 20245,
+          "answer": "Patrick Colquhoun",
+          "expected": "Sir Robert Peel, 1st Baronet",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:40:14+01:00"
+        },
+        {
+          "id": "std-4",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 31978,
+          "answer": "The Oscar-nominated film that had \"You Sexy Thing\" as its theme song is \"The Full Monty\" (1997).",
+          "expected": "The Full Monty",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:41:13+01:00"
+        },
+        {
+          "id": "orch-4",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 5231,
+          "answer": "",
+          "expected": "Meg Ryan",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-25T11:41:24+01:00"
+        },
+        {
+          "id": "quantitative-finqa-35",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9000,
+          "answer": "NO_ANSWER",
+          "expected": "-32.1",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:41:36+01:00"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-02-25T11-45-21",
+      "number": 624,
+      "timestamp_start": "2026-02-25T11:45:24+01:00",
+      "timestamp_end": "2026-02-25T11:58:17+01:00",
+      "label": "Session62-incremental-10space",
+      "description": "Incremental saves, signal handler, preflight check, 10 spaces",
+      "changes_applied": [],
+      "results_summary": {
+        "orchestrator": {
+          "tested": 6,
+          "correct": 0,
+          "errors": 6,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 9456,
+          "p95_latency_ms": 14236,
+          "avg_f1": 0
+        },
+        "quantitative": {
+          "tested": 6,
+          "correct": 0,
+          "errors": 0,
+          "accuracy_pct": 0.0,
+          "avg_latency_ms": 7454,
+          "p95_latency_ms": 10495,
+          "avg_f1": 0
+        },
+        "graph": {
+          "tested": 6,
+          "correct": 1,
+          "errors": 0,
+          "accuracy_pct": 16.7,
+          "avg_latency_ms": 22710,
+          "p95_latency_ms": 27499,
+          "avg_f1": 0.8
+        },
+        "standard": {
+          "tested": 6,
+          "correct": 6,
+          "errors": 0,
+          "accuracy_pct": 100.0,
+          "avg_latency_ms": 30910,
+          "p95_latency_ms": 34233,
+          "avg_f1": 0.9
+        }
+      },
+      "total_tested": 24,
+      "total_correct": 7,
+      "overall_accuracy_pct": 29.2,
+      "questions": [
+        {
+          "id": "orch-0",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 14236,
+          "answer": "",
+          "expected": "Sunny Afternoon",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-25T11:48:54+01:00"
+        },
+        {
+          "id": "quantitative-finqa-30",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 10495,
+          "answer": "NO_ANSWER",
+          "expected": "10.5%",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:49:06+01:00"
+        },
+        {
+          "id": "graph-musique-20",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 19248,
+          "answer": "1543",
+          "expected": "as early as the 3rd century BC",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:49:32+01:00"
+        },
+        {
+          "id": "std-0",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 29023,
+          "answer": "Brandon Lee died during the making of the movie \"The Crow.\"",
+          "expected": "The Crow",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:49:40+01:00"
+        },
+        {
+          "id": "orch-1",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9990,
+          "answer": "",
+          "expected": "The Blind Beggar",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-25T11:50:02+01:00"
+        },
+        {
+          "id": "quantitative-finqa-31",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 5996,
+          "answer": "NO_ANSWER",
+          "expected": "2061",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:50:34+01:00"
+        },
+        {
+          "id": "graph-musique-21",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 20494,
+          "answer": "Michel Foucault",
+          "expected": "Arthur Peel",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:50:59+01:00"
+        },
+        {
+          "id": "std-1",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 31479,
+          "answer": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
+          "expected": "The Staple Singers",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:51:12+01:00"
+        },
+        {
+          "id": "orch-2",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9766,
+          "answer": "",
+          "expected": "Henry Mancini",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-25T11:51:35+01:00"
+        },
+        {
+          "id": "quantitative-finqa-32",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 5242,
+          "answer": "NO_ANSWER",
+          "expected": "-12%",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:52:14+01:00"
+        },
+        {
+          "id": "graph-musique-22",
+          "rag_type": "graph",
+          "correct": true,
+          "f1": 0.8,
+          "latency_ms": 20512,
+          "answer": "Sir Robert Peel",
+          "expected": "Sir Robert Peel, 1st Baronet",
+          "match_type": "SUBSET_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:53:00+01:00"
+        },
+        {
+          "id": "std-2",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 34233,
+          "answer": "MC Hammer had a Too Legit To Quit Tour.",
+          "expected": "MC Hammer",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:53:17+01:00"
+        },
+        {
+          "id": "orch-3",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 13253,
+          "answer": "",
+          "expected": "Mr Jinx",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-25T11:53:50+01:00"
+        },
+        {
+          "id": "quantitative-finqa-33",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 5736,
+          "answer": "NO_ANSWER",
+          "expected": "63458",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:54:25+01:00"
+        },
+        {
+          "id": "graph-musique-23",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 27499,
+          "answer": "Robert Ehrlich",
+          "expected": "Arthur Peel",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:54:50+01:00"
+        },
+        {
+          "id": "std-3",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 29752,
+          "answer": "According to Rudyard Kipling's poem \"If,\" the two imposters to meet and treat the same day are Triumph and Disaster.",
+          "expected": "Triumph and Disaster",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:55:05+01:00"
+        },
+        {
+          "id": "orch-4",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4993,
+          "answer": "",
+          "expected": "Meg Ryan",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-25T11:55:29+01:00"
+        },
+        {
+          "id": "quantitative-finqa-34",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8265,
+          "answer": "NO_ANSWER",
+          "expected": "599768",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:55:56+01:00"
+        },
+        {
+          "id": "graph-musique-24",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 22011,
+          "answer": "Patrick Colquhoun",
+          "expected": "Sir Robert Peel, 1st Baronet",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:56:22+01:00"
+        },
+        {
+          "id": "std-4",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 29730,
+          "answer": "The Oscar-nominated film that had \"You Sexy Thing\" as its theme song is \"The Full Monty.\"",
+          "expected": "The Full Monty",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:56:36+01:00"
+        },
+        {
+          "id": "orch-5",
+          "rag_type": "orchestrator",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4499,
+          "answer": "",
+          "expected": "John Major",
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "timestamp": "2026-02-25T11:57:00+01:00"
+        },
+        {
+          "id": "quantitative-finqa-35",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8990,
+          "answer": "NO_ANSWER",
+          "expected": "-32.1",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:57:36+01:00"
+        },
+        {
+          "id": "graph-musique-25",
+          "rag_type": "graph",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 26496,
+          "answer": "2020",
+          "expected": "June 20, 2016",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:58:03+01:00"
+        },
+        {
+          "id": "std-5",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 31243,
+          "answer": "Joan Crawford's career revived in \"Whatever Happened to Baby Jane?\"",
+          "expected": "Crawford",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-02-25T11:58:17+01:00"
+        }
+      ]
     }
   ],
   "question_registry": {
@@ -135536,13 +136771,61 @@
           "error_type": null,
           "answer": "1543",
           "timestamp": "2026-02-25T10:45:07+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 19729,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1543",
+          "timestamp": "2026-02-25T11:16:43+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 37735,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1543",
+          "timestamp": "2026-02-25T11:27:39+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 21760,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1543",
+          "timestamp": "2026-02-25T11:34:31+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 19248,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "1543",
+          "timestamp": "2026-02-25T11:49:32+01:00"
         }
       ],
-      "total_runs": 19,
+      "total_runs": 23,
       "pass_count": 6,
-      "pass_rate": 0.316,
+      "pass_rate": 0.261,
       "current_status": "fail",
-      "last_tested": "2026-02-25T10:45:07+01:00",
+      "last_tested": "2026-02-25T11:49:32+01:00",
       "best_f1": 0.9,
       "trend": "stable"
     },
@@ -135771,13 +137054,61 @@
           "error_type": null,
           "answer": "Philipp von Hörnigk",
           "timestamp": "2026-02-25T10:46:18+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 21498,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Michel Foucault",
+          "timestamp": "2026-02-25T11:18:09+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 37254,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Michel Foucault",
+          "timestamp": "2026-02-25T11:29:07+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 21746,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Philipp von Hörnigk",
+          "timestamp": "2026-02-25T11:35:42+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 20494,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Michel Foucault",
+          "timestamp": "2026-02-25T11:50:59+01:00"
         }
       ],
-      "total_runs": 18,
+      "total_runs": 22,
       "pass_count": 5,
-      "pass_rate": 0.278,
+      "pass_rate": 0.227,
       "current_status": "fail",
-      "last_tested": "2026-02-25T10:46:18+01:00",
+      "last_tested": "2026-02-25T11:50:59+01:00",
       "best_f1": 0.5,
       "trend": "regressing"
     },
@@ -135982,13 +137313,61 @@
           "error_type": null,
           "answer": "Sir Robert Peel",
           "timestamp": "2026-02-25T10:47:33+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": true,
+          "f1": 0.8,
+          "latency_ms": 27500,
+          "match_type": "SUBSET_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Sir Robert Peel",
+          "timestamp": "2026-02-25T11:19:36+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 19486,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Sir Robert Peel, 1st Baronet",
+          "timestamp": "2026-02-25T11:30:38+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": true,
+          "f1": 1.0,
+          "latency_ms": 19226,
+          "match_type": "EXACT_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Sir Robert Peel, 1st Baronet",
+          "timestamp": "2026-02-25T11:37:12+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": true,
+          "f1": 0.8,
+          "latency_ms": 20512,
+          "match_type": "SUBSET_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Sir Robert Peel",
+          "timestamp": "2026-02-25T11:53:00+01:00"
         }
       ],
-      "total_runs": 16,
-      "pass_count": 13,
-      "pass_rate": 0.812,
+      "total_runs": 20,
+      "pass_count": 17,
+      "pass_rate": 0.85,
       "current_status": "pass",
-      "last_tested": "2026-02-25T10:47:33+01:00",
+      "last_tested": "2026-02-25T11:53:00+01:00",
       "best_f1": 1.0,
       "trend": "improving"
     },
@@ -136289,13 +137668,61 @@
           "error_type": null,
           "answer": "Brandon Lee died during the making of \"The Crow.\"",
           "timestamp": "2026-02-25T10:45:31+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 27005,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Brandon Lee died during the making of the movie \"The Crow.\"",
+          "timestamp": "2026-02-25T11:17:08+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 32261,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Brandon Lee died during the making of the movie \"The Crow.\"",
+          "timestamp": "2026-02-25T11:28:12+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 24726,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Brandon Lee died during the making of \"The Crow\" in 1993.",
+          "timestamp": "2026-02-25T11:35:07+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 29023,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Brandon Lee died during the making of the movie \"The Crow.\"",
+          "timestamp": "2026-02-25T11:49:40+01:00"
         }
       ],
-      "total_runs": 24,
-      "pass_count": 23,
-      "pass_rate": 0.958,
+      "total_runs": 28,
+      "pass_count": 27,
+      "pass_rate": 0.964,
       "current_status": "pass",
-      "last_tested": "2026-02-25T10:45:31+01:00",
+      "last_tested": "2026-02-25T11:49:40+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -136584,13 +138011,61 @@
           "error_type": null,
           "answer": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again\".",
           "timestamp": "2026-02-25T10:46:46+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 24487,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
+          "timestamp": "2026-02-25T11:18:44+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 34488,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
+          "timestamp": "2026-02-25T11:29:38+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 32749,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
+          "timestamp": "2026-02-25T11:36:37+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 31479,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
+          "timestamp": "2026-02-25T11:51:12+01:00"
         }
       ],
-      "total_runs": 23,
-      "pass_count": 22,
-      "pass_rate": 0.957,
+      "total_runs": 27,
+      "pass_count": 26,
+      "pass_rate": 0.963,
       "current_status": "pass",
-      "last_tested": "2026-02-25T10:46:46+01:00",
+      "last_tested": "2026-02-25T11:51:12+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -136855,13 +138330,61 @@
           "error_type": null,
           "answer": "MC Hammer had a Too Legit To Quit Tour.",
           "timestamp": "2026-02-25T10:48:14+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 19760,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "MC Hammer had a Too Legit To Quit Tour.",
+          "timestamp": "2026-02-25T11:20:12+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 37481,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "MC Hammer had a Too Legit To Quit Tour.",
+          "timestamp": "2026-02-25T11:31:11+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 27741,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "MC Hammer had a Too Legit To Quit Tour.",
+          "timestamp": "2026-02-25T11:38:05+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 34233,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "MC Hammer had a Too Legit To Quit Tour.",
+          "timestamp": "2026-02-25T11:53:17+01:00"
         }
       ],
-      "total_runs": 21,
-      "pass_count": 21,
+      "total_runs": 25,
+      "pass_count": 25,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-02-25T10:48:14+01:00",
+      "last_tested": "2026-02-25T11:53:17+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -137138,13 +138661,49 @@
           "error_type": null,
           "answer": "According to Rudyard Kipling, the \"two imposters\" to meet and treat the same day are triumph and disaster.",
           "timestamp": "2026-02-25T10:49:43+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 30749,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "According to Rudyard Kipling, the \"two imposters\" to meet and treat the same day are Triumph and Disaster.",
+          "timestamp": "2026-02-25T11:21:36+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 35247,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "According to Rudyard Kipling, the \"two imposters\" to meet and treat the same day are Triumph and Disaster.",
+          "timestamp": "2026-02-25T11:39:34+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 29752,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "According to Rudyard Kipling's poem \"If,\" the two imposters to meet and treat the same day are Triumph and Disaster.",
+          "timestamp": "2026-02-25T11:55:05+01:00"
         }
       ],
-      "total_runs": 22,
-      "pass_count": 21,
-      "pass_rate": 0.955,
+      "total_runs": 25,
+      "pass_count": 24,
+      "pass_rate": 0.96,
       "current_status": "pass",
-      "last_tested": "2026-02-25T10:49:43+01:00",
+      "last_tested": "2026-02-25T11:55:05+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -137409,13 +138968,49 @@
           "error_type": null,
           "answer": "The Oscar-nominated film that had \"You Sexy Thing\" as its theme song is \"The Full Monty.\"",
           "timestamp": "2026-02-25T10:51:17+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 33483,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Oscar-nominated film \"The Full Monty\" had \"You Sexy Thing\" as its theme song.",
+          "timestamp": "2026-02-25T11:24:09+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 31978,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Oscar-nominated film that had \"You Sexy Thing\" as its theme song is \"The Full Monty\" (1997).",
+          "timestamp": "2026-02-25T11:41:13+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 29730,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The Oscar-nominated film that had \"You Sexy Thing\" as its theme song is \"The Full Monty.\"",
+          "timestamp": "2026-02-25T11:56:36+01:00"
         }
       ],
-      "total_runs": 21,
-      "pass_count": 17,
-      "pass_rate": 0.81,
+      "total_runs": 24,
+      "pass_count": 20,
+      "pass_rate": 0.833,
       "current_status": "pass",
-      "last_tested": "2026-02-25T10:51:17+01:00",
+      "last_tested": "2026-02-25T11:56:36+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -137548,13 +139143,61 @@
           "error_type": null,
           "answer": "The song that begins with the line \"The taxman's taken all my dough\" is \"Taxman\" by The Beatles.\n\n---\n**Sources:**\n[1] gsm8k (100%)\n[2] triviaqa (100%)",
           "timestamp": "2026-02-25T10:45:53+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 27989,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The song that begins with the line \"The taxman's taken all my dough\" is \"Taxman\" by The Beatles.\n\n---\n**Sources:**\n[1] gsm8k (100%)\n[2] triviaqa (97%)\n[3] bigbench_hard (43%)",
+          "timestamp": "2026-02-25T11:17:35+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 46982,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The song that begins with the line \"The taxman's taken all my dough\" is \"Taxman\" by The Beatles.\n\n---\n**Sources:**\n[1] gsm8k (100%)\n[2] triviaqa (91%)",
+          "timestamp": "2026-02-25T11:28:34+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 39722,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The song that begins with the line \"The taxman's taken all my dough\" is \"Taxman\" by The Beatles.\n\n---\n**Sources:**\n[1] gsm8k (100%)\n[2] triviaqa (98%)\n[3] bigbench_hard (43%)",
+          "timestamp": "2026-02-25T11:35:19+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 14236,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-25T11:48:54+01:00"
         }
       ],
-      "total_runs": 10,
+      "total_runs": 14,
       "pass_count": 0,
       "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-02-25T10:45:53+01:00",
+      "current_status": "error",
+      "last_tested": "2026-02-25T11:48:54+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -137675,13 +139318,61 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-25T10:47:07+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 41510,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-25T11:19:04+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 59994,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-25T11:30:01+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 49219,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-02-25T11:36:48+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9990,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-25T11:50:02+01:00"
         }
       ],
-      "total_runs": 9,
+      "total_runs": 13,
       "pass_count": 5,
-      "pass_rate": 0.556,
+      "pass_rate": 0.385,
       "current_status": "error",
-      "last_tested": "2026-02-25T10:47:07+01:00",
+      "last_tested": "2026-02-25T11:50:02+01:00",
       "best_f1": 0.9,
       "trend": "regressing"
     },
@@ -137802,15 +139493,63 @@
           "error_type": null,
           "answer": "Henry Mancini composed the musical theme for the Pink Panther.\n\n---\n**Sources:**\n[1] hotpotqa (100%)\n[2] musique (100%)\n[3] triviaqa (93%)\n[4] strategyqa (90%)",
           "timestamp": "2026-02-25T10:48:38+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3739,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-25T11:20:30+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 37269,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Henry Mancini composed the musical theme for the Pink Panther.\n\n---\n**Sources:**\n[1] triviaqa (100%)\n[2] bigbench_hard (99%)\n[3] musique (99%)\n[4] hotpotqa (99%)",
+          "timestamp": "2026-02-25T11:31:39+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9265,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-25T11:38:15+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9766,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-25T11:51:35+01:00"
         }
       ],
-      "total_runs": 9,
-      "pass_count": 6,
-      "pass_rate": 0.667,
-      "current_status": "pass",
-      "last_tested": "2026-02-25T10:48:38+01:00",
+      "total_runs": 13,
+      "pass_count": 7,
+      "pass_rate": 0.538,
+      "current_status": "error",
+      "last_tested": "2026-02-25T11:51:35+01:00",
       "best_f1": 0.9,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "orch-3": {
       "id": "orch-3",
@@ -137929,13 +139668,49 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-25T10:50:07+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3240,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-25T11:21:59+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3985,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-25T11:39:46+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 13253,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-25T11:53:50+01:00"
         }
       ],
-      "total_runs": 9,
+      "total_runs": 12,
       "pass_count": 5,
-      "pass_rate": 0.556,
+      "pass_rate": 0.417,
       "current_status": "error",
-      "last_tested": "2026-02-25T10:50:07+01:00",
+      "last_tested": "2026-02-25T11:53:50+01:00",
       "best_f1": 0.125,
       "trend": "regressing"
     },
@@ -138068,15 +139843,51 @@
           "error_type": null,
           "answer": "Meg Ryan married Dennis Quaid on Valentine's Day in 1991.\n\n---\n**Sources:**\n[1] gsm8k (100%)\n[2] musique (99%)",
           "timestamp": "2026-02-25T10:52:20+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9996,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-25T11:24:33+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 5231,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-25T11:41:24+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4993,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-25T11:55:29+01:00"
         }
       ],
-      "total_runs": 10,
+      "total_runs": 13,
       "pass_count": 7,
-      "pass_rate": 0.7,
-      "current_status": "pass",
-      "last_tested": "2026-02-25T10:52:20+01:00",
+      "pass_rate": 0.538,
+      "current_status": "error",
+      "last_tested": "2026-02-25T11:55:29+01:00",
       "best_f1": 0.9,
-      "trend": "stable"
+      "trend": "regressing"
     },
     "std-5": {
       "id": "std-5",
@@ -138339,13 +140150,25 @@
           "error_type": null,
           "answer": "Joan Crawford's career revived in Whatever Happened to Baby Jane?",
           "timestamp": "2026-02-25T10:52:48+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 31243,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Joan Crawford's career revived in \"Whatever Happened to Baby Jane?\"",
+          "timestamp": "2026-02-25T11:58:17+01:00"
         }
       ],
-      "total_runs": 21,
-      "pass_count": 11,
-      "pass_rate": 0.524,
+      "total_runs": 22,
+      "pass_count": 12,
+      "pass_rate": 0.545,
       "current_status": "pass",
-      "last_tested": "2026-02-25T10:52:48+01:00",
+      "last_tested": "2026-02-25T11:58:17+01:00",
       "best_f1": 0.9,
       "trend": "stable"
     },
@@ -141533,13 +143356,49 @@
           "error_type": null,
           "answer": "Robert Ehrlich",
           "timestamp": "2026-02-25T10:49:16+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 23230,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Robert Ehrlich",
+          "timestamp": "2026-02-25T11:21:02+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 22971,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Robert Ehrlich",
+          "timestamp": "2026-02-25T11:38:39+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 27499,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Robert Ehrlich",
+          "timestamp": "2026-02-25T11:54:50+01:00"
         }
       ],
-      "total_runs": 15,
+      "total_runs": 18,
       "pass_count": 1,
-      "pass_rate": 0.067,
+      "pass_rate": 0.056,
       "current_status": "fail",
-      "last_tested": "2026-02-25T10:49:16+01:00",
+      "last_tested": "2026-02-25T11:54:50+01:00",
       "best_f1": 0.5,
       "trend": "stable"
     },
@@ -141907,13 +143766,49 @@
           "error_type": null,
           "answer": "Patrick Colquhoun",
           "timestamp": "2026-02-25T10:50:44+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 30500,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Patrick Colquhoun",
+          "timestamp": "2026-02-25T11:23:15+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 20245,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Patrick Colquhoun",
+          "timestamp": "2026-02-25T11:40:14+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 22011,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Patrick Colquhoun",
+          "timestamp": "2026-02-25T11:56:22+01:00"
         }
       ],
-      "total_runs": 15,
+      "total_runs": 18,
       "pass_count": 4,
-      "pass_rate": 0.267,
+      "pass_rate": 0.222,
       "current_status": "fail",
-      "last_tested": "2026-02-25T10:50:44+01:00",
+      "last_tested": "2026-02-25T11:56:22+01:00",
       "best_f1": 0.8,
       "trend": "regressing"
     },
@@ -142269,13 +144164,25 @@
           "error_type": null,
           "answer": "2022",
           "timestamp": "2026-02-25T10:52:02+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 26496,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "2020",
+          "timestamp": "2026-02-25T11:58:03+01:00"
         }
       ],
-      "total_runs": 15,
+      "total_runs": 16,
       "pass_count": 3,
-      "pass_rate": 0.2,
+      "pass_rate": 0.188,
       "current_status": "fail",
-      "last_tested": "2026-02-25T10:52:02+01:00",
+      "last_tested": "2026-02-25T11:58:03+01:00",
       "best_f1": 0.5,
       "trend": "stable"
     },
@@ -147837,13 +149744,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-02-25T10:54:58+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4499,
+          "match_type": "NO_ANSWER",
+          "error": "Expecting value: line 1 column 1 (char 0)",
+          "error_type": "UNKNOWN",
+          "answer": "",
+          "timestamp": "2026-02-25T11:57:00+01:00"
         }
       ],
-      "total_runs": 9,
+      "total_runs": 10,
       "pass_count": 4,
-      "pass_rate": 0.444,
+      "pass_rate": 0.4,
       "current_status": "error",
-      "last_tested": "2026-02-25T10:54:58+01:00",
+      "last_tested": "2026-02-25T11:57:00+01:00",
       "best_f1": 0.9,
       "trend": "stable"
     },
@@ -184747,13 +186666,61 @@
           "error_type": null,
           "answer": "0.0%",
           "timestamp": "2026-02-25T10:44:42+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 12489,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "0.0%",
+          "timestamp": "2026-02-25T11:16:20+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9753,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$13.00",
+          "timestamp": "2026-02-25T11:27:25+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 10229,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$6.84",
+          "timestamp": "2026-02-25T11:34:20+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 10495,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:49:06+01:00"
         }
       ],
-      "total_runs": 12,
+      "total_runs": 16,
       "pass_count": 7,
-      "pass_rate": 0.583,
+      "pass_rate": 0.438,
       "current_status": "fail",
-      "last_tested": "2026-02-25T10:44:42+01:00",
+      "last_tested": "2026-02-25T11:49:06+01:00",
       "best_f1": 0.0388,
       "trend": "stable"
     },
@@ -184898,13 +186865,61 @@
           "error_type": null,
           "answer": "NO_ANSWER",
           "timestamp": "2026-02-25T10:45:19+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8225,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:16:56+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 20748,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:28:45+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8993,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:35:31+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 5996,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:50:34+01:00"
         }
       ],
-      "total_runs": 11,
+      "total_runs": 15,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-25T10:45:19+01:00",
+      "last_tested": "2026-02-25T11:50:34+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -185049,13 +187064,61 @@
           "error_type": null,
           "answer": "107551",
           "timestamp": "2026-02-25T10:46:33+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 13762,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:18:33+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 17245,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "282.8%",
+          "timestamp": "2026-02-25T11:30:13+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8485,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:36:58+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 5242,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:52:14+01:00"
         }
       ],
-      "total_runs": 11,
+      "total_runs": 15,
       "pass_count": 6,
-      "pass_rate": 0.545,
+      "pass_rate": 0.4,
       "current_status": "fail",
-      "last_tested": "2026-02-25T10:46:33+01:00",
+      "last_tested": "2026-02-25T11:52:14+01:00",
       "best_f1": 0.9,
       "trend": "stable"
     },
@@ -185212,13 +187275,61 @@
           "error_type": null,
           "answer": "NO_ANSWER",
           "timestamp": "2026-02-25T10:47:59+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 13011,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:20:02+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-25-40",
+          "iteration_number": 622,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 18238,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:31:50+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 6985,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:38:25+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 5736,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:54:25+01:00"
         }
       ],
-      "total_runs": 12,
+      "total_runs": 16,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-25T10:47:59+01:00",
+      "last_tested": "2026-02-25T11:54:25+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -185375,13 +187486,49 @@
           "error_type": null,
           "answer": "149768",
           "timestamp": "2026-02-25T10:49:32+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 4981,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:21:25+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8488,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:40:02+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8265,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:55:56+01:00"
         }
       ],
-      "total_runs": 12,
+      "total_runs": 15,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-02-25T10:49:32+01:00",
+      "last_tested": "2026-02-25T11:55:56+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -185538,13 +187685,49 @@
           "error_type": null,
           "answer": "NO_ANSWER",
           "timestamp": "2026-02-25T10:51:06+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-15-08",
+          "iteration_number": 621,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3745,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:23:54+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-33-03",
+          "iteration_number": 623,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 9000,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:41:36+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-02-25T11-45-21",
+          "iteration_number": 624,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 8990,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "NO_ANSWER",
+          "timestamp": "2026-02-25T11:57:36+01:00"
         }
       ],
-      "total_runs": 12,
+      "total_runs": 15,
       "pass_count": 6,
-      "pass_rate": 0.5,
+      "pass_rate": 0.4,
       "current_status": "fail",
-      "last_tested": "2026-02-25T10:51:06+01:00",
+      "last_tested": "2026-02-25T11:57:36+01:00",
       "best_f1": 1.0,
       "trend": "stable"
     },
@@ -246753,1182 +248936,6 @@
   ],
   "execution_logs": [
     {
-      "timestamp": "2026-02-25T09:17:13+01:00",
-      "question_id": "graph-musique-8",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 18498,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "John Wayne",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:17:52+01:00",
-      "question_id": "orch-8",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 23253,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Mammals produce milk to feed their young, which differentiates them from other animal families.\n\n---",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:18:19+01:00",
-      "question_id": "std-8",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 24987,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The brothel in The Best Little Whorehouse in Texas was called the Chicken Ranch.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:18:33+01:00",
-      "question_id": "quantitative-finqa-9",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 14271,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "0.17",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:18:56+01:00",
-      "question_id": "graph-musique-9",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 19979,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "John Wayne",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:19:36+01:00",
-      "question_id": "orch-9",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 27735,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Pablo Neruda.\n\n---\n**Sources:**\n[1] musique (100%)\n[2] wikihop (99%)\n[3] hotpotqa (92%)",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:20:05+01:00",
-      "question_id": "std-9",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 24744,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Peter O'Toole was the male star of the movie The Man of La Mancha.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:20:34+01:00",
-      "question_id": "quantitative-finqa-10",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.5,
-      "latency_ms": 15255,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "50.725",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:21:02+01:00",
-      "question_id": "graph-musique-10",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 18731,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Jeff Bridges",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:21:26+01:00",
-      "question_id": "p2-orch-10",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 22749,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Albert Einstein was Time magazine's \"Person of the 20th Century.\"\n\n---\n**Sources:**\n[1] Wikipedia (1",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:21:54+01:00",
-      "question_id": "quantitative-finqa-11",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 28488,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "$106.27million",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:22:06+01:00",
-      "question_id": "p2-std-10",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 21502,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Joey Richardson is Vanessa Redgrave's daughter.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:26:35+01:00",
-      "question_id": "quantitative-finqa-30",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 11752,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "$11.50",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:26:49+01:00",
-      "question_id": "graph-musique-20",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 20256,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "1543",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:27:16+01:00",
-      "question_id": "orch-0",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 28522,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The song that begins with the line \"The taxman's taken all my dough\" is \"Taxman\" by The Beatles.\n\n--",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:27:42+01:00",
-      "question_id": "std-0",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 27749,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Brandon Lee died during the making of \"The Crow.\"",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:27:54+01:00",
-      "question_id": "quantitative-finqa-31",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 8497,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "$2975million",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:28:22+01:00",
-      "question_id": "graph-musique-21",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 21489,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Johann Heinrich Gottlob Justi",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:29:03+01:00",
-      "question_id": "orch-1",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 35241,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The pub where George Cornell was shot by the Kray twins in 1966 was the Blind Beggar in Whitechapel,",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:29:22+01:00",
-      "question_id": "std-1",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 27266,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again\".",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:29:33+01:00",
-      "question_id": "quantitative-finqa-32",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 12732,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "282.9%",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:29:59+01:00",
-      "question_id": "graph-musique-22",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.8,
-      "latency_ms": 20498,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Sir Robert Peel",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:30:49+01:00",
-      "question_id": "std-2",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 27011,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "MC Hammer had a Too Legit To Quit Tour.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:31:01+01:00",
-      "question_id": "orch-2",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 22759,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Henry Mancini composed the musical theme for the Pink Panther.\n\n---\n**Sources:**\n[1] musique (100%)\n",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:31:16+01:00",
-      "question_id": "graph-musique-23",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 20993,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Robert Ehrlich",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:31:36+01:00",
-      "question_id": "quantitative-finqa-33",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 15734,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "24590",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:33:05+01:00",
-      "question_id": "std-3",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 45245,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "According to Rudyard Kipling's poem \"If,\" the two imposters to meet and treat the same day are Trium",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:33:30+01:00",
-      "question_id": "orch-3",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.0976,
-      "latency_ms": 24514,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The cartoon adversary of Pixie and Dixie who would often say \"I hate those meeces to pieces\" is Mr. ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:33:50+01:00",
-      "question_id": "graph-musique-24",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 22504,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Patrick Colquhoun",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:34:09+01:00",
-      "question_id": "quantitative-finqa-34",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 7251,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "149768",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:35:38+01:00",
-      "question_id": "std-4",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 30496,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Oscar-nominated film that had \"You Sexy Thing\" as its theme song is \"The Full Monty\" (1997).",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:35:55+01:00",
-      "question_id": "quantitative-finqa-35",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.5,
-      "latency_ms": 12997,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "36.1",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:36:13+01:00",
-      "question_id": "graph-musique-25",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.3333,
-      "latency_ms": 18757,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "2016-06-26",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:38:57+01:00",
-      "question_id": "quantitative-finqa-30",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 13480,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "3.1%",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:39:13+01:00",
-      "question_id": "graph-musique-20",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 19236,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "1543",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:39:31+01:00",
-      "question_id": "orch-0",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 30240,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The song that begins with the line \"The taxman's taken all my dough\" is \"Taxman\" by The Beatles.\n\n--",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:40:00+01:00",
-      "question_id": "std-0",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 24735,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Brandon Lee died during the making of \"The Crow\" in 1993.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:40:43+01:00",
-      "question_id": "quantitative-finqa-31",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 10724,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "$2975million",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:41:19+01:00",
-      "question_id": "graph-musique-21",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 22991,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Michel Foucault",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:41:37+01:00",
-      "question_id": "orch-1",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 29751,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Blind Beggar pub.\n\n---\n**Sources:**\n[1] commonsenseqa (100%)\n[2] wikihop (96%)\n[3] musique (94%)",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:42:06+01:00",
-      "question_id": "std-1",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 24258,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:43:17+01:00",
-      "question_id": "quantitative-finqa-32",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 15978,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "31 ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:44:12+01:00",
-      "question_id": "graph-musique-22",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.8,
-      "latency_ms": 22981,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Sir Robert Peel",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:44:50+01:00",
-      "question_id": "orch-2",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 37999,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Henry Mancini composed the musical theme for the Pink Panther.\n\n---\n**Sources:**\n[1] triviaqa (100%)",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:45:05+01:00",
-      "question_id": "std-2",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 28000,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "MC Hammer had the Too Legit To Quit Tour.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:45:35+01:00",
-      "question_id": "quantitative-finqa-33",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 9998,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "$33458million",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:46:19+01:00",
-      "question_id": "graph-musique-23",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 18738,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Robert Ehrlich",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:46:47+01:00",
-      "question_id": "orch-3",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.1176,
-      "latency_ms": 43249,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The cartoon adversary of Pixie and Dixie who would often say \"I hate those meeces to pieces\" was Mr.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:47:01+01:00",
-      "question_id": "std-3",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 24724,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "According to Rudyard Kipling's poem \"If,\" the two imposters to meet and treat the same are Triumph a",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:47:33+01:00",
-      "question_id": "quantitative-finqa-34",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 9229,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "149768",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:48:19+01:00",
-      "question_id": "graph-musique-24",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 21243,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Patrick Colquhoun",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:48:49+01:00",
-      "question_id": "std-4",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 36244,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The Oscar-nominated film with \"You Sexy Thing\" as its theme song is \"The Full Monty.\"",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:49:23+01:00",
-      "question_id": "orch-4",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 22977,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Meg Ryan married Dennis Quaid on Valentine's Day in 1991.\n\n---\n**Sources:**\n[1] musique (100%)\n[2] g",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:49:37+01:00",
-      "question_id": "quantitative-finqa-35",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 9243,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "$32.1billion",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:50:22+01:00",
-      "question_id": "graph-musique-25",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 21504,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "2022",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:51:03+01:00",
-      "question_id": "std-5",
-      "rag_type": "standard",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 32490,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Bette Davis's career revived in \"Whatever Happened to Baby Jane?\"",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:51:21+01:00",
-      "question_id": "orch-5",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 26493,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "John Major served as Chancellor of the Exchequer during Margaret Thatcher's tenure as Prime Minister",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:52:54+01:00",
-      "question_id": "quantitative-finqa-36",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 44259,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "279.3 ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:53:18+01:00",
-      "question_id": "graph-musique-26",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.5,
-      "latency_ms": 18989,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "2013",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:53:48+01:00",
-      "question_id": "std-6",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 30232,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "James Stewart won the Best Actor Oscar for The Philadelphia Story.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:54:04+01:00",
-      "question_id": "orch-6",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0606,
-      "latency_ms": 18251,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The third musician who died in the plane crash with Buddy Holly and the Big Bopper was Ritchie Valen",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:55:14+01:00",
-      "question_id": "quantitative-finqa-37",
-      "rag_type": "quantitative",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 14779,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "0%",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:55:32+01:00",
-      "question_id": "graph-musique-27",
-      "rag_type": "graph",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 19494,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Juan Requesens",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:55:46+01:00",
-      "question_id": "std-7",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 22761,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Fred Astaire was the legendary dancer who was Oscar-nominated for his role in The Towering Inferno.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:55:55+01:00",
-      "question_id": "orch-7",
-      "rag_type": "orchestrator",
-      "correct": false,
-      "f1": 0.0,
-      "latency_ms": 20491,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Fruit, cricket, and horseshoe are varieties of beetles.\n\n---\n**Sources:**\n[1] strategyqa (100%)\n[2] ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:57:25+01:00",
-      "question_id": "quantitative-finqa-38",
-      "rag_type": "quantitative",
-      "correct": true,
-      "f1": 0.8,
-      "latency_ms": 8005,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": " ",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sql": null,
-        "sql_status": null,
-        "result_count": 0,
-        "null_agg": false
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:57:47+01:00",
-      "question_id": "graph-musique-28",
-      "rag_type": "graph",
-      "correct": true,
-      "f1": 0.5,
-      "latency_ms": 19001,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Manning River",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "entities": [],
-        "neo4j_paths": 0,
-        "traversal_depth": 0,
-        "community_matches": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T09:58:20+01:00",
-      "question_id": "std-8",
-      "rag_type": "standard",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 27747,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "The brothel in The Best Little Whorehouse in Texas was called the Chicken Ranch.",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "topK": null,
-        "pinecone_results": 0
-      }
-    },
-    {
-      "timestamp": "2026-02-25T10:01:03+01:00",
-      "question_id": "orch-8",
-      "rag_type": "orchestrator",
-      "correct": true,
-      "f1": 0.9,
-      "latency_ms": 38243,
-      "error_type": null,
-      "error_preview": null,
-      "answer_preview": "Mammals produce milk to feed their young, which differentiates them from other animal families.\n\n---",
-      "confidence": null,
-      "pipeline_details_summary": {
-        "sub_pipelines": [],
-        "routing": null
-      }
-    },
-    {
       "timestamp": "2026-02-25T10:03:15+01:00",
       "question_id": "quantitative-finqa-39",
       "rag_type": "quantitative",
@@ -250131,6 +251138,1145 @@
       "correct": false,
       "f1": 0.0,
       "latency_ms": 3756,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:16:27+01:00",
+      "question_id": "quantitative-finqa-30",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 12489,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "0.0%",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:16:52+01:00",
+      "question_id": "graph-musique-20",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 19729,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1543",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:17:05+01:00",
+      "question_id": "quantitative-finqa-31",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 8225,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:17:19+01:00",
+      "question_id": "std-0",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 27005,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Brandon Lee died during the making of the movie \"The Crow.\"",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:17:43+01:00",
+      "question_id": "orch-0",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 27989,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The song that begins with the line \"The taxman's taken all my dough\" is \"Taxman\" by The Beatles.\n\n--",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:18:18+01:00",
+      "question_id": "graph-musique-21",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 21498,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Michel Foucault",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:18:40+01:00",
+      "question_id": "quantitative-finqa-32",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 13762,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:18:51+01:00",
+      "question_id": "std-1",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 24487,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:19:11+01:00",
+      "question_id": "orch-1",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 41510,
+      "error_type": "TIMEOUT",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:19:45+01:00",
+      "question_id": "graph-musique-22",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.8,
+      "latency_ms": 27500,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Sir Robert Peel",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:20:08+01:00",
+      "question_id": "quantitative-finqa-33",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 13011,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:20:18+01:00",
+      "question_id": "std-2",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 19760,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "MC Hammer had a Too Legit To Quit Tour.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:20:37+01:00",
+      "question_id": "orch-2",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3739,
+      "error_type": "UNKNOWN",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:21:09+01:00",
+      "question_id": "graph-musique-23",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 23230,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Robert Ehrlich",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:21:32+01:00",
+      "question_id": "quantitative-finqa-34",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4981,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:21:43+01:00",
+      "question_id": "std-3",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 30749,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "According to Rudyard Kipling, the \"two imposters\" to meet and treat the same day are Triumph and Dis",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:22:15+01:00",
+      "question_id": "orch-3",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3240,
+      "error_type": "UNKNOWN",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:23:28+01:00",
+      "question_id": "graph-musique-24",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 30500,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Patrick Colquhoun",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:27:34+01:00",
+      "question_id": "quantitative-finqa-30",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 9753,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "$13.00",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:27:48+01:00",
+      "question_id": "graph-musique-20",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 37735,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1543",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:28:19+01:00",
+      "question_id": "std-0",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 32261,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Brandon Lee died during the making of the movie \"The Crow.\"",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:28:43+01:00",
+      "question_id": "orch-0",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 46982,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The song that begins with the line \"The taxman's taken all my dough\" is \"Taxman\" by The Beatles.\n\n--",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:28:52+01:00",
+      "question_id": "quantitative-finqa-31",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 20748,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:29:15+01:00",
+      "question_id": "graph-musique-21",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 37254,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Michel Foucault",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:29:48+01:00",
+      "question_id": "std-1",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 34488,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:30:09+01:00",
+      "question_id": "orch-1",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 59994,
+      "error_type": "TIMEOUT",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:30:22+01:00",
+      "question_id": "quantitative-finqa-32",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 17245,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "282.8%",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:30:44+01:00",
+      "question_id": "graph-musique-22",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 19486,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Sir Robert Peel, 1st Baronet",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:31:22+01:00",
+      "question_id": "std-2",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 37481,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "MC Hammer had a Too Legit To Quit Tour.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:34:27+01:00",
+      "question_id": "quantitative-finqa-30",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 10229,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "$6.84",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:34:39+01:00",
+      "question_id": "graph-musique-20",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 21760,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1543",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:35:15+01:00",
+      "question_id": "std-0",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 24726,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Brandon Lee died during the making of \"The Crow\" in 1993.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:35:27+01:00",
+      "question_id": "orch-0",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 39722,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The song that begins with the line \"The taxman's taken all my dough\" is \"Taxman\" by The Beatles.\n\n--",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sub_pipelines": [],
+        "routing": null
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:35:38+01:00",
+      "question_id": "quantitative-finqa-31",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 8993,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:35:49+01:00",
+      "question_id": "graph-musique-21",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 21746,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Philipp von Hörnigk",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:36:44+01:00",
+      "question_id": "std-1",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 32749,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:36:55+01:00",
+      "question_id": "orch-1",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 49219,
+      "error_type": "TIMEOUT",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:37:08+01:00",
+      "question_id": "quantitative-finqa-32",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 8485,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:37:19+01:00",
+      "question_id": "graph-musique-22",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 1.0,
+      "latency_ms": 19226,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Sir Robert Peel, 1st Baronet",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:38:12+01:00",
+      "question_id": "std-2",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 27741,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "MC Hammer had a Too Legit To Quit Tour.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:38:22+01:00",
+      "question_id": "orch-2",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 9265,
+      "error_type": "UNKNOWN",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:38:36+01:00",
+      "question_id": "quantitative-finqa-33",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 6985,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:38:46+01:00",
+      "question_id": "graph-musique-23",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 22971,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Robert Ehrlich",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:39:43+01:00",
+      "question_id": "std-3",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 35247,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "According to Rudyard Kipling, the \"two imposters\" to meet and treat the same day are Triumph and Dis",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:39:58+01:00",
+      "question_id": "orch-3",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 3985,
+      "error_type": "UNKNOWN",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:40:09+01:00",
+      "question_id": "quantitative-finqa-34",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 8488,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:40:22+01:00",
+      "question_id": "graph-musique-24",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 20245,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Patrick Colquhoun",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:49:02+01:00",
+      "question_id": "orch-0",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 14236,
+      "error_type": "UNKNOWN",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:49:17+01:00",
+      "question_id": "quantitative-finqa-30",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 10495,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:49:38+01:00",
+      "question_id": "graph-musique-20",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 19248,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "1543",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:49:48+01:00",
+      "question_id": "std-0",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 29023,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Brandon Lee died during the making of the movie \"The Crow.\"",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:50:12+01:00",
+      "question_id": "orch-1",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 9990,
+      "error_type": "UNKNOWN",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:50:43+01:00",
+      "question_id": "quantitative-finqa-31",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 5996,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:51:08+01:00",
+      "question_id": "graph-musique-21",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 20494,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Michel Foucault",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:51:18+01:00",
+      "question_id": "std-1",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 31479,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Staple Singers had a 70s No 1 hit with \"Let's Do It Again.\"",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:51:43+01:00",
+      "question_id": "orch-2",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 9766,
+      "error_type": "UNKNOWN",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:52:30+01:00",
+      "question_id": "quantitative-finqa-32",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 5242,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:53:12+01:00",
+      "question_id": "graph-musique-22",
+      "rag_type": "graph",
+      "correct": true,
+      "f1": 0.8,
+      "latency_ms": 20512,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Sir Robert Peel",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:53:30+01:00",
+      "question_id": "std-2",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 34233,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "MC Hammer had a Too Legit To Quit Tour.",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:53:58+01:00",
+      "question_id": "orch-3",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 13253,
+      "error_type": "UNKNOWN",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:54:32+01:00",
+      "question_id": "quantitative-finqa-33",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 5736,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:55:01+01:00",
+      "question_id": "graph-musique-23",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 27499,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Robert Ehrlich",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:55:12+01:00",
+      "question_id": "std-3",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 29752,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "According to Rudyard Kipling's poem \"If,\" the two imposters to meet and treat the same day are Trium",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:55:36+01:00",
+      "question_id": "orch-4",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4993,
+      "error_type": "UNKNOWN",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:56:06+01:00",
+      "question_id": "quantitative-finqa-34",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 8265,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "NO_ANSWER",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "sql": null,
+        "sql_status": null,
+        "result_count": 0,
+        "null_agg": false
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:56:32+01:00",
+      "question_id": "graph-musique-24",
+      "rag_type": "graph",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 22011,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "Patrick Colquhoun",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "entities": [],
+        "neo4j_paths": 0,
+        "traversal_depth": 0,
+        "community_matches": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:56:43+01:00",
+      "question_id": "std-4",
+      "rag_type": "standard",
+      "correct": true,
+      "f1": 0.9,
+      "latency_ms": 29730,
+      "error_type": null,
+      "error_preview": null,
+      "answer_preview": "The Oscar-nominated film that had \"You Sexy Thing\" as its theme song is \"The Full Monty.\"",
+      "confidence": null,
+      "pipeline_details_summary": {
+        "topK": null,
+        "pinecone_results": 0
+      }
+    },
+    {
+      "timestamp": "2026-02-25T11:57:08+01:00",
+      "question_id": "orch-5",
+      "rag_type": "orchestrator",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 4499,
+      "error_type": "UNKNOWN",
+      "error_preview": "Expecting value: line 1 column 1 (char 0)",
+      "answer_preview": "",
+      "confidence": null,
+      "pipeline_details_summary": null
+    },
+    {
+      "timestamp": "2026-02-25T11:57:43+01:00",
+      "question_id": "quantitative-finqa-35",
+      "rag_type": "quantitative",
+      "correct": false,
+      "f1": 0.0,
+      "latency_ms": 8990,
       "error_type": null,
       "error_preview": null,
       "answer_preview": "NO_ANSWER",
