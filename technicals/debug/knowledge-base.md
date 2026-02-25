@@ -1325,5 +1325,68 @@ class AutonomousEvaluator:
 
 ---
 
+## SECTION 13 — REDIS DEPENDENCY REMOVAL (Session 60-61)
+
+### 13.1 Context: Why Remove Redis
+- **Session 42**: Redis removed from VM to free RAM (VM has only 969MB total, ~400MB usable)
+- **Impact**: Workflows using Redis nodes (for distributed locking) fail with connection errors
+- **Solution**: Remove Redis nodes and bypass connections
+
+### 13.2 Redis Removal Pattern (Proven on Orchestrator V10.1 + Enrichissement V4.0)
+
+**Symptoms**:
+- Workflow has `n8n-nodes-base.redis` nodes
+- Executions fail with connection errors or HTTP 500
+- Chat Trigger workflows may be blocked by Redis lock pattern
+
+**Fix Process**:
+```python
+# 1. Login via n8n REST API
+POST /rest/login {"emailOrLdapLoginId": "ci@nomos.ai", "password": "CI-Nomos-2026!"}
+
+# 2. GET workflow
+GET /rest/workflows/{WORKFLOW_ID}
+# Response: {"data": {"nodes": [...], "connections": {...}}}
+
+# 3. Identify Redis nodes
+redis_nodes = [node for node in nodes if 'redis' in node['type'].lower() or 'redis' in node['name'].lower()]
+
+# 4. Build bypass map
+# Connection structure: {source: {output: [[{node, type, index}]]}}
+# For each Redis node, find:
+#   - Inputs: what connects TO this Redis node
+#   - Outputs: what this Redis node connects TO
+
+# 5. Rebuild connections
+# For each connection that goes TO a Redis node:
+#   Replace target with what Redis connects to (bypass)
+# Remove Redis nodes from connections dict
+
+# 6. PATCH workflow
+PATCH /rest/workflows/{WORKFLOW_ID} {"nodes": new_nodes, "connections": new_connections}
+
+# 7. Reactivate
+PATCH /rest/workflows/{WORKFLOW_ID} {"active": false}
+# Wait 3s
+POST /rest/workflows/{WORKFLOW_ID}/activate {"versionId": "<version_from_patch>"}
+```
+
+**Worked Examples**:
+- **Orchestrator V10.1** (Session 60): 9 Redis nodes removed → Postgres-only memory
+- **Enrichissement V4.0** (Session 61): 2 Redis lock nodes removed:
+  - `Prepare Lock` → `Redis: Acquire Lock` → `Lock Result Handler` became `Prepare Lock` → `Lock Result Handler`
+  - `Prepare Lock Release` → `Redis: Release Lock` → `Log Success` became `Prepare Lock Release` → `Log Success`
+  - Final: 31 nodes → 29 nodes, Chat Trigger active
+
+**Key Insights**:
+- n8n connection structure is nested: `{source: {output_key: [[{node, type, index}]]}}`
+- Must handle null/missing connection groups (some may be None)
+- Chat Trigger workflows don't need webhook activation (no webhook path)
+- Use urllib with CookieJar for session persistence across API calls
+
+**Next Workflow to Fix**: Ingestion V4.0 (ID: `nh1D4Up0wBZhuQbp`) — same pattern
+
+---
+
 > **REGLE** : Mettre a jour ce fichier IMMEDIATEMENT apres chaque decouverte technique.
 > Pas en fin de session. PENDANT la session, des que la solution est confirmee.

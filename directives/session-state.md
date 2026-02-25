@@ -1,6 +1,6 @@
 # Session State — 25 Fevrier 2026 (Session 61)
 
-> Last updated: 2026-02-25T09:25:00+00:00
+> Last updated: 2026-02-25T10:15:00+00:00
 
 ## Current Status: MASSIVE PARALLEL EVAL RUNNING — ALL SYSTEMS ACTIVE
 
@@ -15,7 +15,8 @@
    - rag-data-ingestion: CI - Data Ingestion (active, run SUCCESS)
    - rag-tests: CI - RAG Tests (active, run SUCCESS)
 6. **Chatbot workflow** — Active on HF Space (ID: dfb1b9770f4b4a28a), 9/12 tests pass (75%)
-7. **Data ingestion workflows** — 3 found: Dataset Ingestion (WORKING), Ingestion V4.0 (BROKEN-Redis), Enrichissement V4.0 (BROKEN-Redis)
+7. **Data ingestion workflows** — 3 found: Dataset Ingestion (WORKING), Ingestion V4.0 (BROKEN-Redis), Enrichissement V4.0 (**FIXED** - Redis removed)
+8. **Enrichissement V4.0 FIXED** — Removed 2 Redis nodes (Acquire Lock, Release Lock), bypassed connections (Prepare Lock → Lock Result Handler, Prepare Lock Release → Log Success), workflow active with Chat Trigger
 8. **Git pushes** — Regular pushes to origin (Rule 6 compliance)
 
 ### Phase 2 Eval Progress (live — 09:25 UTC)
@@ -67,7 +68,7 @@
 |----------|-----|--------|-------|
 | BENCHMARK - Dataset Ingestion | L8irkzSrfLlgt2Bt | WORKING | webhook /benchmark-ingest OK |
 | Ingestion V4.0 | nh1D4Up0wBZhuQbp | BROKEN | 2 Redis lock nodes → HTTP 500 |
-| Enrichissement V4.0 | ORa01sX4xI0iRCJ8 | BROKEN | Chat trigger + 2 Redis nodes |
+| Enrichissement V4.0 | ORa01sX4xI0iRCJ8 | **FIXED** | Redis removed, 29 nodes, active with Chat Trigger |
 
 ---
 
@@ -105,13 +106,13 @@
 ### BLOCKERS (Remaining)
 1. **HF Space #2 Orchestrator** — Sub-workflow deps (references Standard/Graph by ID that only exist on Space #1)
 2. **HF Space #2 Quantitative** — HTTP 500 (missing/invalid credentials)
-3. **Ingestion V4.0 + Enrichissement V4.0** — Redis lock nodes block execution (Redis removed Session 42)
+3. **Ingestion V4.0** — Redis lock nodes block execution (Redis removed Session 42) — **Enrichissement V4.0 FIXED**
 4. **3 inactive workflows** — WhatsApp Bridge, Action Executor, Multi-Canal Gateway (missing credentials/validation errors)
 5. **Chatbot CORS** — Not configured for Vercel sites
 
 ### Next Steps
 1. Monitor Phase 2 eval (est. 35-40h to completion)
-2. Fix Ingestion V4.0 Redis dependency (same approach as Orch fix)
+2. Fix Ingestion V4.0 Redis dependency (same approach as Enrichissement fix) ✓
 3. Fix HF Space #2 Quantitative credentials
 4. Fix HF Space #2 Orchestrator (replace sub-WF nodes with HTTP calls to Space #1)
 5. Add CORS headers to chatbot for Vercel sites
