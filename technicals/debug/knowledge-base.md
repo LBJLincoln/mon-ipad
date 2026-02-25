@@ -1,6 +1,6 @@
 # Knowledge Base — Cerveau Persistant Multi-RAG
 
-> Last updated: 2026-02-24T17:15:00+01:00 (Session 57 — IRON RULES added, LOCAL fallback killed)
+> Last updated: 2026-02-25T11:05:00+01:00 (Session 61 — Dashboard Status API fixed, webhook path corrected)
 > **Ce document est VIVANT.** Il s'enrichit a CHAQUE session avec les solutions, patterns
 > et connaissances techniques decouvertes. A lire EN PREMIER avec `fixes-library.md`.
 > Objectif : ameliorer la performance de l'agent a chaque session.
@@ -68,7 +68,7 @@
 
 | Workflow | Workflow ID | Webhook Path | Methode | Status |
 |----------|-------------|--------------|---------|--------|
-| **Dashboard Status** | `KcfzvJD6yydxY9Uk` | `/webhook/nomos-status` | **GET** (not POST!) | Active |
+| **Dashboard Status API** | `ee7a0a090fc443a4b` | `/webhook/nomos-status` | **GET** (not POST!) | Active |
 | **Benchmark V3.0** | `LKZO1QQY9jvBltP0` | `/webhook/benchmark-v2` | POST | Active (hangs ~90s) |
 | **SQL Executor** | `22k9541l9mHENlLD` | `/webhook/benchmark-sql-exec` | POST | Active (returns 500 — app-level) |
 | **PME Gateway** | `IipwYgPoWqM3axwY` | `/webhook/pme-assistant-gateway` | POST | **DEACTIVATED** — needs OpenRouter credential (VM has none) |
