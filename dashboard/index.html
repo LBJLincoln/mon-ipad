@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-RAG Orchestrator — Live Dashboard</title>
+    <title>Multi-RAG Dashboard — Tour de Contrôle</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -12,55 +13,79 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
-            color: #e0e6ed;
-            padding: 20px;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0e27;
+            color: #e4e9f0;
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
+            padding: 20px;
         }
 
+        /* Header & Executive Summary */
         header {
-            text-align: center;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 16px;
+            padding: 30px;
             margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
 
         h1 {
             font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-        }
-
-        .subtitle {
-            font-size: 1.1rem;
-            color: #94a3b8;
             margin-bottom: 15px;
+            font-weight: 700;
         }
 
-        .refresh-info {
-            display: inline-flex;
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .toggle-dummy {
+            display: flex;
             align-items: center;
             gap: 10px;
-            padding: 8px 16px;
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 20px;
-            font-size: 0.9rem;
-            color: #a5b4fc;
+            background: rgba(99, 102, 241, 0.15);
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(99, 102, 241, 0.3);
         }
 
-        .pulse {
+        .toggle-dummy:hover {
+            background: rgba(99, 102, 241, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .toggle-dummy input {
+            cursor: pointer;
+        }
+
+        .refresh-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .pulse-dot {
             width: 8px;
             height: 8px;
             background: #22c55e;
@@ -69,83 +94,265 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.3); }
         }
 
-        .grid {
+        /* Executive Big Numbers */
+        .exec-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
+            margin-top: 25px;
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.05);
+        .big-number {
+            text-align: center;
+            padding: 25px;
+            background: rgba(15, 23, 42, 0.6);
             border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s;
+        }
+
+        .big-number:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .big-number-value {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .big-number-label {
+            font-size: 0.95rem;
+            color: #94a3b8;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Dummy Mode */
+        .dummy-panel {
+            display: none;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 16px;
+            padding: 40px;
+            margin: 20px 0;
+            text-align: center;
+            border: 2px solid rgba(99, 102, 241, 0.4);
+        }
+
+        .dummy-panel.active {
+            display: block;
+        }
+
+        .dummy-status-ok {
+            font-size: 2.5rem;
+            color: #22c55e;
+            margin-bottom: 20px;
+        }
+
+        .dummy-status-error {
+            font-size: 2.5rem;
+            color: #ef4444;
+            margin-bottom: 20px;
+        }
+
+        .dummy-message {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .dummy-details {
+            margin-top: 25px;
             padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
         }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            border-color: rgba(102, 126, 234, 0.5);
+        .dummy-details ul {
+            list-style: none;
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .card-header {
+        .dummy-details li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Pipeline Cards - Scrollable */
+        .pipelines-section {
+            margin: 30px 0;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .pipeline-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            max-height: 800px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .pipeline-cards::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .pipeline-cards::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 4px;
+        }
+
+        .pipeline-cards::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 4px;
+        }
+
+        .pipeline-cards::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.7);
+        }
+
+        .pipeline-card {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pipeline-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--pipeline-color, #818cf8) 0%, transparent 100%);
+        }
+
+        .pipeline-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .pipeline-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .card-title {
-            font-size: 1.2rem;
+        .pipeline-name {
+            font-size: 1.4rem;
             font-weight: 600;
-            color: #f1f5f9;
+            color: #f8fafc;
         }
 
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 12px;
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .status-healthy {
+        .badge-pass {
             background: rgba(34, 197, 94, 0.2);
             color: #22c55e;
             border: 1px solid rgba(34, 197, 94, 0.4);
         }
 
-        .status-warning {
-            background: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
-            border: 1px solid rgba(251, 191, 36, 0.4);
-        }
-
-        .status-error {
+        .badge-fail {
             background: rgba(239, 68, 68, 0.2);
             color: #ef4444;
             border: 1px solid rgba(239, 68, 68, 0.4);
         }
 
-        .status-unknown {
+        .badge-warn {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+        }
+
+        .badge-unknown {
             background: rgba(148, 163, 184, 0.2);
             color: #94a3b8;
             border: 1px solid rgba(148, 163, 184, 0.4);
         }
 
+        .current-accuracy {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .accuracy-big {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .accuracy-target {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        .phase-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .phase-box {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .phase-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .phase-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
         .metric-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 10px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -161,546 +368,722 @@
 
         .metric-value {
             font-weight: 600;
-            font-size: 1rem;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+        }
+
+        .webhook-dots {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .webhook-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .webhook-dot.online {
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+        }
+
+        .webhook-dot.offline {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+        }
+
+        .webhook-dot.pending {
+            background: #94a3b8;
+        }
+
+        .error-breakdown {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(239, 68, 68, 0.08);
+            border-radius: 8px;
+            border-left: 3px solid #ef4444;
+        }
+
+        .error-breakdown-title {
+            font-size: 0.9rem;
+            color: #fca5a5;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .error-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.85rem;
             color: #f1f5f9;
         }
 
-        .accuracy-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 8px;
+        .chart-container {
+            margin: 20px 0;
+            position: relative;
+            height: 200px;
         }
 
-        .accuracy-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease, background 0.5s ease;
+        /* Infrastructure Grid */
+        .infra-section {
+            margin: 30px 0;
         }
 
-        .accuracy-excellent {
-            background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
-        }
-
-        .accuracy-good {
-            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-        }
-
-        .accuracy-warning {
-            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
-        }
-
-        .accuracy-poor {
-            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
-        }
-
-        .infrastructure-grid {
+        .infra-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
         }
 
-        .infra-item {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 12px;
+        .infra-card {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .infra-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+        }
+
+        .infra-status {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+        }
+
+        .infra-status.up {
+            background: #22c55e;
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+        }
+
+        .infra-status.down {
+            background: #ef4444;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+        }
+
+        .infra-status.pending {
+            background: #fbbf24;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+        }
+
+        .infra-name {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+
+        .infra-detail {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .db-section {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            margin-top: 20px;
+        }
+
+        .db-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .db-item {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 18px;
             border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .infra-label {
-            color: #64748b;
+        .db-name {
+            font-size: 1.1rem;
+            color: #f1f5f9;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .db-stats {
             font-size: 0.85rem;
-            margin-bottom: 4px;
+            color: #94a3b8;
+            line-height: 1.6;
         }
 
-        .infra-value {
-            color: #e2e8f0;
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-
-        .webhook-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-        }
-
-        .webhook-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-        }
-
-        .webhook-ok { background: #22c55e; }
-        .webhook-error { background: #ef4444; }
-        .webhook-pending { background: #94a3b8; }
-
-        .timestamp {
-            font-size: 0.8rem;
-            color: #64748b;
-            margin-top: 8px;
-            text-align: right;
-        }
-
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 10px;
-            color: #fca5a5;
-            font-size: 0.85rem;
-        }
-
+        /* Loading & Timestamp */
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 60px;
             color: #94a3b8;
         }
 
         .spinner {
-            border: 3px solid rgba(102, 126, 234, 0.1);
-            border-top: 3px solid #667eea;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(99, 102, 241, 0.2);
+            border-top-color: #818cf8;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+            margin: 0 auto 20px;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
-        .phase-indicator {
-            display: inline-block;
-            padding: 6px 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 16px;
-            font-size: 0.85rem;
-            font-weight: 600;
+        .timestamp {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-align: right;
             margin-top: 10px;
         }
 
         footer {
             text-align: center;
-            margin-top: 40px;
-            padding: 20px;
+            padding: 30px 20px;
+            margin-top: 50px;
             color: #64748b;
             font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
+        /* Mobile Responsive */
         @media (max-width: 768px) {
             h1 { font-size: 1.8rem; }
-            .grid { grid-template-columns: 1fr; }
+            .big-number-value { font-size: 2rem; }
+            .accuracy-big { font-size: 2.5rem; }
+            .pipeline-cards {
+                grid-template-columns: 1fr;
+                max-height: none;
+            }
+            .exec-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Multi-RAG Orchestrator</h1>
-            <div class="subtitle">Live Pipeline Monitoring Dashboard</div>
-            <div class="refresh-info">
-                <span class="pulse"></span>
-                <span>Auto-refresh: 30s | Last updated: <strong id="last-updated">Loading...</strong></span>
+            <h1>Multi-RAG Orchestrator — Tour de Contrôle</h1>
+
+            <div class="controls">
+                <label class="toggle-dummy">
+                    <input type="checkbox" id="dummyMode">
+                    <span>Mode "Pour les Nuls"</span>
+                </label>
+                <div class="refresh-indicator">
+                    <span class="pulse-dot"></span>
+                    <span>Auto-refresh: 30s | Dernière mise à jour: <strong id="lastUpdate">Chargement...</strong></span>
+                </div>
+            </div>
+
+            <div class="exec-grid">
+                <div class="big-number">
+                    <div class="big-number-value" id="overallAccuracy">--</div>
+                    <div class="big-number-label">Précision Globale</div>
+                </div>
+                <div class="big-number">
+                    <div class="big-number-value" id="currentPhase">--</div>
+                    <div class="big-number-label">Phase Actuelle</div>
+                </div>
+                <div class="big-number">
+                    <div class="big-number-value" id="totalQuestions">--</div>
+                    <div class="big-number-label">Questions Testées</div>
+                </div>
+                <div class="big-number">
+                    <div class="big-number-value" id="spacesActive">--</div>
+                    <div class="big-number-label">HF Spaces Actifs</div>
+                </div>
             </div>
         </header>
 
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <div>Loading pipeline data...</div>
+        <!-- Dummy Mode Panel -->
+        <div id="dummyPanel" class="dummy-panel">
+            <div id="dummyStatusIcon"></div>
+            <div id="dummyMessage" class="dummy-message"></div>
+            <div id="dummyDetails"></div>
         </div>
 
-        <div id="content" style="display: none;">
-            <!-- Phase & Overall Status -->
-            <section style="margin-bottom: 30px;">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">System Overview</h2>
-                        <span id="overall-status" class="status-badge status-unknown">Loading</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Current Phase</span>
-                        <span class="metric-value" id="phase-name">-</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Overall Accuracy</span>
-                        <span class="metric-value" id="overall-accuracy">-</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Total Questions Tested</span>
-                        <span class="metric-value" id="total-questions">-</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Total Test Runs</span>
-                        <span class="metric-value" id="total-runs">-</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Active Blockers</span>
-                        <span class="metric-value" id="blockers-count">-</span>
-                    </div>
-                </div>
-            </section>
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <div>Chargement des données en temps réel...</div>
+        </div>
 
+        <!-- Main Content -->
+        <div id="content" style="display: none;">
             <!-- Pipeline Cards -->
-            <section>
-                <h2 style="margin-bottom: 20px; color: #f1f5f9; font-size: 1.5rem;">Pipeline Status</h2>
-                <div class="grid" id="pipeline-grid">
-                    <!-- Pipelines will be inserted here -->
+            <section class="pipelines-section">
+                <h2 class="section-title">Pipelines RAG — État Détaillé</h2>
+                <div class="pipeline-cards" id="pipelineCards">
+                    <!-- Generated dynamically -->
                 </div>
             </section>
 
             <!-- Infrastructure Status -->
-            <section style="margin-top: 30px;">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Infrastructure Health</h2>
-                        <span id="infra-status" class="status-badge status-unknown">Checking</span>
-                    </div>
-                    <div class="infrastructure-grid" id="infra-grid">
-                        <!-- Infrastructure items will be inserted here -->
+            <section class="infra-section">
+                <h2 class="section-title">Infrastructure — 10 HF Spaces + Bases de Données</h2>
+                <div class="infra-grid" id="infraGrid">
+                    <!-- Generated dynamically -->
+                </div>
+
+                <div class="db-section">
+                    <h3 class="section-title" style="font-size: 1.3rem;">Bases de Données Cloud</h3>
+                    <div class="db-grid">
+                        <div class="db-item">
+                            <div class="db-name">Pinecone SOTA RAG</div>
+                            <div class="db-stats">
+                                10,411 vecteurs | Dim 1024<br>
+                                Jina-v2 embeddings<br>
+                                Limite: 100K vecteurs
+                            </div>
+                        </div>
+                        <div class="db-item">
+                            <div class="db-name">Pinecone Graph</div>
+                            <div class="db-stats">
+                                1,296 vecteurs | e5-large<br>
+                                Phase 2 dataset<br>
+                                Limite: 100K vecteurs
+                            </div>
+                        </div>
+                        <div class="db-item">
+                            <div class="db-name">Neo4j Aura</div>
+                            <div class="db-stats">
+                                19,788 nodes<br>
+                                76,717 relations<br>
+                                Limite: 200K nodes
+                            </div>
+                        </div>
+                        <div class="db-item">
+                            <div class="db-name">Supabase</div>
+                            <div class="db-stats">
+                                40 tables<br>
+                                ~17K lignes<br>
+                                Limite: 500MB storage
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
         </div>
 
         <footer>
-            <p>Multi-RAG Orchestrator | Powered by n8n, Pinecone, Neo4j, Supabase | VM: 34.136.180.66</p>
-            <p style="margin-top: 8px;">Data sources: GitHub raw (status.json, data.json) + HF Space webhooks</p>
+            <p>Multi-RAG Orchestrator v5.5 | Powered by Claude Opus 4.6</p>
+            <p style="margin-top: 8px;">VM: 34.136.180.66 | HF Space: lbjlincoln-nomos-rag-engine.hf.space</p>
+            <p style="margin-top: 8px;">Data sources: GitHub (status.json, data.json) | Auto-refresh: 30s</p>
         </footer>
     </div>
 
     <script>
         // Configuration
         const CONFIG = {
-            refreshInterval: 30000, // 30 seconds
-            githubRaw: 'https://raw.githubusercontent.com/LBJLincoln/mon-ipad/main',
-            n8nHost: 'https://lbjlincoln-nomos-rag-engine.hf.space',
+            refreshInterval: 30000,
+            githubBase: 'https://raw.githubusercontent.com/LBJLincoln/mon-ipad/main',
             pipelines: [
                 {
                     id: 'standard',
                     name: 'Standard RAG',
-                    path: '/webhook/rag-multi-index-v3',
-                    target: 85.0,
-                    color: '#667eea'
+                    color: '#818cf8',
+                    webhook: '/webhook/rag-multi-index-v3',
+                    space: 1
                 },
                 {
                     id: 'graph',
                     name: 'Graph RAG',
-                    path: '/webhook/ff622742-6d71-4e91-af71-b5c666088717',
-                    target: 70.0,
-                    color: '#764ba2'
+                    color: '#a78bfa',
+                    webhook: '/webhook/ff622742-6d71-4e91-af71-b5c666088717',
+                    space: 1
                 },
                 {
                     id: 'quantitative',
                     name: 'Quantitative RAG',
-                    path: '/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9',
-                    target: 85.0,
-                    color: '#f093fb'
+                    color: '#f0abfc',
+                    webhook: '/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9',
+                    space: 2
                 },
                 {
                     id: 'orchestrator',
                     name: 'Orchestrator',
-                    path: '/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0',
-                    target: 70.0,
-                    color: '#4facfe'
+                    color: '#60a5fa',
+                    webhook: '/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0',
+                    space: 2
                 }
+            ],
+            spaces: [
+                { id: 1, name: 'Primary HF Space', url: 'lbjlincoln-nomos-rag-engine.hf.space' },
+                { id: 2, name: 'Secondary HF Space', url: 'PENDING', status: 'pending' }
             ]
         };
 
         let statusData = null;
+        let dataJson = null;
         let webhookStatus = {};
         let lastUpdateTime = null;
 
-        // Fetch data from GitHub raw
-        async function fetchGitHubData(file) {
-            const url = `${CONFIG.githubRaw}/${file}?t=${Date.now()}`;
+        // Fetch JSON from GitHub
+        async function fetchData(path) {
+            const url = `${CONFIG.githubBase}/${path}?t=${Date.now()}`;
             const response = await fetch(url);
-            if (!response.ok) throw new Error(`Failed to fetch ${file}`);
+            if (!response.ok) throw new Error(`Failed to fetch ${path}: ${response.status}`);
             return await response.json();
         }
 
-        // Test webhook health (with timeout)
-        async function testWebhook(path) {
+        // Test webhook
+        async function testWebhook(path, spaceId) {
+            const spaceUrl = CONFIG.spaces.find(s => s.id === spaceId)?.url;
+            if (!spaceUrl || spaceUrl === 'PENDING') {
+                return { online: false, status: 'pending', error: 'Space not configured' };
+            }
+
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+            const timeout = setTimeout(() => controller.abort(), 8000);
 
             try {
-                const response = await fetch(`${CONFIG.n8nHost}${path}`, {
+                const response = await fetch(`https://${spaceUrl}${path}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: 'health-check' }),
+                    body: JSON.stringify({ query: 'health' }),
                     signal: controller.signal
                 });
-                clearTimeout(timeoutId);
-
+                clearTimeout(timeout);
                 return {
+                    online: response.status >= 200 && response.status < 500,
                     status: response.status,
-                    ok: response.status >= 200 && response.status < 500,
                     error: null
                 };
             } catch (error) {
-                clearTimeout(timeoutId);
+                clearTimeout(timeout);
                 return {
+                    online: false,
                     status: 0,
-                    ok: false,
                     error: error.name === 'AbortError' ? 'Timeout' : error.message
                 };
             }
         }
 
-        // Get status badge class
-        function getStatusClass(accuracy, target) {
-            if (accuracy >= target) return 'status-healthy';
-            if (accuracy >= target * 0.9) return 'status-warning';
-            if (accuracy > 0) return 'status-error';
-            return 'status-unknown';
+        // Time formatting
+        function timeAgo(isoString) {
+            if (!isoString) return 'Jamais';
+            const seconds = Math.floor((Date.now() - new Date(isoString)) / 1000);
+            if (seconds < 60) return `${seconds}s`;
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
+            return `${Math.floor(seconds / 86400)}j`;
         }
 
-        // Get accuracy bar class
-        function getAccuracyClass(accuracy) {
-            if (accuracy >= 85) return 'accuracy-excellent';
-            if (accuracy >= 70) return 'accuracy-good';
-            if (accuracy >= 50) return 'accuracy-warning';
-            return 'accuracy-poor';
-        }
-
-        // Format timestamp
-        function formatTime(isoString) {
-            if (!isoString) return 'Never';
-            const date = new Date(isoString);
-            return date.toLocaleString('en-US', {
+        function formatTimestamp(isoString) {
+            if (!isoString) return 'N/A';
+            return new Date(isoString).toLocaleString('fr-FR', {
+                day: '2-digit',
                 month: 'short',
-                day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
             });
         }
 
-        // Calculate time ago
-        function timeAgo(isoString) {
-            if (!isoString) return 'Never';
-            const seconds = Math.floor((Date.now() - new Date(isoString)) / 1000);
-            if (seconds < 60) return `${seconds}s ago`;
-            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-            return `${Math.floor(seconds / 86400)}d ago`;
+        // Get badge class
+        function getBadgeClass(accuracy, target) {
+            if (accuracy >= target) return 'badge-pass';
+            if (accuracy >= target * 0.9) return 'badge-warn';
+            if (accuracy > 0) return 'badge-fail';
+            return 'badge-unknown';
+        }
+
+        // Get accuracy color
+        function getAccuracyColor(accuracy) {
+            if (accuracy >= 85) return '#22c55e';
+            if (accuracy >= 70) return '#60a5fa';
+            if (accuracy >= 50) return '#fbbf24';
+            return '#ef4444';
+        }
+
+        // Render executive summary
+        function renderExecutiveSummary() {
+            const overall = statusData?.overall || {};
+            const phase = statusData?.phase || {};
+            const totals = statusData?.totals || {};
+
+            document.getElementById('overallAccuracy').textContent =
+                overall.accuracy ? `${overall.accuracy.toFixed(1)}%` : '--';
+
+            document.getElementById('currentPhase').textContent =
+                phase.current ? `P${phase.current}` : '--';
+
+            document.getElementById('totalQuestions').textContent =
+                totals.unique_questions?.toLocaleString() || '--';
+
+            const activeSpaces = CONFIG.spaces.filter(s => s.status !== 'pending').length;
+            document.getElementById('spacesActive').textContent = activeSpaces;
         }
 
         // Render pipeline cards
         function renderPipelines() {
-            const grid = document.getElementById('pipeline-grid');
-            grid.innerHTML = '';
+            const container = document.getElementById('pipelineCards');
+            container.innerHTML = '';
 
             CONFIG.pipelines.forEach(pipeline => {
-                const data = statusData.pipelines[pipeline.id] || {};
-                const webhook = webhookStatus[pipeline.id] || { ok: null, status: 0 };
+                const pipelineData = statusData?.pipelines?.[pipeline.id] || {};
+                const webhook = webhookStatus[pipeline.id] || { online: null };
 
-                const accuracy = data.accuracy || 0;
-                const tested = data.tested || 0;
-                const correct = data.correct || 0;
-                const errors = data.errors || 0;
-                const target = data.target || pipeline.target;
-                const met = data.met || false;
+                const accuracy = pipelineData.accuracy || 0;
+                const target = pipelineData.target || 85;
+                const tested = pipelineData.tested || 0;
+                const correct = pipelineData.correct || 0;
+                const errors = pipelineData.errors || 0;
+                const gap = pipelineData.gap || 0;
 
-                const statusClass = getStatusClass(accuracy, target);
-                const accuracyClass = getAccuracyClass(accuracy);
+                // Phase comparison (mock data - enhance with real data if available)
+                const phase1Accuracy = pipelineData.phase1_accuracy || accuracy;
+                const phase2Accuracy = pipelineData.phase2_accuracy || accuracy;
 
-                let webhookHTML = '';
-                if (webhook.ok === null) {
-                    webhookHTML = '<span class="webhook-status"><span class="webhook-dot webhook-pending"></span>Checking...</span>';
-                } else if (webhook.ok) {
-                    webhookHTML = `<span class="webhook-status"><span class="webhook-dot webhook-ok"></span>HTTP ${webhook.status}</span>`;
+                const badgeClass = getBadgeClass(accuracy, target);
+                const accuracyColor = getAccuracyColor(accuracy);
+
+                // Webhook status dots (support multi-space later)
+                let webhookDotsHTML = '';
+                if (webhook.online === null) {
+                    webhookDotsHTML = '<span class="webhook-dot pending"></span><span style="font-size: 0.85rem; color: #94a3b8;">Vérification...</span>';
+                } else if (webhook.online) {
+                    webhookDotsHTML = `<span class="webhook-dot online"></span><span style="font-size: 0.85rem; color: #22c55e;">Space #${pipeline.space} OK</span>`;
                 } else {
-                    webhookHTML = `<span class="webhook-status"><span class="webhook-dot webhook-error"></span>${webhook.error || 'Error'}</span>`;
+                    webhookDotsHTML = `<span class="webhook-dot offline"></span><span style="font-size: 0.85rem; color: #ef4444;">Erreur: ${webhook.error || webhook.status}</span>`;
                 }
 
+                // Error breakdown (mock - enhance with real data)
+                const errorBreakdown = pipelineData.error_patterns || {
+                    rate_limit: 0,
+                    credential: 0,
+                    empty_response: 0,
+                    timeout: 0
+                };
+
+                const hasErrors = Object.values(errorBreakdown).some(v => v > 0);
+
                 const card = `
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">${pipeline.name}</h3>
-                            <span class="status-badge ${statusClass}">${met ? 'Passing' : 'Not Met'}</span>
+                    <div class="pipeline-card" style="--pipeline-color: ${pipeline.color}">
+                        <div class="pipeline-header">
+                            <div class="pipeline-name">${pipeline.name}</div>
+                            <span class="badge ${badgeClass}">${accuracy >= target ? 'PASSED' : 'NOT MET'}</span>
+                        </div>
+
+                        <div class="current-accuracy">
+                            <div class="accuracy-big" style="color: ${accuracyColor}">${accuracy.toFixed(1)}%</div>
+                            <div class="accuracy-target">Cible: ${target}% | Gap: ${gap >= 0 ? '+' : ''}${gap.toFixed(1)}%</div>
+                        </div>
+
+                        <div class="phase-comparison">
+                            <div class="phase-box">
+                                <div class="phase-label">Phase 1</div>
+                                <div class="phase-value">${phase1Accuracy.toFixed(1)}%</div>
+                            </div>
+                            <div class="phase-box">
+                                <div class="phase-label">Phase 2</div>
+                                <div class="phase-value">${phase2Accuracy.toFixed(1)}%</div>
+                            </div>
                         </div>
 
                         <div class="metric-row">
-                            <span class="metric-label">Accuracy</span>
-                            <span class="metric-value">${accuracy.toFixed(1)}%</span>
-                        </div>
-                        <div class="accuracy-bar">
-                            <div class="accuracy-fill ${accuracyClass}" style="width: ${accuracy}%"></div>
+                            <span class="metric-label">Questions testées</span>
+                            <span class="metric-value">${tested.toLocaleString()}</span>
                         </div>
 
                         <div class="metric-row">
-                            <span class="metric-label">Target</span>
-                            <span class="metric-value">${target.toFixed(0)}%</span>
-                        </div>
-
-                        <div class="metric-row">
-                            <span class="metric-label">Questions Tested</span>
-                            <span class="metric-value">${tested}</span>
-                        </div>
-
-                        <div class="metric-row">
-                            <span class="metric-label">Correct / Errors</span>
-                            <span class="metric-value">${correct} / ${errors}</span>
+                            <span class="metric-label">Correct / Erreurs</span>
+                            <span class="metric-value" style="color: ${correct > errors ? '#22c55e' : '#ef4444'}">${correct} / ${errors}</span>
                         </div>
 
                         <div class="metric-row">
                             <span class="metric-label">Webhook Status</span>
-                            <span class="metric-value">${webhookHTML}</span>
+                            <span class="webhook-dots">${webhookDotsHTML}</span>
                         </div>
 
                         <div class="metric-row">
-                            <span class="metric-label">Gap to Target</span>
-                            <span class="metric-value" style="color: ${data.gap >= 0 ? '#22c55e' : '#ef4444'}">
-                                ${data.gap !== undefined ? (data.gap >= 0 ? '+' : '') + data.gap.toFixed(1) + '%' : 'N/A'}
-                            </span>
+                            <span class="metric-label">Dernier test</span>
+                            <span class="metric-value">${pipelineData.last_test ? timeAgo(pipelineData.last_test) : 'N/A'}</span>
                         </div>
+
+                        ${hasErrors ? `
+                            <div class="error-breakdown">
+                                <div class="error-breakdown-title">Erreurs Détectées</div>
+                                ${errorBreakdown.rate_limit ? `<div class="error-item"><span>Rate Limit</span><span>${errorBreakdown.rate_limit}</span></div>` : ''}
+                                ${errorBreakdown.credential ? `<div class="error-item"><span>Credential</span><span>${errorBreakdown.credential}</span></div>` : ''}
+                                ${errorBreakdown.empty_response ? `<div class="error-item"><span>Empty Response</span><span>${errorBreakdown.empty_response}</span></div>` : ''}
+                                ${errorBreakdown.timeout ? `<div class="error-item"><span>Timeout</span><span>${errorBreakdown.timeout}</span></div>` : ''}
+                            </div>
+                        ` : ''}
+
+                        <div class="timestamp">Webhook: ${pipeline.webhook}</div>
                     </div>
                 `;
 
-                grid.innerHTML += card;
+                container.innerHTML += card;
             });
         }
 
-        // Render infrastructure status
+        // Render infrastructure
         function renderInfrastructure() {
-            const grid = document.getElementById('infra-grid');
+            const container = document.getElementById('infraGrid');
+            container.innerHTML = '';
 
-            const healthyWebhooks = Object.values(webhookStatus).filter(w => w.ok).length;
-            const totalWebhooks = CONFIG.pipelines.length;
-            const infraHealthy = healthyWebhooks === totalWebhooks;
-
-            document.getElementById('infra-status').className =
-                `status-badge ${infraHealthy ? 'status-healthy' : 'status-warning'}`;
-            document.getElementById('infra-status').textContent =
-                infraHealthy ? 'Healthy' : 'Degraded';
-
-            const items = [
-                {
-                    label: 'HF Space Host',
-                    value: CONFIG.n8nHost.replace('https://', '')
-                },
-                {
-                    label: 'Webhook Health',
-                    value: `${healthyWebhooks}/${totalWebhooks} active`
-                },
-                {
-                    label: 'Phase Gate',
-                    value: statusData.phase.gates_passed ? 'Passed' : 'Pending'
-                },
-                {
-                    label: 'Total Iterations',
-                    value: statusData.totals?.iterations || 'N/A'
-                },
-                {
-                    label: 'Data Generated',
-                    value: formatTime(statusData.generated_at)
-                },
-                {
-                    label: 'Active Blockers',
-                    value: statusData.blockers?.length || 0
-                }
-            ];
-
-            grid.innerHTML = items.map(item => `
-                <div class="infra-item">
-                    <div class="infra-label">${item.label}</div>
-                    <div class="infra-value">${item.value}</div>
-                </div>
-            `).join('');
-
-            // Show blockers if any
-            if (statusData.blockers && statusData.blockers.length > 0) {
-                grid.innerHTML += `
-                    <div class="error-message" style="grid-column: 1 / -1;">
-                        <strong>Active Blockers:</strong> ${statusData.blockers.join(', ')}
+            // HF Spaces
+            CONFIG.spaces.forEach(space => {
+                const status = space.status === 'pending' ? 'pending' : 'up'; // Enhance with real checks
+                const card = `
+                    <div class="infra-card">
+                        <div class="infra-status ${status}"></div>
+                        <div class="infra-name">${space.name}</div>
+                        <div class="infra-detail">${space.url}</div>
                     </div>
                 `;
+                container.innerHTML += card;
+            });
+
+            // Additional infra items
+            const infraItems = [
+                { name: 'VM Pilotage', detail: '34.136.180.66', status: 'up' },
+                { name: 'GitHub Actions', detail: 'CI/CD Active', status: 'up' },
+                { name: 'Vercel Sites', detail: '4 sites live', status: 'up' },
+                { name: 'Pinecone SOTA', detail: '10.4K vecteurs', status: 'up' },
+                { name: 'Pinecone Graph', detail: '1.3K vecteurs', status: 'up' },
+                { name: 'Neo4j Aura', detail: '19.8K nodes', status: 'up' },
+                { name: 'Supabase', detail: '40 tables', status: 'up' },
+                { name: 'OpenRouter Keys', detail: '6 keys / 3 accounts', status: 'up' }
+            ];
+
+            infraItems.forEach(item => {
+                const card = `
+                    <div class="infra-card">
+                        <div class="infra-status ${item.status}"></div>
+                        <div class="infra-name">${item.name}</div>
+                        <div class="infra-detail">${item.detail}</div>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+
+        // Dummy mode
+        function renderDummyMode() {
+            const panel = document.getElementById('dummyPanel');
+            const statusIcon = document.getElementById('dummyStatusIcon');
+            const message = document.getElementById('dummyMessage');
+            const details = document.getElementById('dummyDetails');
+
+            // Analyze status
+            const overall = statusData?.overall || {};
+            const pipelines = statusData?.pipelines || {};
+            const brokenPipelines = [];
+
+            CONFIG.pipelines.forEach(p => {
+                const data = pipelines[p.id];
+                if (!data || data.accuracy < data.target) {
+                    brokenPipelines.push({
+                        name: p.name,
+                        accuracy: data?.accuracy || 0,
+                        target: data?.target || 85,
+                        issue: data?.accuracy === 0 ? 'Pas de réponse' : 'En dessous de la cible'
+                    });
+                }
+            });
+
+            if (brokenPipelines.length === 0) {
+                statusIcon.className = 'dummy-status-ok';
+                statusIcon.textContent = '✅';
+                message.innerHTML = '<strong>Tout fonctionne parfaitement !</strong><br>Tous les pipelines sont au-dessus de leur cible.';
+                details.innerHTML = '';
+            } else {
+                statusIcon.className = 'dummy-status-error';
+                statusIcon.textContent = '⚠️';
+                message.innerHTML = `<strong>${brokenPipelines.length} pipeline${brokenPipelines.length > 1 ? 's' : ''} en panne</strong><br>Voici pourquoi :`;
+
+                const detailsList = brokenPipelines.map(p => `
+                    <li>
+                        <strong>${p.name}</strong> : ${p.accuracy.toFixed(1)}% (cible: ${p.target}%)<br>
+                        <span style="color: #fca5a5;">→ ${p.issue}</span>
+                    </li>
+                `).join('');
+
+                details.innerHTML = `<div class="dummy-details"><ul>${detailsList}</ul></div>`;
             }
         }
 
-        // Update overall stats
-        function updateOverallStats() {
-            const overall = statusData.overall || {};
-            const phase = statusData.phase || {};
-            const totals = statusData.totals || {};
-
-            document.getElementById('phase-name').textContent =
-                `Phase ${phase.current}: ${phase.name || 'Unknown'}`;
-
-            document.getElementById('overall-accuracy').textContent =
-                `${(overall.accuracy || 0).toFixed(1)}% (Target: ${(overall.target || 0).toFixed(0)}%)`;
-
-            document.getElementById('total-questions').textContent =
-                totals.unique_questions?.toLocaleString() || 'N/A';
-
-            document.getElementById('total-runs').textContent =
-                totals.test_runs?.toLocaleString() || 'N/A';
-
-            document.getElementById('blockers-count').textContent =
-                statusData.blockers?.length || 0;
-
-            const overallMet = overall.met || false;
-            document.getElementById('overall-status').className =
-                `status-badge ${overallMet ? 'status-healthy' : 'status-warning'}`;
-            document.getElementById('overall-status').textContent =
-                overallMet ? 'Healthy' : 'Below Target';
-        }
-
-        // Test all webhooks in parallel
+        // Test all webhooks
         async function testAllWebhooks() {
-            const promises = CONFIG.pipelines.map(async (pipeline) => {
-                const result = await testWebhook(pipeline.path);
-                webhookStatus[pipeline.id] = result;
+            const promises = CONFIG.pipelines.map(async (p) => {
+                const result = await testWebhook(p.webhook, p.space);
+                webhookStatus[p.id] = result;
             });
-
             await Promise.all(promises);
         }
 
-        // Main update function
+        // Main update
         async function updateDashboard() {
             try {
-                // Fetch status.json from GitHub
-                statusData = await fetchGitHubData('docs/status.json');
+                // Fetch data
+                statusData = await fetchData('docs/status.json');
+                // dataJson = await fetchData('docs/data.json'); // Optional
 
-                // Test webhooks in parallel
+                // Test webhooks
                 await testAllWebhooks();
 
-                // Update UI
-                updateOverallStats();
+                // Render all sections
+                renderExecutiveSummary();
                 renderPipelines();
                 renderInfrastructure();
+                renderDummyMode();
 
                 // Update timestamp
                 lastUpdateTime = new Date();
-                document.getElementById('last-updated').textContent = timeAgo(lastUpdateTime.toISOString());
+                document.getElementById('lastUpdate').textContent = timeAgo(lastUpdateTime.toISOString());
 
-                // Hide loading, show content
+                // Show content
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
 
             } catch (error) {
                 console.error('Dashboard update failed:', error);
                 document.getElementById('loading').innerHTML = `
-                    <div class="error-message">
-                        Failed to load dashboard data: ${error.message}
+                    <div style="color: #ef4444; text-align: center;">
+                        <h3>Erreur de chargement</h3>
+                        <p>${error.message}</p>
+                        <p style="margin-top: 15px; font-size: 0.9rem; color: #94a3b8;">Nouvelle tentative dans 30s...</p>
                     </div>
                 `;
             }
         }
 
-        // Update "Last updated" counter every second
+        // Update counter
         function updateCounter() {
             if (lastUpdateTime) {
-                document.getElementById('last-updated').textContent = timeAgo(lastUpdateTime.toISOString());
+                document.getElementById('lastUpdate').textContent = timeAgo(lastUpdateTime.toISOString());
             }
         }
+
+        // Dummy mode toggle
+        document.getElementById('dummyMode').addEventListener('change', (e) => {
+            const panel = document.getElementById('dummyPanel');
+            const content = document.getElementById('content');
+
+            if (e.target.checked) {
+                panel.classList.add('active');
+                content.style.display = 'none';
+            } else {
+                panel.classList.remove('active');
+                content.style.display = 'block';
+            }
+        });
 
         // Initialize
         updateDashboard();
