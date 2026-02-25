@@ -1,6 +1,6 @@
 # EXECUTIVE SUMMARY — Nomos AI Multi-RAG Orchestrator
 
-> Last updated: 2026-02-23T23:30:00+01:00
+> Last updated: 2026-02-25T09:25:00+00:00
 > **Ce fichier DOIT etre consulte et mis a jour a CHAQUE session.**
 > Il est la reference unique pour comprendre tout le projet en langage clair.
 
@@ -34,23 +34,24 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
 
 ### Ou en est-on ?
 - **Phase 1** (200 questions) : **PASSED** (83.9% overall, 20 fev 2026, session 30). Tous les 4 pipelines au-dessus de leurs cibles.
-- **Phase 2** (1,000q par pipeline) : **EN COURS** — Graph DONE (500/500, 78%), Quant DONE (500/500, 92%), Standard partial (579/1000, ~36%), Orchestrator BROKEN (57/1000, 0%)
-- **Bloqueur critique RESOLU** : Root cause identifiee (session 51) — Broken n8n expression syntax `={{.VAR}}` au lieu de `={{$env.VAR}}` dans Standard + Graph workflow JSONs causait tous les appels API (OpenRouter, Pinecone, Jina) a envoyer `Bearer null`. Fix applique (17 instances corrigees), HF Space v5.4 deploiement en cours.
+- **Phase 2** (1,000q par pipeline) : **EN COURS** — Session 61 massive eval: 4 pipelines × 1000q, 12 workers, 74/3950 tested so far. All 4 pipelines FIXED and answering (Session 60).
+- **Session 60 fixes** : Quantitative (API key NaN + Supabase wrong host) + Orchestrator (Redis removed, 9 nodes) + all Postgres credentials.
+- **Session 61** : HF Space #2 deployed, GH Actions on 3 repos (all passing), chatbot active (75% tests), data ingestion audited.
 - **PME** : 3 workflows importes (multi-canal-gateway, action-executor, whatsapp-telegram-bridge) mais PAS actives (404).
-- **Data ingestion** : Demarree — 3/5 datasets HuggingFace telecharges (669MB).
+- **Data ingestion** : 3 workflows found — Dataset Ingestion WORKING, Ingestion V4.0 + Enrichissement V4.0 BROKEN (Redis).
 
 ### Chiffres cles
 | Metrique | Valeur |
 |----------|--------|
-| Questions testees a ce jour | **1,520+** (Phase 1 + Phase 2) |
+| Questions testees a ce jour | **1,594+** (Phase 1 + Phase 2 + Session 61 eval running) |
 | Precision Phase 1 (baseline) | 83.9% (PASSED) |
-| Precision Phase 2 (partiel) | Graph 78%, Quant 92%, Std ~36%, Orch 0% |
+| Precision Phase 2 (Session 61) | Std 75%, Graph 20%, Quant 22%, Orch 81% (early, 74 results) |
 | Vecteurs dans Pinecone | 22,070 |
 | Entites dans Neo4j | 19,788 |
 | Lignes dans Supabase | ~17,600 |
 | Datasets telecharges | 7,609 sectoriels + 669MB HuggingFace |
 | Commits depuis le debut | 200+ |
-| Sessions Claude Code | **51** |
+| Sessions Claude Code | **61** |
 | Sites web live | **4** (ETI + PME connectors + PME use cases + Dashboard) |
 
 ---
