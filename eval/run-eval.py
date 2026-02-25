@@ -40,9 +40,29 @@ def _check_n8n_host():
                 sys.exit(1)
 _check_n8n_host()
 
+def _hosts_for(pipeline):
+    """Get n8n host(s) for a specific pipeline. Supports multi-host round-robin (comma-separated).
+    Returns a list of hosts. If N8N_HOST_PIPELINE contains commas, splits into multiple hosts."""
+    raw = os.environ.get(f"N8N_HOST_{pipeline.upper().replace('-','_')}", N8N_HOST)
+    hosts = [h.strip() for h in raw.split(",") if h.strip()]
+    return hosts if hosts else [N8N_HOST]
+
 def _host_for(pipeline):
-    """Get n8n host for a specific pipeline. Supports per-pipeline routing."""
-    return os.environ.get(f"N8N_HOST_{pipeline.upper().replace('-','_')}", N8N_HOST)
+    """Get single n8n host for a pipeline. For backwards compat — returns first host."""
+    return _hosts_for(pipeline)[0]
+
+# Round-robin counter per pipeline (thread-safe via GIL for simple int increment)
+_rr_counters = defaultdict(int)
+
+def _rr_endpoint(pipeline, webhook_path):
+    """Get next endpoint for a pipeline using round-robin across hosts."""
+    hosts = _hosts_for(pipeline)
+    if len(hosts) == 1:
+        return f"{hosts[0]}{webhook_path}"
+    idx = _rr_counters[pipeline]
+    _rr_counters[pipeline] = idx + 1
+    host = hosts[idx % len(hosts)]
+    return f"{host}{webhook_path}"
 
 # Webhook paths (host-independent)
 WEBHOOK_PATHS = {
@@ -55,16 +75,16 @@ WEBHOOK_PATHS = {
     "pme-whatsapp": "/webhook/whatsapp-incoming",
 }
 
-# Build endpoints with per-pipeline hosts
+# Build endpoints with per-pipeline hosts (backwards compat — single host)
 RAG_ENDPOINTS = {k: f"{_host_for(k)}{v}" for k, v in WEBHOOK_PATHS.items()}
 
-# Per-pipeline optimal batch sizes (from Session 27 concurrency tests)
+# Per-pipeline optimal batch sizes — doubled for dual-space (Session 62)
 PIPELINE_BATCH_SIZES = {
-    "standard": 10,
-    "graph": 5,
-    "quantitative": 3,
-    "orchestrator": 2,
-    "pme-gateway": 1,
+    "standard": 20,
+    "graph": 10,
+    "quantitative": 6,
+    "orchestrator": 4,
+    "pme-gateway": 2,
     "pme-action": 1,
     "pme-whatsapp": 1,
 }

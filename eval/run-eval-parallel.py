@@ -155,7 +155,8 @@ def save_pipeline_results(rag_type, results, label=""):
 
 
 def _process_question(rag_type, q, i, total, endpoint, rag_timeout):
-    """Process a single question. Thread-safe — designed for batch parallel execution."""
+    """Process a single question. Thread-safe — designed for batch parallel execution.
+    Uses round-robin across dual HF Spaces when N8N_HOST_<PIPELINE> contains comma-separated hosts."""
     qid = q["id"]
     used_local = False
 
@@ -164,7 +165,9 @@ def _process_question(rag_type, q, i, total, endpoint, rag_timeout):
         resp = call_local_reasoning(q["question"], rag_type=rag_type, timeout=rag_timeout)
         used_local = True
     else:
-        resp = call_rag(endpoint, q["question"], timeout=rag_timeout)
+        # Dual-space round-robin: alternate between Space #1 and Space #2
+        rr_endpoint = run_eval_mod._rr_endpoint(rag_type, WEBHOOK_PATHS[rag_type])
+        resp = call_rag(rr_endpoint, q["question"], timeout=rag_timeout)
 
     if resp["error"]:
         answer = ""
@@ -216,11 +219,12 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
     Returns (rag_type, totals_dict, per_question_results).
     Early-stop: halts after N consecutive failures (default 4).
     Batch-size: processes N questions in parallel within the pipeline (E5 improvement)."""
+    # Optimized timeouts for dual-space (2x throughput)
     PIPELINE_TIMEOUTS = {
-        "standard": 60,
-        "graph": 90,
-        "quantitative": 60,
-        "orchestrator": 90,
+        "standard": 45,
+        "graph": 45,
+        "quantitative": 45,
+        "orchestrator": 75,
     }
     EARLY_STOP_THRESHOLD = getattr(run_pipeline, '_early_stop', 4)
     _bs_auto = getattr(run_pipeline, '_batch_size_auto', False)
