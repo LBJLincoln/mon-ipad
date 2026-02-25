@@ -30,35 +30,43 @@
 
 5. **HF Space restart triggered** — Stage: BUILDING (as of 22:15 UTC+1)
 
-### Infrastructure State
+### Infrastructure State (updated 22:45 UTC+1)
 | Component | Status | Note |
 |-----------|--------|------|
-| HF Space | **REBUILDING** | Restart triggered, all webhooks down |
+| HF Space | **RUNNING** | Rebuilt, webhooks active for Standard+Graph |
 | VM | **PILOTAGE ONLY** | MCP servers active |
-| GH Actions | **WORKING** | eval-1000q.yml completed successfully |
-| Codespaces | **AVAILABLE** | Not yet utilized this session |
+| GH Actions | **WORKING** | eval-1000q.yml runs completed |
+| Codespaces | **AVAILABLE** | 1 shutdown codespace (rag-tests-eval) |
 
-### Webhook Status (as of 22:00 UTC+1)
+### Webhook Status (as of 22:45 UTC+1)
 | Pipeline | HTTP Code | Status |
 |----------|-----------|--------|
-| Standard | 000 | TIMEOUT — HF Space rebuilding |
-| Graph | 000 | TIMEOUT — HF Space rebuilding |
-| Quantitative | 000 | TIMEOUT — HF Space rebuilding |
-| Orchestrator | 000 | TIMEOUT — HF Space rebuilding |
-| PME Gateway | 000 | TIMEOUT — HF Space rebuilding |
+| Standard | 200 | WORKING — real answers, 78% accuracy |
+| Graph | 200 | WORKING — real answers, 26% accuracy (hard multi-hop questions) |
+| Quantitative | 200 | PARTIAL — returns NO_ANSWER (data retrieval broken, not auth) |
+| Orchestrator | 200 | BROKEN — empty body (sub-workflow chain fails silently) |
+| PME Gateway | OFF | Can't activate ("Could not find property option" validation error) |
 
-### Key Findings from GH Actions Eval
-- **Graph 78% → 22%**: Major regression. Needs investigation — possible Phase 2 question format mismatch or HyDE node failure
-- **Standard 92% → 80%**: Moderate drop. May be harder Phase 2 questions
-- **Quantitative 0%**: Init & ACL node was hot-patched to accept `question` field but still fails
-- **Orchestrator 0%**: Returns empty body — sub-workflow calls broken
-- **PME Gateway 0%**: Not properly activated/configured
+### Latest GH Actions Eval (run 22370664312)
+| Pipeline | Tested | Correct | Accuracy | Issue |
+|----------|--------|---------|----------|-------|
+| Standard | 50 | 39 | **78.0%** | Working. Hard Phase 2 questions lower accuracy |
+| Graph | 50 | 13 | **26.0%** | Working. Multi-hop questions need precise entity resolution |
+| Quantitative | 20 | 0 | **0.0%** | NO_ANSWER — SQL generation not producing queries |
+| Orchestrator | 20 | 0 | **0.0%** | 20 errors — sub-workflow execution chain broken |
+| PME | 20 | 0 | **0.0%** | 20 errors — workflow can't activate |
+
+### Root Cause Analysis (session 59 continued)
+- **Graph 26%**: NOT a regression. Phase 2 questions are much harder multi-hop (MuSiQue/2WikiMultiHop). Answers are reasonable but imprecise (e.g., "Slovakia" vs "Senica District")
+- **Standard 78%**: Working correctly. 22% failures are harder Phase 2 questions
+- **Quantitative 0%**: Init & ACL node fixed to accept query, but downstream SQL/data retrieval returns NO_ANSWER consistently. Supabase data retrieval chain broken
+- **Orchestrator 0%**: Empty body. Execute sub-workflows → some fail → error handler uses respondToWebhook which can't find webhook context in error trigger path
+- **PME 0%**: Workflow validation error prevents activation ("Could not find property option" in n8n v2.8.4)
 
 ### BLOCKERS
-1. **HF Space rebuild** — All webhooks down until rebuild completes and workflows activate
-2. **Graph accuracy regression** — 78% → 22%, needs root cause analysis
-3. **Quantitative still broken** — 0% despite hot-patch fix
-4. **Orchestrator empty body** — Sub-workflow execution mechanism broken
+1. **Quantitative data retrieval** — Pipeline accepts queries but SQL generation returns nothing
+2. **Orchestrator sub-workflow chain** — Error handler can't send response (n8n limitation)
+3. **PME Gateway activation** — Node parameter validation error prevents workflow activation
 
 ### Session 59b — Post-Recomposition Audit (Feb 25)
 

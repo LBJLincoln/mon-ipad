@@ -1,0 +1,430 @@
+{
+  "name": "Project Chatbot V3 — RAG-Enhanced Q&A",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "project-chatbot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 300],
+      "id": "cb-v3-webhook",
+      "name": "Chatbot Webhook",
+      "webhookId": "project-chatbot"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// Node 1: PREPARE SEARCH QUERY\n// Extract question, detect language, validate input\n// ============================================================\nconst body = $input.item.json.body || $input.item.json;\nconst question = (body.question || body.query || body.message || '').trim();\nconst lang = (body.lang || 'fr').toLowerCase();\n\nif (!question || question.length < 2) {\n  return {\n    json: {\n      error: true,\n      status: 'VALIDATION_ERROR',\n      answer: lang === 'fr'\n        ? 'Veuillez poser une question (champ \"question\" requis, minimum 2 caracteres).'\n        : 'Please provide a question (field \"question\" required, minimum 2 characters).',\n      sources: [],\n      confidence: 0.0,\n      engine: 'PROJECT_CHATBOT_V3',\n      timestamp: new Date().toISOString()\n    }\n  };\n}\n\n// Detect topic category for Supabase query targeting\nconst topicKeywords = {\n  financial: /revenue|chiffre|bilan|balance|financ|sales|vente|profit|cost|margin|quarterly|annuel/i,\n  pipeline: /pipeline|standard|graph|quantit|orchestrat|rag|accuracy|precis|phase/i,\n  infrastructure: /infra|server|vm|cloud|hf space|vercel|codespace|database|pinecone|neo4j|supabase/i,\n  sector: /btp|construction|industri|financ|juridique|legal|secteur|sector/i,\n  pme: /pme|sme|connecteur|connector|slack|gmail|whatsapp|telegram|multi-canal/i\n};\n\nlet detectedTopic = 'general';\nfor (const [topic, regex] of Object.entries(topicKeywords)) {\n  if (regex.test(question)) {\n    detectedTopic = topic;\n    break;\n  }\n}\n\nreturn {\n  json: {\n    error: false,\n    question: question,\n    lang: lang,\n    detectedTopic: detectedTopic,\n    timestamp: new Date().toISOString()\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300],
+      "id": "cb-v3-prepare-query",
+      "name": "Prepare Search Query"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "validation-error-check",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [670, 300],
+      "id": "cb-v3-error-check",
+      "name": "Validation Error?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.jina.ai/v1/embeddings",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"jina-embeddings-v3\",\n  \"input\": [{{ JSON.stringify($json.question) }}],\n  \"task\": \"retrieval.query\",\n  \"dimensions\": 1024\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          },
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "fullResponse": false
+            }
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.JINA_API_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 400],
+      "id": "cb-v3-embed-question",
+      "name": "Embed Question (Jina)",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sota-rag-jina-1024-dg0lohp.svc.aped-4627-b74a.pinecone.io/query",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($json.data?.[0]?.embedding || $json.embeddings?.float?.[0] || []) }},\n  \"topK\": 8,\n  \"includeMetadata\": true,\n  \"namespace\": \"\"\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          },
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "fullResponse": false
+            }
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Api-Key",
+              "value": "={{$env.PINECONE_API_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1150, 400],
+      "id": "cb-v3-pinecone-search",
+      "name": "Search Pinecone",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/rpc/execute_sql",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT table_name, (SELECT count(*) FROM information_schema.columns c WHERE c.table_name = t.table_name AND c.table_schema = 'public') as column_count FROM information_schema.tables t WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE' ORDER BY table_name LIMIT 50\"\n}",
+        "options": {
+          "timeout": 10000,
+          "response": {
+            "response": {
+              "fullResponse": false
+            }
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$env.SUPABASE_KEY}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.SUPABASE_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1400, 400],
+      "id": "cb-v3-supabase-query",
+      "name": "Query Supabase Metadata",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// Node 5: FORMAT CONTEXT FROM PINECONE + SUPABASE\n// Merge retrieval results into a structured context for the LLM\n// ============================================================\n\nconst prepareNode = $node['Prepare Search Query'].json;\nconst question = prepareNode.question;\nconst lang = prepareNode.lang;\nconst detectedTopic = prepareNode.detectedTopic;\n\n// --- Extract Pinecone results ---\nlet pineconeContext = '';\nlet pineconeSourceIds = [];\nlet pineconeScores = [];\n\ntry {\n  const pineconeData = $node['Search Pinecone'].json;\n  const matches = pineconeData.matches || [];\n  \n  if (matches.length > 0) {\n    const relevantMatches = matches.filter(m => (m.score || 0) >= 0.3);\n    \n    pineconeContext = relevantMatches.map((m, i) => {\n      const meta = m.metadata || {};\n      const text = meta.text || meta.content || meta.chunk_text || meta.document_text || '';\n      const source = meta.source || meta.filename || meta.title || meta.id || m.id || `doc-${i}`;\n      const score = (m.score || 0).toFixed(3);\n      \n      pineconeSourceIds.push(source);\n      pineconeScores.push(parseFloat(score));\n      \n      return `[Source ${i + 1}: ${source} (score: ${score})]\\n${text.substring(0, 800)}`;\n    }).join('\\n\\n---\\n\\n');\n  }\n} catch (e) {\n  pineconeContext = '';\n}\n\n// --- Extract Supabase metadata ---\nlet supabaseContext = '';\ntry {\n  const supabaseData = $node['Query Supabase Metadata'].json;\n  \n  if (Array.isArray(supabaseData) && supabaseData.length > 0) {\n    const tableList = supabaseData.map(t => `${t.table_name} (${t.column_count} columns)`).join(', ');\n    supabaseContext = `Available Supabase tables: ${tableList}`;\n  } else if (supabaseData && !supabaseData.error) {\n    supabaseContext = `Supabase metadata available: ${JSON.stringify(supabaseData).substring(0, 500)}`;\n  }\n} catch (e) {\n  supabaseContext = '';\n}\n\n// --- Build comprehensive project knowledge base (fallback) ---\nconst PROJECT_KB = `\n## NOMOS AI PROJECT — KNOWLEDGE BASE\n\n### Overview\nNomos AI is an advanced Multi-RAG Orchestrator system that answers complex questions by searching multiple databases simultaneously. It uses 4 specialized RAG pipelines and an intelligent orchestrator that automatically selects the best search method for each question.\n\n### Target: Process 1M+ questions across 4 sectors (Construction/BTP, Industry, Finance, Legal) with 85%+ accuracy and <2.5s response time.\n\n### The 4 RAG Pipelines\n1. **Standard Pipeline** (text search): Question -> HyDE generation -> Pinecone vector search (10,411 vectors, 1024-dim Jina v3) -> Jina reranking -> Llama 70B answer. Phase 1: 85.5% accuracy.\n2. **Graph Pipeline** (entity/relationship search): Question -> entity extraction -> Neo4j graph traversal (19,788 nodes, 76,717 relationships) -> LLM synthesis. Phase 1: 78.0% accuracy. Phase 2: 78.0% (500/500 COMPLETE).\n3. **Quantitative Pipeline** (SQL/numbers): Question -> intent analysis -> SQL generation -> Supabase query (40+ tables, ~17,600 rows) -> LLM interpretation. Phase 1: 92.0% accuracy. Phase 2: 92.0% (500/500 COMPLETE). Best performing pipeline.\n4. **Orchestrator Pipeline** (combines all 3): Question -> intent classification -> route to best pipeline(s) -> aggregate results. Phase 1: 80.0% accuracy.\n\n### Phase 1 Results (200 questions) — PASSED Feb 20, 2026\n- Standard: 85.5% | Graph: 78.0% | Quantitative: 92.0% | Orchestrator: 80.0% | Overall: 83.9%\n\n### Phase 2 (1,000 questions per pipeline) — IN PROGRESS\n- Graph: 78.0% (500/500 COMPLETE) | Quantitative: 92.0% (500/500 COMPLETE)\n- Standard: ~36% (579/1000, paused) | Orchestrator: 0% (57/1000, being repaired)\n- Total questions tested: 1,520+\n\n### Infrastructure\n- Control plane: Google Cloud VM (1 vCPU, 970MB RAM, Debian 11) running Claude Code Opus 4.6\n- Execution: HuggingFace Space (16GB RAM, n8n v2.8.4 with queue mode, 12 workflows)\n- Testing: GitHub Codespaces (2 cores, 8GB RAM, ephemeral)\n- Websites: 4 Vercel deployments (ETI 4-sector site, PME Connectors, PME Use Cases, Dashboard)\n\n### Databases\n- Pinecone: sota-rag-jina-1024 (10,411 vectors, 1024-dim) + 2 secondary indexes\n- Neo4j Aura: 19,788 nodes (8,531 people, 8,331 entities, 1,775 orgs, 840 cities), 76,717 relationships\n- Supabase PostgreSQL: 40+ tables, ~17,600 rows (financials, balance sheets, sales, employees, benchmarks)\n\n### Tech Stack\n- LLMs: OpenRouter free tier — Llama 3.3 70B Instruct, Gemma 3 27B, Trinity Large\n- Embeddings: Jina AI v3 (1024-dim, free 1M tokens/month)\n- Reranking: Jina Reranker v2\n- Workflow engine: n8n | Websites: Next.js 14/15 on Vercel\n- 7 private GitHub repos | 7 MCP server connectors\n- Budget: $0 (all services on free tiers)\n\n### 4 Target Sectors\n1. Construction/BTP: regulations, DTU standards, Eurocodes, safety, 7,600+ documents ready\n2. Industry: predictive maintenance, quality control, supply chain\n3. Finance: balance sheets, revenue analysis, financial ratios\n4. Legal: contracts, compliance, GDPR, case law\n\n### PME (Small Business) Features\n- 15 multi-channel connectors: WhatsApp, Telegram, Slack, Teams, Discord, Gmail, Outlook, HubSpot, Salesforce, Pipedrive, Notion, Google Sheets, Airtable, Zendesk, Freshdesk\n- 3 active PME workflows: Gateway, Slack Connector, Gmail Connector\n- 200 documented use cases\n\n### Project Phases\n- Phase 1: 200q baseline — PASSED (83.9%)\n- Phase 2: 1,000q/pipeline — IN PROGRESS\n- Phase 3: ~10,000q — Next\n- Phase 4: ~100,000q — Planned\n- Phase 5: 1M+ — Final target\n\n### Key Metrics\n- 1,520+ questions tested | 83.9% Phase 1 accuracy | 22,070 vectors in Pinecone\n- 19,788 Neo4j entities | ~17,600 Supabase rows | 7,609 sector documents\n- 200+ commits | 55+ bugs resolved | 55 Claude Code sessions | 12 active workflows\n`;\n\n// --- Compute confidence based on retrieval quality ---\nlet confidence = 0.5; // baseline from KB\nif (pineconeScores.length > 0) {\n  const avgScore = pineconeScores.reduce((a, b) => a + b, 0) / pineconeScores.length;\n  const topScore = Math.max(...pineconeScores);\n  confidence = Math.min(0.95, 0.4 + (topScore * 0.4) + (avgScore * 0.2));\n}\nif (pineconeScores.length === 0 && !supabaseContext) {\n  confidence = 0.5; // KB-only answer\n}\n\n// --- Build the combined context ---\nlet retrievalContext = '';\nif (pineconeContext) {\n  retrievalContext += `## Retrieved Documents from Vector Database\\n\\n${pineconeContext}\\n\\n`;\n}\nif (supabaseContext) {\n  retrievalContext += `## Database Metadata\\n\\n${supabaseContext}\\n\\n`;\n}\n\nconst fullContext = retrievalContext\n  ? `${retrievalContext}\\n\\n## Project Knowledge Base (supplementary)\\n\\n${PROJECT_KB}`\n  : PROJECT_KB;\n\n// --- Build system prompt ---\nconst systemPrompt = lang === 'fr'\n  ? `Tu es l'assistant IA officiel du projet Nomos AI Multi-RAG Orchestrator. Tu reponds aux questions sur le projet de maniere precise, professionnelle et structuree. Tu reponds TOUJOURS en francais.\\n\\nUtilise le contexte suivant pour repondre. Privilegie les documents recuperes (Retrieved Documents) quand ils sont pertinents, puis complete avec la base de connaissances projet.\\n\\nSi tu ne connais pas la reponse exacte, dis-le clairement. Ne fabrique JAMAIS de chiffres ou statistiques non mentionnes dans le contexte.\\n\\nStructure tes reponses avec des listes et tableaux quand c'est pertinent. Sois concis mais complet.\\n\\nCONTEXTE:\\n${fullContext}`\n  : `You are the official AI assistant for the Nomos AI Multi-RAG Orchestrator project. You answer questions about the project accurately, professionally, and with well-structured responses. You ALWAYS respond in English.\\n\\nUse the following context to answer. Prioritize Retrieved Documents when relevant, then supplement with the project knowledge base.\\n\\nIf you don't know the exact answer, say so clearly. NEVER fabricate numbers or statistics not mentioned in the context.\\n\\nStructure your responses with lists and tables when appropriate. Be concise but thorough.\\n\\nCONTEXT:\\n${fullContext}`;\n\nreturn {\n  json: {\n    question: question,\n    lang: lang,\n    detectedTopic: detectedTopic,\n    systemPrompt: systemPrompt,\n    confidence: Math.round(confidence * 100) / 100,\n    sources: pineconeSourceIds,\n    pinecone_matches: pineconeScores.length,\n    has_supabase_data: !!supabaseContext\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1650, 400],
+      "id": "cb-v3-format-context",
+      "name": "Format Context"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.OPENROUTER_API_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "HTTP-Referer",
+              "value": "https://lbjlincoln-nomos-rag-engine.hf.space"
+            },
+            {
+              "name": "X-Title",
+              "value": "Nomos AI Project Chatbot V3"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"meta-llama/llama-3.3-70b-instruct:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": {{ JSON.stringify($json.systemPrompt) }}\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($json.question) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 2048,\n  \"top_p\": 0.9\n}",
+        "options": {
+          "timeout": 45000,
+          "response": {
+            "response": {
+              "fullResponse": false
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1900, 400],
+      "id": "cb-v3-llm-call",
+      "name": "Call OpenRouter LLM",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// Node 7: FORMAT FINAL RESPONSE\n// Build the structured {answer, sources, confidence} response\n// ============================================================\n\nconst llmOutput = $input.item.json;\nconst contextData = $node['Format Context'].json;\n\nlet answer = '';\nlet status = 'SUCCESS';\nlet model = 'meta-llama/llama-3.3-70b-instruct:free';\nlet tokensUsed = 0;\n\n// --- Check for LLM errors ---\nconst hasError = llmOutput.error || llmOutput.code === 'ERR_GOT_REQUEST_ERROR' || (llmOutput.statusCode && llmOutput.statusCode >= 400);\n\ntry {\n  if (hasError) {\n    status = 'LLM_ERROR';\n    const errMsg = llmOutput.error?.message || llmOutput.message || llmOutput.statusMessage || 'LLM service unavailable';\n    answer = contextData.lang === 'fr'\n      ? `Desole, le service LLM est temporairement indisponible (${errMsg}). Veuillez reessayer dans quelques instants.`\n      : `Sorry, the LLM service is temporarily unavailable (${errMsg}). Please try again shortly.`;\n  } else if (llmOutput.choices && llmOutput.choices.length > 0) {\n    answer = (llmOutput.choices[0].message?.content || '').trim();\n    model = llmOutput.model || model;\n    if (llmOutput.usage) {\n      tokensUsed = llmOutput.usage.total_tokens || 0;\n    }\n  } else if (llmOutput.error) {\n    status = 'LLM_ERROR';\n    const errMsg = llmOutput.error.message || JSON.stringify(llmOutput.error);\n    answer = contextData.lang === 'fr'\n      ? `Erreur du service LLM : ${errMsg}`\n      : `LLM service error: ${errMsg}`;\n  }\n} catch (e) {\n  status = 'PARSE_ERROR';\n  answer = contextData.lang === 'fr'\n    ? 'Erreur lors du traitement de la reponse. Veuillez reessayer.'\n    : 'Error processing the response. Please try again.';\n}\n\nif (!answer || answer.length === 0) {\n  status = 'EMPTY_RESPONSE';\n  answer = contextData.lang === 'fr'\n    ? 'Le modele n\\'a pas genere de reponse. Veuillez reformuler votre question.'\n    : 'The model did not generate a response. Please rephrase your question.';\n}\n\n// --- Adjust confidence based on LLM success ---\nlet finalConfidence = contextData.confidence || 0.5;\nif (status !== 'SUCCESS') {\n  finalConfidence = 0.1;\n}\n\n// --- Build sources array ---\nconst sources = (contextData.sources || []).map(s => (typeof s === 'string' ? s : String(s)));\nif (contextData.has_supabase_data) {\n  sources.push('supabase-metadata');\n}\n\nreturn {\n  json: {\n    answer: answer,\n    sources: sources,\n    confidence: finalConfidence,\n    status: status,\n    query: contextData.question,\n    lang: contextData.lang,\n    topic: contextData.detectedTopic,\n    model: model,\n    tokens_used: tokensUsed,\n    pinecone_matches: contextData.pinecone_matches || 0,\n    engine: 'PROJECT_CHATBOT_V3',\n    version: '3.0',\n    timestamp: new Date().toISOString()\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2150, 400],
+      "id": "cb-v3-format-response",
+      "name": "Format Response"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "X-Engine",
+                "value": "PROJECT_CHATBOT_V3"
+              },
+              {
+                "name": "X-Version",
+                "value": "3.0"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2400, 400],
+      "id": "cb-v3-respond-success",
+      "name": "Respond Success"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": "400",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [900, 200],
+      "id": "cb-v3-respond-error",
+      "name": "Respond Validation Error"
+    }
+  ],
+  "connections": {
+    "Chatbot Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Search Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Search Query": {
+      "main": [
+        [
+          {
+            "node": "Validation Error?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validation Error?": {
+      "main": [
+        [
+          {
+            "node": "Respond Validation Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Embed Question (Jina)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embed Question (Jina)": {
+      "main": [
+        [
+          {
+            "node": "Search Pinecone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Pinecone": {
+      "main": [
+        [
+          {
+            "node": "Query Supabase Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Supabase Metadata": {
+      "main": [
+        [
+          {
+            "node": "Format Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Context": {
+      "main": [
+        [
+          {
+            "node": "Call OpenRouter LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call OpenRouter LLM": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": ""
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [
+    {
+      "name": "chatbot"
+    },
+    {
+      "name": "project"
+    },
+    {
+      "name": "rag"
+    },
+    {
+      "name": "v3"
+    }
+  ]
+}

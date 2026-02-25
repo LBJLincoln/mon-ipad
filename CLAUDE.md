@@ -1,6 +1,6 @@
 # Multi-RAG Orchestrator — Tour de Contrôle Centrale
 
-> Last updated: 2026-02-23T23:30:00+01:00
+> Last updated: 2026-02-25T10:00:00+01:00
 
 **CE REPO (`mon-ipad`) EST LA TOUR DE CONTRÔLE.**
 VM Google Cloud permanente · Claude Code via Termius · Pilote 7 repos satellites
@@ -78,41 +78,34 @@ cat logs/session-intelligence-report.json | python3 -c "import sys,json; [print(
 
 ---
 
-## 4. 27 CORE RULES
+## 4. 15 CORE RULES
 
-1. **Read before debug** — `fixes-library.md` avant tout debug (symptôme connu ?)
-2. **Read before webhook test** — `knowledge-base.md` Section 0 AVANT tout test webhook
-3. **Read before action** — `session-state.md` avant action complexe
-4. **source .env.local** — TOUJOURS avant scripts Python
-5. **ZERO credentials in git** — Pre-push check OBLIGATOIRE : `git diff --cached | grep -iE 'sk-or-|pcsk_|jV_zGdx|sbp_|hf_|jina_|ghp_'`
-6. **1 fix per iteration** — Jamais plusieurs noeuds, impossible de débugger sinon
-7. **5/5 minimum before sync** — Valider quick-test.py --questions 5 minimum avant `n8n/sync.py`
-8. **Tests SEQUENTIAL** — Jamais parallèles (cause 503 n8n)
-9. **Commit + push after each fix** — Origin + repos satellites impactés, toutes les 15-20 min minimum
-10. **Update session-state.md** — Après chaque milestone (pas juste fin session)
-11. **Update fixes-library.md + knowledge-base.md** — Après chaque fix/découverte (PENDANT session)
-12. **Update executive-summary.md** — Après chaque milestone/incident/changement phase
-13. **git config user.email** — `alexis.moret6@outlook.fr` (Vercel rejette commits sinon)
-14. **VM = pilotage ONLY** — n8n REMOVED from VM (Session 42). Tests → HF Space ou Codespaces. Guard anti-VM dans eval scripts
-15. **Codespace results pushed before shutdown** — ÉPHÉMÈRES, résultats vers GitHub AVANT arrêt
-16. **3+ regressions → REVERT** — Comparer avec `snapshot/good/`
-17. **Cross-pipeline bottleneck first** — Fix à impact transversal (débloque 4 pipelines > débloque 1 pipeline). Matrice : Impact × Nombre_pipelines × Urgence
-18. **Low-hanging fruit first** — À impact égal, quick-win (5min) AVANT fix complexe (2h). Réévaluer après chaque quick-win
-19. **Background testing** — Tests qui passent → nohup + auto-commit. Agent se concentre sur résolution bottlenecks
-20. **Auto-stop on 3 consecutive failures** — Rapport structuré à Opus pour décision. Détails : `team-agentic-process.md`
-21. **User Scale Override** — Quand l'utilisateur demande infra à max scale 2+ fois dans une session, TRAITER COMME PRIORITÉ BLOQUANTE. Déployer l'architecture d'abord, debug pipelines ensuite. Ne PAS reporter à "Phase N+1". L'utilisateur préfère "80% à l'échelle" plutôt que "100% à petite échelle"
-22. **Message Acknowledgment** — Après 2+ messages utilisateur en séquence, produire une liste numérotée AVANT de commencer le travail. Format: "Reçu N messages. Actions: 1. [action]..."
-23. **Workflow Definition-of-Done** — Un workflow n'est PAS terminé tant que: importé → activé → testé (5q) → documenté → utilisateur notifié avec URL. Créer un JSON = Étape 1 sur 6. Si une étape échoue, statut = BLOQUÉ (pas TERMINÉ)
-24. **Session Intelligence FIRST** — TOUJOURS exécuter `python3 scripts/session-intelligence.py` + `python3 scripts/node-tracker.py` en début de session. Lire les recommandations AVANT tout travail. Ne JAMAIS ignorer un "recurring_issue" dans le rapport.
-25. **Snapshot after EVERY fix** — Après chaque pipeline fix validé (5/5), sauver le workflow fonctionnel dans `snapshot/working-session{N}/`. Permet rollback en <1 min au lieu de rebuild 10+ min.
-26. **Hot-patch via REST API** — Modifier les workflows via PUT/PATCH /rest/workflows/{id} au lieu de rebuild HF Space. Rebuild = DERNIER recours uniquement si hot-patch impossible.
-27. **Browser credential creator** — Pour créer des credentials n8n (OAuth, API keys) depuis Termius, utiliser `POST /api/v1/credentials` sur l'API REST n8n OU Playwright headless. JAMAIS attendre un accès navigateur manuel. C'est un BLOQUEUR CRITIQUE pour les connecteurs PME et les workflows nécessitant des credentials externes.
+1. **Read before act** — `fixes-library.md` avant debug, `knowledge-base.md` Section 0 avant webhook, `session-state.md` avant action complexe
+2. **source .env.local** — TOUJOURS avant scripts Python
+3. **ZERO credentials in git** — Pre-push check : `git diff --cached | grep -iE 'sk-or-|pcsk_|jV_zGdx|sbp_|hf_|jina_|ghp_'`
+4. **1 fix per iteration** — Jamais plusieurs noeuds simultanément (debug impossible sinon)
+5. **5/5 before sync** — Valider quick-test.py --questions 5 avant `n8n/sync.py`
+6. **Commit + push regularly** — Origin + satellites, toutes les 15-20 min. Git email: `alexis.moret6@outlook.fr`
+7. **Update state files** — `session-state.md` après milestone, `fixes-library.md` + `knowledge-base.md` pendant session, `executive-summary.md` après incident
+8. **VM = pilotage ONLY** — No n8n, no eval, no tests. Tout → HF Space ou Codespaces/GH Actions
+9. **Push before shutdown** — Codespaces éphémères : résultats vers GitHub AVANT arrêt
+10. **3+ regressions → REVERT** — Comparer avec `snapshot/working-session{N}/`
+11. **Prioritize cross-pipeline impact** — Bottleneck × pipelines × urgence. Quick-win AVANT fix long à impact égal
+12. **Background testing** — Tests OK → nohup + auto-commit. Focus sur bottlenecks
+13. **Auto-stop on 3 failures** — Rapport structuré, pas de boucle infinie
+14. **User Scale Override** — Scale demandé 2+ fois = PRIORITÉ BLOQUANTE. "80% à l'échelle" > "100% petit"
+15. **Workflow Definition-of-Done** — importé → activé → testé (5q) → documenté → notifié avec URL
 
-### Token budget management
-- Réserver 40K tokens pour le nettoyage de fin de session (commits, docs, handoff)
-- À <30K restants: sauver état, arrêter agents, notifier utilisateur
-- Auto-sauver session-state.md toutes les 30 minutes, pas seulement aux milestones
-- Scripts: `bash scripts/session-startup-hook.sh` et `bash scripts/check-protocol-compliance.sh`
+### Process guidelines (non-numérotées, contextuelles)
+- **Tests parallèles OK** — Batch par pipeline avec rate-limit adapté. Pas de restriction séquentielle artificielle
+- **Session Intelligence** — Exécuter scripts startup au démarrage, lire recommandations
+- **Snapshot after fix** — Sauver workflow validé dans `snapshot/working-session{N}/`
+- **Hot-patch via REST API** — PUT/PATCH `/rest/workflows/{id}`. Rebuild HF Space = dernier recours
+- **Browser credential creator** — `POST /api/v1/credentials` ou Playwright headless. Ne jamais attendre accès navigateur manuel
+
+### Token budget
+- Auto-sauver `session-state.md` toutes les 30 minutes
+- Réserver tokens pour cleanup fin de session (commits, docs, handoff)
 
 ---
 
@@ -168,11 +161,13 @@ Image  : mcr.microsoft.com/devcontainers/universal:2 (Ubuntu)
 Inclus : Python 3.11, Node.js 20, Docker-in-Docker, Claude Code CLI
 ```
 
-| Codespace | Repo | n8n local | Usage |
-|-----------|------|-----------|-------|
-| nomos-rag-tests-5g6g5q9vjjwjf5g4 | rag-tests | 3 workers (docker-compose) | Tests lourds 500q+ |
-| nomos-rag-website-jr7q9gr69qqfqp6r | rag-website | Stateless (Vercel) | Dev site |
-| À créer | rag-data-ingestion | 2 workers (docker-compose) | Ingestion massive |
+**NOTE** : rag-tests tourne sur la VM via scripts eval → HF Space webhooks. PAS besoin de Codespace pour rag-tests.
+
+| Codespace / GH Actions | Repo | Usage |
+|------------------------|------|-------|
+| **GH Actions** ou Codespace | rag-pme-connectors | Tests + CI/CD PME connectors |
+| **GH Actions** ou Codespace | rag-data-ingestion | Ingestion massive, 2 workers docker-compose |
+| Codespace (optionnel) | rag-website | Dev site (Vercel deploy auto) |
 
 ### Bases de données cloud
 | Service | Contenu | Limite |
@@ -314,11 +309,11 @@ rag-storage        → github.com/LBJLincoln/rag-storage.git
 | Repo | Exécutant | Contenu | n8n | Directive |
 |------|-----------|---------|-----|-----------|
 | **mon-ipad** (CE REPO) | VM (Opus) | Directives, eval scripts, MCP configs | HF Space | `/home/termius/mon-ipad/CLAUDE.md` |
-| **rag-tests** | Codespace | Scripts eval, datasets, résultats | SSH tunnel → HF Space | `directives/repos/rag-tests.md` |
+| **rag-tests** | VM → HF Space | Scripts eval, datasets, résultats | HF Space webhooks | `directives/repos/rag-tests.md` |
 | **rag-website** | Codespace + Vercel | Next.js 14, 4 secteurs, chatbots | Local standalone | `directives/repos/rag-website.md` |
 | **rag-dashboard** | Vercel (statique) | HTML/JS, métriques live read-only | AUCUN | `directives/repos/rag-dashboard.md` |
 | **rag-data-ingestion** | Codespace | Ingestion V3.1, Enrichissement V3.1 | Local complet 2 workers | `directives/repos/rag-data-ingestion.md` |
-| **rag-pme-connectors** | Vercel | Next.js 15, 15 apps, MacBook chat | AUCUN | À créer si modifs |
+| **rag-pme-connectors** | Codespace / GH Actions + Vercel | Next.js 15, 15 apps, MacBook chat | AUCUN | À créer si modifs |
 | **rag-pme-usecases** | Vercel | Next.js 14, 200 use cases | AUCUN | Aucune (statique) |
 | **rag-storage** | GitHub LFS | Datasets, snapshots, logs, outputs | AUCUN | Aucune (storage) |
 
@@ -424,17 +419,17 @@ rag-storage        → github.com/LBJLincoln/rag-storage.git
 
 ---
 
-## État actuel v5.4 (2026-02-23)
+## État actuel v5.5 (2026-02-25)
 
-**Déploiement** : HF Space v5.4 deploying with env var syntax fix
-**Infrastructure** : n8n REMOVED from VM (Session 42) — freed ~270MB RAM
-**Credentials** : Per-pipeline OpenRouter keys (6 credentials, 3 accounts)
-**Phase** : Phase 1 PASSED, Phase 2 partial (Graph+Quant DONE, Standard+Orch BLOCKED by HF Space 404)
-**Data** : rag-storage repo created for large datasets/snapshots/logs
-**Critical blocker** : HF Space entrypoint.sh activation broken — ALL webhooks 404
+**Déploiement** : HF Space UP (HTTP 200) — Standard + Graph webhooks fonctionnels
+**Infrastructure** : VM pilotage only. HF Space #1 active, #2 à déployer. GH Actions pour pme-connectors
+**Credentials** : 6 OpenRouter keys (3 accounts), per-pipeline rotation
+**Phase** : Phase 1 PASSED, Phase 2 partial (Graph+Quant DONE, Standard 78%, Orch+Quant BROKEN)
+**Pipelines working** : Standard (78%), Graph (26% on hard Phase2 questions)
+**Pipelines broken** : Quantitative (NO_ANSWER), Orchestrator (empty body), PME (validation error)
 
-**Prochain objectif** :
-1. Build project chatbot (n8n workflow + TermiusModal on all sites) + 1000q test dataset (ETI/PME/Individus)
-2. Setup browser credential creator (n8n REST API POST /api/v1/credentials ou Playwright headless)
-3. Deploy scaling architecture: 2 HF Spaces + 5 Codespaces = 31 workers → target 1000q/min
-4. Fix pipelines + relaunch Phase 2
+**Objectifs session 60** :
+1. Deploy HF Space #2 (double throughput) + activate ALL 14 workflows
+2. Build project chatbot (n8n + TermiusModal on all 4 sites) + 1000q dataset
+3. Fix broken pipelines (Quant, Orch, PME) using bottleneck + low-hanging fruit
+4. Non-stop eval on working pipelines in background
