@@ -1,0 +1,182 @@
+{
+  "workflow": {
+    "name": "V10.1 orchestrator copy",
+    "id": "ALd4gOEqiKL5KR1p",
+    "total_nodes": 68
+  },
+  "redis_nodes": [
+    {
+      "name": "Redis: Fetch Conversation",
+      "operation": "GET conversation history",
+      "purpose": "Fetch short-term conversation memory",
+      "essential_for_rag": false,
+      "category": "conversation_cache",
+      "inputs": [],
+      "outputs": [],
+      "already_bypassed": true,
+      "code_length": 195
+    },
+    {
+      "name": "Redis: Store Conv V8",
+      "operation": "SET conversation history",
+      "purpose": "Store conversation updates",
+      "essential_for_rag": false,
+      "category": "conversation_cache",
+      "inputs": [],
+      "outputs": [],
+      "already_bypassed": true,
+      "code_length": 190
+    },
+    {
+      "name": "Cache Parser",
+      "operation": "Parse cached response",
+      "purpose": "Check if cached answer exists",
+      "essential_for_rag": false,
+      "category": "response_cache",
+      "inputs": [],
+      "outputs": [],
+      "already_bypassed": false,
+      "code_length": 962
+    },
+    {
+      "name": "\ud83d\udcbe Cache Storage",
+      "operation": "Prepare cache data",
+      "purpose": "Format data for caching",
+      "essential_for_rag": false,
+      "category": "response_cache",
+      "inputs": [],
+      "outputs": [],
+      "already_bypassed": false,
+      "code_length": 559
+    },
+    {
+      "name": "Redis: Set Cache",
+      "operation": "SET cached response",
+      "purpose": "Store FAQ/simple answers",
+      "essential_for_rag": false,
+      "category": "response_cache",
+      "inputs": [],
+      "outputs": [],
+      "already_bypassed": true,
+      "code_length": 186
+    },
+    {
+      "name": "\ud83e\udde0 Memory Merger (Redis + Postgres)",
+      "operation": "Merge Redis + Postgres data",
+      "purpose": "Combine short-term (Redis) + long-term (Postgres) memory",
+      "essential_for_rag": false,
+      "category": "memory_fusion",
+      "inputs": [],
+      "outputs": [],
+      "already_bypassed": false,
+      "code_length": 3046
+    },
+    {
+      "name": "\ud83d\udd0e Cache Semantic Search",
+      "operation": "Semantic similarity search",
+      "purpose": "Find similar cached queries",
+      "essential_for_rag": false,
+      "category": "response_cache",
+      "inputs": [],
+      "outputs": [],
+      "already_bypassed": false,
+      "code_length": 542
+    },
+    {
+      "name": "Redis: Cache + Generator",
+      "operation": "GET or generate",
+      "purpose": "Cache-aside pattern",
+      "essential_for_rag": false,
+      "category": "response_cache",
+      "inputs": [],
+      "outputs": [],
+      "already_bypassed": true,
+      "code_length": 194
+    },
+    {
+      "name": "\ud83d\udee1\ufe0f Redis Failure Handler V10.1",
+      "operation": "Error handling",
+      "purpose": "Graceful degradation when Redis fails",
+      "essential_for_rag": false,
+      "category": "error_handling",
+      "inputs": [],
+      "outputs": [],
+      "already_bypassed": false,
+      "code_length": 1901
+    }
+  ],
+  "summary": {
+    "total_redis_nodes": 9,
+    "already_bypassed": 4,
+    "needs_modification": 5,
+    "categories": {
+      "conversation_cache": 2,
+      "response_cache": 4,
+      "memory_fusion": 1,
+      "error_handling": 1
+    },
+    "impact_on_rag": "ZERO - All Redis nodes are for caching/memory only, not core RAG functionality"
+  },
+  "removal_strategy": {
+    "approach": "Pass-through replacement",
+    "steps": [
+      {
+        "step": 1,
+        "action": "Verify current bypass status",
+        "nodes": [
+          "Redis: Fetch Conversation",
+          "Redis: Store Conv V8",
+          "Redis: Set Cache",
+          "Redis: Cache + Generator"
+        ],
+        "status": "ALREADY DONE - These 4 nodes already have bypass code"
+      },
+      {
+        "step": 2,
+        "action": "Modify Memory Merger to use Postgres-only",
+        "nodes": [
+          "\ud83e\udde0 Memory Merger (Redis + Postgres)"
+        ],
+        "status": "NEEDS MODIFICATION - Remove Redis branch, use only Postgres L2/L3",
+        "complexity": "LOW - Already has fallback logic"
+      },
+      {
+        "step": 3,
+        "action": "Bypass cache nodes",
+        "nodes": [
+          "Cache Parser",
+          "\ud83d\udcbe Cache Storage",
+          "\ud83d\udd0e Cache Semantic Search"
+        ],
+        "status": "NEEDS MODIFICATION - Return empty/null cache data",
+        "complexity": "TRIVIAL - Just pass through"
+      },
+      {
+        "step": 4,
+        "action": "Simplify Redis Failure Handler",
+        "nodes": [
+          "\ud83d\udee1\ufe0f Redis Failure Handler V10.1"
+        ],
+        "status": "NEEDS MODIFICATION - Always return degraded mode",
+        "complexity": "TRIVIAL - Already has the code path"
+      },
+      {
+        "step": 5,
+        "action": "Remove conditional branches",
+        "nodes": [
+          "IF: Cache Hit?",
+          "Return: Cached"
+        ],
+        "status": "NEEDS MODIFICATION - Always take \"no cache\" path",
+        "complexity": "TRIVIAL - Change IF condition to always false"
+      }
+    ],
+    "testing": {
+      "method": "quick-test.py --questions 5 --pipeline orchestrator",
+      "expected_behavior": "Workflow should work identically, just without caching (slight performance decrease)",
+      "rollback": "Keep current workflow as V10.1, create V10.2-no-redis"
+    },
+    "estimated_time": "15-20 minutes total",
+    "risk_level": "VERY LOW - Caching is not core functionality"
+  }
+}
