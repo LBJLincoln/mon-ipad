@@ -1,0 +1,18 @@
+tout çà à faire et aussi passer toutes les phases au amx si possible, pour tous es rpeos que je vais te depander end essous. et tout bien faire comme si tu étais claude code cli avec accès à tous es env de termius et VM lcoale depuis lesquelles tu travailes. 
+
+Global IDEA: => 1 produit un chatbot multi-rag qui, via un orchestrator, renvoie la query vers l'un des 3 moteurs RAG adéquat. Ce chatbot, à terme, aura été entraîné sur plus d'1 million de questions et doit être capable de se connecter à au moins 100 logiciels/apps/bases de données et stockage et autres. Il doit donc bien supporter l'ingestion de ces formats, ce sur quoi je travaille actuellement tout en entraînant le chatbot, car il en est actuellement bientôt à la phase 3 (11K) questions, la phase la plus importante , la phase 5 étant le total d'1M de questions mais un peu moins utile et nécessaire pour prouver que j'ai un outil fonctionnel et qui, une fois les docs et autres logiciels évoqués plus haut parfaitement ingérés et connectés au chatbot, peut être vendable. => CE produit vendable se décline à travers 3 sites Vercel, tous sous le nom de Nomos AI mais adaptés à des types d'entreprises spécifiques ainsi qu'aux individus : ETI (4 Secteurs :dans l'ordre, Industrie Finance BTP Juridique) PME (Plus de 200 cas d'usage avec très forts ROI business, financiers et temps grâce à mon chatbot relié à leurs logiciels et autres.) pas seulement 4 secteurs, tous secteurs confondus, Individus : un connecteur d'app Ultimate : chaque individu peut connecter, en fonction de son prix payé, jusqu'à 15 apps au total (messageries, bases de données, calendrier, emails, etc.) => Un Dashboard personnel sur Vercel qui montre tous les repos associés aux sites internet et leur foncitonnement live via testing
+9 repos GitHub: 
+-Une tour de contrôle à partir de laquelle tout est monitore et pilote intelligemment. Claude code CLI travaille dessus, et a accès direct aux autres repos 
+-Repo tests RAG : il teste sur VM HF spaces les 4 pipelines 
+- Repo data ingestion: 2 workflows (ingestion+enrichment) qui doivent se train sur les conditions évoquées tout en haut du message 
+-REPO STOCKAGE : IL DOIT AVOIR LITTÉRALEMENT TOUS KES OUTPUTS MÊME GARBAGE DE TOUS LES AUTRES REPOS 
+- Repo Dahsboard 
+- Repo site web : pour les ETI 
+- Repo site web : pour les PME 
+- Repo site web : Individual 
+- Repo Chatbot: Chatbot interactif new qui permet aux users de savoir tout sur tous mes projets précisément, déployés pour l'instant sur tous mes sites VERCEL (4 AU TOTAL) 
+
+Donc, 
+J'ai besoin de 4 comptes OpenRouter pour avoir une clef pr pipeline, elle-même limitée à 20req/min ,pour le RAG test. J'ai besoin d'une clef pour le Chatbot. Donc, au total, 5 comptes avec 1 clef chacune. Mais si je fais 10 clefs pour les 4 premiers, c'est déjà parfait car ça fait 200 req/min. Donc c'est pas encore proche de mon objectif de 1000req/min par pipeline 
+
+Rien ne tourne dans VM locale et tout est gratuit pour tout, de Pinecone à Neo4j à Jina, SupaBase et autres
