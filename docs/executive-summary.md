@@ -1,3 +1,14 @@
+## Update — 2026-02-27 19:50 UTC
+
+**Dashboard data feed fixed** — mon-ipad is private, dashboard was getting 404s
+- Solution: Copy status.json to PUBLIC rag-dashboard repo, update fetch URLs
+- Auto-sync: `scripts/sync-dashboard-data.sh` runs after every `generate_status.py`
+- Dashboard URLs updated: `mon-ipad/main` → `rag-dashboard/main` (public)
+- Live: https://lbjlincoln.github.io/rag-dashboard/ (GitHub Pages)
+- API: `/api/status` also updated for fallback data
+
+---
+
 ## Update — 2026-02-27 15:38 UTC
 
 - Protocol aligned in `CLAUDE.md` (v2) with DIFF-first + incremental + golden-check discipline.
