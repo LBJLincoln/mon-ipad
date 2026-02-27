@@ -1,0 +1,92 @@
+# Directive — {{REPO_NAME}}
+
+> Last updated: {{LAST_UPDATED}}
+
+## Rôle de ce repo
+
+{{REPO_ROLE}}
+
+### Architecture
+
+| Composant | Description | Status |
+|-----------|-------------|--------|
+| Framework | {{FRAMEWORK}} | {{FRAMEWORK_STATUS}} |
+| Exécution | {{EXECUTION_ENV}} | {{EXECUTION_STATUS}} |
+| n8n Usage | {{N8N_USAGE}} | {{N8N_STATUS}} |
+| Déploiement | {{DEPLOYMENT_TARGET}} | {{DEPLOYMENT_STATUS}} |
+
+### Infrastructure
+
+**Environnement d'exécution**: {{EXECUTION_ENV}}
+
+{{#if N8N_WORKFLOWS}}
+### Workflows n8n
+
+{{N8N_WORKFLOWS_LIST}}
+
+**Endpoints**:
+{{N8N_ENDPOINTS_LIST}}
+{{/if}}
+
+### Règles
+
+1. **Exécution** — {{EXECUTION_RULE}}
+2. **n8n Integration** — {{N8N_RULE}}
+3. **Commits** — Toujours commit + push après modifications critiques
+4. **CLAUDE.md sync** — Géré depuis mon-ipad via `push-directives.sh`
+5. **Tests** — {{TEST_RULE}}
+6. **Environment variables** — {{ENV_VARS_RULE}}
+
+### Commands
+
+**Development**:
+```bash
+{{DEV_COMMANDS}}
+```
+
+**Testing**:
+```bash
+{{TEST_COMMANDS}}
+```
+
+**Deployment**:
+```bash
+{{DEPLOY_COMMANDS}}
+```
+
+### URLs
+
+| Environnement | URL | Région |
+|---------------|-----|--------|
+| Production | {{PROD_URL}} | {{REGION}} |
+| Staging | {{STAGING_URL}} | {{REGION}} |
+
+### Structure fichiers
+
+```
+{{REPO_NAME}}/
+{{FILE_STRUCTURE}}
+```
+
+### Développement local
+
+```bash
+# Clone repo
+gh repo clone LBJLincoln/{{REPO_NAME}}
+cd {{REPO_NAME}}
+
+# Setup
+{{LOCAL_SETUP}}
+
+# Run
+{{LOCAL_RUN}}
+```
+
+### Notes
+
+{{ADDITIONAL_NOTES}}
+
+---
+
+**IMPORTANT**: Ce fichier est synchronisé depuis `mon-ipad/directives/repos/{{REPO_NAME}}.md`.
+Ne pas modifier directement dans ce repo. Modifications via mon-ipad uniquement.
