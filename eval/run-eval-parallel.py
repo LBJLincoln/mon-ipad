@@ -462,8 +462,8 @@ def main():
                              "Available: standard,graph,quantitative,orchestrator,"
                              "pme-gateway,pme-action,pme-whatsapp")
     parser.add_argument("--dataset", type=str, default=None,
-                        choices=["phase-1", "phase-2", "all"],
-                        help="Dataset to evaluate: phase-1 (200q), phase-2 (1000q HF), all (1200q)")
+                        choices=["phase-1", "phase-2", "phase-3", "all"],
+                        help="Dataset to evaluate: phase-1 (200q), phase-2 (1000q HF), phase-3 (~10K), all")
     parser.add_argument("--include-1000", action="store_true",
                         help="[Legacy] Include HF-1000 questions (use --dataset all instead)")
     parser.add_argument("--reset", action="store_true",

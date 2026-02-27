@@ -594,6 +594,30 @@ def load_questions(include_1000=False, dataset="phase-1"):
         if os.path.exists(pme_file):
             _load_dataset_file(pme_file, questions, embed_context=False)
 
+
+    elif dataset == "phase-3":
+        # Phase 3 (~10K): auto-generated merged dataset
+        phase3_file = os.path.join(DATASETS_DIR, "phase-3-questions.json")
+        if os.path.exists(phase3_file):
+            with open(phase3_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                for item in data.get("questions", []):
+                    ptype = item.get("pipeline") or item.get("type")
+                    if ptype in ["standard", "graph", "quantitative"]:
+                        questions[ptype].append({
+                            "id": item.get("id", ""),
+                            "question": item.get("question", ""),
+                            "answer": item.get("expected_answer", ""),
+                            "type": ptype,
+                            "context": item.get("context", ""),
+                        })
+                # Orchestrator mirrors all question types
+                for ptype in ["standard", "graph", "quantitative"]:
+                    for q in questions.get(ptype, []):
+                        questions["orchestrator"].append({**q, "type": "orchestrator"})
+        else:
+            print(f"  WARN: phase-3 dataset missing: {phase3_file}")
+
     elif dataset == "all":
         phase1_q = load_questions(dataset="phase-1")
         phase2_q = load_questions(dataset="phase-2")

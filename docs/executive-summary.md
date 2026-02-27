@@ -1,3 +1,12 @@
+## Update — 2026-02-27 15:38 UTC
+
+- Protocol aligned in `CLAUDE.md` (v2) with DIFF-first + incremental + golden-check discipline.
+- Added control-tower visibility doc: `docs/repo-control-tower.md`.
+- Added auto garbage sync script to `rag-storage`: `scripts/sync-garbage-storage.sh` (run executed, timestamped in rag-storage/global/autosync/last-sync.txt).
+- Security hygiene: removed tokenized remote URL from `rag-storage` origin.
+
+---
+
 
 ## Update — 2026-02-27 15:26 UTC
 

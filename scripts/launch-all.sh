@@ -66,7 +66,7 @@ REQUIRED_VARS=(
     "OPENROUTER_KEY_ORCHESTRATOR"
     "PINECONE_API_KEY"
     "SUPABASE_PASSWORD"
-    "NEO4J_AUTH"
+    "NEO4J_PASSWORD"
 )
 
 # ==============================================================================
@@ -197,7 +197,7 @@ check_env_vars() {
             local val="${!var}"
             local masked="${val:0:8}...${val: -4}"
             log "  ${GREEN}✓${NC} $var = $masked"
-            ((masked_count++))
+            masked_count=$((masked_count + 1))
         fi
     done
 
@@ -241,10 +241,10 @@ test_all_spaces() {
 
         if test_space_connectivity "$space"; then
             success "  $short_name : ACCESSIBLE"
-            ((reachable++))
+            reachable=$((reachable + 1))
         else
             warning "  $short_name : INACCESSIBLE (timeout)"
-            ((unreachable++))
+            unreachable=$((unreachable + 1))
         fi
     done
 
@@ -389,20 +389,20 @@ test_all_webhooks() {
             local key="${short_name}::${pipeline}"
             results[$key]="$result"
 
-            ((completed++))
+            completed=$((completed + 1))
 
             if [[ "$result" == OK:* ]]; then
                 success "    $pipeline : OK (HTTP ${result#OK:})"
-                ((successful++))
+                successful=$((successful + 1))
             elif [[ "$result" == EMPTY:* ]]; then
                 warning "    $pipeline : EMPTY (HTTP ${result#EMPTY:})"
-                ((failed++))
+                failed=$((failed + 1))
             elif [[ "$result" == ERROR:* ]]; then
                 error "    $pipeline : ERROR (HTTP ${result#ERROR:})"
-                ((failed++))
+                failed=$((failed + 1))
             else
                 error "    $pipeline : TIMEOUT"
-                ((failed++))
+                failed=$((failed + 1))
             fi
 
             # Progress indicator
@@ -468,7 +468,7 @@ test_all_webhooks() {
             local result="${results[$key]}"
 
             if [[ "$result" == OK:* ]]; then
-                ((pipeline_ok++))
+                pipeline_ok=$((pipeline_ok + 1))
             fi
         done
 
@@ -563,8 +563,12 @@ main() {
 
     # Pause before starting
     log "\n${YELLOW}Prêt à lancer le déploiement sur ${#SPACES[@]} HF Spaces...${NC}"
-    log "${YELLOW}Appuyez sur ENTRÉE pour continuer ou CTRL+C pour annuler${NC}"
-    read -r
+    if [ -t 0 ]; then
+        log "${YELLOW}Appuyez sur ENTRÉE pour continuer ou CTRL+C pour annuler${NC}"
+        read -r
+    else
+        log "${YELLOW}Mode non-interactif détecté: continuation automatique${NC}"
+    fi
 
     # Main operations
     if ! restore_credentials; then
