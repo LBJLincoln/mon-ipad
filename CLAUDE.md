@@ -1,6 +1,6 @@
 # Multi-RAG Orchestrator — Tour de Contrôle Centrale
 
-> Last updated: 2026-02-25T10:00:00+01:00
+> Last updated: 2026-02-27T15:33:00Z
 
 **CE REPO (`mon-ipad`) EST LA TOUR DE CONTRÔLE.**
 VM Google Cloud permanente · Claude Code via Termius · Pilote 7 repos satellites
@@ -31,35 +31,40 @@ Tu es Claude Code (`claude-opus-4-6`) exécuté dans **Termius** connecté à la
 
 ---
 
-## 2. QUICK START — SESSION CHECKLIST
+## 2. QUICK START — SESSION CHECKLIST (PROTOCOL V2)
 
-### Au démarrage (OBLIGATOIRE — dans cet ordre)
+### Démarrage session (OBLIGATOIRE, 2-3 min)
 ```bash
-# Phase 1: Lire l'état (30s)
-cat directives/session-state.md    # Mémoire session
-cat directives/status.md            # Résumé session précédente
-bash scripts/check-staleness.sh    # Vérifier dates obsolètes
-
-# Phase 2: Intelligence session (1 min) — CRITIQUE: évite de répéter les erreurs
-python3 scripts/session-intelligence.py   # Analyse mathématique des sessions passées
-python3 scripts/node-tracker.py           # Historique succès/échec par noeud n8n
-
-# Phase 3: Appliquer les recommandations du rapport AVANT de commencer
-cat logs/session-intelligence-report.json | python3 -c "import sys,json; [print(f'  [{r[\"priority\"]}] {r[\"action\"]}') for r in json.load(sys.stdin).get('recommendations',[])]"
+cat directives/session-state.md
+cat directives/status.md
+cat technicals/debug/knowledge-base.md
+cat technicals/debug/fixes-library.md
+source .env.local
 ```
 
-### Lancer agents de démarrage (background — PARALLELE)
-- **Agent 1 : Session Intelligence** — Sonnet, analyse logs/session-intelligence-report.json + recommandations
-- **Agent 2 : Repo Health Inspector** — Sonnet, scan staleness + 7 repos via gh api
-- **Agent 3 : Pipeline Health Check** — Haiku, test rapide 5 webhooks (curl POST + check HTTP code)
-- **Agent 4 : Background Evals** — Sonnet, lancer eval sur pipelines fonctionnels (nohup)
+### Ordre de priorité opérationnelle (STRICT)
+1. **Pipelines critiques down** (Standard/Graph/Quant/Orchestrator/Ingestion/PME gateway)
+2. **RAG tests + dashboard live**
+3. **Sites/chatbot UX**
+4. **Démos/contenu marketing**
 
-### Pre-vol checklist (AVANT tout test webhook)
-**Consulter `technicals/debug/knowledge-base.md` Section 0** — webhook paths, field names, auth
-**Consulter `logs/node-tracker-report.json`** — noeuds en échec récent, régressions détectées
-**Consulter `snapshot/working-session58/`** — workflows fonctionnels de référence pour rollback rapide
+### Boucle d'exécution obligatoire (DIFF-FIRST)
+1. **Diagnostiquer** (état actuel + diff vs état fonctionnel)
+2. **Un seul fix à la fois**
+3. **Tester incrémental** (ne pas retraiter les questions déjà testées)
+4. **Comparer aux golden evals** (bloquer si régression critique)
+5. **Commit + push immédiat**
+6. **Mettre à jour docs état** (`executive-summary.md`, `status.md`, `session-state.md`)
 
----
+### Règles de cadence
+- Push utile toutes les **10-15 minutes** en phase active
+- Toujours inclure un update horodaté dans `docs/executive-summary.md` après milestone
+- Si 3 tentatives échouées sur le même point: rollback snapshot + nouvelle stratégie
+
+### Règles dépréciées (supprimées car peu efficaces)
+- Démarrage systématique de multiples agents background avant stabilisation des pipelines
+- Multiplication de chantiers non critiques tant qu'un pipeline prioritaire est rouge
+- Changements multi-noeuds simultanés sans validation intermédiaire
 
 ## 3. STATE FILES — SOURCES DE VÉRITÉ
 
