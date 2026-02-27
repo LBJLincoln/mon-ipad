@@ -1,3 +1,21 @@
+
+## Update — 2026-02-27 15:26 UTC
+
+### Current operational status
+- RAG mass tests executed in parallel on 10 HF Spaces (50 questions x 4 pipelines each).
+- Infrastructure execution is working; evaluation quality currently fails (0% accuracy in latest mass summaries), requiring parsing/scoring and routing fixes.
+- Nomos42 (ex-PME connectors) chat API is live on project Vercel URL and returns responses; renaming/repositioning to Individuals is in progress.
+- Data-ingestion remains partially unstable on HF webhooks (500/404 mix); remediation and activation mapping in progress.
+- LiteLLM stack installed in VM with OpenRouter+Groq key pool setup; runtime integration work continues.
+
+### Next 24h priority
+1. Nomos42 tomorrow-ready for ~20 close-user tests (UX + reliability + naming consistency).
+2. Dashboard live alignment with existing stack (runs + repos + health).
+3. RAG eval quality recovery + incremental/golden checks.
+4. Data-ingestion/enrichment stabilization across spaces/codespaces.
+
+---
+
 # EXECUTIVE SUMMARY — Nomos AI Multi-RAG Orchestrator
 
 > Last updated: 2026-02-25T13:00:00+01:00
