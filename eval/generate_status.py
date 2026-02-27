@@ -208,8 +208,24 @@ def generate():
 
 
 if __name__ == "__main__":
+    import subprocess
     status = generate()
     if status:
         print(json.dumps(status, indent=2))
+
+        # Auto-sync to rag-dashboard (public repo) for live dashboard feed
+        sync_script = os.path.join(REPO_ROOT, "scripts", "sync-dashboard-data.sh")
+        if os.path.exists(sync_script):
+            print("\n🔄 Auto-syncing to rag-dashboard...", file=sys.stderr)
+            try:
+                subprocess.run(["bash", sync_script], check=True, cwd=REPO_ROOT,
+                             capture_output=True, text=True, timeout=30)
+                print("✅ Dashboard data synced", file=sys.stderr)
+            except subprocess.TimeoutExpired:
+                print("⚠️  Dashboard sync timed out (continuing)", file=sys.stderr)
+            except subprocess.CalledProcessError as e:
+                print(f"⚠️  Dashboard sync failed: {e.stderr[:200]}", file=sys.stderr)
+            except Exception as e:
+                print(f"⚠️  Dashboard sync error: {e}", file=sys.stderr)
     else:
         sys.exit(1)
