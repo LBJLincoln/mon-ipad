@@ -1,3 +1,30 @@
+## Update — 2026-02-27 20:00 UTC — Session 63 Full Blast
+
+**Major infrastructure swap: OpenRouter/Trinity → Groq/Llama-3.3-70b-versatile**
+- Root cause: OpenRouter rate-limiting 7/9 free models (429 errors)
+- Solution: Swap all 4 core workflows to Groq API (same Llama 3.3 70B model as golden baseline)
+- 5 Groq API keys deployed across HF Space secrets
+- Workflow JSONs pushed to HF Space (rebuild in progress, SHA: 79d717a)
+- Groq tested from VM: 21ms latency, working perfectly
+
+**15 new scripts/tools created:**
+- `smart-autofix.py` (932 lines) — golden-based intelligent pipeline repair
+- `remote-control.py` (635 lines) — HTTP endpoint for pipeline management + client
+- `populate-trading-board.py` (586 lines) — Supabase metrics writer
+- `auto-model-swap.py` (368 lines) — automatic model fallback on 429
+- `bulk-status.sh`, `bulk-pull.sh`, `cron-git-gc.sh` — multi-repo utilities (K14/K15/K7)
+- API docs, templates, directives for PME repos
+
+**Supabase tables populated:**
+- `trading_board_snapshots`: first row (id=1) with current pipeline metrics
+- `bug_signatures`: schema ready, auto-population via smart-autofix
+
+**Dashboard fixed**: status.json synced to public rag-dashboard repo, URL updated
+
+**Pending**: HF Space rebuild completion → smoke test → progressive eval
+
+---
+
 ## Update — 2026-02-27 19:50 UTC
 
 **Dashboard data feed fixed** — mon-ipad is private, dashboard was getting 404s

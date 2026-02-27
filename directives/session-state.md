@@ -1,122 +1,112 @@
-# Session State — 25 Fevrier 2026 (Session 63 continued)
+# Session State — 27 Fevrier 2026 (Session 63 Full Blast)
 
-> Last updated: 2026-02-25T15:50:00+01:00
+> Last updated: 2026-02-27T20:00:00+01:00
 
-## Current Status: GOLDEN BASELINE REVERTED — LLM RATE-LIMITED
+## Current Status: GROQ SWAP DEPLOYED — REBUILD IN PROGRESS
 
-### Session 63 (continued) Achievements
+### Session 63 Achievements
 
-1. **Workflow Diff Engine operational** — compares all 9 spaces vs golden 22-Feb baseline:
-   - Standard + Graph: 100% match on all spaces
-   - Quantitative: 4 diffs (wrong API key nodes) — REVERTED to golden on 9 spaces
-   - Orchestrator: 26 diffs (14 node type changes Code→Postgres/Redis) — REVERTED to golden on 9 spaces
-   - Fixed: added `activate_workflow` method to N8nClient
-2. **Root cause identified: OpenRouter 429 rate limit**:
-   - `meta-llama/llama-3.3-70b-instruct:free` is rate-limited upstream
-   - Workflows are structurally correct (golden baseline)
-   - All 10 credentials present on primary space
-   - All 4 core workflows ACTIVE
-   - LLM calls fail with 429 → "Unable to generate answer" / "NO_ANSWER"
-3. **Golden baseline confirmed** (22 Feb results):
-   - Standard: 55.6% (363q), Graph: 64.0% (400q), Quant: 52.4% (500q)
-   - Workflow JSONs UNCHANGED since 22 Feb — infrastructure broke, not workflows
-4. **Scripts created (session 63)**:
-   - workflow-diff-engine.py (26KB) — diff + revert to golden
-   - continuous-monitor.py (15KB) — daemon, 5-min ping, 15-min deep test
-   - live-intelligence.py (22KB) — continuous math analysis
-   - launch-all.sh (18KB) — one-click restore+activate+verify
-   - auto-remediate.py (28KB) — 67 known fix patterns
-   - dashboard/index.html (38KB) — per-pipeline scrollable + "for dummies" mode
+1. **Groq swap deployed** — All 4 core workflows swapped from OpenRouter/Trinity to Groq/Llama-3.3-70b-versatile
+   - Same golden model (Llama 3.3 70B), different provider (Groq vs OpenRouter)
+   - Avoids 429 rate limits (OpenRouter) — Groq has 5 dedicated keys
+   - Groq API tested from VM: 21ms latency, "Four." response, HTTP 200
+   - Workflows pushed to HF Space (SHA: 79d717a), Docker rebuild triggered
 
-### BLOCKING ISSUE
-- **OpenRouter free-tier rate limit** — need to swap LLM model or set up LiteLLM multi-provider
-- **Next session**: Try `google/gemma-3-27b-it:free` or set up Together.ai/Groq fallback
-   - Orchestrator: 0% (empty body - separate issue)
-6. **Scripts created**:
-   - `scripts/scale-hf-spaces.py` — HF Space management
-   - `scripts/activate-all-spaces.py` — Bulk workflow activation
-   - `scripts/restore-all-spaces.py` — Parallel credential restoration
-   - **`scripts/launch-all.sh` — ONE-CLICK DEPLOYMENT (NEW)**
-7. **One-click deployment script** — `launch-all.sh`:
-   - Self-contained bash script (18 KB, 600+ lines)
-   - Orchestrates full deployment: restore → activate → test
-   - Tests all 5 webhooks on all 10 spaces (50 tests total)
-   - Color-coded terminal output (French)
-   - Comprehensive logging to `logs/launch-all-YYYY-MM-DD.log`
-   - Results matrix (spaces × pipelines)
-   - **Non-technical user friendly** — just run `bash scripts/launch-all.sh`
-   - Duration: 15-20 minutes for full deployment
-   - Documentation: `scripts/README-launch-all.md`
+2. **15 new scripts created** (via parallel agents):
+   - `scripts/smart-autofix.py` (932 lines) — golden-based intelligent pipeline repair
+   - `scripts/remote-control.py` (635 lines) + client (280 lines) — HTTP endpoint VM:8081
+   - `scripts/populate-trading-board.py` (586 lines) — Supabase metrics writer
+   - `scripts/auto-model-swap.py` (368 lines) — automatic 429 fallback
+   - `scripts/bulk-status.sh` (109 lines) — multi-repo git status (K14)
+   - `scripts/bulk-pull.sh` (85 lines) — multi-repo pull (K15)
+   - `scripts/cron-git-gc.sh` (156 lines) — weekly cleanup (K7)
+   - `docs/api/webhooks.md` (489 lines) — complete API docs (K6)
+   - `directives/repos/rag-pme-usecases.md` (202 lines) — repo directive (K2)
+   - `templates/CLAUDE.md.template` (92 lines) — standardized template (K3)
 
-### Phase 2 Eval Progress (stopped — credential restore in progress)
-- Eval PID stopped (previous run had credential issues)
-- **180+ tested IDs saved** to tested_ids.json
-- Accuracy improving after credential restore on primary space
-- **Next**: Re-run eval after credential fix completes on all spaces
+3. **Supabase populated**:
+   - `trading_board_snapshots`: row 1 inserted (best=quant 92%, worst=orch 0%)
+   - `bug_signatures`: schema ready, auto-population via smart-autofix
+   - Both tables via migrations applied earlier in session
 
-| Pipeline | Tested IDs | Total Available | Current Accuracy | Status |
-|----------|-----------|-----------------|------------------|--------|
-| Standard | 60+ | 1000 | ~85% | STOPPED - credential restore |
-| Graph | 50+ | 1000 | ~20% | STOPPED - credential restore |
-| Quantitative | 50+ | 1000 | ~6% | STOPPED - credential restore |
-| Orchestrator | 20+ | 1000 | 0% (empty body) | STOPPED - separate issue |
-| **TOTAL** | **180+** | **4000** | **Improving** | **Credential restore** |
+4. **Dashboard fixed** (by background agent):
+   - Problem: mon-ipad repo is PRIVATE → raw.githubusercontent returns 404
+   - Fix: status.json synced to PUBLIC rag-dashboard repo, URL updated
+   - Auto-sync script: `scripts/sync-dashboard-data.sh`
 
-### Infrastructure (10 HF Spaces)
-| Space | Account | URL | Status |
-|-------|---------|-----|--------|
-| 1 (primary) | LBJLincoln | lbjlincoln-nomos-rag-engine.hf.space | RUNNING + 11/14 workflows |
-| 2 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-2.hf.space | **BROKEN** — under investigation |
-| 3 | LBJLincoln | lbjlincoln-nomos-rag-engine-3.hf.space | RUNNING + credential restore |
-| 4 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-4.hf.space | RUNNING + credential restore |
-| 5 | LBJLincoln | lbjlincoln-nomos-rag-engine-5.hf.space | RUNNING + credential restore |
-| 6 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-6.hf.space | RUNNING + credential restore |
-| 7 | LBJLincoln | lbjlincoln-nomos-rag-engine-7.hf.space | RUNNING + credential restore |
-| 8 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-8.hf.space | RUNNING + credential restore |
-| 9 | LBJLincoln | lbjlincoln-nomos-rag-engine-9.hf.space | RUNNING + credential restore |
-| 10 | LBJLincoln26 | lbjlincoln26-nomos-rag-engine-10.hf.space | RUNNING + credential restore |
+5. **Model swap backups preserved**:
+   - `snapshot/model-swap-backups/pre-groq-swap/` — all 4 Trinity versions
+   - `snapshot/model-swap-backups/` — pre-Trinity OpenRouter versions
 
-### Chatbot: Live on all 4 sites
-- nomos-ai-pied.vercel.app — YES
-- nomos-pme-connectors — YES
-- nomos-pme-usecases — YES
-- nomos-dashboard — YES
+### BLOCKING: HF Space Rebuild
 
-### Broken Endpoints (still to fix)
-- Data Ingestion V4.0: 404
-- PME Gateway: 404
-- Status Dashboard: 404
+- **Status**: RUNNING_BUILDING (stage reported by HF API)
+- **SHA**: 79d717a (our Groq commit)
+- **Background monitor**: polling every 20s at /tmp/hf-rebuild-monitor.log
+- **Expected**: 3-5 min from push (pushed ~19:35 UTC)
+- **After rebuild**: smoke test (A2), golden check (A3), progressive eval (C1)
 
-### Known Issues
-- **Orchestrator returns empty body** — separate issue from env var fix, needs investigation
-- **HF Space rebuild wipes SQLite DB** — credential references lost, restore script running
-- **Standard workflow uses $env.VAR_NAME** — not credential objects for OpenRouter/Pinecone
-- **N8N_BLOCK_ENV_ACCESS_IN_NODE=false REQUIRED** — for $env expressions to work
+### Pipeline Config (post-swap)
 
-### CRITICAL: Next Session Startup
-1. **Verify credential restore completed** — check all 10 spaces have credentials
-2. **Re-run eval** — use dedup to continue from tested_ids.json (180+ already tested)
-3. **Fix Orchestrator empty body** — investigate root cause (different from env var issue)
-4. **Monitor Space 2** — currently broken, may need manual intervention
-5. **Run session intelligence** — `python3 scripts/session-intelligence.py` before starting
+| Pipeline | Provider | Model | API Key Env | URL |
+|----------|----------|-------|-------------|-----|
+| Standard | Groq | llama-3.3-70b-versatile | GROQ_API_KEY_STANDARD | api.groq.com/openai/v1/chat/completions |
+| Graph | Groq | llama-3.3-70b-versatile | GROQ_API_KEY_GRAPH | api.groq.com/openai/v1/chat/completions |
+| Quantitative | Groq | llama-3.3-70b-versatile | GROQ_API_KEY_QUANTITATIVE | api.groq.com/openai/v1/chat/completions |
+| Orchestrator | Groq | llama-3.3-70b-versatile | GROQ_API_KEY_ORCHESTRATOR | api.groq.com/openai/v1/chat/completions |
 
-### Session Intelligence Recommendations
-1. [CRITICAL] Orchestrator degradation -20% — investigate NO_ANSWER pattern
-2. [HIGH] HF Space rebuild needed (N8N_BLOCK_ENV_ACCESS_IN_NODE fix)
-3. [HIGH] Quantitative degradation -8% — likely caused by env var access block
-4. [MEDIUM] Standard degradation -8%
+### Known Issue: n8n API 401
 
-### Dataset Files
-| File | Pipelines | Questions |
-|------|-----------|-----------|
-| datasets/phase-2/hf-1000.json | graph(500), quant(500) | 1000 |
-| datasets/phase-2/graph-quant-expansion-500x2.json | graph(500), quant(500) | 1000 |
-| datasets/phase-2/standard-orch-1000x2.json | standard(1000), orch(1000) | 2000 |
-| datasets/phase-2/pme-gateway-1000.json | pme-gateway(1000) | 1000 |
-| **TOTAL** | **5 pipelines** | **5000** |
+- HF Space rebuild wipes SQLite → new API key needed
+- setup-workflows.py creates owner + credentials on boot
+- Old N8N_API_KEY in .env.local is stale
+- **TODO**: After rebuild, extract new API key and update .env.local
+- **Better fix**: Switch n8n to PostgreSQL (Supabase) for persistent DB
 
-### Git Commits (Session 62)
-- `92a36a1` — 10 HF Spaces + eval improvements (incremental saves, preflight, signal handler)
-- `e6b4cdd` — executive summary update + tested_ids incremental save
-- `566a4a4` — N8N_BLOCK_ENV_ACCESS_IN_NODE=false fix
-- Plus: Dashboard fix, Enrichissement fix, Action Executor fix (from repair agents)
+### Task Progress
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| A1 | Push Groq workflows to HF Space | DONE | SHA: 79d717a pushed |
+| A2 | Smoke test post-deploy | WAITING | Rebuild in progress |
+| A3 | Golden check + decision engine | PENDING | After A2 |
+| B1 | Populate trading_board_snapshots | DONE | Row 1 inserted |
+| B2 | Fix dashboard live feed | DONE | Status.json synced to public repo |
+| B3 | Create smart-autofix.py | DONE | 932 lines |
+| B4 | Create remote-control.py | DONE | 635 lines + client |
+| B5 | LiteLLM HF Space | DEFERRED | User suggested Codespaces alternative |
+| B6 | Kimi batch files | DONE | 6 files (K2,K3,K6,K7,K14,K15) |
+| B7 | PME Connectors check | PENDING |
+| C1 | Progressive eval | After A2 |
+| C4 | Update docs | IN PROGRESS |
+
+### Phase 2 Eval Progress (pre-session 63)
+
+| Pipeline | Phase 2 Best | Phase 1 Baseline | Golden Model |
+|----------|-------------|------------------|--------------|
+| Standard | 55.6% (363q) | 92.0% (50q) | meta-llama/llama-3.3-70b-instruct:free |
+| Graph | 64.0% (400q) | 78.0% (50q) | meta-llama/llama-3.3-70b-instruct:free |
+| Quantitative | 52.4% (500q) | 92.0% (50q) | meta-llama/llama-3.3-70b-instruct:free |
+| Orchestrator | 11.1% (36q) | 80.0% (50q) | meta-llama/llama-3.3-70b-instruct:free |
+
+### Infrastructure
+
+| Component | Status |
+|-----------|--------|
+| VM (34.136.180.66) | UP — pilotage only |
+| HF Space #1 | REBUILDING (Groq swap) |
+| Vercel (4 sites) | UP (HTTP 200) |
+| Supabase | UP (42 tables) |
+| Pinecone | UP (10K+ vectors) |
+| Neo4j | UP (19K+ nodes) |
+| Groq API | TESTED OK (21ms, 5 keys) |
+| OpenRouter | RATE-LIMITED (7/9 models 429) |
+
+### CRITICAL: Next Steps
+
+1. **Wait for HF Space rebuild** → monitor /tmp/hf-rebuild-monitor.log
+2. **Smoke test** → `python3 eval/quick-test.py --questions 5 --pipelines standard,graph,quantitative,orchestrator`
+3. **If n8n API 401** → extract new API key from setup-workflows.py log
+4. **Progressive eval** → `python3 eval/iterative-eval.py --label "session63-groq"`
+5. **Consider PostgreSQL** for n8n (Supabase) to avoid SQLite wipe on rebuild
+6. **Codespaces** for data-ingestion, PME connectors, Nomos42 tasks
