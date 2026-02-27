@@ -67,7 +67,8 @@ class KeyRotator:
         Returns:
             List of API keys (deduplicated)
         """
-        key_vars = [
+        # Backward-compatible base vars + dynamic discovery of OPENROUTER_KEY_*.
+        base_vars = [
             "OPENROUTER_API_KEY",          # Main key
             "OPENROUTER_KEY_STANDARD",     # Standard RAG pipeline
             "OPENROUTER_KEY_GRAPH",        # Graph RAG pipeline
@@ -77,6 +78,16 @@ class KeyRotator:
             "OPENROUTER_KEY_ACCOUNT2",     # Account 2 (if exists)
             "OPENROUTER_KEY_ACCOUNT3",     # Account 3 (if exists)
         ]
+
+        dynamic_vars = sorted([
+            k for k in os.environ.keys()
+            if k.startswith("OPENROUTER_KEY_")
+        ])
+
+        key_vars = []
+        for k in base_vars + dynamic_vars:
+            if k not in key_vars:
+                key_vars.append(k)
 
         keys = []
         seen = set()
