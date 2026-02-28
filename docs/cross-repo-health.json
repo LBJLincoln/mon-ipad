@@ -1,0 +1,390 @@
+{
+  "generated_at": "2026-02-28T11:18:44.754716+00:00",
+  "version": "1.0",
+  "repos": {
+    "mon-ipad": {
+      "repo": "mon-ipad",
+      "role": "Control tower — directives, eval scripts, MCP configs",
+      "last_commit_sha": "a1e2cf8",
+      "last_commit_msg": "feat(session64): Groq per-pipeline credentials, trading boar",
+      "last_commit_date": "2026-02-28T10:18:37Z",
+      "days_since_commit": 0,
+      "local_sync": "in_sync",
+      "stale": false
+    },
+    "rag-tests": {
+      "repo": "rag-tests",
+      "role": "Eval scripts, datasets, test results",
+      "last_commit_sha": "96b56e6",
+      "last_commit_msg": "chore(gitignore): ignore local logs artifacts",
+      "last_commit_date": "2026-02-27T15:37:31Z",
+      "days_since_commit": 0,
+      "local_sync": "in_sync",
+      "stale": false
+    },
+    "rag-website": {
+      "repo": "rag-website",
+      "role": "Next.js 14 — 4 sector sites + chatbots",
+      "last_commit_sha": "633239c",
+      "last_commit_msg": "chore(chatbot): add shared local chatbot engine file",
+      "last_commit_date": "2026-02-27T15:37:01Z",
+      "days_since_commit": 0,
+      "local_sync": "in_sync",
+      "stale": false
+    },
+    "rag-dashboard": {
+      "repo": "rag-dashboard",
+      "role": "Live metrics dashboard (HTML/JS)",
+      "last_commit_sha": "91f453f",
+      "last_commit_msg": "chore: auto-sync status.json from mon-ipad",
+      "last_commit_date": "2026-02-27T19:44:21Z",
+      "days_since_commit": 0,
+      "local_sync": "in_sync",
+      "stale": false
+    },
+    "rag-data-ingestion": {
+      "repo": "rag-data-ingestion",
+      "role": "Ingestion V3.1 + Enrichissement V3.1",
+      "last_commit_sha": "0fa5ea9",
+      "last_commit_msg": "fix(sync): make live-writer optional to avoid crash",
+      "last_commit_date": "2026-02-27T13:23:55Z",
+      "days_since_commit": 0,
+      "local_sync": "in_sync",
+      "stale": false
+    },
+    "rag-pme-usecases": {
+      "repo": "rag-pme-usecases",
+      "role": "Next.js 14 — 200 use cases",
+      "last_commit_sha": "8937f97",
+      "last_commit_msg": "chore(chatbot): add shared local chatbot engine file",
+      "last_commit_date": "2026-02-27T15:37:00Z",
+      "days_since_commit": 0,
+      "local_sync": "in_sync",
+      "stale": false
+    },
+    "rag-pme-connectors": {
+      "repo": "rag-pme-connectors",
+      "role": "Next.js 15 — 15 PME apps + MacBook chat",
+      "last_commit_sha": "8435492",
+      "last_commit_msg": "feat(nomos42): add Nomos42 transition components and brandin",
+      "last_commit_date": "2026-02-27T17:48:44Z",
+      "days_since_commit": 0,
+      "local_sync": "in_sync",
+      "stale": false
+    }
+  },
+  "ci": {
+    "rag-website": {
+      "status": "no_ci",
+      "workflows": []
+    },
+    "rag-dashboard": {
+      "status": "no_ci",
+      "workflows": []
+    },
+    "rag-pme-usecases": {
+      "status": "no_ci",
+      "workflows": []
+    },
+    "rag-data-ingestion": {
+      "status": "no_ci",
+      "workflows": []
+    },
+    "mon-ipad": {
+      "status": "healthy",
+      "healthy": true,
+      "workflows": [
+        {
+          "name": "Eval 1000q Parallel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-24T21:27:21Z",
+          "run_number": 5
+        },
+        {
+          "name": "Eval 1000q Parallel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-24T20:22:59Z",
+          "run_number": 4
+        },
+        {
+          "name": "Eval 1000q Parallel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-24T17:27:58Z",
+          "run_number": 3
+        }
+      ],
+      "expected_workflows": [
+        "Eval 1000q Parallel"
+      ]
+    },
+    "rag-pme-connectors": {
+      "status": "healthy",
+      "healthy": true,
+      "workflows": [
+        {
+          "name": "Deploy Website to Vercel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-27T17:49:27Z",
+          "run_number": 9
+        },
+        {
+          "name": "Deploy Website to Vercel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-27T15:37:34Z",
+          "run_number": 8
+        },
+        {
+          "name": "Deploy Website to Vercel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-27T13:38:55Z",
+          "run_number": 7
+        }
+      ],
+      "expected_workflows": [
+        "Deploy Website to Vercel"
+      ]
+    },
+    "rag-tests": {
+      "status": "healthy",
+      "healthy": true,
+      "workflows": [
+        {
+          "name": "CI - RAG Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-27T15:37:50Z",
+          "run_number": 2
+        },
+        {
+          "name": "CI - RAG Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-25T09:15:06Z",
+          "run_number": 1
+        },
+        {
+          "name": "Deploy Website to Vercel",
+          "status": "completed",
+          "conclusion": "failure",
+          "updated_at": "2026-02-23T01:25:50Z",
+          "run_number": 7
+        }
+      ],
+      "expected_workflows": [
+        "CI - RAG Tests"
+      ]
+    }
+  },
+  "vercel": {
+    "ETI 4 Sectors": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 2739,
+      "name": "ETI 4 Sectors",
+      "url": "https://nomos-ai-pied.vercel.app"
+    },
+    "Dashboard": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 2503,
+      "name": "Dashboard",
+      "url": "https://nomos-dashboard-alexis-morets-projects.vercel.app"
+    },
+    "PME Connectors": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 3239,
+      "name": "PME Connectors",
+      "url": "https://nomos-pme-connectors-alexis-morets-projects.vercel.app"
+    },
+    "PME Use Cases": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 3477,
+      "name": "PME Use Cases",
+      "url": "https://nomos-pme-usecases-alexis-morets-projects.vercel.app"
+    }
+  },
+  "hf_space": {
+    "url": "https://lbjlincoln-nomos-rag-engine.hf.space",
+    "healthz": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 1246
+    },
+    "healthy": true
+  },
+  "webhooks": {
+    "standard": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 20310,
+      "pipeline": "standard",
+      "webhook": "/webhook/rag-multi-index-v3"
+    },
+    "graph": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 26973,
+      "pipeline": "graph",
+      "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717"
+    },
+    "quantitative": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 1209,
+      "pipeline": "quantitative",
+      "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9"
+    },
+    "orchestrator": {
+      "healthy": false,
+      "status_code": 0,
+      "latency_ms": 30529,
+      "error": "The read operation timed out",
+      "pipeline": "orchestrator",
+      "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0"
+    }
+  },
+  "databases": {
+    "pinecone_primary": {
+      "index": "sota-rag-jina-1024",
+      "healthy": true,
+      "vectors": 10411,
+      "dimension": 1024
+    },
+    "pinecone_graph": {
+      "index": "sota-rag-phase2-graph",
+      "healthy": true,
+      "vectors": 1248,
+      "dimension": 1024
+    },
+    "neo4j": {
+      "healthy": null,
+      "note": "Could not check (env vars missing)"
+    },
+    "supabase": {
+      "healthy": null,
+      "note": "pg8000 not installed"
+    }
+  },
+  "pipeline_metrics": {
+    "standard": {
+      "accuracy": 92.0,
+      "tested": 50,
+      "correct": 46,
+      "errors": 1,
+      "target": 85.0,
+      "met": true,
+      "gap": 7.0
+    },
+    "graph": {
+      "accuracy": 78.0,
+      "tested": 50,
+      "correct": 39,
+      "errors": 0,
+      "target": 70.0,
+      "met": true,
+      "gap": 8.0
+    },
+    "quantitative": {
+      "accuracy": 92.0,
+      "tested": 50,
+      "correct": 46,
+      "errors": 1,
+      "target": 85.0,
+      "met": true,
+      "gap": 7.0
+    },
+    "orchestrator": {
+      "accuracy": 80.0,
+      "tested": 50,
+      "correct": 40,
+      "errors": 2,
+      "target": 70.0,
+      "met": true,
+      "gap": 10.0
+    }
+  },
+  "doctor_report": {
+    "timestamp": "2026-02-28T11:06:16.198229+00:00",
+    "mode": "apply",
+    "pipelines": {
+      "standard": {
+        "pipeline": "standard",
+        "timestamp": "2026-02-28T11:05:54.223582+00:00",
+        "webhook_health": {
+          "healthy": true,
+          "status_code": 200
+        },
+        "recent_errors": [],
+        "matched_fixes": [],
+        "anti_pattern_warnings": [],
+        "health": {
+          "score": 58.6,
+          "status": "DEGRADED",
+          "breakdown": {
+            "accuracy": {
+              "value": 42.0,
+              "threshold": 85.0,
+              "component_score": 49.4
+            },
+            "latency_p95": {
+              "value": 0,
+              "threshold": 5000,
+              "component_score": 50
+            },
+            "error_rate": {
+              "value": 0.0,
+              "threshold": 5.0,
+              "component_score": 100.0
+            },
+            "smoke_pass": {
+              "value": 0.42,
+              "component_score": 42.0
+            },
+            "trend": {
+              "component_score": 50
+            }
+          }
+        },
+        "metrics": {
+          "accuracy": 42.0,
+          "error_rate": 0.0,
+          "latency_p95": 0,
+          "smoke_pass_rate": 0.42,
+          "source": "/home/termius/mon-ipad/logs/iterative-eval/iterative-2026-02-25T05-20-07.json"
+        },
+        "auto_fix_result": "no_candidates"
+      }
+    }
+  },
+  "overall": {
+    "score": 93.8,
+    "status": "DEGRADED",
+    "critical_issues": 1,
+    "component_scores": {
+      "repos": 100.0,
+      "ci": 100.0,
+      "vercel": 100.0,
+      "hf_space": 100,
+      "webhooks": 75.0,
+      "databases": 100.0,
+      "pipelines": 100.0
+    },
+    "weights": {
+      "repos": 0.1,
+      "ci": 0.15,
+      "vercel": 0.1,
+      "hf_space": 0.15,
+      "webhooks": 0.25,
+      "databases": 0.1,
+      "pipelines": 0.15
+    }
+  }
+}
