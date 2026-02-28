@@ -23,6 +23,8 @@ Usage:
   python3 scripts/pipeline-doctor.py --reparse-fixes        # Re-parse fixes-library.md
   python3 scripts/pipeline-doctor.py --show-history         # Fix application history
   python3 scripts/pipeline-doctor.py --list-snapshots       # List validated snapshots
+  python3 scripts/pipeline-doctor.py --repos                # All 7 repos (git, CI, Vercel)
+  python3 scripts/pipeline-doctor.py --repos --repo mon-ipad  # One repo
 
 Last updated: 2026-02-28
 """
@@ -89,6 +91,59 @@ PIPELINES = {
     "orchestrator": {
         "workflow_id": "ALd4gOEqiKL5KR1p",
         "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+    },
+}
+
+# ─── Repo configs (for --repos mode) ─────────────────────────────
+REPOS = {
+    "mon-ipad": {
+        "role": "Control tower — directives, eval scripts, MCP configs",
+        "remote": "origin",
+        "ci_workflow": "Eval 1000q Parallel",
+        "vercel_url": None,
+        "checks": ["git", "ci"],
+    },
+    "rag-tests": {
+        "role": "Eval scripts, datasets, test results",
+        "remote": "rag-tests",
+        "ci_workflow": "CI - RAG Tests",
+        "vercel_url": None,
+        "checks": ["git", "ci"],
+    },
+    "rag-website": {
+        "role": "Next.js 14 — 4 sector sites + chatbots",
+        "remote": "rag-website",
+        "ci_workflow": None,
+        "vercel_url": "https://nomos-ai-pied.vercel.app",
+        "checks": ["git", "vercel"],
+    },
+    "rag-dashboard": {
+        "role": "Live metrics dashboard (HTML/JS)",
+        "remote": "rag-dashboard",
+        "ci_workflow": None,
+        "vercel_url": "https://nomos-dashboard-alexis-morets-projects.vercel.app",
+        "checks": ["git", "vercel"],
+    },
+    "rag-data-ingestion": {
+        "role": "Ingestion V3.1 + Enrichissement V3.1",
+        "remote": "rag-data-ingestion",
+        "ci_workflow": None,
+        "vercel_url": None,
+        "checks": ["git", "scripts"],
+    },
+    "rag-pme-connectors": {
+        "role": "Next.js 15 — 15 PME apps + MacBook chat",
+        "remote": "rag-pme-connectors",
+        "ci_workflow": "Deploy Website to Vercel",
+        "vercel_url": "https://nomos-pme-connectors-alexis-morets-projects.vercel.app",
+        "checks": ["git", "ci", "vercel"],
+    },
+    "rag-pme-usecases": {
+        "role": "Next.js 14 — 200 use cases",
+        "remote": "rag-pme-usecases",
+        "ci_workflow": None,
+        "vercel_url": "https://nomos-pme-usecases-alexis-morets-projects.vercel.app",
+        "checks": ["git", "vercel"],
     },
 }
 
@@ -1233,6 +1288,320 @@ class LearningTracker:
 
 
 # ═══════════════════════════════════════════════════════════════════
+# Component 8 — RepoDiagnosticEngine (covers all 7 repos)
+# ═══════════════════════════════════════════════════════════════════
+
+class RepoDiagnosticEngine:
+    """Diagnose health of all 7 repos: git sync, CI, Vercel, scripts."""
+
+    def __init__(self):
+        self.reports = {}
+
+    def _run_cmd(self, cmd, timeout=30):
+        """Run a shell command, return (returncode, stdout)."""
+        try:
+            result = subprocess.run(
+                cmd, shell=True, capture_output=True, text=True, timeout=timeout
+            )
+            return result.returncode, result.stdout.strip()
+        except subprocess.TimeoutExpired:
+            return -1, "TIMEOUT"
+        except Exception as e:
+            return -1, str(e)
+
+    def _http_check(self, url, timeout=15):
+        """HTTP GET with latency tracking."""
+        import urllib.request
+        import urllib.error
+        start = time.time()
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "pipeline-doctor/1.1"})
+            resp = urllib.request.urlopen(req, timeout=timeout)
+            latency = int((time.time() - start) * 1000)
+            return {"healthy": True, "status_code": resp.getcode(), "latency_ms": latency}
+        except urllib.error.HTTPError as e:
+            latency = int((time.time() - start) * 1000)
+            return {"healthy": False, "status_code": e.code, "latency_ms": latency}
+        except Exception as e:
+            latency = int((time.time() - start) * 1000)
+            return {"healthy": False, "status_code": 0, "latency_ms": latency, "error": str(e)}
+
+    def check_git(self, repo_name, config):
+        """Check git sync status for a repo."""
+        remote = config["remote"]
+        # Get last commit on remote
+        rc, out = self._run_cmd(f"git log {remote}/main --oneline -1 2>/dev/null")
+        if rc != 0:
+            # Try fetching first
+            self._run_cmd(f"git fetch {remote} main 2>/dev/null", timeout=15)
+            rc, out = self._run_cmd(f"git log {remote}/main --oneline -1 2>/dev/null")
+
+        if rc != 0 or not out:
+            return {"status": "error", "message": f"Cannot read {remote}/main"}
+
+        sha = out.split()[0] if out else "?"
+        msg = " ".join(out.split()[1:]) if out else "?"
+
+        # Get commit date
+        rc2, date_out = self._run_cmd(
+            f"git log {remote}/main -1 --format='%ci' 2>/dev/null"
+        )
+        commit_date = date_out.strip("'") if rc2 == 0 else "?"
+
+        # Check if local tracking is behind
+        rc3, diff_out = self._run_cmd(
+            f"git rev-list --count {remote}/main..HEAD 2>/dev/null"
+        )
+        ahead = int(diff_out) if rc3 == 0 and diff_out.isdigit() else 0
+        rc4, diff_out2 = self._run_cmd(
+            f"git rev-list --count HEAD..{remote}/main 2>/dev/null"
+        )
+        behind = int(diff_out2) if rc4 == 0 and diff_out2.isdigit() else 0
+
+        # Days since commit
+        days = 0
+        if commit_date and commit_date != "?":
+            try:
+                from datetime import datetime as dt
+                cd = dt.strptime(commit_date[:19], "%Y-%m-%d %H:%M:%S")
+                days = (datetime.now() - cd).days
+            except Exception:
+                pass
+
+        sync = "in_sync"
+        if ahead > 0 and behind > 0:
+            sync = "diverged"
+        elif behind > 0:
+            sync = "behind"
+        elif ahead > 0:
+            sync = "ahead"
+
+        return {
+            "status": "ok",
+            "last_sha": sha,
+            "last_msg": msg[:60],
+            "commit_date": commit_date[:19] if commit_date != "?" else "?",
+            "days_since_commit": days,
+            "stale": days > 7,
+            "sync": sync,
+            "ahead": ahead,
+            "behind": behind,
+        }
+
+    def check_ci(self, repo_name, config):
+        """Check CI/CD status via gh CLI."""
+        workflow = config.get("ci_workflow")
+        if not workflow:
+            return {"status": "no_ci", "message": "No CI configured"}
+
+        gh_repo = f"LBJLincoln/{repo_name}"
+        rc, out = self._run_cmd(
+            f'gh run list --repo {gh_repo} --workflow "{workflow}" --limit 3 --json status,conclusion,updatedAt,displayTitle 2>/dev/null',
+            timeout=20
+        )
+        if rc != 0 or not out:
+            return {"status": "error", "message": "gh CLI failed"}
+
+        try:
+            runs = json.loads(out)
+        except json.JSONDecodeError:
+            return {"status": "error", "message": "Bad JSON from gh"}
+
+        if not runs:
+            return {"status": "no_runs", "message": "No recent runs"}
+
+        latest = runs[0]
+        healthy = latest.get("conclusion") == "success"
+        return {
+            "status": "healthy" if healthy else "failing",
+            "healthy": healthy,
+            "latest_conclusion": latest.get("conclusion", "?"),
+            "latest_status": latest.get("status", "?"),
+            "latest_title": latest.get("displayTitle", "?")[:60],
+            "updated_at": latest.get("updatedAt", "?"),
+            "total_runs": len(runs),
+        }
+
+    def check_vercel(self, repo_name, config):
+        """Check Vercel site health."""
+        url = config.get("vercel_url")
+        if not url:
+            return {"status": "no_vercel", "message": "No Vercel deployment"}
+        return self._http_check(url)
+
+    def check_scripts(self, repo_name, config):
+        """Check repo-specific scripts/tooling health."""
+        remote = config["remote"]
+        # Check if key files exist on the remote branch
+        checks = []
+
+        if repo_name == "rag-data-ingestion":
+            # Check for key ingestion scripts
+            for f in ["scripts/download-sector-datasets.py", "docker-compose.yml"]:
+                rc, out = self._run_cmd(
+                    f"git show {remote}/main:{f} 2>/dev/null | head -1"
+                )
+                checks.append({"file": f, "exists": rc == 0 and bool(out)})
+        elif repo_name == "rag-tests":
+            for f in ["eval/quick-test.py", "eval/iterative-eval.py"]:
+                rc, out = self._run_cmd(
+                    f"git show {remote}/main:{f} 2>/dev/null | head -1"
+                )
+                checks.append({"file": f, "exists": rc == 0 and bool(out)})
+
+        found = sum(1 for c in checks if c["exists"])
+        total = len(checks) if checks else 1
+        return {
+            "status": "ok" if found == total else "degraded",
+            "files_checked": checks,
+            "found": found,
+            "total": total,
+        }
+
+    def diagnose_repo(self, repo_name):
+        """Run all configured checks for a single repo."""
+        config = REPOS.get(repo_name)
+        if not config:
+            return {"repo": repo_name, "error": "Unknown repo"}
+
+        report = {
+            "repo": repo_name,
+            "role": config["role"],
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "checks": {},
+        }
+
+        for check_type in config.get("checks", []):
+            if check_type == "git":
+                report["checks"]["git"] = self.check_git(repo_name, config)
+            elif check_type == "ci":
+                report["checks"]["ci"] = self.check_ci(repo_name, config)
+            elif check_type == "vercel":
+                report["checks"]["vercel"] = self.check_vercel(repo_name, config)
+            elif check_type == "scripts":
+                report["checks"]["scripts"] = self.check_scripts(repo_name, config)
+
+        # Compute repo health score
+        report["health"] = self._compute_repo_health(report)
+        return report
+
+    def _compute_repo_health(self, report):
+        """Compute 0-100 health score for a repo."""
+        checks = report.get("checks", {})
+        scores = []
+
+        # Git: 30% weight
+        git = checks.get("git", {})
+        if git.get("status") == "ok":
+            git_score = 100.0
+            if git.get("stale"):
+                git_score -= 30
+            if git.get("sync") == "behind":
+                git_score -= 20
+            elif git.get("sync") == "diverged":
+                git_score -= 40
+            scores.append(("git", git_score, 0.30))
+        elif git:
+            scores.append(("git", 0.0, 0.30))
+
+        # CI: 25% weight
+        ci = checks.get("ci", {})
+        if ci.get("status") == "no_ci":
+            # No CI configured — neutral, don't penalize
+            pass
+        elif ci.get("status") == "healthy":
+            scores.append(("ci", 100.0, 0.25))
+        elif ci.get("status") == "failing":
+            scores.append(("ci", 20.0, 0.25))
+        elif ci:
+            scores.append(("ci", 0.0, 0.25))
+
+        # Vercel: 25% weight
+        vercel = checks.get("vercel", {})
+        if vercel.get("status") == "no_vercel":
+            pass  # No Vercel — neutral
+        elif vercel.get("healthy"):
+            latency = vercel.get("latency_ms", 0)
+            v_score = 100.0 if latency < 5000 else max(50.0, 100.0 - (latency - 5000) / 100)
+            scores.append(("vercel", v_score, 0.25))
+        elif vercel:
+            scores.append(("vercel", 0.0, 0.25))
+
+        # Scripts: 20% weight
+        scripts = checks.get("scripts", {})
+        if scripts.get("status") == "ok":
+            scores.append(("scripts", 100.0, 0.20))
+        elif scripts.get("status") == "degraded":
+            found = scripts.get("found", 0)
+            total = scripts.get("total", 1)
+            scores.append(("scripts", (found / total) * 100, 0.20))
+        elif scripts:
+            scores.append(("scripts", 0.0, 0.20))
+
+        if not scores:
+            return {"score": 0.0, "status": "no_data"}
+
+        # Normalize weights to sum to 1.0
+        total_weight = sum(w for _, _, w in scores)
+        if total_weight == 0:
+            return {"score": 0.0, "status": "no_data"}
+
+        score = sum(s * (w / total_weight) for _, s, w in scores)
+        status = "HEALTHY" if score >= 80 else "DEGRADED" if score >= 50 else "CRITICAL"
+        return {
+            "score": round(score, 1),
+            "status": status,
+            "breakdown": {name: round(s, 1) for name, s, _ in scores},
+        }
+
+    def diagnose_all(self, repo_names=None):
+        """Diagnose all (or selected) repos."""
+        targets = repo_names or list(REPOS.keys())
+        results = {}
+        for repo in targets:
+            print(f"\n{'─'*50}")
+            print(f"  DIAGNOSING REPO: {repo.upper()}")
+            print(f"{'─'*50}")
+
+            report = self.diagnose_repo(repo)
+            results[repo] = report
+
+            # Print summary
+            health = report.get("health", {})
+            score = health.get("score", 0)
+            status = health.get("status", "?")
+            icon = {"HEALTHY": "[+]", "DEGRADED": "[~]", "CRITICAL": "[-]"}.get(status, "[?]")
+            print(f"  {icon} Health: {score}/100 ({status})")
+
+            for check_name, check_data in report.get("checks", {}).items():
+                if check_name == "git":
+                    sync = check_data.get("sync", "?")
+                    days = check_data.get("days_since_commit", "?")
+                    sha = check_data.get("last_sha", "?")
+                    print(f"    git: {sync} | {sha} | {days}d ago")
+                elif check_name == "ci":
+                    ci_status = check_data.get("status", "?")
+                    conclusion = check_data.get("latest_conclusion", "?")
+                    print(f"    ci: {ci_status} (latest: {conclusion})")
+                elif check_name == "vercel":
+                    if check_data.get("healthy"):
+                        lat = check_data.get("latency_ms", "?")
+                        print(f"    vercel: UP ({lat}ms)")
+                    elif check_data.get("status") == "no_vercel":
+                        print(f"    vercel: N/A")
+                    else:
+                        code = check_data.get("status_code", "?")
+                        print(f"    vercel: DOWN (HTTP {code})")
+                elif check_name == "scripts":
+                    found = check_data.get("found", 0)
+                    total = check_data.get("total", 0)
+                    print(f"    scripts: {found}/{total} found")
+
+        self.reports = results
+        return results
+
+
+# ═══════════════════════════════════════════════════════════════════
 # CLI & Main
 # ═══════════════════════════════════════════════════════════════════
 
@@ -1281,11 +1650,22 @@ def main():
         action="store_true",
         help="Output report as JSON (machine-readable)",
     )
+    parser.add_argument(
+        "--repos",
+        action="store_true",
+        help="Diagnose all 7 repos (git, CI, Vercel, scripts) instead of pipelines",
+    )
+    parser.add_argument(
+        "--repo", "-r",
+        choices=list(REPOS.keys()),
+        help="Target a specific repo (use with --repos)",
+    )
     args = parser.parse_args()
 
     print("=" * 60)
-    print("  PIPELINE DOCTOR v1.0")
+    print("  PIPELINE DOCTOR v1.1")
     print(f"  Host: {N8N_HOST}")
+    print(f"  Mode: {'repos' if args.repos else 'pipelines'}")
     print(f"  Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 60)
 
@@ -1361,7 +1741,80 @@ def main():
                 print(f"    {pipe}: {info.get('filename', '?')} (score: {info.get('health_score', 0):.1f})")
         return
 
-    # ─── Main diagnostic/fix flow ─────────────────────────────
+    # ─── Repos diagnostic flow ──────────────────────────────────
+    if args.repos:
+        print(f"\n  Fetching remotes...")
+        subprocess.run("git fetch --all --quiet 2>/dev/null", shell=True, timeout=30)
+
+        repo_engine = RepoDiagnosticEngine()
+        targets = [args.repo] if args.repo else None
+        repo_results = repo_engine.diagnose_all(targets)
+
+        # Save repo report
+        repo_report = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "mode": "repos",
+            "repos": repo_results,
+        }
+
+        repo_report_path = os.path.join(LOGS_DIR, "repo-doctor-report.json")
+        os.makedirs(os.path.dirname(repo_report_path), exist_ok=True)
+        with open(repo_report_path, "w") as f:
+            json.dump(repo_report, f, indent=2, ensure_ascii=False, default=str)
+
+        # Also inject into main doctor report
+        os.makedirs(os.path.dirname(DOCTOR_REPORT), exist_ok=True)
+        try:
+            with open(DOCTOR_REPORT) as f:
+                existing = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            existing = {}
+        existing["repos"] = repo_results
+        existing["repos_timestamp"] = datetime.now(timezone.utc).isoformat()
+        with open(DOCTOR_REPORT, "w") as f:
+            json.dump(existing, f, indent=2, ensure_ascii=False, default=str)
+
+        # Summary
+        print(f"\n{'='*60}")
+        print("  REPO DOCTOR — SUMMARY")
+        print(f"{'='*60}")
+
+        overall_scores = []
+        for repo_name, report in repo_results.items():
+            health = report.get("health", {})
+            score = health.get("score", 0)
+            status = health.get("status", "?")
+            icon = {"HEALTHY": "[+]", "DEGRADED": "[~]", "CRITICAL": "[-]"}.get(status, "[?]")
+
+            checks_summary = []
+            for ck_name, ck_data in report.get("checks", {}).items():
+                if ck_name == "git":
+                    checks_summary.append(f"git:{ck_data.get('sync', '?')}")
+                elif ck_name == "ci":
+                    checks_summary.append(f"ci:{ck_data.get('status', '?')}")
+                elif ck_name == "vercel":
+                    v_status = "UP" if ck_data.get("healthy") else "DOWN"
+                    checks_summary.append(f"vercel:{v_status}")
+                elif ck_name == "scripts":
+                    checks_summary.append(f"scripts:{ck_data.get('found', 0)}/{ck_data.get('total', 0)}")
+
+            print(f"  {icon} {repo_name:22s} | score: {score:5.1f} | {status:8s} | {', '.join(checks_summary)}")
+            overall_scores.append(score)
+
+        if overall_scores:
+            avg = sum(overall_scores) / len(overall_scores)
+            avg_status = "HEALTHY" if avg >= 80 else "DEGRADED" if avg >= 50 else "CRITICAL"
+            print(f"\n  Overall: {avg:.1f}/100 ({avg_status})")
+
+        print(f"\n  Report saved: {repo_report_path}")
+        print(f"  Merged into: {DOCTOR_REPORT}")
+        print()
+
+        if args.json:
+            print(json.dumps(repo_report, indent=2, ensure_ascii=False, default=str))
+        return
+
+    # ─── Main pipeline diagnostic/fix flow ────────────────────
 
     # Parse fixes library
     fp = FixesLibraryParser()
