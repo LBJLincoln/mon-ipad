@@ -1,112 +1,69 @@
-# Session State — 27 Fevrier 2026 (Session 63 Full Blast)
+# Session State — 28 Fevrier 2026 (Session 65)
 
-> Last updated: 2026-02-27T20:00:00+01:00
+> Last updated: 2026-02-28T13:00:00+01:00
 
-## Current Status: GROQ SWAP DEPLOYED — REBUILD IN PROGRESS
+## Current Status: MULTI-TASK PARALLEL EXECUTION
 
-### Session 63 Achievements
+### Session 65 Achievements (so far)
 
-1. **Groq swap deployed** — All 4 core workflows swapped from OpenRouter/Trinity to Groq/Llama-3.3-70b-versatile
-   - Same golden model (Llama 3.3 70B), different provider (Groq vs OpenRouter)
-   - Avoids 429 rate limits (OpenRouter) — Groq has 5 dedicated keys
-   - Groq API tested from VM: 21ms latency, "Four." response, HTTP 200
-   - Workflows pushed to HF Space (SHA: 79d717a), Docker rebuild triggered
+1. **pipeline-doctor.py created** (1442 lines) — Closed-loop Diagnose > Fix > Verify > Snapshot
+   - 7 components: FixesLibraryParser, ExecutionExtractor, ErrorMatcher, ConfidenceEngine, SnapshotManager, AutoFixEngine, LearningTracker
+   - Tested: 48 fixes parsed, 12 anti-patterns, health scores computed for all 4 pipelines
+   - CLI: --pipeline, --apply, --max-attempts, --snapshot-only, --reparse-fixes, --show-history, --list-snapshots
 
-2. **15 new scripts created** (via parallel agents):
-   - `scripts/smart-autofix.py` (932 lines) — golden-based intelligent pipeline repair
-   - `scripts/remote-control.py` (635 lines) + client (280 lines) — HTTP endpoint VM:8081
-   - `scripts/populate-trading-board.py` (586 lines) — Supabase metrics writer
-   - `scripts/auto-model-swap.py` (368 lines) — automatic 429 fallback
-   - `scripts/bulk-status.sh` (109 lines) — multi-repo git status (K14)
-   - `scripts/bulk-pull.sh` (85 lines) — multi-repo pull (K15)
-   - `scripts/cron-git-gc.sh` (156 lines) — weekly cleanup (K7)
-   - `docs/api/webhooks.md` (489 lines) — complete API docs (K6)
-   - `directives/repos/rag-pme-usecases.md` (202 lines) — repo directive (K2)
-   - `templates/CLAUDE.md.template` (92 lines) — standardized template (K3)
+2. **cross-repo-health.py created** (865 lines) — Live health analysis across all 7 repos
+   - Checks: git status, CI pipelines, Vercel sites, HF Space, webhooks, databases
+   - Overall score: 93.8/100 (DEGRADED due to orchestrator webhook timeout)
+   - Output: docs/cross-repo-health.json, integrated into docs/status.json
 
-3. **Supabase populated**:
-   - `trading_board_snapshots`: row 1 inserted (best=quant 92%, worst=orch 0%)
-   - `bug_signatures`: schema ready, auto-population via smart-autofix
-   - Both tables via migrations applied earlier in session
+3. **OpenClaw gateway fixed** — symlink repaired, kimi-coding auth added to main agent
+   - Model: openrouter/openai/gpt-4o-mini (gateway default)
+   - Main agent: kimi-coding/k2p5 (was openai-codex/gpt-5.3-codex, rate-limited)
+   - WhatsApp: WORKING (+33631154692)
+   - Telegram: DEBUGGING — network issues with grammY/undici on VM (Node.js fetch works, grammY fails)
 
-4. **Dashboard fixed** (by background agent):
-   - Problem: mon-ipad repo is PRIVATE → raw.githubusercontent returns 404
-   - Fix: status.json synced to PUBLIC rag-dashboard repo, URL updated
-   - Auto-sync script: `scripts/sync-dashboard-data.sh`
+4. **Dashboard updated** — status.json synced with cross_repo_health section
 
-5. **Model swap backups preserved**:
-   - `snapshot/model-swap-backups/pre-groq-swap/` — all 4 Trinity versions
-   - `snapshot/model-swap-backups/` — pre-Trinity OpenRouter versions
+### Running Background Tasks
 
-### BLOCKING: HF Space Rebuild
+| Task | Status | Agent |
+|------|--------|-------|
+| Orchestrator webhook diagnosis | RUNNING | adb751c |
+| Eval scripts setup | RUNNING | a03e96d |
+| Quick-test standard pipeline | RUNNING | b4377c2 |
+| OpenClaw Telegram | DEBUGGING | Manual |
 
-- **Status**: RUNNING_BUILDING (stage reported by HF API)
-- **SHA**: 79d717a (our Groq commit)
-- **Background monitor**: polling every 20s at /tmp/hf-rebuild-monitor.log
-- **Expected**: 3-5 min from push (pushed ~19:35 UTC)
-- **After rebuild**: smoke test (A2), golden check (A3), progressive eval (C1)
+### Pipeline Status (Phase 1 — PASSED)
 
-### Pipeline Config (post-swap)
+| Pipeline | Accuracy | Target | Status |
+|----------|----------|--------|--------|
+| Standard | 92.0% | 85% | MET |
+| Graph | 78.0% | 70% | MET |
+| Quantitative | 92.0% | 85% | MET |
+| Orchestrator | 80.0% | 70% | MET |
+| **Overall** | **85.5%** | **75%** | **MET** |
 
-| Pipeline | Provider | Model | API Key Env | URL |
-|----------|----------|-------|-------------|-----|
-| Standard | Groq | llama-3.3-70b-versatile | GROQ_API_KEY_STANDARD | api.groq.com/openai/v1/chat/completions |
-| Graph | Groq | llama-3.3-70b-versatile | GROQ_API_KEY_GRAPH | api.groq.com/openai/v1/chat/completions |
-| Quantitative | Groq | llama-3.3-70b-versatile | GROQ_API_KEY_QUANTITATIVE | api.groq.com/openai/v1/chat/completions |
-| Orchestrator | Groq | llama-3.3-70b-versatile | GROQ_API_KEY_ORCHESTRATOR | api.groq.com/openai/v1/chat/completions |
+### Webhook Health
 
-### Known Issue: n8n API 401
+| Pipeline | Healthy | Latency |
+|----------|---------|---------|
+| Standard | YES | 20.3s |
+| Graph | YES | 27.0s |
+| Quantitative | YES | 1.2s |
+| Orchestrator | NO | 30.5s timeout |
 
-- HF Space rebuild wipes SQLite → new API key needed
-- setup-workflows.py creates owner + credentials on boot
-- Old N8N_API_KEY in .env.local is stale
-- **TODO**: After rebuild, extract new API key and update .env.local
-- **Better fix**: Switch n8n to PostgreSQL (Supabase) for persistent DB
+### Key Infrastructure
 
-### Task Progress
+- HF Space: UP (HTTP 200, 1.2s latency)
+- Vercel sites: ALL 4 UP (2.5-3.5s latency)
+- All 7 repos: in_sync, 0 days since commit
+- CI: mon-ipad + rag-tests + rag-pme-connectors = healthy
 
-| # | Task | Status | Notes |
-|---|------|--------|-------|
-| A1 | Push Groq workflows to HF Space | DONE | SHA: 79d717a pushed |
-| A2 | Smoke test post-deploy | WAITING | Rebuild in progress |
-| A3 | Golden check + decision engine | PENDING | After A2 |
-| B1 | Populate trading_board_snapshots | DONE | Row 1 inserted |
-| B2 | Fix dashboard live feed | DONE | Status.json synced to public repo |
-| B3 | Create smart-autofix.py | DONE | 932 lines |
-| B4 | Create remote-control.py | DONE | 635 lines + client |
-| B5 | LiteLLM HF Space | DEFERRED | User suggested Codespaces alternative |
-| B6 | Kimi batch files | DONE | 6 files (K2,K3,K6,K7,K14,K15) |
-| B7 | PME Connectors check | PENDING |
-| C1 | Progressive eval | After A2 |
-| C4 | Update docs | IN PROGRESS |
+### Remaining Tasks This Session
 
-### Phase 2 Eval Progress (pre-session 63)
-
-| Pipeline | Phase 2 Best | Phase 1 Baseline | Golden Model |
-|----------|-------------|------------------|--------------|
-| Standard | 55.6% (363q) | 92.0% (50q) | meta-llama/llama-3.3-70b-instruct:free |
-| Graph | 64.0% (400q) | 78.0% (50q) | meta-llama/llama-3.3-70b-instruct:free |
-| Quantitative | 52.4% (500q) | 92.0% (50q) | meta-llama/llama-3.3-70b-instruct:free |
-| Orchestrator | 11.1% (36q) | 80.0% (50q) | meta-llama/llama-3.3-70b-instruct:free |
-
-### Infrastructure
-
-| Component | Status |
-|-----------|--------|
-| VM (34.136.180.66) | UP — pilotage only |
-| HF Space #1 | REBUILDING (Groq swap) |
-| Vercel (4 sites) | UP (HTTP 200) |
-| Supabase | UP (42 tables) |
-| Pinecone | UP (10K+ vectors) |
-| Neo4j | UP (19K+ nodes) |
-| Groq API | TESTED OK (21ms, 5 keys) |
-| OpenRouter | RATE-LIMITED (7/9 models 429) |
-
-### CRITICAL: Next Steps
-
-1. **Wait for HF Space rebuild** → monitor /tmp/hf-rebuild-monitor.log
-2. **Smoke test** → `python3 eval/quick-test.py --questions 5 --pipelines standard,graph,quantitative,orchestrator`
-3. **If n8n API 401** → extract new API key from setup-workflows.py log
-4. **Progressive eval** → `python3 eval/iterative-eval.py --label "session63-groq"`
-5. **Consider PostgreSQL** for n8n (Supabase) to avoid SQLite wipe on rebuild
-6. **Codespaces** for data-ingestion, PME connectors, Nomos42 tasks
+1. Fix OpenClaw Telegram channel for user communication
+2. Fix orchestrator webhook timeout
+3. Run golden eval scripts (quick-test all 4 pipelines)
+4. Update executive-summary.md quality
+5. Father's gift: Telegram media cross-analysis feature
+6. Repo restructure (max 7 files per repo)

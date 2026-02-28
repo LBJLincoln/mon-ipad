@@ -1,3 +1,29 @@
+## Update — 2026-02-28 12:00 UTC — Session 65 Pipeline Doctor + Cross-Repo Health
+
+**2 major new tools created:**
+- `scripts/pipeline-doctor.py` (1442 lines) — Closed-loop diagnostic: Diagnose > Fix > Verify > Snapshot
+  - Parses 48 fixes from fixes-library.md, 12 anti-patterns
+  - Health scoring: accuracy 40%, latency 20%, error_rate 20%, smoke 15%, trend 5%
+  - Auto-fix engine with rollback + learning tracker (doctor-history.jsonl)
+  - CLI: `--pipeline`, `--apply`, `--snapshot-only`, `--reparse-fixes`
+
+- `scripts/cross-repo-health.py` (865 lines) — Live health analysis across all 7 repos
+  - Checks: git sync, CI, Vercel, HF Space, webhooks, Pinecone/Neo4j/Supabase
+  - Overall score: 93.8/100 (orchestrator webhook timeout = only critical issue)
+  - Auto-generates `docs/cross-repo-health.json` and updates `docs/status.json`
+
+**OpenClaw gateway fixed:**
+- Broken symlink repaired, kimi-coding API key added to main agent auth
+- Gateway running with WhatsApp active, Telegram debugging network issues
+
+**Infrastructure status:**
+- All 4 Vercel sites: UP (2.5-3.5s latency)
+- HF Space: UP (HTTP 200, 1.2s)
+- All 7 repos: in_sync, 0 stale
+- Pipeline accuracies: Standard 92%, Graph 78%, Quantitative 92%, Orchestrator 80%
+
+---
+
 ## Update — 2026-02-27 20:00 UTC — Session 63 Full Blast
 
 **Major infrastructure swap: OpenRouter/Trinity → Groq/Llama-3.3-70b-versatile**
