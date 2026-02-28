@@ -10,6 +10,19 @@ Usage:
   python3 scripts/populate-trading-board.py --results-file X   # From specific file
   python3 scripts/populate-trading-board.py --dry-run          # Preview without writing
 
+Integration with eval pipeline:
+  # After running iterative-eval
+  source .env.local
+  python3 eval/iterative-eval.py --label "Phase2-batch1"
+  python3 scripts/populate-trading-board.py
+
+  # After decision engine
+  DECISION=$(python3 scripts/decision-engine.py --pipeline standard --quiet | jq -r '.decision')
+  python3 scripts/populate-trading-board.py --last-decision "$DECISION" --last-decision-pipeline standard
+
+  # From custom results file
+  python3 scripts/populate-trading-board.py --results-file logs/iterative-eval/iterative-20260227.json
+
 Schema:
   trading_board_snapshots:
     - best_pipeline, best_accuracy, best_latency_p95, best_since
@@ -138,18 +151,73 @@ def _extract_pipeline_metrics_from_data_json(data: dict) -> dict:
                 "total_tested": total,
             }
 
-    # Otherwise try legacy data.json format (iterations, quick_tests, etc)
+    # Otherwise try data.json format (prioritize iterations over quick_tests)
     else:
-        # Count tests in last 24h from iterations
-        cutoff = datetime.utcnow() - timedelta(hours=24)
-        tests_24h = {}
+        # First, try to get latest metrics from most recent iterations
+        iterations = data.get("iterations", [])
 
+        # Get last iteration with results_summary
+        latest_results = {}
+        for iteration in reversed(iterations[-20:]):  # Check last 20 iterations
+            results_summary = iteration.get("results_summary", {})
+            if results_summary:
+                for pipeline, pipe_results in results_summary.items():
+                    if pipeline not in latest_results and pipe_results.get("tested", 0) > 0:
+                        latest_results[pipeline] = {
+                            "accuracy": pipe_results.get("accuracy_pct", 0.0),
+                            "latency_p95": pipe_results.get("p95_latency_ms", 0),
+                            "error_rate": (pipe_results.get("errors", 0) / max(pipe_results.get("tested", 1), 1)) * 100,
+                            "total_tested": pipe_results.get("tested", 0),
+                        }
+
+        # If we found results from iterations, use them
+        if latest_results:
+            metrics = latest_results
+
+        # Otherwise fallback to quick_tests (less reliable)
+        else:
+            quick_tests = data.get("quick_tests", [])
+            for pipeline in ALL_PIPELINES:
+                pipe_tests = [t for t in quick_tests if t.get("pipeline") == pipeline]
+
+                if not pipe_tests:
+                    continue
+
+                recent = pipe_tests[-10:]  # last 10 tests
+
+                # Calculate accuracy from recent tests
+                passed = sum(1 for t in recent if t.get("status") == "pass")
+                accuracy = (passed / len(recent)) * 100 if recent else 0.0
+
+                # Extract latency (if available)
+                latencies = [t.get("latency_ms", 0) for t in recent if t.get("latency_ms")]
+                latency_p95 = 0
+                if latencies:
+                    latencies.sort()
+                    idx = int(len(latencies) * 0.95)
+                    latency_p95 = latencies[min(idx, len(latencies) - 1)]
+
+                # Extract error rate
+                errors = sum(1 for t in recent if t.get("status") == "error")
+                error_rate = (errors / len(recent)) * 100 if recent else 0.0
+
+                metrics[pipeline] = {
+                    "accuracy": round(accuracy, 1),
+                    "latency_p95": int(latency_p95),
+                    "error_rate": round(error_rate, 1),
+                    "total_tested": len(recent),
+                }
+
+        # Calculate 24h test volume from iterations
+        cutoff = datetime.utcnow() - timedelta(hours=24)
         for iteration in data.get("iterations", []):
             timestamp = iteration.get("timestamp_start", "")
             if not timestamp:
                 continue
             try:
-                ts = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+                # Handle both Z and +XX:XX timezone formats
+                ts_str = timestamp.replace("Z", "+00:00")
+                ts = datetime.fromisoformat(ts_str)
                 if ts < cutoff:
                     continue
             except:
@@ -157,43 +225,9 @@ def _extract_pipeline_metrics_from_data_json(data: dict) -> dict:
 
             for pipeline in ALL_PIPELINES:
                 results = iteration.get("results_summary", {}).get(pipeline, {})
-                if results:
-                    if pipeline not in tests_24h:
-                        tests_24h[pipeline] = 0
-                    tests_24h[pipeline] += results.get("total", 0)
-
-        # Extract latest quick_tests for recent performance
-        quick_tests = data.get("quick_tests", [])
-        for pipeline in ALL_PIPELINES:
-            pipe_tests = [t for t in quick_tests if t.get("pipeline") == pipeline]
-
-            if not pipe_tests:
-                continue
-
-            recent = pipe_tests[-10:]  # last 10 tests
-
-            # Calculate accuracy from recent tests
-            passed = sum(1 for t in recent if t.get("status") == "pass")
-            accuracy = (passed / len(recent)) * 100 if recent else 0.0
-
-            # Extract latency (if available)
-            latencies = [t.get("latency_ms", 0) for t in recent if t.get("latency_ms")]
-            latency_p95 = 0
-            if latencies:
-                latencies.sort()
-                idx = int(len(latencies) * 0.95)
-                latency_p95 = latencies[min(idx, len(latencies) - 1)]
-
-            # Extract error rate
-            errors = sum(1 for t in recent if t.get("status") == "error")
-            error_rate = (errors / len(recent)) * 100 if recent else 0.0
-
-            metrics[pipeline] = {
-                "accuracy": round(accuracy, 1),
-                "latency_p95": int(latency_p95),
-                "error_rate": round(error_rate, 1),
-                "total_tested": tests_24h.get(pipeline, len(recent)),
-            }
+                if results and pipeline in metrics:
+                    # Accumulate 24h tests (don't overwrite accuracy from latest)
+                    metrics[pipeline]["total_tested"] += results.get("tested", 0)
 
     return metrics
 
@@ -413,12 +447,13 @@ def _supabase_request(endpoint: str, method: str = "GET", data: dict = None) -> 
         sys.exit(1)
 
 
-def _write_trading_board_snapshot(snapshot: dict, dry_run: bool = False) -> dict:
+def _write_trading_board_snapshot(snapshot: dict, dry_run: bool = False, show_request: bool = False) -> dict:
     """Write a snapshot to trading_board_snapshots table.
 
     Args:
         snapshot: Snapshot data dict
         dry_run: If True, only print what would be written
+        show_request: If True, show the actual HTTP request details
 
     Returns:
         Inserted row (or snapshot if dry_run)
@@ -426,6 +461,17 @@ def _write_trading_board_snapshot(snapshot: dict, dry_run: bool = False) -> dict
     if dry_run:
         print("DRY RUN: Would write to trading_board_snapshots:", file=sys.stderr)
         print(json.dumps(snapshot, indent=2), file=sys.stderr)
+
+        if show_request:
+            supabase_url = os.environ.get("SUPABASE_URL", "")
+            print(f"\nHTTP Request:", file=sys.stderr)
+            print(f"  POST {supabase_url}/rest/v1/trading_board_snapshots", file=sys.stderr)
+            print(f"  Headers:", file=sys.stderr)
+            print(f"    apikey: <SUPABASE_API_KEY>", file=sys.stderr)
+            print(f"    Authorization: Bearer <SUPABASE_API_KEY>", file=sys.stderr)
+            print(f"    Content-Type: application/json", file=sys.stderr)
+            print(f"    Prefer: return=representation", file=sys.stderr)
+
         return snapshot
 
     return _supabase_request("/rest/v1/trading_board_snapshots", method="POST", data=snapshot)
@@ -462,7 +508,8 @@ def populate_trading_board(
     results_file: str = None,
     dry_run: bool = False,
     last_decision: str = None,
-    last_decision_pipeline: str = None
+    last_decision_pipeline: str = None,
+    verbose: bool = False
 ):
     """Main function: extract metrics, calculate rankings, write to Supabase.
 
@@ -471,23 +518,35 @@ def populate_trading_board(
         dry_run: If True, preview without writing
         last_decision: Optional last decision (KEEP/REVERT/HOLD)
         last_decision_pipeline: Optional pipeline for last decision
+        verbose: If True, show detailed output
     """
     filepath = results_file or DATA_JSON
 
-    print(f"Loading metrics from: {filepath}", file=sys.stderr)
+    if verbose or dry_run:
+        print(f"Loading metrics from: {filepath}", file=sys.stderr)
+    else:
+        print(f"Loading metrics...", file=sys.stderr)
     data = _load_data_json(filepath)
 
-    print("Extracting pipeline metrics...", file=sys.stderr)
+    if verbose or dry_run:
+        print("Extracting pipeline metrics...", file=sys.stderr)
     pipeline_metrics = _extract_pipeline_metrics_from_data_json(data)
 
     if not pipeline_metrics:
         print("WARNING: No pipeline metrics found in data file.", file=sys.stderr)
         sys.exit(1)
 
-    print("Calculating overall rankings...", file=sys.stderr)
+    if verbose:
+        print("Pipeline metrics:", file=sys.stderr)
+        for name, metrics in pipeline_metrics.items():
+            print(f"  {name}: accuracy={metrics['accuracy']:.1f}%, latency_p95={metrics['latency_p95']}ms, error_rate={metrics['error_rate']:.1f}%", file=sys.stderr)
+
+    if verbose or dry_run:
+        print("Calculating overall rankings...", file=sys.stderr)
     overall = _calculate_overall_metrics(pipeline_metrics)
 
-    print("Scanning for errors and bugs...", file=sys.stderr)
+    if verbose or dry_run:
+        print("Scanning for errors and bugs...", file=sys.stderr)
     bugs = _detect_errors_and_bugs(data, pipeline_metrics)
 
     # Build snapshot
@@ -525,8 +584,9 @@ def populate_trading_board(
     }
 
     # Write to Supabase
-    print("\nWriting snapshot to Supabase...", file=sys.stderr)
-    result = _write_trading_board_snapshot(snapshot, dry_run=dry_run)
+    if verbose or dry_run:
+        print("\nWriting snapshot to Supabase...", file=sys.stderr)
+    result = _write_trading_board_snapshot(snapshot, dry_run=dry_run, show_request=verbose)
 
     if bugs:
         print(f"\nWriting {len(bugs)} bug signatures to Supabase...", file=sys.stderr)
@@ -572,6 +632,11 @@ def main():
         type=str,
         help="Optional: pipeline for last decision",
     )
+    parser.add_argument(
+        "--verbose", "-v",
+        action="store_true",
+        help="Verbose output (show full JSON payload)",
+    )
     args = parser.parse_args()
 
     populate_trading_board(
@@ -579,6 +644,7 @@ def main():
         dry_run=args.dry_run,
         last_decision=args.last_decision,
         last_decision_pipeline=args.last_decision_pipeline,
+        verbose=args.verbose,
     )
 
 

@@ -75,10 +75,10 @@ def create_all_credentials():
 
     # --- Supabase PostgreSQL ---
     try:
-        supabase_host = os.environ.get("SUPABASE_HOST", "aws-0-eu-west-1.pooler.supabase.com")
+        supabase_host = os.environ.get("SUPABASE_HOST", "aws-1-eu-west-1.pooler.supabase.com")
         supabase_port = int(os.environ.get("SUPABASE_PORT", "6543"))
         supabase_db = os.environ.get("SUPABASE_DB", "postgres")
-        supabase_user = os.environ.get("SUPABASE_USER", "postgres.kfyrtsmdolgioyxsglbz")
+        supabase_user = os.environ.get("SUPABASE_USER", "postgres.ayqviqmxifzmhphiqfmj")
         supabase_pass = os.environ.get("SUPABASE_PASSWORD", "")
 
         if supabase_pass:
@@ -196,6 +196,36 @@ def create_all_credentials():
     except Exception as e:
         print(f"  ERROR creating Neo4j credential: {e}")
         stats["failed"].append("Neo4j")
+
+    # --- Groq httpHeaderAuth (per-pipeline keys) ---
+    try:
+        groq_key = os.environ.get("GROQ_API_KEY", "")
+        if groq_key:
+            groq_pipeline_keys = {
+                "Standard": os.environ.get("GROQ_API_KEY_STANDARD", groq_key),
+                "Graph": os.environ.get("GROQ_API_KEY_GRAPH", groq_key),
+                "Quantitative": os.environ.get("GROQ_API_KEY_QUANTITATIVE", groq_key),
+                "Orchestrator": os.environ.get("GROQ_API_KEY_ORCHESTRATOR", groq_key),
+            }
+            groq_cred_ids = {}
+            for label, key in groq_pipeline_keys.items():
+                cid = create_credential(f"Groq API ({label})", "httpHeaderAuth", {
+                    "name": "Authorization",
+                    "value": f"Bearer {key}",
+                })
+                if cid:
+                    groq_cred_ids[label] = cid
+                    stats["created"].append(f"Groq ({label})")
+                else:
+                    stats["failed"].append(f"Groq ({label})")
+            type_map["_groq_pipeline_creds"] = groq_cred_ids
+            print(f"  Created {len(groq_cred_ids)} per-pipeline Groq credentials")
+        else:
+            print("  SKIP: Groq httpHeaderAuth (no GROQ_API_KEY)")
+            stats["skipped"].append("Groq")
+    except Exception as e:
+        print(f"  ERROR creating Groq credentials: {e}")
+        stats["failed"].append("Groq")
 
     # --- Redis ---
     try:
@@ -476,6 +506,94 @@ def assign_per_pipeline_openrouter(type_map):
     return assigned
 
 
+def assign_per_pipeline_groq(type_map):
+    """Override Groq credentials on core pipeline HTTP Request nodes.
+
+    Core pipelines (Standard, Graph, Quantitative, Orchestrator) use Groq
+    for LLM inference. This assigns the per-pipeline Groq httpHeaderAuth
+    credential to all HTTP Request nodes that point to api.groq.com.
+    """
+    groq_creds = type_map.get("_groq_pipeline_creds", {})
+    if not groq_creds:
+        print("  No per-pipeline Groq credentials available")
+        return 0
+
+    pipeline_patterns = {
+        "Standard": ["standard", "wf5"],
+        "Graph": ["graph", "wf2"],
+        "Quantitative": ["quantitative", "wf4"],
+        "Orchestrator": ["orchestrator"],
+    }
+
+    result = api("GET", "workflows?limit=100")
+    if not result:
+        return 0
+
+    wfs = result.get("data", result)
+    if isinstance(wfs, dict) and "data" in wfs:
+        wfs = wfs["data"]
+
+    assigned = 0
+    for wf in wfs:
+        wid = wf.get("id", "")
+        wname = wf.get("name", "?")
+        wname_lower = wname.lower()
+
+        target_label = None
+        for label, patterns in pipeline_patterns.items():
+            if any(p in wname_lower for p in patterns):
+                target_label = label
+                break
+
+        if not target_label or target_label not in groq_creds:
+            continue
+
+        target_cred_id = groq_creds[target_label]
+
+        full = api("GET", f"workflows/{wid}")
+        if not full:
+            continue
+        wf_data = full.get("data", full)
+        if isinstance(wf_data, dict) and "data" in wf_data:
+            wf_data = wf_data["data"]
+
+        changed = False
+        for node in wf_data.get("nodes", []):
+            node_type = node.get("type", "")
+            params = node.get("parameters", {})
+
+            # Target HTTP Request nodes that call Groq API
+            if node_type == "n8n-nodes-base.httpRequest":
+                url_val = str(params.get("url", ""))
+                if "groq.com" in url_val or "api.groq.com" in url_val:
+                    # Set predefined credential type
+                    node["credentials"] = node.get("credentials", {})
+                    node["credentials"]["httpHeaderAuth"] = {
+                        "id": target_cred_id,
+                        "name": f"Groq API ({target_label})",
+                    }
+                    # Ensure authentication is set to predefinedCredentialType
+                    params["authentication"] = "predefinedCredentialType"
+                    params["nodeCredentialType"] = "httpHeaderAuth"
+                    changed = True
+
+        if changed:
+            upd = api("PATCH", f"workflows/{wid}", {
+                "nodes": wf_data.get("nodes", []),
+                "connections": wf_data.get("connections", {}),
+                "settings": wf_data.get("settings", {}),
+                "name": wname,
+            })
+            if upd:
+                print(f"  Assigned Groq ({target_label}) key to: {wname}")
+                assigned += 1
+            else:
+                print(f"  FAILED to assign Groq key for: {wname}")
+
+    print(f"  Per-pipeline Groq assignment: {assigned} workflows updated")
+    return assigned
+
+
 def activate_single(wid, wname):
     """Activate a single workflow. Returns True if successful."""
     # Deactivate first (reset state)
@@ -708,6 +826,9 @@ def run_full_setup_with_retry(max_retries=2):
 
         print("\n=== [B2] Assigning per-pipeline OpenRouter keys (rate limit distribution) ===")
         assigned = assign_per_pipeline_openrouter(type_map)
+
+        print("\n=== [B3] Assigning per-pipeline Groq keys (core pipelines) ===")
+        groq_assigned = assign_per_pipeline_groq(type_map)
 
         print("\n=== [C] Publishing & activating workflows ===")
         time.sleep(3)  # Let n8n settle
