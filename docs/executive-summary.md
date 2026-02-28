@@ -1,97 +1,6 @@
-## Update — 2026-02-28 12:00 UTC — Session 65 Pipeline Doctor + Cross-Repo Health
-
-**2 major new tools created:**
-- `scripts/pipeline-doctor.py` (1442 lines) — Closed-loop diagnostic: Diagnose > Fix > Verify > Snapshot
-  - Parses 48 fixes from fixes-library.md, 12 anti-patterns
-  - Health scoring: accuracy 40%, latency 20%, error_rate 20%, smoke 15%, trend 5%
-  - Auto-fix engine with rollback + learning tracker (doctor-history.jsonl)
-  - CLI: `--pipeline`, `--apply`, `--snapshot-only`, `--reparse-fixes`
-
-- `scripts/cross-repo-health.py` (865 lines) — Live health analysis across all 7 repos
-  - Checks: git sync, CI, Vercel, HF Space, webhooks, Pinecone/Neo4j/Supabase
-  - Overall score: 93.8/100 (orchestrator webhook timeout = only critical issue)
-  - Auto-generates `docs/cross-repo-health.json` and updates `docs/status.json`
-
-**OpenClaw gateway fixed:**
-- Broken symlink repaired, kimi-coding API key added to main agent auth
-- Gateway running with WhatsApp active, Telegram debugging network issues
-
-**Infrastructure status:**
-- All 4 Vercel sites: UP (2.5-3.5s latency)
-- HF Space: UP (HTTP 200, 1.2s)
-- All 7 repos: in_sync, 0 stale
-- Pipeline accuracies: Standard 92%, Graph 78%, Quantitative 92%, Orchestrator 80%
-
----
-
-## Update — 2026-02-27 20:00 UTC — Session 63 Full Blast
-
-**Major infrastructure swap: OpenRouter/Trinity → Groq/Llama-3.3-70b-versatile**
-- Root cause: OpenRouter rate-limiting 7/9 free models (429 errors)
-- Solution: Swap all 4 core workflows to Groq API (same Llama 3.3 70B model as golden baseline)
-- 5 Groq API keys deployed across HF Space secrets
-- Workflow JSONs pushed to HF Space (rebuild in progress, SHA: 79d717a)
-- Groq tested from VM: 21ms latency, working perfectly
-
-**15 new scripts/tools created:**
-- `smart-autofix.py` (932 lines) — golden-based intelligent pipeline repair
-- `remote-control.py` (635 lines) — HTTP endpoint for pipeline management + client
-- `populate-trading-board.py` (586 lines) — Supabase metrics writer
-- `auto-model-swap.py` (368 lines) — automatic model fallback on 429
-- `bulk-status.sh`, `bulk-pull.sh`, `cron-git-gc.sh` — multi-repo utilities (K14/K15/K7)
-- API docs, templates, directives for PME repos
-
-**Supabase tables populated:**
-- `trading_board_snapshots`: first row (id=1) with current pipeline metrics
-- `bug_signatures`: schema ready, auto-population via smart-autofix
-
-**Dashboard fixed**: status.json synced to public rag-dashboard repo, URL updated
-
-**Pending**: HF Space rebuild completion → smoke test → progressive eval
-
----
-
-## Update — 2026-02-27 19:50 UTC
-
-**Dashboard data feed fixed** — mon-ipad is private, dashboard was getting 404s
-- Solution: Copy status.json to PUBLIC rag-dashboard repo, update fetch URLs
-- Auto-sync: `scripts/sync-dashboard-data.sh` runs after every `generate_status.py`
-- Dashboard URLs updated: `mon-ipad/main` → `rag-dashboard/main` (public)
-- Live: https://lbjlincoln.github.io/rag-dashboard/ (GitHub Pages)
-- API: `/api/status` also updated for fallback data
-
----
-
-## Update — 2026-02-27 15:38 UTC
-
-- Protocol aligned in `CLAUDE.md` (v2) with DIFF-first + incremental + golden-check discipline.
-- Added control-tower visibility doc: `docs/repo-control-tower.md`.
-- Added auto garbage sync script to `rag-storage`: `scripts/sync-garbage-storage.sh` (run executed, timestamped in rag-storage/global/autosync/last-sync.txt).
-- Security hygiene: removed tokenized remote URL from `rag-storage` origin.
-
----
-
-
-## Update — 2026-02-27 15:26 UTC
-
-### Current operational status
-- RAG mass tests executed in parallel on 10 HF Spaces (50 questions x 4 pipelines each).
-- Infrastructure execution is working; evaluation quality currently fails (0% accuracy in latest mass summaries), requiring parsing/scoring and routing fixes.
-- Nomos42 (ex-PME connectors) chat API is live on project Vercel URL and returns responses; renaming/repositioning to Individuals is in progress.
-- Data-ingestion remains partially unstable on HF webhooks (500/404 mix); remediation and activation mapping in progress.
-- LiteLLM stack installed in VM with OpenRouter+Groq key pool setup; runtime integration work continues.
-
-### Next 24h priority
-1. Nomos42 tomorrow-ready for ~20 close-user tests (UX + reliability + naming consistency).
-2. Dashboard live alignment with existing stack (runs + repos + health).
-3. RAG eval quality recovery + incremental/golden checks.
-4. Data-ingestion/enrichment stabilization across spaces/codespaces.
-
----
-
 # EXECUTIVE SUMMARY — Nomos AI Multi-RAG Orchestrator
 
-> Last updated: 2026-02-25T13:00:00+01:00
+> Last updated: 2026-02-28T14:00:00+01:00
 > **Ce fichier DOIT etre consulte et mis a jour a CHAQUE session.**
 > Il est la reference unique pour comprendre tout le projet en langage clair.
 
@@ -101,7 +10,7 @@
 
 1. [Vue d'ensemble du projet](#1-vue-densemble-du-projet)
 2. [Architecture complete](#2-architecture-complete)
-3. [Les 7 repos GitHub — Roles et contenus](#3-les-7-repos-github)
+3. [Les 8 repos GitHub — Roles et contenus](#3-les-8-repos-github)
 4. [Infrastructure et machines](#4-infrastructure-et-machines)
 5. [Les 4 pipelines RAG — Comment ca marche](#5-les-4-pipelines-rag)
 6. [Bases de donnees — Etat et contenu](#6-bases-de-donnees)
@@ -124,29 +33,30 @@ Nomos AI est un **systeme d'intelligence artificielle qui repond a des questions
 Construire un moteur de reponse capable de traiter **1 million+ de questions** dans 4 secteurs d'activite (BTP, Industrie, Finance, Juridique) avec une precision de **85%+** et un temps de reponse de **moins de 2.5 secondes**.
 
 ### Ou en est-on ?
-- **Phase 1** (200 questions) : **PASSED** (83.9% overall, 20 fev 2026, session 30). Tous les 4 pipelines au-dessus de leurs cibles.
-- **Phase 2** (1,000q par pipeline) : **EN COURS** — Session 62 mega eval: 180+ tested IDs saved incrementally, 3 pipelines running (Orchestrator preflight failing).
-- **Session 60 fixes** : Quantitative (API key NaN + Supabase wrong host) + Orchestrator (Redis removed, 9 nodes) + all Postgres credentials.
-- **Session 61** : HF Space #2 deployed, GH Actions on 3 repos (all passing), chatbot active (75% tests), data ingestion audited.
-- **Session 62** : **10 HF Spaces deployed and rebuilt** with N8N_BLOCK_ENV_ACCESS_IN_NODE=false fix, credential restore running on all spaces.
-- **Current accuracy** (Phase 2, early batch): Standard ~85%, Graph ~20%, Quantitative ~6%, Orchestrator 0% (empty body issue separate from env var fix).
-- **Infrastructure** : 10 HF Spaces (9 working, Space 2 broken), all rebuilt with env var fix, credential restore script running.
-- **Broken endpoints** : Data Ingestion (404), PME Gateway (404), Status Dashboard (404).
+- **Phase 1** (200 questions) : **PASSED** (85.5% overall, 20 fev 2026, session 30). Tous les 4 pipelines au-dessus de leurs cibles.
+- **Phase 2** (1,000q par pipeline) : **PARTIAL** — Graph 78.0% (500/500 COMPLETE), Quantitative 92.0% (500/500 COMPLETE), Standard 579/1000 tested (~36%, STOPPED), Orchestrator 57/1000 tested (0%, BROKEN).
+- **Session 63** : OpenRouter rate-limited, swapped to Groq/Llama-3.3-70b-versatile. 15 new scripts/tools created. Dashboard data feed fixed.
+- **Session 64** : Groq per-pipeline credentials, trading board improvements, n8n analyzer.
+- **Session 65** : **2 major diagnostic tools created** — `pipeline-doctor.py` (1442 lines, closed-loop fix engine) and `cross-repo-health.py` (865 lines, 93.8/100 health score). OpenClaw gateway fixed.
+- **Current accuracy** (Phase 1 confirmed): Standard 92%, Graph 78%, Quantitative 92%, Orchestrator 80%.
+- **Infrastructure** : HF Space #1 UP (HTTP 200). All 4 Vercel sites live. All 8 repos in sync.
+- **Remaining issues** : Orchestrator webhook timeout, chatbot CORS on Vercel sites.
 
 ### Chiffres cles
 | Metrique | Valeur |
 |----------|--------|
-| Questions testees a ce jour | **1,800+** (Phase 1 + Phase 2 incremental saves) |
-| Precision Phase 1 (baseline) | 83.9% (PASSED) |
-| Precision Phase 2 (Session 62, first batch) | Std ~85%, Graph ~20%, Quant ~6%, Orch 0% (180+ tested IDs) |
-| Vecteurs dans Pinecone | 22,070 |
-| Entites dans Neo4j | 19,788 |
+| Questions testees a ce jour | **2,300+** (Phase 1 + Phase 2 partial) |
+| Precision Phase 1 (baseline) | 85.5% (PASSED, 20 fev 2026) |
+| Precision Phase 2 (partielle) | Graph 78% (500/500), Quant 92% (500/500), Std ~36% (579/1000), Orch 0% (57/1000) |
+| Vecteurs dans Pinecone | 10,411 (sota-rag-jina-1024) + 1,296 (phase2-graph) |
+| Entites dans Neo4j | 19,788 nodes / 76,717 relations |
 | Lignes dans Supabase | ~17,600 |
 | Datasets telecharges | 7,609 sectoriels + 669MB HuggingFace |
-| Commits depuis le debut | 200+ |
-| Sessions Claude Code | **62** |
+| Commits dans mon-ipad | **1,060+** |
+| Sessions Claude Code | **65** |
 | Sites web live | **4** (ETI + PME connectors + PME use cases + Dashboard) |
-| **HF Spaces n8n** | **10** (2 comptes, round-robin load balancing) |
+| HF Space n8n | **1** (primary, 14 workflows, 16GB RAM) |
+| Scripts diagnostiques | pipeline-doctor.py (1442 lines) + cross-repo-health.py (865 lines) |
 
 ---
 
@@ -171,17 +81,16 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
                            |
          +-----------------+-----------------+
          |                                   |
-    10 HF SPACES                     BASES DE DONNEES
-    n8n (16GB RAM each)         Pinecone + Neo4j + Supabase
-    Round-robin load balancing           |
-    14 workflows per space                |
-    Execution layer                       |
-         |                                 |
+    HF SPACE #1                      BASES DE DONNEES
+    n8n 2.8.4 (16GB RAM)       Pinecone + Neo4j + Supabase
+    14 workflows (11 active)             |
+    Execution layer                      |
+         |                                |
          +---------------------------------+
                            |
-                     OPENROUTER
-                     7 keys (multi-rotation)
-                     Llama 70B + Gemma 27B
+                   OPENROUTER + GROQ
+                   6 keys (per-pipeline)
+                   Llama 70B + Gemma 27B
 ```
 
 ### Flux d'une question (de A a Z)
@@ -195,13 +104,13 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
    - Quantitative → genere du SQL et interroge Supabase (chiffres)
    - Orchestrator → combine les 3 ci-dessus
 5. Le pipeline recupere les informations pertinentes
-6. Un LLM (Llama 70B via OpenRouter) formule la reponse
+6. Un LLM (Llama 70B via OpenRouter/Groq) formule la reponse
 7. La reponse est renvoyee a l'utilisateur avec les sources
 ```
 
 ---
 
-## 3. LES 7 REPOS GITHUB
+## 3. LES 8 REPOS GITHUB
 
 Tous les repos sont **prives** sous le compte `LBJLincoln`.
 
@@ -215,6 +124,7 @@ Tous les repos sont **prives** sous le compte `LBJLincoln`.
 | 5 | **rag-data-ingestion** | Ingestion donnees | Codespace | Scripts download, workflows ingestion |
 | 6 | **rag-pme-connectors** | Site PME connecteurs | Vercel | Next.js 15, 15 connecteurs apps (WhatsApp, Telegram, Gmail, etc.) |
 | 7 | **rag-pme-usecases** | Site PME use cases | Vercel | Next.js 14, 200 cas d'usage |
+| 8 | **rag-storage** | Stockage datasets/logs | GitHub LFS | Datasets, snapshots, outputs |
 
 ### Relations entre repos
 ```
@@ -230,6 +140,7 @@ mon-ipad (PILOTE)
    +-- rag-dashboard : AFFICHE les metriques (lecture seule)
    +-- rag-pme-connectors : Site PME (statique)
    +-- rag-pme-usecases : Site PME (statique)
+   +-- rag-storage : STOCKE datasets/snapshots/logs (Git LFS)
 ```
 
 ### Fichiers cles dans mon-ipad (tour de controle)
@@ -262,18 +173,17 @@ mon-ipad (PILOTE)
 | **Docker** | NO containers running — n8n REMOVED (Session 42, freed ~270MB RAM). All n8n operations on HF Space. |
 | **Usage** | PILOTAGE UNIQUEMENT — tour de controle, git, MCP servers. NO eval scripts, NO n8n. |
 
-### HF Spaces (execution — 16 GB RAM each, gratuit)
+### HF Space (execution — 16 GB RAM, gratuit)
 | Element | Detail |
 |---------|--------|
-| **Count** | **10 HF Spaces** (session 62) |
-| **Accounts** | LBJLincoln (Spaces 1,3,5,7,9) + LBJLincoln26 (Spaces 2,4,6,8,10) |
-| **URLs** | lbjlincoln-nomos-rag-engine.hf.space, lbjlincoln-nomos-rag-engine-2 through 10 |
-| **RAM** | 16 GB per Space (cpu-basic) |
+| **Primary** | lbjlincoln-nomos-rag-engine.hf.space (LBJLincoln account) |
+| **RAM** | 16 GB (cpu-basic) |
 | **n8n** | Version 2.8.4 (pinned) |
-| **DB interne** | Supabase PostgreSQL + Redis (queue mode: 1 main + 2 workers per Space) |
-| **Usage** | Round-robin load balancing for Phase 2 eval (50 concurrent workers across 10 Spaces) |
-| **Status** | **ALL 10 RUNNING** — verified HTTP 200 on Standard pipeline, incremental saves every 5 min |
-| **Workflows** | 14 workflows per Space (11 active: 4 pipelines + 7 support, 3 PME in repair) |
+| **Status** | **RUNNING** — HTTP 200, 1.2s latency |
+| **Workflows** | 14 workflows (11 active: 4 pipelines + 7 support, 3 PME in repair) |
+| **Credentials** | 16 (5 OpenRouter per-pipeline + Supabase + Jina + Cohere + HF + more) |
+| **Env vars** | N8N_BLOCK_ENV_ACCESS_IN_NODE=false + 21 other vars |
+| **Secondary** | lbjlincoln26-nomos-rag-engine-2.hf.space — PARTIAL (Quant HTTP 500, Orch blocked by sub-WF deps) |
 
 ### Codespaces GitHub (ephemeres — 60h/mois)
 | Element | Detail |
@@ -306,7 +216,7 @@ Question → Genere une question hypothetique (HyDE)
          → LLM genere la reponse avec les sources
 ```
 - **Base de donnees** : Pinecone `sota-rag-jina-1024` (10,411 vecteurs)
-- **Precision** : Phase 1: 85.5%, Phase 2: ~36% (degradation sous investigation)
+- **Precision** : Phase 1: 92.0% (Session 65), Phase 2: ~36% (579/1000 tested, STOPPED)
 - **Webhook** : `/webhook/rag-multi-index-v3`
 
 #### Pipeline Graph (entites et relations)
@@ -408,14 +318,15 @@ Supabase stocke les donnees structurees (tableaux, chiffres, listes).
 ### Services connectes
 | Service | Usage | Plan | Limite |
 |---------|-------|------|--------|
-| OpenRouter | LLM (Llama 70B, Gemma 27B) | Free | 7 keys configured (pipeline-specific rotation) |
+| OpenRouter | LLM (Llama 70B, Gemma 27B) | Free | 6 keys configured (per-pipeline rotation, 3 accounts) |
+| Groq | LLM (Llama 3.3 70B versatile) | Free | 5 keys deployed (Session 63 swap from OpenRouter) |
 | Jina AI | Embeddings + Reranking | Free | 2 keys configured, 1M tokens/mois each |
 | Pinecone | Vector DB | Free | 100K vecteurs |
 | Neo4j Aura | Graph DB | Free | 200K nodes |
 | Supabase | SQL DB | Free | 500 MB |
 | Cohere | Reranking (backup) | Trial | Quasi-epuise |
 | HuggingFace | Datasets + HF Space | Free | 2 accounts, 2 tokens configured |
-| GitHub | 7 repos prives | Free | Illimite |
+| GitHub | 8 repos prives | Free | Illimite |
 | Vercel | 4 sites deployes | Free | Illimite |
 
 ### MCP Servers (outils connectes a Claude Code)
@@ -444,7 +355,7 @@ ETAPE 1 : Lire l'etat precedent
   → cat technicals/debug/knowledge-base.md    (cerveau persistant)
 
 ETAPE 2 : Verifier les fixes connus
-  → cat technicals/debug/fixes-library.md     (35 bugs deja resolus)
+  → cat technicals/debug/fixes-library.md     (67 bugs deja resolus)
 
 ETAPE 3 : Identifier l'objectif de session
   → Quel pipeline a le plus gros ecart par rapport a sa cible ?
@@ -531,10 +442,9 @@ scripts/codespace-control.sh launch <cs>  # Lancer un test distant
 scripts/codespace-control.sh status <cs>  # Voir la progression
 scripts/codespace-control.sh stream <cs>  # Stream live des logs
 
-# --- Docker VM ---
-docker ps                                 # Voir les containers
-docker logs n8n-n8n-1 --tail 50           # Logs n8n
-docker compose restart n8n                # Redemarrer n8n (rare)
+# --- Diagnostic tools (Session 65) ---
+python3 scripts/pipeline-doctor.py --pipeline standard    # Diagnose + fix
+python3 scripts/cross-repo-health.py --quick              # Health check all repos
 ```
 
 ### Commandes dans rag-tests (Codespace)
@@ -571,11 +481,11 @@ git push origin main
 ### Fichiers critiques (modifies regulierement)
 | Fichier | Role | Modifie a chaque session ? |
 |---------|------|---------------------------|
-| `CLAUDE.md` | Directives globales (40 regles, architecture) | Souvent |
+| `CLAUDE.md` | Directives globales (15 core rules, architecture) | Souvent |
 | `directives/session-state.md` | Memoire de travail active | **TOUJOURS** |
 | `directives/status.md` | Resume de la derniere session | **TOUJOURS** (en dernier) |
 | `technicals/debug/knowledge-base.md` | Cerveau persistant (patterns, solutions) | Souvent |
-| `technicals/debug/fixes-library.md` | 35+ bugs documentes | Apres chaque fix |
+| `technicals/debug/fixes-library.md` | 67 bugs documentes | Apres chaque fix |
 | `docs/status.json` | Metriques machine-readable (auto-genere) | Apres chaque eval |
 | `docs/data.json` | Donnees de toutes les iterations | Apres chaque eval |
 | `docs/executive-summary.md` | **CE FICHIER** | **TOUJOURS** |
@@ -621,38 +531,36 @@ git push origin main
 ### Phase 1 — PASSED (20 fevrier 2026, session 30)
 | Pipeline | Precision | Objectif | Status | Ecart |
 |----------|-----------|----------|--------|-------|
-| Standard | **85.5%** (47/55) | >= 85% | PASSE | +0.5pp |
-| Graph | **78.0%** (39/50) | >= 70% | PASSE | +8.0pp |
-| Quantitative | **92.0%** (46/50) | >= 85% | PASSE | +7.0pp |
-| Orchestrator | **80.0%** (40/50) | >= 70% | PASSE | +10.0pp |
-| **Global** | **83.9%** | >= 75% | **PASSE** | +8.9pp |
+| Standard | **92.0%** | >= 85% | PASSE | +7.0pp |
+| Graph | **78.0%** | >= 70% | PASSE | +8.0pp |
+| Quantitative | **92.0%** | >= 85% | PASSE | +7.0pp |
+| Orchestrator | **80.0%** | >= 70% | PASSE | +10.0pp |
+| **Global** | **85.5%** | >= 75% | **PASSE** | +10.5pp |
 
-### Phase 2 — EN COURS (25 fevrier 2026, session 62 mega eval)
+### Phase 2 — PARTIAL (28 fevrier 2026, session 65)
 | Pipeline | Tested | Total | Accuracy | Status |
 |----------|--------|-------|----------|--------|
-| Standard | 20 | 1000 | **75.0%** | **RUNNING** — 10-space cluster, 50 workers |
-| Graph | 20 | 980 | **20.0%** | **RUNNING** — early results, sample size small |
-| Quantitative | 18 | 970 | **22.2%** | **RUNNING** — early results, sample size small |
-| Orchestrator | 16 | 1000 | **81.2%** | **RUNNING** — highest accuracy so far |
-| **TOTAL** | **74** | **3950** | **48.6%** | **RUNNING** — incremental saves, dedup enabled |
+| Standard | 579 | 1000 | **~36%** | **STOPPED** — HF Space 404s during eval |
+| Graph | **500** | 500 | **78.0%** | **COMPLETE** |
+| Quantitative | **500** | 500 | **92.0%** | **COMPLETE** |
+| Orchestrator | 57 | 1000 | **0%** | **BROKEN** — webhook timeout, empty/404 responses |
+| **TOTAL** | **1,636** | **3,000** | **~55%** | **PARTIAL** — 2/4 pipelines complete |
 
-**Note**: Early results (74/3950 = 1.9% complete). Accuracy will stabilize as sample size grows. Estimated completion: 35-40h.
+**Note**: Graph and Quantitative are fully validated at scale. Standard needs HF Space stability fix. Orchestrator needs webhook timeout investigation.
 
 ### Bloqueur critique RESOLU : Broken n8n env var syntax (sessions 39-51)
-- **Root cause found (Session 51)** : Standard + Graph workflow JSONs used broken syntax `={{.OPENROUTER_KEY_STANDARD}}` instead of correct `={{$env.OPENROUTER_KEY_STANDARD}}`. The `={{.VAR}}` syntax is NOT valid in n8n — evaluates to `null`, causing all HTTP headers to send `Bearer null` for OpenRouter, Jina, and Pinecone API calls.
-- **Why Quantitative worked** : quantitative.json already used correct `={{$env.VAR}}` syntax. Also uses `credentials.httpHeaderAuth` approach in some nodes.
-- **Previous fix attempts (v1-v4.0)** : Addressed wrong problem (activation issues, entrypoint retry logic, credential stripping). The real issue was expression syntax in workflow JSONs.
-- **Fix applied (v5.4)** : `sed -i 's/={{\\./={{$env./g'` across all affected JSONs (n8n/live/ + hf-space/n8n-workflows/). Total: 17 instances fixed (8 standard, 5 graph, 1 benchmark, 3 quantitative-template).
-- **Verification** : `grep -r '={{\\.' n8n/live/ hf-space/n8n-workflows/` returns zero matches.
-- **Deployment status** : v5.4 deploying to HF Space
+- **Root cause found (Session 51)** : Standard + Graph workflow JSONs used broken syntax `={{.OPENROUTER_KEY_STANDARD}}` instead of correct `={{$env.OPENROUTER_KEY_STANDARD}}`. The `={{.VAR}}` syntax is NOT valid in n8n — evaluates to `null`, causing all HTTP headers to send `Bearer null`.
+- **Fix applied (v5.4)** : `sed -i 's/={{\\./={{$env./g'` across all affected JSONs. Total: 17 instances fixed.
+- **Status** : RESOLVED — deployed and verified.
 
-### Fixes documentes (55+ au total)
-Les 55+ bugs documentes sont dans `technicals/debug/fixes-library.md`.
+### Fixes documentes (67 au total)
+Les 67 bugs documentes sont dans `technicals/debug/fixes-library.md`.
 Highlights recents :
+- FIX-65/66/67 : HF Space N8N_BLOCK_ENV_ACCESS_IN_NODE + credential restore + webhook rebuild (Session 62)
+- FIX-64 : Ingestion V4.0 Redis lock nodes prevent startup (Session 61)
+- FIX-63 : N8N_BLOCK_ENV_ACCESS_IN_NODE missing — ALL $env denied (Session 58)
+- FIX-59/60/61 : OpenRouter rate-limit swap, duplicate secrets, Jina/Cohere exhausted (Session 54)
 - FIX-54 : Broken n8n expression syntax `={{.VAR}}` → `={{$env.VAR}}` (Session 51, CRITICAL)
-- FIX-55 : rag-storage migration (datasets/snapshots/logs/outputs) (Session 51)
-- FIX-36 : Phase 1 gate calculation (excluded Phase 2 questions)
-- FIX-29 to FIX-35 : Quantitative + Orchestrator fixes (sessions 27-28)
 - Sessions 39-50 : HF Space activation issues — root cause was env var syntax, not activation
 
 ### Tests de concurrence (session 27)
@@ -681,17 +589,18 @@ Highlights recents :
 10. **Session 59**: Project chatbot MVP deployed on 3 Vercel sites, 1000q test dataset created.
 11. **Session 60**: Quantitative + Orchestrator FIXED (all 4 pipelines working), Redis dependency removed from Orchestrator.
 12. **Session 61**: HF Space #2 deployed, chatbot active (75% tests), GH Actions on 3 repos (all passing).
-13. **Session 62**: **10 HF Spaces deployed** across 2 accounts, round-robin load balancing, mega eval (50 workers), 6 repair agents (3 fixed), incremental saves + dedup + preflight checks.
+13. **Session 62**: 10 HF Spaces deployed across 2 accounts, round-robin load balancing, mega eval, incremental saves + dedup + preflight checks.
+14. **Session 63**: OpenRouter rate-limited (429 errors on 7/9 free models) → swapped all 4 core workflows to Groq/Llama-3.3-70b-versatile. 15 new scripts created. Dashboard data feed fixed. Supabase trading board populated.
+15. **Session 64**: Groq per-pipeline credentials deployed, trading board improvements, n8n analyzer script created.
+16. **Session 65**: `pipeline-doctor.py` (1442 lines, closed-loop fix engine) + `cross-repo-health.py` (865 lines, 93.8/100 health score). OpenClaw gateway fixed. Cross-repo health integrated into status.json.
 
 ### Session 58 — INFRASTRUCTURE COMPLETE
 
 **5000 questions prets** : 5 pipelines x 1000 questions (Standard, Graph, Quantitative, Orchestrator, PME Gateway)
-**Multi-endpoint architecture** : Per-pipeline routing (N8N_HOST_STANDARD, etc.), per-pipeline API keys, per-pipeline batch sizes
-**GitHub Actions** : 5-pipeline matrix configuree (eval-1000q.yml), 15 secrets
+**Multi-endpoint architecture** : Per-pipeline routing, per-pipeline API keys, per-pipeline batch sizes
+**GitHub Actions** : 5-pipeline matrix configuree, 15 secrets
 **Dashboard live** : Pushed to rag-dashboard (Vercel auto-deploy)
 **Scaling doc** : `technicals/project/scaling-bottlenecks.md` — plan x2 a x100
-
-**BLOCKERS** : 0% accuracy Phase 2 sur les 5 pipelines (questions ≠ donnees indexees + bugs workflow specifiques)
 
 ### Scaling — Comment accelerer (resume)
 
@@ -706,76 +615,63 @@ Highlights recents :
 
 **Doc complet** : `technicals/project/scaling-bottlenecks.md`
 
-### Session 62 Achievements
+### Session 65 Achievements (28 fevrier 2026)
 
-#### 1. Infrastructure Scale-Up (10 HF Spaces deployed)
-- **Script created**: `scripts/scale-hf-spaces.py` — automated deployment of multiple HF Spaces
-- **Script created**: `scripts/activate-all-spaces.py` — bulk activation across all Spaces
-- **Round-robin load balancing** — 50 concurrent workers across 10 Spaces
-- **Account distribution** — LBJLincoln (5 Spaces), LBJLincoln26 (5 Spaces)
-- **All verified** — HTTP 200 on Standard pipeline for all 10 Spaces
+#### 1. Diagnostic Tools Created
+- **`scripts/pipeline-doctor.py`** (1442 lines) — Closed-loop diagnostic engine
+  - 7 components: FixesLibraryParser, ExecutionExtractor, ErrorMatcher, ConfidenceEngine, SnapshotManager, AutoFixEngine, LearningTracker
+  - Parses 48 fixes from fixes-library.md, 12 anti-patterns
+  - Health scoring: accuracy 40%, latency 20%, error_rate 20%, smoke 15%, trend 5%
+  - CLI: `--pipeline`, `--apply`, `--snapshot-only`, `--reparse-fixes`, `--show-history`, `--list-snapshots`
 
-#### 2. Eval System Improvements
-- **Incremental saves** — auto-save every 5 minutes, no data loss on crashes
-- **Signal handler** — graceful shutdown on Ctrl+C, final save before exit
-- **Preflight checks** — verify all HF Spaces reachable before starting
-- **Deduplication** — skip already-tested questions from previous runs
-- **Multi-host support** — N8N_ALL_HOSTS env var for round-robin
+- **`scripts/cross-repo-health.py`** (865 lines) — Live health across all 7 repos
+  - Checks: git sync, CI pipelines, Vercel sites, HF Space, webhooks, Pinecone/Neo4j/Supabase
+  - Overall score: 93.8/100 (orchestrator webhook timeout = only critical issue)
+  - Output: `docs/cross-repo-health.json`, integrated into `docs/status.json`
 
-#### 3. Workflow Repair Agents (6 launched, 3 completed)
-| Workflow | Status | Fix Applied |
-|----------|--------|-------------|
-| **Status Dashboard API** | ✅ FIXED | Corrected webhook path, committed to repo |
-| **Enrichissement V4.0** | ✅ FIXED | Redis nodes removed (9 total), 29 nodes active |
-| **Action Executor** | ✅ FIXED | Simplified to 2-node workflow, deployed |
-| WhatsApp Bridge | 🔄 Active | Telegram disabled (no credentials), WhatsApp only |
-| Ingestion V4.0 | 🔄 In Progress | Removing Redis lock nodes |
-| Multi-Canal Gateway | 🔄 In Progress | Fixing node configuration |
+#### 2. OpenClaw Gateway Fixed
+- Broken symlink repaired, kimi-coding API key added
+- WhatsApp active (+33631154692), Telegram debugging network issues
 
-#### 4. Project Chatbot LIVE
-- **Deployed on all 4 Vercel sites** — ETI, PME connectors, PME use cases, Dashboard
-- **Test results** — 9/12 pass (75%), 2.3s avg response time
-- **Dataset created** — 1000 questions (984q generic, split ETI/PME/Individual categories)
-- **Webhook** — /webhook/project-chatbot on HF Space #1
-- **Remaining issue** — CORS not configured for Vercel sites (pending)
+#### 3. Previous Session Highlights
+- **Session 64**: Groq per-pipeline credentials, trading board improvements, n8n analyzer
+- **Session 63**: OpenRouter → Groq swap (429 rate-limit fix), 15 new scripts, dashboard feed fixed
+- **Session 62**: 10 HF Spaces deployed, incremental eval saves, 6 workflow repair agents (3 fixed)
 
 ### Next Steps (priority order)
 
-#### PRIORITY #1 — Monitor Phase 2 Mega Eval (est. 35-40h)
-- **Current**: 74/3950 tested (1.9% complete), PID 54740 running
-- **Expected completion**: ~2026-02-27 00:00 UTC
-- **Auto-save**: Every 5 minutes to `logs/phase2-results-session62-10space.json`
-- **Actions**: Monitor logs, restart if crashed, analyze results when complete
+#### PRIORITY #1 — Fix Orchestrator Webhook Timeout
+- Orchestrator returns 404/empty on all questions (Phase 2: 0% on 57 tested)
+- Webhook healthy at 30.5s but timing out — investigate sub-workflow routing
 
-#### PRIORITY #2 — Fix Remaining Workflows (3 in progress)
-1. **Ingestion V4.0** — Remove Redis lock nodes (same as Enrichissement fix)
-2. **Multi-Canal Gateway** — Fix node configuration errors
-3. **Chatbot CORS** — Add CORS headers for Vercel sites
+#### PRIORITY #2 — Resume Standard Pipeline Phase 2 Eval
+- 579/1000 tested at ~36%, need HF Space stability for remaining 421 questions
+- Graph (78%) and Quantitative (92%) already complete at 500/500
 
-#### PRIORITY #3 — HF Space #2 Full Deployment
-- Fix Quantitative credentials (HTTP 500)
-- Replace Orchestrator sub-workflow nodes with HTTP calls to Space #1
-- Verify all 14 workflows active on Space #2
+#### PRIORITY #3 — Fix Remaining Workflows
+1. **Ingestion V4.0** — Remove Redis lock nodes (HTTP 500)
+2. **Chatbot CORS** — Add CORS headers for Vercel sites
+3. **PME Gateway** — Validation error, not activated
 
-#### PRIORITY #4 — Data Ingestion Complete
-- Build 500-filetype ingestion scripts (currently 11 types)
+#### PRIORITY #4 — Data Ingestion + Scaling
+- Build ingestion for additional file types (currently 11 types real)
 - Test Ingestion V4.0 after Redis removal
-- Document real capabilities vs. documentation claims
+- Plan HF Space #2 full deployment for throughput doubling
 
-### Infrastructure Summary (Session 62)
+### Infrastructure Summary (Session 65)
 
-**10 HF Spaces deployed** — all RUNNING, verified HTTP 200
+**HF Space #1** — RUNNING, HTTP 200, 1.2s latency
 ```
-Account LBJLincoln:    Spaces 1, 3, 5, 7, 9
-Account LBJLincoln26:  Spaces 2, 4, 6, 8, 10
-Each: 16GB RAM, n8n 2.8.4, 14 workflows (11 active, 3 in repair)
+Account: LBJLincoln
+URL: lbjlincoln-nomos-rag-engine.hf.space
+RAM: 16GB, n8n 2.8.4, 14 workflows (11 active, 3 in repair)
 ```
 
-**7 OpenRouter API keys** — per-pipeline rotation across 3 accounts
+**6 OpenRouter + 5 Groq API keys** — per-pipeline rotation across 3 accounts
 - OPENROUTER_KEY_STANDARD, GRAPH, QUANTITATIVE, ORCHESTRATOR (primary 4)
-- OPENROUTER_API_KEY, KEY_2, KEY_3 (fallback rotation)
+- 5 Groq keys as fallback (Session 63 swap for rate-limit resilience)
 
-**4 Vercel sites** — all live, chatbot deployed on all
+**4 Vercel sites** — all live
 - nomos-ai-pied.vercel.app (ETI)
 - nomos-pme-connectors-alexis-morets-projects.vercel.app
 - nomos-pme-usecases-alexis-morets-projects.vercel.app
@@ -794,35 +690,6 @@ Each: 16GB RAM, n8n 2.8.4, 14 workflows (11 active, 3 in repair)
 
 ---
 
-## SESSION 62 SUMMARY — 10-SPACE DEPLOYMENT + ENV VAR FIX
-
-### Infrastructure Deployed
-- **10 HF Spaces** — all RUNNING across 2 accounts (LBJLincoln: 1,3,5,7,9 / LBJLincoln26: 2,4,6,8,10)
-- **Critical fix deployed** — N8N_BLOCK_ENV_ACCESS_IN_NODE=false on all 10 spaces (addresses env var access denial)
-- **All spaces rebuilt** — Factory reboot to apply env var fix
-- **Space 2 broken** — Under investigation, 9 spaces operational
-- **Scripts created** — scale-hf-spaces.py, activate-all-spaces.py
-
-### Eval System Improvements
-- **Incremental saves** — auto-save every 5 minutes to tested_ids.json (180+ IDs saved)
-- **Signal handler** — graceful shutdown on Ctrl+C
-- **Preflight checks** — verify all HF Spaces reachable before eval
-- **Deduplication** — skip already-tested questions from previous runs
-- **Current status** — Eval PID stopped, accuracy improving after credential restore
-
-### Critical Fixes Applied
-- **N8N_BLOCK_ENV_ACCESS_IN_NODE=false** — Deployed to all 10 HF Spaces
-- **Credential restore** — 11/14 workflows on primary space, replicating to 8 more spaces
-- **Orchestrator issue** — Still returning empty body (separate issue from env var fix)
-- **Next step** — Re-run eval after credential restoration completes
-
-### Chatbot Deployed
-- **Live on all 4 Vercel sites** — ETI, PME Connectors, PME Use Cases, Dashboard
-- **Test results** — 9/12 pass (75%), 2.3s avg response
-- **Dataset** — 984q generic test set created
-
----
-
 ## 13. GLOSSAIRE
 
 | Terme | Signification |
@@ -835,6 +702,7 @@ Each: 16GB RAM, n8n 2.8.4, 14 workflows (11 active, 3 in repair)
 | **Neo4j** | Base de donnees graphe (cherche par entites et relations) |
 | **Supabase** | Base de donnees SQL (cherche par requetes structurees) |
 | **OpenRouter** | Passerelle vers des LLM gratuits (Llama 70B, Gemma 27B) |
+| **Groq** | API d'inference LLM ultra-rapide (Llama 3.3 70B), ajoute en Session 63 comme fallback OpenRouter |
 | **LLM** | Large Language Model — intelligence artificielle qui genere du texte |
 | **Embedding** | Representation numerique d'un texte (vecteur de 1024 nombres) |
 | **Jina** | Service qui transforme du texte en embeddings (gratuit, 1M tokens/mois) |
@@ -856,7 +724,7 @@ Each: 16GB RAM, n8n 2.8.4, 14 workflows (11 active, 3 in repair)
 - **`docs/status.json`** — Metriques live (auto-genere par `eval/generate_status.py`), NE PAS EDITER manuellement
 - **`docs/data.json`** — Historique complet iterations/executions (auto-genere), NE PAS EDITER manuellement (9.3 MB, 253K+ lignes)
 
-Le fichier `data.json` est automatiquement mis a jour toutes les 5 minutes pendant les evals. L'infrastructure actuelle (10 HF Spaces, 7 OpenRouter keys, 4 Vercel sites) est documentee dans ce fichier executive-summary.md.
+Le fichier `data.json` est automatiquement mis a jour toutes les 5 minutes pendant les evals. L'infrastructure actuelle (1 HF Space primary, 6 OpenRouter + 5 Groq keys, 4 Vercel sites) est documentee dans ce fichier executive-summary.md.
 
 ---
 

@@ -28,13 +28,32 @@ from telegram.ext import (
 )
 
 # ── Config ──────────────────────────────────────────────────────────
-BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8672296360:AAEvfje0wpQkQK2WpgUCwZnPHVvGAlHUNqk")
-OPENROUTER_KEY = os.environ.get("OPENROUTER_KEY_SPARE") or os.environ.get("OPENROUTER_API_KEY")
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 N8N_HOST = os.environ.get("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space")
+
+# Multiple API keys for fallback (rotate on rate limit)
+_KEYS = [
+    os.environ.get("OPENROUTER_API_KEY", ""),
+    os.environ.get("OPENROUTER_KEY_SPARE", ""),
+    os.environ.get("OPENROUTER_KEY_STANDARD", ""),
+    os.environ.get("OPENROUTER_KEY_GRAPH", ""),
+]
+OPENROUTER_KEYS = [k for k in _KEYS if k]
+_key_idx = 0
+
+def get_key():
+    global _key_idx
+    key = OPENROUTER_KEYS[_key_idx % len(OPENROUTER_KEYS)]
+    return key
+
+def rotate_key():
+    global _key_idx
+    _key_idx += 1
 
 # Models
 VISION_MODEL = "google/gemma-3-27b-it:free"  # Free, supports vision
-TEXT_MODEL = "meta-llama/llama-3.3-70b-instruct:free"  # Free, strong text
+TEXT_MODEL = "google/gemma-3-27b-it:free"  # Free, fast, less rate-limited
+TEXT_MODEL_FALLBACK = "meta-llama/llama-3.3-70b-instruct:free"
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
@@ -50,24 +69,33 @@ log = logging.getLogger("nomos-bot")
 # ── Helpers ─────────────────────────────────────────────────────────
 
 async def call_openrouter(messages: list, model: str = TEXT_MODEL, max_tokens: int = 1024) -> str:
-    """Call OpenRouter API with messages."""
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_KEY}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://nomos-ai-pied.vercel.app",
-        "X-Title": "Nomos AI Telegram Bot",
-    }
-    payload = {
-        "model": model,
-        "messages": messages,
-        "max_tokens": max_tokens,
-        "temperature": 0.7,
-    }
-    async with httpx.AsyncClient(timeout=60) as client:
-        resp = await client.post(OPENROUTER_URL, json=payload, headers=headers)
-        resp.raise_for_status()
-        data = resp.json()
-        return data["choices"][0]["message"]["content"]
+    """Call OpenRouter API with key rotation on rate limit."""
+    for attempt in range(len(OPENROUTER_KEYS)):
+        headers = {
+            "Authorization": f"Bearer {get_key()}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://nomos-ai-pied.vercel.app",
+            "X-Title": "Nomos AI Telegram Bot",
+        }
+        payload = {
+            "model": model,
+            "messages": messages,
+            "max_tokens": max_tokens,
+            "temperature": 0.7,
+        }
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.post(OPENROUTER_URL, json=payload, headers=headers)
+            if resp.status_code == 429:
+                log.warning(f"Rate limited on key #{_key_idx}, rotating...")
+                rotate_key()
+                # Try fallback model too
+                if model == TEXT_MODEL:
+                    payload["model"] = TEXT_MODEL_FALLBACK
+                continue
+            resp.raise_for_status()
+            data = resp.json()
+            return data["choices"][0]["message"]["content"]
+    raise Exception("All API keys rate limited")
 
 
 async def call_rag(question: str) -> str:
@@ -283,8 +311,8 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
 # ── Main ────────────────────────────────────────────────────────────
 
 def main():
-    if not OPENROUTER_KEY:
-        log.error("No OPENROUTER_KEY_SPARE or OPENROUTER_API_KEY set. Run: source .env.local")
+    if not OPENROUTER_KEYS:
+        log.error("No OpenRouter API keys found. Run: source .env.local")
         sys.exit(1)
 
     log.info(f"Starting Nomos AI Telegram Bot...")

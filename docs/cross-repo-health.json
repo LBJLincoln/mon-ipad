@@ -1,13 +1,23 @@
 {
-  "generated_at": "2026-02-28T11:18:44.754716+00:00",
+  "generated_at": "2026-02-28T17:28:44.482159+00:00",
   "version": "1.0",
   "repos": {
+    "rag-dashboard": {
+      "repo": "rag-dashboard",
+      "role": "Live metrics dashboard (HTML/JS)",
+      "last_commit_sha": "dca207d",
+      "last_commit_msg": "chore: auto-sync status.json from mon-ipad",
+      "last_commit_date": "2026-02-28T14:25:04Z",
+      "days_since_commit": 0,
+      "local_sync": "behind",
+      "stale": false
+    },
     "mon-ipad": {
       "repo": "mon-ipad",
       "role": "Control tower — directives, eval scripts, MCP configs",
-      "last_commit_sha": "a1e2cf8",
-      "last_commit_msg": "feat(session64): Groq per-pipeline credentials, trading boar",
-      "last_commit_date": "2026-02-28T10:18:37Z",
+      "last_commit_sha": "ef27b46",
+      "last_commit_msg": "feat: add lightweight Telegram bot for media cross-analysis",
+      "last_commit_date": "2026-02-28T14:26:55Z",
       "days_since_commit": 0,
       "local_sync": "in_sync",
       "stale": false
@@ -18,7 +28,7 @@
       "last_commit_sha": "96b56e6",
       "last_commit_msg": "chore(gitignore): ignore local logs artifacts",
       "last_commit_date": "2026-02-27T15:37:31Z",
-      "days_since_commit": 0,
+      "days_since_commit": 1,
       "local_sync": "in_sync",
       "stale": false
     },
@@ -28,17 +38,27 @@
       "last_commit_sha": "633239c",
       "last_commit_msg": "chore(chatbot): add shared local chatbot engine file",
       "last_commit_date": "2026-02-27T15:37:01Z",
-      "days_since_commit": 0,
+      "days_since_commit": 1,
       "local_sync": "in_sync",
       "stale": false
     },
-    "rag-dashboard": {
-      "repo": "rag-dashboard",
-      "role": "Live metrics dashboard (HTML/JS)",
-      "last_commit_sha": "91f453f",
-      "last_commit_msg": "chore: auto-sync status.json from mon-ipad",
-      "last_commit_date": "2026-02-27T19:44:21Z",
+    "rag-pme-connectors": {
+      "repo": "rag-pme-connectors",
+      "role": "Next.js 15 — 15 PME apps + MacBook chat",
+      "last_commit_sha": "bf58a0b",
+      "last_commit_msg": "feat(chatbot): add Groq fast LLM with 8s timeout for Vercel",
+      "last_commit_date": "2026-02-28T15:40:20Z",
       "days_since_commit": 0,
+      "local_sync": "behind",
+      "stale": false
+    },
+    "rag-pme-usecases": {
+      "repo": "rag-pme-usecases",
+      "role": "Next.js 14 — 200 use cases",
+      "last_commit_sha": "8937f97",
+      "last_commit_msg": "chore(chatbot): add shared local chatbot engine file",
+      "last_commit_date": "2026-02-27T15:37:00Z",
+      "days_since_commit": 1,
       "local_sync": "in_sync",
       "stale": false
     },
@@ -48,37 +68,17 @@
       "last_commit_sha": "0fa5ea9",
       "last_commit_msg": "fix(sync): make live-writer optional to avoid crash",
       "last_commit_date": "2026-02-27T13:23:55Z",
-      "days_since_commit": 0,
-      "local_sync": "in_sync",
-      "stale": false
-    },
-    "rag-pme-usecases": {
-      "repo": "rag-pme-usecases",
-      "role": "Next.js 14 — 200 use cases",
-      "last_commit_sha": "8937f97",
-      "last_commit_msg": "chore(chatbot): add shared local chatbot engine file",
-      "last_commit_date": "2026-02-27T15:37:00Z",
-      "days_since_commit": 0,
-      "local_sync": "in_sync",
-      "stale": false
-    },
-    "rag-pme-connectors": {
-      "repo": "rag-pme-connectors",
-      "role": "Next.js 15 — 15 PME apps + MacBook chat",
-      "last_commit_sha": "8435492",
-      "last_commit_msg": "feat(nomos42): add Nomos42 transition components and brandin",
-      "last_commit_date": "2026-02-27T17:48:44Z",
-      "days_since_commit": 0,
+      "days_since_commit": 1,
       "local_sync": "in_sync",
       "stale": false
     }
   },
   "ci": {
-    "rag-website": {
+    "rag-dashboard": {
       "status": "no_ci",
       "workflows": []
     },
-    "rag-dashboard": {
+    "rag-website": {
       "status": "no_ci",
       "workflows": []
     },
@@ -89,6 +89,36 @@
     "rag-data-ingestion": {
       "status": "no_ci",
       "workflows": []
+    },
+    "rag-pme-connectors": {
+      "status": "healthy",
+      "healthy": true,
+      "workflows": [
+        {
+          "name": "Deploy Website to Vercel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-28T15:40:52Z",
+          "run_number": 14
+        },
+        {
+          "name": "Deploy Website to Vercel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-28T15:35:09Z",
+          "run_number": 13
+        },
+        {
+          "name": "Deploy Website to Vercel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-28T15:24:14Z",
+          "run_number": 12
+        }
+      ],
+      "expected_workflows": [
+        "Deploy Website to Vercel"
+      ]
     },
     "mon-ipad": {
       "status": "healthy",
@@ -118,36 +148,6 @@
       ],
       "expected_workflows": [
         "Eval 1000q Parallel"
-      ]
-    },
-    "rag-pme-connectors": {
-      "status": "healthy",
-      "healthy": true,
-      "workflows": [
-        {
-          "name": "Deploy Website to Vercel",
-          "status": "completed",
-          "conclusion": "success",
-          "updated_at": "2026-02-27T17:49:27Z",
-          "run_number": 9
-        },
-        {
-          "name": "Deploy Website to Vercel",
-          "status": "completed",
-          "conclusion": "success",
-          "updated_at": "2026-02-27T15:37:34Z",
-          "run_number": 8
-        },
-        {
-          "name": "Deploy Website to Vercel",
-          "status": "completed",
-          "conclusion": "success",
-          "updated_at": "2026-02-27T13:38:55Z",
-          "run_number": 7
-        }
-      ],
-      "expected_workflows": [
-        "Deploy Website to Vercel"
       ]
     },
     "rag-tests": {
@@ -182,33 +182,33 @@
     }
   },
   "vercel": {
+    "PME Use Cases": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 387,
+      "name": "PME Use Cases",
+      "url": "https://nomos-pme-usecases-alexis-morets-projects.vercel.app"
+    },
     "ETI 4 Sectors": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 2739,
+      "latency_ms": 392,
       "name": "ETI 4 Sectors",
       "url": "https://nomos-ai-pied.vercel.app"
     },
     "Dashboard": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 2503,
+      "latency_ms": 434,
       "name": "Dashboard",
       "url": "https://nomos-dashboard-alexis-morets-projects.vercel.app"
     },
     "PME Connectors": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 3239,
+      "latency_ms": 624,
       "name": "PME Connectors",
       "url": "https://nomos-pme-connectors-alexis-morets-projects.vercel.app"
-    },
-    "PME Use Cases": {
-      "healthy": true,
-      "status_code": 200,
-      "latency_ms": 3477,
-      "name": "PME Use Cases",
-      "url": "https://nomos-pme-usecases-alexis-morets-projects.vercel.app"
     }
   },
   "hf_space": {
@@ -216,7 +216,7 @@
     "healthz": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 1246
+      "latency_ms": 170
     },
     "healthy": true
   },
@@ -224,28 +224,28 @@
     "standard": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 20310,
+      "latency_ms": 21252,
       "pipeline": "standard",
       "webhook": "/webhook/rag-multi-index-v3"
     },
     "graph": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 26973,
+      "latency_ms": 20023,
       "pipeline": "graph",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717"
     },
     "quantitative": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 1209,
+      "latency_ms": 929,
       "pipeline": "quantitative",
       "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9"
     },
     "orchestrator": {
       "healthy": false,
       "status_code": 0,
-      "latency_ms": 30529,
+      "latency_ms": 30166,
       "error": "The read operation timed out",
       "pipeline": "orchestrator",
       "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0"
@@ -312,12 +312,12 @@
     }
   },
   "doctor_report": {
-    "timestamp": "2026-02-28T11:06:16.198229+00:00",
+    "timestamp": "2026-02-28T17:28:43.665738+00:00",
     "mode": "apply",
     "pipelines": {
       "standard": {
         "pipeline": "standard",
-        "timestamp": "2026-02-28T11:05:54.223582+00:00",
+        "timestamp": "2026-02-28T17:27:30.445042+00:00",
         "webhook_health": {
           "healthy": true,
           "status_code": 200
@@ -360,6 +360,61 @@
           "smoke_pass_rate": 0.42,
           "source": "/home/termius/mon-ipad/logs/iterative-eval/iterative-2026-02-25T05-20-07.json"
         },
+        "auto_fix_result": "no_candidates"
+      },
+      "graph": {
+        "pipeline": "graph",
+        "timestamp": "2026-02-28T17:27:51.077134+00:00",
+        "webhook_health": {
+          "healthy": true,
+          "status_code": 200
+        },
+        "recent_errors": [],
+        "matched_fixes": [],
+        "anti_pattern_warnings": [],
+        "health": {
+          "score": 0,
+          "breakdown": {},
+          "status": "no_data"
+        },
+        "metrics": {},
+        "auto_fix_result": "no_candidates"
+      },
+      "quantitative": {
+        "pipeline": "quantitative",
+        "timestamp": "2026-02-28T17:28:11.891055+00:00",
+        "webhook_health": {
+          "healthy": true,
+          "status_code": 200
+        },
+        "recent_errors": [],
+        "matched_fixes": [],
+        "anti_pattern_warnings": [],
+        "health": {
+          "score": 0,
+          "breakdown": {},
+          "status": "no_data"
+        },
+        "metrics": {},
+        "auto_fix_result": "no_candidates"
+      },
+      "orchestrator": {
+        "pipeline": "orchestrator",
+        "timestamp": "2026-02-28T17:28:12.933432+00:00",
+        "webhook_health": {
+          "healthy": false,
+          "status_code": 0,
+          "error": "The read operation timed out"
+        },
+        "recent_errors": [],
+        "matched_fixes": [],
+        "anti_pattern_warnings": [],
+        "health": {
+          "score": 0,
+          "breakdown": {},
+          "status": "no_data"
+        },
+        "metrics": {},
         "auto_fix_result": "no_candidates"
       }
     }
