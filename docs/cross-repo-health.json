@@ -1,17 +1,7 @@
 {
-  "generated_at": "2026-03-01T19:13:21.015462+00:00",
+  "generated_at": "2026-03-01T20:15:50.769673+00:00",
   "version": "1.0",
   "repos": {
-    "rag-tests": {
-      "repo": "rag-tests",
-      "role": "Eval scripts, datasets, test results",
-      "last_commit_sha": "96b56e6",
-      "last_commit_msg": "chore(gitignore): ignore local logs artifacts",
-      "last_commit_date": "2026-02-27T15:37:31Z",
-      "days_since_commit": 2,
-      "local_sync": "in_sync",
-      "stale": false
-    },
     "rag-website": {
       "repo": "rag-website",
       "role": "Next.js 14 — 4 sector sites + chatbots",
@@ -22,12 +12,22 @@
       "local_sync": "behind",
       "stale": false
     },
+    "rag-tests": {
+      "repo": "rag-tests",
+      "role": "Eval scripts, datasets, test results",
+      "last_commit_sha": "96b56e6",
+      "last_commit_msg": "chore(gitignore): ignore local logs artifacts",
+      "last_commit_date": "2026-02-27T15:37:31Z",
+      "days_since_commit": 2,
+      "local_sync": "in_sync",
+      "stale": false
+    },
     "rag-dashboard": {
       "repo": "rag-dashboard",
       "role": "Live metrics dashboard (HTML/JS)",
-      "last_commit_sha": "1c361a3",
+      "last_commit_sha": "e6590f4",
       "last_commit_msg": "chore: auto-sync status.json from mon-ipad",
-      "last_commit_date": "2026-03-01T19:13:15Z",
+      "last_commit_date": "2026-03-01T20:15:51Z",
       "days_since_commit": 0,
       "local_sync": "behind",
       "stale": false
@@ -35,20 +35,10 @@
     "mon-ipad": {
       "repo": "mon-ipad",
       "role": "Control tower — directives, eval scripts, MCP configs",
-      "last_commit_sha": "a47dc0d",
-      "last_commit_msg": "chore: remove 35 deprecated scripts (12,870 lines)",
-      "last_commit_date": "2026-03-01T14:21:52Z",
+      "last_commit_sha": "a2c9cdb",
+      "last_commit_msg": "docs: update executive-summary for Session 66 — pipeline res",
+      "last_commit_date": "2026-03-01T20:09:55Z",
       "days_since_commit": 0,
-      "local_sync": "in_sync",
-      "stale": false
-    },
-    "rag-data-ingestion": {
-      "repo": "rag-data-ingestion",
-      "role": "Ingestion V3.1 + Enrichissement V3.1",
-      "last_commit_sha": "0fa5ea9",
-      "last_commit_msg": "fix(sync): make live-writer optional to avoid crash",
-      "last_commit_date": "2026-02-27T13:23:55Z",
-      "days_since_commit": 2,
       "local_sync": "in_sync",
       "stale": false
     },
@@ -71,14 +61,24 @@
       "days_since_commit": 0,
       "local_sync": "behind",
       "stale": false
+    },
+    "rag-data-ingestion": {
+      "repo": "rag-data-ingestion",
+      "role": "Ingestion V3.1 + Enrichissement V3.1",
+      "last_commit_sha": "0fa5ea9",
+      "last_commit_msg": "fix(sync): make live-writer optional to avoid crash",
+      "last_commit_date": "2026-02-27T13:23:55Z",
+      "days_since_commit": 2,
+      "local_sync": "in_sync",
+      "stale": false
     }
   },
   "ci": {
-    "rag-dashboard": {
+    "rag-website": {
       "status": "no_ci",
       "workflows": []
     },
-    "rag-website": {
+    "rag-dashboard": {
       "status": "no_ci",
       "workflows": []
     },
@@ -185,28 +185,28 @@
     "Dashboard": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 5486,
+      "latency_ms": 1996,
       "name": "Dashboard",
       "url": "https://nomos-dashboard-alexis-morets-projects.vercel.app"
-    },
-    "PME Connectors": {
-      "healthy": true,
-      "status_code": 200,
-      "latency_ms": 5502,
-      "name": "PME Connectors",
-      "url": "https://nomos-pme-connectors-alexis-morets-projects.vercel.app"
     },
     "ETI 4 Sectors": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 5267,
+      "latency_ms": 2482,
       "name": "ETI 4 Sectors",
       "url": "https://nomos-ai-pied.vercel.app"
+    },
+    "PME Connectors": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 3732,
+      "name": "PME Connectors",
+      "url": "https://nomos-pme-connectors-alexis-morets-projects.vercel.app"
     },
     "PME Use Cases": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 5260,
+      "latency_ms": 3750,
       "name": "PME Use Cases",
       "url": "https://nomos-pme-usecases-alexis-morets-projects.vercel.app"
     }
@@ -216,7 +216,7 @@
     "healthz": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 3972
+      "latency_ms": 2026
     },
     "healthy": true
   },
@@ -224,28 +224,28 @@
     "standard": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 11975,
+      "latency_ms": 14008,
       "pipeline": "standard",
       "webhook": "/webhook/rag-multi-index-v3"
     },
     "graph": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 9263,
+      "latency_ms": 10236,
       "pipeline": "graph",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717"
     },
     "quantitative": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 2730,
+      "latency_ms": 2497,
       "pipeline": "quantitative",
       "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9"
     },
     "orchestrator": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 2495,
+      "latency_ms": 3495,
       "pipeline": "orchestrator",
       "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0"
     }
@@ -259,9 +259,9 @@
     },
     "pinecone_graph": {
       "index": "sota-rag-phase2-graph",
-      "healthy": null,
-      "vectors": "unknown",
-      "note": "Could not connect (API key or library missing)"
+      "healthy": true,
+      "vectors": 1248,
+      "dimension": 1024
     },
     "neo4j": {
       "healthy": null,
@@ -274,22 +274,22 @@
   },
   "pipeline_metrics": {
     "standard": {
-      "accuracy": 90.0,
+      "accuracy": 84.0,
       "tested": 50,
-      "correct": 45,
-      "errors": 1,
+      "correct": 42,
+      "errors": 0,
       "target": 85.0,
-      "met": true,
-      "gap": 5.0
+      "met": false,
+      "gap": -1.0
     },
     "graph": {
-      "accuracy": 74.0,
+      "accuracy": 68.0,
       "tested": 50,
-      "correct": 37,
+      "correct": 34,
       "errors": 0,
       "target": 70.0,
-      "met": true,
-      "gap": 4.0
+      "met": false,
+      "gap": -2.0
     },
     "quantitative": {
       "accuracy": 80.0,
@@ -667,7 +667,7 @@
     "repos_timestamp": "2026-02-28T17:38:51.876553+00:00"
   },
   "overall": {
-    "score": 94.6,
+    "score": 99.4,
     "status": "HEALTHY",
     "critical_issues": 0,
     "component_scores": {
@@ -676,8 +676,8 @@
       "vercel": 100.0,
       "hf_space": 100,
       "webhooks": 100.0,
-      "databases": 50,
-      "pipelines": 97.1
+      "databases": 100.0,
+      "pipelines": 96.1
     },
     "weights": {
       "repos": 0.1,
