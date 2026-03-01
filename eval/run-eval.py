@@ -80,10 +80,10 @@ RAG_ENDPOINTS = {k: f"{_host_for(k)}{v}" for k, v in WEBHOOK_PATHS.items()}
 
 # Per-pipeline optimal batch sizes — doubled for dual-space (Session 62)
 PIPELINE_BATCH_SIZES = {
-    "standard": 20,
-    "graph": 10,
-    "quantitative": 6,
-    "orchestrator": 4,
+    "standard": 5,
+    "graph": 5,
+    "quantitative": 3,
+    "orchestrator": 2,
     "pme-gateway": 2,
     "pme-action": 1,
     "pme-whatsapp": 1,
@@ -231,11 +231,12 @@ def call_local_reasoning(question_text, rag_type="quantitative", timeout=30):
     return {"data": None, "latency_ms": latency_ms, "error": "all models rate-limited", "http_status": 429}
 
 
-def call_rag(endpoint, question, timeout=60, max_retries=3):
+def call_rag(endpoint, question, timeout=60, max_retries=3, extra_fields=None):
     """
     Makes an HTTP POST request to the RAG endpoint with retry + exponential backoff.
     Returns a dictionary with 'data', 'latency_ms', 'error', 'http_status'.
     Retries on: 429 (rate limit), 502/503/504 (server overload), timeouts, connection errors.
+    extra_fields: dict of additional fields to include in the payload (e.g. namespace).
     """
     RETRYABLE_CODES = {429, 502, 503, 504}
     last_result = None
@@ -243,7 +244,10 @@ def call_rag(endpoint, question, timeout=60, max_retries=3):
     for attempt in range(max_retries):
         start_time = datetime.now()
         try:
-            payload = json.dumps({"query": question, "tenant_id": "benchmark"}).encode('utf-8')
+            body = {"query": question, "tenant_id": "benchmark"}
+            if extra_fields:
+                body.update(extra_fields)
+            payload = json.dumps(body).encode('utf-8')
             headers = {"Content-Type": "application/json"}
             req = request.Request(endpoint, data=payload, headers=headers)
             with request.urlopen(req, timeout=timeout) as resp:
@@ -285,11 +289,17 @@ def extract_answer(response_data):
     # Try multiple common response field names
     for key in ["response", "answer", "result", "interpretation", "final_response"]:
         if key in response_data and response_data[key]:
-            return str(response_data[key])
+            val = str(response_data[key])
+            # Treat pipeline error markers as empty answers
+            if val.strip().upper() in ("NO_ANSWER", "N/A", "ERROR", "UNABLE TO GENERATE ANSWER"):
+                continue
+            return val
     # Fallback to nested output
     output = response_data.get("output", {})
     if isinstance(output, dict):
-        return output.get("answer", "") or output.get("response", "")
+        val = output.get("answer", "") or output.get("response", "")
+        if val and val.strip().upper() not in ("NO_ANSWER", "N/A", "ERROR", "UNABLE TO GENERATE ANSWER"):
+            return val
     return ""
 
 
@@ -383,6 +393,74 @@ def evaluate_answer(answer, expected_answer):
 def compute_f1(answer, expected):
     """Compute F1 score between answer and expected."""
     return evaluate_answer(answer, expected)["f1"]
+
+
+def evaluate_answer_semantic(answer, expected_answer, question=""):
+    """
+    LLM-as-judge semantic scoring using OpenRouter free models.
+    Returns {"semantic_correct": bool, "semantic_score": 0-1, "explanation": str}.
+    Falls back gracefully on API errors — never blocks the eval pipeline.
+    """
+    if not answer or not expected_answer:
+        return {"semantic_correct": False, "semantic_score": 0.0, "explanation": "empty input"}
+
+    api_key = os.environ.get("OPENROUTER_KEY_STANDARD", os.environ.get("OPENROUTER_API_KEY", ""))
+    if not api_key:
+        return {"semantic_correct": False, "semantic_score": 0.0, "explanation": "no API key"}
+
+    prompt = f"""You are an answer correctness judge. Compare the candidate answer against the expected answer for the given question.
+
+Question: {question}
+Expected answer: {expected_answer}
+Candidate answer: {answer}
+
+Evaluate if the candidate answer is semantically correct (conveys the same meaning as the expected answer, even if worded differently).
+
+Respond with EXACTLY one line in this format:
+VERDICT: [CORRECT|INCORRECT] | SCORE: [0.0-1.0] | REASON: [brief explanation]
+
+Score guide: 1.0 = perfect match, 0.7+ = correct with extra info, 0.3-0.7 = partially correct, <0.3 = wrong."""
+
+    try:
+        payload = json.dumps({
+            "model": "arcee-ai/trinity-large-preview:free",
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": 100,
+            "temperature": 0.0
+        }).encode('utf-8')
+        req = request.Request(
+            "https://openrouter.ai/api/v1/chat/completions",
+            data=payload,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {api_key}"
+            }
+        )
+        with request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+
+        content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+
+        # Parse response
+        is_correct = "CORRECT" in content.upper() and "INCORRECT" not in content.upper()
+        score = 0.0
+        reason = content.strip()
+
+        import re
+        score_match = re.search(r'SCORE:\s*([\d.]+)', content)
+        if score_match:
+            score = min(1.0, max(0.0, float(score_match.group(1))))
+        elif is_correct:
+            score = 0.8
+
+        reason_match = re.search(r'REASON:\s*(.+)', content)
+        if reason_match:
+            reason = reason_match.group(1).strip()
+
+        return {"semantic_correct": is_correct, "semantic_score": score, "explanation": reason}
+
+    except Exception as e:
+        return {"semantic_correct": False, "semantic_score": 0.0, "explanation": f"API error: {str(e)[:80]}"}
 
 
 def extract_pipeline_details(response_data, rag_type):
@@ -551,6 +629,7 @@ def _load_dataset_file(filepath, questions, embed_context=False):
             "question": question_text,
             "expected": q.get("expected_answer", ""),
             "rag_type": rag_target,
+            "namespace": q.get("namespace", ""),
         })
         loaded += 1
 

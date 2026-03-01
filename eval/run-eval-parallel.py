@@ -65,6 +65,7 @@ extract_answer = run_eval_mod.extract_answer
 evaluate_answer = run_eval_mod.evaluate_answer
 extract_pipeline_details = run_eval_mod.extract_pipeline_details
 compute_f1 = run_eval_mod.compute_f1
+evaluate_answer_semantic = run_eval_mod.evaluate_answer_semantic
 load_questions = run_eval_mod.load_questions
 load_tested_ids_by_type = run_eval_mod.load_tested_ids_by_type
 save_tested_ids = run_eval_mod.save_tested_ids
@@ -193,6 +194,10 @@ def _process_question(rag_type, q, i, total, endpoint, rag_timeout):
     qid = q["id"]
     used_local = False
 
+    # NOTE: namespace field in dataset = question origin metadata, NOT Pinecone query namespace.
+    # Default namespace has actual document content; benchmark namespaces have Q&A pairs only.
+    # Do NOT send namespace to the pipeline.
+
     # Use local LLM reasoning for designated pipelines
     if rag_type in _local_pipelines:
         resp = call_local_reasoning(q["question"], rag_type=rag_type, timeout=rag_timeout)
@@ -226,13 +231,19 @@ def _process_question(rag_type, q, i, total, endpoint, rag_timeout):
     f1_val = evaluation.get("f1", compute_f1(answer, q["expected"]))
     has_error = resp["error"] is not None
 
+    # Optional LLM-as-judge semantic scoring
+    semantic_result = None
+    if getattr(_process_question, '_semantic_score', False) and answer and q.get("expected"):
+        semantic_result = evaluate_answer_semantic(answer, q["expected"], q["question"])
+
     # Thread-safe print
     symbol = "[+]" if is_correct else "[-]"
     local_tag = " LOCAL" if used_local else ""
+    sem_tag = f" SEM={semantic_result['semantic_score']:.1f}" if semantic_result else ""
     tprint(f"  [{rag_type.upper()} {i+1}/{total}] {symbol} {qid} | "
-           f"F1={f1_val:.3f} | {resp['latency_ms']}ms | {evaluation['method']}{local_tag}")
+           f"F1={f1_val:.3f} | {resp['latency_ms']}ms | {evaluation['method']}{local_tag}{sem_tag}")
 
-    return {
+    result = {
         "qid": qid,
         "question": q["question"],
         "expected": q["expected"],
@@ -245,6 +256,9 @@ def _process_question(rag_type, q, i, total, endpoint, rag_timeout):
         "evaluation": evaluation,
         "pipeline_details": pipeline_details,
     }
+    if semantic_result:
+        result["semantic"] = semantic_result
+    return result
 
 
 def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
@@ -498,6 +512,10 @@ def main():
                         help="Run N preflight questions per pipeline before full eval. "
                              "If any pipeline fails all preflight questions, skip it. "
                              "Default: 0 (disabled). Recommended: 2-5.")
+    parser.add_argument("--semantic-score", action="store_true",
+                        help="Enable LLM-as-judge semantic scoring as secondary metric. "
+                             "Uses OpenRouter free model to evaluate answer correctness. "
+                             "Adds semantic_correct and semantic_score to results.")
     args = parser.parse_args()
 
     # Pass delay, early-stop, and batch-size to run_pipeline via function attributes
@@ -507,6 +525,7 @@ def main():
     # batch-size: 0 = auto (per-pipeline optimal), >0 = explicit override
     run_pipeline._batch_size = args.batch_size  # 0 means "use per-pipeline default"
     run_pipeline._batch_size_auto = (args.batch_size == 0)
+    _process_question._semantic_score = args.semantic_score
 
     # LOCAL pipelines DISABLED (Session 57) — VM is pilotage ONLY
     # All eval must go through HF Space n8n pipelines
