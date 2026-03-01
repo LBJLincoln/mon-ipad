@@ -1,6 +1,6 @@
 # EXECUTIVE SUMMARY — Nomos AI Multi-RAG Orchestrator
 
-> Last updated: 2026-02-28T14:00:00+01:00
+> Last updated: 2026-03-01T19:30:00+01:00
 > **Ce fichier DOIT etre consulte et mis a jour a CHAQUE session.**
 > Il est la reference unique pour comprendre tout le projet en langage clair.
 
@@ -34,20 +34,25 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
 
 ### Ou en est-on ?
 - **Phase 1** (200 questions) : **PASSED** (85.5% overall, 20 fev 2026, session 30). Tous les 4 pipelines au-dessus de leurs cibles.
-- **Phase 2** (1,000q par pipeline) : **PARTIAL** — Graph 78.0% (500/500 COMPLETE), Quantitative 92.0% (500/500 COMPLETE), Standard 579/1000 tested (~36%, STOPPED), Orchestrator 57/1000 tested (0%, BROKEN).
-- **Session 63** : OpenRouter rate-limited, swapped to Groq/Llama-3.3-70b-versatile. 15 new scripts/tools created. Dashboard data feed fixed.
-- **Session 64** : Groq per-pipeline credentials, trading board improvements, n8n analyzer.
-- **Session 65** : **2 major diagnostic tools created** — `pipeline-doctor.py` (1442 lines, closed-loop fix engine) and `cross-repo-health.py` (865 lines, 93.8/100 health score). OpenClaw gateway fixed.
-- **Current accuracy** (Phase 1 confirmed): Standard 92%, Graph 78%, Quantitative 92%, Orchestrator 80%.
-- **Infrastructure** : HF Space #1 UP (HTTP 200). All 4 Vercel sites live. All 8 repos in sync.
-- **Remaining issues** : Orchestrator webhook timeout, chatbot CORS on Vercel sites.
+- **Phase 2** (1,000q par pipeline) : **IN PROGRESS** — Graph 78.0% (500/500 COMPLETE), Quantitative 92.0% (500/500 COMPLETE), Standard RERUNNING (90% on verification, 1000q in progress), Orchestrator (BROKEN — empty body, deferred).
+- **Session 66** (1 mars 2026) : **MAJOR PIPELINE RESTORATION** — All 4 pipelines had catastrophically regressed. Root causes found and fixed:
+  - Restored golden snapshots via n8n REST API (credential remapping needed)
+  - Fixed Pinecone JSON body syntax error (stray comma from namespace patch)
+  - Replaced expired Jina Reranker API key (401 → valid key)
+  - Fixed BM25 Postgres tenant_id filter (too strict for benchmark)
+  - **Critical fix**: `.env.local` had 9 stale HF Spaces in round-robin — only Space #1 active, 8/9 requests timed out
+  - Added LLM-as-judge semantic scoring, NO_ANSWER detection in extract_answer()
+- **Current accuracy** (Session 66 verified): Standard **90%**, Graph **75%**, Quantitative **100%** (on Phase 2 data).
+- **Infrastructure** : HF Space #1 UP. All 4 Vercel sites live. 7 repos active. Cross-repo health 82.1/100.
+- **Remaining issues** : Orchestrator empty body (68-node workflow too complex), Graph 40% on MuSiQue multi-hop questions.
 
 ### Chiffres cles
 | Metrique | Valeur |
 |----------|--------|
-| Questions testees a ce jour | **2,300+** (Phase 1 + Phase 2 partial) |
+| Questions testees a ce jour | **2,400+** (Phase 1 + Phase 2 partial + Session 66 verification) |
 | Precision Phase 1 (baseline) | 85.5% (PASSED, 20 fev 2026) |
-| Precision Phase 2 (partielle) | Graph 78% (500/500), Quant 92% (500/500), Std ~36% (579/1000), Orch 0% (57/1000) |
+| Precision Phase 2 (en cours) | Graph 78% (500/500 DONE), Quant 92% (500/500 DONE), Std 90% (rerunning 1000q), Orch deferred |
+| Session 66 verification | Standard 90%, Graph 75%, Quant 100% (10q each on Phase 2 data) |
 | Vecteurs dans Pinecone | 10,411 (sota-rag-jina-1024) + 1,296 (phase2-graph) |
 | Entites dans Neo4j | 19,788 nodes / 76,717 relations |
 | Lignes dans Supabase | ~17,600 |
