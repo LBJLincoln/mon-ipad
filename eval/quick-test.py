@@ -165,8 +165,8 @@ def run_quick_tests(pipelines, max_questions=3, trigger="manual"):
                     norm_expected = normalize_for_match(expected)
                     if norm_expected in norm_answer:
                         passed = True
-                elif not expected and len(resp["answer"]) > 10:
-                    passed = True  # No expected = just check non-empty
+                elif not expected and len(resp["answer"]) > 0:
+                    passed = True  # No expected = just check non-empty response
 
             status = "pass" if passed else ("error" if resp["error"] else "fail")
             symbol = "[+]" if passed else "[-]"
