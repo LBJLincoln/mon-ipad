@@ -1,94 +1,120 @@
 {
-  "generated_at": "2026-02-28T15:25:01+01:00",
+  "generated_at": "2026-03-01T15:11:08+01:00",
   "phase": {
     "current": 1,
     "name": "Baseline (200q)",
-    "gates_passed": true
+    "gates_passed": false
   },
   "pipelines": {
     "standard": {
-      "accuracy": 92.0,
+      "accuracy": 60.0,
       "tested": 50,
-      "correct": 46,
+      "correct": 30,
       "errors": 1,
       "target": 85.0,
-      "met": true,
-      "gap": 7.0
+      "met": false,
+      "gap": -25.0
     },
     "graph": {
-      "accuracy": 78.0,
+      "accuracy": 50.0,
       "tested": 50,
-      "correct": 39,
+      "correct": 25,
       "errors": 0,
       "target": 70.0,
-      "met": true,
-      "gap": 8.0
+      "met": false,
+      "gap": -20.0
     },
     "quantitative": {
-      "accuracy": 92.0,
+      "accuracy": 82.0,
       "tested": 50,
-      "correct": 46,
+      "correct": 41,
       "errors": 1,
       "target": 85.0,
-      "met": true,
-      "gap": 7.0
+      "met": false,
+      "gap": -3.0
     },
     "orchestrator": {
-      "accuracy": 80.0,
+      "accuracy": 66.0,
       "tested": 50,
-      "correct": 40,
-      "errors": 2,
+      "correct": 33,
+      "errors": 9,
       "target": 70.0,
-      "met": true,
-      "gap": 10.0
+      "met": false,
+      "gap": -4.0
     }
   },
   "overall": {
-    "accuracy": 85.5,
+    "accuracy": 64.5,
     "target": 75.0,
-    "met": true
+    "met": false
   },
-  "blockers": [],
-  "next_action": "Phase 1 COMPLETE — run Phase 2: python3 eval/run-eval-parallel.py --dataset phase-2 --reset",
+  "blockers": [
+    "standard: 60.0% < 85.0% (gap: -25.0pp)",
+    "graph: 50.0% < 70.0% (gap: -20.0pp)",
+    "quantitative: 82.0% < 85.0% (gap: -3.0pp)",
+    "orchestrator: 66.0% < 70.0% (gap: -4.0pp)",
+    "overall: 64.5% < 75.0%"
+  ],
+  "next_action": "Fix standard pipeline (60.0% vs 85.0% target, gap: -25.0pp)",
   "last_iteration": {
-    "id": "iter-2026-02-25T13-08-09",
-    "label": "Iteration 1048",
-    "timestamp": "2026-02-26T14:39:21+01:00",
-    "total_tested": 154,
-    "overall_accuracy_pct": 1.9,
+    "id": "iter-2026-03-01T14-34-26",
+    "label": "autorun-s66-v2",
+    "timestamp": "2026-03-01T14:34:29+01:00",
+    "total_tested": 54,
+    "overall_accuracy_pct": 16.7,
     "pipelines": {
-      "graph": {
-        "tested": 82,
+      "quantitative": {
+        "tested": 6,
         "correct": 1,
-        "accuracy": 1.2
+        "accuracy": 16.7
       },
       "standard": {
-        "tested": 72,
-        "correct": 2,
-        "accuracy": 2.8
+        "tested": 20,
+        "correct": 3,
+        "accuracy": 15.0
+      },
+      "graph": {
+        "tested": 20,
+        "correct": 4,
+        "accuracy": 20.0
+      },
+      "orchestrator": {
+        "tested": 8,
+        "correct": 1,
+        "accuracy": 12.5
       }
     }
   },
   "totals": {
-    "unique_questions": 2697,
-    "test_runs": 9813,
-    "iterations": 1048
+    "unique_questions": 2816,
+    "test_runs": 10714,
+    "iterations": 1405
   },
   "cross_repo_health": {
-    "generated_at": "2026-02-28T17:28:44.482159+00:00",
-    "overall_score": 93.8,
+    "generated_at": "2026-03-01T14:16:46.443098+00:00",
+    "overall_score": 85.0,
     "overall_status": "DEGRADED",
-    "critical_issues": 1,
+    "critical_issues": 2,
     "component_scores": {
       "repos": 100.0,
       "ci": 100.0,
       "vercel": 100.0,
       "hf_space": 100,
-      "webhooks": 75.0,
+      "webhooks": 50.0,
       "databases": 100.0,
-      "pipelines": 100.0
+      "pipelines": 83.2
     },
     "repos_summary": {
+      "rag-website": {
+        "stale": false,
+        "days_since_commit": 0,
+        "ci_status": "no_ci"
+      },
+      "rag-tests": {
+        "stale": false,
+        "days_since_commit": 1,
+        "ci_status": "healthy"
+      },
       "rag-dashboard": {
         "stale": false,
         "days_since_commit": 0,
@@ -99,66 +125,56 @@
         "days_since_commit": 0,
         "ci_status": "healthy"
       },
-      "rag-tests": {
-        "stale": false,
-        "days_since_commit": 1,
-        "ci_status": "healthy"
-      },
-      "rag-website": {
-        "stale": false,
-        "days_since_commit": 1,
-        "ci_status": "no_ci"
-      },
       "rag-pme-connectors": {
         "stale": false,
         "days_since_commit": 0,
         "ci_status": "healthy"
       },
-      "rag-pme-usecases": {
-        "stale": false,
-        "days_since_commit": 1,
-        "ci_status": "no_ci"
-      },
       "rag-data-ingestion": {
         "stale": false,
-        "days_since_commit": 1,
+        "days_since_commit": 2,
+        "ci_status": "no_ci"
+      },
+      "rag-pme-usecases": {
+        "stale": false,
+        "days_since_commit": 0,
         "ci_status": "no_ci"
       }
     },
     "vercel_sites": {
-      "PME Use Cases": {
-        "healthy": true,
-        "latency_ms": 387
-      },
       "ETI 4 Sectors": {
         "healthy": true,
-        "latency_ms": 392
+        "latency_ms": 1733
+      },
+      "PME Use Cases": {
+        "healthy": true,
+        "latency_ms": 1754
       },
       "Dashboard": {
         "healthy": true,
-        "latency_ms": 434
+        "latency_ms": 1997
       },
       "PME Connectors": {
         "healthy": true,
-        "latency_ms": 624
+        "latency_ms": 2472
       }
     },
     "webhooks": {
       "standard": {
-        "healthy": true,
-        "latency_ms": 21252
+        "healthy": false,
+        "latency_ms": 30741
       },
       "graph": {
         "healthy": true,
-        "latency_ms": 20023
+        "latency_ms": 22743
       },
       "quantitative": {
         "healthy": true,
-        "latency_ms": 929
+        "latency_ms": 1496
       },
       "orchestrator": {
         "healthy": false,
-        "latency_ms": 30166
+        "latency_ms": 31246
       }
     },
     "hf_space_healthy": true

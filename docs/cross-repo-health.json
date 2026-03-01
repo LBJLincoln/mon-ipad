@@ -1,25 +1,15 @@
 {
-  "generated_at": "2026-02-28T17:28:44.482159+00:00",
+  "generated_at": "2026-03-01T14:16:46.443098+00:00",
   "version": "1.0",
   "repos": {
-    "rag-dashboard": {
-      "repo": "rag-dashboard",
-      "role": "Live metrics dashboard (HTML/JS)",
-      "last_commit_sha": "dca207d",
-      "last_commit_msg": "chore: auto-sync status.json from mon-ipad",
-      "last_commit_date": "2026-02-28T14:25:04Z",
+    "rag-website": {
+      "repo": "rag-website",
+      "role": "Next.js 14 — 4 sector sites + chatbots",
+      "last_commit_sha": "d0d2929",
+      "last_commit_msg": "feat: upgrade chatbot API to v5.2 with Groq+OpenRouter LLM c",
+      "last_commit_date": "2026-03-01T13:13:24Z",
       "days_since_commit": 0,
       "local_sync": "behind",
-      "stale": false
-    },
-    "mon-ipad": {
-      "repo": "mon-ipad",
-      "role": "Control tower — directives, eval scripts, MCP configs",
-      "last_commit_sha": "ef27b46",
-      "last_commit_msg": "feat: add lightweight Telegram bot for media cross-analysis",
-      "last_commit_date": "2026-02-28T14:26:55Z",
-      "days_since_commit": 0,
-      "local_sync": "in_sync",
       "stale": false
     },
     "rag-tests": {
@@ -32,13 +22,23 @@
       "local_sync": "in_sync",
       "stale": false
     },
-    "rag-website": {
-      "repo": "rag-website",
-      "role": "Next.js 14 — 4 sector sites + chatbots",
-      "last_commit_sha": "633239c",
-      "last_commit_msg": "chore(chatbot): add shared local chatbot engine file",
-      "last_commit_date": "2026-02-27T15:37:01Z",
-      "days_since_commit": 1,
+    "rag-dashboard": {
+      "repo": "rag-dashboard",
+      "role": "Live metrics dashboard (HTML/JS)",
+      "last_commit_sha": "5e5b573",
+      "last_commit_msg": "chore: auto-sync status.json from mon-ipad",
+      "last_commit_date": "2026-03-01T14:11:12Z",
+      "days_since_commit": 0,
+      "local_sync": "behind",
+      "stale": false
+    },
+    "mon-ipad": {
+      "repo": "mon-ipad",
+      "role": "Control tower — directives, eval scripts, MCP configs",
+      "last_commit_sha": "efce831",
+      "last_commit_msg": "fix(eval): scoring bug + add Phase 2 Pinecone ingestion scri",
+      "last_commit_date": "2026-03-01T07:57:09Z",
+      "days_since_commit": 0,
       "local_sync": "in_sync",
       "stale": false
     },
@@ -49,16 +49,6 @@
       "last_commit_msg": "feat(chatbot): add Groq fast LLM with 8s timeout for Vercel",
       "last_commit_date": "2026-02-28T15:40:20Z",
       "days_since_commit": 0,
-      "local_sync": "behind",
-      "stale": false
-    },
-    "rag-pme-usecases": {
-      "repo": "rag-pme-usecases",
-      "role": "Next.js 14 — 200 use cases",
-      "last_commit_sha": "8937f97",
-      "last_commit_msg": "chore(chatbot): add shared local chatbot engine file",
-      "last_commit_date": "2026-02-27T15:37:00Z",
-      "days_since_commit": 1,
       "local_sync": "in_sync",
       "stale": false
     },
@@ -68,8 +58,18 @@
       "last_commit_sha": "0fa5ea9",
       "last_commit_msg": "fix(sync): make live-writer optional to avoid crash",
       "last_commit_date": "2026-02-27T13:23:55Z",
-      "days_since_commit": 1,
+      "days_since_commit": 2,
       "local_sync": "in_sync",
+      "stale": false
+    },
+    "rag-pme-usecases": {
+      "repo": "rag-pme-usecases",
+      "role": "Next.js 14 — 200 use cases",
+      "last_commit_sha": "b8197b0",
+      "last_commit_msg": "feat: upgrade chatbot to v5.2 with Groq+OpenRouter LLM",
+      "last_commit_date": "2026-03-01T13:15:24Z",
+      "days_since_commit": 0,
+      "local_sync": "behind",
       "stale": false
     }
   },
@@ -120,36 +120,6 @@
         "Deploy Website to Vercel"
       ]
     },
-    "mon-ipad": {
-      "status": "healthy",
-      "healthy": true,
-      "workflows": [
-        {
-          "name": "Eval 1000q Parallel",
-          "status": "completed",
-          "conclusion": "success",
-          "updated_at": "2026-02-24T21:27:21Z",
-          "run_number": 5
-        },
-        {
-          "name": "Eval 1000q Parallel",
-          "status": "completed",
-          "conclusion": "success",
-          "updated_at": "2026-02-24T20:22:59Z",
-          "run_number": 4
-        },
-        {
-          "name": "Eval 1000q Parallel",
-          "status": "completed",
-          "conclusion": "success",
-          "updated_at": "2026-02-24T17:27:58Z",
-          "run_number": 3
-        }
-      ],
-      "expected_workflows": [
-        "Eval 1000q Parallel"
-      ]
-    },
     "rag-tests": {
       "status": "healthy",
       "healthy": true,
@@ -179,34 +149,64 @@
       "expected_workflows": [
         "CI - RAG Tests"
       ]
+    },
+    "mon-ipad": {
+      "status": "healthy",
+      "healthy": true,
+      "workflows": [
+        {
+          "name": "Eval 1000q Parallel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-24T21:27:21Z",
+          "run_number": 5
+        },
+        {
+          "name": "Eval 1000q Parallel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-24T20:22:59Z",
+          "run_number": 4
+        },
+        {
+          "name": "Eval 1000q Parallel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-24T17:27:58Z",
+          "run_number": 3
+        }
+      ],
+      "expected_workflows": [
+        "Eval 1000q Parallel"
+      ]
     }
   },
   "vercel": {
-    "PME Use Cases": {
-      "healthy": true,
-      "status_code": 200,
-      "latency_ms": 387,
-      "name": "PME Use Cases",
-      "url": "https://nomos-pme-usecases-alexis-morets-projects.vercel.app"
-    },
     "ETI 4 Sectors": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 392,
+      "latency_ms": 1733,
       "name": "ETI 4 Sectors",
       "url": "https://nomos-ai-pied.vercel.app"
+    },
+    "PME Use Cases": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 1754,
+      "name": "PME Use Cases",
+      "url": "https://nomos-pme-usecases-alexis-morets-projects.vercel.app"
     },
     "Dashboard": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 434,
+      "latency_ms": 1997,
       "name": "Dashboard",
       "url": "https://nomos-dashboard-alexis-morets-projects.vercel.app"
     },
     "PME Connectors": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 624,
+      "latency_ms": 2472,
       "name": "PME Connectors",
       "url": "https://nomos-pme-connectors-alexis-morets-projects.vercel.app"
     }
@@ -216,36 +216,37 @@
     "healthz": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 170
+      "latency_ms": 1032
     },
     "healthy": true
   },
   "webhooks": {
     "standard": {
-      "healthy": true,
-      "status_code": 200,
-      "latency_ms": 21252,
+      "healthy": false,
+      "status_code": 0,
+      "latency_ms": 30741,
+      "error": "The read operation timed out",
       "pipeline": "standard",
       "webhook": "/webhook/rag-multi-index-v3"
     },
     "graph": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 20023,
+      "latency_ms": 22743,
       "pipeline": "graph",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717"
     },
     "quantitative": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 929,
+      "latency_ms": 1496,
       "pipeline": "quantitative",
       "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9"
     },
     "orchestrator": {
       "healthy": false,
       "status_code": 0,
-      "latency_ms": 30166,
+      "latency_ms": 31246,
       "error": "The read operation timed out",
       "pipeline": "orchestrator",
       "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0"
@@ -255,7 +256,7 @@
     "pinecone_primary": {
       "index": "sota-rag-jina-1024",
       "healthy": true,
-      "vectors": 10411,
+      "vectors": 13373,
       "dimension": 1024
     },
     "pinecone_graph": {
@@ -275,40 +276,40 @@
   },
   "pipeline_metrics": {
     "standard": {
-      "accuracy": 92.0,
+      "accuracy": 60.0,
       "tested": 50,
-      "correct": 46,
+      "correct": 30,
       "errors": 1,
       "target": 85.0,
-      "met": true,
-      "gap": 7.0
+      "met": false,
+      "gap": -25.0
     },
     "graph": {
-      "accuracy": 78.0,
+      "accuracy": 50.0,
       "tested": 50,
-      "correct": 39,
+      "correct": 25,
       "errors": 0,
       "target": 70.0,
-      "met": true,
-      "gap": 8.0
+      "met": false,
+      "gap": -20.0
     },
     "quantitative": {
-      "accuracy": 92.0,
+      "accuracy": 82.0,
       "tested": 50,
-      "correct": 46,
+      "correct": 41,
       "errors": 1,
       "target": 85.0,
-      "met": true,
-      "gap": 7.0
+      "met": false,
+      "gap": -3.0
     },
     "orchestrator": {
-      "accuracy": 80.0,
+      "accuracy": 66.0,
       "tested": 50,
-      "correct": 40,
-      "errors": 2,
+      "correct": 33,
+      "errors": 9,
       "target": 70.0,
-      "met": true,
-      "gap": 10.0
+      "met": false,
+      "gap": -4.0
     }
   },
   "doctor_report": {
@@ -417,20 +418,268 @@
         "metrics": {},
         "auto_fix_result": "no_candidates"
       }
-    }
+    },
+    "repos": {
+      "mon-ipad": {
+        "repo": "mon-ipad",
+        "role": "Control tower — directives, eval scripts, MCP configs",
+        "timestamp": "2026-02-28T17:38:21.121112+00:00",
+        "checks": {
+          "git": {
+            "status": "ok",
+            "last_sha": "76b877c",
+            "last_msg": "diag: run pipeline-doctor (4 pipelines) + cross-repo-health ",
+            "commit_date": "2026-02-28 17:30:46",
+            "days_since_commit": 0,
+            "stale": false,
+            "sync": "in_sync",
+            "ahead": 0,
+            "behind": 0
+          },
+          "ci": {
+            "status": "healthy",
+            "healthy": true,
+            "latest_conclusion": "success",
+            "latest_status": "completed",
+            "latest_title": "Eval 1000q Parallel",
+            "updated_at": "2026-02-24T21:27:21Z",
+            "total_runs": 3
+          }
+        },
+        "health": {
+          "score": 100.0,
+          "status": "HEALTHY",
+          "breakdown": {
+            "git": 100.0,
+            "ci": 100.0
+          }
+        }
+      },
+      "rag-tests": {
+        "repo": "rag-tests",
+        "role": "Eval scripts, datasets, test results",
+        "timestamp": "2026-02-28T17:38:29.130625+00:00",
+        "checks": {
+          "git": {
+            "status": "ok",
+            "last_sha": "96b56e6",
+            "last_msg": "chore(gitignore): ignore local logs artifacts",
+            "commit_date": "2026-02-27 15:37:31",
+            "days_since_commit": 1,
+            "stale": false,
+            "sync": "diverged",
+            "ahead": 139,
+            "behind": 5
+          },
+          "ci": {
+            "status": "healthy",
+            "healthy": true,
+            "latest_conclusion": "success",
+            "latest_status": "completed",
+            "latest_title": "chore(gitignore): ignore local logs artifacts",
+            "updated_at": "2026-02-27T15:37:50Z",
+            "total_runs": 2
+          }
+        },
+        "health": {
+          "score": 78.2,
+          "status": "DEGRADED",
+          "breakdown": {
+            "git": 60.0,
+            "ci": 100.0
+          }
+        }
+      },
+      "rag-website": {
+        "repo": "rag-website",
+        "role": "Next.js 14 — 4 sector sites + chatbots",
+        "timestamp": "2026-02-28T17:38:34.128195+00:00",
+        "checks": {
+          "git": {
+            "status": "ok",
+            "last_sha": "633239c",
+            "last_msg": "chore(chatbot): add shared local chatbot engine file",
+            "commit_date": "2026-02-27 15:37:01",
+            "days_since_commit": 1,
+            "stale": false,
+            "sync": "diverged",
+            "ahead": 139,
+            "behind": 8
+          },
+          "vercel": {
+            "healthy": true,
+            "status_code": 200,
+            "latency_ms": 2494
+          }
+        },
+        "health": {
+          "score": 78.2,
+          "status": "DEGRADED",
+          "breakdown": {
+            "git": 60.0,
+            "vercel": 100.0
+          }
+        }
+      },
+      "rag-dashboard": {
+        "repo": "rag-dashboard",
+        "role": "Live metrics dashboard (HTML/JS)",
+        "timestamp": "2026-02-28T17:38:38.124331+00:00",
+        "checks": {
+          "git": {
+            "status": "ok",
+            "last_sha": "ce55829",
+            "last_msg": "chore: auto-sync status.json from mon-ipad",
+            "commit_date": "2026-02-28 17:37:55",
+            "days_since_commit": 0,
+            "stale": false,
+            "sync": "diverged",
+            "ahead": 139,
+            "behind": 53
+          },
+          "vercel": {
+            "healthy": true,
+            "status_code": 200,
+            "latency_ms": 1472
+          }
+        },
+        "health": {
+          "score": 78.2,
+          "status": "DEGRADED",
+          "breakdown": {
+            "git": 60.0,
+            "vercel": 100.0
+          }
+        }
+      },
+      "rag-data-ingestion": {
+        "repo": "rag-data-ingestion",
+        "role": "Ingestion V3.1 + Enrichissement V3.1",
+        "timestamp": "2026-02-28T17:38:40.873895+00:00",
+        "checks": {
+          "git": {
+            "status": "ok",
+            "last_sha": "0fa5ea9",
+            "last_msg": "fix(sync): make live-writer optional to avoid crash",
+            "commit_date": "2026-02-27 13:23:55",
+            "days_since_commit": 1,
+            "stale": false,
+            "sync": "diverged",
+            "ahead": 139,
+            "behind": 6
+          },
+          "scripts": {
+            "status": "degraded",
+            "files_checked": [
+              {
+                "file": "scripts/download-sector-datasets.py",
+                "exists": false
+              },
+              {
+                "file": "docker-compose.yml",
+                "exists": false
+              }
+            ],
+            "found": 0,
+            "total": 2
+          }
+        },
+        "health": {
+          "score": 36.0,
+          "status": "CRITICAL",
+          "breakdown": {
+            "git": 60.0,
+            "scripts": 0.0
+          }
+        }
+      },
+      "rag-pme-connectors": {
+        "repo": "rag-pme-connectors",
+        "role": "Next.js 15 — 15 PME apps + MacBook chat",
+        "timestamp": "2026-02-28T17:38:41.876537+00:00",
+        "checks": {
+          "git": {
+            "status": "ok",
+            "last_sha": "bf58a0b",
+            "last_msg": "feat(chatbot): add Groq fast LLM with 8s timeout for Vercel",
+            "commit_date": "2026-02-28 15:40:20",
+            "days_since_commit": 0,
+            "stale": false,
+            "sync": "diverged",
+            "ahead": 139,
+            "behind": 15
+          },
+          "ci": {
+            "status": "healthy",
+            "healthy": true,
+            "latest_conclusion": "success",
+            "latest_status": "completed",
+            "latest_title": "feat(chatbot): add Groq fast LLM with 8s timeout for Vercel",
+            "updated_at": "2026-02-28T15:40:52Z",
+            "total_runs": 3
+          },
+          "vercel": {
+            "healthy": true,
+            "status_code": 200,
+            "latency_ms": 1493
+          }
+        },
+        "health": {
+          "score": 85.0,
+          "status": "HEALTHY",
+          "breakdown": {
+            "git": 60.0,
+            "ci": 100.0,
+            "vercel": 100.0
+          }
+        }
+      },
+      "rag-pme-usecases": {
+        "repo": "rag-pme-usecases",
+        "role": "Next.js 14 — 200 use cases",
+        "timestamp": "2026-02-28T17:38:46.124195+00:00",
+        "checks": {
+          "git": {
+            "status": "ok",
+            "last_sha": "8937f97",
+            "last_msg": "chore(chatbot): add shared local chatbot engine file",
+            "commit_date": "2026-02-27 15:37:00",
+            "days_since_commit": 1,
+            "stale": false,
+            "sync": "diverged",
+            "ahead": 1064,
+            "behind": 6
+          },
+          "vercel": {
+            "healthy": true,
+            "status_code": 200,
+            "latency_ms": 971
+          }
+        },
+        "health": {
+          "score": 78.2,
+          "status": "DEGRADED",
+          "breakdown": {
+            "git": 60.0,
+            "vercel": 100.0
+          }
+        }
+      }
+    },
+    "repos_timestamp": "2026-02-28T17:38:51.876553+00:00"
   },
   "overall": {
-    "score": 93.8,
+    "score": 85.0,
     "status": "DEGRADED",
-    "critical_issues": 1,
+    "critical_issues": 2,
     "component_scores": {
       "repos": 100.0,
       "ci": 100.0,
       "vercel": 100.0,
       "hf_space": 100,
-      "webhooks": 75.0,
+      "webhooks": 50.0,
       "databases": 100.0,
-      "pipelines": 100.0
+      "pipelines": 83.2
     },
     "weights": {
       "repos": 0.1,

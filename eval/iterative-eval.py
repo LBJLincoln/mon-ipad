@@ -560,7 +560,7 @@ def main():
                         help="Label for this evaluation run")
     parser.add_argument("--no-gate", action="store_true",
                         help="Run all stages regardless of gate results")
-    parser.add_argument("--dataset", type=str, default=None,
+    parser.add_argument("--dataset", type=str, default="phase-1",
                         choices=["phase-1", "phase-2", "all"],
                         help="Dataset to use")
     parser.add_argument("--force", action="store_true",
