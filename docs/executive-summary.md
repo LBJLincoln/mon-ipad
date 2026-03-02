@@ -1,6 +1,6 @@
 # EXECUTIVE SUMMARY — Nomos AI Multi-RAG Orchestrator
 
-> Last updated: 2026-03-01T19:30:00+01:00
+> Last updated: 2026-03-02T15:00:00+00:00
 > **Ce fichier DOIT etre consulte et mis a jour a CHAQUE session.**
 > Il est la reference unique pour comprendre tout le projet en langage clair.
 
@@ -42,9 +42,18 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
   - Fixed BM25 Postgres tenant_id filter (too strict for benchmark)
   - **Critical fix**: `.env.local` had 9 stale HF Spaces in round-robin — only Space #1 active, 8/9 requests timed out
   - Added LLM-as-judge semantic scoring, NO_ANSWER detection in extract_answer()
+- **Session 68** (2 mars 2026) : **CLEANUP + DASHBOARD + INGESTION**
+  - Committed 35 stale file deletions (cleanup from sessions 60-67)
+  - Fixed Vercel dashboard (`framework: null` removal, sync throttle to prevent deploy quota burn)
+  - Removed Redis nodes from Ingestion V4.0 + Enrichment V4.0 (4 nodes → Code bypass)
+  - Added webhook trigger to Enrichment workflow (`/webhook/rag-v6-enrichment`)
+  - Created `scripts/n8n-api.py` — reusable REST API helper with session cookie auth
+  - Added repo status cards to dashboard (7 repos, color-coded)
+  - **Critical discovery**: n8n API key JWT invalidates on HF Space rebuild → use session cookie auth instead
+  - OpenClaw/Telegram deferred (OOM on VM)
 - **Current accuracy** (Session 66 verified): Standard **90%**, Graph **75%**, Quantitative **100%** (on Phase 2 data).
-- **Infrastructure** : HF Space #1 UP. All 4 Vercel sites live. 7 repos active. Cross-repo health 82.1/100.
-- **Remaining issues** : Orchestrator empty body (68-node workflow too complex), Graph 40% on MuSiQue multi-hop questions.
+- **Infrastructure** : HF Space #1 UP. All 4 Vercel sites live. 7 repos active. Dashboard pending Vercel quota reset.
+- **Remaining issues** : Orchestrator empty body (68-node workflow too complex), Graph 40% on MuSiQue multi-hop questions, Multi-HF-Space architecture not yet documented.
 
 ### Chiffres cles
 | Metrique | Valeur |
@@ -58,7 +67,7 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
 | Lignes dans Supabase | ~17,600 |
 | Datasets telecharges | 7,609 sectoriels + 669MB HuggingFace |
 | Commits dans mon-ipad | **1,060+** |
-| Sessions Claude Code | **65** |
+| Sessions Claude Code | **68** |
 | Sites web live | **4** (ETI + PME connectors + PME use cases + Dashboard) |
 | HF Space n8n | **1** (primary, 14 workflows, 16GB RAM) |
 | Scripts diagnostiques | pipeline-doctor.py (1442 lines) + cross-repo-health.py (865 lines) |
@@ -598,6 +607,9 @@ Highlights recents :
 14. **Session 63**: OpenRouter rate-limited (429 errors on 7/9 free models) → swapped all 4 core workflows to Groq/Llama-3.3-70b-versatile. 15 new scripts created. Dashboard data feed fixed. Supabase trading board populated.
 15. **Session 64**: Groq per-pipeline credentials deployed, trading board improvements, n8n analyzer script created.
 16. **Session 65**: `pipeline-doctor.py` (1442 lines, closed-loop fix engine) + `cross-repo-health.py` (865 lines, 93.8/100 health score). OpenClaw gateway fixed. Cross-repo health integrated into status.json.
+17. **Session 66**: MAJOR PIPELINE RESTORATION — fixed stale round-robin hosts, Pinecone JSON syntax, Jina API key, BM25 filter. Standard 90%, Graph 75%, Quant 100%.
+18. **Session 67**: Phase 2 Standard eval launched, OpenClaw Groq config, Vercel token renewed.
+19. **Session 68**: Cleanup (35 stale files), dashboard fix (framework:null removal + sync throttle), ingestion/enrichment Redis removal (4 nodes), n8n cookie auth discovery, `n8n-api.py` helper created, repo status cards added to dashboard. OpenClaw deferred (OOM).
 
 ### Session 58 — INFRASTRUCTURE COMPLETE
 
@@ -643,25 +655,33 @@ Highlights recents :
 - **Session 63**: OpenRouter → Groq swap (429 rate-limit fix), 15 new scripts, dashboard feed fixed
 - **Session 62**: 10 HF Spaces deployed, incremental eval saves, 6 workflow repair agents (3 fixed)
 
-### Next Steps (priority order)
+### Next Steps (priority order, updated Session 68)
 
-#### PRIORITY #1 — Fix Orchestrator Webhook Timeout
-- Orchestrator returns 404/empty on all questions (Phase 2: 0% on 57 tested)
-- Webhook healthy at 30.5s but timing out — investigate sub-workflow routing
+#### PRIORITY #1 — Resume Phase 2 Eval (all tests across all repos)
+- Standard 579/1000 (need to complete remaining 421)
+- Orchestrator 57/1000 (BROKEN — empty body, 0% accuracy)
+- Graph 500/500 COMPLETE (78%), Quantitative 500/500 COMPLETE (92%)
+- **Goal**: Complete all 4000 questions (4 pipelines × 1000)
 
-#### PRIORITY #2 — Resume Standard Pipeline Phase 2 Eval
-- 579/1000 tested at ~36%, need HF Space stability for remaining 421 questions
-- Graph (78%) and Quantitative (92%) already complete at 500/500
+#### PRIORITY #2 — Fix Orchestrator
+- Returns empty body / 404 on Phase 2 questions
+- 68-node workflow — investigate sub-workflow routing
+- Consider simplifying or splitting into smaller workflows
 
-#### PRIORITY #3 — Fix Remaining Workflows
-1. **Ingestion V4.0** — Remove Redis lock nodes (HTTP 500)
-2. **Chatbot CORS** — Add CORS headers for Vercel sites
-3. **PME Gateway** — Validation error, not activated
+#### PRIORITY #3 — Multi-HF-Space Architecture (Phase 5)
+- User requested: LiteLLM proxy, SQLite → PostgreSQL migration, batch size optimization
+- Target: ~500 qs/min per workflow with matched batch sizes
+- Document architecture for Space #1 (Standard + Graph) and Space #2 (Quantitative + Orchestrator)
 
-#### PRIORITY #4 — Data Ingestion + Scaling
-- Build ingestion for additional file types (currently 11 types real)
-- Test Ingestion V4.0 after Redis removal
-- Plan HF Space #2 full deployment for throughput doubling
+#### PRIORITY #4 — Dashboard + Credential Resilience
+- Vercel dashboard will auto-deploy after quota reset (vercel.json already fixed)
+- Test and document credential restore after HF Space rebuild
+- Ensure `scripts/n8n-api.py` is used for all n8n operations (not API key)
+
+#### PRIORITY #5 — Ingestion Pipeline Testing
+- Ingestion + Enrichment deployed (Redis removed, webhooks registered)
+- Need real document tests to validate
+- PME Gateway still 404 (not activated)
 
 ### Infrastructure Summary (Session 65)
 

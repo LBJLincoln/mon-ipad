@@ -1,6 +1,6 @@
 # Knowledge Base — Cerveau Persistant Multi-RAG
 
-> Last updated: 2026-02-25T13:00:00+01:00 (Session 62 — HF Space rebuild knowledge, credential restore process)
+> Last updated: 2026-03-02T15:00:00+00:00 (Session 68 — n8n cookie auth discovery, sync throttle, Redis removal from ingestion/enrichment)
 > **Ce document est VIVANT.** Il s'enrichit a CHAQUE session avec les solutions, patterns
 > et connaissances techniques decouvertes. A lire EN PREMIER avec `fixes-library.md`.
 > Objectif : ameliorer la performance de l'agent a chaque session.
@@ -1482,6 +1482,104 @@ docker exec <container> env | grep N8N_BLOCK_ENV_ACCESS_IN_NODE
 **Hypothesis**: Orchestrator sub-workflow calls may have different issue (FIX-34 related?).
 
 **Next step**: Diagnose Orchestrator execution flow after credential restore completes.
+
+---
+
+## SECTION 15 — SESSION 68 CRITICAL DISCOVERIES (2026-03-02)
+
+### 15.1 n8n REST API: Session Cookie Auth (NOT API Key)
+
+**CRITICAL DISCOVERY**: n8n API key JWT becomes INVALID after every HF Space rebuild because the JWT signing secret changes. The API key approach is fundamentally broken for HF Spaces.
+
+**Solution**: Use session cookie authentication via `/rest/login`:
+```python
+import urllib.request, http.cookiejar, json
+
+cj = http.cookiejar.CookieJar()
+opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+data = json.dumps({"emailOrLdapLoginId": "ci@nomos.ai", "password": "CI-Nomos-2026!"}).encode()
+req = urllib.request.Request(f"{HOST}/rest/login", data=data,
+    headers={"Content-Type": "application/json"}, method="POST")
+opener.open(req, timeout=20)
+# Now use `opener` for all subsequent requests — cookie auto-attached
+```
+
+**Reusable script**: `scripts/n8n-api.py` — supports `list`, `get`, `deploy`, `activate`, `test-webhooks`
+
+**Key insight**: curl FAILS on `/rest/` and `/api/` paths through HF proxy, but Python `urllib` works fine. Always use Python for REST API operations.
+
+### 15.2 n8n Workflow Activation (n8n 2.8+)
+
+**POST /rest/workflows/{id}/activate with versionId** is the ONLY way to register webhooks.
+**PATCH {active: true}** does NOT register webhooks in n8n 2.8+.
+
+**Pattern**:
+```python
+# 1. PATCH to update workflow content
+result = api_patch(opener, f"/workflows/{id}", {"nodes": ..., "connections": ...})
+vid = result.get("versionId")
+
+# 2. Deactivate first
+api_patch(opener, f"/workflows/{id}", {"active": False, "versionId": vid})
+time.sleep(2)
+
+# 3. Activate via POST (registers webhooks)
+api_post(opener, f"/workflows/{id}/activate", {"versionId": vid})
+```
+
+### 15.3 Webhook Trigger Node Requirements
+
+When adding a webhook trigger to an n8n workflow:
+- **MUST** include `"httpMethod": "POST"` in parameters (default is empty = 404)
+- **responseMode**: Use `"lastNode"` unless you have a RespondToWebhook node downstream
+- `"responseNode"` without a downstream RespondToWebhook node → "No Respond to Webhook node" error
+
+### 15.4 Dashboard Auto-Sync Throttle
+
+**Problem**: `sync-dashboard-data.sh` was pushing to rag-dashboard every ~30 seconds via cron, burning 100+ Vercel deploys/day (free tier limit = 100).
+
+**Fix**: Added 5-minute throttle using lockfile `/tmp/dashboard-sync-last-push`.
+
+**Prevention**: Any automated git push to a Vercel-deployed repo MUST have rate limiting.
+
+### 15.5 OpenClaw Cannot Run on VM
+
+**Root cause**: OpenClaw gateway needs ~250MB heap. VM has 969MB total, ~200MB free after Claude Code + eval processes. OOM every time.
+
+**Valid OpenClaw API types**: `anthropic-messages`, `openai-completions`, `openai-responses`, `openai-codex` — NOT plain `"openai"`.
+
+**Status**: Service stopped. Consider deploying on HF Space or Codespace instead.
+
+### 15.6 Redis → Code Bypass Conversion (Ingestion + Enrichment)
+
+Successfully converted 4 Redis nodes (2 per workflow) to Code bypass nodes:
+```json
+{
+  "type": "n8n-nodes-base.code",
+  "parameters": {
+    "jsCode": "return [{ json: { lockAcquired: true, lockKey: 'bypass', workerId: 'solo' } }];"
+  }
+}
+```
+Remove `credentials` field when converting. Both `nodes` array AND `activeVersion.nodes` must be updated in the JSON.
+
+### 15.7 Preventing Credential Loss on HF Space Rebuilds
+
+**The credential lifecycle on HF Spaces**:
+1. HF Space rebuild → SQLite wiped → ALL credentials gone
+2. `entrypoint.sh` runs → imports workflow JSONs (credentials stripped during import)
+3. `setup-workflows.py` runs → recreates credentials via REST API using HF Space secrets
+4. Workflows activated → webhooks registered
+
+**What to verify after EVERY rebuild**:
+- [ ] `python3 scripts/n8n-api.py list` — all workflows visible
+- [ ] `python3 scripts/n8n-api.py test-webhooks` — all webhooks respond (200 or 500, NOT 404)
+- [ ] If 404 → run `python3 scripts/n8n-api.py activate <wf_id>` for each workflow
+
+**CI credentials** (from `hf-space/entrypoint.sh`):
+- Email: `ci@nomos.ai`
+- Password: `CI-Nomos-2026!`
+- Encryption key: `sota-rag-2026-hf-space-key`
 
 ---
 

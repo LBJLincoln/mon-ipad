@@ -1,9 +1,9 @@
 # Fixes Library — Multi-RAG Orchestrator
 
-> Last updated: 2026-02-25T13:00:00+01:00
+> Last updated: 2026-03-02T15:00:00+00:00
 
 > **Bibliotheque permanente de tous les bugs resolus.** A consulter EN PREMIER avant tout debug.
-> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 62 (2026-02-25).
+> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 68 (2026-03-02).
 
 ---
 
@@ -77,6 +77,11 @@
 | 65 | HF Space | N8N_BLOCK_ENV_ACCESS_IN_NODE=false deployed to 10 HF Spaces | 62 | CRITIQUE |
 | 66 | HF Space | Credential restore script for post-rebuild recovery | 62 | CRITIQUE |
 | 67 | HF Space | HF Space rebuilds reset all webhook registrations | 62 | IMPORTANT |
+| 68 | n8n API | API key JWT invalidates on HF rebuild — use session cookie auth | 68 | CRITIQUE |
+| 69 | Ingestion V4.0 | Redis → Code bypass conversion (ingestion + enrichment, 4 nodes) | 68 | CRITIQUE |
+| 70 | Enrichment | Missing httpMethod + wrong responseMode on new webhook trigger | 68 | IMPORTANT |
+| 71 | Dashboard | Auto-sync burned 100 Vercel deploys/day — added 5-min throttle | 68 | IMPORTANT |
+| 72 | Dashboard | framework:null in vercel.json causes Next.js auto-detect → 404 | 68 | CRITIQUE |
 
 ---
 
