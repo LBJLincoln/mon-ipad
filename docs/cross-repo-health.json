@@ -1,17 +1,7 @@
 {
-  "generated_at": "2026-03-01T20:15:50.769673+00:00",
+  "generated_at": "2026-03-02T09:56:46.601510+00:00",
   "version": "1.0",
   "repos": {
-    "rag-website": {
-      "repo": "rag-website",
-      "role": "Next.js 14 — 4 sector sites + chatbots",
-      "last_commit_sha": "d0d2929",
-      "last_commit_msg": "feat: upgrade chatbot API to v5.2 with Groq+OpenRouter LLM c",
-      "last_commit_date": "2026-03-01T13:13:24Z",
-      "days_since_commit": 0,
-      "local_sync": "behind",
-      "stale": false
-    },
     "rag-tests": {
       "repo": "rag-tests",
       "role": "Eval scripts, datasets, test results",
@@ -22,12 +12,12 @@
       "local_sync": "in_sync",
       "stale": false
     },
-    "rag-dashboard": {
-      "repo": "rag-dashboard",
-      "role": "Live metrics dashboard (HTML/JS)",
-      "last_commit_sha": "e6590f4",
-      "last_commit_msg": "chore: auto-sync status.json from mon-ipad",
-      "last_commit_date": "2026-03-01T20:15:51Z",
+    "rag-website": {
+      "repo": "rag-website",
+      "role": "Next.js 14 — 4 sector sites + chatbots",
+      "last_commit_sha": "570d5eb",
+      "last_commit_msg": "chore: redeploy with GROQ_API_KEY env var",
+      "last_commit_date": "2026-03-01T22:52:22Z",
       "days_since_commit": 0,
       "local_sync": "behind",
       "stale": false
@@ -35,29 +25,39 @@
     "mon-ipad": {
       "repo": "mon-ipad",
       "role": "Control tower — directives, eval scripts, MCP configs",
-      "last_commit_sha": "a2c9cdb",
-      "last_commit_msg": "docs: update executive-summary for Session 66 — pipeline res",
-      "last_commit_date": "2026-03-01T20:09:55Z",
+      "last_commit_sha": "7a5d4a4",
+      "last_commit_msg": "chore: session 66 final — Phase 2 eval data + status updates",
+      "last_commit_date": "2026-03-01T20:18:07Z",
       "days_since_commit": 0,
       "local_sync": "in_sync",
       "stale": false
     },
-    "rag-pme-connectors": {
-      "repo": "rag-pme-connectors",
-      "role": "Next.js 15 — 15 PME apps + MacBook chat",
-      "last_commit_sha": "bf58a0b",
-      "last_commit_msg": "feat(chatbot): add Groq fast LLM with 8s timeout for Vercel",
-      "last_commit_date": "2026-02-28T15:40:20Z",
-      "days_since_commit": 1,
-      "local_sync": "in_sync",
+    "rag-dashboard": {
+      "repo": "rag-dashboard",
+      "role": "Live metrics dashboard (HTML/JS)",
+      "last_commit_sha": "be04c46",
+      "last_commit_msg": "chore: auto-sync status.json from mon-ipad",
+      "last_commit_date": "2026-03-02T01:44:05Z",
+      "days_since_commit": 0,
+      "local_sync": "behind",
       "stale": false
     },
     "rag-pme-usecases": {
       "repo": "rag-pme-usecases",
       "role": "Next.js 14 — 200 use cases",
-      "last_commit_sha": "b8197b0",
-      "last_commit_msg": "feat: upgrade chatbot to v5.2 with Groq+OpenRouter LLM",
-      "last_commit_date": "2026-03-01T13:15:24Z",
+      "last_commit_sha": "2b9e4f4",
+      "last_commit_msg": "chore: redeploy with GROQ_API_KEY env var",
+      "last_commit_date": "2026-03-01T23:04:24Z",
+      "days_since_commit": 0,
+      "local_sync": "behind",
+      "stale": false
+    },
+    "rag-pme-connectors": {
+      "repo": "rag-pme-connectors",
+      "role": "Next.js 15 — 15 PME apps + MacBook chat",
+      "last_commit_sha": "cb3f64e",
+      "last_commit_msg": "chore: redeploy with GROQ_API_KEY env var",
+      "last_commit_date": "2026-03-01T23:03:37Z",
       "days_since_commit": 0,
       "local_sync": "behind",
       "stale": false
@@ -74,11 +74,11 @@
     }
   },
   "ci": {
-    "rag-website": {
+    "rag-dashboard": {
       "status": "no_ci",
       "workflows": []
     },
-    "rag-dashboard": {
+    "rag-website": {
       "status": "no_ci",
       "workflows": []
     },
@@ -90,34 +90,34 @@
       "status": "no_ci",
       "workflows": []
     },
-    "rag-tests": {
+    "rag-pme-connectors": {
       "status": "healthy",
       "healthy": true,
       "workflows": [
         {
-          "name": "CI - RAG Tests",
+          "name": "Deploy Website to Vercel",
           "status": "completed",
           "conclusion": "success",
-          "updated_at": "2026-02-27T15:37:50Z",
-          "run_number": 2
-        },
-        {
-          "name": "CI - RAG Tests",
-          "status": "completed",
-          "conclusion": "success",
-          "updated_at": "2026-02-25T09:15:06Z",
-          "run_number": 1
+          "updated_at": "2026-03-01T23:04:18Z",
+          "run_number": 15
         },
         {
           "name": "Deploy Website to Vercel",
           "status": "completed",
-          "conclusion": "failure",
-          "updated_at": "2026-02-23T01:25:50Z",
-          "run_number": 7
+          "conclusion": "success",
+          "updated_at": "2026-02-28T15:40:52Z",
+          "run_number": 14
+        },
+        {
+          "name": "Deploy Website to Vercel",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-28T15:35:09Z",
+          "run_number": 13
         }
       ],
       "expected_workflows": [
-        "CI - RAG Tests"
+        "Deploy Website to Vercel"
       ]
     },
     "mon-ipad": {
@@ -150,65 +150,65 @@
         "Eval 1000q Parallel"
       ]
     },
-    "rag-pme-connectors": {
+    "rag-tests": {
       "status": "healthy",
       "healthy": true,
       "workflows": [
         {
-          "name": "Deploy Website to Vercel",
+          "name": "CI - RAG Tests",
           "status": "completed",
           "conclusion": "success",
-          "updated_at": "2026-02-28T15:40:52Z",
-          "run_number": 14
+          "updated_at": "2026-02-27T15:37:50Z",
+          "run_number": 2
+        },
+        {
+          "name": "CI - RAG Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "updated_at": "2026-02-25T09:15:06Z",
+          "run_number": 1
         },
         {
           "name": "Deploy Website to Vercel",
           "status": "completed",
-          "conclusion": "success",
-          "updated_at": "2026-02-28T15:35:09Z",
-          "run_number": 13
-        },
-        {
-          "name": "Deploy Website to Vercel",
-          "status": "completed",
-          "conclusion": "success",
-          "updated_at": "2026-02-28T15:24:14Z",
-          "run_number": 12
+          "conclusion": "failure",
+          "updated_at": "2026-02-23T01:25:50Z",
+          "run_number": 7
         }
       ],
       "expected_workflows": [
-        "Deploy Website to Vercel"
+        "CI - RAG Tests"
       ]
     }
   },
   "vercel": {
-    "Dashboard": {
-      "healthy": true,
-      "status_code": 200,
-      "latency_ms": 1996,
-      "name": "Dashboard",
-      "url": "https://nomos-dashboard-alexis-morets-projects.vercel.app"
-    },
     "ETI 4 Sectors": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 2482,
+      "latency_ms": 1986,
       "name": "ETI 4 Sectors",
       "url": "https://nomos-ai-pied.vercel.app"
-    },
-    "PME Connectors": {
-      "healthy": true,
-      "status_code": 200,
-      "latency_ms": 3732,
-      "name": "PME Connectors",
-      "url": "https://nomos-pme-connectors-alexis-morets-projects.vercel.app"
     },
     "PME Use Cases": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 3750,
+      "latency_ms": 2480,
       "name": "PME Use Cases",
       "url": "https://nomos-pme-usecases-alexis-morets-projects.vercel.app"
+    },
+    "Dashboard": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 2479,
+      "name": "Dashboard",
+      "url": "https://nomos-dashboard-alexis-morets-projects.vercel.app"
+    },
+    "PME Connectors": {
+      "healthy": true,
+      "status_code": 200,
+      "latency_ms": 2743,
+      "name": "PME Connectors",
+      "url": "https://nomos-pme-connectors-alexis-morets-projects.vercel.app"
     }
   },
   "hf_space": {
@@ -216,7 +216,7 @@
     "healthz": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 2026
+      "latency_ms": 1486
     },
     "healthy": true
   },
@@ -224,28 +224,28 @@
     "standard": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 14008,
+      "latency_ms": 13247,
       "pipeline": "standard",
       "webhook": "/webhook/rag-multi-index-v3"
     },
     "graph": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 10236,
+      "latency_ms": 9499,
       "pipeline": "graph",
       "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717"
     },
     "quantitative": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 2497,
+      "latency_ms": 1494,
       "pipeline": "quantitative",
       "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9"
     },
     "orchestrator": {
       "healthy": true,
       "status_code": 200,
-      "latency_ms": 3495,
+      "latency_ms": 2248,
       "pipeline": "orchestrator",
       "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0"
     }
@@ -253,9 +253,9 @@
   "databases": {
     "pinecone_primary": {
       "index": "sota-rag-jina-1024",
-      "healthy": null,
-      "vectors": "unknown",
-      "note": "Could not connect (API key or library missing)"
+      "healthy": true,
+      "vectors": 13373,
+      "dimension": 1024
     },
     "pinecone_graph": {
       "index": "sota-rag-phase2-graph",
