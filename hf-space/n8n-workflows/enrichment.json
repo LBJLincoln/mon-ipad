@@ -35,26 +35,16 @@
     },
     {
       "parameters": {
-        "operation": "set",
-        "key": "={{ $json.lockKey }}",
-        "value": "={{ $json.workerId }}",
-        "expire": true,
-        "ttl": 7200
+        "jsCode": "return [{ json: { lockAcquired: true, lockKey: 'bypass', workerId: 'solo' } }];"
       },
       "id": "redis-lock-acquire",
       "name": "Redis: Acquire Lock",
-      "type": "n8n-nodes-base.redis",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         608,
         400
       ],
-      "credentials": {
-        "redis": {
-          "id": "O2KEPiv7VzgDG5ZX",
-          "name": "Redis Upstash"
-        }
-      },
       "onError": "continueErrorOutput"
     },
     {
@@ -372,23 +362,16 @@
     },
     {
       "parameters": {
-        "operation": "delete",
-        "key": "=={{ $json.lockKey }}\n"
+        "jsCode": "return [{ json: { released: true } }];"
       },
       "id": "redis-lock-release",
       "name": "Redis: Release Lock",
-      "type": "n8n-nodes-base.redis",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         2208,
         400
-      ],
-      "credentials": {
-        "redis": {
-          "id": "O2KEPiv7VzgDG5ZX",
-          "name": "Redis Upstash"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -728,6 +711,22 @@
         1680,
         1040
       ]
+    },
+    {
+      "parameters": {
+        "path": "rag-v6-enrichment",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-enrichment-trigger",
+      "name": "Webhook Enrichment Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        80,
+        200
+      ],
+      "webhookId": "24c971d6-d25b-4e77-a84a-dd02c742a4a5"
     }
   ],
   "connections": {
@@ -1031,6 +1030,17 @@
           }
         ]
       ]
+    },
+    "Webhook Enrichment Trigger": {
+      "main": [
+        [
+          {
+            "node": "Init OT Trace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1133,26 +1143,16 @@
       },
       {
         "parameters": {
-          "operation": "set",
-          "key": "={{ $json.lockKey }}",
-          "value": "={{ $json.workerId }}",
-          "expire": true,
-          "ttl": 7200
+          "jsCode": "return [{ json: { lockAcquired: true, lockKey: 'bypass', workerId: 'solo' } }];"
         },
         "id": "redis-lock-acquire",
         "name": "Redis: Acquire Lock",
-        "type": "n8n-nodes-base.redis",
-        "typeVersion": 1,
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
         "position": [
           608,
           400
         ],
-        "credentials": {
-          "redis": {
-            "id": "O2KEPiv7VzgDG5ZX",
-            "name": "Redis Upstash"
-          }
-        },
         "onError": "continueErrorOutput"
       },
       {
@@ -1470,23 +1470,16 @@
       },
       {
         "parameters": {
-          "operation": "delete",
-          "key": "=={{ $json.lockKey }}\n"
+          "jsCode": "return [{ json: { released: true } }];"
         },
         "id": "redis-lock-release",
         "name": "Redis: Release Lock",
-        "type": "n8n-nodes-base.redis",
-        "typeVersion": 1,
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
         "position": [
           2208,
           400
-        ],
-        "credentials": {
-          "redis": {
-            "id": "O2KEPiv7VzgDG5ZX",
-            "name": "Redis Upstash"
-          }
-        }
+        ]
       },
       {
         "parameters": {
@@ -1800,6 +1793,22 @@
           },
           "options": {}
         }
+      },
+      {
+        "parameters": {
+          "path": "rag-v6-enrichment",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "webhook-enrichment-trigger",
+        "name": "Webhook Enrichment Trigger",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          80,
+          200
+        ],
+        "webhookId": "fa5a4373-b5a5-47a1-a646-e82cfd800c84"
       }
     ],
     "connections": {
@@ -2098,6 +2107,17 @@
             },
             {
               "node": "Store Community Summaries Postgres",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook Enrichment Trigger": {
+        "main": [
+          [
+            {
+              "node": "Init OT Trace",
               "type": "main",
               "index": 0
             }

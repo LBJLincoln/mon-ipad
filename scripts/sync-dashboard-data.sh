@@ -9,6 +9,18 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MON_IPAD_DIR="$(dirname "$SCRIPT_DIR")"
 DASHBOARD_DIR="/tmp/rag-dashboard-sync"
+LOCKFILE="/tmp/dashboard-sync-last-push"
+
+# Throttle: skip if last push was < 5 minutes ago (saves Vercel deploy quota)
+if [ -f "$LOCKFILE" ]; then
+    LAST_PUSH=$(cat "$LOCKFILE" 2>/dev/null || echo 0)
+    NOW=$(date +%s)
+    ELAPSED=$(( NOW - LAST_PUSH ))
+    if [ "$ELAPSED" -lt 300 ]; then
+        echo "⏳ Throttled — last push ${ELAPSED}s ago (min 300s). Skipping."
+        exit 0
+    fi
+fi
 
 echo "🔄 Syncing dashboard data..."
 echo "Source: $MON_IPAD_DIR/docs/status.json"
@@ -61,6 +73,9 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 
 echo "🚀 Pushing to rag-dashboard..."
 git push origin main
+
+# Record push timestamp for throttle
+date +%s > "$LOCKFILE"
 
 echo "✅ Dashboard data synced successfully!"
 echo "🌐 Live dashboard: https://nomos-dashboard-alexis-morets-projects.vercel.app"

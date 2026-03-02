@@ -40,26 +40,16 @@
     },
     {
       "parameters": {
-        "operation": "set",
-        "key": "={{ $json.lockKey }}",
-        "value": "={{ $json.workerId }}",
-        "expire": true,
-        "ttl": 3600
+        "jsCode": "return [{ json: { lockAcquired: true, lockKey: 'bypass', workerId: 'solo' } }];"
       },
       "id": "94420020-37da-45bc-8c8e-98017b59d58a",
       "name": "Redis: Acquire Lock",
-      "type": "n8n-nodes-base.redis",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         -3104,
         208
       ],
-      "credentials": {
-        "redis": {
-          "id": "O2KEPiv7VzgDG5ZX",
-          "name": "Redis Upstash"
-        }
-      },
       "onError": "continueErrorOutput"
     },
     {
@@ -545,23 +535,16 @@
     },
     {
       "parameters": {
-        "operation": "delete",
-        "key": "=={{ $json.lockKey }}"
+        "jsCode": "return [{ json: { released: true } }];"
       },
       "id": "40723c1d-6da4-42c5-915a-dc5ed7358092",
       "name": "Redis: Release Lock",
-      "type": "n8n-nodes-base.redis",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         464,
         112
-      ],
-      "credentials": {
-        "redis": {
-          "id": "O2KEPiv7VzgDG5ZX",
-          "name": "Redis Upstash"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -1135,26 +1118,16 @@
       },
       {
         "parameters": {
-          "operation": "set",
-          "key": "={{ $json.lockKey }}",
-          "value": "={{ $json.workerId }}",
-          "expire": true,
-          "ttl": 3600
+          "jsCode": "return [{ json: { lockAcquired: true, lockKey: 'bypass', workerId: 'solo' } }];"
         },
         "id": "94420020-37da-45bc-8c8e-98017b59d58a",
         "name": "Redis: Acquire Lock",
-        "type": "n8n-nodes-base.redis",
-        "typeVersion": 1,
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
         "position": [
           -3104,
           208
         ],
-        "credentials": {
-          "redis": {
-            "id": "O2KEPiv7VzgDG5ZX",
-            "name": "Redis Upstash"
-          }
-        },
         "onError": "continueErrorOutput"
       },
       {
@@ -1638,23 +1611,16 @@
       },
       {
         "parameters": {
-          "operation": "delete",
-          "key": "=={{ $json.lockKey }}"
+          "jsCode": "return [{ json: { released: true } }];"
         },
         "id": "40723c1d-6da4-42c5-915a-dc5ed7358092",
         "name": "Redis: Release Lock",
-        "type": "n8n-nodes-base.redis",
-        "typeVersion": 1,
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
         "position": [
           464,
           112
-        ],
-        "credentials": {
-          "redis": {
-            "id": "O2KEPiv7VzgDG5ZX",
-            "name": "Redis Upstash"
-          }
-        }
+        ]
       },
       {
         "parameters": {
