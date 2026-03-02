@@ -42,10 +42,21 @@ _check_n8n_host()
 
 def _hosts_for(pipeline):
     """Get n8n host(s) for a specific pipeline. Supports multi-host round-robin (comma-separated).
-    Returns a list of hosts. If N8N_HOST_PIPELINE contains commas, splits into multiple hosts."""
-    raw = os.environ.get(f"N8N_HOST_{pipeline.upper().replace('-','_')}", N8N_HOST)
-    hosts = [h.strip() for h in raw.split(",") if h.strip()]
-    return hosts if hosts else [N8N_HOST]
+    Priority: N8N_HOST_<PIPELINE> > N8N_ALL_HOSTS > N8N_HOST.
+    Returns a list of hosts. If value contains commas, splits into multiple hosts."""
+    # Per-pipeline override
+    raw = os.environ.get(f"N8N_HOST_{pipeline.upper().replace('-','_')}", "")
+    if raw and "<" not in raw:
+        hosts = [h.strip() for h in raw.split(",") if h.strip()]
+        if hosts:
+            return hosts
+    # Global multi-host
+    all_hosts = os.environ.get("N8N_ALL_HOSTS", "")
+    if all_hosts and "<" not in all_hosts:
+        hosts = [h.strip() for h in all_hosts.split(",") if h.strip()]
+        if hosts:
+            return hosts
+    return [N8N_HOST]
 
 def _host_for(pipeline):
     """Get single n8n host for a pipeline. For backwards compat — returns first host."""
@@ -55,14 +66,43 @@ def _host_for(pipeline):
 _rr_counters = defaultdict(int)
 
 def _rr_endpoint(pipeline, webhook_path):
-    """Get next endpoint for a pipeline using round-robin across hosts."""
+    """Get next endpoint for a pipeline using round-robin across healthy hosts."""
     hosts = _hosts_for(pipeline)
-    if len(hosts) == 1:
-        return f"{hosts[0]}{webhook_path}"
+    # Filter to healthy hosts if we have cached health data
+    healthy = [h for h in hosts if _host_health.get(h, True)]
+    if not healthy:
+        healthy = hosts  # Fallback: try all
+    if len(healthy) == 1:
+        return f"{healthy[0]}{webhook_path}"
     idx = _rr_counters[pipeline]
     _rr_counters[pipeline] = idx + 1
-    host = hosts[idx % len(hosts)]
+    host = healthy[idx % len(healthy)]
     return f"{host}{webhook_path}"
+
+# Health cache: host -> bool (True = alive)
+_host_health = {}
+
+def check_hosts_health(timeout=8):
+    """Pre-flight health check on all configured hosts. Updates _host_health cache."""
+    all_hosts = set()
+    for pipe in WEBHOOK_PATHS:
+        all_hosts.update(_hosts_for(pipe))
+    alive = 0
+    for host in sorted(all_hosts):
+        try:
+            req = request.Request(f"{host}/healthz", method="GET")
+            with request.urlopen(req, timeout=timeout) as resp:
+                _host_health[host] = (resp.status == 200)
+                if resp.status == 200:
+                    alive += 1
+                    print(f"  [UP]   {host}")
+                else:
+                    print(f"  [DOWN] {host} (HTTP {resp.status})")
+        except Exception as e:
+            _host_health[host] = False
+            print(f"  [DOWN] {host} ({e})")
+    print(f"  Health: {alive}/{len(all_hosts)} Spaces alive")
+    return alive
 
 # Webhook paths (host-independent)
 WEBHOOK_PATHS = {
@@ -78,14 +118,14 @@ WEBHOOK_PATHS = {
 # Build endpoints with per-pipeline hosts (backwards compat — single host)
 RAG_ENDPOINTS = {k: f"{_host_for(k)}{v}" for k, v in WEBHOOK_PATHS.items()}
 
-# Per-pipeline optimal batch sizes — doubled for dual-space (Session 62)
+# Per-pipeline batch sizes — scaled for 6-Space round-robin (Session 68b)
 PIPELINE_BATCH_SIZES = {
-    "standard": 5,
-    "graph": 5,
-    "quantitative": 3,
-    "orchestrator": 2,
-    "pme-gateway": 2,
-    "pme-action": 1,
+    "standard": 10,
+    "graph": 8,
+    "quantitative": 5,
+    "orchestrator": 3,
+    "pme-gateway": 3,
+    "pme-action": 2,
     "pme-whatsapp": 1,
 }
 

@@ -23,6 +23,37 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EVAL_DIR = os.path.dirname(os.path.abspath(__file__))
 N8N_HOST = os.environ.get("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space")
 
+# Multi-Space support: comma-separated URLs per pipeline or global
+N8N_ALL_HOSTS = [h.strip() for h in os.environ.get("N8N_ALL_HOSTS", N8N_HOST).split(",") if h.strip()]
+_rr_counters = {}
+
+def _get_hosts_for_pipeline(pipeline):
+    """Get list of hosts for a pipeline (from env or global)."""
+    env_key = f"N8N_HOST_{pipeline.upper()}"
+    hosts_str = os.environ.get(env_key, "")
+    if hosts_str and "<" not in hosts_str:
+        return [h.strip() for h in hosts_str.split(",") if h.strip()]
+    return N8N_ALL_HOSTS
+
+def _rr_endpoint(pipeline, webhook_path):
+    """Round-robin across healthy hosts for a pipeline."""
+    hosts = _get_hosts_for_pipeline(pipeline)
+    if not hosts:
+        return f"{N8N_HOST}{webhook_path}"
+    idx = _rr_counters.get(pipeline, 0)
+    _rr_counters[pipeline] = idx + 1
+    host = hosts[idx % len(hosts)]
+    return f"{host}{webhook_path}"
+
+def _check_host_health(host, timeout=8):
+    """Quick health check on a host. Returns True if alive."""
+    try:
+        req = request.Request(f"{host}/healthz", method="GET")
+        with request.urlopen(req, timeout=timeout) as resp:
+            return resp.status == 200
+    except Exception:
+        return False
+
 # Guard: block accidental use of VM n8n for evals
 def _check_n8n_host():
     import re
@@ -41,12 +72,15 @@ except FileNotFoundError:
         def record_quick_test(self, **kw): pass
     writer = _NullWriter()
 
-RAG_ENDPOINTS = {
-    "standard":     f"{N8N_HOST}/webhook/rag-multi-index-v3",
-    "graph":        f"{N8N_HOST}/webhook/ff622742-6d71-4e91-af71-b5c666088717",
-    "quantitative": f"{N8N_HOST}/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
-    "orchestrator": f"{N8N_HOST}/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+WEBHOOK_PATHS = {
+    "standard":     "/webhook/rag-multi-index-v3",
+    "graph":        "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+    "quantitative": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+    "orchestrator": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
 }
+
+# Backward compat: RAG_ENDPOINTS uses default host
+RAG_ENDPOINTS = {k: f"{N8N_HOST}{v}" for k, v in WEBHOOK_PATHS.items()}
 
 # Known-good test questions (questions that should always pass)
 SMOKE_QUESTIONS = {
@@ -139,9 +173,9 @@ def run_quick_tests(pipelines, max_questions=3, trigger="manual"):
     results = {}
 
     for pipe in pipelines:
-        endpoint = RAG_ENDPOINTS.get(pipe)
+        webhook_path = WEBHOOK_PATHS.get(pipe)
         questions = SMOKE_QUESTIONS.get(pipe, [])[:max_questions]
-        if not endpoint or not questions:
+        if not webhook_path or not questions:
             continue
 
         print(f"\n  Quick test: {pipe.upper()} ({len(questions)} questions)")
@@ -154,6 +188,7 @@ def run_quick_tests(pipelines, max_questions=3, trigger="manual"):
             pipe_max_retries = 1 if pipe == "quantitative" else 3
             if i > 0:
                 time.sleep(3)  # 3s between questions — prevents n8n 503 (LIMIT=2)
+            endpoint = _rr_endpoint(pipe, webhook_path)
             resp = call_endpoint(endpoint, q["query"], timeout=pipe_timeout, max_retries=pipe_max_retries)
             expected = q.get("expected_contains", "")
             passed = False
@@ -211,6 +246,9 @@ def main():
     print("  QUICK ENDPOINT SMOKE TEST")
     print(f"  Pipelines: {', '.join(pipelines)}")
     print(f"  Questions per pipeline: {args.questions}")
+    print(f"  Hosts: {len(N8N_ALL_HOSTS)} Space(s)")
+    for h in N8N_ALL_HOSTS:
+        print(f"    - {h}")
     print("=" * 50)
 
     results = run_quick_tests(pipelines, max_questions=args.questions, trigger=args.trigger)

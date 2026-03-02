@@ -73,6 +73,8 @@ RAG_ENDPOINTS = run_eval_mod.RAG_ENDPOINTS
 PIPELINE_BATCH_SIZES = getattr(run_eval_mod, 'PIPELINE_BATCH_SIZES', {})
 PIPELINE_TIMEOUTS = getattr(run_eval_mod, 'PIPELINE_TIMEOUTS', {})
 WEBHOOK_PATHS = getattr(run_eval_mod, 'WEBHOOK_PATHS', {})
+check_hosts_health = getattr(run_eval_mod, 'check_hosts_health', lambda **kw: 1)
+_hosts_for = getattr(run_eval_mod, '_hosts_for', lambda p: [os.environ.get("N8N_HOST", "")])
 
 # Pipelines that should use local LLM reasoning instead of HF Space
 _local_pipelines = set()
@@ -574,20 +576,32 @@ def main():
         requested_types = ["standard", "graph", "quantitative", "orchestrator"]
         print("  NOTE: Phase 2 tests all 4 pipelines (3000 questions total).")
 
+    # Pre-flight: check which Spaces are alive
+    print("\n  Checking HF Space health...")
+    alive_count = check_hosts_health(timeout=8)
+    all_hosts_set = set()
+    for p in requested_types:
+        all_hosts_set.update(_hosts_for(p))
+
     print("=" * 70)
-    print("  PARALLEL RAG EVALUATION — Pipelines Concurrent")
+    print("  PARALLEL RAG EVALUATION — Multi-Space Concurrent")
     print(f"  Started: {start_time.isoformat()}")
     print(f"  Dataset: {dataset_label}")
     print(f"  Types: {', '.join(requested_types)}")
+    print(f"  Spaces: {alive_count}/{len(all_hosts_set)} alive (round-robin)")
     print(f"  Max per pipeline: {args.max or 'all'}")
     if args.batch_size == 0:
         bs_info = ", ".join(f"{p}={PIPELINE_BATCH_SIZES.get(p, 1)}" for p in requested_types)
         print(f"  Batch size: auto ({bs_info})")
     else:
         print(f"  Batch size: {args.batch_size} (override for all pipelines)")
-    # Show per-pipeline endpoints
+    # Show per-pipeline hosts (round-robin)
     for p in requested_types:
-        print(f"  [{p.upper()}] → {RAG_ENDPOINTS.get(p, 'UNKNOWN')}")
+        hosts = _hosts_for(p)
+        if len(hosts) > 1:
+            print(f"  [{p.upper()}] → {len(hosts)} hosts (round-robin)")
+        else:
+            print(f"  [{p.upper()}] → {hosts[0]}")
     print(f"  Reset dedup: {args.reset}")
     print("=" * 70)
 
