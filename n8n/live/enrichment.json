@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-03T09:56:05.272Z",
+  "updatedAt": "2026-03-03T11:29:51.936Z",
   "createdAt": "2026-01-25T13:18:48.000Z",
   "id": "ORa01sX4xI0iRCJ8",
   "name": "TEST - SOTA 2026 - Enrichissement V4.0",
@@ -143,7 +143,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Normalize & Merge with Hash Deduplication - HARDENED\nconst crypto = require('crypto');\nconst internal = $items('Fetch Internal Use Cases') || [];\nconst external = $items('Fetch External Data Sources') || [];\n\nconst seen = new Set();\nconst merged = [...internal, ...external]\n  .filter(item => {\n    if (!item.json) return false;\n    const content = JSON.stringify(item.json);\n    const hash = crypto.createHash('sha256').update(content).digest('hex');\n    if (seen.has(hash)) return false;\n    seen.add(hash);\n    return true;\n  })\n  .map(item => ({\n    json: {\n      ...item.json,\n      enriched: false,\n      source_sync_date: new Date().toISOString(),\n      dedup_hash: crypto.createHash('sha256').update(JSON.stringify(item.json)).digest('hex')\n    }\n  }));\n\nconsole.log(`Deduplication: ${internal.length + external.length} -> ${merged.length}`);\nreturn merged;"
+        "jsCode": "// Normalize & Merge with Hash Deduplication - HARDENED\n// Inline hash (crypto module not allowed in sandbox)\nfunction simpleHash(str) {\n  let hash = 0;\n  for (let i = 0; i < str.length; i++) {\n    const ch = str.charCodeAt(i);\n    hash = ((hash << 5) - hash) + ch;\n    hash |= 0;\n  }\n  return Math.abs(hash).toString(16).padStart(8, '0');\n}\nconst internal = $items('Fetch Internal Use Cases') || [];\nconst external = $items('Fetch External Data Sources') || [];\n\nconst seen = new Set();\nconst merged = [...internal, ...external]\n  .filter(item => {\n    if (!item.json) return false;\n    const content = JSON.stringify(item.json);\n    const hash = simpleHash(content);\n    if (seen.has(hash)) return false;\n    seen.add(hash);\n    return true;\n  })\n  .map(item => ({\n    json: {\n      ...item.json,\n      enriched: false,\n      source_sync_date: new Date().toISOString(),\n      dedup_hash: crypto.createHash('sha256').update(JSON.stringify(item.json)).digest('hex')\n    }\n  }));\n\nconsole.log(`Deduplication: ${internal.length + external.length} -> ${merged.length}`);\nreturn merged;"
       },
       "id": "087c43d6-c62e-4365-baba-feb9d762548d",
       "name": "Normalize & Merge",
@@ -157,12 +157,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n  \"model\": \"{{ $env.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json).substring(0, 30000) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+        "jsonBody": "{\n  \"model\": \"{{ 'meta-llama/llama-3.3-70b-instruct:free' || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json).substring(0, 30000) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
         "options": {
           "timeout": 30000
         }
@@ -201,7 +201,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.PINECONE_URL }}/vectors/upsert",
+        "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/vectors/upsert",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -294,7 +294,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.NEO4J_URL }}/db/neo4j/tx/commit",
+        "url": "https://2fc858f1.databases.neo4j.io/db/neo4j/tx/commit",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBasicAuth",
         "sendBody": true,
@@ -323,7 +323,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.NEO4J_URL }}/community-detection/trigger",
+        "url": "https://2fc858f1.databases.neo4j.io/community-detection/trigger",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBasicAuth",
         "sendBody": true,
@@ -347,7 +347,8 @@
           "id": "ID9LjvQkatgCPGld",
           "name": "Neo4j Aura"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -392,7 +393,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
+        "url": "https://localhost:4318/v1/traces",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"enrichment_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"timestamp\": \"{{ $json.timestamp }}\"\n}",
@@ -407,7 +408,8 @@
       "position": [
         2608,
         400
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -450,7 +452,7 @@
         500
       ],
       "parameters": {
-        "jsCode": "// P06 SOTA 2026: Chunk-level Entity Extraction\n// Split documents into overlapping chunks for thorough entity extraction\nconst crypto = require('crypto');\nconst items = $input.all();\nconst CHUNK_SIZE = 4000;\nconst CHUNK_OVERLAP = 200;\nconst chunks = [];\n\nfor (const item of items) {\n  const content = JSON.stringify(item.json);\n  const sourceId = item.json.dedup_hash || crypto.createHash('sha256').update(content).digest('hex').substring(0, 16);\n\n  if (content.length <= CHUNK_SIZE) {\n    chunks.push({\n      json: {\n        _chunk_index: 0,\n        _chunk_total: 1,\n        _chunk_content: content,\n        _source_id: sourceId,\n        _original: item.json\n      }\n    });\n  } else {\n    let start = 0;\n    let chunkIdx = 0;\n    const totalChunks = Math.ceil((content.length - CHUNK_OVERLAP) / (CHUNK_SIZE - CHUNK_OVERLAP));\n    while (start < content.length) {\n      const end = Math.min(start + CHUNK_SIZE, content.length);\n      chunks.push({\n        json: {\n          _chunk_index: chunkIdx,\n          _chunk_total: totalChunks,\n          _chunk_content: content.substring(start, end),\n          _source_id: sourceId,\n          _original: item.json\n        }\n      });\n      start += CHUNK_SIZE - CHUNK_OVERLAP;\n      chunkIdx++;\n    }\n  }\n}\n\nconsole.log('P06: Split ' + items.length + ' documents into ' + chunks.length + ' chunks');\nreturn chunks;"
+        "jsCode": "// P06 SOTA 2026: Chunk-level Entity Extraction\n// Split documents into overlapping chunks for thorough entity extraction\n// Inline hash (crypto module not allowed in sandbox)\nfunction simpleHash(str) {\n  let hash = 0;\n  for (let i = 0; i < str.length; i++) {\n    const ch = str.charCodeAt(i);\n    hash = ((hash << 5) - hash) + ch;\n    hash |= 0;\n  }\n  return Math.abs(hash).toString(16).padStart(8, '0');\n}\nconst items = $input.all();\nconst CHUNK_SIZE = 4000;\nconst CHUNK_OVERLAP = 200;\nconst chunks = [];\n\nfor (const item of items) {\n  const content = JSON.stringify(item.json);\n  const sourceId = item.json.dedup_hash || simpleHash(content).substring(0, 16);\n\n  if (content.length <= CHUNK_SIZE) {\n    chunks.push({\n      json: {\n        _chunk_index: 0,\n        _chunk_total: 1,\n        _chunk_content: content,\n        _source_id: sourceId,\n        _original: item.json\n      }\n    });\n  } else {\n    let start = 0;\n    let chunkIdx = 0;\n    const totalChunks = Math.ceil((content.length - CHUNK_OVERLAP) / (CHUNK_SIZE - CHUNK_OVERLAP));\n    while (start < content.length) {\n      const end = Math.min(start + CHUNK_SIZE, content.length);\n      chunks.push({\n        json: {\n          _chunk_index: chunkIdx,\n          _chunk_total: totalChunks,\n          _chunk_content: content.substring(start, end),\n          _source_id: sourceId,\n          _original: item.json\n        }\n      });\n      start += CHUNK_SIZE - CHUNK_OVERLAP;\n      chunkIdx++;\n    }\n  }\n}\n\nconsole.log('P06: Split ' + items.length + ' documents into ' + chunks.length + ' chunks');\nreturn chunks;"
       }
     },
     {
@@ -481,12 +483,12 @@
       "waitBetweenTries": 2000,
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n  \"model\": \"{{ $env.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json._chunk_content }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+        "jsonBody": "{\n  \"model\": \"{{ 'meta-llama/llama-3.3-70b-instruct:free' || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json._chunk_content }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
         "options": {
           "timeout": 30000
         }
@@ -536,7 +538,7 @@
       "onError": "continueErrorOutput",
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.NEO4J_URL }}/db/neo4j/tx/commit",
+        "url": "https://2fc858f1.databases.neo4j.io/db/neo4j/tx/commit",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBasicAuth",
         "sendBody": true,
@@ -567,12 +569,12 @@
       "waitBetweenTries": 2000,
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n  \"model\": \"{{ $env.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en analyse de communautes dans un graphe de connaissances.\\nPour chaque communaute, genere:\\n1. Un titre descriptif (max 10 mots)\\n2. Un resume de 2-3 phrases expliquant le theme commun\\n3. Les entites cles (max 5)\\n4. Les relations dominantes\\n\\nFormat JSON:\\n{\\n  \\\"title\\\": string,\\n  \\\"summary\\\": string,\\n  \\\"key_entities\\\": [string],\\n  \\\"dominant_relations\\\": [string],\\n  \\\"importance_score\\\": 0.0-1.0\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 2000\n}",
+        "jsonBody": "{\n  \"model\": \"{{ 'meta-llama/llama-3.3-70b-instruct:free' || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en analyse de communautes dans un graphe de connaissances.\\nPour chaque communaute, genere:\\n1. Un titre descriptif (max 10 mots)\\n2. Un resume de 2-3 phrases expliquant le theme commun\\n3. Les entites cles (max 5)\\n4. Les relations dominantes\\n\\nFormat JSON:\\n{\\n  \\\"title\\\": string,\\n  \\\"summary\\\": string,\\n  \\\"key_entities\\\": [string],\\n  \\\"dominant_relations\\\": [string],\\n  \\\"importance_score\\\": 0.0-1.0\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 2000\n}",
         "options": {
           "timeout": 30000
         }
@@ -596,7 +598,7 @@
       "onError": "continueErrorOutput",
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.NEO4J_URL }}/db/neo4j/tx/commit",
+        "url": "https://2fc858f1.databases.neo4j.io/db/neo4j/tx/commit",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBasicAuth",
         "sendBody": true,
@@ -1027,9 +1029,9 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "d21545f7-8a72-470a-a4cf-2138c8ab68d9",
-  "activeVersionId": "d21545f7-8a72-470a-a4cf-2138c8ab68d9",
-  "versionCounter": 18,
+  "versionId": "f9d2188b-b245-4e07-a2be-122ee60a9a95",
+  "activeVersionId": "f9d2188b-b245-4e07-a2be-122ee60a9a95",
+  "versionCounter": 30,
   "triggerCount": 1,
   "shared": [
     {
@@ -1053,9 +1055,9 @@
   "tags": [],
   "parentFolder": null,
   "activeVersion": {
-    "updatedAt": "2026-03-03T09:56:03.800Z",
-    "createdAt": "2026-03-03T09:56:03.800Z",
-    "versionId": "d21545f7-8a72-470a-a4cf-2138c8ab68d9",
+    "updatedAt": "2026-03-03T11:24:46.685Z",
+    "createdAt": "2026-03-03T11:24:46.685Z",
+    "versionId": "f9d2188b-b245-4e07-a2be-122ee60a9a95",
     "workflowId": "ORa01sX4xI0iRCJ8",
     "nodes": [
       {
@@ -1194,7 +1196,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Normalize & Merge with Hash Deduplication - HARDENED\nconst crypto = require('crypto');\nconst internal = $items('Fetch Internal Use Cases') || [];\nconst external = $items('Fetch External Data Sources') || [];\n\nconst seen = new Set();\nconst merged = [...internal, ...external]\n  .filter(item => {\n    if (!item.json) return false;\n    const content = JSON.stringify(item.json);\n    const hash = crypto.createHash('sha256').update(content).digest('hex');\n    if (seen.has(hash)) return false;\n    seen.add(hash);\n    return true;\n  })\n  .map(item => ({\n    json: {\n      ...item.json,\n      enriched: false,\n      source_sync_date: new Date().toISOString(),\n      dedup_hash: crypto.createHash('sha256').update(JSON.stringify(item.json)).digest('hex')\n    }\n  }));\n\nconsole.log(`Deduplication: ${internal.length + external.length} -> ${merged.length}`);\nreturn merged;"
+          "jsCode": "// Normalize & Merge with Hash Deduplication - HARDENED\n// Inline hash (crypto module not allowed in sandbox)\nfunction simpleHash(str) {\n  let hash = 0;\n  for (let i = 0; i < str.length; i++) {\n    const ch = str.charCodeAt(i);\n    hash = ((hash << 5) - hash) + ch;\n    hash |= 0;\n  }\n  return Math.abs(hash).toString(16).padStart(8, '0');\n}\nconst internal = $items('Fetch Internal Use Cases') || [];\nconst external = $items('Fetch External Data Sources') || [];\n\nconst seen = new Set();\nconst merged = [...internal, ...external]\n  .filter(item => {\n    if (!item.json) return false;\n    const content = JSON.stringify(item.json);\n    const hash = simpleHash(content);\n    if (seen.has(hash)) return false;\n    seen.add(hash);\n    return true;\n  })\n  .map(item => ({\n    json: {\n      ...item.json,\n      enriched: false,\n      source_sync_date: new Date().toISOString(),\n      dedup_hash: crypto.createHash('sha256').update(JSON.stringify(item.json)).digest('hex')\n    }\n  }));\n\nconsole.log(`Deduplication: ${internal.length + external.length} -> ${merged.length}`);\nreturn merged;"
         },
         "id": "087c43d6-c62e-4365-baba-feb9d762548d",
         "name": "Normalize & Merge",
@@ -1208,12 +1210,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $env.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+          "url": "https://openrouter.ai/api/v1/chat/completions",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "{\n  \"model\": \"{{ $env.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json).substring(0, 30000) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+          "jsonBody": "{\n  \"model\": \"{{ 'meta-llama/llama-3.3-70b-instruct:free' || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json).substring(0, 30000) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
           "options": {
             "timeout": 30000
           }
@@ -1252,7 +1254,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $env.PINECONE_URL }}/vectors/upsert",
+          "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/vectors/upsert",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
@@ -1345,7 +1347,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $env.NEO4J_URL }}/db/neo4j/tx/commit",
+          "url": "https://2fc858f1.databases.neo4j.io/db/neo4j/tx/commit",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpBasicAuth",
           "sendBody": true,
@@ -1374,7 +1376,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $env.NEO4J_URL }}/community-detection/trigger",
+          "url": "https://2fc858f1.databases.neo4j.io/community-detection/trigger",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpBasicAuth",
           "sendBody": true,
@@ -1398,7 +1400,8 @@
             "id": "ID9LjvQkatgCPGld",
             "name": "Neo4j Aura"
           }
-        }
+        },
+        "disabled": true
       },
       {
         "parameters": {
@@ -1443,7 +1446,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ $env.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
+          "url": "https://localhost:4318/v1/traces",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"enrichment_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"timestamp\": \"{{ $json.timestamp }}\"\n}",
@@ -1458,7 +1461,8 @@
         "position": [
           2608,
           400
-        ]
+        ],
+        "disabled": true
       },
       {
         "parameters": {
@@ -1501,7 +1505,7 @@
           500
         ],
         "parameters": {
-          "jsCode": "// P06 SOTA 2026: Chunk-level Entity Extraction\n// Split documents into overlapping chunks for thorough entity extraction\nconst crypto = require('crypto');\nconst items = $input.all();\nconst CHUNK_SIZE = 4000;\nconst CHUNK_OVERLAP = 200;\nconst chunks = [];\n\nfor (const item of items) {\n  const content = JSON.stringify(item.json);\n  const sourceId = item.json.dedup_hash || crypto.createHash('sha256').update(content).digest('hex').substring(0, 16);\n\n  if (content.length <= CHUNK_SIZE) {\n    chunks.push({\n      json: {\n        _chunk_index: 0,\n        _chunk_total: 1,\n        _chunk_content: content,\n        _source_id: sourceId,\n        _original: item.json\n      }\n    });\n  } else {\n    let start = 0;\n    let chunkIdx = 0;\n    const totalChunks = Math.ceil((content.length - CHUNK_OVERLAP) / (CHUNK_SIZE - CHUNK_OVERLAP));\n    while (start < content.length) {\n      const end = Math.min(start + CHUNK_SIZE, content.length);\n      chunks.push({\n        json: {\n          _chunk_index: chunkIdx,\n          _chunk_total: totalChunks,\n          _chunk_content: content.substring(start, end),\n          _source_id: sourceId,\n          _original: item.json\n        }\n      });\n      start += CHUNK_SIZE - CHUNK_OVERLAP;\n      chunkIdx++;\n    }\n  }\n}\n\nconsole.log('P06: Split ' + items.length + ' documents into ' + chunks.length + ' chunks');\nreturn chunks;"
+          "jsCode": "// P06 SOTA 2026: Chunk-level Entity Extraction\n// Split documents into overlapping chunks for thorough entity extraction\n// Inline hash (crypto module not allowed in sandbox)\nfunction simpleHash(str) {\n  let hash = 0;\n  for (let i = 0; i < str.length; i++) {\n    const ch = str.charCodeAt(i);\n    hash = ((hash << 5) - hash) + ch;\n    hash |= 0;\n  }\n  return Math.abs(hash).toString(16).padStart(8, '0');\n}\nconst items = $input.all();\nconst CHUNK_SIZE = 4000;\nconst CHUNK_OVERLAP = 200;\nconst chunks = [];\n\nfor (const item of items) {\n  const content = JSON.stringify(item.json);\n  const sourceId = item.json.dedup_hash || simpleHash(content).substring(0, 16);\n\n  if (content.length <= CHUNK_SIZE) {\n    chunks.push({\n      json: {\n        _chunk_index: 0,\n        _chunk_total: 1,\n        _chunk_content: content,\n        _source_id: sourceId,\n        _original: item.json\n      }\n    });\n  } else {\n    let start = 0;\n    let chunkIdx = 0;\n    const totalChunks = Math.ceil((content.length - CHUNK_OVERLAP) / (CHUNK_SIZE - CHUNK_OVERLAP));\n    while (start < content.length) {\n      const end = Math.min(start + CHUNK_SIZE, content.length);\n      chunks.push({\n        json: {\n          _chunk_index: chunkIdx,\n          _chunk_total: totalChunks,\n          _chunk_content: content.substring(start, end),\n          _source_id: sourceId,\n          _original: item.json\n        }\n      });\n      start += CHUNK_SIZE - CHUNK_OVERLAP;\n      chunkIdx++;\n    }\n  }\n}\n\nconsole.log('P06: Split ' + items.length + ' documents into ' + chunks.length + ' chunks');\nreturn chunks;"
         }
       },
       {
@@ -1532,12 +1536,12 @@
         "waitBetweenTries": 2000,
         "parameters": {
           "method": "POST",
-          "url": "={{ $env.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+          "url": "https://openrouter.ai/api/v1/chat/completions",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "{\n  \"model\": \"{{ $env.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json._chunk_content }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
+          "jsonBody": "{\n  \"model\": \"{{ 'meta-llama/llama-3.3-70b-instruct:free' || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en extraction d'entites et relations avec validation.\\n\\n=== TYPES D'ENTITES ===\\nPERSON: Noms de personnes (avec role si mentionne)\\nORG: Organisations, entreprises, departements\\nPROJECT: Projets, initiatives, programmes\\nMETRIC: KPIs, chiffres cles, mesures\\nDATE: Dates, periodes, deadlines\\nLOCATION: Lieux, regions, pays\\nCONCEPT: Concepts metier, termes techniques\\n\\n=== TYPES DE RELATIONS ===\\nREPORTS_TO: Hierarchie (A reporte a B)\\nMANAGES: Management (A manage B)\\nWORKS_WITH: Collaboration\\nOWNS: Propriete/responsabilite\\nPART_OF: Appartenance\\nIMPACTS: Influence/effet\\nRELATED_TO: Relation generique\\n\\n=== V3.1: VALIDATION ===\\n1. Chaque entite doit avoir un nom normalise (majuscules pour acronymes)\\n2. Chaque relation doit avoir une CONFIDENCE (0-1)\\n3. Detecte les ALIAS potentiels (meme entite, noms differents)\\n\\n=== FORMAT JSON ===\\n{\\n  \\\"entities\\\": [\\n    {\\\"name\\\": string, \\\"type\\\": string, \\\"aliases\\\": [string], \\\"context\\\": string}\\n  ],\\n  \\\"relationships\\\": [\\n    {\\\"source\\\": string, \\\"type\\\": string, \\\"target\\\": string, \\\"confidence\\\": 0.0-1.0, \\\"evidence\\\": string}\\n  ],\\n  \\\"hypothetical_questions\\\": [string, string, string],\\n  \\\"key_facts\\\": [string]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json._chunk_content }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 4096\n}",
           "options": {
             "timeout": 30000
           }
@@ -1587,7 +1591,7 @@
         "onError": "continueErrorOutput",
         "parameters": {
           "method": "POST",
-          "url": "={{ $env.NEO4J_URL }}/db/neo4j/tx/commit",
+          "url": "https://2fc858f1.databases.neo4j.io/db/neo4j/tx/commit",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpBasicAuth",
           "sendBody": true,
@@ -1618,12 +1622,12 @@
         "waitBetweenTries": 2000,
         "parameters": {
           "method": "POST",
-          "url": "={{ $env.ENTITY_EXTRACTION_API_URL || 'https://api.deepseek.com/v1/chat/completions' }}",
+          "url": "https://openrouter.ai/api/v1/chat/completions",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "{\n  \"model\": \"{{ $env.ENTITY_EXTRACTION_MODEL || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en analyse de communautes dans un graphe de connaissances.\\nPour chaque communaute, genere:\\n1. Un titre descriptif (max 10 mots)\\n2. Un resume de 2-3 phrases expliquant le theme commun\\n3. Les entites cles (max 5)\\n4. Les relations dominantes\\n\\nFormat JSON:\\n{\\n  \\\"title\\\": string,\\n  \\\"summary\\\": string,\\n  \\\"key_entities\\\": [string],\\n  \\\"dominant_relations\\\": [string],\\n  \\\"importance_score\\\": 0.0-1.0\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 2000\n}",
+          "jsonBody": "{\n  \"model\": \"{{ 'meta-llama/llama-3.3-70b-instruct:free' || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en analyse de communautes dans un graphe de connaissances.\\nPour chaque communaute, genere:\\n1. Un titre descriptif (max 10 mots)\\n2. Un resume de 2-3 phrases expliquant le theme commun\\n3. Les entites cles (max 5)\\n4. Les relations dominantes\\n\\nFormat JSON:\\n{\\n  \\\"title\\\": string,\\n  \\\"summary\\\": string,\\n  \\\"key_entities\\\": [string],\\n  \\\"dominant_relations\\\": [string],\\n  \\\"importance_score\\\": 0.0-1.0\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json) }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"max_tokens\": 2000\n}",
           "options": {
             "timeout": 30000
           }
@@ -1647,7 +1651,7 @@
         "onError": "continueErrorOutput",
         "parameters": {
           "method": "POST",
-          "url": "={{ $env.NEO4J_URL }}/db/neo4j/tx/commit",
+          "url": "https://2fc858f1.databases.neo4j.io/db/neo4j/tx/commit",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpBasicAuth",
           "sendBody": true,
@@ -2074,11 +2078,27 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-03T09:56:09.863Z",
-        "id": 52,
+        "createdAt": "2026-03-03T11:24:53.697Z",
+        "id": 62,
         "workflowId": "ORa01sX4xI0iRCJ8",
-        "versionId": "d21545f7-8a72-470a-a4cf-2138c8ab68d9",
+        "versionId": "f9d2188b-b245-4e07-a2be-122ee60a9a95",
         "event": "activated",
+        "userId": "bd8ccdd2-cb2f-467e-87d8-0e3012b9a4a9"
+      },
+      {
+        "createdAt": "2026-03-03T11:29:56.470Z",
+        "id": 66,
+        "workflowId": "ORa01sX4xI0iRCJ8",
+        "versionId": "f9d2188b-b245-4e07-a2be-122ee60a9a95",
+        "event": "activated",
+        "userId": "bd8ccdd2-cb2f-467e-87d8-0e3012b9a4a9"
+      },
+      {
+        "createdAt": "2026-03-03T11:29:56.453Z",
+        "id": 65,
+        "workflowId": "ORa01sX4xI0iRCJ8",
+        "versionId": "f9d2188b-b245-4e07-a2be-122ee60a9a95",
+        "event": "deactivated",
         "userId": "bd8ccdd2-cb2f-467e-87d8-0e3012b9a4a9"
       }
     ]
@@ -2096,5 +2116,5 @@
     "workflow:unpublish",
     "workflow:update"
   ],
-  "checksum": "11994800f8ffef84aef31e69c78985ba316f403c08eb4e1e2e5349321552c925"
+  "checksum": "4bfcda3646ccdc2a05b763390505a1911a8bbfc1d539ef16f5496cd8ca420dc3"
 }
