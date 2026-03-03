@@ -726,7 +726,7 @@ def load_questions(include_1000=False, dataset="phase-1"):
                         questions[ptype].append({
                             "id": item.get("id", ""),
                             "question": item.get("question", ""),
-                            "answer": item.get("expected_answer", ""),
+                            "expected": item.get("expected_answer", ""),
                             "type": ptype,
                             "context": item.get("context", ""),
                         })
