@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -u
 """Ingest Phase 3 standard contexts into Pinecone default namespace.
 
 Extracts unique context paragraphs from datasets/phase-3/standard-8700.json,

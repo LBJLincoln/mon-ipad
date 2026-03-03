@@ -1,13 +1,13 @@
 # Storage Strategy — Phase 3 → Phase 5
 
-> Last updated: 2026-03-03T10:30:00Z
+> Last updated: 2026-03-03T12:15:00Z
 
 ## Current State
 
 | Location | Used | Free | Contents |
 |----------|------|------|----------|
 | VM disk | 12 GB | 17 GB | Code, datasets (phase 1-3), eval results |
-| Pinecone sota-rag-jina-1024 | 13.4K vectors | 100K limit | Benchmark + standard contexts |
+| Pinecone sota-rag-jina-1024 | ~15.9K vectors | 100K limit | Benchmark + standard contexts (2520/7700 P3 ingested) |
 | Neo4j Aura | 34.9K nodes / 153.7K rels | 200K / 400K limit | Entities + relationships |
 | Supabase | ~17K rows | 500MB limit | Financial tables, benchmark data |
 | GitHub LFS (rag-storage) | ~200 MB | 1 GB limit | Archived datasets, snapshots |
