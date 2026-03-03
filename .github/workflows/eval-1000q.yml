@@ -8,6 +8,15 @@ name: "Eval 1000q Parallel"
 on:
   workflow_dispatch:
     inputs:
+      dataset:
+        description: "Dataset phase to evaluate"
+        default: "phase-3"
+        type: choice
+        options:
+          - phase-1
+          - phase-2
+          - phase-3
+          - all
       max_questions:
         description: "Max questions per pipeline"
         default: "1000"
@@ -18,7 +27,7 @@ on:
         type: string
       pipelines:
         description: "Pipelines to run (comma-separated or 'all')"
-        default: "standard,graph,quantitative,orchestrator,pme-gateway"
+        default: "standard,graph,quantitative"
         type: string
       early_stop:
         description: "Stop after N consecutive failures"
@@ -52,7 +61,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pipeline: [standard, graph, quantitative, orchestrator, pme-gateway]
+        pipeline: [standard, graph, quantitative]
     runs-on: ubuntu-latest
     timeout-minutes: 180
     name: "Eval ${{ matrix.pipeline }}"
@@ -70,7 +79,7 @@ jobs:
       - name: Run evaluation (${{ matrix.pipeline }})
         run: |
           python3 eval/run-eval-parallel.py \
-            --dataset phase-2 \
+            --dataset ${{ inputs.dataset || 'phase-3' }} \
             --types ${{ matrix.pipeline }} \
             --max ${{ inputs.max_questions || '1000' }} \
             --batch-size ${{ inputs.batch_size || '0' }} \

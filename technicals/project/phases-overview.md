@@ -1,6 +1,6 @@
 # Incremental Evaluation Plan — SOTA 2026
 
-> Last updated: 2026-02-22T21:45:00+01:00
+> Last updated: 2026-03-03T21:30:00Z
 
 ## Vue d'ensemble
 
@@ -99,6 +99,30 @@ Tous les 16 datasets HuggingFace (3 tiers).
 **Prerequis** : Phase 4 gates passees. Infrastructure payante requise.
 
 **Cout estime** : $215-455/mois (Pinecone Standard + Neo4j Pro + Supabase Pro).
+
+---
+
+## TRIGGERS DOWNSTREAM — Actions déclenchées par les phases
+
+### Tests site ETI (4 secteurs)
+
+**Trigger** : Phase 4 PASSED + rag-data-ingestion COMPLETE
+
+| Condition | Pourquoi |
+|-----------|----------|
+| Phase 4 PASSED | Prouve que les pipelines RAG sont fiables à l'échelle (100K questions). Lancer les tests site sur des pipelines non validés donne des faux négatifs. |
+| rag-data-ingestion COMPLETE | Garantit que les données sectorielles (finance, santé, industrie, juridique) sont présentes dans Pinecone, Neo4j et Supabase. Sans données, les chatbots ETI répondent dans le vide. |
+
+**Action** : Lancer les tests E2E des sites ETI :
+- `nomos-ai-pied.vercel.app` (4 secteurs)
+- `nomos-pme-connectors-alexis-morets-projects.vercel.app` (connecteurs PME)
+
+**Vérification** :
+```bash
+python3 eval/phase_gates.py --trigger eti_site_tests --repo-complete rag-data-ingestion
+```
+
+**Historique** : Anciennement déclenché après Phase 2. Modifié le 2026-03-03 (session 69) car Phase 2 ne teste que des benchmarks HF génériques, insuffisant pour valider les réponses sectorielles.
 
 ---
 

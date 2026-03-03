@@ -91,6 +91,71 @@ PHASE_GATES = {
     },
 }
 
+# Downstream triggers — actions gated behind specific phase completions
+# Each trigger defines: required_phases (all must pass), required_repos (all must be complete),
+# and the action to unlock.
+DOWNSTREAM_TRIGGERS = {
+    "eti_site_tests": {
+        "name": "ETI 4-Sector Site Tests",
+        "description": (
+            "Launch ETI site tests (finance, santé, industrie, legal) only when "
+            "Phase 4 RAG pipelines are validated at scale AND data-ingestion has "
+            "finished ingesting+enriching all sector documents. Both conditions are "
+            "required: Phase 4 proves pipeline reliability at 100K questions, "
+            "data-ingestion ensures sector-specific content is present in all databases."
+        ),
+        "required_phases": [4],
+        "required_repos": ["rag-data-ingestion"],
+        "action": "run_eti_site_tests",
+        "sites": [
+            "nomos-ai-pied.vercel.app",
+            "nomos-pme-connectors-alexis-morets-projects.vercel.app",
+        ],
+    },
+}
+
+
+def check_trigger(trigger_name, phase_results=None, repo_status=None):
+    """Check if a downstream trigger's conditions are met.
+
+    Args:
+        trigger_name: Key in DOWNSTREAM_TRIGGERS
+        phase_results: Dict of {phase_num: bool} — pre-computed gate results.
+                       If None, checks gates live from data.json.
+        repo_status: Dict of {repo_name: bool} — whether each repo has completed its work.
+                     Must be provided by the caller (cannot be auto-detected).
+
+    Returns:
+        dict: {"ready": bool, "blockers": [str], "trigger": dict}
+    """
+    if trigger_name not in DOWNSTREAM_TRIGGERS:
+        return {"ready": False, "blockers": [f"Unknown trigger: {trigger_name}"]}
+
+    trigger = DOWNSTREAM_TRIGGERS[trigger_name]
+    blockers = []
+
+    # Check required phases
+    for phase_num in trigger.get("required_phases", []):
+        if phase_results and phase_num in phase_results:
+            passed = phase_results[phase_num]
+        else:
+            result = check_gates(phase=phase_num)
+            passed = result["passed"]
+        if not passed:
+            blockers.append(f"Phase {phase_num} ({PHASE_GATES[phase_num]['name']}) not passed")
+
+    # Check required repos
+    repo_status = repo_status or {}
+    for repo in trigger.get("required_repos", []):
+        if not repo_status.get(repo, False):
+            blockers.append(f"Repo '{repo}' work not complete")
+
+    return {
+        "ready": len(blockers) == 0,
+        "trigger": trigger,
+        "blockers": blockers,
+    }
+
 
 def load_data_json():
     """Load docs/data.json and return parsed data."""
@@ -348,10 +413,29 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Phase Gate Validator")
     parser.add_argument("--phase", type=int, default=None, help="Phase to check (default: current)")
     parser.add_argument("--enforce", type=int, default=None, help="Enforce gate for target phase")
+    parser.add_argument("--trigger", type=str, default=None,
+                        help="Check downstream trigger (e.g., 'eti_site_tests')")
+    parser.add_argument("--repo-complete", nargs="*", default=[],
+                        help="Mark repos as complete (e.g., 'rag-data-ingestion')")
     parser.add_argument("--json", action="store_true", help="Output as JSON")
     args = parser.parse_args()
 
-    if args.enforce:
+    if args.trigger:
+        repo_status = {r: True for r in args.repo_complete}
+        result = check_trigger(args.trigger, repo_status=repo_status)
+        if args.json:
+            print(json.dumps(result, indent=2))
+        else:
+            t = result["trigger"]
+            status = "READY" if result["ready"] else "BLOCKED"
+            print(f"\n  Trigger: {t['name']}")
+            print(f"  Status: {status}")
+            print(f"  Description: {t['description']}")
+            if result["blockers"]:
+                print(f"\n  Blockers:")
+                for b in result["blockers"]:
+                    print(f"    - {b}")
+    elif args.enforce:
         enforce_gate(target_phase=args.enforce)
         print("  Gate check passed.")
     elif args.json:
