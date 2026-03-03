@@ -49,27 +49,24 @@ def save_state(state):
         json.dump(state, f)
 
 
-def neo4j_query(statements, url, user, password):
-    """Execute Cypher statements via Neo4j Aura Query API v2.
-    Executes each statement sequentially (v2 API takes one statement per request)."""
+def neo4j_run(statement, parameters, url, user, password):
+    """Execute a single Cypher statement via Neo4j Aura Query API v2."""
     import base64
     auth = base64.b64encode(f"{user}:{password}".encode()).decode()
-    headers = {
+    body = json.dumps({
+        "statement": statement,
+        "parameters": parameters
+    }).encode()
+    req = urllib.request.Request(url, data=body, headers={
         "Content-Type": "application/json",
         "Authorization": f"Basic {auth}",
         "Accept": "application/json"
-    }
-    for stmt in statements:
-        body = json.dumps({
-            "statement": stmt["statement"],
-            "parameters": stmt.get("parameters", {})
-        }).encode()
-        req = urllib.request.Request(url, data=body, headers=headers)
-        resp = urllib.request.urlopen(req, timeout=30)
-        result = json.loads(resp.read().decode())
-        if "errors" in result and result["errors"]:
-            raise RuntimeError(f"Neo4j error: {result['errors']}")
-    return {"ok": True}
+    })
+    resp = urllib.request.urlopen(req, timeout=60)
+    result = json.loads(resp.read().decode())
+    if "errors" in result and result["errors"]:
+        raise RuntimeError(f"Neo4j error: {result['errors']}")
+    return result
 
 
 def extract_paragraphs(dataset_path):
@@ -191,41 +188,43 @@ def main():
         batch_num += 1
 
         try:
-            statements = []
+            # Prepare batch data for UNWIND operations
+            para_rows = []
+            entity_rows = []
 
             for title, para in batch:
                 entities = extract_entities_from_text(para["text"])
-
-                # Create Paragraph node with content
-                statements.append({
-                    "statement": (
-                        "MERGE (p:Paragraph {title: $title}) "
-                        "SET p.text = $text, p.source = 'phase3_graph', "
-                        "p.is_supporting = $is_supporting, p.question_count = $qcount"
-                    ),
-                    "parameters": {
-                        "title": title,
-                        "text": para["text"][:5000],
-                        "is_supporting": para["is_supporting"],
-                        "qcount": para["question_count"]
-                    }
+                para_rows.append({
+                    "title": title,
+                    "text": para["text"][:5000],
+                    "is_supporting": para["is_supporting"],
+                    "qcount": para["question_count"]
                 })
-
-                # Create Entity nodes + HAS_ENTITY relationships
-                for ent in entities[:10]:  # limit per paragraph
-                    statements.append({
-                        "statement": (
-                            "MERGE (e:Entity {name: $name, tenant_id: 'phase3'}) "
-                            "WITH e "
-                            "MATCH (p:Paragraph {title: $title}) "
-                            "MERGE (p)-[:HAS_ENTITY]->(e)"
-                        ),
-                        "parameters": {"name": ent, "title": title}
-                    })
+                for ent in entities[:10]:
+                    entity_rows.append({"title": title, "name": ent})
                     total_entities_created += 1
 
-            # Execute batch
-            neo4j_query(statements, NEO4J_URL, NEO4J_USER, NEO4J_PASSWORD)
+            # Bulk create paragraphs (1 API call)
+            neo4j_run(
+                "UNWIND $rows AS row "
+                "MERGE (p:Paragraph {title: row.title}) "
+                "SET p.text = row.text, p.source = 'phase3_graph', "
+                "p.is_supporting = row.is_supporting, p.question_count = row.qcount",
+                {"rows": para_rows},
+                NEO4J_URL, NEO4J_USER, NEO4J_PASSWORD
+            )
+
+            # Bulk create entities + links (1 API call)
+            if entity_rows:
+                neo4j_run(
+                    "UNWIND $rows AS row "
+                    "MERGE (e:Entity {name: row.name, tenant_id: 'phase3'}) "
+                    "WITH e, row "
+                    "MATCH (p:Paragraph {title: row.title}) "
+                    "MERGE (p)-[:HAS_ENTITY]->(e)",
+                    {"rows": entity_rows},
+                    NEO4J_URL, NEO4J_USER, NEO4J_PASSWORD
+                )
 
             # Update state
             batch_titles = [t for t, _ in batch]
@@ -242,7 +241,7 @@ def main():
                   f"{len(completed)}/{len(paragraphs)} ({done_pct:.1f}%), "
                   f"~{total_entities_created} entities")
 
-            time.sleep(0.3)
+            time.sleep(0.5)
             errors = 0
 
         except Exception as e:
@@ -257,18 +256,17 @@ def main():
     if not dry_run and len(completed) > 0:
         print("\nCreating cross-paragraph relationships...")
         try:
-            neo4j_query([{
-                "statement": (
-                    "MATCH (p1:Paragraph)-[:HAS_ENTITY]->(e:Entity)<-[:HAS_ENTITY]-(p2:Paragraph) "
-                    "WHERE p1.source = 'phase3_graph' AND p2.source = 'phase3_graph' "
-                    "AND id(p1) < id(p2) "
-                    "WITH p1, p2, count(e) AS shared "
-                    "WHERE shared >= 2 "
-                    "MERGE (p1)-[r:RELATED_TO]-(p2) "
-                    "SET r.shared_entities = shared, r.source = 'phase3_graph'"
-                ),
-                "parameters": {}
-            }], NEO4J_URL, NEO4J_USER, NEO4J_PASSWORD)
+            neo4j_run(
+                "MATCH (p1:Paragraph)-[:HAS_ENTITY]->(e:Entity)<-[:HAS_ENTITY]-(p2:Paragraph) "
+                "WHERE p1.source = 'phase3_graph' AND p2.source = 'phase3_graph' "
+                "AND id(p1) < id(p2) "
+                "WITH p1, p2, count(e) AS shared "
+                "WHERE shared >= 2 "
+                "MERGE (p1)-[r:RELATED_TO]-(p2) "
+                "SET r.shared_entities = shared, r.source = 'phase3_graph'",
+                {},
+                NEO4J_URL, NEO4J_USER, NEO4J_PASSWORD
+            )
             print("  Cross-paragraph relationships created.")
         except Exception as e:
             print(f"  WARNING: Cross-paragraph relationships failed: {e}")
