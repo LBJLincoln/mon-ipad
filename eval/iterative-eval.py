@@ -109,6 +109,22 @@ PHASE2_PIPELINE_TARGETS = {
     "quantitative": 70.0,
 }
 
+# Extended stages for Phase 3 (~10K questions — standard 8700, graph 1500, quant 500)
+PHASE3_STAGES = [
+    {"name": "Stage 1: Smoke (5q)",      "questions": 5,    "min_accuracy": 40.0, "max_errors_pct": 60.0},
+    {"name": "Stage 2: Quick (20q)",     "questions": 20,   "min_accuracy": 50.0, "max_errors_pct": 40.0},
+    {"name": "Stage 3: Medium (100q)",   "questions": 100,  "min_accuracy": None, "max_errors_pct": 20.0},
+    {"name": "Stage 4: Large (500q)",    "questions": 500,  "min_accuracy": None, "max_errors_pct": 15.0},
+    {"name": "Stage 5: XL (2000q)",      "questions": 2000, "min_accuracy": None, "max_errors_pct": 10.0},
+    {"name": "Stage 6: Full (all)",      "questions": 9999, "min_accuracy": None, "max_errors_pct": 10.0},
+]
+
+PHASE3_PIPELINE_TARGETS = {
+    "standard": 70.0,
+    "graph": 55.0,
+    "quantitative": 70.0,
+}
+
 
 def tprint(msg):
     with _print_lock:
@@ -561,7 +577,7 @@ def main():
     parser.add_argument("--no-gate", action="store_true",
                         help="Run all stages regardless of gate results")
     parser.add_argument("--dataset", type=str, default="phase-1",
-                        choices=["phase-1", "phase-2", "all"],
+                        choices=["phase-1", "phase-2", "phase-3", "all"],
                         help="Dataset to use")
     parser.add_argument("--force", action="store_true",
                         help="Skip phase gate checks")
@@ -582,13 +598,23 @@ def main():
         pipelines = ["graph", "quantitative"]
         tprint("  NOTE: Phase 2 tests graph + quantitative only. Auto-adjusted.")
 
-    # Use Phase 2 targets and stages when running Phase 2 dataset
+    # Auto-adjust for Phase 3 (exclude orchestrator)
+    if args.dataset == "phase-3" and args.pipelines == "standard,graph,quantitative,orchestrator":
+        pipelines = ["standard", "graph", "quantitative"]
+        tprint("  NOTE: Phase 3 excludes orchestrator (broken). Auto-adjusted.")
+
+    # Use phase-specific targets and stages
     active_stages = STAGES
     if args.dataset == "phase-2":
         PIPELINE_TARGETS.update(PHASE2_PIPELINE_TARGETS)
         active_stages = PHASE2_STAGES
         tprint(f"  NOTE: Using Phase 2 targets: {PHASE2_PIPELINE_TARGETS}")
         tprint(f"  NOTE: Using Phase 2 stages (5 → 10 → 50 → 200 → 500)")
+    elif args.dataset == "phase-3":
+        PIPELINE_TARGETS.update(PHASE3_PIPELINE_TARGETS)
+        active_stages = PHASE3_STAGES
+        tprint(f"  NOTE: Using Phase 3 targets: {PHASE3_PIPELINE_TARGETS}")
+        tprint(f"  NOTE: Using Phase 3 stages (5 → 20 → 100 → 500 → 2000 → full)")
 
     print("=" * 70)
     print("  ITERATIVE PIPELINE EVALUATION — Progressive Stage Gates")

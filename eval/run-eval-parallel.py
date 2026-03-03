@@ -268,13 +268,8 @@ def run_pipeline(rag_type, questions, tested_ids_by_type, label=""):
     Returns (rag_type, totals_dict, per_question_results).
     Early-stop: halts after N consecutive failures (default 4).
     Batch-size: processes N questions in parallel within the pipeline (E5 improvement)."""
-    # Optimized timeouts for dual-space (2x throughput)
-    PIPELINE_TIMEOUTS = {
-        "standard": 45,
-        "graph": 45,
-        "quantitative": 45,
-        "orchestrator": 75,
-    }
+    # Use source module timeouts (90/90/120/180) — 45s was too aggressive for Phase 3
+    # PIPELINE_TIMEOUTS is imported from run-eval.py at module level (line 74)
     EARLY_STOP_THRESHOLD = getattr(run_pipeline, '_early_stop', 4)
     _bs_auto = getattr(run_pipeline, '_batch_size_auto', False)
     if _bs_auto:
@@ -473,10 +468,11 @@ def main():
     parser = argparse.ArgumentParser(description="Parallel RAG Evaluation (up to 12 workflows concurrent)")
     parser.add_argument("--max", type=int, default=None,
                         help="Max questions per pipeline type")
-    parser.add_argument("--types", type=str, default="standard,graph,quantitative,orchestrator",
+    parser.add_argument("--types", type=str, default="standard,graph,quantitative",
                         help="Comma-separated pipeline types to test. "
                              "Available: standard,graph,quantitative,orchestrator,"
-                             "pme-gateway,pme-action,pme-whatsapp")
+                             "pme-gateway,pme-action,pme-whatsapp. "
+                             "Note: orchestrator excluded by default (add explicitly if needed)")
     parser.add_argument("--dataset", type=str, default=None,
                         choices=["phase-1", "phase-2", "phase-3", "all"],
                         help="Dataset to evaluate: phase-1 (200q), phase-2 (1000q HF), phase-3 (~10K), all")

@@ -722,7 +722,7 @@ def load_questions(include_1000=False, dataset="phase-1"):
                 data = json.load(f)
                 for item in data.get("questions", []):
                     ptype = item.get("pipeline") or item.get("type")
-                    if ptype in ["standard", "graph", "quantitative"]:
+                    if ptype in ["standard", "graph", "quantitative", "orchestrator"]:
                         questions[ptype].append({
                             "id": item.get("id", ""),
                             "question": item.get("question", ""),
@@ -730,10 +730,6 @@ def load_questions(include_1000=False, dataset="phase-1"):
                             "type": ptype,
                             "context": item.get("context", ""),
                         })
-                # Orchestrator mirrors all question types
-                for ptype in ["standard", "graph", "quantitative"]:
-                    for q in questions.get(ptype, []):
-                        questions["orchestrator"].append({**q, "type": "orchestrator"})
         else:
             print(f"  WARN: phase-3 dataset missing: {phase3_file}")
 
