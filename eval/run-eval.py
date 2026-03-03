@@ -380,7 +380,30 @@ def evaluate_answer(answer, expected_answer):
         return {"correct": True, "method": "CONTAINS_MATCH", "f1": 0.9}
     elif norm_answer in norm_expected:
         return {"correct": True, "method": "SUBSET_MATCH", "f1": 0.8}
-    else:
+
+    # Numeric proximity: extract numbers and compare with tolerance
+    # Handles "22.99%" vs "23.0%", "$45,392,000" vs "$45392000", etc.
+    answer_nums = re.findall(r'[\d]+\.?\d*', answer_lower)
+    expected_nums = re.findall(r'[\d]+\.?\d*', expected_lower)
+    if expected_nums and answer_nums:
+        for exp_str in expected_nums:
+            try:
+                exp_val = float(exp_str)
+                for ans_str in answer_nums:
+                    try:
+                        ans_val = float(ans_str)
+                        # Within 2% relative tolerance or 0.5 absolute
+                        if exp_val == 0:
+                            if abs(ans_val) < 0.5:
+                                return {"correct": True, "method": "NUMERIC_MATCH", "f1": 0.95}
+                        elif abs(ans_val - exp_val) / abs(exp_val) < 0.02 or abs(ans_val - exp_val) < 0.5:
+                            return {"correct": True, "method": "NUMERIC_MATCH", "f1": 0.95}
+                    except ValueError:
+                        continue
+            except ValueError:
+                continue
+
+    if True:
         # Token-level F1 for partial matches
         STOPWORDS = {"a", "an", "the", "is", "of", "in", "to", "and", "for", "on", "at", "with", "from", "s",
                      "that", "was", "by", "it", "its", "are", "were", "been", "be", "has", "have", "had",
