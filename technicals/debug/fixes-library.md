@@ -1,9 +1,9 @@
 # Fixes Library — Multi-RAG Orchestrator
 
-> Last updated: 2026-03-02T15:00:00+00:00
+> Last updated: 2026-03-03T21:00:00+00:00
 
 > **Bibliotheque permanente de tous les bugs resolus.** A consulter EN PREMIER avant tout debug.
-> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 68 (2026-03-02).
+> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 69 (2026-03-03).
 
 ---
 
@@ -82,6 +82,13 @@
 | 70 | Enrichment | Missing httpMethod + wrong responseMode on new webhook trigger | 68 | IMPORTANT |
 | 71 | Dashboard | Auto-sync burned 100 Vercel deploys/day — added 5-min throttle | 68 | IMPORTANT |
 | 72 | Dashboard | framework:null in vercel.json causes Next.js auto-detect → 404 | 68 | CRITIQUE |
+| 73 | Enrichment | $items('DisabledNode') crashes — wrap in try/catch | 69 | CRITIQUE |
+| 74 | n8n Expressions | {{ 'model' \|\| 'fallback' }} in jsonBody not evaluated — hardcode or ={{ }} | 69 | CRITIQUE |
+| 75 | Data-Ingestion | 6 LLM nodes (3 ingestion + 3 enrichment) switched to LiteLLM proxy | 69 | IMPORTANT |
+| 76 | Eval Scripts | Orchestrator duplication bug — Phase 3 loader mirrored 10,700 extra questions | 69 | CRITIQUE |
+| 77 | Eval Scripts | run-eval-parallel.py hardcoded 45s timeouts overriding source module 90/120/180s | 69 | IMPORTANT |
+| 78 | Neo4j Ingestion | tx/commit returns 403 on Aura — use /db/neo4j/query/v2 (Query API) | 69 | CRITIQUE |
+| 79 | Neo4j Ingestion | Sequential statements 100x slower — use UNWIND $rows for bulk ops | 69 | IMPORTANT |
 
 ---
 

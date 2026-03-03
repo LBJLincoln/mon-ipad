@@ -1,6 +1,6 @@
 # Knowledge Base — Cerveau Persistant Multi-RAG
 
-> Last updated: 2026-03-02T15:00:00+00:00 (Session 68 — n8n cookie auth discovery, sync throttle, Redis removal from ingestion/enrichment)
+> Last updated: 2026-03-03T21:00:00+00:00 (Session 69 — LiteLLM for data-ingestion, Phase 3 ingestion complete, eval script fixes, Neo4j bulk UNWIND)
 > **Ce document est VIVANT.** Il s'enrichit a CHAQUE session avec les solutions, patterns
 > et connaissances techniques decouvertes. A lire EN PREMIER avec `fixes-library.md`.
 > Objectif : ameliorer la performance de l'agent a chaque session.
@@ -1580,6 +1580,67 @@ Remove `credentials` field when converting. Both `nodes` array AND `activeVersio
 - Email: `ci@nomos.ai`
 - Password: `CI-Nomos-2026!`
 - Encryption key: `sota-rag-2026-hf-space-key`
+
+## SECTION 16 — SESSION 69 CRITICAL DISCOVERIES (2026-03-03)
+
+### 16.1 n8n Disabled Nodes Crash $items()
+
+**Problem**: `$items('NodeName')` throws `"Cannot assign to read only property 'name' of object 'Error'"` when the referenced node is disabled. It does NOT return empty array.
+
+**Fix**: Always wrap in try/catch:
+```javascript
+let data = [];
+try { data = $items('PotentiallyDisabledNode') || []; } catch(e) { data = []; }
+```
+
+### 16.2 n8n Expressions in jsonBody Strings
+
+**Problem**: `{{ 'meta-llama/llama-3.3-70b-instruct:free' || 'deepseek-chat' }}` inside a jsonBody string is NOT evaluated by n8n. It's sent as literal text to the API, causing "not a valid model ID" errors.
+
+**Fix**: Either hardcode the model name or use `={{ }}` expression syntax (not inside quotes). For HTTP Request nodes targeting LLM APIs, hardcode the model in the JSON body.
+
+### 16.3 LiteLLM Proxy Credential (n8n)
+
+Created credential `mStiDbYim2aZ0cMq` (type: httpHeaderAuth) for LiteLLM:
+- Header: `Authorization: Bearer sk-litellm-nomos-2026`
+- URL: `https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions`
+- Model name: `llama-70b` (routes to OpenRouter or Groq via 10-key pool)
+- Used by: Ingestion V4.0 (3 nodes) + Enrichment V4.0 (3 nodes)
+
+### 16.4 Neo4j Aura Query API v2
+
+**Problem**: `POST /db/neo4j/tx/commit` returns HTTP 403 on Neo4j Aura free tier.
+
+**Fix**: Use Query API v2 at `/db/neo4j/query/v2`:
+```python
+body = {"statement": "CYPHER QUERY", "parameters": {...}}
+# NOT {"statements": [{"statement": ...}]} (that's tx/commit format)
+```
+
+### 16.5 Neo4j UNWIND for Bulk Operations
+
+**Problem**: Sending one API call per node creation = 170 calls per batch of 20 paragraphs.
+
+**Fix**: Use UNWIND to batch into 2 API calls per batch:
+```cypher
+UNWIND $rows AS row
+MERGE (p:Paragraph {title: row.title})
+SET p.text = row.text, p.source = 'phase3_graph'
+```
+Result: ~100x speedup (5,834 paragraphs in ~5min vs hours).
+
+### 16.6 Eval Script Phase 3 Orchestrator Bug
+
+**Problem**: `run-eval.py` lines 733-736 mirrored ALL standard+graph+quant questions (10,200) into orchestrator for Phase 3, creating 11,700 duplicates instead of using the native 1,000 orchestrator questions from the dataset.
+
+**Fix**: Changed `if ptype in ["standard", "graph", "quantitative"]` to `if ptype in ["standard", "graph", "quantitative", "orchestrator"]` to load native orchestrator questions. Removed the mirroring loop.
+
+### 16.7 Supabase Financial Data Coverage
+
+Phase 3 quantitative questions (500) reference TechVision Inc + GreenEnergy Corp.
+Supabase `financials` table has: TechVision (8 rows), GreenEnergy (8 rows), HealthPlus (8 rows) = 24 rows total.
+`quarterly_revenue` has 12 rows (Europe Q1 2023 - Q1 2024).
+Data coverage: SUFFICIENT for Phase 3 quant pipeline.
 
 ---
 
