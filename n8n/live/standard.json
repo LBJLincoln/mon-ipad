@@ -37,7 +37,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Init & ACL Pre-Filter V3.4 - With Adaptive TopK\nconst rawInput = $input.first().json;\nconst input = rawInput.body || rawInput;\n\n// Parse query robustement\nlet queryStr = '';\nif (typeof input.query === 'string') {\n  queryStr = input.query;\n} else if (input.query && typeof input.query === 'object') {\n  queryStr = JSON.stringify(input.query);\n} else {\n  queryStr = String(input.query || '');\n}\n\nconst userContext = input.user_context || {};\nconst tenantId = userContext.tenant_id || input.tenant_id || 'default';\nconst userGroups = Array.isArray(userContext.groups) ? userContext.groups : ['admin', 'guest'];\n\n// V3.4: Analyse de complexit\u00e9 pour adaptive top_k\nconst COMPLEXITY_INDICATORS = {\n  simple: /^(qu'est-ce que|d\u00e9finition|c'est quoi)/i,\n  moderate: /(comment|pourquoi|expliquer)/i,\n  complex: /(comparer|analyser|impact|relation|entre.*et)/i,\n  multi_hop: /(quel.*puis|d'abord.*ensuite|en tenant compte)/i\n};\n\nlet complexity = 'moderate';\nlet adaptiveTopK = 15;\n\nif (COMPLEXITY_INDICATORS.simple.test(queryStr)) {\n  complexity = 'simple';\n  adaptiveTopK = 8;\n} else if (COMPLEXITY_INDICATORS.multi_hop.test(queryStr)) {\n  complexity = 'complex';\n  adaptiveTopK = 25;\n} else if (COMPLEXITY_INDICATORS.complex.test(queryStr)) {\n  complexity = 'complex';\n  adaptiveTopK = 20;\n}\n\n// V3.4: Detect if query needs decomposition\n// V3.4: Decomposition disabled for rate limit optimization\nconst needsDecomposition = false;\n\n// ACL filter (d\u00e9sactiv\u00e9 par d\u00e9faut pour compatibilit\u00e9)\nconst disableAcl = (input.disable_acl === true);\nconst aclFilter = disableAcl ? {} : {\n  \"$or\": [\n    { \"tenant_id\": tenantId, \"allowed_groups\": { \"$in\": userGroups } },\n    { \"tenant_id\": { \"$exists\": false } }\n  ]\n};\n\nreturn [{\n  json: {\n    trace_id: input.trace_id || 'tr-' + Date.now(),\n    query: queryStr.trim(),\n    acl_filter: aclFilter,\n    acl_disabled: disableAcl,\n    user_context: { tenant_id: tenantId, groups: userGroups },\n    \n    // V3.4 Enhancements\n    complexity: complexity,\n    topK: Math.min(input.topK || adaptiveTopK, 50),\n    adaptive_topK: adaptiveTopK,\n    needs_decomposition: needsDecomposition\n  }\n}];"
+        "jsCode": "// Init & ACL Pre-Filter V3.4 - With Adaptive TopK\nconst rawInput = $input.first().json;\nconst input = rawInput.body || rawInput;\n\n// Parse query robustement\nlet queryStr = '';\nif (typeof input.query === 'string') {\n  queryStr = input.query;\n} else if (input.query && typeof input.query === 'object') {\n  queryStr = JSON.stringify(input.query);\n} else {\n  queryStr = String(input.query || '');\n}\n\nconst userContext = input.user_context || {};\nconst tenantId = userContext.tenant_id || input.tenant_id || 'benchmark';\nconst userGroups = Array.isArray(userContext.groups) ? userContext.groups : ['admin', 'guest'];\n\n// V3.4: Analyse de complexit\u00e9 pour adaptive top_k\nconst COMPLEXITY_INDICATORS = {\n  simple: /^(qu'est-ce que|d\u00e9finition|c'est quoi)/i,\n  moderate: /(comment|pourquoi|expliquer)/i,\n  complex: /(comparer|analyser|impact|relation|entre.*et)/i,\n  multi_hop: /(quel.*puis|d'abord.*ensuite|en tenant compte)/i\n};\n\nlet complexity = 'moderate';\nlet adaptiveTopK = 15;\n\nif (COMPLEXITY_INDICATORS.simple.test(queryStr)) {\n  complexity = 'simple';\n  adaptiveTopK = 8;\n} else if (COMPLEXITY_INDICATORS.multi_hop.test(queryStr)) {\n  complexity = 'complex';\n  adaptiveTopK = 25;\n} else if (COMPLEXITY_INDICATORS.complex.test(queryStr)) {\n  complexity = 'complex';\n  adaptiveTopK = 20;\n}\n\n// V3.4: Detect if query needs decomposition\n// V3.4: Decomposition disabled for rate limit optimization\nconst needsDecomposition = false;\n\n// ACL filter (d\u00e9sactiv\u00e9 par d\u00e9faut pour compatibilit\u00e9)\nconst disableAcl = (input.disable_acl === true);\nconst aclFilter = disableAcl ? {} : {\n  \"$or\": [\n    { \"tenant_id\": tenantId, \"allowed_groups\": { \"$in\": userGroups } },\n    { \"tenant_id\": { \"$exists\": false } }\n  ]\n};\n\nreturn [{\n  json: {\n    trace_id: input.trace_id || 'tr-' + Date.now(),\n    query: queryStr.trim(),\n    acl_filter: aclFilter,\n    acl_disabled: disableAcl,\n    user_context: { tenant_id: tenantId, groups: userGroups },\n    \n    // V3.4 Enhancements\n    complexity: complexity,\n    topK: Math.min(input.topK || adaptiveTopK, 50),\n    adaptive_topK: adaptiveTopK,\n    needs_decomposition: needsDecomposition\n  }\n}];"
       },
       "id": "9e9a1c50-0934-43a7-9185-5616ab227650",
       "name": "Init & ACL Pre-Filter V3.4",
@@ -53,7 +53,7 @@
       "parameters": {
         "method": "POST",
         "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "none",
+        "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"model\": \"arcee-ai/trinity-large-preview:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
@@ -70,14 +70,7 @@
           }
         },
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Bearer ={{$env.OPENROUTER_KEY_STANDARD}}"
-            }
-          ]
-        }
+        "genericAuthType": "httpHeaderAuth"
       },
       "id": "2203b6fc-10ed-43f1-8814-134887ef30b3",
       "name": "HyDE Generator",
@@ -90,13 +83,19 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "VTFur78v4L4wWEk9",
+          "name": "OpenRouter API (Standard)"
+        }
+      }
     },
     {
       "parameters": {
         "method": "POST",
         "url": "https://api.jina.ai/v1/embeddings",
-        "authentication": "none",
+        "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"model\": \"jina-embeddings-v3\",\n  \"input\": [{{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"task\": \"retrieval.query\"\n}",
@@ -113,14 +112,7 @@
           }
         },
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Bearer ={{$env.JINA_API_KEY}}"
-            }
-          ]
-        }
+        "genericAuthType": "httpHeaderAuth"
       },
       "id": "89633b5e-e055-4431-a38b-2963e872fba3",
       "name": "HyDE Embedding",
@@ -133,13 +125,19 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "I68x3RvlHJZyQuR6",
+          "name": "Jina API Key"
+        }
+      }
     },
     {
       "parameters": {
         "method": "POST",
         "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
-        "authentication": "none",
+        "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
@@ -160,10 +158,6 @@
         "headerParameters": {
           "parameters": [
             {
-              "name": "Api-Key",
-              "value": "={{$env.PINECONE_API_KEY}}"
-            },
-            {
               "name": "Content-Type",
               "value": "application/json"
             }
@@ -181,13 +175,19 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "US6Cxlgs8LfyZWss",
+          "name": "Pinecone API Key (Api-Key header)"
+        }
+      }
     },
     {
       "parameters": {
         "method": "POST",
         "url": "https://api.jina.ai/v1/embeddings",
-        "authentication": "none",
+        "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"model\": \"jina-embeddings-v3\",\n  \"input\": [{{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}],\n  \"task\": \"retrieval.query\"\n}",
@@ -204,14 +204,7 @@
           }
         },
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Bearer ={{$env.JINA_API_KEY}}"
-            }
-          ]
-        }
+        "genericAuthType": "httpHeaderAuth"
       },
       "id": "845805cf-5935-4b94-b320-7cf6042c94e9",
       "name": "Original Embedding",
@@ -224,13 +217,19 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "I68x3RvlHJZyQuR6",
+          "name": "Jina API Key"
+        }
+      }
     },
     {
       "parameters": {
         "method": "POST",
         "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
-        "authentication": "none",
+        "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
@@ -251,10 +250,6 @@
         "headerParameters": {
           "parameters": [
             {
-              "name": "Api-Key",
-              "value": "={{$env.PINECONE_API_KEY}}"
-            },
-            {
               "name": "Content-Type",
               "value": "application/json"
             }
@@ -272,7 +267,13 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "US6Cxlgs8LfyZWss",
+          "name": "Pinecone API Key (Api-Key header)"
+        }
+      }
     },
     {
       "parameters": {
@@ -292,7 +293,7 @@
       ],
       "credentials": {
         "postgres": {
-          "id": "USU8ngVzsUbED3mn",
+          "id": "qhxUGPAXDN7Esubu",
           "name": "Supabase Postgres (Pooler)"
         }
       },
@@ -332,7 +333,7 @@
       "parameters": {
         "method": "POST",
         "url": "https://api.jina.ai/v1/rerank",
-        "authentication": "none",
+        "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"model\": \"jina-reranker-v2-base-multilingual\",\n  \"query\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }},\n  \"documents\": {{ $json.skip_reranker ? '[\"placeholder\"]' : JSON.stringify(($json.results || []).map(r => r.content || '').filter(c => c.length > 0).slice(0, 25)) }},\n  \"top_n\": 10\n}",
@@ -349,14 +350,7 @@
           }
         },
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Bearer ={{$env.COHERE_API_KEY}}"
-            }
-          ]
-        }
+        "genericAuthType": "httpHeaderAuth"
       },
       "id": "dd352491-9109-477d-8c93-d8b4576d238d",
       "name": "Cohere Reranker",
@@ -369,7 +363,13 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "I68x3RvlHJZyQuR6",
+          "name": "Jina API Key"
+        }
+      }
     },
     {
       "parameters": {
@@ -389,7 +389,7 @@
       "parameters": {
         "method": "POST",
         "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "none",
+        "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"model\": \"arcee-ai/trinity-large-preview:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
@@ -406,14 +406,7 @@
           }
         },
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Bearer ={{$env.OPENROUTER_KEY_STANDARD}}"
-            }
-          ]
-        }
+        "genericAuthType": "httpHeaderAuth"
       },
       "id": "7dc20347-e74b-433b-84c3-6e41e2f5d041",
       "name": "LLM Generation",
@@ -426,7 +419,13 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "VTFur78v4L4wWEk9",
+          "name": "OpenRouter API (Standard)"
+        }
+      }
     },
     {
       "parameters": {
@@ -562,7 +561,7 @@
       "parameters": {
         "method": "POST",
         "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "none",
+        "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"model\": \"arcee-ai/trinity-large-preview:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
@@ -579,14 +578,7 @@
           }
         },
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Bearer ={{$env.OPENROUTER_KEY_STANDARD}}"
-            }
-          ]
-        }
+        "genericAuthType": "httpHeaderAuth"
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
@@ -599,7 +591,13 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "VTFur78v4L4wWEk9",
+          "name": "OpenRouter API (Standard)"
+        }
+      }
     },
     {
       "parameters": {
