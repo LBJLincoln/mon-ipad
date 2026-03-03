@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-03T11:29:43.189Z",
+  "updatedAt": "2026-03-03T18:14:07.911Z",
   "createdAt": "2026-01-25T13:19:09.188Z",
   "id": "nh1D4Up0wBZhuQbp",
   "name": "Ingestion V4.0 (SOTA 2026)",
@@ -173,12 +173,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ 'meta-llama/llama-3.3-70b-instruct:free' || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decoupe semantique adaptative.\\n\\n=== STRATEGIE SELON TYPE DE CONTENU ===\\n\\nNARRATIF (rapports, articles):\\n- Chunks de 300-500 mots\\n- Decoupe aux changements de sujet/ton\\n\\nTECHNIQUE (documentation, specs):\\n- Chunks de 200-400 mots\\n- Decoupe aux sections logiques\\n\\nTABULAIRE (donnees, listes):\\n- Garder les tableaux entiers si possible\\n- Sinon, grouper les lignes liees\\n\\nLEGAL (contrats, policies):\\n- Chunks plus longs (500-800 mots)\\n- Ne jamais couper une clause\\n\\n=== REGLES ===\\n1. Detecte le type de contenu\\n2. Applique la strategie appropriee\\n3. Chaque chunk doit etre coherent et auto-suffisant\\n4. Indique le topic de chaque chunk\\n\\nReponds JSON: {\\\"content_type\\\": \\\"narrative|technical|tabular|legal\\\", \\\"chunks\\\": [{\\\"content\\\": string, \\\"topic\\\": string, \\\"start_index\\\": number}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Type MIME: {{ $node['MIME Type Detector'].json.mime_type }}\\nNom fichier: {{ $node['MIME Type Detector'].json.objectKey }}\\n\\nContenu:\\n{{ $json.processed_content?.substring(0, 15000) || '' }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 4000,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "jsonBody": "={\n  \"model\": \"llama-70b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decoupe semantique adaptative.\\n\\n=== STRATEGIE SELON TYPE DE CONTENU ===\\n\\nNARRATIF (rapports, articles):\\n- Chunks de 300-500 mots\\n- Decoupe aux changements de sujet/ton\\n\\nTECHNIQUE (documentation, specs):\\n- Chunks de 200-400 mots\\n- Decoupe aux sections logiques\\n\\nTABULAIRE (donnees, listes):\\n- Garder les tableaux entiers si possible\\n- Sinon, grouper les lignes liees\\n\\nLEGAL (contrats, policies):\\n- Chunks plus longs (500-800 mots)\\n- Ne jamais couper une clause\\n\\n=== REGLES ===\\n1. Detecte le type de contenu\\n2. Applique la strategie appropriee\\n3. Chaque chunk doit etre coherent et auto-suffisant\\n4. Indique le topic de chaque chunk\\n\\nReponds JSON: {\\\"content_type\\\": \\\"narrative|technical|tabular|legal\\\", \\\"chunks\\\": [{\\\"content\\\": string, \\\"topic\\\": string, \\\"start_index\\\": number}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Type MIME: {{ $node['MIME Type Detector'].json.mime_type }}\\nNom fichier: {{ $node['MIME Type Detector'].json.objectKey }}\\n\\nContenu:\\n{{ $json.processed_content?.substring(0, 15000) || '' }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 4000,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
         "options": {
           "timeout": 60000
         }
@@ -197,8 +197,8 @@
       "waitBetweenTries": 2000,
       "credentials": {
         "httpHeaderAuth": {
-          "id": "BKZLSd99DbHp6QZ1",
-          "name": "OpenRouter API (Main)"
+          "id": "mStiDbYim2aZ0cMq",
+          "name": "LiteLLM Proxy Key"
         }
       }
     },
@@ -242,12 +242,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ 'meta-llama/llama-3.3-70b-instruct:free' || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere exactement 3 questions auxquelles ce paragraphe repond. Format JSON: {\\\"questions\\\": [\\\"Q1?\\\", \\\"Q2?\\\", \\\"Q3?\\\"]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json.chunks?.slice(0, 5).map(c => c.content.substring(0, 500))) }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "jsonBody": "={\n  \"model\": \"llama-70b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere exactement 3 questions auxquelles ce paragraphe repond. Format JSON: {\\\"questions\\\": [\\\"Q1?\\\", \\\"Q2?\\\", \\\"Q3?\\\"]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json.chunks?.slice(0, 5).map(c => c.content.substring(0, 500))) }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
         "options": {
           "timeout": 30000
         }
@@ -266,8 +266,8 @@
       "waitBetweenTries": 2000,
       "credentials": {
         "httpHeaderAuth": {
-          "id": "BKZLSd99DbHp6QZ1",
-          "name": "OpenRouter API (Main)"
+          "id": "mStiDbYim2aZ0cMq",
+          "name": "LiteLLM Proxy Key"
         }
       }
     },
@@ -630,7 +630,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -654,8 +654,8 @@
       "notes": "P01: Per-chunk contextual retrieval LLM call",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "BKZLSd99DbHp6QZ1",
-          "name": "OpenRouter API (Main)"
+          "id": "mStiDbYim2aZ0cMq",
+          "name": "LiteLLM Proxy Key"
         }
       }
     },
@@ -1004,9 +1004,9 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "c93837b3-79a1-47af-83a2-0cd7c462cd1c",
-  "activeVersionId": "c93837b3-79a1-47af-83a2-0cd7c462cd1c",
-  "versionCounter": 48,
+  "versionId": "5654a2e1-4fac-4bce-9287-28925565a86a",
+  "activeVersionId": "5654a2e1-4fac-4bce-9287-28925565a86a",
+  "versionCounter": 55,
   "triggerCount": 1,
   "shared": [
     {
@@ -1030,9 +1030,9 @@
   "tags": [],
   "parentFolder": null,
   "activeVersion": {
-    "updatedAt": "2026-03-03T11:29:41.447Z",
-    "createdAt": "2026-03-03T11:29:41.447Z",
-    "versionId": "c93837b3-79a1-47af-83a2-0cd7c462cd1c",
+    "updatedAt": "2026-03-03T18:14:07.914Z",
+    "createdAt": "2026-03-03T18:14:07.914Z",
+    "versionId": "5654a2e1-4fac-4bce-9287-28925565a86a",
     "workflowId": "nh1D4Up0wBZhuQbp",
     "nodes": [
       {
@@ -1201,12 +1201,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://openrouter.ai/api/v1/chat/completions",
+          "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ 'meta-llama/llama-3.3-70b-instruct:free' || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decoupe semantique adaptative.\\n\\n=== STRATEGIE SELON TYPE DE CONTENU ===\\n\\nNARRATIF (rapports, articles):\\n- Chunks de 300-500 mots\\n- Decoupe aux changements de sujet/ton\\n\\nTECHNIQUE (documentation, specs):\\n- Chunks de 200-400 mots\\n- Decoupe aux sections logiques\\n\\nTABULAIRE (donnees, listes):\\n- Garder les tableaux entiers si possible\\n- Sinon, grouper les lignes liees\\n\\nLEGAL (contrats, policies):\\n- Chunks plus longs (500-800 mots)\\n- Ne jamais couper une clause\\n\\n=== REGLES ===\\n1. Detecte le type de contenu\\n2. Applique la strategie appropriee\\n3. Chaque chunk doit etre coherent et auto-suffisant\\n4. Indique le topic de chaque chunk\\n\\nReponds JSON: {\\\"content_type\\\": \\\"narrative|technical|tabular|legal\\\", \\\"chunks\\\": [{\\\"content\\\": string, \\\"topic\\\": string, \\\"start_index\\\": number}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Type MIME: {{ $node['MIME Type Detector'].json.mime_type }}\\nNom fichier: {{ $node['MIME Type Detector'].json.objectKey }}\\n\\nContenu:\\n{{ $json.processed_content?.substring(0, 15000) || '' }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 4000,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+          "jsonBody": "={\n  \"model\": \"llama-70b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decoupe semantique adaptative.\\n\\n=== STRATEGIE SELON TYPE DE CONTENU ===\\n\\nNARRATIF (rapports, articles):\\n- Chunks de 300-500 mots\\n- Decoupe aux changements de sujet/ton\\n\\nTECHNIQUE (documentation, specs):\\n- Chunks de 200-400 mots\\n- Decoupe aux sections logiques\\n\\nTABULAIRE (donnees, listes):\\n- Garder les tableaux entiers si possible\\n- Sinon, grouper les lignes liees\\n\\nLEGAL (contrats, policies):\\n- Chunks plus longs (500-800 mots)\\n- Ne jamais couper une clause\\n\\n=== REGLES ===\\n1. Detecte le type de contenu\\n2. Applique la strategie appropriee\\n3. Chaque chunk doit etre coherent et auto-suffisant\\n4. Indique le topic de chaque chunk\\n\\nReponds JSON: {\\\"content_type\\\": \\\"narrative|technical|tabular|legal\\\", \\\"chunks\\\": [{\\\"content\\\": string, \\\"topic\\\": string, \\\"start_index\\\": number}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Type MIME: {{ $node['MIME Type Detector'].json.mime_type }}\\nNom fichier: {{ $node['MIME Type Detector'].json.objectKey }}\\n\\nContenu:\\n{{ $json.processed_content?.substring(0, 15000) || '' }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 4000,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
           "options": {
             "timeout": 60000
           }
@@ -1225,8 +1225,8 @@
         "waitBetweenTries": 2000,
         "credentials": {
           "httpHeaderAuth": {
-            "id": "BKZLSd99DbHp6QZ1",
-            "name": "OpenRouter API (Main)"
+            "id": "mStiDbYim2aZ0cMq",
+            "name": "LiteLLM Proxy Key"
           }
         }
       },
@@ -1270,12 +1270,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://openrouter.ai/api/v1/chat/completions",
+          "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"{{ 'meta-llama/llama-3.3-70b-instruct:free' || 'deepseek-chat' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere exactement 3 questions auxquelles ce paragraphe repond. Format JSON: {\\\"questions\\\": [\\\"Q1?\\\", \\\"Q2?\\\", \\\"Q3?\\\"]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json.chunks?.slice(0, 5).map(c => c.content.substring(0, 500))) }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+          "jsonBody": "={\n  \"model\": \"llama-70b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Genere exactement 3 questions auxquelles ce paragraphe repond. Format JSON: {\\\"questions\\\": [\\\"Q1?\\\", \\\"Q2?\\\", \\\"Q3?\\\"]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ JSON.stringify($json.chunks?.slice(0, 5).map(c => c.content.substring(0, 500))) }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
           "options": {
             "timeout": 30000
           }
@@ -1294,8 +1294,8 @@
         "waitBetweenTries": 2000,
         "credentials": {
           "httpHeaderAuth": {
-            "id": "BKZLSd99DbHp6QZ1",
-            "name": "OpenRouter API (Main)"
+            "id": "mStiDbYim2aZ0cMq",
+            "name": "LiteLLM Proxy Key"
           }
         }
       },
@@ -1658,7 +1658,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://openrouter.ai/api/v1/chat/completions",
+          "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
@@ -1682,8 +1682,8 @@
         "notes": "P01: Per-chunk contextual retrieval LLM call",
         "credentials": {
           "httpHeaderAuth": {
-            "id": "BKZLSd99DbHp6QZ1",
-            "name": "OpenRouter API (Main)"
+            "id": "mStiDbYim2aZ0cMq",
+            "name": "LiteLLM Proxy Key"
           }
         }
       },
@@ -2029,10 +2029,10 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-03T11:29:47.469Z",
-        "id": 64,
+        "createdAt": "2026-03-03T18:14:09.453Z",
+        "id": 98,
         "workflowId": "nh1D4Up0wBZhuQbp",
-        "versionId": "c93837b3-79a1-47af-83a2-0cd7c462cd1c",
+        "versionId": "5654a2e1-4fac-4bce-9287-28925565a86a",
         "event": "activated",
         "userId": "bd8ccdd2-cb2f-467e-87d8-0e3012b9a4a9"
       }
@@ -2051,5 +2051,5 @@
     "workflow:unpublish",
     "workflow:update"
   ],
-  "checksum": "c0a18c4a13068194579eee845a12f28b05688d11668feed7dd78bbc700045028"
+  "checksum": "aabad21c6de1d26ba55d062d7d2ce961afa2461c56796c31314dec8c45dbc98c"
 }

@@ -1,121 +1,115 @@
 # Credentials & Cles API
 
-> Last updated: 2026-02-19T15:30:00+01:00
+> Last updated: 2026-03-03T18:15:00+00:00
 
 > **Ce fichier DOIT etre mis a jour** apres chaque rotation de cle ou changement de service.
-> Derniere mise a jour : 2026-02-18 (audit credentials session 24, alignement .env.local/.mcp.json, HF Space)
 
 ---
 
-## Configuration Docker n8n
+## n8n — HF Space #1
 
 ### Acces
-- **Host** : `http://34.136.180.66:5678`
-- **UI** : `admin@mon-ipad.com` / `SotaRAG2026!` (n8n 2.7.4 — champ `emailOrLdapLoginId`)
-- **API Key** : JWT Docker (dans `.env.local`, pas dans le repo)
-- **MCP natif** : `http://34.136.180.66:5678/mcp-server/http` (token MCP separe)
-- **PostgreSQL local** : localhost:5432 (n8n / n8n_password_secure_2026) — usage interne n8n
-- **Redis local** : localhost:6379 (sans password) — usage interne bull queues
+- **Host** : `https://lbjlincoln-nomos-rag-engine.hf.space`
+- **Auth** : Cookie-based login (NOT API key — JWT invalidates on HF rebuild)
+- **Login** : `ci@nomos.ai` / `CI-Nomos-2026!` (field: `emailOrLdapLoginId`)
+- **Helper** : `python3 scripts/n8n-api.py list|get|deploy|activate`
+- **DB** : SQLite (ephemeral per space, for workflow storage only)
 
-### Credentials n8n Docker (2 creees le 2026-02-15)
-| Credential | Type | ID n8n | Details |
-|------------|------|--------|---------|
-| Supabase Postgres (Pooler) | postgres | `USU8ngVzsUbED3mn` | host: aws-1-eu-west-1.pooler.supabase.com, port: 6543, user: postgres.ayqviqmxifzmhphiqfmj |
-| Redis Upstash | redis | `CWih07lwPxfwFeY6` | host: dynamic-frog-47846.upstash.io, port: 6379, TLS: true |
+> **IMPORTANT**: VM n8n was removed Session 42. All n8n runs on HF Space #1.
 
-### Variables d'environnement
-Les cles API sont configurees dans :
-1. **Docker n8n** : env vars du container (source de verite pour les workflows)
-2. **`.env.local`** : pour les scripts Python locaux (gitignore)
-3. **`.claude/settings.json`** : pour les MCP servers (gitignore les vrais secrets)
+### n8n Credentials (HF Space)
+| Credential | Type | ID | Usage |
+|------------|------|-----|-------|
+| OpenRouter (Standard) | httpHeaderAuth | `VTFur78v4L4wWEk9` | Standard RAG pipeline |
+| OpenRouter (Graph) | httpHeaderAuth | `8zKa8MqNEHsbVGKp` | Graph RAG pipeline |
+| OpenRouter (Quantitative) | httpHeaderAuth | `lGI3u8XGRIwaFq1e` | Quantitative pipeline |
+| OpenRouter (Orchestrator) | httpHeaderAuth | `S7i3kAtU5ZqIVCYS` | Orchestrator pipeline |
+| LiteLLM Proxy Key | httpHeaderAuth | `mStiDbYim2aZ0cMq` | Ingestion + Enrichment (auto key rotation) |
+| Jina API Key | httpHeaderAuth | `I68x3RvlHJZyQuR6` | Embeddings (key 2 — key 1 exhausted) |
+| Supabase Postgres | postgres | `Vrvh0ukcROAk9dyX` | SQL queries |
+| Pinecone API Key | httpHeaderAuth | `US6Cxlgs8LfyZWss` | Vector search |
 
-> **IMPORTANT** : Les cles API ne doivent PAS etre dans le repo GitHub.
-> Utiliser `.env.local` (gitignore) pour les scripts locaux.
+---
+
+## LiteLLM Proxy — HF Space #7
+
+### Acces
+- **Host** : `https://lbjlincoln-nomos-rag-engine-7.hf.space`
+- **Master Key** : `sk-litellm-nomos-2026`
+- **Persistence** : Supabase Postgres (DATABASE_URL env var)
+- **Config** : `hf-space/litellm-proxy/litellm-config.yaml`
+
+### Key Pool (10 keys, auto-rotation)
+| Provider | Keys | Model Names |
+|----------|------|-------------|
+| OpenRouter (5 keys) | OPENROUTER_KEY_STANDARD, _GRAPH, _QUANTITATIVE, _ORCHESTRATOR, OPENROUTER_API_KEY | llama-70b, trinity, gemma-27b |
+| Groq (5 keys) | GROQ_API_KEY through GROQ_API_KEY_5 | llama-70b-groq (also fallback for llama-70b) |
+| Jina (2 keys) | JINA_API_KEY, JINA_API_KEY_2 | jina-embed, jina-rerank |
 
 ---
 
 ## Services configures
 
-### n8n Docker
-- **Host** : `http://34.136.180.66:5678`
-- **API Key** : JWT Docker (dans .env.local)
-- **Variables** : `$env.VAR_NAME` (pas `$vars` — free tier)
-
 ### Pinecone
 - **Index principal** : `sota-rag-jina-1024` (Jina embeddings-v3, 1024-dim)
-- **Index backup** : `sota-rag-cohere-1024` (Cohere embed-english-v3.0, 1024-dim)
-- **Index Phase 2** : `sota-rag-phase2-graph` (e5-large, 1024-dim)
-- **Host** : Voir .env.local
-- **Plan** : Free (serverless)
+- **Index Phase 2 Graph** : `sota-rag-phase2-graph` (e5-large, 1024-dim)
+- **Vectors** : ~19,000+ (default namespace: ~9,500+)
+- **Plan** : Free (serverless, 100K max)
 
 ### Supabase
 - **Project ref** : `ayqviqmxifzmhphiqfmj`
 - **URL** : `https://ayqviqmxifzmhphiqfmj.supabase.co`
+- **Pooler** : `aws-1-eu-west-1.pooler.supabase.com:6543`
 - **Plan** : Free tier
+- **Usage** : Quantitative data, LiteLLM persistence, financial tables
 
-### Neo4j
-- **URI** : `bolt://localhost:7687` (Docker VM)
+### Neo4j Aura
 - **API** : `https://38c949a2.databases.neo4j.io/db/neo4j/query/v2`
+- **Auth** : Basic auth (credentials in .env.local)
+- **Stats** : 19,788 nodes / 76,717 relationships
+- **Plan** : Free tier (200K nodes / 400K rels max)
 
-### OpenRouter
-- **Cle** : Dans .env.local et Docker env
-- **Rate limit** : 20 req/min (avec credit)
+### OpenRouter (6 keys across 3 accounts)
+- Per-pipeline keys: `OPENROUTER_KEY_STANDARD`, `_GRAPH`, `_QUANTITATIVE`, `_ORCHESTRATOR`
+- Generic: `OPENROUTER_API_KEY`
+- Rate limit: 20 req/min per key
+- Models: `meta-llama/llama-3.3-70b-instruct:free`, `arcee-ai/trinity-large-preview:free`, `google/gemma-3-27b-it:free`
 
-### Jina AI (PRIMARY — migre le 2026-02-16)
+### Groq (5 keys)
+- Keys: `GROQ_API_KEY` through `GROQ_API_KEY_5`
+- Rate limit: 30 req/min per key
+- Model: `llama-3.3-70b-versatile`
+- Used via: LiteLLM proxy (auto-rotation), OpenClaw gateway
+
+### Jina AI
 - **Embeddings** : `jina-embeddings-v3` (1024-dim)
 - **Reranker** : `jina-reranker-v2-base-multilingual`
-- **Limite** : 10M tokens/mois (gratuit)
-- **Usage** : Indexing + query Pinecone + reranking
+- **Keys** : 2 (key 1 EXHAUSTED — "Insufficient account balance", key 2 ACTIVE)
+- **Limite** : 1M tokens/month, 100K tokens/min
+- **Usage** : Pinecone ingestion, Standard pipeline embeddings, reranking
 
-### Cohere (BACKUP)
-- **Embeddings** : `embed-english-v3.0` (1024-dim) — index backup conserve
-- **Reranker** : `rerank-multilingual-v3.0` — plus utilise
-- **Note** : Trial epuise (429), 2 cles mortes. Index Cohere conserve comme backup uniquement.
+### Cohere (BACKUP — trial exhausted)
+- Trial quasi-epuise (429 errors)
+- Index backup conserve: `sota-rag-cohere-1024`
+
+### Vercel
+- **Token** : `vcp_6cSoud...` in .env.local (renewed Session 67)
+- **Team** : `team_UNwVypB5JKvFoiY57skYS6ZA`
+- **User** : `lbjlincoln`
 
 ### HuggingFace
-- **Token** : Dans .env.local et .mcp.json (huggingface MCP)
-- **HF Space** : `https://huggingface.co/spaces/LBJLincoln/nomos-rag-engine` (private, Docker, cpu-basic)
-- **URL n8n HF** : `https://lbjlincoln-nomos-rag-engine.hf.space` (deploiement en cours)
-
-### Audit credentials session 24
-| Source | Credentials | Alignees |
-|--------|------------|----------|
-| `.env.local` | 18 vars (source de verite) | Reference |
-| `.mcp.json` | 7 MCP servers | Alignees (OpenRouter + Cohere fixes) |
-| Git remotes | 7 remotes avec `ghp_` token | OK |
-| `.gitignore` | .env.local, .mcp.json, .claude/ | Proteges |
+- **Token** : In .env.local
+- **Space #1** : `https://huggingface.co/spaces/LBJLincoln/nomos-rag-engine` (private, Docker, cpu-basic)
+- **Space #7** : LiteLLM proxy
 
 ---
 
-## Workflow IDs Docker (13 workflows actifs)
+## Variables d'environnement
 
-### Pipelines RAG (4)
-| Pipeline | Docker ID | Webhook |
-|----------|-----------|---------|
-| Standard RAG V3.4 | `TmgyRP20N4JFd9CB` | `/webhook/rag-multi-index-v3` |
-| Graph RAG V3.3 | `6257AfT1l4FMC6lY` | `/webhook/ff622742-6d71-4e91-af71-b5c666088717` |
-| Quantitative V2.0 | `e465W7V9Q8uK6zJE` | `/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9` |
-| Orchestrator V10.1 | `aGsYnJY9nNCaTM82` | `/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0` |
+Les cles API sont configurees dans :
+1. **HF Space env vars** : Source de verite pour n8n workflows (set via HF API)
+2. **`.env.local`** : Pour les scripts Python locaux (gitignore)
+3. **LiteLLM env vars** : Set via HF Space secrets API for Space #7
 
-### Workflows Support (9)
-| Workflow | Docker ID |
-|----------|-----------|
-| Ingestion V3.1 | `15sUKy5lGL4rYW0L` |
-| Enrichissement V3.1 | `9V2UTVRbf4OJXPto` |
-| Feedback V3.1 | `F70g14jMxIGCZnFz` |
-| Benchmark V3.0 | `LKZO1QQY9jvBltP0` |
-| Dataset Ingestion | `YaHS9rVb1osRUJpE` |
-| Monitoring & Alerting | `tLNh3wTty7sEprLj` |
-| Orchestrator Tester | `m9jaYzWMSVbBFeSf` |
-| RAG Batch Tester | `y2FUkI5SZfau67dN` |
-| SQL Executor | `22k9541l9mHENlLD` |
-
-> Mapping complet : `n8n/docker-workflow-ids.json`
-
-### Trace Cloud (OBSOLETE)
-| Pipeline | Cloud ID | Execution reussie |
-|----------|----------|-------------------|
-| Standard | `IgQeo5svGlIAPkBc` | #19404 |
-| Graph | `95x2BBAbJlLWZtWEJn6rb` | #19305 |
-| Quantitative | `E19NZG9WfM7FNsxr` | #19326 |
-| Orchestrator | `ALd4gOEqiKL5KR1p` | #19323 |
+> **IMPORTANT** : Les cles API ne doivent PAS etre dans le repo GitHub.
+> Pre-push check : `git diff --cached | grep -iE 'sk-or-|pcsk_|jV_zGdx|sbp_|hf_|jina_|ghp_'`

@@ -1,45 +1,59 @@
 # n8n API Endpoints & Reference Complete
 
-> Last updated: 2026-02-25T11:30:00+00:00
+> Last updated: 2026-03-03T18:15:00+00:00
 
 > **Ce fichier est la reference unique** pour les scripts Python de test.
 > Les scripts doivent s'y referer pour formater les requetes et utiliser les bons points d'entree.
-> Derniere mise a jour : 2026-02-25 (10 HF Space cluster deployed)
 
 ---
 
-## Configuration — 10 HF Space Cluster (deployed 2026-02-25)
+## Configuration — HF Space #1 (active)
 
 ```bash
-# 10 HF Spaces deployed for distributed load
-# Space 1-10 URLs in .env.local
-source .env.local  # charge N8N_HOST, N8N_API_KEY, N8N_HOST_1 through N8N_HOST_10
+# Single active HF Space (Space #1)
+N8N_HOST=https://lbjlincoln-nomos-rag-engine.hf.space
+# Auth: Cookie-based (scripts/n8n-api.py helper)
+# n8n: ci@nomos.ai / CI-Nomos-2026!
 ```
 
-### 10 HF Space Endpoints
-| Space | URL | Account | Status |
-|-------|-----|---------|--------|
-| Space 1 | https://lbjlincoln-nomos-rag-engine.hf.space | LBJLincoln | ACTIVE |
-| Space 2 | https://lbjlincoln26-nomos-rag-engine-2.hf.space | LBJLincoln26 | ACTIVE |
-| Space 3 | https://lbjlincoln-nomos-rag-engine-3.hf.space | LBJLincoln | ACTIVE |
-| Space 4 | https://lbjlincoln26-nomos-rag-engine-4.hf.space | LBJLincoln26 | ACTIVE |
-| Space 5 | https://lbjlincoln-nomos-rag-engine-5.hf.space | LBJLincoln | ACTIVE |
-| Space 6 | https://lbjlincoln26-nomos-rag-engine-6.hf.space | LBJLincoln26 | ACTIVE |
-| Space 7 | https://lbjlincoln-nomos-rag-engine-7.hf.space | LBJLincoln | ACTIVE |
-| Space 8 | https://lbjlincoln26-nomos-rag-engine-8.hf.space | LBJLincoln26 | ACTIVE |
-| Space 9 | https://lbjlincoln-nomos-rag-engine-9.hf.space | LBJLincoln | ACTIVE |
-| Space 10 | https://lbjlincoln26-nomos-rag-engine-10.hf.space | LBJLincoln26 | ACTIVE |
+### HF Space Endpoints
+| Space | URL | Account | Role | Status |
+|-------|-----|---------|------|--------|
+| Space 1 | https://lbjlincoln-nomos-rag-engine.hf.space | LBJLincoln | n8n (RAG pipelines) | **ACTIVE** |
+| Space 7 | https://lbjlincoln-nomos-rag-engine-7.hf.space | LBJLincoln | LiteLLM Proxy (key rotation) | **ACTIVE** |
+| Spaces 2-6, 8-10 | Various | Mixed | INACTIVE | **NOT DEPLOYED** |
 
-> **IMPORTANT** : Load balancing across 10 spaces. Use round-robin or least-loaded strategy.
+> **NOTE** : Only Space #1 (n8n) and Space #7 (LiteLLM) are active. Other spaces were planned but not deployed.
+> SQLite is used for n8n ephemeral workflow storage per space. All shared state uses Supabase Postgres.
+
+---
+
+## LiteLLM Proxy (Space #7)
+
+```bash
+LITELLM_URL=https://lbjlincoln-nomos-rag-engine-7.hf.space
+LITELLM_KEY=sk-litellm-nomos-2026
+
+# Health check
+curl -s "$LITELLM_URL/health/liveliness"
+
+# Chat completion (auto key rotation: 5 OpenRouter + 5 Groq)
+curl -s -X POST "$LITELLM_URL/v1/chat/completions" \
+  -H "Authorization: Bearer $LITELLM_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"llama-70b","messages":[{"role":"user","content":"test"}]}'
+
+# Available models: llama-70b, llama-70b-groq, trinity, gemma-27b, jina-embed, jina-rerank
+```
 
 ---
 
 ## Format de Requete pour Scripts Python (REFERENCE)
 
-### Format de body webhook (VERIFIE FONCTIONNEL — Session 25)
+### Format de body webhook (VERIFIE FONCTIONNEL — Session 69)
 
 ```python
-# Format qui FONCTIONNE — verifie le 2026-02-19 (Session 25)
+# Format qui FONCTIONNE — verifie le 2026-03-03
 # ATTENTION : le field name est "query" (PAS "question")
 payload = {"query": "Your question here"}
 # Content-Type: application/json
@@ -49,221 +63,160 @@ payload = {"query": "Your question here"}
 > **PIEGE RECURRENT** : Utiliser `question` au lieu de `query` provoque une VALIDATION_ERROR.
 > Toujours utiliser `query` pour les 4 pipelines.
 
-### Timestamps — Fuseau horaire Paris (CET/CEST)
-
-| Champ | Format | Exemple |
-|-------|--------|---------|
-| `startedAt` (n8n API) | ISO 8601 UTC | `2026-02-12T10:19:49.123Z` |
-| Conversion Paris (CET = UTC+1) | +1h | `2026-02-12T11:19:49.123 CET` |
-| Conversion Paris (CEST = UTC+2) | +2h | (ete uniquement) |
-| Format pour logs | ISO local | `2026-02-12T11-19-49` |
-
 ### Pattern Python pour appeler un webhook
 
 ```python
 import urllib.request, json
-from datetime import datetime, timezone, timedelta
 
-N8N_HOST = "http://34.136.180.66:5678"
-PARIS_TZ = timezone(timedelta(hours=1))  # CET (hiver), +2 pour CEST (ete)
+N8N_HOST = "https://lbjlincoln-nomos-rag-engine.hf.space"
 
 def call_webhook(path, question, timeout=120):
-    """Appel webhook n8n avec timestamp Paris."""
+    """Appel webhook n8n."""
     url = f"{N8N_HOST}{path}"
     payload = json.dumps({"query": question}).encode()
     req = urllib.request.Request(url, data=payload, method="POST",
         headers={"Content-Type": "application/json"})
-    timestamp_paris = datetime.now(PARIS_TZ).strftime("%Y-%m-%dT%H:%M:%S")
     with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read()), timestamp_paris
+        return json.loads(resp.read())
 ```
 
 ---
 
-## REST API Endpoints (tous testés et fonctionnels)
+## REST API — Cookie Auth (Session 68 discovery)
 
-### Workflows
+> **IMPORTANT**: n8n on HF Space does NOT support API key auth (JWT invalidates on rebuild).
+> Use cookie-based auth via `scripts/n8n-api.py` helper.
+
+### Helper script (recommended)
 
 ```bash
-# Lister tous les workflows
-curl -s "$N8N_HOST/api/v1/workflows" -H "X-N8N-API-KEY: $N8N_API_KEY" | python3 -m json.tool
-
-# Récupérer un workflow spécifique
-curl -s "$N8N_HOST/api/v1/workflows/<WF_ID>" -H "X-N8N-API-KEY: $N8N_API_KEY"
-
-# Mettre à jour un workflow (PUT)
-curl -s -X PUT "$N8N_HOST/api/v1/workflows/<WF_ID>" \
-  -H "X-N8N-API-KEY: $N8N_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d @workflow.json
-
-# Activer un workflow
-curl -s -X POST "$N8N_HOST/api/v1/workflows/<WF_ID>/activate" \
-  -H "X-N8N-API-KEY: $N8N_API_KEY"
-
-# Désactiver un workflow
-curl -s -X POST "$N8N_HOST/api/v1/workflows/<WF_ID>/deactivate" \
-  -H "X-N8N-API-KEY: $N8N_API_KEY"
+source .env.local
+python3 scripts/n8n-api.py list                          # List workflows
+python3 scripts/n8n-api.py get <WF_ID>                   # Export workflow JSON
+python3 scripts/n8n-api.py deploy n8n/live/workflow.json  # Import workflow
+python3 scripts/n8n-api.py activate <WF_ID>              # Activate webhook
+python3 scripts/n8n-api.py exec <WF_ID>                  # Trigger execution
 ```
 
-### Exécutions
+### Raw REST API (cookie auth)
 
 ```bash
-# Lister les dernières exécutions
-curl -s "$N8N_HOST/api/v1/executions?limit=10" -H "X-N8N-API-KEY: $N8N_API_KEY"
-
-# Récupérer une exécution avec données complètes (CRITIQUE pour l'analyse)
-curl -s "$N8N_HOST/api/v1/executions/<EXEC_ID>?includeData=true" \
-  -H "X-N8N-API-KEY: $N8N_API_KEY"
-
-# Filtrer par workflow
-curl -s "$N8N_HOST/api/v1/executions?workflowId=<WF_ID>&limit=5" \
-  -H "X-N8N-API-KEY: $N8N_API_KEY"
-
-# Filtrer par status
-curl -s "$N8N_HOST/api/v1/executions?status=error&limit=10" \
-  -H "X-N8N-API-KEY: $N8N_API_KEY"
-```
-
-### Variables
-
-```bash
-# Lister les variables
-curl -s "$N8N_HOST/api/v1/variables" -H "X-N8N-API-KEY: $N8N_API_KEY"
-
-# Créer/mettre à jour une variable
-curl -s -X POST "$N8N_HOST/api/v1/variables" \
-  -H "X-N8N-API-KEY: $N8N_API_KEY" \
+# 1. Login (get session cookie)
+curl -s -c /tmp/n8n-cookies.txt -X POST "$N8N_HOST/rest/login" \
   -H "Content-Type: application/json" \
-  -d '{"key": "EMBEDDING_MODEL", "value": "jina-embeddings-v3"}'
+  -d '{"emailOrLdapLoginId":"ci@nomos.ai","password":"CI-Nomos-2026!"}'
+
+# 2. List workflows
+curl -s -b /tmp/n8n-cookies.txt "$N8N_HOST/rest/workflows"
+
+# 3. Get workflow
+curl -s -b /tmp/n8n-cookies.txt "$N8N_HOST/rest/workflows/<WF_ID>"
+
+# 4. Update workflow (PATCH, not PUT)
+curl -s -b /tmp/n8n-cookies.txt -X PATCH "$N8N_HOST/rest/workflows/<WF_ID>" \
+  -H "Content-Type: application/json" \
+  -d '{"nodes": [...], "connections": {...}}'
+
+# 5. Activate (REQUIRED for webhooks — needs versionId!)
+curl -s -b /tmp/n8n-cookies.txt -X POST "$N8N_HOST/rest/workflows/<WF_ID>/activate" \
+  -H "Content-Type: application/json" \
+  -d '{"versionId": "<VERSION_ID_FROM_PATCH_RESPONSE>"}'
+
+# 6. Get executions
+curl -s -b /tmp/n8n-cookies.txt "$N8N_HOST/rest/executions?workflowId=<WF_ID>&limit=5"
 ```
 
 ---
 
-## Webhooks (endpoints de test)
+## Webhooks (endpoints de test — verified 2026-03-03)
 
 ```bash
-# Standard RAG
+N8N_HOST=https://lbjlincoln-nomos-rag-engine.hf.space
+
+# Standard RAG (working — 85%+ accuracy)
 curl -s -X POST "$N8N_HOST/webhook/rag-multi-index-v3" \
   -H "Content-Type: application/json" \
   -d '{"query": "What is the capital of Japan?"}'
 
-# Graph RAG
+# Graph RAG (working — OTEL Init fixed Session 69)
 curl -s -X POST "$N8N_HOST/webhook/ff622742-6d71-4e91-af71-b5c666088717" \
   -H "Content-Type: application/json" \
-  -d '{"query": "Who founded Microsoft?"}'
+  -d '{"query": "Who founded Microsoft?", "topK": 100}'
 
-# Quantitative RAG
+# Quantitative RAG (working — 92% accuracy)
 curl -s -X POST "$N8N_HOST/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9" \
   -H "Content-Type: application/json" \
   -d '{"query": "What was Apple revenue in 2023?"}'
 
-# Orchestrator (route vers les 3)
+# Orchestrator (BROKEN — empty body issue, not fixed yet)
 curl -s -X POST "$N8N_HOST/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0" \
   -H "Content-Type: application/json" \
   -d '{"query": "What is the capital of Japan?"}'
+
+# Ingestion V4.0 (working — async, routes through LiteLLM)
+curl -s -X POST "$N8N_HOST/webhook/rag-v6-ingestion" \
+  -H "Content-Type: application/json" \
+  -d '{"filename":"test.txt","documentId":"test-001","content":"Document text here.","source":"manual"}'
+
+# Enrichment V4.0 (working — async, routes through LiteLLM)
+curl -s -X POST "$N8N_HOST/webhook/rag-v6-enrichment" \
+  -H "Content-Type: application/json" \
+  -d '{"documentId":"test-001","content":"Text to enrich.","entities":["entity1"]}'
 ```
 
 ---
 
-## Pattern Python pour modifier un nœud
+## Workflow IDs — HF Space (verified 2026-03-03)
 
-```python
-import urllib.request, json, os
+### Pipelines RAG (4)
+| Pipeline | HF Space ID | Webhook | Status |
+|----------|-------------|---------|--------|
+| Standard RAG V3.4 | `TmgyRP20N4JFd9CB` | `/webhook/rag-multi-index-v3` | **WORKING** |
+| Graph RAG V3.3 | `6257AfT1l4FMC6lY` | `/webhook/ff622742-...` | **WORKING** |
+| Quantitative V2.0 | `E19NZG9WfM7FNsxr` | `/webhook/3e0f8010-...` | **WORKING** |
+| Orchestrator V10.1 | `ALd4gOEqiKL5KR1p` | `/webhook/92217bb8-...` | **BROKEN** |
 
-N8N_HOST = os.environ["N8N_HOST"]
-API_KEY = os.environ["N8N_API_KEY"]
+### Workflows Support
+| Workflow | HF Space ID | Status |
+|----------|-------------|--------|
+| Ingestion V4.0 | `nh1D4Up0wBZhuQbp` | **WORKING** (LiteLLM routed) |
+| Enrichment V4.0 | `ORa01sX4xI0iRCJ8` | **WORKING** (LiteLLM routed) |
+| Benchmark V3.0 | `qUm28nhq62SxVWHe` | Active |
+| Dashboard Status API | `7866297137a444618` | Active |
+| Dataset Ingestion | `L8irkzSrfLlgt2Bt` | Active |
+| SQL Executor | `3O2xcKuloLnZB5dH` | Active |
 
-def n8n_api(method, path, data=None):
-    url = f"{N8N_HOST}{path}"
-    body = json.dumps(data).encode() if data else None
-    req = urllib.request.Request(url, data=body, method=method,
-        headers={"X-N8N-API-KEY": API_KEY, "Content-Type": "application/json"})
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read())
-
-# 1. Télécharger le workflow
-wf = n8n_api("GET", f"/api/v1/workflows/{WF_ID}")
-
-# 2. Trouver et modifier le nœud cible
-for node in wf["nodes"]:
-    if node["name"] == "Target Node Name":
-        node["parameters"]["jsCode"] = NEW_CODE
-        break
-
-# 3. Nettoyer le payload (n8n rejette certains champs en PUT)
-ALLOWED_SETTINGS = {"executionOrder", "callerPolicy", "saveManualExecutions", "saveExecutionProgress"}
-clean = {k: v for k, v in wf.items() if k not in ("id", "createdAt", "updatedAt", "active")}
-if "settings" in clean:
-    clean["settings"] = {k: v for k, v in clean["settings"].items() if k in ALLOWED_SETTINGS}
-
-# 4. Déployer
-n8n_api("POST", f"/api/v1/workflows/{WF_ID}/deactivate")
-n8n_api("PUT", f"/api/v1/workflows/{WF_ID}", clean)
-n8n_api("POST", f"/api/v1/workflows/{WF_ID}/activate")
-```
+### n8n Credentials on HF Space
+| Credential | ID | Usage |
+|------------|-----|-------|
+| OpenRouter (Standard) | `VTFur78v4L4wWEk9` | Standard pipeline |
+| OpenRouter (Graph) | `8zKa8MqNEHsbVGKp` | Graph pipeline |
+| OpenRouter (Quantitative) | `lGI3u8XGRIwaFq1e` | Quant pipeline |
+| OpenRouter (Orchestrator) | `S7i3kAtU5ZqIVCYS` | Orchestrator pipeline |
+| LiteLLM Proxy Key | `mStiDbYim2aZ0cMq` | Ingestion + Enrichment |
+| Jina API Key | `I68x3RvlHJZyQuR6` | Embeddings (key 2 active) |
+| Supabase Postgres | `Vrvh0ukcROAk9dyX` | Database queries |
+| Pinecone API Key | `US6Cxlgs8LfyZWss` | Vector search |
 
 ---
 
-## Pièges connus
+## Pieges connus (updated Session 69)
 
-| Piège | Solution |
+| Piege | Solution |
 |-------|----------|
-| PUT workflow rejette `id`, `createdAt`, `updatedAt` | Filtrer ces champs du payload |
-| PUT workflow rejette certains `settings` | Ne garder que `ALLOWED_SETTINGS` |
-| `active` dans le body cause conflit | Le retirer du payload PUT |
-| Timeout webhook (30s par défaut) | Configurer `responseTimeoutMs` dans le nœud Webhook |
-| Variables n8n pas visibles dans le code | Utiliser `$vars.NOM_VARIABLE` dans les expressions |
-| Exécution sans données | Ajouter `?includeData=true` au GET execution |
-| `$env.X` bloqué en Docker self-hosted | Remplacer par valeurs hardcodées dans les nœuds |
-| Credentials n8n inexistantes après migration | **RESOLU 15-fev** : Postgres `USU8ngVzsUbED3mn` + Redis `CWih07lwPxfwFeY6` creees, 12/13 workflows remappes |
-| `require('crypto')` bloqué dans Code nodes | Utiliser fonction hash custom (bitwise) |
-| Pinecone dim 1024 (Jina) vs 1536 (ancien) | Utiliser index `sota-rag-jina-1024` (primary) |
-| Jina embedding JSON trailing comma | Verifier pas de trailing comma dans body JSON apres migration |
-| Tests parallèles → 503 n8n overload | Toujours tester les pipelines séquentiellement |
-| Free models OpenRouter changent souvent | Vérifier disponibilité avant de fixer le modèle |
-| Neo4j URL `bolt://` | `skip_graph=true` silencieux — Graph renvoie réponse vide sans erreur | Changer URL → `https://...neo4j.io/db/neo4j/query/v2` |
-| Workflow live vide (0 nodes) | HTTP 500 immédiat sur tout appel webhook | Re-pousser depuis `n8n/live/` via PUT API |
-| PUT 400 "additional properties" | `isArchived`, `versionCounter` rejetés par l'API | Payload minimal : `name` + `nodes` + `connections` + `settings` + `staticData` |
-| `N8N_RUNNERS_ENABLED` (CI) | `$getWorkflowStaticData` ne persiste pas entre runs | Ajouter `N8N_RUNNERS_ENABLED=false` dans docker-compose |
+| `"query"` not `"question"` | Webhook body MUST use `query` field |
+| API key auth doesn't work on HF Space | Use cookie auth (POST /rest/login) |
+| PATCH needs versionId for reactivation | Get versionId from PATCH response → POST /activate |
+| Disabled Code nodes pass through raw webhook data | Re-enable or fix downstream references |
+| `{{ 'model' || 'fallback' }}` in jsonBody | n8n expressions not evaluated in JSON strings — hardcode |
+| `$items('DisabledNode')` crashes | Wrap in try/catch for disabled/optional nodes |
+| Jina rate limit 100K tokens/min | Pause background ingestion before testing pipelines |
+| Free models OpenRouter changent souvent | Use LiteLLM proxy for automatic fallback to Groq |
+| Execution data compressed (string table format) | parsed[0]=structure, parsed[1:]=strings, digit refs are 1-indexed |
 
 ---
 
-## Workflow IDs — Docker self-hosted (verifie 2026-02-13)
-
-### IDs actifs (n8n Docker sur 34.136.180.66:5678)
-| Pipeline | Workflow ID | Verifie API |
-|----------|-------------|-------------|
-| Standard | `TmgyRP20N4JFd9CB` | Oui (2026-02-14) |
-| Graph | `6257AfT1l4FMC6lY` | Oui (2026-02-14) |
-| Quantitative | `e465W7V9Q8uK6zJE` | Oui (2026-02-14) |
-| Orchestrator | `aGsYnJY9nNCaTM82` | Oui (2026-02-14) |
-
-### IDs anciens (n8n Cloud — OBSOLETE, ne plus utiliser)
-| Pipeline | Workflow ID | Notes |
-|----------|-------------|-------|
-| Standard | `IgQeo5svGlIAPkBc` / `LnTqRX4LZlI009Ks-3Jnp` | Cloud, obsolete |
-| Graph | `95x2BBAbJlLWZtWEJn6rb` | Cloud, obsolete |
-| Quantitative | `E19NZG9WfM7FNsxr` | Cloud, obsolete |
-| Orchestrator | `ALd4gOEqiKL5KR1p` | Cloud, obsolete |
-
-> **IMPORTANT** : Toujours utiliser les IDs Docker (premiere table).
-> Mapping complet des 13 workflows : `n8n/docker-workflow-ids.json`.
-
----
-
-## Webhook Paths (VERIFIE FONCTIONNEL)
-
-| Pipeline | Path | Dernier test OK | Timestamp Paris |
-|----------|------|-----------------|-----------------|
-| Standard | `/webhook/rag-multi-index-v3` | 2026-02-16 | 19:19 CET |
-| Graph | `/webhook/ff622742-6d71-4e91-af71-b5c666088717` | 2026-02-16 | 19:21 CET |
-| Quantitative | `/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9` | 2026-02-16 | 19:18 CET |
-| Orchestrator | `/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0` | 2026-02-16 | — |
-
----
-
-## Chemins des scripts de test (POST-REORGANISATION)
+## Scripts de test
 
 | Script | Chemin | Usage |
 |--------|--------|-------|
@@ -271,6 +224,7 @@ n8n_api("POST", f"/api/v1/workflows/{WF_ID}/activate")
 | Iterative eval | `eval/iterative-eval.py` | Progressif 5→10→50 |
 | Parallel eval (200q) | `eval/run-eval-parallel.py` | Full eval |
 | Node analyzer | `eval/node-analyzer.py` | Analyse node-par-node |
+| N8n API helper | `scripts/n8n-api.py` | REST API operations |
 | N8n execution analyzer | `scripts/analyze_n8n_executions.py` | Analyse brute complete |
 | Status generator | `eval/generate_status.py` | Regenere status.json |
-| Phase gates | `eval/phase_gates.py` | Verification gates |
+| Phase 3 ingestion | `scripts/ingest-phase3-pinecone.py` | Pinecone context ingestion |
