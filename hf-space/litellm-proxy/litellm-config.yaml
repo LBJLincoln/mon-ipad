@@ -1,103 +1,21 @@
-# LiteLLM Proxy — Key Pooling for Multi-RAG
-# Pools 7 OpenRouter keys + Groq across all n8n Spaces
+# LiteLLM Proxy — Key Pooling & Model Rotation for Multi-RAG
+# Pools 5 OpenRouter keys + 5 Groq keys across all pipelines
 # Deployed on HF Space: LBJLincoln/nomos-rag-engine-7
+# Persistence: Supabase Postgres (cross-session state)
+#
+# ENV VARS required:
+#   OPENROUTER_KEY_STANDARD, OPENROUTER_KEY_GRAPH, OPENROUTER_KEY_QUANTITATIVE,
+#   OPENROUTER_KEY_ORCHESTRATOR, OPENROUTER_API_KEY
+#   GROQ_API_KEY, GROQ_API_KEY_2, GROQ_API_KEY_3, GROQ_API_KEY_4, GROQ_API_KEY_5
+#   JINA_API_KEY, JINA_API_KEY_2
+#   LITELLM_MASTER_KEY, DATABASE_URL
 
 model_list:
-  # === Llama 70B (primary RAG model) — via OpenRouter ===
-  - model_name: "llama-70b"
-    litellm_params:
-      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
-      api_key: "os.environ/OPENROUTER_KEY_1"
-      api_base: "https://openrouter.ai/api/v1"
-      rpm: 20
-      timeout: 120
-
-  - model_name: "llama-70b"
-    litellm_params:
-      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
-      api_key: "os.environ/OPENROUTER_KEY_2"
-      api_base: "https://openrouter.ai/api/v1"
-      rpm: 20
-      timeout: 120
-
-  - model_name: "llama-70b"
-    litellm_params:
-      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
-      api_key: "os.environ/OPENROUTER_KEY_3"
-      api_base: "https://openrouter.ai/api/v1"
-      rpm: 20
-      timeout: 120
-
-  - model_name: "llama-70b"
-    litellm_params:
-      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
-      api_key: "os.environ/OPENROUTER_KEY_4"
-      api_base: "https://openrouter.ai/api/v1"
-      rpm: 20
-      timeout: 120
-
-  - model_name: "llama-70b"
-    litellm_params:
-      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
-      api_key: "os.environ/OPENROUTER_KEY_5"
-      api_base: "https://openrouter.ai/api/v1"
-      rpm: 20
-      timeout: 120
-
-  - model_name: "llama-70b"
-    litellm_params:
-      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
-      api_key: "os.environ/OPENROUTER_KEY_6"
-      api_base: "https://openrouter.ai/api/v1"
-      rpm: 20
-      timeout: 120
-
-  - model_name: "llama-70b"
-    litellm_params:
-      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
-      api_key: "os.environ/OPENROUTER_KEY_7"
-      api_base: "https://openrouter.ai/api/v1"
-      rpm: 20
-      timeout: 120
-
-  # === Gemma 27B (fast/lite model) — via OpenRouter ===
-  - model_name: "gemma-27b"
-    litellm_params:
-      model: "openrouter/google/gemma-3-27b-it:free"
-      api_key: "os.environ/OPENROUTER_KEY_1"
-      api_base: "https://openrouter.ai/api/v1"
-      rpm: 20
-      timeout: 90
-
-  - model_name: "gemma-27b"
-    litellm_params:
-      model: "openrouter/google/gemma-3-27b-it:free"
-      api_key: "os.environ/OPENROUTER_KEY_2"
-      api_base: "https://openrouter.ai/api/v1"
-      rpm: 20
-      timeout: 90
-
-  - model_name: "gemma-27b"
-    litellm_params:
-      model: "openrouter/google/gemma-3-27b-it:free"
-      api_key: "os.environ/OPENROUTER_KEY_3"
-      api_base: "https://openrouter.ai/api/v1"
-      rpm: 20
-      timeout: 90
-
-  - model_name: "gemma-27b"
-    litellm_params:
-      model: "openrouter/google/gemma-3-27b-it:free"
-      api_key: "os.environ/OPENROUTER_KEY_4"
-      api_base: "https://openrouter.ai/api/v1"
-      rpm: 20
-      timeout: 90
-
-  # === Trinity (entity extraction) — via OpenRouter ===
+  # ========== OPENROUTER: Trinity (entity extraction, fast) ==========
   - model_name: "trinity"
     litellm_params:
       model: "openrouter/arcee-ai/trinity-large-preview:free"
-      api_key: "os.environ/OPENROUTER_KEY_5"
+      api_key: "os.environ/OPENROUTER_KEY_STANDARD"
       api_base: "https://openrouter.ai/api/v1"
       rpm: 20
       timeout: 90
@@ -105,40 +23,207 @@ model_list:
   - model_name: "trinity"
     litellm_params:
       model: "openrouter/arcee-ai/trinity-large-preview:free"
-      api_key: "os.environ/OPENROUTER_KEY_6"
+      api_key: "os.environ/OPENROUTER_KEY_GRAPH"
       api_base: "https://openrouter.ai/api/v1"
       rpm: 20
       timeout: 90
 
-  # === Llama 70B via Groq (fast inference) ===
+  - model_name: "trinity"
+    litellm_params:
+      model: "openrouter/arcee-ai/trinity-large-preview:free"
+      api_key: "os.environ/OPENROUTER_KEY_QUANTITATIVE"
+      api_base: "https://openrouter.ai/api/v1"
+      rpm: 20
+      timeout: 90
+
+  - model_name: "trinity"
+    litellm_params:
+      model: "openrouter/arcee-ai/trinity-large-preview:free"
+      api_key: "os.environ/OPENROUTER_KEY_ORCHESTRATOR"
+      api_base: "https://openrouter.ai/api/v1"
+      rpm: 20
+      timeout: 90
+
+  - model_name: "trinity"
+    litellm_params:
+      model: "openrouter/arcee-ai/trinity-large-preview:free"
+      api_key: "os.environ/OPENROUTER_API_KEY"
+      api_base: "https://openrouter.ai/api/v1"
+      rpm: 20
+      timeout: 90
+
+  # ========== OPENROUTER: Gemma 27B (fast/lite model) ==========
+  - model_name: "gemma-27b"
+    litellm_params:
+      model: "openrouter/google/gemma-3-27b-it:free"
+      api_key: "os.environ/OPENROUTER_KEY_STANDARD"
+      api_base: "https://openrouter.ai/api/v1"
+      rpm: 20
+      timeout: 90
+
+  - model_name: "gemma-27b"
+    litellm_params:
+      model: "openrouter/google/gemma-3-27b-it:free"
+      api_key: "os.environ/OPENROUTER_KEY_GRAPH"
+      api_base: "https://openrouter.ai/api/v1"
+      rpm: 20
+      timeout: 90
+
+  - model_name: "gemma-27b"
+    litellm_params:
+      model: "openrouter/google/gemma-3-27b-it:free"
+      api_key: "os.environ/OPENROUTER_KEY_QUANTITATIVE"
+      api_base: "https://openrouter.ai/api/v1"
+      rpm: 20
+      timeout: 90
+
+  # ========== OPENROUTER: Llama 70B (primary RAG model) ==========
+  - model_name: "llama-70b"
+    litellm_params:
+      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
+      api_key: "os.environ/OPENROUTER_KEY_STANDARD"
+      api_base: "https://openrouter.ai/api/v1"
+      rpm: 20
+      timeout: 120
+
+  - model_name: "llama-70b"
+    litellm_params:
+      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
+      api_key: "os.environ/OPENROUTER_KEY_GRAPH"
+      api_base: "https://openrouter.ai/api/v1"
+      rpm: 20
+      timeout: 120
+
+  - model_name: "llama-70b"
+    litellm_params:
+      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
+      api_key: "os.environ/OPENROUTER_KEY_QUANTITATIVE"
+      api_base: "https://openrouter.ai/api/v1"
+      rpm: 20
+      timeout: 120
+
+  - model_name: "llama-70b"
+    litellm_params:
+      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
+      api_key: "os.environ/OPENROUTER_KEY_ORCHESTRATOR"
+      api_base: "https://openrouter.ai/api/v1"
+      rpm: 20
+      timeout: 120
+
+  - model_name: "llama-70b"
+    litellm_params:
+      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
+      api_key: "os.environ/OPENROUTER_API_KEY"
+      api_base: "https://openrouter.ai/api/v1"
+      rpm: 20
+      timeout: 120
+
+  # ========== GROQ: Llama 70B (fast inference, 5 keys) ==========
   - model_name: "llama-70b-groq"
     litellm_params:
       model: "groq/llama-3.3-70b-versatile"
-      api_key: "os.environ/GROQ_KEY_1"
+      api_key: "os.environ/GROQ_API_KEY"
       rpm: 30
       timeout: 60
 
   - model_name: "llama-70b-groq"
     litellm_params:
       model: "groq/llama-3.3-70b-versatile"
-      api_key: "os.environ/GROQ_KEY_2"
+      api_key: "os.environ/GROQ_API_KEY_2"
       rpm: 30
       timeout: 60
 
-  # === Fallback: route llama-70b requests to Groq too ===
+  - model_name: "llama-70b-groq"
+    litellm_params:
+      model: "groq/llama-3.3-70b-versatile"
+      api_key: "os.environ/GROQ_API_KEY_3"
+      rpm: 30
+      timeout: 60
+
+  - model_name: "llama-70b-groq"
+    litellm_params:
+      model: "groq/llama-3.3-70b-versatile"
+      api_key: "os.environ/GROQ_API_KEY_4"
+      rpm: 30
+      timeout: 60
+
+  - model_name: "llama-70b-groq"
+    litellm_params:
+      model: "groq/llama-3.3-70b-versatile"
+      api_key: "os.environ/GROQ_API_KEY_5"
+      rpm: 30
+      timeout: 60
+
+  # ========== GROQ as fallback for llama-70b requests ==========
   - model_name: "llama-70b"
     litellm_params:
       model: "groq/llama-3.3-70b-versatile"
-      api_key: "os.environ/GROQ_KEY_1"
+      api_key: "os.environ/GROQ_API_KEY"
       rpm: 30
       timeout: 60
 
   - model_name: "llama-70b"
     litellm_params:
       model: "groq/llama-3.3-70b-versatile"
-      api_key: "os.environ/GROQ_KEY_2"
+      api_key: "os.environ/GROQ_API_KEY_2"
       rpm: 30
       timeout: 60
+
+  - model_name: "llama-70b"
+    litellm_params:
+      model: "groq/llama-3.3-70b-versatile"
+      api_key: "os.environ/GROQ_API_KEY_3"
+      rpm: 30
+      timeout: 60
+
+  # ========== GROQ as fallback for trinity requests ==========
+  - model_name: "trinity"
+    litellm_params:
+      model: "groq/llama-3.3-70b-versatile"
+      api_key: "os.environ/GROQ_API_KEY_4"
+      rpm: 30
+      timeout: 60
+
+  - model_name: "trinity"
+    litellm_params:
+      model: "groq/llama-3.3-70b-versatile"
+      api_key: "os.environ/GROQ_API_KEY_5"
+      rpm: 30
+      timeout: 60
+
+  # ========== JINA: Embeddings (key rotation) ==========
+  - model_name: "jina-embed"
+    litellm_params:
+      model: "jina_ai/jina-embeddings-v3"
+      api_key: "os.environ/JINA_API_KEY"
+      api_base: "https://api.jina.ai/v1"
+      rpm: 60
+      timeout: 30
+
+  - model_name: "jina-embed"
+    litellm_params:
+      model: "jina_ai/jina-embeddings-v3"
+      api_key: "os.environ/JINA_API_KEY_2"
+      api_base: "https://api.jina.ai/v1"
+      rpm: 60
+      timeout: 30
+
+  # ========== JINA: Reranker (key rotation) ==========
+  - model_name: "jina-rerank"
+    litellm_params:
+      model: "jina_ai/jina-reranker-v2-base-multilingual"
+      api_key: "os.environ/JINA_API_KEY"
+      api_base: "https://api.jina.ai/v1"
+      rpm: 60
+      timeout: 30
+
+  - model_name: "jina-rerank"
+    litellm_params:
+      model: "jina_ai/jina-reranker-v2-base-multilingual"
+      api_key: "os.environ/JINA_API_KEY_2"
+      api_base: "https://api.jina.ai/v1"
+      rpm: 60
+      timeout: 30
 
 router_settings:
   routing_strategy: "usage-based-routing-v2"
@@ -150,11 +235,12 @@ router_settings:
 
 general_settings:
   master_key: "os.environ/LITELLM_MASTER_KEY"
-  database_url: null
-  store_model_in_db: false
+  database_url: "os.environ/DATABASE_URL"
+  store_model_in_db: true
 
 litellm_settings:
   drop_params: true
   set_verbose: false
   request_timeout: 120
   num_retries: 2
+  cache: false
