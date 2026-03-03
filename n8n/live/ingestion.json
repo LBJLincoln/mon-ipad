@@ -25,7 +25,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Init Lock & Trace \u2014 accepts both S3 events and direct content\n// Inline hash (crypto module not allowed in sandbox)\nfunction simpleHash(str) {\n  let hash = 0;\n  for (let i = 0; i < str.length; i++) {\n    const ch = str.charCodeAt(i);\n    hash = ((hash << 5) - hash) + ch;\n    hash |= 0;\n  }\n  return Math.abs(hash).toString(16).padStart(8, '0');\n}\nconst body = $json.body || $json || {};\n\n// Accept documentId OR objectKey\nconst documentId = body.documentId || body.objectKey || body.key;\nif (!documentId) {\n  throw new Error('VALIDATION_ERROR: documentId (or objectKey) is required');\n}\n\nconst content = body.content || '';\nconst hash = simpleHash(documentId);\nconst workerId = `worker-${$execution.id}`;\nconst lockKey = `lock:ingestion:${hash}`;\nconst traceId = `tr-ingest-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\n// File extension from documentId or metadata\nconst ext = body.file_extension || (documentId.split('.').pop() || 'txt').toLowerCase();\n\nreturn {\n  lockKey,\n  workerId,\n  hash,\n  objectKey: documentId,\n  documentId,\n  file_extension: ext,\n  bucket: body.bucket || 'default',\n  traceId,\n  timestamp: new Date().toISOString(),\n  s3_url: body.s3_url || '',\n  ttl_seconds: 3600,\n  tenant_id: body.tenant_id || body.metadata?.tenant_id || 'default',\n  content: content,\n  has_content: content.length > 0,\n  metadata: body.metadata || {}\n};"
+        "jsCode": "// Init Lock & Trace \u2014 accepts both S3 events and direct content\n// Inline hash (crypto module not allowed in sandbox)\nfunction simpleHash(str) {\n  let hash = 0;\n  for (let i = 0; i < str.length; i++) {\n    const ch = str.charCodeAt(i);\n    hash = ((hash << 5) - hash) + ch;\n    hash |= 0;\n  }\n  return Math.abs(hash).toString(16).padStart(8, '0');\n}\nconst body = $json.body || $json || {};\n\n// Accept documentId OR objectKey\nconst documentId = body.documentId || body.objectKey || body.key;\nif (!documentId) {\n  throw new Error('VALIDATION_ERROR: documentId (or objectKey) is required');\n}\n\nconst content = body.content || '';\nconst hash = simpleHash(documentId);\nconst workerId = `worker-${$execution.id}`;\nconst lockKey = `lock:ingestion:${hash}`;\nconst traceId = `tr-ingest-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\n// File extension from documentId or metadata\nconst ext = body.file_extension || (documentId.split('.').pop() || 'txt').toLowerCase();\n\nreturn {\n  lockKey,\n  workerId,\n  hash,\n  objectKey: documentId,\n  documentId,\n  file_extension: ext,\n  bucket: body.bucket || 'benchmark',\n  traceId,\n  timestamp: new Date().toISOString(),\n  s3_url: body.s3_url || '',\n  ttl_seconds: 3600,\n  tenant_id: body.tenant_id || body.metadata?.tenant_id || 'benchmark',\n  content: content,\n  has_content: content.length > 0,\n  metadata: body.metadata || {}\n};"
       },
       "id": "cb248158-002b-4b44-aa3e-edaf46cd57a1",
       "name": "Init Lock & Trace",
@@ -234,7 +234,7 @@
       "notes": "PATCH 5.4: Mark old versions obsolete",
       "credentials": {
         "postgres": {
-          "id": "bYOgAfowFSi3XPMf",
+          "id": "qhxUGPAXDN7Esubu",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -326,7 +326,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare Vectors V3.1 - Uses contextual_content for embeddings\nconst chunkData = $node['Q&A Enricher'].json;\nconst embeddings = $json.data || [];\nconst chunks = chunkData.chunks || [];\n\nconst vectors = chunks.slice(0, 100).map((chunk, idx) => {\n  const embedding = embeddings[idx]?.embedding || [];\n  \n  return {\n    id: chunk.id,\n    values: embedding,\n    metadata: {\n      // V3.1: Store both original and contextual\n      content: chunk.content.substring(0, 1000),\n      contextual_content: (chunk.contextual_content || chunk.content).substring(0, 1500),\n      contextual_prefix: chunk.contextual_prefix || '',\n      \n      // Document metadata\n      parent_id: chunk.parent_id,\n      parent_filename: chunk.parent_filename,\n      document_title: chunk.document_title || '',\n      document_type: chunk.document_type || '',\n      section: chunk.section || '',\n      \n      // Chunk metadata\n      chunk_index: chunk.chunk_index,\n      total_chunks: chunk.total_chunks,\n      topic: chunk.topic || 'general',\n      \n      // Q&A enhancement\n      hypothetical_questions: chunk.hypothetical_questions || [],\n      \n      // ACL & tenant\n      tenant_id: chunk.tenant_id || 'default',\n      allowed_groups: ['default', 'admin'],\n      \n      // Quality\n      quality_score: chunk.quality_score || 0.5,\n      \n      // Timestamps\n      ingested_at: new Date().toISOString(),\n      version: chunk.version || 1\n    }\n  };\n});\n\nreturn {\n  vectors: vectors,\n  trace_id: chunkData.trace_id,\n  chunk_count: vectors.length,\n  contextual_enabled: true\n};"
+        "jsCode": "// Prepare Vectors V3.1 - Uses contextual_content for embeddings\nconst chunkData = $node['Q&A Enricher'].json;\nconst embeddings = $json.data || [];\nconst chunks = chunkData.chunks || [];\n\nconst vectors = chunks.slice(0, 100).map((chunk, idx) => {\n  const embedding = embeddings[idx]?.embedding || [];\n  \n  return {\n    id: chunk.id,\n    values: embedding,\n    metadata: {\n      // V3.1: Store both original and contextual\n      content: chunk.content.substring(0, 1000),\n      contextual_content: (chunk.contextual_content || chunk.content).substring(0, 1500),\n      contextual_prefix: chunk.contextual_prefix || '',\n      \n      // Document metadata\n      parent_id: chunk.parent_id,\n      parent_filename: chunk.parent_filename,\n      document_title: chunk.document_title || '',\n      document_type: chunk.document_type || '',\n      section: chunk.section || '',\n      \n      // Chunk metadata\n      chunk_index: chunk.chunk_index,\n      total_chunks: chunk.total_chunks,\n      topic: chunk.topic || 'general',\n      \n      // Q&A enhancement\n      hypothetical_questions: chunk.hypothetical_questions || [],\n      \n      // ACL & tenant\n      tenant_id: chunk.tenant_id || 'benchmark',\n      allowed_groups: ['default', 'admin'],\n      \n      // Quality\n      quality_score: chunk.quality_score || 0.5,\n      \n      // Timestamps\n      ingested_at: new Date().toISOString(),\n      version: chunk.version || 1\n    }\n  };\n});\n\nreturn {\n  vectors: vectors,\n  trace_id: chunkData.trace_id,\n  chunk_count: vectors.length,\n  contextual_enabled: true\n};"
       },
       "id": "cca4ed4b-00e6-4c87-b88e-2b971db78027",
       "name": "Prepare Vectors V3.1 (Contextual)",
@@ -521,7 +521,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
-          "id": "bYOgAfowFSi3XPMf",
+          "id": "qhxUGPAXDN7Esubu",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -1053,7 +1053,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Init Lock & Trace \u2014 accepts both S3 events and direct content\n// Inline hash (crypto module not allowed in sandbox)\nfunction simpleHash(str) {\n  let hash = 0;\n  for (let i = 0; i < str.length; i++) {\n    const ch = str.charCodeAt(i);\n    hash = ((hash << 5) - hash) + ch;\n    hash |= 0;\n  }\n  return Math.abs(hash).toString(16).padStart(8, '0');\n}\nconst body = $json.body || $json || {};\n\n// Accept documentId OR objectKey\nconst documentId = body.documentId || body.objectKey || body.key;\nif (!documentId) {\n  throw new Error('VALIDATION_ERROR: documentId (or objectKey) is required');\n}\n\nconst content = body.content || '';\nconst hash = simpleHash(documentId);\nconst workerId = `worker-${$execution.id}`;\nconst lockKey = `lock:ingestion:${hash}`;\nconst traceId = `tr-ingest-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\n// File extension from documentId or metadata\nconst ext = body.file_extension || (documentId.split('.').pop() || 'txt').toLowerCase();\n\nreturn {\n  lockKey,\n  workerId,\n  hash,\n  objectKey: documentId,\n  documentId,\n  file_extension: ext,\n  bucket: body.bucket || 'default',\n  traceId,\n  timestamp: new Date().toISOString(),\n  s3_url: body.s3_url || '',\n  ttl_seconds: 3600,\n  tenant_id: body.tenant_id || body.metadata?.tenant_id || 'default',\n  content: content,\n  has_content: content.length > 0,\n  metadata: body.metadata || {}\n};"
+          "jsCode": "// Init Lock & Trace \u2014 accepts both S3 events and direct content\n// Inline hash (crypto module not allowed in sandbox)\nfunction simpleHash(str) {\n  let hash = 0;\n  for (let i = 0; i < str.length; i++) {\n    const ch = str.charCodeAt(i);\n    hash = ((hash << 5) - hash) + ch;\n    hash |= 0;\n  }\n  return Math.abs(hash).toString(16).padStart(8, '0');\n}\nconst body = $json.body || $json || {};\n\n// Accept documentId OR objectKey\nconst documentId = body.documentId || body.objectKey || body.key;\nif (!documentId) {\n  throw new Error('VALIDATION_ERROR: documentId (or objectKey) is required');\n}\n\nconst content = body.content || '';\nconst hash = simpleHash(documentId);\nconst workerId = `worker-${$execution.id}`;\nconst lockKey = `lock:ingestion:${hash}`;\nconst traceId = `tr-ingest-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\n// File extension from documentId or metadata\nconst ext = body.file_extension || (documentId.split('.').pop() || 'txt').toLowerCase();\n\nreturn {\n  lockKey,\n  workerId,\n  hash,\n  objectKey: documentId,\n  documentId,\n  file_extension: ext,\n  bucket: body.bucket || 'benchmark',\n  traceId,\n  timestamp: new Date().toISOString(),\n  s3_url: body.s3_url || '',\n  ttl_seconds: 3600,\n  tenant_id: body.tenant_id || body.metadata?.tenant_id || 'benchmark',\n  content: content,\n  has_content: content.length > 0,\n  metadata: body.metadata || {}\n};"
         },
         "id": "cb248158-002b-4b44-aa3e-edaf46cd57a1",
         "name": "Init Lock & Trace",
@@ -1262,7 +1262,7 @@
         "notes": "PATCH 5.4: Mark old versions obsolete",
         "credentials": {
           "postgres": {
-            "id": "bYOgAfowFSi3XPMf",
+            "id": "qhxUGPAXDN7Esubu",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -1354,7 +1354,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Prepare Vectors V3.1 - Uses contextual_content for embeddings\nconst chunkData = $node['Q&A Enricher'].json;\nconst embeddings = $json.data || [];\nconst chunks = chunkData.chunks || [];\n\nconst vectors = chunks.slice(0, 100).map((chunk, idx) => {\n  const embedding = embeddings[idx]?.embedding || [];\n  \n  return {\n    id: chunk.id,\n    values: embedding,\n    metadata: {\n      // V3.1: Store both original and contextual\n      content: chunk.content.substring(0, 1000),\n      contextual_content: (chunk.contextual_content || chunk.content).substring(0, 1500),\n      contextual_prefix: chunk.contextual_prefix || '',\n      \n      // Document metadata\n      parent_id: chunk.parent_id,\n      parent_filename: chunk.parent_filename,\n      document_title: chunk.document_title || '',\n      document_type: chunk.document_type || '',\n      section: chunk.section || '',\n      \n      // Chunk metadata\n      chunk_index: chunk.chunk_index,\n      total_chunks: chunk.total_chunks,\n      topic: chunk.topic || 'general',\n      \n      // Q&A enhancement\n      hypothetical_questions: chunk.hypothetical_questions || [],\n      \n      // ACL & tenant\n      tenant_id: chunk.tenant_id || 'default',\n      allowed_groups: ['default', 'admin'],\n      \n      // Quality\n      quality_score: chunk.quality_score || 0.5,\n      \n      // Timestamps\n      ingested_at: new Date().toISOString(),\n      version: chunk.version || 1\n    }\n  };\n});\n\nreturn {\n  vectors: vectors,\n  trace_id: chunkData.trace_id,\n  chunk_count: vectors.length,\n  contextual_enabled: true\n};"
+          "jsCode": "// Prepare Vectors V3.1 - Uses contextual_content for embeddings\nconst chunkData = $node['Q&A Enricher'].json;\nconst embeddings = $json.data || [];\nconst chunks = chunkData.chunks || [];\n\nconst vectors = chunks.slice(0, 100).map((chunk, idx) => {\n  const embedding = embeddings[idx]?.embedding || [];\n  \n  return {\n    id: chunk.id,\n    values: embedding,\n    metadata: {\n      // V3.1: Store both original and contextual\n      content: chunk.content.substring(0, 1000),\n      contextual_content: (chunk.contextual_content || chunk.content).substring(0, 1500),\n      contextual_prefix: chunk.contextual_prefix || '',\n      \n      // Document metadata\n      parent_id: chunk.parent_id,\n      parent_filename: chunk.parent_filename,\n      document_title: chunk.document_title || '',\n      document_type: chunk.document_type || '',\n      section: chunk.section || '',\n      \n      // Chunk metadata\n      chunk_index: chunk.chunk_index,\n      total_chunks: chunk.total_chunks,\n      topic: chunk.topic || 'general',\n      \n      // Q&A enhancement\n      hypothetical_questions: chunk.hypothetical_questions || [],\n      \n      // ACL & tenant\n      tenant_id: chunk.tenant_id || 'benchmark',\n      allowed_groups: ['default', 'admin'],\n      \n      // Quality\n      quality_score: chunk.quality_score || 0.5,\n      \n      // Timestamps\n      ingested_at: new Date().toISOString(),\n      version: chunk.version || 1\n    }\n  };\n});\n\nreturn {\n  vectors: vectors,\n  trace_id: chunkData.trace_id,\n  chunk_count: vectors.length,\n  contextual_enabled: true\n};"
         },
         "id": "cca4ed4b-00e6-4c87-b88e-2b971db78027",
         "name": "Prepare Vectors V3.1 (Contextual)",
@@ -1549,7 +1549,7 @@
         "onError": "continueErrorOutput",
         "credentials": {
           "postgres": {
-            "id": "bYOgAfowFSi3XPMf",
+            "id": "qhxUGPAXDN7Esubu",
             "name": "Supabase Postgres (Pooler)"
           }
         }
