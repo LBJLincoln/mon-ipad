@@ -144,6 +144,57 @@ def cmd_activate(opener, wf_id):
         print("  Activated via PATCH fallback")
 
 
+def cmd_exec(opener, exec_id=None, wf_id=None):
+    """Show execution details node by node."""
+    if exec_id:
+        data = api_get(opener, f"/executions/{exec_id}", timeout=30)
+    else:
+        # Get latest for workflow
+        all_execs = api_get(opener, f"/executions?limit=5", timeout=15)
+        results = all_execs.get("results", all_execs) if isinstance(all_execs, dict) else all_execs
+        if wf_id:
+            results = [e for e in results if e.get("workflowId") == wf_id]
+        if not results:
+            print("No executions found")
+            return
+        exec_id = results[0]["id"]
+        print(f"Latest execution: {exec_id} ({results[0].get('workflowName','?')})")
+        data = api_get(opener, f"/executions/{exec_id}", timeout=30)
+
+    ed = data if isinstance(data, dict) else data
+    # Handle compressed format
+    if isinstance(ed.get("data"), list):
+        print("Compressed execution format — saving raw to /tmp/n8n-exec-raw.json")
+        with open("/tmp/n8n-exec-raw.json", "w") as f:
+            json.dump(ed, f)
+        return
+
+    rd = ed.get("resultData", {}).get("runData", {})
+    print(f"\nNodes executed: {len(rd)}")
+    for node_name, runs in rd.items():
+        if not runs or not runs[0]:
+            print(f"  SKIP | {node_name}")
+            continue
+        run = runs[0]
+        main = run.get("data", {}).get("main", [[]])
+        items = main[0] if main and main[0] else []
+        err = run.get("error")
+        n = len(items) if items else 0
+        tag = "ERR" if err else "OK "
+        print(f"  {tag} | {node_name:45s} | {n} items")
+        if err:
+            msg = err.get("message", str(err))[:200] if isinstance(err, dict) else str(err)[:200]
+            print(f"        error: {msg}")
+        if n > 0:
+            j = items[0].get("json", {})
+            for k in ["answer", "error", "response", "hyde_query", "results_count",
+                       "neo4j_results", "pinecone_results", "embedding_error",
+                       "status", "context_sources", "question"]:
+                if k in j:
+                    v = str(j[k])[:150]
+                    print(f"        {k}: {v}")
+
+
 def cmd_test_webhooks():
     print(f"Testing webhooks on {HOST}...\n")
     for name, path in KNOWN_WEBHOOKS.items():
@@ -181,5 +232,9 @@ if __name__ == "__main__":
         cmd_deploy(opener, sys.argv[2])
     elif cmd == "activate" and len(sys.argv) > 2:
         cmd_activate(opener, sys.argv[2])
+    elif cmd == "exec":
+        eid = sys.argv[2] if len(sys.argv) > 2 else None
+        wfid = sys.argv[3] if len(sys.argv) > 3 else None
+        cmd_exec(opener, exec_id=eid, wf_id=wfid)
     else:
         print(__doc__)
