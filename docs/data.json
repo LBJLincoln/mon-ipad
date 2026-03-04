@@ -1,11 +1,11 @@
 {
   "meta": {
-    "generated_at": "2026-03-04T16:55:37+01:00",
+    "generated_at": "2026-03-04T16:56:02+01:00",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
-    "total_unique_questions": 2334,
-    "total_test_runs": 2334,
+    "total_unique_questions": 2335,
+    "total_test_runs": 2335,
     "total_iterations": 52,
     "status": "running",
     "current_session": "2026-03-04T16-34-57"
@@ -38448,19 +38448,19 @@
       "id": "iter-2026-03-04T16-34-57",
       "number": 52,
       "timestamp_start": "2026-03-04T16:35:03+01:00",
-      "timestamp_end": "2026-03-04T16:55:34+01:00",
+      "timestamp_end": "2026-03-04T16:56:02+01:00",
       "label": "Phase3-S70-stdquant",
       "description": "Dataset: phase-3, Parallel: standard,quantitative, Max: None, Reset: False",
       "changes_applied": [],
       "results_summary": {
         "quantitative": {
-          "tested": 220,
-          "correct": 119,
+          "tested": 221,
+          "correct": 120,
           "errors": 0,
-          "accuracy_pct": 54.1,
-          "avg_latency_ms": 15442,
-          "p95_latency_ms": 26986,
-          "avg_f1": 0.8395
+          "accuracy_pct": 54.3,
+          "avg_latency_ms": 15437,
+          "p95_latency_ms": 26251,
+          "avg_f1": 0.8404
         },
         "standard": {
           "tested": 105,
@@ -38472,9 +38472,9 @@
           "avg_f1": 0.8
         }
       },
-      "total_tested": 325,
-      "total_correct": 212,
-      "overall_accuracy_pct": 65.2,
+      "total_tested": 326,
+      "total_correct": 213,
+      "overall_accuracy_pct": 65.3,
       "questions": [
         {
           "id": "p3-qua-00147",
@@ -42700,6 +42700,19 @@
           "error": null,
           "error_type": null,
           "timestamp": "2026-03-04T16:55:34+01:00"
+        },
+        {
+          "id": "p3-qua-00301",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.95,
+          "latency_ms": 14489,
+          "answer": "$1,140,000",
+          "expected": "$61,440,000.00",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-04T16:56:02+01:00"
         }
       ]
     }
@@ -115057,6 +115070,37 @@
       "current_status": "fail",
       "last_tested": "2026-03-04T16:55:34+01:00",
       "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "p3-qua-00301": {
+      "id": "p3-qua-00301",
+      "question": "Report the figure for HealthPlus Labs's selling, general & admin expense in 2022?",
+      "expected": "$61,440,000.00",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-03-04T16-34-57",
+          "iteration_number": 52,
+          "correct": true,
+          "f1": 0.95,
+          "latency_ms": 14489,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$1,140,000",
+          "timestamp": "2026-03-04T16:56:02+01:00"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-03-04T16:56:02+01:00",
+      "best_f1": 0.95,
       "trend": "stable"
     }
   },
