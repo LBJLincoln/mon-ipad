@@ -271,11 +271,44 @@ def call_local_reasoning(question_text, rag_type="quantitative", timeout=30):
     return {"data": None, "latency_ms": latency_ms, "error": "all models rate-limited", "http_status": 429}
 
 
+def _do_request(endpoint, payload, headers, timeout):
+    """Execute a single HTTP request with hard deadline via threading.
+    Returns (data_dict, http_status) or raises on error."""
+    import threading
+
+    result_box = [None, None]  # [response_bytes, http_status]
+    error_box = [None]
+
+    def _worker():
+        try:
+            req = request.Request(endpoint, data=payload, headers=headers)
+            with request.urlopen(req, timeout=timeout) as resp:
+                result_box[0] = resp.read()
+                result_box[1] = resp.getcode()
+        except Exception as e:
+            error_box[0] = e
+
+    t = threading.Thread(target=_worker, daemon=True)
+    t.start()
+    # Hard deadline: timeout + 10s grace period. Thread is daemon so it dies with process.
+    t.join(timeout=timeout + 10)
+
+    if t.is_alive():
+        # Thread still running = hung request. Don't wait, return timeout error.
+        raise TimeoutError(f"Hard deadline exceeded ({timeout + 10}s)")
+
+    if error_box[0]:
+        raise error_box[0]
+
+    return json.loads(result_box[0].decode('utf-8')), result_box[1]
+
+
 def call_rag(endpoint, question, timeout=60, max_retries=3, extra_fields=None):
     """
     Makes an HTTP POST request to the RAG endpoint with retry + exponential backoff.
     Returns a dictionary with 'data', 'latency_ms', 'error', 'http_status'.
     Retries on: 429 (rate limit), 502/503/504 (server overload), timeouts, connection errors.
+    Uses threading-based hard deadline to prevent indefinite hangs on resp.read().
     extra_fields: dict of additional fields to include in the payload (e.g. namespace).
     """
     RETRYABLE_CODES = {429, 502, 503, 504}
@@ -289,11 +322,9 @@ def call_rag(endpoint, question, timeout=60, max_retries=3, extra_fields=None):
                 body.update(extra_fields)
             payload = json.dumps(body).encode('utf-8')
             headers = {"Content-Type": "application/json"}
-            req = request.Request(endpoint, data=payload, headers=headers)
-            with request.urlopen(req, timeout=timeout) as resp:
-                data = json.loads(resp.read().decode('utf-8'))
-                latency_ms = int((datetime.now() - start_time).total_seconds() * 1000)
-                return {"data": data, "latency_ms": latency_ms, "error": None, "http_status": resp.getcode()}
+            data, http_status = _do_request(endpoint, payload, headers, timeout)
+            latency_ms = int((datetime.now() - start_time).total_seconds() * 1000)
+            return {"data": data, "latency_ms": latency_ms, "error": None, "http_status": http_status}
         except error.HTTPError as e:
             latency_ms = int((datetime.now() - start_time).total_seconds() * 1000)
             last_result = {"data": None, "latency_ms": latency_ms, "error": str(e), "http_status": e.code}
@@ -302,7 +333,11 @@ def call_rag(endpoint, question, timeout=60, max_retries=3, extra_fields=None):
                 time.sleep(delay)
                 continue
             return last_result
-        except (ConnectionError, TimeoutError, OSError) as e:
+        except TimeoutError as e:
+            # Hard deadline exceeded — do NOT retry, the endpoint is hung
+            latency_ms = int((datetime.now() - start_time).total_seconds() * 1000)
+            return {"data": None, "latency_ms": latency_ms, "error": f"TIMEOUT: {e}", "http_status": None}
+        except (ConnectionError, OSError) as e:
             latency_ms = int((datetime.now() - start_time).total_seconds() * 1000)
             last_result = {"data": None, "latency_ms": latency_ms, "error": str(e), "http_status": None}
             if attempt < max_retries - 1:

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-04T02:18:40.757Z",
+  "updatedAt": "2026-03-04T13:00:01.642Z",
   "createdAt": "2026-02-09T04:28:15.672Z",
   "id": "ALd4gOEqiKL5KR1p",
   "name": "V10.1 orchestrator copy",
@@ -87,7 +87,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "redis": {
-          "id": "2zWYpJeQC6jTf7bF",
+          "id": "6VHwdPZIvoxs5dvh",
           "name": "Redis"
         }
       }
@@ -111,7 +111,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
-          "id": "bw4tS5hs7JoFoKMy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -321,7 +321,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
-          "id": "bw4tS5hs7JoFoKMy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -342,7 +342,7 @@
       "typeVersion": 1,
       "credentials": {
         "redis": {
-          "id": "2zWYpJeQC6jTf7bF",
+          "id": "6VHwdPZIvoxs5dvh",
           "name": "Redis"
         }
       }
@@ -366,7 +366,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
-          "id": "bw4tS5hs7JoFoKMy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -501,11 +501,11 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
         "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $env.LLM_INTENT_MODEL || 'mistralai/mistral-small-3.1-24b-instruct:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated multi-engine RAG system.\\n\\n=== YOUR MISSION ===\\n1. Analyze the user query\\n2. Identify ALL intents (explicit AND implicit)\\n3. Determine DEPENDENCIES between intents\\n4. Assign the optimal RAG engine for each intent\\n\\n=== AVAILABLE RAG ENGINES ===\\n\\n**STANDARD (Pinecone + BM25)**\\n- Hybrid document retrieval (dense + sparse)\\n- topK=20, Cohere reranking\\n- Latency: ~3s\\n- Strengths: facts, procedures, definitions, technical documentation\\n- Weaknesses: poor for precise numbers, complex relationships\\n\\n**GRAPH (Neo4j)**\\n- Multi-hop traversal (4 levels max)\\n- Community detection, intelligent pruning\\n- Latency: ~5s\\n- Strengths: relationships, hierarchies, impacts, multi-hop reasoning, bridging facts across entities\\n- Weaknesses: no quantitative data, slow for simple queries\\n- USE FOR ANY question that requires CHAINING 2+ facts across different entities or documents:\\n  * 'Who voices the character named after X?' (chain: X -> character -> voice actor)\\n  * 'In what year did the founder of X die?' (chain: X -> founder -> death year)\\n  * 'What country is the birthplace of the director of film Y located in?' (chain: Y -> director -> birthplace -> country)\\n  * 'Which film has the director who died first?' (chain: film -> director -> death date, compare)\\n  * Any question mentioning a person/place/org indirectly through another entity\\n- CRITICAL: If answering requires looking up entity A to find entity B, then looking up entity B to find the answer, this is GRAPH, NOT STANDARD\\n- When in doubt between STANDARD and GRAPH, prefer GRAPH for questions about people, places, organizations, or historical facts that involve indirect references\\n\\n**QUANTITATIVE (PostgreSQL)**\\n- Automatic SQL generation with self-healing\\n- Access to tables: sales, employees, products, kpis\\n- Latency: ~4s\\n- Strengths: numbers, totals, averages, comparisons, KPIs, trends\\n- Weaknesses: no narrative text, requires structured data\\n\\n=== PRIORITIZATION RULES ===\\n1. Numbers/totals/averages/KPIs -> QUANTITATIVE\\n2. Simple factual lookups (single entity, direct answer) -> STANDARD\\n3. Multi-hop chains (answer requires 2+ fact lookups) -> GRAPH\\n4. If the question refers to an entity INDIRECTLY (e.g. 'the founder of X', 'the director of Y', 'the birthplace of Z') -> GRAPH\\n5. Comparisons between entities (which is older, who died first) -> GRAPH\\n6. Questions about people, places, orgs connected through events/works -> GRAPH\\n7. If two intents are INDEPENDENT, mark 'can_parallelize': true\\n8. When unsure between STANDARD and GRAPH, choose GRAPH\\n\\n=== STRICT JSON FORMAT ===\\nRespond ONLY with this JSON, no text before/after:\\n{\\n  \\\"reasoning\\\": \\\"<your step-by-step analysis in 2-3 sentences>\\\",\\n  \\\"intents\\\": [\\n    {\\n      \\\"id\\\": \\\"intent-1\\\",\\n      \\\"description\\\": \\\"<what the user wants to know>\\\",\\n      \\\"type\\\": \\\"FACTUAL|QUANTITATIVE|RELATIONAL|PROCEDURAL|COMPARATIVE\\\",\\n      \\\"suggested_rag\\\": \\\"STANDARD|GRAPH|QUANTITATIVE\\\",\\n      \\\"priority\\\": 1,\\n      \\\"depends_on\\\": [],\\n      \\\"can_parallelize_with\\\": [\\\"intent-X\\\"]\\n    }\\n  ],\\n  \\\"execution_order\\\": [\\\"intent-1\\\"],\\n  \\\"has_parallel_intents\\\": false,\\n  \\\"complexity\\\": \\\"SIMPLE|MODERATE|COMPLEX\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"=== QUERY TO ANALYZE ===\\n{{ $node['Init V8 Security & Analysis'].json.query }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 800\n}",
+        "jsonBody": "={\n  \"model\": \"fast\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated multi-engine RAG system.\\n\\n=== YOUR MISSION ===\\n1. Analyze the user query\\n2. Identify ALL intents (explicit AND implicit)\\n3. Determine DEPENDENCIES between intents\\n4. Assign the optimal RAG engine for each intent\\n\\n=== AVAILABLE RAG ENGINES ===\\n\\n**STANDARD (Pinecone + BM25)**\\n- Hybrid document retrieval (dense + sparse)\\n- topK=20, Cohere reranking\\n- Latency: ~3s\\n- Strengths: facts, procedures, definitions, technical documentation\\n- Weaknesses: poor for precise numbers, complex relationships\\n\\n**GRAPH (Neo4j)**\\n- Multi-hop traversal (4 levels max)\\n- Community detection, intelligent pruning\\n- Latency: ~5s\\n- Strengths: relationships, hierarchies, impacts, multi-hop reasoning, bridging facts across entities\\n- Weaknesses: no quantitative data, slow for simple queries\\n- USE FOR ANY question that requires CHAINING 2+ facts across different entities or documents:\\n  * 'Who voices the character named after X?' (chain: X -> character -> voice actor)\\n  * 'In what year did the founder of X die?' (chain: X -> founder -> death year)\\n  * 'What country is the birthplace of the director of film Y located in?' (chain: Y -> director -> birthplace -> country)\\n  * 'Which film has the director who died first?' (chain: film -> director -> death date, compare)\\n  * Any question mentioning a person/place/org indirectly through another entity\\n- CRITICAL: If answering requires looking up entity A to find entity B, then looking up entity B to find the answer, this is GRAPH, NOT STANDARD\\n- When in doubt between STANDARD and GRAPH, prefer GRAPH for questions about people, places, organizations, or historical facts that involve indirect references\\n\\n**QUANTITATIVE (PostgreSQL)**\\n- Automatic SQL generation with self-healing\\n- Access to tables: sales, employees, products, kpis\\n- Latency: ~4s\\n- Strengths: numbers, totals, averages, comparisons, KPIs, trends\\n- Weaknesses: no narrative text, requires structured data\\n\\n=== PRIORITIZATION RULES ===\\n1. Numbers/totals/averages/KPIs -> QUANTITATIVE\\n2. Simple factual lookups (single entity, direct answer) -> STANDARD\\n3. Multi-hop chains (answer requires 2+ fact lookups) -> GRAPH\\n4. If the question refers to an entity INDIRECTLY (e.g. 'the founder of X', 'the director of Y', 'the birthplace of Z') -> GRAPH\\n5. Comparisons between entities (which is older, who died first) -> GRAPH\\n6. Questions about people, places, orgs connected through events/works -> GRAPH\\n7. If two intents are INDEPENDENT, mark 'can_parallelize': true\\n8. When unsure between STANDARD and GRAPH, choose GRAPH\\n\\n=== STRICT JSON FORMAT ===\\nRespond ONLY with this JSON, no text before/after:\\n{\\n  \\\"reasoning\\\": \\\"<your step-by-step analysis in 2-3 sentences>\\\",\\n  \\\"intents\\\": [\\n    {\\n      \\\"id\\\": \\\"intent-1\\\",\\n      \\\"description\\\": \\\"<what the user wants to know>\\\",\\n      \\\"type\\\": \\\"FACTUAL|QUANTITATIVE|RELATIONAL|PROCEDURAL|COMPARATIVE\\\",\\n      \\\"suggested_rag\\\": \\\"STANDARD|GRAPH|QUANTITATIVE\\\",\\n      \\\"priority\\\": 1,\\n      \\\"depends_on\\\": [],\\n      \\\"can_parallelize_with\\\": [\\\"intent-X\\\"]\\n    }\\n  ],\\n  \\\"execution_order\\\": [\\\"intent-1\\\"],\\n  \\\"has_parallel_intents\\\": false,\\n  \\\"complexity\\\": \\\"SIMPLE|MODERATE|COMPLEX\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"=== QUERY TO ANALYZE ===\\n{{ $node['Init V8 Security & Analysis'].json.query }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 800\n}",
         "options": {
           "timeout": 8000,
           "retry": {
@@ -518,7 +518,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.OPENROUTER_KEY_ORCHESTRATOR}}"
+              "value": "Bearer sk-litellm-nomos-2026"
             }
           ]
         }
@@ -550,11 +550,11 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
         "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $env.LLM_PLANNER_MODEL || 'mistralai/mistral-small-3.1-24b-instruct:free' }}\",\n  \"temperature\": 0.2,\n  \"max_tokens\": 500,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify(`You are the TASK PLANNER of a multi-engine RAG system. You receive analyzed intents and must create an optimal execution plan.\n\n=== DETAILED RAG ENGINE CAPABILITIES ===\n\n**STANDARD (RAG Multi-Index V3.4)**\n- Technology: Pinecone (1536 dims) + BM25 sparse\n- Retrieval: HyDE (hypothetical document), optional Query Decomposition\n- Reranking: Cohere rerank-multilingual-v3\n- topK: 20 chunks, ~500 tokens/chunk\n- Latency: 2-4 seconds\n- OPTIMAL FOR: Factual questions, procedures, definitions, technical documentation\n- AVOID FOR: precise numbers, hierarchical relationships\n\n**GRAPH (Neo4j Graph RAG V3.3)**\n- Technology: Neo4j + 4-hop traversal\n- Capabilities: community detection, path finding, pruning\n- Entities: Person, Team, Project, Document, Skill\n- Relations: WORKS_IN, MANAGES, REPORTS_TO, CONTRIBUTES_TO\n- Latency: 3-6 seconds\n- OPTIMAL FOR: Relationships, hierarchies, impacts, org charts, multi-hop reasoning, entity traversal, comparison between entities\n- AVOID FOR: numbers, long narrative text\n\n**QUANTITATIVE (SQL RAG V2.0)**\n- Technology: PostgreSQL + Text-to-SQL (CoT)\n- Self-healing: automatic SQL correction\n- Tables: sales, employees, products, kpis\n- Latency: 2-5 seconds\n- OPTIMAL FOR: Totals, averages, comparisons, KPIs, trends\n- AVOID FOR: text, non-numeric relationships\n\n=== PLANNING RULES ===\n1. PARALLELIZATION: If two tasks have NO dependency, same parallel_group (max 3)\n2. DEPENDENCIES: A task needing another's result -> depends_on\n3. SKIP CONDITIONS: If one answer can cover multiple intents -> if_success_covers\n4. FALLBACKS: Always provide a fallback_rag DIFFERENT from target_rag\n\n=== RECEIVED INTENTS ===\n${JSON.stringify($json.intents, null, 2)}\n\n=== SUGGESTED ORDER ===\n${$json.execution_order.join(' -> ')}\n\n=== PARALLELIZABLE INTENTS ===\n${$json.has_parallel_intents ? 'YES' : 'NO'}\n\n=== ORIGINAL QUERY ===\n${$json.original_query}\n\n=== STRICT JSON FORMAT ===\nRespond ONLY with this JSON:\n{\n  \"plan_id\": \"plan-<timestamp>\",\n  \"reasoning\": \"<your reasoning in 2-3 sentences>\",\n  \"execution_mode\": \"SEQUENTIAL|PARALLEL|MIXED\",\n  \"parallel_groups\": [{\"group_id\": 1, \"task_ids\": [1, 2], \"reason\": \"...\"}],\n  \"tasks\": [\n    {\n      \"task_id\": 1,\n      \"intent_id\": \"intent-1\",\n      \"query\": \"<query OPTIMIZED for this RAG>\",\n      \"target_rag\": \"STANDARD|GRAPH|QUANTITATIVE\",\n      \"fallback_rag\": \"STANDARD|GRAPH|QUANTITATIVE\",\n      \"parallel_group\": null,\n      \"depends_on_task\": null,\n      \"success_criteria\": {\"min_confidence\": 0.6, \"min_sources\": 1},\n      \"if_success_covers\": []\n    }\n  ],\n  \"total_tasks\": 1,\n  \"estimated_latency_ms\": 3000\n}`) }}\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"model\": \"fast\",\n  \"temperature\": 0.2,\n  \"max_tokens\": 500,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify(`You are the TASK PLANNER of a multi-engine RAG system. You receive analyzed intents and must create an optimal execution plan.\n\n=== DETAILED RAG ENGINE CAPABILITIES ===\n\n**STANDARD (RAG Multi-Index V3.4)**\n- Technology: Pinecone (1536 dims) + BM25 sparse\n- Retrieval: HyDE (hypothetical document), optional Query Decomposition\n- Reranking: Cohere rerank-multilingual-v3\n- topK: 20 chunks, ~500 tokens/chunk\n- Latency: 2-4 seconds\n- OPTIMAL FOR: Factual questions, procedures, definitions, technical documentation\n- AVOID FOR: precise numbers, hierarchical relationships\n\n**GRAPH (Neo4j Graph RAG V3.3)**\n- Technology: Neo4j + 4-hop traversal\n- Capabilities: community detection, path finding, pruning\n- Entities: Person, Team, Project, Document, Skill\n- Relations: WORKS_IN, MANAGES, REPORTS_TO, CONTRIBUTES_TO\n- Latency: 3-6 seconds\n- OPTIMAL FOR: Relationships, hierarchies, impacts, org charts, multi-hop reasoning, entity traversal, comparison between entities\n- AVOID FOR: numbers, long narrative text\n\n**QUANTITATIVE (SQL RAG V2.0)**\n- Technology: PostgreSQL + Text-to-SQL (CoT)\n- Self-healing: automatic SQL correction\n- Tables: sales, employees, products, kpis\n- Latency: 2-5 seconds\n- OPTIMAL FOR: Totals, averages, comparisons, KPIs, trends\n- AVOID FOR: text, non-numeric relationships\n\n=== PLANNING RULES ===\n1. PARALLELIZATION: If two tasks have NO dependency, same parallel_group (max 3)\n2. DEPENDENCIES: A task needing another's result -> depends_on\n3. SKIP CONDITIONS: If one answer can cover multiple intents -> if_success_covers\n4. FALLBACKS: Always provide a fallback_rag DIFFERENT from target_rag\n\n=== RECEIVED INTENTS ===\n${JSON.stringify($json.intents, null, 2)}\n\n=== SUGGESTED ORDER ===\n${$json.execution_order.join(' -> ')}\n\n=== PARALLELIZABLE INTENTS ===\n${$json.has_parallel_intents ? 'YES' : 'NO'}\n\n=== ORIGINAL QUERY ===\n${$json.original_query}\n\n=== STRICT JSON FORMAT ===\nRespond ONLY with this JSON:\n{\n  \"plan_id\": \"plan-<timestamp>\",\n  \"reasoning\": \"<your reasoning in 2-3 sentences>\",\n  \"execution_mode\": \"SEQUENTIAL|PARALLEL|MIXED\",\n  \"parallel_groups\": [{\"group_id\": 1, \"task_ids\": [1, 2], \"reason\": \"...\"}],\n  \"tasks\": [\n    {\n      \"task_id\": 1,\n      \"intent_id\": \"intent-1\",\n      \"query\": \"<query OPTIMIZED for this RAG>\",\n      \"target_rag\": \"STANDARD|GRAPH|QUANTITATIVE\",\n      \"fallback_rag\": \"STANDARD|GRAPH|QUANTITATIVE\",\n      \"parallel_group\": null,\n      \"depends_on_task\": null,\n      \"success_criteria\": {\"min_confidence\": 0.6, \"min_sources\": 1},\n      \"if_success_covers\": []\n    }\n  ],\n  \"total_tasks\": 1,\n  \"estimated_latency_ms\": 3000\n}`) }}\n    }\n  ]\n}",
         "options": {
           "timeout": 10000,
           "retry": {
@@ -567,7 +567,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.OPENROUTER_KEY_ORCHESTRATOR}}"
+              "value": "Bearer sk-litellm-nomos-2026"
             }
           ]
         }
@@ -737,7 +737,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
-          "id": "bw4tS5hs7JoFoKMy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -773,7 +773,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
-          "id": "bw4tS5hs7JoFoKMy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -909,7 +909,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
-          "id": "bw4tS5hs7JoFoKMy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -991,7 +991,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
-          "id": "bw4tS5hs7JoFoKMy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -1028,7 +1028,7 @@
       ],
       "credentials": {
         "redis": {
-          "id": "2zWYpJeQC6jTf7bF",
+          "id": "6VHwdPZIvoxs5dvh",
           "name": "Redis"
         }
       }
@@ -1238,7 +1238,7 @@
       ],
       "credentials": {
         "redis": {
-          "id": "2zWYpJeQC6jTf7bF",
+          "id": "6VHwdPZIvoxs5dvh",
           "name": "Redis"
         }
       }
@@ -1246,11 +1246,11 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions' }}",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
         "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ {\n  \"model\": $env.LLM_AGENT_MODEL || 'mistralai/mistral-small-3.1-24b-instruct:free',\n  \"max_tokens\": 500,\n  \"temperature\": 0.3,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the JUDGE of a multi-engine RAG system. Your role is to decide if the obtained results are sufficient to answer the user's question.\\n\\n=== YOUR ROLE ===\\n1. Analyze the user's ORIGINAL QUERY\\n2. Examine the OBTAINED RESPONSES from completed tasks\\n3. JUDGE whether these responses are sufficient to answer the query\\n4. Decide what to do with remaining pending tasks\\n\\n=== YOUR POSSIBLE DECISIONS ===\\n\\n**all_tasks_complete: true** \u2192 The obtained responses are sufficient to answer the user\\n- Set all pending tasks to SKIP\\n- The workflow will generate the final response\\n\\n**all_tasks_complete: false** \u2192 Information is still missing\\n- KEEP necessary pending tasks\\n- SKIP redundant pending tasks\\n- Optional: ADD new tasks\\n\\n=== JSON RESPONSE FORMAT ===\\n{\\n  \\\"all_tasks_complete\\\": true/false,\\n  \\\"judgment\\\": \\\"Explanation of why responses are sufficient or not\\\",\\n  \\\"actions\\\": [\\n    {\\\"action\\\": \\\"SKIP\\\", \\\"task_id\\\": 2, \\\"reason\\\": \\\"...\\\"},\\n    {\\\"action\\\": \\\"KEEP\\\", \\\"task_id\\\": 3, \\\"reason\\\": \\\"...\\\"}\\n  ],\\n  \\\"missing_info\\\": \\\"What is missing if all_tasks_complete=false\\\"\\n}\\n\\n=== RULES ===\\n- You MUST provide an action for EVERY pending task\\n- If all_tasks_complete=true, ALL pending tasks must be SKIP\\n- Do NOT handle fallbacks/errors (another system handles that)\\n- Respond ONLY with valid JSON\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"=== USER'S ORIGINAL QUERY ===\\n\" + $node['Init V8 Security & Analysis'].json.query + \"\\n\\n=== OBTAINED RESPONSES (completed tasks) ===\\n\" + JSON.stringify($node['\ud83d\udcca Task Status Aggregator'].json.completed_tasks || [], null, 2) + \"\\n\\n=== PENDING TASKS ===\\n\" + JSON.stringify($node['\ud83d\udcca Task Status Aggregator'].json.pending_tasks || [], null, 2) + \"\\n\\n=== ERROR TASKS ===\\n\" + JSON.stringify($node['\ud83d\udcca Task Status Aggregator'].json.error_tasks || [], null, 2) + \"\\n\\nAnalyze whether the obtained responses are sufficient to answer the original query. Return your decision in JSON.\"\n    }\n  ]\n} }}",
+        "jsonBody": "={{ {\n  \"model\": \"smart\",\n  \"max_tokens\": 500,\n  \"temperature\": 0.3,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the JUDGE of a multi-engine RAG system. Your role is to decide if the obtained results are sufficient to answer the user's question.\\n\\n=== YOUR ROLE ===\\n1. Analyze the user's ORIGINAL QUERY\\n2. Examine the OBTAINED RESPONSES from completed tasks\\n3. JUDGE whether these responses are sufficient to answer the query\\n4. Decide what to do with remaining pending tasks\\n\\n=== YOUR POSSIBLE DECISIONS ===\\n\\n**all_tasks_complete: true** \u2192 The obtained responses are sufficient to answer the user\\n- Set all pending tasks to SKIP\\n- The workflow will generate the final response\\n\\n**all_tasks_complete: false** \u2192 Information is still missing\\n- KEEP necessary pending tasks\\n- SKIP redundant pending tasks\\n- Optional: ADD new tasks\\n\\n=== JSON RESPONSE FORMAT ===\\n{\\n  \\\"all_tasks_complete\\\": true/false,\\n  \\\"judgment\\\": \\\"Explanation of why responses are sufficient or not\\\",\\n  \\\"actions\\\": [\\n    {\\\"action\\\": \\\"SKIP\\\", \\\"task_id\\\": 2, \\\"reason\\\": \\\"...\\\"},\\n    {\\\"action\\\": \\\"KEEP\\\", \\\"task_id\\\": 3, \\\"reason\\\": \\\"...\\\"}\\n  ],\\n  \\\"missing_info\\\": \\\"What is missing if all_tasks_complete=false\\\"\\n}\\n\\n=== RULES ===\\n- You MUST provide an action for EVERY pending task\\n- If all_tasks_complete=true, ALL pending tasks must be SKIP\\n- Do NOT handle fallbacks/errors (another system handles that)\\n- Respond ONLY with valid JSON\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"=== USER'S ORIGINAL QUERY ===\\n\" + $node['Init V8 Security & Analysis'].json.query + \"\\n\\n=== OBTAINED RESPONSES (completed tasks) ===\\n\" + JSON.stringify($node['\ud83d\udcca Task Status Aggregator'].json.completed_tasks || [], null, 2) + \"\\n\\n=== PENDING TASKS ===\\n\" + JSON.stringify($node['\ud83d\udcca Task Status Aggregator'].json.pending_tasks || [], null, 2) + \"\\n\\n=== ERROR TASKS ===\\n\" + JSON.stringify($node['\ud83d\udcca Task Status Aggregator'].json.error_tasks || [], null, 2) + \"\\n\\nAnalyze whether the obtained responses are sufficient to answer the original query. Return your decision in JSON.\"\n    }\n  ]\n} }}",
         "options": {
           "timeout": 8000,
           "retry": {
@@ -1263,7 +1263,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.OPENROUTER_KEY_ORCHESTRATOR}}"
+              "value": "Bearer sk-litellm-nomos-2026"
             }
           ]
         }
@@ -1323,7 +1323,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
-          "id": "bw4tS5hs7JoFoKMy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -1346,7 +1346,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
-          "id": "bw4tS5hs7JoFoKMy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -1406,11 +1406,11 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1' }}/chat/completions",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
         "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{ $env.LLM_FAST_MODEL || 'stepfun/step-3.5-flash:free' }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated multi-engine RAG system.\\n\\n=== YOUR MISSION ===\\n1. Analyzer la query utilisateur\\n2. Identifier TOUS les intents (explicites ET implicites)\\n3. D\u00e9terminer les D\u00c9PENDANCES entre intents\\n4. Assigner le moteur RAG optimal pour chaque intent\\n\\n=== MOTEURS RAG DISPONIBLES ===\\n\\n**STANDARD (Pinecone + BM25)**\\n- Forces: faits, proc\u00e9dures, d\u00e9finitions\\n\\n**GRAPH (Neo4j)**\\n- Forces: relations, hi\u00e9rarchies, impacts\\n\\n**QUANTITATIVE (PostgreSQL)**\\n- Forces: chiffres, totaux, moyennes, KPIs\\n\\n=== FORMAT JSON STRICT ===\\n{\\n  \\\"reasoning\\\": \\\"<ton analyse>\\\",\\n  \\\"intents\\\": [{\\\"id\\\": \\\"intent-1\\\", \\\"type\\\": \\\"FACTUAL|QUANTITATIVE|RELATIONAL\\\", \\\"suggested_rag\\\": \\\"STANDARD|GRAPH|QUANTITATIVE\\\", \\\"priority\\\": 1}],\\n  \\\"execution_order\\\": [\\\"intent-1\\\"],\\n  \\\"complexity\\\": \\\"SIMPLE|MODERATE|COMPLEX\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"=== QUERY TO ANALYZE ===\\n{{ $node['Init V8 Security & Analysis'].json.query }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 800\n}",
+        "jsonBody": "={\n  \"model\": \"fast\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are the INTENT ANALYZER of a sophisticated multi-engine RAG system.\\n\\n=== YOUR MISSION ===\\n1. Analyzer la query utilisateur\\n2. Identifier TOUS les intents (explicites ET implicites)\\n3. D\u00e9terminer les D\u00c9PENDANCES entre intents\\n4. Assigner le moteur RAG optimal pour chaque intent\\n\\n=== MOTEURS RAG DISPONIBLES ===\\n\\n**STANDARD (Pinecone + BM25)**\\n- Forces: faits, proc\u00e9dures, d\u00e9finitions\\n\\n**GRAPH (Neo4j)**\\n- Forces: relations, hi\u00e9rarchies, impacts\\n\\n**QUANTITATIVE (PostgreSQL)**\\n- Forces: chiffres, totaux, moyennes, KPIs\\n\\n=== FORMAT JSON STRICT ===\\n{\\n  \\\"reasoning\\\": \\\"<ton analyse>\\\",\\n  \\\"intents\\\": [{\\\"id\\\": \\\"intent-1\\\", \\\"type\\\": \\\"FACTUAL|QUANTITATIVE|RELATIONAL\\\", \\\"suggested_rag\\\": \\\"STANDARD|GRAPH|QUANTITATIVE\\\", \\\"priority\\\": 1}],\\n  \\\"execution_order\\\": [\\\"intent-1\\\"],\\n  \\\"complexity\\\": \\\"SIMPLE|MODERATE|COMPLEX\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"=== QUERY TO ANALYZE ===\\n{{ $node['Init V8 Security & Analysis'].json.query }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 800\n}",
         "options": {
           "timeout": 12000,
           "retry": {
@@ -1423,7 +1423,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.OPENROUTER_KEY_ORCHESTRATOR}}"
+              "value": "Bearer sk-litellm-nomos-2026"
             }
           ]
         }
@@ -1455,7 +1455,7 @@
       "name": "Postgres : Get Current Tasks",
       "credentials": {
         "postgres": {
-          "id": "bw4tS5hs7JoFoKMy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -2277,9 +2277,9 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "5af273cc-59f6-4152-bf68-810cead0f436",
-  "activeVersionId": "5af273cc-59f6-4152-bf68-810cead0f436",
-  "versionCounter": 171,
+  "versionId": "1ce8554d-2326-4e6e-8430-e4daf3dda6b8",
+  "activeVersionId": "f93e400e-8c79-4f90-acf7-2124ad26516f",
+  "versionCounter": 194,
   "triggerCount": 2,
   "shared": [
     {
@@ -2303,9 +2303,9 @@
   "tags": [],
   "parentFolder": null,
   "activeVersion": {
-    "updatedAt": "2026-03-04T02:10:59.768Z",
-    "createdAt": "2026-03-04T02:10:59.768Z",
-    "versionId": "5af273cc-59f6-4152-bf68-810cead0f436",
+    "updatedAt": "2026-03-04T08:32:37.247Z",
+    "createdAt": "2026-03-04T08:32:37.247Z",
+    "versionId": "f93e400e-8c79-4f90-acf7-2124ad26516f",
     "workflowId": "ALd4gOEqiKL5KR1p",
     "nodes": [
       {
@@ -2388,7 +2388,7 @@
         "onError": "continueErrorOutput",
         "credentials": {
           "redis": {
-            "id": "2zWYpJeQC6jTf7bF",
+            "id": "6VHwdPZIvoxs5dvh",
             "name": "Redis"
           }
         }
@@ -2412,7 +2412,7 @@
         "onError": "continueErrorOutput",
         "credentials": {
           "postgres": {
-            "id": "bw4tS5hs7JoFoKMy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -2622,7 +2622,7 @@
         "onError": "continueErrorOutput",
         "credentials": {
           "postgres": {
-            "id": "bw4tS5hs7JoFoKMy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -2643,7 +2643,7 @@
         "typeVersion": 1,
         "credentials": {
           "redis": {
-            "id": "2zWYpJeQC6jTf7bF",
+            "id": "6VHwdPZIvoxs5dvh",
             "name": "Redis"
           }
         }
@@ -2667,7 +2667,7 @@
         "onError": "continueErrorOutput",
         "credentials": {
           "postgres": {
-            "id": "bw4tS5hs7JoFoKMy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -3038,7 +3038,7 @@
         "onError": "continueErrorOutput",
         "credentials": {
           "postgres": {
-            "id": "bw4tS5hs7JoFoKMy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -3074,7 +3074,7 @@
         "onError": "continueErrorOutput",
         "credentials": {
           "postgres": {
-            "id": "bw4tS5hs7JoFoKMy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -3210,7 +3210,7 @@
         "onError": "continueErrorOutput",
         "credentials": {
           "postgres": {
-            "id": "bw4tS5hs7JoFoKMy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -3292,7 +3292,7 @@
         "onError": "continueErrorOutput",
         "credentials": {
           "postgres": {
-            "id": "bw4tS5hs7JoFoKMy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -3329,7 +3329,7 @@
         ],
         "credentials": {
           "redis": {
-            "id": "2zWYpJeQC6jTf7bF",
+            "id": "6VHwdPZIvoxs5dvh",
             "name": "Redis"
           }
         }
@@ -3539,7 +3539,7 @@
         ],
         "credentials": {
           "redis": {
-            "id": "2zWYpJeQC6jTf7bF",
+            "id": "6VHwdPZIvoxs5dvh",
             "name": "Redis"
           }
         }
@@ -3624,7 +3624,7 @@
         "onError": "continueErrorOutput",
         "credentials": {
           "postgres": {
-            "id": "bw4tS5hs7JoFoKMy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -3647,7 +3647,7 @@
         "onError": "continueErrorOutput",
         "credentials": {
           "postgres": {
-            "id": "bw4tS5hs7JoFoKMy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -3756,7 +3756,7 @@
         "name": "Postgres : Get Current Tasks",
         "credentials": {
           "postgres": {
-            "id": "bw4tS5hs7JoFoKMy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -4575,82 +4575,10 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-04T02:18:12.045Z",
-        "id": 798,
+        "createdAt": "2026-03-04T08:41:25.864Z",
+        "id": 937,
         "workflowId": "ALd4gOEqiKL5KR1p",
-        "versionId": "5af273cc-59f6-4152-bf68-810cead0f436",
-        "event": "activated",
-        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
-      },
-      {
-        "createdAt": "2026-03-04T02:18:12.635Z",
-        "id": 799,
-        "workflowId": "ALd4gOEqiKL5KR1p",
-        "versionId": "5af273cc-59f6-4152-bf68-810cead0f436",
-        "event": "activated",
-        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
-      },
-      {
-        "createdAt": "2026-03-04T02:18:23.281Z",
-        "id": 800,
-        "workflowId": "ALd4gOEqiKL5KR1p",
-        "versionId": "5af273cc-59f6-4152-bf68-810cead0f436",
-        "event": "deactivated",
-        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
-      },
-      {
-        "createdAt": "2026-03-04T02:18:23.617Z",
-        "id": 801,
-        "workflowId": "ALd4gOEqiKL5KR1p",
-        "versionId": "5af273cc-59f6-4152-bf68-810cead0f436",
-        "event": "deactivated",
-        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
-      },
-      {
-        "createdAt": "2026-03-04T02:18:25.100Z",
-        "id": 802,
-        "workflowId": "ALd4gOEqiKL5KR1p",
-        "versionId": "5af273cc-59f6-4152-bf68-810cead0f436",
-        "event": "activated",
-        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
-      },
-      {
-        "createdAt": "2026-03-04T02:18:25.452Z",
-        "id": 803,
-        "workflowId": "ALd4gOEqiKL5KR1p",
-        "versionId": "5af273cc-59f6-4152-bf68-810cead0f436",
-        "event": "activated",
-        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
-      },
-      {
-        "createdAt": "2026-03-04T02:18:29.298Z",
-        "id": 804,
-        "workflowId": "ALd4gOEqiKL5KR1p",
-        "versionId": "5af273cc-59f6-4152-bf68-810cead0f436",
-        "event": "deactivated",
-        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
-      },
-      {
-        "createdAt": "2026-03-04T02:18:31.131Z",
-        "id": 805,
-        "workflowId": "ALd4gOEqiKL5KR1p",
-        "versionId": "5af273cc-59f6-4152-bf68-810cead0f436",
-        "event": "activated",
-        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
-      },
-      {
-        "createdAt": "2026-03-04T02:18:48.293Z",
-        "id": 806,
-        "workflowId": "ALd4gOEqiKL5KR1p",
-        "versionId": "5af273cc-59f6-4152-bf68-810cead0f436",
-        "event": "deactivated",
-        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
-      },
-      {
-        "createdAt": "2026-03-04T02:18:50.288Z",
-        "id": 807,
-        "workflowId": "ALd4gOEqiKL5KR1p",
-        "versionId": "5af273cc-59f6-4152-bf68-810cead0f436",
+        "versionId": "f93e400e-8c79-4f90-acf7-2124ad26516f",
         "event": "activated",
         "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
       }
@@ -4669,5 +4597,5 @@
     "workflow:unpublish",
     "workflow:update"
   ],
-  "checksum": "9015e867b016e1e3e5be75d814828a909b7af72969941d4ec44bbd559945696f"
+  "checksum": "4e955191dc020186f4b7ce9f7ec0833b8f1d333c83d033383a33fee504468aff"
 }

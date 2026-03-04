@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-04T08:10:23+01:00",
+  "generated_at": "2026-03-04T14:32:52+01:00",
   "phase": {
     "current": 1,
     "name": "Baseline (200q)",
@@ -7,76 +7,82 @@
   },
   "pipelines": {
     "standard": {
-      "accuracy": 90.0,
-      "tested": 50,
-      "correct": 45,
-      "errors": 4,
+      "accuracy": 0,
+      "tested": 0,
+      "correct": 0,
+      "errors": 0,
       "target": 85.0,
-      "met": true,
-      "gap": 5.0
+      "met": false,
+      "gap": -85.0
     },
     "graph": {
-      "accuracy": 60.0,
-      "tested": 50,
-      "correct": 30,
+      "accuracy": 0,
+      "tested": 0,
+      "correct": 0,
       "errors": 0,
       "target": 70.0,
       "met": false,
-      "gap": -10.0
+      "gap": -70.0
     },
     "quantitative": {
-      "accuracy": 82.0,
-      "tested": 50,
-      "correct": 41,
-      "errors": 1,
+      "accuracy": 0,
+      "tested": 0,
+      "correct": 0,
+      "errors": 0,
       "target": 85.0,
       "met": false,
-      "gap": -3.0
+      "gap": -85.0
     },
     "orchestrator": {
-      "accuracy": 64.0,
-      "tested": 50,
-      "correct": 32,
-      "errors": 10,
+      "accuracy": 0,
+      "tested": 0,
+      "correct": 0,
+      "errors": 0,
       "target": 70.0,
       "met": false,
-      "gap": -6.0
+      "gap": -70.0
     }
   },
   "overall": {
-    "accuracy": 74.0,
+    "accuracy": 0,
     "target": 75.0,
     "met": false
   },
   "blockers": [
-    "graph: 60.0% < 70.0% (gap: -10.0pp)",
-    "quantitative: 82.0% < 85.0% (gap: -3.0pp)",
-    "orchestrator: 64.0% < 70.0% (gap: -6.0pp)",
-    "overall: 74.0% < 75.0%"
+    "standard: 0% < 85.0% (gap: -85.0pp)",
+    "graph: 0% < 70.0% (gap: -70.0pp)",
+    "quantitative: 0% < 85.0% (gap: -85.0pp)",
+    "orchestrator: 0% < 70.0% (gap: -70.0pp)",
+    "overall: 0% < 75.0%"
   ],
-  "next_action": "Fix graph pipeline (60.0% vs 70.0% target, gap: -10.0pp)",
+  "next_action": "Fix standard pipeline (0% vs 85.0% target, gap: -85.0pp)",
   "last_iteration": {
-    "id": "iter-2026-03-04T08-05-55",
-    "label": "Phase1-S69-all",
-    "timestamp": "2026-03-04T08:06:01+01:00",
-    "total_tested": 5,
-    "overall_accuracy_pct": 20.0,
+    "id": "iter-2026-03-04T14-22-37",
+    "label": "Phase2-S70-b9-v2",
+    "timestamp": "2026-03-04T14:22:37+01:00",
+    "total_tested": 262,
+    "overall_accuracy_pct": 64.5,
     "pipelines": {
       "quantitative": {
-        "tested": 3,
-        "correct": 1,
-        "accuracy": 33.3
+        "tested": 172,
+        "correct": 85,
+        "accuracy": 49.4
       },
       "graph": {
-        "tested": 2,
-        "correct": 0,
-        "accuracy": 0.0
+        "tested": 9,
+        "correct": 3,
+        "accuracy": 33.3
+      },
+      "standard": {
+        "tested": 81,
+        "correct": 81,
+        "accuracy": 100.0
       }
     }
   },
   "totals": {
-    "unique_questions": 2944,
-    "test_runs": 12543,
-    "iterations": 1501
+    "unique_questions": 262,
+    "test_runs": 262,
+    "iterations": 51
   }
 }

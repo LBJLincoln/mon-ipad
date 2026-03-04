@@ -66,40 +66,77 @@ _iteration_id = None
 import threading
 _data_lock = threading.Lock()
 
+# In-memory data cache — avoids re-loading 15MB from disk on every question
+_cached_data = None
+_cache_dirty = False
+_SAVE_INTERVAL = 5  # seconds — flush to disk at most every 5s
+_last_save_time = 0
+_flush_timer = None
+
 
 def _load():
-    """Load data.json."""
+    """Load data.json — uses in-memory cache when available."""
+    global _cached_data
+    if _cached_data is not None:
+        return _cached_data
     if not os.path.exists(DATA_FILE):
-        return _default_data()
+        _cached_data = _default_data()
+        return _cached_data
     with open(DATA_FILE) as f:
-        return json.load(f)
+        _cached_data = json.load(f)
+    return _cached_data
 
 
 def _save(data):
-    """Save data.json atomically, then regenerate docs/status.json and sync eval-data.json.
-    Uses PID+thread+counter for unique tmp filenames to avoid race conditions."""
-    data["meta"]["generated_at"] = paris_iso()
-    _save._counter = getattr(_save, '_counter', 0) + 1
-    tmp = DATA_FILE + f".tmp.{os.getpid()}.{threading.get_ident()}.{_save._counter}"
+    """Buffer data in memory, flush to disk at most every _SAVE_INTERVAL seconds.
+    This avoids 15MB load+serialize+write per question (was ~1s each = batch hang)."""
+    global _cached_data, _cache_dirty, _last_save_time, _flush_timer
+    _cached_data = data
+    _cache_dirty = True
+    now = time.time()
+    if now - _last_save_time >= _SAVE_INTERVAL:
+        _flush_to_disk()
+    elif _flush_timer is None or not _flush_timer.is_alive():
+        # Schedule a flush in _SAVE_INTERVAL seconds
+        _flush_timer = threading.Timer(_SAVE_INTERVAL, _flush_from_timer)
+        _flush_timer.daemon = True
+        _flush_timer.start()
+
+
+def _flush_from_timer():
+    """Called by timer thread — acquires lock and flushes."""
+    with _data_lock:
+        if _cache_dirty:
+            _flush_to_disk()
+
+
+def _flush_to_disk():
+    """Actually write data.json to disk. Must be called with _data_lock held (or from finish())."""
+    global _cache_dirty, _last_save_time
+    if _cached_data is None:
+        return
+    _cached_data["meta"]["generated_at"] = paris_iso()
+    _flush_to_disk._counter = getattr(_flush_to_disk, '_counter', 0) + 1
+    tmp = DATA_FILE + f".tmp.{os.getpid()}.{threading.get_ident()}.{_flush_to_disk._counter}"
     try:
         with open(tmp, "w") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
+            json.dump(_cached_data, f, indent=2, ensure_ascii=False)
         os.replace(tmp, DATA_FILE)
     except OSError:
-        # Retry once on filesystem error
         try:
             with open(tmp, "w") as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
+                json.dump(_cached_data, f, indent=2, ensure_ascii=False)
             os.replace(tmp, DATA_FILE)
         except OSError:
-            pass  # Non-fatal — next save will succeed
+            pass
     finally:
-        # Clean up any leftover tmp files
         try:
             if os.path.exists(tmp):
                 os.unlink(tmp)
         except OSError:
             pass
+    _cache_dirty = False
+    _last_save_time = time.time()
     _sync_eval_data()
     _debounced_regenerate_status()
 
@@ -546,28 +583,9 @@ def record_execution(rag_type, question_id, question_text, expected="",
         with open(err_path, "w") as f:
             json.dump(err_trace, f, indent=2, ensure_ascii=False)
 
-    # Update execution_logs summary in data.json (last 200) — thread-safe
-    with _data_lock:
-        data = _load()
-        data = _ensure_v2(data)
-        if "execution_logs" not in data:
-            data["execution_logs"] = []
-        data["execution_logs"].append({
-            "timestamp": entry["timestamp"],
-            "question_id": question_id,
-            "rag_type": rag_type,
-            "correct": bool(correct),
-            "f1": round(f1, 4),
-            "latency_ms": int(latency_ms),
-            "error_type": error_type,
-            "error_preview": _sanitize(error, 100) if error else None,
-            "answer_preview": extracted_answer[:100],
-            "confidence": entry["output"]["confidence"],
-            "pipeline_details_summary": _summarize_pipeline_details(rag_type, pipeline_details),
-        })
-        if len(data["execution_logs"]) > 200:
-            data["execution_logs"] = data["execution_logs"][-200:]
-        _save(data)
+    # Skip data.json write for execution_logs — JSONL file is sufficient.
+    # This eliminates the second _data_lock acquisition per question,
+    # which was the root cause of batch mode hangs (18 sequential lock+save cycles).
 
     return entry
 
@@ -770,33 +788,43 @@ def update_db_stats():
     return snapshot_databases(trigger="stats-update")
 
 
+def flush():
+    """Force-flush any buffered data to disk. Call before exit or signal."""
+    with _data_lock:
+        if _cache_dirty:
+            _flush_to_disk()
+
+
 def finish(event="eval_complete"):
-    """Mark evaluation as complete."""
-    data = _load()
-    data = _ensure_v2(data)
-    data["meta"]["status"] = "complete"
+    """Mark evaluation as complete. Force-flushes any buffered data to disk."""
+    global _cached_data
+    with _data_lock:
+        data = _load()
+        data = _ensure_v2(data)
+        data["meta"]["status"] = "complete"
 
-    # Close the current iteration
-    if data["iterations"]:
-        iteration = data["iterations"][-1]
-        iteration["timestamp_end"] = paris_iso()
+        # Close the current iteration
+        if data["iterations"]:
+            iteration = data["iterations"][-1]
+            iteration["timestamp_end"] = paris_iso()
 
-    # Add history point
-    accs = {}
-    if data["iterations"]:
-        latest = data["iterations"][-1]
-        for rt, rs in latest.get("results_summary", {}).items():
-            accs[rt] = rs["accuracy_pct"]
+        # Add history point
+        accs = {}
+        if data["iterations"]:
+            latest = data["iterations"][-1]
+            for rt, rs in latest.get("results_summary", {}).items():
+                accs[rt] = rs["accuracy_pct"]
 
-    point = {
-        "timestamp": paris_iso(),
-        "event": event,
-        "total_tested": data["meta"].get("total_test_runs", 0),
-    }
-    point.update(accs)
-    data.setdefault("history", []).append(point)
+        point = {
+            "timestamp": paris_iso(),
+            "event": event,
+            "total_tested": data["meta"].get("total_test_runs", 0),
+        }
+        point.update(accs)
+        data.setdefault("history", []).append(point)
 
-    _save(data)
+        _cached_data = data
+        _flush_to_disk()
 
 
 def git_push(message="Update dashboard data"):

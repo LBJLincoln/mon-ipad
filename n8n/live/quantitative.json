@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-04T03:36:48.480Z",
+  "updatedAt": "2026-03-04T12:59:51.919Z",
   "createdAt": "2026-02-09T04:28:12.794Z",
   "id": "E19NZG9WfM7FNsxr",
   "name": "TEST - SOTA 2026 - WF4 Quantitative V2.0",
@@ -38,7 +38,7 @@
       ],
       "credentials": {
         "postgres": {
-          "id": "bw4tS5hs7JoFoKMy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -59,8 +59,8 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "predefinedCredentialType",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.requestBody) }}\n",
@@ -76,11 +76,14 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.OPENROUTER_KEY_QUANTITATIVE}}"
+              "value": "Bearer sk-litellm-nomos-2026"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
             }
           ]
-        },
-        "nodeCredentialType": "httpHeaderAuth"
+        }
       },
       "id": "1b0e89ee-a913-498e-ab6d-2f8d568a2d2f",
       "name": "Text-to-SQL Generator (CoT Enhanced)",
@@ -91,13 +94,7 @@
         208
       ],
       "continueOnFail": true,
-      "onError": "continueRegularOutput",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "dvCYQQs4JdiWamyU",
-          "name": "LLM API Key"
-        }
-      }
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -131,7 +128,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
-          "id": "bw4tS5hs7JoFoKMy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -152,8 +149,8 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "predefinedCredentialType",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ $json.requestBody }}",
@@ -169,11 +166,14 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.OPENROUTER_KEY_QUANTITATIVE}}"
+              "value": "Bearer sk-litellm-nomos-2026"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
             }
           ]
-        },
-        "nodeCredentialType": "httpHeaderAuth"
+        }
       },
       "id": "1179b1b8-11c3-41ae-b750-cec4e2687620",
       "name": "Interpretation Layer (LLM Analyst)",
@@ -184,13 +184,7 @@
         0
       ],
       "continueOnFail": true,
-      "onError": "continueRegularOutput",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "dvCYQQs4JdiWamyU",
-          "name": "LLM API Key"
-        }
-      }
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -267,8 +261,8 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "predefinedCredentialType",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ $json.requestBody }}",
@@ -284,11 +278,14 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.OPENROUTER_KEY_QUANTITATIVE}}"
+              "value": "Bearer sk-litellm-nomos-2026"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
             }
           ]
-        },
-        "nodeCredentialType": "httpHeaderAuth"
+        }
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -299,13 +296,7 @@
       "id": "62e9e6c2-a7b6-4f8f-baf1-8eef71eb898c",
       "name": "SQL Repair LLM",
       "continueOnFail": true,
-      "onError": "continueRegularOutput",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "dvCYQQs4JdiWamyU",
-          "name": "LLM API Key"
-        }
-      }
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -397,7 +388,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: 'arcee-ai/trinity-large-preview:free',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n!!!! CRITICAL DATA MODEL WARNING !!!!\nThe financials table contains BOTH quarterly rows (period='Q1','Q2','Q3','Q4') AND a full-year aggregate row (period='FY') for each company/year.\n- For annual totals: ALWAYS use period = 'FY'. NEVER SUM() without period filter or you get DOUBLE the real value.\n- For quarterly data: filter by the specific quarter (period = 'Q1', etc.).\n- SUM() is only valid across different companies or fiscal_years, NOT across periods within the same company/year.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER / DOUBLE-COUNTING PREVENTION:\n  The financials table contains BOTH period-level rows (Q1, Q2, Q3, Q4) AND full-year aggregate rows (period = 'FY').\n  * For annual/total revenue queries: ALWAYS filter with period = 'FY' to get the pre-computed annual total. Do NOT use SUM() across all periods as this will double-count (giving 2x the real value).\n  * For quarterly queries: filter by the specific period (e.g., period = 'Q1').\n  * Only use SUM() when aggregating across different companies or fiscal_years, NOT across periods within the same company/year.\n  * Example CORRECT query: SELECT revenue FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023 AND period = 'FY'\n  * Example WRONG query: SELECT SUM(revenue) FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023  -- This sums FY + Q1+Q2+Q3+Q4 = 2x!\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE (use: tenant_id = 'default' OR tenant_id IS NULL for max coverage)\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
+        "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: 'smart',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n!!!! CRITICAL DATA MODEL WARNING !!!!\nThe financials table contains BOTH quarterly rows (period='Q1','Q2','Q3','Q4') AND a full-year aggregate row (period='FY') for each company/year.\n- For annual totals: ALWAYS use period = 'FY'. NEVER SUM() without period filter or you get DOUBLE the real value.\n- For quarterly data: filter by the specific quarter (period = 'Q1', etc.).\n- SUM() is only valid across different companies or fiscal_years, NOT across periods within the same company/year.\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER / DOUBLE-COUNTING PREVENTION:\n  The financials table contains BOTH period-level rows (Q1, Q2, Q3, Q4) AND full-year aggregate rows (period = 'FY').\n  * For annual/total revenue queries: ALWAYS filter with period = 'FY' to get the pre-computed annual total. Do NOT use SUM() across all periods as this will double-count (giving 2x the real value).\n  * For quarterly queries: filter by the specific period (e.g., period = 'Q1').\n  * Only use SUM() when aggregating across different companies or fiscal_years, NOT across periods within the same company/year.\n  * Example CORRECT query: SELECT revenue FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023 AND period = 'FY'\n  * Example WRONG query: SELECT SUM(revenue) FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023  -- This sums FY + Q1+Q2+Q3+Q4 = 2x!\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE (use: tenant_id = 'default' OR tenant_id IS NULL for max coverage)\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -410,7 +401,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: 'arcee-ai/trinity-large-preview:free',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
+        "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: 'default',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -423,7 +414,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"arcee-ai/trinity-large-preview:free\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: 'arcee-ai/trinity-large-preview:free',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
+        "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"smart\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: 'smart',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -506,7 +497,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Build LLM request for direct context-based financial reasoning (FIX-39)\nconst data = $input.first().json;\nconst question = data.extracted_question || data.query || '';\nconst context = data.extracted_context || '';\n\nconst requestBody = {\n  model: 'arcee-ai/trinity-large-preview:free',\n  messages: [\n    {\n      role: 'system',\n      content: 'You are an expert financial analyst. Answer the question based ONLY on the provided context and data tables.\\n\\n'\n        + 'REASONING METHOD (follow these steps):\\n'\n        + '1. LOCATE: Find the specific table row/column or text passage with the relevant data\\n'\n        + '2. EXTRACT: Pull exact numbers from the data (with units \u2014 $, %, millions, etc.)\\n'\n        + '3. CALCULATE: Show your arithmetic step by step (e.g., 500 - 450 = 50, 50/450 = 0.1111)\\n'\n        + '4. ANSWER: State the final result\\n\\n'\n        + 'TABLE PARSING RULES:\\n'\n        + '- Tables may be JSON arrays like [[\"col1\",\"col2\"],[\"val1\",\"val2\"]] \u2014 treat each inner array as a row\\n'\n        + '- Tables may use pipe delimiters (|col1|col2|) or space-separated columns\\n'\n        + '- Read exact values from tables \u2014 never approximate\\n'\n        + '- For dollar amounts like \"$ 3329\" or \"$3,329\", extract the number: 3329\\n'\n        + '- For percentages like \"35.0% ( 35.0 % )\", extract: 35.0%\\n'\n        + '- For column lookups: find the row matching the criteria, read the target column\\n'\n        + '- For aggregations: sum/subtract/divide the exact values\\n\\n'\n        + 'ANSWER FORMAT:\\n'\n        + '- First line MUST be ONLY the final answer (number, percentage, yes/no)\\n'\n        + '- Then explain your reasoning\\n'\n        + '- Examples of correct first lines: \"15.7%\", \"1.08\", \"$94 million\", \"yes\"\\n'\n        + '- NEVER start with \"The answer is\" \u2014 just the value'\n    },\n    {\n      role: 'user',\n      content: context\n        ? `Context and data:\\n${context}\\n\\nQuestion: ${question}`\n        : `Question: ${question}`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 600,\n  top_p: 0.9\n};\n\nreturn [{ json: { requestBody, extracted_question: question, extracted_context: context } }];"
+        "jsCode": "// Build LLM request for direct context-based financial reasoning (FIX-39)\nconst data = $input.first().json;\nconst question = data.extracted_question || data.query || '';\nconst context = data.extracted_context || '';\n\nconst requestBody = {\n  model: 'default',\n  messages: [\n    {\n      role: 'system',\n      content: 'You are an expert financial analyst. Answer the question based ONLY on the provided context and data tables.\\n\\n'\n        + 'REASONING METHOD (follow these steps):\\n'\n        + '1. LOCATE: Find the specific table row/column or text passage with the relevant data\\n'\n        + '2. EXTRACT: Pull exact numbers from the data (with units \u2014 $, %, millions, etc.)\\n'\n        + '3. CALCULATE: Show your arithmetic step by step (e.g., 500 - 450 = 50, 50/450 = 0.1111)\\n'\n        + '4. ANSWER: State the final result\\n\\n'\n        + 'TABLE PARSING RULES:\\n'\n        + '- Tables may be JSON arrays like [[\"col1\",\"col2\"],[\"val1\",\"val2\"]] \u2014 treat each inner array as a row\\n'\n        + '- Tables may use pipe delimiters (|col1|col2|) or space-separated columns\\n'\n        + '- Read exact values from tables \u2014 never approximate\\n'\n        + '- For dollar amounts like \"$ 3329\" or \"$3,329\", extract the number: 3329\\n'\n        + '- For percentages like \"35.0% ( 35.0 % )\", extract: 35.0%\\n'\n        + '- For column lookups: find the row matching the criteria, read the target column\\n'\n        + '- For aggregations: sum/subtract/divide the exact values\\n\\n'\n        + 'ANSWER FORMAT:\\n'\n        + '- First line MUST be ONLY the final answer (number, percentage, yes/no)\\n'\n        + '- Then explain your reasoning\\n'\n        + '- Examples of correct first lines: \"15.7%\", \"1.08\", \"$94 million\", \"yes\"\\n'\n        + '- NEVER start with \"The answer is\" \u2014 just the value'\n    },\n    {\n      role: 'user',\n      content: context\n        ? `Context and data:\\n${context}\\n\\nQuestion: ${question}`\n        : `Question: ${question}`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 600,\n  top_p: 0.9\n};\n\nreturn [{ json: { requestBody, extracted_question: question, extracted_context: context } }];"
       },
       "id": "a1b2c3d4-cpr1-4000-8000-000000000003",
       "name": "Prepare Context Reasoning",
@@ -520,8 +511,8 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "predefinedCredentialType",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.requestBody) }}",
@@ -537,11 +528,14 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.OPENROUTER_KEY_QUANTITATIVE}}"
+              "value": "Bearer sk-litellm-nomos-2026"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
             }
           ]
-        },
-        "nodeCredentialType": "httpHeaderAuth"
+        }
       },
       "id": "a1b2c3d4-cll1-4000-8000-000000000004",
       "name": "Context Reasoning LLM",
@@ -552,13 +546,7 @@
         -100
       ],
       "continueOnFail": true,
-      "onError": "continueRegularOutput",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "dvCYQQs4JdiWamyU",
-          "name": "LLM API Key"
-        }
-      }
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -858,9 +846,9 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "1a3c2fc4-0b01-4bc7-a1a1-6e4519f8767a",
-  "activeVersionId": "1a3c2fc4-0b01-4bc7-a1a1-6e4519f8767a",
-  "versionCounter": 212,
+  "versionId": "3679339e-b46e-4eca-9a46-c6ffad335432",
+  "activeVersionId": "19779622-b588-4fc2-b248-5ad4b016817f",
+  "versionCounter": 242,
   "triggerCount": 2,
   "shared": [
     {
@@ -884,9 +872,9 @@
   "tags": [],
   "parentFolder": null,
   "activeVersion": {
-    "updatedAt": "2026-03-04T03:36:48.725Z",
-    "createdAt": "2026-03-04T03:36:48.725Z",
-    "versionId": "1a3c2fc4-0b01-4bc7-a1a1-6e4519f8767a",
+    "updatedAt": "2026-03-04T08:46:16.453Z",
+    "createdAt": "2026-03-04T08:46:16.453Z",
+    "versionId": "19779622-b588-4fc2-b248-5ad4b016817f",
     "workflowId": "E19NZG9WfM7FNsxr",
     "nodes": [
       {
@@ -920,7 +908,7 @@
         ],
         "credentials": {
           "postgres": {
-            "id": "bw4tS5hs7JoFoKMy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -942,7 +930,7 @@
         "parameters": {
           "method": "POST",
           "url": "https://openrouter.ai/api/v1/chat/completions",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ JSON.stringify($json.requestBody) }}\n",
@@ -959,10 +947,13 @@
               {
                 "name": "Authorization",
                 "value": "=Bearer {{$env.OPENROUTER_KEY_QUANTITATIVE}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
               }
             ]
-          },
-          "nodeCredentialType": "httpHeaderAuth"
+          }
         },
         "id": "1b0e89ee-a913-498e-ab6d-2f8d568a2d2f",
         "name": "Text-to-SQL Generator (CoT Enhanced)",
@@ -973,13 +964,7 @@
           208
         ],
         "continueOnFail": true,
-        "onError": "continueRegularOutput",
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "dvCYQQs4JdiWamyU",
-            "name": "LLM API Key"
-          }
-        }
+        "onError": "continueRegularOutput"
       },
       {
         "parameters": {
@@ -1013,7 +998,7 @@
         "onError": "continueErrorOutput",
         "credentials": {
           "postgres": {
-            "id": "bw4tS5hs7JoFoKMy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -1035,7 +1020,7 @@
         "parameters": {
           "method": "POST",
           "url": "https://openrouter.ai/api/v1/chat/completions",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ $json.requestBody }}",
@@ -1052,10 +1037,13 @@
               {
                 "name": "Authorization",
                 "value": "=Bearer {{$env.OPENROUTER_KEY_QUANTITATIVE}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
               }
             ]
-          },
-          "nodeCredentialType": "httpHeaderAuth"
+          }
         },
         "id": "1179b1b8-11c3-41ae-b750-cec4e2687620",
         "name": "Interpretation Layer (LLM Analyst)",
@@ -1066,13 +1054,7 @@
           0
         ],
         "continueOnFail": true,
-        "onError": "continueRegularOutput",
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "dvCYQQs4JdiWamyU",
-            "name": "LLM API Key"
-          }
-        }
+        "onError": "continueRegularOutput"
       },
       {
         "parameters": {
@@ -1150,7 +1132,7 @@
         "parameters": {
           "method": "POST",
           "url": "https://openrouter.ai/api/v1/chat/completions",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ $json.requestBody }}",
@@ -1167,10 +1149,13 @@
               {
                 "name": "Authorization",
                 "value": "=Bearer {{$env.OPENROUTER_KEY_QUANTITATIVE}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
               }
             ]
-          },
-          "nodeCredentialType": "httpHeaderAuth"
+          }
         },
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
@@ -1181,13 +1166,7 @@
         "id": "62e9e6c2-a7b6-4f8f-baf1-8eef71eb898c",
         "name": "SQL Repair LLM",
         "continueOnFail": true,
-        "onError": "continueRegularOutput",
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "dvCYQQs4JdiWamyU",
-            "name": "LLM API Key"
-          }
-        }
+        "onError": "continueRegularOutput"
       },
       {
         "parameters": {
@@ -1403,7 +1382,7 @@
         "parameters": {
           "method": "POST",
           "url": "https://openrouter.ai/api/v1/chat/completions",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ JSON.stringify($json.requestBody) }}",
@@ -1420,10 +1399,13 @@
               {
                 "name": "Authorization",
                 "value": "=Bearer {{$env.OPENROUTER_KEY_QUANTITATIVE}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
               }
             ]
-          },
-          "nodeCredentialType": "httpHeaderAuth"
+          }
         },
         "id": "a1b2c3d4-cll1-4000-8000-000000000004",
         "name": "Context Reasoning LLM",
@@ -1434,13 +1416,7 @@
           -100
         ],
         "continueOnFail": true,
-        "onError": "continueRegularOutput",
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "dvCYQQs4JdiWamyU",
-            "name": "LLM API Key"
-          }
-        }
+        "onError": "continueRegularOutput"
       },
       {
         "parameters": {
@@ -1738,10 +1714,10 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-04T03:38:22.272Z",
-        "id": 825,
+        "createdAt": "2026-03-04T08:46:24.361Z",
+        "id": 939,
         "workflowId": "E19NZG9WfM7FNsxr",
-        "versionId": "1a3c2fc4-0b01-4bc7-a1a1-6e4519f8767a",
+        "versionId": "19779622-b588-4fc2-b248-5ad4b016817f",
         "event": "activated",
         "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
       }
@@ -1760,5 +1736,5 @@
     "workflow:unpublish",
     "workflow:update"
   ],
-  "checksum": "01bf9980e1d795ac61bf3bfb6e1b249715da2a38d1057bd9788bb4348163e2f1"
+  "checksum": "a659a24e916ac85c991765731098f165e98f59fb353d1503e0d795c0c1368d0b"
 }

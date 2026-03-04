@@ -113,7 +113,12 @@ def _signal_handler(signum, frame):
         total = sum(len(v) for v in _global_tested_ids.values())
         print(f"\n  SIGNAL {signum} received — saving {total} tested IDs before exit...", flush=True)
         save_tested_ids({k: v for k, v in _global_tested_ids.items()})
-        print(f"  Saved. Exiting.", flush=True)
+    # Flush any buffered data.json writes
+    try:
+        writer.flush()
+        print(f"  Flushed data.json. Exiting.", flush=True)
+    except Exception:
+        pass
     sys.exit(0)
 
 

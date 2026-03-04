@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-04T03:36:34.172Z",
+  "updatedAt": "2026-03-04T12:59:43.172Z",
   "createdAt": "2026-02-14T01:10:15.711Z",
   "id": "6257AfT1l4FMC6lY",
   "name": "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED",
@@ -24,11 +24,11 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "predefinedCredentialType",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"arcee-ai/trinity-large-preview:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an entity extraction specialist. Given a question, extract ALL specific named entities (people, places, films, TV shows, organizations, dates, events). Return JSON format ONLY.\\n\\nRULES:\\n1. Extract SPECIFIC names only \u2014 never generic concepts\\n2. For multi-hop questions, extract entities from EACH hop\\n3. Also generate a brief hypothetical answer document (100 words max)\\n4. Return: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": \\\"PERSON|PLACE|FILM|ORGANIZATION|EVENT|DATE\\\"}]}\\n\\nEXAMPLE:\\nQuestion: Who voices the character in SpongeBob named after a glowing species?\\nEntities: [{\\\"name\\\": \\\"SpongeBob SquarePants\\\", \\\"type\\\": \\\"FILM\\\"}, {\\\"name\\\": \\\"Plankton\\\", \\\"type\\\": \\\"PERSON\\\"}, {\\\"name\\\": \\\"Mr. Lawrence\\\", \\\"type\\\": \\\"PERSON\\\"}]\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500\n}",
+        "jsonBody": "={\n  \"model\": \"fast\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an entity extraction specialist. Given a question, extract ALL specific named entities (people, places, films, TV shows, organizations, dates, events). Return JSON format ONLY.\\n\\nRULES:\\n1. Extract SPECIFIC names only \u2014 never generic concepts\\n2. For multi-hop questions, extract entities from EACH hop\\n3. Also generate a brief hypothetical answer document (100 words max)\\n4. Return: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": \\\"PERSON|PLACE|FILM|ORGANIZATION|EVENT|DATE\\\"}]}\\n\\nEXAMPLE:\\nQuestion: Who voices the character in SpongeBob named after a glowing species?\\nEntities: [{\\\"name\\\": \\\"SpongeBob SquarePants\\\", \\\"type\\\": \\\"FILM\\\"}, {\\\"name\\\": \\\"Plankton\\\", \\\"type\\\": \\\"PERSON\\\"}, {\\\"name\\\": \\\"Mr. Lawrence\\\", \\\"type\\\": \\\"PERSON\\\"}]\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500\n}",
         "options": {
           "timeout": 30000,
           "retry": {
@@ -41,11 +41,14 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer ={{$env.OPENROUTER_KEY_GRAPH}}"
+              "value": "Bearer sk-litellm-nomos-2026"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
             }
           ]
-        },
-        "nodeCredentialType": "httpHeaderAuth"
+        }
       },
       "id": "89b5c399-d785-424c-81d8-312bc84650c1",
       "name": "WF3: HyDE & Entity Extraction",
@@ -58,13 +61,7 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "pNVzIoHyuHyx963N",
-          "name": "LLM API Key"
-        }
-      }
+      "waitBetweenTries": 3000
     },
     {
       "parameters": {
@@ -129,12 +126,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
+        "url": "https://sota-rag-integrated-a4mkzmz.svc.aped-4627-b74a.pinecone.io/records/namespaces/__default__/search",
         "authentication": "none",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Validate Embedding'].json.embedding || $node['Generate HyDE Embedding'].json.embeddings?.float?.[0] || []) }},\n  \"topK\": {{ $node['OTEL Init'].json.topK || 100 }},\n  \"includeMetadata\": true\n}",
+        "jsonBody": "={{\n(() => {\n  const hydeDoc = $node['Extract HyDE Document']?.json?.hyde_document || '';\n  const query = $node['OTEL Init']?.json?.query || '';\n  const searchText = hydeDoc || query;\n  const topK = Math.min($node['OTEL Init']?.json?.topK || 50, 50);\n  return JSON.stringify({\n    \"query\": {\n      \"top_k\": topK,\n      \"inputs\": {\"text\": searchText}\n    }\n  });\n})()\n}}",
         "options": {
           "timeout": 30000,
           "retry": {
@@ -186,7 +183,7 @@
       "onError": "continueRegularOutput",
       "credentials": {
         "postgres": {
-          "id": "PleXt6bOBQW96RXy",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -247,7 +244,8 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "disabled": true
     },
     {
       "parameters": {
@@ -279,7 +277,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\ntry {\n  vectorResults = $node['WF3: Cohere Reranker']?.json?.results || [];\n} catch(e) {\n  vectorResults = [];\n}\n\n// Safely get Neo4j data\nlet neo4jData = null;\ntry {\n  neo4jData = $node['Validate Neo4j Results']?.json;\n} catch(e) {}\n\n// Safely get community data\nlet communityData = null;\ntry {\n  communityData = $node['Community Summaries Fetch']?.json;\n} catch(e) {}\n\n// Safely get entity extraction data\nlet entityData = null;\ntry {\n  entityData = $node['WF3: HyDE & Entity Extraction']?.json;\n} catch(e) {}\n\n// FIX-39d: Check for embedded reference context in query (Phase 2 graph questions)\nconst originalQuery = $node['OTEL Init'].json.query || '';\nlet embeddedContext = '';\nconst refCtxMatch = originalQuery.match(/\\nReference context:([\\s\\S]+)$/);\nif (refCtxMatch) {\n  embeddedContext = refCtxMatch[1].trim().substring(0, 3000);\n}\n\n// Build context from all available sources\nconst ctx = $json.budgeted_context || {};\nconst query = $node['OTEL Init'].json.query;\nconst traceId = $node['OTEL Init'].json.trace_id || '';\nconst contextParts = [];\n\n// Graph relationships from budgeted context\nif (ctx.relationships) {\n  contextParts.push('Graph Relationships: ' + ctx.relationships);\n}\nif (ctx.graph && ctx.graph.length > 0) {\n  const graphText = ctx.graph.slice(0, 5).map(g => g.content || g.text || '').filter(Boolean).join('\\n');\n  if (graphText) contextParts.push('Graph Context:\\n' + graphText);\n}\n\n// Vector/reranked docs\nif (ctx.reranked && ctx.reranked.length > 0) {\n  const rerankedText = ctx.reranked.slice(0, 5).map((d, i) => {\n    const content = typeof d === 'string' ? d : (d.document || d.content || d.text || '');\n    return '[Doc ' + (i+1) + '] ' + content;\n  }).filter(Boolean).join('\\n');\n  if (rerankedText) contextParts.push('Relevant Documents:\\n' + rerankedText);\n}\n\n// Community summaries\nif (ctx.community && ctx.community.length > 0) {\n  const commText = ctx.community.slice(0, 3).map(c => c.content || c.text || '').filter(Boolean).join('\\n');\n  if (commText) contextParts.push('Community Summaries:\\n' + commText);\n}\n\n// Fallback: if no budgeted context, try raw Neo4j data\nif (contextParts.length === 0) {\n  if (neo4jData && !neo4jData.skip_graph) {\n    // Extract paths from Neo4j v2 format\n    const values = neo4jData.data?.values || neo4jData.results?.[0]?.data?.map(d => d.row) || [];\n    if (values.length > 0) {\n      const pathStr = values.slice(0, 10).map(row => {\n        if (Array.isArray(row)) {\n          const startEntity = row[0];\n          const pathNodes = row[1] || [];\n          const pathRels = row[2] || [];\n          const nodeNames = Array.isArray(pathNodes) ? pathNodes.map(n => n.name || n).join(' -> ') : String(pathNodes);\n          return startEntity + ': ' + nodeNames + ' [' + (Array.isArray(pathRels) ? pathRels.join(', ') : '') + ']';\n        }\n        return JSON.stringify(row).substring(0, 200);\n      }).join('\\n');\n      contextParts.push('Entity Graph Paths:\\n' + pathStr);\n    }\n  }\n  \n  // Try community summaries raw data\n  if (communityData) {\n    const summaries = communityData.summaries || communityData;\n    if (Array.isArray(summaries) && summaries.length > 0) {\n      const commStr = summaries.slice(0, 3).map(s => s.summary || s.content || JSON.stringify(s).substring(0, 300)).join('\\n');\n      contextParts.push('Community Summaries:\\n' + commStr);\n    }\n  }\n  \n  // Try Hyde document as last resort context\n  if (contextParts.length === 0 && entityData) {\n    const content = entityData.choices?.[0]?.message?.content || '';\n    try {\n      const parsed = JSON.parse(content);\n      if (parsed.hyde_document) {\n        contextParts.push('Background Knowledge:\\n' + parsed.hyde_document);\n      }\n    } catch(e) {\n      if (content.length > 20) {\n        contextParts.push('Background Knowledge:\\n' + content.substring(0, 1000));\n      }\n    }\n  }\n}\n\n// FIX-39d: Use embedded context as fallback when all sources empty\nif (contextParts.length === 0 && embeddedContext) {\n  contextParts.push('Reference Documents:\\n' + embeddedContext);\n}\n\nconst fullContext = contextParts.join('\\n\\n');\nconst embedding_fallback = vectorResults.length === 0;\nconst traversal_depth = ctx.graph?.length || 0;\nconst context_sources = contextParts.length;\n\n// Build request body for LLM Answer Synthesis\nconst requestBody = {\n  model: 'arcee-ai/trinity-large-preview:free',\n  messages: [\n    {\n      role: 'system',\n      content: 'You are a precise knowledge graph Q&A assistant. Answer using ONLY the provided context.\\n\\nRULES:\\n1. WHO questions: return person name only (e.g., \\'John Knox\\')\\n2. WHAT questions: return entity name (e.g., \\'River Thames\\')\\n3. WHERE questions: return location (e.g., \\'Pearl River County\\')\\n4. WHEN questions: return year/date only (e.g., \\'1572\\')\\n5. Use graph relationships to trace multi-hop paths\\n6. If context has a chain A\u2192B\u2192C, follow it to find the answer\\n7. Give ONLY the final answer \u2014 no explanation, no prefixes\\n8. NEVER say you lack information\\n9. Respond in the SAME LANGUAGE as the question'\n    },\n    {\n      role: 'user',\n      content: 'Context:\\n' + fullContext + '\\n\\nQuestion: ' + query + '\\n\\nAnswer concisely:'\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 400\n};\n\nreturn [{\n  json: {\n    requestBody: requestBody,\n    trace_id: traceId,\n    embedding_fallback: embedding_fallback,\n    tokens_used: 0,\n    traversal_depth: traversal_depth,\n    context_sources: context_sources,\n    debug_context_length: fullContext.length,\n    debug_context_parts: contextParts.length\n  }\n}];"
+        "jsCode": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\ntry {\n  vectorResults = $node['WF3: Cohere Reranker']?.json?.results || [];\n} catch(e) {\n  vectorResults = [];\n}\n\n// Safely get Neo4j data\nlet neo4jData = null;\ntry {\n  neo4jData = $node['Validate Neo4j Results']?.json;\n} catch(e) {}\n\n// Safely get community data\nlet communityData = null;\ntry {\n  communityData = $node['Community Summaries Fetch']?.json;\n} catch(e) {}\n\n// Safely get entity extraction data\nlet entityData = null;\ntry {\n  entityData = $node['WF3: HyDE & Entity Extraction']?.json;\n} catch(e) {}\n\n// FIX-39d: Check for embedded reference context in query (Phase 2 graph questions)\nconst originalQuery = $node['OTEL Init'].json.query || '';\nlet embeddedContext = '';\nconst refCtxMatch = originalQuery.match(/\\nReference context:([\\s\\S]+)$/);\nif (refCtxMatch) {\n  embeddedContext = refCtxMatch[1].trim().substring(0, 3000);\n}\n\n// Build context from all available sources\nconst ctx = $json.budgeted_context || {};\nconst query = $node['OTEL Init'].json.query;\nconst traceId = $node['OTEL Init'].json.trace_id || '';\nconst contextParts = [];\n\n// Graph relationships from budgeted context\nif (ctx.relationships) {\n  contextParts.push('Graph Relationships: ' + ctx.relationships);\n}\nif (ctx.graph && ctx.graph.length > 0) {\n  const graphText = ctx.graph.slice(0, 5).map(g => g.content || g.text || '').filter(Boolean).join('\\n');\n  if (graphText) contextParts.push('Graph Context:\\n' + graphText);\n}\n\n// Vector/reranked docs\nif (ctx.reranked && ctx.reranked.length > 0) {\n  const rerankedText = ctx.reranked.slice(0, 5).map((d, i) => {\n    const content = typeof d === 'string' ? d : (d.document || d.content || d.text || '');\n    return '[Doc ' + (i+1) + '] ' + content;\n  }).filter(Boolean).join('\\n');\n  if (rerankedText) contextParts.push('Relevant Documents:\\n' + rerankedText);\n}\n\n// Community summaries\nif (ctx.community && ctx.community.length > 0) {\n  const commText = ctx.community.slice(0, 3).map(c => c.content || c.text || '').filter(Boolean).join('\\n');\n  if (commText) contextParts.push('Community Summaries:\\n' + commText);\n}\n\n// Fallback: if no budgeted context, try raw Neo4j data\nif (contextParts.length === 0) {\n  if (neo4jData && !neo4jData.skip_graph) {\n    // Extract paths from Neo4j v2 format\n    const values = neo4jData.data?.values || neo4jData.results?.[0]?.data?.map(d => d.row) || [];\n    if (values.length > 0) {\n      const pathStr = values.slice(0, 10).map(row => {\n        if (Array.isArray(row)) {\n          const startEntity = row[0];\n          const pathNodes = row[1] || [];\n          const pathRels = row[2] || [];\n          const nodeNames = Array.isArray(pathNodes) ? pathNodes.map(n => n.name || n).join(' -> ') : String(pathNodes);\n          return startEntity + ': ' + nodeNames + ' [' + (Array.isArray(pathRels) ? pathRels.join(', ') : '') + ']';\n        }\n        return JSON.stringify(row).substring(0, 200);\n      }).join('\\n');\n      contextParts.push('Entity Graph Paths:\\n' + pathStr);\n    }\n  }\n  \n  // Try community summaries raw data\n  if (communityData) {\n    const summaries = communityData.summaries || communityData;\n    if (Array.isArray(summaries) && summaries.length > 0) {\n      const commStr = summaries.slice(0, 3).map(s => s.summary || s.content || JSON.stringify(s).substring(0, 300)).join('\\n');\n      contextParts.push('Community Summaries:\\n' + commStr);\n    }\n  }\n  \n  // Try Hyde document as last resort context\n  if (contextParts.length === 0 && entityData) {\n    const content = entityData.choices?.[0]?.message?.content || '';\n    try {\n      const parsed = JSON.parse(content);\n      if (parsed.hyde_document) {\n        contextParts.push('Background Knowledge:\\n' + parsed.hyde_document);\n      }\n    } catch(e) {\n      if (content.length > 20) {\n        contextParts.push('Background Knowledge:\\n' + content.substring(0, 1000));\n      }\n    }\n  }\n}\n\n// FIX-39d: Use embedded context as fallback when all sources empty\nif (contextParts.length === 0 && embeddedContext) {\n  contextParts.push('Reference Documents:\\n' + embeddedContext);\n}\n\nconst fullContext = contextParts.join('\\n\\n');\nconst embedding_fallback = vectorResults.length === 0;\nconst traversal_depth = ctx.graph?.length || 0;\nconst context_sources = contextParts.length;\n\n// Build request body for LLM Answer Synthesis\nconst requestBody = {\n  model: 'default',\n  messages: [\n    {\n      role: 'system',\n      content: 'You are a precise knowledge graph Q&A assistant. Answer using ONLY the provided context.\\n\\nRULES:\\n1. WHO questions: return person name only (e.g., \\'John Knox\\')\\n2. WHAT questions: return entity name (e.g., \\'River Thames\\')\\n3. WHERE questions: return location (e.g., \\'Pearl River County\\')\\n4. WHEN questions: return year/date only (e.g., \\'1572\\')\\n5. Use graph relationships to trace multi-hop paths\\n6. If context has a chain A\u2192B\u2192C, follow it to find the answer\\n7. Give ONLY the final answer \u2014 no explanation, no prefixes\\n8. NEVER say you lack information\\n9. Respond in the SAME LANGUAGE as the question'\n    },\n    {\n      role: 'user',\n      content: 'Context:\\n' + fullContext + '\\n\\nQuestion: ' + query + '\\n\\nAnswer concisely:'\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 400\n};\n\nreturn [{\n  json: {\n    requestBody: requestBody,\n    trace_id: traceId,\n    embedding_fallback: embedding_fallback,\n    tokens_used: 0,\n    traversal_depth: traversal_depth,\n    context_sources: context_sources,\n    debug_context_length: fullContext.length,\n    debug_context_parts: contextParts.length\n  }\n}];"
       },
       "id": "0520b590-2736-4e0e-9191-0cb6ac9cce39",
       "name": "Response Formatter",
@@ -403,7 +401,8 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "disabled": true
     },
     {
       "parameters": {
@@ -435,7 +434,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const embeddingData = $json;\n\n// Check if we have a valid embedding - handle both Cohere and OpenRouter formats\nlet embedding = [];\n\n// Cohere v2 format: embeddings.float[0]\nif (embeddingData.embeddings?.float?.[0]) {\n  embedding = embeddingData.embeddings.float[0];\n}\n// OpenRouter/OpenAI format: data[0].embedding\nelse if (embeddingData.data?.[0]?.embedding) {\n  embedding = embeddingData.data[0].embedding;\n}\n// Body wrapper variants\nelse if (embeddingData.body?.embeddings?.float?.[0]) {\n  embedding = embeddingData.body.embeddings.float[0];\n}\nelse if (embeddingData.body?.data?.[0]?.embedding) {\n  embedding = embeddingData.body.data[0].embedding;\n}\nelse if (Array.isArray(embeddingData.embedding)) {\n  embedding = embeddingData.embedding;\n}\n\n// Validate embedding dimensions (1024 for Cohere, 1536 for OpenAI)\nconst expectedDims = parseInt('1024' || '1024');\nconst isValid = embedding.length >= 384; // Accept any reasonable dimension\n\nif (!isValid) {\n  return [{\n    json: {\n      valid: false,\n      error: `Invalid embedding: got ${embedding.length}, expected ${expectedDims}`,\n      embedding: [],\n      fallback: true\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    embedding: embedding,\n    dimensions: embedding.length\n  }\n}];"
+        "jsCode": "// Validate Embedding \u2014 PATCHED: Bypass Jina, pass through HyDE text\n// When Jina embedding is disabled, pass through the HyDE document text\n// for Pinecone Integrated text search\n\nconst input = $json;\n\n// Try to get embedding from various formats\nlet embedding = [];\nif (input.embeddings?.float?.[0]) embedding = input.embeddings.float[0];\nelse if (input.data?.[0]?.embedding) embedding = input.data[0].embedding;\nelse if (input.body?.embeddings?.float?.[0]) embedding = input.body.embeddings.float[0];\n\n// Get the HyDE document text (from Extract HyDE Document when embedding is disabled)\nconst hydeText = input.hyde_document || input.text || input.content || '';\n\n// If no embedding but we have HyDE text, use text-based search mode\nif (embedding.length === 0 && hydeText) {\n  return [{\n    json: {\n      embedding: [],\n      embedding_valid: false,\n      use_text_search: true,\n      hyde_text: hydeText,\n      provider: \"text_search_fallback\"\n    }\n  }];\n}\n\nif (embedding.length === 0) {\n  return [{\n    json: {\n      embedding: [],\n      embedding_valid: false,\n      use_text_search: false,\n      error: \"No valid embedding found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    embedding: embedding,\n    embedding_valid: true,\n    use_text_search: false,\n    provider: \"jina\"\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -466,8 +465,8 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "predefinedCredentialType",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.requestBody) }}",
@@ -483,11 +482,14 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer ={{$env.OPENROUTER_KEY_GRAPH}}"
+              "value": "Bearer sk-litellm-nomos-2026"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
             }
           ]
-        },
-        "nodeCredentialType": "httpHeaderAuth"
+        }
       },
       "id": "a1b2c3d4-llm-answer-synthesis",
       "name": "LLM Answer Synthesis",
@@ -500,13 +502,7 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "pNVzIoHyuHyx963N",
-          "name": "LLM API Key"
-        }
-      }
+      "waitBetweenTries": 3000
     },
     {
       "parameters": {
@@ -841,9 +837,9 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "5df49319-7bbe-4ecd-81e6-6f36c1af8ef3",
-  "activeVersionId": "5df49319-7bbe-4ecd-81e6-6f36c1af8ef3",
-  "versionCounter": 210,
+  "versionId": "44d0b4f8-e49d-4dd3-a0ed-7bb370670de0",
+  "activeVersionId": "8b92535f-c131-43c9-9b2b-c2213650f8db",
+  "versionCounter": 248,
   "triggerCount": 2,
   "shared": [
     {
@@ -867,9 +863,9 @@
   "tags": [],
   "parentFolder": null,
   "activeVersion": {
-    "updatedAt": "2026-03-04T03:36:34.418Z",
-    "createdAt": "2026-03-04T03:36:34.418Z",
-    "versionId": "5df49319-7bbe-4ecd-81e6-6f36c1af8ef3",
+    "updatedAt": "2026-03-04T08:39:29.553Z",
+    "createdAt": "2026-03-04T08:39:29.553Z",
+    "versionId": "8b92535f-c131-43c9-9b2b-c2213650f8db",
     "workflowId": "6257AfT1l4FMC6lY",
     "nodes": [
       {
@@ -890,7 +886,7 @@
         "parameters": {
           "method": "POST",
           "url": "https://openrouter.ai/api/v1/chat/completions",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={\n  \"model\": \"arcee-ai/trinity-large-preview:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an entity extraction specialist. Given a question, extract ALL specific named entities (people, places, films, TV shows, organizations, dates, events). Return JSON format ONLY.\\n\\nRULES:\\n1. Extract SPECIFIC names only \u2014 never generic concepts\\n2. For multi-hop questions, extract entities from EACH hop\\n3. Also generate a brief hypothetical answer document (100 words max)\\n4. Return: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": \\\"PERSON|PLACE|FILM|ORGANIZATION|EVENT|DATE\\\"}]}\\n\\nEXAMPLE:\\nQuestion: Who voices the character in SpongeBob named after a glowing species?\\nEntities: [{\\\"name\\\": \\\"SpongeBob SquarePants\\\", \\\"type\\\": \\\"FILM\\\"}, {\\\"name\\\": \\\"Plankton\\\", \\\"type\\\": \\\"PERSON\\\"}, {\\\"name\\\": \\\"Mr. Lawrence\\\", \\\"type\\\": \\\"PERSON\\\"}]\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500\n}",
@@ -906,11 +902,14 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "Bearer ={{$env.OPENROUTER_KEY_GRAPH}}"
+                "value": "=Bearer {{$env.OPENROUTER_KEY_GRAPH}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
               }
             ]
-          },
-          "nodeCredentialType": "httpHeaderAuth"
+          }
         },
         "id": "89b5c399-d785-424c-81d8-312bc84650c1",
         "name": "WF3: HyDE & Entity Extraction",
@@ -923,13 +922,7 @@
         "onError": "continueRegularOutput",
         "retryOnFail": true,
         "maxTries": 3,
-        "waitBetweenTries": 3000,
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "pNVzIoHyuHyx963N",
-            "name": "LLM API Key"
-          }
-        }
+        "waitBetweenTries": 3000
       },
       {
         "parameters": {
@@ -994,12 +987,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
+          "url": "https://sota-rag-integrated-a4mkzmz.svc.aped-4627-b74a.pinecone.io/records/namespaces/__default__/search",
           "authentication": "none",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Validate Embedding'].json.embedding || $node['Generate HyDE Embedding'].json.embeddings?.float?.[0] || []) }},\n  \"topK\": {{ $node['OTEL Init'].json.topK || 100 }},\n  \"includeMetadata\": true\n}",
+          "jsonBody": "={{\n(() => {\n  const hydeDoc = $node['Extract HyDE Document']?.json?.hyde_document || '';\n  const query = $node['OTEL Init']?.json?.query || '';\n  const searchText = hydeDoc || query;\n  const topK = Math.min($node['OTEL Init']?.json?.topK || 50, 50);\n  return JSON.stringify({\n    \"query\": {\n      \"top_k\": topK,\n      \"inputs\": {\"text\": searchText}\n    }\n  });\n})()\n}}",
           "options": {
             "timeout": 30000,
             "retry": {
@@ -1051,7 +1044,7 @@
         "onError": "continueRegularOutput",
         "credentials": {
           "postgres": {
-            "id": "PleXt6bOBQW96RXy",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -1112,7 +1105,8 @@
         "onError": "continueRegularOutput",
         "retryOnFail": true,
         "maxTries": 3,
-        "waitBetweenTries": 3000
+        "waitBetweenTries": 3000,
+        "disabled": true
       },
       {
         "parameters": {
@@ -1268,7 +1262,8 @@
         "onError": "continueRegularOutput",
         "retryOnFail": true,
         "maxTries": 3,
-        "waitBetweenTries": 3000
+        "waitBetweenTries": 3000,
+        "disabled": true
       },
       {
         "parameters": {
@@ -1300,7 +1295,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const embeddingData = $json;\n\n// Check if we have a valid embedding - handle both Cohere and OpenRouter formats\nlet embedding = [];\n\n// Cohere v2 format: embeddings.float[0]\nif (embeddingData.embeddings?.float?.[0]) {\n  embedding = embeddingData.embeddings.float[0];\n}\n// OpenRouter/OpenAI format: data[0].embedding\nelse if (embeddingData.data?.[0]?.embedding) {\n  embedding = embeddingData.data[0].embedding;\n}\n// Body wrapper variants\nelse if (embeddingData.body?.embeddings?.float?.[0]) {\n  embedding = embeddingData.body.embeddings.float[0];\n}\nelse if (embeddingData.body?.data?.[0]?.embedding) {\n  embedding = embeddingData.body.data[0].embedding;\n}\nelse if (Array.isArray(embeddingData.embedding)) {\n  embedding = embeddingData.embedding;\n}\n\n// Validate embedding dimensions (1024 for Cohere, 1536 for OpenAI)\nconst expectedDims = parseInt('1024' || '1024');\nconst isValid = embedding.length >= 384; // Accept any reasonable dimension\n\nif (!isValid) {\n  return [{\n    json: {\n      valid: false,\n      error: `Invalid embedding: got ${embedding.length}, expected ${expectedDims}`,\n      embedding: [],\n      fallback: true\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    embedding: embedding,\n    dimensions: embedding.length\n  }\n}];"
+          "jsCode": "// Validate Embedding \u2014 PATCHED: Bypass Jina, pass through HyDE text\n// When Jina embedding is disabled, pass through the HyDE document text\n// for Pinecone Integrated text search\n\nconst input = $json;\n\n// Try to get embedding from various formats\nlet embedding = [];\nif (input.embeddings?.float?.[0]) embedding = input.embeddings.float[0];\nelse if (input.data?.[0]?.embedding) embedding = input.data[0].embedding;\nelse if (input.body?.embeddings?.float?.[0]) embedding = input.body.embeddings.float[0];\n\n// Get the HyDE document text (from Extract HyDE Document when embedding is disabled)\nconst hydeText = input.hyde_document || input.text || input.content || '';\n\n// If no embedding but we have HyDE text, use text-based search mode\nif (embedding.length === 0 && hydeText) {\n  return [{\n    json: {\n      embedding: [],\n      embedding_valid: false,\n      use_text_search: true,\n      hyde_text: hydeText,\n      provider: \"text_search_fallback\"\n    }\n  }];\n}\n\nif (embedding.length === 0) {\n  return [{\n    json: {\n      embedding: [],\n      embedding_valid: false,\n      use_text_search: false,\n      error: \"No valid embedding found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    embedding: embedding,\n    embedding_valid: true,\n    use_text_search: false,\n    provider: \"jina\"\n  }\n}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -1332,7 +1327,7 @@
         "parameters": {
           "method": "POST",
           "url": "https://openrouter.ai/api/v1/chat/completions",
-          "authentication": "predefinedCredentialType",
+          "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ JSON.stringify($json.requestBody) }}",
@@ -1348,11 +1343,14 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "Bearer ={{$env.OPENROUTER_KEY_GRAPH}}"
+                "value": "=Bearer {{$env.OPENROUTER_KEY_GRAPH}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
               }
             ]
-          },
-          "nodeCredentialType": "httpHeaderAuth"
+          }
         },
         "id": "a1b2c3d4-llm-answer-synthesis",
         "name": "LLM Answer Synthesis",
@@ -1365,13 +1363,7 @@
         "onError": "continueRegularOutput",
         "retryOnFail": true,
         "maxTries": 3,
-        "waitBetweenTries": 3000,
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "pNVzIoHyuHyx963N",
-            "name": "LLM API Key"
-          }
-        }
+        "waitBetweenTries": 3000
       },
       {
         "parameters": {
@@ -1704,10 +1696,26 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-04T03:38:09.084Z",
-        "id": 824,
+        "createdAt": "2026-03-04T08:39:40.797Z",
+        "id": 921,
         "workflowId": "6257AfT1l4FMC6lY",
-        "versionId": "5df49319-7bbe-4ecd-81e6-6f36c1af8ef3",
+        "versionId": "8b92535f-c131-43c9-9b2b-c2213650f8db",
+        "event": "activated",
+        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
+      },
+      {
+        "createdAt": "2026-03-04T08:40:47.835Z",
+        "id": 930,
+        "workflowId": "6257AfT1l4FMC6lY",
+        "versionId": "8b92535f-c131-43c9-9b2b-c2213650f8db",
+        "event": "deactivated",
+        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
+      },
+      {
+        "createdAt": "2026-03-04T08:40:49.892Z",
+        "id": 931,
+        "workflowId": "6257AfT1l4FMC6lY",
+        "versionId": "8b92535f-c131-43c9-9b2b-c2213650f8db",
         "event": "activated",
         "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
       }
@@ -1726,5 +1734,5 @@
     "workflow:unpublish",
     "workflow:update"
   ],
-  "checksum": "a6dd7ce1289072cf31be28dd25a2b386fc1e0def74cbcb8a0d1a160d42488f9e"
+  "checksum": "c01d0476759accc9940b21b6727c1380bedc37c6924b863336caab3d3e8bd1e0"
 }

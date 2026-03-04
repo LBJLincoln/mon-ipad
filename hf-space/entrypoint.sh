@@ -1,22 +1,22 @@
 #!/bin/bash
 # =================================================================
-# HF Space Entrypoint — n8n Engine v5.5
+# HF Space Entrypoint — n8n Engine v6.0 (Persistent Postgres)
 # =================================================================
-# SQLITE + POST /activate APPROACH:
-# 1. Strip credential refs from workflows → clean JSONs
-# 2. CLI import cleaned workflows (creates SQLite entries)
-# 3. Start n8n (reads SQLite, runs migrations)
-# 4. After healthy: Login → Create credentials → Restore cred refs
-# 5. POST /activate with versionId → registers webhooks
-# 6. Verify webhooks
+# POSTGRES-BACKED PERSISTENT APPROACH:
+# - Each Space uses its own Supabase schema (n8n_engine_1..6)
+# - First boot: create tables + import workflows + setup credentials
+# - Subsequent boots: everything persists — just verify webhooks
+# - No more re-importing on every restart!
+#
+# Env var SPACE_NUMBER (1-6) determines which schema to use.
+# Default: 1 (primary Space)
 #
 # KEY: PATCH {active:true} does NOT register webhooks in n8n 2.8+.
 #      POST /workflows/{id}/activate with versionId is required.
-#      POST /activate also validates node credentials → must restore
-#      credential refs BEFORE activation.
+#      n8n re-registers webhooks from DB on startup automatically.
 #
 # RESILIENCE: No set -e. Container stays alive even if setup fails.
-# Last updated: 2026-02-23
+# Last updated: 2026-03-03
 # =================================================================
 
 SETUP_LOG="/tmp/setup-workflows.log"
@@ -46,8 +46,20 @@ else
     export WEBHOOK_URL=https://lbjlincoln-nomos-rag-engine.hf.space
     echo "  WEBHOOK_URL fallback (hardcoded): $WEBHOOK_URL"
 fi
-export DB_TYPE=sqlite
-export DB_SQLITE_DATABASE=/home/node/.n8n/database.sqlite
+# --- Persistent Postgres (Supabase) --- SHARED schema for all Spaces
+# All Spaces share the same n8n_engine schema (same workflows, credentials).
+# This means: set up once, all Spaces benefit. Load balancer can route anywhere.
+# Using shared schema avoids migration conflicts across per-Space schemas.
+SPACE_NUMBER="${SPACE_NUMBER:-1}"
+export DB_TYPE=postgresdb
+export DB_POSTGRESDB_HOST="${SUPABASE_HOST:-aws-1-eu-west-1.pooler.supabase.com}"
+export DB_POSTGRESDB_PORT="${SUPABASE_PORT:-6543}"
+export DB_POSTGRESDB_DATABASE="${SUPABASE_DB:-postgres}"
+export DB_POSTGRESDB_USER="${SUPABASE_USER:-postgres.ayqviqmxifzmhphiqfmj}"
+export DB_POSTGRESDB_PASSWORD="${SUPABASE_PASSWORD}"
+export DB_POSTGRESDB_SCHEMA="n8n_engine_1"
+export DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED=false
+echo "  DB: Postgres schema n8n_engine_1 (shared) @ ${DB_POSTGRESDB_HOST}:${DB_POSTGRESDB_PORT} — Space #${SPACE_NUMBER}"
 export EXECUTIONS_MODE=regular
 export N8N_DEFAULT_BINARY_DATA_MODE=filesystem
 export EXECUTIONS_DATA_PRUNE=true
@@ -106,14 +118,28 @@ echo "  === ENV CHECK ==="
 [ -n "$N8N_ENCRYPTION_KEY" ] && echo "  N8N_ENCRYPTION_KEY: SET" || echo "  N8N_ENCRYPTION_KEY: UNSET"
 echo "  ================="
 
-# ---- 2. Strip credentials + CLI import ----
+# ---- 2. Check persistence + conditional import ----
 echo ""
-echo "[2/6] Importing workflows via CLI..."
+echo "[2/6] Checking database persistence..."
 
 mkdir -p /home/node/.n8n
 
-# Strip credential references to prevent FOREIGN KEY errors
-echo "  Stripping credential references..."
+# Check if Postgres schema already has workflows (persistent from previous boot)
+DB_HAS_WORKFLOWS=false
+if [ -n "$SUPABASE_PASSWORD" ]; then
+    WF_COUNT=$(python3 -c "
+import urllib.request, json, os, ssl
+# Check if n8n tables exist by trying a quick count
+# n8n will create tables on first start, so we just check if schema exists
+schema = os.environ.get('DB_POSTGRESDB_SCHEMA', 'n8n_engine_1')
+print('0')  # Will be checked after n8n starts
+" 2>/dev/null || echo "0")
+    echo "  Postgres schema: n8n_engine_${SPACE_NUMBER}"
+    echo "  Pre-check: will verify workflow count after n8n starts"
+fi
+
+# Always prepare clean workflows (needed for first boot or updates)
+echo "  Preparing clean workflow files..."
 mkdir -p /tmp/n8n-clean-workflows
 CLEANED=0
 for wf in /app/n8n-workflows/*.json; do
@@ -123,7 +149,7 @@ for wf in /app/n8n-workflows/*.json; do
 import json, uuid
 with open('$wf') as f:
     d = json.load(f)
-# Strip credential references from nodes
+# Strip credential references to prevent FOREIGN KEY errors
 for node in d.get('nodes', []):
     node.pop('credentials', None)
 # Strip FK-causing fields (reference old DB objects that don't exist)
@@ -141,23 +167,6 @@ print('  Cleaned: $WFNAME')
     CLEANED=$((CLEANED + 1))
 done
 echo "  Cleaned $CLEANED workflow files"
-
-# CLI import (n8n creates SQLite DB on first import)
-echo "  CLI importing..."
-CLI_OK=0
-CLI_FAIL=0
-for wf in /tmp/n8n-clean-workflows/*.json; do
-    [ -f "$wf" ] || continue
-    WFNAME=$(basename "$wf")
-    if n8n import:workflow --input="$wf" 2>&1; then
-        CLI_OK=$((CLI_OK + 1))
-        echo "  OK: $WFNAME"
-    else
-        CLI_FAIL=$((CLI_FAIL + 1))
-        echo "  FAIL: $WFNAME"
-    fi
-done
-echo "  CLI import: $CLI_OK OK, $CLI_FAIL failed"
 
 # ---- 3. Start n8n ----
 echo ""
@@ -184,6 +193,44 @@ if [ "$N8N_READY" != "true" ]; then
     # Don't exit — try to keep container alive
     wait $N8N_PID
     exit 0
+fi
+
+# ---- 3b. Check if DB already has workflows (persistent boot) ----
+echo "  Checking if workflows already in Postgres..."
+EXISTING_WF_COUNT=$(curl -s http://127.0.0.1:7860/rest/workflows 2>/dev/null | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    data = d.get('data', d)
+    if isinstance(data, list):
+        print(len(data))
+    else:
+        print(0)
+except:
+    print(0)
+" 2>/dev/null || echo "0")
+echo "  Existing workflows in DB: $EXISTING_WF_COUNT"
+
+if [ "$EXISTING_WF_COUNT" -gt 3 ] 2>/dev/null; then
+    echo "  PERSISTENT BOOT — $EXISTING_WF_COUNT workflows found. Skipping CLI import."
+    NEEDS_IMPORT=false
+else
+    echo "  FIRST BOOT — importing workflows via CLI..."
+    CLI_OK=0
+    CLI_FAIL=0
+    for wf in /tmp/n8n-clean-workflows/*.json; do
+        [ -f "$wf" ] || continue
+        WFNAME=$(basename "$wf")
+        if n8n import:workflow --input="$wf" 2>&1; then
+            CLI_OK=$((CLI_OK + 1))
+            echo "  OK: $WFNAME"
+        else
+            CLI_FAIL=$((CLI_FAIL + 1))
+            echo "  FAIL: $WFNAME"
+        fi
+    done
+    echo "  CLI import: $CLI_OK OK, $CLI_FAIL failed"
+    NEEDS_IMPORT=true
 fi
 
 # ---- 4. Post-start: Owner setup + credentials ----
@@ -273,39 +320,78 @@ fi
 
 # ---- 5. Credential restore + publish/activate ----
 echo ""
-echo "[5/6] Running setup-workflows.py (credentials + publish + activate)..."
 
-if [ -n "$COOKIE" ]; then
-    SETUP_SUCCESS=false
-    for setup_attempt in 1 2 3; do
-        echo "  === setup-workflows.py attempt $setup_attempt/3 ==="
-        if python3 /app/setup-workflows.py "$COOKIE" "http://127.0.0.1:7860" 2>&1; then
-            SETUP_EXIT=$?
-            echo "  setup-workflows.py exit code: $SETUP_EXIT"
-            if [ $SETUP_EXIT -eq 0 ]; then
-                SETUP_SUCCESS=true
-                break
+if [ "$NEEDS_IMPORT" = "true" ] || [ "$IS_FIRST_BOOT" = "yes" ]; then
+    echo "[5/6] FIRST BOOT: Running setup-workflows.py (credentials + publish + activate)..."
+    if [ -n "$COOKIE" ]; then
+        SETUP_SUCCESS=false
+        for setup_attempt in 1 2 3; do
+            echo "  === setup-workflows.py attempt $setup_attempt/3 ==="
+            if python3 /app/setup-workflows.py "$COOKIE" "http://127.0.0.1:7860" 2>&1; then
+                SETUP_EXIT=$?
+                echo "  setup-workflows.py exit code: $SETUP_EXIT"
+                if [ $SETUP_EXIT -eq 0 ]; then
+                    SETUP_SUCCESS=true
+                    break
+                fi
+            else
+                SETUP_EXIT=$?
+                echo "  setup-workflows.py FAILED with exit code: $SETUP_EXIT"
             fi
+            if [ $setup_attempt -lt 3 ]; then
+                echo "  Waiting 10s before retry..."
+                sleep 10
+            fi
+        done
+        if [ "$SETUP_SUCCESS" != "true" ]; then
+            echo "  WARNING: setup-workflows.py failed after 3 attempts"
         else
-            SETUP_EXIT=$?
-            echo "  setup-workflows.py FAILED with exit code: $SETUP_EXIT"
+            echo "  setup-workflows.py completed successfully"
         fi
-
-        if [ $setup_attempt -lt 3 ]; then
-            echo "  Waiting 10s before retry..."
-            sleep 10
-        fi
-    done
-
-    if [ "$SETUP_SUCCESS" != "true" ]; then
-        echo "  WARNING: setup-workflows.py failed after 3 attempts"
-        echo "  Credentials may not be fully restored. Webhooks may be broken."
     else
-        echo "  setup-workflows.py completed successfully"
+        echo "  Login failed — skipping credential setup."
     fi
 else
-    echo "  Login failed — skipping credential setup."
-    echo "  Webhooks will NOT work (credentials needed for publish/activate)."
+    echo "[5/6] PERSISTENT BOOT: Credentials already in Postgres — skipping setup."
+    echo "  Re-activating webhooks from persisted state..."
+    # n8n auto-registers webhooks from DB on startup, but verify with activation
+    if [ -n "$COOKIE" ]; then
+        # Quick re-activation of all active workflows
+        ACTIVE_WFS=$(curl -s http://127.0.0.1:7860/rest/workflows \
+            -H "Cookie: n8n-auth=$COOKIE" 2>/dev/null | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    data = d.get('data', d)
+    for wf in (data if isinstance(data, list) else []):
+        if wf.get('active'):
+            print(wf['id'])
+except:
+    pass
+" 2>/dev/null || true)
+        REACTIVATED=0
+        for wf_id in $ACTIVE_WFS; do
+            # Get versionId and re-activate
+            VER=$(curl -s "http://127.0.0.1:7860/rest/workflows/$wf_id" \
+                -H "Cookie: n8n-auth=$COOKIE" 2>/dev/null | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    data = d.get('data', d)
+    print(data.get('versionId',''))
+except:
+    pass
+" 2>/dev/null || true)
+            if [ -n "$VER" ]; then
+                curl -s -X POST "http://127.0.0.1:7860/rest/workflows/$wf_id/activate" \
+                    -H "Cookie: n8n-auth=$COOKIE" \
+                    -H "Content-Type: application/json" \
+                    -d "{\"versionId\":\"$VER\"}" > /dev/null 2>&1
+                REACTIVATED=$((REACTIVATED + 1))
+            fi
+        done
+        echo "  Re-activated $REACTIVATED workflows"
+    fi
 fi
 
 # ---- 6. Verify webhooks ----
@@ -333,9 +419,11 @@ echo "  Auth: ${COOKIE:+OK}${COOKIE:-SKIPPED}"
 echo "  Boot complete at $(date -u)"
 echo ""
 echo "==================================================================="
-echo "  NOMOS RAG ENGINE READY"
-echo "  URL: https://lbjlincoln-nomos-rag-engine.hf.space"
+echo "  NOMOS RAG ENGINE READY — Space #${SPACE_NUMBER}"
+echo "  DB: Postgres (n8n_engine_${SPACE_NUMBER}) — PERSISTENT"
+echo "  URL: ${WEBHOOK_URL}"
 echo "  Webhooks: $WEBHOOKS_OK responding"
+echo "  Boot type: $([ \"$NEEDS_IMPORT\" = \"true\" ] && echo 'FIRST (imported workflows)' || echo 'PERSISTENT (from DB)')"
 echo "==================================================================="
 
 # Keep container alive
