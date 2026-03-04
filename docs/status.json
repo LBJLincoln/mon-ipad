@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-03T16:07:39+01:00",
+  "generated_at": "2026-03-04T08:10:23+01:00",
   "phase": {
     "current": 1,
     "name": "Baseline (200q)",
@@ -7,31 +7,31 @@
   },
   "pipelines": {
     "standard": {
-      "accuracy": 84.0,
+      "accuracy": 90.0,
       "tested": 50,
-      "correct": 42,
-      "errors": 0,
+      "correct": 45,
+      "errors": 4,
       "target": 85.0,
-      "met": false,
-      "gap": -1.0
+      "met": true,
+      "gap": 5.0
     },
     "graph": {
-      "accuracy": 62.0,
+      "accuracy": 60.0,
       "tested": 50,
-      "correct": 31,
+      "correct": 30,
       "errors": 0,
       "target": 70.0,
       "met": false,
-      "gap": -8.0
+      "gap": -10.0
     },
     "quantitative": {
-      "accuracy": 80.0,
+      "accuracy": 82.0,
       "tested": 50,
-      "correct": 40,
+      "correct": 41,
       "errors": 1,
       "target": 85.0,
       "met": false,
-      "gap": -5.0
+      "gap": -3.0
     },
     "orchestrator": {
       "accuracy": 64.0,
@@ -44,35 +44,39 @@
     }
   },
   "overall": {
-    "accuracy": 72.5,
+    "accuracy": 74.0,
     "target": 75.0,
     "met": false
   },
   "blockers": [
-    "standard: 84.0% < 85.0% (gap: -1.0pp)",
-    "graph: 62.0% < 70.0% (gap: -8.0pp)",
-    "quantitative: 80.0% < 85.0% (gap: -5.0pp)",
+    "graph: 60.0% < 70.0% (gap: -10.0pp)",
+    "quantitative: 82.0% < 85.0% (gap: -3.0pp)",
     "orchestrator: 64.0% < 70.0% (gap: -6.0pp)",
-    "overall: 72.5% < 75.0%"
+    "overall: 74.0% < 75.0%"
   ],
-  "next_action": "Fix graph pipeline (62.0% vs 70.0% target, gap: -8.0pp)",
+  "next_action": "Fix graph pipeline (60.0% vs 70.0% target, gap: -10.0pp)",
   "last_iteration": {
-    "id": "iter-2026-03-02T19-22-47",
-    "label": "Iteration 1484",
-    "timestamp": "2026-03-03T03:52:38+01:00",
-    "total_tested": 50,
-    "overall_accuracy_pct": 0.0,
+    "id": "iter-2026-03-04T08-05-55",
+    "label": "Phase1-S69-all",
+    "timestamp": "2026-03-04T08:06:01+01:00",
+    "total_tested": 5,
+    "overall_accuracy_pct": 20.0,
     "pipelines": {
-      "standard": {
-        "tested": 50,
+      "quantitative": {
+        "tested": 3,
+        "correct": 1,
+        "accuracy": 33.3
+      },
+      "graph": {
+        "tested": 2,
         "correct": 0,
         "accuracy": 0.0
       }
     }
   },
   "totals": {
-    "unique_questions": 2816,
-    "test_runs": 12274,
-    "iterations": 1484
+    "unique_questions": 2944,
+    "test_runs": 12543,
+    "iterations": 1501
   }
 }
