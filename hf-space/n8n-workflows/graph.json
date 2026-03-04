@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-18T12:33:52.625Z",
+  "updatedAt": "2026-03-04T12:59:43.172Z",
   "createdAt": "2026-02-14T01:10:15.711Z",
   "id": "6257AfT1l4FMC6lY",
   "name": "TEST - SOTA 2026 - WF2 Graph RAG V3.3 - CORRECTED",
@@ -24,11 +24,11 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
         "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an entity extraction specialist. Given a question, extract ALL specific named entities (people, places, films, TV shows, organizations, dates, events). Return JSON format ONLY.\\n\\nRULES:\\n1. Extract SPECIFIC names only — never generic concepts\\n2. For multi-hop questions, extract entities from EACH hop\\n3. Also generate a brief hypothetical answer document (100 words max)\\n4. Return: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": \\\"PERSON|PLACE|FILM|ORGANIZATION|EVENT|DATE\\\"}]}\\n\\nEXAMPLE:\\nQuestion: Who voices the character in SpongeBob named after a glowing species?\\nEntities: [{\\\"name\\\": \\\"SpongeBob SquarePants\\\", \\\"type\\\": \\\"FILM\\\"}, {\\\"name\\\": \\\"Plankton\\\", \\\"type\\\": \\\"PERSON\\\"}, {\\\"name\\\": \\\"Mr. Lawrence\\\", \\\"type\\\": \\\"PERSON\\\"}]\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500\n}",
+        "jsonBody": "={\n  \"model\": \"fast\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an entity extraction specialist. Given a question, extract ALL specific named entities (people, places, films, TV shows, organizations, dates, events). Return JSON format ONLY.\\n\\nRULES:\\n1. Extract SPECIFIC names only — never generic concepts\\n2. For multi-hop questions, extract entities from EACH hop\\n3. Also generate a brief hypothetical answer document (100 words max)\\n4. Return: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": \\\"PERSON|PLACE|FILM|ORGANIZATION|EVENT|DATE\\\"}]}\\n\\nEXAMPLE:\\nQuestion: Who voices the character in SpongeBob named after a glowing species?\\nEntities: [{\\\"name\\\": \\\"SpongeBob SquarePants\\\", \\\"type\\\": \\\"FILM\\\"}, {\\\"name\\\": \\\"Plankton\\\", \\\"type\\\": \\\"PERSON\\\"}, {\\\"name\\\": \\\"Mr. Lawrence\\\", \\\"type\\\": \\\"PERSON\\\"}]\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500\n}",
         "options": {
           "timeout": 30000,
           "retry": {
@@ -41,7 +41,11 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer ={{$env.GROQ_API_KEY_GRAPH}}"
+              "value": "Bearer sk-litellm-nomos-2026"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
             }
           ]
         }
@@ -61,7 +65,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Neo4j Query Builder (Deep Traversal V2) - with NLP entity extraction fallback\nconst initData = $node['OTEL Init'].json;\nconst rawContent = $json.choices?.[0]?.message?.content || '';\n\nlet hydeDocument = '';\nlet extractedEntities = [];\n\n// Strategy 1: Try JSON parse\ntry {\n  const parsed = JSON.parse(rawContent);\n  hydeDocument = parsed.hyde_document || '';\n  extractedEntities = (parsed.entities || [])\n    .filter(e => e && typeof e.name === 'string')\n    .map(e => e.name);\n} catch (e) {\n  // Strategy 2: Try embedded JSON\n  const jsonMatch = rawContent.match(/\\{[\\s\\S]*\"entities\"[\\s\\S]*\\}/);\n  if (jsonMatch) {\n    try {\n      const embedded = JSON.parse(jsonMatch[0]);\n      hydeDocument = embedded.hyde_document || '';\n      extractedEntities = (embedded.entities || [])\n        .filter(e => e && typeof e.name === 'string')\n        .map(e => e.name);\n    } catch (e2) {}\n  }\n}\n\n// Strategy 3: NLP-based entity extraction from plain text\nif (extractedEntities.length === 0) {\n  hydeDocument = rawContent;\n  const fullText = rawContent + ' ' + initData.query;\n  \n  const stopWords = new Set([\n    'The', 'What', 'Who', 'Where', 'When', 'How', 'Which', 'Did', 'Does',\n    'Was', 'Were', 'Are', 'Is', 'For', 'This', 'That', 'These', 'Those',\n    'Her', 'His', 'Its', 'She', 'They', 'Not', 'Also', 'Both', 'But',\n    'And', 'Has', 'Had', 'Have', 'Can', 'May', 'Will', 'Our', 'All',\n    'Such', 'Two', 'One', 'First', 'He', 'In', 'As', 'An',\n    'Modern', 'Today', 'Years', 'Only', 'Particularly', 'Remains',\n    'Significant', 'Important', 'Format', 'Throughout', 'Despite',\n    'However', 'Although', 'Furthermore', 'Moreover', 'Additionally',\n    'Meanwhile', 'Nevertheless', 'Consequently', 'Subsequently',\n    'Ultimately', 'Indeed', 'Several', 'Various', 'Numerous',\n    'During', 'Between', 'Within', 'Beyond', 'After', 'Before'\n  ]);\n  \n  const properNouns = fullText.match(/[A-Z\\u00C0-\\u00DC][a-z\\u00E0-\\u00FF]+(?:\\s+[A-Z\\u00C0-\\u00DC][a-z\\u00E0-\\u00FF]+)*/g) || [];\n  \n  const seen = new Set();\n  for (const noun of properNouns) {\n    const clean = noun.trim();\n    if (clean.length > 2 && !stopWords.has(clean) && !seen.has(clean.toLowerCase())) {\n      seen.add(clean.toLowerCase());\n      extractedEntities.push(clean);\n    }\n  }\n  \n  const acronyms = fullText.match(/\\b[A-Z]{2,}\\b/g) || [];\n  for (const acr of acronyms) {\n    if (!seen.has(acr.toLowerCase()) && acr.length >= 2) {\n      seen.add(acr.toLowerCase());\n      extractedEntities.push(acr);\n    }\n  }\n}\n\nconst validEntities = extractedEntities\n  .map(e => e.replace(/[^a-zA-Z\\u00C0-\\u00FF0-9\\-_\\s]/g, '').substring(0, 100))\n  .filter(e => e.length > 2)\n  .slice(0, 20);\n\nif (validEntities.length === 0) {\n  return [{\n    json: {\n      skip_neo4j: true,\n      reason: 'No valid entities extracted from text or JSON',\n      hyde_document: hydeDocument || rawContent\n    }\n  }];\n}\n\nconst MAX_DEPTH = 4;\nconst MAX_RESULTS = 100;\n\nconst correctedQuery = `\nMATCH (n)\nWHERE ((n.name IN $entity_names\n      OR ANY(ename IN $entity_names WHERE toLower(n.name) CONTAINS toLower(ename))\n      OR ANY(ename IN $entity_names WHERE toLower(ename) CONTAINS toLower(n.name)))\n      OR toLower(n.name) IN [x IN $entity_names | toLower(x)]\n      OR ANY(ename IN $entity_names WHERE size(ename) > 3 AND toLower(n.name) CONTAINS toLower(ename)))\n  AND (n.tenant_id IN [$tenant_id, 'default', 'benchmark'] OR n.tenant_id IS NULL)\nWITH n,\n     CASE\n       WHEN n:Organization THEN 1.3\n       WHEN n:Person THEN 1.2\n       WHEN n:City THEN 1.1\n       WHEN n:Museum THEN 1.2\n       WHEN n:Technology THEN 1.0\n       WHEN n:Disease THEN 1.0\n       ELSE 0.9\n     END as entity_priority\nORDER BY entity_priority DESC\nLIMIT 10\n\nOPTIONAL MATCH path = (n)-[r*1..${MAX_DEPTH}]-(m)\nWHERE (m.tenant_id = $tenant_id OR m.tenant_id IS NULL)\nWITH path, n as startNode, entity_priority,\n     reduce(score = entity_priority, rel IN relationships(path) |\n       score + CASE type(rel)\n         WHEN 'A_CREE' THEN 1.5\n         WHEN 'CAUSE_PAR' THEN 1.4\n         WHEN 'CONNECTE' THEN 1.3\n         WHEN 'PROTEGE_CONTRE' THEN 1.3\n         WHEN 'ETUDIE' THEN 1.2\n         WHEN 'UTILISE' THEN 1.2\n         WHEN 'CIBLE' THEN 1.2\n         WHEN 'EXPOSE_A' THEN 1.1\n         WHEN 'VISE_A_LIMITER' THEN 1.1\n         WHEN 'SOUS_ENSEMBLE_DE' THEN 1.0\n         WHEN 'ETEND' THEN 1.0\n         ELSE 0.8\n       END\n     ) as path_score,\n     length(path) as path_length\n\nWHERE path_score > (path_length * 0.3)\n\nRETURN\n  startNode.name as start_entity,\n  [node IN nodes(path) | {name: node.name, type: labels(node)[0]}] as path_nodes,\n  [rel IN relationships(path) | type(rel)] as path_relations,\n  path_score,\n  path_length\nORDER BY path_score DESC\nLIMIT $max_results\n`;\n\nreturn [{\n  json: {\n    skip_neo4j: false,\n    query: correctedQuery,\n    parameters: {\n      entity_names: validEntities,\n      tenant_id: initData.user_context?.tenant_id || 'benchmark',\n      max_results: MAX_RESULTS\n    },\n    hyde_document: hydeDocument || rawContent,\n    entities: validEntities,\n    traversal_config: { max_depth: MAX_DEPTH },\n    _debug: {\n      entities_found: validEntities.length,\n      extraction_method: 'nlp_fallback',\n      neo4j_5x_compatible: true\n    }\n  }\n}];",
+        "jsCode": "// Neo4j Query Builder (Deep Traversal V2) - with NLP entity extraction fallback\nconst initData = $node['OTEL Init'].json;\nconst rawContent = $json.choices?.[0]?.message?.content || '';\n\nlet hydeDocument = '';\nlet extractedEntities = [];\n\n// Strategy 1: Try JSON parse\ntry {\n  const parsed = JSON.parse(rawContent);\n  hydeDocument = parsed.hyde_document || '';\n  extractedEntities = (parsed.entities || [])\n    .filter(e => e && typeof e.name === 'string')\n    .map(e => e.name);\n} catch (e) {\n  // Strategy 2: Try embedded JSON\n  const jsonMatch = rawContent.match(/\\{[\\s\\S]*\"entities\"[\\s\\S]*\\}/);\n  if (jsonMatch) {\n    try {\n      const embedded = JSON.parse(jsonMatch[0]);\n      hydeDocument = embedded.hyde_document || '';\n      extractedEntities = (embedded.entities || [])\n        .filter(e => e && typeof e.name === 'string')\n        .map(e => e.name);\n    } catch (e2) {}\n  }\n}\n\n// Strategy 3: NLP-based entity extraction from plain text\nif (extractedEntities.length === 0) {\n  hydeDocument = rawContent;\n  const fullText = rawContent + ' ' + initData.query;\n  \n  const stopWords = new Set([\n    'The', 'What', 'Who', 'Where', 'When', 'How', 'Which', 'Did', 'Does',\n    'Was', 'Were', 'Are', 'Is', 'For', 'This', 'That', 'These', 'Those',\n    'Her', 'His', 'Its', 'She', 'They', 'Not', 'Also', 'Both', 'But',\n    'And', 'Has', 'Had', 'Have', 'Can', 'May', 'Will', 'Our', 'All',\n    'Such', 'Two', 'One', 'First', 'He', 'In', 'As', 'An',\n    'Modern', 'Today', 'Years', 'Only', 'Particularly', 'Remains',\n    'Significant', 'Important', 'Format', 'Throughout', 'Despite',\n    'However', 'Although', 'Furthermore', 'Moreover', 'Additionally',\n    'Meanwhile', 'Nevertheless', 'Consequently', 'Subsequently',\n    'Ultimately', 'Indeed', 'Several', 'Various', 'Numerous',\n    'During', 'Between', 'Within', 'Beyond', 'After', 'Before'\n  ]);\n  \n  const properNouns = fullText.match(/[A-Z\\u00C0-\\u00DC][a-z\\u00E0-\\u00FF]+(?:\\s+[A-Z\\u00C0-\\u00DC][a-z\\u00E0-\\u00FF]+)*/g) || [];\n  \n  const seen = new Set();\n  for (const noun of properNouns) {\n    const clean = noun.trim();\n    if (clean.length > 2 && !stopWords.has(clean) && !seen.has(clean.toLowerCase())) {\n      seen.add(clean.toLowerCase());\n      extractedEntities.push(clean);\n    }\n  }\n  \n  const acronyms = fullText.match(/\\b[A-Z]{2,}\\b/g) || [];\n  for (const acr of acronyms) {\n    if (!seen.has(acr.toLowerCase()) && acr.length >= 2) {\n      seen.add(acr.toLowerCase());\n      extractedEntities.push(acr);\n    }\n  }\n}\n\nconst validEntities = extractedEntities\n  .map(e => e.replace(/[^a-zA-Z\\u00C0-\\u00FF0-9\\-_\\s]/g, '').substring(0, 100))\n  .filter(e => e.length > 2)\n  .slice(0, 20);\n\nif (validEntities.length === 0) {\n  return [{\n    json: {\n      skip_neo4j: true,\n      reason: 'No valid entities extracted from text or JSON',\n      hyde_document: hydeDocument || rawContent\n    }\n  }];\n}\n\nconst MAX_DEPTH = 2;\nconst MAX_RESULTS = 100;\n\nconst correctedQuery = `\nMATCH (n)\nWHERE ((n.name IN $entity_names\n      OR ANY(ename IN $entity_names WHERE toLower(n.name) CONTAINS toLower(ename))\n      OR ANY(ename IN $entity_names WHERE toLower(ename) CONTAINS toLower(n.name)))\n      OR toLower(n.name) IN [x IN $entity_names | toLower(x)]\n      OR ANY(ename IN $entity_names WHERE size(ename) > 3 AND toLower(n.name) CONTAINS toLower(ename)))\n  AND (n.tenant_id IN [$tenant_id, 'default', 'benchmark'] OR n.tenant_id IS NULL)\nWITH n,\n     CASE\n       WHEN n:Organization THEN 1.3\n       WHEN n:Person THEN 1.2\n       WHEN n:City THEN 1.1\n       WHEN n:Museum THEN 1.2\n       WHEN n:Technology THEN 1.0\n       WHEN n:Disease THEN 1.0\n       ELSE 0.9\n     END as entity_priority\nORDER BY entity_priority DESC\nLIMIT 5\n\nMATCH path = (n)-[r*1..${MAX_DEPTH}]-(m)\nWHERE (m.tenant_id = $tenant_id OR m.tenant_id IS NULL)\nWITH path, n as startNode, entity_priority,\n     reduce(score = entity_priority, rel IN relationships(path) |\n       score + CASE type(rel)\n         WHEN 'A_CREE' THEN 1.5\n         WHEN 'CAUSE_PAR' THEN 1.4\n         WHEN 'CONNECTE' THEN 0.3\n         WHEN 'PROTEGE_CONTRE' THEN 1.3\n         WHEN 'ETUDIE' THEN 1.2\n         WHEN 'UTILISE' THEN 1.2\n         WHEN 'CIBLE' THEN 1.2\n         WHEN 'EXPOSE_A' THEN 1.1\n         WHEN 'VISE_A_LIMITER' THEN 1.1\n         WHEN 'SOUS_ENSEMBLE_DE' THEN 1.0\n         WHEN 'ETEND' THEN 1.0\n         ELSE 0.8\n       END\n     ) as path_score,\n     length(path) as path_length\n\nWHERE path_score > (path_length * 0.3)\n\nRETURN\n  startNode.name as start_entity,\n  [node IN nodes(path) | {name: node.name, type: labels(node)[0]}] as path_nodes,\n  [rel IN relationships(path) | type(rel)] as path_relations,\n  path_score,\n  path_length\nORDER BY path_score DESC\nLIMIT $max_results\n`;\n\nreturn [{\n  json: {\n    skip_neo4j: false,\n    query: correctedQuery,\n    parameters: {\n      entity_names: validEntities,\n      tenant_id: initData.user_context?.tenant_id || 'benchmark',\n      max_results: MAX_RESULTS\n    },\n    hyde_document: hydeDocument || rawContent,\n    entities: validEntities,\n    traversal_config: { max_depth: MAX_DEPTH },\n    _debug: {\n      entities_found: validEntities.length,\n      extraction_method: 'nlp_fallback',\n      neo4j_5x_compatible: true\n    }\n  }\n}];",
         "options": {
           "timeout": 15000
         }
@@ -86,10 +90,10 @@
         "specifyBody": "json",
         "jsonBody": "={{ { statement: $json.query, parameters: $json.parameters ?? {} } }}",
         "options": {
-          "timeout": 30000,
+          "timeout": 15000,
           "retry": {
-            "maxTries": 3,
-            "waitBetweenTries": 3000
+            "maxTries": 2,
+            "waitBetweenTries": 2000
           }
         },
         "sendHeaders": true,
@@ -116,18 +120,18 @@
       ],
       "onError": "continueRegularOutput",
       "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 3000
+      "maxTries": 2,
+      "waitBetweenTries": 2000
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
+        "url": "https://sota-rag-integrated-a4mkzmz.svc.aped-4627-b74a.pinecone.io/records/namespaces/__default__/search",
         "authentication": "none",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Validate Embedding'].json.embedding || $node['Generate HyDE Embedding'].json.embeddings?.float?.[0] || []) }},\n  \"topK\": {{ $node['OTEL Init'].json.topK || 100 }},\n  \"includeMetadata\": true\n}",
+        "jsonBody": "={{\n(() => {\n  const hydeDoc = $node['Extract HyDE Document']?.json?.hyde_document || '';\n  const query = $node['OTEL Init']?.json?.query || '';\n  const searchText = hydeDoc || query;\n  const topK = Math.min($node['OTEL Init']?.json?.topK || 50, 50);\n  return JSON.stringify({\n    \"query\": {\n      \"top_k\": topK,\n      \"inputs\": {\"text\": searchText}\n    }\n  });\n})()\n}}",
         "options": {
           "timeout": 30000,
           "retry": {
@@ -176,13 +180,13 @@
         752,
         6256
       ],
+      "onError": "continueRegularOutput",
       "credentials": {
         "postgres": {
-          "id": "USU8ngVzsUbED3mn",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
-      },
-      "onError": "continueRegularOutput"
+      }
     },
     {
       "parameters": {
@@ -240,7 +244,8 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "disabled": true
     },
     {
       "parameters": {
@@ -272,7 +277,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\ntry {\n  vectorResults = $node['WF3: Cohere Reranker']?.json?.results || [];\n} catch(e) {\n  vectorResults = [];\n}\n\n// Safely get Neo4j data\nlet neo4jData = null;\ntry {\n  neo4jData = $node['Validate Neo4j Results']?.json;\n} catch(e) {}\n\n// Safely get community data\nlet communityData = null;\ntry {\n  communityData = $node['Community Summaries Fetch']?.json;\n} catch(e) {}\n\n// Safely get entity extraction data\nlet entityData = null;\ntry {\n  entityData = $node['WF3: HyDE & Entity Extraction']?.json;\n} catch(e) {}\n\n// FIX-39d: Check for embedded reference context in query (Phase 2 graph questions)\nconst originalQuery = $node['OTEL Init'].json.query || '';\nlet embeddedContext = '';\nconst refCtxMatch = originalQuery.match(/\\nReference context:([\\s\\S]+)$/);\nif (refCtxMatch) {\n  embeddedContext = refCtxMatch[1].trim().substring(0, 3000);\n}\n\n// Build context from all available sources\nconst ctx = $json.budgeted_context || {};\nconst query = $node['OTEL Init'].json.query;\nconst traceId = $node['OTEL Init'].json.trace_id || '';\nconst contextParts = [];\n\n// Graph relationships from budgeted context\nif (ctx.relationships) {\n  contextParts.push('Graph Relationships: ' + ctx.relationships);\n}\nif (ctx.graph && ctx.graph.length > 0) {\n  const graphText = ctx.graph.slice(0, 5).map(g => g.content || g.text || '').filter(Boolean).join('\\n');\n  if (graphText) contextParts.push('Graph Context:\\n' + graphText);\n}\n\n// Vector/reranked docs\nif (ctx.reranked && ctx.reranked.length > 0) {\n  const rerankedText = ctx.reranked.slice(0, 5).map((d, i) => {\n    const content = typeof d === 'string' ? d : (d.document || d.content || d.text || '');\n    return '[Doc ' + (i+1) + '] ' + content;\n  }).filter(Boolean).join('\\n');\n  if (rerankedText) contextParts.push('Relevant Documents:\\n' + rerankedText);\n}\n\n// Community summaries\nif (ctx.community && ctx.community.length > 0) {\n  const commText = ctx.community.slice(0, 3).map(c => c.content || c.text || '').filter(Boolean).join('\\n');\n  if (commText) contextParts.push('Community Summaries:\\n' + commText);\n}\n\n// Fallback: if no budgeted context, try raw Neo4j data\nif (contextParts.length === 0) {\n  if (neo4jData && !neo4jData.skip_graph) {\n    // Extract paths from Neo4j v2 format\n    const values = neo4jData.data?.values || neo4jData.results?.[0]?.data?.map(d => d.row) || [];\n    if (values.length > 0) {\n      const pathStr = values.slice(0, 10).map(row => {\n        if (Array.isArray(row)) {\n          const startEntity = row[0];\n          const pathNodes = row[1] || [];\n          const pathRels = row[2] || [];\n          const nodeNames = Array.isArray(pathNodes) ? pathNodes.map(n => n.name || n).join(' -> ') : String(pathNodes);\n          return startEntity + ': ' + nodeNames + ' [' + (Array.isArray(pathRels) ? pathRels.join(', ') : '') + ']';\n        }\n        return JSON.stringify(row).substring(0, 200);\n      }).join('\\n');\n      contextParts.push('Entity Graph Paths:\\n' + pathStr);\n    }\n  }\n  \n  // Try community summaries raw data\n  if (communityData) {\n    const summaries = communityData.summaries || communityData;\n    if (Array.isArray(summaries) && summaries.length > 0) {\n      const commStr = summaries.slice(0, 3).map(s => s.summary || s.content || JSON.stringify(s).substring(0, 300)).join('\\n');\n      contextParts.push('Community Summaries:\\n' + commStr);\n    }\n  }\n  \n  // Try Hyde document as last resort context\n  if (contextParts.length === 0 && entityData) {\n    const content = entityData.choices?.[0]?.message?.content || '';\n    try {\n      const parsed = JSON.parse(content);\n      if (parsed.hyde_document) {\n        contextParts.push('Background Knowledge:\\n' + parsed.hyde_document);\n      }\n    } catch(e) {\n      if (content.length > 20) {\n        contextParts.push('Background Knowledge:\\n' + content.substring(0, 1000));\n      }\n    }\n  }\n}\n\n// FIX-39d: Use embedded context as fallback when all sources empty\nif (contextParts.length === 0 && embeddedContext) {\n  contextParts.push('Reference Documents:\\n' + embeddedContext);\n}\n\nconst fullContext = contextParts.join('\\n\\n');\nconst embedding_fallback = vectorResults.length === 0;\nconst traversal_depth = ctx.graph?.length || 0;\nconst context_sources = contextParts.length;\n\n// Build request body for LLM Answer Synthesis\nconst requestBody = {\n  model: 'llama-3.3-70b-versatile',\n  messages: [\n    {\n      role: 'system',\n      content: 'You are a precise knowledge graph Q&A assistant. Answer using ONLY the provided context.\\n\\nRULES:\\n1. WHO questions: return person name only (e.g., \\'John Knox\\')\\n2. WHAT questions: return entity name (e.g., \\'River Thames\\')\\n3. WHERE questions: return location (e.g., \\'Pearl River County\\')\\n4. WHEN questions: return year/date only (e.g., \\'1572\\')\\n5. Use graph relationships to trace multi-hop paths\\n6. If context has a chain A→B→C, follow it to find the answer\\n7. Give ONLY the final answer — no explanation, no prefixes\\n8. NEVER say you lack information\\n9. Respond in the SAME LANGUAGE as the question'\n    },\n    {\n      role: 'user',\n      content: 'Context:\\n' + fullContext + '\\n\\nQuestion: ' + query + '\\n\\nAnswer concisely:'\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 400\n};\n\nreturn [{\n  json: {\n    requestBody: requestBody,\n    trace_id: traceId,\n    embedding_fallback: embedding_fallback,\n    tokens_used: 0,\n    traversal_depth: traversal_depth,\n    context_sources: context_sources,\n    debug_context_length: fullContext.length,\n    debug_context_parts: contextParts.length\n  }\n}];"
+        "jsCode": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\ntry {\n  vectorResults = $node['WF3: Cohere Reranker']?.json?.results || [];\n} catch(e) {\n  vectorResults = [];\n}\n\n// Safely get Neo4j data\nlet neo4jData = null;\ntry {\n  neo4jData = $node['Validate Neo4j Results']?.json;\n} catch(e) {}\n\n// Safely get community data\nlet communityData = null;\ntry {\n  communityData = $node['Community Summaries Fetch']?.json;\n} catch(e) {}\n\n// Safely get entity extraction data\nlet entityData = null;\ntry {\n  entityData = $node['WF3: HyDE & Entity Extraction']?.json;\n} catch(e) {}\n\n// FIX-39d: Check for embedded reference context in query (Phase 2 graph questions)\nconst originalQuery = $node['OTEL Init'].json.query || '';\nlet embeddedContext = '';\nconst refCtxMatch = originalQuery.match(/\\nReference context:([\\s\\S]+)$/);\nif (refCtxMatch) {\n  embeddedContext = refCtxMatch[1].trim().substring(0, 3000);\n}\n\n// Build context from all available sources\nconst ctx = $json.budgeted_context || {};\nconst query = $node['OTEL Init'].json.query;\nconst traceId = $node['OTEL Init'].json.trace_id || '';\nconst contextParts = [];\n\n// Graph relationships from budgeted context\nif (ctx.relationships) {\n  contextParts.push('Graph Relationships: ' + ctx.relationships);\n}\nif (ctx.graph && ctx.graph.length > 0) {\n  const graphText = ctx.graph.slice(0, 5).map(g => g.content || g.text || '').filter(Boolean).join('\\n');\n  if (graphText) contextParts.push('Graph Context:\\n' + graphText);\n}\n\n// Vector/reranked docs\nif (ctx.reranked && ctx.reranked.length > 0) {\n  const rerankedText = ctx.reranked.slice(0, 5).map((d, i) => {\n    const content = typeof d === 'string' ? d : (d.document || d.content || d.text || '');\n    return '[Doc ' + (i+1) + '] ' + content;\n  }).filter(Boolean).join('\\n');\n  if (rerankedText) contextParts.push('Relevant Documents:\\n' + rerankedText);\n}\n\n// Community summaries\nif (ctx.community && ctx.community.length > 0) {\n  const commText = ctx.community.slice(0, 3).map(c => c.content || c.text || '').filter(Boolean).join('\\n');\n  if (commText) contextParts.push('Community Summaries:\\n' + commText);\n}\n\n// Fallback: if no budgeted context, try raw Neo4j data\nif (contextParts.length === 0) {\n  if (neo4jData && !neo4jData.skip_graph) {\n    // Extract paths from Neo4j v2 format\n    const values = neo4jData.data?.values || neo4jData.results?.[0]?.data?.map(d => d.row) || [];\n    if (values.length > 0) {\n      const pathStr = values.slice(0, 10).map(row => {\n        if (Array.isArray(row)) {\n          const startEntity = row[0];\n          const pathNodes = row[1] || [];\n          const pathRels = row[2] || [];\n          const nodeNames = Array.isArray(pathNodes) ? pathNodes.map(n => n.name || n).join(' -> ') : String(pathNodes);\n          return startEntity + ': ' + nodeNames + ' [' + (Array.isArray(pathRels) ? pathRels.join(', ') : '') + ']';\n        }\n        return JSON.stringify(row).substring(0, 200);\n      }).join('\\n');\n      contextParts.push('Entity Graph Paths:\\n' + pathStr);\n    }\n  }\n  \n  // Try community summaries raw data\n  if (communityData) {\n    const summaries = communityData.summaries || communityData;\n    if (Array.isArray(summaries) && summaries.length > 0) {\n      const commStr = summaries.slice(0, 3).map(s => s.summary || s.content || JSON.stringify(s).substring(0, 300)).join('\\n');\n      contextParts.push('Community Summaries:\\n' + commStr);\n    }\n  }\n  \n  // Try Hyde document as last resort context\n  if (contextParts.length === 0 && entityData) {\n    const content = entityData.choices?.[0]?.message?.content || '';\n    try {\n      const parsed = JSON.parse(content);\n      if (parsed.hyde_document) {\n        contextParts.push('Background Knowledge:\\n' + parsed.hyde_document);\n      }\n    } catch(e) {\n      if (content.length > 20) {\n        contextParts.push('Background Knowledge:\\n' + content.substring(0, 1000));\n      }\n    }\n  }\n}\n\n// FIX-39d: Use embedded context as fallback when all sources empty\nif (contextParts.length === 0 && embeddedContext) {\n  contextParts.push('Reference Documents:\\n' + embeddedContext);\n}\n\nconst fullContext = contextParts.join('\\n\\n');\nconst embedding_fallback = vectorResults.length === 0;\nconst traversal_depth = ctx.graph?.length || 0;\nconst context_sources = contextParts.length;\n\n// Build request body for LLM Answer Synthesis\nconst requestBody = {\n  model: 'smart',\n  messages: [\n    {\n      role: 'system',\n      content: 'You are a precise knowledge graph Q&A assistant. Answer using ONLY the provided context.\\n\\nRULES:\\n1. WHO questions: return person name only (e.g., \\'John Knox\\')\\n2. WHAT questions: return entity name (e.g., \\'River Thames\\')\\n3. WHERE questions: return location (e.g., \\'Pearl River County\\')\\n4. WHEN questions: return year/date only (e.g., \\'1572\\')\\n5. Use graph relationships to trace multi-hop paths\\n6. If context has a chain A→B→C, follow it to find the answer\\n7. Give ONLY the final answer — no explanation, no prefixes\\n8. NEVER say you lack information\\n9. Respond in the SAME LANGUAGE as the question'\n    },\n    {\n      role: 'user',\n      content: 'Context:\\n' + fullContext + '\\n\\nQuestion: ' + query + '\\n\\nAnswer concisely:'\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 400\n};\n\nreturn [{\n  json: {\n    requestBody: requestBody,\n    trace_id: traceId,\n    embedding_fallback: embedding_fallback,\n    tokens_used: 0,\n    traversal_depth: traversal_depth,\n    context_sources: context_sources,\n    debug_context_length: fullContext.length,\n    debug_context_parts: contextParts.length\n  }\n}];"
       },
       "id": "0520b590-2736-4e0e-9191-0cb6ac9cce39",
       "name": "Response Formatter",
@@ -396,7 +401,8 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "disabled": true
     },
     {
       "parameters": {
@@ -428,7 +434,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const embeddingData = $json;\n\n// Check if we have a valid embedding - handle both Cohere and OpenRouter formats\nlet embedding = [];\n\n// Cohere v2 format: embeddings.float[0]\nif (embeddingData.embeddings?.float?.[0]) {\n  embedding = embeddingData.embeddings.float[0];\n}\n// OpenRouter/OpenAI format: data[0].embedding\nelse if (embeddingData.data?.[0]?.embedding) {\n  embedding = embeddingData.data[0].embedding;\n}\n// Body wrapper variants\nelse if (embeddingData.body?.embeddings?.float?.[0]) {\n  embedding = embeddingData.body.embeddings.float[0];\n}\nelse if (embeddingData.body?.data?.[0]?.embedding) {\n  embedding = embeddingData.body.data[0].embedding;\n}\nelse if (Array.isArray(embeddingData.embedding)) {\n  embedding = embeddingData.embedding;\n}\n\n// Validate embedding dimensions (1024 for Cohere, 1536 for OpenAI)\nconst expectedDims = parseInt('1024' || '1024');\nconst isValid = embedding.length >= 384; // Accept any reasonable dimension\n\nif (!isValid) {\n  return [{\n    json: {\n      valid: false,\n      error: `Invalid embedding: got ${embedding.length}, expected ${expectedDims}`,\n      embedding: [],\n      fallback: true\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    embedding: embedding,\n    dimensions: embedding.length\n  }\n}];"
+        "jsCode": "// Validate Embedding — PATCHED: Bypass Jina, pass through HyDE text\n// When Jina embedding is disabled, pass through the HyDE document text\n// for Pinecone Integrated text search\n\nconst input = $json;\n\n// Try to get embedding from various formats\nlet embedding = [];\nif (input.embeddings?.float?.[0]) embedding = input.embeddings.float[0];\nelse if (input.data?.[0]?.embedding) embedding = input.data[0].embedding;\nelse if (input.body?.embeddings?.float?.[0]) embedding = input.body.embeddings.float[0];\n\n// Get the HyDE document text (from Extract HyDE Document when embedding is disabled)\nconst hydeText = input.hyde_document || input.text || input.content || '';\n\n// If no embedding but we have HyDE text, use text-based search mode\nif (embedding.length === 0 && hydeText) {\n  return [{\n    json: {\n      embedding: [],\n      embedding_valid: false,\n      use_text_search: true,\n      hyde_text: hydeText,\n      provider: \"text_search_fallback\"\n    }\n  }];\n}\n\nif (embedding.length === 0) {\n  return [{\n    json: {\n      embedding: [],\n      embedding_valid: false,\n      use_text_search: false,\n      error: \"No valid embedding found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    embedding: embedding,\n    embedding_valid: true,\n    use_text_search: false,\n    provider: \"jina\"\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -459,16 +465,16 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
         "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.requestBody) }}",
         "options": {
-          "timeout": 30000,
+          "timeout": 20000,
           "retry": {
-            "maxTries": 3,
-            "waitBetweenTries": 3000
+            "maxTries": 2,
+            "waitBetweenTries": 2000
           }
         },
         "sendHeaders": true,
@@ -476,7 +482,11 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer ={{$env.GROQ_API_KEY_GRAPH}}"
+              "value": "Bearer sk-litellm-nomos-2026"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
             }
           ]
         }
@@ -491,8 +501,8 @@
       ],
       "onError": "continueRegularOutput",
       "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 3000
+      "maxTries": 2,
+      "waitBetweenTries": 2000
     },
     {
       "parameters": {
@@ -827,60 +837,35 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "c1f632b6-01aa-4fc2-9a9e-31ae0671a86a",
-  "activeVersionId": "c1f632b6-01aa-4fc2-9a9e-31ae0671a86a",
-  "versionCounter": 81,
+  "versionId": "44d0b4f8-e49d-4dd3-a0ed-7bb370670de0",
+  "activeVersionId": "8b92535f-c131-43c9-9b2b-c2213650f8db",
+  "versionCounter": 248,
   "triggerCount": 2,
   "shared": [
     {
-      "updatedAt": "2026-02-14T01:10:15.711Z",
-      "createdAt": "2026-02-14T01:10:15.711Z",
+      "updatedAt": "2026-03-04T00:27:09.240Z",
+      "createdAt": "2026-03-04T00:27:09.240Z",
       "role": "workflow:owner",
       "workflowId": "6257AfT1l4FMC6lY",
-      "projectId": "dJumyQB5Ybedt2Yz",
+      "projectId": "NFwlGGtw5nC8lqVo",
       "project": {
-        "updatedAt": "2026-02-15T09:26:56.758Z",
-        "createdAt": "2026-02-13T22:46:14.781Z",
-        "id": "dJumyQB5Ybedt2Yz",
-        "name": "Admin RAG <admin@mon-ipad.com>",
+        "updatedAt": "2026-03-04T00:13:20.034Z",
+        "createdAt": "2026-03-04T00:11:52.718Z",
+        "id": "NFwlGGtw5nC8lqVo",
+        "name": "CI Bot <ci@nomos.ai>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "5e0b7c8f-d330-43e7-ada6-31b78e20460a",
-        "projectRelations": [
-          {
-            "updatedAt": "2026-02-13T22:46:14.781Z",
-            "createdAt": "2026-02-13T22:46:14.781Z",
-            "userId": "5e0b7c8f-d330-43e7-ada6-31b78e20460a",
-            "projectId": "dJumyQB5Ybedt2Yz",
-            "user": {
-              "updatedAt": "2026-02-18T06:24:56.091Z",
-              "createdAt": "2026-02-13T22:45:18.287Z",
-              "id": "5e0b7c8f-d330-43e7-ada6-31b78e20460a",
-              "email": "admin@mon-ipad.com",
-              "firstName": "Admin",
-              "lastName": "RAG",
-              "personalizationAnswers": null,
-              "settings": {
-                "userActivated": true,
-                "mcpEnabled": true,
-                "isOnboarded": true
-              },
-              "disabled": false,
-              "mfaEnabled": false,
-              "lastActiveAt": "2026-02-18",
-              "isPending": false
-            }
-          }
-        ]
+        "creatorId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
       }
     }
   ],
   "tags": [],
+  "parentFolder": null,
   "activeVersion": {
-    "updatedAt": "2026-02-17T19:49:44.892Z",
-    "createdAt": "2026-02-17T19:49:44.892Z",
-    "versionId": "c1f632b6-01aa-4fc2-9a9e-31ae0671a86a",
+    "updatedAt": "2026-03-04T08:39:29.553Z",
+    "createdAt": "2026-03-04T08:39:29.553Z",
+    "versionId": "8b92535f-c131-43c9-9b2b-c2213650f8db",
     "workflowId": "6257AfT1l4FMC6lY",
     "nodes": [
       {
@@ -900,11 +885,11 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://api.groq.com/openai/v1/chat/completions",
+          "url": "https://openrouter.ai/api/v1/chat/completions",
           "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"IMPORTANT: Respond ONLY with valid JSON, no prose or markdown.\\n\\nGenerate a hypothetical document that would perfectly answer the question. This document will be used for semantic search. Format: dense, factual text, 200-300 words. Also extract key entities as JSON: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": string}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 400\n}",
+          "jsonBody": "={\n  \"model\": \"arcee-ai/trinity-large-preview:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an entity extraction specialist. Given a question, extract ALL specific named entities (people, places, films, TV shows, organizations, dates, events). Return JSON format ONLY.\\n\\nRULES:\\n1. Extract SPECIFIC names only — never generic concepts\\n2. For multi-hop questions, extract entities from EACH hop\\n3. Also generate a brief hypothetical answer document (100 words max)\\n4. Return: {\\\"hyde_document\\\": string, \\\"entities\\\": [{\\\"name\\\": string, \\\"type\\\": \\\"PERSON|PLACE|FILM|ORGANIZATION|EVENT|DATE\\\"}]}\\n\\nEXAMPLE:\\nQuestion: Who voices the character in SpongeBob named after a glowing species?\\nEntities: [{\\\"name\\\": \\\"SpongeBob SquarePants\\\", \\\"type\\\": \\\"FILM\\\"}, {\\\"name\\\": \\\"Plankton\\\", \\\"type\\\": \\\"PERSON\\\"}, {\\\"name\\\": \\\"Mr. Lawrence\\\", \\\"type\\\": \\\"PERSON\\\"}]\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.query }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 500\n}",
           "options": {
             "timeout": 30000,
             "retry": {
@@ -917,7 +902,11 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "Bearer ={{$env.GROQ_API_KEY_GRAPH}}"
+                "value": "=Bearer {{$env.OPENROUTER_KEY_GRAPH}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
               }
             ]
           }
@@ -937,7 +926,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Neo4j Query Builder (Deep Traversal V2) - with NLP entity extraction fallback\nconst initData = $node['OTEL Init'].json;\nconst rawContent = $json.choices?.[0]?.message?.content || '';\n\nlet hydeDocument = '';\nlet extractedEntities = [];\n\n// Strategy 1: Try JSON parse\ntry {\n  const parsed = JSON.parse(rawContent);\n  hydeDocument = parsed.hyde_document || '';\n  extractedEntities = (parsed.entities || [])\n    .filter(e => e && typeof e.name === 'string')\n    .map(e => e.name);\n} catch (e) {\n  // Strategy 2: Try embedded JSON\n  const jsonMatch = rawContent.match(/\\{[\\s\\S]*\"entities\"[\\s\\S]*\\}/);\n  if (jsonMatch) {\n    try {\n      const embedded = JSON.parse(jsonMatch[0]);\n      hydeDocument = embedded.hyde_document || '';\n      extractedEntities = (embedded.entities || [])\n        .filter(e => e && typeof e.name === 'string')\n        .map(e => e.name);\n    } catch (e2) {}\n  }\n}\n\n// Strategy 3: NLP-based entity extraction from plain text\nif (extractedEntities.length === 0) {\n  hydeDocument = rawContent;\n  const fullText = rawContent + ' ' + initData.query;\n  \n  const stopWords = new Set([\n    'The', 'What', 'Who', 'Where', 'When', 'How', 'Which', 'Did', 'Does',\n    'Was', 'Were', 'Are', 'Is', 'For', 'This', 'That', 'These', 'Those',\n    'Her', 'His', 'Its', 'She', 'They', 'Not', 'Also', 'Both', 'But',\n    'And', 'Has', 'Had', 'Have', 'Can', 'May', 'Will', 'Our', 'All',\n    'Such', 'Two', 'One', 'First', 'He', 'In', 'As', 'An',\n    'Modern', 'Today', 'Years', 'Only', 'Particularly', 'Remains',\n    'Significant', 'Important', 'Format', 'Throughout', 'Despite',\n    'However', 'Although', 'Furthermore', 'Moreover', 'Additionally',\n    'Meanwhile', 'Nevertheless', 'Consequently', 'Subsequently',\n    'Ultimately', 'Indeed', 'Several', 'Various', 'Numerous',\n    'During', 'Between', 'Within', 'Beyond', 'After', 'Before'\n  ]);\n  \n  const properNouns = fullText.match(/[A-Z\\u00C0-\\u00DC][a-z\\u00E0-\\u00FF]+(?:\\s+[A-Z\\u00C0-\\u00DC][a-z\\u00E0-\\u00FF]+)*/g) || [];\n  \n  const seen = new Set();\n  for (const noun of properNouns) {\n    const clean = noun.trim();\n    if (clean.length > 2 && !stopWords.has(clean) && !seen.has(clean.toLowerCase())) {\n      seen.add(clean.toLowerCase());\n      extractedEntities.push(clean);\n    }\n  }\n  \n  const acronyms = fullText.match(/\\b[A-Z]{2,}\\b/g) || [];\n  for (const acr of acronyms) {\n    if (!seen.has(acr.toLowerCase()) && acr.length >= 2) {\n      seen.add(acr.toLowerCase());\n      extractedEntities.push(acr);\n    }\n  }\n}\n\nconst validEntities = extractedEntities\n  .map(e => e.replace(/[^a-zA-Z\\u00C0-\\u00FF0-9\\-_\\s]/g, '').substring(0, 100))\n  .filter(e => e.length > 2)\n  .slice(0, 20);\n\nif (validEntities.length === 0) {\n  return [{\n    json: {\n      skip_neo4j: true,\n      reason: 'No valid entities extracted from text or JSON',\n      hyde_document: hydeDocument || rawContent\n    }\n  }];\n}\n\nconst MAX_DEPTH = 3;\nconst MAX_RESULTS = 100;\n\nconst correctedQuery = `\nMATCH (n)\nWHERE ((n.name IN $entity_names\n      OR ANY(ename IN $entity_names WHERE toLower(n.name) CONTAINS toLower(ename))\n      OR ANY(ename IN $entity_names WHERE toLower(ename) CONTAINS toLower(n.name)))\n      OR toLower(n.name) IN [x IN $entity_names | toLower(x)]\n      OR ANY(ename IN $entity_names WHERE size(ename) > 3 AND toLower(n.name) CONTAINS toLower(ename)))\n  AND (n.tenant_id = $tenant_id OR n.tenant_id IS NULL)\nWITH n,\n     CASE\n       WHEN n:Organization THEN 1.3\n       WHEN n:Person THEN 1.2\n       WHEN n:City THEN 1.1\n       WHEN n:Museum THEN 1.2\n       WHEN n:Technology THEN 1.0\n       WHEN n:Disease THEN 1.0\n       ELSE 0.9\n     END as entity_priority\nORDER BY entity_priority DESC\nLIMIT 10\n\nOPTIONAL MATCH path = (n)-[r*1..${MAX_DEPTH}]-(m)\nWHERE (m.tenant_id = $tenant_id OR m.tenant_id IS NULL)\nWITH path, n as startNode, entity_priority,\n     reduce(score = entity_priority, rel IN relationships(path) |\n       score + CASE type(rel)\n         WHEN 'A_CREE' THEN 1.5\n         WHEN 'CAUSE_PAR' THEN 1.4\n         WHEN 'CONNECTE' THEN 1.3\n         WHEN 'PROTEGE_CONTRE' THEN 1.3\n         WHEN 'ETUDIE' THEN 1.2\n         WHEN 'UTILISE' THEN 1.2\n         WHEN 'CIBLE' THEN 1.2\n         WHEN 'EXPOSE_A' THEN 1.1\n         WHEN 'VISE_A_LIMITER' THEN 1.1\n         WHEN 'SOUS_ENSEMBLE_DE' THEN 1.0\n         WHEN 'ETEND' THEN 1.0\n         ELSE 0.8\n       END\n     ) as path_score,\n     length(path) as path_length\n\nWHERE path_score > (path_length * 0.3)\n\nRETURN\n  startNode.name as start_entity,\n  [node IN nodes(path) | {name: node.name, type: labels(node)[0]}] as path_nodes,\n  [rel IN relationships(path) | type(rel)] as path_relations,\n  path_score,\n  path_length\nORDER BY path_score DESC\nLIMIT $max_results\n`;\n\nreturn [{\n  json: {\n    skip_neo4j: false,\n    query: correctedQuery,\n    parameters: {\n      entity_names: validEntities,\n      tenant_id: initData.user_context?.tenant_id || 'benchmark',\n      max_results: MAX_RESULTS\n    },\n    hyde_document: hydeDocument || rawContent,\n    entities: validEntities,\n    traversal_config: { max_depth: MAX_DEPTH },\n    _debug: {\n      entities_found: validEntities.length,\n      extraction_method: 'nlp_fallback',\n      neo4j_5x_compatible: true\n    }\n  }\n}];",
+          "jsCode": "// Neo4j Query Builder (Deep Traversal V2) - with NLP entity extraction fallback\nconst initData = $node['OTEL Init'].json;\nconst rawContent = $json.choices?.[0]?.message?.content || '';\n\nlet hydeDocument = '';\nlet extractedEntities = [];\n\n// Strategy 1: Try JSON parse\ntry {\n  const parsed = JSON.parse(rawContent);\n  hydeDocument = parsed.hyde_document || '';\n  extractedEntities = (parsed.entities || [])\n    .filter(e => e && typeof e.name === 'string')\n    .map(e => e.name);\n} catch (e) {\n  // Strategy 2: Try embedded JSON\n  const jsonMatch = rawContent.match(/\\{[\\s\\S]*\"entities\"[\\s\\S]*\\}/);\n  if (jsonMatch) {\n    try {\n      const embedded = JSON.parse(jsonMatch[0]);\n      hydeDocument = embedded.hyde_document || '';\n      extractedEntities = (embedded.entities || [])\n        .filter(e => e && typeof e.name === 'string')\n        .map(e => e.name);\n    } catch (e2) {}\n  }\n}\n\n// Strategy 3: NLP-based entity extraction from plain text\nif (extractedEntities.length === 0) {\n  hydeDocument = rawContent;\n  const fullText = rawContent + ' ' + initData.query;\n  \n  const stopWords = new Set([\n    'The', 'What', 'Who', 'Where', 'When', 'How', 'Which', 'Did', 'Does',\n    'Was', 'Were', 'Are', 'Is', 'For', 'This', 'That', 'These', 'Those',\n    'Her', 'His', 'Its', 'She', 'They', 'Not', 'Also', 'Both', 'But',\n    'And', 'Has', 'Had', 'Have', 'Can', 'May', 'Will', 'Our', 'All',\n    'Such', 'Two', 'One', 'First', 'He', 'In', 'As', 'An',\n    'Modern', 'Today', 'Years', 'Only', 'Particularly', 'Remains',\n    'Significant', 'Important', 'Format', 'Throughout', 'Despite',\n    'However', 'Although', 'Furthermore', 'Moreover', 'Additionally',\n    'Meanwhile', 'Nevertheless', 'Consequently', 'Subsequently',\n    'Ultimately', 'Indeed', 'Several', 'Various', 'Numerous',\n    'During', 'Between', 'Within', 'Beyond', 'After', 'Before'\n  ]);\n  \n  const properNouns = fullText.match(/[A-Z\\u00C0-\\u00DC][a-z\\u00E0-\\u00FF]+(?:\\s+[A-Z\\u00C0-\\u00DC][a-z\\u00E0-\\u00FF]+)*/g) || [];\n  \n  const seen = new Set();\n  for (const noun of properNouns) {\n    const clean = noun.trim();\n    if (clean.length > 2 && !stopWords.has(clean) && !seen.has(clean.toLowerCase())) {\n      seen.add(clean.toLowerCase());\n      extractedEntities.push(clean);\n    }\n  }\n  \n  const acronyms = fullText.match(/\\b[A-Z]{2,}\\b/g) || [];\n  for (const acr of acronyms) {\n    if (!seen.has(acr.toLowerCase()) && acr.length >= 2) {\n      seen.add(acr.toLowerCase());\n      extractedEntities.push(acr);\n    }\n  }\n}\n\nconst validEntities = extractedEntities\n  .map(e => e.replace(/[^a-zA-Z\\u00C0-\\u00FF0-9\\-_\\s]/g, '').substring(0, 100))\n  .filter(e => e.length > 2)\n  .slice(0, 20);\n\nif (validEntities.length === 0) {\n  return [{\n    json: {\n      skip_neo4j: true,\n      reason: 'No valid entities extracted from text or JSON',\n      hyde_document: hydeDocument || rawContent\n    }\n  }];\n}\n\nconst MAX_DEPTH = 4;\nconst MAX_RESULTS = 100;\n\nconst correctedQuery = `\nMATCH (n)\nWHERE ((n.name IN $entity_names\n      OR ANY(ename IN $entity_names WHERE toLower(n.name) CONTAINS toLower(ename))\n      OR ANY(ename IN $entity_names WHERE toLower(ename) CONTAINS toLower(n.name)))\n      OR toLower(n.name) IN [x IN $entity_names | toLower(x)]\n      OR ANY(ename IN $entity_names WHERE size(ename) > 3 AND toLower(n.name) CONTAINS toLower(ename)))\n  AND (n.tenant_id IN [$tenant_id, 'default', 'benchmark'] OR n.tenant_id IS NULL)\nWITH n,\n     CASE\n       WHEN n:Organization THEN 1.3\n       WHEN n:Person THEN 1.2\n       WHEN n:City THEN 1.1\n       WHEN n:Museum THEN 1.2\n       WHEN n:Technology THEN 1.0\n       WHEN n:Disease THEN 1.0\n       ELSE 0.9\n     END as entity_priority\nORDER BY entity_priority DESC\nLIMIT 10\n\nOPTIONAL MATCH path = (n)-[r*1..${MAX_DEPTH}]-(m)\nWHERE (m.tenant_id = $tenant_id OR m.tenant_id IS NULL)\nWITH path, n as startNode, entity_priority,\n     reduce(score = entity_priority, rel IN relationships(path) |\n       score + CASE type(rel)\n         WHEN 'A_CREE' THEN 1.5\n         WHEN 'CAUSE_PAR' THEN 1.4\n         WHEN 'CONNECTE' THEN 1.3\n         WHEN 'PROTEGE_CONTRE' THEN 1.3\n         WHEN 'ETUDIE' THEN 1.2\n         WHEN 'UTILISE' THEN 1.2\n         WHEN 'CIBLE' THEN 1.2\n         WHEN 'EXPOSE_A' THEN 1.1\n         WHEN 'VISE_A_LIMITER' THEN 1.1\n         WHEN 'SOUS_ENSEMBLE_DE' THEN 1.0\n         WHEN 'ETEND' THEN 1.0\n         ELSE 0.8\n       END\n     ) as path_score,\n     length(path) as path_length\n\nWHERE path_score > (path_length * 0.3)\n\nRETURN\n  startNode.name as start_entity,\n  [node IN nodes(path) | {name: node.name, type: labels(node)[0]}] as path_nodes,\n  [rel IN relationships(path) | type(rel)] as path_relations,\n  path_score,\n  path_length\nORDER BY path_score DESC\nLIMIT $max_results\n`;\n\nreturn [{\n  json: {\n    skip_neo4j: false,\n    query: correctedQuery,\n    parameters: {\n      entity_names: validEntities,\n      tenant_id: initData.user_context?.tenant_id || 'benchmark',\n      max_results: MAX_RESULTS\n    },\n    hyde_document: hydeDocument || rawContent,\n    entities: validEntities,\n    traversal_config: { max_depth: MAX_DEPTH },\n    _debug: {\n      entities_found: validEntities.length,\n      extraction_method: 'nlp_fallback',\n      neo4j_5x_compatible: true\n    }\n  }\n}];",
           "options": {
             "timeout": 15000
           }
@@ -998,12 +987,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
+          "url": "https://sota-rag-integrated-a4mkzmz.svc.aped-4627-b74a.pinecone.io/records/namespaces/__default__/search",
           "authentication": "none",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Validate Embedding'].json.embedding || $node['Generate HyDE Embedding'].json.embeddings?.float?.[0] || []) }},\n  \"topK\": {{ $node['OTEL Init'].json.topK || 100 }},\n  \"includeMetadata\": true\n}",
+          "jsonBody": "={{\n(() => {\n  const hydeDoc = $node['Extract HyDE Document']?.json?.hyde_document || '';\n  const query = $node['OTEL Init']?.json?.query || '';\n  const searchText = hydeDoc || query;\n  const topK = Math.min($node['OTEL Init']?.json?.topK || 50, 50);\n  return JSON.stringify({\n    \"query\": {\n      \"top_k\": topK,\n      \"inputs\": {\"text\": searchText}\n    }\n  });\n})()\n}}",
           "options": {
             "timeout": 30000,
             "retry": {
@@ -1052,13 +1041,13 @@
           752,
           6256
         ],
+        "onError": "continueRegularOutput",
         "credentials": {
           "postgres": {
-            "id": "USU8ngVzsUbED3mn",
+            "id": "cH96tQ3I9uIHqiiq",
             "name": "Supabase Postgres (Pooler)"
           }
-        },
-        "onError": "continueRegularOutput"
+        }
       },
       {
         "parameters": {
@@ -1116,7 +1105,8 @@
         "onError": "continueRegularOutput",
         "retryOnFail": true,
         "maxTries": 3,
-        "waitBetweenTries": 3000
+        "waitBetweenTries": 3000,
+        "disabled": true
       },
       {
         "parameters": {
@@ -1148,7 +1138,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\ntry {\n  vectorResults = $node['WF3: Cohere Reranker']?.json?.results || [];\n} catch(e) {\n  vectorResults = [];\n}\n\n// Safely get Neo4j data\nlet neo4jData = null;\ntry {\n  neo4jData = $node['Validate Neo4j Results']?.json;\n} catch(e) {}\n\n// Safely get community data\nlet communityData = null;\ntry {\n  communityData = $node['Community Summaries Fetch']?.json;\n} catch(e) {}\n\n// Safely get entity extraction data\nlet entityData = null;\ntry {\n  entityData = $node['WF3: HyDE & Entity Extraction']?.json;\n} catch(e) {}\n\n// Build context from all available sources\nconst ctx = $json.budgeted_context || {};\nconst query = $node['OTEL Init'].json.query;\nconst traceId = $node['OTEL Init'].json.trace_id || '';\nconst contextParts = [];\n\n// Graph relationships from budgeted context\nif (ctx.relationships) {\n  contextParts.push('Graph Relationships: ' + ctx.relationships);\n}\nif (ctx.graph && ctx.graph.length > 0) {\n  const graphText = ctx.graph.slice(0, 5).map(g => g.content || g.text || '').filter(Boolean).join('\\n');\n  if (graphText) contextParts.push('Graph Context:\\n' + graphText);\n}\n\n// Vector/reranked docs\nif (ctx.reranked && ctx.reranked.length > 0) {\n  const rerankedText = ctx.reranked.slice(0, 5).map((d, i) => {\n    const content = typeof d === 'string' ? d : (d.document || d.content || d.text || '');\n    return '[Doc ' + (i+1) + '] ' + content;\n  }).filter(Boolean).join('\\n');\n  if (rerankedText) contextParts.push('Relevant Documents:\\n' + rerankedText);\n}\n\n// Community summaries\nif (ctx.community && ctx.community.length > 0) {\n  const commText = ctx.community.slice(0, 3).map(c => c.content || c.text || '').filter(Boolean).join('\\n');\n  if (commText) contextParts.push('Community Summaries:\\n' + commText);\n}\n\n// Fallback: if no budgeted context, try raw Neo4j data\nif (contextParts.length === 0) {\n  if (neo4jData && !neo4jData.skip_graph) {\n    // Extract paths from Neo4j v2 format\n    const values = neo4jData.data?.values || neo4jData.results?.[0]?.data?.map(d => d.row) || [];\n    if (values.length > 0) {\n      const pathStr = values.slice(0, 10).map(row => {\n        if (Array.isArray(row)) {\n          const startEntity = row[0];\n          const pathNodes = row[1] || [];\n          const pathRels = row[2] || [];\n          const nodeNames = Array.isArray(pathNodes) ? pathNodes.map(n => n.name || n).join(' -> ') : String(pathNodes);\n          return startEntity + ': ' + nodeNames + ' [' + (Array.isArray(pathRels) ? pathRels.join(', ') : '') + ']';\n        }\n        return JSON.stringify(row).substring(0, 200);\n      }).join('\\n');\n      contextParts.push('Entity Graph Paths:\\n' + pathStr);\n    }\n  }\n  \n  // Try community summaries raw data\n  if (communityData) {\n    const summaries = communityData.summaries || communityData;\n    if (Array.isArray(summaries) && summaries.length > 0) {\n      const commStr = summaries.slice(0, 3).map(s => s.summary || s.content || JSON.stringify(s).substring(0, 300)).join('\\n');\n      contextParts.push('Community Summaries:\\n' + commStr);\n    }\n  }\n  \n  // Try Hyde document as last resort context\n  if (contextParts.length === 0 && entityData) {\n    const content = entityData.choices?.[0]?.message?.content || '';\n    try {\n      const parsed = JSON.parse(content);\n      if (parsed.hyde_document) {\n        contextParts.push('Background Knowledge:\\n' + parsed.hyde_document);\n      }\n    } catch(e) {\n      if (content.length > 20) {\n        contextParts.push('Background Knowledge:\\n' + content.substring(0, 1000));\n      }\n    }\n  }\n}\n\nconst fullContext = contextParts.join('\\n\\n');\nconst embedding_fallback = vectorResults.length === 0;\nconst traversal_depth = ctx.graph?.length || 0;\nconst context_sources = contextParts.length;\n\n// Build request body for LLM Answer Synthesis\nconst requestBody = {\n  model: 'llama-3.3-70b-versatile',\n  messages: [\n    {\n      role: 'system',\n      content: 'You are a precise knowledge graph assistant. Answer questions using ONLY the provided context. For factual questions (who/what/where/when), answer in 1-5 words. For yes/no questions, start with Yes or No. For numerical questions, give the number with unit. NEVER say you lack information - always provide your best answer from the context. Respond in the SAME LANGUAGE as the question.'\n    },\n    {\n      role: 'user',\n      content: 'Context:\\n' + fullContext + '\\n\\nQuestion: ' + query + '\\n\\nAnswer concisely:'\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 300\n};\n\nreturn [{\n  json: {\n    requestBody: requestBody,\n    trace_id: traceId,\n    embedding_fallback: embedding_fallback,\n    tokens_used: 0,\n    traversal_depth: traversal_depth,\n    context_sources: context_sources,\n    debug_context_length: fullContext.length,\n    debug_context_parts: contextParts.length\n  }\n}];"
+          "jsCode": "// Response Formatter - builds LLM Answer Synthesis request body\n// Handles missing vector results when embedding credits are exhausted\n\n// Safely get reranked vector results\nlet vectorResults = [];\ntry {\n  vectorResults = $node['WF3: Cohere Reranker']?.json?.results || [];\n} catch(e) {\n  vectorResults = [];\n}\n\n// Safely get Neo4j data\nlet neo4jData = null;\ntry {\n  neo4jData = $node['Validate Neo4j Results']?.json;\n} catch(e) {}\n\n// Safely get community data\nlet communityData = null;\ntry {\n  communityData = $node['Community Summaries Fetch']?.json;\n} catch(e) {}\n\n// Safely get entity extraction data\nlet entityData = null;\ntry {\n  entityData = $node['WF3: HyDE & Entity Extraction']?.json;\n} catch(e) {}\n\n// FIX-39d: Check for embedded reference context in query (Phase 2 graph questions)\nconst originalQuery = $node['OTEL Init'].json.query || '';\nlet embeddedContext = '';\nconst refCtxMatch = originalQuery.match(/\\nReference context:([\\s\\S]+)$/);\nif (refCtxMatch) {\n  embeddedContext = refCtxMatch[1].trim().substring(0, 3000);\n}\n\n// Build context from all available sources\nconst ctx = $json.budgeted_context || {};\nconst query = $node['OTEL Init'].json.query;\nconst traceId = $node['OTEL Init'].json.trace_id || '';\nconst contextParts = [];\n\n// Graph relationships from budgeted context\nif (ctx.relationships) {\n  contextParts.push('Graph Relationships: ' + ctx.relationships);\n}\nif (ctx.graph && ctx.graph.length > 0) {\n  const graphText = ctx.graph.slice(0, 5).map(g => g.content || g.text || '').filter(Boolean).join('\\n');\n  if (graphText) contextParts.push('Graph Context:\\n' + graphText);\n}\n\n// Vector/reranked docs\nif (ctx.reranked && ctx.reranked.length > 0) {\n  const rerankedText = ctx.reranked.slice(0, 5).map((d, i) => {\n    const content = typeof d === 'string' ? d : (d.document || d.content || d.text || '');\n    return '[Doc ' + (i+1) + '] ' + content;\n  }).filter(Boolean).join('\\n');\n  if (rerankedText) contextParts.push('Relevant Documents:\\n' + rerankedText);\n}\n\n// Community summaries\nif (ctx.community && ctx.community.length > 0) {\n  const commText = ctx.community.slice(0, 3).map(c => c.content || c.text || '').filter(Boolean).join('\\n');\n  if (commText) contextParts.push('Community Summaries:\\n' + commText);\n}\n\n// Fallback: if no budgeted context, try raw Neo4j data\nif (contextParts.length === 0) {\n  if (neo4jData && !neo4jData.skip_graph) {\n    // Extract paths from Neo4j v2 format\n    const values = neo4jData.data?.values || neo4jData.results?.[0]?.data?.map(d => d.row) || [];\n    if (values.length > 0) {\n      const pathStr = values.slice(0, 10).map(row => {\n        if (Array.isArray(row)) {\n          const startEntity = row[0];\n          const pathNodes = row[1] || [];\n          const pathRels = row[2] || [];\n          const nodeNames = Array.isArray(pathNodes) ? pathNodes.map(n => n.name || n).join(' -> ') : String(pathNodes);\n          return startEntity + ': ' + nodeNames + ' [' + (Array.isArray(pathRels) ? pathRels.join(', ') : '') + ']';\n        }\n        return JSON.stringify(row).substring(0, 200);\n      }).join('\\n');\n      contextParts.push('Entity Graph Paths:\\n' + pathStr);\n    }\n  }\n  \n  // Try community summaries raw data\n  if (communityData) {\n    const summaries = communityData.summaries || communityData;\n    if (Array.isArray(summaries) && summaries.length > 0) {\n      const commStr = summaries.slice(0, 3).map(s => s.summary || s.content || JSON.stringify(s).substring(0, 300)).join('\\n');\n      contextParts.push('Community Summaries:\\n' + commStr);\n    }\n  }\n  \n  // Try Hyde document as last resort context\n  if (contextParts.length === 0 && entityData) {\n    const content = entityData.choices?.[0]?.message?.content || '';\n    try {\n      const parsed = JSON.parse(content);\n      if (parsed.hyde_document) {\n        contextParts.push('Background Knowledge:\\n' + parsed.hyde_document);\n      }\n    } catch(e) {\n      if (content.length > 20) {\n        contextParts.push('Background Knowledge:\\n' + content.substring(0, 1000));\n      }\n    }\n  }\n}\n\n// FIX-39d: Use embedded context as fallback when all sources empty\nif (contextParts.length === 0 && embeddedContext) {\n  contextParts.push('Reference Documents:\\n' + embeddedContext);\n}\n\nconst fullContext = contextParts.join('\\n\\n');\nconst embedding_fallback = vectorResults.length === 0;\nconst traversal_depth = ctx.graph?.length || 0;\nconst context_sources = contextParts.length;\n\n// Build request body for LLM Answer Synthesis\nconst requestBody = {\n  model: 'arcee-ai/trinity-large-preview:free',\n  messages: [\n    {\n      role: 'system',\n      content: 'You are a precise knowledge graph Q&A assistant. Answer using ONLY the provided context.\\n\\nRULES:\\n1. WHO questions: return person name only (e.g., \\'John Knox\\')\\n2. WHAT questions: return entity name (e.g., \\'River Thames\\')\\n3. WHERE questions: return location (e.g., \\'Pearl River County\\')\\n4. WHEN questions: return year/date only (e.g., \\'1572\\')\\n5. Use graph relationships to trace multi-hop paths\\n6. If context has a chain A→B→C, follow it to find the answer\\n7. Give ONLY the final answer — no explanation, no prefixes\\n8. NEVER say you lack information\\n9. Respond in the SAME LANGUAGE as the question'\n    },\n    {\n      role: 'user',\n      content: 'Context:\\n' + fullContext + '\\n\\nQuestion: ' + query + '\\n\\nAnswer concisely:'\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 400\n};\n\nreturn [{\n  json: {\n    requestBody: requestBody,\n    trace_id: traceId,\n    embedding_fallback: embedding_fallback,\n    tokens_used: 0,\n    traversal_depth: traversal_depth,\n    context_sources: context_sources,\n    debug_context_length: fullContext.length,\n    debug_context_parts: contextParts.length\n  }\n}];"
         },
         "id": "0520b590-2736-4e0e-9191-0cb6ac9cce39",
         "name": "Response Formatter",
@@ -1189,21 +1179,6 @@
         "retryOnFail": true,
         "maxTries": 3,
         "waitBetweenTries": 3000
-      },
-      {
-        "parameters": {
-          "content": "# 🔧 VARIABLES D'ENVIRONNEMENT (SOTA 2026) - CORRECTED V3.3.1\n\n## CORRECTIONS APPLIQUÉES:\n1. ✅ OTEL Init: Fixed duplicate 'const query' declaration\n2. ✅ WF3: Cohere Reranker: Fixed triple nested template\n3. ✅ Model references updated for OpenRouter format\n\n## LLM APIs\n- `OPENROUTER_BASE_URL` - https://api.groq.com/openai/v1/chat/completions\n- `LLM_HYDE_MODEL` - llama-3.3-70b-versatile\n\n## Databases\n- `NEO4J_URL` - Neo4j HTTP API URL\n- `PINECONE_URL` - Pinecone query endpoint\n\n## Reranking\n- `RERANKER_API_URL` - https://api.jina.ai/v1/rerank\n- `RERANKER_MODEL` - jina-reranker-v2-base-multilingual\n",
-          "height": 500,
-          "width": 400
-        },
-        "id": "06eeed8a-47ad-49e4-94be-59effdb952c8",
-        "name": "📋 Configuration SOTA 2026",
-        "type": "n8n-nodes-base.stickyNote",
-        "typeVersion": 1,
-        "position": [
-          -544,
-          6176
-        ]
       },
       {
         "parameters": {
@@ -1287,7 +1262,8 @@
         "onError": "continueRegularOutput",
         "retryOnFail": true,
         "maxTries": 3,
-        "waitBetweenTries": 3000
+        "waitBetweenTries": 3000,
+        "disabled": true
       },
       {
         "parameters": {
@@ -1319,7 +1295,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const embeddingData = $json;\n\n// Check if we have a valid embedding - handle both Cohere and OpenRouter formats\nlet embedding = [];\n\n// Cohere v2 format: embeddings.float[0]\nif (embeddingData.embeddings?.float?.[0]) {\n  embedding = embeddingData.embeddings.float[0];\n}\n// OpenRouter/OpenAI format: data[0].embedding\nelse if (embeddingData.data?.[0]?.embedding) {\n  embedding = embeddingData.data[0].embedding;\n}\n// Body wrapper variants\nelse if (embeddingData.body?.embeddings?.float?.[0]) {\n  embedding = embeddingData.body.embeddings.float[0];\n}\nelse if (embeddingData.body?.data?.[0]?.embedding) {\n  embedding = embeddingData.body.data[0].embedding;\n}\nelse if (Array.isArray(embeddingData.embedding)) {\n  embedding = embeddingData.embedding;\n}\n\n// Validate embedding dimensions (1024 for Cohere, 1536 for OpenAI)\nconst expectedDims = parseInt('1024' || '1024');\nconst isValid = embedding.length >= 384; // Accept any reasonable dimension\n\nif (!isValid) {\n  return [{\n    json: {\n      valid: false,\n      error: `Invalid embedding: got ${embedding.length}, expected ${expectedDims}`,\n      embedding: [],\n      fallback: true\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    embedding: embedding,\n    dimensions: embedding.length\n  }\n}];"
+          "jsCode": "// Validate Embedding — PATCHED: Bypass Jina, pass through HyDE text\n// When Jina embedding is disabled, pass through the HyDE document text\n// for Pinecone Integrated text search\n\nconst input = $json;\n\n// Try to get embedding from various formats\nlet embedding = [];\nif (input.embeddings?.float?.[0]) embedding = input.embeddings.float[0];\nelse if (input.data?.[0]?.embedding) embedding = input.data[0].embedding;\nelse if (input.body?.embeddings?.float?.[0]) embedding = input.body.embeddings.float[0];\n\n// Get the HyDE document text (from Extract HyDE Document when embedding is disabled)\nconst hydeText = input.hyde_document || input.text || input.content || '';\n\n// If no embedding but we have HyDE text, use text-based search mode\nif (embedding.length === 0 && hydeText) {\n  return [{\n    json: {\n      embedding: [],\n      embedding_valid: false,\n      use_text_search: true,\n      hyde_text: hydeText,\n      provider: \"text_search_fallback\"\n    }\n  }];\n}\n\nif (embedding.length === 0) {\n  return [{\n    json: {\n      embedding: [],\n      embedding_valid: false,\n      use_text_search: false,\n      error: \"No valid embedding found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    embedding: embedding,\n    embedding_valid: true,\n    use_text_search: false,\n    provider: \"jina\"\n  }\n}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -1350,7 +1326,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://api.groq.com/openai/v1/chat/completions",
+          "url": "https://openrouter.ai/api/v1/chat/completions",
           "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
@@ -1367,7 +1343,11 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "Bearer ={{$env.GROQ_API_KEY_GRAPH}}"
+                "value": "=Bearer {{$env.OPENROUTER_KEY_GRAPH}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
               }
             ]
           }
@@ -1710,51 +1690,49 @@
         ]
       }
     },
-    "authors": "Admin RAG",
+    "authors": "CI Bot",
     "name": null,
     "description": null,
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-02-18T12:30:45.644Z",
-        "id": 184,
+        "createdAt": "2026-03-04T08:39:40.797Z",
+        "id": 921,
         "workflowId": "6257AfT1l4FMC6lY",
-        "versionId": "c1f632b6-01aa-4fc2-9a9e-31ae0671a86a",
+        "versionId": "8b92535f-c131-43c9-9b2b-c2213650f8db",
+        "event": "activated",
+        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
+      },
+      {
+        "createdAt": "2026-03-04T08:40:47.835Z",
+        "id": 930,
+        "workflowId": "6257AfT1l4FMC6lY",
+        "versionId": "8b92535f-c131-43c9-9b2b-c2213650f8db",
         "event": "deactivated",
-        "userId": "5e0b7c8f-d330-43e7-ada6-31b78e20460a"
+        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
       },
       {
-        "createdAt": "2026-02-17T19:51:12.394Z",
-        "id": 182,
+        "createdAt": "2026-03-04T08:40:49.892Z",
+        "id": 931,
         "workflowId": "6257AfT1l4FMC6lY",
-        "versionId": "c1f632b6-01aa-4fc2-9a9e-31ae0671a86a",
+        "versionId": "8b92535f-c131-43c9-9b2b-c2213650f8db",
         "event": "activated",
-        "userId": "5e0b7c8f-d330-43e7-ada6-31b78e20460a"
-      },
-      {
-        "createdAt": "2026-02-17T19:50:01.879Z",
-        "id": 181,
-        "workflowId": "6257AfT1l4FMC6lY",
-        "versionId": "c1f632b6-01aa-4fc2-9a9e-31ae0671a86a",
-        "event": "activated",
-        "userId": "5e0b7c8f-d330-43e7-ada6-31b78e20460a"
-      },
-      {
-        "createdAt": "2026-02-18T12:34:08.627Z",
-        "id": 186,
-        "workflowId": "6257AfT1l4FMC6lY",
-        "versionId": "c1f632b6-01aa-4fc2-9a9e-31ae0671a86a",
-        "event": "activated",
-        "userId": "5e0b7c8f-d330-43e7-ada6-31b78e20460a"
-      },
-      {
-        "createdAt": "2026-02-17T19:54:46.687Z",
-        "id": 183,
-        "workflowId": "6257AfT1l4FMC6lY",
-        "versionId": "c1f632b6-01aa-4fc2-9a9e-31ae0671a86a",
-        "event": "activated",
-        "userId": "5e0b7c8f-d330-43e7-ada6-31b78e20460a"
+        "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
       }
     ]
-  }
+  },
+  "scopes": [
+    "workflow:create",
+    "workflow:delete",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:update"
+  ],
+  "checksum": "c01d0476759accc9940b21b6727c1380bedc37c6924b863336caab3d3e8bd1e0"
 }
