@@ -1,6 +1,6 @@
 # rag-data-ingestion — CLAUDE.md
 
-> Last updated: 2026-02-23T17:00:00+01:00
+> Last updated: 2026-03-05T22:00:00Z
 > **Ce repo s'exécute dans un Codespace GitHub éphémère.**
 > Tu es un agent Claude Code specialise dans l'INGESTION et l'ENRICHISSEMENT des BDD.
 > **MODELE PRINCIPAL : `claude-opus-4-6`** — Strategie ingestion, analyse qualite, decisions.
@@ -13,29 +13,36 @@
 
 ---
 
-## ÉTAT ACTUEL — 25 fév 2026 (audit Session 59b)
+## ÉTAT ACTUEL — 5 mars 2026 (Session 72)
 
 | | |
 |-|-|
-| **Dernier commit** | Session 39 — 22 fév 2026 |
-| **Déployé / en cours** | Workflows Ingestion V4.0 + Enrichissement V4.0 (JSON dans n8n/live/) |
-| **Codespace** | Not currently running |
-| **Datasets downloaded** | squad_v2, triviaqa, hotpotqa (669MB total) — Missing: musique + finqa |
+| **Dernier commit** | Session 72 — 5 mars 2026 |
+| **Déployé / en cours** | Workflows Ingestion V4.0 (patched, LLM→OpenRouter) + Enrichissement V4.0 |
+| **Codespace** | `ingestion-prod-4j4j67rq5xjrfjp75` (Available) |
+| **Datasets downloaded** | Session 70: 16/16 HF benchmarks + 18/18 sector datasets downloaded |
+| **Pinecone index** | `website-sectors-jina-1024` (1024-dim, cosine, serverless) — created Session 72 |
 
-### AUDIT HONNÊTE (Session 59b)
+### État des composants (Session 72)
 | Composant | Réalité | Status |
 |-----------|---------|--------|
-| **ingestion.json** | VRAI CODE (30 noeuds, BM25, NER, chunking) — jamais exécuté en prod | UNTESTED |
-| **enrichment.json** | **CASSÉ** — URLs placeholder `internal-api.company.com` et `external-data-provider.com` | BROKEN |
-| **500 file types** | **INEXISTANT** — les 5 scripts référencés dans CLAUDE.md n'existent PAS. MIME detector = 11 types | MISSING |
+| **ingestion.json** | 30 noeuds — LLM nodes patched to OpenRouter (was LiteLLM/Space#7 DOWN) | **WORKING** |
+| **enrichment.json** | Webhook HTTP 500 — still has placeholder issues | BROKEN |
+| **Direct ingestion scripts** | `ingest-direct.py`, `ingest-downloaded-datasets.py`, `ingest-phase3-bulk.py` — uses Jina v3 + HF fallback + Pinecone standard API | **WORKING** |
+| **Embedding** | Jina v3 (primary, out of credits) → HuggingFace `multilingual-e5-large-instruct` (fallback, 1024-dim) | **WORKING** |
+| **Document types** | 100+ types registered, tests pass (65 tests) | OK |
 | **Scripts download** | 4 scripts Python FONCTIONNELS (download-benchmarks, download-sectors, etc.) | OK |
-| **Docker/Codespace** | FONCTIONNEL (n8n + 2 workers + postgres + redis) mais PAS d'import workflow | PARTIAL |
-| **Tests** | ZÉRO — pas de pytest, pas de CI, pas de test data | MISSING |
+| **Tests** | **110 offline tests passing** (chunking, doc types, structure, pipeline validation) | **WORKING** |
+| **CI** | pytest runs on every push (test-offline job) + manual E2E (test-live job) | **WORKING** |
 
-### Priorité next session
-1. **FIX enrichment.json** — remplacer les 2 URLs placeholder par des vrais endpoints (ou les supprimer)
-2. **Ajouter import workflow** dans setup.sh (importer les JSON dans n8n au démarrage)
-3. **Décider 500 file types** — construire les 5 scripts manquants OU réduire le scope au 11 types réels
+### Session 72 accomplishments
+1. Created Pinecone index `website-sectors-jina-1024` (4th index, dim 1024)
+2. Migrated 3 ingest scripts from Pinecone integrated inference to Jina v3 + standard vectors API
+3. Created `pinecone_utils.py` shared module with Jina/HF embedding fallback
+4. Fixed 110 offline tests (was 0), all passing
+5. Updated CI to run pytest (was syntax-only)
+6. Patched n8n Ingestion V4.0 workflow: LLM nodes → OpenRouter (Space #7 DOWN)
+7. E2E self-test passing: ingest → search → verify (3/3 queries, scores > 0.82)
 
 ### SOTA V4.0 Improvements Applied (Session 31)
 | Technique | Impact | Status |
@@ -98,8 +105,8 @@ puis ingérer les datasets sectoriels dans les BDD du projet.
 ### Les 2 workflows — UPGRADED to V4.0 (SOTA 2026)
 | Workflow | ID n8n | Version | Key V4.0 Features |
 |----------|--------|---------|-------------------|
-| **Ingestion V4.0** | `15sUKy5lGL4rYW0L` | V4.0 | Late Chunking, Domain-Specific Chunking, French NER, CompactRAG, BM25 FR |
-| **Enrichissement V4.0** | `9V2UTVRbf4OJXPto` | V4.0 | Entity Resolution V4, Cross-Doc Linking, FR Summaries, Relationship V4 |
+| **Ingestion V4.0** | `nh1D4Up0wBZhuQbp` | V4.0 | Late Chunking, Domain-Specific Chunking, French NER, CompactRAG, BM25 FR — LLM→OpenRouter |
+| **Enrichissement V4.0** | `ORa01sX4xI0iRCJ8` | V4.0 | Entity Resolution V4, Cross-Doc Linking, FR Summaries — **HTTP 500** |
 
 ### Cibles de performance
 | Métrique | V3.1 | V4.0 Target | Technique |
@@ -274,7 +281,7 @@ La bibliotheque de fixes master est dans `mon-ipad/technicals/debug/fixes-librar
 ### BDD Separees (Ingestion)
 | BDD | Index/Schema mon-ipad (benchmark) | Index/Schema website (secteurs) |
 |-----|-----------------------------------|--------------------------------|
-| Pinecone | `sota-rag-jina-1024` | `website-sectors-jina-1024` |
+| Pinecone | `sota-rag-jina-1024` | `website-sectors-jina-1024` (CREATED Session 72, dim 1024, ready) |
 | Neo4j | labels generiques | labels `WEB_*` |
 | Supabase | schema `public` | schema `website_*` |
 
@@ -438,7 +445,7 @@ Orchestrator : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/92217bb8-ffc
 Appel : `curl -X POST "<url>" -H "Content-Type: application/json" -d '{"query": "..."}'`
 **IMPORTANT** : Le champ est `query` (PAS `question`).
 
-**CRITICAL (Session 39-42)** : ALL WEBHOOKS RETURN 404 after HF Space rebuild. The entrypoint.sh activation script is broken. Workflows exist in git repo but are not activated. This is THE #1 blocker for ALL pipelines.
+**Session 72 STATUS** : Ingestion webhook returns HTTP 200 (/webhook/rag-v6-ingestion). Enrichment returns HTTP 500. Standard/Quantitative/Orchestrator webhooks OK. LLM nodes patched to OpenRouter (was LiteLLM Space#7 DOWN).
 ```
 
 ---
