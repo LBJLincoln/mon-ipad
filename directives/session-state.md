@@ -55,21 +55,19 @@
 | Database | Index/Table | Count | Change | Note |
 |----------|------------|-------|--------|------|
 | Pinecone `sota-rag-jina-1024` | 12 namespaces | 21,073 vectors | +10,662 vs Session 68 | **ACTIVE** — used by all pipelines |
-| Pinecone `sota-rag-integrated` | 4 namespaces | 43,440 vectors | NEW (Session 70) | **NOT USED** — see explanation below |
+| ~~Pinecone `sota-rag-integrated`~~ | ~~4 namespaces~~ | ~~43,440 vectors~~ | ~~Session 70~~ | **DELETED Session 71** — orphaned benchmarks, not sector data |
 | Pinecone `sota-rag` | 12 namespaces | 10,411 vectors | Unchanged | Legacy index |
 | Pinecone `sota-rag-phase2-graph` | 1 namespace | 1,248 vectors | Unchanged | Graph-specific |
 | Supabase | 8 key tables | ~12,432 rows | Unchanged | |
 | Neo4j | Reported | 70,847 nodes | Unverifiable (HTTP 403) | |
 
-#### Why so many vectors? (76,172 total across 4 Pinecone indexes)
+#### Vector cleanup (Session 71)
 
-The vector count grew because Session 70's ingestion created **two separate targets**:
-1. **`sota-rag-jina-1024`** (+10,662 vectors → 21,073): Bulk ingestion added Phase 3 benchmark contexts into the existing pipeline index. This is the index ALL pipelines use.
-2. **`sota-rag-integrated`** (43,440 vectors): Created as a **dedicated ingestion index** by the direct Python pipeline (which bypassed broken n8n workflows). Uses the same Jina embeddings but a different index name. **NOT connected to any pipeline** — this is dead data unless pipelines are reconfigured to use it, or its vectors are migrated to `sota-rag-jina-1024`.
+`sota-rag-integrated` (43,440 vectors) was **DELETED** — verified contents were benchmark questions (popqa, finqa, msmarco, frames), not sector data. Same Jina v3 embeddings as `sota-rag-jina-1024` but stored questions instead of context paragraphs (useless for RAG retrieval). No data loss — pipelines never used it.
 
-The old indexes (`sota-rag` 10,411 + `sota-rag-phase2-graph` 1,248) are legacy/unchanged.
+Also found: `nomos-ingestion` index (0 vectors, empty) — cleanup candidate.
 
-**Action needed**: Either migrate `sota-rag-integrated` vectors into `sota-rag-jina-1024`, or reconfigure pipelines to also query `sota-rag-integrated`, or delete it to save Pinecone quota.
+**Remaining active indexes**: `sota-rag-jina-1024` (21,073), `sota-rag` (10,411 legacy), `sota-rag-phase2-graph` (1,248).
 
 ### rag-data-ingestion Status
 
