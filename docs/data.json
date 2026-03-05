@@ -1,14 +1,14 @@
 {
   "meta": {
-    "generated_at": "2026-03-05T08:56:48+01:00",
+    "generated_at": "2026-03-05T09:07:53+01:00",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
     "total_unique_questions": 10038,
     "total_test_runs": 10081,
-    "total_iterations": 54,
+    "total_iterations": 55,
     "status": "running",
-    "current_session": "2026-03-05T08-42-54"
+    "current_session": "2026-03-05T08-55-47"
   },
   "reference_cloud_executions": {
     "note": "Executions reussies sur n8n Cloud (avant migration Docker). Servent de reference uniquement.",
@@ -142925,24 +142925,24 @@
       "id": "iter-2026-03-05T08-42-54",
       "number": 54,
       "timestamp_start": "2026-03-05T08:43:22+01:00",
-      "timestamp_end": "2026-03-05T08:56:44+01:00",
+      "timestamp_end": "2026-03-05T08:54:01+01:00",
       "label": "Phase3-Quant-PostFix-NoStop",
       "description": "Dataset: phase-3, Parallel: quantitative, Max: None, Reset: True",
       "changes_applied": [],
       "results_summary": {
         "quantitative": {
-          "tested": 39,
-          "correct": 21,
+          "tested": 33,
+          "correct": 17,
           "errors": 0,
-          "accuracy_pct": 53.8,
-          "avg_latency_ms": 12196,
-          "p95_latency_ms": 24729,
-          "avg_f1": 0.8
+          "accuracy_pct": 51.5,
+          "avg_latency_ms": 11597,
+          "p95_latency_ms": 17258,
+          "avg_f1": 0.7912
         }
       },
-      "total_tested": 39,
-      "total_correct": 21,
-      "overall_accuracy_pct": 53.8,
+      "total_tested": 33,
+      "total_correct": 17,
+      "overall_accuracy_pct": 51.5,
       "questions": [
         {
           "id": "p3-qua-00147",
@@ -143372,84 +143372,109 @@
           "error": null,
           "error_type": null,
           "timestamp": "2026-03-05T08:54:01+01:00"
-        },
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-03-05T08-55-47",
+      "number": 55,
+      "timestamp_start": "2026-03-05T08:56:24+01:00",
+      "timestamp_end": "2026-03-05T09:07:48+01:00",
+      "label": "Phase3-Quant-PostFix-NoStop",
+      "description": "Dataset: phase-3, Parallel: quantitative, Max: None, Reset: True",
+      "changes_applied": [],
+      "results_summary": {
+        "quantitative": {
+          "tested": 6,
+          "correct": 2,
+          "errors": 0,
+          "accuracy_pct": 33.3,
+          "avg_latency_ms": 14454,
+          "p95_latency_ms": 16980,
+          "avg_f1": 0.725
+        }
+      },
+      "total_tested": 6,
+      "total_correct": 2,
+      "overall_accuracy_pct": 33.3,
+      "questions": [
         {
-          "id": "p3-qua-00095",
+          "id": "p3-qua-00147",
           "rag_type": "quantitative",
-          "correct": true,
-          "f1": 0.8,
-          "latency_ms": 5727,
-          "answer": "",
-          "expected": "40.0%",
-          "match_type": "SUBSET_MATCH",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 14750,
+          "answer": "15.7%",
+          "expected": "23.0%",
+          "match_type": "NO_MATCH",
           "error": null,
           "error_type": null,
-          "timestamp": "2026-03-05T08:55:12+01:00"
+          "timestamp": "2026-03-05T09:05:17+01:00"
         },
         {
-          "id": "p3-qua-00307",
+          "id": "p3-qua-00491",
           "rag_type": "quantitative",
           "correct": true,
-          "f1": 0.8,
-          "latency_ms": 9729,
-          "answer": "",
-          "expected": "$216,000,000.00",
-          "match_type": "SUBSET_MATCH",
+          "f1": 0.5,
+          "latency_ms": 14243,
+          "answer": "15.0%",
+          "expected": "20.0%",
+          "match_type": "TOKEN_F1",
           "error": null,
           "error_type": null,
-          "timestamp": "2026-03-05T08:55:13+01:00"
+          "timestamp": "2026-03-05T09:06:49+01:00"
         },
         {
-          "id": "p3-qua-00034",
+          "id": "p3-qua-00440",
           "rag_type": "quantitative",
-          "correct": true,
-          "f1": 0.8,
-          "latency_ms": 6503,
-          "answer": "",
-          "expected": "$5,865,000,000.00",
-          "match_type": "SUBSET_MATCH",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 16980,
+          "answer": "Increase",
+          "expected": "decrease",
+          "match_type": "NO_MATCH",
           "error": null,
           "error_type": null,
-          "timestamp": "2026-03-05T08:55:14+01:00"
+          "timestamp": "2026-03-05T09:06:49+01:00"
         },
         {
-          "id": "p3-qua-00227",
+          "id": "p3-qua-00363",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 11240,
+          "answer": "$94million",
+          "expected": "$45,392,000.00",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-05T09:07:47+01:00"
+        },
+        {
+          "id": "p3-qua-00290",
           "rag_type": "quantitative",
           "correct": true,
           "f1": 0.95,
-          "latency_ms": 23002,
-          "answer": "$1,410,000",
-          "expected": "$23,962,000.00",
+          "latency_ms": 15760,
+          "answer": "$1,200million",
+          "expected": "$1,938,000,000.00",
           "match_type": "NUMERIC_MATCH",
           "error": null,
           "error_type": null,
-          "timestamp": "2026-03-05T08:56:43+01:00"
+          "timestamp": "2026-03-05T09:07:48+01:00"
         },
         {
-          "id": "p3-qua-00067",
+          "id": "p3-qua-00168",
           "rag_type": "quantitative",
           "correct": false,
           "f1": 0.0,
-          "latency_ms": 25732,
-          "answer": "15.7%",
-          "expected": "20.0%",
+          "latency_ms": 13751,
+          "answer": "$1,250million",
+          "expected": "$128,000,000.00",
           "match_type": "NO_MATCH",
           "error": null,
           "error_type": null,
-          "timestamp": "2026-03-05T08:56:43+01:00"
-        },
-        {
-          "id": "p3-qua-00149",
-          "rag_type": "quantitative",
-          "correct": false,
-          "f1": 0.0,
-          "latency_ms": 22250,
-          "answer": "15.7%",
-          "expected": "10.0%",
-          "match_type": "NO_MATCH",
-          "error": null,
-          "error_type": null,
-          "timestamp": "2026-03-05T08:56:44+01:00"
+          "timestamp": "2026-03-05T09:07:48+01:00"
         }
       ]
     }
@@ -205767,13 +205792,25 @@
           "error_type": null,
           "answer": "15.7%",
           "timestamp": "2026-03-05T08:45:29+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-05T08-55-47",
+          "iteration_number": 55,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 14750,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "15.7%",
+          "timestamp": "2026-03-05T09:05:17+01:00"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-03-05T08:45:29+01:00",
+      "last_tested": "2026-03-05T09:05:17+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -205810,15 +205847,27 @@
           "error_type": null,
           "answer": "12.5%",
           "timestamp": "2026-03-05T08:46:37+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-05T08-55-47",
+          "iteration_number": 55,
+          "correct": true,
+          "f1": 0.5,
+          "latency_ms": 14243,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "15.0%",
+          "timestamp": "2026-03-05T09:06:49+01:00"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "fail",
-      "last_tested": "2026-03-05T08:46:37+01:00",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 3,
+      "pass_count": 1,
+      "pass_rate": 0.333,
+      "current_status": "pass",
+      "last_tested": "2026-03-05T09:06:49+01:00",
+      "best_f1": 0.5,
+      "trend": "improving"
     },
     "p3-qua-00440": {
       "id": "p3-qua-00440",
@@ -205853,13 +205902,25 @@
           "error_type": null,
           "answer": "Increase",
           "timestamp": "2026-03-05T08:46:38+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-05T08-55-47",
+          "iteration_number": 55,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 16980,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Increase",
+          "timestamp": "2026-03-05T09:06:49+01:00"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-03-05T08:46:38+01:00",
+      "last_tested": "2026-03-05T09:06:49+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -205896,13 +205957,25 @@
           "error_type": null,
           "answer": "$94million",
           "timestamp": "2026-03-05T08:48:09+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-05T08-55-47",
+          "iteration_number": 55,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 11240,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$94million",
+          "timestamp": "2026-03-05T09:07:47+01:00"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-03-05T08:48:09+01:00",
+      "last_tested": "2026-03-05T09:07:47+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -205939,13 +206012,25 @@
           "error_type": null,
           "answer": "$1,200million",
           "timestamp": "2026-03-05T08:48:42+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-05T08-55-47",
+          "iteration_number": 55,
+          "correct": true,
+          "f1": 0.95,
+          "latency_ms": 15760,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$1,200million",
+          "timestamp": "2026-03-05T09:07:48+01:00"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 2,
+      "total_runs": 3,
+      "pass_count": 3,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-03-05T08:48:42+01:00",
+      "last_tested": "2026-03-05T09:07:48+01:00",
       "best_f1": 0.95,
       "trend": "stable"
     },
@@ -205982,13 +206067,25 @@
           "error_type": null,
           "answer": "$94million",
           "timestamp": "2026-03-05T08:48:43+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-05T08-55-47",
+          "iteration_number": 55,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 13751,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$1,250million",
+          "timestamp": "2026-03-05T09:07:48+01:00"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 3,
       "pass_count": 1,
-      "pass_rate": 0.5,
+      "pass_rate": 0.333,
       "current_status": "fail",
-      "last_tested": "2026-03-05T08:48:43+01:00",
+      "last_tested": "2026-03-05T09:07:48+01:00",
       "best_f1": 0.95,
       "trend": "regressing"
     },
@@ -207453,25 +207550,13 @@
           "error_type": null,
           "answer": "",
           "timestamp": "2026-03-04T16:42:00+01:00"
-        },
-        {
-          "iteration_id": "iter-2026-03-05T08-42-54",
-          "iteration_number": 54,
-          "correct": true,
-          "f1": 0.8,
-          "latency_ms": 5727,
-          "match_type": "SUBSET_MATCH",
-          "error": null,
-          "error_type": null,
-          "answer": "",
-          "timestamp": "2026-03-05T08:55:12+01:00"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 2,
+      "total_runs": 1,
+      "pass_count": 1,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-03-05T08:55:12+01:00",
+      "last_tested": "2026-03-04T16:42:00+01:00",
       "best_f1": 0.8,
       "trend": "stable"
     },
@@ -207496,25 +207581,13 @@
           "error_type": null,
           "answer": "",
           "timestamp": "2026-03-04T16:42:01+01:00"
-        },
-        {
-          "iteration_id": "iter-2026-03-05T08-42-54",
-          "iteration_number": 54,
-          "correct": true,
-          "f1": 0.8,
-          "latency_ms": 9729,
-          "match_type": "SUBSET_MATCH",
-          "error": null,
-          "error_type": null,
-          "answer": "",
-          "timestamp": "2026-03-05T08:55:13+01:00"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 2,
+      "total_runs": 1,
+      "pass_count": 1,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-03-05T08:55:13+01:00",
+      "last_tested": "2026-03-04T16:42:01+01:00",
       "best_f1": 0.8,
       "trend": "stable"
     },
@@ -207539,25 +207612,13 @@
           "error_type": null,
           "answer": "",
           "timestamp": "2026-03-04T16:42:01+01:00"
-        },
-        {
-          "iteration_id": "iter-2026-03-05T08-42-54",
-          "iteration_number": 54,
-          "correct": true,
-          "f1": 0.8,
-          "latency_ms": 6503,
-          "match_type": "SUBSET_MATCH",
-          "error": null,
-          "error_type": null,
-          "answer": "",
-          "timestamp": "2026-03-05T08:55:14+01:00"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 2,
+      "total_runs": 1,
+      "pass_count": 1,
       "pass_rate": 1.0,
       "current_status": "pass",
-      "last_tested": "2026-03-05T08:55:14+01:00",
+      "last_tested": "2026-03-04T16:42:01+01:00",
       "best_f1": 0.8,
       "trend": "stable"
     },
@@ -207861,27 +207922,15 @@
           "error_type": null,
           "answer": "$1,200million",
           "timestamp": "2026-03-04T16:42:22+01:00"
-        },
-        {
-          "iteration_id": "iter-2026-03-05T08-42-54",
-          "iteration_number": 54,
-          "correct": true,
-          "f1": 0.95,
-          "latency_ms": 23002,
-          "match_type": "NUMERIC_MATCH",
-          "error": null,
-          "error_type": null,
-          "answer": "$1,410,000",
-          "timestamp": "2026-03-05T08:56:43+01:00"
         }
       ],
-      "total_runs": 2,
-      "pass_count": 1,
-      "pass_rate": 0.5,
-      "current_status": "pass",
-      "last_tested": "2026-03-05T08:56:43+01:00",
-      "best_f1": 0.95,
-      "trend": "improving"
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-03-04T16:42:22+01:00",
+      "best_f1": 0.0,
+      "trend": "stable"
     },
     "p3-qua-00067": {
       "id": "p3-qua-00067",
@@ -207904,27 +207953,15 @@
           "error_type": null,
           "answer": "35.0%",
           "timestamp": "2026-03-04T16:42:33+01:00"
-        },
-        {
-          "iteration_id": "iter-2026-03-05T08-42-54",
-          "iteration_number": 54,
-          "correct": false,
-          "f1": 0.0,
-          "latency_ms": 25732,
-          "match_type": "NO_MATCH",
-          "error": null,
-          "error_type": null,
-          "answer": "15.7%",
-          "timestamp": "2026-03-05T08:56:43+01:00"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 1,
       "pass_count": 1,
-      "pass_rate": 0.5,
-      "current_status": "fail",
-      "last_tested": "2026-03-05T08:56:43+01:00",
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-03-04T16:42:33+01:00",
       "best_f1": 0.5,
-      "trend": "regressing"
+      "trend": "stable"
     },
     "p3-qua-00149": {
       "id": "p3-qua-00149",
@@ -207947,25 +207984,13 @@
           "error_type": null,
           "answer": "15.7%",
           "timestamp": "2026-03-04T16:42:41+01:00"
-        },
-        {
-          "iteration_id": "iter-2026-03-05T08-42-54",
-          "iteration_number": 54,
-          "correct": false,
-          "f1": 0.0,
-          "latency_ms": 22250,
-          "match_type": "NO_MATCH",
-          "error": null,
-          "error_type": null,
-          "answer": "15.7%",
-          "timestamp": "2026-03-05T08:56:44+01:00"
         }
       ],
-      "total_runs": 2,
+      "total_runs": 1,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-03-05T08:56:44+01:00",
+      "last_tested": "2026-03-04T16:42:41+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
