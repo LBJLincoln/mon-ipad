@@ -391,6 +391,10 @@ def evaluate_answer(answer, expected_answer):
         # No expected answer — just check non-empty response
         return {"correct": len(answer_lower) > 10, "method": "NON_EMPTY", "f1": 1.0 if len(answer_lower) > 10 else 0.0}
 
+    if not answer_lower or len(answer_lower) < 2:
+        # Empty or trivially short answer — always wrong
+        return {"correct": False, "method": "NO_MATCH", "f1": 0.0}
+
     # Normalize numbers: remove commas, $, % for comparison
     def normalize(text):
         import unicodedata
@@ -417,26 +421,38 @@ def evaluate_answer(answer, expected_answer):
         return {"correct": True, "method": "SUBSET_MATCH", "f1": 0.8}
 
     # Numeric proximity: extract numbers and compare with tolerance
-    # Handles "22.99%" vs "23.0%", "$45,392,000" vs "$45392000", etc.
-    answer_nums = re.findall(r'[\d]+\.?\d*', answer_lower)
-    expected_nums = re.findall(r'[\d]+\.?\d*', expected_lower)
-    if expected_nums and answer_nums:
-        for exp_str in expected_nums:
+    # Handles "22.99%" vs "23.0%", "$45,392,000" vs "$45392000", "$1.94 billion" vs "1938000000", etc.
+    MULTIPLIERS = {'trillion': 1e12, 'billion': 1e9, 'million': 1e6, 'thousand': 1e3,
+                   'trillions': 1e12, 'billions': 1e9, 'millions': 1e6, 'thousands': 1e3,
+                   'b': 1e9, 'm': 1e6, 'k': 1e3, 'bn': 1e9, 'mn': 1e6}
+
+    def extract_scaled_numbers(text):
+        """Extract numbers with multiplier awareness (e.g., '$1.94 billion' → 1940000000)."""
+        nums = []
+        # Pattern: number optionally followed by a multiplier word
+        for m in re.finditer(r'([\d]+(?:,\d{3})*\.?\d*)\s*(trillion|billion|million|thousand|trillions|billions|millions|thousands|bn|mn|[bmk])?(?:\b|$)', text):
+            raw_num = m.group(1).replace(',', '')
             try:
-                exp_val = float(exp_str)
-                for ans_str in answer_nums:
-                    try:
-                        ans_val = float(ans_str)
-                        # Within 2% relative tolerance or 0.5 absolute
-                        if exp_val == 0:
-                            if abs(ans_val) < 0.5:
-                                return {"correct": True, "method": "NUMERIC_MATCH", "f1": 0.95}
-                        elif abs(ans_val - exp_val) / abs(exp_val) < 0.02 or abs(ans_val - exp_val) < 0.5:
-                            return {"correct": True, "method": "NUMERIC_MATCH", "f1": 0.95}
-                    except ValueError:
-                        continue
+                val = float(raw_num)
             except ValueError:
                 continue
+            mult_word = m.group(2)
+            if mult_word and mult_word.lower() in MULTIPLIERS:
+                val *= MULTIPLIERS[mult_word.lower()]
+            nums.append(val)
+        return nums
+
+    answer_scaled = extract_scaled_numbers(answer_lower)
+    expected_scaled = extract_scaled_numbers(expected_lower)
+    if expected_scaled and answer_scaled:
+        for exp_val in expected_scaled:
+            for ans_val in answer_scaled:
+                # Within 2% relative tolerance or 0.5 absolute
+                if exp_val == 0:
+                    if abs(ans_val) < 0.5:
+                        return {"correct": True, "method": "NUMERIC_MATCH", "f1": 0.95}
+                elif abs(ans_val - exp_val) / abs(exp_val) < 0.02 or abs(ans_val - exp_val) < 0.5:
+                    return {"correct": True, "method": "NUMERIC_MATCH", "f1": 0.95}
 
     if True:
         # Token-level F1 for partial matches
