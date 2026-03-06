@@ -1,6 +1,6 @@
 # rag-data-ingestion — CLAUDE.md
 
-> Last updated: 2026-03-05T22:00:00Z
+> Last updated: 2026-03-06T00:30:00Z
 > **Ce repo s'exécute dans un Codespace GitHub éphémère.**
 > Tu es un agent Claude Code specialise dans l'INGESTION et l'ENRICHISSEMENT des BDD.
 > **MODELE PRINCIPAL : `claude-opus-4-6`** — Strategie ingestion, analyse qualite, decisions.
@@ -20,8 +20,9 @@
 | **Dernier commit** | Session 72 — 5 mars 2026 |
 | **Déployé / en cours** | Workflows Ingestion V4.0 (patched, LLM→OpenRouter) + Enrichissement V4.0 |
 | **Codespace** | `ingestion-prod-4j4j67rq5xjrfjp75` (Available) |
-| **Datasets downloaded** | Session 70: 16/16 HF benchmarks + 18/18 sector datasets downloaded |
-| **Pinecone index** | `website-sectors-jina-1024` (1024-dim, cosine, serverless) — created Session 72 |
+| **Datasets downloaded** | Session 70: 16/16 HF benchmarks + 18/18 sector datasets (34,095 items) |
+| **Pinecone index** | `website-sectors-jina-1024` — **31,916 vectors** (sectors ns), 1024-dim, cosine |
+| **Ingestion status** | **COMPLETE** — 18 datasets, 34,095 records, 0 errors |
 
 ### État des composants (Session 72)
 | Composant | Réalité | Status |
@@ -43,6 +44,9 @@
 5. Updated CI to run pytest (was syntax-only)
 6. Patched n8n Ingestion V4.0 workflow: LLM nodes → OpenRouter (Space #7 DOWN)
 7. E2E self-test passing: ingest → search → verify (3/3 queries, scores > 0.82)
+8. **Ingested 34,095 sector records** (18 datasets, 4 sectors) — 0 errors
+9. **Retrieval validation passed**: avg score 0.863, all 8 queries > 0.7, correct sector matching
+10. Fixed `__default__` namespace bug (Pinecone reserved name) → `sectors` namespace
 
 ### SOTA V4.0 Improvements Applied (Session 31)
 | Technique | Impact | Status |

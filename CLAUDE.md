@@ -179,6 +179,7 @@ Inclus : Python 3.11, Node.js 20, Docker-in-Docker, Claude Code CLI
 |---------|---------|--------|
 | Pinecone sota-rag-jina-1024 | 10,411 vecteurs, dim 1024 | 100K max |
 | Pinecone sota-rag-phase2-graph | 1,296 vecteurs, e5-large | 100K max |
+| Pinecone website-sectors-jina-1024 | 31,916 vecteurs, dim 1024 (sectors) | 100K max |
 | Neo4j Aura | 19,788 nodes / 76,717 rels | 200K nodes / 400K rels |
 | Supabase | 40 tables / ~17K lignes | 500MB storage |
 
