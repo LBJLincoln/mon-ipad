@@ -1,6 +1,6 @@
 # rag-website — CLAUDE.md
 
-> Last updated: 2026-02-25T11:30:00+00:00
+> Last updated: 2026-03-06T12:00:00Z
 > **Ce repo s'exécute dans un Codespace GitHub éphémère (dev) + Vercel (prod).**
 > Tu es un agent Claude Code specialise dans le SITE BUSINESS multi-secteurs.
 > **MODELE PRINCIPAL : `claude-opus-4-6`** — Architecture, decisions, evaluation qualite.
@@ -13,15 +13,16 @@
 
 ---
 
-## ÉTAT ACTUEL — 25 fév 2026
+## ÉTAT ACTUEL — 6 mars 2026
 
 | | |
 |-|-|
 | **Status** | Live sur Vercel : https://nomos-ai-pied.vercel.app |
-| **GitHub Action** | Has a known failure that needs fixing (deployment still works) |
+| **RAG Phase** | Phase 1 PASSED, Phase 3 in progress (Std 87.5%, Graph 40.9%) |
 | **Dashboard SSE** | /dashboard route active with real-time updates |
+| **Sector Data** | Pinecone `website-sectors-jina-1024` : **31,916 vectors** (4 secteurs ingeres) |
 | **Codespace** | Can be created on-demand for development |
-| **Prochain objectif immédiat** | Fix GitHub Action workflow + Intégrer vrais docs sectoriels dans démos chatbot |
+| **Prochain objectif** | Integrer vrais docs sectoriels dans demos chatbot (data disponible) |
 
 ### Commandes clés pour cette session
 ```bash
@@ -56,17 +57,18 @@ npm run build
 
 ```
 PHASE A — RAG Pipeline Iteration  ← RAG-TESTS + MON-IPAD
-  Phase 1 (200q)  BLOQUÉE — ne concerne pas directement ce repo
+  Phase 1 (200q)  PASSED (Session 30, 20 fev 2026)
+  Phase 3 (~10K q)  EN COURS — Standard 87.5% COMPLETE, Graph 40.9% COMPLETE
 
 PHASE B — Analyse SOTA 2026  ← MON-IPAD (résultats dans technicals/)
   → Ce repo CONSOMME les résultats SOTA pour ses démos
 
 PHASE C — Ingestion & Enrichment  ← RAG-DATA-INGESTION
-  → Ce repo CONSOMME les datasets sectoriels ingérés (Pinecone website-sectors-*)
+  → COMPLETE — 34K records ingeres, Pinecone `website-sectors-jina-1024` = 31,916 vectors
 
 PHASE D — Production & Déploiement  ← CE REPO EST ICI ✅
   Statut actuel : MVP en prod (nomos-ai-pied.vercel.app)
-  Manquant : vraies données sectorielles dans les démos chatbot
+  Données sectorielles disponibles dans Pinecone (31,916 vectors) — à intégrer dans chatbot
 ```
 
 ### Ce que ce repo attend des autres repos

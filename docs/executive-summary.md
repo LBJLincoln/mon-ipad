@@ -1,6 +1,6 @@
 # EXECUTIVE SUMMARY — Nomos AI Multi-RAG Orchestrator
 
-> Last updated: 2026-03-05T18:30:00+00:00
+> Last updated: 2026-03-06T12:00:00Z
 > **Ce fichier DOIT etre consulte et mis a jour a CHAQUE session.**
 > Il est la reference unique pour comprendre tout le projet en langage clair.
 
@@ -35,24 +35,29 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
 ### Ou en est-on ?
 - **Phase 1** (200 questions) : **PASSED** (85.5% overall, 20 fev 2026, session 30). Tous les 4 pipelines au-dessus de leurs cibles.
 - **Phase 2** (1,000q par pipeline) : **PARTIAL** — Graph 78.0% (500/500 COMPLETE), Quantitative 92.0% (500/500 COMPLETE), Standard 579/1000 (STOPPED), Orchestrator 0% (BROKEN).
-- **Phase 3** (~10K questions) : **IN PROGRESS** (Sessions 70-71)
+- **Phase 3** (~10K questions) : **IN PROGRESS** (Sessions 70-72)
   - Standard: **8,006 tested → 87.5% accuracy — COMPLETE** (above 85% target)
-  - Graph: ~1,115/1,500 in progress (~37% accuracy on hard Phase 3 questions)
-  - Quantitative: 500 tested → 30% accuracy — but **dataset INVALID** (synthetic expected answers wrong, pipeline works correctly)
+  - Graph: **1,500 tested → 40.9% accuracy — COMPLETE** (614 correct, accuracy drop vs Phase 2)
+  - Quantitative: 500 tested → 30% accuracy — **dataset INVALID** (synthetic expected answers wrong, pipeline works correctly)
   - Orchestrator: ON HOLD
 - **Session 70** (4 mars 2026) : **DATA INGESTION COMPLETE**
   - rag-data-ingestion: 16/16 HF benchmarks + 18/18 sector datasets downloaded (23,381 items)
   - Direct Python ingestion: +10,662 vectors into `sota-rag-jina-1024` (now 21,073)
-  - Also created `sota-rag-integrated` (43,440 vectors) — NOT used by pipelines
+  - `website-sectors-jina-1024`: 31,916 vectors (sector data for chatbot)
   - Neo4j: 70,847 nodes reported
 - **Session 71** (5 mars 2026) : **PHASE 3 EVAL PROGRESS**
   - Cleaned up 5 duplicate processes (VM load 13.5 → 3.5)
   - Standard Phase 3 confirmed COMPLETE at 87.5%
-  - Graph eval running (~74% done)
+  - `sota-rag-integrated` (43,440 vectors) **DELETED** — orphaned benchmarks, not used by any pipeline
   - Quant dataset confirmed invalid (2 re-runs same result)
-- **Current accuracy** : Standard **87.5%** (Phase 3, 8006q), Graph **78%** (Phase 2, 500q), Quantitative **92%** (Phase 2, 500q).
+- **Session 72** (6 mars 2026) : **DOCS SYNC + GRAPH COMPLETE**
+  - Graph Phase 3 eval COMPLETE: 1,500q, 614 correct, **40.9% accuracy**
+  - rag-data-ingestion: 34,095 records ingested, 31,916 sector vectors, 110 tests passing
+  - All CLAUDE.md files synced to reflect Phase 3 reality
+  - Quant Phase 3 dataset regeneration (correct Supabase values)
+- **Current accuracy** : Standard **87.5%** (Phase 3, 8006q), Graph **40.9%** (Phase 3, 1500q), Quantitative **92%** (Phase 2, 500q real data).
 - **Infrastructure** : HF Space #1 UP (8 round-robin). All 4 Vercel sites live. 7 repos active.
-- **Remaining issues** : Orchestrator empty body, Quant Phase 3 dataset invalid, `sota-rag-integrated` orphaned (43K vectors unused), rag-data-ingestion Codespace shut down.
+- **Remaining issues** : Orchestrator empty body, Quant Phase 3 dataset invalid (regenerating), Graph accuracy drop to investigate.
 
 ### Chiffres cles
 | Metrique | Valeur |
@@ -60,13 +65,13 @@ Construire un moteur de reponse capable de traiter **1 million+ de questions** d
 | Questions testees a ce jour | **10,900+** (Phase 1 + Phase 2 + Phase 3) |
 | Precision Phase 1 (baseline) | 85.5% (PASSED, 20 fev 2026) |
 | Precision Phase 2 | Graph 78% (500/500), Quant 92% (500/500), Std 579/1000 partial, Orch 0% broken |
-| Precision Phase 3 | **Standard 87.5% (8,006q COMPLETE)**, Graph ~37% (1,115/1,500 in progress), Quant 30% (dataset invalid) |
-| Vecteurs dans Pinecone | **21,073** (sota-rag-jina-1024) + **43,440** (sota-rag-integrated, unused) + 10,411 (legacy) + 1,248 (phase2-graph) |
+| Precision Phase 3 | **Standard 87.5% (8,006q COMPLETE)**, **Graph 40.9% (1,500q COMPLETE)**, Quant 30% (dataset invalid) |
+| Vecteurs dans Pinecone | **21,073** (sota-rag-jina-1024) + **31,916** (website-sectors-jina-1024) + 10,411 (legacy) + 1,248 (phase2-graph) |
 | Entites dans Neo4j | ~70,847 nodes (reported, unverifiable from VM) |
 | Lignes dans Supabase | ~12,432 |
 | Datasets telecharges | 23,381 items (16 HF benchmarks + 18 sector datasets) |
 | Commits dans mon-ipad | **1,100+** |
-| Sessions Claude Code | **71** |
+| Sessions Claude Code | **72** |
 | Sites web live | **4** (ETI + PME connectors + PME use cases + Dashboard) |
 | HF Space n8n | **8** (round-robin for eval) |
 | Scripts diagnostiques | pipeline-doctor.py (1442 lines) + cross-repo-health.py (865 lines) |
@@ -285,9 +290,10 @@ trouve les textes les plus proches mathematiquement.
 | Index | Vecteurs | Usage |
 |-------|----------|-------|
 | `sota-rag-jina-1024` | **21,073** | Pipeline Standard + Graph (ACTIVE — used by all pipelines) |
-| `sota-rag-integrated` | **43,440** | Created Session 70 — **NOT USED** by pipelines (orphaned) |
+| `website-sectors-jina-1024` | **31,916** | Sector data for chatbot (4 secteurs: Finance, Juridique, BTP, Industrie) |
 | `sota-rag` | 10,411 | Legacy (pre-Phase 3) |
 | `sota-rag-phase2-graph` | 1,248 | Graph enrichi (musique dataset) |
+| ~~`sota-rag-integrated`~~ | ~~43,440~~ | **DELETED Session 71** — orphaned benchmarks, not sector data |
 
 ### Neo4j (graphe de connaissances)
 Neo4j stocke les entites (personnes, lieux, organisations) et leurs relations.
@@ -560,16 +566,16 @@ git push origin main
 | Orchestrator | 57 | 1000 | **0%** | **BROKEN** — webhook timeout, empty/404 responses |
 | **TOTAL** | **1,636** | **3,000** | **~55%** | **PARTIAL** — 2/4 pipelines complete |
 
-### Phase 3 — IN PROGRESS (5 mars 2026, sessions 70-71)
+### Phase 3 — IN PROGRESS (6 mars 2026, sessions 70-72)
 | Pipeline | Tested | Total | Accuracy | Status |
 |----------|--------|-------|----------|--------|
 | Standard | **8,006** | 8,700 | **87.5%** | **COMPLETE** — above 85% target |
-| Graph | ~1,115 | 1,500 | ~37% | **Running** (74% done) |
-| Quantitative | 500 | 500 | 30% | **DONE** — dataset INVALID (wrong expected answers) |
+| Graph | **1,500** | 1,500 | **40.9%** | **COMPLETE** — 614 correct, accuracy drop vs Phase 2 |
+| Quantitative | 500 | 500 | 30% | **DONE** — dataset INVALID (wrong expected answers, regenerating v2) |
 | Orchestrator | 0 | 1,000 | — | ON HOLD |
-| **TOTAL** | **~9,621** | **11,700** | — | **IN PROGRESS** — 1/4 complete, 1 running |
+| **TOTAL** | **~10,006** | **11,700** | — | **IN PROGRESS** — 2/4 complete, 1 invalid, 1 on hold |
 
-**Note**: Standard validated at scale (87.5% on 8K questions). Quant accuracy drop is dataset issue, not pipeline (Phase 2 was 92% on real data). Graph accuracy lower on Phase 3 hard questions vs Phase 2.
+**Note**: Standard validated at scale (87.5% on 8K questions). Quant accuracy drop is dataset issue, not pipeline (Phase 2 was 92% on real data). Graph 40.9% vs 78% Phase 2 — Phase 3 questions (MuSiQue, 2WikiMultiHop, HotpotQA-bridge) are harder multi-hop questions not in our knowledge base.
 
 ### Bloqueur critique RESOLU : Broken n8n env var syntax (sessions 39-51)
 - **Root cause found (Session 51)** : Standard + Graph workflow JSONs used broken syntax `={{.OPENROUTER_KEY_STANDARD}}` instead of correct `={{$env.OPENROUTER_KEY_STANDARD}}`. The `={{.VAR}}` syntax is NOT valid in n8n — evaluates to `null`, causing all HTTP headers to send `Bearer null`.
@@ -620,7 +626,8 @@ Highlights recents :
 18. **Session 67**: Phase 2 Standard eval launched, OpenClaw Groq config, Vercel token renewed.
 19. **Session 68**: Cleanup (35 stale files), dashboard fix (framework:null removal + sync throttle), ingestion/enrichment Redis removal (4 nodes), n8n cookie auth discovery, `n8n-api.py` helper created, repo status cards added to dashboard. OpenClaw deferred (OOM).
 20. **Session 70** (4 mars): DATA INGESTION COMPLETE — 23,381 items downloaded (16 HF + 18 sectors), direct Python ingestion (+10,662 vectors in `sota-rag-jina-1024`, 43,440 in `sota-rag-integrated`), Neo4j 70K+ nodes, CI 5 green runs.
-21. **Session 71** (5 mars): PHASE 3 EVAL — Standard **COMPLETE** (8,006q, 87.5%), Graph 74% done (~1,115/1,500), Quant dataset confirmed INVALID (2 re-runs same result), process cleanup (VM load 13.5 → 3.5).
+21. **Session 71** (5 mars): PHASE 3 EVAL — Standard **COMPLETE** (8,006q, 87.5%), Graph 74% done (~1,115/1,500), Quant dataset confirmed INVALID (2 re-runs same result), process cleanup (VM load 13.5 → 3.5). `sota-rag-integrated` (43K vectors) **DELETED**.
+22. **Session 72** (6 mars): DOCS SYNC + GRAPH COMPLETE — Graph Phase 3 **COMPLETE** (1,500q, 40.9%), all CLAUDE.md synced to Phase 3 reality, rag-data-ingestion complete (34,095 records, 31,916 sector vectors), Quant dataset v2 regeneration with correct Supabase values.
 
 ### Session 58 — INFRASTRUCTURE COMPLETE
 
@@ -666,23 +673,22 @@ Highlights recents :
 - **Session 63**: OpenRouter → Groq swap (429 rate-limit fix), 15 new scripts, dashboard feed fixed
 - **Session 62**: 10 HF Spaces deployed, incremental eval saves, 6 workflow repair agents (3 fixed)
 
-### Next Steps (priority order, updated Session 71)
+### Next Steps (priority order, updated Session 72)
 
 #### PRIORITY #1 — Complete Phase 3 Eval
 - Standard: **DONE** (87.5%, 8,006q)
-- Graph: Running (~1,115/1,500) — wait for completion
-- Quant: **Dataset INVALID** — regenerate Phase 3 Quant questions with correct Supabase values
+- Graph: **DONE** (40.9%, 1,500q) — analyze accuracy drop vs Phase 2 (78%)
+- Quant: **Dataset INVALID** — regenerate with correct Supabase values (v2 in progress)
 - Orchestrator: ON HOLD
 
-#### PRIORITY #2 — Fix `sota-rag-integrated` orphaned vectors
-- 43,440 vectors in a Pinecone index that NO pipeline uses
-- Options: (a) migrate to `sota-rag-jina-1024`, (b) reconfigure pipelines, (c) delete
-- This is the main GAP from Session 70 ingestion
+#### PRIORITY #2 — Analyze Graph Accuracy Drop
+- Phase 2: 78.0% → Phase 3: 40.9% (significant drop)
+- Phase 3 questions (MuSiQue, 2WikiMultiHop, HotpotQA-bridge) are harder multi-hop questions
+- Need to determine: are the questions too hard for our knowledge base, or is the pipeline weak?
 
 #### PRIORITY #3 — rag-data-ingestion: Resume repo's own objectives
 - Codespace shut down, repo dormant since March 4
 - n8n Ingestion V4.0 + Enrichment V4.0 NEVER tested in production
-- CLAUDE.md stale (last updated Feb 23)
 - Need: launch Codespace, test workflows on HF Space, add retrieval quality tests
 
 #### PRIORITY #4 — Fix Orchestrator

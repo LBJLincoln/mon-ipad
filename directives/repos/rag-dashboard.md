@@ -1,6 +1,6 @@
 # rag-dashboard — CLAUDE.md
 
-> Last updated: 2026-02-25T11:30:00+00:00
+> Last updated: 2026-03-06T12:00:00Z
 > **Ce repo est statique — déployé PUBLIQUEMENT sur Vercel.**
 > **URL LIVE : https://nomos-dashboard-alexis-morets-projects.vercel.app/**
 > Tu es un agent Claude Code specialise dans le DASHBOARD DE MONITORING live.
@@ -112,32 +112,31 @@ git push origin main
 
 ## DATASETS & METRIQUES — CE QUE LE DASHBOARD AFFICHE
 
-### Metriques actuelles (Phase 1 PASSED, Phase 2 EN COURS)
-| Pipeline | Phase 1 (PASSED) | Phase 2 v10 (last completed) | Target P2 |
-|----------|------------------|------------------------------|-----------|
-| Standard | 85.5% PASS | 60.4% (1263q tested) | >= 75% |
-| Graph | 78.0% PASS | 55.7% | >= 55% |
-| Quantitative | 92.0% PASS | 53.3% | >= 65% |
-| Orchestrator | 80.0% PASS | 58.2% | >= 70% |
-| Overall | 83.9% PASS | 57.0% | >= 75% |
+### Metriques actuelles (Phase 1 PASSED, Phase 3 EN COURS)
+| Pipeline | Phase 1 (PASSED) | Phase 2 | Phase 3 (latest) | Target P3 |
+|----------|------------------|---------|-------------------|-----------|
+| Standard | 85.5% PASS | ~36% (579/1000) | **87.5% (8,006q) COMPLETE** | >= 85% |
+| Graph | 78.0% PASS | 78.0% (500/500) | **40.9% (1,500q) COMPLETE** | >= 55% |
+| Quantitative | 92.0% PASS | 92.0% (500/500) | 30% (INVALID dataset) | >= 65% |
+| Orchestrator | 80.0% PASS | 0% (BROKEN) | ON HOLD | >= 70% |
 
-### Metriques Phase 2 (a ajouter)
+### Metriques Phase 3 (a afficher)
 | Metrique | Source | Format |
 |----------|--------|--------|
-| Questions testees | `status.json → total_questions` | Nombre (actuellement 932) |
+| Questions testees | `status.json → total_questions` | Nombre (10,900+) |
 | Accuracy par pipeline | `status.json → pipelines.<name>.accuracy` | Pourcentage |
 | Phase gates | `status.json → gates_passed` | Booleen |
-| Iterations stables | `status.json → stable_iterations` | Nombre (cible: 3) |
 | Latence moyenne | A ajouter | Secondes |
-| Concurrence max testee | A ajouter | Nombre de questions simultanées |
+| Pinecone vectors | 54K+ across 4 indexes | Nombre |
 
 ### Total datasets du projet
 | Phase | Questions |
 |-------|-----------|
 | Phase 1 | 200 |
 | Phase 2 | 3,000 |
+| Phase 3 | 11,700 |
 | Sectoriels | 7,609 |
-| **Total disponible** | **10,809** |
+| **Total disponible** | **~15,500** |
 
 ### HF Space status (pour monitoring)
 ```

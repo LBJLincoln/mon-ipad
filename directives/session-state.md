@@ -1,126 +1,94 @@
-# Session State — 5 Mars 2026 (Session 71)
+# Session State — 6 Mars 2026 (Session 72)
 
-> Last updated: 2026-03-05T18:30:00+00:00
+> Last updated: 2026-03-06T12:00:00Z
 
-## Current Status: SESSION 71 — PHASE 3 EVAL + INGESTION VERIFICATION
+## Current Status: SESSION 72 — DOCS SYNC + GRAPH COMPLETE + QUANT REGEN
 
-### Session 71 Actions
+### Session 72 Actions
 
-1. **Process Cleanup** — DONE
-   - Killed 5 duplicate eval processes (4x Quant-PostFix + 1x GraphQuant)
-   - VM load dropped from 13.5 to 3.5 (was severely overloaded)
-   - Freed ~160 MB RAM + 700 MB swap
+1. **Graph Phase 3 Eval** — **COMPLETE**
+   - PID 987476 finished (process dead)
+   - **1,500 questions tested, 614 correct → 40.9% accuracy**
+   - Significant drop vs Phase 2 (78.0%) — Phase 3 questions are harder multi-hop (MuSiQue, 2WikiMultiHop, HotpotQA-bridge)
+   - These questions require knowledge not in our Neo4j/Pinecone databases
 
-2. **rag-data-ingestion Verification** — DONE
-   - Session 70 (March 4) ingestion CONFIRMED successful
-   - 16/16 HF benchmarks downloaded, 18/18 sector datasets downloaded
-   - `sota-rag-jina-1024`: 21,073 vectors (was 10,411 → +10,662 new in default ns)
-   - `sota-rag-integrated`: 43,440 vectors (dedicated ingestion index, NOT used by pipelines)
-   - Supabase: unchanged (financials 24, benchmark_datasets 10,772)
-   - Neo4j: reported 70,847 nodes (HTTP API blocked, unverifiable from VM)
-   - rag-data-ingestion CI: 5 green runs on March 4
+2. **All CLAUDE.md Synced** — DONE
+   - `CLAUDE.md` (principal): Phase 3 results, Pinecone 21,073 vec, sota-rag-integrated removed
+   - `directives/repos/rag-tests.md`: Major refonte (Phase 1 PASSED, Phase 3 results, HF Space webhooks)
+   - `directives/repos/rag-website.md`: Phase 3 status, sector data available (31,916 vectors)
+   - `directives/repos/rag-dashboard.md`: Phase 3 metrics
+   - `docs/executive-summary.md`: Session 72, Graph complete, Pinecone updated
+   - All timestamps → 2026-03-06
 
-3. **Quant Accuracy Drop Analysis** — DONE
-   - Phase 2: 92.0% (500q HF real data) → Phase 3: 54.0%/30.0% (500q synthetic)
-   - ROOT CAUSE: Phase 3 synthetic questions have wrong expected answers
-   - Pipeline returns CORRECT values from Supabase, but expected answers don't match
-   - Example: "GreenEnergy operating margin 2023" expected 23.0%, actual DB value 15.7%
-   - VERDICT: Pipeline works. Phase 3 Quant dataset is INVALID.
-   - Two re-runs (NumFix + EvalFix) confirmed: still ~30% — dataset problem, not pipeline
+3. **rag-data-ingestion** — ACTIVE
+   - Session 72 (earlier): 34,095 records ingested, 31,916 sector vectors
+   - Codespace running, 110 tests passing
+   - CLAUDE.md already updated (2026-03-06T00:30:00Z)
 
-4. **Standard Phase 3 Eval** — **COMPLETE**
-   - PID 824008 finished (process no longer running)
-   - **8,006 questions tested / 8,700 total** (694 skipped/dedup)
-   - **7,002 correct → 87.5% accuracy**
-   - Match types: SUBSET_MATCH 6944, NON_EMPTY 912, CONTAINS 33, NO_ANSWER 66, TOKEN_F1 13, NO_MATCH 25
-   - **ABOVE 85% TARGET** — Standard pipeline validated at scale
+4. **Quant Phase 3 Dataset Regeneration** — IN PROGRESS
+   - Created `db/populate/regenerate_quant_phase3.py`
+   - Queries Supabase `financials` table (24 rows: TechVision, GreenEnergy, HealthPlus x 8 periods)
+   - Generates Q&A pairs with real expected answers from Supabase
+   - Output: `datasets/phase-3/quantitative-500-v2.json`
 
-5. **Graph Eval** — IN PROGRESS
-   - PID 987476, started Mar 5 13:12
-   - **~1,115/1,500** (74%) as of 18:30
-   - Rate: ~6-7 questions/minute
-   - Label: Phase3-Graph-S71-clean
-
-### Phase 3 Eval Progress (UPDATED)
+### Phase 3 Eval Progress (FINAL)
 
 | Pipeline | Total | Tested | % | Accuracy | Status |
 |----------|-------|--------|---|----------|--------|
 | Standard | 8,700 | **8,006** | 92.0% | **87.5%** | **COMPLETE** — above 85% target |
-| Graph | 1,500 | **~1,115** | 74% | ~37% (TBD) | **Running** (PID 987476) |
-| Quantitative | 500 | 500 | 100% | **30.0%** | DONE — **dataset INVALID** (synthetic misalignment) |
+| Graph | 1,500 | **1,500** | 100% | **40.9%** | **COMPLETE** — 614 correct |
+| Quantitative | 500 | 500 | 100% | **30.0%** | DONE — **dataset INVALID** (regenerating v2) |
 | Orchestrator | 1,000 | 0 | 0% | — | ON HOLD (user decision) |
 
-### Database State (verified Session 71)
+### Database State (verified Session 72)
 
-| Database | Index/Table | Count | Change | Note |
-|----------|------------|-------|--------|------|
-| Pinecone `sota-rag-jina-1024` | 12 namespaces | 21,073 vectors | +10,662 vs Session 68 | **ACTIVE** — used by all pipelines |
-| ~~Pinecone `sota-rag-integrated`~~ | ~~4 namespaces~~ | ~~43,440 vectors~~ | ~~Session 70~~ | **DELETED Session 71** — orphaned benchmarks, not sector data |
-| Pinecone `sota-rag` | 12 namespaces | 10,411 vectors | Unchanged | Legacy index |
-| Pinecone `sota-rag-phase2-graph` | 1 namespace | 1,248 vectors | Unchanged | Graph-specific |
-| Supabase | 8 key tables | ~12,432 rows | Unchanged | |
-| Neo4j | Reported | 70,847 nodes | Unverifiable (HTTP 403) | |
-
-#### Vector cleanup (Session 71)
-
-`sota-rag-integrated` (43,440 vectors) was **DELETED** — verified contents were benchmark questions (popqa, finqa, msmarco, frames), not sector data. Same Jina v3 embeddings as `sota-rag-jina-1024` but stored questions instead of context paragraphs (useless for RAG retrieval). No data loss — pipelines never used it.
-
-Also found: `nomos-ingestion` index (0 vectors, empty) — cleanup candidate.
-
-**Remaining active indexes**: `sota-rag-jina-1024` (21,073), `sota-rag` (10,411 legacy), `sota-rag-phase2-graph` (1,248).
+| Database | Index/Table | Count | Note |
+|----------|------------|-------|------|
+| Pinecone `sota-rag-jina-1024` | 12 namespaces | **21,073 vectors** | **ACTIVE** — used by all pipelines |
+| Pinecone `website-sectors-jina-1024` | sectors | **31,916 vectors** | Sector data for chatbot (4 secteurs) |
+| Pinecone `sota-rag` | 12 namespaces | 10,411 vectors | Legacy index |
+| Pinecone `sota-rag-phase2-graph` | 1 namespace | 1,248 vectors | Graph-specific |
+| ~~Pinecone `sota-rag-integrated`~~ | — | — | **DELETED Session 71** |
+| Supabase | 8 key tables | ~12,432 rows | Unchanged |
+| Neo4j | Reported | ~70,847 nodes | Unverifiable (HTTP 403) |
 
 ### rag-data-ingestion Status
 
-**OBJECTIVE: Downloads DONE, but repo NOT running its own tests**
+**OBJECTIVE: Downloads DONE, ingestion COMPLETE**
 - All downloads complete (16/16 HF + 18/18 sectors = 23,381 items)
-- Direct Python ingestion pipeline working (bypassed broken n8n workflows)
-- CI: 5 green runs on March 4, last commit March 4
-- Codespace: **SHUTDOWN** (fuzzy-waffle, stopped Mar 5 09:34)
-- **No codespace currently running** — repo is dormant
-
-**WHY rag-data-ingestion is NOT running its own objectives**:
-1. **No active Codespace** — Codespace `fuzzy-waffle` was shut down. 60h/month free tier limit.
-2. **n8n ingestion workflows are broken** — Session 70 had to bypass n8n entirely with direct Python scripts. The n8n Ingestion V4.0 and Enrichment V4.0 workflows (the core value of this repo) have NEVER been tested in production.
-3. **CLAUDE.md is stale** (last updated Feb 23) — still says "webhooks ALL 404", still references priorities that were resolved in Session 70.
-4. **No retrieval quality tests** — The repo has no way to measure if ingested data actually improves RAG accuracy. Downloads ≠ useful ingestion.
-5. **`sota-rag-integrated` orphaned** — 43,440 vectors ingested but pipelines don't use them.
-
-**To make rag-data-ingestion productive again**:
-1. Launch a Codespace (or use GH Actions)
-2. Update CLAUDE.md with Session 70-71 reality
-3. Test n8n Ingestion/Enrichment V4.0 workflows on HF Space
-4. Decide: migrate `sota-rag-integrated` → `sota-rag-jina-1024` or delete
-5. Add retrieval quality validation (ingest → test → measure)
+- Direct Python ingestion pipeline working (34,095 records total)
+- `website-sectors-jina-1024`: 31,916 vectors for chatbot
+- CI: 110 tests passing
+- CLAUDE.md updated Session 72
 
 ### rag-tests Status
 
-**OBJECTIVE: Phase 3 — Standard COMPLETE, Graph in progress**
+**OBJECTIVE: Phase 3 — Standard + Graph COMPLETE, Quant regenerating**
 - Standard: **8,006 tested, 87.5% accuracy — COMPLETE**
-- Graph: ~1,115/1,500 in progress
-- Quant: complete but dataset invalid (needs regeneration)
-- Last commit: Feb 27 (repo dormant, evals run from mon-ipad)
+- Graph: **1,500 tested, 40.9% accuracy — COMPLETE**
+- Quant: dataset invalid, regenerating v2 with correct Supabase values
+- Last commit: updated Session 72
 
 ### Key Infrastructure
 
 - 8 HF Spaces: ALL UP (round-robin for eval)
-- VM: load stabilized after cleanup
-- Dashboard: Live on Vercel
-- 1 eval process running (Graph only — Standard finished)
+- VM: stable, pilotage only
+- Dashboard: Live on Vercel (4 sites)
+- No eval processes running (all complete or stopped)
 
 ### Running Processes
 
 | PID | Started | Label | Status |
 |-----|---------|-------|--------|
 | ~~824008~~ | ~~Mar 4~~ | ~~Phase3-S70-stdquant~~ | **FINISHED** — Standard 8006/8700 done at 87.5% |
-| 987476 | Mar 5 13:12 | Phase3-Graph-S71-clean | Graph ~1115/1500 (74%) |
-| 1006670 | Mar 5 15:52 | Phase3-Quant-NumFix-S71 | Quant re-run (~350/500) — confirms bad dataset |
-| 1008882 | Mar 5 16:08 | Phase3-Quant-EvalFix-S71 | Quant re-run (~282/500) — confirms bad dataset |
+| ~~987476~~ | ~~Mar 5~~ | ~~Phase3-Graph-S71-clean~~ | **FINISHED** — Graph 1500/1500 done at 40.9% |
+| ~~1006670~~ | ~~Mar 5~~ | ~~Phase3-Quant-NumFix-S71~~ | **FINISHED** — confirmed bad dataset |
+| ~~1008882~~ | ~~Mar 5~~ | ~~Phase3-Quant-EvalFix-S71~~ | **FINISHED** — confirmed bad dataset |
 
 ### Next Steps
 
-1. **Wait for Graph to complete** (~385 remaining)
-2. **Kill Quant re-runs** when done — they only confirm dataset is bad
-3. **Fix Phase 3 Quant dataset** — regenerate with correct Supabase values
-4. **Decide on rag-data-ingestion** — launch Codespace? Migrate vectors? Update CLAUDE.md?
-5. **Decide on Orchestrator** — user says leave for now
-6. **Commit + push** progress to all repos
+1. **Regenerate Quant dataset** with correct Supabase values → `quantitative-500-v2.json`
+2. **Re-run Quant eval** with v2 dataset
+3. **Analyze Graph accuracy drop** (78% Phase 2 → 40.9% Phase 3)
+4. **Push directives** to all 6 satellites
+5. **Decide on Orchestrator** — fix or deprioritize?

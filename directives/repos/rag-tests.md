@@ -1,19 +1,18 @@
 # rag-tests — CLAUDE.md
 
-> Last updated: 2026-02-24T21:30:00+01:00
-> **Ce repo s'exécute dans un Codespace GitHub éphémère OU sur HF Space (16GB RAM).**
+> Last updated: 2026-03-06T12:00:00Z
+> **Ce repo s'exécute sur la VM → HF Space webhooks (PAS de Codespace local n8n).**
 > Tu es un agent Claude Code specialise dans les TESTS des 4 pipelines RAG.
 > **MODELE PRINCIPAL : `claude-opus-4-6`** — Analyse, decisions, evaluation des resultats.
 > **DELEGATION** : Haiku 4.5 pour exploration codebase rapide via `Task(model: "haiku", subagent_type: "Explore")`.
-> **n8n LOCAL dans ce Codespace** (docker-compose : n8n-main + 3 workers) — PAS de SSH tunnel vers la VM.
 > Tu suis le même workflow-process que mon-ipad, adapté à ton rôle de testeur.
 > Processus team-agentic multi-model : voir `technicals/project/team-agentic-process.md` (dans mon-ipad).
 
-### REGLES CRITIQUES (Session 25+31+57)
+### REGLES CRITIQUES (Session 25+31+57+72)
 - **Pre-vol checklist OBLIGATOIRE** : Consulter knowledge-base.md Section 0 avant tout test webhook
-- **ZERO test sur la VM** : Tests → HF Space (16GB) ou Codespace (8GB)
+- **ZERO test sur la VM directement** : Tests → HF Space (16GB) via webhook HTTP POST
 - **Field name = `query`** (PAS `question`) pour les 4 pipelines
-- **55+ fixes documentes** dans `technicals/debug/fixes-library.md` — consulter AVANT tout debug
+- **67+ fixes documentes** dans `technicals/debug/fixes-library.md` — consulter AVANT tout debug
 - **Background testing** : Les tests qui passent tournent en `nohup` background avec auto-commit toutes les 15 min
 - **Bottleneck-first** : Toujours résoudre le blocage principal avant d'optimiser ce qui fonctionne
 - **Pipeline isolation** : Si un pipeline est bloqué, l'exclure et lancer les autres en parallèle
@@ -23,64 +22,44 @@
 
 ---
 
-## ÉTAT ACTUEL — 22 fév 2026 (Session 37)
+## ÉTAT ACTUEL — 6 mars 2026 (Session 72)
 
 | | |
 |-|-|
-| **Dernier commit** | 1f2a1e4 — session 37: v10 done (57%), v11 running |
-| **Phase 1** | PASSED (83.9% overall, 20 fev 2026) |
-| **Phase 2** | EN COURS — v11 running (Standard 335/537 tested, 45.7%) |
-| **v10 résultats** | 1263q, 57% overall (Standard 60.4%, Graph 55.7%, Quant 53.3%, Orch 58.2%) |
-| **HF Space** | https://lbjlincoln-nomos-rag-engine.hf.space — n8n 2.8.3, 16GB RAM, RUNNING |
-| **Prochain objectif** | Finaliser v11, analyser limites Phase 2, documenter |
+| **Phase 1** | **PASSED** (83.9% overall, 20 fev 2026, Session 30) |
+| **Phase 2** | **PARTIAL** — Graph 78.0% (500/500), Quant 92.0% (500/500), Std/Orch STOPPED |
+| **Phase 3** | **EN COURS** — Standard 87.5% COMPLETE, Graph 40.9% COMPLETE, Quant INVALID, Orch ON HOLD |
+| **HF Space** | https://lbjlincoln-nomos-rag-engine.hf.space — n8n 2.8.4, 16GB RAM, 8 instances round-robin |
+| **Prochain objectif** | Regenerer Quant dataset, analyser Graph accuracy drop (78% → 40.9%) |
 
 ### Commandes clés pour cette session
 ```bash
-# Démarrer le Codespace si nécessaire
-gh codespace start --codespace nomos-rag-tests-5g6g5q9vjjwjf5g4
-
-# Dans le Codespace — configurer Opus 4.6
-bash scripts/setup-claude-opus.sh
-
-# Démarrer n8n LOCAL (3 workers — PAS de SSH tunnel vers VM !)
-docker compose up -d
-curl -s http://localhost:5678/healthz | head -1  # doit répondre
-
-# Charger variables
+# Tests tournent depuis la VM → HF Space webhooks
 source .env.local
 
-# Test rapide pipeline Quantitative (priorité)
-python3 eval/quick-test.py --questions 5 --pipeline quantitative
+# Test rapide pipeline
+python3 eval/quick-test.py --questions 5 --pipeline <cible>
 
-# Test itératif pour fix en cours
-python3 eval/iterative-eval.py --label "Phase1-fix-quant"
+# Test batch Phase 3
+python3 eval/run-eval-parallel.py --dataset datasets/phase-3/<fichier>.json --label "Phase3-..." --pipeline <cible> --reset
 ```
 
-### État des pipelines (Phase 1 PASSED, Phase 2 EN COURS)
-| Pipeline | Phase 1 (PASSED) | Phase 2 v11 (en cours) | Target P2 |
-|----------|------------------|------------------------|-----------|
-| Standard | 85.5% PASS | 335/537 tested (45.7%) | >= 75% |
-| Graph | 78.0% PASS | En attente | >= 55% |
-| Quantitative | 92.0% PASS | En attente | >= 65% |
-| Orchestrator | 80.0% PASS | En attente | >= 70% |
+### État des pipelines (Phase 1 → Phase 3)
+| Pipeline | Phase 1 (PASSED) | Phase 2 | Phase 3 | Target P3 |
+|----------|------------------|---------|---------|-----------|
+| Standard | 85.5% PASS | ~36% (579/1000) | **87.5% (8,006q) COMPLETE** | >= 85% |
+| Graph | 78.0% PASS | 78.0% (500/500) COMPLETE | **40.9% (1,500q) COMPLETE** | >= 55% |
+| Quantitative | 92.0% PASS | 92.0% (500/500) COMPLETE | 30% (500q) **INVALID dataset** | >= 65% |
+| Orchestrator | 80.0% PASS | 0% (57/1000) BROKEN | ON HOLD | >= 70% |
 
 ---
 
 ## OBJECTIF DE CE REPO
 
-**Tester, mesurer et rapporter** la performance des 4 pipelines RAG hébergés sur la VM.
+**Tester, mesurer et rapporter** la performance des 4 pipelines RAG hébergés sur HF Space.
 Tu ne modifies PAS les workflows n8n (rôle de mon-ipad).
 Tu ne touches PAS aux données (rôle de rag-data-ingestion).
 Tu **mesures** uniquement, et tu pushes les résultats vers GitHub.
-
-### Cibles Phase 1 (actuel)
-| Pipeline | Cible | Accuracy actuelle |
-|----------|-------|-------------------|
-| Standard | >= 85% | 85.5% PASS |
-| Graph | >= 70% | 68.7% FAIL |
-| Quantitative | >= 85% | 78.3% FAIL |
-| Orchestrator | >= 70% | 80.0% PASS |
-| **Overall** | **>= 75%** | **78.1% PASS** |
 
 ---
 
@@ -88,13 +67,13 @@ Tu **mesures** uniquement, et tu pushes les résultats vers GitHub.
 
 ```
 PHASE A — RAG Pipeline Iteration  ← CE REPO EST ICI
-  Phase 1 (200q)  ← EN COURS — BLOQUÉE (Graph + Quant FAIL)
-  Phase 2 (1 000q HuggingFace)  ← prérequis : Phase 1 gates toutes passées
-  Phase 3 (~10K q)  ← prérequis : Phase 2
+  Phase 1 (200q)  ← PASSED (Session 30, 20 fev 2026)
+  Phase 2 (1,000q HuggingFace)  ← PARTIAL (Graph+Quant DONE)
+  Phase 3 (~10K q)  ← EN COURS — Standard+Graph COMPLETE, Quant INVALID, Orch ON HOLD
   Phase 4 (~100K q) / Phase 5 (1M+)  ← infrastructure payante requise
 
 PHASE B — Analyse SOTA 2026  ← MON-IPAD (pilotage)
-PHASE C — Ingestion & Enrichment BDD  ← RAG-DATA-INGESTION
+PHASE C — Ingestion & Enrichment BDD  ← RAG-DATA-INGESTION (COMPLETE — 34K records)
 PHASE D — Production & Déploiement  ← RAG-WEBSITE + RAG-DASHBOARD
 ```
 
@@ -102,58 +81,25 @@ PHASE D — Production & Déploiement  ← RAG-WEBSITE + RAG-DASHBOARD
 
 | Pour débloquer | Condition à atteindre | Comment |
 |---------------|----------------------|---------|
-| **Phase 1 → Phase 2** | Graph ≥ 70% ET Quant ≥ 85% (3 iter. stables) | Fix n8n workflows + tester ici |
-| **Phase 2 (1000q)** | Datasets HuggingFace ingérés par rag-data-ingestion | Attendre ingestion, puis lancer `--questions 1000` |
-| **Phase 3 (10K q)** | Phase 2 gates : Graph ≥ 60%, Quant ≥ 70% | Idem |
+| **Phase 3 complete** | Quant dataset regenerated + re-tested | Regenerer avec valeurs Supabase reelles |
+| **Phase 3 → Phase 4** | Standard >= 85%, Graph >= 55%, Quant >= 65% | Standard OK, Graph a investiguer, Quant a retester |
 
-### Pourquoi Phase 1 est encore bloquée (ne pas confondre avec Phase 2)
-Les itérations 35-42 labelisées **"Phase2-quant-..."** dans `docs/data.json` sont des **tests de niveau Phase 2** sur le pipeline quantitatif, pas une entrée officielle en Phase 2. Elles ont été lancées pour identifier les lacunes. La Phase 1 reste bloquée car :
-- Graph : 68.7% < 70% cible (−1.3pp)
-- Quantitative : 78.3% < 85% cible (−6.7pp)
-- 0 itération stable consécutive sur les 2 pipelines simultanément
+### Problèmes Phase 3 identifiés
+- **Quant 30%** : Le dataset a des expected answers synthétiques qui ne matchent pas les valeurs réelles en Supabase. La pipeline retourne les bonnes valeurs. Solution : régénérer le dataset.
+- **Graph 40.9%** : Accuracy drop significatif vs Phase 2 (78%). Les questions Phase 3 (MuSiQue, 2WikiMultiHop, HotpotQA-bridge) sont plus difficiles que Phase 2. A analyser : est-ce les questions ou le pipeline ?
+- **Orchestrator 0%** : Retourne empty body / 404 depuis Phase 2. Non testé Phase 3.
 
 ---
 
-## INFRASTRUCTURE DE CE CODESPACE
+## EXECUTION ENVIRONMENT
 
 ```
-Type        : GitHub Codespace (éphémère — 60h/mois Free)
-CPU         : 2 cores
-RAM         : 8 GB (vs ~100MB disponibles sur VM → tests lourds ICI)
-Disque      : 32 GB
-n8n local   : OUI — docker-compose.yml (n8n-main + 3 workers + Redis + PostgreSQL)
-              PAS de SSH tunnel vers VM — n8n tourne ICI dans le Codespace
-              docker compose up -d  (port 5678 local)
+Tests tournent DEPUIS la VM (mon-ipad) → HF Space webhooks (16GB RAM)
+PAS de Codespace local n8n — PAS de docker compose up -d
+Scripts eval dans mon-ipad/eval/ appellent les webhooks HF Space directement
 ```
 
-**ÉPHÉMÈRE** : toujours committer + pusher résultats avant arrêt.
-
----
-
-## DÉMARRAGE DE SESSION (TOUJOURS EN PREMIER)
-
-```bash
-# 0. Configurer Opus 4.6 (une fois par Codespace)
-bash scripts/setup-claude-opus.sh
-
-# 1. Préparer docker-compose.yml (le fichier source est rag-tests-docker-compose.yml)
-cp rag-tests-docker-compose.yml docker-compose.yml  # si docker-compose.yml absent
-
-# 2. Démarrer n8n LOCAL (PAS de SSH tunnel — n8n tourne dans ce Codespace)
-docker compose up -d
-sleep 10  # attendre que n8n démarre
-curl -s http://localhost:5678/healthz | head -1  # doit répondre "OK"
-
-# 2. Charger les variables d'environnement
-source .env.local
-
-# 3. État actuel
-cat docs/status.json
-python3 eval/phase_gates.py
-
-# 4. Identifier le pipeline avec le plus gros gap
-# → Quantitative (-6.7pp, PRIORITÉ 1) et Graph (-1.3pp, PRIORITÉ 2)
-```
+**IMPORTANT** : Contrairement à ce qui était documenté avant Session 42, les tests ne nécessitent PAS de Codespace avec n8n local. Tout passe par les webhooks HF Space.
 
 ---
 
@@ -165,7 +111,7 @@ python3 eval/phase_gates.py
 cat technicals/debug/fixes-library.md
 ```
 
-35 bugs documentes ont deja ete resolus (sessions 7–27). Chercher le symptome dans le tableau PIEGES RECURRENTS avant toute analyse. **Si symptome connu → appliquer directement SANS re-analyser.** Consulter les 2-3 dernieres versions reussies dans `n8n/validated/`. Si le symptome est nouveau → debugger, puis signaler a mon-ipad pour documentation dans la bibliotheque.
+67 bugs documentes ont deja ete resolus (sessions 7–71). Chercher le symptome dans le tableau PIEGES RECURRENTS avant toute analyse. **Si symptome connu → appliquer directement SANS re-analyser.** Consulter les 2-3 dernieres versions reussies dans `n8n/validated/`. Si le symptome est nouveau → debugger, puis signaler a mon-ipad pour documentation dans la bibliotheque.
 
 ### Protocole Auto-Stop
 3 echecs consecutifs sur le meme type d'erreur → STOP, documenter dans `logs/diagnostics/`, signaler a mon-ipad.
@@ -175,7 +121,7 @@ La bibliotheque de fixes master est dans `mon-ipad/technicals/debug/fixes-librar
 
 ---
 
-## BOUCLE D'ITÉRATION (identique à workflow-process.md de mon-ipad)
+## BOUCLE D'ITÉRATION
 
 ### Étape 1 : Test 1/1
 ```bash
@@ -201,20 +147,11 @@ python3 eval/run-eval-parallel.py --max 10 --reset --label "label-descriptif"
 - Si >= 7/10 → pipeline validé pour cette session
 - Si < 7/10 → signaler et itérer
 
-### Étape 4 : Tests lourds (500q+) — UNIQUEMENT ICI (RAM 8GB)
+### Étape 4 : Tests lourds (500q+) — Phase 3
 ```bash
-python3 eval/run-eval-parallel.py --reset --label "phase1-200q"
-python3 eval/run-eval-parallel.py --questions 1000 --label "phase2-1000q"
-```
-
-### Règle d'or : JAMAIS de tests parallèles
-```bash
-# NE PAS FAIRE
-python3 quick-test.py --pipeline standard &
-python3 quick-test.py --pipeline graph &  # → 503
-
-# FAIRE
-python3 quick-test.py --questions 5 --pipelines standard,graph,quantitative,orchestrator
+python3 eval/run-eval-parallel.py --dataset datasets/phase-3/standard-8700.json --label "Phase3-Std" --pipeline standard --reset
+python3 eval/run-eval-parallel.py --dataset datasets/phase-3/graph-1500.json --label "Phase3-Graph" --pipeline graph --reset
+python3 eval/run-eval-parallel.py --dataset datasets/phase-3/quantitative-500-v2.json --label "Phase3-Quant-v2" --pipeline quantitative --reset
 ```
 
 ---
@@ -238,24 +175,23 @@ Checklist pour chaque question :
 
 ---
 
-## WEBHOOKS (n8n LOCAL — docker compose up -d requis)
+## WEBHOOKS (HF Space — tests via HTTP POST)
 
 ```
-Standard     : http://localhost:5678/webhook/rag-multi-index-v3
-Graph        : http://localhost:5678/webhook/ff622742-6d71-4e91-af71-b5c666088717
-Quantitative : http://localhost:5678/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9
-Orchestrator : http://localhost:5678/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0
+Standard     : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/rag-multi-index-v3
+Graph        : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/ff622742-6d71-4e91-af71-b5c666088717
+Quantitative : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9
+Orchestrator : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0
 ```
-Note : ces webhooks fonctionnent sur le n8n LOCAL du Codespace (même port 5678).
-Les workflows n8n doivent être importés depuis `n8n/` (sync depuis mon-ipad).
+Appel : `curl -X POST "<url>" -H "Content-Type: application/json" -d '{"query": "..."}'`
 
 ---
 
-## PRIORITÉS ACTUELLES (Phase 1 → Phase 2)
+## PRIORITÉS ACTUELLES (Phase 3)
 
-1. **Quantitative** : 78.3% → 85% (gap -6.7pp — SQL edge cases, multi-table JOINs)
-2. **Graph** : 68.7% → 70% (gap -1.3pp — entity extraction)
-3. **Phase 2** : 1000q (hf-1000.json) quand les gates Phase 1 passent
+1. **Quant dataset** : Régénérer avec valeurs Supabase réelles (script `db/populate/regenerate_quant_phase3.py`)
+2. **Graph analysis** : Comprendre le drop 78% → 40.9% (questions plus dures ou pipeline faible ?)
+3. **Orchestrator** : Fix empty body / 404 (ON HOLD par décision utilisateur)
 
 ---
 
@@ -268,8 +204,13 @@ Les workflows n8n doivent être importés depuis `n8n/` (sync depuis mon-ipad).
 | **Phase 1** | `datasets/phase-1/graph-quant-50x2.json` | 100 | Graph (50) + Quantitative (50) |
 | **Phase 2** | `datasets/phase-2/hf-1000.json` | 1,000 | Graph (500) + Quantitative (500) |
 | **Phase 2** | `datasets/phase-2/standard-orch-1000x2.json` | 2,000 | Standard (1,000) + Orchestrator (1,000) |
+| **Phase 3** | `datasets/phase-3/standard-8700.json` | 8,700 | Standard |
+| **Phase 3** | `datasets/phase-3/graph-1500.json` | 1,500 | Graph |
+| **Phase 3** | `datasets/phase-3/quantitative-500.json` | 500 | Quantitative (INVALID — v1) |
+| **Phase 3** | `datasets/phase-3/quantitative-500-v2.json` | 500 | Quantitative (regenerated — v2) |
+| **Phase 3** | `datasets/phase-3/orchestrator-auto.json` | 1,000 | Orchestrator (mixed) |
 | **Sectoriels** | `datasets/sectors/*.jsonl` | 7,609 | Finance (2,250) + Juridique (2,500) + BTP (1,844) + Industrie (1,015) |
-| **Total** | | **10,809** | |
+| **Total** | | **~15,500** | |
 
 ### Sources des questions (14 benchmarks)
 SQuAD v2, HotpotQA, MuSiQue, 2WikiMultiHopQA, NarrativeQA, QuALITY, TriviaQA, Natural Questions, FinQA, TatQA, ConvFinQA, WikiTableQuestions, IIRC, Bamboogle
@@ -279,19 +220,9 @@ SQuAD v2, HotpotQA, MuSiQue, 2WikiMultiHopQA, NarrativeQA, QuALITY, TriviaQA, Na
 |---------|----------|-----------------|
 | Test rapide (1-10q) | `python3 eval/quick-test.py --questions 5 --pipeline <cible>` | Debug, validation rapide |
 | Test parallele multi-pipeline | `python3 eval/parallel-pipeline-test.py --questions 10 --concurrency 3` | Validation concurrence |
-| Test iteratif | `python3 eval/iterative-eval.py --label "Phase1-fix"` | Boucle d'amelioration |
-| Test batch | `python3 eval/run-eval-parallel.py --reset --label "phase1-200q"` | Evaluation complete |
+| Test iteratif | `python3 eval/iterative-eval.py --label "Phase3-fix"` | Boucle d'amelioration |
+| Test batch | `python3 eval/run-eval-parallel.py --reset --label "phase3-..."` | Evaluation complete |
 | Phase gates | `python3 eval/phase_gates.py` | Verification seuils |
-
-### HF Space — Endpoints de test (alternative au Codespace)
-Les pipelines sont aussi accessibles directement sur HF Space (16 GB RAM) :
-```
-Standard     : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/rag-multi-index-v3
-Graph        : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/ff622742-6d71-4e91-af71-b5c666088717
-Quantitative : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9
-Orchestrator : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0
-```
-Appel : `curl -X POST "<url>" -H "Content-Type: application/json" -d '{"query": "..."}'`
 
 ### Limites de concurrence (session 27)
 | Pipeline | Max concurrent | Note |
@@ -299,11 +230,11 @@ Appel : `curl -X POST "<url>" -H "Content-Type: application/json" -d '{"query": 
 | Standard | 5 | Rock solid |
 | Graph | 3 | Leger degrade au-dela |
 | Orchestrator | 1 | Degrade sous charge (delegue aux sous-pipelines) |
-| Quantitative | non teste | Rate limited OpenRouter |
+| Quantitative | 1 | Rate limited OpenRouter |
 
 ### Pilotage live depuis la VM (codespace-control.sh)
 ```bash
-scripts/codespace-control.sh launch <codespace> --max 50 --label "Phase1-fix"
+scripts/codespace-control.sh launch <codespace> --max 50 --label "Phase3-fix"
 scripts/codespace-control.sh status <codespace>    # progression en temps reel
 scripts/codespace-control.sh stream <codespace>    # stream live des logs
 scripts/codespace-control.sh stop <codespace>      # arret d'urgence
@@ -321,7 +252,7 @@ python3 eval/generate_status.py
 
 # Commit résultats
 git add logs/ outputs/ docs/status.json docs/data.json
-git commit -m "test(phase1): Standard X% Graph X% Quant X% Orch X%"
+git commit -m "test(phase3): Standard X% Graph X% Quant X% Orch X%"
 git push origin main
 
 # → mon-ipad lira les résultats depuis GitHub
@@ -333,14 +264,13 @@ git push origin main
 
 1. **Consulter fixes-library.md EN PREMIER** — avant tout debug (`technicals/debug/fixes-library.md`)
 2. **source .env.local** avant tout script Python
-3. **docker compose up -d** avant tout test (n8n LOCAL — PAS de SSH tunnel)
-4. **Tests séquentiels** — un pipeline à la fois (jamais de parallèles → 503)
-5. **Double analyse** (node-analyzer + analyze_n8n_executions) pour chaque exécution
-6. **Ne pas modifier** les workflows n8n → rôle exclusif de mon-ipad
-7. **Push résultats** avant arrêt du Codespace (éphémère !)
-8. **Signaler les problèmes** dans logs/diagnostics/ + commit
-9. **Modele principal : claude-opus-4-6** — lancer `bash scripts/setup-claude-opus.sh` au demarrage
-10. **Delegation multi-model** — Opus analyse les resultats, Haiku explore le codebase rapidement
+3. **Tests via HF Space webhooks** — PAS de n8n local, PAS de docker compose
+4. **Double analyse** (node-analyzer + analyze_n8n_executions) pour chaque exécution
+5. **Ne pas modifier** les workflows n8n → rôle exclusif de mon-ipad
+6. **Push résultats** régulièrement
+7. **Signaler les problèmes** dans logs/diagnostics/ + commit
+8. **Modele principal : claude-opus-4-6** — analyse et decisions
+9. **Delegation multi-model** — Opus analyse les resultats, Haiku explore le codebase rapidement
 
 ### Strategie Multi-Model (Session 26)
 - **Opus 4.6** : Analyse des resultats d'evaluation, decisions de fix, communication

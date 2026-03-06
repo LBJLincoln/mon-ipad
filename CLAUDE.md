@@ -1,6 +1,6 @@
 # Multi-RAG Orchestrator — Tour de Contrôle Centrale
 
-> Last updated: 2026-02-27T15:33:00Z
+> Last updated: 2026-03-06T12:00:00Z
 
 **CE REPO (`mon-ipad`) EST LA TOUR DE CONTRÔLE.**
 VM Google Cloud permanente · Claude Code via Termius · Pilote 7 repos satellites
@@ -177,11 +177,12 @@ Inclus : Python 3.11, Node.js 20, Docker-in-Docker, Claude Code CLI
 ### Bases de données cloud
 | Service | Contenu | Limite |
 |---------|---------|--------|
-| Pinecone sota-rag-jina-1024 | 10,411 vecteurs, dim 1024 | 100K max |
-| Pinecone sota-rag-phase2-graph | 1,296 vecteurs, e5-large | 100K max |
+| Pinecone sota-rag-jina-1024 | 21,073 vecteurs, dim 1024 | 100K max |
+| Pinecone sota-rag | 10,411 vecteurs, dim 1024 (legacy) | 100K max |
+| Pinecone sota-rag-phase2-graph | 1,248 vecteurs, e5-large | 100K max |
 | Pinecone website-sectors-jina-1024 | 31,916 vecteurs, dim 1024 (sectors) | 100K max |
-| Neo4j Aura | 19,788 nodes / 76,717 rels | 200K nodes / 400K rels |
-| Supabase | 40 tables / ~17K lignes | 500MB storage |
+| Neo4j Aura | ~70,847 nodes / 76,717 rels | 200K nodes / 400K rels |
+| Supabase | 40 tables / ~12,432 lignes | 500MB storage |
 
 ### Déploiements Vercel (production live)
 | Site | URL | Région |
@@ -195,7 +196,7 @@ Inclus : Python 3.11, Node.js 20, Docker-in-Docker, Claude Code CLI
 | MCP | Capacités | Note |
 |-----|-----------|------|
 | n8n | Inspecter workflows (HF Space endpoint) | HF proxy issues possible |
-| pinecone | 3 indexes, 22K+ vecteurs | OK |
+| pinecone | 4 indexes, 54K+ vecteurs | OK |
 | neo4j | Graph 19K+ nodes, Cypher queries | OK |
 | supabase | SQL queries directes | OK |
 | jina-embeddings | Embeddings 1024-dim + Pinecone CRUD | 1M tokens/mois |
@@ -215,14 +216,21 @@ Inclus : Python 3.11, Node.js 20, Docker-in-Docker, Claude Code CLI
 | Orchestrator | `/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0` | Meta | 80.0% | >= 70% ✓ |
 | **Overall** | | | **83.9%** | **>= 75% ✓** |
 
-### État Phase 2 — EN COURS (22 fév 2026)
+### État Phase 2 — PARTIAL (fév 2026)
 | Pipeline | Tested | Total | Accuracy | Status |
 |----------|--------|-------|----------|--------|
-| Standard | 579 | 1000 | ~36% | **STOPPED** — HF Space ALL 404 |
-| Graph | **500** | 500 | 78.0% | **COMPLETE** |
-| Quantitative | **500** | 500 | 92.0% | **COMPLETE** |
-| Orchestrator | 57 | 1000 | 0% | **BROKEN** — empty/404 every question |
-| PME Gateway | 0 | — | — | NOT ACTIVATED — HF rebuild |
+| Standard | 579 | 1000 | ~36% | STOPPED |
+| Graph | **500** | 500 | **78.0%** | **COMPLETE** |
+| Quantitative | **500** | 500 | **92.0%** | **COMPLETE** |
+| Orchestrator | 57 | 1000 | 0% | BROKEN |
+
+### État Phase 3 — EN COURS (6 mars 2026)
+| Pipeline | Tested | Total | Accuracy | Status |
+|----------|--------|-------|----------|--------|
+| Standard | **8,006** | 8,700 | **87.5%** | **COMPLETE** — above 85% target |
+| Graph | **1,500** | 1,500 | **40.9%** | **COMPLETE** — accuracy drop vs Phase 2 (hard questions) |
+| Quantitative | 500 | 500 | 30% | **INVALID** — synthetic dataset wrong expected answers |
+| Orchestrator | 0 | 1,000 | — | ON HOLD |
 
 ### Workflows n8n actifs (9 core + 3 PME)
 **Pipelines RAG (4)** : Standard V3.4, Graph V3.3, Quantitative V2.0, Orchestrator V10.1
@@ -243,10 +251,10 @@ Inclus : Python 3.11, Node.js 20, Docker-in-Docker, Claude Code CLI
 | Phase | Description | Repo | Statut |
 |-------|-------------|------|--------|
 | A.Phase1 | 200q baseline | rag-tests | ✅ PASSED (20 fév) |
-| A.Phase2 | 1000q HF | rag-tests | **EN COURS** — Graph+Quant DONE, Std+Orch BLOCKED |
-| A.Phase3 | ~10K q | rag-tests | Prérequis : Phase2 |
+| A.Phase2 | 1000q HF | rag-tests | PARTIAL — Graph 78% + Quant 92% DONE, Std+Orch BLOCKED |
+| A.Phase3 | ~10K q | rag-tests | **EN COURS** — Std 87.5% COMPLETE, Graph 40.9% COMPLETE, Quant INVALID |
 | B. SOTA | Recherche 2026 | mon-ipad | FAIT (session 13) — voir `technicals/project/rag-research-2026.md` |
-| C. Ingestion | 14 benchmarks | rag-data-ingestion | STARTED — 3/5 datasets (669MB) |
+| C. Ingestion | 14 benchmarks | rag-data-ingestion | **COMPLETE** — 34,095 records, 31,916 sector vectors |
 | D. Website | 4 secteurs + PME | rag-website | MVP live — Vercel deployed |
 
 ---
@@ -425,17 +433,18 @@ rag-storage        → github.com/LBJLincoln/rag-storage.git
 
 ---
 
-## État actuel v5.5 (2026-02-25)
+## État actuel v6.0 (2026-03-06)
 
-**Déploiement** : HF Space UP (HTTP 200) — Standard + Graph webhooks fonctionnels
-**Infrastructure** : VM pilotage only. HF Space #1 active, #2 à déployer. GH Actions pour pme-connectors
-**Credentials** : 6 OpenRouter keys (3 accounts), per-pipeline rotation
-**Phase** : Phase 1 PASSED, Phase 2 partial (Graph+Quant DONE, Standard 78%, Orch+Quant BROKEN)
-**Pipelines working** : Standard (78%), Graph (26% on hard Phase2 questions)
-**Pipelines broken** : Quantitative (NO_ANSWER), Orchestrator (empty body), PME (validation error)
+**Déploiement** : HF Space UP (HTTP 200) — 8 instances round-robin, 14 workflows (11 active)
+**Infrastructure** : VM pilotage only. HF Space #1 active. GH Actions pour pme-connectors + data-ingestion
+**Credentials** : 6 OpenRouter + 5 Groq keys (per-pipeline rotation, 3 accounts)
+**Phase** : Phase 1 PASSED, Phase 2 PARTIAL, **Phase 3 EN COURS**
+**Phase 3 results** : Standard **87.5%** (8,006q COMPLETE), Graph **40.9%** (1,500q COMPLETE), Quant 30% (INVALID dataset), Orch ON HOLD
+**Pinecone** : `sota-rag-jina-1024` 21,073 vec, `website-sectors-jina-1024` 31,916 vec, `sota-rag-phase2-graph` 1,248 vec, `sota-rag` 10,411 legacy
+**Sessions** : 72 | **Commits** : 1,100+
 
-**Objectifs session 60** :
-1. Deploy HF Space #2 (double throughput) + activate ALL 14 workflows
-2. Build project chatbot (n8n + TermiusModal on all 4 sites) + 1000q dataset
-3. Fix broken pipelines (Quant, Orch, PME) using bottleneck + low-hanging fruit
-4. Non-stop eval on working pipelines in background
+**Priorités session 73** :
+1. Sync all docs (CLAUDE.md) to reflect Phase 3 reality
+2. Regenerate Quant Phase 3 dataset with correct Supabase values
+3. Analyze Graph accuracy drop (78% Phase 2 → 40.9% Phase 3)
+4. Fix Orchestrator (empty body / 404 since Phase 2)
