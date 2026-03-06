@@ -997,11 +997,11 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://api.groq.com/openai/v1/chat/completions",
-          "authentication": "predefinedCredentialType",
+          "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+          "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+          "jsonBody": "={\n  \"model\": \"fast\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1019,11 +1019,10 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "Bearer ={{$env.GROQ_API_KEY_STANDARD}}"
+                "value": "Bearer sk-litellm-nomos-2026"
               }
             ]
-          },
-          "nodeCredentialType": "httpHeaderAuth"
+          }
         },
         "id": "2203b6fc-10ed-43f1-8814-134887ef30b3",
         "name": "HyDE Generator",
@@ -1036,13 +1035,7 @@
         "onError": "continueRegularOutput",
         "retryOnFail": true,
         "maxTries": 3,
-        "waitBetweenTries": 3000,
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "XsyjRhedhgW2p355",
-            "name": "Groq API (Standard)"
-          }
-        }
+        "waitBetweenTries": 3000
       },
       {
         "parameters": {
@@ -1340,11 +1333,11 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://api.groq.com/openai/v1/chat/completions",
-          "authentication": "predefinedCredentialType",
+          "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+          "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
+          "jsonBody": "={\n  \"model\": \"default\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1362,12 +1355,11 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "Bearer ={{$env.GROQ_API_KEY_STANDARD}}"
+                "value": "Bearer sk-litellm-nomos-2026"
               }
             ]
           },
-          "nodeCredentialType": "httpHeaderAuth"
-        },
+          },
         "id": "7dc20347-e74b-433b-84c3-6e41e2f5d041",
         "name": "LLM Generation",
         "type": "n8n-nodes-base.httpRequest",
@@ -1379,13 +1371,7 @@
         "onError": "continueRegularOutput",
         "retryOnFail": true,
         "maxTries": 3,
-        "waitBetweenTries": 3000,
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "XsyjRhedhgW2p355",
-            "name": "Groq API (Standard)"
-          }
-        }
+        "waitBetweenTries": 3000
       },
       {
         "parameters": {
@@ -1505,11 +1491,11 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://api.groq.com/openai/v1/chat/completions",
-          "authentication": "predefinedCredentialType",
+          "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+          "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
+          "jsonBody": "={\n  \"model\": \"fast\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1527,12 +1513,11 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "Bearer ={{$env.GROQ_API_KEY_STANDARD}}"
+                "value": "Bearer sk-litellm-nomos-2026"
               }
             ]
           },
-          "nodeCredentialType": "httpHeaderAuth"
-        },
+          },
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.3,
         "position": [
@@ -1544,13 +1529,7 @@
         "onError": "continueRegularOutput",
         "retryOnFail": true,
         "maxTries": 3,
-        "waitBetweenTries": 3000,
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "XsyjRhedhgW2p355",
-            "name": "Groq API (Standard)"
-          }
-        }
+        "waitBetweenTries": 3000
       },
       {
         "parameters": {

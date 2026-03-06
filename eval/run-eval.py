@@ -118,14 +118,14 @@ WEBHOOK_PATHS = {
 # Build endpoints with per-pipeline hosts (backwards compat — single host)
 RAG_ENDPOINTS = {k: f"{_host_for(k)}{v}" for k, v in WEBHOOK_PATHS.items()}
 
-# Per-pipeline batch sizes — scaled for 6-Space round-robin (Session 68b)
+# Per-pipeline batch sizes — scaled for 8-Space round-robin (Session 73)
 PIPELINE_BATCH_SIZES = {
-    "standard": 10,
-    "graph": 8,
-    "quantitative": 5,
-    "orchestrator": 3,
-    "pme-gateway": 3,
-    "pme-action": 2,
+    "standard": 16,
+    "graph": 12,
+    "quantitative": 8,
+    "orchestrator": 4,
+    "pme-gateway": 4,
+    "pme-action": 3,
     "pme-whatsapp": 1,
 }
 
@@ -795,7 +795,7 @@ def load_questions(include_1000=False, dataset="phase-1"):
             with open(phase3_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 for item in data.get("questions", []):
-                    ptype = item.get("pipeline") or item.get("type")
+                    ptype = item.get("pipeline") or item.get("rag_target") or item.get("type")
                     if ptype in ["standard", "graph", "quantitative", "orchestrator"]:
                         questions[ptype].append({
                             "id": item.get("id", ""),

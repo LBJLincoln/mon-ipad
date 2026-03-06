@@ -487,7 +487,7 @@
               "conditions": [
                 {
                   "leftValue": "={{ $json.question_type }}",
-                  "rightValue": "context_reasoning",
+                  "rightValue": "sql_query",
                   "operator": {
                     "type": "string",
                     "operation": "equals"
@@ -506,7 +506,8 @@
       "position": [
         430,
         100
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -519,7 +520,8 @@
       "position": [
         650,
         -100
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -559,7 +561,8 @@
         -100
       ],
       "continueOnFail": true,
-      "onError": "continueRegularOutput"
+      "onError": "continueRegularOutput",
+      "disabled": true
     },
     {
       "parameters": {
@@ -572,7 +575,8 @@
       "position": [
         1150,
         -100
-      ]
+      ],
+      "disabled": true
     }
   ],
   "connections": {
@@ -814,7 +818,7 @@
       "main": [
         [
           {
-            "node": "Route by Question Type",
+            "node": "Schema Introspection",
             "type": "main",
             "index": 0
           }
@@ -825,14 +829,14 @@
       "main": [
         [
           {
-            "node": "Prepare Context Reasoning",
+            "node": "Schema Introspection",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Schema Introspection",
+            "node": "Prepare Context Reasoning",
             "type": "main",
             "index": 0
           }
