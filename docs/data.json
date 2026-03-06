@@ -1,14 +1,14 @@
 {
   "meta": {
-    "generated_at": "2026-03-05T21:14:07+01:00",
+    "generated_at": "2026-03-06T09:01:29+01:00",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
-    "total_unique_questions": 12015,
-    "total_test_runs": 12019,
-    "total_iterations": 53,
+    "total_unique_questions": 12025,
+    "total_test_runs": 12029,
+    "total_iterations": 54,
     "status": "complete",
-    "current_session": "2026-03-05T14-12-44"
+    "current_session": "2026-03-06T08-59-14"
   },
   "reference_cloud_executions": {
     "note": "Executions reussies sur n8n Cloud (avant migration Docker). Servent de reference uniquement.",
@@ -168630,6 +168630,161 @@
           "error": null,
           "error_type": null,
           "timestamp": "2026-03-05T21:13:22+01:00"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-03-06T08-59-14",
+      "number": 54,
+      "timestamp_start": "2026-03-06T08:59:18+01:00",
+      "timestamp_end": "2026-03-06T09:01:29+01:00",
+      "label": "Phase3-Quant-v2-RealData",
+      "description": "Dataset: phase-3, Parallel: quantitative, Max: None, Reset: True",
+      "changes_applied": [],
+      "results_summary": {
+        "quantitative": {
+          "tested": 10,
+          "correct": 2,
+          "errors": 0,
+          "accuracy_pct": 20.0,
+          "avg_latency_ms": 7871,
+          "p95_latency_ms": 11500,
+          "avg_f1": 0.675
+        }
+      },
+      "total_tested": 10,
+      "total_correct": 2,
+      "overall_accuracy_pct": 20.0,
+      "questions": [
+        {
+          "id": "supabase_financial_0",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 7748,
+          "answer": "$1,050,000",
+          "expected": "$4.25 billion",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-06T09:00:16+01:00"
+        },
+        {
+          "id": "supabase_financial_1",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.4,
+          "latency_ms": 9494,
+          "answer": "$1.08million",
+          "expected": "$820.00 million",
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-06T09:00:30+01:00"
+        },
+        {
+          "id": "supabase_financial_2",
+          "rag_type": "quantitative",
+          "correct": true,
+          "f1": 0.95,
+          "latency_ms": 10502,
+          "answer": "$1,080million",
+          "expected": "$1.06 billion",
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-06T09:00:30+01:00"
+        },
+        {
+          "id": "supabase_financial_3",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 10982,
+          "answer": "$94million",
+          "expected": "$2.76 billion",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-06T09:00:30+01:00"
+        },
+        {
+          "id": "supabase_financial_4",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 11500,
+          "answer": "$8,550million",
+          "expected": "$1.49 billion",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-06T09:00:30+01:00"
+        },
+        {
+          "id": "supabase_financial_5",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 7475,
+          "answer": "$845,000",
+          "expected": "$1.70 billion",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-06T09:00:49+01:00"
+        },
+        {
+          "id": "supabase_financial_6",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3780,
+          "answer": "",
+          "expected": "$850.00 million",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-06T09:00:49+01:00"
+        },
+        {
+          "id": "supabase_financial_7",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3738,
+          "answer": "",
+          "expected": "$850.00 million",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-06T09:00:49+01:00"
+        },
+        {
+          "id": "supabase_financial_8",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 6751,
+          "answer": "$1,230,000",
+          "expected": "$218.00 million",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-06T09:00:49+01:00"
+        },
+        {
+          "id": "supabase_financial_9",
+          "rag_type": "quantitative",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 6747,
+          "answer": "$23,119,000",
+          "expected": "$1.04 billion",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-06T09:00:49+01:00"
         }
       ]
     }
@@ -541147,39 +541302,319 @@
       "last_tested": "2026-03-05T21:13:22+01:00",
       "best_f1": 0.0,
       "trend": "stable"
+    },
+    "supabase_financial_0": {
+      "id": "supabase_financial_0",
+      "question": "What was TechVision Inc's revenue in 2020?",
+      "expected": "$4.25 billion",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-03-06T08-59-14",
+          "iteration_number": 54,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 7748,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$1,050,000",
+          "timestamp": "2026-03-06T09:00:16+01:00"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-03-06T09:00:16+01:00",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "supabase_financial_1": {
+      "id": "supabase_financial_1",
+      "question": "What was TechVision Inc's net income in 2020?",
+      "expected": "$820.00 million",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-03-06T08-59-14",
+          "iteration_number": 54,
+          "correct": true,
+          "f1": 0.4,
+          "latency_ms": 9494,
+          "match_type": "TOKEN_F1",
+          "error": null,
+          "error_type": null,
+          "answer": "$1.08million",
+          "timestamp": "2026-03-06T09:00:30+01:00"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-03-06T09:00:30+01:00",
+      "best_f1": 0.4,
+      "trend": "stable"
+    },
+    "supabase_financial_2": {
+      "id": "supabase_financial_2",
+      "question": "How much was TechVision Inc's operating income in 2020?",
+      "expected": "$1.06 billion",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-03-06T08-59-14",
+          "iteration_number": 54,
+          "correct": true,
+          "f1": 0.95,
+          "latency_ms": 10502,
+          "match_type": "NUMERIC_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$1,080million",
+          "timestamp": "2026-03-06T09:00:30+01:00"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 1,
+      "pass_rate": 1.0,
+      "current_status": "pass",
+      "last_tested": "2026-03-06T09:00:30+01:00",
+      "best_f1": 0.95,
+      "trend": "stable"
+    },
+    "supabase_financial_3": {
+      "id": "supabase_financial_3",
+      "question": "Report the gross profit of TechVision Inc for fiscal year 2020.",
+      "expected": "$2.76 billion",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-03-06T08-59-14",
+          "iteration_number": 54,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 10982,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$94million",
+          "timestamp": "2026-03-06T09:00:30+01:00"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-03-06T09:00:30+01:00",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "supabase_financial_4": {
+      "id": "supabase_financial_4",
+      "question": "Report the cost of goods sold of TechVision Inc for fiscal year 2020.",
+      "expected": "$1.49 billion",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-03-06T08-59-14",
+          "iteration_number": 54,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 11500,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$8,550million",
+          "timestamp": "2026-03-06T09:00:30+01:00"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-03-06T09:00:30+01:00",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "supabase_financial_5": {
+      "id": "supabase_financial_5",
+      "question": "Report the operating expenses of TechVision Inc for fiscal year 2020.",
+      "expected": "$1.70 billion",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-03-06T08-59-14",
+          "iteration_number": 54,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 7475,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$845,000",
+          "timestamp": "2026-03-06T09:00:49+01:00"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-03-06T09:00:49+01:00",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "supabase_financial_6": {
+      "id": "supabase_financial_6",
+      "question": "What was TechVision Inc's R&D expenses in 2020?",
+      "expected": "$850.00 million",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-03-06T08-59-14",
+          "iteration_number": 54,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3780,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-03-06T09:00:49+01:00"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-03-06T09:00:49+01:00",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "supabase_financial_7": {
+      "id": "supabase_financial_7",
+      "question": "What is the selling, general and administrative expenses for TechVision Inc in FY2020?",
+      "expected": "$850.00 million",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-03-06T08-59-14",
+          "iteration_number": 54,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 3738,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-03-06T09:00:49+01:00"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-03-06T09:00:49+01:00",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "supabase_financial_8": {
+      "id": "supabase_financial_8",
+      "question": "What was TechVision Inc's tax expense in 2020?",
+      "expected": "$218.00 million",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-03-06T08-59-14",
+          "iteration_number": 54,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 6751,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$1,230,000",
+          "timestamp": "2026-03-06T09:00:49+01:00"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-03-06T09:00:49+01:00",
+      "best_f1": 0.0,
+      "trend": "stable"
+    },
+    "supabase_financial_9": {
+      "id": "supabase_financial_9",
+      "question": "What is the income before tax for TechVision Inc in FY2020?",
+      "expected": "$1.04 billion",
+      "expected_detail": "",
+      "rag_type": "quantitative",
+      "category": "",
+      "entities": [],
+      "tables": [],
+      "runs": [
+        {
+          "iteration_id": "iter-2026-03-06T08-59-14",
+          "iteration_number": 54,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 6747,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "$23,119,000",
+          "timestamp": "2026-03-06T09:00:49+01:00"
+        }
+      ],
+      "total_runs": 1,
+      "pass_count": 0,
+      "pass_rate": 0.0,
+      "current_status": "fail",
+      "last_tested": "2026-03-06T09:00:49+01:00",
+      "best_f1": 0.0,
+      "trend": "stable"
     }
   },
   "quick_tests": [
-    {
-      "timestamp": "2026-03-03T11:51:48+01:00",
-      "pipeline": "graph",
-      "query": "What did Marie Curie win Nobel Prizes for?",
-      "status": "fail",
-      "latency_ms": 35745,
-      "response_preview": "Information not available in the knowledge graph.",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-03-03T11:52:30+01:00",
-      "pipeline": "graph",
-      "query": "What did Alexander Fleming discover?",
-      "status": "pass",
-      "latency_ms": 22472,
-      "response_preview": "Penicillin",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-03-03T11:53:10+01:00",
-      "pipeline": "graph",
-      "query": "Who founded Microsoft?",
-      "status": "pass",
-      "latency_ms": 23995,
-      "response_preview": "Bill Gates",
-      "trigger": "manual",
-      "error": null
-    },
     {
       "timestamp": "2026-03-03T11:53:52+01:00",
       "pipeline": "graph",
@@ -541649,6 +542084,36 @@
       "response_preview": "Unable to generate answer",
       "trigger": "manual",
       "error": null
+    },
+    {
+      "timestamp": "2026-03-06T08:57:11+01:00",
+      "pipeline": "quantitative",
+      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
+      "status": "pass",
+      "latency_ms": 7740,
+      "response_preview": "$1,044million",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-03-06T08:57:34+01:00",
+      "pipeline": "quantitative",
+      "query": "What was GreenEnergy Corp's total revenue in 2023?",
+      "status": "pass",
+      "latency_ms": 7499,
+      "response_preview": "$1,050million",
+      "trigger": "manual",
+      "error": null
+    },
+    {
+      "timestamp": "2026-03-06T08:57:59+01:00",
+      "pipeline": "quantitative",
+      "query": "What is the total number of products across all companies?",
+      "status": "pass",
+      "latency_ms": 7245,
+      "response_preview": "30",
+      "trigger": "manual",
+      "error": null
     }
   ],
   "execution_logs": [],
@@ -542057,6 +542522,12 @@
       "event": "eval_complete",
       "total_tested": 12019,
       "graph": 40.9
+    },
+    {
+      "timestamp": "2026-03-06T09:01:29+01:00",
+      "event": "eval_complete",
+      "total_tested": 12029,
+      "quantitative": 20.0
     }
   ],
   "workflow_versions": {
