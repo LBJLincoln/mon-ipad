@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-03-06T10:47:37+01:00",
+    "generated_at": "2026-03-06T11:21:53+01:00",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
@@ -541616,36 +541616,6 @@
   },
   "quick_tests": [
     {
-      "timestamp": "2026-03-03T16:03:13+01:00",
-      "pipeline": "graph",
-      "query": "What is the WHO?",
-      "status": "fail",
-      "latency_ms": 18873,
-      "response_preview": "Information not available in the knowledge graph.",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-03-03T16:04:00+01:00",
-      "pipeline": "graph",
-      "query": "What disease is caused by mosquitoes?",
-      "status": "fail",
-      "latency_ms": 31735,
-      "response_preview": "Information not available in the knowledge graph.",
-      "trigger": "manual",
-      "error": null
-    },
-    {
-      "timestamp": "2026-03-03T16:04:33+01:00",
-      "pipeline": "quantitative",
-      "query": "What was TechVision Inc's total revenue in fiscal year 2023?",
-      "status": "pass",
-      "latency_ms": 15246,
-      "response_preview": "TechVision Inc's total revenue for fiscal year 2023 was **$6,745,000,000.00** (6.745 billion USD), based on the annual (\"FY\") financial data from the benchmark tenant.",
-      "trigger": "manual",
-      "error": null
-    },
-    {
       "timestamp": "2026-03-03T16:05:26+01:00",
       "pipeline": "quantitative",
       "query": "What was GreenEnergy Corp's total revenue in 2023?",
@@ -542114,6 +542084,36 @@
       "response_preview": "The capital of Japan is Tokyo.",
       "trigger": "manual",
       "error": null
+    },
+    {
+      "timestamp": "2026-03-06T11:21:09+01:00",
+      "pipeline": "orchestrator",
+      "query": "What is the capital of Japan?",
+      "status": "error",
+      "latency_ms": 5051,
+      "response_preview": "",
+      "trigger": "manual",
+      "error": "Empty response"
+    },
+    {
+      "timestamp": "2026-03-06T11:21:30+01:00",
+      "pipeline": "orchestrator",
+      "query": "What was TechVision Inc's total revenue in 2023?",
+      "status": "error",
+      "latency_ms": 5729,
+      "response_preview": "",
+      "trigger": "manual",
+      "error": "Empty response"
+    },
+    {
+      "timestamp": "2026-03-06T11:21:53+01:00",
+      "pipeline": "orchestrator",
+      "query": "What did Marie Curie win Nobel Prizes for?",
+      "status": "error",
+      "latency_ms": 5233,
+      "response_preview": "",
+      "trigger": "manual",
+      "error": "Empty response"
     }
   ],
   "execution_logs": [],
