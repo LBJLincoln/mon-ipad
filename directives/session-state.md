@@ -1,8 +1,40 @@
-# Session State — 6 Mars 2026 (Session 72)
+# Session State — 6 Mars 2026 (Session 73)
 
-> Last updated: 2026-03-06T12:00:00Z
+> Last updated: 2026-03-06T09:20:00Z
 
-## Current Status: SESSION 72 — DOCS SYNC + GRAPH COMPLETE + QUANT REGEN
+## Current Status: SESSION 73 — SOTA 2026 INGESTION + PIPELINE FIXES
+
+### Session 73 Actions (IN PROGRESS)
+
+1. **Quant Pipeline Fix** — DEPLOYED + VALIDATED (5/5)
+   - Added SQL Period Enforcer node between Validator and Executor
+   - Injects `period = 'FY'` for annual queries, prevents double-counting
+   - Enhanced system prompt with HARD RULES and explicit SQL examples
+   - Deployed to HF Space via PATCH REST API
+
+2. **Graph Pipeline Fix** — DEPLOYED + VALIDATED (5/5)
+   - MAX_DEPTH increased 2→3 with fallback guard
+   - Enhanced HyDE entity extraction prompt (TECHNOLOGY, REGULATION, CONCEPT types)
+   - Added domain-specific term extraction (cybersecurity, GDPR, etc.)
+   - Added label-based Neo4j matching for better recall
+
+3. **Orchestrator Fix (FIX-34)** — DEPLOYED, STILL FAILING
+   - Replaced all 3 executeWorkflow nodes with httpRequest POST
+   - Empty response persists — deeper issue in Execution Engine routing
+   - ON HOLD for now, Quant+Graph are priority
+
+4. **SOTA 2026 Ingestion** — IN PROGRESS (Codespace)
+   - Codespace `ingestion-sota-x565xw4r744p2pvw7` created
+   - 6 files created (652 lines):
+     - `services/reranker/app.py` — Cross-encoder ms-marco-MiniLM-L-6-v2
+     - `services/bm25/build_index.py` + `app.py` — BM25 hybrid + RRF fusion
+     - `scripts/contextual_enrichment.py` — Anthropic-style context prefixes
+     - `scripts/compact_qa_generator.py` — CompactRAG QA pairs
+     - `scripts/validate_retrieval_quality.py` — Quality validation
+
+---
+
+## Previous Status: SESSION 72 — DOCS SYNC + GRAPH COMPLETE + QUANT REGEN
 
 ### Session 72 Actions
 
