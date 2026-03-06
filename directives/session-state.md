@@ -1,13 +1,43 @@
-# Session State — 6 Mars 2026 (Session 73)
+# Session State — 6 Mars 2026 (Session 74)
 
-> Last updated: 2026-03-06T09:20:00Z
+> Last updated: 2026-03-06T21:55:00Z
 
-## Current Status: SESSION 73 — SOTA 2026 INGESTION + PIPELINE FIXES
+## Current Status: SESSION 74 — PIPELINE DEBUGGING + N8N PERSISTENCE DISCOVERY
 
-### Session 73 Actions (IN PROGRESS)
+### Session 74 Key Findings
 
-1. **Quant Pipeline Fix** — DEPLOYED + VALIDATED (5/5)
-   - Added SQL Period Enforcer node between Validator and Executor
+1. **CRITICAL: n8n PATCH changes don't persist across HF Space restarts**
+   - HF Space has NO persistent storage (`storage: null`, 1 replica)
+   - REST API PATCHes update in-memory only, DB changes lost on Docker rebuild
+   - Factory restart reverts to whatever is baked in the Docker image
+   - **Solution**: Update `n8n/live/*.json` files and push to HF Space Git via `n8n/sync.py`
+   - This explains why changes keep getting lost across sessions!
+
+2. **LiteLLM Proxy WORKING** — `lbjlincoln-nomos-rag-engine-7.hf.space`
+   - Master key: `sk-litellm-nomos-2026`
+   - Model aliases: `smart` (Llama 70B), `fast` (Trinity+Gemma), `default` (Trinity)
+   - All 5 Groq keys working (HTTP 200)
+   - LiteLLM successfully routes and retries across 7 OpenRouter + 5 Groq + 1 Gemini keys
+
+3. **Quant V5.0 Pipeline Issues**
+   - `n8n/live/quantitative.json` has correct LiteLLM URLs but `model: 'llama-70b'`
+   - Docker image bakes in older version with `model: 'llama-3.3-70b-versatile'` (Groq name)
+   - "LiteLLM Proxy Key" credential was MISSING in n8n — created it (`0lRYcsfMxjrExYZn`)
+   - n8n community edition: `$env.*` NOT supported (403 "Plan lacks license")
+
+4. **Standard + Graph Pipelines** — REVERTED to Phase 3 configs
+   - User will provide new Jina API key later
+   - Phase 3 configs use Jina embeddings + LiteLLM for LLM + `sota-rag-jina-1024`
+
+### Session 74 TODO (Next Session)
+
+1. **Fix `n8n/live/quantitative.json`** — Change `model: 'llama-70b'` → `model: 'smart'` and sync via `n8n/sync.py` to persist changes
+2. **Update `n8n/live/standard.json` and `n8n/live/graph.json`** with latest Phase 3 working configs
+3. **Sync all workflow changes** via `n8n/sync.py` (not REST API PATCH!)
+4. **Get Jina API key** from user for Standard/Graph embeddings
+5. **Orchestrator** — still broken, ON HOLD
+
+### Previous Session 73 Actions
    - Injects `period = 'FY'` for annual queries, prevents double-counting
    - Enhanced system prompt with HARD RULES and explicit SQL examples
    - Deployed to HF Space via PATCH REST API
