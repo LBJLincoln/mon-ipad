@@ -1,19 +1,20 @@
 # Project State — Multi-RAG Orchestrator SOTA 2026
 
-> Last updated: 2026-03-07T18:00:00Z
+> Last updated: 2026-03-07T22:00:00Z
 
-## Session 79 — Current Status
+## Session 80 — Current Status
 
 ### Overview
 - **Phase 1**: PASSED (83.9% overall)
 - **Phase 2**: PARTIAL (Graph 78% + Quant 92% COMPLETE, Std+Orch BLOCKED)
 - **Phase 3**: **DONE** (Std 87.5% PASS, Graph 40.9% ACCEPTED, Quant 95.2% PASS)
-- **Phase 4**: IN PROGRESS — Pinecone ingestion running (Std DONE, Graph in progress, Quant pending)
-- **Claude Code**: Updated to 2.1.71 (was 2.1.39). New: /simplify, /batch, auto-memory
-- **15 custom skills created** (.claude/commands/)
-- **Auto session-start script updated**
-- **Infrastructure**: 3/4 pipelines ACTIVE, LiteLLM UP (9 models)
-- **Sessions**: 79 | **Commits**: 1,100+
+- **Phase 4**: IN PROGRESS — Std DONE (10,917 contexts), Graph partial (~10,700/11,300), Quant pending (3,876)
+- **Jina API**: Both keys exhausted (~11M tokens). TEI HF Space deploying as replacement
+- **TEI Space**: `LBJLincoln/nomos-tei-embeddings` — building (jina-v3 on cpu-basic)
+- **Gradio embed Space**: `LBJLincoln/nomos-embeddings-api` — deploying as TEI fallback
+- **Infrastructure**: 3/4 pipelines ACTIVE, LiteLLM UP, all DBs UP
+- **Pinecone**: 42,758 total vectors (32,986 default ns + 9,772 benchmark ns)
+- **Sessions**: 80 | **Commits**: 1,100+
 
 ---
 
@@ -86,12 +87,12 @@
 | HF Space #1 | UP | n8n primary, 8 instances round-robin, 14 workflows (11 active) |
 | HF Space #7 | UP | LiteLLM proxy, 9 models, 73 endpoints, auto key rotation |
 | Supabase Postgres | UP | 40 tables, 7,509 sector docs, 3,876 financial tables, tenant_id=`benchmark` |
-| Pinecone sota-rag-jina-1024 | UP | 33,190 vectors (23,418 default + 9,772 benchmark ns) |
+| Pinecone sota-rag-jina-1024 | UP | 42,758 vectors (32,986 default + 9,772 benchmark ns) |
 | Pinecone website-sectors-jina-1024 | UP | 31,916 vectors (sector data) |
 | Pinecone sota-rag-phase2-graph | UP | 1,248 vectors (e5-large) |
 | Neo4j Aura | UP | ~78,000+ nodes (incl. Phase 4 paragraphs), 76,717 relationships |
 | n8n API Key | EXPIRED | Use cookie auth via `/rest/login` (ci@nomos.ai / CI-Nomos-2026!) |
-| Jina API Key | NEW KEY | `jina_c87d...` deployed S79 (Cloudflare bypass via User-Agent, 1024 dims) |
+| Jina API Key | EXHAUSTED | Both `jina_c87d...` and `jina_612a...` depleted (~11M tokens). Using TEI/Gradio HF Space |
 | VM Google Cloud | PILOTAGE ONLY | 34.136.180.66, ~413MB RAM available, n8n removed S42 |
 
 ---
@@ -208,28 +209,52 @@
 
 ---
 
-## Session 80 TODO (Next)
+## Session 80 Achievements (7 Mar 2026)
 
-### Priority 1: Complete Phase 4 Ingestion + Full Eval
-1. **Complete Phase 4 ingestion** (graph + quant contexts into Pinecone)
-2. **Run full Phase 4 eval** across all pipelines post-ingestion
+### 1. Jina API Blocker Resolved
+- Both Jina keys exhausted (~11M tokens total)
+- Deployed TEI Space (`LBJLincoln/nomos-tei-embeddings`) with jina-v3 + trust-remote-code
+- Deployed Gradio Space (`LBJLincoln/nomos-embeddings-api`) as fallback
+- Ingestion script updated to support TEI/Gradio backends with auto-fallback
 
-### Priority 2: Website Redesign
-1. **Website redesign per design briefs** (Codespace work)
-2. **Apply color psychology palettes** per product
+### 2. Ingestion Script Enhanced
+- `scripts/ingest-phase4-contexts.py` now supports --backend jina|tei|auto
+- Auto-skips already-ingested vectors (checks Pinecone IDs before embedding)
+- TEI backend: smaller batches (8), less delay (0.5s)
+- Graceful Jina→TEI fallback on quota exhaustion
 
-### Priority 3: Nano Banana Video Generation
-1. **Generate product demo videos** for 4 sectors using Nano Banana 2
+### 3. Pipeline Health Verified
+- All 3 RAG workflows active on n8n (Standard, Graph, Quant)
+- n8n Space UP, cookie auth working
 
-### Priority 4: GEO Optimization
-1. **GEO optimization across all sites** (Generative Engine Optimization)
+---
+
+## Session 81 TODO (Next)
+
+### Priority 1: Complete Phase 4 Ingestion
+1. **Verify TEI/Gradio Space UP** and test embedding quality
+2. **Finish Graph ingestion** (~600 remaining contexts)
+3. **Complete Quant ingestion** (3,876 contexts)
+4. **Run full Phase 4 eval** post-ingestion
+
+### Priority 2: Pipeline Duplication for rag-website
+1. **Duplicate Standard/Graph/Quant workflows** → point at `website-sectors-jina-1024`
+2. **Create simplified Orchestrator V2** (no guardrails/Redis)
+
+### Priority 3: Website Redesign
+1. **Apply design briefs** (ETI navy+gold, PME green+orange, Dashboard dark+neon)
+2. **GEO optimization** across all sites
+
+### Priority 4: Cohere Rerank 3.5 Integration
+1. **Add rerank node** post-retrieval in Standard pipeline (+23-30% precision)
 
 ---
 
 ## Running Processes
 
-- **Pinecone Phase 4 ingestion**: PID active, Graph 11,300 contexts in progress
-- **Neo4j Phase 4 ingestion**: Background task running
+- **TEI Space**: Building (jina-embeddings-v3 download on cpu-basic)
+- **Gradio embed Space**: Deploying (sentence-transformers fallback)
+- **Pipeline test**: Running in background (60s timeout)
 
 ---
 
@@ -301,7 +326,7 @@
 | Phase 3 Standard tested | 8,006 / 8,700 |
 | Phase 3 Graph tested | 1,500 / 1,500 |
 | Phase 3 Quant tested | 500 / 500 (v2 dataset, 95.2% PASS) |
-| Pinecone vectors (sota-rag-jina-1024) | 33,190 |
+| Pinecone vectors (sota-rag-jina-1024) | 42,758 |
 | Pinecone vectors (website-sectors) | 31,916 |
 | Neo4j nodes | ~78,000+ |
 | Neo4j relationships | ~76,717 |
