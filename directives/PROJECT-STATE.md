@@ -127,13 +127,33 @@
 
 ---
 
-## Session 77 TODO (Current — 7 Mar 2026)
+## Session 77 Achievements (7 Mar 2026)
+
+### 1. Phase 4 Dataset Generator Created
+- `scripts/generate-phase4-datasets.py` — downloads & formats ~90K questions from HF
+  - Standard: 7 datasets → ~50K (SQuAD v2, MS MARCO, HotpotQA, WebQ, TriviaQA, NQ, PubMedQA)
+  - Graph: 3 datasets → ~17K (HotpotQA distractor, 2WikiMultiHopQA, MuSiQue)
+  - Quantitative: 3 datasets → ~13K (FinQA, TAT-QA, WikiTableQuestions)
+
+### 2. Phase 4 Quick Test (36 questions)
+- Overall: 2.8% (expected — raw HF benchmark questions vs our domain-specific RAG)
+- Standard: 0/16, Graph: 1/12, Quant: 0/8
+- Confirms Phase 4 datasets are harder than Phase 1-3 curated questions
+
+### 3. Claude Code Updated to 2.1.71
+- New features: /simplify, /batch, auto-memory, HTTP hooks
+- Termius snippet: `bash ~/mon-ipad/scripts/claude-session.sh "question"`
+
+### 4. Dashboard & Status Updated
+- `docs/data.json`, `docs/status.json`, `docs/tested_ids.json` refreshed
+- 12,288 unique questions tracked, 63 iterations total
+
+---
+
+## Session 78 TODO (Next)
 
 ### Priority 1: Phase 4 Execution (~100K questions)
-1. **Scale existing 13 HF datasets** to ~100K total questions
-   - Standard: NQ full (307K), MS MARCO (549K), HotpotQA (113K) → sample 50K
-   - Graph: HotpotQA + 2WikiMultiHopQA + MuSiQue → sample 20K
-   - Quant: FinQA + TAT-QA + WikiTableQuestions + HybridQA → sample 20K+
+1. **Run `generate-phase4-datasets.py`** to download full datasets
 2. **Max efficiency eval**: parallel workers, auto batch sizing, 429 rotation
 3. **Optional**: Add RAGBench (100K, 5 domains) for domain diversity
 
@@ -283,7 +303,8 @@ source .env.local                              # Load environment vars
 **Current Reality**:
 - Phase 1: ✅ PASSED (83.9% overall)
 - Phase 2: 🟡 PARTIAL (Graph + Quant complete, Std + Orch blocked)
-- Phase 3: 🟡 IN PROGRESS (Std 87.5% complete, Graph 40.9% complete, Quant dataset invalid)
+- Phase 3: ✅ DONE (Std 87.5%, Graph 40.9% accepted, Quant 95.2%)
+- Phase 4: 🟡 STARTING (dataset generator ready, quick test done)
 - Infrastructure: ✅ STABLE (HF Space + LiteLLM + Supabase + Pinecone + Neo4j)
 
-**Next Milestone**: Complete Phase 3 by fixing Quant dataset and analyzing Graph accuracy drop.
+**Next Milestone**: Phase 4 — scale to ~100K HF benchmark questions.
