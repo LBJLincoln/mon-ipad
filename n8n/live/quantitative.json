@@ -1,15 +1,15 @@
 {
-  "updatedAt": "2026-03-07T11:30:00.000Z",
-  "createdAt": "2026-02-09T04:28:12.794Z",
-  "id": "E19NZG9WfM7FNsxr",
-  "name": "TEST - SOTA 2026 - WF4 Quantitative V2.0",
+  "updatedAt": "2026-03-06T18:09:29.592Z",
+  "createdAt": "2026-03-06T16:55:10.834Z",
+  "id": "Tht75NLmCRcObYom",
+  "name": "WF4 Quantitative V4.1 (Fast+120s)",
   "description": null,
   "active": true,
   "isArchived": false,
   "nodes": [
     {
       "parameters": {
-        "jsCode": "// ============================================\n// PATCH #1: INIT & ACL - ORCHESTRATOR SUPPORT\n// ============================================\n// Pour: WF4 Quantitative & WF2 Graph\n// Bug: Workflows \u00e9chouent quand appel\u00e9s par orchestrateur\n// Fix: Support multi-format d'entr\u00e9e\n\n// Init & ACL for RAG - HARDENED V2.2 (ORCHESTRATOR FIX)\nconst rawInput = $input.first().json;\nconst input = rawInput.body || rawInput;\n\n// === EXTRACTION ROBUSTE DE LA QUERY ===\n// Supporte: webhook, chat trigger, sub-workflow, ET orchestrator\nlet queryStr = '';\n\n// Priorit\u00e9 1: Direct query field (webhook/chat)\nif (typeof input.query === 'string') {\n  queryStr = input.query;\n}\n// Priorit\u00e9 2: Chat input\nelse if (input.chatInput) {\n  queryStr = input.chatInput;\n}\n// Priorit\u00e9 3: Orchestrator format - task_query\nelse if (input.task_query) {\n  queryStr = input.task_query;\n}\n// Priorit\u00e9 4: Orchestrator format - current_task.query\nelse if (input.current_task && typeof input.current_task.query === 'string') {\n  queryStr = input.current_task.query;\n}\n// Priorit\u00e9 5: Query as object (stringify)\nelse if (input.query && typeof input.query === 'object') {\n  queryStr = JSON.stringify(input.query);\n}\n\nconst query = queryStr.trim();\n\n// === VALIDATION ===\nif (!query || query.length < 2) {\n  throw new Error('VALIDATION_ERROR: query is required and must be at least 2 characters');\n}\n\n// === EXTRACTION DU USER CONTEXT ===\n// Parse user_context (peut \u00eatre string JSON ou objet)\nlet userContext = {};\n\nif (typeof input.user_context === 'string') {\n  try {\n    userContext = JSON.parse(input.user_context);\n  } catch (e) {\n    userContext = {};\n  }\n} else if (input.user_context && typeof input.user_context === 'object') {\n  userContext = input.user_context;\n}\n\n// === EXTRACTION DU TRACE_ID ===\n// Support multiple sources\nconst traceId = input.trace_id || \n                input.current_task?.trace_id || \n                `tr-rag-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\n// === OUTPUT ===\nreturn [{\n  json: {\n    trace_id: traceId,\n    query: query.substring(0, 2000),\n    user_context: {\n      tenant_id: userContext.tenant_id || input.tenant_id || 'benchmark',\n      groups: Array.isArray(userContext.groups) ? userContext.groups : ['guest']\n    },\n    timestamp: new Date().toISOString(),\n    source: rawInput.body ? 'webhook' : \n            (rawInput.chatInput ? 'chat' : \n            (input.task_query ? 'orchestrator' : 'subworkflow')),\n    \n    // Metadata pour debugging\n    _debug: {\n      original_input_keys: Object.keys(input),\n      query_source: input.task_query ? 'task_query' : \n                    (input.current_task ? 'current_task.query' : \n                    (input.chatInput ? 'chatInput' : 'query'))\n    }\n  }\n}];\n\n"
+        "jsCode": "// ============================================\n// PATCH #1: INIT & ACL - ORCHESTRATOR SUPPORT\n// ============================================\n// Pour: WF4 Quantitative & WF2 Graph\n// Bug: Workflows \u00e9chouent quand appel\u00e9s par orchestrateur\n// Fix: Support multi-format d'entr\u00e9e\n\n// Init & ACL for RAG - HARDENED V2.2 (ORCHESTRATOR FIX)\nconst rawInput = $input.first().json;\nconst input = rawInput.body || rawInput;\n\n// === EXTRACTION ROBUSTE DE LA QUERY ===\n// Supporte: webhook, chat trigger, sub-workflow, ET orchestrator\nlet queryStr = '';\n\n// Priorit\u00e9 1: Direct query field (webhook/chat)\nif (typeof input.query === 'string') {\n  queryStr = input.query;\n}\n// Priorit\u00e9 2: Question field (eval/API)\nelse if (typeof input.question === 'string') {\n  queryStr = input.question;\n}\n// Priorit\u00e9 3: Chat input\nelse if (input.chatInput) {\n  queryStr = input.chatInput;\n}\n// Priorit\u00e9 3: Orchestrator format - task_query\nelse if (input.task_query) {\n  queryStr = input.task_query;\n}\n// Priorit\u00e9 4: Orchestrator format - current_task.query\nelse if (input.current_task && typeof input.current_task.query === 'string') {\n  queryStr = input.current_task.query;\n}\n// Priorit\u00e9 5: Query as object (stringify)\nelse if (input.query && typeof input.query === 'object') {\n  queryStr = JSON.stringify(input.query);\n}\n\nconst query = queryStr.trim();\n\n// === VALIDATION ===\nif (!query || query.length < 2) {\n  throw new Error('VALIDATION_ERROR: query is required and must be at least 2 characters');\n}\n\n// === EXTRACTION DU USER CONTEXT ===\n// Parse user_context (peut \u00eatre string JSON ou objet)\nlet userContext = {};\n\nif (typeof input.user_context === 'string') {\n  try {\n    userContext = JSON.parse(input.user_context);\n  } catch (e) {\n    userContext = {};\n  }\n} else if (input.user_context && typeof input.user_context === 'object') {\n  userContext = input.user_context;\n}\n\n// === EXTRACTION DU TRACE_ID ===\n// Support multiple sources\nconst traceId = input.trace_id || \n                input.current_task?.trace_id || \n                `tr-rag-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;\n\n// === OUTPUT ===\nreturn [{\n  json: {\n    trace_id: traceId,\n    query: query.substring(0, 2000),\n    user_context: {\n      tenant_id: userContext.tenant_id || input.tenant_id || 'default',\n      groups: Array.isArray(userContext.groups) ? userContext.groups : ['guest']\n    },\n    timestamp: new Date().toISOString(),\n    source: rawInput.body ? 'webhook' : \n            (rawInput.chatInput ? 'chat' : \n            (input.task_query ? 'orchestrator' : 'subworkflow')),\n    \n    // Metadata pour debugging\n    _debug: {\n      original_input_keys: Object.keys(input),\n      query_source: input.task_query ? 'task_query' : \n                    (input.current_task ? 'current_task.query' : \n                    (input.chatInput ? 'chatInput' : 'query'))\n    }\n  }\n}];\n\n"
       },
       "id": "d8623e2a-1060-46e1-b3e9-33251065d013",
       "name": "Init & ACL",
@@ -38,7 +38,7 @@
       ],
       "credentials": {
         "postgres": {
-          "id": "b44avEJtnkw46GL6",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -59,13 +59,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
-        "authentication": "none",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.requestBody) }}\n",
         "options": {
-          "timeout": 60000,
+          "timeout": 120000,
           "retry": {
             "maxTries": 3,
             "waitBetweenTries": 5000
@@ -76,14 +76,15 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer sk-litellm-nomos-2026"
+              "value": "=`Bearer ${$env.OPENROUTER_KEY_QUANTITATIVE || $env.OPENROUTER_API_KEY}`"
             },
             {
               "name": "Content-Type",
               "value": "application/json"
             }
           ]
-        }
+        },
+        "genericAuthType": "httpHeaderAuth"
       },
       "id": "1b0e89ee-a913-498e-ab6d-2f8d568a2d2f",
       "name": "Text-to-SQL Generator (CoT Enhanced)",
@@ -98,7 +99,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// CRITICAL: SQL Validator - Security Shield V2 (HANDLES MARKDOWN + JSON)\n// Extracts SQL from JSON, markdown code blocks, or raw SELECT statements\nconst contextData = $node['Schema Context Builder'].json;\n\ntry {\n  const rawContent = $json.choices?.[0]?.message?.content || '';\n  let sql = '';\n  let explanation = '';\n\n  // Strategy 1: Try direct JSON parse\n  try {\n    const parsed = JSON.parse(rawContent);\n    sql = String(parsed.sql || '').trim();\n    explanation = String(parsed.explanation || '');\n  } catch (e) {\n    // Strategy 2: Extract SQL from ```sql code block\n    const sqlBlockMatch = rawContent.match(/```sql\\s*\\n([\\s\\S]*?)```/);\n    if (sqlBlockMatch) {\n      sql = sqlBlockMatch[1].trim().replace(/;\\s*$/, '');\n    }\n\n    // Strategy 3: Extract from ```json block containing sql key\n    if (!sql) {\n      const jsonBlockMatch = rawContent.match(/```json\\s*\\n([\\s\\S]*?)```/);\n      if (jsonBlockMatch) {\n        try {\n          const jsonParsed = JSON.parse(jsonBlockMatch[1].trim());\n          sql = String(jsonParsed.sql || '').trim();\n          explanation = String(jsonParsed.explanation || '');\n        } catch (e2) {}\n      }\n    }\n\n    // Strategy 4: Find SELECT statement directly in text\n    if (!sql) {\n      const selectMatch = rawContent.match(/\\b(SELECT\\s[\\s\\S]*?LIMIT\\s+\\d+)/i);\n      if (selectMatch) {\n        sql = selectMatch[1].replace(/;\\s*$/, '').trim();\n      }\n    }\n  }\n\n  if (!sql) {\n    return {\n      ...contextData,\n      validated_sql: \"SELECT 'SQL_GENERATION_ERROR: No SQL found in LLM response' as error_message, 'error' as status LIMIT 1\",\n      explanation: 'Could not extract SQL from LLM response',\n      validation_status: 'FAILED',\n      validation_error: 'SQL_GENERATION_ERROR',\n      validation_timestamp: new Date().toISOString()\n    };\n  }\n\n  const sqlUpper = sql.toUpperCase();\n\n  // FORBIDDEN PATTERNS - P0 Security\n  const forbiddenPatterns = [\n    /\\b(DELETE|UPDATE|INSERT|DROP|TRUNCATE|ALTER|CREATE)\\b/i,\n    /\\b(GRANT|REVOKE|EXEC|EXECUTE|CALL)\\b/i,\n    /--|;.*;|UNION.*SELECT/i,\n    /xp_|sp_|pg_sleep/i,\n    /\\bINTO\\s+OUTFILE\\b|\\bLOAD_FILE\\b/i\n  ];\n\n  for (const pattern of forbiddenPatterns) {\n    if (pattern.test(sql)) {\n      return {\n        ...contextData,\n        validated_sql: \"SELECT 'SQL_INJECTION_DETECTED' as error_message, 'error' as status LIMIT 1\",\n        explanation: 'Forbidden SQL pattern detected',\n        validation_status: 'FAILED',\n        validation_error: 'SQL_INJECTION_DETECTED',\n        validation_timestamp: new Date().toISOString()\n      };\n    }\n  }\n\n  if (!sqlUpper.trimStart().startsWith('SELECT')) {\n    return {\n      ...contextData,\n      validated_sql: \"SELECT 'Query must start with SELECT' as error_message, 'error' as status LIMIT 1\",\n      explanation: 'Query must start with SELECT',\n      validation_status: 'FAILED',\n      validation_error: 'SQL_VALIDATION_ERROR',\n      validation_timestamp: new Date().toISOString()\n    };\n  }\n\n  let finalSql = sql;\n  if (!sqlUpper.includes('LIMIT')) {\n    finalSql = finalSql + ' LIMIT 1000';\n  }\n\n  const limitMatch = finalSql.match(/LIMIT\\s+(\\d+)/i);\n  if (limitMatch) {\n    const limitValue = parseInt(limitMatch[1]);\n    if (limitValue > 1000) {\n      finalSql = finalSql.replace(/LIMIT\\s+\\d+/i, 'LIMIT 1000');\n    }\n  }\n\n  if (!sqlUpper.includes('TENANT_ID')) {\n    if (sqlUpper.includes('WHERE')) {\n      finalSql = finalSql.replace(/WHERE/i, `WHERE tenant_id = '${contextData.user_context.tenant_id}' AND`);\n    }\n  }\n\n  return {\n    ...contextData,\n    validated_sql: finalSql,\n    explanation: explanation,\n    validation_status: 'PASSED',\n    validation_timestamp: new Date().toISOString()\n  };\n\n} catch (globalError) {\n  return {\n    ...contextData,\n    validated_sql: \"SELECT 'VALIDATOR_ERROR: \" + String(globalError.message).replace(/'/g, \"''\").substring(0, 100) + \"' as error_message, 'error' as status LIMIT 1\",\n    explanation: 'Validator error: ' + globalError.message,\n    validation_status: 'FAILED',\n    validation_error: 'VALIDATOR_CRASH',\n    validation_timestamp: new Date().toISOString()\n  };\n}\n"
+        "jsCode": "// CRITICAL: SQL Validator - Security Shield (ERROR-SAFE VERSION)\n// Never throws - returns error data that flows through pipeline\nconst contextData = $node['Schema Context Builder'].json;\n\ntry {\n  let llmResponse = {};\n  try {\n    llmResponse = JSON.parse($json.choices?.[0]?.message?.content || '{}');\n  } catch (e) {\n    // LLM returned invalid JSON - return safe fallback\n    return {\n      ...contextData,\n      validated_sql: \"SELECT 'SQL_GENERATION_ERROR: Invalid LLM response' as error_message, 'error' as status LIMIT 1\",\n      explanation: 'LLM returned invalid JSON response',\n      validation_status: 'FAILED',\n      validation_error: 'SQL_GENERATION_ERROR',\n      validation_timestamp: new Date().toISOString()\n    };\n  }\n\n  const sql = String(llmResponse.sql || '').trim();\n  const sqlUpper = sql.toUpperCase();\n\n  // FORBIDDEN PATTERNS - P0 Security\n  const forbiddenPatterns = [\n    /DELETE|UPDATE|INSERT|DROP|TRUNCATE|ALTER|CREATE/i,\n    /GRANT|REVOKE|EXEC|EXECUTE|CALL/i,\n    /--|;.*;|UNION.*SELECT/i,\n    /xp_|sp_|pg_sleep/i,\n    /\\bINTO\\s+OUTFILE\\b|\\bLOAD_FILE\\b/i\n  ];\n\n  for (const pattern of forbiddenPatterns) {\n    if (pattern.test(sqlUpper)) {\n      return {\n        ...contextData,\n        validated_sql: \"SELECT 'SQL_INJECTION_DETECTED' as error_message, 'error' as status LIMIT 1\",\n        explanation: 'Forbidden SQL pattern detected',\n        validation_status: 'FAILED',\n        validation_error: 'SQL_INJECTION_DETECTED',\n        validation_timestamp: new Date().toISOString()\n      };\n    }\n  }\n\n  // REQUIRED PATTERNS - return error instead of throwing\n  if (!sqlUpper.startsWith('SELECT')) {\n    return {\n      ...contextData,\n      validated_sql: \"SELECT 'Query must start with SELECT' as error_message, 'error' as status LIMIT 1\",\n      explanation: 'Query must start with SELECT',\n      validation_status: 'FAILED',\n      validation_error: 'SQL_VALIDATION_ERROR',\n      validation_timestamp: new Date().toISOString()\n    };\n  }\n\n  // Add LIMIT if missing (instead of throwing)\n  let finalSql = llmResponse.sql;\n  if (!sqlUpper.includes('LIMIT')) {\n    finalSql = finalSql + ' LIMIT 1000';\n  }\n\n  // Extract LIMIT value\n  const limitMatch = sqlUpper.match(/LIMIT\\s+(\\d+)/i);\n  if (limitMatch) {\n    const limitValue = parseInt(limitMatch[1]);\n    if (limitValue > 1000) {\n      finalSql = finalSql.replace(/LIMIT\\s+\\d+/i, 'LIMIT 1000');\n    }\n  }\n\n  // Check tenant_id filter - add if missing (instead of throwing)\n  if (!sqlUpper.includes('TENANT_ID')) {\n    // Try to add tenant_id filter\n    if (sqlUpper.includes('WHERE')) {\n      finalSql = finalSql.replace(/WHERE/i, `WHERE tenant_id = '${contextData.user_context.tenant_id}' AND`);\n    } else if (sqlUpper.includes('FROM')) {\n      // Skip tenant_id injection for complex queries (JOINs) - LLM handles it via prompt\n    }\n  }\n\n  // Passed validation\n  return {\n    ...contextData,\n    validated_sql: finalSql,\n    explanation: llmResponse.explanation || '',\n    validation_status: 'PASSED',\n    validation_timestamp: new Date().toISOString()\n  };\n\n} catch (globalError) {\n  // Catch-all: never let the node crash\n  return {\n    ...contextData,\n    validated_sql: \"SELECT 'VALIDATOR_ERROR: \" + String(globalError.message).replace(/'/g, \"''\").substring(0, 100) + \"' as error_message, 'error' as status LIMIT 1\",\n    explanation: 'Validator encountered an unexpected error: ' + globalError.message,\n    validation_status: 'FAILED',\n    validation_error: 'VALIDATOR_CRASH',\n    validation_timestamp: new Date().toISOString()\n  };\n}\n"
       },
       "id": "e3780345-617d-4483-9ab4-79a5c8873cf8",
       "name": "SQL Validator (Shield #1)",
@@ -141,7 +142,7 @@
       "onError": "continueErrorOutput",
       "credentials": {
         "postgres": {
-          "id": "b44avEJtnkw46GL6",
+          "id": "cH96tQ3I9uIHqiiq",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -162,13 +163,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
-        "authentication": "none",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ $json.requestBody }}",
         "options": {
-          "timeout": 60000,
+          "timeout": 120000,
           "retry": {
             "maxTries": 3,
             "waitBetweenTries": 5000
@@ -179,14 +180,15 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer sk-litellm-nomos-2026"
+              "value": "=`Bearer ${$env.OPENROUTER_KEY_QUANTITATIVE || $env.OPENROUTER_API_KEY}`"
             },
             {
               "name": "Content-Type",
               "value": "application/json"
             }
           ]
-        }
+        },
+        "genericAuthType": "httpHeaderAuth"
       },
       "id": "1179b1b8-11c3-41ae-b750-cec4e2687620",
       "name": "Interpretation Layer (LLM Analyst)",
@@ -214,52 +216,6 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "={{ $env.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"quantitative_rag_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"attributes\": {\n    \"result_count\": {{ $json.result_count }},\n    \"sql_length\": {{ $json.sql_executed?.length || 0 }}\n  }\n}",
-        "options": {
-          "timeout": 5000
-        }
-      },
-      "id": "5ba4b171-8e2a-4e2d-82ef-04d6f3cb5c01",
-      "name": "OTEL Export (Shield #9)",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        2384,
-        208
-      ],
-      "onError": "continueRegularOutput",
-      "disabled": true
-    },
-    {
-      "parameters": {},
-      "id": "3abfc5c3-e8ce-40ab-936d-a49a33c8e47c",
-      "name": "Error Handler",
-      "type": "n8n-nodes-base.errorTrigger",
-      "typeVersion": 1,
-      "position": [
-        368,
-        640
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Error handler - graceful fallback when nodes haven't executed\ntry {\n  const error = $json;\n  let initData = {};\n  try {\n    initData = $node['Init & ACL']?.json || {};\n  } catch (e) {\n    initData = { trace_id: 'err-' + Date.now(), query: 'unknown' };\n  }\n\n  return {\n    status: 'ERROR',\n    trace_id: initData.trace_id || 'err-' + Date.now(),\n    error_type: error.message?.includes('SQL_') ? 'SQL_ERROR' :\n                error.message?.includes('rate') ? 'RATE_LIMIT' :\n                error.message?.includes('Provider') ? 'PROVIDER_ERROR' : 'SYSTEM_ERROR',\n    error_message: error.message || error.description || 'Unknown error',\n    query: initData.query || 'unknown',\n    timestamp: new Date().toISOString()\n  };\n} catch (e) {\n  return {\n    status: 'ERROR',\n    trace_id: 'err-fallback-' + Date.now(),\n    error_type: 'ERROR_HANDLER_FAILURE',\n    error_message: e.message || 'Error handler itself failed',\n    timestamp: new Date().toISOString()\n  };\n}"
-      },
-      "id": "84eb686e-dc41-452e-a894-f0b6603457c1",
-      "name": "Error Response Builder",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        576,
-        640
-      ]
-    },
-    {
-      "parameters": {
         "jsCode": "// SQL Error Handler - Self-Healing (MAX 2 REPAIRS)\n// Counter via $execution.id key + $getWorkflowStaticData (requires N8N_RUNNERS_ENABLED=false)\nconst MAX_REPAIRS = 2;\n\nconst staticData = $getWorkflowStaticData('global');\nconst execId = ($execution && $execution.id) ? $execution.id : ('fallback_' + Date.now());\nconst retryKey = 'repair_' + execId;\n\nconst currentCount = (staticData[retryKey] || 0) + 1;\nstaticData[retryKey] = currentCount;\n\nif (currentCount > MAX_REPAIRS) {\n  delete staticData[retryKey];\n  return [{ json: { needs_repair: false, retry_exhausted: true, error_type: 'SQL_MAX_RETRIES', attempts: currentCount } }];\n}\n\nlet originalQuery = 'unknown';\nlet failedSQL = '';\nlet errorMsg = 'SQL execution failed';\nlet schemaContext = '';\nlet tenantId = 'default';\n\ntry { originalQuery = $node['Init & ACL'].json.query; } catch(e) {}\ntry { failedSQL = ($node['SQL Validator (Shield #1)'].json || {}).validated_sql || $json.sql || ''; } catch(e) {}\ntry { errorMsg = $json.error_message || $json.message || 'SQL execution failed'; } catch(e) {}\ntry { schemaContext = $node['Schema Context Builder'].json.schema_context; } catch(e) {}\ntry { tenantId = ($node['Init & ACL'].json.user_context || {}).tenant_id || 'default'; } catch(e) {}\n\nreturn [{\n  json: {\n    needs_repair: true,\n    retry_count: currentCount,\n    original_query: originalQuery,\n    failed_sql: failedSQL,\n    error_message: errorMsg,\n    schema_context: schemaContext,\n    tenant_id: tenantId,\n    repair_context: {\n      failed_sql: failedSQL,\n      error_message: errorMsg,\n      schema_context: schemaContext\n    }\n  }\n}];\n"
       },
       "type": "n8n-nodes-base.code",
@@ -274,13 +230,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
-        "authentication": "none",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ $json.requestBody }}",
         "options": {
-          "timeout": 60000,
+          "timeout": 120000,
           "retry": {
             "maxTries": 3,
             "waitBetweenTries": 5000
@@ -291,14 +247,15 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer sk-litellm-nomos-2026"
+              "value": "=`Bearer ${$env.OPENROUTER_KEY_QUANTITATIVE || $env.OPENROUTER_API_KEY}`"
             },
             {
               "name": "Content-Type",
               "value": "application/json"
             }
           ]
-        }
+        },
+        "genericAuthType": "httpHeaderAuth"
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -401,7 +358,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: 'llama-70b',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n!!!! CRITICAL DATA MODEL WARNING !!!!\nThe financials table contains BOTH quarterly rows (period='Q1','Q2','Q3','Q4') AND a full-year aggregate row (period='FY') for each company/year.\n- For annual totals: ALWAYS use period = 'FY'. NEVER SUM() without period filter or you get DOUBLE the real value.\n- For quarterly data: filter by the specific quarter (period = 'Q1', etc.).\n- SUM() is only valid across different companies or fiscal_years, NOT across periods within the same company/year.\n\n=== HARD RULES (NEVER VIOLATE) ===\nRULE 1: For ANY question about annual/total/yearly data \u2192 ALWAYS add period = 'FY' in WHERE clause.\nRULE 2: If the question says 'in 2023' without specifying Q1/Q2/Q3/Q4 \u2192 use period = 'FY'.\nRULE 3: NEVER write SUM(revenue) or AVG(revenue) without period filter. Use period = 'FY' row instead.\nRULE 4: Only omit period filter when question explicitly asks for quarterly breakdown.\nRULE 5: When comparing years (growth), use period = 'FY' for BOTH years.\n\nExamples of CORRECT SQL:\n- 'Revenue in 2023' \u2192 SELECT revenue FROM financials WHERE company_name ILIKE '%X%' AND fiscal_year = 2023 AND period = 'FY'\n- 'Q3 2023 revenue' \u2192 SELECT revenue FROM financials WHERE company_name ILIKE '%X%' AND fiscal_year = 2023 AND period = 'Q3'\n- 'Total revenue all companies 2023' \u2192 SELECT SUM(revenue) FROM financials WHERE fiscal_year = 2023 AND period = 'FY'\n- 'Revenue growth 2022-2023' \u2192 Compare period = 'FY' rows for both years\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER / DOUBLE-COUNTING PREVENTION:\n  The financials table contains BOTH period-level rows (Q1, Q2, Q3, Q4) AND full-year aggregate rows (period = 'FY').\n  * For annual/total revenue queries: ALWAYS filter with period = 'FY' to get the pre-computed annual total. Do NOT use SUM() across all periods as this will double-count (giving 2x the real value).\n  * For quarterly queries: filter by the specific period (e.g., period = 'Q1').\n  * Only use SUM() when aggregating across different companies or fiscal_years, NOT across periods within the same company/year.\n  * Example CORRECT query: SELECT revenue FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023 AND period = 'FY'\n  * Example WRONG query: SELECT SUM(revenue) FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023  -- This sums FY + Q1+Q2+Q3+Q4 = 2x!\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE (use: tenant_id = 'default' OR tenant_id IS NULL for max coverage)\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query. Return ONLY a valid JSON object. Do NOT include markdown, code blocks, or any text outside the JSON.\\n\\n=== SAMPLE DATA (for reference) ===\\nfinancials: company_name='TechVision Inc', fiscal_year=2023, period='FY', revenue=5200000, net_income=780000\\nbalance_sheet: company_name='TechVision Inc', fiscal_year=2023, total_assets=12500000, total_liabilities=4800000\\nquarterly_revenue: company_name='GreenEnergy Corp', quarter='Q3 2023', revenue=1250000\\nproducts: name='CloudSync Pro', category='SaaS', price=49.99\\norders: customer_id=1, product_id=3, quantity=10, total_amount=499.90, order_date='2023-06-15'`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
+        "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: 'google/gemma-3-27b-it:free',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n!!!! CRITICAL DATA MODEL WARNING !!!!\nThe financials table contains BOTH quarterly rows (period='Q1','Q2','Q3','Q4') AND a full-year aggregate row (period='FY') for each company/year.\n- For annual totals: ALWAYS use period = 'FY'. NEVER SUM() without period filter or you get DOUBLE the real value.\n- For quarterly data: filter by the specific quarter (period = 'Q1', etc.).\n- SUM() is only valid across different companies or fiscal_years, NOT across periods within the same company/year.\n\n=== HARD RULES (NEVER VIOLATE) ===\nRULE 1: For ANY question about annual/total/yearly data \u2192 ALWAYS add period = 'FY' in WHERE clause.\nRULE 2: If the question says 'in 2023' without specifying Q1/Q2/Q3/Q4 \u2192 use period = 'FY'.\nRULE 3: NEVER write SUM(revenue) or AVG(revenue) without period filter. Use period = 'FY' row instead.\nRULE 4: Only omit period filter when question explicitly asks for quarterly breakdown.\nRULE 5: When comparing years (growth), use period = 'FY' for BOTH years.\n\nExamples of CORRECT SQL:\n- 'Revenue in 2023' \u2192 SELECT revenue FROM financials WHERE company_name ILIKE '%X%' AND fiscal_year = 2023 AND period = 'FY'\n- 'Q3 2023 revenue' \u2192 SELECT revenue FROM financials WHERE company_name ILIKE '%X%' AND fiscal_year = 2023 AND period = 'Q3'\n- 'Total revenue all companies 2023' \u2192 SELECT SUM(revenue) FROM financials WHERE fiscal_year = 2023 AND period = 'FY'\n- 'Revenue growth 2022-2023' \u2192 Compare period = 'FY' rows for both years\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER / DOUBLE-COUNTING PREVENTION:\n  The financials table contains BOTH period-level rows (Q1, Q2, Q3, Q4) AND full-year aggregate rows (period = 'FY').\n  * For annual/total revenue queries: ALWAYS filter with period = 'FY' to get the pre-computed annual total. Do NOT use SUM() across all periods as this will double-count (giving 2x the real value).\n  * For quarterly queries: filter by the specific period (e.g., period = 'Q1').\n  * Only use SUM() when aggregating across different companies or fiscal_years, NOT across periods within the same company/year.\n  * Example CORRECT query: SELECT revenue FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023 AND period = 'FY'\n  * Example WRONG query: SELECT SUM(revenue) FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023  -- This sums FY + Q1+Q2+Q3+Q4 = 2x!\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE (use: tenant_id = 'default' OR tenant_id IS NULL for max coverage)\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.\\n\\n=== SAMPLE DATA (for reference) ===\\nfinancials: company_name='TechVision Inc', fiscal_year=2023, period='FY', revenue=5200000, net_income=780000\\nbalance_sheet: company_name='TechVision Inc', fiscal_year=2023, total_assets=12500000, total_liabilities=4800000\\nquarterly_revenue: company_name='GreenEnergy Corp', quarter='Q3 2023', revenue=1250000\\nproducts: name='CloudSync Pro', category='SaaS', price=49.99\\norders: customer_id=1, product_id=3, quantity=10, total_amount=499.90, order_date='2023-06-15'`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -414,7 +371,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: 'llama-70b',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
+        "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: 'google/gemma-3-27b-it:free',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -427,7 +384,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"smart\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: 'llama-70b',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
+        "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"smart\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: 'google/gemma-3-27b-it:free',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -437,154 +394,47 @@
       ],
       "id": "585ba1b1-1f92-4703-b30e-c245342df589",
       "name": "Prepare SQL Repair Request"
-    },
-    {
-      "parameters": {
-        "jsCode": "// GitHub Error Logger for quantitative\nconst errorData = $input.first().json;\nconst timestamp = new Date().toISOString();\nconst questionId = errorData.question_id || errorData.trace_id || 'q-' + Date.now();\nconst errorType = errorData.error_type || errorData.error_code || 'UNKNOWN';\nconst pipeline = 'quantitative';\n\nconst logEntry = {\n  timestamp: timestamp,\n  pipeline: pipeline,\n  question_id: questionId,\n  error_type: errorType,\n  error_message: (errorData.error || errorData.message || 'No message').slice(0, 500),\n  input: {\n    query: (errorData.query || errorData.original_query || '').slice(0, 300),\n    tenant_id: errorData.tenant_id || 'benchmark'\n  },\n  partial_response: errorData.partial_response || errorData.response || null,\n  n8n_context: {\n    workflow_id: $workflow.id,\n    workflow_name: $workflow.name,\n    execution_id: $execution.id\n  },\n  performance: {\n    latency_ms: errorData.latency_ms || 0,\n    http_status: errorData.http_status || null\n  }\n};\n\nreturn [{ json: logEntry }];"
-      },
-      "id": "67b4a644-948c-402d-9f71-bae592c0ee3d",
-      "name": "GitHub Error Logger (quantitative)",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2684,
-        0
-      ],
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "jsCode": "// SQL Execution Logger\nconst input = $input.first().json;\n\nconst log = {\n  timestamp: new Date().toISOString(),\n  pipeline: 'quantitative',\n  step: 'sql_execution',\n  sql: (input.validated_sql || input.sql || input.sql_executed || '').slice(0, 500),\n  validation_status: input.validation_status || input.metadata?.validation_status || 'UNKNOWN',\n  result_count: input.result_count || 0,\n  null_aggregation: input.null_aggregation || false,\n  error: input.sql_error || null\n};\n\nreturn [{ json: { ...input, _sql_log: log } }];"
-      },
-      "id": "bc332ab4-b2b3-48a4-9569-cf1d47c6aa30",
-      "name": "SQL Execution Logger",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2684,
-        200
-      ],
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Question Type Classifier \u2014 Routes between SQL and Context Reasoning (FIX-39)\nconst initData = $input.first().json;\nconst query = initData.query || '';\n\n// Detect context-rich questions embedded by eval (FIX-39 format)\n// Format: \"question text\\n\\nContext:\\ncontext\\n\\nTable data:\\n[[...]]\"\nconst hasTableData39 = query.includes('Table data:') && (query.includes('[[') || query.includes('|'));\nconst hasContext39 = query.includes('Context:') || query.includes('\\nContext\\n');\n\n// Original Phase 2 markers\nconst hasContextMarker = query.includes('Context:') && query.includes('Question:');\nconst hasPipeTable = /\\|[^|]+\\|[^|]+\\|/.test(query);\nconst isLongWithContext = (hasContextMarker || hasPipeTable) && query.length > 500;\nconst isFinancialContext = query.toLowerCase().includes('please answer the given financial question');\n\n// FIX-39: Also detect JSON table arrays in query\nconst hasJsonTable = /\\[\\s*\\[/.test(query) && query.length > 200;\nconst isContextQuestion39 = hasTableData39 || (hasContext39 && hasJsonTable);\n\nconst isContextQuestion = isLongWithContext || isFinancialContext || isContextQuestion39;\n\nif (isContextQuestion) {\n  let extractedQuestion = query;\n  let extractedContext = '';\n  \n  // FIX-39 format: question\\n\\nContext:\\n...\\n\\nTable data:\\n...\n  const ctx39Match = query.match(/\\nContext:\\s*([\\s\\S]*?)(?=\\nTable data:|$)/);\n  const table39Match = query.match(/Table data:\\s*([\\s\\S]+)$/);\n  const question39Match = query.match(/^(.+?)(?=\\n\\nContext:|\\nTable data:|$)/s);\n  \n  // Original format\n  const contextMatch = query.match(/Context:\\s*([\\s\\S]+?)(?=\\nQuestion:|$)/);\n  const questionMatch = query.match(/Question:\\s*([\\s\\S]+?)(?:\\nAnswer:|$)/);\n  \n  if (question39Match) extractedQuestion = question39Match[1].trim();\n  else if (questionMatch) extractedQuestion = questionMatch[1].trim();\n  \n  if (ctx39Match) extractedContext = ctx39Match[1].trim();\n  else if (contextMatch) extractedContext = contextMatch[1].trim();\n  \n  // Append table data to context if found\n  if (table39Match) {\n    extractedContext = (extractedContext ? extractedContext + '\\n\\n' : '') + 'Table: ' + table39Match[1].trim();\n  }\n  \n  return [{\n    json: {\n      ...initData,\n      question_type: 'context_reasoning',\n      extracted_question: extractedQuestion,\n      extracted_context: extractedContext,\n      original_query: query\n    }\n  }];\n} else {\n  return [{\n    json: {\n      ...initData,\n      question_type: 'sql_query'\n    }\n  }];\n}"
-      },
-      "id": "a1b2c3d4-qtc1-4000-8000-000000000001",
-      "name": "Question Type Classifier",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        300,
-        208
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "string": [
-            {
-              "conditions": [
-                {
-                  "leftValue": "={{ $json.question_type }}",
-                  "rightValue": "sql_query",
-                  "operator": {
-                    "type": "string",
-                    "operation": "equals"
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "a1b2c3d4-rqt1-4000-8000-000000000002",
-      "name": "Route by Question Type",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        430,
-        100
-      ],
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "jsCode": "// Build LLM request for direct context-based financial reasoning (FIX-39)\nconst data = $input.first().json;\nconst question = data.extracted_question || data.query || '';\nconst context = data.extracted_context || '';\n\nconst requestBody = {\n  model: 'llama-70b',\n  messages: [\n    {\n      role: 'system',\n      content: 'You are an expert financial analyst. Answer the question based ONLY on the provided context and data tables.\\n\\n'\n        + 'REASONING METHOD (follow these steps):\\n'\n        + '1. LOCATE: Find the specific table row/column or text passage with the relevant data\\n'\n        + '2. EXTRACT: Pull exact numbers from the data (with units \u2014 $, %, millions, etc.)\\n'\n        + '3. CALCULATE: Show your arithmetic step by step (e.g., 500 - 450 = 50, 50/450 = 0.1111)\\n'\n        + '4. ANSWER: State the final result\\n\\n'\n        + 'TABLE PARSING RULES:\\n'\n        + '- Tables may be JSON arrays like [[\"col1\",\"col2\"],[\"val1\",\"val2\"]] \u2014 treat each inner array as a row\\n'\n        + '- Tables may use pipe delimiters (|col1|col2|) or space-separated columns\\n'\n        + '- Read exact values from tables \u2014 never approximate\\n'\n        + '- For dollar amounts like \"$ 3329\" or \"$3,329\", extract the number: 3329\\n'\n        + '- For percentages like \"35.0% ( 35.0 % )\", extract: 35.0%\\n'\n        + '- For column lookups: find the row matching the criteria, read the target column\\n'\n        + '- For aggregations: sum/subtract/divide the exact values\\n\\n'\n        + 'ANSWER FORMAT:\\n'\n        + '- First line MUST be ONLY the final answer (number, percentage, yes/no)\\n'\n        + '- Then explain your reasoning\\n'\n        + '- Examples of correct first lines: \"15.7%\", \"1.08\", \"$94 million\", \"yes\"\\n'\n        + '- NEVER start with \"The answer is\" \u2014 just the value'\n    },\n    {\n      role: 'user',\n      content: context\n        ? `Context and data:\\n${context}\\n\\nQuestion: ${question}`\n        : `Question: ${question}`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 600,\n  top_p: 0.9\n};\n\nreturn [{ json: { requestBody, extracted_question: question, extracted_context: context } }];"
-      },
-      "id": "a1b2c3d4-cpr1-4000-8000-000000000003",
-      "name": "Prepare Context Reasoning",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        650,
-        -100
-      ],
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
-        "authentication": "none",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($json.requestBody) }}",
-        "options": {
-          "timeout": 60000,
-          "retry": {
-            "maxTries": 3,
-            "waitBetweenTries": 5000
-          }
-        },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Bearer sk-litellm-nomos-2026"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        }
-      },
-      "id": "a1b2c3d4-cll1-4000-8000-000000000004",
-      "name": "Context Reasoning LLM",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        900,
-        -100
-      ],
-      "continueOnFail": true,
-      "onError": "continueRegularOutput",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "jsCode": "// Extract and format context reasoning response (FIX-39)\nconst data = $input.first().json;\nconst initData = $('Question Type Classifier').first().json;\nlet answer = 'NO_ANSWER';\n\ntry {\n  const choices = data.choices || [];\n  if (choices.length > 0) {\n    const fullText = choices[0].message?.content || '';\n    \n    // Extract first line as the answer\n    const lines = fullText.trim().split('\\n').filter(l => l.trim());\n    if (lines.length > 0) {\n      let firstLine = lines[0].trim();\n      \n      // Clean up common prefixes\n      firstLine = firstLine.replace(/^(the answer is|answer:|final answer:|result:)\\s*/i, '');\n      firstLine = firstLine.replace(/^approximately\\s*/i, '');\n      firstLine = firstLine.replace(/[.*]$/g, '').trim();\n      \n      // Extract numeric answer from first line\n      const numMatch = firstLine.match(/(-?[\\d,]+\\.?\\d*\\s*%?)/);\n      const dollarMatch = firstLine.match(/(\\$\\s*-?[\\d,]+\\.?\\d*\\s*(?:million|billion|thousand)?)/i);\n      \n      if (dollarMatch) answer = dollarMatch[1].replace(/\\s+/g, '');\n      else if (numMatch) answer = numMatch[1].replace(/,/g, '');\n      else answer = firstLine.substring(0, 100);\n    }\n  }\n} catch (e) {\n  answer = 'ERROR: ' + e.message;\n}\n\nreturn [{\n  json: {\n    status: answer === 'NO_ANSWER' ? 'ERROR' : 'OK',\n    trace_id: initData.trace_id || 'ctx-' + Date.now(),\n    query: initData.extracted_question || initData.query || '',\n    sql_executed: 'N/A (context-based reasoning)',\n    result_count: 1,\n    interpretation: answer\n  }\n}];"
-      },
-      "id": "a1b2c3d4-crf1-4000-8000-000000000005",
-      "name": "Context Response Formatter",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1150,
-        -100
-      ],
-      "disabled": true
     }
   ],
   "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Init & ACL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Init & ACL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Init & ACL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Init & ACL": {
       "main": [
         [
           {
-            "node": "Question Type Classifier",
+            "node": "Schema Introspection",
             "type": "main",
             "index": 0
           }
@@ -607,6 +457,17 @@
         [
           {
             "node": "Prepare SQL Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SQL Request": {
+      "main": [
+        [
+          {
+            "node": "Text-to-SQL Generator (CoT Enhanced)",
             "type": "main",
             "index": 0
           }
@@ -675,22 +536,22 @@
         ]
       ]
     },
-    "Interpretation Layer (LLM Analyst)": {
+    "Prepare Interpretation Request": {
       "main": [
         [
           {
-            "node": "Response Formatter",
+            "node": "Interpretation Layer (LLM Analyst)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Error Handler": {
+    "Interpretation Layer (LLM Analyst)": {
       "main": [
         [
           {
-            "node": "Error Response Builder",
+            "node": "Response Formatter",
             "type": "main",
             "index": 0
           }
@@ -726,6 +587,17 @@
         ]
       ]
     },
+    "Prepare SQL Repair Request": {
+      "main": [
+        [
+          {
+            "node": "SQL Repair LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "SQL Repair LLM": {
       "main": [
         [
@@ -747,143 +619,24 @@
           }
         ]
       ]
-    },
-    "When Executed by Another Workflow": {
-      "main": [
-        [
-          {
-            "node": "Init & ACL",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "When chat message received": {
-      "main": [
-        [
-          {
-            "node": "Init & ACL",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "Init & ACL",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare SQL Request": {
-      "main": [
-        [
-          {
-            "node": "Text-to-SQL Generator (CoT Enhanced)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare Interpretation Request": {
-      "main": [
-        [
-          {
-            "node": "Interpretation Layer (LLM Analyst)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare SQL Repair Request": {
-      "main": [
-        [
-          {
-            "node": "SQL Repair LLM",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Question Type Classifier": {
-      "main": [
-        [
-          {
-            "node": "Schema Introspection",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Route by Question Type": {
-      "main": [
-        [
-          {
-            "node": "Schema Introspection",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Prepare Context Reasoning",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare Context Reasoning": {
-      "main": [
-        [
-          {
-            "node": "Context Reasoning LLM",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Context Reasoning LLM": {
-      "main": [
-        [
-          {
-            "node": "Context Response Formatter",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "settings": {
-    "executionOrder": "v1",
-    "callerPolicy": "workflowsFromSameOwner",
-    "availableInMCP": false
+    "executionOrder": "v1"
   },
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "3679339e-b46e-4eca-9a46-c6ffad335432",
-  "activeVersionId": "19779622-b588-4fc2-b248-5ad4b016817f",
-  "versionCounter": 242,
+  "versionId": "4d6450d1-b7ac-49e6-8be9-18e77589ba55",
+  "activeVersionId": "96008219-26ed-4ea8-b339-a76b6b0b7e47",
+  "versionCounter": 13,
   "triggerCount": 2,
   "shared": [
     {
-      "updatedAt": "2026-03-04T00:27:44.492Z",
-      "createdAt": "2026-03-04T00:27:44.492Z",
+      "updatedAt": "2026-03-06T16:55:10.834Z",
+      "createdAt": "2026-03-06T16:55:10.834Z",
       "role": "workflow:owner",
-      "workflowId": "E19NZG9WfM7FNsxr",
+      "workflowId": "Tht75NLmCRcObYom",
       "projectId": "NFwlGGtw5nC8lqVo",
       "project": {
         "updatedAt": "2026-03-04T00:13:20.034Z",
@@ -900,10 +653,10 @@
   "tags": [],
   "parentFolder": null,
   "activeVersion": {
-    "updatedAt": "2026-03-04T08:46:16.453Z",
-    "createdAt": "2026-03-04T08:46:16.453Z",
-    "versionId": "19779622-b588-4fc2-b248-5ad4b016817f",
-    "workflowId": "E19NZG9WfM7FNsxr",
+    "updatedAt": "2026-03-06T16:55:10.834Z",
+    "createdAt": "2026-03-06T16:55:10.834Z",
+    "versionId": "96008219-26ed-4ea8-b339-a76b6b0b7e47",
+    "workflowId": "Tht75NLmCRcObYom",
     "nodes": [
       {
         "parameters": {
@@ -943,7 +696,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Build schema context for LLM\nconst inputData = $input.all();\nif (!inputData || inputData.length === 0) {\n  return {\n    ...$node['Init & ACL'].json,\n    schema_context: \"Aucune table trouv\u00e9e dans le sch\u00e9ma public.\",\n    available_tables: []\n  };\n}\n\nconst schemaData = inputData.map(i => i.json);\nconst tables = {};\n\nschemaData.forEach(col => {\n  if (!tables[col.table_name]) tables[col.table_name] = [];\n  tables[col.table_name].push(`${col.column_name} ${col.data_type}${col.is_nullable === 'NO' ? ' NOT NULL' : ''}`);\n});\n\nconst schemaContext = Object.entries(tables)\n  .map(([table, columns]) => `Table: ${table}\\nColumns: ${columns.join(', ')}`)\n  .join('\\n\\n');\n\n// Add common relationships / foreign keys context\nconst FK_CONTEXT = `\nFOREIGN KEY RELATIONSHIPS (for JOINs):\n- financials.company_name = balance_sheet.company_name (join on company + year + period)\n- financials.company_name = quarterly_revenue.company_name\n- financials.company_name = employees.company_name\n- orders.customer_id = customers.id\n- orders.product_id = products.id\n- order_items.order_id = orders.id\n- order_items.product_id = products.id\n- employees.department_id = departments.id\n\nIMPORTANT RULES:\n- financials: use period='FY' for annual totals (avoid double-counting with quarterly rows)\n- tenant_id filter: WHERE tenant_id = 'default' OR tenant_id IS NULL (catches all data)\n- Company names may have suffixes (Inc, Corp, Ltd) \u2014 use ILIKE '%company_name%'\n`;\n\nconst initData = $node['Init & ACL'].json;\n\nreturn {\n  ...initData,\n  schema_context: schemaContext,\n  available_tables: Object.keys(tables)\n};"
+          "jsCode": "// Build schema context for LLM\nconst inputData = $input.all();\nif (!inputData || inputData.length === 0) {\n  return {\n    ...$node['Init & ACL'].json,\n    schema_context: \"Aucune table trouv\u00e9e dans le sch\u00e9ma public.\",\n    available_tables: []\n  };\n}\n\nconst schemaData = inputData.map(i => i.json);\nconst tables = {};\n\nschemaData.forEach(col => {\n  if (!tables[col.table_name]) tables[col.table_name] = [];\n  tables[col.table_name].push(`${col.column_name} ${col.data_type}${col.is_nullable === 'NO' ? ' NOT NULL' : ''}`);\n});\n\nconst schemaContext = Object.entries(tables)\n  .map(([table, columns]) => `Table: ${table}\\nColumns: ${columns.join(', ')}`)\n  .join('\\n\\n');\n\n// Add common relationships / foreign keys context\nconst FK_CONTEXT = `\nFOREIGN KEY RELATIONSHIPS (for JOINs):\n- financials.company_name = balance_sheet.company_name (join on company + year + period)\n- financials.company_name = quarterly_revenue.company_name\n- financials.company_name = employees.company_name\n- orders.customer_id = customers.id\n- orders.product_id = products.id\n- order_items.order_id = orders.id\n- order_items.product_id = products.id\n- employees.department_id = departments.id\n\nIMPORTANT RULES:\n- financials: use period='FY' for annual totals (avoid double-counting with quarterly rows)\n- tenant_id filter: WHERE tenant_id = 'default' OR tenant_id IS NULL (catches all data)\n- Company names may have suffixes (Inc, Corp, Ltd) \u2014 use ILIKE '%company_name%'\n`;\n\nconst initData = $node['Init & ACL'].json;\n\nreturn {\n  ...initData,\n  schema_context: schemaContext + '\\n\\n' + FK_CONTEXT,\n  available_tables: Object.keys(tables)\n};"
         },
         "id": "f52905d6-700c-45b2-8265-4501a7c08482",
         "name": "Schema Context Builder",
@@ -957,13 +710,13 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://openrouter.ai/api/v1/chat/completions",
+          "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
           "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ JSON.stringify($json.requestBody) }}\n",
           "options": {
-            "timeout": 60000,
+            "timeout": 120000,
             "retry": {
               "maxTries": 3,
               "waitBetweenTries": 5000
@@ -974,7 +727,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{$env.OPENROUTER_KEY_QUANTITATIVE}}"
+                "value": "Bearer sk-litellm-nomos-2026"
               },
               {
                 "name": "Content-Type",
@@ -1060,13 +813,13 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://openrouter.ai/api/v1/chat/completions",
+          "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
           "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ $json.requestBody }}",
           "options": {
-            "timeout": 60000,
+            "timeout": 120000,
             "retry": {
               "maxTries": 3,
               "waitBetweenTries": 5000
@@ -1077,7 +830,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{$env.OPENROUTER_KEY_QUANTITATIVE}}"
+                "value": "Bearer sk-litellm-nomos-2026"
               },
               {
                 "name": "Content-Type",
@@ -1112,52 +865,6 @@
       },
       {
         "parameters": {
-          "method": "POST",
-          "url": "={{ $env.OTEL_COLLECTOR_URL || 'https://otel-collector.internal' }}/v1/traces",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={\n  \"traceId\": \"{{ $json.trace_id }}\",\n  \"spanName\": \"quantitative_rag_complete\",\n  \"status\": \"{{ $json.status }}\",\n  \"attributes\": {\n    \"result_count\": {{ $json.result_count }},\n    \"sql_length\": {{ $json.sql_executed?.length || 0 }}\n  }\n}",
-          "options": {
-            "timeout": 5000
-          }
-        },
-        "id": "5ba4b171-8e2a-4e2d-82ef-04d6f3cb5c01",
-        "name": "OTEL Export (Shield #9)",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.3,
-        "position": [
-          2384,
-          208
-        ],
-        "onError": "continueRegularOutput",
-        "disabled": true
-      },
-      {
-        "parameters": {},
-        "id": "3abfc5c3-e8ce-40ab-936d-a49a33c8e47c",
-        "name": "Error Handler",
-        "type": "n8n-nodes-base.errorTrigger",
-        "typeVersion": 1,
-        "position": [
-          368,
-          640
-        ]
-      },
-      {
-        "parameters": {
-          "jsCode": "// Error handler - graceful fallback when nodes haven't executed\ntry {\n  const error = $json;\n  let initData = {};\n  try {\n    initData = $node['Init & ACL']?.json || {};\n  } catch (e) {\n    initData = { trace_id: 'err-' + Date.now(), query: 'unknown' };\n  }\n\n  return {\n    status: 'ERROR',\n    trace_id: initData.trace_id || 'err-' + Date.now(),\n    error_type: error.message?.includes('SQL_') ? 'SQL_ERROR' :\n                error.message?.includes('rate') ? 'RATE_LIMIT' :\n                error.message?.includes('Provider') ? 'PROVIDER_ERROR' : 'SYSTEM_ERROR',\n    error_message: error.message || error.description || 'Unknown error',\n    query: initData.query || 'unknown',\n    timestamp: new Date().toISOString()\n  };\n} catch (e) {\n  return {\n    status: 'ERROR',\n    trace_id: 'err-fallback-' + Date.now(),\n    error_type: 'ERROR_HANDLER_FAILURE',\n    error_message: e.message || 'Error handler itself failed',\n    timestamp: new Date().toISOString()\n  };\n}"
-        },
-        "id": "84eb686e-dc41-452e-a894-f0b6603457c1",
-        "name": "Error Response Builder",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          576,
-          640
-        ]
-      },
-      {
-        "parameters": {
           "jsCode": "// SQL Error Handler - Self-Healing (MAX 2 REPAIRS)\n// Counter via $execution.id key + $getWorkflowStaticData (requires N8N_RUNNERS_ENABLED=false)\nconst MAX_REPAIRS = 2;\n\nconst staticData = $getWorkflowStaticData('global');\nconst execId = ($execution && $execution.id) ? $execution.id : ('fallback_' + Date.now());\nconst retryKey = 'repair_' + execId;\n\nconst currentCount = (staticData[retryKey] || 0) + 1;\nstaticData[retryKey] = currentCount;\n\nif (currentCount > MAX_REPAIRS) {\n  delete staticData[retryKey];\n  return [{ json: { needs_repair: false, retry_exhausted: true, error_type: 'SQL_MAX_RETRIES', attempts: currentCount } }];\n}\n\nlet originalQuery = 'unknown';\nlet failedSQL = '';\nlet errorMsg = 'SQL execution failed';\nlet schemaContext = '';\nlet tenantId = 'default';\n\ntry { originalQuery = $node['Init & ACL'].json.query; } catch(e) {}\ntry { failedSQL = ($node['SQL Validator (Shield #1)'].json || {}).validated_sql || $json.sql || ''; } catch(e) {}\ntry { errorMsg = $json.error_message || $json.message || 'SQL execution failed'; } catch(e) {}\ntry { schemaContext = $node['Schema Context Builder'].json.schema_context; } catch(e) {}\ntry { tenantId = ($node['Init & ACL'].json.user_context || {}).tenant_id || 'default'; } catch(e) {}\n\nreturn [{\n  json: {\n    needs_repair: true,\n    retry_count: currentCount,\n    original_query: originalQuery,\n    failed_sql: failedSQL,\n    error_message: errorMsg,\n    schema_context: schemaContext,\n    tenant_id: tenantId,\n    repair_context: {\n      failed_sql: failedSQL,\n      error_message: errorMsg,\n      schema_context: schemaContext\n    }\n  }\n}];\n"
         },
         "type": "n8n-nodes-base.code",
@@ -1172,13 +879,13 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://openrouter.ai/api/v1/chat/completions",
+          "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
           "authentication": "none",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ $json.requestBody }}",
           "options": {
-            "timeout": 60000,
+            "timeout": 120000,
             "retry": {
               "maxTries": 3,
               "waitBetweenTries": 5000
@@ -1189,7 +896,7 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "=Bearer {{$env.OPENROUTER_KEY_QUANTITATIVE}}"
+                "value": "Bearer sk-litellm-nomos-2026"
               },
               {
                 "name": "Content-Type",
@@ -1299,7 +1006,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: 'arcee-ai/trinity-large-preview:free',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n!!!! CRITICAL DATA MODEL WARNING !!!!\nThe financials table contains BOTH quarterly rows (period='Q1','Q2','Q3','Q4') AND a full-year aggregate row (period='FY') for each company/year.\n- For annual totals: ALWAYS use period = 'FY'. NEVER SUM() without period filter or you get DOUBLE the real value.\n- For quarterly data: filter by the specific quarter (period = 'Q1', etc.).\n- SUM() is only valid across different companies or fiscal_years, NOT across periods within the same company/year.\n\n=== HARD RULES (NEVER VIOLATE) ===\nRULE 1: For ANY question about annual/total/yearly data \u2192 ALWAYS add period = 'FY' in WHERE clause.\nRULE 2: If the question says 'in 2023' without specifying Q1/Q2/Q3/Q4 \u2192 use period = 'FY'.\nRULE 3: NEVER write SUM(revenue) or AVG(revenue) without period filter. Use period = 'FY' row instead.\nRULE 4: Only omit period filter when question explicitly asks for quarterly breakdown.\nRULE 5: When comparing years (growth), use period = 'FY' for BOTH years.\n\nExamples of CORRECT SQL:\n- 'Revenue in 2023' \u2192 SELECT revenue FROM financials WHERE company_name ILIKE '%X%' AND fiscal_year = 2023 AND period = 'FY'\n- 'Q3 2023 revenue' \u2192 SELECT revenue FROM financials WHERE company_name ILIKE '%X%' AND fiscal_year = 2023 AND period = 'Q3'\n- 'Total revenue all companies 2023' \u2192 SELECT SUM(revenue) FROM financials WHERE fiscal_year = 2023 AND period = 'FY'\n- 'Revenue growth 2022-2023' \u2192 Compare period = 'FY' rows for both years\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER / DOUBLE-COUNTING PREVENTION:\n  The financials table contains BOTH period-level rows (Q1, Q2, Q3, Q4) AND full-year aggregate rows (period = 'FY').\n  * For annual/total revenue queries: ALWAYS filter with period = 'FY' to get the pre-computed annual total. Do NOT use SUM() across all periods as this will double-count (giving 2x the real value).\n  * For quarterly queries: filter by the specific period (e.g., period = 'Q1').\n  * Only use SUM() when aggregating across different companies or fiscal_years, NOT across periods within the same company/year.\n  * Example CORRECT query: SELECT revenue FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023 AND period = 'FY'\n  * Example WRONG query: SELECT SUM(revenue) FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023  -- This sums FY + Q1+Q2+Q3+Q4 = 2x!\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE (use: tenant_id = 'default' OR tenant_id IS NULL for max coverage)\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
+          "jsCode": "// Prepare SQL Request - Safe JSON Building\nconst initData = $node['Schema Context Builder'].json;\n\nconst requestBody = {\n  model: 'fast',\n  messages: [\n    {\n      role: \"system\",\n      content: `You are an expert SQL generator with explicit Chain-of-Thought reasoning.\n\n!!!! CRITICAL DATA MODEL WARNING !!!!\nThe financials table contains BOTH quarterly rows (period='Q1','Q2','Q3','Q4') AND a full-year aggregate row (period='FY') for each company/year.\n- For annual totals: ALWAYS use period = 'FY'. NEVER SUM() without period filter or you get DOUBLE the real value.\n- For quarterly data: filter by the specific quarter (period = 'Q1', etc.).\n- SUM() is only valid across different companies or fiscal_years, NOT across periods within the same company/year.\n\n=== HARD RULES (NEVER VIOLATE) ===\nRULE 1: For ANY question about annual/total/yearly data \u2192 ALWAYS add period = 'FY' in WHERE clause.\nRULE 2: If the question says 'in 2023' without specifying Q1/Q2/Q3/Q4 \u2192 use period = 'FY'.\nRULE 3: NEVER write SUM(revenue) or AVG(revenue) without period filter. Use period = 'FY' row instead.\nRULE 4: Only omit period filter when question explicitly asks for quarterly breakdown.\nRULE 5: When comparing years (growth), use period = 'FY' for BOTH years.\n\nExamples of CORRECT SQL:\n- 'Revenue in 2023' \u2192 SELECT revenue FROM financials WHERE company_name ILIKE '%X%' AND fiscal_year = 2023 AND period = 'FY'\n- 'Q3 2023 revenue' \u2192 SELECT revenue FROM financials WHERE company_name ILIKE '%X%' AND fiscal_year = 2023 AND period = 'Q3'\n- 'Total revenue all companies 2023' \u2192 SELECT SUM(revenue) FROM financials WHERE fiscal_year = 2023 AND period = 'FY'\n- 'Revenue growth 2022-2023' \u2192 Compare period = 'FY' rows for both years\n\n=== 4-STEP METHOD ===\n\nSTEP 1 - UNDERSTAND THE QUESTION:\n- Identify ENTITIES mentioned (probable tables)\n- Identify METRICS requested (SUM, COUNT, AVG, etc.)\n- Identify FILTERS and CONDITIONS\n- Identify the TIME PERIOD if present\n\nSTEP 2 - MAP TO SCHEMA:\n- Find relevant tables in the provided schema\n- Identify EXACT column names (respect case!)\n- Verify data types\n- If you don't know the exact format of a value (e.g., quarter), use LIKE with wildcard.\nExample: quarter LIKE 'Q3%' instead of quarter = 'Q3'\n- CRITICAL - ENTITY NAMES: When filtering by name (company_name, product_name, etc.), ALWAYS use ILIKE with wildcards.\n  GOOD: WHERE company_name ILIKE '%TechVision%'\n  BAD: WHERE company_name = 'TechVision'\n  Database names often include suffixes (Inc, Corp, Labs, Ltd).\n  Alternative: use company_id if available (e.g., company_id = 'techvision')\n- CRITICAL - PERIOD FILTER / DOUBLE-COUNTING PREVENTION:\n  The financials table contains BOTH period-level rows (Q1, Q2, Q3, Q4) AND full-year aggregate rows (period = 'FY').\n  * For annual/total revenue queries: ALWAYS filter with period = 'FY' to get the pre-computed annual total. Do NOT use SUM() across all periods as this will double-count (giving 2x the real value).\n  * For quarterly queries: filter by the specific period (e.g., period = 'Q1').\n  * Only use SUM() when aggregating across different companies or fiscal_years, NOT across periods within the same company/year.\n  * Example CORRECT query: SELECT revenue FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023 AND period = 'FY'\n  * Example WRONG query: SELECT SUM(revenue) FROM financials WHERE company_name ILIKE '%TechVision%' AND fiscal_year = 2023  -- This sums FY + Q1+Q2+Q3+Q4 = 2x!\n- Identify necessary JOINs\n\nSTEP 3 - BUILD THE QUERY:\n- SELECT: columns to return\n- FROM: main table\n- JOIN: if multi-table\n- WHERE: filters + tenant_id = '${initData.user_context.tenant_id}'\n- GROUP BY: if aggregation\n- ORDER BY: if sorting requested\n- LIMIT: max 1000\n\nSTEP 4 - VERIFY:\n- Is the query syntactically valid?\n- Does it answer the original question?\n- Do the column names exist in the schema?\n\n=== SECURITY RULES ===\n1. ALWAYS start with SELECT\n2. ALWAYS include tenant_id in WHERE (use: tenant_id = 'default' OR tenant_id IS NULL for max coverage)\n3. ALWAYS LIMIT (max 1000)\n4. NEVER use DELETE, UPDATE, INSERT, DROP, TRUNCATE, ALTER, CREATE\n5. NEVER use SQL comments (--)\n\n=== STRICT JSON FORMAT ===\n{\n  \"reasoning\": {\n    \"entities_found\": [\"...\"],\n    \"metrics_needed\": [\"...\"],\n    \"filters_identified\": [\"...\"],\n    \"tables_used\": [\"...\"],\n    \"joins_needed\": [\"...\"],\n    \"potential_issues\": [\"...\"]\n  },\n  \"sql\": \"SELECT ... FROM ... WHERE tenant_id = '<TENANT_ID>' LIMIT 1000\",\n  \"explanation\": \"This query does X because Y\",\n  \"confidence\": 0.0-1.0\n}`\n    },\n    {\n      role: \"user\",\n      content: `=== USER QUESTION ===\n${initData.query}\n\n=== AVAILABLE SCHEMA ===\n${initData.schema_context}\n\n=== CONTEXT ===\nTenant ID: ${initData.user_context.tenant_id}\nGroups: ${JSON.stringify(initData.user_context.groups)}\n\nGenerate the SQL query with complete Chain-of-Thought reasoning.\\n\\n=== SAMPLE DATA (for reference) ===\\nfinancials: company_name='TechVision Inc', fiscal_year=2023, period='FY', revenue=5200000, net_income=780000\\nbalance_sheet: company_name='TechVision Inc', fiscal_year=2023, total_assets=12500000, total_liabilities=4800000\\nquarterly_revenue: company_name='GreenEnergy Corp', quarter='Q3 2023', revenue=1250000\\nproducts: name='CloudSync Pro', category='SaaS', price=49.99\\norders: customer_id=1, product_id=3, quantity=10, total_amount=499.90, order_date='2023-06-15'`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 1000\n};\n\nreturn {\n  json: {\n    requestBody: requestBody\n  }\n};"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -1312,7 +1019,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: 'arcee-ai/trinity-large-preview:free',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
+          "jsCode": "// Prepare Interpretation Request - Safe JSON Building\nconst aggregatorData = $node['Result Aggregator'].json;\n\nconst requestBody = {\n  model: 'fast',\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are an expert financial analyst. Interpret the SQL results and answer the original question clearly and concisely. Always respond in the same language as the question. If the data is empty, explain why.\"\n    },\n    {\n      role: \"user\",\n      content: `Original question: ${aggregatorData.query}\n\nExecuted SQL query: ${aggregatorData.validated_sql}\n\nResults (${aggregatorData.result_count} rows):\n${aggregatorData.result_preview}`\n    }\n  ],\n  temperature: 0.3,\n  max_tokens: 800\n};\n\nreturn {\n  json: {\n    ...aggregatorData,\n    requestBody: requestBody\n  }\n};"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -1325,7 +1032,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"arcee-ai/trinity-large-preview:free\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: 'arcee-ai/trinity-large-preview:free',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
+          "jsCode": "// Prepare SQL Repair Request - null-safe guard\nconst errorHandlerData = $json;\nconst repairContext = errorHandlerData.repair_context || {};\n\nif (!repairContext.failed_sql) {\n  return { json: { ...errorHandlerData, requestBody: {\"model\": \"smart\", \"messages\": [{\"role\": \"user\", \"content\": \"return empty JSON: {}\"}], \"max_tokens\": 5}, skip_repair: true } };\n}\n\nconst requestBody = {\n  model: 'fast',\n  messages: [\n    { role: \"system\", content: \"You are an expert SQL debugger. Fix the failed SQL query. Return JSON: {analysis, fix_applied, sql, confidence}\" },\n    { role: \"user\", content: \"FAILED SQL:\\n\" + (repairContext.failed_sql || \"N/A\") + \"\\n\\nERROR:\\n\" + (repairContext.error_message || \"Unknown\") + \"\\n\\nSCHEMA:\\n\" + (repairContext.schema_context || \"N/A\") + \"\\n\\nQUESTION:\\n\" + (repairContext.original_question || \"N/A\") }\n  ],\n  temperature: 0.1,\n  max_tokens: 800\n};\n\nreturn { json: { ...errorHandlerData, requestBody } };"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -1335,150 +1042,47 @@
         ],
         "id": "585ba1b1-1f92-4703-b30e-c245342df589",
         "name": "Prepare SQL Repair Request"
-      },
-      {
-        "parameters": {
-          "jsCode": "// GitHub Error Logger for quantitative\nconst errorData = $input.first().json;\nconst timestamp = new Date().toISOString();\nconst questionId = errorData.question_id || errorData.trace_id || 'q-' + Date.now();\nconst errorType = errorData.error_type || errorData.error_code || 'UNKNOWN';\nconst pipeline = 'quantitative';\n\nconst logEntry = {\n  timestamp: timestamp,\n  pipeline: pipeline,\n  question_id: questionId,\n  error_type: errorType,\n  error_message: (errorData.error || errorData.message || 'No message').slice(0, 500),\n  input: {\n    query: (errorData.query || errorData.original_query || '').slice(0, 300),\n    tenant_id: errorData.tenant_id || 'benchmark'\n  },\n  partial_response: errorData.partial_response || errorData.response || null,\n  n8n_context: {\n    workflow_id: $workflow.id,\n    workflow_name: $workflow.name,\n    execution_id: $execution.id\n  },\n  performance: {\n    latency_ms: errorData.latency_ms || 0,\n    http_status: errorData.http_status || null\n  }\n};\n\nreturn [{ json: logEntry }];"
-        },
-        "id": "67b4a644-948c-402d-9f71-bae592c0ee3d",
-        "name": "GitHub Error Logger (quantitative)",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2684,
-          0
-        ],
-        "onError": "continueRegularOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "// SQL Execution Logger\nconst input = $input.first().json;\n\nconst log = {\n  timestamp: new Date().toISOString(),\n  pipeline: 'quantitative',\n  step: 'sql_execution',\n  sql: (input.validated_sql || input.sql || input.sql_executed || '').slice(0, 500),\n  validation_status: input.validation_status || input.metadata?.validation_status || 'UNKNOWN',\n  result_count: input.result_count || 0,\n  null_aggregation: input.null_aggregation || false,\n  error: input.sql_error || null\n};\n\nreturn [{ json: { ...input, _sql_log: log } }];"
-        },
-        "id": "bc332ab4-b2b3-48a4-9569-cf1d47c6aa30",
-        "name": "SQL Execution Logger",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2684,
-          200
-        ],
-        "onError": "continueRegularOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "// Question Type Classifier \u2014 Routes between SQL and Context Reasoning (FIX-39)\nconst initData = $input.first().json;\nconst query = initData.query || '';\n\n// Detect context-rich questions embedded by eval (FIX-39 format)\n// Format: \"question text\\n\\nContext:\\ncontext\\n\\nTable data:\\n[[...]]\"\nconst hasTableData39 = query.includes('Table data:') && (query.includes('[[') || query.includes('|'));\nconst hasContext39 = query.includes('Context:') || query.includes('\\nContext\\n');\n\n// Original Phase 2 markers\nconst hasContextMarker = query.includes('Context:') && query.includes('Question:');\nconst hasPipeTable = /\\|[^|]+\\|[^|]+\\|/.test(query);\nconst isLongWithContext = (hasContextMarker || hasPipeTable) && query.length > 500;\nconst isFinancialContext = query.toLowerCase().includes('please answer the given financial question');\n\n// FIX-39: Also detect JSON table arrays in query\nconst hasJsonTable = /\\[\\s*\\[/.test(query) && query.length > 200;\nconst isContextQuestion39 = hasTableData39 || (hasContext39 && hasJsonTable);\n\nconst isContextQuestion = isLongWithContext || isFinancialContext || isContextQuestion39;\n\nif (isContextQuestion) {\n  let extractedQuestion = query;\n  let extractedContext = '';\n  \n  // FIX-39 format: question\\n\\nContext:\\n...\\n\\nTable data:\\n...\n  const ctx39Match = query.match(/\\nContext:\\s*([\\s\\S]*?)(?=\\nTable data:|$)/);\n  const table39Match = query.match(/Table data:\\s*([\\s\\S]+)$/);\n  const question39Match = query.match(/^(.+?)(?=\\n\\nContext:|\\nTable data:|$)/s);\n  \n  // Original format\n  const contextMatch = query.match(/Context:\\s*([\\s\\S]+?)(?=\\nQuestion:|$)/);\n  const questionMatch = query.match(/Question:\\s*([\\s\\S]+?)(?:\\nAnswer:|$)/);\n  \n  if (question39Match) extractedQuestion = question39Match[1].trim();\n  else if (questionMatch) extractedQuestion = questionMatch[1].trim();\n  \n  if (ctx39Match) extractedContext = ctx39Match[1].trim();\n  else if (contextMatch) extractedContext = contextMatch[1].trim();\n  \n  // Append table data to context if found\n  if (table39Match) {\n    extractedContext = (extractedContext ? extractedContext + '\\n\\n' : '') + 'Table: ' + table39Match[1].trim();\n  }\n  \n  return [{\n    json: {\n      ...initData,\n      question_type: 'context_reasoning',\n      extracted_question: extractedQuestion,\n      extracted_context: extractedContext,\n      original_query: query\n    }\n  }];\n} else {\n  return [{\n    json: {\n      ...initData,\n      question_type: 'sql_query'\n    }\n  }];\n}"
-        },
-        "id": "a1b2c3d4-qtc1-4000-8000-000000000001",
-        "name": "Question Type Classifier",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          300,
-          208
-        ]
-      },
-      {
-        "parameters": {
-          "conditions": {
-            "string": [
-              {
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.question_type }}",
-                    "rightValue": "context_reasoning",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "options": {}
-        },
-        "id": "a1b2c3d4-rqt1-4000-8000-000000000002",
-        "name": "Route by Question Type",
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 2,
-        "position": [
-          430,
-          100
-        ]
-      },
-      {
-        "parameters": {
-          "jsCode": "// Build LLM request for direct context-based financial reasoning (FIX-39)\nconst data = $input.first().json;\nconst question = data.extracted_question || data.query || '';\nconst context = data.extracted_context || '';\n\nconst requestBody = {\n  model: 'arcee-ai/trinity-large-preview:free',\n  messages: [\n    {\n      role: 'system',\n      content: 'You are an expert financial analyst. Answer the question based ONLY on the provided context and data tables.\\n\\n'\n        + 'REASONING METHOD (follow these steps):\\n'\n        + '1. LOCATE: Find the specific table row/column or text passage with the relevant data\\n'\n        + '2. EXTRACT: Pull exact numbers from the data (with units \u2014 $, %, millions, etc.)\\n'\n        + '3. CALCULATE: Show your arithmetic step by step (e.g., 500 - 450 = 50, 50/450 = 0.1111)\\n'\n        + '4. ANSWER: State the final result\\n\\n'\n        + 'TABLE PARSING RULES:\\n'\n        + '- Tables may be JSON arrays like [[\"col1\",\"col2\"],[\"val1\",\"val2\"]] \u2014 treat each inner array as a row\\n'\n        + '- Tables may use pipe delimiters (|col1|col2|) or space-separated columns\\n'\n        + '- Read exact values from tables \u2014 never approximate\\n'\n        + '- For dollar amounts like \"$ 3329\" or \"$3,329\", extract the number: 3329\\n'\n        + '- For percentages like \"35.0% ( 35.0 % )\", extract: 35.0%\\n'\n        + '- For column lookups: find the row matching the criteria, read the target column\\n'\n        + '- For aggregations: sum/subtract/divide the exact values\\n\\n'\n        + 'ANSWER FORMAT:\\n'\n        + '- First line MUST be ONLY the final answer (number, percentage, yes/no)\\n'\n        + '- Then explain your reasoning\\n'\n        + '- Examples of correct first lines: \"15.7%\", \"1.08\", \"$94 million\", \"yes\"\\n'\n        + '- NEVER start with \"The answer is\" \u2014 just the value'\n    },\n    {\n      role: 'user',\n      content: context\n        ? `Context and data:\\n${context}\\n\\nQuestion: ${question}`\n        : `Question: ${question}`\n    }\n  ],\n  temperature: 0.1,\n  max_tokens: 600,\n  top_p: 0.9\n};\n\nreturn [{ json: { requestBody, extracted_question: question, extracted_context: context } }];"
-        },
-        "id": "a1b2c3d4-cpr1-4000-8000-000000000003",
-        "name": "Prepare Context Reasoning",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          650,
-          -100
-        ]
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "https://openrouter.ai/api/v1/chat/completions",
-          "authentication": "none",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ JSON.stringify($json.requestBody) }}",
-          "options": {
-            "timeout": 60000,
-            "retry": {
-              "maxTries": 3,
-              "waitBetweenTries": 5000
-            }
-          },
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "Authorization",
-                "value": "=Bearer {{$env.OPENROUTER_KEY_QUANTITATIVE}}"
-              },
-              {
-                "name": "Content-Type",
-                "value": "application/json"
-              }
-            ]
-          }
-        },
-        "id": "a1b2c3d4-cll1-4000-8000-000000000004",
-        "name": "Context Reasoning LLM",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.3,
-        "position": [
-          900,
-          -100
-        ],
-        "continueOnFail": true,
-        "onError": "continueRegularOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "// Extract and format context reasoning response (FIX-39)\nconst data = $input.first().json;\nconst initData = $('Question Type Classifier').first().json;\nlet answer = 'NO_ANSWER';\n\ntry {\n  const choices = data.choices || [];\n  if (choices.length > 0) {\n    const fullText = choices[0].message?.content || '';\n    \n    // Extract first line as the answer\n    const lines = fullText.trim().split('\\n').filter(l => l.trim());\n    if (lines.length > 0) {\n      let firstLine = lines[0].trim();\n      \n      // Clean up common prefixes\n      firstLine = firstLine.replace(/^(the answer is|answer:|final answer:|result:)\\s*/i, '');\n      firstLine = firstLine.replace(/^approximately\\s*/i, '');\n      firstLine = firstLine.replace(/[.*]$/g, '').trim();\n      \n      // Extract numeric answer from first line\n      const numMatch = firstLine.match(/(-?[\\d,]+\\.?\\d*\\s*%?)/);\n      const dollarMatch = firstLine.match(/(\\$\\s*-?[\\d,]+\\.?\\d*\\s*(?:million|billion|thousand)?)/i);\n      \n      if (dollarMatch) answer = dollarMatch[1].replace(/\\s+/g, '');\n      else if (numMatch) answer = numMatch[1].replace(/,/g, '');\n      else answer = firstLine.substring(0, 100);\n    }\n  }\n} catch (e) {\n  answer = 'ERROR: ' + e.message;\n}\n\nreturn [{\n  json: {\n    status: answer === 'NO_ANSWER' ? 'ERROR' : 'OK',\n    trace_id: initData.trace_id || 'ctx-' + Date.now(),\n    query: initData.extracted_question || initData.query || '',\n    sql_executed: 'N/A (context-based reasoning)',\n    result_count: 1,\n    interpretation: answer\n  }\n}];"
-        },
-        "id": "a1b2c3d4-crf1-4000-8000-000000000005",
-        "name": "Context Response Formatter",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          1150,
-          -100
-        ]
       }
     ],
     "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Init & ACL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "Init & ACL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Init & ACL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
       "Init & ACL": {
         "main": [
           [
             {
-              "node": "Question Type Classifier",
+              "node": "Schema Introspection",
               "type": "main",
               "index": 0
             }
@@ -1501,6 +1105,17 @@
           [
             {
               "node": "Prepare SQL Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare SQL Request": {
+        "main": [
+          [
+            {
+              "node": "Text-to-SQL Generator (CoT Enhanced)",
               "type": "main",
               "index": 0
             }
@@ -1569,22 +1184,22 @@
           ]
         ]
       },
-      "Interpretation Layer (LLM Analyst)": {
+      "Prepare Interpretation Request": {
         "main": [
           [
             {
-              "node": "Response Formatter",
+              "node": "Interpretation Layer (LLM Analyst)",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Error Handler": {
+      "Interpretation Layer (LLM Analyst)": {
         "main": [
           [
             {
-              "node": "Error Response Builder",
+              "node": "Response Formatter",
               "type": "main",
               "index": 0
             }
@@ -1620,6 +1235,17 @@
           ]
         ]
       },
+      "Prepare SQL Repair Request": {
+        "main": [
+          [
+            {
+              "node": "SQL Repair LLM",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
       "SQL Repair LLM": {
         "main": [
           [
@@ -1641,123 +1267,6 @@
             }
           ]
         ]
-      },
-      "When Executed by Another Workflow": {
-        "main": [
-          [
-            {
-              "node": "Init & ACL",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "When chat message received": {
-        "main": [
-          [
-            {
-              "node": "Init & ACL",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Webhook": {
-        "main": [
-          [
-            {
-              "node": "Init & ACL",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare SQL Request": {
-        "main": [
-          [
-            {
-              "node": "Text-to-SQL Generator (CoT Enhanced)",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Interpretation Request": {
-        "main": [
-          [
-            {
-              "node": "Interpretation Layer (LLM Analyst)",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare SQL Repair Request": {
-        "main": [
-          [
-            {
-              "node": "SQL Repair LLM",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Question Type Classifier": {
-        "main": [
-          [
-            {
-              "node": "Route by Question Type",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Route by Question Type": {
-        "main": [
-          [
-            {
-              "node": "Prepare Context Reasoning",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Schema Introspection",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Context Reasoning": {
-        "main": [
-          [
-            {
-              "node": "Context Reasoning LLM",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Context Reasoning LLM": {
-        "main": [
-          [
-            {
-              "node": "Context Response Formatter",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
       }
     },
     "authors": "CI Bot",
@@ -1766,10 +1275,10 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-04T08:46:24.361Z",
-        "id": 939,
-        "workflowId": "E19NZG9WfM7FNsxr",
-        "versionId": "19779622-b588-4fc2-b248-5ad4b016817f",
+        "createdAt": "2026-03-06T16:55:20.975Z",
+        "id": 1069,
+        "workflowId": "Tht75NLmCRcObYom",
+        "versionId": "96008219-26ed-4ea8-b339-a76b6b0b7e47",
         "event": "activated",
         "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
       }
@@ -1788,5 +1297,5 @@
     "workflow:unpublish",
     "workflow:update"
   ],
-  "checksum": "a659a24e916ac85c991765731098f165e98f59fb353d1503e0d795c0c1368d0b"
+  "checksum": "809a1d30bcdf76efe815c6001f9c5e7417eb2eb9b056cbf9f8085c5bd3c75e0c"
 }

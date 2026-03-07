@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-04T12:59:35.605Z",
+  "updatedAt": "2026-03-06T18:00:47.995Z",
   "createdAt": "2026-02-14T01:10:12.253Z",
   "id": "TmgyRP20N4JFd9CB",
   "name": "TEST - SOTA 2026 - WF5 Standard RAG V3.4 - CORRECTED",
@@ -37,7 +37,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Init & ACL Pre-Filter V3.4 - With Adaptive TopK\nconst rawInput = $input.first().json;\nconst input = rawInput.body || rawInput;\n\n// Parse query robustement\nlet queryStr = '';\nif (typeof input.query === 'string') {\n  queryStr = input.query;\n} else if (input.query && typeof input.query === 'object') {\n  queryStr = JSON.stringify(input.query);\n} else {\n  queryStr = String(input.query || '');\n}\n\nconst userContext = input.user_context || {};\nconst tenantId = userContext.tenant_id || input.tenant_id || 'default';\nconst userGroups = Array.isArray(userContext.groups) ? userContext.groups : ['admin', 'guest'];\n\n// V3.4: Analyse de complexit\u00e9 pour adaptive top_k\nconst COMPLEXITY_INDICATORS = {\n  simple: /^(qu'est-ce que|d\u00e9finition|c'est quoi)/i,\n  moderate: /(comment|pourquoi|expliquer)/i,\n  complex: /(comparer|analyser|impact|relation|entre.*et)/i,\n  multi_hop: /(quel.*puis|d'abord.*ensuite|en tenant compte)/i\n};\n\nlet complexity = 'moderate';\nlet adaptiveTopK = 15;\n\nif (COMPLEXITY_INDICATORS.simple.test(queryStr)) {\n  complexity = 'simple';\n  adaptiveTopK = 8;\n} else if (COMPLEXITY_INDICATORS.multi_hop.test(queryStr)) {\n  complexity = 'complex';\n  adaptiveTopK = 25;\n} else if (COMPLEXITY_INDICATORS.complex.test(queryStr)) {\n  complexity = 'complex';\n  adaptiveTopK = 20;\n}\n\n// V3.4: Detect if query needs decomposition\n// V3.4: Decomposition disabled for rate limit optimization\nconst needsDecomposition = false;\n\n// ACL filter (d\u00e9sactiv\u00e9 par d\u00e9faut pour compatibilit\u00e9)\nconst disableAcl = (input.disable_acl === true);\nconst aclFilter = disableAcl ? {} : {\n  \"$or\": [\n    { \"tenant_id\": tenantId, \"allowed_groups\": { \"$in\": userGroups } },\n    { \"tenant_id\": { \"$exists\": false } }\n  ]\n};\n\nreturn [{\n  json: {\n    trace_id: input.trace_id || 'tr-' + Date.now(),\n    query: queryStr.trim(),\n    acl_filter: aclFilter,\n    acl_disabled: disableAcl,\n    user_context: { tenant_id: tenantId, groups: userGroups },\n    \n    // V3.4 Enhancements\n    complexity: complexity,\n    topK: Math.min(input.topK || adaptiveTopK, 50),\n    adaptive_topK: adaptiveTopK,\n    needs_decomposition: needsDecomposition\n  }\n}];"
+        "jsCode": "// Init & ACL Pre-Filter V3.4 - With Adaptive TopK\nconst rawInput = $input.first().json;\nconst input = rawInput.body || rawInput;\n\n// Parse query robustement\nlet queryStr = '';\nif (typeof input.query === 'string') {\n  queryStr = input.query;\n} else if (input.query && typeof input.query === 'object') {\n  queryStr = JSON.stringify(input.query);\n} else if (typeof input.question === 'string') {\n  queryStr = input.question;\n} else {\n  queryStr = String(input.query || input.question || '');\n}\n\nconst userContext = input.user_context || {};\nconst tenantId = userContext.tenant_id || input.tenant_id || 'default';\nconst userGroups = Array.isArray(userContext.groups) ? userContext.groups : ['admin', 'guest'];\n\n// V3.4: Analyse de complexit\u00e9 pour adaptive top_k\nconst COMPLEXITY_INDICATORS = {\n  simple: /^(qu'est-ce que|d\u00e9finition|c'est quoi)/i,\n  moderate: /(comment|pourquoi|expliquer)/i,\n  complex: /(comparer|analyser|impact|relation|entre.*et)/i,\n  multi_hop: /(quel.*puis|d'abord.*ensuite|en tenant compte)/i\n};\n\nlet complexity = 'moderate';\nlet adaptiveTopK = 15;\n\nif (COMPLEXITY_INDICATORS.simple.test(queryStr)) {\n  complexity = 'simple';\n  adaptiveTopK = 8;\n} else if (COMPLEXITY_INDICATORS.multi_hop.test(queryStr)) {\n  complexity = 'complex';\n  adaptiveTopK = 25;\n} else if (COMPLEXITY_INDICATORS.complex.test(queryStr)) {\n  complexity = 'complex';\n  adaptiveTopK = 20;\n}\n\n// V3.4: Detect if query needs decomposition\n// V3.4: Decomposition disabled for rate limit optimization\nconst needsDecomposition = false;\n\n// ACL filter (d\u00e9sactiv\u00e9 par d\u00e9faut pour compatibilit\u00e9)\nconst disableAcl = (input.disable_acl === true);\nconst aclFilter = disableAcl ? {} : {\n  \"$or\": [\n    { \"tenant_id\": tenantId, \"allowed_groups\": { \"$in\": userGroups } },\n    { \"tenant_id\": { \"$exists\": false } }\n  ]\n};\n\nreturn [{\n  json: {\n    trace_id: input.trace_id || 'tr-' + Date.now(),\n    query: queryStr.trim(),\n    acl_filter: aclFilter,\n    acl_disabled: disableAcl,\n    user_context: { tenant_id: tenantId, groups: userGroups },\n    \n    // V3.4 Enhancements\n    complexity: complexity,\n    topK: Math.min(input.topK || adaptiveTopK, 50),\n    adaptive_topK: adaptiveTopK,\n    needs_decomposition: needsDecomposition\n  }\n}];"
       },
       "id": "9e9a1c50-0934-43a7-9185-5616ab227650",
       "name": "Init & ACL Pre-Filter V3.4",
@@ -52,11 +52,11 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
-        "authentication": "predefinedCredentialType",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"fast\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+        "jsonBody": "={\n  \"model\": \"google/gemma-3-27b-it:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
         "options": {
           "batching": {
             "batch": {
@@ -74,11 +74,11 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer sk-litellm-nomos-2026"
+              "value": "Bearer ={{$env.GROQ_API_KEY_STANDARD}}"
             }
           ]
         },
-        "nodeCredentialType": "httpHeaderAuth"
+        "genericAuthType": "httpHeaderAuth"
       },
       "id": "2203b6fc-10ed-43f1-8814-134887ef30b3",
       "name": "HyDE Generator",
@@ -94,7 +94,7 @@
       "waitBetweenTries": 3000,
       "credentials": {
         "httpHeaderAuth": {
-          "id": "XsyjRhedhgW2p355",
+          "id": "jt5NkCEYN2bkLzo4",
           "name": "Groq API (Standard)"
         }
       }
@@ -140,17 +140,18 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "disabled": true
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
+        "url": "https://sota-rag-text-a4mkzmz.svc.aped-4627-b74a.pinecone.io/records/namespaces/__default__/search",
         "authentication": "none",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.embeddings?.float?.[0] || $node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+        "jsonBody": "={\n  \"query\": {\n    \"top_k\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n    \"inputs\": {\n      \"text\": {{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  }\n}",
         "options": {
           "batching": {
             "batch": {
@@ -231,17 +232,18 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "disabled": true
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
+        "url": "https://sota-rag-text-a4mkzmz.svc.aped-4627-b74a.pinecone.io/records/namespaces/__default__/search",
         "authentication": "none",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.embeddings?.float?.[0] || $node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+        "jsonBody": "={\n  \"query\": {\n    \"top_k\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n    \"inputs\": {\n      \"text\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  }\n}",
         "options": {
           "batching": {
             "batch": {
@@ -300,7 +302,7 @@
       "onError": "continueRegularOutput",
       "credentials": {
         "postgres": {
-          "id": "cH96tQ3I9uIHqiiq",
+          "id": "cf76nju1pvz7iuOf",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -376,7 +378,8 @@
       "onError": "continueRegularOutput",
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 3000
+      "waitBetweenTries": 3000,
+      "disabled": true
     },
     {
       "parameters": {
@@ -395,11 +398,11 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
-        "authentication": "predefinedCredentialType",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"default\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
+        "jsonBody": "={\n  \"model\": \"google/gemma-3-27b-it:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
         "options": {
           "batching": {
             "batch": {
@@ -417,11 +420,11 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer sk-litellm-nomos-2026"
+              "value": "Bearer ={{$env.GROQ_API_KEY_STANDARD}}"
             }
           ]
         },
-        "nodeCredentialType": "httpHeaderAuth"
+        "genericAuthType": "httpHeaderAuth"
       },
       "id": "7dc20347-e74b-433b-84c3-6e41e2f5d041",
       "name": "LLM Generation",
@@ -437,14 +440,14 @@
       "waitBetweenTries": 3000,
       "credentials": {
         "httpHeaderAuth": {
-          "id": "XsyjRhedhgW2p355",
+          "id": "jt5NkCEYN2bkLzo4",
           "name": "Groq API (Standard)"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "// Response Formatter - Standard RAG V3.4 (FIXED)\ntry {\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n  if (!llmContent) {\n    try {\n      const skipData = $node['Skip LLM?'].json;\n      if (skipData?.fallback_response?.response) {\n        llmContent = skipData.fallback_response.response;\n      }\n    } catch(e) {}\n  }\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n  let initData = {};\n  try { initData = $node['Init & ACL Pre-Filter V3.4'].json; } catch(e) {}\n  if (llmContent) {\n    return [{ json: { response: llmContent, trace_id: initData.trace_id || 'tr-'+Date.now(), sources: sources.slice(0,5), model: 'default', embedding_fallback: sources.length===0, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n  }\n  return [{ json: { response: 'Unable to generate answer', trace_id: initData.trace_id || 'tr-'+Date.now(), error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n} catch(e) {\n  return [{ json: { response: 'Error: '+e.message, error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n}"
+        "jsCode": "// Response Formatter - Standard RAG V3.4 (FIXED)\ntry {\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n  if (!llmContent) {\n    try {\n      const skipData = $node['Skip LLM?'].json;\n      if (skipData?.fallback_response?.response) {\n        llmContent = skipData.fallback_response.response;\n      }\n    } catch(e) {}\n  }\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n  let initData = {};\n  try { initData = $node['Init & ACL Pre-Filter V3.4'].json; } catch(e) {}\n  if (llmContent) {\n    return [{ json: { response: llmContent, trace_id: initData.trace_id || 'tr-'+Date.now(), sources: sources.slice(0,5), model: 'llama-3.3-70b-versatile', embedding_fallback: sources.length===0, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n  }\n  return [{ json: { response: 'Unable to generate answer', trace_id: initData.trace_id || 'tr-'+Date.now(), error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n} catch(e) {\n  return [{ json: { response: 'Error: '+e.message, error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n}"
       },
       "id": "66bf2956-117a-4408-b218-cf96cb317529",
       "name": "Response Formatter",
@@ -560,11 +563,11 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
-        "authentication": "predefinedCredentialType",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"fast\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
+        "jsonBody": "={\n  \"model\": \"google/gemma-3-27b-it:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
         "options": {
           "batching": {
             "batch": {
@@ -582,11 +585,11 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer sk-litellm-nomos-2026"
+              "value": "Bearer ={{$env.GROQ_API_KEY_STANDARD}}"
             }
           ]
         },
-        "nodeCredentialType": "httpHeaderAuth"
+        "genericAuthType": "httpHeaderAuth"
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
@@ -602,7 +605,7 @@
       "waitBetweenTries": 3000,
       "credentials": {
         "httpHeaderAuth": {
-          "id": "XsyjRhedhgW2p355",
+          "id": "jt5NkCEYN2bkLzo4",
           "name": "Groq API (Standard)"
         }
       }
@@ -637,7 +640,7 @@
     },
     {
       "parameters": {
-        "respondWith": "allIncomingItems",
+        "respondWith": "firstIncomingItem",
         "options": {}
       },
       "id": "edbdeb9a-d43f-4678-9668-e2645fe2a1a9",
@@ -921,9 +924,9 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "7004b399-f529-406a-a358-8fbc29c0ca2f",
-  "activeVersionId": "be73d88d-4719-46f8-a4fc-fbe714f4618f",
-  "versionCounter": 259,
+  "versionId": "8e7bfb54-f870-42b3-a365-b7c73cce471f",
+  "activeVersionId": "66644f7b-b872-4af7-8cbb-4b1daed95946",
+  "versionCounter": 300,
   "triggerCount": 2,
   "shared": [
     {
@@ -947,9 +950,9 @@
   "tags": [],
   "parentFolder": null,
   "activeVersion": {
-    "updatedAt": "2026-03-04T08:35:41.603Z",
-    "createdAt": "2026-03-04T08:35:41.603Z",
-    "versionId": "be73d88d-4719-46f8-a4fc-fbe714f4618f",
+    "updatedAt": "2026-03-06T16:21:45.304Z",
+    "createdAt": "2026-03-06T16:21:45.304Z",
+    "versionId": "66644f7b-b872-4af7-8cbb-4b1daed95946",
     "workflowId": "TmgyRP20N4JFd9CB",
     "nodes": [
       {
@@ -997,11 +1000,11 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
-          "authentication": "none",
+          "url": "https://api.groq.com/openai/v1/chat/completions",
+          "authentication": "predefinedCredentialType",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"fast\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+          "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1019,10 +1022,11 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "Bearer sk-litellm-nomos-2026"
+                "value": "Bearer ={{$env.GROQ_API_KEY_STANDARD}}"
               }
             ]
-          }
+          },
+          "nodeCredentialType": "httpHeaderAuth"
         },
         "id": "2203b6fc-10ed-43f1-8814-134887ef30b3",
         "name": "HyDE Generator",
@@ -1035,7 +1039,13 @@
         "onError": "continueRegularOutput",
         "retryOnFail": true,
         "maxTries": 3,
-        "waitBetweenTries": 3000
+        "waitBetweenTries": 3000,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "jt5NkCEYN2bkLzo4",
+            "name": "Groq API (Standard)"
+          }
+        }
       },
       {
         "parameters": {
@@ -1238,7 +1248,7 @@
         "onError": "continueRegularOutput",
         "credentials": {
           "postgres": {
-            "id": "cH96tQ3I9uIHqiiq",
+            "id": "cf76nju1pvz7iuOf",
             "name": "Supabase Postgres (Pooler)"
           }
         }
@@ -1333,11 +1343,11 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
-          "authentication": "none",
+          "url": "https://api.groq.com/openai/v1/chat/completions",
+          "authentication": "predefinedCredentialType",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"default\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
+          "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1355,11 +1365,12 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "Bearer sk-litellm-nomos-2026"
+                "value": "Bearer ={{$env.GROQ_API_KEY_STANDARD}}"
               }
             ]
           },
-          },
+          "nodeCredentialType": "httpHeaderAuth"
+        },
         "id": "7dc20347-e74b-433b-84c3-6e41e2f5d041",
         "name": "LLM Generation",
         "type": "n8n-nodes-base.httpRequest",
@@ -1371,7 +1382,13 @@
         "onError": "continueRegularOutput",
         "retryOnFail": true,
         "maxTries": 3,
-        "waitBetweenTries": 3000
+        "waitBetweenTries": 3000,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "jt5NkCEYN2bkLzo4",
+            "name": "Groq API (Standard)"
+          }
+        }
       },
       {
         "parameters": {
@@ -1491,11 +1508,11 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
-          "authentication": "none",
+          "url": "https://api.groq.com/openai/v1/chat/completions",
+          "authentication": "predefinedCredentialType",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"fast\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
+          "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert en decomposition de questions. Analyse la question et decompose-la en sous-questions independantes si necessaire.\\n\\nREGLES:\\n1. Si la question est simple et directe, retourne is_simple: true\\n2. Si la question contient plusieurs aspects, decompose en 2-4 sous-questions\\n3. Chaque sous-question doit etre auto-suffisante\\n4. Ordonne par dependance logique\\n\\nFormat JSON strict:\\n{\\n  \\\"is_simple\\\": boolean,\\n  \\\"original_query\\\": \\\"..\\\",\\n  \\\"sub_queries\\\": [\\\"q1\\\", \\\"q2\\\", ...],\\n  \\\"reasoning\\\": \\\"Pourquoi cette decomposition\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1513,11 +1530,12 @@
             "parameters": [
               {
                 "name": "Authorization",
-                "value": "Bearer sk-litellm-nomos-2026"
+                "value": "Bearer ={{$env.GROQ_API_KEY_STANDARD}}"
               }
             ]
           },
-          },
+          "nodeCredentialType": "httpHeaderAuth"
+        },
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.3,
         "position": [
@@ -1529,7 +1547,13 @@
         "onError": "continueRegularOutput",
         "retryOnFail": true,
         "maxTries": 3,
-        "waitBetweenTries": 3000
+        "waitBetweenTries": 3000,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "jt5NkCEYN2bkLzo4",
+            "name": "Groq API (Standard)"
+          }
+        }
       },
       {
         "parameters": {
@@ -1843,10 +1867,10 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-03-04T08:41:11.367Z",
-        "id": 935,
+        "createdAt": "2026-03-06T16:28:11.447Z",
+        "id": 1059,
         "workflowId": "TmgyRP20N4JFd9CB",
-        "versionId": "be73d88d-4719-46f8-a4fc-fbe714f4618f",
+        "versionId": "66644f7b-b872-4af7-8cbb-4b1daed95946",
         "event": "activated",
         "userId": "f1c43c50-fc63-43d8-8ef9-98b993d0690f"
       }
@@ -1865,5 +1889,5 @@
     "workflow:unpublish",
     "workflow:update"
   ],
-  "checksum": "1e95e66daee515b98c488bda59aa5e30700d32fd17b9dae5d1c54090bd7bab8c"
+  "checksum": "e588ecf459d5050914385ed38105e384822b976586085dc335e1a634c8911c3b"
 }

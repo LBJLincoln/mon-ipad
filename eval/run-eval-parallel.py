@@ -479,8 +479,8 @@ def main():
                              "pme-gateway,pme-action,pme-whatsapp. "
                              "Note: orchestrator excluded by default (add explicitly if needed)")
     parser.add_argument("--dataset", type=str, default=None,
-                        choices=["phase-1", "phase-2", "phase-3", "all"],
-                        help="Dataset to evaluate: phase-1 (200q), phase-2 (1000q HF), phase-3 (~10K), all")
+                        choices=["phase-1", "phase-2", "phase-3", "phase-4", "all"],
+                        help="Dataset to evaluate: phase-1 (200q), phase-2 (1000q HF), phase-3 (~10K), phase-4 (100K+), all")
     parser.add_argument("--include-1000", action="store_true",
                         help="[Legacy] Include HF-1000 questions (use --dataset all instead)")
     parser.add_argument("--reset", action="store_true",
@@ -620,7 +620,8 @@ def main():
 
     # Load questions
     print("\n  Loading questions...")
-    questions = load_questions(include_1000=args.include_1000, dataset=args.dataset or "phase-1")
+    questions = load_questions(include_1000=args.include_1000, dataset=args.dataset or "phase-1",
+                               filter_types=requested_types if (args.dataset or "").startswith("phase-4") else None)
 
     # Filter to requested types + apply max
     for t in list(questions.keys()):

@@ -1,10 +1,9 @@
-# Environment
+# Environment & Secrets
 .env
 .env.local
 *.local
-.venv/
 
-# Claude Code (contains API keys)
+# Claude Code
 .claude/settings.json
 .mcp.json
 
@@ -12,23 +11,49 @@
 node_modules/
 package-lock.json
 
-# Build outputs
+# Python
+.venv/
+.venv-litellm/
+__pycache__/
+*.pyc
+
+# Build
 dist/
 build/
 *.js.map
 
-# Outputs from agents
-outputs/
-backups/
-# modified-workflows/ - tracked for final importable n8n workflows
-final-workflows/
-# patches/ - tracked for patch-writer agent output
-
-# Logs (generic)
+# Logs (moved to rag-storage)
+logs/
 *.log
 
-# Logs — moved to rag-storage (Session 54)
-logs/
+# Temp
+*.tmp
+*.temp
+*.bak
+
+# Snapshots & DB (generated, not source)
+snapshot/current/
+snapshot/workflows/
+db/
+
+# Large datasets (regenerable)
+datasets/hf/natural_questions.jsonl
+datasets/hf/narrativeqa.jsonl
+datasets/hf/triviaqa.jsonl
+datasets/phase-4/
+datasets/phase-3-questions.json
+
+# Website repos (live in satellite repos, NOT in mon-ipad)
+website/
+website-pme-connectors/
+website-pme-usecases/
+
+# Stale outputs
+outputs/
+backups/
+final-workflows/
+n8n_analysis_results/
+dashboard/
 
 # OS
 .DS_Store
@@ -37,33 +62,3 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
-
-# Python
-__pycache__/
-*.pyc
-
-# Temp
-*.tmp
-*.temp
-# Snapshots and DB — moved to rag-storage (Session 54)
-snapshot/current/
-snapshot/workflows/
-snapshot/pre-jina-migration/
-db/
-
-# Large HF dataset files (>100MB — re-downloadable)
-datasets/hf/natural_questions.jsonl
-datasets/hf/narrativeqa.jsonl
-datasets/hf/triviaqa.jsonl
-
-# Phase 4 datasets (>300MB — generated, regenerable)
-datasets/phase-4/
-website-pme-connectors/.next/
-website-pme-usecases/.next/
-
-# Website source code (lives in satellite repos, not in mon-ipad)
-website/
-website-pme-connectors/
-website-pme-usecases/
-n8n_analysis_results/
-.venv-litellm/

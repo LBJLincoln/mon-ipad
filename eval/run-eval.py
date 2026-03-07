@@ -752,7 +752,7 @@ def _load_dataset_file(filepath, questions, embed_context=False):
     return loaded
 
 
-def load_questions(include_1000=False, dataset="phase-1"):
+def load_questions(include_1000=False, dataset="phase-1", filter_types=None):
     """Load questions from specified dataset files.
 
     Handles ALL known context formats for graph and quantitative questions.
@@ -806,6 +806,37 @@ def load_questions(include_1000=False, dataset="phase-1"):
                         })
         else:
             print(f"  WARN: phase-3 dataset missing: {phase3_file}")
+
+    elif dataset == "phase-4":
+        # Phase 4 (100K+): per-pipeline dataset files (loaded selectively to save RAM)
+        phase4_dir = os.path.join(DATASETS_DIR, "phase-4")
+        phase4_files = {
+            "standard": "standard-50000.json",
+            "graph": "graph-20000.json",
+            "quantitative": "quantitative-20000.json",
+            "orchestrator": "orchestrator-10000.json",
+        }
+        for ptype, fname in phase4_files.items():
+            if filter_types and ptype not in filter_types:
+                print(f"  Phase-4 {ptype}: SKIPPED (not in filter_types)")
+                continue
+            fpath = os.path.join(phase4_dir, fname)
+            if os.path.exists(fpath):
+                with open(fpath, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                items = data.get("questions", data) if isinstance(data, dict) else data
+                for item in items:
+                    questions[ptype].append({
+                        "id": item.get("id", f"p4-{ptype[:3]}-{item.get('item_index', 0):05d}"),
+                        "question": item.get("question", ""),
+                        "expected": item.get("expected_answer", "") or item.get("answer", ""),
+                        "type": ptype,
+                        "context": item.get("context", "") or "",
+                    })
+                del data, items  # free memory immediately
+                print(f"  Phase-4 {ptype}: loaded {len(questions[ptype])} from {fname}")
+            else:
+                print(f"  WARN: phase-4 {ptype} missing: {fpath}")
 
     elif dataset == "all":
         phase1_q = load_questions(dataset="phase-1")
