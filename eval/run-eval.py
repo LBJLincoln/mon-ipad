@@ -810,12 +810,15 @@ def load_questions(include_1000=False, dataset="phase-1", filter_types=None):
     elif dataset == "phase-4":
         # Phase 4 (100K+): per-pipeline dataset files (loaded selectively to save RAM)
         phase4_dir = os.path.join(DATASETS_DIR, "phase-4")
-        phase4_files = {
-            "standard": "standard-50000.json",
-            "graph": "graph-20000.json",
-            "quantitative": "quantitative-20000.json",
-            "orchestrator": "orchestrator-10000.json",
-        }
+        # Auto-discover phase-4 files by pipeline prefix
+        phase4_files = {}
+        if os.path.isdir(phase4_dir):
+            for fname in sorted(os.listdir(phase4_dir)):
+                if not fname.endswith(".json"):
+                    continue
+                for ptype in ("standard", "graph", "quantitative", "orchestrator"):
+                    if fname.startswith(ptype + "-"):
+                        phase4_files[ptype] = fname  # last match wins (highest number)
         for ptype, fname in phase4_files.items():
             if filter_types and ptype not in filter_types:
                 print(f"  Phase-4 {ptype}: SKIPPED (not in filter_types)")
