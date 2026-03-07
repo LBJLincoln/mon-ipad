@@ -150,12 +150,37 @@
 
 ---
 
-## Session 78 TODO (Next)
+## Session 78 Achievements (7 Mar 2026)
 
-### Priority 1: Phase 4 Execution (~100K questions)
-1. **Run `generate-phase4-datasets.py`** to download full datasets
-2. **Max efficiency eval**: parallel workers, auto batch sizing, 429 rotation
-3. **Optional**: Add RAGBench (100K, 5 domains) for domain diversity
+### 1. Phase 4 Datasets V2 (SOTA Benchmarks)
+- `scripts/generate-phase4-datasets-v2.py` — 18 SOTA benchmarks
+- Standard: **39,805** questions (RAGBench×8, SQuAD v2, MS MARCO, TriviaQA, CRAG)
+- Graph: **13,856** questions (RAGBench HotpotQA, HotpotQA, MuSiQue, MultiHop-RAG)
+- Quant: **8,000** questions (RAGBench FinQA + TAT-QA)
+- **Total: 61,661 questions** (was 35K in V1 — +75%)
+
+### 2. Sector Ingestion COMPLETE (rag-data-ingestion)
+- **Supabase**: 7,509 docs across 4 sectors (Finance 2,150 | Juridique 2,500 | BTP 1,844 | Industrie 1,015)
+- **Neo4j**: 7,509 docs + entity extraction (law refs, courts, companies, metrics)
+- New scripts: `ingest-all-sectors.py` (universal QA + corpus format handler)
+- Bug fix: Supabase port 6543 → 5432 (transaction pooler doesn't persist)
+
+### 3. Phase 4 Eval Run
+- 244 questions tested: **4.9% accuracy** (Std 0%, Graph 0%, Quant 6.8%)
+- Expected: HF benchmark data NOT in our vector DBs
+- Quant best: partial Supabase financial table matches
+
+### 4. Eval Auto-Discovery Fix
+- `run-eval.py` now auto-discovers Phase 4 files by prefix (no more hardcoded names)
+
+---
+
+## Session 79 TODO (Next)
+
+### Priority 1: Phase 4 Data Gap
+1. **Ingest Phase 4 benchmark data into Pinecone** — currently only sector data, not the HF benchmark contexts
+2. **Evaluate after ingestion** — accuracy should improve dramatically
+3. **Scale to full 61K eval** (currently only 244 tested)
 
 ### Priority 2: rag-data-ingestion Completion
 1. **Finance sectors** → Supabase tables + Neo4j entities
