@@ -48,6 +48,52 @@
 
 ---
 
+# PRODUCT LINE 2: Speed Website Builder (Independent Product)
+
+## Package W1: "Site Pro en 5 min" ($17)
+**Target:** Solopreneurs, freelancers, AI agents
+**Format:** Video (5 min) + Template repo
+**Content:**
+- Live coding: landing page from zero to deployed in 5 min
+- Vercel deploy with custom domain
+- AI-assisted copy generation
+- Template: Next.js + Tailwind + animations
+
+## Package W2: "Site Business en 20 min" ($47)
+**Target:** Startups, PME, marketing teams
+**Format:** Video (20 min) + Template repo + Checklist
+**Content:**
+- Multi-page site with CTA optimization
+- SEO + GEO meta tags (JSON-LD, OpenGraph)
+- Color psychology applied per audience
+- Contact form + CRM integration
+- Analytics setup (GA4, Hotjar)
+
+## Package W3: "Site Premium en 1h" ($127)
+**Target:** Agencies, ETI, B2B SaaS
+**Format:** Video (1h) + Full repo + Design system
+**Content:**
+- Full design system (colors, typography, spacing)
+- AI chatbot integration (embedded RAG)
+- Multi-language (i18n)
+- Payment integration (Stripe)
+- Dashboard admin panel
+- Performance optimization (Core Web Vitals)
+
+## Package W4: "Full Stack AI Website Masterclass" ($297)
+**Target:** Developers, AI engineers, tech leads
+**Format:** Video course (4h) + All repos + Support
+**Content:**
+- Everything in W1-W3
+- Backend API (Node.js/Python)
+- Database setup (Supabase/PostgreSQL)
+- AI features: chatbot, document search, recommendations
+- CI/CD pipeline (GitHub Actions + Vercel)
+- Monitoring and analytics dashboard
+- 14-day support
+
+---
+
 ## Distribution Channels
 
 ### Immediate (Tonight)
@@ -74,7 +120,25 @@
 | Debug Playbook | $47 | 50/month | $2,350 |
 | Architecture Blueprint | $197 | 20/month | $3,940 |
 | Enterprise Kit | $497 | 5/month | $2,485 |
-| **Total** | | | **$11,475/month** |
+| **RAG Total** | | | **$11,475/month** |
+
+### Speed Website Builder
+
+| Package | Price | Target Volume | Revenue/month |
+|---------|-------|--------------|---------------|
+| Site 5min | $17 | 200/month | $3,400 |
+| Site 20min | $47 | 80/month | $3,760 |
+| Site 1h | $127 | 30/month | $3,810 |
+| Masterclass | $297 | 10/month | $2,970 |
+| **Website Total** | | | **$13,940/month** |
+
+### Combined
+
+| | Revenue/month |
+|--|--------------|
+| RAG Products | $11,475 |
+| Website Products | $13,940 |
+| **TOTAL** | **$25,415/month** |
 
 ## Agentic Commerce Optimization
 - Structured product data (JSON-LD) for AI agent discovery
