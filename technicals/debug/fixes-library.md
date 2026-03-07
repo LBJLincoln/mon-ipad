@@ -1,9 +1,9 @@
 # Fixes Library — Multi-RAG Orchestrator
 
-> Last updated: 2026-03-03T21:00:00+00:00
+> Last updated: 2026-03-07T12:00:00+00:00
 
 > **Bibliotheque permanente de tous les bugs resolus.** A consulter EN PREMIER avant tout debug.
-> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 69 (2026-03-03).
+> Mise a jour obligatoire apres chaque fix reussi. Session courante : Session 75 (2026-03-07).
 
 ---
 
@@ -77,6 +77,12 @@
 | 65 | HF Space | N8N_BLOCK_ENV_ACCESS_IN_NODE=false deployed to 10 HF Spaces | 62 | CRITIQUE |
 | 66 | HF Space | Credential restore script for post-rebuild recovery | 62 | CRITIQUE |
 | 67 | HF Space | HF Space rebuilds reset all webhook registrations | 62 | IMPORTANT |
+| 68 | Quantitative Pipeline | SQL Validator only parses JSON — LLM returns markdown/CoT → extraction fails | 75 | CRITIQUE |
+| 69 | Quantitative Pipeline | Postgres credential ID mismatch (cH96→b44av) — Schema Introspection returns 0 rows | 75 | CRITIQUE |
+| 70 | Quantitative Pipeline | tenant_id='default' vs 'benchmark' — SQL returns 0 rows despite correct query | 75 | CRITIQUE |
+| 71 | n8n Workflows | Duplicate active workflows with same webhook ID — wrong one handles requests | 75 | CRITIQUE |
+| 72 | n8n API | n8n 2.8+ activate requires versionId POST body (not just PATCH active=true) | 75 | IMPORTANT |
+| 73 | n8n API | API key (X-N8N-API-KEY) returns 401 — use cookie auth via /rest/login instead | 75 | IMPORTANT |
 | 68 | n8n API | API key JWT invalidates on HF rebuild — use session cookie auth | 68 | CRITIQUE |
 | 69 | Ingestion V4.0 | Redis → Code bypass conversion (ingestion + enrichment, 4 nodes) | 68 | CRITIQUE |
 | 70 | Enrichment | Missing httpMethod + wrong responseMode on new webhook trigger | 68 | IMPORTANT |
@@ -1319,5 +1325,44 @@ for node in workflow['nodes']:
 - **Timeline**: Webhooks restore automatically after credential restore completes (~5-10 minutes per space).
 - **RULE**: After HF Space factory reboot, EXPECT all webhooks to be down until credential restore + activation completes. Do NOT attempt to test pipelines before activation finishes.
 - **Related**: FIX-66 (credential restore), FIX-19 (n8n 2.8+ activation requires versionId)
+
+---
+
+### 68 — SQL Validator only parses JSON — LLM returns markdown/CoT (Session 75)
+- **Symptom**: Quant pipeline always returns `SQL_GENERATION_ERROR: Invalid LLM response`. LLM generates correct SQL but wrapped in markdown Chain-of-Thought format.
+- **Root cause**: SQL Validator uses `JSON.parse(content)` which fails when content starts with `### Chain-of-Thought`. SQL is inside ` ```sql ` code blocks.
+- **Fix**: Multi-strategy extraction in SQL Validator: (1) JSON.parse, (2) ```sql block regex, (3) ```json block regex, (4) raw SELECT regex.
+- **Files**: `n8n/live/quantitative.json` — SQL Validator (Shield #1) node jsCode
+- **RULE**: Always handle both JSON and markdown LLM responses. Free-tier models (Llama 70B via Groq) often return markdown even when asked for JSON-only.
+
+### 69 — Postgres credential ID mismatch (Session 75)
+- **Symptom**: Schema Introspection returns 0 rows. Schema Context Builder outputs "Aucune table trouvee".
+- **Root cause**: Quant workflow used credential `cH96tQ3I9uIHqiiq` (broken/expired). Standard uses `b44avEJtnkw46GL6` (working).
+- **Fix**: Replace both Postgres node credential IDs: Schema Introspection + SQL Executor → `b44avEJtnkw46GL6`.
+- **RULE**: After credential issues, compare working pipeline credentials with broken ones. Multiple credential IDs exist due to 10 HF Spaces sharing one Postgres.
+
+### 70 — tenant_id 'default' vs 'benchmark' (Session 75)
+- **Symptom**: Correct SQL generated and validated, but SQL Executor returns 0 rows.
+- **Root cause**: Init & ACL defaults to `tenant_id = 'default'`. All benchmark data uses `tenant_id = 'benchmark'`.
+- **Fix**: Changed Init & ACL default: `'default'` → `'benchmark'`. Also changed SQL Validator injection to use `(tenant_id = 'X' OR tenant_id IS NULL)`.
+- **RULE**: Always verify tenant_id in Supabase matches what the pipeline sends. Use `SELECT DISTINCT tenant_id FROM <table>` to check.
+
+### 71 — Duplicate active workflows with same webhook ID (Session 75)
+- **Symptom**: PATCH updates to workflow code have no effect. Execution uses old code.
+- **Root cause**: Two Quant workflows (V3.1 `cjhEhVs0KV1ExHqX` and V5.0 `EW07B8H7OmoghE8Z`) were BOTH active with the same webhook ID `3e0f8010-...`. V3.1 was handling all requests. Patching V5.0 had no effect.
+- **Fix**: Identify which workflow ID appears in execution data (`workflowId` field). Deactivate the stale one, fix the active one.
+- **RULE**: Before patching a workflow, ALWAYS check the execution's `workflowId` to confirm which workflow is actually running. Multiple workflows can share the same webhook ID!
+- **Debug**: `GET /rest/executions?workflowId=X&limit=1` → check `data.results[0].workflowId` in flatted format.
+
+### 72 — n8n 2.8+ activate requires versionId (Session 75)
+- **Symptom**: `POST /rest/workflows/{id}/activate` returns 400: `{"code":"invalid_type","expected":"string","path":["versionId"],"message":"Required"}`.
+- **Fix**: GET the workflow first to get `versionId`, then POST `/activate` with body `{"versionId": "..."}`.
+- **Related**: FIX-19 (same pattern, documented earlier but forgotten)
+
+### 73 — API key (X-N8N-API-KEY) returns 401 (Session 75)
+- **Symptom**: REST API calls with `X-N8N-API-KEY` header return 401 Unauthorized.
+- **Root cause**: API key may expire or be invalidated after HF Space rebuild. Community edition token lifecycle is unpredictable.
+- **Fix**: Use cookie-based auth: POST `/rest/login` with `emailOrLdapLoginId` + `password`, then use cookies for all subsequent requests.
+- **RULE**: Always have cookie auth as fallback. If API key fails, login and use cookies.
 
 ---
