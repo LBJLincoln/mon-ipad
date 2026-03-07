@@ -1,0 +1,197 @@
+{
+  "metadata": {
+    "title": "Sector Smoke Test - 4 ETI Verticals (20 questions)",
+    "generated_at": "2026-03-07",
+    "total_questions": 20,
+    "sectors": ["finance", "btp", "juridique", "industrie"],
+    "questions_per_sector": 5,
+    "data_sources": {
+      "pinecone": "website-sectors-jina-1024 (31,916 vectors, namespace: sectors)",
+      "supabase": "sector_documents (11,387 rows)",
+      "neo4j": "SectorDocument nodes (7,509)"
+    },
+    "note": "Each question is derived from actual ingested sector data. Expected answers use substring matching (expected_contains). Questions cover the main datasets per sector."
+  },
+  "questions": [
+    {
+      "id": "sec-fin-01",
+      "question": "What is the FY2018 capital expenditure amount for 3M based on the cash flow statement?",
+      "expected_contains": "1577",
+      "pipeline": "standard",
+      "sector": "finance",
+      "dataset_source": "financebench",
+      "category": "financial-extraction"
+    },
+    {
+      "id": "sec-fin-02",
+      "question": "Who are the primary customers of Boeing as of FY2022?",
+      "expected_contains": "government",
+      "pipeline": "standard",
+      "sector": "finance",
+      "dataset_source": "financebench",
+      "category": "factual"
+    },
+    {
+      "id": "sec-fin-03",
+      "question": "Did Pfizer grow its PPNE between FY20 and FY21?",
+      "expected_contains": "positive",
+      "pipeline": "standard",
+      "sector": "finance",
+      "dataset_source": "financebench",
+      "category": "analytical"
+    },
+    {
+      "id": "sec-fin-04",
+      "question": "What was the net cash from operating activities in 2009 for the company discussed in the credit union systems segment?",
+      "expected_contains": "206588",
+      "pipeline": "standard",
+      "sector": "finance",
+      "dataset_source": "convfinqa",
+      "category": "quantitative"
+    },
+    {
+      "id": "sec-fin-05",
+      "question": "What drove the reduction in SG&A expense as a percent of net sales?",
+      "expected_contains": "marketing",
+      "pipeline": "standard",
+      "sector": "finance",
+      "dataset_source": "financebench",
+      "category": "analytical"
+    },
+    {
+      "id": "sec-btp-01",
+      "question": "What is the maximum riser height for steps in an exit according to building codes?",
+      "expected_contains": "180",
+      "pipeline": "standard",
+      "sector": "btp",
+      "dataset_source": "code_accord_entities",
+      "category": "building-code"
+    },
+    {
+      "id": "sec-btp-02",
+      "question": "What is the minimum clear headroom for means of escape routes in buildings other than dwellings?",
+      "expected_contains": "2m",
+      "pipeline": "standard",
+      "sector": "btp",
+      "dataset_source": "code_accord_relations",
+      "category": "building-code"
+    },
+    {
+      "id": "sec-btp-03",
+      "question": "What is the maximum temperature allowed in cold water pipe systems according to building regulations?",
+      "expected_contains": "20",
+      "pipeline": "standard",
+      "sector": "btp",
+      "dataset_source": "code_accord_relations",
+      "category": "building-code"
+    },
+    {
+      "id": "sec-btp-04",
+      "question": "What is the minimum turning space diameter required in a dwelling for persons with mobility impairment?",
+      "expected_contains": "1500",
+      "pipeline": "standard",
+      "sector": "btp",
+      "dataset_source": "code_accord_relations",
+      "category": "accessibility"
+    },
+    {
+      "id": "sec-btp-05",
+      "question": "What must be tested using water to ensure the integrity of the water system in construction?",
+      "expected_contains": "pressure",
+      "pipeline": "standard",
+      "sector": "btp",
+      "dataset_source": "code_accord_entities",
+      "category": "building-code"
+    },
+    {
+      "id": "sec-jur-01",
+      "question": "Que dit l'article R641-3 du Code de l'énergie concernant l'autorité compétente pour prononcer l'amende ?",
+      "expected_contains": "ministre",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "dataset_source": "cold_french_law",
+      "category": "french-law"
+    },
+    {
+      "id": "sec-jur-02",
+      "question": "Selon l'article 1186 du code civil, quelles sont les conditions de caducité des contrats interdépendants dans une opération incluant une location financière ?",
+      "expected_contains": "caducit",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "dataset_source": "french_case_law_juri",
+      "category": "case-law"
+    },
+    {
+      "id": "sec-jur-03",
+      "question": "Que dit l'article R151-19 du Code de l'urbanisme concernant les zones urbaines d'un plan local d'urbanisme intercommunal ?",
+      "expected_contains": "zone",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "dataset_source": "cold_french_law",
+      "category": "french-law"
+    },
+    {
+      "id": "sec-jur-04",
+      "question": "Quelles sont les conditions de création des établissements et services sociaux et médico-sociaux publics selon l'article L315-2 du Code de l'action sociale ?",
+      "expected_contains": "arrêté",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "dataset_source": "cold_french_law",
+      "category": "french-law"
+    },
+    {
+      "id": "sec-jur-05",
+      "question": "Selon la Cour de cassation, le superprivilège des salaires est-il exclusivement attaché à la personne des salariés lorsque l'AGS est subrogée dans leurs droits ?",
+      "expected_contains": "subrog",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "dataset_source": "french_case_law_juri",
+      "category": "case-law"
+    },
+    {
+      "id": "sec-ind-01",
+      "question": "How do I select Natural mode on the TV picture settings?",
+      "expected_contains": "Settings",
+      "pipeline": "standard",
+      "sector": "industrie",
+      "dataset_source": "ragbench_emanual",
+      "category": "device-manual"
+    },
+    {
+      "id": "sec-ind-02",
+      "question": "How do I connect an IP control device to the TV?",
+      "expected_contains": "Remote",
+      "pipeline": "standard",
+      "sector": "industrie",
+      "dataset_source": "ragbench_emanual",
+      "category": "device-manual"
+    },
+    {
+      "id": "sec-ind-03",
+      "question": "How to prevent screen burn on the TV?",
+      "expected_contains": "still image",
+      "pipeline": "standard",
+      "sector": "industrie",
+      "dataset_source": "ragbench_emanual",
+      "category": "device-manual"
+    },
+    {
+      "id": "sec-ind-04",
+      "question": "How do I install apps on the TV?",
+      "expected_contains": "Select",
+      "pipeline": "standard",
+      "sector": "industrie",
+      "dataset_source": "ragbench_emanual",
+      "category": "device-manual"
+    },
+    {
+      "id": "sec-ind-05",
+      "question": "What is the use of Smart Security on the TV?",
+      "expected_contains": "hacking",
+      "pipeline": "standard",
+      "sector": "industrie",
+      "dataset_source": "ragbench_emanual",
+      "category": "device-manual"
+    }
+  ]
+}
