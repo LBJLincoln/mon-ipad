@@ -2,14 +2,16 @@
 
 > Last updated: 2026-03-07T14:00:00Z
 
-## Session 76 — Current Status
+## Session 77 — Current Status
 
 ### Overview
-- **Phase 1**: PASSED (83.9% overall, all pipelines meet targets)
+- **Phase 1**: PASSED (83.9% overall)
 - **Phase 2**: PARTIAL (Graph 78% + Quant 92% COMPLETE, Std+Orch BLOCKED)
-- **Phase 3**: IN PROGRESS (Std 87.5% COMPLETE, Graph 40.9% COMPLETE, Quant INVALID dataset)
-- **Infrastructure**: HF Space #1 UP (n8n primary), LiteLLM proxy operational
-- **Sessions**: 75 completed, 1,100+ commits across 7 repos
+- **Phase 3**: **DONE** (Std 87.5% PASS, Graph 40.9% ACCEPTED, Quant 95.2% PASS)
+- **Phase 4**: STARTING (~100K questions from 13 HF benchmarks)
+- **Claude Code**: Updated to 2.1.71 (was 2.1.39). New: /simplify, /batch, auto-memory
+- **Infrastructure**: 3/4 pipelines ACTIVE, LiteLLM UP (9 models)
+- **Sessions**: 77 | **Commits**: 1,100+
 
 ---
 
@@ -58,19 +60,20 @@
 | Quantitative | 500 | **500** | **92.0%** | >= 65% | **COMPLETE** |
 | Orchestrator | 1,000 | 57 | 0% | >= 70% | BROKEN |
 
-### Phase 3 — Scale Testing (IN PROGRESS — Mar 2026)
+### Phase 3 — Scale Testing (DONE — Mar 2026)
 | Pipeline | Total | Tested | Accuracy | Target | Status |
 |----------|-------|--------|----------|--------|--------|
-| Standard | 8,700 | **8,006** | **87.5%** | >= 85% | **COMPLETE** — above target |
-| Graph | 1,500 | **1,500** | **40.9%** | >= 70% | **COMPLETE** — accuracy drop vs P2 |
-| Quantitative | 500 | 500 | **30%** | >= 85% | **INVALID** — dataset has wrong expected answers |
-| Orchestrator | 1,000 | 0 | — | >= 70% | ON HOLD |
+| Standard | 8,700 | **8,006** | **87.5%** | >= 85% | **PASS** |
+| Graph | 1,500 | **1,500** | **40.9%** | >= 70% | **ACCEPTED** — user decision: proceed to P4 |
+| Quantitative | 500 | 500 | **95.2%** | >= 85% | **PASS** (v2 dataset) |
+| Orchestrator | 1,000 | 0 | — | >= 70% | ON HOLD (not blocking P4) |
 
 **Notes**:
-- Standard Phase 3: **SUCCESS** — 87.5% exceeds 85% target on 8,006 questions
-- Graph Phase 3: Accuracy dropped from 78% (P2) to 40.9% (P3) — hard questions + data relevance issues
-- Quant Phase 3: Pipeline now WORKING (S75 fixes), but synthetic dataset has incorrect expected answers
-- Orchestrator: 404 error, ON HOLD pending user decision
+- Standard Phase 3: **PASS** — 87.5% exceeds 85% target
+- Graph Phase 3: 40.9% below target but user accepted (hard multi-hop questions + Neo4j data gaps)
+- Quant Phase 3: **PASS** — 95.2% on v2 dataset (pipeline fixed S75)
+- Orchestrator: ON HOLD, not blocking Phase 4
+- **Phase 3 → Phase 4 GATE: PASSED** (Session 77 user decision)
 
 ---
 
@@ -124,36 +127,31 @@
 
 ---
 
-## Session 76 TODO (Next Steps)
+## Session 77 TODO (Current — 7 Mar 2026)
 
-### Priority 1: Quantitative Phase 3 Dataset
-1. **Regenerate Quant Phase 3 v2 dataset** with correct Supabase values
-   - Script exists: `db/populate/regenerate_quant_phase3.py`
-   - Ensure tenant_id=`benchmark`, use working Postgres credential
-2. **Launch Phase 3 Quant re-eval** with v2 dataset
-   - Target: >= 85% accuracy on 500 questions
+### Priority 1: Phase 4 Execution (~100K questions)
+1. **Scale existing 13 HF datasets** to ~100K total questions
+   - Standard: NQ full (307K), MS MARCO (549K), HotpotQA (113K) → sample 50K
+   - Graph: HotpotQA + 2WikiMultiHopQA + MuSiQue → sample 20K
+   - Quant: FinQA + TAT-QA + WikiTableQuestions + HybridQA → sample 20K+
+2. **Max efficiency eval**: parallel workers, auto batch sizing, 429 rotation
+3. **Optional**: Add RAGBench (100K, 5 domains) for domain diversity
 
-### Priority 2: Graph Accuracy Investigation
-1. **Analyze Graph accuracy drop**: 78% (Phase 2) → 40.9% (Phase 3)
-   - Hypothesis: Harder questions in Phase 3 dataset
-   - Hypothesis: Neo4j data gaps for specific entities
-   - Action: Sample analysis of failed questions
-2. **Potential fixes**:
-   - Improve entity extraction
-   - Expand Neo4j graph data
-   - Enhance multi-hop traversal logic
+### Priority 2: rag-data-ingestion Completion
+1. **Finance sectors** → Supabase tables + Neo4j entities
+2. **Juridique sectors** → Neo4j relationships + Supabase
+3. **Fix Enrichment V4.0** (HTTP 500)
+4. **Post-Phase 4**: Connect to ETI website (rag-website)
 
-### Priority 3: Architecture & Documentation
-1. **rag-data-ingestion**: Check final status, complete remaining tasks
-2. **Architecture recomposition**: User authorized full repo cleanup
-3. **Sync CLAUDE.md**: Update all repos to reflect Phase 3 reality
+### Priority 3: Eval Script Upgrades
+1. **Auto model rotation on 429** (switch OpenRouter key automatically)
+2. **Max batch sizes** per pipeline (already: std=10, graph=5, quant=3)
+3. **Multiple HF Space round-robin** for throughput
+4. **RAGAS metrics** integration (faithfulness, context recall)
 
-### Priority 4: Orchestrator (User Decision)
-1. **Fix or deprioritize**: 404 error (empty body issue) since Phase 2
-2. **Options**:
-   - Debug sub-workflow routing
-   - Simplify 68-node workflow
-   - Defer to later phase
+### Priority 4: Orchestrator (DEFERRED)
+- ON HOLD — not blocking Phase 4
+- Revisit after Phase 4 completion
 
 ---
 
