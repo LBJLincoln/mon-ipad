@@ -8,8 +8,12 @@
 #   claude-session --resume            # reprend dernière session
 #   claude-session --batch "task1" "task2" "task3"  # parallel sub-agents
 #
-# Snippet Termius: coller ce one-liner:
-#   bash ~/mon-ipad/scripts/claude-session.sh "ta question"
+# Snippet Termius (RECOMMANDÉ):
+#   bash ~/mon-ipad/scripts/claude-session.sh
+# Ou avec --dangerously-skip-permissions:
+#   bash ~/mon-ipad/scripts/claude-session.sh --skip-perms
+# Ancien (sans auto session-start):
+#   cd ~/mon-ipad && claude --dangerously-skip-permissions
 # ============================================================
 
 set -euo pipefail
@@ -22,6 +26,16 @@ source .env.local 2>/dev/null
 
 # Ensure PATH includes latest Claude Code
 export PATH="$HOME/.npm-global/bin:$PATH"
+
+# Permission mode
+PERMS_FLAG=""
+if [[ "${1:-}" == "--skip-perms" ]]; then
+    PERMS_FLAG="--dangerously-skip-permissions"
+    shift
+fi
+
+# Auto session-start system prompt
+AUTO_START='CRITICAL: At the START of every conversation, BEFORE responding to the user, automatically execute ALL steps from the /session-start skill: read PROJECT-STATE.md, read DEBUG-PLAYBOOK.md (first 100 lines), source .env.local, check pipeline health, check database status, and output a concise session brief. Do this even if the user has not asked — it is mandatory startup procedure.'
 
 # Colors
 RED='\033[0;31m'
@@ -65,7 +79,7 @@ case "${1:-}" in
         ;;
     --resume)
         echo -e "${CYAN}Resuming last Claude session...${NC}"
-        claude --resume --model claude-opus-4-6
+        claude --resume --model claude-opus-4-6 $PERMS_FLAG
         ;;
     --batch)
         shift
@@ -73,24 +87,26 @@ case "${1:-}" in
         # Each task gets its own sub-agent via claude -p
         for task in "$@"; do
             echo -e "${YELLOW}>>> Task: ${task}${NC}"
-            claude -p "$task" --model claude-opus-4-6 &
+            claude -p "$task" --model claude-opus-4-6 $PERMS_FLAG &
         done
         wait
         echo -e "${GREEN}All batch tasks completed.${NC}"
         ;;
     "")
-        # Interactive mode
+        # Interactive mode with auto session-start
         health_check
         echo -e "${CYAN}Launching interactive Claude session (Opus 4.6)...${NC}"
-        echo -e "${YELLOW}Tips: /simplify (code review) | /batch (parallel changes) | /memory (manage memory)${NC}"
+        echo -e "${YELLOW}Skills: /session-start | /monitor | /eval | /status-check | /self-heal${NC}"
         echo ""
-        claude --model claude-opus-4-6
+        claude --model claude-opus-4-6 $PERMS_FLAG \
+            --append-system-prompt "$AUTO_START"
         ;;
     *)
         # Direct question mode
         health_check
         echo -e "${CYAN}Running: ${1}${NC}"
         echo ""
-        claude -p "$*" --model claude-opus-4-6
+        claude -p "$*" --model claude-opus-4-6 $PERMS_FLAG \
+            --append-system-prompt "$AUTO_START"
         ;;
 esac

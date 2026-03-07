@@ -1,6 +1,6 @@
 # PROJECT ROADMAP — Multi-RAG Orchestrator 2026
 
-> Last updated: 2026-03-07T14:00:00Z
+> Last updated: 2026-03-07T20:15:00Z
 >
 > Consolidated roadmap covering: evaluation phases, improvement priorities, bottleneck resolution, team process, and SOTA research insights.
 
@@ -337,6 +337,10 @@ result = evaluate(
 | W2 | Chat live avec pipeline selection | UX | Moyen | PARTIEL |
 | W3 | Dashboard public avec metriques accuracy | Credibilite | Faible | FAIT (Vercel) |
 | W4 | Videos sectorielles (scripts Kimi) | Marketing | Moyen | SCRIPTS PRETS |
+| **W5** | **GEO optimization** (TLDR-first, structured data, FAQ schema) | **SEO+GEO** | Moyen | **PLANIFIE S79** |
+| **W6** | **Nano Banana 2 video demos** (4 sectors) | **Marketing** | Moyen | **PLANIFIE S79** |
+| **W7** | **Per-product color differentiation** (psychology-driven palettes) | **Conversion** | Moyen | **BRIEF CREE S79** |
+| **W8** | **Product persona alignment** (ETI vs PME vs technique) | **Brand** | Moyen | **BRIEF CREE S79** |
 
 ---
 
@@ -916,18 +920,22 @@ Accuracy         >= 85%   (Standard: PASS, Quant/Graph: FAIL)
 
 ---
 
-### 6.8 Top 10 Actions Prioritaires (Classées par Impact)
+### 6.8 Top 10 Actions Prioritaires (Classées par Impact) — Updated Session 79
 
-1. **Ajouter RAGAS faithfulness + context recall** aux scripts eval (2-4h) — requis Phase Gates
-2. **Late chunking Jina** `late_chunking=True` pour ré-ingestion des 3 plus grands namespaces (4-8h) → +10-12%
-3. **BM25/keyword search** pour Juridique et Finance dans n8n (1-2h/pipeline) → +15-25%
-4. **Query classification node** dans Orchestrator V10.1 — pattern A-RAG Feb 2026 (4-6h)
-5. **Hero rag-website** outcome-focused, < 8 mots, chatbot live embed (1 jour)
-6. **Confidence-gated escalation** dans Orchestrator si confiance < 0.7 → 2e pipeline (2-4h)
-7. **Phase Gate progress bar** dans dashboard (4h)
-8. **Progressive disclosure citations** dans chatbot (réponse d'abord, sources collapsibles) (2-4h)
-9. **Feedback widget** thumbs up/down → Supabase (2-4h)
-10. **ACL metadata** dans Pinecone par client/secteur (1-2 jours, ré-ingestion)
+| Rank | Action | Impact | Effort | Target | Source |
+|------|--------|--------|--------|--------|--------|
+| **1** | **Cohere Rerank 3.5** post-retrieval | +23-30% precision | LOW (MCP tool ready) | Std+Graph+Orch | Cohere blog 2025 |
+| **2** | **CRAG grading layer** — filter irrelevant retrievals | +10-15% accuracy | LOW-MED (LLM grading prompt) | **Graph (40.9%)** | arXiv:2401.15884 |
+| **3** | **Late chunking Jina** `late_chunking=True` | +2-4% retrieval | LOW (parameter flag) | Standard | arXiv:2409.04701 |
+| **4** | **RAGAS faithfulness + context recall** | Enterprise gates | MED (2-4h) | All | RAGAS 2026 |
+| **5** | **Adaptive Routing (Higress-RAG)** — intent classifier + semantic cache | +5-10% routing | MED | Orchestrator | arXiv:2602.23374 |
+| **6** | **A-RAG hierarchical tools** — multi-turn agentic retrieval | +8-12% accuracy | MED (open-source) | Std+Orch | arXiv:2602.03442 |
+| **7** | **BM25/keyword + RRF fusion** | +15-25% domain queries | MED | Std+Quant | RRF literature |
+| **8** | **Website GEO optimization** — TLDR-first, structured data, FAQ schema | SEO/GEO traffic | MED | rag-website | GEO 2026 guides |
+| **9** | **Nano Banana video demos** — 4 sector product videos | Marketing | MED | rag-website | Google Nano Banana 2 |
+| **10** | **Per-product color/UX differentiation** — psychology-driven palettes | Conversion +2-3% | LOW-MED | All 3 sites | JMSR 2025 |
+
+**Previous top 10 items moved to backlog where not superseded.**
 
 ---
 
@@ -944,6 +952,15 @@ Accuracy         >= 85%   (Standard: PASS, Quant/Graph: FAIL)
 | Late Chunking | arXiv:2409.04701 | +10-12% retrieval accuracy, no LLM cost |
 | RAG-Studio: Domain Adaptation | ACL EMNLP 2024 | Synthetic data pour fine-tuning domain-specific RAG |
 | RRF: Reciprocal Rank Fusion | Cormack et al. | +18.5% MRR, fuse vector + BM25 |
+| Higress-RAG | arXiv:2602.23374 | MCP-based dual hybrid retrieval + adaptive routing + CRAG |
+| RouteRAG (RL routing) | arXiv:2512.09487 | RL-based text/graph routing, +7.7 F1, GRPO training |
+| RAGLens | arXiv:2512.08892 | Sparse autoencoders for hallucination detection in RAG |
+| RAGRouter | arXiv:2505.23052 | Contrastive learning query router for multiple RAG LLMs |
+| CRAG | arXiv:2401.15884 | Corrective RAG with retrieval quality evaluation + fallback |
+| Cohere Rerank 3.5 | Cohere blog 2025 | +26.4% cross-lingual, +23.4% vs hybrid search |
+| RAG-MCP | arXiv:2505.03275 | Semantic retrieval for MCP server selection, -50% tokens |
+| RoutIR | arXiv:2601.10644 | Fast serving framework for retrieval pipelines |
+| Self-Healing RAG | AIAnytime 2025 | 3-layer auto-recovery: retrieval, ranking, learning |
 
 ---
 
@@ -951,6 +968,7 @@ Accuracy         >= 85%   (Standard: PASS, Quant/Graph: FAIL)
 
 | Session | Changes | Date |
 |---------|---------|------|
+| 79 | SOTA research update: 12 new papers, top 10 reprioritized, GEO+marketing | 2026-03-07 |
 | 73 | Consolidated 6 separate project docs into single roadmap | 2026-03-07 |
 | 42 | Repo health inspection, 70+ new items | 2026-02-22 |
 | 40 | Cross-pipeline bottleneck prioritization | 2026-02-22 |
