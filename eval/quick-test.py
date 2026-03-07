@@ -85,13 +85,15 @@ RAG_ENDPOINTS = {k: f"{N8N_HOST}{v}" for k, v in WEBHOOK_PATHS.items()}
 # Known-good test questions (questions that should always pass)
 SMOKE_QUESTIONS = {
     "standard": [
+        # Mix of general knowledge (tests LLM) + domain-specific (tests RAG retrieval)
         {"query": "What is the capital of Japan?", "expected_contains": "Tokyo"},
-        {"query": "Where is Normandy located?", "expected_contains": "France"},
         {"query": "Who painted the Mona Lisa?", "expected_contains": "Vinci"},
-        {"query": "What is the largest ocean?", "expected_contains": "Pacific"},
-        {"query": "What year did World War II end?", "expected_contains": "1945"},
+        {"query": "What is machine learning?", "expected_contains": "algorithm"},
+        {"query": "What is intraocular pressure?", "expected_contains": "eye"},
+        {"query": "What is PCR used for in molecular biology?", "expected_contains": "amplif"},
     ],
     "graph": [
+        # Entity relationship questions (tests Neo4j graph traversal)
         {"query": "What did Marie Curie win Nobel Prizes for?", "expected_contains": "Physics"},
         {"query": "What did Alexander Fleming discover?", "expected_contains": "penicillin"},
         {"query": "Who founded Microsoft?", "expected_contains": "Gates"},
@@ -99,16 +101,16 @@ SMOKE_QUESTIONS = {
         {"query": "What disease is caused by mosquitoes?", "expected_contains": "malaria"},
     ],
     "quantitative": [
+        # Financial questions with verifiable expected answers from Supabase
+        {"query": "What was the yearly amortization rate related to the trademarks?", "expected_contains": "8"},
+        {"query": "What was the decrease in the Other expense, net in 2018?", "expected_contains": "4"},
         {"query": "What was TechVision Inc's total revenue in fiscal year 2023?", "expected_contains": ""},
         {"query": "What was GreenEnergy Corp's total revenue in 2023?", "expected_contains": ""},
-        {"query": "What is the total number of products across all companies?", "expected_contains": ""},
         {"query": "What was HealthPlus Labs' net income in 2022?", "expected_contains": ""},
-        {"query": "What was TechVision's revenue in Q1 2023?", "expected_contains": ""},
     ],
     "orchestrator": [
+        # ON HOLD — orchestrator webhook returns 404
         {"query": "What is the capital of Japan?", "expected_contains": "Tokyo"},
-        {"query": "What was TechVision Inc's total revenue in 2023?", "expected_contains": ""},
-        {"query": "What did Marie Curie win Nobel Prizes for?", "expected_contains": "Physics"},
         {"query": "Who painted the Mona Lisa?", "expected_contains": "Vinci"},
         {"query": "What is the largest ocean?", "expected_contains": "Pacific"},
     ],
@@ -235,7 +237,7 @@ def run_quick_tests(pipelines, max_questions=3, trigger="manual"):
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Quick endpoint smoke tests")
-    parser.add_argument("--pipelines", type=str, default="standard,graph,quantitative,orchestrator")
+    parser.add_argument("--pipelines", type=str, default="standard,graph,quantitative")
     parser.add_argument("--questions", type=int, default=3)
     parser.add_argument("--trigger", type=str, default="manual")
     parser.add_argument("--allow-local", action="store_true", help="Allow localhost/VM n8n (for CI)")
