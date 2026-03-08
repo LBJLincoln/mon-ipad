@@ -1,9 +1,10 @@
-# Cycle 1 — Outreach Content Pack
-> Generated: 2026-03-08 | Agent: Outreach Cycle 1
+# Cycle 1 — Outreach Content Pack (Agent Outreach)
+> Generated: 2026-03-08 | Agent: Outreach Cycle 1 (no OpenClaw)
+> Telegram posted: message_id=19, channel=@Nomos42, date=2026-03-08
 
 ---
 
-## 1. TELEGRAM POST (Posted to @Nomos42)
+## 1. TELEGRAM POST (Posted to @Nomos42 — CONFIRMED message_id=19)
 
 ```
 🔧 RAG Engineers — Stop Guessing, Start Shipping
@@ -17,8 +18,12 @@ Everything we learned is packaged into battle-tested guides:
 → 10 n8n workflows, debug playbook, eval framework, prompt library, and more
 → https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d
 
+🆕 MCP + RAG Integration Playbook ($147)
+→ Connect AI agents to your RAG pipelines via MCP protocol
+→ https://buy.stripe.com/eVq14g6Dwd9F6rh54h5J606
+
 📊 Individual Guides from $27–$197
-→ Full catalog: https://nomos42.gumroad.com
+→ Full catalog: https://lbjlincoln.github.io/rag-dashboard/store.html
 
 What's inside:
 • 79+ production fixes (Debug Playbook)
@@ -52,7 +57,7 @@ The entire engineering stack — workflows, prompts, eval framework, debug playb
 Would a 5-min walkthrough be useful? Happy to share our benchmark methodology either way.
 
 — Alexis
-Nomos AI · nomos42.gumroad.com
+Nomos AI · https://lbjlincoln.github.io/rag-dashboard/store.html
 ```
 
 ### 2B. Cold DM — Twitter/X (Tech Founders & Indie Hackers)
@@ -67,7 +72,21 @@ Packaged the whole thing: n8n workflows, eval framework, 79+ production fixes, p
 Interested in seeing the benchmark results? Happy to share.
 ```
 
-### 2C. Warm DM — Follow-up after engagement
+### 2C. Cold DM — MCP/Agent Community (NEW for Cycle 1)
+
+```
+Hey {name} — noticed you're building with MCP / AI agents.
+
+We just shipped a playbook on integrating RAG pipelines with MCP — real implementation from our production system (95.2% accuracy, 61K+ eval questions).
+
+Covers tool definitions, context passing, multi-pipeline routing, and error handling patterns.
+
+Here's the direct link: https://buy.stripe.com/eVq14g6Dwd9F6rh54h5J606
+
+Happy to walk through the architecture if useful.
+```
+
+### 2D. Warm DM — Follow-up after engagement
 
 ```
 Hey {name}, thanks for {liking/commenting on} the post about {topic}.
@@ -79,7 +98,7 @@ Here's the direct link: {product_link}
 Use code EARLYBIRD40 for 40% off (limited).
 ```
 
-### 2D. Discord/Slack Community DM
+### 2E. Discord/Slack Community DM
 
 ```
 Hey! Noticed your question about {rag_topic} in #{channel}.
@@ -88,7 +107,7 @@ We ran into the same issue and documented the fix in our Debug Playbook (79+ pro
 
 Here's the specific fix: {brief_description}
 
-Full playbook with all fixes: https://buy.stripe.com/... ($47)
+Full playbook with all fixes: https://buy.stripe.com/00w7sEd1U2v14j92FT5J600 ($47)
 
 Happy to help with your specific setup too.
 ```
@@ -117,10 +136,11 @@ We've packaged everything into production-ready toolkits:
 → Eval framework (catch regressions before production)
 → 79+ production debug fixes
 → 50+ tested prompts for retrieval & generation
+→ NEW: MCP + RAG Integration Playbook for AI agent architectures
 
 The MEGA BUNDLE ($497) includes the complete stack, or individual guides start at $27.
 
-Catalog: https://nomos42.gumroad.com
+Catalog: https://lbjlincoln.github.io/rag-dashboard/store.html
 Questions? Reply to this email.
 
 — Alexis Moret
@@ -168,6 +188,7 @@ Key angles:
 • Free-tier LLM stack (Llama 3.3 70B, Gemma 3 27B)
 • Evaluation methodology against 18 SOTA datasets
 • 79 production fixes discovered over 76 engineering sessions
+• NEW: MCP integration for AI agent ecosystems
 
 I can provide benchmark data, architecture diagrams, and code samples.
 
@@ -176,7 +197,7 @@ The piece would link to our open toolkit catalog for readers who want to replica
 Interested?
 
 — Alexis Moret
-Nomos AI · https://nomos42.gumroad.com
+Nomos AI · https://lbjlincoln.github.io/rag-dashboard/store.html
 ```
 
 ---
@@ -195,8 +216,9 @@ What makes this different:
 ✅ $0/month infrastructure (free-tier LLMs + vector DBs)
 ✅ Copy-paste deployment (n8n workflows, ready to import)
 ✅ Measurable results (eval framework included)
+✅ MCP-ready (connect AI agents to your RAG pipelines)
 
-Products: 20+ guides, templates, and toolkits from $27 to $497.
+Products: 15+ guides, templates, and toolkits from $27 to $497.
 Use code LAUNCH20 for 20% off your first purchase.
 ```
 
@@ -205,7 +227,7 @@ Use code LAUNCH20 for 20% off your first purchase.
 ```
 1. "RAG engineering toolkit — 95.2% accuracy, $0/month infra, 79+ production fixes"
 2. "We benchmarked RAG against 61K questions. Here's everything we learned."
-3. "Production RAG stack: workflows, prompts, eval framework, debug playbook"
+3. "Production RAG stack: workflows, prompts, eval framework, debug playbook, MCP integration"
 ```
 
 ### 4C. GitHub Marketplace / Sponsors Description
@@ -221,6 +243,7 @@ Production-grade RAG engineering resources built from 76 sessions of real develo
 - **Debug Playbook** — 79+ categorized production fixes
 - **Prompt Library** — 50+ tested prompts for RAG pipelines
 - **Architecture Guides** — Graph RAG, Multi-Tenant, Agentic RAG
+- **MCP + RAG Playbook** — Connect AI agents to RAG via MCP protocol
 
 ## Results
 | Metric | Value |
@@ -234,7 +257,7 @@ Production-grade RAG engineering resources built from 76 sessions of real develo
 ## Get Started
 → Individual guides from $27
 → Complete MEGA BUNDLE: $497
-→ https://nomos42.gumroad.com
+→ https://lbjlincoln.github.io/rag-dashboard/store.html
 ```
 
 ### 4D. AI Agent Marketplaces (Relevance AI, AgentOps, etc.)
@@ -249,13 +272,14 @@ Trained on 79+ real production RAG fixes from a system processing 61,661 benchma
 - Suggest fixes based on production-proven solutions
 - Evaluate pipeline accuracy against SOTA benchmarks
 - Optimize prompts for retrieval and generation nodes
+- MCP tool integration for autonomous RAG debugging
 
 **Training Data:**
 - 76 engineering sessions of real debugging
 - 18 SOTA benchmark datasets
 - 4 pipeline architectures (Standard, Graph, Quantitative, Orchestrator)
 
-**Integration:** Works with n8n, LangChain, LlamaIndex, custom pipelines.
+**Integration:** Works with n8n, LangChain, LlamaIndex, MCP, custom pipelines.
 
 Price: $47 (Debug Playbook) | $27 (Context Kit) | $497 (Full Stack)
 ```
@@ -271,6 +295,7 @@ What you'll learn:
 • Evaluate accuracy against SOTA benchmarks (61,661 questions)
 • Debug production failures with 79+ documented fixes
 • Optimize prompts, retrieval, and generation nodes
+• Integrate RAG pipelines with AI agents via MCP
 
 Includes:
 • 10 ready-to-deploy n8n workflows
@@ -294,6 +319,7 @@ Prerequisites: Basic Python, familiarity with LLMs
 | HN20 | 20% | Hacker News |
 | DEVTO15 | 15% | Dev.to readers |
 | EARLYBIRD40 | 40% | Early adopters / DMs |
+| MCP25 | 25% | MCP/Agent communities |
 
 ---
 
@@ -306,6 +332,7 @@ Prerequisites: Basic Python, familiarity with LLMs
 - Hacker News — Show HN format
 - Dev.to — Technical articles
 - LinkedIn AI/ML groups
+- MCP Discord / Claude API communities (NEW)
 
 ### Medium Priority
 - r/artificial (1.2M)
@@ -315,7 +342,7 @@ Prerequisites: Basic Python, familiarity with LLMs
 - Product Hunt
 
 ### Outreach Cadence
-- Day 1: Telegram post + 5 LinkedIn DMs
+- Day 1: Telegram post ✅ (DONE — message_id=19) + 5 LinkedIn DMs
 - Day 2: Reddit post (r/LocalLLaMA) + 5 Twitter DMs
 - Day 3: Dev.to article + 3 email outreaches
 - Day 4: Discord community engagement + follow-ups
