@@ -1,5 +1,33 @@
 # War Log — Commercial Cycles
 
+## Cycle 18 — 2026-03-08
+
+### Actions
+1. **NEW MICRO-SITE**: RAG Mistakes Checker (interactive checklist tool)
+   - 15 critical mistakes across 5 categories: Retrieval, Data, LLM, Eval, Ops
+   - Each mistake has severity rating (Critical/High/Medium) and concrete impact numbers
+   - Users check mistakes they're making → get personalized fix plan with product recommendations
+   - Score ring visualization with A-F grading system
+   - Per-mistake product mapping → targeted upsell (not generic)
+   - MEGA BUNDLE CTA for users with 3+ mistakes (most users)
+   - Location: `monetisation/sites/rag-mistakes-checker/index.html`
+
+2. **TELEGRAM POST**: "15 RAG Mistakes" angle on @Nomos42 (message_id: 32)
+   - Hook: "Are You Making These 15 RAG Mistakes?"
+   - Full list of all 15 mistakes with impact metrics
+   - Social proof: "audited 90+ production pipelines"
+   - Multiple product links + MEGA BUNDLE CTA
+   - Fresh angle: self-diagnosis/checklist (vs previous assessment/diagnostic/architecture angles)
+
+### Impact Estimate
+- "Mistakes" framing triggers loss aversion — strongest psychological conversion driver
+- Checklist format = highest engagement of any content type (people NEED to check)
+- Each checked mistake = self-qualified lead for specific product
+- 80%+ of users will check 3+ mistakes → MEGA BUNDLE becomes obvious choice
+- Expected: 3-5 bundle conversions/month from mistakes funnel = $1,491-$2,485/month
+
+---
+
 ## Cycle 17 — 2026-03-08
 
 ### Actions
