@@ -16,21 +16,35 @@ JINA_EMBED_URL = 'https://api.jina.ai/v1/embeddings'
 JINA_RERANK_URL = 'https://api.jina.ai/v1/rerank'
 
 def update_workflow(filepath, embed_url, dry_run=False):
-    """Update embedding URLs in a workflow JSON file."""
+    """Update embedding URLs and remove Jina auth headers in a workflow JSON file."""
     with open(filepath) as f:
-        content = f.read()
+        data = json.load(f)
 
-    original = content
     changes = []
 
-    # Replace Jina embedding URL — use /v1/embeddings (Jina-compatible format)
-    if JINA_EMBED_URL in content:
-        content = content.replace(JINA_EMBED_URL, f'{embed_url}/v1/embeddings')
-        changes.append(f'Jina embed → {embed_url}/v1/embeddings')
+    for node in data.get('nodes', []):
+        params = node.get('parameters', {})
+        url = params.get('url', '')
 
-    # Update request body format: Jina uses {"model":..., "input":...}
-    # TEI/Gradio uses {"inputs":..., "truncate": true}
-    # This needs careful node-by-node handling, skip for now
+        # Only replace embedding URLs (NOT rerank)
+        if url == JINA_EMBED_URL:
+            new_url = f'{embed_url}/v1/embeddings'
+            if not dry_run:
+                params['url'] = new_url
+            changes.append(f'{node["name"]}: URL → {new_url}')
+
+            # Remove Jina auth header (self-hosted needs no auth)
+            hp = params.get('headerParameters', {})
+            hp_params = hp.get('parameters', [])
+            stripped = [p for p in hp_params if 'JINA' not in str(p.get('value', ''))]
+            if len(stripped) < len(hp_params):
+                if not dry_run:
+                    if stripped:
+                        hp['parameters'] = stripped
+                    else:
+                        params['sendHeaders'] = False
+                        params.pop('headerParameters', None)
+                changes.append(f'{node["name"]}: removed Jina auth header')
 
     if not changes:
         return 0
@@ -42,7 +56,7 @@ def update_workflow(filepath, embed_url, dry_run=False):
         return len(changes)
 
     with open(filepath, 'w') as f:
-        f.write(content)
+        json.dump(data, f, indent=2)
     print(f'  {filepath}: {len(changes)} changes applied')
     for c in changes:
         print(f'    - {c}')

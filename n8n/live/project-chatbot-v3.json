@@ -1,5 +1,5 @@
 {
-  "name": "Project Chatbot V3 — RAG-Enhanced Q&A",
+  "name": "Project Chatbot V3 \u2014 RAG-Enhanced Q&A",
   "active": true,
   "nodes": [
     {
@@ -11,7 +11,10 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [200, 300],
+      "position": [
+        200,
+        300
+      ],
       "id": "cb-v3-webhook",
       "name": "Chatbot Webhook",
       "webhookId": "project-chatbot"
@@ -22,7 +25,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [450, 300],
+      "position": [
+        450,
+        300
+      ],
       "id": "cb-v3-prepare-query",
       "name": "Prepare Search Query"
     },
@@ -52,14 +58,17 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [670, 300],
+      "position": [
+        670,
+        300
+      ],
       "id": "cb-v3-error-check",
       "name": "Validation Error?"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.jina.ai/v1/embeddings",
+        "url": "https://lbjlincoln-nomos-embeddings-api.hf.space/v1/embeddings",
         "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
@@ -81,10 +90,6 @@
         "headerParameters": {
           "parameters": [
             {
-              "name": "Authorization",
-              "value": "=Bearer {{$env.JINA_API_KEY}}"
-            },
-            {
               "name": "Content-Type",
               "value": "application/json"
             }
@@ -93,7 +98,10 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [900, 400],
+      "position": [
+        900,
+        400
+      ],
       "id": "cb-v3-embed-question",
       "name": "Embed Question (Jina)",
       "continueOnFail": true
@@ -135,7 +143,10 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1150, 400],
+      "position": [
+        1150,
+        400
+      ],
       "id": "cb-v3-pinecone-search",
       "name": "Search Pinecone",
       "continueOnFail": true
@@ -176,18 +187,24 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1400, 400],
+      "position": [
+        1400,
+        400
+      ],
       "id": "cb-v3-supabase-query",
       "name": "Query Supabase Metadata",
       "continueOnFail": true
     },
     {
       "parameters": {
-        "jsCode": "// ============================================================\n// Node 5: FORMAT CONTEXT FROM PINECONE + SUPABASE\n// Merge retrieval results into a structured context for the LLM\n// ============================================================\n\nconst prepareNode = $node['Prepare Search Query'].json;\nconst question = prepareNode.question;\nconst lang = prepareNode.lang;\nconst detectedTopic = prepareNode.detectedTopic;\n\n// --- Extract Pinecone results ---\nlet pineconeContext = '';\nlet pineconeSourceIds = [];\nlet pineconeScores = [];\n\ntry {\n  const pineconeData = $node['Search Pinecone'].json;\n  const matches = pineconeData.matches || [];\n  \n  if (matches.length > 0) {\n    const relevantMatches = matches.filter(m => (m.score || 0) >= 0.3);\n    \n    pineconeContext = relevantMatches.map((m, i) => {\n      const meta = m.metadata || {};\n      const text = meta.text || meta.content || meta.chunk_text || meta.document_text || '';\n      const source = meta.source || meta.filename || meta.title || meta.id || m.id || `doc-${i}`;\n      const score = (m.score || 0).toFixed(3);\n      \n      pineconeSourceIds.push(source);\n      pineconeScores.push(parseFloat(score));\n      \n      return `[Source ${i + 1}: ${source} (score: ${score})]\\n${text.substring(0, 800)}`;\n    }).join('\\n\\n---\\n\\n');\n  }\n} catch (e) {\n  pineconeContext = '';\n}\n\n// --- Extract Supabase metadata ---\nlet supabaseContext = '';\ntry {\n  const supabaseData = $node['Query Supabase Metadata'].json;\n  \n  if (Array.isArray(supabaseData) && supabaseData.length > 0) {\n    const tableList = supabaseData.map(t => `${t.table_name} (${t.column_count} columns)`).join(', ');\n    supabaseContext = `Available Supabase tables: ${tableList}`;\n  } else if (supabaseData && !supabaseData.error) {\n    supabaseContext = `Supabase metadata available: ${JSON.stringify(supabaseData).substring(0, 500)}`;\n  }\n} catch (e) {\n  supabaseContext = '';\n}\n\n// --- Build comprehensive project knowledge base (fallback) ---\nconst PROJECT_KB = `\n## NOMOS AI PROJECT — KNOWLEDGE BASE\n\n### Overview\nNomos AI is an advanced Multi-RAG Orchestrator system that answers complex questions by searching multiple databases simultaneously. It uses 4 specialized RAG pipelines and an intelligent orchestrator that automatically selects the best search method for each question.\n\n### Target: Process 1M+ questions across 4 sectors (Construction/BTP, Industry, Finance, Legal) with 85%+ accuracy and <2.5s response time.\n\n### The 4 RAG Pipelines\n1. **Standard Pipeline** (text search): Question -> HyDE generation -> Pinecone vector search (10,411 vectors, 1024-dim Jina v3) -> Jina reranking -> Llama 70B answer. Phase 1: 85.5% accuracy.\n2. **Graph Pipeline** (entity/relationship search): Question -> entity extraction -> Neo4j graph traversal (19,788 nodes, 76,717 relationships) -> LLM synthesis. Phase 1: 78.0% accuracy. Phase 2: 78.0% (500/500 COMPLETE).\n3. **Quantitative Pipeline** (SQL/numbers): Question -> intent analysis -> SQL generation -> Supabase query (40+ tables, ~17,600 rows) -> LLM interpretation. Phase 1: 92.0% accuracy. Phase 2: 92.0% (500/500 COMPLETE). Best performing pipeline.\n4. **Orchestrator Pipeline** (combines all 3): Question -> intent classification -> route to best pipeline(s) -> aggregate results. Phase 1: 80.0% accuracy.\n\n### Phase 1 Results (200 questions) — PASSED Feb 20, 2026\n- Standard: 85.5% | Graph: 78.0% | Quantitative: 92.0% | Orchestrator: 80.0% | Overall: 83.9%\n\n### Phase 2 (1,000 questions per pipeline) — IN PROGRESS\n- Graph: 78.0% (500/500 COMPLETE) | Quantitative: 92.0% (500/500 COMPLETE)\n- Standard: ~36% (579/1000, paused) | Orchestrator: 0% (57/1000, being repaired)\n- Total questions tested: 1,520+\n\n### Infrastructure\n- Control plane: Google Cloud VM (1 vCPU, 970MB RAM, Debian 11) running Claude Code Opus 4.6\n- Execution: HuggingFace Space (16GB RAM, n8n v2.8.4 with queue mode, 12 workflows)\n- Testing: GitHub Codespaces (2 cores, 8GB RAM, ephemeral)\n- Websites: 4 Vercel deployments (ETI 4-sector site, PME Connectors, PME Use Cases, Dashboard)\n\n### Databases\n- Pinecone: sota-rag-jina-1024 (10,411 vectors, 1024-dim) + 2 secondary indexes\n- Neo4j Aura: 19,788 nodes (8,531 people, 8,331 entities, 1,775 orgs, 840 cities), 76,717 relationships\n- Supabase PostgreSQL: 40+ tables, ~17,600 rows (financials, balance sheets, sales, employees, benchmarks)\n\n### Tech Stack\n- LLMs: OpenRouter free tier — Llama 3.3 70B Instruct, Gemma 3 27B, Trinity Large\n- Embeddings: Jina AI v3 (1024-dim, free 1M tokens/month)\n- Reranking: Jina Reranker v2\n- Workflow engine: n8n | Websites: Next.js 14/15 on Vercel\n- 7 private GitHub repos | 7 MCP server connectors\n- Budget: $0 (all services on free tiers)\n\n### 4 Target Sectors\n1. Construction/BTP: regulations, DTU standards, Eurocodes, safety, 7,600+ documents ready\n2. Industry: predictive maintenance, quality control, supply chain\n3. Finance: balance sheets, revenue analysis, financial ratios\n4. Legal: contracts, compliance, GDPR, case law\n\n### PME (Small Business) Features\n- 15 multi-channel connectors: WhatsApp, Telegram, Slack, Teams, Discord, Gmail, Outlook, HubSpot, Salesforce, Pipedrive, Notion, Google Sheets, Airtable, Zendesk, Freshdesk\n- 3 active PME workflows: Gateway, Slack Connector, Gmail Connector\n- 200 documented use cases\n\n### Project Phases\n- Phase 1: 200q baseline — PASSED (83.9%)\n- Phase 2: 1,000q/pipeline — IN PROGRESS\n- Phase 3: ~10,000q — Next\n- Phase 4: ~100,000q — Planned\n- Phase 5: 1M+ — Final target\n\n### Key Metrics\n- 1,520+ questions tested | 83.9% Phase 1 accuracy | 22,070 vectors in Pinecone\n- 19,788 Neo4j entities | ~17,600 Supabase rows | 7,609 sector documents\n- 200+ commits | 55+ bugs resolved | 55 Claude Code sessions | 12 active workflows\n`;\n\n// --- Compute confidence based on retrieval quality ---\nlet confidence = 0.5; // baseline from KB\nif (pineconeScores.length > 0) {\n  const avgScore = pineconeScores.reduce((a, b) => a + b, 0) / pineconeScores.length;\n  const topScore = Math.max(...pineconeScores);\n  confidence = Math.min(0.95, 0.4 + (topScore * 0.4) + (avgScore * 0.2));\n}\nif (pineconeScores.length === 0 && !supabaseContext) {\n  confidence = 0.5; // KB-only answer\n}\n\n// --- Build the combined context ---\nlet retrievalContext = '';\nif (pineconeContext) {\n  retrievalContext += `## Retrieved Documents from Vector Database\\n\\n${pineconeContext}\\n\\n`;\n}\nif (supabaseContext) {\n  retrievalContext += `## Database Metadata\\n\\n${supabaseContext}\\n\\n`;\n}\n\nconst fullContext = retrievalContext\n  ? `${retrievalContext}\\n\\n## Project Knowledge Base (supplementary)\\n\\n${PROJECT_KB}`\n  : PROJECT_KB;\n\n// --- Build system prompt ---\nconst systemPrompt = lang === 'fr'\n  ? `Tu es l'assistant IA officiel du projet Nomos AI Multi-RAG Orchestrator. Tu reponds aux questions sur le projet de maniere precise, professionnelle et structuree. Tu reponds TOUJOURS en francais.\\n\\nUtilise le contexte suivant pour repondre. Privilegie les documents recuperes (Retrieved Documents) quand ils sont pertinents, puis complete avec la base de connaissances projet.\\n\\nSi tu ne connais pas la reponse exacte, dis-le clairement. Ne fabrique JAMAIS de chiffres ou statistiques non mentionnes dans le contexte.\\n\\nStructure tes reponses avec des listes et tableaux quand c'est pertinent. Sois concis mais complet.\\n\\nCONTEXTE:\\n${fullContext}`\n  : `You are the official AI assistant for the Nomos AI Multi-RAG Orchestrator project. You answer questions about the project accurately, professionally, and with well-structured responses. You ALWAYS respond in English.\\n\\nUse the following context to answer. Prioritize Retrieved Documents when relevant, then supplement with the project knowledge base.\\n\\nIf you don't know the exact answer, say so clearly. NEVER fabricate numbers or statistics not mentioned in the context.\\n\\nStructure your responses with lists and tables when appropriate. Be concise but thorough.\\n\\nCONTEXT:\\n${fullContext}`;\n\nreturn {\n  json: {\n    question: question,\n    lang: lang,\n    detectedTopic: detectedTopic,\n    systemPrompt: systemPrompt,\n    confidence: Math.round(confidence * 100) / 100,\n    sources: pineconeSourceIds,\n    pinecone_matches: pineconeScores.length,\n    has_supabase_data: !!supabaseContext\n  }\n};"
+        "jsCode": "// ============================================================\n// Node 5: FORMAT CONTEXT FROM PINECONE + SUPABASE\n// Merge retrieval results into a structured context for the LLM\n// ============================================================\n\nconst prepareNode = $node['Prepare Search Query'].json;\nconst question = prepareNode.question;\nconst lang = prepareNode.lang;\nconst detectedTopic = prepareNode.detectedTopic;\n\n// --- Extract Pinecone results ---\nlet pineconeContext = '';\nlet pineconeSourceIds = [];\nlet pineconeScores = [];\n\ntry {\n  const pineconeData = $node['Search Pinecone'].json;\n  const matches = pineconeData.matches || [];\n  \n  if (matches.length > 0) {\n    const relevantMatches = matches.filter(m => (m.score || 0) >= 0.3);\n    \n    pineconeContext = relevantMatches.map((m, i) => {\n      const meta = m.metadata || {};\n      const text = meta.text || meta.content || meta.chunk_text || meta.document_text || '';\n      const source = meta.source || meta.filename || meta.title || meta.id || m.id || `doc-${i}`;\n      const score = (m.score || 0).toFixed(3);\n      \n      pineconeSourceIds.push(source);\n      pineconeScores.push(parseFloat(score));\n      \n      return `[Source ${i + 1}: ${source} (score: ${score})]\\n${text.substring(0, 800)}`;\n    }).join('\\n\\n---\\n\\n');\n  }\n} catch (e) {\n  pineconeContext = '';\n}\n\n// --- Extract Supabase metadata ---\nlet supabaseContext = '';\ntry {\n  const supabaseData = $node['Query Supabase Metadata'].json;\n  \n  if (Array.isArray(supabaseData) && supabaseData.length > 0) {\n    const tableList = supabaseData.map(t => `${t.table_name} (${t.column_count} columns)`).join(', ');\n    supabaseContext = `Available Supabase tables: ${tableList}`;\n  } else if (supabaseData && !supabaseData.error) {\n    supabaseContext = `Supabase metadata available: ${JSON.stringify(supabaseData).substring(0, 500)}`;\n  }\n} catch (e) {\n  supabaseContext = '';\n}\n\n// --- Build comprehensive project knowledge base (fallback) ---\nconst PROJECT_KB = `\n## NOMOS AI PROJECT \u2014 KNOWLEDGE BASE\n\n### Overview\nNomos AI is an advanced Multi-RAG Orchestrator system that answers complex questions by searching multiple databases simultaneously. It uses 4 specialized RAG pipelines and an intelligent orchestrator that automatically selects the best search method for each question.\n\n### Target: Process 1M+ questions across 4 sectors (Construction/BTP, Industry, Finance, Legal) with 85%+ accuracy and <2.5s response time.\n\n### The 4 RAG Pipelines\n1. **Standard Pipeline** (text search): Question -> HyDE generation -> Pinecone vector search (10,411 vectors, 1024-dim Jina v3) -> Jina reranking -> Llama 70B answer. Phase 1: 85.5% accuracy.\n2. **Graph Pipeline** (entity/relationship search): Question -> entity extraction -> Neo4j graph traversal (19,788 nodes, 76,717 relationships) -> LLM synthesis. Phase 1: 78.0% accuracy. Phase 2: 78.0% (500/500 COMPLETE).\n3. **Quantitative Pipeline** (SQL/numbers): Question -> intent analysis -> SQL generation -> Supabase query (40+ tables, ~17,600 rows) -> LLM interpretation. Phase 1: 92.0% accuracy. Phase 2: 92.0% (500/500 COMPLETE). Best performing pipeline.\n4. **Orchestrator Pipeline** (combines all 3): Question -> intent classification -> route to best pipeline(s) -> aggregate results. Phase 1: 80.0% accuracy.\n\n### Phase 1 Results (200 questions) \u2014 PASSED Feb 20, 2026\n- Standard: 85.5% | Graph: 78.0% | Quantitative: 92.0% | Orchestrator: 80.0% | Overall: 83.9%\n\n### Phase 2 (1,000 questions per pipeline) \u2014 IN PROGRESS\n- Graph: 78.0% (500/500 COMPLETE) | Quantitative: 92.0% (500/500 COMPLETE)\n- Standard: ~36% (579/1000, paused) | Orchestrator: 0% (57/1000, being repaired)\n- Total questions tested: 1,520+\n\n### Infrastructure\n- Control plane: Google Cloud VM (1 vCPU, 970MB RAM, Debian 11) running Claude Code Opus 4.6\n- Execution: HuggingFace Space (16GB RAM, n8n v2.8.4 with queue mode, 12 workflows)\n- Testing: GitHub Codespaces (2 cores, 8GB RAM, ephemeral)\n- Websites: 4 Vercel deployments (ETI 4-sector site, PME Connectors, PME Use Cases, Dashboard)\n\n### Databases\n- Pinecone: sota-rag-jina-1024 (10,411 vectors, 1024-dim) + 2 secondary indexes\n- Neo4j Aura: 19,788 nodes (8,531 people, 8,331 entities, 1,775 orgs, 840 cities), 76,717 relationships\n- Supabase PostgreSQL: 40+ tables, ~17,600 rows (financials, balance sheets, sales, employees, benchmarks)\n\n### Tech Stack\n- LLMs: OpenRouter free tier \u2014 Llama 3.3 70B Instruct, Gemma 3 27B, Trinity Large\n- Embeddings: Jina AI v3 (1024-dim, free 1M tokens/month)\n- Reranking: Jina Reranker v2\n- Workflow engine: n8n | Websites: Next.js 14/15 on Vercel\n- 7 private GitHub repos | 7 MCP server connectors\n- Budget: $0 (all services on free tiers)\n\n### 4 Target Sectors\n1. Construction/BTP: regulations, DTU standards, Eurocodes, safety, 7,600+ documents ready\n2. Industry: predictive maintenance, quality control, supply chain\n3. Finance: balance sheets, revenue analysis, financial ratios\n4. Legal: contracts, compliance, GDPR, case law\n\n### PME (Small Business) Features\n- 15 multi-channel connectors: WhatsApp, Telegram, Slack, Teams, Discord, Gmail, Outlook, HubSpot, Salesforce, Pipedrive, Notion, Google Sheets, Airtable, Zendesk, Freshdesk\n- 3 active PME workflows: Gateway, Slack Connector, Gmail Connector\n- 200 documented use cases\n\n### Project Phases\n- Phase 1: 200q baseline \u2014 PASSED (83.9%)\n- Phase 2: 1,000q/pipeline \u2014 IN PROGRESS\n- Phase 3: ~10,000q \u2014 Next\n- Phase 4: ~100,000q \u2014 Planned\n- Phase 5: 1M+ \u2014 Final target\n\n### Key Metrics\n- 1,520+ questions tested | 83.9% Phase 1 accuracy | 22,070 vectors in Pinecone\n- 19,788 Neo4j entities | ~17,600 Supabase rows | 7,609 sector documents\n- 200+ commits | 55+ bugs resolved | 55 Claude Code sessions | 12 active workflows\n`;\n\n// --- Compute confidence based on retrieval quality ---\nlet confidence = 0.5; // baseline from KB\nif (pineconeScores.length > 0) {\n  const avgScore = pineconeScores.reduce((a, b) => a + b, 0) / pineconeScores.length;\n  const topScore = Math.max(...pineconeScores);\n  confidence = Math.min(0.95, 0.4 + (topScore * 0.4) + (avgScore * 0.2));\n}\nif (pineconeScores.length === 0 && !supabaseContext) {\n  confidence = 0.5; // KB-only answer\n}\n\n// --- Build the combined context ---\nlet retrievalContext = '';\nif (pineconeContext) {\n  retrievalContext += `## Retrieved Documents from Vector Database\\n\\n${pineconeContext}\\n\\n`;\n}\nif (supabaseContext) {\n  retrievalContext += `## Database Metadata\\n\\n${supabaseContext}\\n\\n`;\n}\n\nconst fullContext = retrievalContext\n  ? `${retrievalContext}\\n\\n## Project Knowledge Base (supplementary)\\n\\n${PROJECT_KB}`\n  : PROJECT_KB;\n\n// --- Build system prompt ---\nconst systemPrompt = lang === 'fr'\n  ? `Tu es l'assistant IA officiel du projet Nomos AI Multi-RAG Orchestrator. Tu reponds aux questions sur le projet de maniere precise, professionnelle et structuree. Tu reponds TOUJOURS en francais.\\n\\nUtilise le contexte suivant pour repondre. Privilegie les documents recuperes (Retrieved Documents) quand ils sont pertinents, puis complete avec la base de connaissances projet.\\n\\nSi tu ne connais pas la reponse exacte, dis-le clairement. Ne fabrique JAMAIS de chiffres ou statistiques non mentionnes dans le contexte.\\n\\nStructure tes reponses avec des listes et tableaux quand c'est pertinent. Sois concis mais complet.\\n\\nCONTEXTE:\\n${fullContext}`\n  : `You are the official AI assistant for the Nomos AI Multi-RAG Orchestrator project. You answer questions about the project accurately, professionally, and with well-structured responses. You ALWAYS respond in English.\\n\\nUse the following context to answer. Prioritize Retrieved Documents when relevant, then supplement with the project knowledge base.\\n\\nIf you don't know the exact answer, say so clearly. NEVER fabricate numbers or statistics not mentioned in the context.\\n\\nStructure your responses with lists and tables when appropriate. Be concise but thorough.\\n\\nCONTEXT:\\n${fullContext}`;\n\nreturn {\n  json: {\n    question: question,\n    lang: lang,\n    detectedTopic: detectedTopic,\n    systemPrompt: systemPrompt,\n    confidence: Math.round(confidence * 100) / 100,\n    sources: pineconeSourceIds,\n    pinecone_matches: pineconeScores.length,\n    has_supabase_data: !!supabaseContext\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1650, 400],
+      "position": [
+        1650,
+        400
+      ],
       "id": "cb-v3-format-context",
       "name": "Format Context"
     },
@@ -230,7 +247,10 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1900, 400],
+      "position": [
+        1900,
+        400
+      ],
       "id": "cb-v3-llm-call",
       "name": "Call OpenRouter LLM",
       "continueOnFail": true
@@ -241,7 +261,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2150, 400],
+      "position": [
+        2150,
+        400
+      ],
       "id": "cb-v3-format-response",
       "name": "Format Response"
     },
@@ -270,7 +293,10 @@
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [2400, 400],
+      "position": [
+        2400,
+        400
+      ],
       "id": "cb-v3-respond-success",
       "name": "Respond Success"
     },
@@ -292,7 +318,10 @@
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [900, 200],
+      "position": [
+        900,
+        200
+      ],
       "id": "cb-v3-respond-error",
       "name": "Respond Validation Error"
     }
