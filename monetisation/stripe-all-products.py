@@ -77,6 +77,13 @@ PRODUCTS = [
         "price_cents": 6700,
         "currency": "usd",
     },
+    # NEW - Operations Runbook
+    {
+        "name": "RAG Operations Runbook — Zero to Production in 30 Days",
+        "description": "Week-by-week playbook built from 76 real engineering sessions and 61K benchmark questions. Day-by-day checklists, decision matrices, anti-patterns, batch size configs, debugging flowcharts. Go from zero to 80%+ accuracy on $0 infrastructure in 30 days. Includes prompt template library (25 templates) and complete infrastructure reference.",
+        "price_cents": 9700,
+        "currency": "usd",
+    },
     # MEGA BUNDLE
     {
         "name": "MEGA BUNDLE — Complete RAG Engineering Stack",
