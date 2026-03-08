@@ -1,7 +1,7 @@
 {
   "updatedAt": "2026-03-06T18:05:14.991Z",
   "createdAt": "2026-02-14T01:10:15.711Z",
-  "id": "6257AfT1l4FMC6lY",
+  "id": "0wTNiRtQDdF7fHa6",
   "name": "WF-WEB Graph RAG V3.3 (Website Sectors)",
   "description": null,
   "active": true,
@@ -129,12 +129,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://sota-rag-text-a4mkzmz.svc.aped-4627-b74a.pinecone.io/records/namespaces/__default__/search",
+        "url": "https://website-sectors-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
         "authentication": "none",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"query\": {\n    \"top_k\": 15,\n    \"inputs\": {\n      \"text\": {{ JSON.stringify($node['WF3: HyDE & Entity Extraction'].json.choices?.[0]?.message?.content || $node['OTEL Init'].json.query || '') }}\n    }\n  }\n}",
+        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Validate Embedding'].json.embedding || $node['Generate HyDE Embedding'].json.embeddings?.float?.[0] || $node['Generate HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['OTEL Init'].json.topK || 100 }},\n  \"namespace\": \"sectors\",\n  \"includeMetadata\": true\n}",
         "options": {
           "timeout": 30000,
           "retry": {
@@ -993,7 +993,7 @@
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Validate Embedding'].json.embedding || $node['Generate HyDE Embedding'].json.embeddings?.float?.[0] || []) }},\n  \"topK\": {{ $node['OTEL Init'].json.topK || 100 }},\n  \"includeMetadata\": true\n}",
+          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Validate Embedding'].json.embedding || $node['Generate HyDE Embedding'].json.embeddings?.float?.[0] || $node['Generate HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['OTEL Init'].json.topK || 100 }},\n  \"namespace\": \"sectors\",\n  \"includeMetadata\": true\n}",
           "options": {
             "timeout": 30000,
             "retry": {

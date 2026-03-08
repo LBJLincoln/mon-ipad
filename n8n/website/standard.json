@@ -1,7 +1,7 @@
 {
   "updatedAt": "2026-03-06T18:00:47.995Z",
   "createdAt": "2026-02-14T01:10:12.253Z",
-  "id": "TmgyRP20N4JFd9CB",
+  "id": "2Pk87ulicqq1CmMw",
   "name": "WF-WEB Standard RAG V3.4 (Website Sectors)",
   "description": null,
   "active": true,
@@ -138,12 +138,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://sota-rag-text-a4mkzmz.svc.aped-4627-b74a.pinecone.io/records/namespaces/__default__/search",
+        "url": "https://website-sectors-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
         "authentication": "none",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"query\": {\n    \"top_k\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n    \"inputs\": {\n      \"text\": {{ JSON.stringify($node['HyDE Generator'].json.choices?.[0]?.message?.content || $node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  }\n}",
+        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.data?.[0]?.embedding || $node['HyDE Embedding'].json.embeddings?.float?.[0] || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"namespace\": \"sectors\",\n  \"includeMetadata\": true\n}",
         "options": {
           "batching": {
             "batch": {
@@ -222,12 +222,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://sota-rag-text-a4mkzmz.svc.aped-4627-b74a.pinecone.io/records/namespaces/__default__/search",
+        "url": "https://website-sectors-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
         "authentication": "none",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"query\": {\n    \"top_k\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n    \"inputs\": {\n      \"text\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  }\n}",
+        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.data?.[0]?.embedding || $node['Original Embedding'].json.embeddings?.float?.[0] || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"namespace\": \"sectors\",\n  \"includeMetadata\": true\n}",
         "options": {
           "batching": {
             "batch": {
@@ -1082,7 +1082,7 @@
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.embeddings?.float?.[0] || $node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.data?.[0]?.embedding || $node['HyDE Embedding'].json.embeddings?.float?.[0] || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"namespace\": \"sectors\",\n  \"includeMetadata\": true\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1173,7 +1173,7 @@
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.embeddings?.float?.[0] || $node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.data?.[0]?.embedding || $node['Original Embedding'].json.embeddings?.float?.[0] || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"namespace\": \"sectors\",\n  \"includeMetadata\": true\n}",
           "options": {
             "batching": {
               "batch": {
