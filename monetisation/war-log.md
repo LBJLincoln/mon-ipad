@@ -1,5 +1,31 @@
 # War Log — Commercial Cycles
 
+## Cycle 13 — 2026-03-08
+
+### Actions
+1. **NEW PRODUCT**: MCP + RAG Integration Playbook ($147)
+   - 18-chapter playbook: MCP servers (TS+Python), 12 RAG tool definitions, multi-pipeline routing
+   - Hottest topic in AI engineering right now — MCP adoption is exploding
+   - Stripe product: `prod_U73LMvGP9rlygL`
+   - Payment link: https://buy.stripe.com/6oU6oA6Dw2v1dTJdkx5J60i
+   - ZIP package created in `monetisation/packages/`
+
+2. **SALES PAGE UPDATE**: Added MCP RAG Playbook card with green/blue gradient border + HOT badge
+   - Positioned before Agentic RAG (natural companion product)
+   - Added to JSON-LD structured data for SEO
+
+3. **TELEGRAM POST**: Product highlight on @Nomos42 (message_id: 18)
+   - Hook: "Your RAG pipeline is powerful. But your AI assistants can't use it."
+   - Feature list + buy link + mega bundle upsell
+
+### Impact Estimate
+- MCP is THE trending protocol — Claude, Cursor, Windsurf all adopting it
+- $147 price point matches Agentic RAG (companion purchase likely)
+- Total catalog now: 17 products, $27-$497 range
+- Expected: 3-8 sales/month = $441-$1,176/month incremental
+
+---
+
 ## Cycle 1 — 2026-03-08
 
 ### Actions
