@@ -435,13 +435,50 @@ Recommended order (highest value first):
 
 ## 7. Checklist
 
-- [ ] Store settings configured (USD, tax, branding)
+- [ ] Store settings configured (currency change EUR->USD, tax, branding)
 - [ ] All 14 products created in dashboard
 - [ ] ZIP files uploaded for 9 ready products
 - [ ] Remaining 5 ZIPs packaged and uploaded
-- [ ] LAUNCH20 discount code created
-- [ ] BUNDLE30 discount code created
-- [ ] Checkout URLs generated via API
+- [x] LAUNCH20 discount code created (API, 20% off, 100 uses)
+- [x] BUNDLE30 discount code created (API, 30% off, 50 uses)
+- [x] REDDIT25 discount code created (API, 25% off, unlimited)
+- [x] HN20 discount code created (API, 20% off, unlimited)
+- [x] DEVTO15 discount code created (API, 15% off, unlimited)
+- [x] EARLYBIRD40 discount code created (API, 40% off, 10 uses)
+- [x] Webhook created (ID: 79486, order_created + subscription_created)
+- [ ] Checkout URLs generated via API (needs products first)
 - [ ] URLs added to `monetisation/distribution-posts.md`
 - [ ] Sales page updated with Lemon Squeezy links as alternative to Stripe
 - [ ] Test purchase completed with discount code
+
+## 8. Automation Script
+
+```bash
+# After creating products in dashboard, generate checkout URLs:
+source .env.local
+python3 monetisation/lemon-squeezy-create-products.py
+```
+
+The script (`monetisation/lemon-squeezy-create-products.py`) will:
+1. Check existing products via API
+2. If `LEMON_SQUEEZY_PASSWORD` is set, automate dashboard product creation
+3. Generate checkout URLs for all products
+4. Create discount codes (already done)
+
+### API Limitations
+- Products: **READ-ONLY** (GET/LIST only, no POST/CREATE)
+- Variants: **READ-ONLY** (GET/LIST only)
+- Checkouts: CREATE supported (needs existing variant)
+- Discounts: CREATE/DELETE supported
+- Webhooks: CREATE/UPDATE/DELETE supported
+- Store: **READ-ONLY** (no PATCH)
+
+## 9. Status (2026-03-08)
+
+| Item | Status | Details |
+|------|--------|---------|
+| Store | ACTIVE | nomos42.lemonsqueezy.com, EUR, France, free plan |
+| Products | 0/14 | Must create via dashboard (API read-only) |
+| Discounts | 6/6 | All created via API (test mode until store activated) |
+| Webhook | ACTIVE | ID 79486, order_created events |
+| Automation | READY | Script needs LEMON_SQUEEZY_PASSWORD or manual products |

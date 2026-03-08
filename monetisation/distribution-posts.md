@@ -3,7 +3,7 @@
 > Created: 2026-03-08
 > Author: Alexis Moret
 > Products: RAG Debug Playbook ($47), AI Agent Context Kit ($27), Multi-RAG Blueprint ($197)
-> Payment: Stripe — use [LINK] placeholder until real buy.stripe.com links are set
+> Payment: Stripe — all links live
 
 ---
 
@@ -82,11 +82,11 @@ Every failure became a structured fix: symptom, root cause, solution code, preve
 
 I packaged this into two products for anyone building RAG:
 
-- **RAG Debug Playbook** ($47) — The full 79+ fixes, 3 diagnostic flowcharts, 12 anti-patterns, LLM behavior profiles, database gotchas. PDF + Markdown format (the .md works as a Claude Code / Copilot / Cursor context file). [LINK]
+- **RAG Debug Playbook** ($47) — The full 79+ fixes, 3 diagnostic flowcharts, 12 anti-patterns, LLM behavior profiles, database gotchas. PDF + Markdown format (the .md works as a Claude Code / Copilot / Cursor context file). https://buy.stripe.com/00w7sEd1U2v14j92FT5J600
 
-- **AI Agent Context Kit** ($27) — Drop-in .md context files that give your AI coding assistant instant RAG debugging expertise. Your Claude/Copilot/Cursor reads the file and knows every fix. [LINK]
+- **AI Agent Context Kit** ($27) — Drop-in .md context files that give your AI coding assistant instant RAG debugging expertise. Your Claude/Copilot/Cursor reads the file and knows every fix. https://buy.stripe.com/7sY9AMbXQ4D94j95S55J601
 
-- **Multi-RAG Architecture Blueprint** ($197) — Complete architecture docs, n8n workflow JSONs (import and run), LiteLLM proxy config, evaluation scripts, infrastructure setup guide. Everything you need to build the system described above. [LINK]
+- **Multi-RAG Architecture Blueprint** ($197) — Complete architecture docs, n8n workflow JSONs (import and run), LiteLLM proxy config, evaluation scripts, infrastructure setup guide. Everything you need to build the system described above. https://buy.stripe.com/aFa14g4vob1x3f5bcp5J602
 
 Happy to answer questions about specific architectural decisions, failure modes, or the evaluation methodology.
 
@@ -149,8 +149,8 @@ We adopted a strict rule: if a fix introduces 3+ regressions on the existing tes
 
 I documented all 79 production fixes, the evaluation scripts, and the full methodology in two resources:
 
-- **RAG Debug Playbook** ($47) — 79+ fixes with root cause analysis, diagnostic flowcharts, anti-patterns. PDF + Markdown. [LINK]
-- **Multi-RAG Architecture Blueprint** ($197) — Complete architecture, n8n workflows, eval scripts, infrastructure guide. [LINK]
+- **RAG Debug Playbook** ($47) — 79+ fixes with root cause analysis, diagnostic flowcharts, anti-patterns. PDF + Markdown. https://buy.stripe.com/00w7sEd1U2v14j92FT5J600
+- **Multi-RAG Architecture Blueprint** ($197) — Complete architecture, n8n workflows, eval scripts, infrastructure guide. https://buy.stripe.com/aFa14g4vob1x3f5bcp5J602
 
 Happy to discuss evaluation methodology, failure taxonomies, or specific pipeline design decisions.
 
@@ -178,9 +178,9 @@ Each of the 79 fixes has: symptom, root cause, solution code, prevention strateg
 
 Format: PDF + Markdown. The .md version works as a context file for Claude Code, Copilot, or Cursor — drop it in your project and your AI assistant knows every fix.
 
-RAG Debug Playbook — $47: [LINK]
-AI Agent Context Kit (context files only) — $27: [LINK]
-Full Architecture Blueprint — $197: [LINK]
+RAG Debug Playbook — $47: https://buy.stripe.com/00w7sEd1U2v14j92FT5J600
+AI Agent Context Kit (context files only) — $27: https://buy.stripe.com/7sY9AMbXQ4D94j95S55J601
+Full Architecture Blueprint — $197: https://buy.stripe.com/aFa14g4vob1x3f5bcp5J602
 
 Background: Polytechnique + HEC (France). Founded an AI company serving top 3 French construction firms. Built this system to handle financial, legal, and industrial document analysis at scale.
 
@@ -435,13 +435,13 @@ The `llm_judge` function uses a separate LLM call to evaluate whether the genera
 I've packaged the hard-won knowledge from these 80+ sessions into three products:
 
 **RAG Debug Playbook ($47)** — 79+ production fixes with root cause analysis, 3 diagnostic flowcharts, 12 anti-patterns, LLM behavior profiles, database gotchas for Pinecone/Neo4j/Supabase. PDF + Markdown format. The .md version works as a Claude Code / Copilot / Cursor context file — drop it in your project and your AI assistant knows every fix.
-[LINK]
+https://buy.stripe.com/00w7sEd1U2v14j92FT5J600
 
 **AI Agent Context Kit ($27)** — Drop-in .md context files for Claude Code, GitHub Copilot, and Cursor. Your AI assistant gets instant RAG debugging expertise. No manual lookup needed.
-[LINK]
+https://buy.stripe.com/7sY9AMbXQ4D94j95S55J601
 
 **Multi-RAG Architecture Blueprint ($197)** — Complete architecture documentation, importable n8n workflow JSON files, LiteLLM proxy configuration, Python evaluation scripts, and infrastructure setup guide. Build what took 80+ sessions in a weekend.
-[LINK]
+https://buy.stripe.com/aFa14g4vob1x3f5bcp5J602
 
 No affiliates, no hype. Just documented production experience from building RAG systems that actually work.
 
@@ -560,9 +560,9 @@ RAG Debug Playbook ($47) — every fix, root cause to prevention
 AI Agent Context Kit ($27) — drop-in files for Claude/Copilot/Cursor
 Multi-RAG Blueprint ($197) — full architecture + n8n workflows
 
-[LINK]
+https://lbjlincoln.github.io/rag-dashboard/store.html
 
-Built by @[handle] — Polytechnique + HEC, founded AI company serving top 3 French constructors.
+Built by @AlexisMoretAI — Polytechnique + HEC, founded AI company serving top 3 French constructors.
 
 ---
 
@@ -590,9 +590,9 @@ After documenting 79 production fixes, clear patterns emerged: silent failures (
 
 I have compiled the complete fix library, diagnostic methodology, and architecture documentation into resources for teams building production RAG:
 
-- RAG Debug Playbook: 79+ fixes with root cause analysis, diagnostic flowcharts, database gotchas ($47) [LINK]
-- Multi-RAG Architecture Blueprint: Full architecture docs, importable n8n workflows, evaluation scripts, infrastructure guide ($197) [LINK]
-- AI Agent Context Kit: Context files for Claude Code, Copilot, and Cursor ($27) [LINK]
+- RAG Debug Playbook: 79+ fixes with root cause analysis, diagnostic flowcharts, database gotchas ($47) https://buy.stripe.com/00w7sEd1U2v14j92FT5J600
+- Multi-RAG Architecture Blueprint: Full architecture docs, importable n8n workflows, evaluation scripts, infrastructure guide ($197) https://buy.stripe.com/aFa14g4vob1x3f5bcp5J602
+- AI Agent Context Kit: Context files for Claude Code, Copilot, and Cursor ($27) https://buy.stripe.com/7sY9AMbXQ4D94j95S55J601
 
 All formats include Markdown files that work as AI assistant context -- drop into your project and your team's Claude, Copilot, or Cursor instance immediately has production RAG debugging expertise.
 
@@ -606,13 +606,12 @@ Open to discussing RAG architecture decisions, evaluation methodology, or infras
 
 ## Quick Reference: Product Links
 
-Replace [LINK] placeholders with actual Stripe links once created:
-
-| Product | Price | Placeholder |
-|---------|-------|-------------|
-| RAG Debug Playbook | $47 | [LINK] |
-| AI Agent Context Kit | $27 | [LINK] |
-| Multi-RAG Architecture Blueprint | $197 | [LINK] |
+| Product | Price | Link |
+|---------|-------|------|
+| RAG Debug Playbook | $47 | https://buy.stripe.com/00w7sEd1U2v14j92FT5J600 |
+| AI Agent Context Kit | $27 | https://buy.stripe.com/7sY9AMbXQ4D94j95S55J601 |
+| Multi-RAG Architecture Blueprint | $197 | https://buy.stripe.com/aFa14g4vob1x3f5bcp5J602 |
+| Store Page (all products) | — | https://lbjlincoln.github.io/rag-dashboard/store.html |
 
 ---
 
