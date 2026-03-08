@@ -11,7 +11,10 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [200, 300],
+      "position": [
+        200,
+        300
+      ],
       "id": "chatbot-webhook",
       "name": "Chatbot Webhook",
       "webhookId": "project-chatbot"
@@ -22,7 +25,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [450, 300],
+      "position": [
+        450,
+        300
+      ],
       "id": "chatbot-build-prompt",
       "name": "Build Prompt"
     },
@@ -52,20 +58,23 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [670, 300],
+      "position": [
+        670,
+        300
+      ],
       "id": "chatbot-error-check",
       "name": "Has Error?"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.OPENROUTER_API_KEY}}"
+              "value": "Bearer sk-litellm-nomos-2026"
             },
             {
               "name": "Content-Type",
@@ -83,7 +92,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"meta-llama/llama-3.3-70b-instruct:free\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": {{ JSON.stringify($json.systemPrompt) }}\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($json.userMessage) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 2048,\n  \"top_p\": 0.9\n}",
+        "jsonBody": "={\n  \"model\": \"llama-70b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": {{ JSON.stringify($json.systemPrompt) }}\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($json.userMessage) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 2048,\n  \"top_p\": 0.9\n}",
         "options": {
           "timeout": 30000,
           "response": {
@@ -95,18 +104,24 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [900, 400],
+      "position": [
+        900,
+        400
+      ],
       "id": "chatbot-llm-call",
       "name": "Call OpenRouter LLM",
       "continueOnFail": true
     },
     {
       "parameters": {
-        "jsCode": "// Format the LLM response — handles both success and error from HTTP Request\nconst input = $input.item.json;\nconst prevData = $('Build Prompt').item.json;\n\nlet response = '';\nlet model = 'meta-llama/llama-3.3-70b-instruct:free';\nlet tokensUsed = 0;\nlet status = 'SUCCESS';\n\n// Check if the HTTP Request node failed (continueOnFail)\nconst hasError = input.error || input.code === 'ERR_GOT_REQUEST_ERROR' || input.statusCode >= 400;\n\ntry {\n  if (hasError) {\n    status = 'LLM_ERROR';\n    const errMsg = input.error?.message || input.message || input.statusMessage || 'LLM service unavailable';\n    response = prevData.lang === 'fr'\n      ? `Desole, le service LLM est temporairement indisponible (${errMsg}). Veuillez reessayer dans quelques instants.`\n      : `Sorry, the LLM service is temporarily unavailable (${errMsg}). Please try again shortly.`;\n  } else if (input.choices && input.choices.length > 0) {\n    response = input.choices[0].message?.content || '';\n    model = input.model || model;\n    if (input.usage) {\n      tokensUsed = input.usage.total_tokens || 0;\n    }\n  } else if (input.error) {\n    // OpenRouter error response (e.g., rate limit)\n    status = 'LLM_ERROR';\n    const errMsg = input.error.message || JSON.stringify(input.error);\n    response = prevData.lang === 'fr'\n      ? `Erreur du service LLM : ${errMsg}`\n      : `LLM service error: ${errMsg}`;\n  }\n} catch (e) {\n  status = 'PARSE_ERROR';\n  response = prevData.lang === 'fr'\n    ? 'Erreur lors du traitement de la reponse LLM. Veuillez reessayer.'\n    : 'Error processing LLM response. Please try again.';\n}\n\nif (!response || response.trim().length === 0) {\n  status = 'EMPTY_RESPONSE';\n  response = prevData.lang === 'fr'\n    ? 'Le modele n\\'a pas genere de reponse. Veuillez reformuler votre question.'\n    : 'The model did not generate a response. Please rephrase your question.';\n}\n\nreturn {\n  json: {\n    status,\n    response: response.trim(),\n    query: prevData.query,\n    lang: prevData.lang,\n    model,\n    tokens_used: tokensUsed,\n    engine: 'PROJECT_CHATBOT_LLM',\n    version: '2.0',\n    timestamp: new Date().toISOString()\n  }\n};"
+        "jsCode": "// Format the LLM response — handles both success and error from HTTP Request\nconst input = $input.item.json;\nconst prevData = $('Build Prompt').item.json;\n\nlet response = '';\nlet model = 'llama-70b';\nlet tokensUsed = 0;\nlet status = 'SUCCESS';\n\n// Check if the HTTP Request node failed (continueOnFail)\nconst hasError = input.error || input.code === 'ERR_GOT_REQUEST_ERROR' || input.statusCode >= 400;\n\ntry {\n  if (hasError) {\n    status = 'LLM_ERROR';\n    const errMsg = input.error?.message || input.message || input.statusMessage || 'LLM service unavailable';\n    response = prevData.lang === 'fr'\n      ? `Desole, le service LLM est temporairement indisponible (${errMsg}). Veuillez reessayer dans quelques instants.`\n      : `Sorry, the LLM service is temporarily unavailable (${errMsg}). Please try again shortly.`;\n  } else if (input.choices && input.choices.length > 0) {\n    response = input.choices[0].message?.content || '';\n    model = input.model || model;\n    if (input.usage) {\n      tokensUsed = input.usage.total_tokens || 0;\n    }\n  } else if (input.error) {\n    // OpenRouter error response (e.g., rate limit)\n    status = 'LLM_ERROR';\n    const errMsg = input.error.message || JSON.stringify(input.error);\n    response = prevData.lang === 'fr'\n      ? `Erreur du service LLM : ${errMsg}`\n      : `LLM service error: ${errMsg}`;\n  }\n} catch (e) {\n  status = 'PARSE_ERROR';\n  response = prevData.lang === 'fr'\n    ? 'Erreur lors du traitement de la reponse LLM. Veuillez reessayer.'\n    : 'Error processing LLM response. Please try again.';\n}\n\nif (!response || response.trim().length === 0) {\n  status = 'EMPTY_RESPONSE';\n  response = prevData.lang === 'fr'\n    ? 'Le modele n\\'a pas genere de reponse. Veuillez reformuler votre question.'\n    : 'The model did not generate a response. Please rephrase your question.';\n}\n\nreturn {\n  json: {\n    status,\n    response: response.trim(),\n    query: prevData.query,\n    lang: prevData.lang,\n    model,\n    tokens_used: tokensUsed,\n    engine: 'PROJECT_CHATBOT_LLM',\n    version: '2.0',\n    timestamp: new Date().toISOString()\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1150, 400],
+      "position": [
+        1150,
+        400
+      ],
       "id": "chatbot-format-response",
       "name": "Format Response"
     },
@@ -131,7 +146,10 @@
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [1400, 400],
+      "position": [
+        1400,
+        400
+      ],
       "id": "chatbot-respond-success",
       "name": "Respond Success"
     },
@@ -145,7 +163,10 @@
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [900, 200],
+      "position": [
+        900,
+        200
+      ],
       "id": "chatbot-respond-error",
       "name": "Respond Error"
     }

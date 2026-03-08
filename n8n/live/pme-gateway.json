@@ -39,13 +39,17 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Content-Type",
               "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer sk-litellm-nomos-2026"
             }
           ]
         },
@@ -70,12 +74,7 @@
         300
       ],
       "notes": "FIX-33: Auth header injected at import time (no $env). FIX-35: URL includes /chat/completions",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "CqLJFNeg9IjsIlPX",
-          "name": "OpenRouter API (PME)"
-        }
-      }
+      "credentials": {}
     },
     {
       "parameters": {
@@ -240,7 +239,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ query: 'G\u00e9n\u00e8re un rapport d\u00e9taill\u00e9: ' + $('Channel Detector').item.json.message, sector: 'pme-connectors', tenant_id: 'benchmark' }) }}",
+        "jsonBody": "={{ JSON.stringify({ query: 'Génère un rapport détaillé: ' + $('Channel Detector').item.json.message, sector: 'pme-connectors', tenant_id: 'benchmark' }) }}",
         "options": {
           "response": {
             "response": {
@@ -262,7 +261,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Format response for the original channel\nconst channelData = $('Channel Detector').item.json;\nconst channel = channelData.channel;\nconst result = $input.item.json;\n\n// Extract answer from various response formats\nconst answer = result.answer || result.response || result.result || result.final_response || result.interpretation || result.output || 'D\u00e9sol\u00e9, je n\\'ai pas pu traiter votre demande.';\nconst sources = result.sources || result.context || [];\nconst confidence = result.confidence || 0;\n\nlet formattedResponse = {};\n\nswitch (channel) {\n  case 'whatsapp':\n    formattedResponse = {\n      messaging_product: 'whatsapp',\n      to: channelData.userId,\n      type: 'text',\n      text: { body: answer }\n    };\n    break;\n  case 'telegram':\n    formattedResponse = {\n      chat_id: channelData.metadata.chatId,\n      text: answer,\n      parse_mode: 'Markdown'\n    };\n    break;\n  case 'email':\n    formattedResponse = {\n      to: channelData.userId,\n      subject: 'Re: ' + (channelData.metadata.subject || 'Votre demande'),\n      body: answer,\n      inReplyTo: channelData.metadata.messageId\n    };\n    break;\n  case 'api':\n  default:\n    formattedResponse = {\n      success: true,\n      channel,\n      userId: channelData.userId,\n      answer: answer,\n      sources: sources,\n      confidence: confidence,\n      metadata: { timestamp: new Date().toISOString() }\n    };\n    break;\n}\n\nreturn formattedResponse;"
+        "jsCode": "// Format response for the original channel\nconst channelData = $('Channel Detector').item.json;\nconst channel = channelData.channel;\nconst result = $input.item.json;\n\n// Extract answer from various response formats\nconst answer = result.answer || result.response || result.result || result.final_response || result.interpretation || result.output || 'Désolé, je n\\'ai pas pu traiter votre demande.';\nconst sources = result.sources || result.context || [];\nconst confidence = result.confidence || 0;\n\nlet formattedResponse = {};\n\nswitch (channel) {\n  case 'whatsapp':\n    formattedResponse = {\n      messaging_product: 'whatsapp',\n      to: channelData.userId,\n      type: 'text',\n      text: { body: answer }\n    };\n    break;\n  case 'telegram':\n    formattedResponse = {\n      chat_id: channelData.metadata.chatId,\n      text: answer,\n      parse_mode: 'Markdown'\n    };\n    break;\n  case 'email':\n    formattedResponse = {\n      to: channelData.userId,\n      subject: 'Re: ' + (channelData.metadata.subject || 'Votre demande'),\n      body: answer,\n      inReplyTo: channelData.metadata.messageId\n    };\n    break;\n  case 'api':\n  default:\n    formattedResponse = {\n      success: true,\n      channel,\n      userId: channelData.userId,\n      answer: answer,\n      sources: sources,\n      confidence: confidence,\n      metadata: { timestamp: new Date().toISOString() }\n    };\n    break;\n}\n\nreturn formattedResponse;"
       },
       "id": "b8c9d0e1-f2a3-4567-1234-678901234567",
       "name": "Response Formatter",
