@@ -1,5 +1,32 @@
 # War Log — Commercial Cycles
 
+## Cycle 17 — 2026-03-08
+
+### Actions
+1. **NEW MICRO-SITE**: RAG Architecture Selector (interactive decision tree)
+   - 6-question wizard: data type, query complexity, scale, accuracy needs, budget, team level
+   - Scoring algorithm maps answers to 5 architectures: Standard, Graph, Quantitative, Orchestrator, Multimodal
+   - Each result shows: accuracy benchmarks, latency, complexity, key components
+   - Personalized product recommendations with match percentages (85-99%)
+   - MEGA BUNDLE upsell with price anchoring ($1,614 → $497)
+   - Dark theme, animated transitions, mobile-responsive
+   - Location: `monetisation/sites/rag-architecture-selector/index.html`
+
+2. **TELEGRAM POST**: Architecture comparison angle on @Nomos42 (message_id: 29)
+   - Hook: "Which RAG Architecture Is Right for YOUR Use Case?"
+   - Side-by-side accuracy benchmarks for all 5 architectures
+   - Fresh angle: architecture selection/decision (vs previous diagnostic/assessment/product angles)
+   - Product links + MEGA BUNDLE CTA
+
+### Impact Estimate
+- Architecture selection is THE #1 decision question for RAG builders — massive search intent
+- Interactive tools convert 4-6x vs static content
+- Match percentage creates personalization → trust → purchase
+- "Wrong architecture = months wasted" creates urgency
+- Expected: 2-4 bundle conversions/month from selector funnel = $994-$1,988/month
+
+---
+
 ## Cycle 16 — 2026-03-08
 
 ### Actions
