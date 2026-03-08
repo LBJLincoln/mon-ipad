@@ -25,7 +25,7 @@ GRADIO_URL = 'https://lbjlincoln-nomos-embeddings-api.hf.space'
 EMBEDDING_BACKEND = 'auto'  # 'jina', 'tei', 'gradio', or 'auto'
 
 JINA_BATCH_SIZE = 16  # texts per Jina API call (conservative for free tier)
-TEI_BATCH_SIZE = 8  # smaller batches for TEI on CPU
+TEI_BATCH_SIZE = 2  # cpu-basic overloads with >2 texts per batch
 PINECONE_BATCH_SIZE = 100  # vectors per Pinecone upsert
 JINA_DELAY = 2.0  # seconds between Jina calls (rate limiting)
 TEI_DELAY = 0.5  # TEI is self-hosted, less delay needed
@@ -261,8 +261,8 @@ def ingest(pipeline, max_contexts=None, backend='auto'):
         print('  All contexts already ingested!')
         return 0
 
-    batch_size = TEI_BATCH_SIZE if backend == 'tei' else JINA_BATCH_SIZE
-    delay = TEI_DELAY if backend == 'tei' else JINA_DELAY
+    batch_size = TEI_BATCH_SIZE if backend in ('tei', 'gradio') else JINA_BATCH_SIZE
+    delay = TEI_DELAY if backend in ('tei', 'gradio') else JINA_DELAY
     total = len(items)
     ingested = 0
     total_tokens = 0
@@ -276,6 +276,13 @@ def ingest(pipeline, max_contexts=None, backend='auto'):
         try:
             embeddings, usage = embed_texts(texts, backend)
             total_tokens += usage.get('total_tokens', 0)
+            elapsed = time.time() - start_time
+            done = batch_start + len(batch)
+            if done % 10 < batch_size or done == total:
+                rate = done / max(elapsed, 1) * 60
+                eta_min = (total - done) / max(rate, 0.1)
+                print(f'  [{done}/{total}] embedded, {elapsed:.0f}s elapsed, '
+                      f'{rate:.1f}/min, ETA {eta_min:.0f}min')
         except Exception as e:
             print(f'  ERROR at batch {batch_start}: {e}')
             if 'quota' in str(e).lower():

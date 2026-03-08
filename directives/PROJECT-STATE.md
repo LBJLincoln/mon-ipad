@@ -1,20 +1,27 @@
 # Project State — Multi-RAG Orchestrator SOTA 2026
 
-> Last updated: 2026-03-07T22:00:00Z
+> Last updated: 2026-03-08T02:45:00Z
 
-## Session 80 — Current Status
+## Session 82 — Current Status
 
 ### Overview
-- **Phase 1**: PASSED (83.9% overall)
-- **Phase 2**: PARTIAL (Graph 78% + Quant 92% COMPLETE, Std+Orch BLOCKED)
 - **Phase 3**: **DONE** (Std 87.5% PASS, Graph 40.9% ACCEPTED, Quant 95.2% PASS)
-- **Phase 4**: IN PROGRESS — Std DONE (10,917 contexts), Graph partial (~10,700/11,300), Quant pending (3,876)
-- **Jina API**: Both keys exhausted (~11M tokens). TEI HF Space deploying as replacement
-- **TEI Space**: `LBJLincoln/nomos-tei-embeddings` — building (jina-v3 on cpu-basic)
-- **Gradio embed Space**: `LBJLincoln/nomos-embeddings-api` — deploying as TEI fallback
-- **Infrastructure**: 3/4 pipelines ACTIVE, LiteLLM UP, all DBs UP
-- **Pinecone**: 42,758 total vectors (32,986 default ns + 9,772 benchmark ns)
-- **Sessions**: 80 | **Commits**: 1,100+
+- **Phase 4**: IN PROGRESS — Std DONE, Graph DONE, Quant INGESTING overnight (~10h ETA)
+- **Jina API REPLACED**: Self-hosted `nomos-embeddings-api` HF Space RUNNING
+- **n8n workflows UPDATED**: 7 files swapped Jina→self-hosted, auth headers removed
+- **Telegram bot**: @Nomos42Bot UP in Codespace with trinity-large-preview:free
+- **Monetisation**: Products ready, Gumroad account created, awaiting manual product setup
+- **Infrastructure**: 3/4 pipelines ACTIVE, embeddings self-hosted, LiteLLM UP
+- **Pinecone**: 42,758+ vectors in sota-rag-jina-1024 (growing with quant ingestion)
+- **Sessions**: 82 | **Commits**: 1,100+
+
+### Session 82 Achievements
+1. Self-hosted embedding Space WORKING (monkey-patch for PyTorch 2.4+, lazy loading)
+2. n8n workflows updated: Jina→self-hosted (7 files, 15 changes)
+3. Standard pipeline 3/3 PASS with self-hosted embeddings
+4. OpenClaw Telegram bot reconfigured: OpenRouter free models (trinity-large-preview)
+5. Quant ingestion launched: 3,871 contexts at 6.3/min via Gradio Space
+6. Graph contexts confirmed fully ingested (11,300/11,300)
 
 ---
 
