@@ -6,11 +6,11 @@ All Nomos AI products across 3 payment platforms.
 
 ---
 
-## 1. Stripe (Primary) -- 14 products LIVE
+## 1. Stripe (Primary) -- 15 products LIVE
 
 | # | Product | Price | Payment Link |
 |---|---------|-------|--------------|
-| 1 | MEGA BUNDLE - All 13 RAG Products | $497 | https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d |
+| 1 | MEGA BUNDLE - All 14 RAG Products | $497 | https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d |
 | 2 | Architecture Blueprint - Multi-Pipeline RAG System | $197 | https://buy.stripe.com/aFa14g4vob1x3f5bcp5J602 |
 | 3 | n8n Workflow Collection - Production RAG Workflows | $197 | https://buy.stripe.com/bJe00c9PI8Tp2b1a8l5J603 |
 | 4 | Enterprise Site Template - Next.js 15 | $197 | https://buy.stripe.com/14A6oAaTM4D94j93JX5J604 |
@@ -19,11 +19,12 @@ All Nomos AI products across 3 payment platforms.
 | 7 | RAG Eval Framework - 61K-Question System | $127 | https://buy.stripe.com/fZu4gs2ng1qX6rh0xL5J605 |
 | 8 | Ingestion Toolkit - V4 Pipeline | $97 | https://buy.stripe.com/dRm7sEfa27PlcPFgwJ5J608 |
 | 9 | Dashboard Template - Real-Time RAG Metrics | $97 | https://buy.stripe.com/14AcMYbXQ7PldTJ5S55J60a |
-| 10 | Benchmark Dataset Toolkit - 61K Questions | $67 | https://buy.stripe.com/cNi5kwaTMfhN5nd3JX5J60b |
-| 11 | Embeddings Service - Self-Hosted Jina | $67 | https://buy.stripe.com/aFa00ce5Y0mT9Dtcgt5J60c |
-| 12 | RAG Debug Playbook - 75+ Fixes | $47 | https://buy.stripe.com/00w7sEd1U2v14j92FT5J600 |
-| 13 | Claude Code Skills Pack - 17 Commands | $47 | https://buy.stripe.com/7sY8wIge64D93f53JX5J609 |
-| 14 | Agent Context Kit - CLAUDE.md Templates | $27 | https://buy.stripe.com/7sY9AMbXQ4D94j95S55J601 |
+| 10 | RAG Cost Optimization Guide - $0/month Production RAG | $87 | _PENDING: Create in Stripe Dashboard_ |
+| 11 | Benchmark Dataset Toolkit - 61K Questions | $67 | https://buy.stripe.com/cNi5kwaTMfhN5nd3JX5J60b |
+| 12 | Embeddings Service - Self-Hosted Jina | $67 | https://buy.stripe.com/aFa00ce5Y0mT9Dtcgt5J60c |
+| 13 | RAG Debug Playbook - 75+ Fixes | $47 | https://buy.stripe.com/00w7sEd1U2v14j92FT5J600 |
+| 14 | Claude Code Skills Pack - 17 Commands | $47 | https://buy.stripe.com/7sY8wIge64D93f53JX5J609 |
+| 15 | Agent Context Kit - CLAUDE.md Templates | $27 | https://buy.stripe.com/7sY9AMbXQ4D94j95S55J601 |
 
 ---
 
