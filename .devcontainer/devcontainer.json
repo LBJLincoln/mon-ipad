@@ -1,32 +1,29 @@
 {
-  "name": "Nomos AI — Multi-RAG Control Tower",
+  "name": "Nomos AI — Multi-RAG Guerre des 10K€",
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {
-      "moby": true,
-      "dockerDashComposeVersion": "v2"
-    },
     "ghcr.io/devcontainers/features/python:1": { "version": "3.11" },
-    "ghcr.io/devcontainers/features/node:1": { "version": "20" },
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" },
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
-  "forwardPorts": [5678, 5432, 6379],
+  "forwardPorts": [5678, 5432, 8080],
   "portsAttributes": {
-    "5678": { "label": "n8n VM", "onAutoForward": "silent" },
+    "5678": { "label": "n8n", "onAutoForward": "silent" },
     "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
-    "6379": { "label": "Redis", "onAutoForward": "silent" }
+    "8080": { "label": "OpenClaw Gateway", "onAutoForward": "silent" }
   },
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-python.python",
-        "ms-toolsai.jupyter",
-        "ms-azuretools.vscode-docker"
+        "ms-toolsai.jupyter"
       ]
     }
   },
   "remoteEnv": {
-    "REPO_ROLE": "mon-ipad-control-tower"
+    "REPO_ROLE": "mon-ipad-control-tower",
+    "NVM_DIR": "/home/vscode/.nvm"
   },
-  "postCreateCommand": "pip install -q requests python-dotenv aiohttp bcrypt psycopg2-binary && echo 'Control tower ready. Source .env.local before running scripts.'"
+  "postCreateCommand": "pip install -q requests python-dotenv aiohttp psycopg2-binary pinecone-client neo4j && npm install -g @anthropic-ai/claude-code && echo '=== READY: Claude Code + Python deps installed ==='",
+  "postStartCommand": "which claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code; echo 'Codespace started — run: source .env.local && bash monetisation-daemon.sh'"
 }
