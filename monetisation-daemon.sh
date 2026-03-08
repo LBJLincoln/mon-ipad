@@ -1,12 +1,16 @@
 #!/bin/bash
-# GUERRE DES 10K€ — OpenClaw vs Claude Code CLI en alternance
-# Chaque cycle: Claude Code fait une action, puis OpenClaw fait une action
-# Les deux se battent pour produire le plus de revenus possible
+# GUERRE DES 10K€ — AI Agent Marketplace Battle
+# 2 rounds per cycle: Claude Code CLI → OpenClaw/Gemini
+# Pattern YC/OpenAI: detect demand → create → distribute → iterate
+# Agents have CARTE BLANCHE: websites, videos, Telegram channels, marketplaces
 
 cd /workspaces/mon-ipad
 source .env.local 2>/dev/null
 export GIT_AUTHOR_EMAIL="alexis.moret6@outlook.fr"
 export GIT_COMMITTER_EMAIL="alexis.moret6@outlook.fr"
+
+# Create output dirs
+mkdir -p monetisation/openclaw-output monetisation/generated-content monetisation/sites monetisation/videos
 
 CYCLE=0
 while true; do
@@ -15,75 +19,80 @@ while true; do
 
     # ===== ROUND 1: CLAUDE CODE CLI =====
     echo "$(date -Iseconds) [CLAUDE CODE] Round $CYCLE..."
-    claude --dangerously-skip-permissions -p "
-Tu es CLAUDE CODE CLI en compétition avec OpenClaw pour atteindre 10K€.
-CYCLE $CYCLE. Tu DOIS battre OpenClaw en productivité.
+    timeout 600 claude --dangerously-skip-permissions -p "
+Tu es CLAUDE CODE CLI — Agent commercial IA autonome. Cycle $CYCLE.
+OBJECTIF: Gagner 10K€. Tu as CARTE BLANCHE totale.
 
-SCORE: Chaque livrable concret = +1 point. Objectif: plus de points qu'OpenClaw.
+OUTILS DISPONIBLES:
+- Stripe: 14 produits live avec payment links (dans .env.local: STRIPE_SECRET_KEY)
+- Google API: Gemini Flash pour générer du contenu/vidéo (GOOGLE_API_KEY dans .env.local)
+- Telegram: Bot @Nomos42Bot actif
+- GitHub Pages: Hosting gratuit illimité
+- Web: Recherche internet pour trouver des marchés
+- Python: Créer des scripts, APIs, scrapers
+- HTML/CSS/JS: Créer des landing pages, sites, marketplaces
 
-Choisis UNE action haute-valeur:
-1. PRODUIRE: Nouveau produit digital dans monetisation/packages/ (guide PDF, template, toolkit)
-2. RECHERCHER: Nouveaux canaux de vente (web search), MAJ monetisation/sales-channels-research.md
-3. OPTIMISER: Améliore sales-page.html (GEO, SEO, conversion, CTA, social proof)
-4. DISTRIBUER: Contenu marketing (posts) dans monetisation/generated-content/
-5. SEO/GEO: Meta tags, structured data, sitemap dans monetisation/seo-geo-assets/
-6. PRICING: Bundles Stripe, pricing psychology, upsells
-7. EXPAND: Lemon Squeezy, AppSumo, Gumroad, Product Hunt prep
-8. OUTREACH: Email templates, DM scripts, partnership proposals
+PATTERN YC/OPENAI (120K$ en 3 jours):
+1. DÉTECTER: Scanne les marchés AI/SaaS - que cherchent les développeurs/agents IA?
+2. CRÉER: Crée un produit/site/marketplace qui répond à cette demande
+3. DISTRIBUER: Poste sur Reddit, HN, Twitter, Telegram, Discord, communautés AI
+4. ITÉRER: Analyse les retours, optimise, relance
+
+ACTIONS CONCRÈTES CE CYCLE:
+- Crée un site/landing page dans monetisation/sites/
+- Ou crée du contenu marketing dans monetisation/generated-content/
+- Ou améliore le sales-page.html existant
+- Ou crée un nouveau produit digital dans monetisation/packages/
+- Ou lance une campagne automatisée (email, DM, posts)
+- Ou détecte un nouveau marché via web search
 
 RÈGLES:
-- Tu DOIS produire un fichier concret et committable
-- Commit + push avec 'auto(claude): ...' prefix
-- Log ton score dans monetisation/scoreboard.md
+- Chaque cycle DOIT produire un livrable concret (fichier, site, contenu)
+- Commit + push avec 'auto(claude-$CYCLE): ...' prefix
+- Log actions + résultats dans monetisation/war-log.md
+- Ne demande JAMAIS rien à l'humain
 - Si push échoue: git pull --rebase puis retry
-" </dev/null 2>&1 | tail -30 >> /tmp/guerre-10k-claude.log
+- MESURE ton impact: combien de views/clicks/sales potentiels?
+" </dev/null 2>&1 | tail -50 >> /tmp/guerre-10k-claude.log
 
     git add -A 2>/dev/null
-    git commit -m "auto(claude): guerre-10k cycle $CYCLE — $(date +%H:%M)" --no-gpg-sign 2>/dev/null
+    git commit -m "auto(claude-$CYCLE): guerre-10k — $(date +%H:%M)" --no-gpg-sign 2>/dev/null
     git pull --rebase origin main 2>/dev/null
     git push origin main 2>/dev/null
 
     echo "$(date -Iseconds) [CLAUDE CODE] Round $CYCLE DONE"
+    sleep 5
 
-    # ===== ROUND 2: OPENCLAW =====
-    echo "$(date -Iseconds) [OPENCLAW] Round $CYCLE..."
-    if command -v openclaw &>/dev/null; then
-        # OpenClaw is installed — use it
-        openclaw run --agent monetisation-warrior --prompt "
-Tu es OPENCLAW en compétition avec Claude Code CLI pour atteindre 10K€.
-CYCLE $CYCLE. Tu DOIS battre Claude Code en créativité et vitesse.
+    # ===== ROUND 2: GEMINI CLI (via Google API) =====
+    echo "$(date -Iseconds) [GEMINI/OPENCLAW] Round $CYCLE..."
 
-Choisis une action différente de Claude Code:
-- Crée du contenu viral (hooks, threads, vidéo scripts)
-- Propose des idées de produits innovants
-- Analyse la concurrence et trouve des gaps de marché
-- Crée des landing pages optimisées
-- Génère des emails de vente persuasifs
+    # Use Claude Code as orchestrator to call Gemini API for creative content
+    timeout 600 claude --dangerously-skip-permissions -p "
+Tu es l'AGENT GEMINI — tu utilises l'API Google Gemini pour créer du contenu créatif.
+Cycle $CYCLE round 2. Tu DOIS faire quelque chose de DIFFERENT du round 1.
 
-Écris tes résultats dans monetisation/openclaw-output/cycle-$CYCLE.md
-Log ton score dans monetisation/scoreboard.md
-" 2>&1 | tail -20 >> /tmp/guerre-10k-openclaw.log || echo "$(date -Iseconds) [OPENCLAW] Command failed, using Claude as fallback"
-    else
-        # OpenClaw not installed — install it
-        echo "$(date -Iseconds) [OPENCLAW] Not found. Installing..."
-        npm install -g openclaw 2>/dev/null || pip install openclaw 2>/dev/null || {
-            echo "$(date -Iseconds) [OPENCLAW] Install failed. Using Claude Code for both rounds."
-            claude --dangerously-skip-permissions -p "
-Tu es OPENCLAW (simulé). CYCLE $CYCLE round 2.
-Tu DOIS faire une action DIFFÉRENTE de Claude Code round 1.
-Focus: contenu viral, créativité, outreach, analytics.
-Écris dans monetisation/openclaw-output/cycle-${CYCLE}.md
-" </dev/null 2>&1 | tail -20 >> /tmp/guerre-10k-openclaw.log
-        }
-    fi
+GOOGLE_API_KEY est dans .env.local. Utilise-le pour:
+1. Appeler Gemini Flash via l'API pour générer du contenu marketing
+2. Créer des vidéos/images descriptions pour Nano Banana quand disponible
+3. Générer des copies de vente persuasives en français ET anglais
+4. Créer des scripts de vidéos marketing
+
+FOCUS: Contenu VIRAL et CRÉATIF
+- Thread Twitter optimisé (hooks, emojis, breaks)
+- Post LinkedIn storytelling (Polytechnique → startup IA → résultats)
+- Vidéo script pour YouTube/TikTok (30-60 sec)
+- Newsletter template pour email outreach
+- DM templates pour partenariats/influenceurs
+
+Écris dans monetisation/generated-content/cycle-${CYCLE}-gemini.md
+Log dans monetisation/war-log.md
+" </dev/null 2>&1 | tail -30 >> /tmp/guerre-10k-gemini.log
 
     git add -A 2>/dev/null
-    git commit -m "auto(openclaw): guerre-10k cycle $CYCLE — $(date +%H:%M)" --no-gpg-sign 2>/dev/null
+    git commit -m "auto(gemini-$CYCLE): guerre-10k — $(date +%H:%M)" --no-gpg-sign 2>/dev/null
     git pull --rebase origin main 2>/dev/null
     git push origin main 2>/dev/null
 
-    echo "$(date -Iseconds) [OPENCLAW] Round $CYCLE DONE"
     echo "$(date -Iseconds) === CYCLE $CYCLE COMPLET ==="
-
-    sleep 15  # Brief pause between cycles
+    sleep 10  # Brief pause between cycles
 done
