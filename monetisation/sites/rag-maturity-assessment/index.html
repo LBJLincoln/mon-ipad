@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Maturity Assessment — Where Does Your Pipeline Stand?</title>
+    <meta name="description" content="Take the free 2-minute RAG maturity assessment. Get your score, identify gaps, and get a personalized improvement roadmap based on 90+ production sessions.">
+    <meta property="og:title" content="RAG Maturity Assessment — Free 2-Minute Diagnostic">
+    <meta property="og:description" content="Score your RAG pipeline across 8 dimensions. Built from 1,100+ commits and 90+ production sessions.">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://lbjlincoln.github.io/rag-dashboard/rag-maturity-assessment/">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(135deg, #0a0a2e 0%, #1a0a3e 50%, #0a0a2e 100%);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        .hero h1 {
+            font-size: 2.4rem;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+        .hero p { font-size: 1.1rem; color: #94a3b8; max-width: 600px; margin: 0 auto 20px; }
+        .hero .badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #a78bfa;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            background: #1a1a2e;
+            border-radius: 8px;
+            height: 8px;
+            margin: 30px 0 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+            border-radius: 8px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+        .progress-text { text-align: center; color: #64748b; font-size: 0.85rem; margin-bottom: 30px; }
+
+        /* Questions */
+        .question-card {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .question-card.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .question-card h3 { font-size: 1.2rem; color: #f1f5f9; margin-bottom: 6px; }
+        .question-card .dimension { font-size: 0.8rem; color: #8b5cf6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option {
+            background: #1a1a2e;
+            border: 2px solid #1e293b;
+            border-radius: 12px;
+            padding: 14px 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        .option:hover { border-color: #8b5cf6; background: rgba(139, 92, 246, 0.1); }
+        .option.selected { border-color: #8b5cf6; background: rgba(139, 92, 246, 0.15); }
+        .option .score-label { font-size: 0.75rem; color: #64748b; margin-top: 4px; }
+
+        /* Navigation */
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+        .btn {
+            padding: 12px 28px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-secondary { background: #1e293b; color: #94a3b8; }
+        .btn-secondary:hover { background: #2d3748; }
+        .btn-primary { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Results */
+        #results { display: none; }
+        .score-circle {
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            border: 6px solid #1e293b;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            margin: 30px auto;
+            position: relative;
+        }
+        .score-circle .number { font-size: 3.5rem; font-weight: 800; }
+        .score-circle .label { font-size: 0.85rem; color: #94a3b8; }
+        .maturity-level {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .maturity-desc { text-align: center; color: #94a3b8; margin-bottom: 30px; font-size: 0.95rem; }
+
+        /* Dimension scores */
+        .dimension-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px; }
+        .dim-card {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .dim-card .dim-name { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+        .dim-card .dim-score { font-size: 1.6rem; font-weight: 700; }
+        .dim-bar { height: 4px; background: #1e293b; border-radius: 2px; margin-top: 8px; }
+        .dim-bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+
+        /* Recommendations */
+        .rec-section { margin-top: 30px; }
+        .rec-section h3 { font-size: 1.2rem; margin-bottom: 16px; color: #f1f5f9; }
+        .rec-card {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        .rec-info h4 { font-size: 1rem; color: #f1f5f9; margin-bottom: 4px; }
+        .rec-info p { font-size: 0.85rem; color: #64748b; }
+        .rec-info .priority {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 6px;
+        }
+        .priority-critical { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .priority-high { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .priority-medium { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .rec-price {
+            font-weight: 700; font-size: 1.1rem; color: #8b5cf6; white-space: nowrap;
+        }
+        .rec-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .rec-link:hover { box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
+
+        /* Bundle CTA */
+        .bundle-cta {
+            background: linear-gradient(135deg, #1a0a3e, #0a2a4e);
+            border: 2px solid rgba(139, 92, 246, 0.4);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .bundle-cta h3 { font-size: 1.3rem; color: #f1f5f9; margin-bottom: 8px; }
+        .bundle-cta .savings { font-size: 2rem; font-weight: 800; color: #10b981; margin: 10px 0; }
+        .bundle-cta p { color: #94a3b8; margin-bottom: 16px; }
+        .bundle-cta .cta-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            color: white;
+            text-decoration: none;
+            padding: 14px 40px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .bundle-cta .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(139, 92, 246, 0.5); }
+
+        /* Share */
+        .share-section { text-align: center; margin-top: 30px; padding: 20px; }
+        .share-section p { color: #64748b; margin-bottom: 10px; }
+        .retake-btn { background: none; border: 1px solid #334155; color: #94a3b8; padding: 10px 24px; border-radius: 8px; cursor: pointer; }
+
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 1.8rem; }
+            .dimension-grid { grid-template-columns: 1fr; }
+            .rec-card { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>RAG Maturity Assessment</h1>
+    <p>Score your pipeline across 8 dimensions in 2 minutes. Get a personalized improvement roadmap.</p>
+    <span class="badge">Built from 90+ production sessions &middot; 1,100+ commits</span>
+</div>
+
+<div class="container">
+    <div id="quiz">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-text" id="progressText">Question 1 of 8</div>
+
+        <!-- Q1: Retrieval Accuracy -->
+        <div class="question-card active" data-q="0">
+            <div class="dimension">Retrieval Accuracy</div>
+            <h3>What's your current RAG accuracy on representative queries?</h3>
+            <div class="options">
+                <div class="option" data-score="1" onclick="selectOption(this)">Below 60% — frequent hallucinations and wrong answers</div>
+                <div class="option" data-score="2" onclick="selectOption(this)">60-75% — works for simple queries, fails on complex ones</div>
+                <div class="option" data-score="3" onclick="selectOption(this)">75-85% — solid for most cases, occasional misses</div>
+                <div class="option" data-score="4" onclick="selectOption(this)">85-95% — production-grade with systematic evaluation</div>
+                <div class="option" data-score="5" onclick="selectOption(this)">95%+ — benchmark-validated with continuous monitoring</div>
+            </div>
+        </div>
+
+        <!-- Q2: Chunking & Indexing -->
+        <div class="question-card" data-q="1">
+            <div class="dimension">Chunking & Indexing</div>
+            <h3>How sophisticated is your chunking strategy?</h3>
+            <div class="options">
+                <div class="option" data-score="1" onclick="selectOption(this)">Fixed-size chunks (500 tokens) — no optimization</div>
+                <div class="option" data-score="2" onclick="selectOption(this)">Recursive/semantic splitting — basic overlap tuning</div>
+                <div class="option" data-score="3" onclick="selectOption(this)">Document-type aware chunking with metadata enrichment</div>
+                <div class="option" data-score="4" onclick="selectOption(this)">Hybrid strategies (semantic + structural) with benchmarked configs</div>
+                <div class="option" data-score="5" onclick="selectOption(this)">Adaptive chunking per doc type + late chunking + parent-child retrieval</div>
+            </div>
+        </div>
+
+        <!-- Q3: Evaluation -->
+        <div class="question-card" data-q="2">
+            <div class="dimension">Evaluation & Testing</div>
+            <h3>How do you measure and test your RAG system?</h3>
+            <div class="options">
+                <div class="option" data-score="1" onclick="selectOption(this)">Manual spot-checks — no systematic evaluation</div>
+                <div class="option" data-score="2" onclick="selectOption(this)">Small test set (< 50 questions) run occasionally</div>
+                <div class="option" data-score="3" onclick="selectOption(this)">200+ golden questions with automated scoring</div>
+                <div class="option" data-score="4" onclick="selectOption(this)">Multi-dimensional eval (accuracy, relevance, completeness) + CI integration</div>
+                <div class="option" data-score="5" onclick="selectOption(this)">10K+ benchmark suite with regression detection and continuous monitoring</div>
+            </div>
+        </div>
+
+        <!-- Q4: Architecture -->
+        <div class="question-card" data-q="3">
+            <div class="dimension">Architecture & Pipelines</div>
+            <h3>What does your RAG architecture look like?</h3>
+            <div class="options">
+                <div class="option" data-score="1" onclick="selectOption(this)">Single pipeline — embed, retrieve, generate</div>
+                <div class="option" data-score="2" onclick="selectOption(this)">Single pipeline with reranking and basic query rewriting</div>
+                <div class="option" data-score="3" onclick="selectOption(this)">Multiple retrieval strategies (vector + keyword/BM25)</div>
+                <div class="option" data-score="4" onclick="selectOption(this)">Specialized pipelines (standard + graph + quantitative)</div>
+                <div class="option" data-score="5" onclick="selectOption(this)">Multi-pipeline orchestrator with adaptive routing per query type</div>
+            </div>
+        </div>
+
+        <!-- Q5: Debugging -->
+        <div class="question-card" data-q="4">
+            <div class="dimension">Debugging & Observability</div>
+            <h3>How do you debug RAG failures?</h3>
+            <div class="options">
+                <div class="option" data-score="1" onclick="selectOption(this)">Guesswork — change prompts and hope for the best</div>
+                <div class="option" data-score="2" onclick="selectOption(this)">Basic logging — can see inputs/outputs but not intermediate steps</div>
+                <div class="option" data-score="3" onclick="selectOption(this)">Full trace logging with node-level execution visibility</div>
+                <div class="option" data-score="4" onclick="selectOption(this)">Structured debug playbook with diagnostic flowcharts</div>
+                <div class="option" data-score="5" onclick="selectOption(this)">Automated anomaly detection + self-healing with fix catalog</div>
+            </div>
+        </div>
+
+        <!-- Q6: Performance -->
+        <div class="question-card" data-q="5">
+            <div class="dimension">Performance & Latency</div>
+            <h3>What's your end-to-end query latency?</h3>
+            <div class="options">
+                <div class="option" data-score="1" onclick="selectOption(this)">30+ seconds — barely usable for interactive queries</div>
+                <div class="option" data-score="2" onclick="selectOption(this)">15-30 seconds — acceptable but slow for users</div>
+                <div class="option" data-score="3" onclick="selectOption(this)">5-15 seconds — decent but room for optimization</div>
+                <div class="option" data-score="4" onclick="selectOption(this)">2-5 seconds — optimized with caching and parallel retrieval</div>
+                <div class="option" data-score="5" onclick="selectOption(this)">&lt;2 seconds — streaming, pre-computed embeddings, edge caching</div>
+            </div>
+        </div>
+
+        <!-- Q7: Cost -->
+        <div class="question-card" data-q="6">
+            <div class="dimension">Cost Efficiency</div>
+            <h3>What's your LLM/infrastructure spend per 1,000 queries?</h3>
+            <div class="options">
+                <div class="option" data-score="1" onclick="selectOption(this)">$50+ — using GPT-4 for everything, no optimization</div>
+                <div class="option" data-score="2" onclick="selectOption(this)">$20-50 — some model routing, but mostly expensive models</div>
+                <div class="option" data-score="3" onclick="selectOption(this)">$5-20 — mixed models with basic cost-aware routing</div>
+                <div class="option" data-score="4" onclick="selectOption(this)">$1-5 — optimized model selection per task, some free-tier usage</div>
+                <div class="option" data-score="5" onclick="selectOption(this)">Near $0 — free-tier LLMs + self-hosted embeddings, production-grade</div>
+            </div>
+        </div>
+
+        <!-- Q8: Data Handling -->
+        <div class="question-card" data-q="7">
+            <div class="dimension">Data & Content Coverage</div>
+            <h3>What types of content does your RAG handle?</h3>
+            <div class="options">
+                <div class="option" data-score="1" onclick="selectOption(this)">Text-only PDFs — single format, single language</div>
+                <div class="option" data-score="2" onclick="selectOption(this)">Multiple text formats (PDF, docs, web) but no structured data</div>
+                <div class="option" data-score="3" onclick="selectOption(this)">Text + tables/CSVs with basic extraction</div>
+                <div class="option" data-score="4" onclick="selectOption(this)">Multimodal (text, tables, images) + knowledge graphs</div>
+                <div class="option" data-score="5" onclick="selectOption(this)">Full multimodal + quantitative data + graph relationships + real-time feeds</div>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" id="prevBtn" onclick="navigate(-1)" disabled>Back</button>
+            <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)" disabled>Next</button>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results">
+        <div class="score-circle" id="scoreCircle">
+            <span class="number" id="totalScore">0</span>
+            <span class="label">/ 40</span>
+        </div>
+        <div class="maturity-level" id="maturityLevel"></div>
+        <div class="maturity-desc" id="maturityDesc"></div>
+
+        <h3 style="margin-bottom: 16px;">Dimension Breakdown</h3>
+        <div class="dimension-grid" id="dimGrid"></div>
+
+        <div class="rec-section">
+            <h3>Your Personalized Improvement Roadmap</h3>
+            <div id="recommendations"></div>
+        </div>
+
+        <div class="bundle-cta">
+            <h3>Skip months of trial and error</h3>
+            <div class="savings">Save $1,117+</div>
+            <p>The MEGA BUNDLE includes solutions for ALL 8 dimensions. 17 products, one price.</p>
+            <a href="https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d" class="cta-btn">Get the MEGA BUNDLE — $497</a>
+        </div>
+
+        <div class="share-section">
+            <p>Want to reassess after improvements?</p>
+            <button class="retake-btn" onclick="retake()">Retake Assessment</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const dimensions = [
+    'Retrieval Accuracy',
+    'Chunking & Indexing',
+    'Evaluation & Testing',
+    'Architecture & Pipelines',
+    'Debugging & Observability',
+    'Performance & Latency',
+    'Cost Efficiency',
+    'Data & Content Coverage'
+];
+
+const products = {
+    'Retrieval Accuracy': [
+        { name: 'RAG Prompt Library', price: '$67', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d', desc: 'Tested prompts for higher accuracy across all query types' },
+        { name: 'Agentic RAG Blueprint', price: '$147', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d', desc: 'Multi-agent retrieval patterns for complex queries' }
+    ],
+    'Chunking & Indexing': [
+        { name: 'Chunking & Retrieval Guide', price: '$87', link: 'https://buy.stripe.com/6oU5kw5zs1qXcPFcgt5J60f', desc: '7 strategies benchmarked — find the optimal config' },
+        { name: 'Multimodal RAG Guide', price: '$137', link: 'https://buy.stripe.com/3cIeV6aTMglR16X2FT5J60e', desc: 'Handle images, tables, PDFs with specialized chunking' }
+    ],
+    'Evaluation & Testing': [
+        { name: 'Eval Framework', price: '$127', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d', desc: '10K-question benchmark suite with automated scoring' }
+    ],
+    'Architecture & Pipelines': [
+        { name: 'Architecture Blueprint', price: '$197', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d', desc: 'Multi-pipeline architecture with 87.5% accuracy' },
+        { name: 'n8n RAG Workflows', price: '$197', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d', desc: '10 production workflows ready to deploy' },
+        { name: 'Agent Orchestration Playbook', price: '$157', link: 'https://buy.stripe.com/aFa00c1jc5Hd02T3JX5J60h', desc: '8 orchestration patterns with 94.2% accuracy' }
+    ],
+    'Debugging & Observability': [
+        { name: 'Debug Playbook', price: '$47', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d', desc: '75+ production fixes with diagnostic flowcharts' },
+        { name: 'Operations Runbook', price: '$97', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d', desc: 'Complete ops playbook for RAG in production' }
+    ],
+    'Performance & Latency': [
+        { name: 'Latency & Performance Guide', price: '$107', link: 'https://buy.stripe.com/3cI5kw9PI1qX3f5bcp5J60g', desc: '77-80% latency reduction across 4 pipelines' }
+    ],
+    'Cost Efficiency': [
+        { name: 'Agent Context Kit', price: '$27', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d', desc: 'Production patterns for $0 infrastructure RAG' },
+        { name: 'Claude Code Skills', price: '$47', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d', desc: 'Automate RAG ops to cut engineering hours 60%' }
+    ],
+    'Data & Content Coverage': [
+        { name: 'Multimodal RAG Guide', price: '$137', link: 'https://buy.stripe.com/3cIeV6aTMglR16X2FT5J60e', desc: 'Images, tables, PDFs, audio — full multimodal pipeline' },
+        { name: 'MCP + RAG Playbook', price: '$147', link: 'https://buy.stripe.com/6oU6oA6Dw2v1dTJdkx5J60i', desc: 'Connect your RAG to any AI assistant via MCP' }
+    ]
+};
+
+const levels = [
+    { min: 8, max: 15, name: 'Prototype', color: '#ef4444', desc: 'Your RAG is in early stages. Major gaps across most dimensions need addressing before production.' },
+    { min: 16, max: 22, name: 'Developing', color: '#f59e0b', desc: 'You have basics working but critical gaps remain. Focused improvements will yield 2-3x gains.' },
+    { min: 23, max: 29, name: 'Production-Ready', color: '#3b82f6', desc: 'Solid foundation with room to optimize. Targeted fixes can push you to expert level.' },
+    { min: 30, max: 35, name: 'Advanced', color: '#10b981', desc: 'Strong across most dimensions. Fine-tuning specific areas will maximize your competitive edge.' },
+    { min: 36, max: 40, name: 'Expert', color: '#8b5cf6', desc: 'Top-tier RAG implementation. You\'re operating at production excellence across the board.' }
+];
+
+let answers = new Array(8).fill(null);
+let current = 0;
+
+function selectOption(el) {
+    const card = el.closest('.question-card');
+    card.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    answers[current] = parseInt(el.dataset.score);
+    document.getElementById('nextBtn').disabled = false;
+}
+
+function navigate(dir) {
+    const cards = document.querySelectorAll('.question-card');
+    cards[current].classList.remove('active');
+    current += dir;
+
+    if (current >= 8) {
+        showResults();
+        return;
+    }
+
+    cards[current].classList.add('active');
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = answers[current] === null;
+    document.getElementById('nextBtn').textContent = current === 7 ? 'See Results' : 'Next';
+
+    const pct = (current / 8) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `Question ${current + 1} of 8`;
+}
+
+function showResults() {
+    document.getElementById('quiz').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+
+    const total = answers.reduce((a, b) => a + b, 0);
+    document.getElementById('totalScore').textContent = total;
+
+    const level = levels.find(l => total >= l.min && total <= l.max);
+    document.getElementById('maturityLevel').textContent = `Level: ${level.name}`;
+    document.getElementById('maturityLevel').style.color = level.color;
+    document.getElementById('maturityDesc').textContent = level.desc;
+    document.getElementById('scoreCircle').style.borderColor = level.color;
+
+    // Dimension breakdown
+    const grid = document.getElementById('dimGrid');
+    grid.innerHTML = '';
+    const colors = ['#ef4444', '#f59e0b', '#eab308', '#3b82f6', '#10b981'];
+
+    dimensions.forEach((dim, i) => {
+        const score = answers[i];
+        const color = colors[Math.min(score - 1, 4)];
+        grid.innerHTML += `
+            <div class="dim-card">
+                <div class="dim-name">${dim}</div>
+                <div class="dim-score" style="color:${color}">${score}/5</div>
+                <div class="dim-bar"><div class="dim-bar-fill" style="width:${score*20}%;background:${color}"></div></div>
+            </div>`;
+    });
+
+    // Recommendations — sorted by weakest dimensions
+    const recDiv = document.getElementById('recommendations');
+    recDiv.innerHTML = '';
+    const ranked = dimensions.map((d, i) => ({ dim: d, score: answers[i], idx: i }))
+        .sort((a, b) => a.score - b.score);
+
+    ranked.forEach(({ dim, score }) => {
+        if (score >= 5) return; // Skip perfect scores
+        const prods = products[dim] || [];
+        const priority = score <= 2 ? 'critical' : score <= 3 ? 'high' : 'medium';
+        const priorityLabel = score <= 2 ? 'Critical Gap' : score <= 3 ? 'High Priority' : 'Optimize';
+
+        prods.forEach(p => {
+            recDiv.innerHTML += `
+                <div class="rec-card">
+                    <div class="rec-info">
+                        <h4>${p.name}</h4>
+                        <p>${p.desc}</p>
+                        <span class="priority priority-${priority}">${priorityLabel} &middot; ${dim}</span>
+                    </div>
+                    <a href="${p.link}" class="rec-link">${p.price} &rarr;</a>
+                </div>`;
+        });
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function retake() {
+    answers = new Array(8).fill(null);
+    current = 0;
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('quiz').style.display = 'block';
+    document.querySelectorAll('.question-card').forEach((c, i) => {
+        c.classList.toggle('active', i === 0);
+        c.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    });
+    document.getElementById('prevBtn').disabled = true;
+    document.getElementById('nextBtn').disabled = true;
+    document.getElementById('nextBtn').textContent = 'Next';
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('progressText').textContent = 'Question 1 of 8';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

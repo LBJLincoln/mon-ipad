@@ -1,5 +1,32 @@
 # War Log — Commercial Cycles
 
+## Cycle 15 — 2026-03-08
+
+### Actions
+1. **NEW MICRO-SITE**: RAG Maturity Assessment (interactive quiz)
+   - 8-dimension assessment: Accuracy, Chunking, Eval, Architecture, Debugging, Performance, Cost, Data Coverage
+   - Interactive quiz with progress bar, animated transitions, score circle
+   - Personalized product recommendations ranked by weakest dimensions (Critical/High/Medium priority)
+   - Dynamic product links based on user's specific gaps
+   - MEGA BUNDLE CTA with savings highlight
+   - Mobile-responsive, dark theme, conversion-optimized
+   - Location: `monetisation/sites/rag-maturity-assessment/index.html`
+
+2. **TELEGRAM POST**: Assessment angle on @Nomos42 (message_id: 24)
+   - Fresh angle: "Where does YOUR RAG pipeline actually stand?"
+   - Lists all 8 assessment dimensions
+   - Links to free assessment tool + MEGA BUNDLE
+   - Drives engagement through interactive content (assessments convert 4-6x vs static pages)
+
+### Impact Estimate
+- Interactive assessments have highest engagement rates of any content type (4-6x vs static)
+- Personalized product recommendations = qualified upsell based on user's actual gaps
+- "Free tool" angle drives traffic + trust before purchase decision
+- Assessment creates urgency by showing concrete gaps with priority labels
+- Expected: 2-4 bundle conversions/month from assessment funnel = $994-$1,988/month
+
+---
+
 ## Cycle 14 — 2026-03-08
 
 ### Actions
