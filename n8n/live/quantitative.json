@@ -59,8 +59,8 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "genericCredentialType",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.requestBody) }}\n",
@@ -76,15 +76,14 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=`Bearer ${$env.OPENROUTER_KEY_QUANTITATIVE || $env.OPENROUTER_API_KEY}`"
+              "value": "Bearer sk-litellm-nomos-2026"
             },
             {
               "name": "Content-Type",
               "value": "application/json"
             }
           ]
-        },
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "id": "1b0e89ee-a913-498e-ab6d-2f8d568a2d2f",
       "name": "Text-to-SQL Generator (CoT Enhanced)",
@@ -163,8 +162,8 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "genericCredentialType",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ $json.requestBody }}",
@@ -180,15 +179,14 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=`Bearer ${$env.OPENROUTER_KEY_QUANTITATIVE || $env.OPENROUTER_API_KEY}`"
+              "value": "Bearer sk-litellm-nomos-2026"
             },
             {
               "name": "Content-Type",
               "value": "application/json"
             }
           ]
-        },
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "id": "1179b1b8-11c3-41ae-b750-cec4e2687620",
       "name": "Interpretation Layer (LLM Analyst)",
@@ -230,8 +228,8 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "genericCredentialType",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ $json.requestBody }}",
@@ -247,15 +245,14 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=`Bearer ${$env.OPENROUTER_KEY_QUANTITATIVE || $env.OPENROUTER_API_KEY}`"
+              "value": "Bearer sk-litellm-nomos-2026"
             },
             {
               "name": "Content-Type",
               "value": "application/json"
             }
           ]
-        },
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,

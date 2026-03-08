@@ -103,6 +103,9 @@ def normalize_for_match(text):
     """Normalize text for fuzzy matching."""
     normalized = _re.sub(r'(\d),(\d)', r'\1\2', text)
     normalized = normalized.replace('$', '').replace('%', '').replace('\u20ac', '')
+    # Normalize unit expressions: "2 meters" -> "2m", "180 millimetres" -> "180mm"
+    normalized = _re.sub(r'(\d+)\s*(meter|metre|meters|metres)', r'\1m', normalized)
+    normalized = _re.sub(r'(\d+)\s*(millimeter|millimetre|millimeters|millimetres)', r'\1mm', normalized)
     return normalized.lower()
 
 
@@ -154,10 +157,38 @@ def call_webhook(pipeline, query, timeout=90, max_retries=2):
     return {"answer": "", "error": "Max retries exceeded", "latency_ms": 0}
 
 
+def embed_query_selfhosted(query):
+    """Generate embedding using self-hosted Jina v3 on HF Space (primary)."""
+    selfhosted_url = os.environ.get(
+        "EMBEDDINGS_URL",
+        "https://lbjlincoln-nomos-embeddings-api.hf.space/v1/embeddings"
+    )
+    payload = json.dumps({
+        "model": "jina-embeddings-v3",
+        "input": [query],
+    }).encode()
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        req = request.Request(selfhosted_url, data=payload, headers=headers, method="POST")
+        with request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read().decode())
+            embedding = data["data"][0]["embedding"]
+            return embedding, None
+    except Exception as e:
+        return None, f"Self-hosted embed error: {str(e)[:180]}"
+
+
 def embed_query_jina(query):
-    """Generate embedding for a query using Jina v3 API."""
+    """Generate embedding for a query — tries self-hosted first, then Jina API."""
+    # Try self-hosted first (Jina keys exhausted)
+    embedding, err = embed_query_selfhosted(query)
+    if embedding:
+        return embedding, None
+
+    # Fallback to Jina API
     if not JINA_API_KEY:
-        return None, "JINA_API_KEY not set"
+        return None, f"Self-hosted failed ({err}) and JINA_API_KEY not set"
 
     payload = json.dumps({
         "model": "jina-embeddings-v3",
@@ -177,8 +208,8 @@ def embed_query_jina(query):
             data = json.loads(resp.read().decode())
             embedding = data["data"][0]["embedding"]
             return embedding, None
-    except Exception as e:
-        return None, str(e)[:200]
+    except Exception as e2:
+        return None, f"Both failed. Self-hosted: {err} | Jina: {str(e2)[:100]}"
 
 
 def query_sector_pinecone(embedding, top_k=5):
@@ -209,19 +240,20 @@ def query_sector_pinecone(embedding, top_k=5):
 
 
 def generate_answer_groq(query, context_chunks, model="llama-3.3-70b-versatile"):
-    """Generate an answer using Groq LLM from retrieved context."""
-    if not GROQ_API_KEY:
-        return "", "GROQ_API_KEY not set"
-
+    """Generate an answer using LiteLLM proxy (primary) or Groq (fallback)."""
     # Build context from Pinecone matches
     context_parts = []
     for i, match in enumerate(context_chunks[:5]):
         meta = match.get("metadata", {})
         text = meta.get("text", "") or meta.get("content", "") or meta.get("question", "")
+        answer = meta.get("answer", "")
         sector = meta.get("sector", "")
         dataset = meta.get("dataset", "")
         if text:
-            context_parts.append(f"[Source {i+1} | {sector}/{dataset}] {text[:1000]}")
+            chunk = f"[Source {i+1} | {sector}/{dataset}] {text[:1000]}"
+            if answer:
+                chunk += f"\nAnswer: {answer[:500]}"
+            context_parts.append(chunk)
 
     if not context_parts:
         return "", "No context retrieved from Pinecone"
@@ -243,26 +275,41 @@ def generate_answer_groq(query, context_chunks, model="llama-3.3-70b-versatile")
         },
     ]
 
-    payload = json.dumps({
-        "model": model,
-        "messages": messages,
-        "temperature": 0.1,
-        "max_tokens": 512,
-    }).encode()
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-    }
+    # Try LiteLLM proxy first (Groq API key may be exhausted)
+    litellm_url = "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions"
+    litellm_key = "sk-litellm-nomos-2026"
 
-    try:
-        req = request.Request("https://api.groq.com/openai/v1/chat/completions",
-                              data=payload, headers=headers, method="POST")
-        with request.urlopen(req, timeout=60) as resp:
-            data = json.loads(resp.read().decode())
-            answer = data["choices"][0]["message"]["content"]
-            return answer.strip(), None
-    except Exception as e:
-        return "", str(e)[:200]
+    endpoints = [
+        (litellm_url, litellm_key, "default"),
+        ("https://api.groq.com/openai/v1/chat/completions", GROQ_API_KEY, model),
+    ]
+
+    last_err = ""
+    for ep_url, ep_key, ep_model in endpoints:
+        if not ep_key:
+            continue
+        payload = json.dumps({
+            "model": ep_model,
+            "messages": messages,
+            "temperature": 0.1,
+            "max_tokens": 512,
+        }).encode()
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {ep_key}",
+        }
+
+        try:
+            req = request.Request(ep_url, data=payload, headers=headers, method="POST")
+            with request.urlopen(req, timeout=60) as resp:
+                data = json.loads(resp.read().decode())
+                answer = data["choices"][0]["message"]["content"]
+                return answer.strip(), None
+        except Exception as e:
+            last_err = str(e)[:150]
+            continue
+
+    return "", f"All LLM endpoints failed. Last: {last_err}"
 
 
 def call_direct_pinecone(query, timeout=90):
@@ -442,7 +489,14 @@ def main():
                         help="Show questions without calling APIs")
     parser.add_argument("--allow-local", action="store_true",
                         help="Allow localhost/VM n8n (for testing)")
+    parser.add_argument("--webhook-override", type=str, default=None,
+                        help="Override webhook path for standard pipeline (e.g. /webhook/website-standard-v3)")
     args = parser.parse_args()
+
+    # Apply webhook override if provided
+    if args.webhook_override:
+        WEBHOOK_PATHS["standard"] = args.webhook_override
+        print(f"  Webhook override: standard -> {args.webhook_override}")
 
     # Load dataset
     questions, metadata = load_sector_dataset(

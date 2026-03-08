@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomos AI Store — Production RAG Tools &amp; Templates</title>
+    <meta name="description" content="Production-tested RAG engineering tools built across 80+ sessions and 1,100+ commits. Debug playbooks, architecture blueprints, n8n workflows, evaluation frameworks, and more.">
+    <meta property="og:title" content="Nomos AI Store — Production RAG Tools">
+    <meta property="og:description" content="From 79+ production fixes to complete multi-pipeline architectures. Tools that power 87.5% accuracy on 10K-question benchmarks.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lbjlincoln.github.io/rag-dashboard/store.html">
+    <link rel="canonical" href="https://lbjlincoln.github.io/rag-dashboard/store.html">
+
+    <!-- JSON-LD Structured Data for Agentic Commerce -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": "Nomos AI Store",
+      "description": "Production-tested RAG engineering tools, templates, and knowledge products.",
+      "url": "https://lbjlincoln.github.io/rag-dashboard/store.html",
+      "brand": {
+        "@type": "Brand",
+        "name": "Nomos AI"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "RAG Engineering Products",
+        "itemListElement": [
+          {
+            "@type": "Product",
+            "name": "MEGA BUNDLE — Complete RAG Engineering Stack",
+            "description": "Everything: Architecture Blueprint + 10 n8n Workflows + Debug Playbook + Agent Context Kit + Eval Framework + Engineering Handbook + Ingestion Toolkit + Dashboard + Claude Skills + Embeddings Service + Agentic Commerce Playbook. $1,400+ value.",
+            "sku": "NOMOS-MEGA-001",
+            "offers": {
+              "@type": "Offer",
+              "price": "497.00",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
+            }
+          },
+          {
+            "@type": "Product",
+            "name": "Multi-RAG Architecture Blueprint",
+            "description": "Complete architecture for a 4-pipeline RAG system handling 61K+ questions at 87-95% accuracy. Includes infrastructure setup on 100% free tier, n8n workflow configs, LiteLLM proxy setup, evaluation methodology.",
+            "sku": "NOMOS-RAG-ARCH-001",
+            "offers": {
+              "@type": "Offer",
+              "price": "197.00",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
+            }
+          },
+          {
+            "@type": "Product",
+            "name": "RAG Debug Playbook",
+            "description": "79+ documented production fixes for RAG systems. Diagnostic flowcharts, database gotchas, LLM reliability patterns. PDF + Markdown format compatible with Claude Code, Copilot, and Cursor.",
+            "sku": "NOMOS-RAG-DEBUG-001",
+            "offers": {
+              "@type": "Offer",
+              "price": "47.00",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
+            }
+          },
+          {
+            "@type": "Product",
+            "name": "AI Agent Context Kit",
+            "description": "Drop-in .md context files that give AI coding assistants instant expertise in RAG debugging. Compatible with Claude Code, GitHub Copilot, and Cursor.",
+            "sku": "NOMOS-AGENT-CTX-001",
+            "offers": {
+              "@type": "Offer",
+              "price": "27.00",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
+            }
+          }
+        ]
+      }
+    }
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #e0e6ed;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .nav-brand {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #e0e6ed;
+        }
+
+        .nav-links a.active {
+            color: #a5b4fc;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 40px 60px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #a78bfa 50%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            line-height: 1.7;
+            margin-bottom: 32px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #22c55e, #4ade80);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* Products */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px 80px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e0e6ed;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 32px;
+        }
+
+        /* Bundle card */
+        .bundle-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            border: 2px solid rgba(102, 126, 234, 0.4);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bundle-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .bundle-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        .bundle-card h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .bundle-card .desc {
+            color: #c4b5fd;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+            max-width: 700px;
+        }
+
+        .bundle-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .bundle-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #e0e6ed;
+        }
+
+        .bundle-item .check {
+            color: #22c55e;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .bundle-footer {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .price-block {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .price-current {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .price-original {
+            font-size: 1.2rem;
+            color: #64748b;
+            text-decoration: line-through;
+        }
+
+        .price-tag {
+            font-size: 0.85rem;
+            color: #4ade80;
+            font-weight: 600;
+        }
+
+        /* Product grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 28px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(102, 126, 234, 0.4);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .product-tier {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 14px;
+            width: fit-content;
+        }
+
+        .tier-premium {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .tier-mid {
+            background: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+
+        .tier-starter {
+            background: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .product-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #f1f5f9;
+            line-height: 1.3;
+        }
+
+        .product-card .desc {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .product-card .features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .product-card .features li {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            padding: 4px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .product-card .features li::before {
+            content: "\2713";
+            color: #22c55e;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #e0e6ed;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .btn-sm {
+            padding: 8px 20px;
+            font-size: 0.85rem;
+        }
+
+        /* Social proof */
+        .proof-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 40px;
+            margin-bottom: 48px;
+            text-align: center;
+        }
+
+        .proof-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 32px;
+            color: #e0e6ed;
+        }
+
+        .proof-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .proof-card {
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .proof-card .metric {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .proof-card .metric-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+
+        .proof-card .metric-detail {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .metric-green { color: #22c55e; }
+        .metric-blue { color: #60a5fa; }
+        .metric-purple { color: #a78bfa; }
+        .metric-amber { color: #fbbf24; }
+
+        /* Footer */
+        .store-footer {
+            text-align: center;
+            padding: 40px;
+            color: #475569;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .store-footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .store-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 12px 20px;
+            }
+
+            .nav-links {
+                gap: 16px;
+            }
+
+            .hero {
+                padding: 48px 20px 40px;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .stats-row {
+                gap: 24px;
+            }
+
+            .container {
+                padding: 0 20px 60px;
+            }
+
+            .bundle-card {
+                padding: 24px;
+            }
+
+            .bundle-card h2 {
+                font-size: 1.4rem;
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bundle-items {
+                grid-template-columns: 1fr;
+            }
+
+            .price-current {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">Nomos AI</a>
+        <div class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="store.html" class="active">Store</a>
+            <a href="https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d" target="_blank">Store</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>Production RAG Tools<br>Built From 80+ Engineering Sessions</h1>
+        <div class="subtitle">
+            Everything we built to achieve 87.5% accuracy on 10K-question benchmarks
+            and 95.2% on quantitative queries &mdash; packaged as ready-to-use tools,
+            templates, and knowledge products.
+        </div>
+        <div class="stats-row">
+            <div class="stat">
+                <div class="stat-value">1,100+</div>
+                <div class="stat-label">Commits</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">80+</div>
+                <div class="stat-label">Sessions</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">79+</div>
+                <div class="stat-label">Production Fixes</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">61K</div>
+                <div class="stat-label">Questions Tested</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+
+        <!-- MEGA BUNDLE -->
+        <div class="bundle-card">
+            <span class="bundle-badge">Best Value</span>
+            <h2>MEGA BUNDLE &mdash; Complete RAG Engineering Stack</h2>
+            <div class="desc">
+                Everything you need to build a production RAG system from scratch in one weekend.
+                All products below, plus exclusive extras. Over $1,400 in value.
+            </div>
+            <div class="bundle-items">
+                <div class="bundle-item"><span class="check">&#10003;</span> Architecture Blueprint</div>
+                <div class="bundle-item"><span class="check">&#10003;</span> 10 n8n Workflows</div>
+                <div class="bundle-item"><span class="check">&#10003;</span> RAG Debug Playbook</div>
+                <div class="bundle-item"><span class="check">&#10003;</span> Agent Context Kit</div>
+                <div class="bundle-item"><span class="check">&#10003;</span> Evaluation Framework</div>
+                <div class="bundle-item"><span class="check">&#10003;</span> Engineering Handbook</div>
+                <div class="bundle-item"><span class="check">&#10003;</span> Ingestion Toolkit</div>
+                <div class="bundle-item"><span class="check">&#10003;</span> Dashboard Template</div>
+                <div class="bundle-item"><span class="check">&#10003;</span> Claude Code Skills</div>
+                <div class="bundle-item"><span class="check">&#10003;</span> Embeddings Service</div>
+                <div class="bundle-item"><span class="check">&#10003;</span> Agentic Commerce Playbook</div>
+                <div class="bundle-item"><span class="check">&#10003;</span> Benchmark Datasets</div>
+            </div>
+            <div class="bundle-footer">
+                <div class="price-block">
+                    <span class="price-current">$497</span>
+                    <span class="price-original">$1,400+</span>
+                    <span class="price-tag">Save 65%</span>
+                </div>
+                <a href="https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d" target="_blank" class="btn btn-primary">Get the Bundle</a>
+            </div>
+        </div>
+
+        <!-- Social Proof -->
+        <div class="proof-section">
+            <h2>Built in Production, Not in Theory</h2>
+            <div class="proof-grid">
+                <div class="proof-card">
+                    <div class="metric metric-green">87.5%</div>
+                    <div class="metric-label">Standard RAG Accuracy</div>
+                    <div class="metric-detail">10,000-question Phase 3 benchmark. HyDE + BM25 + Reciprocal Rank Fusion retrieval strategy.</div>
+                </div>
+                <div class="proof-card">
+                    <div class="metric metric-blue">95.2%</div>
+                    <div class="metric-label">Quantitative RAG Accuracy</div>
+                    <div class="metric-detail">Financial tables, SQL generation, numerical reasoning. Specialized pipeline with structured data handling.</div>
+                </div>
+                <div class="proof-card">
+                    <div class="metric metric-purple">$0/mo</div>
+                    <div class="metric-label">Infrastructure Cost</div>
+                    <div class="metric-detail">100% free tier: HuggingFace Spaces, Pinecone, Neo4j Aura, Supabase, OpenRouter LLMs.</div>
+                </div>
+                <div class="proof-card">
+                    <div class="metric metric-amber">4</div>
+                    <div class="metric-label">Specialized Pipelines</div>
+                    <div class="metric-detail">Standard, Graph, Quantitative, Orchestrator. Intelligent routing sends each query to the right pipeline.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tier 1: Premium Products -->
+        <div class="section-title">Premium Products</div>
+        <div class="section-subtitle">Complete systems and architecture documentation</div>
+        <div class="product-grid">
+
+            <div class="product-card">
+                <span class="product-tier tier-premium">Premium</span>
+                <h3>Multi-RAG Architecture Blueprint</h3>
+                <div class="desc">Complete architecture for a 4-pipeline RAG system. Includes n8n workflow JSON files ready to import, LiteLLM proxy config, evaluation methodology from 200 to 61K questions, and full infrastructure setup on 100% free tiers.</div>
+                <ul class="features">
+                    <li>4 specialized pipeline designs</li>
+                    <li>n8n workflow JSONs (import and run)</li>
+                    <li>LiteLLM proxy with 9 free models</li>
+                    <li>Phase-gated eval methodology</li>
+                    <li>Infrastructure setup guide</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$197</span>
+                    <a href="https://buy.stripe.com/aFa14g4vob1x3f5bcp5J602" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <span class="product-tier tier-premium">Premium</span>
+                <h3>n8n RAG Workflow Collection</h3>
+                <div class="desc">10 battle-tested n8n workflow JSON files: Standard RAG, Graph RAG, Quantitative RAG, Orchestrator, Enrichment, Ingestion, PME Gateway, and more. Import directly into n8n with zero setup.</div>
+                <ul class="features">
+                    <li>10 production workflow files</li>
+                    <li>Groq / OpenRouter / LiteLLM compatible</li>
+                    <li>Import and run in minutes</li>
+                    <li>Self-hosted embeddings included</li>
+                    <li>Webhook endpoints pre-configured</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$197</span>
+                    <a href="https://buy.stripe.com/bJe00c9PI8Tp2b1a8l5J603" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <span class="product-tier tier-premium">Premium</span>
+                <h3>Enterprise RAG Website Template</h3>
+                <div class="desc">Production Next.js 14 + Tailwind + shadcn/ui website with 4 sector-specific AI chatbots (Finance, Legal, Construction, Manufacturing). MacBook frame animations, live dashboard with SSE streaming.</div>
+                <ul class="features">
+                    <li>Next.js 14 + Tailwind + shadcn/ui</li>
+                    <li>4 sector AI chatbots built-in</li>
+                    <li>Deploy to Vercel in 5 minutes</li>
+                    <li>SEO pre-configured</li>
+                    <li>SSE streaming dashboard</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$197</span>
+                    <a href="https://buy.stripe.com/14A6oAaTM4D94j93JX5J604" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <span class="product-tier tier-premium">Premium</span>
+                <h3>Agentic Commerce Playbook</h3>
+                <div class="desc">How to sell AI products TO AI agents. ACP protocol implementation, 10-platform distribution strategy, MCP server integration, revenue automation. First-mover advantage in the $1T agentic commerce market.</div>
+                <ul class="features">
+                    <li>ACP protocol implementation</li>
+                    <li>10-platform distribution matrix</li>
+                    <li>MCP server integration guide</li>
+                    <li>JSON-LD structured data templates</li>
+                    <li>Revenue automation playbook</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$197</span>
+                    <a href="https://buy.stripe.com/aFa3co9PI5Hd2b11BP5J607" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tier 2: Mid-range -->
+        <div class="section-title">Engineering Tools</div>
+        <div class="section-subtitle">Evaluation, debugging, and documentation</div>
+        <div class="product-grid">
+
+            <div class="product-card">
+                <span class="product-tier tier-mid">Core</span>
+                <h3>RAG Evaluation Framework</h3>
+                <div class="desc">Complete Python evaluation suite: smoke tests, parallel batch evaluation, phase gates (200 to 61K questions), regression detection, and live metrics dashboard. 11 battle-tested scripts.</div>
+                <ul class="features">
+                    <li>Phase-gated testing (200 to 61K)</li>
+                    <li>Parallel batch evaluation</li>
+                    <li>Regression detection</li>
+                    <li>Live metrics dashboard</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$127</span>
+                    <a href="https://buy.stripe.com/fZu4gs2ng1qX6rh0xL5J605" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <span class="product-tier tier-mid">Core</span>
+                <h3>RAG Engineering Handbook</h3>
+                <div class="desc">Complete technical documentation: 79+ production fixes with root cause analysis, infrastructure reference for Pinecone, Neo4j, Supabase, n8n, project roadmap with SOTA research review. 2,500+ lines.</div>
+                <ul class="features">
+                    <li>79+ fixes with root cause analysis</li>
+                    <li>Infrastructure reference guides</li>
+                    <li>SOTA research review</li>
+                    <li>1000+ document types by sector</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$147</span>
+                    <a href="https://buy.stripe.com/eVq14g6Dwd9F6rh54h5J606" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <span class="product-tier tier-mid">Core</span>
+                <h3>RAG Ingestion Toolkit</h3>
+                <div class="desc">20+ production scripts for document ingestion: multi-format parsing (PDF, DOCX, JSONL), Pinecone/Neo4j/Supabase loaders, BM25 service, reranker, quality validation. Process 34K+ documents reliably.</div>
+                <ul class="features">
+                    <li>Multi-format parsing scripts</li>
+                    <li>Pinecone / Neo4j / Supabase loaders</li>
+                    <li>BM25 + reranker services</li>
+                    <li>Quality validation pipeline</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$97</span>
+                    <a href="https://buy.stripe.com/dRm7sEfa27PlcPFgwJ5J608" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <span class="product-tier tier-mid">Core</span>
+                <h3>RAG Pipeline Dashboard</h3>
+                <div class="desc">Real-time HTML/JS dashboard for RAG pipeline monitoring. Chart.js visualizations, trading board with BEST/WORST/MIDDLE analysis, auto-refresh, Vercel serverless API. Deploy in 2 minutes.</div>
+                <ul class="features">
+                    <li>Real-time pipeline monitoring</li>
+                    <li>Chart.js visualizations</li>
+                    <li>Trading board analysis</li>
+                    <li>GitHub Pages / Vercel deploy</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$97</span>
+                    <a href="https://buy.stripe.com/14AcMYbXQ7PldTJ5S55J60a" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tier 3: Starter -->
+        <div class="section-title">Starter Tools</div>
+        <div class="section-subtitle">Accessible entry points for AI engineers</div>
+        <div class="product-grid">
+
+            <div class="product-card">
+                <span class="product-tier tier-starter">Starter</span>
+                <h3>RAG Debug Playbook</h3>
+                <div class="desc">The definitive troubleshooting guide for RAG systems in production. 79 documented fixes with root cause analysis, solution code, and prevention strategies. Diagnostic flowcharts go from symptom to fix in under 5 minutes.</div>
+                <ul class="features">
+                    <li>79+ documented production fixes</li>
+                    <li>Diagnostic flowcharts</li>
+                    <li>PDF + Markdown format</li>
+                    <li>Works as Claude/Copilot context file</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$47</span>
+                    <a href="https://buy.stripe.com/00w7sEd1U2v14j92FT5J600" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <span class="product-tier tier-starter">Starter</span>
+                <h3>Claude Code Skill Pack</h3>
+                <div class="desc">17 production-ready Claude Code custom commands: session management, evaluation, monitoring, self-healing, cross-repo sync, regression detection, metrics aggregation, website audit, and more.</div>
+                <ul class="features">
+                    <li>17 custom Claude Code skills</li>
+                    <li>Drop into .claude/commands/</li>
+                    <li>Session management automation</li>
+                    <li>Cross-repo synchronization</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$47</span>
+                    <a href="https://buy.stripe.com/7sY8wIge64D93f53JX5J609" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <span class="product-tier tier-starter">Starter</span>
+                <h3>AI Agent Context Kit</h3>
+                <div class="desc">Drop-in context files that make your AI coding assistant an expert RAG debugger. Structured .md files optimized for Claude Code (CLAUDE.md), GitHub Copilot, and Cursor. 30-second setup.</div>
+                <ul class="features">
+                    <li>CLAUDE.md context file</li>
+                    <li>Copilot/Cursor formats included</li>
+                    <li>Error pattern database</li>
+                    <li>Prompt templates for RAG debug</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$27</span>
+                    <a href="https://buy.stripe.com/7sY9AMbXQ4D94j95S55J601" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <span class="product-tier tier-starter">Starter</span>
+                <h3>SOTA Benchmark Dataset Toolkit</h3>
+                <div class="desc">18 curated SOTA benchmark datasets (61,661 questions) with download scripts, phase generators, and evaluation harness. SQuAD v2, MS MARCO, TriviaQA, HotpotQA, FinQA, and more.</div>
+                <ul class="features">
+                    <li>18 SOTA benchmarks</li>
+                    <li>61,661 questions</li>
+                    <li>Download + phase gen scripts</li>
+                    <li>Evaluation harness included</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$67</span>
+                    <a href="https://buy.stripe.com/cNi5kwaTMfhN5nd3JX5J60b" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <span class="product-tier tier-starter">Starter</span>
+                <h3>Self-Hosted Embeddings Service</h3>
+                <div class="desc">Deploy your own Jina-compatible embeddings API on HuggingFace Spaces (free tier). Lazy model loading, health monitoring, TEI-compatible endpoints. Stop paying per-token for embeddings.</div>
+                <ul class="features">
+                    <li>Jina-compatible /v1/embeddings API</li>
+                    <li>TEI-compatible /embed endpoint</li>
+                    <li>Free HF Spaces deployment</li>
+                    <li>Health monitoring built-in</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$67</span>
+                    <a href="https://buy.stripe.com/aFa00ce5Y0mT9Dtcgt5J60c" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <span class="product-tier tier-starter">Starter</span>
+                <h3>Site Pro en 5 min</h3>
+                <div class="desc">Professional landing page from zero to deployed in under 5 minutes. Next.js 14 + Tailwind CSS template with animations, SEO pre-configured, free Vercel hosting. Includes AI copywriting prompts.</div>
+                <ul class="features">
+                    <li>Next.js 14 + Tailwind template</li>
+                    <li>Framer Motion animations</li>
+                    <li>SEO + OpenGraph pre-configured</li>
+                    <li>$0/month Vercel hosting</li>
+                </ul>
+                <div class="product-footer">
+                    <span class="product-price">$17</span>
+                    <a href="https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d" target="_blank" class="btn btn-secondary btn-sm">Buy Now</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- About -->
+        <div class="proof-section">
+            <h2>About Nomos AI</h2>
+            <p style="color: #94a3b8; max-width: 700px; margin: 0 auto; line-height: 1.7; font-size: 0.95rem;">
+                Built by an engineer from Polytechnique and HEC Paris, Nomos AI products come from
+                real production experience building multi-pipeline RAG systems. Every fix, every template,
+                every workflow has been battle-tested across 80+ engineering sessions and 1,100+ commits.
+                We run 4 specialized RAG pipelines on 100% free-tier infrastructure and evaluate against
+                61,000+ benchmark questions from 18 SOTA datasets.
+            </p>
+            <div style="margin-top: 24px;">
+                <a href="index.html" class="btn btn-secondary" style="margin-right: 12px;">View Live Dashboard</a>
+                <a href="https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d" target="_blank" class="btn btn-secondary">View All Products</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="store-footer">
+        <p>Nomos AI &mdash; Production RAG Engineering Tools</p>
+        <p style="margin-top: 8px;">
+            <a href="index.html">Dashboard</a> &middot;
+            <a href="https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d" target="_blank">Store</a> &middot;
+            <a href="https://github.com/lbjlincoln" target="_blank">GitHub</a>
+        </p>
+    </footer>
+
+</body>
+</html>

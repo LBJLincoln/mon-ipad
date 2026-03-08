@@ -51,8 +51,8 @@ WORKFLOW_IDS = {
         "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
     },
     "quantitative": {
-        "id": "e465W7V9Q8uK6zJE",
-        "name": "WF4 Quantitative V2.0",
+        "id": "cjhEhVs0KV1ExHqX",
+        "name": "WF4 Quantitative V3.1 (LiteLLM)",
         "webhook": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
     },
     "orchestrator": {
