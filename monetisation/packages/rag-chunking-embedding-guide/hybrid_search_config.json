@@ -1,0 +1,107 @@
+{
+  "_comment": "Production Hybrid Search Configuration — Nomos AI RAG Chunking & Embedding Guide",
+  "_version": "1.0",
+
+  "embedding": {
+    "model": "jina-embeddings-v3",
+    "dimensions": 1024,
+    "task_query": "retrieval.query",
+    "task_passage": "retrieval.passage",
+    "batch_size": 32,
+    "max_tokens": 8192,
+    "normalize": true
+  },
+
+  "chunking": {
+    "strategy": "semantic_paragraph",
+    "chunk_size_tokens": 512,
+    "overlap_tokens": 77,
+    "overlap_percent": 15,
+    "min_chunk_tokens": 50,
+    "separators": ["\n\n\n", "\n\n", "\n", ". ", " "],
+    "preserve_tables": true,
+    "preserve_code_blocks": true
+  },
+
+  "hybrid_search": {
+    "enabled": true,
+    "alpha": 0.7,
+    "dense_weight": 0.7,
+    "sparse_weight": 0.3,
+    "fusion_method": "reciprocal_rank_fusion",
+    "rrf_k": 60,
+    "dense_top_k_multiplier": 2,
+    "sparse_top_k_multiplier": 2
+  },
+
+  "retrieval": {
+    "top_k": 5,
+    "score_threshold": 0.3,
+    "reranking": {
+      "enabled": true,
+      "model": "cross-encoder/ms-marco-MiniLM-L-12-v2",
+      "top_n": 20,
+      "final_k": 5
+    },
+    "metadata_filters": {
+      "enabled": true,
+      "default_filters": {}
+    }
+  },
+
+  "vector_db": {
+    "provider": "pinecone",
+    "index_name": "rag-production",
+    "metric": "cosine",
+    "cloud": "aws",
+    "region": "us-east-1",
+    "pod_type": "p2",
+    "replicas": 1,
+    "metadata_config": {
+      "indexed": ["topic", "doc_type", "source", "language"]
+    }
+  },
+
+  "sparse_index": {
+    "provider": "bm25",
+    "tokenizer": "whitespace",
+    "k1": 1.5,
+    "b": 0.75,
+    "language": "english",
+    "stopwords": true,
+    "stemming": true
+  },
+
+  "performance_targets": {
+    "retrieval_at_5": 0.88,
+    "retrieval_at_10": 0.93,
+    "mrr": 0.82,
+    "p50_latency_ms": 50,
+    "p99_latency_ms": 200,
+    "ingestion_docs_per_minute": 100
+  },
+
+  "profiles": {
+    "starter": {
+      "dimensions": 256,
+      "chunk_size": 512,
+      "hybrid": false,
+      "reranking": false,
+      "note": "Minimal cost, good for prototyping"
+    },
+    "balanced": {
+      "dimensions": 768,
+      "chunk_size": 512,
+      "hybrid": true,
+      "reranking": false,
+      "note": "Good accuracy/cost balance for production"
+    },
+    "maximum_accuracy": {
+      "dimensions": 1024,
+      "chunk_size": 512,
+      "hybrid": true,
+      "reranking": true,
+      "note": "Best accuracy, higher latency and cost"
+    }
+  }
+}
