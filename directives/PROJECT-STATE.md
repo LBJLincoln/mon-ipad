@@ -1,38 +1,44 @@
 # Project State — Multi-RAG Orchestrator SOTA 2026
 
-> Last updated: 2026-03-08T02:45:00Z
+> Last updated: 2026-03-08T22:10:00Z
 
-## Session 82 — Current Status
+## Session 90 — Current Status
 
 ### Overview
 - **Phase 3**: **DONE** (Std 87.5% PASS, Graph 40.9% ACCEPTED, Quant 95.2% PASS)
-- **Phase 4**: IN PROGRESS — Std DONE, Graph DONE, Quant INGESTING overnight (~10h ETA)
-- **Jina API REPLACED**: Self-hosted `nomos-embeddings-api` HF Space RUNNING
-- **n8n workflows UPDATED**: 7 files swapped Jina→self-hosted, auth headers removed
-- **Telegram bot**: @Nomos42Bot UP in Codespace with trinity-large-preview:free
-- **Monetisation**: Products ready, Gumroad account created, awaiting manual product setup
-- **Infrastructure**: 3/4 pipelines ACTIVE, embeddings self-hosted, LiteLLM UP
-- **Pinecone**: 42,758+ vectors in sota-rag-jina-1024 (growing with quant ingestion)
-- **Sessions**: 82 | **Commits**: 1,100+
+- **Phase 4**: IN PROGRESS — All 3 pipelines ingested, eval running
+- **Phase 4 Eval**: Std 13%, Graph 7%, Quant 14% (external SOTA benchmarks — data mismatch)
+- **Pipelines**: 3/3 WORKING (Std 36s, Graph 39s FIXED, Quant 43s)
+- **Graph FIX**: Neo4j depth 4→2, results 100→25, Jina→self-hosted = 96s→39s (57% faster)
+- **Monetisation**: 17 products on Stripe ($27-$497), 3 Vercel sites, daemon running
+- **Testing daemon**: 80+ cycles, entity enrichment 64.8%→95%, empty contexts 4,167→0
+- **Infrastructure**: 4 n8n Spaces UP, LiteLLM UP, all DBs healthy
+- **Pinecone**: 46,634 vectors SOTA + 31,937 sectors
+- **Neo4j**: ~86,841 nodes (up from 79,451), entity enrichment 95%
+- **Supabase**: 11,387 docs (ALL with context), 3,876 financial tables
+- **Sessions**: 90 | **Commits**: 1,100+
 
-### Session 82 Achievements
-1. Self-hosted embedding Space WORKING (monkey-patch for PyTorch 2.4+, lazy loading)
-2. n8n workflows updated: Jina→self-hosted (7 files, 15 changes)
-3. Standard pipeline 3/3 PASS with self-hosted embeddings
-4. OpenClaw Telegram bot reconfigured: OpenRouter free models (trinity-large-preview)
-5. Quant ingestion launched: 3,871 contexts at 6.3/min via Gradio Space
-6. Graph contexts confirmed fully ingested (11,300/11,300)
+### Session 90 Achievements
+1. Graph pipeline FIXED: Neo4j depth 4→2, max_results 100→25 = 96s→39s
+2. Graph embeddings switched Jina→self-hosted (api.jina.ai exhausted)
+3. Monetisation codespace recreated + daemon launched (17 products, cycle 2)
+4. New product: MCP + RAG Integration Playbook ($147) created by daemon
+5. 3 Vercel sites deployed: rag-mega-bundle, rag-free-tools, ai-agent-marketplace
+6. Testing daemon: entity enrichment 95%, finance coverage 92%, 9 new sector docs
+7. Docling tested: 9/9 docs processed, 21 vectors, 3 bugs fixed
+8. LobeChat agents PR #1507 submitted
+9. 23 AI directory submissions prepared
 
 ---
 
-## Pipeline Status (Session 75 Verified)
+## Pipeline Status (Session 90 Verified)
 
-| Pipeline | Status | Response Time | Accuracy | Notes |
-|----------|--------|--------------|----------|-------|
-| Standard | WORKING | ~42s | 87.5% (P3) | Jina key updated, correct ML answers |
-| Graph | WORKING | ~32s | 40.9% (P3) | Pipeline OK but Neo4j data returns unrelated entities |
-| Quantitative | WORKING | ~7-9s | 95.2% (P3) | Pipeline FIXED S75, v2 dataset PASS |
-| Orchestrator | 404 | — | — | ON HOLD (empty body issue) |
+| Pipeline | Status | Response Time | Accuracy (P3) | Accuracy (P4) | Notes |
+|----------|--------|--------------|----------------|----------------|-------|
+| Standard | WORKING | ~36s | 87.5% | 13% | Self-hosted embeddings, Groq direct |
+| Graph | WORKING | ~39s | 40.9% | 7% | FIXED S90: depth 4→2, 96s→39s |
+| Quantitative | WORKING | ~43s | 95.2% | 14% | LiteLLM, gemma-27b model |
+| Orchestrator | 404 | — | — | — | ON HOLD |
 
 ---
 
@@ -91,13 +97,12 @@
 
 | Component | Status | Details |
 |-----------|--------|---------|
-| HF Space #1 | UP | n8n primary, 8 instances round-robin, 14 workflows (11 active) |
-| HF Space #7 | UP | LiteLLM proxy, 9 models, 73 endpoints, auto key rotation |
-| Supabase Postgres | UP | 40 tables, 7,509 sector docs, 3,876 financial tables, tenant_id=`benchmark` |
-| Pinecone sota-rag-jina-1024 | UP | 42,758 vectors (32,986 default + 9,772 benchmark ns) |
-| Pinecone website-sectors-jina-1024 | UP | 31,916 vectors (sector data) |
-| Pinecone sota-rag-phase2-graph | UP | 1,248 vectors (e5-large) |
-| Neo4j Aura | UP | ~78,000+ nodes (incl. Phase 4 paragraphs), 76,717 relationships |
+| HF Space #1 | UP | n8n primary, 4 Spaces active (1,3,5,9) |
+| HF Space #7 | UP | LiteLLM proxy, 9 models, auto key rotation |
+| Supabase Postgres | UP | 40 tables, 11,387 sector docs, 3,876 financial tables, ALL with context |
+| Pinecone sota-rag-jina-1024 | UP | 46,634 vectors (36,862 default + 12 benchmark ns) |
+| Pinecone website-sectors-jina-1024 | UP | 31,937 vectors (sector data) |
+| Neo4j Aura | UP | ~86,841 nodes (Entity 42,218 + SectorDoc 11,385 + Person 15,989 + more) |
 | n8n API Key | EXPIRED | Use cookie auth via `/rest/login` (ci@nomos.ai / CI-Nomos-2026!) |
 | Jina API Key | EXHAUSTED | Both `jina_c87d...` and `jina_612a...` depleted (~11M tokens). Using TEI/Gradio HF Space |
 | VM Google Cloud | PILOTAGE ONLY | 34.136.180.66, ~413MB RAM available, n8n removed S42 |
@@ -325,22 +330,26 @@
 
 ---
 
-## Metrics Snapshot (Session 79)
+## Metrics Snapshot (Session 90)
 
 | Metric | Value |
 |--------|-------|
-| Total questions tested (all phases) | ~9,000+ |
+| Total questions tested (all phases) | ~12,000+ |
 | Phase 3 Standard tested | 8,006 / 8,700 |
 | Phase 3 Graph tested | 1,500 / 1,500 |
 | Phase 3 Quant tested | 500 / 500 (v2 dataset, 95.2% PASS) |
-| Pinecone vectors (sota-rag-jina-1024) | 42,758 |
-| Pinecone vectors (website-sectors) | 31,916 |
-| Neo4j nodes | ~78,000+ |
-| Neo4j relationships | ~76,717 |
-| Supabase tables | 40 |
-| Supabase rows | ~15,000+ |
+| Phase 4 datasets generated | 61,661 questions (18 SOTA benchmarks) |
+| Phase 4 Pinecone ingested | Std 10,917 + Graph 11,300 + Quant 3,550 |
+| Pinecone vectors (sota-rag-jina-1024) | 46,634 |
+| Pinecone vectors (website-sectors) | 31,937 |
+| Neo4j nodes | ~86,841 |
+| Neo4j entity enrichment | 95% (was 64.8%) |
+| Supabase sector docs | 11,387 (ALL with context, was 37% empty) |
+| Supabase financial tables | 3,876 |
+| Stripe products | 17 ($27-$497) |
+| Vercel sites | 3 deployed |
 | Commits (all repos) | 1,100+ |
-| Sessions | 79 |
+| Sessions | 90 |
 
 ---
 
