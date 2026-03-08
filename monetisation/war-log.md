@@ -1,5 +1,30 @@
 # War Log — Commercial Cycles
 
+## Cycle 14 — 2026-03-08
+
+### Actions
+1. **NEW MICRO-SITE**: RAG ROI Calculator (interactive tool)
+   - Full interactive calculator at `monetisation/sites/rag-roi-calculator/index.html`
+   - Users input: queries, team size, accuracy, latency, debug hours, LLM spend
+   - Calculates monthly waste breakdown (hallucinations, latency, debug, LLM overspend)
+   - Dynamic product recommendations based on user's specific pain points
+   - MEGA BUNDLE CTA with payback period calculation
+   - Mobile-responsive, dark theme, conversion-optimized
+
+2. **TELEGRAM POST**: ROI/cost angle on @Nomos42 (message_id: 21)
+   - New angle: "How much is bad RAG ACTUALLY costing you?"
+   - Cost breakdown (hallucinations, slow queries, debug spirals, LLM overspend)
+   - Links to store + MEGA BUNDLE
+
+### Impact Estimate
+- Interactive calculators convert 3-5x better than static pages (engagement + personalization)
+- ROI angle targets decision-makers and budget holders — higher conversion
+- Dynamic product recommendations = personalized upsell path
+- Telegram post #7 with fresh angle avoids audience fatigue
+- Expected: 1-3 bundle conversions/month from calculator = $497-$1,491/month
+
+---
+
 ## Cycle 13 — 2026-03-08
 
 ### Actions
