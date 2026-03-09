@@ -38,7 +38,7 @@ PRODUCTS = [
         "title": "MEGA BUNDLE - All 13 RAG Products",
         "price": 497.00,
         "stripe_url": "https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d",
-        "route": "mega-bundle",
+        "route": "rag-mega-bundle",
         "headline": "Everything. One payment. Lifetime access.",
         "description": (
             "Complete RAG engineering toolkit: Architecture Blueprint, n8n Workflows, "
@@ -219,15 +219,55 @@ PRODUCTS = [
 # HTTP helpers
 # ---------------------------------------------------------------------------
 
-def _get_headers():
-    """Build auth headers."""
+def _get_api_key():
+    """Get the raw API key from environment."""
     api_key = os.environ.get("WHOP_API_KEY", "")
     if not api_key:
         print("ERROR: WHOP_API_KEY not set in environment.")
         print("  Get your key at: https://dash.whop.com/settings/developer")
         sys.exit(1)
-    return {
+    return api_key
+
+
+def _get_access_token(company_id):
+    """Generate a short-lived JWT access token scoped to a company.
+
+    Company API keys (apik_*) cannot directly call v1 endpoints for a specific
+    company.  They must first POST /access_tokens to obtain a JWT that is
+    scoped to the target company.  The JWT inherits all permissions from the
+    parent key.
+    """
+    api_key = _get_api_key()
+    headers = {
         "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+    payload = {"company_id": company_id}
+    status, resp = http_request("POST", f"{BASE_URL}/access_tokens", data=payload, headers=headers)
+    if status not in (200, 201):
+        print(f"ERROR: Failed to create access token (HTTP {status})")
+        print(f"  {json.dumps(resp, indent=2)[:500]}")
+        sys.exit(1)
+    token = resp.get("token", "")
+    if not token:
+        print("ERROR: Empty access token returned.")
+        sys.exit(1)
+    return token
+
+
+# Cache the token so we don't create one per API call
+_cached_token = None
+
+
+def _get_headers():
+    """Build auth headers using a company-scoped JWT access token."""
+    global _cached_token
+    if _cached_token is None:
+        company_id = _get_company_id()
+        _cached_token = _get_access_token(company_id)
+    return {
+        "Authorization": f"Bearer {_cached_token}",
         "Content-Type": "application/json",
         "Accept": "application/json",
     }
@@ -275,36 +315,65 @@ def http_request(method, url, data=None, headers=None):
 # ---------------------------------------------------------------------------
 
 def list_companies():
-    """List companies accessible with the current API key."""
-    headers = _get_headers()
+    """List companies accessible with the current API key.
+
+    Uses the raw API key (not a company-scoped JWT) since we don't know the
+    company_id yet.  Falls back to looking up a known route slug if the
+    /companies endpoint is unavailable.
+    """
+    api_key = _get_api_key()
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+
     print("\n" + "=" * 60)
     print("  WHOP — List Companies")
     print("=" * 60)
 
     status, resp = http_request("GET", f"{BASE_URL}/companies", headers=headers)
-    if status != 200:
-        print(f"\n  ERROR: HTTP {status}")
-        print(f"  {json.dumps(resp, indent=2)[:500]}")
-        return
+    if status == 200:
+        companies = resp.get("data", [])
+        if not companies:
+            print("\n  No companies found via /companies endpoint.")
+        else:
+            print(f"\n  Found {len(companies)} company(ies):\n")
+            for c in companies:
+                print(f"  ID:      {c.get('id', 'N/A')}")
+                print(f"  Title:   {c.get('title', 'N/A')}")
+                print(f"  Route:   {c.get('route', 'N/A')}")
+                print(f"  URL:     https://whop.com/{c.get('route', '')}")
+                print(f"  Members: {c.get('member_count', 0)}")
+                owner = c.get("owner_user", {})
+                print(f"  Owner:   {owner.get('name', 'N/A')} (@{owner.get('username', 'N/A')})")
+                print()
+            print("  To use a company, add to .env.local:")
+            print(f"  WHOP_COMPANY_ID={companies[0].get('id', 'biz_xxxxxxxxxxxx')}")
+            print()
+            return
 
-    companies = resp.get("data", [])
-    if not companies:
-        print("\n  No companies found. Create one at https://whop.com/sell")
-        return
+    # Fallback: /companies endpoint may fail with company-scoped API keys.
+    # Try looking up the company by route slug instead.
+    print(f"\n  /companies returned HTTP {status} — trying route-slug lookup...")
+    for slug in ["nomosai", "nomos42", "nomos-ai"]:
+        s2, r2 = http_request("GET", f"{BASE_URL}/companies/{slug}", headers=headers)
+        if s2 == 200 and r2.get("id"):
+            print(f"\n  Found company via route '{slug}':\n")
+            print(f"  ID:      {r2.get('id')}")
+            print(f"  Title:   {r2.get('title')}")
+            print(f"  Route:   {r2.get('route')}")
+            print(f"  URL:     https://whop.com/{r2.get('route', '')}")
+            print(f"  Members: {r2.get('member_count', 0)}")
+            owner = r2.get("owner_user", {})
+            print(f"  Owner:   {owner.get('name', 'N/A')} (@{owner.get('username', 'N/A')})")
+            print()
+            print("  Add to .env.local:")
+            print(f"  export WHOP_COMPANY_ID=\"{r2.get('id')}\"")
+            print()
+            return
 
-    print(f"\n  Found {len(companies)} company(ies):\n")
-    for c in companies:
-        print(f"  ID:      {c.get('id', 'N/A')}")
-        print(f"  Title:   {c.get('title', 'N/A')}")
-        print(f"  Route:   {c.get('route', 'N/A')}")
-        print(f"  URL:     https://whop.com/{c.get('route', '')}")
-        print(f"  Members: {c.get('member_count', 0)}")
-        owner = c.get("owner_user", {})
-        print(f"  Owner:   {owner.get('name', 'N/A')} (@{owner.get('username', 'N/A')})")
-        print()
-
-    print("  To use a company, add to .env.local:")
-    print(f"  WHOP_COMPANY_ID={companies[0].get('id', 'biz_xxxxxxxxxxxx')}")
+    print("\n  Could not find any company. Create one at https://whop.com/sell")
     print()
 
 

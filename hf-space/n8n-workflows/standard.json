@@ -138,12 +138,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
+        "url": "https://website-sectors-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
         "authentication": "none",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.embeddings?.float?.[0] || $node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.embeddings?.float?.[0] || $node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true,\n  \"namespace\": \"sectors\"\n}",
         "options": {
           "batching": {
             "batch": {
@@ -229,12 +229,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
+        "url": "https://website-sectors-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
         "authentication": "none",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.embeddings?.float?.[0] || $node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.embeddings?.float?.[0] || $node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true,\n  \"namespace\": \"sectors\"\n}",
         "options": {
           "batching": {
             "batch": {
@@ -1087,12 +1087,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
+          "url": "https://website-sectors-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
           "authentication": "none",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.embeddings?.float?.[0] || $node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.embeddings?.float?.[0] || $node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true,\n  \"namespace\": \"sectors\"\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1178,12 +1178,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
+          "url": "https://website-sectors-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/query",
           "authentication": "none",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.embeddings?.float?.[0] || $node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n}",
+          "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.embeddings?.float?.[0] || $node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true,\n  \"namespace\": \"sectors\"\n}",
           "options": {
             "batching": {
               "batch": {
