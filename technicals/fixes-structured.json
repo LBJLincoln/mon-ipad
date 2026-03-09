@@ -1,0 +1,257 @@
+[
+  {
+    "fix_id": "FIX-63",
+    "title": "N8N_BLOCK_ENV_ACCESS_IN_NODE missing",
+    "symptom_regex": "access to env vars denied|\\$env\\..*denied|Unable to generate answer",
+    "severity": "P0",
+    "action_type": "restart_space",
+    "action_params": {
+      "reason": "entrypoint.sh missing N8N_BLOCK_ENV_ACCESS_IN_NODE=false",
+      "note": "Cross-pipeline fix. Must be set in entrypoint.sh BEFORE n8n starts."
+    },
+    "verify_command": "python3 eval/quick-test.py --questions 3 --pipeline standard",
+    "confidence": 0.95,
+    "pipeline": "all"
+  },
+  {
+    "fix_id": "FIX-42",
+    "title": "Stuck executions block webhook response",
+    "symptom_regex": "timed out|HTTP 000|urlopen error.*timed out|Execution is already being resumed|curl.*000",
+    "severity": "P0",
+    "action_type": "restart_space",
+    "action_params": {
+      "reason": "Stuck executions (new/running/waiting/crashed) blocking webhook responses",
+      "cleanup_sql": "DELETE FROM execution_entity WHERE status IN ('new', 'running', 'waiting', 'crashed');",
+      "note": "healthz returns 200 but webhooks never respond"
+    },
+    "verify_command": "python3 eval/quick-test.py --questions 1 --pipeline standard",
+    "confidence": 0.90,
+    "pipeline": "all"
+  },
+  {
+    "fix_id": "FIX-71",
+    "title": "Duplicate workflows with same webhook ID",
+    "symptom_regex": "PATCH.*no effect|execution.*old code|workflowId.*mismatch",
+    "severity": "P1",
+    "action_type": "patch_workflow",
+    "action_params": {
+      "reason": "Two workflows active with same webhook. PATCH hits wrong one.",
+      "debug": "GET /rest/executions?workflowId=X&limit=1 — check workflowId in response",
+      "fix": "Deactivate stale workflow, fix the active one"
+    },
+    "verify_command": "python3 eval/quick-test.py --questions 1 --pipeline quantitative",
+    "confidence": 0.80,
+    "pipeline": "quantitative"
+  },
+  {
+    "fix_id": "FIX-68",
+    "title": "SQL Validator only parses JSON — markdown LLM response",
+    "symptom_regex": "SQL_GENERATION_ERROR|Invalid LLM response|JSON\\.parse.*failed|Chain-of-Thought",
+    "severity": "P1",
+    "action_type": "patch_workflow",
+    "action_params": {
+      "reason": "SQL Validator uses JSON.parse but LLM returns markdown with ```sql blocks",
+      "fix": "Multi-strategy extraction: JSON.parse, ```sql regex, ```json regex, raw SELECT regex"
+    },
+    "verify_command": "python3 eval/quick-test.py --questions 3 --pipeline quantitative",
+    "confidence": 0.85,
+    "pipeline": "quantitative"
+  },
+  {
+    "fix_id": "FIX-34",
+    "title": "executeWorkflow returns empty (respondToWebhook)",
+    "symptom_regex": "200 empty body|data\\.main.*\\[\\[\\]\\]|orchestrator.*empty",
+    "severity": "P1",
+    "action_type": "patch_workflow",
+    "action_params": {
+      "reason": "executeWorkflow + respondToWebhook = empty response to parent",
+      "fix": "Replace executeWorkflow with httpRequest POST to webhook URL"
+    },
+    "verify_command": "python3 eval/quick-test.py --questions 1 --pipeline orchestrator",
+    "confidence": 0.75,
+    "pipeline": "orchestrator"
+  },
+  {
+    "fix_id": "FIX-33",
+    "title": "$env blocked for ALL node types (n8n 2.8+)",
+    "symptom_regex": "access to env vars denied|\\$env\\..*blocked|sandbox.*\\$env",
+    "severity": "P0",
+    "action_type": "restart_space",
+    "action_params": {
+      "reason": "n8n 2.8+ sandbox blocks $env in ALL node types",
+      "fix": "Replace $env.X with real values at import time OR set N8N_BLOCK_ENV_ACCESS_IN_NODE=false"
+    },
+    "verify_command": "python3 eval/quick-test.py --questions 1 --pipeline standard",
+    "confidence": 0.95,
+    "pipeline": "all"
+  },
+  {
+    "fix_id": "FIX-80",
+    "title": "Workflows migrated from OpenRouter/Groq to LiteLLM proxy",
+    "symptom_regex": "rate.?limit|429|Groq.*error|OpenRouter.*error|api key.*invalid|credential.*not found",
+    "severity": "P0",
+    "action_type": "switch_model",
+    "action_params": {
+      "reason": "Groq/OpenRouter keys exhausted or rate-limited",
+      "litellm_url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+      "litellm_key": "Bearer sk-litellm-nomos-2026",
+      "models": {"gemma-27b": "fast", "llama-70b": "reasoning", "trinity": "extraction"}
+    },
+    "verify_command": "python3 eval/quick-test.py --questions 3 --pipeline standard",
+    "confidence": 0.90,
+    "pipeline": "all"
+  },
+  {
+    "fix_id": "FIX-81",
+    "title": "Graph pipeline Pinecone index wrong",
+    "symptom_regex": "NO_MATCH|vector search.*empty|sota-rag-text|0 matches.*graph",
+    "severity": "P1",
+    "action_type": "patch_workflow",
+    "action_params": {
+      "reason": "Graph workflow pointed to decommissioned sota-rag-text index",
+      "correct_index": "sota-rag-jina-1024-a4mkzmz",
+      "correct_endpoint": "/query (not /records/search)"
+    },
+    "verify_command": "python3 eval/quick-test.py --questions 3 --pipeline graph",
+    "confidence": 0.85,
+    "pipeline": "graph"
+  },
+  {
+    "fix_id": "FIX-82",
+    "title": "Website pipelines — Pinecone /records vs /query + wrong index",
+    "symptom_regex": "Unable to generate response|0 matches.*website|website.*empty|sectors.*not found",
+    "severity": "P1",
+    "action_type": "patch_workflow",
+    "action_params": {
+      "reason": "Website pipelines using /records/search on non-inference index",
+      "correct_index": "website-sectors-jina-1024",
+      "correct_namespace": "sectors",
+      "correct_endpoint": "/query"
+    },
+    "verify_command": "python3 eval/quick-test.py --questions 2 --pipeline standard",
+    "confidence": 0.80,
+    "pipeline": "standard"
+  },
+  {
+    "fix_id": "FIX-83",
+    "title": "Telegram bot HTTP 409 — multiple instances polling",
+    "symptom_regex": "409.*Conflict|terminated by other getUpdates|multiple bot instance",
+    "severity": "P2",
+    "action_type": "restart_space",
+    "action_params": {
+      "reason": "Multiple scripts polling same Telegram bot token",
+      "fix": "pkill -f telegram-sales-bot.py && pkill -f telegram-active-seller.py before restart"
+    },
+    "verify_command": "pgrep -c -f telegram | test $(cat) -le 1",
+    "confidence": 0.95,
+    "pipeline": "all"
+  },
+  {
+    "fix_id": "FIX-84",
+    "title": "Twitter API 403 — OAuth 1.0a permissions insufficient",
+    "symptom_regex": "403.*Forbidden.*oauth1|not configured.*appropriate.*permissions",
+    "severity": "P3",
+    "action_type": "manual",
+    "action_params": {
+      "reason": "Twitter app has Read-only permissions, needs Read+Write",
+      "manual_steps": [
+        "Go to developer.twitter.com > App > Settings",
+        "Change permissions to Read and Write",
+        "Regenerate Access Token and Secret",
+        "Update TWITTER_ACCESS_TOKEN in .env.local"
+      ]
+    },
+    "verify_command": "echo 'Manual fix required — Twitter Developer Portal'",
+    "confidence": 0.50,
+    "pipeline": "all"
+  },
+  {
+    "fix_id": "FIX-85",
+    "title": "Phase 4 eval --force flag ignored by phase gate",
+    "symptom_regex": "PHASE GATE BLOCKED|Phase 3 gates NOT met|--force.*ignored",
+    "severity": "P2",
+    "action_type": "manual",
+    "action_params": {
+      "reason": "Autonomous eval script used --max-questions (invalid), should be --max",
+      "fix": "Use --max 100 --force in eval scripts"
+    },
+    "verify_command": "python3 eval/run-eval-parallel.py --help | grep -q 'max'",
+    "confidence": 0.90,
+    "pipeline": "all"
+  },
+  {
+    "fix_id": "FIX-86",
+    "title": "Phase 4 eval 0% — benchmark questions lack embedded context",
+    "symptom_regex": "Phase 4.*0%|benchmark.*NO_MATCH|external.*0\\.0%",
+    "severity": "P3",
+    "action_type": "manual",
+    "action_params": {
+      "reason": "External SOTA benchmarks need contexts not in our Pinecone index",
+      "note": "Not a pipeline bug — evaluation methodology issue. Smoke test passes."
+    },
+    "verify_command": "python3 eval/quick-test.py --questions 5 --pipeline standard",
+    "confidence": 0.30,
+    "pipeline": "all"
+  },
+  {
+    "fix_id": "FIX-87",
+    "title": "Quant pipeline HTTP 500 — LiteLLM/SQL generation failure",
+    "symptom_regex": "HTTP 500|Internal Server Error|LiteLLM.*500|SQL generation.*fail|NO_ANSWER.*quant",
+    "severity": "P1",
+    "action_type": "switch_model",
+    "action_params": {
+      "reason": "LiteLLM proxy 500 when Groq overloaded + gemma-27b generates invalid SQL",
+      "fallback_model": "llama-70b",
+      "note": "95.2% on curated Phase 3, but fails on complex FinQA questions"
+    },
+    "verify_command": "python3 eval/quick-test.py --questions 3 --pipeline quantitative",
+    "confidence": 0.70,
+    "pipeline": "quantitative"
+  },
+  {
+    "fix_id": "FIX-88",
+    "title": "Sector eval uneven — Juridique/Industrie low accuracy",
+    "symptom_regex": "Juridique.*[0-3]/5|Industrie.*[0-2]/5|sector.*(?:40|20)%|Information not found.*sector",
+    "severity": "P2",
+    "action_type": "manual",
+    "action_params": {
+      "reason": "Juridique articles fragmented across chunks, Industrie docs possibly not ingested",
+      "todo": [
+        "Verify Industrie documents in Pinecone website-sectors-jina-1024",
+        "Check chunk sizes for Juridique (legal articles split across chunks)",
+        "Consider sector-specific retrieval tuning (different top_k)"
+      ]
+    },
+    "verify_command": "python3 eval/quick-test.py --questions 5 --pipeline standard",
+    "confidence": 0.40,
+    "pipeline": "standard"
+  },
+  {
+    "fix_id": "FIX-89",
+    "title": "Autonomous eval daemon — wrong argument causes silent failure",
+    "symptom_regex": "unrecognized arguments|--max-questions|daemon.*exit.*immediate",
+    "severity": "P2",
+    "action_type": "manual",
+    "action_params": {
+      "reason": "Eval script used --max-questions (invalid), correct is --max",
+      "fix": "Replace --max-questions with --max in daemon scripts"
+    },
+    "verify_command": "python3 eval/run-eval-parallel.py --help | grep max",
+    "confidence": 0.95,
+    "pipeline": "all"
+  },
+  {
+    "fix_id": "FIX-90",
+    "title": "Monetisation watchdog restart loop — kills competing bot instances",
+    "symptom_regex": "restart loop|watchdog.*restart.*fail|bot.*crash.*restart",
+    "severity": "P2",
+    "action_type": "restart_space",
+    "action_params": {
+      "reason": "Watchdog restarts bot without killing existing instances first",
+      "fix": "pkill -f telegram-sales-bot.py + 5s delay before restart"
+    },
+    "verify_command": "pgrep -c -f telegram-sales-bot",
+    "confidence": 0.85,
+    "pipeline": "all"
+  }
+]
