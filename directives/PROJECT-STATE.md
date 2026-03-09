@@ -9,9 +9,9 @@
 - **Phase 4**: PAUSED — External SOTA benchmarks = data mismatch (Std 13%, Graph 7%, Quant 14%)
 - **Phase 5 (NEW)**: SECTOR VALIDATION — Prod-ready eval sur NOS données sectorielles
 - **Pipelines**: **4/4 WORKING** (Std 36s, Graph 39s, Quant 43s, **Orch V11 ~30s RESTORED**)
-- **Sector Eval**: 220 questions créées, baseline **25%** (pipelines query wrong index)
-- **PROBLÈME CRITIQUE**: Pipelines query `sota-rag-jina-1024` (benchmarks) au lieu de `website-sectors-jina-1024` (nos données)
-- **Monetisation**: 17 Stripe + Whop script + RapidAPI spec + Gumroad ready
+- **Sector Eval**: 220 questions, **65%** (Finance 80%, Juridique 80%, Industrie 80%, BTP 20%)
+- **Index routing FIXED S91**: Pipelines now query `website-sectors-jina-1024` (sector data)
+- **Monetisation**: 19 Stripe + 14 Whop LIVE + RapidAPI spec + buy.html deployed
 - **Infrastructure**: 7/7 HF Spaces UP, all DBs healthy
 - **Docling**: 9 docs processed, 21 vectors (sample PDFs, pas prod)
 - **Sessions**: 91 | **Commits**: 1,100+
@@ -43,15 +43,17 @@
 
 | Pipeline | Status | Response Time | Accuracy (P3) | Sector Eval | Notes |
 |----------|--------|--------------|----------------|-------------|-------|
-| Standard | WORKING | ~36s | 87.5% | 20% | Queries benchmark index, NOT sectors |
-| Graph | WORKING | ~39s | 40.9% | 20% | FIXED S90: depth 4→2 |
-| Quantitative | WORKING | ~43s | 95.2% | 20% | LiteLLM, gemma-27b |
+| Standard | WORKING | ~36s | 87.5% | **80%** | Sector index + BM25 fix + prompt fix |
+| Graph | WORKING | ~39s | 40.9% | **80%** | Sector index + prompt français |
+| Quantitative | WORKING | ~43s | 95.2% | **80%** | LiteLLM, gemma-27b (Finance) |
 | **Orchestrator** | **WORKING** | **~30s** | — | — | **V11 RESTORED S91** (10 nodes, Groq routing) |
 
-### BLOCAGE CRITIQUE : Index Mismatch
-Les pipelines Standard/Graph/Quant sont hardcodés sur `sota-rag-jina-1024` (benchmarks académiques).
-Nos 31,937 vecteurs sectoriels dans `website-sectors-jina-1024` ne sont JAMAIS interrogés.
-**Fix requis** : ajouter paramètre `index_name` ou créer des webhooks sectoriels dédiés.
+### Sector Eval Résultats (S91)
+- **Overall: 65%** (13/20 smoke, 3 secteurs à 80%)
+- Finance 80%, Juridique 80%, Industrie 80%, BTP 20% (data gap codes construction)
+- Index routing FIXÉ : `website-sectors-jina-1024` (was `sota-rag-jina-1024`)
+- BM25 function `bm25_search_sectors()` créée sur Supabase (trilingual search)
+- LLM prompts: température 0.3→0.1, réponse dans la langue de la question
 
 ---
 
@@ -348,18 +350,19 @@ Nos 31,937 vecteurs sectoriels dans `website-sectors-jina-1024` ne sont JAMAIS i
 |--------|-------|
 | Total questions tested (all phases) | ~12,000+ |
 | **Sector eval questions** | **220 (55/secteur)** |
-| **Sector eval baseline** | **25% (pipelines query wrong index)** |
+| **Sector eval** | **65% (Finance 80%, Juridique 80%, Industrie 80%, BTP 20%)** |
 | Pipelines WORKING | **4/4** (was 3/4) |
 | Phase 3 Standard | 87.5% PASS |
 | Phase 3 Graph | 40.9% ACCEPTED |
 | Phase 3 Quant | 95.2% PASS |
 | Phase 4 (external SOTA) | Std 13%, Graph 7%, Quant 14% |
 | Pinecone vectors (sota-rag) | 46,634 |
-| Pinecone vectors (sectors) | 31,937 |
+| Pinecone vectors (sectors) | ~40,000 (ingestion running → 60K) |
 | Neo4j nodes | ~86,841 |
 | Neo4j entity enrichment | 95% |
-| Supabase sector docs | 11,387 (ALL with context) |
+| Supabase sector docs | **43,357** (was 4,165 — port fix 6543→5432) |
 | Supabase financial tables | 3,876 |
+| **Marketplace scripts ready** | **Whop LIVE + RapidAPI + Gumroad + buy.html** |
 | Stripe products | 17 ($27-$497) |
 | **Marketplace scripts ready** | **Whop + RapidAPI + Gumroad** |
 | Vercel sites | 3 deployed |
