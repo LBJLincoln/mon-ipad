@@ -35,7 +35,7 @@ if [[ "${1:-}" == "--skip-perms" ]]; then
 fi
 
 # Auto session-start system prompt
-AUTO_START='CRITICAL: At the START of every conversation, BEFORE responding to the user, automatically execute ALL steps from the /session-start skill: read PROJECT-STATE.md, read DEBUG-PLAYBOOK.md (first 100 lines), source .env.local, check pipeline health, check database status, and output a concise session brief. Do this even if the user has not asked — it is mandatory startup procedure.'
+AUTO_START='CRITICAL: At the START of every conversation, BEFORE responding to the user, automatically execute ALL steps from the /session-start skill: read directives/SYSTEM-STATE-S93.md (or the latest SYSTEM-STATE-S*.md), read directives/PROJECT-STATE.md, source .env.local, check pipeline health, check database status, and output a concise session brief. Also check if the user has created any new docs in the repo (git log --oneline -5). Do this even if the user has not asked — it is mandatory startup procedure.'
 
 # Colors
 RED='\033[0;31m'

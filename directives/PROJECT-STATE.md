@@ -1,184 +1,111 @@
-# Project State — Nomos Sector AI Expert
+# Etat Systeme Complet — Post Session 93
 
-> Last updated: 2026-03-09T17:30:00Z
-
-## Session 92 — RESTRUCTURATION + PIPELINE FIX
-
-### Overview
-- **PIVOT** : Benchmarks academiques → Expert IA Sectoriel
-- **2 axes** : (1) Pipelines sectorielles parfaites (2) Monetisation
-- **Pipelines** : 4/4 ALL SWITCHED TO LITELLM PROXY (Groq expired, Jina expired)
-- **LLM-as-judge** : Deployed, 220q eval scored, accuracy ~20% (dataset mismatch)
-- **Critical finding** : Eval dataset has US company 10-K questions — NOT sector data
-- **Self-healing** : Architecture L0-L4 prete, reranker + embeddings self-hosted
-
-### Session 92 Actions (ALL)
-1. **RESTRUCTURATION COMPLETE** : Pivot tous les repos vers secteur expert
-2. Benchmark eval scripts → `rag-storage/archive/benchmark-eval/`
-3. DB populate scripts → `rag-storage/archive/benchmark-db-populate/`
-4. Identity files → `rag-storage/archive/identity-files/`
-5. Infra configs → `rag-storage/archive/infra-configs/`
-6. Nouveau `sectors/` avec config par secteur
-7. Nouveau `ops/` avec scripts operationnels
-8. CLAUDE.md v9.0 reecrit pour secteur expert
-9. **RERANKER DEPLOYED** : `nomos-reranker-api` HF Space, FlashRank, /v1/rerank
-10. **LLM-AS-JUDGE** : `eval/llm-judge-rescore.py` via LiteLLM/Gemma-27B
-11. **GRAPH PIPELINE FIXED** : Groq→LiteLLM, Jina→self-hosted, sota→sectors index, namespace fix
-12. **STANDARD PIPELINE FIXED** : Same 20 changes (3 Groq, 2 Jina embed, 1 Jina rerank, 2 Pinecone)
-13. **ORCHESTRATOR REACTIVATED** : webhook=orchestrator-v2, Quant sub-workflow ref fixed
-14. **220q EVAL COMPLETE** : String match ~26%, LLM judge ~20% (dataset quality issue)
-15. **MATCHING FIX** : Bidirectional stem + 25+ FR synonyms (FIX-93)
+> Date: 2026-03-09 | Auteur: Claude Code Opus 4.6
 
 ---
 
-## Sector Accuracy Matrix
+## 1. INFRASTRUCTURE
 
-### String Match (220q, Standard pipeline)
-| Secteur | Standard | Graph | Quant | Orch | Target | Status |
-|---------|----------|-------|-------|------|--------|--------|
-| Finance | 20.0% | TBD | TBD | TBD | 90% | Dataset mismatch |
-| BTP | 30.9% | TBD | TBD | TBD | 85% | Dataset mismatch |
-| Juridique | 29.1% | TBD | TBD | TBD | 90% | Dataset mismatch |
-| Industrie | 25.5% | TBD | TBD | TBD | 85% | Dataset mismatch |
+| Composant | Lieu | Status | RAM/Disk |
+|-----------|------|--------|----------|
+| **VM Google Cloud** | 34.136.180.66 | UP | 969MB RAM, 18/30GB disk |
+| **HF S1** (engine) | n8n primary | UP 200 | 16GB (cpu-basic) |
+| **HF S3** (engine-3) | n8n secondary | UP 200 | 16GB |
+| **HF S5** (engine-5) | n8n eval | UP 200 | 16GB |
+| **HF S7** (engine-7) | LiteLLM proxy | UP 200 | 16GB |
+| **HF S9** (engine-9) | n8n overflow | UP 200 | 16GB |
+| **HF Embeddings** | Jina self-hosted | UP 200 | cpu-basic |
+| **HF Reranker** | FlashRank | UP 200 | cpu-basic |
+| **HF S6** (Docling) | NON DEPLOYE | — | — |
+| **HF S8** (Eval runner) | NON DEPLOYE | — | — |
 
-### LLM-as-Judge (Gemma-27B, 198 scoreable)
-| Secteur | Standard | Quality (0-100) |
-|---------|----------|-----------------|
-| Finance | 18.2% | 30.7 |
-| BTP | 25.5% | 36.5 |
-| Juridique | 10.9% | 22.8 |
-| Industrie | 27.3% | 27.9 |
+## 2. BASES DE DONNEES
 
-**Root cause** : Eval dataset has US company 10-K questions (AMD, Boeing, Verizon) — NOT our sector data
-**Action needed** : Rewrite eval dataset with questions matching our actual Pinecone/Supabase content
-**Pipeline status** : All 4 working, all using LiteLLM proxy + self-hosted embeddings/reranker
+### Compte 1 (existant)
 
----
+| BDD | Utilise | Libre | Max | Contenu |
+|-----|---------|-------|-----|---------|
+| **Pinecone** `website-sectors-jina-1024` | 43K vecteurs | 57K | 100K | Donnees sectorielles FR |
+| **Pinecone** `sota-rag-jina-1024` | 0 | 100K | 100K | Vide (purge S93) |
+| **Pinecone** slots | 2/5 | 3 libres | 5 | — |
+| **Neo4j** #1 (38c949a2) | 22K nodes, 22K rels | 178K/378K | 200K/400K | SectorDoc + Entity |
+| **Supabase** #1 (ayqviqmx) | 85MB | 415MB | 500MB | sector_documents (43K) |
 
-## Pipeline Status
+### Compte 2 (NOUVEAU — S93)
 
-| Pipeline | Status | Workflow ID | LLM | Embeddings | Reranker | Notes |
-|----------|--------|-------------|-----|------------|---------|-------|
-| Standard | **WORKING** | `TmgyRP20N4JFd9CB` | LiteLLM `llama-70b` | Self-hosted | Self-hosted | All self-hosted |
-| Graph | **WORKING** | `6257AfT1l4FMC6lY` | LiteLLM `llama-70b` | Self-hosted | Self-hosted | Neo4j + vector |
-| Quant | **WORKING** | `cjhEhVs0KV1ExHqX` | LiteLLM | N/A | N/A | Financial SQL |
-| Orchestrator | **WORKING** | `ALd4gOEqiKL5KR1p` | OpenRouter | Sub-workflows | N/A | Routes to Std/Graph/Quant |
+| BDD | Utilise | Libre | Max | Usage prevu |
+|-----|---------|-------|-----|-------------|
+| **Pinecone** #2 | 0 | 500K | 5 indexes x 100K | Expansion secteurs |
+| **Neo4j** #2 (48d838a5) | 0 | 200K/400K | 200K/400K | Nouveaux secteurs / overflow |
+| **Supabase** #2 (xivvnrkb) | 0 | 500MB | 500MB | Nouvelles donnees sectorielles |
 
-All pipelines query `website-sectors-jina-1024` namespace `sectors` (43,312 vectors).
-Legacy index `sota-rag-jina-1024` frozen at 46,634 vectors (do not write).
-**Groq keys ALL EXPIRED** — all pipelines switched to LiteLLM proxy (engine-7).
-**Jina keys ALL EXHAUSTED** — embeddings + reranker via self-hosted HF Spaces.
+### Capacite totale combinee
 
----
+| BDD | Total disponible |
+|-----|-----------------|
+| Pinecone | 8 index slots, ~757K vecteurs libres |
+| Neo4j | ~378K nodes, ~778K relations libres |
+| Supabase | ~915MB libres |
 
-## Infrastructure State
+## 3. PIPELINES RAG
 
-| Component | Status | Details |
-|-----------|--------|---------|
-| HF Space S1 (engine) | UP | n8n primary |
-| HF Space S3 (engine-3) | UP | n8n secondary |
-| HF Space S5 (engine-5) | UP | n8n tertiary |
-| HF Space S7 (engine-7) | CHECK | LiteLLM proxy |
-| HF Space S9 (engine-9) | UP | n8n quaternary |
-| HF Embeddings | CHECK | Self-hosted Jina |
-| Pinecone sectors | UP | 31,937 vectors |
-| Neo4j Aura | UP | ~86,841 nodes |
-| Supabase | UP | 43,357 sector docs |
+| Pipeline | Workflow ID | Status | LLM | Notes |
+|----------|------------|--------|-----|-------|
+| Standard | TmgyRP20N4JFd9CB | WORKING | LiteLLM llama-70b | Repond avec data US (pas FR) |
+| Graph | 6257AfT1l4FMC6lY | WORKING | LiteLLM llama-70b | Self-hosted embed/rerank |
+| Quant | cjhEhVs0KV1ExHqX | WORKING | LiteLLM | SQL financier |
+| Orchestrator | ALd4gOEqiKL5KR1p | WORKING | OpenRouter | Route vers Std/Graph/Quant |
+| Ingestion V4 | (n8n/live) | HTTP 200 | LiteLLM | Pas teste avec vrais docs |
+| Enrichment V4 | ORa01sX4xI0iRCJ8 | FIXE (5 bugs) | LiteLLM | JSON corrige, PAS SYNCE |
+| Auto-Healer | (n8n/live) | NOUVEAU | LiteLLM | PAS DEPLOYE |
 
----
+## 4. DONNEES SECTORIELLES
 
-## Active Repos
+| Secteur | Supabase docs | Pinecone vects | Neo4j nodes | Qualite | Gap |
+|---------|--------------|----------------|-------------|---------|-----|
+| Finance | 25,858 | ~15K est. | 15,220 | Datasets US/EN | Besoin FR |
+| Juridique | 10,123 | ~10K est. | 2,500 | CAIL, cold-law, case-law | Besoin Legifrance |
+| BTP | 4,443 | ~8K est. | 1,844 | BOAMP, techqa | **DATA GAP** — besoin DTU/NF |
+| Industrie | 2,933 | ~5K est. | 1,015 | Manufacturing QA | Besoin normes ISO FR |
 
-| Repo | Role | Focus |
-|------|------|-------|
-| **mon-ipad** | Tour de controle | Eval, ops, pilotage |
-| **rag-data-ingestion** | Moteur ingestion | 100+ doc types, 1M scale |
-| **rag-website** | Produit client | Chatbot expert sectoriel |
-| **rag-dashboard** | Metriques live | Sector accuracy display |
-| **rag-storage** | Archive | Benchmarks, legacy, LFS |
+### Accuracy actuelle (220q eval)
+- Finance: 20% | BTP: 31% | Juridique: 29% | Industrie: 26%
+- **Root cause** : Eval = questions US, data = mix US/FR. Pas de vraies donnees sectorielles FR.
 
-Archived: `rag-pme-connectors`, `rag-tests` (merged into mon-ipad)
+## 5. REPOS GITHUB
 
----
+| Repo | Status | Derniere action S93 |
+|------|--------|---------------------|
+| **mon-ipad** | ACTIF, clean | Auto-healer + enrichment fix + purge script |
+| **rag-data-ingestion** | ACTIF | Fix trust_remote_code, scripts ingestion |
+| **rag-website** | ACTIF | Inchange S93 |
+| **rag-dashboard** | ACTIF | Inchange S93 |
+| **rag-storage** | ARCHIVE | Archives benchmark exportees (35MB) |
 
-## Next Steps (Priority Order)
+## 6. EN COURS (BACKGROUND)
 
-### DONE (Session 92)
-1. ~~Restructuration fichiers~~ DONE
-2. ~~Reranker deployed~~ DONE — `nomos-reranker-api` HF Space, FlashRank, /v1/rerank
-3. ~~LLM-as-judge framework~~ DONE — `eval/llm-judge-rescore.py` via LiteLLM/Gemma-27B
-4. ~~Matching fix~~ DONE — bidirectional stem + 25+ FR synonyms (FIX-93)
-5. ~~Raw results saving~~ DONE — `logs/continuous-eval/raw-*.json`
-6. ~~DEBUG-PLAYBOOK updated~~ DONE — FIX-91, FIX-92, FIX-93
-7. ~~220q Standard eval~~ DONE — String 26%, LLM judge 20%
-8. ~~Graph pipeline FIXED~~ DONE — Groq→LiteLLM, Jina→self-hosted, index→sectors, namespace
-9. ~~Standard pipeline FIXED~~ DONE — 20 node changes, all self-hosted
-10. ~~Orchestrator REACTIVATED~~ DONE — webhook orchestrator-v2, Quant ref fixed
-11. ~~All pipelines Groq→LiteLLM~~ DONE — No more Groq dependency
+- `download-massive-datasets.py` (PID 72279) — telecharge 10 HF datasets
+  - Verifier: `tail -50 /tmp/download-massive.log`
+  - Resultat: `ls -lh ~/rag-data-ingestion/datasets/sectors/*.jsonl`
 
-### IMMEDIATE (remaining)
-12. **REWRITE EVAL DATASET** — Current questions are US 10-K benchmarks, need sector-specific
-13. Commit + push all changes
-14. Run eval with Graph + Quant + Orch pipelines
+## 7. PISTE D'AMELIORATION — LDR (Long/Moyen/Court terme)
 
-### SHORT TERM (sessions 93-95)
-12. BTP DATA : Crawler BOAMP API + Legifrance construction
-13. Continuous eval : script qui tourne indefiniment
-14. Self-healing cron : health check + auto-fix toutes les 15 min
-15. Integrate reranker into n8n workflows (Standard + Graph pipelines)
+### COURT TERME (S94 — prochaine session)
+1. Sync enrichment fix vers n8n (`n8n/sync.py`)
+2. Deploy auto-healer sur S5 ou S9
+3. Verifier + ingerer datasets telecharges dans Pinecone
+4. Reecrire eval dataset (questions FR sur vrais contenus)
 
-### MEDIUM TERM (sessions 96-100)
-16. RAGAS/DeepEval integration for richer eval metrics
-17. Regression guard : pre-commit hook
-18. Scale ingestion : 200K docs (50K/secteur)
-19. Docling : traiter vrais PDF complexes (DTU, bilans, contrats)
+### MOYEN TERME (S95-S97)
+5. Deployer Docling sur HF Space S6 (traitement PDF complexes)
+6. Crawler BOAMP (4,927+ marches BTP) + Legifrance XML
+7. Utiliser comptes BDD #2 pour scale (Pinecone #2 pour nouveaux sectors)
+8. Activer auto-healer en continu (cron 30min)
+9. Atteindre 80% accuracy sur 4 secteurs
 
-### MONETISATION (directives utilisateur a venir)
-- Analyser pourquoi 0 revenue malgre 14 Whop + 19 Stripe
-- Restructurer offre autour de ce qui vend reellement
-
----
-
-## Running Processes
-
-- `telegram-active-seller.py` (PID 1394626)
-- `telegram-sales-bot.py` (PID 1415732)
-- `twitter-poster.py` (PID 1434382)
-- MCP servers (Cohere, HF, Jina)
-
----
-
-## Historical Performance (Legacy — archived in rag-storage)
-
-| Phase | Standard | Graph | Quant | Orch | Status |
-|-------|----------|-------|-------|------|--------|
-| Phase 1 (200q) | 85.5% | 78.0% | 92.0% | 80.0% | ARCHIVED |
-| Phase 3 (10K) | 87.5% | 40.9% | 95.2% | — | ARCHIVED |
-| Phase 4 (external) | 13% | 7% | 14% | — | ARCHIVED (irrelevant) |
-
-**These benchmark results are archived. Sector accuracy is the only metric that matters now.**
-
----
-
-## Key Session History
-
-| Session | Key Achievement |
-|---------|----------------|
-| 91 | Orchestrator V11 restored, sector eval 65%, Whop 14 products |
-| 92 | **RESTRUCTURATION** — Pivot sectoriel, reranker deployed, LLM-as-judge, matching fixes |
-
----
-
-## Metrics Snapshot
-
-| Metric | Value |
-|--------|-------|
-| Sector eval (standard) | 65% (220 questions) |
-| Sector eval (graph/quant/orch) | TBD (a evaluer) |
-| Pipelines WORKING | 4/4 |
-| Pinecone sector vectors | 31,937 |
-| Neo4j nodes | ~86,841 |
-| Supabase sector docs | 43,357 |
-| HF Spaces active | 5/10 (objectif: 10/10) |
-| Sessions | 92 |
-| Commits | 1,100+ |
+### LONG TERME (S98+)
+10. 250K vecteurs par secteur (1M total)
+11. Docling autonome en continu sur Codespace
+12. Self-healing complet (analyze → patch → test → apply → commit)
+13. Monetisation : connecter chatbot expert au Stripe/Whop
+14. API publique RapidAPI avec auth
