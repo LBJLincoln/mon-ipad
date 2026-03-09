@@ -1,0 +1,34 @@
+{
+  "sector": "finance",
+  "languages": ["en", "fr"],
+  "targets": {
+    "standard": 90,
+    "graph": 75,
+    "quantitative": 95,
+    "orchestrator": 85
+  },
+  "current_accuracy": {
+    "standard": 80,
+    "graph": null,
+    "quantitative": 95.2,
+    "orchestrator": null
+  },
+  "data_sources": {
+    "pinecone_index": "website-sectors-jina-1024",
+    "pinecone_namespace": "finance",
+    "supabase_table": "sector_documents",
+    "supabase_filter": "sector = 'finance'",
+    "neo4j_label": "SectorDocument"
+  },
+  "document_types": [
+    "annual_report", "10-K", "10-Q", "balance_sheet", "income_statement",
+    "cash_flow", "earnings_call_transcript", "SEC_filing", "IFRS_standard",
+    "audit_report", "prospectus", "bond_indenture", "credit_agreement",
+    "financial_model", "equity_research", "risk_assessment", "regulatory_filing",
+    "tax_return", "pension_report", "insurance_policy", "fund_prospectus",
+    "ESG_report", "proxy_statement", "merger_agreement", "valuation_report"
+  ],
+  "eval_questions_count": 55,
+  "priority": "HIGH",
+  "notes": "Strongest sector. Quant pipeline already at 95.2%. Focus on Standard+Graph accuracy."
+}

@@ -1,60 +1,96 @@
-# Multi-RAG Orchestrator — Tour de Contrôle Centrale
+# Nomos Sector AI Expert — Tour de Controle
 
-> Last updated: 2026-03-07T14:30:00Z
+> Last updated: 2026-03-09T12:00:00Z
 
-**CE REPO (`mon-ipad`) EST LA TOUR DE CONTRÔLE.**
-VM Google Cloud permanente · Claude Code via Termius · Pilote 7 repos satellites
+**CE REPO (`mon-ipad`) EST LA TOUR DE CONTROLE.**
+VM Google Cloud permanente . Claude Code via Termius . Pilote 5 repos actifs + 2 archives
 
-**MODÈLE PRINCIPAL : `claude-opus-4-6` (abonnement Max) — Analyse, décisions, pilotage.**
-**DELEGATION : Sonnet 4.5 (execution) + Haiku 4.5 (exploration) via Task tool — UNIQUEMENT quand Opus le juge pertinent.**
+**MISSION : Construire le meilleur assistant IA expert sectoriel au monde sur 4 secteurs.**
+**Chaque pipeline doit devenir un expert imbattable dans son domaine.**
+
+**MODELE PRINCIPAL : `claude-opus-4-6` (abonnement Max)**
+**DELEGATION : Sonnet 4.6 (execution) + Haiku 4.5 (exploration) via Task tool**
 
 ---
 
-## 1. IDENTITY
+## 1. IDENTITY & MISSION
 
-Tu es Claude Code (`claude-opus-4-6`) exécuté dans **Termius** connecté à la **VM Google Cloud** (`34.136.180.66`). Tu pilotes l'ensemble du projet Multi-RAG depuis cette machine permanente.
+Tu es Claude Code (`claude-opus-4-6`) executant depuis **Termius** sur la **VM Google Cloud** (`34.136.180.66`).
 
-| Tâche | Modèle | Mécanisme |
+**Mission** : Transformer nos 4 pipelines RAG en experts sectoriels de classe mondiale capables de traiter les documents les plus complexes de chaque industrie et de repondre avec la precision d'un expert senior.
+
+| Tache | Modele | Mecanisme |
 |-------|--------|-----------|
-| Analyse, décisions, pilotage | **Opus 4.6** | Direct (toi) |
-| Recherches web, batch commands, génération | Sonnet 4.5 | `Task(model: "sonnet")` |
-| Exploration codebase, vérifications | Haiku 4.5 | `Task(model: "haiku")` |
+| Analyse, decisions, pilotage | **Opus 4.6** | Direct (toi) |
+| Recherches web, batch commands | Sonnet 4.6 | `Task(model: "sonnet")` |
+| Exploration codebase | Haiku 4.5 | `Task(model: "haiku")` |
 
-**JAMAIS déléguer** : analyse workflows, décisions debug, rédaction directives, évaluation résultats, communication utilisateur.
-
----
-
-## 2. QUICK START
-
-### Démarrage session (OBLIGATOIRE)
-```bash
-cat directives/PROJECT-STATE.md
-cat technicals/DEBUG-PLAYBOOK.md | head -100
-source .env.local
-```
-
-### Priorités (STRICT)
-1. Pipelines critiques down
-2. RAG tests + dashboard live
-3. Sites/chatbot UX
-4. Démos/contenu marketing
-
-### Boucle d'exécution
-1. Diagnostiquer → 2. Un seul fix → 3. Tester incrémental → 4. Comparer golden evals → 5. Commit+push → 6. MAJ `directives/PROJECT-STATE.md`
+**JAMAIS deleguer** : analyse workflows, decisions debug, redaction directives, evaluation resultats, communication utilisateur.
 
 ---
 
-## 3. STATE FILES
+## 2. DEUX AXES STRATEGIQUES
 
-| Fichier | Rôle | MAJ |
-|---------|------|-----|
-| `directives/PROJECT-STATE.md` | Mémoire de travail + résumé session | Après chaque milestone |
-| `directives/PROCESS-RUNBOOKS.md` | Processus, endpoints, méthodologie | Quand process change |
-| `technicals/DEBUG-PLAYBOOK.md` | Fixes library + knowledge base + diagnostic | Pendant session |
-| `technicals/INFRASTRUCTURE.md` | Stack, credentials, env vars, limites | Quand infra change |
-| `technicals/PROJECT-ROADMAP.md` | Phases, roadmap, bottlenecks, recherche | Quand stratégie change |
-| `docs/status.json` | Métriques live (auto-généré) | Ne PAS éditer |
-| `docs/data.json` | Dashboard data (auto-généré) | Ne PAS éditer |
+### AXE 1 : Expert IA Sectoriel (priorite technique)
+- 4 secteurs : **Finance**, **BTP**, **Juridique**, **Industrie**
+- 4 pipelines RAG specialisees tournant en continu
+- Ingestion capable de traiter 100+ types de documents, les plus complexes
+- Scale a 1M documents par secteur
+- Evals parfaits mesurant la qualite expert
+- Self-healing : pipelines cassees se reparent, bonnes pipelines testent en continu
+
+### AXE 2 : Monetisation (priorite revenue)
+- Directives separees (fournies par l'utilisateur)
+- Infra deja prete : 19 Stripe + 14 Whop + RapidAPI + 20 packages ZIP
+- Focus : pourquoi pas de revenue ? restructurer autour de ce qui vend
+
+### Priorites session (STRICT)
+1. Pipelines DOWN → diagnostiquer + reparer
+2. Pipelines UP → lancer evals continus jusqu'aux objectifs
+3. Ingestion → nouveaux documents complexes
+4. Monetisation → selon directives utilisateur
+
+---
+
+## 3. SECTEURS & OBJECTIFS
+
+### Accuracy Targets (AMBITIEUX)
+
+| Secteur | Standard | Graph | Quant | Orchestrator | Current Best |
+|---------|----------|-------|-------|-------------|-------------|
+| **Finance** | >= 90% | >= 75% | >= 95% | >= 85% | Std 80%, Quant 95.2% |
+| **BTP** | >= 85% | >= 70% | >= 80% | >= 75% | Std 20% (DATA GAP) |
+| **Juridique** | >= 90% | >= 80% | N/A | >= 80% | Std 80% |
+| **Industrie** | >= 85% | >= 70% | >= 80% | >= 75% | Std 80% |
+
+### Quality Targets (Expert-level)
+
+| Metric | Target | Current |
+|--------|--------|---------|
+| Source citation | >= 90% answers cite specific document | ~50% |
+| Sector terminology | >= 80% use correct professional terms | ~60% |
+| Response language match | 100% respond in question language | ~85% |
+| Response time | <= 30s average | ~36s |
+| Complex document handling | 100+ doc types per sector | ~20 types |
+
+### Data Scale Targets
+
+| Secteur | Pinecone Vectors | Supabase Docs | Neo4j Nodes | Target 6mo |
+|---------|-----------------|---------------|-------------|-----------|
+| Finance | ~10K | 2,150 | ~20K | 250K total |
+| BTP | ~8K | 1,844 | ~15K | 200K total |
+| Juridique | ~8K | 2,500 | ~25K | 300K total |
+| Industrie | ~6K | 1,015 | ~10K | 250K total |
+
+### Sector Config Files
+
+| Fichier | Contenu |
+|---------|---------|
+| `sectors/finance/` | Eval questions, golden answers, doc type registry |
+| `sectors/btp/` | Eval questions, golden answers, doc type registry |
+| `sectors/juridique/` | Eval questions, golden answers, doc type registry |
+| `sectors/industrie/` | Eval questions, golden answers, doc type registry |
+| `sectors/eval-datasets/` | Master eval dataset (220+ questions) |
 
 ---
 
@@ -63,14 +99,17 @@ source .env.local
 1. **Read before act** — `DEBUG-PLAYBOOK.md` avant debug, `PROJECT-STATE.md` avant action complexe
 2. **source .env.local** — TOUJOURS avant scripts Python
 3. **ZERO credentials in git** — `git diff --cached | grep -iE 'sk-or-|pcsk_|jV_zGdx|sbp_|hf_|jina_|ghp_'`
-4. **1 fix per iteration** — Jamais plusieurs noeuds simultanément
-5. **5/5 before sync** — `quick-test.py --questions 5` avant `n8n/sync.py`
+4. **1 fix per iteration** — Jamais plusieurs noeuds simultanement
+5. **Sector smoke before sync** — `quick-test.py --sector all` avant `n8n/sync.py`
 6. **Commit + push regularly** — Toutes les 15-20 min. Git email: `alexis.moret6@outlook.fr`
-7. **Update state files** — `PROJECT-STATE.md` après milestone
-8. **VM = pilotage ONLY** — No n8n, no eval compute. Tout → HF Space
-9. **Push before shutdown** — Codespaces éphémères : résultats vers GitHub AVANT arrêt
+7. **Update state files** — `PROJECT-STATE.md` apres milestone
+8. **VM = pilotage ONLY** — No n8n, no eval compute. Tout sur HF Spaces
+9. **Push before shutdown** — Codespaces ephemeres : resultats vers GitHub AVANT arret
 10. **3+ regressions → REVERT**
-11. **Auto-stop on 3 failures** — Rapport structuré, pas de boucle infinie
+11. **Auto-stop on 3 failures** — Rapport structure, pas de boucle infinie
+12. **10% improvement per session** — Chaque session doit ameliorer le secteur le plus faible
+13. **Self-healing first** — Pipeline cassee = priorite absolue avant tout autre travail
+14. **Continuous eval** — Bonnes pipelines tournent leurs tests 24/7 jusqu'aux objectifs
 
 ---
 
@@ -79,21 +118,35 @@ source .env.local
 ### VM Google Cloud (pilotage ONLY)
 ```
 IP: 34.136.180.66 | Debian 11 | 1 vCPU | 969 MB RAM | 30 GB disk
-N8N_HOST: https://lbjlincoln-nomos-rag-engine.hf.space
 ```
 
-### HF Spaces — 4 n8n + 1 LiteLLM + 1 Embeddings
-5 n8n Spaces (1,3,5,7,9). Space #7 = LiteLLM proxy. `nomos-embeddings-api` = self-hosted Jina.
+### HF Spaces (10 slots — maximiser utilisation)
 
-### Databases
-| Service | Contenu | Limite |
-|---------|---------|--------|
-| Pinecone sota-rag-jina-1024 | 46,634 vecteurs (benchmarks) | 100K max |
-| Pinecone website-sectors-jina-1024 | 31,937 vecteurs (secteurs) | 100K max |
-| Neo4j Aura | ~86,841 nodes, enrichment 95% | 200K/400K |
-| Supabase | 11,387 sector docs + 3,876 financial tables | 500MB |
+| Space | Role | URL | Status |
+|-------|------|-----|--------|
+| engine (S1) | n8n primary — Standard + Graph | lbjlincoln-nomos-rag-engine.hf.space | UP |
+| engine-3 (S3) | n8n secondary — load balancing | lbjlincoln-nomos-rag-engine-3.hf.space | UP |
+| engine-5 (S5) | n8n tertiary — eval dedicated | lbjlincoln-nomos-rag-engine-5.hf.space | UP |
+| engine-7 (S7) | LiteLLM proxy — 9 models, key rotation | lbjlincoln-nomos-rag-engine-7.hf.space | CHECK |
+| engine-9 (S9) | n8n quaternary — overflow | lbjlincoln-nomos-rag-engine-9.hf.space | UP |
+| embeddings | Self-hosted Jina embeddings (1024 dims) | lbjlincoln-nomos-embeddings-api.hf.space | CHECK |
+| S6 (TODO) | Docling document processor | — | PLANNED |
+| S8 (TODO) | Continuous eval runner | — | PLANNED |
+| S10 (TODO) | Self-heal monitor | — | PLANNED |
+| S2 (TODO) | Sector-specific pipeline | — | PLANNED |
 
-### Batch sizes (auto mode)
+**Strategie** : Utiliser TOUS les slots HF gratuits pour demultiplier les pipelines. Chaque Space = une fonction specialisee.
+
+### Databases (SECTOR-ONLY)
+
+| Service | Contenu | Index/Table | Limite |
+|---------|---------|-------------|--------|
+| Pinecone `website-sectors-jina-1024` | Sector vectors | **PRIMARY** | 100K max |
+| Pinecone `sota-rag-jina-1024` | Legacy benchmarks | **ARCHIVE** (ne plus ecrire) | 46K frozen |
+| Neo4j Aura | ~86,841 nodes, enrichment 95% | Sector entities | 200K/400K |
+| Supabase | 43,357 sector docs + 3,876 financial tables | `sector_documents` | 500MB |
+
+### Batch sizes
 | Pipeline | Batch | Concurrency | Timeout |
 |----------|-------|-------------|---------|
 | Standard | 10 | 5 | 90s |
@@ -101,19 +154,17 @@ N8N_HOST: https://lbjlincoln-nomos-rag-engine.hf.space
 | Quantitative | 3 | 1 | 120s |
 | Orchestrator | 2 | 1 | 180s |
 
-**Détails complets** : `technicals/INFRASTRUCTURE.md`
-
 ---
 
-## 6. PIPELINES RAG
+## 6. PIPELINES RAG (Sector Expert Mode)
 
 ### Webhooks
-| Pipeline | Webhook Path | Status |
-|----------|-------------|--------|
-| Standard | `/webhook/rag-multi-index-v3` | WORKING |
-| Graph | `/webhook/ff622742-6d71-4e91-af71-b5c666088717` | WORKING |
-| Quantitative | `/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9` | WORKING |
-| Orchestrator | `/webhook/orchestrator-v2` | **WORKING (V11 S91)** |
+| Pipeline | Webhook Path | Role Sectoriel | Status |
+|----------|-------------|----------------|--------|
+| Standard | `/webhook/rag-multi-index-v3` | Recherche vectorielle sectorielle | WORKING |
+| Graph | `/webhook/ff622742-6d71-4e91-af71-b5c666088717` | Relations entites sectorielles | WORKING |
+| Quantitative | `/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9` | Donnees financieres SQL | WORKING |
+| Orchestrator | `/webhook/orchestrator-v2` | Routage intelligent 4 secteurs | WORKING |
 
 ### Active Workflow IDs
 | Pipeline | ID | Name |
@@ -121,19 +172,10 @@ N8N_HOST: https://lbjlincoln-nomos-rag-engine.hf.space
 | Standard | `TmgyRP20N4JFd9CB` | WF5 Standard RAG V3.4 (Groq direct) |
 | Graph | `6257AfT1l4FMC6lY` | WF2 Graph RAG V3.3 (Groq direct) |
 | Quant | `cjhEhVs0KV1ExHqX` | WF4 Quant V3.1 (LiteLLM) |
-| Orchestrator | `ALd4gOEqiKL5KR1p` | **V11 Minimal (Groq routing) — RESTORED S91** |
-
-### Phase Results
-| Phase | Standard | Graph | Quant | Orch |
-|-------|----------|-------|-------|------|
-| Phase 1 (200q) | 85.5% | 78.0% | 92.0% | 80.0% |
-| Phase 3 (10K) | **87.5%** | 40.9% | **95.2%** | ON HOLD |
-| **Phase 5 Sector (220q)** | **25% baseline** | **25%** | **25%** | **TODO** |
-
-**BLOCAGE** : Pipelines query `sota-rag-jina-1024` (benchmarks). Fix : router vers `website-sectors-jina-1024`.
+| Orchestrator | `ALd4gOEqiKL5KR1p` | V11 Minimal (Groq routing) |
 
 ### LLM Models (free tier)
-| Modèle | Rôles | Coût |
+| Modele | Roles | Cout |
 |--------|-------|------|
 | `meta-llama/llama-3.3-70b-instruct:free` | SQL, Intent, Planning, HyDE, QA | $0 |
 | `google/gemma-3-27b-it:free` | Fast, Lite | $0 |
@@ -141,64 +183,145 @@ N8N_HOST: https://lbjlincoln-nomos-rag-engine.hf.space
 
 ---
 
-## 7. COMMANDS
+## 7. SELF-HEALING & AGENTIC MODE
 
-```bash
-# Eval
-source .env.local
-python3 eval/quick-test.py --questions 5 --pipeline <cible>
-python3 eval/sector-eval.py --all-pipelines --questions 220   # Sector eval (Phase 5)
-python3 eval/run-eval-parallel.py --dataset phase-3 --types standard,graph --reset --label "..."
-python3 eval/node-analyzer.py --execution-id <ID>
-python3 eval/generate_status.py
+### Boucle autonome (chaque 15 min si cron actif)
+```
+L0: Health check all HF Spaces (parallel)
+L1: Smoke test 3 questions par secteur (12 total)
+L2: Si echec → match contre fixes-structured.json
+L3: Auto-fix P0-P2
+L4: Log → self-heal.jsonl
+```
 
-# Git
-git push origin main
-bash scripts/push-directives.sh           # Sync CLAUDE.md → satellites
-python3 n8n/sync.py                       # Sync workflows
+### Boucle session (10% improvement garanti)
+```
+1. Identifier secteur le plus faible
+2. Rechercher technique applicable (ROADMAP Section 6)
+3. Appliquer UN changement (prompt, retrieval, data, enrichment)
+4. Mesurer before/after
+5. Si gain >= 2pp → commit. Si regression → revert
+6. Session PAS terminee tant qu'un secteur n'a pas progresse
+```
 
-# n8n analysis
-python3 scripts/analyze_n8n_executions.py --execution-id <ID>
-python3 scripts/n8n-api.py list           # List workflows (cookie auth)
+### Continuous Eval (pipelines saines)
+```
+Pipelines non-cassees → tournent evals en continu
+- Round-robin sur les HF Spaces (S1, S3, S5, S9)
+- 220 questions sectorielles par cycle
+- Resultats auto-logged dans docs/sector-accuracy.json
+- Alerter si accuracy drop > 5%
+```
 
-# Codespaces
-scripts/codespace-control.sh list|launch|status|stop|results
+### Regression Guard
+```
+Avant commit touchant n8n/ ou eval/:
+1. Run 20 questions critiques (5/secteur)
+2. Comparer aux derniers scores
+3. Bloquer si drop > 5% sur un secteur
 ```
 
 ---
 
-## 8. REPOS (7)
+## 8. INGESTION & DOCLING
 
-| Repo | Rôle | Directive |
-|------|------|-----------|
-| **mon-ipad** (CE REPO) | Pilotage, eval, MCP | Ce fichier |
-| **rag-tests** | Datasets, résultats eval | `directives/repos/rag-tests.md` |
-| **rag-website** | Next.js, 4 secteurs, chatbots | `directives/repos/rag-website.md` |
-| **rag-dashboard** | HTML/JS métriques | `directives/repos/rag-dashboard.md` |
-| **rag-data-ingestion** | Ingestion V4, 34K records | `directives/repos/rag-data-ingestion.md` |
-| **rag-pme-connectors** | Next.js 15, 15 apps | — |
-| **rag-storage** | GitHub LFS archive | — |
+### Architecture ingestion (rag-data-ingestion)
+```
+Acquisition → Processing (Docling) → Chunking (par secteur) → Embedding → Storage
+```
+
+### Document Types par secteur (cible : 100+)
+- **Finance** : SEC filings, IFRS standards, annual reports, balance sheets, 10-K/10-Q, earnings calls
+- **BTP** : DTU, Eurocodes, CCTP, AFNOR normes, BOAMP, permis, etudes sol, DQE
+- **Juridique** : Codes (civil, commerce, travail), jurisprudence, contrats, CGV, statuts, RGPD
+- **Industrie** : ISO normes, manuels maintenance, fiches securite, AMDEC, procedures qualite
+
+### Eval Docling
+- Mesurer qualite extraction : tableaux, formules, mise en page complexe
+- Comparer chunks Docling vs chunks simples
+- Target : 95% fidelite sur documents complexes
 
 ---
 
-## 9. DETAILED DOCS
+## 9. COMMANDS
+
+```bash
+# Session
+source .env.local
+cat directives/PROJECT-STATE.md
+
+# Sector Eval
+python3 eval/quick-test.py --sector all
+python3 eval/sector-eval.py --all-pipelines --questions 220
+
+# Pipeline Analysis
+python3 eval/node-analyzer.py --execution-id <ID>
+python3 ops/analyze_n8n_executions.py --execution-id <ID>
+
+# Operations
+python3 ops/self-heal-orchestrator.py
+python3 ops/pipeline-doctor.py
+python3 ops/n8n-api.py list
+bash ops/keepalive-spaces.sh
+
+# Sync
+bash ops/push-directives.sh
+python3 n8n/sync.py
+git push origin main
+
+# Codespaces
+bash ops/codespace-control.sh list|launch|status|stop|results
+```
+
+---
+
+## 10. REPOS (5 actifs + 2 archives)
+
+| Repo | Role | Status |
+|------|------|--------|
+| **mon-ipad** (CE REPO) | Tour de controle, eval, ops, MCP | **ACTIF** |
+| **rag-data-ingestion** | Moteur ingestion 1M docs, Docling, 100+ types | **ACTIF** |
+| **rag-website** | Produit chatbot expert sectoriel, Next.js | **ACTIF** |
+| **rag-dashboard** | Dashboard sector accuracy, metriques live | **ACTIF** |
+| **rag-storage** | Archive LFS + benchmark legacy | **ARCHIVE** |
+| **rag-pme-connectors** | Next.js 15, 15 apps (deprioritise) | **ARCHIVE** |
+| **rag-tests** | Fusionne dans mon-ipad (datasets sectoriels) | **ARCHIVE** |
+
+---
+
+## 11. STATE FILES
+
+| Fichier | Role | MAJ |
+|---------|------|-----|
+| `directives/PROJECT-STATE.md` | Memoire de travail + resume session | Apres chaque milestone |
+| `directives/PROCESS-RUNBOOKS.md` | Processus, endpoints, methodologie | Quand process change |
+| `technicals/DEBUG-PLAYBOOK.md` | 90+ fixes, knowledge base, diagnostic | Pendant session |
+| `technicals/INFRASTRUCTURE.md` | Stack, credentials, env vars, limites | Quand infra change |
+| `technicals/PROJECT-ROADMAP.md` | Roadmap sectorielle, bottlenecks, recherche | Quand strategie change |
+| `docs/status.json` | Metriques live (auto-genere) | Ne PAS editer |
+| `docs/sector-accuracy.json` | Accuracy par secteur (auto-genere) | Ne PAS editer |
+
+---
+
+## 12. DETAILED DOCS
 
 | Fichier | Contenu |
 |---------|---------|
 | `technicals/INFRASTRUCTURE.md` | Stack, credentials, env vars, limites, storage |
-| `technicals/PROJECT-ROADMAP.md` | Phases, roadmap, bottlenecks, recherche SOTA |
-| `technicals/DEBUG-PLAYBOOK.md` | 75+ fixes, knowledge base, diagnostic flowchart |
+| `technicals/PROJECT-ROADMAP.md` | Roadmap sectorielle, bottlenecks, recherche SOTA |
+| `technicals/DEBUG-PLAYBOOK.md` | 90+ fixes, knowledge base, diagnostic flowchart |
 | `technicals/data/sector-datasets.md` | 1000+ types documents par secteur |
-| `directives/PROJECT-STATE.md` | État courant, pipelines, infra, next steps |
-| `directives/PROCESS-RUNBOOKS.md` | Processus, endpoints, méthodologie |
+| `directives/PROJECT-STATE.md` | Etat courant, secteurs, pipelines, next steps |
+| `directives/PROCESS-RUNBOOKS.md` | Processus, endpoints, methodologie |
 | `directives/repos/` | Directives par repo satellite |
-| `docs/executive-summary.md` | Résumé global projet |
 
 ---
 
-## État actuel v8.0 (Session 91 — 2026-03-09)
+## Etat actuel v9.0 (Session 92 — 2026-03-09)
 
-**Déploiement** : 7 HF Spaces UP, **4/4 pipelines WORKING** (Orch V11 restored)
-**Phase 5 Sector** : Baseline **25%** — pipelines query wrong index (fix en cours)
-**Monetisation** : Whop + RapidAPI + Gumroad scripts prêts, 17 produits Stripe
-**Sessions** : 91 | **Commits** : 1,100+
+**RESTRUCTURATION** : Pivot complet vers Expert IA Sectoriel + Monetisation
+**Pipelines** : 4/4 WORKING, objectif = expert sectoriel imbattable
+**Sectors** : Finance 80%, BTP 20% (DATA GAP), Juridique 80%, Industrie 80%
+**Ingestion** : 43K docs Supabase, 32K vecteurs Pinecone, cible 1M
+**Self-healing** : Architecture L0-L4, evals continus, regression guard
+**Sessions** : 92 | **Commits** : 1,100+

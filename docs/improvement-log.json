@@ -1,0 +1,152 @@
+{
+  "sessions": [
+    {
+      "session": 82,
+      "date": "2026-03-04",
+      "target": "standard/all",
+      "technique": "self_hosted_embeddings",
+      "before": 85.5,
+      "after": 87.5,
+      "delta": 2.0,
+      "kept": true
+    },
+    {
+      "session": 86,
+      "date": "2026-03-06",
+      "target": "quantitative/all",
+      "technique": "model_name_fix_litellm",
+      "before": 0,
+      "after": 95.2,
+      "delta": 95.2,
+      "kept": true
+    },
+    {
+      "session": 88,
+      "date": "2026-03-07",
+      "target": "standard/sectors",
+      "technique": "sector_eval_baseline",
+      "before": 0,
+      "after": 65,
+      "delta": 65,
+      "kept": true
+    },
+    {
+      "session": 90,
+      "date": "2026-03-08",
+      "target": "graph/all",
+      "technique": "neo4j_depth_reduction",
+      "before": 40.9,
+      "after": 67,
+      "delta": 26.1,
+      "kept": true
+    },
+    {
+      "session": 90,
+      "date": "2026-03-08",
+      "target": "graph/all",
+      "technique": "response_formatter_fix",
+      "before": 40.9,
+      "after": 67,
+      "delta": 26.1,
+      "kept": true
+    },
+    {
+      "session": 90,
+      "date": "2026-03-08",
+      "target": "data/all",
+      "technique": "entity_enrichment_95pct",
+      "before": 0,
+      "after": 95,
+      "delta": 95,
+      "kept": true
+    },
+    {
+      "session": 90,
+      "date": "2026-03-08",
+      "target": "data/all",
+      "technique": "empty_context_fix",
+      "before": 63,
+      "after": 100,
+      "delta": 37,
+      "kept": true
+    },
+    {
+      "session": 91,
+      "date": "2026-03-09",
+      "target": "standard/btp",
+      "technique": "pending",
+      "before": 20,
+      "after": null,
+      "delta": null,
+      "kept": null
+    }
+  ],
+  "technique_scores": {
+    "self_hosted_embeddings": {
+      "attempts": 1,
+      "avg_gain": 2.0,
+      "confidence": 0.95,
+      "description": "Migrate from Jina API to self-hosted embedding model"
+    },
+    "model_name_fix_litellm": {
+      "attempts": 1,
+      "avg_gain": 95.2,
+      "confidence": 0.99,
+      "description": "Fix model name format for LiteLLM proxy"
+    },
+    "neo4j_depth_reduction": {
+      "attempts": 1,
+      "avg_gain": 26.1,
+      "confidence": 0.85,
+      "description": "Reduce Neo4j traversal depth 4->2, results 100->25"
+    },
+    "response_formatter_fix": {
+      "attempts": 1,
+      "avg_gain": 26.1,
+      "confidence": 0.85,
+      "description": "Fix Graph response formatter to use path_nodes+path_relations"
+    },
+    "entity_enrichment_95pct": {
+      "attempts": 1,
+      "avg_gain": 95.0,
+      "confidence": 0.9,
+      "description": "Run entity enrichment on all sector documents"
+    },
+    "empty_context_fix": {
+      "attempts": 1,
+      "avg_gain": 37.0,
+      "confidence": 0.95,
+      "description": "Fill empty context fields in Supabase docs"
+    },
+    "reranker_integration": {
+      "attempts": 0,
+      "avg_gain": null,
+      "confidence": null,
+      "description": "Add Cohere Rerank 3.5 to retrieval pipeline"
+    },
+    "prompt_engineering_fr": {
+      "attempts": 0,
+      "avg_gain": null,
+      "confidence": null,
+      "description": "Improve French-language prompts for sector queries"
+    },
+    "bm25_hybrid_search": {
+      "attempts": 0,
+      "avg_gain": null,
+      "confidence": null,
+      "description": "Add BM25 keyword search alongside vector similarity"
+    },
+    "chunk_size_optimization": {
+      "attempts": 0,
+      "avg_gain": null,
+      "confidence": null,
+      "description": "Optimize chunk sizes for different document types"
+    },
+    "docling_complex_docs": {
+      "attempts": 0,
+      "avg_gain": null,
+      "confidence": null,
+      "description": "Use Docling for complex PDF/HTML table extraction"
+    }
+  }
+}

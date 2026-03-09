@@ -1,0 +1,36 @@
+{
+  "sector": "juridique",
+  "languages": ["fr", "en"],
+  "targets": {
+    "standard": 90,
+    "graph": 80,
+    "quantitative": null,
+    "orchestrator": 80
+  },
+  "current_accuracy": {
+    "standard": 80,
+    "graph": null,
+    "quantitative": null,
+    "orchestrator": null
+  },
+  "data_sources": {
+    "pinecone_index": "website-sectors-jina-1024",
+    "pinecone_namespace": "juridique",
+    "supabase_table": "sector_documents",
+    "supabase_filter": "sector = 'juridique'",
+    "neo4j_label": "SectorDocument"
+  },
+  "document_types": [
+    "code_civil", "code_commerce", "code_travail", "code_urbanisme",
+    "code_energie", "code_environnement", "jurisprudence_cassation",
+    "jurisprudence_conseil_etat", "arret_CJUE", "directive_EU",
+    "reglement_EU", "contrat_SaaS", "CGV", "CGU", "NDA",
+    "statuts_societe", "pacte_associes", "bail_commercial",
+    "bail_habitation", "convention_collective", "RGPD_conformite",
+    "declaration_CNIL", "PIA", "decision_autorite_concurrence",
+    "avis_HADOPI", "circulaire_ministerielle"
+  ],
+  "eval_questions_count": 55,
+  "priority": "HIGH",
+  "notes": "Graph pipeline ideal for legal entity relationships. Legifrance API is free."
+}

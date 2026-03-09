@@ -1,0 +1,35 @@
+{
+  "sector": "btp",
+  "languages": ["fr", "en"],
+  "targets": {
+    "standard": 85,
+    "graph": 70,
+    "quantitative": 80,
+    "orchestrator": 75
+  },
+  "current_accuracy": {
+    "standard": 20,
+    "graph": null,
+    "quantitative": null,
+    "orchestrator": null
+  },
+  "data_sources": {
+    "pinecone_index": "website-sectors-jina-1024",
+    "pinecone_namespace": "btp",
+    "supabase_table": "sector_documents",
+    "supabase_filter": "sector = 'btp'",
+    "neo4j_label": "SectorDocument"
+  },
+  "document_types": [
+    "DTU", "Eurocode", "NF_norm", "CCTP", "CCAG", "DQE", "DOE",
+    "permis_construire", "etude_sol", "plan_architecte", "plan_structure",
+    "BOAMP_marche", "cahier_charges", "fiche_technique_materiau",
+    "rapport_controle_technique", "PGC", "PPSPS", "DIUO", "CSPS",
+    "diagnostic_amiante", "DPE", "RE2020", "PLU", "SCOT",
+    "AFNOR_guide", "avis_technique", "fiche_securite"
+  ],
+  "eval_questions_count": 55,
+  "priority": "CRITICAL",
+  "data_gap": "French DTU/NF building codes missing. Sources: AFNOR (paid), BOAMP (free API), Legifrance",
+  "notes": "Weakest sector at 20%. Need massive French construction data ingestion."
+}

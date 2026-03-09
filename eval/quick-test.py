@@ -76,43 +76,37 @@ WEBHOOK_PATHS = {
     "standard":     "/webhook/rag-multi-index-v3",
     "graph":        "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
     "quantitative": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
-    "orchestrator": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+    "orchestrator": "/webhook/orchestrator-v2",
 }
 
 # Backward compat: RAG_ENDPOINTS uses default host
 RAG_ENDPOINTS = {k: f"{N8N_HOST}{v}" for k, v in WEBHOOK_PATHS.items()}
 
-# Known-good test questions (questions that should always pass)
+# Sector-specific test questions — tests ACTUAL data in website-sectors-jina-1024
 SMOKE_QUESTIONS = {
     "standard": [
-        # Mix of general knowledge (tests LLM) + domain-specific (tests RAG retrieval)
-        {"query": "What is the capital of Japan?", "expected_contains": "Tokyo"},
-        {"query": "Who painted the Mona Lisa?", "expected_contains": "Vinci"},
-        {"query": "What is machine learning?", "expected_contains": "algorithm"},
-        {"query": "What is intraocular pressure?", "expected_contains": "eye"},
-        {"query": "What is PCR used for in molecular biology?", "expected_contains": "amplif"},
+        {"query": "What is the FY2018 capital expenditure amount for 3M?", "expected_contains": "1577", "sector": "finance"},
+        {"query": "What is the minimum turning space diameter required?", "expected_contains": "1500", "sector": "btp"},
+        {"query": "Que dit l'article R151-19 du Code de l'urbanisme?", "expected_contains": "zone", "sector": "juridique"},
+        {"query": "How do I install apps on the TV?", "expected_contains": "app", "sector": "industrie"},
+        {"query": "Who are the primary customers of Boeing?", "expected_contains": "commercial", "sector": "finance"},
     ],
     "graph": [
-        # Entity relationship questions (tests Neo4j graph traversal)
-        {"query": "What did Marie Curie win Nobel Prizes for?", "expected_contains": "Physics"},
-        {"query": "What did Alexander Fleming discover?", "expected_contains": "penicillin"},
-        {"query": "Who founded Microsoft?", "expected_contains": "Gates"},
-        {"query": "What is the WHO?", "expected_contains": "Health"},
-        {"query": "What disease is caused by mosquitoes?", "expected_contains": "malaria"},
+        {"query": "What entities are related to Boeing in FY2022?", "expected_contains": "Boeing", "sector": "finance"},
+        {"query": "Quels articles du Code de l'énergie concernent les certificats?", "expected_contains": "énergie", "sector": "juridique"},
+        {"query": "What relationships exist between construction safety standards?", "expected_contains": "safety", "sector": "btp"},
+        {"query": "How are TV settings connected to picture modes?", "expected_contains": "mode", "sector": "industrie"},
+        {"query": "What financial metrics are related to 3M capital expenditure?", "expected_contains": "3M", "sector": "finance"},
     ],
     "quantitative": [
-        # Financial questions with verifiable expected answers from Supabase
-        {"query": "What was the yearly amortization rate related to the trademarks?", "expected_contains": "8"},
-        {"query": "What was the decrease in the Other expense, net in 2018?", "expected_contains": "4"},
-        {"query": "What was TechVision Inc's total revenue in fiscal year 2023?", "expected_contains": ""},
-        {"query": "What was GreenEnergy Corp's total revenue in 2023?", "expected_contains": ""},
-        {"query": "What was HealthPlus Labs' net income in 2022?", "expected_contains": ""},
+        {"query": "What is 3M's total revenue for FY2018?", "expected_contains": "revenue", "sector": "finance"},
+        {"query": "What are Boeing's operating expenses?", "expected_contains": "expense", "sector": "finance"},
+        {"query": "How many financial tables exist for AMD?", "expected_contains": "AMD", "sector": "finance"},
     ],
     "orchestrator": [
-        # ON HOLD — orchestrator webhook returns 404
-        {"query": "What is the capital of Japan?", "expected_contains": "Tokyo"},
-        {"query": "Who painted the Mona Lisa?", "expected_contains": "Vinci"},
-        {"query": "What is the largest ocean?", "expected_contains": "Pacific"},
+        {"query": "What is the FY2018 capital expenditure for 3M?", "expected_contains": "1577", "sector": "finance"},
+        {"query": "Que dit l'article R641-3 du Code de l'énergie?", "expected_contains": "énergie", "sector": "juridique"},
+        {"query": "How do I connect an IP control device to the TV?", "expected_contains": "IP", "sector": "industrie"},
     ],
 }
 
