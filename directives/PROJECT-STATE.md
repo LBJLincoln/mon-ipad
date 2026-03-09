@@ -88,7 +88,7 @@
   - Verifier: `tail -50 /tmp/download-massive.log`
   - Resultat: `ls -lh ~/rag-data-ingestion/datasets/sectors/*.jsonl`
 
-## 7. PISTE D'AMELIORATION — LDR (Long/Moyen/Court terme)
+## 7. TLDR — Piste d'amelioration (Court/Moyen/Long terme)
 
 ### COURT TERME (S94 — prochaine session)
 1. Sync enrichment fix vers n8n (`n8n/sync.py`)
