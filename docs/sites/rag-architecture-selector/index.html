@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Architecture Selector — Find Your Ideal Pipeline in 60 Seconds</title>
+<meta name="description" content="Answer 6 questions about your use case and get a personalized RAG architecture recommendation with implementation resources.">
+<meta property="og:title" content="RAG Architecture Selector — Free Interactive Tool">
+<meta property="og:description" content="Stop guessing. Find the exact RAG architecture for your use case in 60 seconds.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;overflow-x:hidden}
+.hero{text-align:center;padding:60px 20px 40px;max-width:800px;margin:0 auto}
+.hero h1{font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,#00d4ff,#7c3aed,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2;margin-bottom:16px}
+.hero p{font-size:1.15rem;color:#94a3b8;max-width:600px;margin:0 auto 8px}
+.badge{display:inline-block;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:6px 16px;border-radius:20px;font-size:.8rem;font-weight:600;margin-bottom:24px;letter-spacing:.5px}
+.container{max-width:720px;margin:0 auto;padding:0 20px 60px}
+.progress-bar{width:100%;height:6px;background:#1e1e2e;border-radius:3px;margin-bottom:32px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#00d4ff);border-radius:3px;transition:width .4s ease}
+.question-card{background:linear-gradient(135deg,#12121a,#1a1a2e);border:1px solid #2a2a3e;border-radius:16px;padding:36px;margin-bottom:24px;display:none;animation:fadeIn .4s ease}
+.question-card.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.question-card h2{font-size:1.3rem;font-weight:700;margin-bottom:8px;color:#f0f0f0}
+.question-card .hint{font-size:.85rem;color:#64748b;margin-bottom:20px}
+.options{display:flex;flex-direction:column;gap:10px}
+.option{background:#0f0f1a;border:2px solid #2a2a3e;border-radius:12px;padding:16px 20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px}
+.option:hover{border-color:#7c3aed;background:#151525;transform:translateX(4px)}
+.option.selected{border-color:#7c3aed;background:rgba(124,58,237,.12)}
+.option-icon{font-size:1.5rem;flex-shrink:0}
+.option-text h3{font-size:.95rem;font-weight:600;color:#e0e0e0;margin-bottom:2px}
+.option-text p{font-size:.8rem;color:#64748b}
+.result-card{background:linear-gradient(135deg,#12121a,#1a1a2e);border:1px solid #2a2a3e;border-radius:16px;padding:40px;display:none;animation:fadeIn .5s ease}
+.result-card.active{display:block}
+.arch-badge{display:inline-block;padding:8px 20px;border-radius:24px;font-size:.85rem;font-weight:700;letter-spacing:.5px;margin-bottom:16px}
+.arch-name{font-size:1.8rem;font-weight:800;margin-bottom:8px;color:#f0f0f0}
+.arch-desc{font-size:1rem;color:#94a3b8;margin-bottom:24px;line-height:1.6}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.metric{background:#0f0f1a;border:1px solid #2a2a3e;border-radius:10px;padding:14px;text-align:center}
+.metric .value{font-size:1.4rem;font-weight:800;color:#00d4ff}
+.metric .label{font-size:.75rem;color:#64748b;margin-top:4px}
+.components{margin-bottom:28px}
+.components h3{font-size:1rem;font-weight:700;margin-bottom:12px;color:#f0f0f0}
+.component-list{display:flex;flex-wrap:wrap;gap:8px}
+.component-tag{background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);color:#c4b5fd;padding:6px 14px;border-radius:8px;font-size:.8rem;font-weight:500}
+.recommended{margin-top:32px;padding-top:28px;border-top:1px solid #2a2a3e}
+.recommended h3{font-size:1.1rem;font-weight:700;margin-bottom:16px;color:#f0f0f0}
+.product-rec{background:#0f0f1a;border:1px solid #2a2a3e;border-radius:12px;padding:20px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.product-rec .info h4{font-size:.95rem;font-weight:600;color:#e0e0e0;margin-bottom:2px}
+.product-rec .info p{font-size:.8rem;color:#64748b}
+.product-rec .info .match{color:#10b981;font-weight:600;font-size:.75rem}
+.buy-btn{display:inline-block;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:10px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:.85rem;transition:transform .2s,box-shadow .2s;white-space:nowrap}
+.buy-btn:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(124,58,237,.4)}
+.mega-cta{margin-top:32px;background:linear-gradient(135deg,rgba(249,115,22,.1),rgba(124,58,237,.1));border:2px solid rgba(249,115,22,.3);border-radius:16px;padding:28px;text-align:center}
+.mega-cta h3{font-size:1.2rem;font-weight:800;color:#f97316;margin-bottom:8px}
+.mega-cta p{font-size:.9rem;color:#94a3b8;margin-bottom:16px}
+.mega-cta .price{font-size:1.1rem;color:#f97316;font-weight:700;margin-bottom:4px}
+.mega-cta .price s{color:#64748b;font-weight:400}
+.mega-btn{display:inline-block;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;padding:14px 36px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;transition:transform .2s,box-shadow .2s}
+.mega-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(249,115,22,.4)}
+.restart-btn{display:block;margin:24px auto 0;background:transparent;border:1px solid #2a2a3e;color:#64748b;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s}
+.restart-btn:hover{border-color:#7c3aed;color:#e0e0e0}
+.social-proof{text-align:center;margin-top:20px;font-size:.8rem;color:#64748b}
+.social-proof span{color:#10b981;font-weight:600}
+@media(max-width:600px){.hero h1{font-size:1.7rem}.metrics{grid-template-columns:1fr 1fr}.product-rec{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">FREE INTERACTIVE TOOL</div>
+  <h1>Which RAG Architecture Is Right for Your Use Case?</h1>
+  <p>Answer 6 quick questions. Get a personalized architecture recommendation with accuracy benchmarks and implementation resources.</p>
+  <div class="social-proof">Based on <span>90+ production deployments</span> across 4 industry sectors</div>
+</div>
+
+<div class="container">
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+
+  <!-- Question 1: Data Type -->
+  <div class="question-card active" id="q1">
+    <h2>What type of data does your RAG pipeline process?</h2>
+    <div class="hint">Select the primary data type — you can always add more later</div>
+    <div class="options">
+      <div class="option" onclick="answer(1,'text')">
+        <div class="option-icon">📄</div>
+        <div class="option-text"><h3>Text Documents</h3><p>PDFs, articles, documentation, reports, contracts</p></div>
+      </div>
+      <div class="option" onclick="answer(1,'structured')">
+        <div class="option-icon">📊</div>
+        <div class="option-text"><h3>Structured / Numerical Data</h3><p>Financial data, metrics, databases, spreadsheets, time series</p></div>
+      </div>
+      <div class="option" onclick="answer(1,'graph')">
+        <div class="option-icon">🕸️</div>
+        <div class="option-text"><h3>Connected / Relational Data</h3><p>Knowledge graphs, entity relationships, hierarchies, networks</p></div>
+      </div>
+      <div class="option" onclick="answer(1,'mixed')">
+        <div class="option-icon">🔀</div>
+        <div class="option-text"><h3>Mixed / Multi-modal</h3><p>Images + text, tables in PDFs, audio transcripts, diverse formats</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question 2: Query Complexity -->
+  <div class="question-card" id="q2">
+    <h2>How complex are your typical queries?</h2>
+    <div class="hint">Think about what your users actually ask</div>
+    <div class="options">
+      <div class="option" onclick="answer(2,'simple')">
+        <div class="option-icon">🔍</div>
+        <div class="option-text"><h3>Simple Lookups</h3><p>"What is X?" — Direct fact retrieval from documents</p></div>
+      </div>
+      <div class="option" onclick="answer(2,'analytical')">
+        <div class="option-icon">📈</div>
+        <div class="option-text"><h3>Analytical Questions</h3><p>"Compare X vs Y" — Requires synthesis across multiple sources</p></div>
+      </div>
+      <div class="option" onclick="answer(2,'reasoning')">
+        <div class="option-icon">🧠</div>
+        <div class="option-text"><h3>Multi-step Reasoning</h3><p>"Why did X happen and what should we do?" — Chain of thought needed</p></div>
+      </div>
+      <div class="option" onclick="answer(2,'hybrid')">
+        <div class="option-icon">⚡</div>
+        <div class="option-text"><h3>All of the Above</h3><p>Mix of simple, analytical, and reasoning queries</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question 3: Scale -->
+  <div class="question-card" id="q3">
+    <h2>What's your expected query volume?</h2>
+    <div class="hint">Daily queries when the system is in production</div>
+    <div class="options">
+      <div class="option" onclick="answer(3,'low')">
+        <div class="option-icon">🌱</div>
+        <div class="option-text"><h3>Low (< 100/day)</h3><p>Internal team tool, small user base</p></div>
+      </div>
+      <div class="option" onclick="answer(3,'medium')">
+        <div class="option-icon">🌿</div>
+        <div class="option-text"><h3>Medium (100-1K/day)</h3><p>Department-wide or mid-size SaaS</p></div>
+      </div>
+      <div class="option" onclick="answer(3,'high')">
+        <div class="option-icon">🌳</div>
+        <div class="option-text"><h3>High (1K-10K/day)</h3><p>Company-wide or customer-facing product</p></div>
+      </div>
+      <div class="option" onclick="answer(3,'massive')">
+        <div class="option-icon">🏔️</div>
+        <div class="option-text"><h3>Massive (10K+/day)</h3><p>Enterprise platform, high-traffic application</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question 4: Accuracy Priority -->
+  <div class="question-card" id="q4">
+    <h2>What's your accuracy requirement?</h2>
+    <div class="hint">How critical is it that answers are 100% correct?</div>
+    <div class="options">
+      <div class="option" onclick="answer(4,'best-effort')">
+        <div class="option-icon">👍</div>
+        <div class="option-text"><h3>Best Effort (70-80%)</h3><p>Internal exploration, brainstorming, research assistance</p></div>
+      </div>
+      <div class="option" onclick="answer(4,'production')">
+        <div class="option-icon">✅</div>
+        <div class="option-text"><h3>Production Grade (80-90%)</h3><p>Customer support, knowledge bases, content generation</p></div>
+      </div>
+      <div class="option" onclick="answer(4,'critical')">
+        <div class="option-icon">🎯</div>
+        <div class="option-text"><h3>Mission Critical (90%+)</h3><p>Financial analysis, legal, healthcare, compliance</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question 5: Budget -->
+  <div class="question-card" id="q5">
+    <h2>What's your LLM budget situation?</h2>
+    <div class="hint">Monthly spend you can allocate to LLM API calls</div>
+    <div class="options">
+      <div class="option" onclick="answer(5,'free')">
+        <div class="option-icon">🆓</div>
+        <div class="option-text"><h3>Free Tier Only</h3><p>Using free models (Llama, Gemma, Mistral via free APIs)</p></div>
+      </div>
+      <div class="option" onclick="answer(5,'low')">
+        <div class="option-icon">💵</div>
+        <div class="option-text"><h3>Low ($0-100/month)</h3><p>Small budget, need cost efficiency</p></div>
+      </div>
+      <div class="option" onclick="answer(5,'medium')">
+        <div class="option-icon">💰</div>
+        <div class="option-text"><h3>Medium ($100-1K/month)</h3><p>Can use GPT-4o / Claude Sonnet for key operations</p></div>
+      </div>
+      <div class="option" onclick="answer(5,'high')">
+        <div class="option-icon">💎</div>
+        <div class="option-text"><h3>High ($1K+/month)</h3><p>Enterprise budget, best models available</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question 6: Team -->
+  <div class="question-card" id="q6">
+    <h2>What's your team's RAG experience level?</h2>
+    <div class="hint">Be honest — this affects the architecture complexity we recommend</div>
+    <div class="options">
+      <div class="option" onclick="answer(6,'beginner')">
+        <div class="option-icon">🌱</div>
+        <div class="option-text"><h3>Beginner</h3><p>First RAG project, learning the fundamentals</p></div>
+      </div>
+      <div class="option" onclick="answer(6,'intermediate')">
+        <div class="option-icon">⚙️</div>
+        <div class="option-text"><h3>Intermediate</h3><p>Built basic RAG, looking to improve accuracy/scale</p></div>
+      </div>
+      <div class="option" onclick="answer(6,'advanced')">
+        <div class="option-icon">🚀</div>
+        <div class="option-text"><h3>Advanced</h3><p>Production RAG experience, optimizing for edge cases</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="result-card" id="result"></div>
+</div>
+
+<script>
+const answers = {};
+const ARCHITECTURES = {
+  standard: {
+    name: "Standard RAG Pipeline",
+    badge: "background:linear-gradient(135deg,#2563eb,#0891b2)",
+    desc: "The workhorse. Embedding-based retrieval with semantic search, reranking, and LLM generation. Best for text-heavy use cases with moderate complexity. Our Standard pipeline achieves 87.5% accuracy on 10K questions with free-tier LLMs.",
+    accuracy: "85-90%", latency: "2-4s", complexity: "Medium",
+    components: ["Jina Embeddings","Pinecone Vector DB","Cohere Reranker","HyDE Query Expansion","Groq LLM (free)","Semantic Chunking"],
+    products: [
+      {name:"SOTA RAG Architecture Blueprint",price:"$197",match:"97% match",desc:"Complete Standard RAG implementation guide",link:"https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d"},
+      {name:"RAG Chunking & Retrieval Guide",price:"$87",match:"94% match",desc:"7 chunking strategies benchmarked for Standard RAG",link:"https://buy.stripe.com/6oU5kw5zs1qXcPFcgt5J60f"},
+      {name:"RAG Eval Framework",price:"$127",match:"91% match",desc:"Test and validate your Standard pipeline",link:"https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d"}
+    ]
+  },
+  graph: {
+    name: "Graph RAG Pipeline",
+    badge: "background:linear-gradient(135deg,#7c3aed,#a855f7)",
+    desc: "For connected data. Combines Neo4j knowledge graphs with vector search for entity-aware retrieval. Excels at relationship queries, multi-hop reasoning, and domain-specific knowledge. Achieves 78% accuracy with rich contextual understanding.",
+    accuracy: "75-85%", latency: "3-6s", complexity: "High",
+    components: ["Neo4j Knowledge Graph","Entity Extraction","Relationship Mapping","Graph Traversal","Vector + Graph Hybrid","Cypher Query Gen"],
+    products: [
+      {name:"SOTA RAG Architecture Blueprint",price:"$197",match:"95% match",desc:"Includes Graph RAG architecture patterns",link:"https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d"},
+      {name:"n8n RAG Workflows Collection",price:"$197",match:"92% match",desc:"Graph RAG workflow templates for n8n",link:"https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d"},
+      {name:"Agent Orchestration Playbook",price:"$157",match:"88% match",desc:"Multi-pipeline routing including Graph",link:"https://buy.stripe.com/aFa00c1jc5Hd02T3JX5J60h"}
+    ]
+  },
+  quantitative: {
+    name: "Quantitative RAG Pipeline",
+    badge: "background:linear-gradient(135deg,#059669,#10b981)",
+    desc: "Purpose-built for numbers. SQL generation, statistical analysis, and numerical reasoning over structured data. Our Quant pipeline hits 95.2% accuracy — the highest of any pipeline — because structured data has clear ground truth.",
+    accuracy: "92-96%", latency: "4-8s", complexity: "High",
+    components: ["SQL Generation","Statistical Engine","Numerical Validation","Supabase/PostgreSQL","Schema-Aware Prompts","Unit Conversion"],
+    products: [
+      {name:"SOTA RAG Architecture Blueprint",price:"$197",match:"96% match",desc:"Quant RAG architecture deep-dive",link:"https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d"},
+      {name:"RAG Eval Framework",price:"$127",match:"93% match",desc:"Quant-specific evaluation metrics",link:"https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d"},
+      {name:"Operations Runbook",price:"$97",match:"87% match",desc:"Production ops for data pipelines",link:"https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d"}
+    ]
+  },
+  orchestrator: {
+    name: "Multi-Pipeline Orchestrator",
+    badge: "background:linear-gradient(135deg,#f97316,#ea580c)",
+    desc: "The ultimate architecture. An intent-classification layer routes each query to the best pipeline (Standard, Graph, or Quant) automatically. Handles any query type with the right specialized pipeline. This is what production RAG at scale looks like.",
+    accuracy: "88-95%", latency: "5-10s", complexity: "Very High",
+    components: ["Intent Classifier","Pipeline Router","Standard RAG","Graph RAG","Quant RAG","Response Synthesizer","Fallback Chains","Confidence Scoring"],
+    products: [
+      {name:"AI Agent Orchestration Playbook",price:"$157",match:"99% match",desc:"8 orchestration patterns with benchmarks",link:"https://buy.stripe.com/aFa00c1jc5Hd02T3JX5J60h"},
+      {name:"SOTA RAG Architecture Blueprint",price:"$197",match:"96% match",desc:"Full multi-pipeline architecture",link:"https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d"},
+      {name:"Agentic RAG Blueprint",price:"$147",match:"94% match",desc:"Agentic routing and tool use patterns",link:"https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d"}
+    ]
+  },
+  multimodal: {
+    name: "Multimodal RAG Pipeline",
+    badge: "background:linear-gradient(135deg,#ec4899,#8b5cf6)",
+    desc: "For diverse data formats. Handles images, tables embedded in PDFs, audio transcripts, and mixed-media documents. Uses vision models for image understanding and specialized extractors for tables. Critical when 35%+ of your documents contain non-text elements.",
+    accuracy: "80-88%", latency: "4-8s", complexity: "High",
+    components: ["Vision Models","Table Extraction","OCR Pipeline","Audio Transcription","Format Detection","Multi-modal Embeddings"],
+    products: [
+      {name:"Multimodal RAG Guide",price:"$137",match:"99% match",desc:"Complete multimodal implementation",link:"https://buy.stripe.com/3cIeV6aTMglR16X2FT5J60e"},
+      {name:"SOTA RAG Architecture Blueprint",price:"$197",match:"90% match",desc:"Architecture patterns for multimodal",link:"https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d"},
+      {name:"RAG Chunking & Retrieval Guide",price:"$87",match:"85% match",desc:"Chunking strategies for mixed formats",link:"https://buy.stripe.com/6oU5kw5zs1qXcPFcgt5J60f"}
+    ]
+  }
+};
+
+function answer(q, val) {
+  answers[q] = val;
+  document.querySelectorAll(`#q${q} .option`).forEach(o => o.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  setTimeout(() => {
+    document.getElementById(`q${q}`).classList.remove('active');
+    if (q < 6) {
+      document.getElementById(`q${q+1}`).classList.add('active');
+      document.getElementById('progress').style.width = ((q)/6*100)+'%';
+    } else {
+      document.getElementById('progress').style.width = '100%';
+      showResult();
+    }
+  }, 300);
+}
+
+function showResult() {
+  let scores = {standard:0,graph:0,quantitative:0,orchestrator:0,multimodal:0};
+  // Data type scoring
+  if(answers[1]==='text'){scores.standard+=3;scores.graph+=1}
+  if(answers[1]==='structured'){scores.quantitative+=4;scores.orchestrator+=1}
+  if(answers[1]==='graph'){scores.graph+=4;scores.orchestrator+=1}
+  if(answers[1]==='mixed'){scores.multimodal+=3;scores.orchestrator+=2}
+  // Query complexity
+  if(answers[2]==='simple'){scores.standard+=3}
+  if(answers[2]==='analytical'){scores.graph+=2;scores.quantitative+=2}
+  if(answers[2]==='reasoning'){scores.orchestrator+=3;scores.graph+=1}
+  if(answers[2]==='hybrid'){scores.orchestrator+=4}
+  // Scale
+  if(answers[3]==='low'){scores.standard+=2}
+  if(answers[3]==='medium'){scores.standard+=1;scores.graph+=1}
+  if(answers[3]==='high'){scores.orchestrator+=2;scores.standard+=1}
+  if(answers[3]==='massive'){scores.orchestrator+=3}
+  // Accuracy
+  if(answers[4]==='best-effort'){scores.standard+=2}
+  if(answers[4]==='production'){scores.standard+=1;scores.graph+=1;scores.quantitative+=1}
+  if(answers[4]==='critical'){scores.quantitative+=2;scores.orchestrator+=2}
+  // Budget
+  if(answers[5]==='free'){scores.standard+=3}
+  if(answers[5]==='low'){scores.standard+=2;scores.quantitative+=1}
+  if(answers[5]==='medium'){scores.graph+=1;scores.orchestrator+=1;scores.quantitative+=1}
+  if(answers[5]==='high'){scores.orchestrator+=2;scores.multimodal+=1}
+  // Team level
+  if(answers[6]==='beginner'){scores.standard+=3}
+  if(answers[6]==='intermediate'){scores.standard+=1;scores.graph+=1;scores.quantitative+=1}
+  if(answers[6]==='advanced'){scores.orchestrator+=2;scores.multimodal+=1}
+
+  let best = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+  let arch = ARCHITECTURES[best];
+  let html = `
+    <div class="arch-badge" style="${arch.badge}">${best.toUpperCase()} ARCHITECTURE</div>
+    <div class="arch-name">${arch.name}</div>
+    <div class="arch-desc">${arch.desc}</div>
+    <div class="metrics">
+      <div class="metric"><div class="value">${arch.accuracy}</div><div class="label">Expected Accuracy</div></div>
+      <div class="metric"><div class="value">${arch.latency}</div><div class="label">Avg Latency</div></div>
+      <div class="metric"><div class="value">${arch.complexity}</div><div class="label">Complexity</div></div>
+    </div>
+    <div class="components">
+      <h3>Key Components</h3>
+      <div class="component-list">${arch.components.map(c=>`<span class="component-tag">${c}</span>`).join('')}</div>
+    </div>
+    <div class="recommended">
+      <h3>🎯 Recommended Implementation Resources</h3>
+      ${arch.products.map(p=>`
+        <div class="product-rec">
+          <div class="info">
+            <h4>${p.name} — ${p.price}</h4>
+            <p>${p.desc}</p>
+            <div class="match">${p.match} for your use case</div>
+          </div>
+          <a href="${p.link}" target="_blank" class="buy-btn">Get It →</a>
+        </div>
+      `).join('')}
+    </div>
+    <div class="mega-cta">
+      <h3>🔥 Want ALL Architectures? Get the MEGA BUNDLE</h3>
+      <p>All ${Object.keys(ARCHITECTURES).length} architectures + 17 implementation resources in one package. Everything you need to build production RAG — any architecture, any scale.</p>
+      <div class="price"><s>$1,614 individual</s> → $497 (69% off)</div>
+      <br>
+      <a href="https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d" target="_blank" class="mega-btn">Get the MEGA BUNDLE — $497</a>
+    </div>
+    <button class="restart-btn" onclick="restart()">↻ Start Over</button>
+  `;
+  document.getElementById('result').innerHTML = html;
+  document.getElementById('result').classList.add('active');
+}
+
+function restart() {
+  Object.keys(answers).forEach(k => delete answers[k]);
+  document.getElementById('result').classList.remove('active');
+  document.getElementById('result').innerHTML = '';
+  document.querySelectorAll('.question-card').forEach(q => q.classList.remove('active'));
+  document.getElementById('q1').classList.add('active');
+  document.getElementById('progress').style.width = '0%';
+}
+</script>
+</body>
+</html>

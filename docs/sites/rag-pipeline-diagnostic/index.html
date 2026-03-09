@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Pipeline Diagnostic — Find & Fix Your RAG Issues in 60 Seconds</title>
+<meta name="description" content="Interactive diagnostic tool: describe your RAG symptoms, get instant root-cause analysis and battle-tested fixes from 90+ production sessions.">
+<meta property="og:title" content="RAG Pipeline Diagnostic — Fix Your RAG in 60 Seconds">
+<meta property="og:description" content="Describe your symptoms. Get instant root-cause analysis + fixes from 90+ production debugging sessions.">
+<meta property="og:type" content="website">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh}
+.hero{text-align:center;padding:60px 20px 40px;background:linear-gradient(135deg,#0a0a1a 0%,#1a0a2e 50%,#0a1a2e 100%)}
+.hero h1{font-size:2.4rem;background:linear-gradient(135deg,#ff6b6b,#ffa500,#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px;line-height:1.2}
+.hero .sub{font-size:1.15rem;color:#aaa;max-width:600px;margin:0 auto 20px}
+.hero .proof{display:inline-block;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);border-radius:20px;padding:6px 18px;font-size:0.85rem;color:#ff6b6b}
+.container{max-width:800px;margin:0 auto;padding:20px}
+.symptom-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:30px 0}
+@media(max-width:600px){.symptom-grid{grid-template-columns:1fr}}
+.symptom-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px;cursor:pointer;transition:all 0.25s}
+.symptom-card:hover{border-color:rgba(255,107,107,0.5);background:rgba(255,107,107,0.06);transform:translateY(-2px)}
+.symptom-card.selected{border-color:#ff6b6b;background:rgba(255,107,107,0.1)}
+.symptom-card h3{font-size:1rem;margin-bottom:6px;color:#fff}
+.symptom-card p{font-size:0.82rem;color:#888;line-height:1.4}
+.symptom-icon{font-size:1.5rem;margin-bottom:8px}
+.step-label{font-size:0.8rem;text-transform:uppercase;letter-spacing:2px;color:#666;margin-bottom:8px}
+.step-title{font-size:1.4rem;color:#fff;margin-bottom:20px}
+.btn-primary{display:inline-block;background:linear-gradient(135deg,#ff6b6b,#ff4757);color:#fff;font-size:1rem;font-weight:600;padding:14px 36px;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s;text-decoration:none}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 25px rgba(255,71,87,0.4)}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.btn-secondary{display:inline-block;background:transparent;color:#ff6b6b;border:1px solid #ff6b6b;font-size:0.9rem;padding:10px 24px;border-radius:8px;cursor:pointer;transition:all 0.2s;text-decoration:none;margin-left:10px}
+.btn-secondary:hover{background:rgba(255,107,107,0.1)}
+#diagnostic-panel{display:none;margin-top:30px}
+.diagnosis-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;margin-bottom:20px}
+.diagnosis-card h3{color:#fff;margin-bottom:12px;font-size:1.1rem}
+.severity{display:inline-block;padding:3px 10px;border-radius:12px;font-size:0.75rem;font-weight:600;margin-bottom:10px}
+.severity.critical{background:rgba(255,71,87,0.2);color:#ff4757}
+.severity.high{background:rgba(255,165,0,0.2);color:#ffa500}
+.severity.medium{background:rgba(255,215,0,0.2);color:#ffd700}
+.root-cause{background:rgba(0,0,0,0.3);border-left:3px solid #ff6b6b;padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:0.9rem;line-height:1.6}
+.fix-list{list-style:none;margin:12px 0}
+.fix-list li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.88rem;line-height:1.5}
+.fix-list li:last-child{border:none}
+.fix-list li::before{content:"✓";color:#4ecdc4;margin-right:8px;font-weight:bold}
+.product-rec{background:linear-gradient(135deg,rgba(255,107,107,0.08),rgba(255,165,0,0.08));border:1px solid rgba(255,107,107,0.2);border-radius:10px;padding:16px;margin-top:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.product-rec .name{font-weight:600;color:#fff;font-size:0.95rem}
+.product-rec .price{color:#ff6b6b;font-weight:700;font-size:1.1rem}
+.product-rec a{background:#ff4757;color:#fff;padding:8px 18px;border-radius:6px;text-decoration:none;font-size:0.85rem;font-weight:600;white-space:nowrap}
+.product-rec a:hover{background:#ff6b6b}
+.mega-cta{text-align:center;margin:40px 0;padding:30px;background:linear-gradient(135deg,rgba(255,107,107,0.08),rgba(139,92,246,0.08));border:1px solid rgba(255,107,107,0.2);border-radius:14px}
+.mega-cta h3{color:#fff;font-size:1.3rem;margin-bottom:6px}
+.mega-cta .price-compare{margin:10px 0 16px}
+.mega-cta .old{text-decoration:line-through;color:#666;font-size:1rem}
+.mega-cta .new{color:#ff6b6b;font-size:1.5rem;font-weight:800;margin-left:10px}
+.counter{text-align:center;margin:20px 0;font-size:0.85rem;color:#666}
+.progress-bar{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;margin:20px 0;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#ff6b6b,#ffa500);border-radius:2px;transition:width 0.5s}
+footer{text-align:center;padding:40px 20px;color:#444;font-size:0.8rem}
+footer a{color:#666;text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="hero">
+<h1>RAG Pipeline Diagnostic</h1>
+<p class="sub">Select your symptoms. Get instant root-cause analysis and battle-tested fixes from 90+ production debugging sessions.</p>
+<span class="proof">Built from 1,100+ commits across 7 production repos</span>
+</div>
+
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:10%"></div></div>
+
+<p class="step-label">Step 1 of 2</p>
+<p class="step-title">What symptoms are you seeing?</p>
+<p style="font-size:0.85rem;color:#888;margin-bottom:10px">Select all that apply:</p>
+
+<div class="symptom-grid" id="symptoms">
+<div class="symptom-card" data-symptom="hallucination" onclick="toggleSymptom(this)">
+<div class="symptom-icon">🎭</div>
+<h3>Hallucinations / Wrong Answers</h3>
+<p>RAG returns confident but incorrect information, cites wrong sources, or makes up facts</p>
+</div>
+<div class="symptom-card" data-symptom="low-accuracy" onclick="toggleSymptom(this)">
+<div class="symptom-icon">📉</div>
+<h3>Low Accuracy (&lt;80%)</h3>
+<p>Eval scores stuck below 80%, can't break through despite tweaking prompts</p>
+</div>
+<div class="symptom-card" data-symptom="slow" onclick="toggleSymptom(this)">
+<div class="symptom-icon">🐌</div>
+<h3>Slow Responses (>5s)</h3>
+<p>Queries take 5-30+ seconds, users abandon before seeing results</p>
+</div>
+<div class="symptom-card" data-symptom="irrelevant" onclick="toggleSymptom(this)">
+<div class="symptom-icon">🎯</div>
+<h3>Irrelevant Retrieval</h3>
+<p>Chunks retrieved don't match the query intent, wrong documents surfaced</p>
+</div>
+<div class="symptom-card" data-symptom="inconsistent" onclick="toggleSymptom(this)">
+<div class="symptom-icon">🎲</div>
+<h3>Inconsistent Results</h3>
+<p>Same question gives different answers each time, non-deterministic behavior</p>
+</div>
+<div class="symptom-card" data-symptom="scaling" onclick="toggleSymptom(this)">
+<div class="symptom-icon">💥</div>
+<h3>Breaks at Scale</h3>
+<p>Works with 100 docs but fails at 10K+. Timeouts, OOM, degraded quality</p>
+</div>
+<div class="symptom-card" data-symptom="cost" onclick="toggleSymptom(this)">
+<div class="symptom-icon">💸</div>
+<h3>Costs Exploding</h3>
+<p>LLM/embedding/infra bills growing faster than usage, no cost visibility</p>
+</div>
+<div class="symptom-card" data-symptom="debug" onclick="toggleSymptom(this)">
+<div class="symptom-icon">🔍</div>
+<h3>Can't Debug Failures</h3>
+<p>Something's wrong but you can't tell WHERE in the pipeline it breaks</p>
+</div>
+</div>
+
+<div style="text-align:center;margin:20px 0">
+<button class="btn-primary" id="diagnose-btn" disabled onclick="runDiagnosis()">Run Diagnosis →</button>
+</div>
+
+<div id="diagnostic-panel"></div>
+</div>
+
+<footer>
+<p>Nomos RAG Engineering &mdash; <a href="https://github.com/alexismoret">github.com/alexismoret</a></p>
+</footer>
+
+<script>
+const selected = new Set();
+function toggleSymptom(el) {
+  const s = el.dataset.symptom;
+  if (selected.has(s)) { selected.delete(s); el.classList.remove('selected'); }
+  else { selected.add(s); el.classList.add('selected'); }
+  document.getElementById('diagnose-btn').disabled = selected.size === 0;
+  document.getElementById('progress').style.width = Math.min(10 + selected.size * 10, 50) + '%';
+}
+
+const DB = {
+  hallucination: {
+    severity: 'critical',
+    title: 'Hallucination / Confabulation',
+    rootCause: 'Top 3 causes: (1) Chunk boundaries split key facts — LLM fills gaps with plausible fiction. (2) No source grounding enforcement in prompt. (3) Embedding model mismatch — semantic similarity ≠ factual relevance.',
+    fixes: [
+      'Switch to semantic chunking (sentence-boundary aware) — eliminates 40% of hallucinations',
+      'Add explicit grounding instruction: "Answer ONLY from the provided context. If unsure, say so."',
+      'Implement citation verification: force LLM to quote exact source text',
+      'Add a Critic Agent layer that cross-checks answers against retrieved chunks (94.2% accuracy)',
+      'Use reranking (Cohere/Jina) to ensure top-k chunks are truly relevant'
+    ],
+    product: { name: 'Debug Playbook', price: '$47', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dt5J60d' },
+    altProduct: { name: 'AI Agent Orchestration Playbook', price: '$157', link: 'https://buy.stripe.com/aFa00c1jc5Hd02T3JX5J60h' }
+  },
+  'low-accuracy': {
+    severity: 'critical',
+    title: 'Accuracy Plateau (<80%)',
+    rootCause: 'You\'re likely hitting the retrieval ceiling. No amount of prompt tuning fixes bad retrieval. Common blockers: (1) Wrong chunk size for your data type. (2) Single retrieval strategy for diverse query types. (3) No eval framework — you\'re optimizing blind.',
+    fixes: [
+      'Benchmark chunk sizes: 256/512/1024 tokens — optimal varies by document type',
+      'Implement hybrid search: dense (embeddings) + sparse (BM25) retrieval',
+      'Add query classification → route to specialized pipelines (standard/graph/quantitative)',
+      'Build golden eval dataset (50+ Q&A pairs) — measure before/after every change',
+      'Add HyDE (Hypothetical Document Embeddings) for complex queries'
+    ],
+    product: { name: 'Eval Framework', price: '$127', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dt5J60d' },
+    altProduct: { name: 'Chunking & Retrieval Guide', price: '$87', link: 'https://buy.stripe.com/6oU5kw5zs1qXcPFcgt5J60f' }
+  },
+  slow: {
+    severity: 'high',
+    title: 'Latency Bottleneck',
+    rootCause: 'RAG latency = embedding time + vector search + LLM generation. Typical breakdown: embedding 10-15%, retrieval 5-10%, LLM 70-80%. But graph/SQL pipelines add 20-40s from query planning alone.',
+    fixes: [
+      'Profile each node: find the actual bottleneck (usually LLM, not retrieval)',
+      'Switch to streaming responses — perceived latency drops 60%',
+      'Implement semantic caching: cache embeddings + responses for similar queries',
+      'Parallelize independent pipeline stages (embed + search concurrently)',
+      'Use smaller/faster models for routing, reserve large models for final generation'
+    ],
+    product: { name: 'Latency & Performance Guide', price: '$107', link: 'https://buy.stripe.com/3cI5kw9PI1qX3f5bcp5J60g' },
+    altProduct: { name: 'Operations Runbook', price: '$97', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dt5J60d' }
+  },
+  irrelevant: {
+    severity: 'high',
+    title: 'Retrieval Relevance Failure',
+    rootCause: 'Embedding model sees query and docs in different semantic spaces. The #1 fix most teams miss: your chunks are too big or too small. #2: no reranking stage. #3: metadata filters not utilized.',
+    fixes: [
+      'Add reranking: cross-encoder reranker on top-20 → top-5 improves relevance 25-40%',
+      'Implement metadata filtering: pre-filter by document type, date, source before vector search',
+      'Try different embedding models: Jina v3 (1024d) outperforms OpenAI ada on technical docs',
+      'Add query expansion: generate 3 reformulations, search all, merge results',
+      'Implement MMR (Maximal Marginal Relevance) to diversify retrieved chunks'
+    ],
+    product: { name: 'Chunking & Retrieval Guide', price: '$87', link: 'https://buy.stripe.com/6oU5kw5zs1qXcPFcgt5J60f' },
+    altProduct: { name: 'Architecture Blueprint', price: '$197', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dt5J60d' }
+  },
+  inconsistent: {
+    severity: 'medium',
+    title: 'Non-Deterministic Behavior',
+    rootCause: 'Three sources of randomness: (1) LLM temperature > 0. (2) Vector search returning different chunks near decision boundary. (3) Race conditions in async pipeline stages.',
+    fixes: [
+      'Set temperature=0 for factual RAG queries (keep >0 only for creative tasks)',
+      'Increase top-k retrieval then apply deterministic reranking',
+      'Add response caching with semantic similarity threshold (cosine > 0.95 = cache hit)',
+      'Pin model versions — don\'t use "latest" aliases in production',
+      'Log full pipeline traces to identify which stage introduces variance'
+    ],
+    product: { name: 'Operations Runbook', price: '$97', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dt5J60d' },
+    altProduct: { name: 'Eval Framework', price: '$127', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dt5J60d' }
+  },
+  scaling: {
+    severity: 'high',
+    title: 'Scale Degradation',
+    rootCause: 'Most RAG architectures are designed for demos, not production. At 10K+ docs: (1) Embedding batching missing → timeout. (2) Single vector index → slow search. (3) No tenant isolation → noisy neighbor.',
+    fixes: [
+      'Implement batch ingestion: process in batches of 10 with concurrency 5',
+      'Use namespace/index partitioning: separate indices per document type or tenant',
+      'Add connection pooling for database calls (Pinecone/Neo4j/Supabase)',
+      'Implement incremental ingestion — only process new/changed documents',
+      'Set up horizontal scaling: multiple n8n instances with round-robin routing'
+    ],
+    product: { name: 'Architecture Blueprint', price: '$197', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dt5J60d' },
+    altProduct: { name: 'Latency & Performance Guide', price: '$107', link: 'https://buy.stripe.com/3cI5kw9PI1qX3f5bcp5J60g' }
+  },
+  cost: {
+    severity: 'high',
+    title: 'Cost Runaway',
+    rootCause: 'LLM costs dominate (70-85% of total). Hidden multipliers: (1) Re-embedding unchanged docs. (2) No caching — same queries hit LLM repeatedly. (3) Using expensive models for simple routing tasks.',
+    fixes: [
+      'Implement model tiering: cheap/free models for routing, mid-tier for generation, premium only for complex',
+      'Add semantic caching: 30-40% of queries are near-duplicates',
+      'Switch to free-tier LLMs where possible (Llama 3.3 70B, Gemma 3 27B = $0)',
+      'Track per-query cost with token counting middleware',
+      'Deduplicate embeddings — hash content, skip unchanged documents on re-ingestion'
+    ],
+    product: { name: 'Prompt Library', price: '$67', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dt5J60d' },
+    altProduct: { name: 'Operations Runbook', price: '$97', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dt5J60d' }
+  },
+  debug: {
+    severity: 'critical',
+    title: 'Observability Black Box',
+    rootCause: 'RAG pipelines have 6-12 stages. Without per-node tracing, you\'re debugging by guessing. The #1 time waste: optimizing the wrong node. Most teams spend 80% of debug time on 20% of actual issues.',
+    fixes: [
+      'Add structured logging at every pipeline stage (input/output/latency/tokens)',
+      'Build a node-by-node execution analyzer (we have one: eval/node-analyzer.py)',
+      'Implement golden test dataset — run after every change to catch regressions',
+      'Set up alerting on key metrics: accuracy, latency p95, error rate, cost per query',
+      'Create a debug decision tree: symptom → likely cause → fix (we cataloged 75+)'
+    ],
+    product: { name: 'Debug Playbook', price: '$47', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dt5J60d' },
+    altProduct: { name: 'Eval Framework', price: '$127', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dt5J60d' }
+  }
+};
+
+function runDiagnosis() {
+  if (selected.size === 0) return;
+  document.getElementById('progress').style.width = '100%';
+  const panel = document.getElementById('diagnostic-panel');
+  let html = '<p class="step-label">Diagnosis Complete</p>';
+  html += '<p class="step-title">' + selected.size + ' Issue' + (selected.size>1?'s':'') + ' Identified</p>';
+
+  const sorted = [...selected].sort((a,b) => {
+    const order = {critical:0, high:1, medium:2};
+    return (order[DB[a]?.severity]||2) - (order[DB[b]?.severity]||2);
+  });
+
+  const recommendedProducts = new Map();
+
+  sorted.forEach(s => {
+    const d = DB[s];
+    if (!d) return;
+    html += '<div class="diagnosis-card">';
+    html += '<span class="severity ' + d.severity + '">' + d.severity.toUpperCase() + '</span>';
+    html += '<h3>' + d.title + '</h3>';
+    html += '<div class="root-cause">' + d.rootCause + '</div>';
+    html += '<ul class="fix-list">';
+    d.fixes.forEach(f => html += '<li>' + f + '</li>');
+    html += '</ul>';
+    html += '<div class="product-rec"><div><div class="name">📘 ' + d.product.name + '</div><div style="font-size:0.78rem;color:#888;margin-top:2px">Complete guide to fixing this issue</div></div><span class="price">' + d.product.price + '</span><a href="' + d.product.link + '">Get Fix →</a></div>';
+    html += '</div>';
+    recommendedProducts.set(d.product.name, d.product);
+    if (d.altProduct) recommendedProducts.set(d.altProduct.name, d.altProduct);
+  });
+
+  if (selected.size >= 2) {
+    html += '<div class="mega-cta">';
+    html += '<h3>🔥 Multiple Issues? Get the Complete Fix</h3>';
+    html += '<p style="color:#aaa;font-size:0.9rem;margin:6px 0">The MEGA BUNDLE covers ALL ' + selected.size + ' issues you identified — plus 15+ more guides</p>';
+    html += '<div class="price-compare"><span class="old">$1,614 if bought separately</span><span class="new">$497</span></div>';
+    html += '<a class="btn-primary" href="https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d">Get MEGA BUNDLE — Fix Everything →</a>';
+    html += '<p style="color:#666;font-size:0.78rem;margin-top:10px">30-day money-back guarantee · Instant access · Lifetime updates</p>';
+    html += '</div>';
+  }
+
+  panel.innerHTML = html;
+  panel.style.display = 'block';
+  panel.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>

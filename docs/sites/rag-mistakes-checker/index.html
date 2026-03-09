@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Mistakes Checker — Are You Making These 15 Critical Errors?</title>
+<meta name="description" content="Check your RAG pipeline against 15 critical mistakes that kill accuracy, waste money, and frustrate users. Get personalized fixes instantly.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh}
+.container{max-width:720px;margin:0 auto;padding:20px}
+h1{font-size:2rem;text-align:center;margin:30px 0 10px;background:linear-gradient(135deg,#ff6b6b,#ffa502);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{text-align:center;color:#888;font-size:1.05rem;margin-bottom:30px}
+.category{margin-bottom:24px;background:#12121a;border-radius:12px;padding:20px;border:1px solid #1a1a2e}
+.category-title{font-size:1.1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cat-retrieval .category-title{color:#3b82f6}
+.cat-chunking .category-title{color:#f59e0b}
+.cat-llm .category-title{color:#8b5cf6}
+.cat-eval .category-title{color:#10b981}
+.cat-ops .category-title{color:#ef4444}
+.mistake{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #1a1a2e;cursor:pointer;transition:background .2s}
+.mistake:last-child{border-bottom:none}
+.mistake:hover{background:#1a1a2e;border-radius:8px;padding-left:8px}
+.mistake input[type="checkbox"]{width:20px;height:20px;accent-color:#ff6b6b;cursor:pointer;flex-shrink:0;margin-top:2px}
+.mistake-text{flex:1}
+.mistake-name{font-weight:600;font-size:.95rem}
+.mistake-desc{color:#777;font-size:.85rem;margin-top:3px}
+.severity{font-size:.7rem;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:8px}
+.sev-critical{background:#ff6b6b22;color:#ff6b6b}
+.sev-high{background:#ffa50222;color:#ffa502}
+.sev-medium{background:#f59e0b22;color:#f59e0b}
+.results{display:none;margin-top:30px;text-align:center}
+.results.show{display:block}
+.score-ring{width:160px;height:160px;margin:0 auto 20px;position:relative}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring circle{fill:none;stroke-width:8}
+.score-ring .bg{stroke:#1a1a2e}
+.score-ring .fg{stroke-dasharray:440;stroke-dashoffset:440;transition:stroke-dashoffset 1.5s ease}
+.score-value{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2.5rem;font-weight:800}
+.score-label{font-size:.9rem;color:#888}
+.grade{font-size:1.5rem;font-weight:800;margin:10px 0}
+.grade-a{color:#10b981}
+.grade-b{color:#3b82f6}
+.grade-c{color:#f59e0b}
+.grade-d{color:#ef4444}
+.grade-f{color:#ff6b6b}
+.fix-section{margin-top:30px;text-align:left}
+.fix-card{background:#12121a;border-radius:12px;padding:18px;margin-bottom:14px;border-left:3px solid}
+.fix-card h4{margin-bottom:6px;font-size:1rem}
+.fix-card p{color:#888;font-size:.88rem;margin-bottom:10px}
+.fix-card .product-rec{display:flex;justify-content:space-between;align-items:center;background:#1a1a2e;border-radius:8px;padding:10px 14px;margin-top:8px}
+.fix-card .product-name{font-weight:600;font-size:.9rem}
+.fix-card .product-price{color:#10b981;font-weight:700}
+.btn{display:inline-block;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:1.05rem;transition:transform .2s,box-shadow .2s;cursor:pointer;border:none}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,.4)}
+.btn-check{background:linear-gradient(135deg,#ff6b6b,#ffa502);color:#fff;margin-top:20px;font-size:1.1rem;padding:16px 40px}
+.btn-buy{background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:.9rem;padding:8px 18px}
+.btn-mega{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;margin-top:20px;font-size:1.1rem;padding:16px 40px;display:inline-block}
+.mega-box{background:linear-gradient(135deg,#1a1a2e,#12121a);border:2px solid #8b5cf6;border-radius:16px;padding:30px;margin-top:30px;text-align:center}
+.mega-box h3{font-size:1.4rem;color:#8b5cf6;margin-bottom:8px}
+.mega-box .old-price{text-decoration:line-through;color:#666;font-size:1.1rem}
+.mega-box .new-price{font-size:2rem;font-weight:800;color:#10b981}
+.mega-box .savings{color:#ffa502;font-size:.95rem;margin:8px 0 16px}
+.count-display{text-align:center;font-size:1.3rem;margin:20px 0;color:#ff6b6b;font-weight:700}
+.reset-btn{background:none;border:1px solid #333;color:#888;padding:8px 16px;border-radius:6px;cursor:pointer;margin-top:15px;font-size:.85rem}
+.reset-btn:hover{border-color:#888;color:#ccc}
+.trust{text-align:center;margin-top:16px;color:#666;font-size:.8rem}
+footer{text-align:center;padding:40px 20px;color:#444;font-size:.8rem}
+@media(max-width:600px){h1{font-size:1.5rem}.container{padding:12px}.score-ring{width:120px;height:120px}.score-value{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>RAG Mistakes Checker</h1>
+<p class="subtitle">Check the mistakes you're currently making. Be honest — your fix plan depends on it.</p>
+
+<div class="category cat-retrieval">
+<div class="category-title">🔍 Retrieval Mistakes</div>
+<label class="mistake" data-cat="retrieval" data-sev="critical" data-fix="chunking">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">Using fixed-size chunking without overlap <span class="severity sev-critical">CRITICAL</span></span><div class="mistake-desc">Cuts context mid-sentence. Drops accuracy by 15-25%. Semantic or recursive chunking fixes this.</div></div>
+</label>
+<label class="mistake" data-cat="retrieval" data-sev="critical" data-fix="architecture">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">Single retrieval strategy for all query types <span class="severity sev-critical">CRITICAL</span></span><div class="mistake-desc">Keyword queries need BM25, semantic queries need embeddings, analytical need SQL. One size never fits.</div></div>
+</label>
+<label class="mistake" data-cat="retrieval" data-sev="high" data-fix="chunking">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">No reranking after initial retrieval <span class="severity sev-high">HIGH</span></span><div class="mistake-desc">Top-K from vector search is a rough filter. Reranking with cross-encoders boosts precision by 20-35%.</div></div>
+</label>
+</div>
+
+<div class="category cat-chunking">
+<div class="category-title">📦 Data & Embedding Mistakes</div>
+<label class="mistake" data-cat="data" data-sev="critical" data-fix="chunking">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">Not cleaning data before embedding <span class="severity sev-critical">CRITICAL</span></span><div class="mistake-desc">Headers, footers, boilerplate pollute your vector space. Garbage in = garbage out.</div></div>
+</label>
+<label class="mistake" data-cat="data" data-sev="high" data-fix="multimodal">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">Ignoring tables, images, and PDFs <span class="severity sev-high">HIGH</span></span><div class="mistake-desc">35% of enterprise documents contain tables/images. Text-only pipelines miss critical data.</div></div>
+</label>
+<label class="mistake" data-cat="data" data-sev="medium" data-fix="architecture">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">Wrong embedding model for your domain <span class="severity sev-medium">MEDIUM</span></span><div class="mistake-desc">Generic embeddings underperform on specialized domains. Fine-tuned or domain-specific models win.</div></div>
+</label>
+</div>
+
+<div class="category cat-llm">
+<div class="category-title">🤖 LLM & Prompt Mistakes</div>
+<label class="mistake" data-cat="llm" data-sev="critical" data-fix="prompts">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">No system prompt engineering for RAG <span class="severity sev-critical">CRITICAL</span></span><div class="mistake-desc">Generic prompts = hallucinations. RAG needs grounding instructions, citation rules, and refusal patterns.</div></div>
+</label>
+<label class="mistake" data-cat="llm" data-sev="high" data-fix="prompts">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">Stuffing all retrieved chunks into context <span class="severity sev-high">HIGH</span></span><div class="mistake-desc">More context ≠ better answers. Lost-in-the-middle effect kills accuracy after 5-7 chunks.</div></div>
+</label>
+<label class="mistake" data-cat="llm" data-sev="high" data-fix="latency">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">No caching for repeated queries <span class="severity sev-high">HIGH</span></span><div class="mistake-desc">40-60% of queries are repeats. Semantic caching cuts latency by 80% and LLM costs by 50%.</div></div>
+</label>
+</div>
+
+<div class="category cat-eval">
+<div class="category-title">📊 Evaluation Mistakes</div>
+<label class="mistake" data-cat="eval" data-sev="critical" data-fix="eval">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">No automated evaluation pipeline <span class="severity sev-critical">CRITICAL</span></span><div class="mistake-desc">If you can't measure it, you can't improve it. Flying blind guarantees regression.</div></div>
+</label>
+<label class="mistake" data-cat="eval" data-sev="high" data-fix="eval">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">Testing with &lt;50 questions <span class="severity sev-high">HIGH</span></span><div class="mistake-desc">Small test sets miss edge cases. You need 200+ diverse questions to trust your accuracy numbers.</div></div>
+</label>
+<label class="mistake" data-cat="eval" data-sev="medium" data-fix="debug">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">No per-node execution tracing <span class="severity sev-medium">MEDIUM</span></span><div class="mistake-desc">When accuracy drops, WHERE did it fail? Without node-level tracing, debugging is guesswork.</div></div>
+</label>
+</div>
+
+<div class="category cat-ops">
+<div class="category-title">⚙️ Operations Mistakes</div>
+<label class="mistake" data-cat="ops" data-sev="high" data-fix="ops">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">No monitoring or alerting on accuracy <span class="severity sev-high">HIGH</span></span><div class="mistake-desc">Accuracy degrades silently. By the time users complain, you've lost trust.</div></div>
+</label>
+<label class="mistake" data-cat="ops" data-sev="high" data-fix="latency">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">Not measuring end-to-end latency <span class="severity sev-high">HIGH</span></span><div class="mistake-desc">Users abandon after 3 seconds. If you don't measure latency per component, you can't optimize.</div></div>
+</label>
+<label class="mistake" data-cat="ops" data-sev="medium" data-fix="ops">
+<input type="checkbox"><div class="mistake-text"><span class="mistake-name">Manual deployment without CI/CD <span class="severity sev-medium">MEDIUM</span></span><div class="mistake-desc">Manual deploys = manual errors. Automated pipelines prevent regressions and speed up iteration.</div></div>
+</label>
+</div>
+
+<div class="count-display">Mistakes checked: <span id="count">0</span> / 15</div>
+<div style="text-align:center">
+<button class="btn btn-check" onclick="showResults()">Get My Fix Plan →</button>
+</div>
+
+<div class="results" id="results">
+<div class="score-ring">
+<svg viewBox="0 0 160 160"><circle class="bg" cx="80" cy="80" r="70"/><circle class="fg" id="ring" cx="80" cy="80" r="70"/></svg>
+<div class="score-value" id="scoreVal">--</div>
+</div>
+<div class="score-label">RAG Health Score</div>
+<div class="grade" id="gradeText"></div>
+
+<div class="fix-section" id="fixes"></div>
+
+<div class="mega-box">
+<h3>Fix ALL 15 Mistakes at Once</h3>
+<p style="color:#aaa;margin-bottom:12px">The MEGA BUNDLE covers every single mistake above — chunking, retrieval, prompts, eval, ops, debugging.</p>
+<div class="old-price">Individual products: $1,614</div>
+<div class="new-price">$497</div>
+<div class="savings">Save $1,117 (69% off) — 17 products in one bundle</div>
+<a href="https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d" class="btn btn-mega">Get the MEGA BUNDLE — $497 →</a>
+<div class="trust">30-day money-back guarantee · Instant download · Lifetime updates</div>
+</div>
+
+<div style="text-align:center;margin-top:20px">
+<button class="reset-btn" onclick="resetAll()">↺ Start Over</button>
+</div>
+</div>
+</div>
+<footer>© 2026 Nomos RAG Engineering · Built from 90+ production debugging sessions</footer>
+
+<script>
+const fixMap={
+chunking:{name:'RAG Chunking & Retrieval Guide',price:'$87',link:'https://buy.stripe.com/6oU5kw5zs1qXcPFcgt5J60f',color:'#f59e0b',desc:'7 chunking strategies benchmarked, hybrid search, reranking patterns, data cleaning pipelines.'},
+architecture:{name:'RAG Architecture Blueprint',price:'$197',link:'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d',color:'#3b82f6',desc:'Complete architecture patterns for Standard, Graph, Quantitative, and Orchestrator RAG.'},
+multimodal:{name:'Multimodal RAG Guide',price:'$137',link:'https://buy.stripe.com/3cIeV6aTMglR16X2FT5J60e',color:'#ec4899',desc:'Handle images, tables, PDFs, audio, and video. 4 architecture patterns with benchmarks.'},
+prompts:{name:'RAG Prompt Library',price:'$67',link:'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d',color:'#8b5cf6',desc:'200+ battle-tested prompts for grounding, citation, refusal, and context management.'},
+eval:{name:'RAG Eval Framework',price:'$127',link:'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d',color:'#10b981',desc:'Automated evaluation pipeline, 1000+ question datasets, golden answer comparison.'},
+debug:{name:'Debug Playbook',price:'$47',link:'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d',color:'#ef4444',desc:'75+ fixes from 90 production debugging sessions. Node-level tracing methodology.'},
+latency:{name:'Latency & Performance Guide',price:'$107',link:'https://buy.stripe.com/3cI5kw9PI1qX3f5bcp5J60g',color:'#06b6d4',desc:'Latency profiling, caching strategies, embedding optimization. 77-80% latency reduction.'},
+ops:{name:'Operations Runbook',price:'$97',link:'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d',color:'#f97316',desc:'Monitoring, alerting, CI/CD, deployment automation, incident response for RAG.'}
+};
+function getChecked(){return document.querySelectorAll('.mistake input:checked')}
+function updateCount(){document.getElementById('count').textContent=getChecked().length}
+document.querySelectorAll('.mistake input').forEach(cb=>cb.addEventListener('change',updateCount));
+function showResults(){
+const checked=getChecked();
+const total=15;const mistakes=checked.length;
+const score=Math.round(((total-mistakes)/total)*100);
+const el=document.getElementById('results');el.classList.add('show');
+el.scrollIntoView({behavior:'smooth'});
+const ring=document.getElementById('ring');
+const circ=2*Math.PI*70;
+ring.style.strokeDasharray=circ;
+setTimeout(()=>{ring.style.strokeDashoffset=circ-(circ*score/100)},100);
+let grade,gradeClass,gradeMsg;
+if(score>=90){grade='A';gradeClass='grade-a';gradeMsg='Excellent! Minor tweaks only.';ring.style.stroke='#10b981'}
+else if(score>=75){grade='B';gradeClass='grade-b';gradeMsg='Good foundation, but gaps remain.';ring.style.stroke='#3b82f6'}
+else if(score>=55){grade='C';gradeClass='grade-c';gradeMsg='Significant issues — accuracy is suffering.';ring.style.stroke='#f59e0b'}
+else if(score>=35){grade='D';gradeClass='grade-d';gradeMsg='Critical problems — you\'re losing users.';ring.style.stroke='#ef4444'}
+else{grade='F';gradeClass='grade-f';gradeMsg='Your RAG pipeline needs a complete overhaul.';ring.style.stroke='#ff6b6b'}
+document.getElementById('scoreVal').textContent=score;
+const gt=document.getElementById('gradeText');gt.textContent=`Grade: ${grade} — ${gradeMsg}`;gt.className='grade '+gradeClass;
+const neededFixes=new Map();
+checked.forEach(cb=>{
+const m=cb.closest('.mistake');
+const fix=m.dataset.fix;const sev=m.dataset.sev;
+if(!neededFixes.has(fix)||sevRank(sev)>sevRank(neededFixes.get(fix).sev)){
+neededFixes.set(fix,{sev,count:(neededFixes.get(fix)?.count||0)+1})
+}else{neededFixes.get(fix).count++}
+});
+const fixesEl=document.getElementById('fixes');fixesEl.innerHTML='<h3 style="margin-bottom:16px;font-size:1.2rem">Your Personalized Fix Plan</h3>';
+const sorted=[...neededFixes.entries()].sort((a,b)=>sevRank(b[1].sev)-sevRank(a[1].sev));
+sorted.forEach(([key,val])=>{
+const f=fixMap[key];if(!f)return;
+const card=document.createElement('div');card.className='fix-card';card.style.borderColor=f.color;
+card.innerHTML=`<h4 style="color:${f.color}">${f.name}</h4><p>${f.desc}</p><div class="product-rec"><div><span class="product-name">${f.name}</span><br><span style="color:#888;font-size:.8rem">Fixes ${val.count} mistake${val.count>1?'s':''} you checked</span></div><a href="${f.link}" class="btn btn-buy">${f.price} →</a></div>`;
+fixesEl.appendChild(card);
+});
+if(sorted.length===0){fixesEl.innerHTML+='<p style="color:#10b981;text-align:center;font-size:1.1rem">No mistakes checked — your pipeline looks clean!</p>'}
+}
+function sevRank(s){return s==='critical'?3:s==='high'?2:1}
+function resetAll(){
+document.querySelectorAll('.mistake input').forEach(cb=>cb.checked=false);
+document.getElementById('results').classList.remove('show');
+updateCount();window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
