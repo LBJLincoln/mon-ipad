@@ -542,6 +542,35 @@ sleep 35
 - **Fix**: Watchdog script should `pkill -f telegram-sales-bot.py` before restarting, and add a 5-second delay.
 - **Prevention**: All bot watchdog scripts must kill existing instances before spawning new ones.
 
+### FIX-91: HF Space Reranker — Port conflict with uvicorn + Gradio SDK
+
+- **Session**: 92
+- **Symptom**: Reranker HF Space enters RUNTIME_ERROR: `[Errno 98] address already in use` on port 7861.
+- **Root cause**: When using `gr.mount_gradio_app(app, demo, path="/")` + `uvicorn.run(app, port=7860)`, Gradio internally tries to start a second server on port 7861. This creates a conflict.
+- **Fix**: Use exact same pattern as working `nomos-embeddings-api` Space: FastAPI parent → custom routes → `gr.mount_gradio_app()` → `uvicorn.run()`. Do NOT use `demo.launch()` with separate `uvicorn.run()`.
+- **Key pattern**: `app = FastAPI()` → routes on `app` → `app = gr.mount_gradio_app(app, demo, path="/")` → `uvicorn.run(app, ...)`.
+- **Prevention**: Always copy working Space patterns verbatim. Test locally before deploying.
+
+### FIX-92: Custom FastAPI routes return 404 on Gradio 6.x HF Spaces
+
+- **Session**: 92
+- **Symptom**: Routes registered on `demo.app` (`@demo.app.post("/v1/rerank")`) return 404 while Gradio UI works fine.
+- **Root cause**: In Gradio 6.x, all Gradio routes moved under `/gradio_api/` prefix. Routes added to `demo.app` are overwritten during `demo.launch()`. The internal FastAPI app structure is rebuilt.
+- **Fix**: Do NOT register routes on `demo.app`. Instead, create a separate `FastAPI()` parent app, register routes there, then mount Gradio with `gr.mount_gradio_app(parent_app, demo, path="/")`.
+- **Proven pattern**: See `nomos-embeddings-api` Space which has `/health`, `/v1/embeddings` working.
+- **Prevention**: Never use `demo.app` for custom routes in Gradio 6.x.
+
+### FIX-93: continuous-sector-eval.py accuracy drop (65% → 30%)
+
+- **Session**: 92
+- **Symptom**: New `continuous-sector-eval.py` shows 18-52% per sector, while old `sector-eval.py` showed 65-80%.
+- **Root cause**: Two issues in `flexible_match()`:
+  1. **One-directional stem matching** — only checked `word.startswith(expected_prefix)`, missed reverse check `expected.startswith(word_prefix)`. French conjugated forms like "rejete"→"rejet" were missed.
+  2. **Missing French synonyms** — No legal terms (cassation, subrog, renvoi, rejet), no BTP terms (isolation, beton), no finance terms (rendement, obligation).
+  3. **max_retries=2** vs 3 in old script — more timeouts counted as failures.
+- **Fix**: Added bidirectional stem matching, 25+ French/sector-specific synonyms, set max_retries=3.
+- **Prevention**: Always align matching logic across eval scripts. Run side-by-side comparison before replacing.
+
 ---
 
 ## 3. IRON RULES

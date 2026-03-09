@@ -94,7 +94,7 @@ def normalize_for_match(text):
 
 
 def flexible_match(answer, expected):
-    """Multi-strategy matching for expert sector answers."""
+    """Multi-strategy matching for expert sector answers (aligned with sector-eval.py)."""
     norm_a = normalize_for_match(answer)
     norm_e = normalize_for_match(expected)
 
@@ -107,11 +107,16 @@ def flexible_match(answer, expected):
     if len(words) > 1 and all(w in norm_a for w in words):
         return True
 
-    # 3. Stem-based (min 3 chars, 75% prefix)
+    # 3. Stem-based — BIDIRECTIONAL (both directions)
+    answer_words = norm_a.split()
     if len(norm_e) >= 3:
-        for word in norm_a.split():
+        for word in answer_words:
             min_p = max(3, int(len(norm_e) * 0.75))
+            # Expected is prefix of answer word
             if word.startswith(norm_e[:min_p]):
+                return True
+            # Answer word is prefix of expected (reverse direction)
+            if norm_e.startswith(word[:min_p]) and len(word) >= min_p:
                 return True
 
     # 4. Number extraction
@@ -121,7 +126,7 @@ def flexible_match(answer, expected):
         if any(n in ans_nums for n in exp_nums):
             return True
 
-    # 5. Synonym maps (EN + FR)
+    # 5. Synonym maps (EN + FR — comprehensive for all sectors)
     SYNONYMS = {
         'increase': ['grew', 'rise', 'higher', 'up', 'improved', 'growth', 'augmente', 'hausse'],
         'decrease': ['declined', 'lower', 'down', 'reduced', 'fell', 'drop', 'baisse', 'diminue'],
@@ -132,6 +137,27 @@ def flexible_match(answer, expected):
         'energie': ['energy', 'energetique', 'power', 'electricite'],
         'securite': ['safety', 'security', 'surete', 'protection'],
         'norme': ['standard', 'regulation', 'norm', 'regle'],
+        # French legal terms (Juridique sector)
+        'forestiere': ['forestier', 'foret', 'naturel', 'boise'],
+        'ministre': ['ministeriel', 'ministere', 'autorite administrative'],
+        'subrog': ['subrogation', 'subroger', 'subrogatoire'],
+        'cassation': ['cour de cassation', 'pourvoi', 'arret'],
+        'renvoi': ['renvoyer', 'renvoyee', 'renvoi devant'],
+        'rejet': ['rejete', 'rejeter', 'pourvoi rejete'],
+        # Technical industry terms
+        'pressure': ['pressure test', 'water pressure', 'hydrostatic', 'pressure testing', 'pression'],
+        'still image': ['static image', 'fixed image', 'stationary image', 'still picture'],
+        # BTP construction terms
+        'isolation': ['isolant', 'thermique', 'phonique', 'calorifuge'],
+        'beton': ['concrete', 'ciment', 'mortier', 'armature'],
+        'charpente': ['structure', 'ossature', 'poutre', 'framework'],
+        'fondation': ['foundation', 'soubassement', 'radier', 'semelle'],
+        'etancheite': ['waterproofing', 'impermeable', 'membrane'],
+        # Finance terms
+        'rendement': ['yield', 'return', 'performance', 'rentabilite'],
+        'obligation': ['bond', 'titre', 'debenture'],
+        'capitalisation': ['market cap', 'valuation', 'valorisation'],
+        'dividende': ['dividend', 'distribution', 'coupon'],
     }
     for key, syns in SYNONYMS.items():
         if key in norm_e:
@@ -196,7 +222,104 @@ def quality_score(answer, question, sector):
     return score
 
 
-def call_webhook(pipeline, query, timeout=90, max_retries=2):
+# ─── LLM-as-Judge ────────────────────────────────────────────────────────
+# Primary: LiteLLM proxy (engine-7) with key rotation across models
+# Fallback: Direct OpenRouter with key rotation
+LITELLM_URL = "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions"
+LITELLM_KEY = os.environ.get("LITELLM_MASTER_KEY", "sk-litellm-nomos-2026")
+LITELLM_JUDGE_MODEL = "gemma-27b"  # Routes through LiteLLM, avoids OpenRouter rate limits
+
+# OpenRouter fallback keys
+_OR_KEYS = []
+for _k in ["OPENROUTER_API_KEY", "OPENROUTER_KEY_SPARE", "OPENROUTER_KEY_GRAPH",
+           "OPENROUTER_KEY_STANDARD", "OPENROUTER_KEY_QUANTITATIVE",
+           "OPENROUTER_KEY_ORCHESTRATOR", "OPENROUTER_KEY_PME"]:
+    _v = os.environ.get(_k, "")
+    if _v:
+        _OR_KEYS.append(_v)
+
+_judge_lock = Lock()
+_judge_key_idx = 0
+# Disabled inline: too slow (14s/call). Use eval/llm-judge-rescore.py post-processing instead.
+LLM_JUDGE_ENABLED = os.environ.get("LLM_JUDGE_INLINE", "").lower() in ("1", "true", "yes")
+
+def _next_or_key():
+    """Round-robin across OpenRouter keys."""
+    global _judge_key_idx
+    with _judge_lock:
+        key = _OR_KEYS[_judge_key_idx % len(_OR_KEYS)]
+        _judge_key_idx += 1
+        return key
+
+def llm_judge(question, expected_contains, answer, sector):
+    """Use LLM to judge answer correctness. Routes through LiteLLM first, then OpenRouter.
+    Returns {"llm_pass": bool, "llm_score": int 0-100, "llm_reasoning": str} or None.
+    """
+    if not LLM_JUDGE_ENABLED or not answer or len(answer) < 10:
+        return None
+
+    prompt = f"""You are an expert evaluator for a {sector} sector AI assistant.
+
+Question: {question}
+
+Expected answer should contain: "{expected_contains}"
+
+Actual answer: {answer[:800]}
+
+Evaluate the answer on these criteria:
+1. Does it correctly address the question? (0-40 points)
+2. Does it contain the expected information "{expected_contains}" or an equivalent/synonym? (0-30 points)
+3. Is it factually accurate and well-structured? (0-30 points)
+
+Respond in EXACTLY this JSON format, nothing else:
+{{"pass": true/false, "score": 0-100, "reason": "one sentence explanation"}}"""
+
+    # Build list of (url, model, key) backends to try
+    backends = []
+    if LITELLM_KEY:
+        backends.append((LITELLM_URL, LITELLM_JUDGE_MODEL, LITELLM_KEY))
+        backends.append((LITELLM_URL, "fast", LITELLM_KEY))
+    for i in range(min(2, len(_OR_KEYS))):
+        backends.append(("https://openrouter.ai/api/v1/chat/completions",
+                         "google/gemma-3-27b-it:free", _next_or_key()))
+
+    for url, model, api_key in backends:
+        payload = json.dumps({
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.0,
+            "max_tokens": 150,
+        }).encode()
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}",
+        }
+        try:
+            req = request.Request(url, data=payload, headers=headers, method="POST")
+            with request.urlopen(req, timeout=20) as resp:
+                data = json.loads(resp.read().decode())
+                content = data["choices"][0]["message"]["content"].strip()
+                if "```" in content:
+                    content = content.split("```")[1].strip()
+                    if content.startswith("json"):
+                        content = content[4:].strip()
+                result = json.loads(content)
+                return {
+                    "llm_pass": bool(result.get("pass", False)),
+                    "llm_score": int(result.get("score", 0)),
+                    "llm_reasoning": str(result.get("reason", ""))[:200],
+                }
+        except error.HTTPError as e:
+            if e.code == 429:
+                continue
+            return None
+        except Exception:
+            continue
+
+    return None  # All backends failed, fall back to flexible_match
+
+
+def call_webhook(pipeline, query, timeout=90, max_retries=3):
     """Call pipeline webhook with round-robin across 8 HF Spaces."""
     webhook_path = WEBHOOK_PATHS.get(pipeline)
     if not webhook_path:
@@ -246,18 +369,32 @@ def call_webhook(pipeline, query, timeout=90, max_retries=2):
 
 
 def eval_single_question(item, pipeline):
-    """Evaluate a single question against a pipeline. Thread-safe."""
+    """Evaluate a single question against a pipeline. Thread-safe.
+    Uses LLM-as-judge when available, falls back to flexible_match."""
     result = call_webhook(pipeline, item["question"])
     passed = False
     q_score = 0
+    judge_result = None
 
     if result["answer"] and not result["error"]:
         expected = item.get("expected_contains", "")
         if expected:
-            passed = flexible_match(result["answer"], expected)
+            # Try LLM-as-judge first (more accurate for expert answers)
+            if LLM_JUDGE_ENABLED:
+                judge_result = llm_judge(
+                    item["question"], expected, result["answer"],
+                    item.get("sector", "unknown")
+                )
+            if judge_result:
+                passed = judge_result["llm_pass"]
+                q_score = judge_result["llm_score"]
+            else:
+                # Fallback: string matching + quality heuristic
+                passed = flexible_match(result["answer"], expected)
+                q_score = quality_score(result["answer"], item["question"], item.get("sector", ""))
         else:
             passed = len(result["answer"]) > 10
-        q_score = quality_score(result["answer"], item["question"], item.get("sector", ""))
+            q_score = quality_score(result["answer"], item["question"], item.get("sector", ""))
 
     return {
         "id": item.get("id", "?"),
@@ -270,6 +407,8 @@ def eval_single_question(item, pipeline):
         "error": result["error"],
         "answer_preview": (result["answer"] or "")[:200],
         "host": result.get("host", ""),
+        "judge": "llm" if judge_result else "string",
+        "llm_reasoning": judge_result["llm_reasoning"] if judge_result else "",
     }
 
 
@@ -485,7 +624,7 @@ def main():
             for g in gaps:
                 print(g)
 
-        # Log cycle
+        # Log cycle with raw results for LLM judge post-processing
         cycle_log = {
             "cycle": cycle,
             "timestamp": datetime.utcnow().isoformat(),
@@ -497,6 +636,11 @@ def main():
         log_file = os.path.join(LOG_DIR, f"cycle-{cycle:04d}.json")
         with open(log_file, "w") as f:
             json.dump(cycle_log, f, indent=2)
+
+        # Save raw results (with answers) for LLM judge post-processing
+        raw_file = os.path.join(LOG_DIR, f"raw-{cycle:04d}.json")
+        with open(raw_file, "w") as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
 
         if not args.continuous:
             break

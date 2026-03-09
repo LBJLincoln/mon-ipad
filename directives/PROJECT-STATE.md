@@ -84,23 +84,32 @@ Archived: `rag-pme-connectors`, `rag-tests` (merged into mon-ipad)
 
 ## Next Steps (Priority Order)
 
-### IMMEDIATE (cette session)
+### DONE (Session 92)
 1. ~~Restructuration fichiers~~ DONE
-2. Verifier HF Spaces DOWN (S7 LiteLLM, embeddings)
-3. Lancer eval complet 4 pipelines x 4 secteurs
-4. Commit + push restructuration
+2. ~~Reranker deployed~~ DONE — `nomos-reranker-api` HF Space, FlashRank, /v1/rerank WORKING
+3. ~~LLM-as-judge framework~~ DONE — `eval/llm-judge-rescore.py` via LiteLLM/Gemma-27B
+4. ~~Matching fix~~ DONE — bidirectional stem + 25+ FR synonyms (FIX-93)
+5. ~~Raw results saving~~ DONE — `logs/continuous-eval/raw-*.json` for post-processing
+6. ~~DEBUG-PLAYBOOK updated~~ DONE — FIX-91, FIX-92, FIX-93
+
+### IMMEDIATE (remaining)
+7. Run full 220q Standard eval + LLM judge rescore (IN PROGRESS)
+8. Fix Graph pipeline timeout (webhook responds but >90s)
+9. Fix Orchestrator (ALd4gOEqiKL5KR1p deactivated)
+10. Renew Groq API keys (all 5 expired/403)
+11. Commit + push all changes
 
 ### SHORT TERM (sessions 93-95)
-5. BTP DATA : Crawler BOAMP API + Legifrance construction
-6. Continuous eval : script qui tourne indefiniment
-7. Self-healing cron : health check + auto-fix toutes les 15 min
-8. Eval Graph + Quant sur tous les secteurs (actuellement null)
+12. BTP DATA : Crawler BOAMP API + Legifrance construction
+13. Continuous eval : script qui tourne indefiniment
+14. Self-healing cron : health check + auto-fix toutes les 15 min
+15. Integrate reranker into n8n workflows (Standard + Graph pipelines)
 
 ### MEDIUM TERM (sessions 96-100)
-9. Expert eval : LLM-as-judge avec rubrics sectorielles
-10. Regression guard : pre-commit hook
-11. Scale ingestion : 200K docs (50K/secteur)
-12. Docling : traiter vrais PDF complexes (DTU, bilans, contrats)
+16. RAGAS/DeepEval integration for richer eval metrics
+17. Regression guard : pre-commit hook
+18. Scale ingestion : 200K docs (50K/secteur)
+19. Docling : traiter vrais PDF complexes (DTU, bilans, contrats)
 
 ### MONETISATION (directives utilisateur a venir)
 - Analyser pourquoi 0 revenue malgre 14 Whop + 19 Stripe
@@ -134,7 +143,7 @@ Archived: `rag-pme-connectors`, `rag-tests` (merged into mon-ipad)
 | Session | Key Achievement |
 |---------|----------------|
 | 91 | Orchestrator V11 restored, sector eval 65%, Whop 14 products |
-| 92 | **RESTRUCTURATION** — Pivot sectoriel, CLAUDE.md v9.0, archive benchmarks |
+| 92 | **RESTRUCTURATION** — Pivot sectoriel, reranker deployed, LLM-as-judge, matching fixes |
 
 ---
 
