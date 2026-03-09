@@ -214,61 +214,53 @@ with gr.Blocks(title="Nomos Reranker API") as demo:
 
 
 # ---------------------------------------------------------------------------
-# Mount FastAPI routes for /v1/rerank and /rerank (Jina/Cohere/TEI compatible)
+# Add FastAPI routes to Gradio's internal app (no port conflict on HF Spaces)
 # ---------------------------------------------------------------------------
-from fastapi import FastAPI, Request
+from fastapi import Request
 from fastapi.responses import JSONResponse
-import uvicorn
 
-app = FastAPI(title="Nomos Reranker API")
+# Gradio Blocks exposes its internal FastAPI via demo.app after creation
+_fastapi = demo.app  # type: ignore
 
 
-@app.post("/v1/rerank")
+@_fastapi.post("/v1/rerank")
 async def v1_rerank(request: Request):
     """Jina/Cohere-compatible rerank endpoint."""
     try:
         body = await request.json()
     except Exception:
         return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
-
     query = body.get("query", "")
     documents = body.get("documents", [])
     top_n = body.get("top_n", 5)
     model = body.get("model", None)
-
-    # Handle documents as list of strings or list of dicts
     if documents and isinstance(documents[0], dict):
         documents = [d.get("text", d.get("content", str(d))) for d in documents]
-
     result = do_rerank(query, documents, top_n, model)
     if "error" in result:
         return JSONResponse(result, status_code=400)
     return JSONResponse(result)
 
 
-@app.post("/rerank")
+@_fastapi.post("/rerank")
 async def tei_rerank(request: Request):
     """TEI-compatible rerank endpoint."""
     try:
         body = await request.json()
     except Exception:
         return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
-
     query = body.get("query", "")
-    # TEI uses "texts" instead of "documents"
     documents = body.get("texts", body.get("documents", []))
     top_n = body.get("top_n", len(documents))
-
     if documents and isinstance(documents[0], dict):
         documents = [d.get("text", d.get("content", str(d))) for d in documents]
-
     result = do_rerank(query, documents, top_n)
     if "error" in result:
         return JSONResponse(result, status_code=400)
     return JSONResponse(result)
 
 
-@app.get("/health")
+@_fastapi.get("/health")
 async def health():
     return JSONResponse({
         "status": "ok",
@@ -278,7 +270,7 @@ async def health():
     })
 
 
-@app.get("/info")
+@_fastapi.get("/info")
 async def info():
     return JSONResponse({
         "service": "nomos-reranker-api",
@@ -292,9 +284,5 @@ async def info():
     })
 
 
-# Mount FastAPI into Gradio
-demo = gr.mount_gradio_app(app, demo, path="/")
-
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 7860))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    demo.launch(server_name="0.0.0.0", server_port=int(os.environ.get("PORT", 7860)))
