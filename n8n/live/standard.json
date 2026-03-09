@@ -56,7 +56,7 @@
         "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"gemma-27b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+        "jsonBody": "={\n  \"model\": \"gemma-27b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in the same language as the question.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
         "options": {
           "batching": {
             "batch": {
@@ -264,9 +264,9 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT id, content, source, \n       ts_rank(to_tsvector('french', content), plainto_tsquery('french', $1)) as bm25_score\nFROM documents \nWHERE is_obsolete = false \n  AND tenant_id = $2\n  AND to_tsvector('french', content) @@ plainto_tsquery('french', $1)\nORDER BY bm25_score DESC LIMIT 20",
+        "query": "SELECT * FROM bm25_search_sectors($1, 20)",
         "options": {
-          "queryReplacement": "=={{ $node['Init & ACL Pre-Filter V3.4'].json.query }},{{ $node['Init & ACL Pre-Filter V3.4'].json.user_context.tenant_id }}"
+          "queryReplacement": "=={{ $node['Init & ACL Pre-Filter V3.4'].json.query }}"
         }
       },
       "id": "935d1864-4a23-4add-8697-621cb9880b38",
@@ -280,7 +280,7 @@
       "onError": "continueRegularOutput",
       "credentials": {
         "postgres": {
-          "id": "cf76nju1pvz7iuOf",
+          "id": "b44avEJtnkw46GL6",
           "name": "Supabase Postgres (Pooler)"
         }
       }
@@ -380,7 +380,7 @@
         "authentication": "none",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"gemma-27b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
+        "jsonBody": "={\n  \"model\": \"gemma-27b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a precise RAG assistant. Answer ONLY using the provided context documents. NEVER use your own knowledge. Quote exact numbers, names, values from the context. If the context contains the answer, you MUST provide it - never say you cannot answer. Respond in the same language as the question. Be concise (1-3 sentences). Do NOT add source citations unless asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 400\n}",
         "options": {
           "batching": {
             "batch": {
@@ -419,7 +419,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Response Formatter - Standard RAG V3.4 (FIXED)\ntry {\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n  if (!llmContent) {\n    try {\n      const skipData = $node['Skip LLM?'].json;\n      if (skipData?.fallback_response?.response) {\n        llmContent = skipData.fallback_response.response;\n      }\n    } catch(e) {}\n  }\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n  let initData = {};\n  try { initData = $node['Init & ACL Pre-Filter V3.4'].json; } catch(e) {}\n  if (llmContent) {\n    return [{ json: { response: llmContent, trace_id: initData.trace_id || 'tr-'+Date.now(), sources: sources.slice(0,5), model: 'llama-70b', embedding_fallback: sources.length===0, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n  }\n  return [{ json: { response: 'Unable to generate answer', trace_id: initData.trace_id || 'tr-'+Date.now(), error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n} catch(e) {\n  return [{ json: { response: 'Error: '+e.message, error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n}"
+        "jsCode": "// Response Formatter - Standard RAG V3.4 (FIXED)\ntry {\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n  if (!llmContent) {\n    try {\n      const skipData = $node['Skip LLM?'].json;\n      if (skipData?.fallback_response?.response) {\n        llmContent = skipData.fallback_response.response;\n      }\n    } catch(e) {}\n  }\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n  let initData = {};\n  try { initData = $node['Init & ACL Pre-Filter V3.4'].json; } catch(e) {}\n  if (llmContent) {\n    return [{ json: { response: llmContent, trace_id: initData.trace_id || 'tr-'+Date.now(), sources: sources.slice(0,5), model: 'llama-70b', embedding_fallback: sources.length===0, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n  }\n  return [{ json: { response: 'No relevant context found for this query.', trace_id: initData.trace_id || 'tr-'+Date.now(), error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n} catch(e) {\n  return [{ json: { response: 'Error: '+e.message, error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n}"
       },
       "id": "66bf2956-117a-4408-b218-cf96cb317529",
       "name": "Response Formatter",
@@ -970,7 +970,7 @@
           "authentication": "predefinedCredentialType",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"llama-70b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in English.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
+          "jsonBody": "={\n  \"model\": \"llama-70b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Generate a concise hypothetical document (50-100 words) that directly answers the question. Respond in the same language as the question.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($node['Init & ACL Pre-Filter V3.4'].json.query || '') }}\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 400\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1198,9 +1198,9 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "SELECT id, content, source, \n       ts_rank(to_tsvector('french', content), plainto_tsquery('french', $1)) as bm25_score\nFROM documents \nWHERE is_obsolete = false \n  AND tenant_id = $2\n  AND to_tsvector('french', content) @@ plainto_tsquery('french', $1)\nORDER BY bm25_score DESC LIMIT 20",
+          "query": "SELECT * FROM bm25_search_sectors($1, 20)",
           "options": {
-            "queryReplacement": "=={{ $node['Init & ACL Pre-Filter V3.4'].json.query }},{{ $node['Init & ACL Pre-Filter V3.4'].json.user_context.tenant_id }}"
+            "queryReplacement": "=={{ $node['Init & ACL Pre-Filter V3.4'].json.query }}"
           }
         },
         "id": "935d1864-4a23-4add-8697-621cb9880b38",
@@ -1313,7 +1313,7 @@
           "authentication": "predefinedCredentialType",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"model\": \"llama-70b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert assistant. Answer the question CONCISELY in 1-2 sentences. Be direct and factual. Respond in English only. Do NOT include source citations or explanations unless specifically asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.3,\n  \"max_tokens\": 300\n}",
+          "jsonBody": "={\n  \"model\": \"llama-70b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a precise RAG assistant. Answer ONLY using the provided context documents. NEVER use your own knowledge. Quote exact numbers, names, values from the context. If the context contains the answer, you MUST provide it - never say you cannot answer. Respond in the same language as the question. Be concise (1-3 sentences). Do NOT add source citations unless asked.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Question: ' + ($node['Init & ACL Pre-Filter V3.4'].json.query || '') + '\\n\\nContexte documentaire:\\n' + (($json.results || []).map((r, i) => '[' + (i+1) + '] ' + (r.source || 'source') + ': ' + (r.content || '')).join('\\n---\\n').substring(0, 6000))) }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 400\n}",
           "options": {
             "batching": {
               "batch": {
@@ -1358,7 +1358,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Response Formatter - Standard RAG V3.4 (FIXED)\ntry {\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n  if (!llmContent) {\n    try {\n      const skipData = $node['Skip LLM?'].json;\n      if (skipData?.fallback_response?.response) {\n        llmContent = skipData.fallback_response.response;\n      }\n    } catch(e) {}\n  }\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n  let initData = {};\n  try { initData = $node['Init & ACL Pre-Filter V3.4'].json; } catch(e) {}\n  if (llmContent) {\n    return [{ json: { response: llmContent, trace_id: initData.trace_id || 'tr-'+Date.now(), sources: sources.slice(0,5), model: 'llama-70b', embedding_fallback: sources.length===0, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n  }\n  return [{ json: { response: 'Unable to generate answer', trace_id: initData.trace_id || 'tr-'+Date.now(), error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n} catch(e) {\n  return [{ json: { response: 'Error: '+e.message, error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n}"
+          "jsCode": "// Response Formatter - Standard RAG V3.4 (FIXED)\ntry {\n  let llmContent = '';\n  try {\n    const llmData = $node['LLM Generation'].json;\n    if (llmData?.choices?.[0]?.message?.content) {\n      llmContent = llmData.choices[0].message.content;\n    }\n  } catch(e) {}\n  if (!llmContent) {\n    try {\n      const skipData = $node['Skip LLM?'].json;\n      if (skipData?.fallback_response?.response) {\n        llmContent = skipData.fallback_response.response;\n      }\n    } catch(e) {}\n  }\n  let sources = [];\n  try {\n    const reranked = $node['Rerank Merger']?.json;\n    sources = reranked?.reranked_results || reranked?.results || [];\n  } catch(e) {}\n  let initData = {};\n  try { initData = $node['Init & ACL Pre-Filter V3.4'].json; } catch(e) {}\n  if (llmContent) {\n    return [{ json: { response: llmContent, trace_id: initData.trace_id || 'tr-'+Date.now(), sources: sources.slice(0,5), model: 'llama-70b', embedding_fallback: sources.length===0, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n  }\n  return [{ json: { response: 'No relevant context found for this query.', trace_id: initData.trace_id || 'tr-'+Date.now(), error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n} catch(e) {\n  return [{ json: { response: 'Error: '+e.message, error: true, engine: 'STANDARD', timestamp: new Date().toISOString() }}];\n}"
         },
         "id": "66bf2956-117a-4408-b218-cf96cb317529",
         "name": "Response Formatter",
