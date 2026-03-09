@@ -22,7 +22,7 @@ KNOWN_WEBHOOKS = {
     "Standard": "webhook/rag-multi-index-v3",
     "Graph": "webhook/ff622742-6d71-4e91-af71-b5c666088717",
     "Quantitative": "webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
-    "Orchestrator": "webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+    "Orchestrator": "webhook/orchestrator-v2",
     "Ingestion": "webhook/rag-v6-ingestion",
     "Enrichment": "webhook/rag-v6-enrichment",
     "PME Gateway": "webhook/pme-assistant-gateway",

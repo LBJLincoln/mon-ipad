@@ -57,8 +57,8 @@ WORKFLOW_IDS = {
     },
     "orchestrator": {
         "id": "ALd4gOEqiKL5KR1p",
-        "name": "V10.1 orchestrator copy",
-        "webhook": "/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0",
+        "name": "V11 Orchestrator Minimal",
+        "webhook": "/webhook/orchestrator-v2",
     },
 }
 

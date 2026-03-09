@@ -113,48 +113,79 @@ Tous les 16 datasets HuggingFace (3 tiers).
 
 ---
 
-### Phase 4 — Full HF (~100K questions)
+### Phase 4 — External SOTA Benchmarks (PAUSED)
 
-**Prerequis**: Phase 3 gates passees. Echantillons 10x plus grands.
-
-**Infrastructure possible**:
-- Pinecone: ~100K vecteurs (free tier suffisant avec serverless)
-- Neo4j: ~15K entites (Aura Free = 50K max, suffisant)
-- Supabase: ~50K lignes (free tier = 500MB, suffisant)
-
-**Exit criteria**: Pas de regression vs Phase 3.
+**Status**: PAUSED — 61,661 questions from 18 SOTA benchmarks.
+Résultats : Std 13%, Graph 7%, Quant 14%. Data mismatch : les benchmarks académiques contiennent des données pas dans nos index.
+**Décision S91** : Non pertinent pour prod-readiness. Focus sur Phase 5.
 
 ---
 
-### Phase 5 — Million+ (production)
+### Phase 5 — SECTOR VALIDATION (ACTIVE — Session 91+)
 
-**Prerequis**: Phase 4 gates passees. Infrastructure payante requise.
+**But** : Valider que les pipelines sont prod-ready sur NOS données sectorielles.
 
-**Cout estime**: $215-455/mois (Pinecone Standard + Neo4j Pro + Supabase Pro).
+**Dataset** : 220 questions (55/secteur) dans `eval/datasets/sector-eval/sector-full-eval.json`
+- Finance : 55q (financebench, finqa, tatqa, convfinqa)
+- BTP : 55q (code_accord, docie, ragbench_techqa)
+- Juridique : 55q (cold_french_law, french_case_law)
+- Industrie : 55q (ragbench_emanual, hotpotqa)
+
+**Baseline S91** : 25% (pipelines query `sota-rag-jina-1024` au lieu de `website-sectors-jina-1024`)
+
+**Targets** :
+| Pipeline | Target | Baseline S91 | Blocage |
+|----------|--------|-------------|---------|
+| Standard | ≥80% | 20% | Index mismatch |
+| Graph | ≥60% | 20% | Index mismatch + Neo4j sector data |
+| Quantitative | ≥85% | 20% | Index mismatch + SQL schema |
+| Orchestrator | ≥70% | — | Routing + sub-pipeline index |
+
+**Actions requises** :
+1. **Index routing** : Modifier les workflows n8n pour accepter `index_name` paramètre OU créer webhooks sectoriels
+2. **Eval complète** : `python3 eval/sector-eval.py --all-pipelines --questions 220`
+3. **Iterate** : Fix par pipeline jusqu'aux targets
+4. **Docling** : Ingérer vrais documents production (PDF, DOCX de clients réels)
+
+**Exit criteria** : Tous les pipelines ≥ leur target sur 220 questions sectorielles.
 
 ---
 
-### Triggers Downstream — Actions déclenchées par les phases
+### Phase 6 — MONETISATION & DISTRIBUTION (PARALLEL)
+
+**But** : Générer du revenu via marketplaces US/Asie + API.
+
+**Canaux (par priorité)** :
+| Canal | Type | Commission | Script | Status |
+|-------|------|-----------|--------|--------|
+| **Whop.com** | Digital products | 6% | `monetisation/whop-listings.py` | PRÊT (API auto) |
+| **Gumroad** | Digital products | 10% | `monetisation/gumroad-listings.md` | PRÊT (manuel) |
+| **RapidAPI** | RAG API-as-Service | 20% | `monetisation/rapidapi/publish-rapidapi.py` | PRÊT (OpenAPI spec) |
+| **Fiverr** | Consulting gigs | 20% | — | TODO (manual) |
+| **Upwork** | RAG contracts | 0-15% | — | TODO (manual) |
+| **n8nmarket.com** | n8n workflows | varies | — | TODO |
+| **AppSumo** | Lifetime deal | 5-30% | — | TODO (apply) |
+| **Coconala** | Japan market | 22% | — | TODO |
+
+**Produits** : 17 sur Stripe ($27-$497), ZIP packages prêts, OpenAPI spec prête.
+
+**Targets** :
+- Semaine 1 : Whop + Gumroad + RapidAPI listés
+- Semaine 2 : Fiverr 3 gigs + Upwork profile
+- Semaine 3 : AppSumo submission + Reddit/HN posts
+- Mois 1 : Premier 1K€ de revenu
+
+---
+
+### Triggers Downstream
 
 #### Tests site ETI (4 secteurs)
 
-**Trigger**: Phase 4 PASSED + rag-data-ingestion COMPLETE
-
-| Condition | Pourquoi |
-|-----------|----------|
-| Phase 4 PASSED | Prouve que les pipelines RAG sont fiables à l'échelle (100K questions). Lancer les tests site sur des pipelines non validés donne des faux négatifs. |
-| rag-data-ingestion COMPLETE | Garantit que les données sectorielles (finance, santé, industrie, juridique) sont présentes dans Pinecone, Neo4j et Supabase. Sans données, les chatbots ETI répondent dans le vide. |
+**Trigger**: Phase 5 PASSED (sector eval ≥80% sur Standard)
 
 **Action**: Lancer les tests E2E des sites ETI:
 - `nomos-ai-pied.vercel.app` (4 secteurs)
 - `nomos-pme-connectors-alexis-morets-projects.vercel.app` (connecteurs PME)
-
-**Vérification**:
-```bash
-python3 eval/phase_gates.py --trigger eti_site_tests --repo-complete rag-data-ingestion
-```
-
-**Historique**: Anciennement déclenché après Phase 2. Modifié le 2026-03-03 (session 69) car Phase 2 ne teste que des benchmarks HF génériques, insuffisant pour valider les réponses sectorielles.
 
 ---
 

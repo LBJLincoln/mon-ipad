@@ -82,16 +82,16 @@ IP: 34.136.180.66 | Debian 11 | 1 vCPU | 969 MB RAM | 30 GB disk
 N8N_HOST: https://lbjlincoln-nomos-rag-engine.hf.space
 ```
 
-### HF Spaces — 9 n8n instances + 1 LiteLLM
-All 9 n8n Spaces UP (round-robin). Space #7 = LiteLLM proxy.
+### HF Spaces — 4 n8n + 1 LiteLLM + 1 Embeddings
+5 n8n Spaces (1,3,5,7,9). Space #7 = LiteLLM proxy. `nomos-embeddings-api` = self-hosted Jina.
 
 ### Databases
 | Service | Contenu | Limite |
 |---------|---------|--------|
-| Pinecone sota-rag-jina-1024 | 21,073 vecteurs | 100K max |
-| Pinecone website-sectors-jina-1024 | 31,916 vecteurs | 100K max |
-| Neo4j Aura | ~70,847 nodes / 76,717 rels | 200K/400K |
-| Supabase | 40 tables, tenant_id=benchmark | 500MB |
+| Pinecone sota-rag-jina-1024 | 46,634 vecteurs (benchmarks) | 100K max |
+| Pinecone website-sectors-jina-1024 | 31,937 vecteurs (secteurs) | 100K max |
+| Neo4j Aura | ~86,841 nodes, enrichment 95% | 200K/400K |
+| Supabase | 11,387 sector docs + 3,876 financial tables | 500MB |
 
 ### Batch sizes (auto mode)
 | Pipeline | Batch | Concurrency | Timeout |
@@ -113,7 +113,7 @@ All 9 n8n Spaces UP (round-robin). Space #7 = LiteLLM proxy.
 | Standard | `/webhook/rag-multi-index-v3` | WORKING |
 | Graph | `/webhook/ff622742-6d71-4e91-af71-b5c666088717` | WORKING |
 | Quantitative | `/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9` | WORKING |
-| Orchestrator | `/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0` | 404 ON HOLD |
+| Orchestrator | `/webhook/orchestrator-v2` | **WORKING (V11 S91)** |
 
 ### Active Workflow IDs
 | Pipeline | ID | Name |
@@ -121,13 +121,16 @@ All 9 n8n Spaces UP (round-robin). Space #7 = LiteLLM proxy.
 | Standard | `TmgyRP20N4JFd9CB` | WF5 Standard RAG V3.4 (Groq direct) |
 | Graph | `6257AfT1l4FMC6lY` | WF2 Graph RAG V3.3 (Groq direct) |
 | Quant | `cjhEhVs0KV1ExHqX` | WF4 Quant V3.1 (LiteLLM) |
-| Orchestrator | `ALd4gOEqiKL5KR1p` | V10.1 (BROKEN) |
+| Orchestrator | `ALd4gOEqiKL5KR1p` | **V11 Minimal (Groq routing) — RESTORED S91** |
 
 ### Phase Results
 | Phase | Standard | Graph | Quant | Orch |
 |-------|----------|-------|-------|------|
 | Phase 1 (200q) | 85.5% | 78.0% | 92.0% | 80.0% |
 | Phase 3 (10K) | **87.5%** | 40.9% | **95.2%** | ON HOLD |
+| **Phase 5 Sector (220q)** | **25% baseline** | **25%** | **25%** | **TODO** |
+
+**BLOCAGE** : Pipelines query `sota-rag-jina-1024` (benchmarks). Fix : router vers `website-sectors-jina-1024`.
 
 ### LLM Models (free tier)
 | Modèle | Rôles | Coût |
@@ -144,6 +147,7 @@ All 9 n8n Spaces UP (round-robin). Space #7 = LiteLLM proxy.
 # Eval
 source .env.local
 python3 eval/quick-test.py --questions 5 --pipeline <cible>
+python3 eval/sector-eval.py --all-pipelines --questions 220   # Sector eval (Phase 5)
 python3 eval/run-eval-parallel.py --dataset phase-3 --types standard,graph --reset --label "..."
 python3 eval/node-analyzer.py --execution-id <ID>
 python3 eval/generate_status.py
@@ -192,9 +196,9 @@ scripts/codespace-control.sh list|launch|status|stop|results
 
 ---
 
-## État actuel v7.0 (Session 76 — 2026-03-07)
+## État actuel v8.0 (Session 91 — 2026-03-09)
 
-**Déploiement** : 9 HF Spaces UP, 3/4 pipelines WORKING
-**Phase 3** : Standard **87.5%**, Graph 40.9%, Quant **95.2%** (v2 dataset), Orch ON HOLD
-**Architecture** : Session 76 cleanup — 3.2GB→814MB, 44→7 scripts, 33→8 docs
-**Sessions** : 76 | **Commits** : 1,100+
+**Déploiement** : 7 HF Spaces UP, **4/4 pipelines WORKING** (Orch V11 restored)
+**Phase 5 Sector** : Baseline **25%** — pipelines query wrong index (fix en cours)
+**Monetisation** : Whop + RapidAPI + Gumroad scripts prêts, 17 produits Stripe
+**Sessions** : 91 | **Commits** : 1,100+

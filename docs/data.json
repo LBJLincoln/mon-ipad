@@ -1,14 +1,14 @@
 {
   "meta": {
-    "generated_at": "2026-03-08T23:04:54+01:00",
+    "generated_at": "2026-03-08T23:08:46+01:00",
     "description": "Clean baseline - only successful cloud executions (reference). Docker testing starts from scratch.",
     "source": "Manual cleanup session 13-fev",
     "version": "2.0",
     "total_unique_questions": 12932,
-    "total_test_runs": 13713,
-    "total_iterations": 74,
+    "total_test_runs": 13723,
+    "total_iterations": 75,
     "status": "complete",
-    "current_session": "2026-03-08T21-26-05"
+    "current_session": "2026-03-08T23-05-47"
   },
   "reference_cloud_executions": {
     "note": "Executions reussies sur n8n Cloud (avant migration Docker). Servent de reference uniquement.",
@@ -191297,6 +191297,161 @@
           "error": "HTTP Error 500: Internal Server Error",
           "error_type": "UNKNOWN",
           "timestamp": "2026-03-08T21:38:40+01:00"
+        }
+      ]
+    },
+    {
+      "id": "iter-2026-03-08T23-05-47",
+      "number": 75,
+      "timestamp_start": "2026-03-08T23:05:48+01:00",
+      "timestamp_end": "2026-03-08T23:08:46+01:00",
+      "label": "Phase4-parallel-10q-standard",
+      "description": "Dataset: phase-1, Parallel: standard, Max: 10, Reset: False",
+      "changes_applied": [],
+      "results_summary": {
+        "standard": {
+          "tested": 10,
+          "correct": 4,
+          "errors": 4,
+          "accuracy_pct": 40.0,
+          "avg_latency_ms": 57811,
+          "p95_latency_ms": 90684,
+          "avg_f1": 0.7395
+        }
+      },
+      "total_tested": 10,
+      "total_correct": 4,
+      "overall_accuracy_pct": 40.0,
+      "questions": [
+        {
+          "id": "std-01",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 90538,
+          "answer": "",
+          "expected": "France",
+          "match_type": "NO_ANSWER",
+          "error": "TIMEOUT: The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-03-08T23:07:30+01:00"
+        },
+        {
+          "id": "std-02",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 45448,
+          "answer": "The first season of SpongeBob SquarePants aired from May 1, 1999 to March 3, 2001.",
+          "expected": "May 1, 1999",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-08T23:07:56+01:00"
+        },
+        {
+          "id": "std-03",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 30582,
+          "answer": "Tokyo is the capital of Japan.",
+          "expected": "Tokyo",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-08T23:07:56+01:00"
+        },
+        {
+          "id": "std-04",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 33818,
+          "answer": "William Shakespeare wrote Romeo and Juliet.",
+          "expected": "William Shakespeare",
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-08T23:07:56+01:00"
+        },
+        {
+          "id": "std-05",
+          "rag_type": "standard",
+          "correct": true,
+          "f1": 0.2581,
+          "latency_ms": 28626,
+          "answer": "Penicillin is a group of antibiotics derived from Penicillium fungi, discovered by Alexander Fleming in 1928, that revolutionized medicine by effectively treating bacterial infections and saving countless lives.",
+          "expected": "An antibiotic discovered by Alexander Fleming",
+          "match_type": "FUZZY_RECALL",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-08T23:07:56+01:00"
+        },
+        {
+          "id": "std-06",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 90492,
+          "answer": "",
+          "expected": "Einstein theory gravity spacetime",
+          "match_type": "NO_ANSWER",
+          "error": "TIMEOUT: The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-03-08T23:07:56+01:00"
+        },
+        {
+          "id": "std-07",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 39056,
+          "answer": "",
+          "expected": "Pacific Ocean",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-08T23:07:57+01:00"
+        },
+        {
+          "id": "std-08",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 38192,
+          "answer": "",
+          "expected": "Leonardo da Vinci",
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "timestamp": "2026-03-08T23:07:57+01:00"
+        },
+        {
+          "id": "std-09",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 90684,
+          "answer": "",
+          "expected": "Process by which plants convert light energy into chemical energy",
+          "match_type": "NO_ANSWER",
+          "error": "TIMEOUT: The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-03-08T23:07:57+01:00"
+        },
+        {
+          "id": "std-10",
+          "rag_type": "standard",
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 90681,
+          "answer": "",
+          "expected": "299,792 per second",
+          "match_type": "NO_ANSWER",
+          "error": "TIMEOUT: The read operation timed out",
+          "error_type": "TIMEOUT",
+          "timestamp": "2026-03-08T23:07:57+01:00"
         }
       ]
     }
@@ -600750,13 +600905,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-03-08T19:55:51+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-08T23-05-47",
+          "iteration_number": 75,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 90538,
+          "match_type": "NO_ANSWER",
+          "error": "TIMEOUT: The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-03-08T23:07:31+01:00"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "error",
-      "last_tested": "2026-03-08T19:55:51+01:00",
+      "last_tested": "2026-03-08T23:07:31+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -600812,15 +600979,27 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-03-08T19:55:51+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-08T23-05-47",
+          "iteration_number": 75,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 45448,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "The first season of SpongeBob SquarePants aired from May 1, 1999 to March 3, 2001.",
+          "timestamp": "2026-03-08T23:07:56+01:00"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-03-08T19:55:51+01:00",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 2,
+      "pass_count": 1,
+      "pass_rate": 0.5,
+      "current_status": "pass",
+      "last_tested": "2026-03-08T23:07:56+01:00",
+      "best_f1": 0.9,
+      "trend": "improving"
     },
     "std-03": {
       "id": "std-03",
@@ -600843,15 +601022,27 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-03-08T19:55:51+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-08T23-05-47",
+          "iteration_number": 75,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 30582,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "Tokyo is the capital of Japan.",
+          "timestamp": "2026-03-08T23:07:56+01:00"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-03-08T19:55:51+01:00",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 2,
+      "pass_count": 1,
+      "pass_rate": 0.5,
+      "current_status": "pass",
+      "last_tested": "2026-03-08T23:07:56+01:00",
+      "best_f1": 0.9,
+      "trend": "improving"
     },
     "graph-03": {
       "id": "graph-03",
@@ -600905,15 +601096,27 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-03-08T19:55:52+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-08T23-05-47",
+          "iteration_number": 75,
+          "correct": true,
+          "f1": 0.9,
+          "latency_ms": 33818,
+          "match_type": "CONTAINS_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "William Shakespeare wrote Romeo and Juliet.",
+          "timestamp": "2026-03-08T23:07:56+01:00"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-03-08T19:55:52+01:00",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 2,
+      "pass_count": 1,
+      "pass_rate": 0.5,
+      "current_status": "pass",
+      "last_tested": "2026-03-08T23:07:56+01:00",
+      "best_f1": 0.9,
+      "trend": "improving"
     },
     "std-05": {
       "id": "std-05",
@@ -600936,15 +601139,27 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-03-08T19:55:52+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-08T23-05-47",
+          "iteration_number": 75,
+          "correct": true,
+          "f1": 0.2581,
+          "latency_ms": 28626,
+          "match_type": "FUZZY_RECALL",
+          "error": null,
+          "error_type": null,
+          "answer": "Penicillin is a group of antibiotics derived from Penicillium fungi, discovered by Alexander Fleming in 1928, that revolutionized medicine by effectively treating bacterial infections and saving countless lives.",
+          "timestamp": "2026-03-08T23:07:56+01:00"
         }
       ],
-      "total_runs": 1,
-      "pass_count": 0,
-      "pass_rate": 0.0,
-      "current_status": "error",
-      "last_tested": "2026-03-08T19:55:52+01:00",
-      "best_f1": 0.0,
-      "trend": "stable"
+      "total_runs": 2,
+      "pass_count": 1,
+      "pass_rate": 0.5,
+      "current_status": "pass",
+      "last_tested": "2026-03-08T23:07:56+01:00",
+      "best_f1": 0.2581,
+      "trend": "improving"
     },
     "graph-04": {
       "id": "graph-04",
@@ -600998,13 +601213,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-03-08T19:55:53+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-08T23-05-47",
+          "iteration_number": 75,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 90492,
+          "match_type": "NO_ANSWER",
+          "error": "TIMEOUT: The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-03-08T23:07:56+01:00"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "error",
-      "last_tested": "2026-03-08T19:55:53+01:00",
+      "last_tested": "2026-03-08T23:07:56+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -601060,13 +601287,25 @@
           "error_type": null,
           "answer": "",
           "timestamp": "2026-03-08T19:55:53+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-08T23-05-47",
+          "iteration_number": 75,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 39056,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-03-08T23:07:57+01:00"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-03-08T19:55:53+01:00",
+      "last_tested": "2026-03-08T23:07:57+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -601122,13 +601361,25 @@
           "error_type": null,
           "answer": "",
           "timestamp": "2026-03-08T19:55:53+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-08T23-05-47",
+          "iteration_number": 75,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 38192,
+          "match_type": "NO_MATCH",
+          "error": null,
+          "error_type": null,
+          "answer": "",
+          "timestamp": "2026-03-08T23:07:57+01:00"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "fail",
-      "last_tested": "2026-03-08T19:55:53+01:00",
+      "last_tested": "2026-03-08T23:07:57+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -601184,13 +601435,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-03-08T19:55:54+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-08T23-05-47",
+          "iteration_number": 75,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 90684,
+          "match_type": "NO_ANSWER",
+          "error": "TIMEOUT: The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-03-08T23:07:57+01:00"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "error",
-      "last_tested": "2026-03-08T19:55:54+01:00",
+      "last_tested": "2026-03-08T23:07:57+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -601246,13 +601509,25 @@
           "error_type": "TIMEOUT",
           "answer": "",
           "timestamp": "2026-03-08T19:55:54+01:00"
+        },
+        {
+          "iteration_id": "iter-2026-03-08T23-05-47",
+          "iteration_number": 75,
+          "correct": false,
+          "f1": 0.0,
+          "latency_ms": 90681,
+          "match_type": "NO_ANSWER",
+          "error": "TIMEOUT: The read operation timed out",
+          "error_type": "TIMEOUT",
+          "answer": "",
+          "timestamp": "2026-03-08T23:07:57+01:00"
         }
       ],
-      "total_runs": 1,
+      "total_runs": 2,
       "pass_count": 0,
       "pass_rate": 0.0,
       "current_status": "error",
-      "last_tested": "2026-03-08T19:55:54+01:00",
+      "last_tested": "2026-03-08T23:07:57+01:00",
       "best_f1": 0.0,
       "trend": "stable"
     },
@@ -601568,16 +601843,6 @@
     }
   },
   "quick_tests": [
-    {
-      "timestamp": "2026-03-08T13:40:16+01:00",
-      "pipeline": "graph",
-      "query": "What did Marie Curie win Nobel Prizes for?",
-      "status": "fail",
-      "latency_ms": 26066,
-      "response_preview": "No answer based on provided context.",
-      "trigger": "manual",
-      "error": null
-    },
     {
       "timestamp": "2026-03-08T13:40:58+01:00",
       "pipeline": "graph",
@@ -602065,6 +602330,16 @@
       "status": "pass",
       "latency_ms": 41614,
       "response_preview": "Intraocular pressure (IOP) is the fluid pressure inside the eye, maintained by the balance between aqueous humor production and drainage through the trabecular meshwork and uveoscleral pathways.",
+      "trigger": "phase4-parallel-eval",
+      "error": null
+    },
+    {
+      "timestamp": "2026-03-08T23:05:23+01:00",
+      "pipeline": "standard",
+      "query": "What is PCR used for in molecular biology?",
+      "status": "pass",
+      "latency_ms": 24589,
+      "response_preview": "PCR is used in molecular biology to amplify specific DNA sequences, enabling applications such as genetic analysis, disease diagnosis, forensic identification, and cloning.",
       "trigger": "phase4-parallel-eval",
       "error": null
     }
@@ -602586,6 +602861,12 @@
       "quantitative": 14.0,
       "standard": 13.3,
       "graph": 6.7
+    },
+    {
+      "timestamp": "2026-03-08T23:08:46+01:00",
+      "event": "eval_complete",
+      "total_tested": 13723,
+      "standard": 40.0
     }
   ],
   "workflow_versions": {

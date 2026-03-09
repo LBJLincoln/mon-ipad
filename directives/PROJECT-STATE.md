@@ -1,44 +1,57 @@
 # Project State — Multi-RAG Orchestrator SOTA 2026
 
-> Last updated: 2026-03-08T22:10:00Z
+> Last updated: 2026-03-09T01:00:00Z
 
-## Session 90 — Current Status
+## Session 91 — Current Status
 
 ### Overview
-- **Phase 3**: **DONE** (Std 87.5% PASS, Graph 40.9% ACCEPTED, Quant 95.2% PASS)
-- **Phase 4**: IN PROGRESS — All 3 pipelines ingested, eval running
-- **Phase 4 Eval**: Std 13%, Graph 7%, Quant 14% (external SOTA benchmarks — data mismatch)
-- **Pipelines**: 3/3 WORKING (Std 36s, Graph 39s FIXED, Quant 43s)
-- **Graph FIX**: Neo4j depth 4→2, results 100→25, Jina→self-hosted = 96s→39s (57% faster)
-- **Monetisation**: 17 products on Stripe ($27-$497), 3 Vercel sites, daemon running
-- **Testing daemon**: 80+ cycles, entity enrichment 64.8%→95%, empty contexts 4,167→0
-- **Infrastructure**: 4 n8n Spaces UP, LiteLLM UP, all DBs healthy
-- **Pinecone**: 46,634 vectors SOTA + 31,937 sectors
-- **Neo4j**: ~86,841 nodes (up from 79,451), entity enrichment 95%
-- **Supabase**: 11,387 docs (ALL with context), 3,876 financial tables
-- **Sessions**: 90 | **Commits**: 1,100+
+- **Phase 3**: **DONE** (Std 87.5%, Graph 40.9%, Quant 95.2%)
+- **Phase 4**: PAUSED — External SOTA benchmarks = data mismatch (Std 13%, Graph 7%, Quant 14%)
+- **Phase 5 (NEW)**: SECTOR VALIDATION — Prod-ready eval sur NOS données sectorielles
+- **Pipelines**: **4/4 WORKING** (Std 36s, Graph 39s, Quant 43s, **Orch V11 ~30s RESTORED**)
+- **Sector Eval**: 220 questions créées, baseline **25%** (pipelines query wrong index)
+- **PROBLÈME CRITIQUE**: Pipelines query `sota-rag-jina-1024` (benchmarks) au lieu de `website-sectors-jina-1024` (nos données)
+- **Monetisation**: 17 Stripe + Whop script + RapidAPI spec + Gumroad ready
+- **Infrastructure**: 7/7 HF Spaces UP, all DBs healthy
+- **Docling**: 9 docs processed, 21 vectors (sample PDFs, pas prod)
+- **Sessions**: 91 | **Commits**: 1,100+
 
-### Session 90 Achievements
-1. Graph pipeline FIXED: Neo4j depth 4→2, max_results 100→25 = 96s→39s
-2. Graph embeddings switched Jina→self-hosted (api.jina.ai exhausted)
-3. Monetisation codespace recreated + daemon launched (17 products, cycle 2)
-4. New product: MCP + RAG Integration Playbook ($147) created by daemon
-5. 3 Vercel sites deployed: rag-mega-bundle, rag-free-tools, ai-agent-marketplace
-6. Testing daemon: entity enrichment 95%, finance coverage 92%, 9 new sector docs
-7. Docling tested: 9/9 docs processed, 21 vectors, 3 bugs fixed
-8. LobeChat agents PR #1507 submitted
-9. 23 AI directory submissions prepared
+### Session 91 Achievements
+1. **Orchestrator V11 DEPLOYED** : 68→10 nodes, webhook `/orchestrator-v2`, 3/3 routing correct
+2. **Sector Eval System** : 220 questions (55/secteur) depuis données Supabase réelles
+3. **Sector Eval Baseline** : 25% (5/20) — attendu car pipelines query mauvais index
+4. **Whop listing script** : `monetisation/whop-listings.py` (14 produits, API automatique)
+5. **RapidAPI spec** : `monetisation/rapidapi/openapi.json` + publish script (3 tiers)
+6. **Docling exécuté** sur codespace : 9 docs, 21 vecteurs Pinecone
+7. **Diagnostic crash VM** : déconnexion Termius/mosh à 23:27, pas d'OOM
+
+### OBJECTIF PROD-READY (Phase 5)
+**But** : Chaque pipeline doit atteindre ≥80% sur les questions sectorielles de NOS données.
+
+| Étape | Action | Status |
+|-------|--------|--------|
+| 5.1 | Reconfigurer pipelines → query `website-sectors-jina-1024` pour questions sectorielles | TODO |
+| 5.2 | Ou créer index routing : paramètre `index_name` dans webhooks | TODO |
+| 5.3 | Eval 220 questions sectorielles sur 4 pipelines | TODO (baseline 25%) |
+| 5.4 | Target : Std ≥80%, Graph ≥60%, Quant ≥85%, Orch ≥70% sur secteurs | TODO |
+| 5.5 | Docling : ingérer vrais documents production (pas samples 3KB) | TODO |
+| 5.6 | Marketplace : lister sur Whop, Gumroad, RapidAPI | TODO |
 
 ---
 
-## Pipeline Status (Session 90 Verified)
+## Pipeline Status (Session 91 Verified)
 
-| Pipeline | Status | Response Time | Accuracy (P3) | Accuracy (P4) | Notes |
-|----------|--------|--------------|----------------|----------------|-------|
-| Standard | WORKING | ~36s | 87.5% | 13% | Self-hosted embeddings, Groq direct |
-| Graph | WORKING | ~39s | 40.9% | 7% | FIXED S90: depth 4→2, 96s→39s |
-| Quantitative | WORKING | ~43s | 95.2% | 14% | LiteLLM, gemma-27b model |
-| Orchestrator | 404 | — | — | — | ON HOLD |
+| Pipeline | Status | Response Time | Accuracy (P3) | Sector Eval | Notes |
+|----------|--------|--------------|----------------|-------------|-------|
+| Standard | WORKING | ~36s | 87.5% | 20% | Queries benchmark index, NOT sectors |
+| Graph | WORKING | ~39s | 40.9% | 20% | FIXED S90: depth 4→2 |
+| Quantitative | WORKING | ~43s | 95.2% | 20% | LiteLLM, gemma-27b |
+| **Orchestrator** | **WORKING** | **~30s** | — | — | **V11 RESTORED S91** (10 nodes, Groq routing) |
+
+### BLOCAGE CRITIQUE : Index Mismatch
+Les pipelines Standard/Graph/Quant sont hardcodés sur `sota-rag-jina-1024` (benchmarks académiques).
+Nos 31,937 vecteurs sectoriels dans `website-sectors-jina-1024` ne sont JAMAIS interrogés.
+**Fix requis** : ajouter paramètre `index_name` ou créer des webhooks sectoriels dédiés.
 
 ---
 
@@ -46,11 +59,10 @@
 
 | Pipeline | Workflow Name | ID | Status | Notes |
 |----------|--------------|-----|--------|-------|
-| Standard | WF5 Standard RAG V3.4 | `TmgyRP20N4JFd9CB` | ACTIVE | Uses Groq direct |
-| Graph | WF2 Graph RAG V3.3 | `6257AfT1l4FMC6lY` | ACTIVE | Uses Groq direct |
-| **Quantitative** | **WF4 Quant V3.1 (Local+LiteLLM)** | **cjhEhVs0KV1ExHqX** | **ACTIVE** | Fixed S75, uses LiteLLM |
-| Quant V5.0 | WF4 Quant V5.0 (Clean) | `EW07B8H7OmoghE8Z` | INACTIVE | Deactivated S75 |
-| Orchestrator | V10.1 orchestrator copy | `ALd4gOEqiKL5KR1p` | BROKEN | Empty body issue |
+| Standard | WF5 Standard RAG V3.4 | `TmgyRP20N4JFd9CB` | ACTIVE | Groq direct |
+| Graph | WF2 Graph RAG V3.3 | `6257AfT1l4FMC6lY` | ACTIVE | Groq direct |
+| Quantitative | WF4 Quant V3.1 (LiteLLM) | `cjhEhVs0KV1ExHqX` | ACTIVE | LiteLLM |
+| **Orchestrator** | **V11 Minimal** | **`ALd4gOEqiKL5KR1p`** | **ACTIVE** | **RESTORED S91** — 10 nodes, `/webhook/orchestrator-v2` |
 
 ### Critical Discovery (FIX-71 — Session 75)
 **DUPLICATE WORKFLOWS TRAP**: Multiple workflows can share the same webhook ID. Always check execution's `workflowId` to identify which workflow is actually running. In Session 75, V3.1 was active while V5.0 was being patched in vain.
@@ -330,26 +342,29 @@
 
 ---
 
-## Metrics Snapshot (Session 90)
+## Metrics Snapshot (Session 91)
 
 | Metric | Value |
 |--------|-------|
 | Total questions tested (all phases) | ~12,000+ |
-| Phase 3 Standard tested | 8,006 / 8,700 |
-| Phase 3 Graph tested | 1,500 / 1,500 |
-| Phase 3 Quant tested | 500 / 500 (v2 dataset, 95.2% PASS) |
-| Phase 4 datasets generated | 61,661 questions (18 SOTA benchmarks) |
-| Phase 4 Pinecone ingested | Std 10,917 + Graph 11,300 + Quant 3,550 |
-| Pinecone vectors (sota-rag-jina-1024) | 46,634 |
-| Pinecone vectors (website-sectors) | 31,937 |
+| **Sector eval questions** | **220 (55/secteur)** |
+| **Sector eval baseline** | **25% (pipelines query wrong index)** |
+| Pipelines WORKING | **4/4** (was 3/4) |
+| Phase 3 Standard | 87.5% PASS |
+| Phase 3 Graph | 40.9% ACCEPTED |
+| Phase 3 Quant | 95.2% PASS |
+| Phase 4 (external SOTA) | Std 13%, Graph 7%, Quant 14% |
+| Pinecone vectors (sota-rag) | 46,634 |
+| Pinecone vectors (sectors) | 31,937 |
 | Neo4j nodes | ~86,841 |
-| Neo4j entity enrichment | 95% (was 64.8%) |
-| Supabase sector docs | 11,387 (ALL with context, was 37% empty) |
+| Neo4j entity enrichment | 95% |
+| Supabase sector docs | 11,387 (ALL with context) |
 | Supabase financial tables | 3,876 |
 | Stripe products | 17 ($27-$497) |
+| **Marketplace scripts ready** | **Whop + RapidAPI + Gumroad** |
 | Vercel sites | 3 deployed |
 | Commits (all repos) | 1,100+ |
-| Sessions | 90 |
+| Sessions | 91 |
 
 ---
 
@@ -391,13 +406,18 @@ source .env.local                              # Load environment vars
 
 ## Vision & Mission
 
-**Vision**: Build a Multi-RAG Orchestrator SOTA capable of routing questions to 4 specialized RAG pipelines (Standard, Graph, Quantitative, Orchestrator) and achieving state-of-the-art performance on HuggingFace benchmarks.
+**Vision**: Produit RAG-as-a-Service prod-ready sur 4 secteurs (BTP, Finance, Juridique, Industrie) avec 4 pipelines spécialisées, vendu via marketplaces US/Asie + API.
 
 **Current Reality**:
-- Phase 1: ✅ PASSED (83.9% overall)
-- Phase 2: 🟡 PARTIAL (Graph + Quant complete, Std + Orch blocked)
-- Phase 3: ✅ DONE (Std 87.5%, Graph 40.9% accepted, Quant 95.2%)
-- Phase 4: 🟡 IN PROGRESS (Pinecone ingestion: Std DONE, Graph in progress, Quant pending)
-- Infrastructure: ✅ STABLE (HF Space + LiteLLM + Supabase + Pinecone + Neo4j)
+- Phase 1-3: DONE (benchmarks académiques validés)
+- Phase 4: PAUSED (benchmarks externes = data mismatch, non pertinent)
+- **Phase 5: SECTOR VALIDATION** — Valider sur NOS données sectorielles
+- Infrastructure: STABLE (7 HF Spaces, 4/4 pipelines, all DBs)
+- Monetisation: Scripts prêts (Whop, RapidAPI, Gumroad), pas encore listé
 
-**Next Milestone**: Phase 4 — scale to ~100K HF benchmark questions.
+**Priorités immédiates** :
+1. **FIX INDEX ROUTING** — Pipelines doivent query `website-sectors-jina-1024` pour questions sectorielles
+2. **SECTOR EVAL ≥80%** — 220 questions, target par pipeline
+3. **MARKETPLACE LISTINGS** — Whop (API auto), Gumroad (manuel), RapidAPI (API spec)
+4. **VRAIS DOCS DOCLING** — Ingérer des documents production, pas des samples 3KB
+5. **VENDRE** — Fiverr gigs, Upwork profile, Reddit/HN posts
