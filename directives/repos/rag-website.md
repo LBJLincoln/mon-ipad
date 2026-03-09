@@ -1,6 +1,6 @@
 # rag-website — CLAUDE.md
 
-> Last updated: 2026-03-06T12:00:00Z
+> Last updated: 2026-03-09T16:00:00Z
 > **Ce repo s'exécute dans un Codespace GitHub éphémère (dev) + Vercel (prod).**
 > Tu es un agent Claude Code specialise dans le SITE BUSINESS multi-secteurs.
 > **MODELE PRINCIPAL : `claude-opus-4-6`** — Architecture, decisions, evaluation qualite.
@@ -13,16 +13,23 @@
 
 ---
 
-## ÉTAT ACTUEL — 6 mars 2026
+## ÉTAT ACTUEL — 9 mars 2026
 
 | | |
 |-|-|
-| **Status** | Live sur Vercel : https://nomos-ai-pied.vercel.app |
-| **RAG Phase** | Phase 1 PASSED, Phase 3 in progress (Std 87.5%, Graph 40.9%) |
+| **Status** | PRODUCTION-READY sur Vercel : https://nomos-ai-pied.vercel.app |
+| **RAG Phase** | Phase 3 DONE (Std 87.5%, Graph 40.9%, Quant 95.2%) |
+| **Pipelines** | 4 pipelines connected: Standard, Graph, Quantitative, Orchestrator-v2 |
 | **Dashboard SSE** | /dashboard route active with real-time updates |
+| **Health Check** | /api/health endpoint monitors all 4 pipelines |
+| **Security** | Rate limiting (20/min), HSTS, input validation, error boundaries |
 | **Sector Data** | Pinecone `website-sectors-jina-1024` : **31,916 vectors** (4 secteurs ingeres) |
+| **Sector Routing** | BTP->Standard, Finance->Quantitative, Juridique->Standard, Industrie->Standard |
 | **Codespace** | Can be created on-demand for development |
-| **Prochain objectif** | Integrer vrais docs sectoriels dans demos chatbot (data disponible) |
+| **LLM Fallback** | Groq (Llama 70B) + OpenRouter (Gemma 27B) — both keys in Vercel env |
+| **Vercel Config** | rootDirectory=null, framework=nextjs, maxDuration=60s (Hobby limit) |
+| **Known Limitation** | Pipeline cold start ~30-60s on free HF Space, falls back to LLM |
+| **Prochain objectif** | Upgrade to Vercel Pro for 300s timeout, or optimize pipeline latency |
 
 ### Commandes clés pour cette session
 ```bash
@@ -387,24 +394,41 @@ Les chatbots du site peuvent appeler les pipelines RAG sur HF Space :
 Standard     : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/rag-multi-index-v3
 Graph        : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/ff622742-6d71-4e91-af71-b5c666088717
 Quantitative : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9
-Orchestrator : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0
+Orchestrator : https://lbjlincoln-nomos-rag-engine.hf.space/webhook/orchestrator-v2
 ```
-Appel depuis le frontend Next.js :
+Appel depuis le frontend Next.js (via `/api/chat` route):
 ```javascript
-const response = await fetch('https://lbjlincoln-nomos-rag-engine.hf.space/webhook/rag-multi-index-v3', {
+// Client-side: call the Next.js API route (NOT the n8n webhook directly)
+const response = await fetch('/api/chat', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ query: userQuestion })
+  body: JSON.stringify({ query: userQuestion, sectorId: 'btp' })
 });
 const data = await response.json();
 ```
-**IMPORTANT** : Le champ est `query` (PAS `question`).
+**IMPORTANT** : n8n webhooks accept `question` field. The API route sends both `question` and `query` for compatibility.
+**IMPORTANT** : Vercel Hobby has 60s hard timeout. Pipeline takes 30-60s on cold start. Fallback chain: Pipeline (45s) -> Groq LLM (8s) -> Local engine (instant).
 
-### Etat HF Space (session 27)
-- Standard : 200 OK, 100% accuracy (rock solid)
-- Graph : 200 OK, 100% accuracy
-- Orchestrator : 200 OK, 100% accuracy (sequential only)
-- Quantitative : 200 OK, infra OK mais OpenRouter 429 rate limit
+### Etat HF Space (session 90+)
+- Standard : WORKING (Groq direct, ~30-50s cold start on cpu-basic)
+- Graph : WORKING (Groq direct, ~30-50s)
+- Quantitative : WORKING (LiteLLM, ~25-40s)
+- Orchestrator : ON HOLD (404, webhook not active)
+
+### Vercel Environment Variables
+| Key | Value | Status |
+|-----|-------|--------|
+| N8N_HOST | `https://lbjlincoln-nomos-rag-engine.hf.space` | CORRECT |
+| STATUS_API_URL | `https://lbjlincoln-nomos-rag-engine.hf.space/webhook/nomos-status` | CORRECT |
+| GROQ_API_KEY | (encrypted) | SET |
+| OPENROUTER_API_KEY | (encrypted) | SET |
+| N8N_WEBHOOK_PATH | `/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0` | LEGACY |
+
+### Vercel Project Settings
+- Project ID: `prj_UHqz8xGIA9VYugrY9s85skBC5MCJ`
+- Root Directory: null (was incorrectly set to "website" — caused ALL builds to fail)
+- Framework: nextjs
+- Node Version: 24.x
 
 ---
 
