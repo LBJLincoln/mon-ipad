@@ -1,18 +1,18 @@
 # Project State — Nomos Sector AI Expert
 
-> Last updated: 2026-03-09T12:00:00Z
+> Last updated: 2026-03-09T17:30:00Z
 
-## Session 92 — RESTRUCTURATION
+## Session 92 — RESTRUCTURATION + PIPELINE FIX
 
 ### Overview
 - **PIVOT** : Benchmarks academiques → Expert IA Sectoriel
 - **2 axes** : (1) Pipelines sectorielles parfaites (2) Monetisation
-- **Pipelines** : 4/4 WORKING (Std 36s, Graph 39s, Quant 43s, Orch 30s)
-- **Sectors** : Finance 80%, Juridique 80%, Industrie 80%, **BTP 20% (DATA GAP)**
-- **Restructuration** : Benchmark files → rag-storage, new sectors/ + ops/ dirs
-- **Self-healing** : Architecture L0-L4 prete, evals continus planifies
+- **Pipelines** : 4/4 ALL SWITCHED TO LITELLM PROXY (Groq expired, Jina expired)
+- **LLM-as-judge** : Deployed, 220q eval scored, accuracy ~20% (dataset mismatch)
+- **Critical finding** : Eval dataset has US company 10-K questions — NOT sector data
+- **Self-healing** : Architecture L0-L4 prete, reranker + embeddings self-hosted
 
-### Session 92 Actions
+### Session 92 Actions (ALL)
 1. **RESTRUCTURATION COMPLETE** : Pivot tous les repos vers secteur expert
 2. Benchmark eval scripts → `rag-storage/archive/benchmark-eval/`
 3. DB populate scripts → `rag-storage/archive/benchmark-db-populate/`
@@ -21,34 +21,53 @@
 6. Nouveau `sectors/` avec config par secteur
 7. Nouveau `ops/` avec scripts operationnels
 8. CLAUDE.md v9.0 reecrit pour secteur expert
+9. **RERANKER DEPLOYED** : `nomos-reranker-api` HF Space, FlashRank, /v1/rerank
+10. **LLM-AS-JUDGE** : `eval/llm-judge-rescore.py` via LiteLLM/Gemma-27B
+11. **GRAPH PIPELINE FIXED** : Groq→LiteLLM, Jina→self-hosted, sota→sectors index, namespace fix
+12. **STANDARD PIPELINE FIXED** : Same 20 changes (3 Groq, 2 Jina embed, 1 Jina rerank, 2 Pinecone)
+13. **ORCHESTRATOR REACTIVATED** : webhook=orchestrator-v2, Quant sub-workflow ref fixed
+14. **220q EVAL COMPLETE** : String match ~26%, LLM judge ~20% (dataset quality issue)
+15. **MATCHING FIX** : Bidirectional stem + 25+ FR synonyms (FIX-93)
 
 ---
 
 ## Sector Accuracy Matrix
 
-| Secteur | Standard | Graph | Quant | Orch | Target Std | Data Gap |
-|---------|----------|-------|-------|------|-----------|----------|
-| **Finance** | **80%** | TBD | **95.2%** | TBD | 90% | Non |
-| **BTP** | **20%** | TBD | TBD | TBD | 85% | **OUI — DTU/NF manquants** |
-| **Juridique** | **80%** | TBD | N/A | TBD | 90% | Non |
-| **Industrie** | **80%** | TBD | TBD | TBD | 85% | Non |
+### String Match (220q, Standard pipeline)
+| Secteur | Standard | Graph | Quant | Orch | Target | Status |
+|---------|----------|-------|-------|------|--------|--------|
+| Finance | 20.0% | TBD | TBD | TBD | 90% | Dataset mismatch |
+| BTP | 30.9% | TBD | TBD | TBD | 85% | Dataset mismatch |
+| Juridique | 29.1% | TBD | TBD | TBD | 90% | Dataset mismatch |
+| Industrie | 25.5% | TBD | TBD | TBD | 85% | Dataset mismatch |
 
-**Overall sector accuracy** : 65% (Standard only, 220 questions)
-**Critical blocker** : BTP a 20% — besoin massif de donnees construction francaises
+### LLM-as-Judge (Gemma-27B, 198 scoreable)
+| Secteur | Standard | Quality (0-100) |
+|---------|----------|-----------------|
+| Finance | 18.2% | 30.7 |
+| BTP | 25.5% | 36.5 |
+| Juridique | 10.9% | 22.8 |
+| Industrie | 27.3% | 27.9 |
+
+**Root cause** : Eval dataset has US company 10-K questions (AMD, Boeing, Verizon) — NOT our sector data
+**Action needed** : Rewrite eval dataset with questions matching our actual Pinecone/Supabase content
+**Pipeline status** : All 4 working, all using LiteLLM proxy + self-hosted embeddings/reranker
 
 ---
 
 ## Pipeline Status
 
-| Pipeline | Status | Response Time | Workflow ID | Notes |
-|----------|--------|--------------|-------------|-------|
-| Standard | WORKING | ~36s | `TmgyRP20N4JFd9CB` | Groq direct, sector index OK |
-| Graph | WORKING | ~39s | `6257AfT1l4FMC6lY` | Groq direct, sector entities |
-| Quant | WORKING | ~43s | `cjhEhVs0KV1ExHqX` | LiteLLM, financial SQL |
-| Orchestrator | WORKING | ~30s | `ALd4gOEqiKL5KR1p` | V11 Minimal, Groq routing |
+| Pipeline | Status | Workflow ID | LLM | Embeddings | Reranker | Notes |
+|----------|--------|-------------|-----|------------|---------|-------|
+| Standard | **WORKING** | `TmgyRP20N4JFd9CB` | LiteLLM `llama-70b` | Self-hosted | Self-hosted | All self-hosted |
+| Graph | **WORKING** | `6257AfT1l4FMC6lY` | LiteLLM `llama-70b` | Self-hosted | Self-hosted | Neo4j + vector |
+| Quant | **WORKING** | `cjhEhVs0KV1ExHqX` | LiteLLM | N/A | N/A | Financial SQL |
+| Orchestrator | **WORKING** | `ALd4gOEqiKL5KR1p` | OpenRouter | Sub-workflows | N/A | Routes to Std/Graph/Quant |
 
-All pipelines query `website-sectors-jina-1024` (sector data).
+All pipelines query `website-sectors-jina-1024` namespace `sectors` (43,312 vectors).
 Legacy index `sota-rag-jina-1024` frozen at 46,634 vectors (do not write).
+**Groq keys ALL EXPIRED** — all pipelines switched to LiteLLM proxy (engine-7).
+**Jina keys ALL EXHAUSTED** — embeddings + reranker via self-hosted HF Spaces.
 
 ---
 
@@ -86,18 +105,21 @@ Archived: `rag-pme-connectors`, `rag-tests` (merged into mon-ipad)
 
 ### DONE (Session 92)
 1. ~~Restructuration fichiers~~ DONE
-2. ~~Reranker deployed~~ DONE — `nomos-reranker-api` HF Space, FlashRank, /v1/rerank WORKING
+2. ~~Reranker deployed~~ DONE — `nomos-reranker-api` HF Space, FlashRank, /v1/rerank
 3. ~~LLM-as-judge framework~~ DONE — `eval/llm-judge-rescore.py` via LiteLLM/Gemma-27B
 4. ~~Matching fix~~ DONE — bidirectional stem + 25+ FR synonyms (FIX-93)
-5. ~~Raw results saving~~ DONE — `logs/continuous-eval/raw-*.json` for post-processing
+5. ~~Raw results saving~~ DONE — `logs/continuous-eval/raw-*.json`
 6. ~~DEBUG-PLAYBOOK updated~~ DONE — FIX-91, FIX-92, FIX-93
+7. ~~220q Standard eval~~ DONE — String 26%, LLM judge 20%
+8. ~~Graph pipeline FIXED~~ DONE — Groq→LiteLLM, Jina→self-hosted, index→sectors, namespace
+9. ~~Standard pipeline FIXED~~ DONE — 20 node changes, all self-hosted
+10. ~~Orchestrator REACTIVATED~~ DONE — webhook orchestrator-v2, Quant ref fixed
+11. ~~All pipelines Groq→LiteLLM~~ DONE — No more Groq dependency
 
 ### IMMEDIATE (remaining)
-7. Run full 220q Standard eval + LLM judge rescore (IN PROGRESS)
-8. Fix Graph pipeline timeout (webhook responds but >90s)
-9. Fix Orchestrator (ALd4gOEqiKL5KR1p deactivated)
-10. Renew Groq API keys (all 5 expired/403)
-11. Commit + push all changes
+12. **REWRITE EVAL DATASET** — Current questions are US 10-K benchmarks, need sector-specific
+13. Commit + push all changes
+14. Run eval with Graph + Quant + Orch pipelines
 
 ### SHORT TERM (sessions 93-95)
 12. BTP DATA : Crawler BOAMP API + Legifrance construction

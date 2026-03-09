@@ -571,6 +571,39 @@ sleep 35
 - **Fix**: Added bidirectional stem matching, 25+ French/sector-specific synonyms, set max_retries=3.
 - **Prevention**: Always align matching logic across eval scripts. Run side-by-side comparison before replacing.
 
+### FIX-94: Groq API keys ALL expired (403) — Pipeline LLM migration
+
+- **Session**: 92
+- **Symptom**: All 5 GROQ_API_KEY_* return HTTP 403. Graph pipeline returns only entity name, no synthesis.
+- **Root cause**: Free Groq API keys expired. All 4 RAG pipelines used api.groq.com directly.
+- **Fix**: Migrated ALL pipelines to LiteLLM proxy (`engine-7.hf.space/v1/chat/completions`):
+  - URL: `api.groq.com/openai/v1/chat/completions` → `lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions`
+  - Model: `llama-3.3-70b-versatile` → `llama-70b` (LiteLLM alias)
+  - Auth: `Bearer $env.GROQ_API_KEY_*` → `Bearer sk-litellm-nomos-2026`
+  - ALSO fix `authentication: "predefinedCredentialType"` → `"none"` AND remove `nodeCredentialType` AND remove `credentials` block
+  - ALSO check JS code nodes for hardcoded model names (e.g., Response Formatter)
+- **Prevention**: Always use LiteLLM proxy as abstraction layer. Never hardcode LLM provider URLs.
+
+### FIX-95: Jina API keys exhausted — Embeddings + Reranker migration
+
+- **Session**: 92
+- **Symptom**: Graph pipeline embedding returns 401, reranker returns 401. No vector search results.
+- **Root cause**: Both Jina API keys exhausted (free tier limit).
+- **Fix**: Switched to self-hosted alternatives:
+  - Embeddings: `api.jina.ai/v1/embeddings` → `lbjlincoln-nomos-embeddings-api.hf.space/v1/embeddings`
+  - Reranker: `api.jina.ai/v1/rerank` → `lbjlincoln-nomos-reranker-api.hf.space/v1/rerank`
+  - Auth: `Bearer $env.JINA_API_KEY` → `Bearer nomos-self-hosted`
+  - Model (reranker): `jina-reranker-v2-base-multilingual` → `ms-marco-MiniLM-L-12-v2`
+- **Prevention**: Self-hosted services have no API limits. Always prefer self-hosted when available.
+
+### FIX-96: Pinecone namespace missing — 0 matches from sector index
+
+- **Session**: 92
+- **Symptom**: Pinecone query to `website-sectors-jina-1024` returns 0 matches despite 43K vectors.
+- **Root cause**: All sector data is in namespace `sectors`, but workflow queries default (empty) namespace.
+- **Fix**: Add `"namespace": "sectors"` to ALL Pinecone query JSON bodies in ALL pipelines.
+- **Prevention**: ALWAYS specify namespace when querying Pinecone. Check `describe-index-stats` to verify.
+
 ---
 
 ## 3. IRON RULES
