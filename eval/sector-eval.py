@@ -41,8 +41,8 @@ from collections import defaultdict
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EVAL_DIR = os.path.dirname(os.path.abspath(__file__))
 # Default to full eval dataset (220 questions); use --dataset for smoke test
-DATASET_FILE = os.path.join(REPO_ROOT, "datasets", "sector-eval", "sector-full-eval.json")
-SMOKE_DATASET = os.path.join(REPO_ROOT, "datasets", "sector-eval", "sector-smoke-test.json")
+DATASET_FILE = os.path.join(REPO_ROOT, "sectors", "eval-datasets", "sector-full-eval.json")
+SMOKE_DATASET = os.path.join(REPO_ROOT, "sectors", "eval-datasets", "sector-smoke-test.json")
 RESULTS_DIR = os.path.join(REPO_ROOT, "logs", "sector-eval")
 RESULTS_DOCS = os.path.join(REPO_ROOT, "docs", "sector-eval-results.json")
 
