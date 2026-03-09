@@ -201,7 +201,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/vectors/upsert",
+        "url": "https://website-sectors-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/vectors/upsert",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -232,45 +232,18 @@
         "schema": "public",
         "table": "enriched_metadata",
         "columns": {
-          "0": "d",
-          "1": "e",
-          "2": "d",
-          "3": "u",
-          "4": "p",
-          "5": "_",
-          "6": "h",
-          "7": "a",
-          "8": "s",
-          "9": "h",
-          "10": ",",
-          "11": " ",
-          "12": "s",
-          "13": "o",
-          "14": "u",
-          "15": "r",
-          "16": "c",
-          "17": "e",
-          "18": "_",
-          "19": "d",
-          "20": "a",
-          "21": "t",
-          "22": "a",
-          "23": ",",
-          "24": " ",
-          "25": "s",
-          "26": "y",
-          "27": "n",
-          "28": "c",
-          "29": "_",
-          "30": "d",
-          "31": "a",
-          "32": "t",
-          "33": "e",
           "mappingMode": "defineBelow",
           "value": {},
-          "matchingColumns": [],
-          "schema": [],
-          "attemptToConvertTypes": false,
+          "matchingColumns": ["dedup_hash"],
+          "schema": [
+            { "id": "dedup_hash", "displayName": "dedup_hash", "match": true, "required": true, "type": "string" },
+            { "id": "source_data", "displayName": "source_data", "match": false, "required": false, "type": "string" },
+            { "id": "sync_date", "displayName": "sync_date", "match": false, "required": false, "type": "dateTime" },
+            { "id": "sector", "displayName": "sector", "match": false, "required": false, "type": "string" },
+            { "id": "entity_count", "displayName": "entity_count", "match": false, "required": false, "type": "number" },
+            { "id": "enriched", "displayName": "enriched", "match": false, "required": false, "type": "boolean" }
+          ],
+          "attemptToConvertTypes": true,
           "convertFieldsToString": false
         },
         "options": {}
@@ -415,17 +388,32 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "rag-v6-enrichment",
+        "responseMode": "responseNode",
         "options": {}
       },
       "id": "43a2f62c-9089-4617-9072-d580a1778b9b",
       "name": "Enrichment Webhook",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1.1,
+      "typeVersion": 2.1,
       "position": [
         80,
         0
       ],
       "webhookId": "43a2f62c-9089-4617-9072-d580a1778b9b"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: $json.status || 'completed', trace_id: $json.trace_id || 'unknown', timestamp: new Date().toISOString(), entities_processed: $json.total_after || 0, relationships: $json.total_relationships || 0 }) }}"
+      },
+      "id": "ah-respond-enrichment",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        2600,
+        400
+      ]
     },
     {
       "parameters": {
@@ -815,14 +803,14 @@
       "main": [
         [
           {
-            "node": "Relationship Mapper V3.1 (Entity Linking)",
+            "node": "Relationship Mapper V4.0",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Relationship Mapper V3.1 (Entity Linking)": {
+    "Relationship Mapper V4.0": {
       "main": [
         [
           {
@@ -921,6 +909,11 @@
             "node": "Export Trace to OpenTelemetry",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -962,18 +955,18 @@
       "main": [
         [
           {
-            "node": "Global Entity Resolution",
+            "node": "Global Entity Resolution V4.0",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Global Entity Resolution": {
+    "Global Entity Resolution V4.0": {
       "main": [
         [
           {
-            "node": "Relationship Mapper V3.1 (Entity Linking)",
+            "node": "Relationship Mapper V4.0",
             "type": "main",
             "index": 0
           }
@@ -1254,7 +1247,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://sota-rag-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/vectors/upsert",
+          "url": "https://website-sectors-jina-1024-a4mkzmz.svc.aped-4627-b74a.pinecone.io/vectors/upsert",
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
@@ -1285,45 +1278,18 @@
           "schema": "public",
           "table": "enriched_metadata",
           "columns": {
-            "0": "d",
-            "1": "e",
-            "2": "d",
-            "3": "u",
-            "4": "p",
-            "5": "_",
-            "6": "h",
-            "7": "a",
-            "8": "s",
-            "9": "h",
-            "10": ",",
-            "11": " ",
-            "12": "s",
-            "13": "o",
-            "14": "u",
-            "15": "r",
-            "16": "c",
-            "17": "e",
-            "18": "_",
-            "19": "d",
-            "20": "a",
-            "21": "t",
-            "22": "a",
-            "23": ",",
-            "24": " ",
-            "25": "s",
-            "26": "y",
-            "27": "n",
-            "28": "c",
-            "29": "_",
-            "30": "d",
-            "31": "a",
-            "32": "t",
-            "33": "e",
             "mappingMode": "defineBelow",
             "value": {},
-            "matchingColumns": [],
-            "schema": [],
-            "attemptToConvertTypes": false,
+            "matchingColumns": ["dedup_hash"],
+            "schema": [
+              { "id": "dedup_hash", "displayName": "dedup_hash", "match": true, "required": true, "type": "string" },
+              { "id": "source_data", "displayName": "source_data", "match": false, "required": false, "type": "string" },
+              { "id": "sync_date", "displayName": "sync_date", "match": false, "required": false, "type": "dateTime" },
+              { "id": "sector", "displayName": "sector", "match": false, "required": false, "type": "string" },
+              { "id": "entity_count", "displayName": "entity_count", "match": false, "required": false, "type": "number" },
+              { "id": "enriched", "displayName": "enriched", "match": false, "required": false, "type": "boolean" }
+            ],
+            "attemptToConvertTypes": true,
             "convertFieldsToString": false
           },
           "options": {}
@@ -1868,14 +1834,14 @@
         "main": [
           [
             {
-              "node": "Relationship Mapper V3.1 (Entity Linking)",
+              "node": "Relationship Mapper V4.0",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Relationship Mapper V3.1 (Entity Linking)": {
+      "Relationship Mapper V4.0": {
         "main": [
           [
             {
@@ -2015,18 +1981,18 @@
         "main": [
           [
             {
-              "node": "Global Entity Resolution",
+              "node": "Global Entity Resolution V4.0",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Global Entity Resolution": {
+      "Global Entity Resolution V4.0": {
         "main": [
           [
             {
-              "node": "Relationship Mapper V3.1 (Entity Linking)",
+              "node": "Relationship Mapper V4.0",
               "type": "main",
               "index": 0
             }

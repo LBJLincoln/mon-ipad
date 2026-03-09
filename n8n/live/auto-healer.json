@@ -1,0 +1,213 @@
+{
+  "name": "Auto-Healer V1.0 — LLM Analyzer + Sandbox Test",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "minutes", "minutesInterval": 30 }]
+        }
+      },
+      "id": "ah-trigger",
+      "name": "Every 30min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 400]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "auto-healer-trigger",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "ah-webhook",
+      "name": "Manual Trigger Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [200, 600],
+      "webhookId": "auto-healer-trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─── Auto-Healer Init ───\n// Defines targets, pipeline configs, and test questions\n\nconst PIPELINES = {\n  'TmgyRP20N4JFd9CB': {\n    name: 'Standard',\n    webhook: '/webhook/rag-multi-index-v3',\n    targets: { finance: 90, btp: 85, juridique: 90, industrie: 85 }\n  },\n  'cjhEhVs0KV1ExHqX': {\n    name: 'Quant',\n    webhook: '/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9',\n    targets: { finance: 95 }\n  },\n  '6257AfT1l4FMC6lY': {\n    name: 'Graph',\n    webhook: '/webhook/ff622742-6d71-4e91-af71-b5c666088717',\n    targets: { finance: 75, btp: 70, juridique: 80, industrie: 70 }\n  },\n  'ALd4gOEqiKL5KR1p': {\n    name: 'Orchestrator',\n    webhook: '/webhook/orchestrator-v2',\n    targets: { finance: 85, btp: 75, juridique: 80, industrie: 75 }\n  }\n};\n\n// 20 smoke test questions (5 per sector) — must match actual Pinecone data\nconst SMOKE_TESTS = [\n  { q: 'Quels sont les principaux ratios financiers pour évaluer la solvabilité ?', sector: 'finance', expected_keywords: ['ratio', 'solvabilité', 'dette', 'capitaux'] },\n  { q: 'Comment fonctionne un crédit-bail immobilier ?', sector: 'finance', expected_keywords: ['crédit-bail', 'loyer', 'option', 'achat'] },\n  { q: 'Quelles sont les normes IFRS pour la comptabilisation des revenus ?', sector: 'finance', expected_keywords: ['IFRS', 'revenu', 'comptabilisation', 'norme'] },\n  { q: 'Comment calculer le besoin en fonds de roulement ?', sector: 'finance', expected_keywords: ['BFR', 'fonds', 'roulement', 'trésorerie'] },\n  { q: 'Quelle est la différence entre marge brute et marge nette ?', sector: 'finance', expected_keywords: ['marge', 'brute', 'nette', 'résultat'] },\n  { q: 'Quelles sont les étapes d\\'un permis de construire ?', sector: 'btp', expected_keywords: ['permis', 'construire', 'mairie', 'délai'] },\n  { q: 'Comment fonctionne le DTU 31.2 pour les maisons à ossature bois ?', sector: 'btp', expected_keywords: ['DTU', 'ossature', 'bois', 'construction'] },\n  { q: 'Quelles sont les normes parasismiques en France ?', sector: 'btp', expected_keywords: ['parasismique', 'Eurocode', 'zone', 'sismique'] },\n  { q: 'Comment rédiger un CCTP pour un marché public de travaux ?', sector: 'btp', expected_keywords: ['CCTP', 'marché', 'travaux', 'cahier'] },\n  { q: 'Quelles sont les obligations de la RE2020 ?', sector: 'btp', expected_keywords: ['RE2020', 'énergie', 'carbone', 'bâtiment'] },\n  { q: 'Quels sont les délais de prescription en droit civil français ?', sector: 'juridique', expected_keywords: ['prescription', 'délai', 'ans', 'civil'] },\n  { q: 'Comment fonctionne la procédure de licenciement économique ?', sector: 'juridique', expected_keywords: ['licenciement', 'économique', 'procédure', 'salarié'] },\n  { q: 'Quelles sont les obligations RGPD pour une PME ?', sector: 'juridique', expected_keywords: ['RGPD', 'données', 'personnelles', 'traitement'] },\n  { q: 'Comment créer une SAS en France ?', sector: 'juridique', expected_keywords: ['SAS', 'statuts', 'capital', 'immatriculation'] },\n  { q: 'Quelles sont les clauses essentielles d\\'un contrat de travail ?', sector: 'juridique', expected_keywords: ['contrat', 'travail', 'clause', 'rémunération'] },\n  { q: 'Comment mettre en place une démarche ISO 9001 ?', sector: 'industrie', expected_keywords: ['ISO', '9001', 'qualité', 'processus'] },\n  { q: 'Quelles sont les étapes d\\'une analyse AMDEC ?', sector: 'industrie', expected_keywords: ['AMDEC', 'défaillance', 'criticité', 'analyse'] },\n  { q: 'Comment rédiger une fiche de données de sécurité ?', sector: 'industrie', expected_keywords: ['FDS', 'sécurité', 'données', 'substance'] },\n  { q: 'Quels sont les principes du lean manufacturing ?', sector: 'industrie', expected_keywords: ['lean', 'gaspillage', 'flux', 'amélioration'] },\n  { q: 'Comment planifier la maintenance préventive d\\'équipements industriels ?', sector: 'industrie', expected_keywords: ['maintenance', 'préventive', 'équipement', 'planification'] }\n];\n\nconst N8N_HOSTS = [\n  'https://lbjlincoln-nomos-rag-engine.hf.space',\n  'https://lbjlincoln-nomos-rag-engine-3.hf.space',\n  'https://lbjlincoln-nomos-rag-engine-5.hf.space',\n  'https://lbjlincoln-nomos-rag-engine-9.hf.space'\n];\n\nreturn [{\n  json: {\n    pipelines: PIPELINES,\n    smoke_tests: SMOKE_TESTS,\n    n8n_hosts: N8N_HOSTS,\n    started_at: new Date().toISOString(),\n    run_id: 'ah-' + Date.now()\n  }\n}];"
+      },
+      "id": "ah-init",
+      "name": "Init Config & Targets",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─── Fetch Recent Executions for ALL pipelines ───\nconst config = $input.first().json;\nconst host = config.n8n_hosts[0];\nconst results = [];\n\nfor (const [wfId, pipeline] of Object.entries(config.pipelines)) {\n  try {\n    const resp = await fetch(\n      `${host}/rest/executions?limit=10&workflowId=${wfId}`,\n      { headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(15000) }\n    );\n    \n    if (!resp.ok) {\n      results.push({\n        pipeline: pipeline.name,\n        workflow_id: wfId,\n        status: 'FETCH_ERROR',\n        error: `HTTP ${resp.status}`,\n        executions: []\n      });\n      continue;\n    }\n    \n    const data = await resp.json();\n    const execs = data.data?.results || data.data || [];\n    \n    const summary = execs.slice(0, 10).map(e => ({\n      id: e.id,\n      status: e.status || (e.finished ? 'success' : 'running'),\n      started: e.startedAt,\n      finished: e.stoppedAt,\n      duration_ms: e.startedAt && e.stoppedAt \n        ? new Date(e.stoppedAt) - new Date(e.startedAt) : null,\n      mode: e.mode\n    }));\n    \n    const success_count = summary.filter(e => e.status === 'success').length;\n    const error_count = summary.filter(e => e.status === 'error').length;\n    \n    results.push({\n      pipeline: pipeline.name,\n      workflow_id: wfId,\n      status: error_count > 5 ? 'UNHEALTHY' : error_count > 2 ? 'DEGRADED' : 'HEALTHY',\n      total: summary.length,\n      success: success_count,\n      errors: error_count,\n      success_rate: summary.length > 0 ? Math.round(success_count / summary.length * 100) : 0,\n      avg_duration_ms: Math.round(\n        summary.filter(e => e.duration_ms).reduce((s, e) => s + e.duration_ms, 0) /\n        Math.max(summary.filter(e => e.duration_ms).length, 1)\n      ),\n      last_error: summary.find(e => e.status === 'error') || null,\n      executions: summary\n    });\n  } catch (err) {\n    results.push({\n      pipeline: pipeline.name,\n      workflow_id: wfId,\n      status: 'UNREACHABLE',\n      error: err.message,\n      executions: []\n    });\n  }\n}\n\nreturn [{\n  json: {\n    ...config,\n    execution_health: results,\n    healthy_count: results.filter(r => r.status === 'HEALTHY').length,\n    degraded_count: results.filter(r => r.status === 'DEGRADED').length,\n    unhealthy_count: results.filter(r => r.status === 'UNHEALTHY' || r.status === 'UNREACHABLE').length\n  }\n}];"
+      },
+      "id": "ah-fetch-execs",
+      "name": "Fetch Execution Health",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [800, 500],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─── Run Smoke Tests (5 questions, round-robin across hosts) ───\nconst config = $input.first().json;\nconst tests = config.smoke_tests;\nconst hosts = config.n8n_hosts;\nconst results = [];\n\n// Pick 5 random tests (1 per sector + 1 random)\nconst sectors = ['finance', 'btp', 'juridique', 'industrie'];\nconst selected = [];\nfor (const sector of sectors) {\n  const sectorTests = tests.filter(t => t.sector === sector);\n  selected.push(sectorTests[Math.floor(Math.random() * sectorTests.length)]);\n}\n// Add one more random\nselected.push(tests[Math.floor(Math.random() * tests.length)]);\n\nfor (let i = 0; i < selected.length; i++) {\n  const test = selected[i];\n  const host = hosts[i % hosts.length];\n  const webhook = config.pipelines['TmgyRP20N4JFd9CB'].webhook; // Standard\n  \n  try {\n    const start = Date.now();\n    const resp = await fetch(`${host}${webhook}`, {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({ question: test.q, sector: test.sector }),\n      signal: AbortSignal.timeout(60000)\n    });\n    const elapsed = Date.now() - start;\n    \n    let answer = '';\n    let raw = {};\n    if (resp.ok) {\n      raw = await resp.json();\n      answer = (raw.answer || raw.response || raw.result || JSON.stringify(raw)).toString().toLowerCase();\n    }\n    \n    // Keyword match scoring\n    const matched = test.expected_keywords.filter(kw => answer.includes(kw.toLowerCase()));\n    const score = matched.length / test.expected_keywords.length;\n    \n    results.push({\n      sector: test.sector,\n      question: test.q.substring(0, 80),\n      status: resp.ok ? 'OK' : `HTTP_${resp.status}`,\n      response_time_ms: elapsed,\n      keyword_score: Math.round(score * 100),\n      matched_keywords: matched,\n      missing_keywords: test.expected_keywords.filter(kw => !answer.includes(kw.toLowerCase())),\n      answer_preview: answer.substring(0, 200),\n      host: host.split('//')[1].split('.')[0]\n    });\n  } catch (err) {\n    results.push({\n      sector: test.sector,\n      question: test.q.substring(0, 80),\n      status: 'TIMEOUT',\n      error: err.message,\n      keyword_score: 0,\n      host: host.split('//')[1].split('.')[0]\n    });\n  }\n}\n\n// Aggregate by sector\nconst sectorScores = {};\nfor (const r of results) {\n  if (!sectorScores[r.sector]) sectorScores[r.sector] = [];\n  sectorScores[r.sector].push(r.keyword_score);\n}\nconst sectorAvg = {};\nfor (const [s, scores] of Object.entries(sectorScores)) {\n  sectorAvg[s] = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);\n}\n\nreturn [{\n  json: {\n    ...config,\n    smoke_results: results,\n    sector_scores: sectorAvg,\n    overall_score: Math.round(results.reduce((s, r) => s + r.keyword_score, 0) / results.length),\n    avg_response_ms: Math.round(results.filter(r => r.response_time_ms).reduce((s, r) => s + r.response_time_ms, 0) / Math.max(results.filter(r => r.response_time_ms).length, 1)),\n    timeouts: results.filter(r => r.status === 'TIMEOUT').length,\n    errors: results.filter(r => r.status.startsWith('HTTP_')).length\n  }\n}];"
+      },
+      "id": "ah-smoke-test",
+      "name": "Run Smoke Tests (5q)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1100, 500],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama-70b\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert n8n RAG pipeline optimizer. You analyze execution health + smoke test results and produce a SINGLE actionable improvement patch.\\n\\nYou MUST respond in valid JSON with this exact schema:\\n{\\n  \\\"diagnosis\\\": \\\"2-3 sentence root cause analysis\\\",\\n  \\\"severity\\\": \\\"CRITICAL|HIGH|MEDIUM|LOW\\\",\\n  \\\"target_pipeline\\\": \\\"Standard|Graph|Quant|Orchestrator\\\",\\n  \\\"improvement_type\\\": \\\"prompt_change|param_tweak|node_config|retrieval_change|error_handling\\\",\\n  \\\"specific_change\\\": {\\n    \\\"node_name\\\": \\\"exact node name to modify\\\",\\n    \\\"field\\\": \\\"the parameter field to change\\\",\\n    \\\"current_value_hint\\\": \\\"what you think is there now\\\",\\n    \\\"new_value\\\": \\\"the exact new value to set\\\",\\n    \\\"rationale\\\": \\\"why this improves accuracy\\\"\\n  },\\n  \\\"expected_impact\\\": \\\"+X% on sector Y\\\",\\n  \\\"risk\\\": \\\"LOW|MEDIUM|HIGH\\\",\\n  \\\"rollback_plan\\\": \\\"how to undo if it regresses\\\"\\n}\\n\\nRules:\\n- ONE change only, never multiple\\n- Target the weakest sector (lowest score)\\n- Prefer prompt improvements over structural changes\\n- Be specific: exact node names, exact values\\n- If everything looks healthy, respond with severity=LOW and improvement_type=none\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('EXECUTION HEALTH:\\n' + JSON.stringify($json.execution_health, null, 2) + '\\n\\nSMOKE TEST RESULTS:\\n' + JSON.stringify($json.smoke_results, null, 2) + '\\n\\nSECTOR SCORES: ' + JSON.stringify($json.sector_scores) + '\\nOVERALL: ' + $json.overall_score + '%\\nTARGETS: Finance 90%, BTP 85%, Juridique 90%, Industrie 85%\\nAVG RESPONSE TIME: ' + $json.avg_response_ms + 'ms (target: <30000ms)\\nTIMEOUTS: ' + $json.timeouts + '\\nERRORS: ' + $json.errors) }}\n    }\n  ],\n  \"temperature\": 0.2,\n  \"max_tokens\": 1000,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "options": {
+          "timeout": 45000,
+          "retry": { "maxTries": 2, "waitBetweenTries": 3000 }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer sk-litellm-nomos-2026" }
+          ]
+        }
+      },
+      "id": "ah-llm-analyze",
+      "name": "LLM Analyze & Propose Patch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1400, 500],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─── Parse LLM response + Build structured report ───\nconst prev = $input.first().json;\nlet llmRaw = '';\nlet patch = null;\nlet parseError = null;\n\ntry {\n  // Extract from HTTP response\n  const choices = prev.choices || [];\n  if (choices.length > 0) {\n    llmRaw = choices[0].message?.content || '';\n  }\n  \n  // Parse JSON from LLM\n  if (llmRaw) {\n    // Handle markdown code blocks\n    let cleaned = llmRaw;\n    if (cleaned.includes('```json')) {\n      cleaned = cleaned.split('```json')[1].split('```')[0];\n    } else if (cleaned.includes('```')) {\n      cleaned = cleaned.split('```')[1].split('```')[0];\n    }\n    patch = JSON.parse(cleaned.trim());\n  }\n} catch (err) {\n  parseError = `LLM parse error: ${err.message}. Raw: ${llmRaw.substring(0, 300)}`;\n}\n\n// Get smoke data from upstream (it's in the execution data chain)\nconst execData = $('Run Smoke Tests (5q)').first().json;\n\nconst report = {\n  run_id: execData.run_id,\n  timestamp: new Date().toISOString(),\n  \n  // Health summary\n  execution_health: {\n    healthy: execData.healthy_count,\n    degraded: execData.degraded_count,\n    unhealthy: execData.unhealthy_count,\n    details: (execData.execution_health || []).map(h => ({\n      pipeline: h.pipeline,\n      status: h.status,\n      success_rate: h.success_rate,\n      avg_duration_ms: h.avg_duration_ms\n    }))\n  },\n  \n  // Smoke test results\n  smoke_tests: {\n    overall_score: execData.overall_score,\n    sector_scores: execData.sector_scores,\n    avg_response_ms: execData.avg_response_ms,\n    timeouts: execData.timeouts,\n    errors: execData.errors,\n    details: (execData.smoke_results || []).map(r => ({\n      sector: r.sector,\n      score: r.keyword_score,\n      status: r.status,\n      response_ms: r.response_time_ms,\n      missing_kw: r.missing_keywords\n    }))\n  },\n  \n  // LLM patch proposal\n  patch_proposal: patch,\n  patch_parse_error: parseError,\n  \n  // Decision: should Claude Code apply this?\n  recommendation: !patch ? 'NO_PATCH' :\n    patch.severity === 'CRITICAL' ? 'APPLY_URGENT' :\n    patch.severity === 'HIGH' && patch.risk !== 'HIGH' ? 'APPLY_RECOMMENDED' :\n    patch.severity === 'MEDIUM' ? 'APPLY_IF_IDLE' :\n    'SKIP',\n    \n  // Targets comparison\n  gaps: Object.entries(execData.sector_scores || {}).map(([sector, score]) => {\n    const targets = { finance: 90, btp: 85, juridique: 90, industrie: 85 };\n    return { sector, current: score, target: targets[sector] || 85, gap: (targets[sector] || 85) - score };\n  }).sort((a, b) => b.gap - a.gap)\n};\n\nreturn [{ json: report }];"
+      },
+      "id": "ah-build-report",
+      "name": "Build Structured Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1700, 500],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─── Format report for webhook delivery to Claude Code CLI ───\nconst report = $input.first().json;\n\n// Compact format for the webhook POST\nconst payload = {\n  type: 'auto-healer-report',\n  version: '1.0',\n  ...report\n};\n\n// Also generate human-readable summary\nconst lines = [\n  `=== AUTO-HEALER REPORT ${report.run_id} ===${report.timestamp}`,\n  '',\n  `HEALTH: ${report.execution_health.healthy}H / ${report.execution_health.degraded}D / ${report.execution_health.unhealthy}U`,\n  `SMOKE: ${report.smoke_tests.overall_score}% overall | Avg ${report.smoke_tests.avg_response_ms}ms | ${report.smoke_tests.timeouts} timeouts`,\n  '',\n  'SECTOR SCORES vs TARGETS:',\n  ...(report.gaps || []).map(g => `  ${g.sector}: ${g.current}% / ${g.target}% (gap: ${g.gap}pp)`),\n  '',\n  `RECOMMENDATION: ${report.recommendation}`,\n];\n\nif (report.patch_proposal) {\n  lines.push('');\n  lines.push(`PATCH: [${report.patch_proposal.severity}] ${report.patch_proposal.target_pipeline} — ${report.patch_proposal.improvement_type}`);\n  lines.push(`  Node: ${report.patch_proposal.specific_change?.node_name}`);\n  lines.push(`  Change: ${report.patch_proposal.specific_change?.rationale}`);\n  lines.push(`  Expected: ${report.patch_proposal.expected_impact}`);\n  lines.push(`  Risk: ${report.patch_proposal.risk}`);\n}\n\nreturn [{\n  json: {\n    payload,\n    summary: lines.join('\\n')\n  }\n}];"
+      },
+      "id": "ah-format",
+      "name": "Format for Delivery",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─── Save report to persistent log ───\n// This stores the report so Claude Code can fetch it via GET\nconst data = $input.first().json;\n\n// Store in global static data for retrieval\nconst staticData = $getWorkflowStaticData('global');\nif (!staticData.reports) staticData.reports = [];\n\n// Keep last 50 reports\nstaticData.reports.unshift(data.payload);\nif (staticData.reports.length > 50) staticData.reports = staticData.reports.slice(0, 50);\nstaticData.lastReport = data.payload;\nstaticData.lastUpdated = new Date().toISOString();\n\nreturn [{ json: { stored: true, total_reports: staticData.reports.length, summary: data.summary } }];"
+      },
+      "id": "ah-store",
+      "name": "Store Report (Static Data)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2300, 400]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "auto-healer-results",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "ah-results-webhook",
+      "name": "GET Results Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [2300, 700],
+      "webhookId": "auto-healer-results"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─── Serve last report to Claude Code CLI ───\nconst staticData = $getWorkflowStaticData('global');\nconst last = staticData.lastReport || { error: 'No reports yet. Trigger the auto-healer first.' };\nconst count = (staticData.reports || []).length;\n\nreturn [{\n  json: {\n    last_report: last,\n    total_reports: count,\n    last_updated: staticData.lastUpdated || null\n  }\n}];"
+      },
+      "id": "ah-serve-results",
+      "name": "Serve Last Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2600, 700]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}"
+      },
+      "id": "ah-respond-trigger",
+      "name": "Respond to Trigger",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2600, 400]
+    }
+  ],
+  "connections": {
+    "Every 30min": {
+      "main": [
+        [{ "node": "Init Config & Targets", "type": "main", "index": 0 }]
+      ]
+    },
+    "Manual Trigger Webhook": {
+      "main": [
+        [{ "node": "Init Config & Targets", "type": "main", "index": 0 }]
+      ]
+    },
+    "Init Config & Targets": {
+      "main": [
+        [{ "node": "Fetch Execution Health", "type": "main", "index": 0 }]
+      ]
+    },
+    "Fetch Execution Health": {
+      "main": [
+        [{ "node": "Run Smoke Tests (5q)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Run Smoke Tests (5q)": {
+      "main": [
+        [{ "node": "LLM Analyze & Propose Patch", "type": "main", "index": 0 }]
+      ]
+    },
+    "LLM Analyze & Propose Patch": {
+      "main": [
+        [{ "node": "Build Structured Report", "type": "main", "index": 0 }]
+      ]
+    },
+    "Build Structured Report": {
+      "main": [
+        [{ "node": "Format for Delivery", "type": "main", "index": 0 }]
+      ]
+    },
+    "Format for Delivery": {
+      "main": [
+        [
+          { "node": "Store Report (Static Data)", "type": "main", "index": 0 },
+          { "node": "Respond to Trigger", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "GET Results Webhook": {
+      "main": [
+        [{ "node": "Serve Last Report", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "tags": [{ "name": "auto-healer" }, { "name": "v1.0" }]
+}
