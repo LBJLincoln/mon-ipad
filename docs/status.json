@@ -1,55 +1,37 @@
 {
-  "generated_at": "2026-03-08T15:30:00+01:00",
+  "generated_at": "2026-03-10T23:34:20+01:00",
   "phase": {
-    "current": 4,
-    "name": "SOTA Benchmark (61K questions)",
-    "gates_passed": true
+    "current": 1,
+    "name": "Baseline (200q)",
+    "gates_passed": false
   },
   "pipelines": {
     "standard": {
-      "accuracy": 87.5,
-      "tested": 10917,
-      "correct": 9553,
-      "errors": 218,
+      "accuracy": 86.3,
+      "tested": 9216,
+      "correct": 7954,
+      "errors": 85,
       "target": 85.0,
       "met": true,
-      "gap": 2.5,
-      "latency_ms": 36000,
-      "latency_p95_ms": 52000,
-      "phase3_accuracy": 87.5,
-      "phase4_accuracy": 13.0,
-      "phase4_tested": 10917,
-      "phase4_status": "DONE"
+      "gap": 1.3
     },
     "graph": {
-      "accuracy": 40.9,
-      "tested": 11300,
-      "correct": 4622,
-      "errors": 565,
+      "accuracy": 35.8,
+      "tested": 1724,
+      "correct": 617,
+      "errors": 27,
       "target": 70.0,
       "met": false,
-      "gap": -29.1,
-      "latency_ms": 39000,
-      "latency_p95_ms": 58000,
-      "phase3_accuracy": 40.9,
-      "phase4_accuracy": 7.0,
-      "phase4_tested": 11300,
-      "phase4_status": "DONE"
+      "gap": -34.2
     },
     "quantitative": {
-      "accuracy": 95.2,
-      "tested": 3550,
-      "correct": 3380,
-      "errors": 35,
+      "accuracy": 64.7,
+      "tested": 776,
+      "correct": 502,
+      "errors": 6,
       "target": 85.0,
-      "met": true,
-      "gap": 10.2,
-      "latency_ms": 43000,
-      "latency_p95_ms": 65000,
-      "phase3_accuracy": 95.2,
-      "phase4_accuracy": 14.0,
-      "phase4_tested": 3550,
-      "phase4_status": "91.7% ingested"
+      "met": false,
+      "gap": -20.3
     },
     "orchestrator": {
       "accuracy": 0,
@@ -58,77 +40,38 @@
       "errors": 0,
       "target": 70.0,
       "met": false,
-      "gap": -70.0,
-      "latency_ms": 0,
-      "latency_p95_ms": 0,
-      "phase3_accuracy": 80.0,
-      "phase4_accuracy": 0,
-      "phase4_tested": 0,
-      "phase4_status": "ON HOLD"
+      "gap": -70.0
     }
   },
-  "infrastructure": {
-    "hf_spaces": {
-      "n8n_primary": { "name": "nomos-rag-engine", "status": "UP", "url": "https://lbjlincoln-nomos-rag-engine.hf.space" },
-      "n8n_space_2": { "name": "nomos-rag-engine-2", "status": "UP" },
-      "n8n_space_3": { "name": "nomos-rag-engine-3", "status": "UP" },
-      "n8n_space_4": { "name": "nomos-rag-engine-4", "status": "UP" },
-      "litellm": { "name": "nomos-rag-engine-7", "status": "UP", "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space" },
-      "embeddings": { "name": "nomos-embeddings-api", "status": "UP", "type": "Gradio" }
-    },
-    "databases": {
-      "pinecone": {
-        "sota_index": { "name": "sota-rag-jina-1024", "vectors": 46263, "limit": 100000 },
-        "website_index": { "name": "website-sectors-jina-1024", "vectors": 31916, "limit": 100000 },
-        "total_vectors": 78179
-      },
-      "neo4j": {
-        "nodes": 79451,
-        "relationships": 219414,
-        "limit_nodes": 200000,
-        "limit_rels": 400000
-      },
-      "supabase": {
-        "tables": 40,
-        "sector_documents": 11387,
-        "financial_tables": 3876,
-        "limit_mb": 500
-      }
-    },
-    "llm_models": [
-      { "name": "llama-3.3-70b-instruct", "provider": "OpenRouter", "roles": "SQL, Intent, Planning, QA", "cost": "free" },
-      { "name": "gemma-3-27b-it", "provider": "OpenRouter", "roles": "Fast, Lite", "cost": "free" },
-      { "name": "trinity-large-preview", "provider": "OpenRouter", "roles": "Extraction, Summaries", "cost": "free" }
-    ]
-  },
   "overall": {
-    "accuracy": 74.5,
+    "accuracy": 62.3,
     "target": 75.0,
     "met": false
   },
   "blockers": [
-    "Graph pipeline 40.9% < 70.0% target (gap: -29.1pp)",
-    "Orchestrator ON HOLD (404 webhook)",
-    "Neo4j: ZERO entity enrichment on SectorDocuments"
+    "graph: 35.8% < 70.0% (gap: -34.2pp)",
+    "quantitative: 64.7% < 85.0% (gap: -20.3pp)",
+    "orchestrator: 0% < 70.0% (gap: -70.0pp)",
+    "overall: 62.3% < 75.0%"
   ],
-  "next_action": "Fix Graph pipeline accuracy (CRAG grading + Cohere Rerank 3.5)",
+  "next_action": "Fix orchestrator pipeline (0% vs 70.0% target, gap: -70.0pp)",
   "last_iteration": {
-    "id": "iter-2026-03-08T15-30-00",
-    "label": "Phase4-SOTA-Benchmark",
-    "timestamp": "2026-03-08T15:30:00+01:00",
-    "total_tested": 25767,
-    "overall_accuracy_pct": 74.5,
+    "id": "iter-2026-03-08T23-05-47",
+    "label": "Phase4-parallel-10q-standard",
+    "timestamp": "2026-03-08T23:05:48+01:00",
+    "total_tested": 10,
+    "overall_accuracy_pct": 40.0,
     "pipelines": {
-      "standard": { "tested": 10917, "correct": 9553, "accuracy": 87.5 },
-      "graph": { "tested": 11300, "correct": 4622, "accuracy": 40.9 },
-      "quantitative": { "tested": 3550, "correct": 3380, "accuracy": 95.2 }
+      "standard": {
+        "tested": 10,
+        "correct": 4,
+        "accuracy": 40.0
+      }
     }
   },
   "totals": {
-    "unique_questions": 61661,
-    "test_runs": 25767,
-    "iterations": 87,
-    "sessions": 87,
-    "commits": 1100
+    "unique_questions": 12932,
+    "test_runs": 13723,
+    "iterations": 75
   }
 }
