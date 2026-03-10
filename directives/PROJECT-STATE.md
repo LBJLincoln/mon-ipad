@@ -1,6 +1,6 @@
-# Etat Systeme Complet — Post Session 94
+# Etat Systeme Complet — Post Session 94 (updated)
 
-> Date: 2026-03-10 | Auteur: Claude Code Opus 4.6
+> Date: 2026-03-10T04:00Z | Auteur: Claude Code Opus 4.6
 
 ---
 
@@ -9,24 +9,31 @@
 | Composant | Lieu | Status | Notes |
 |-----------|------|--------|-------|
 | **VM Google Cloud** | 34.136.180.66 | UP | 969MB RAM, 18/30GB disk |
-| **HF S1** (engine) | n8n primary | UP 200 | Standard V3.5 + Graph + Enrichment V4.0 |
+| **HF S1** (engine) | n8n primary | UP 200 | Standard + Graph + Enrichment V4.0 + Auto-Healer |
 | **HF S3** (engine-3) | n8n secondary | UP 200 | Load balancing |
 | **HF S5** (engine-5) | n8n eval | 503 SLEEP | A reveiller |
-| **HF S7** (engine-7) | LiteLLM proxy | UP 200 | 9 models, key rotation |
+| **HF S7** (engine-7) | LiteLLM proxy | **BROKEN** | DB corruption: `LiteLLM_VerificationToken` missing |
 | **HF S9** (engine-9) | n8n overflow | UP 200 | Disponible |
-| **HF S6** (Docling) | **NOUVEAU** Document processor | UP 200 | nomos-docling-api, cpu-basic |
-| **HF Embeddings** | Jina v3 self-hosted | UP 200 | ~3.4 emb/s, batch<=50 |
+| **HF S6** (Docling) | Document processor | UP 200 | nomos-docling-api, cpu-basic |
+| **HF Embeddings** | Jina v3 self-hosted | UP 200 | ~3.4 emb/s, batch<=50. API keys EXHAUSTED |
 | **HF Reranker** | FlashRank | UP 200 | |
+
+### LLM Access
+| Provider | Status | Notes |
+|----------|--------|-------|
+| **Groq direct** | WORKING | `llama-3.3-70b-versatile`, 100K tokens/day free |
+| **LiteLLM S7** | BROKEN | DB corruption, needs rebuild |
+| **Jina API** | EXHAUSTED | Both keys $0 balance. Self-hosted only |
 
 ## 2. BASES DE DONNEES
 
-### Compte 1
+### Compte 1 — CORRECTED (hosts verified via Pinecone API)
 
-| BDD | Utilise | Libre | Contenu |
-|-----|---------|-------|---------|
-| **Pinecone** `website-sectors-jina-1024` | 45,916 | 54K | Secteurs Jina v3 |
-| **Pinecone** `sectors-e5-multilingual` | ~17K (ingestion EN COURS) | 83K | **NOUVEAU** E5 multilingual, integrated embedding |
-| **Pinecone** `sota-rag-jina-1024` | 0 | 100K | Vide (purge S93) |
+| BDD | Utilise | Libre | Contenu | Host subdomain |
+|-----|---------|-------|---------|----------------|
+| **Pinecone** `website-sectors-jina-1024` | ~43K | 57K | Secteurs Jina v3 | `a4mkzmz` |
+| **Pinecone** `sectors-e5-multilingual` | **9,158** | 91K | E5 multilingual, integrated embedding | `a4mkzmz` |
+| **Pinecone** `sota-rag-jina-1024` | 0 | 100K | Vide (purge S93) | `a4mkzmz` |
 | **Neo4j** #1 (38c949a2) | 22K nodes | 178K libres | SectorDoc + Entity |
 | **Supabase** #1 (ayqviqmx) | 85MB | 415MB | sector_documents (43K) |
 
@@ -40,22 +47,29 @@
 
 ## 3. PIPELINES RAG
 
-| Pipeline | Status | Version | Changements S94 |
-|----------|--------|---------|-----------------|
-| Standard | **UPGRADED** | V3.5.0 | **Multi-index: 5 sources RRF** (Jina HyDE + Jina Original + BM25 + E5 Original + E5 HyDE) |
+| Pipeline | Status | Version | Notes S94 |
+|----------|--------|---------|-----------|
+| Standard (n8n) | **PATCHED** but data flow broken | V3.5.0 | Groq direct + E5 search patched, but n8n execution returns 0 sources |
+| **RAG Proxy** | **WORKING** | V1.0 | `ops/rag-proxy.py` — E5 search + Groq LLM, bypasses n8n |
 | Graph | WORKING | V3.3 | Inchange |
-| Quant | WORKING | V3.1 | Inchange |
+| Quant | WORKING | V3.1 | Inchange, uses LiteLLM (BROKEN) |
 | Orchestrator | WORKING | V10.1 | Inchange |
-| Enrichment | **DEPLOYED** | V4.0 | 5 bugs fixes, synce vers n8n |
-| Auto-Healer | **NOUVEAU** | V1.0 | Deploye, cron 30min, ID Yqw7Pzn0e7m0C6i3 |
+| Enrichment | **DEPLOYED** | V4.0 | 5 bugs fixes, synced via cookie auth |
+| Auto-Healer | **ACTIVE** | V1.0 | Cron 30min, ID `Yqw7Pzn0e7m0C6i3` |
+
+### RAG Proxy (RECOMMENDED — bypasses n8n)
+- **Script**: `ops/rag-proxy.py`
+- **How it works**: E5 integrated search → Groq LLM → response with sources
+- **Tested**: Finance (3M CapEx → $1,577M correct), BTP (BOAMP marches publics, score 0.86)
+- **Usage**: `source .env.local && python3 ops/rag-proxy.py "question" [sector]`
 
 ## 4. DONNEES SECTORIELLES
 
-### Ingestion en cours (PID 203705)
-- **Index cible**: sectors-e5-multilingual (integrated embedding)
-- **Progression**: ~17K/26K vectors
-- **Script**: `ops/ingest-integrated.py`
-- **Log**: `/tmp/ingest-all-sectors.log`
+### E5 Index — CLEAN INGESTION COMPLETE
+- **Index**: sectors-e5-multilingual
+- **Vectors**: 9,158 (purged junk, reingested clean data only)
+- **Script used**: `ops/clean-ingest.py`
+- **Whitelisted files**: 8 clean JSONL files from 4 sectors
 
 ### Datasets disponibles (rag-data-ingestion)
 | Secteur | Fichiers | Records | Status |
@@ -71,10 +85,12 @@
 - **Sujets cles**: Facturation electronique 2026, RE2020, RGPD, DUERP/ICPE
 - Fichiers: `sectors/eval-datasets/tavily-real-world-tests.json`, `sectors/real-documents-to-ingest.json`
 
-## 5. OUTILS NOUVEAUX (S94)
+## 5. OUTILS (S94)
 
 | Outil | Fichier | Role |
 |-------|---------|------|
+| **RAG Proxy** | `ops/rag-proxy.py` | **PRIMARY** — E5 search + Groq LLM |
+| **Clean Ingest** | `ops/clean-ingest.py` | Purge + reingest, 8 threads, smart text extraction |
 | Tavily Sector Research | `ops/tavily-sector-research.py` | Recherche temps reel PME/ETI |
 | Deploy Workflows | `ops/deploy-workflows.py` | Deploy n8n via cookie auth |
 | Ingest Integrated | `ops/ingest-integrated.py` | Pinecone with built-in embedding |
@@ -89,22 +105,21 @@
 
 ## 7. TLDR — Prochaines etapes
 
-### COURT TERME (S95)
-1. Finir ingestion sectors-e5-multilingual (reste ~9K records)
-2. Tester Docling sur vrais PDF sectoriels (upload direct, pas URL)
-3. Implementer auto-healer V2 (analytics completes, 4 pipelines)
-4. Upgrader Graph pipeline avec multi-index aussi
-5. Connecter comptes BDD #2 aux pipelines
-6. Ingerer les 158 documents Tavily via Docling
+### IMMEDIAT (S95)
+1. **Fix LiteLLM S7** — rebuild Space or fix DB (Graph+Quant depend on it)
+2. **Run full eval** via rag-proxy on 220 questions (wait Groq rate limit reset)
+3. **Update quick-test.py** to use rag-proxy instead of broken n8n webhooks
+4. **Ingest MORE data** — Jina index has ~43K but E5 only 9K, need parity
+5. **Fix n8n Standard pipeline** or replace with rag-proxy as webhook
 
-### MOYEN TERME (S96-S98)
-7. Multi-index sur les 4 pipelines
-8. Pipeline Standard queries E5 index en mode natif texte (pas besoin de Jina)
-9. Auto-healer persistent (Supabase history, trends)
+### COURT TERME (S96-S97)
+6. Tester Docling sur vrais PDF sectoriels (upload direct)
+7. Ingerer les 158 documents Tavily via Docling
+8. Graph pipeline multi-index upgrade
+9. Connecter comptes BDD #2 aux pipelines
 10. Atteindre 80% accuracy sur 4 secteurs
-11. Tavily cron pour mise a jour continue des tests
 
-### LONG TERME (S99+)
-12. 250K vecteurs par secteur
-13. Self-healing complet autonome
-14. Monetisation : chatbot expert + Stripe
+### LONG TERME (S98+)
+11. 250K vecteurs par secteur
+12. Self-healing complet autonome
+13. Monetisation : chatbot expert + Stripe
