@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nomos RAG - Live Dashboard</title>
+<style>
+:root {
+  --bg: #0a0e17;
+  --card: #111827;
+  --border: #1e293b;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --green: #22c55e;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+  --blue: #3b82f6;
+  --purple: #8b5cf6;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 20px;
+}
+.header {
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.header h1 {
+  font-size: 28px;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+}
+.header .subtitle {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+.header .live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  margin-right: 6px;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.card h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-label { color: var(--muted); font-size: 13px; }
+.stat-value { font-size: 15px; font-weight: 600; }
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+.status-up { background: var(--green); }
+.status-down { background: var(--red); }
+.status-warn { background: var(--yellow); }
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+.progress-fill.green { background: linear-gradient(90deg, var(--green), #16a34a); }
+.progress-fill.blue { background: linear-gradient(90deg, var(--blue), var(--purple)); }
+.progress-fill.yellow { background: linear-gradient(90deg, var(--yellow), #d97706); }
+.big-number {
+  font-size: 36px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.big-sub { color: var(--muted); font-size: 13px; }
+.error-item {
+  padding: 8px;
+  margin: 4px 0;
+  background: rgba(239,68,68,0.1);
+  border-left: 3px solid var(--red);
+  border-radius: 4px;
+  font-size: 12px;
+}
+.error-item .time { color: var(--muted); }
+.agent-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+.agent-name { flex: 1; font-size: 13px; }
+.agent-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-running { background: rgba(34,197,94,0.2); color: var(--green); }
+.badge-stopped { background: rgba(239,68,68,0.2); color: var(--red); }
+.refresh-info {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 20px;
+  padding: 10px;
+}
+.pipeline-score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.score-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.score-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>NOMOS RAG</h1>
+  <div class="subtitle"><span class="live-dot"></span>LIVE DASHBOARD &mdash; AI Expert Sectoriel</div>
+  <div class="subtitle" id="last-update">Loading...</div>
+</div>
+
+<div class="grid">
+  <!-- Spaces -->
+  <div class="card">
+    <h2>HF Spaces</h2>
+    <div id="spaces-list">
+      <div class="stat-row"><span class="stat-label">Loading...</span></div>
+    </div>
+  </div>
+
+  <!-- Pipelines -->
+  <div class="card">
+    <h2>Pipelines RAG</h2>
+    <div id="pipelines-list">
+      <div class="stat-row"><span class="stat-label">Loading...</span></div>
+    </div>
+  </div>
+
+  <!-- E5 Vectors -->
+  <div class="card">
+    <h2>E5 Pinecone Index</h2>
+    <div style="text-align:center; padding: 10px 0;">
+      <div class="big-number" id="e5-count">--</div>
+      <div class="big-sub">vectors / <span id="e5-target">100,000</span></div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill blue" id="e5-bar" style="width: 0%"></div>
+    </div>
+    <div style="text-align:right; margin-top:4px;">
+      <span class="big-sub" id="e5-pct">--%</span>
+    </div>
+  </div>
+
+  <!-- Databases -->
+  <div class="card">
+    <h2>Databases</h2>
+    <div class="stat-row">
+      <span class="stat-label">E5 Pinecone</span>
+      <span class="stat-value" id="db-e5">--</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Jina Pinecone (legacy)</span>
+      <span class="stat-value">~43,000</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Neo4j Nodes</span>
+      <span class="stat-value" id="db-neo4j">~42,000</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Supabase Docs</span>
+      <span class="stat-value" id="db-supabase">43,357</span>
+    </div>
+  </div>
+
+  <!-- Agents -->
+  <div class="card">
+    <h2>Background Agents</h2>
+    <div id="agents-list">
+      <div class="stat-row"><span class="stat-label">Loading...</span></div>
+    </div>
+  </div>
+
+  <!-- Errors (24h) -->
+  <div class="card">
+    <h2>Recent Errors (24h)</h2>
+    <div id="errors-list">
+      <div style="color: var(--green); font-size: 13px; padding: 20px; text-align: center;">
+        No errors detected
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="refresh-info">
+  Auto-refreshes every 30 seconds &mdash; Data source: <code>data/health-status.json</code> + <code>logs/monitor-report.json</code><br>
+  <span id="connection-status">Connecting...</span>
+</div>
+
+<script>
+// Configuration — change this to your data source URL
+// Option 1: Serve from VM (python3 -m http.server 8080)
+// Option 2: GitHub raw URL after push
+const DATA_SOURCES = {
+  health: './health-status.json',      // relative path when served from docs/
+  report: '../logs/monitor-report.json' // or full URL
+};
+
+// For local file access (when opened directly), use embedded data
+let lastData = null;
+
+async function fetchData(url) {
+  try {
+    const resp = await fetch(url + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return await resp.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderSpaces(spaces) {
+  const el = document.getElementById('spaces-list');
+  if (!spaces || !spaces.length) {
+    el.innerHTML = '<div class="stat-row"><span class="stat-label">No data</span></div>';
+    return;
+  }
+  el.innerHTML = spaces.map(s => {
+    const isUp = s.status === 'UP';
+    const dotClass = isUp ? 'status-up' : 'status-down';
+    const name = s.name || s.url?.split('//')[1]?.split('.')[0] || '?';
+    return `<div class="stat-row">
+      <span><span class="status-dot ${dotClass}"></span>${name}</span>
+      <span class="stat-value" style="color: ${isUp ? 'var(--green)' : 'var(--red)'}">${s.status}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderPipelines(pipelines) {
+  const el = document.getElementById('pipelines-list');
+  if (!pipelines || !Object.keys(pipelines).length) {
+    el.innerHTML = '<div class="stat-row"><span class="stat-label">No data</span></div>';
+    return;
+  }
+  el.innerHTML = Object.entries(pipelines).map(([name, stats]) => {
+    const rate = stats.success_rate || 0;
+    const color = rate >= 90 ? 'var(--green)' : rate >= 70 ? 'var(--yellow)' : 'var(--red)';
+    return `<div class="stat-row">
+      <span class="stat-label">${name}</span>
+      <div class="pipeline-score">
+        <div class="score-bar">
+          <div class="score-fill" style="width:${rate}%; background:${color}"></div>
+        </div>
+        <span class="stat-value" style="color:${color}">${rate.toFixed(0)}%</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderE5(count, target) {
+  target = target || 100000;
+  const pct = ((count / target) * 100).toFixed(1);
+  document.getElementById('e5-count').textContent = count?.toLocaleString() || '--';
+  document.getElementById('e5-pct').textContent = pct + '%';
+  document.getElementById('e5-bar').style.width = Math.min(pct, 100) + '%';
+  document.getElementById('db-e5').textContent = count?.toLocaleString() || '--';
+}
+
+function renderAgents(agents) {
+  const el = document.getElementById('agents-list');
+  if (!agents || !Object.keys(agents).length) {
+    // Show defaults
+    const defaults = ['monitor', 'eval', 'ingest', 'pipeline', 'docs'];
+    el.innerHTML = defaults.map(name => `<div class="agent-row">
+      <span class="agent-name">${name}</span>
+      <span class="agent-badge badge-stopped">UNKNOWN</span>
+    </div>`).join('');
+    return;
+  }
+  el.innerHTML = Object.entries(agents).map(([name, info]) => {
+    const running = info.status === 'RUNNING';
+    return `<div class="agent-row">
+      <span class="agent-name">${name}</span>
+      <span class="agent-badge ${running ? 'badge-running' : 'badge-stopped'}">${info.status}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderErrors(errors) {
+  const el = document.getElementById('errors-list');
+  if (!errors || errors.length === 0) {
+    el.innerHTML = '<div style="color:var(--green);font-size:13px;padding:20px;text-align:center;">No errors detected</div>';
+    return;
+  }
+  el.innerHTML = errors.slice(0, 8).map(err => {
+    const time = err.ts?.split('T')[1]?.substring(0, 8) || '';
+    return `<div class="error-item">
+      <span class="time">${time}</span>
+      [${err.pipeline || '?'}] <strong>${err.node || '?'}</strong>: ${err.type || ''}
+    </div>`;
+  }).join('');
+}
+
+async function refresh() {
+  // Try health-status.json first
+  let health = await fetchData(DATA_SOURCES.health);
+  let report = await fetchData(DATA_SOURCES.report);
+
+  // Use whatever data we got
+  const data = { ...(health || {}), ...(report || {}) };
+
+  if (!health && !report) {
+    document.getElementById('connection-status').textContent = 'Offline — No data source available';
+    document.getElementById('connection-status').style.color = 'var(--red)';
+
+    // Try embedded demo data
+    if (window.DEMO_DATA) {
+      renderWithData(window.DEMO_DATA);
+    }
+    return;
+  }
+
+  document.getElementById('connection-status').textContent = 'Connected';
+  document.getElementById('connection-status').style.color = 'var(--green)';
+  lastData = data;
+  renderWithData(data);
+}
+
+function renderWithData(data) {
+  // Timestamp
+  const ts = data.timestamp || new Date().toISOString();
+  document.getElementById('last-update').textContent = 'Last update: ' + ts.replace('T', ' ').substring(0, 19) + ' UTC';
+
+  // Spaces
+  renderSpaces(data.spaces);
+
+  // Pipelines
+  renderPipelines(data.pipelines);
+
+  // E5
+  if (data.e5_vectors) {
+    renderE5(data.e5_vectors, 100000);
+  } else if (data.databases?.e5_vectors) {
+    renderE5(data.databases.e5_vectors, 100000);
+  }
+
+  // Agents
+  if (data.agents) renderAgents(data.agents);
+
+  // Errors
+  renderErrors(data.recent_errors || []);
+}
+
+// Embedded fallback data (updated by ops/monitor.py)
+window.DEMO_DATA = {
+  timestamp: new Date().toISOString(),
+  spaces: [
+    {name: 'S1', status: 'UP'}, {name: 'S3', status: 'UP'},
+    {name: 'S5', status: 'UP'}, {name: 'S9', status: 'UP'}
+  ],
+  pipelines: {
+    'Standard': {success_rate: 98, total: 138},
+    'Orchestrator': {success_rate: 100, total: 21},
+    'Graph': {success_rate: 100, total: 12},
+    'Quant': {success_rate: 100, total: 9}
+  },
+  e5_vectors: 58533,
+  agents: {
+    monitor: {status: 'RUNNING'}, eval: {status: 'RUNNING'},
+    ingest: {status: 'RUNNING'}, pipeline: {status: 'RUNNING'},
+    docs: {status: 'RUNNING'}
+  },
+  recent_errors: []
+};
+
+// Initial load
+refresh();
+
+// Auto-refresh every 30s
+setInterval(refresh, 30000);
+</script>
+</body>
+</html>
