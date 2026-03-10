@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-03-10T11:36:06Z",
+  "health": {
+    "overall": "YELLOW",
+    "pipelines": {
+      "Standard": {
+        "status": "GREEN",
+        "reason": "100% success rate"
+      },
+      "Graph": {
+        "status": "GREEN",
+        "reason": "100% success rate"
+      },
+      "Quantitative": {
+        "status": "GREEN",
+        "reason": "93% success rate"
+      },
+      "Orchestrator": {
+        "status": "RED",
+        "reason": "0% success rate"
+      }
+    }
+  },
+  "bottlenecks": [
+    {
+      "node": "Orchestrator",
+      "issue": "Complete failure",
+      "impact": "HIGH"
+    }
+  ],
+  "regressions": [
+    {
+      "pipeline": "Orchestrator",
+      "delta_pct": -100.0,
+      "severity": "CRITICAL"
+    }
+  ],
+  "capacity": {
+    "volume_trend": "STABLE",
+    "saturation_risk": "MEDIUM",
+    "notes": "Average duration and P95 are high but stable"
+  },
+  "recommendations": [
+    {
+      "rank": 1,
+      "action": "Investigate and fix Orchestrator pipeline",
+      "impact": "HIGH",
+      "effort": "HIGH"
+    },
+    {
+      "rank": 2,
+      "action": "Monitor Quantitative pipeline for potential issues",
+      "impact": "MEDIUM",
+      "effort": "LOW"
+    },
+    {
+      "rank": 3,
+      "action": "Optimize Standard and Graph pipelines for better performance",
+      "impact": "LOW",
+      "effort": "MEDIUM"
+    }
+  ],
+  "summary_oneliner": "System is mostly healthy but Orchestrator pipeline is completely down",
+  "raw_metrics_summary": "Metrics snapshot at 2026-03-10T11:36:06Z\nPipelines: Standard, Graph, Quantitative, Orchestrator\n\n## Executions: 106 total, 87 success, 19 failures\n  auto-healer: 23/25 ok (92%)\n  graph: 7/7 ok (100%)\n  orchestrator: 0/16 ok (0%)\n  quant: 13/14 ok (93%)\n  standard: 44/44 ok (100%)\n  Avg duration: 29320.0ms, P95: 50893ms\n\n## Node Performance: 6 entries (flat)\n\n## Error Catalog: 4 error types\n\n## Regression Tracker: 2 entries"
+}
