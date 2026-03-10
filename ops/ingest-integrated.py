@@ -38,18 +38,22 @@ SECTOR_DIRS = ["finance", "btp", "juridique", "industrie"]
 def extract_text(record):
     """Extract embeddable text from a JSONL record."""
     parts = []
-    for field in ["text", "content", "passage", "document", "context",
-                   "article_contenu_text", "article_contenu_markdown", "fact"]:
+    # Direct text fields (priority order)
+    for field in ["text", "content", "passage", "document", "documents",
+                   "context", "article_contenu_text", "article_contenu_markdown",
+                   "fact"]:
         if field in record and record[field]:
             val = str(record[field]).strip()
             if len(val) > MIN_TEXT_LEN:
                 parts.append(val)
                 break
+    # Q+A composite (convfinqa, financebench, manufacturing_qa, additive_manufacturing)
     if not parts:
         q = str(record.get("query", record.get("question",
                 record.get("Question", "")))).strip()
         a = str(record.get("answer", record.get("response",
-                record.get("Answer", record.get("Explanation", ""))))).strip()
+                record.get("Answer", record.get("Explanation",
+                record.get("reason", "")))))).strip()
         if q and a:
             parts.append(f"Question: {q}\nAnswer: {a}")
         elif q:

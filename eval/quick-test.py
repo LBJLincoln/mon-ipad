@@ -23,6 +23,17 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EVAL_DIR = os.path.dirname(os.path.abspath(__file__))
 N8N_HOST = os.environ.get("N8N_HOST", "https://lbjlincoln-nomos-rag-engine.hf.space")
 
+# ── RAG Proxy mode (E5 + Groq, bypasses n8n) ──
+USE_PROXY = "--proxy" in sys.argv
+if USE_PROXY:
+    sys.path.insert(0, os.path.join(REPO_ROOT, "ops"))
+    try:
+        import rag_proxy  # ops/rag-proxy.py renamed import
+    except ImportError:
+        # Direct import from file
+        from importlib.machinery import SourceFileLoader as _SFL
+        rag_proxy = _SFL("rag_proxy", os.path.join(REPO_ROOT, "ops", "rag-proxy.py")).load_module()
+
 # Multi-Space support: comma-separated URLs per pipeline or global
 N8N_ALL_HOSTS = [h.strip() for h in os.environ.get("N8N_ALL_HOSTS", N8N_HOST).split(",") if h.strip()]
 _rr_counters = {}
@@ -56,6 +67,8 @@ def _check_host_health(host, timeout=8):
 
 # Guard: block accidental use of VM n8n for evals
 def _check_n8n_host():
+    if USE_PROXY:
+        return  # Proxy mode doesn't use n8n
     import re
     if re.search(r'localhost|127\.0\.0\.1|34\.136\.180\.66', N8N_HOST):
         if "--allow-local" not in sys.argv:
@@ -114,8 +127,10 @@ SMOKE_QUESTIONS = {
 def normalize_for_match(text):
     """Normalize text for fuzzy matching — strip formatting from numbers etc."""
     import re
-    # Remove commas from numbers (6,745 → 6745), dollar signs, percent signs
-    normalized = re.sub(r'(\d),(\d)', r'\1\2', text)
+    # Remove commas and spaces from numbers (6,745 → 6745, 1 500 → 1500)
+    normalized = re.sub(r'(\d)[,\s](\d)', r'\1\2', text)
+    # Handle wider spacing (1 500 000)
+    normalized = re.sub(r'(\d)\s+(\d)', r'\1\2', normalized)
     normalized = normalized.replace('$', '').replace('%', '')
     return normalized.lower()
 
@@ -164,6 +179,19 @@ def call_endpoint(endpoint, query, timeout=60, max_retries=3):
     return {"status": "error", "latency_ms": 0, "answer": "", "error": "Max retries exceeded"}
 
 
+def call_proxy(query, sector=None, timeout=30):
+    """Call RAG proxy (E5 search + Groq LLM) instead of n8n webhook."""
+    try:
+        start = time.time()
+        result = rag_proxy.rag_query(query, sector)
+        latency = int((time.time() - start) * 1000)
+        if result.get("error"):
+            return {"status": "error", "latency_ms": latency, "answer": "", "error": result.get("message", "proxy error")}
+        return {"status": "ok", "latency_ms": latency, "answer": result.get("response", ""), "error": None}
+    except Exception as e:
+        return {"status": "error", "latency_ms": 0, "answer": "", "error": str(e)[:200]}
+
+
 def run_quick_tests(pipelines, max_questions=3, trigger="manual"):
     """Run quick smoke tests for specified pipelines."""
     results = {}
@@ -174,18 +202,22 @@ def run_quick_tests(pipelines, max_questions=3, trigger="manual"):
         if not webhook_path or not questions:
             continue
 
-        print(f"\n  Quick test: {pipe.upper()} ({len(questions)} questions)")
+        mode_label = "PROXY (E5+Groq)" if USE_PROXY else pipe.upper()
+        print(f"\n  Quick test: {mode_label} ({len(questions)} questions)")
         pipe_results = []
 
         for i, q in enumerate(questions):
-            # Use generous timeouts — LLM calls via free models can be slow (429 retries)
-            pipe_timeout = 300 if pipe in ("orchestrator", "quantitative") else 90
-            # For quantitative: 1 retry max (not 3) — prevents cascading stale n8n executions
-            pipe_max_retries = 1 if pipe == "quantitative" else 3
-            if i > 0:
-                time.sleep(3)  # 3s between questions — prevents n8n 503 (LIMIT=2)
-            endpoint = _rr_endpoint(pipe, webhook_path)
-            resp = call_endpoint(endpoint, q["query"], timeout=pipe_timeout, max_retries=pipe_max_retries)
+            if USE_PROXY:
+                resp = call_proxy(q["query"], q.get("sector"))
+            else:
+                # Use generous timeouts — LLM calls via free models can be slow (429 retries)
+                pipe_timeout = 300 if pipe in ("orchestrator", "quantitative") else 90
+                # For quantitative: 1 retry max (not 3) — prevents cascading stale n8n executions
+                pipe_max_retries = 1 if pipe == "quantitative" else 3
+                if i > 0:
+                    time.sleep(3)  # 3s between questions — prevents n8n 503 (LIMIT=2)
+                endpoint = _rr_endpoint(pipe, webhook_path)
+                resp = call_endpoint(endpoint, q["query"], timeout=pipe_timeout, max_retries=pipe_max_retries)
             expected = q.get("expected_contains", "")
             passed = False
 
@@ -235,16 +267,22 @@ def main():
     parser.add_argument("--questions", type=int, default=3)
     parser.add_argument("--trigger", type=str, default="manual")
     parser.add_argument("--allow-local", action="store_true", help="Allow localhost/VM n8n (for CI)")
+    parser.add_argument("--proxy", action="store_true", help="Use RAG proxy (E5+Groq) instead of n8n")
     args = parser.parse_args()
 
     pipelines = [p.strip() for p in args.pipelines.split(",")]
     print("=" * 50)
     print("  QUICK ENDPOINT SMOKE TEST")
+    if USE_PROXY:
+        print("  Mode: RAG PROXY (E5 search + Groq LLM)")
+    else:
+        print(f"  Mode: n8n webhooks")
     print(f"  Pipelines: {', '.join(pipelines)}")
     print(f"  Questions per pipeline: {args.questions}")
-    print(f"  Hosts: {len(N8N_ALL_HOSTS)} Space(s)")
-    for h in N8N_ALL_HOSTS:
-        print(f"    - {h}")
+    if not USE_PROXY:
+        print(f"  Hosts: {len(N8N_ALL_HOSTS)} Space(s)")
+        for h in N8N_ALL_HOSTS:
+            print(f"    - {h}")
     print("=" * 50)
 
     results = run_quick_tests(pipelines, max_questions=args.questions, trigger=args.trigger)
