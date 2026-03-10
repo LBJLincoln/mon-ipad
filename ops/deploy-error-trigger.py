@@ -35,7 +35,9 @@ WORKFLOW_JSON_PATH = "/home/termius/mon-ipad/n8n/live/error-trigger-handler.json
 
 SPACES = {
     "S1": "https://lbjlincoln-nomos-rag-engine.hf.space",
+    "S2": "https://lbjlincoln26-nomos-rag-engine-2.hf.space",
     "S3": "https://lbjlincoln-nomos-rag-engine-3.hf.space",
+    "S4": "https://lbjlincoln26-nomos-rag-engine-4.hf.space",
     "S5": "https://lbjlincoln-nomos-rag-engine-5.hf.space",
     "S9": "https://lbjlincoln-nomos-rag-engine-9.hf.space",
 }
@@ -45,7 +47,7 @@ SPACES = {
 PIPELINE_WORKFLOWS = {
     "TmgyRP20N4JFd9CB": {
         "name": "Standard RAG V3.5",
-        "spaces": ["S1", "S3", "S5", "S9"],
+        "spaces": ["S1", "S2", "S3", "S4", "S5", "S9"],
     },
     "6257AfT1l4FMC6lY": {
         "name": "Graph RAG V3.3",

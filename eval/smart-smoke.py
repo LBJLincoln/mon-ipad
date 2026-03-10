@@ -69,7 +69,9 @@ _ssl_ctx.verify_mode = ssl.CERT_NONE
 # ── Space URLs & Credentials ────────────────────────────────────
 SPACES = {
     "S1": "https://lbjlincoln-nomos-rag-engine.hf.space",
+    "S2": "https://lbjlincoln26-nomos-rag-engine-2.hf.space",
     "S3": "https://lbjlincoln-nomos-rag-engine-3.hf.space",
+    "S4": "https://lbjlincoln26-nomos-rag-engine-4.hf.space",
     "S5": "https://lbjlincoln-nomos-rag-engine-5.hf.space",
     "S9": "https://lbjlincoln-nomos-rag-engine-9.hf.space",
 }
@@ -82,7 +84,7 @@ PIPELINES = {
     "standard": {
         "webhook": "/webhook/rag-multi-index-v3",
         "workflow_id": "TmgyRP20N4JFd9CB",
-        "spaces": ["S1", "S3", "S9"],  # deployed on 3 Spaces
+        "spaces": ["S1", "S2", "S3", "S4", "S5", "S9"],  # deployed on 6 Spaces
     },
     "graph": {
         "webhook": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",

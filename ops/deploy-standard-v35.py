@@ -24,8 +24,11 @@ N8N_EMAIL = "ci@nomos.ai"
 
 SPACES = {
     "S1": "https://lbjlincoln-nomos-rag-engine.hf.space",
+    "S2": "https://lbjlincoln26-nomos-rag-engine-2.hf.space",
     "S3": "https://lbjlincoln-nomos-rag-engine-3.hf.space",
+    "S4": "https://lbjlincoln26-nomos-rag-engine-4.hf.space",
     "S5": "https://lbjlincoln-nomos-rag-engine-5.hf.space",
+    "S9": "https://lbjlincoln-nomos-rag-engine-9.hf.space",
 }
 
 # SSL context that skips verification for HF spaces
