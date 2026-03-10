@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-10T21:39:51.675422Z",
+  "timestamp": "2026-03-10T22:21:04.473236Z",
   "spaces": [
     {
       "name": "S1",
@@ -22,32 +22,61 @@
       "status": "UP"
     }
   ],
+  "e5_vectors": 58533,
+  "agents": {
+    "monitor": {
+      "pid": 332541,
+      "status": "RUNNING"
+    },
+    "eval": {
+      "pid": 332542,
+      "status": "RUNNING"
+    },
+    "ingest": {
+      "pid": 332543,
+      "status": "RUNNING"
+    },
+    "pipeline": {
+      "pid": 332545,
+      "status": "RUNNING"
+    },
+    "docs": {
+      "pid": 332546,
+      "status": "RUNNING"
+    }
+  },
+  "last_pipeline_check": {
+    "cycle": 2,
+    "failures": [
+      "standard",
+      "quantitative"
+    ],
+    "ts": "2026-03-10T22:09:46.958993+00:00"
+  },
   "pipelines": {
     "Standard": {
-      "success_rate": 100.0,
-      "total": 143
+      "success_rate": 97.4,
+      "total": 152
+    },
+    "Auto-Healer": {
+      "success_rate": 75.0,
+      "total": 12
     },
     "Orchestrator": {
-      "success_rate": 100.0,
-      "total": 18
+      "success_rate": 86.4,
+      "total": 22
     },
     "Graph": {
       "success_rate": 100.0,
-      "total": 12
+      "total": 9
     },
     "Quant": {
       "success_rate": 100.0,
-      "total": 12
-    },
-    "Auto-Healer": {
-      "success_rate": 100.0,
-      "total": 12
+      "total": 9
     },
     "Unknown": {
       "success_rate": 100.0,
       "total": 3
     }
-  },
-  "error_count_24h": 3,
-  "new_errors": 0
+  }
 }
