@@ -45,6 +45,8 @@ os.makedirs(DATA_DIR, exist_ok=True)
 RESULTS_FILE = os.path.join(DATA_DIR, "expert-results.json")
 SECTOR_SCORES_FILE = os.path.join(DATA_DIR, "sector-scores.json")
 BOTTLENECKS_FILE = os.path.join(DATA_DIR, "bottlenecks.json")
+PROGRESS_FILE = os.path.join(DATA_DIR, "progress.json")
+LIVE_RESULTS_FILE = os.path.join(DATA_DIR, "expert-results-live.json")
 
 # ─── RAG Proxy ────────────────────────────────────────────────────────────
 USE_PROXY = "--proxy" in sys.argv
@@ -730,6 +732,84 @@ def call_webhook(pipeline, query, timeout=90):
 
 
 # =========================================================================
+#  SECTION 5b — STREAMING / INCREMENTAL OUTPUT
+# =========================================================================
+
+def _write_progress(current, total, sector, last_score, errors, elapsed_s=0):
+    """Write progress.json after each question for external monitoring."""
+    progress = {
+        "current": current,
+        "total": total,
+        "sector": sector,
+        "last_score": round(last_score, 2) if last_score else None,
+        "errors": errors,
+        "pct": round(current / total * 100, 1) if total > 0 else 0,
+        "elapsed_s": round(elapsed_s, 1),
+        "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+    try:
+        with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
+            json.dump(progress, f, indent=2, ensure_ascii=False)
+    except Exception:
+        pass  # Never crash on progress write
+
+
+def _write_live_results(results):
+    """Write partial results to expert-results-live.json after each question."""
+    sector_agg = defaultdict(lambda: {
+        "count": 0, "errors": 0,
+        "factual_accuracy": [], "source_citation": [], "expert_terminology": [],
+        "completeness": [], "language_match": [],
+    })
+    for r in results:
+        s = r.get("sector", "unknown")
+        sector_agg[s]["count"] += 1
+        if r.get("error"):
+            sector_agg[s]["errors"] += 1
+        if r.get("scores"):
+            for key in ["factual_accuracy", "source_citation", "expert_terminology",
+                        "completeness", "language_match"]:
+                val = r["scores"].get(key, 0)
+                if val > 0:
+                    sector_agg[s][key].append(val)
+
+    sector_summary = {}
+    for s, sd in sector_agg.items():
+        scores = {}
+        for key in ["factual_accuracy", "source_citation", "expert_terminology",
+                    "completeness", "language_match"]:
+            vals = sd[key]
+            scores[key] = round(sum(vals) / len(vals), 2) if vals else 0
+        overall_vals = [v for v in scores.values() if v > 0]
+        scores["overall"] = round(sum(overall_vals) / len(overall_vals), 2) if overall_vals else 0
+        sector_summary[s] = {"count": sd["count"], "errors": sd["errors"], "scores": scores}
+
+    live_output = {
+        "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "total_questions": len(results),
+        "sector_summary": sector_summary,
+        "results": results,
+    }
+    try:
+        with open(LIVE_RESULTS_FILE, "w", encoding="utf-8") as f:
+            json.dump(live_output, f, indent=2, ensure_ascii=False)
+    except Exception:
+        pass  # Never crash on live results write
+
+
+def _result_avg_score(result):
+    """Compute the average score from a result dict. Returns float or None."""
+    scores = result.get("scores")
+    if not scores:
+        return None
+    vals = [scores.get(k, 0) for k in
+            ["factual_accuracy", "source_citation", "expert_terminology",
+             "completeness", "language_match"]]
+    non_zero = [v for v in vals if v > 0]
+    return sum(non_zero) / len(non_zero) if non_zero else 0.0
+
+
+# =========================================================================
 #  SECTION 6 — EVALUATION ENGINE
 # =========================================================================
 
@@ -791,34 +871,53 @@ def evaluate_single(question_data, pipeline="standard", use_proxy=True):
 
 
 def run_evaluation(questions, pipeline="standard", use_proxy=True, delay=3):
-    """Run evaluation on a list of questions. Returns list of result dicts."""
+    """Run evaluation on a list of questions. Returns list of result dicts.
+
+    Streaming mode: writes progress.json and expert-results-live.json after
+    each question so external tools can monitor progress in real time.
+    """
     results = []
     total = len(questions)
+    eval_start = time.time()
 
     for i, q in enumerate(questions):
         sector = q.get("sector", "?")
         qid = q.get("id", "?")
-        print(f"\n  [{i+1}/{total}] {sector.upper()} | {qid} | {q['question'][:60]}...")
+        q_start = time.time()
 
         result = evaluate_single(q, pipeline=pipeline, use_proxy=use_proxy)
         results.append(result)
         _eval_stats["total"] += 1
 
+        q_elapsed = time.time() - q_start
+        total_elapsed = time.time() - eval_start
+        avg = _result_avg_score(result)
+
+        # ── One-line streaming summary to stdout ──
         if result["error"]:
-            print(f"    [-] ERR: {result['error'][:80]} | {result['latency_ms']}ms")
+            print(f"[{i+1}/{total}] {sector} | ERR: {result['error'][:60]} | {q_elapsed:.1f}s",
+                  flush=True)
         else:
-            scores = result["scores"]
-            avg = 0
-            if scores:
-                vals = [scores.get(k, 0) for k in
-                        ["factual_accuracy", "source_citation", "expert_terminology",
-                         "completeness", "language_match"]]
-                avg = sum(vals) / len(vals) if vals else 0
-            print(f"    [{'+'if avg >= 3 else '-'}] avg={avg:.1f}/5 | "
-                  f"fact={scores.get('factual_accuracy',0)} cite={scores.get('source_citation',0)} "
-                  f"term={scores.get('expert_terminology',0)} comp={scores.get('completeness',0)} "
-                  f"lang={scores.get('language_match',0)} | {result['latency_ms']}ms "
-                  f"({scores.get('judge_backend','?')})")
+            scores = result["scores"] or {}
+            marker = "+" if (avg and avg >= 3) else "-"
+            print(f"[{i+1}/{total}] {sector} | score={avg:.1f} | "
+                  f"{q_elapsed:.1f}s | "
+                  f"f={scores.get('factual_accuracy',0)} c={scores.get('source_citation',0)} "
+                  f"t={scores.get('expert_terminology',0)} k={scores.get('completeness',0)} "
+                  f"l={scores.get('language_match',0)} | "
+                  f"{scores.get('judge_backend','?')}",
+                  flush=True)
+
+        # ── Write progress + live results after EACH question ──
+        _write_progress(
+            current=i + 1,
+            total=total,
+            sector=sector,
+            last_score=avg,
+            errors=_eval_stats["errors"],
+            elapsed_s=total_elapsed,
+        )
+        _write_live_results(results)
 
         if i < total - 1:
             time.sleep(delay)
@@ -827,15 +926,20 @@ def run_evaluation(questions, pipeline="standard", use_proxy=True, delay=3):
 
 
 def evaluate_adversarial(use_proxy=True, delay=3):
-    """Run adversarial question evaluation."""
+    """Run adversarial question evaluation.
+
+    Streaming mode: writes progress.json and expert-results-live.json after
+    each question so external tools can monitor progress in real time.
+    """
     results = []
     total = len(ADVERSARIAL_QUESTIONS)
+    eval_start = time.time()
 
     for i, q in enumerate(ADVERSARIAL_QUESTIONS):
         cat = q["category"]
         qid = q["id"]
         sector = q.get("sectors", ["unknown"])[0] if q.get("sectors") else "unknown"
-        print(f"\n  [{i+1}/{total}] ADV/{cat} | {qid} | {q['question'][:60]}...")
+        q_start = time.time()
 
         q_eval = {**q, "sector": sector}
         result = evaluate_single(q_eval, pipeline="standard", use_proxy=use_proxy)
@@ -843,22 +947,34 @@ def evaluate_adversarial(use_proxy=True, delay=3):
         results.append(result)
         _eval_stats["total"] += 1
 
+        q_elapsed = time.time() - q_start
+        total_elapsed = time.time() - eval_start
+        avg = _result_avg_score(result)
+
+        # ── One-line streaming summary to stdout ──
         if result["error"]:
-            print(f"    [-] ERR: {result['error'][:80]}")
+            print(f"[{i+1}/{total}] ADV/{cat} | ERR: {result['error'][:60]} | {q_elapsed:.1f}s",
+                  flush=True)
         else:
-            scores = result.get("scores", {})
-            avg = 0
-            if scores:
-                vals = [scores.get(k, 0) for k in
-                        ["factual_accuracy", "source_citation", "expert_terminology",
-                         "completeness", "language_match"]]
-                avg = sum(vals) / len(vals) if vals else 0
             note = ""
             if cat == "out-of-scope":
-                note = " (should refuse/redirect)"
+                note = " (refuse?)"
             elif cat == "ambiguous":
-                note = " (should ask for clarification)"
-            print(f"    [i] avg={avg:.1f}/5 | {result['latency_ms']}ms{note}")
+                note = " (clarify?)"
+            print(f"[{i+1}/{total}] ADV/{cat} | score={avg:.1f} | "
+                  f"{q_elapsed:.1f}s | {result['latency_ms']}ms{note}",
+                  flush=True)
+
+        # ── Write progress + live results after EACH question ──
+        _write_progress(
+            current=i + 1,
+            total=total,
+            sector=f"adversarial/{cat}",
+            last_score=avg,
+            errors=_eval_stats["errors"],
+            elapsed_s=total_elapsed,
+        )
+        _write_live_results(results)
 
         if i < total - 1:
             time.sleep(delay)

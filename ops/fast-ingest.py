@@ -29,6 +29,21 @@ import urllib.error
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
+# Force unbuffered output for background/nohup execution
+try:
+    sys.stdout.reconfigure(line_buffering=True)
+    sys.stderr.reconfigure(line_buffering=True)
+except Exception:
+    pass
+
+# Use requests with connection pooling if available (much faster)
+try:
+    import requests
+    from requests.adapters import HTTPAdapter
+    HAS_REQUESTS = True
+except ImportError:
+    HAS_REQUESTS = False
+
 # ── Config ──────────────────────────────────────────────────────
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY", "")
 PINECONE_HOST = "https://sectors-e5-multilingual-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
@@ -52,6 +67,8 @@ METADATA_FIELDS = [
 
 METRICS_DIR = os.path.expanduser("~/mon-ipad/data/metrics")
 ERROR_LOG = os.path.join(METRICS_DIR, "ingestion_errors.json")
+INGEST_PROGRESS_DIR = os.path.expanduser("~/mon-ipad/data/ingest")
+INGEST_PROGRESS_FILE = os.path.join(INGEST_PROGRESS_DIR, "progress.json")
 
 
 # ── Thread-safe counters ────────────────────────────────────────
@@ -116,6 +133,30 @@ class Stats:
         else:
             return f"{secs / 3600:.1f}h"
 
+    def write_progress(self, sector="all"):
+        """Write progress.json for external monitoring."""
+        try:
+            os.makedirs(INGEST_PROGRESS_DIR, exist_ok=True)
+            rate = self.rate
+            progress = {
+                "processed": self.processed,
+                "total": self.total,
+                "upserted": self.upserted,
+                "skipped": self.skipped,
+                "sector": sector,
+                "errors": self.errors,
+                "rate": f"{rate:.1f} docs/min" if rate > 0 else "0 docs/min",
+                "rate_per_sec": round(rate, 2),
+                "pct": round(self.processed / self.total * 100, 1) if self.total > 0 else 0,
+                "elapsed_s": round(self.elapsed, 1),
+                "eta": self.eta_str(),
+                "timestamp": datetime.utcnow().isoformat() + "Z",
+            }
+            with open(INGEST_PROGRESS_FILE, "w") as f:
+                json.dump(progress, f, indent=2)
+        except Exception:
+            pass  # Never crash on progress write
+
     def save_errors(self):
         if not self._error_details:
             return
@@ -152,10 +193,11 @@ def extract_text(record):
                 parts.append(val)
                 break
 
-    # Q+A composite (convfinqa, financebench, manufacturing_qa, etc.)
+    # Q+A composite (convfinqa, financebench, manufacturing_qa, Sujet, etc.)
     if not parts:
         q = str(record.get("query", record.get("question",
-                record.get("Question", "")))).strip()
+                record.get("Question", record.get("inputs",
+                record.get("user_prompt", "")))))).strip()
         a = str(record.get("answer", record.get("response",
                 record.get("Answer", record.get("Explanation",
                 record.get("reason", "")))))).strip()
@@ -175,14 +217,63 @@ def extract_text(record):
     return "\n".join(parts)[:MAX_TEXT_LEN]
 
 
+# ── Thread-local sessions for connection pooling ──────────────
+_thread_local = threading.local()
+
+def _get_session():
+    """Get or create a thread-local requests.Session with connection pooling."""
+    if not hasattr(_thread_local, "session"):
+        session = requests.Session()
+        adapter = HTTPAdapter(
+            pool_connections=1,
+            pool_maxsize=1,
+            max_retries=0,  # We handle retries ourselves
+        )
+        session.mount("https://", adapter)
+        session.headers.update({
+            "Api-Key": PINECONE_API_KEY,
+            "Content-Type": "application/json",
+        })
+        _thread_local.session = session
+    return _thread_local.session
+
+
 # ── Pinecone operations ────────────────────────────────────────
 def upsert_one(record, delay=DEFAULT_DELAY, retries=3):
     """Upsert a single record. Returns (success: bool, error_msg: str|None)."""
+    url = f"{PINECONE_HOST}/records/namespaces/{NAMESPACE}/upsert"
+
+    if HAS_REQUESTS:
+        session = _get_session()
+        for attempt in range(retries):
+            try:
+                resp = session.post(url, json=record, timeout=15)
+                if resp.status_code in (200, 201):
+                    if delay > 0:
+                        time.sleep(delay)
+                    return True, None
+                elif resp.status_code == 429:
+                    wait = min(2 ** attempt + 0.5, 5)
+                    time.sleep(wait)
+                    continue
+                elif resp.status_code == 409:
+                    return True, None
+                elif attempt == retries - 1:
+                    return False, f"HTTP {resp.status_code}: {resp.text[:300]}"
+                else:
+                    time.sleep(0.5)
+            except Exception as e:
+                if attempt == retries - 1:
+                    return False, str(e)[:200]
+                time.sleep(0.5)
+        return False, "max retries exceeded"
+
+    # Fallback to urllib (no connection pooling)
     data = json.dumps(record).encode()
     for attempt in range(retries):
         try:
             req = urllib.request.Request(
-                f"{PINECONE_HOST}/records/namespaces/{NAMESPACE}/upsert",
+                url,
                 data=data,
                 headers={
                     "Api-Key": PINECONE_API_KEY,
@@ -190,7 +281,7 @@ def upsert_one(record, delay=DEFAULT_DELAY, retries=3):
                 },
                 method="POST",
             )
-            urllib.request.urlopen(req, timeout=30)
+            urllib.request.urlopen(req, timeout=15)
             if delay > 0:
                 time.sleep(delay)
             return True, None
@@ -201,21 +292,19 @@ def upsert_one(record, delay=DEFAULT_DELAY, retries=3):
             except Exception:
                 pass
             if e.code == 429:
-                # Rate limited — exponential backoff
-                wait = (2 ** (attempt + 1)) + (attempt * 0.5)
+                wait = min(2 ** attempt + 0.5, 5)
                 time.sleep(wait)
                 continue
             elif e.code == 409:
-                # Conflict / already exists — treat as success
                 return True, None
             elif attempt == retries - 1:
                 return False, f"HTTP {e.code}: {body}"
             else:
-                time.sleep(1)
+                time.sleep(0.5)
         except Exception as e:
             if attempt == retries - 1:
                 return False, str(e)
-            time.sleep(1)
+            time.sleep(0.5)
     return False, "max retries exceeded"
 
 
@@ -385,6 +474,10 @@ def worker_upsert(record, stats, sector, delay):
             flush=True,
         )
 
+    # Write progress file every 50 records for external monitoring
+    if processed % 50 == 0 and processed > 0:
+        stats.write_progress(sector)
+
     return success
 
 
@@ -418,19 +511,23 @@ def ingest_records(records, sector, stats, workers, delay, skip_existing):
         flush=True,
     )
 
+    # Process in batches to avoid memory issues on constrained VMs
+    batch_size = min(200, len(records))
     with ThreadPoolExecutor(max_workers=workers) as executor:
-        futures = {
-            executor.submit(worker_upsert, record, stats, sector, delay): record
-            for record in records
-        }
+        for batch_start in range(0, len(records), batch_size):
+            batch = records[batch_start:batch_start + batch_size]
+            futures = {
+                executor.submit(worker_upsert, record, stats, sector, delay): record
+                for record in batch
+            }
 
-        # Wait for all to complete — as_completed gives earliest-done first
-        for future in as_completed(futures):
-            try:
-                future.result()
-            except Exception as e:
-                record = futures[future]
-                stats.inc_error(record["_id"], f"future exception: {e}")
+            # Wait for batch to complete
+            for future in as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    record = futures[future]
+                    stats.inc_error(record["_id"], f"future exception: {e}")
 
 
 # ── CLI ─────────────────────────────────────────────────────────
@@ -609,6 +706,10 @@ def main():
         if stats.errors > 0:
             stats.save_errors()
             print(f"  Error log: {ERROR_LOG}")
+        # Final progress write
+        sector_label = ", ".join(sectors) if sectors else (args.hf_sector or "all")
+        stats.write_progress(sector_label)
+        print(f"  Progress:  {INGEST_PROGRESS_FILE}")
     print(f"{'=' * 64}", flush=True)
 
 
