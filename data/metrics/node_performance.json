@@ -1,145 +1,56 @@
 {
-  "updated_at": "2026-03-10T11:52:19Z",
-  "total_entries": 1,
+  "updated_at": "2026-03-10T11:57:48Z",
+  "total_entries": 108,
   "pipelines": {
-    "standard": {
-      "total_executions": 1,
-      "avg_latency_ms": 10000,
-      "p95_latency_ms": 10000,
+    "orchestrator": {
+      "total_executions": 18,
+      "avg_latency_ms": 28056,
+      "p95_latency_ms": 180224,
+      "error_rate": 55.6,
+      "throughput_per_hour": 12.0,
+      "earliest": "2026-03-10T10:26:00.053Z",
+      "latest": "2026-03-10T11:56:13.027Z"
+    },
+    "quant": {
+      "total_executions": 14,
+      "avg_latency_ms": 9973,
+      "p95_latency_ms": 23455,
+      "error_rate": 7.1,
+      "throughput_per_hour": 1.8,
+      "earliest": "2026-03-10T03:24:07.376Z",
+      "latest": "2026-03-10T11:03:51.203Z"
+    },
+    "auto-healer": {
+      "total_executions": 25,
+      "avg_latency_ms": 7309,
+      "p95_latency_ms": 21149,
+      "error_rate": 8.0,
+      "throughput_per_hour": 8.3,
+      "earliest": "2026-03-10T08:30:22.050Z",
+      "latest": "2026-03-10T11:30:59.330Z"
+    },
+    "graph": {
+      "total_executions": 7,
+      "avg_latency_ms": 35181,
+      "p95_latency_ms": 45280,
       "error_rate": 0.0,
-      "throughput_per_hour": 1.0,
-      "earliest": "2026-03-10T10:00:00.000Z",
-      "latest": "2026-03-10T10:00:00.000Z"
-    }
-  },
-  "nodes": {
-    "standard::Webhook Trigger": {
-      "pipeline": "standard",
-      "node": "Webhook Trigger",
-      "node_type": "trigger",
-      "total": 1,
-      "avg_ms": 5,
-      "p50_ms": 5,
-      "p95_ms": 5,
-      "max_ms": 5,
-      "pct_of_pipeline": 0.1,
-      "failure_rate": 0.0,
-      "avg_data_in_bytes": 2,
-      "avg_data_out_bytes": 31,
-      "rolling": {
-        "avg_1h_ms": 0,
-        "avg_6h_ms": 5,
-        "avg_24h_ms": 5,
-        "count_1h": 0,
-        "count_6h": 1,
-        "count_24h": 1,
-        "error_rate_1h": 0.0,
-        "error_rate_6h": 0.0,
-        "error_rate_24h": 0.0
-      },
-      "anomaly_flags": []
+      "throughput_per_hour": 1.5,
+      "earliest": "2026-03-10T03:23:32.120Z",
+      "latest": "2026-03-10T08:11:49.733Z"
     },
-    "standard::Pinecone Search": {
-      "pipeline": "standard",
-      "node": "Pinecone Search",
-      "node_type": "retrieval",
-      "total": 1,
-      "avg_ms": 2340,
-      "p50_ms": 2340,
-      "p95_ms": 2340,
-      "max_ms": 2340,
-      "pct_of_pipeline": 23.4,
-      "failure_rate": 0.0,
-      "avg_data_in_bytes": 31,
-      "avg_data_out_bytes": 36,
-      "rolling": {
-        "avg_1h_ms": 0,
-        "avg_6h_ms": 2340,
-        "avg_24h_ms": 2340,
-        "count_1h": 0,
-        "count_6h": 1,
-        "count_24h": 1,
-        "error_rate_1h": 0.0,
-        "error_rate_6h": 0.0,
-        "error_rate_24h": 0.0
-      },
-      "anomaly_flags": []
-    },
-    "standard::LLM Generation": {
-      "pipeline": "standard",
-      "node": "LLM Generation",
-      "node_type": "llm",
-      "total": 1,
-      "avg_ms": 5400,
-      "p50_ms": 5400,
-      "p95_ms": 5400,
-      "max_ms": 5400,
-      "pct_of_pipeline": 54.0,
-      "failure_rate": 0.0,
-      "avg_data_in_bytes": 41,
-      "avg_data_out_bytes": 36,
-      "rolling": {
-        "avg_1h_ms": 0,
-        "avg_6h_ms": 5400,
-        "avg_24h_ms": 5400,
-        "count_1h": 0,
-        "count_6h": 1,
-        "count_24h": 1,
-        "error_rate_1h": 0.0,
-        "error_rate_6h": 0.0,
-        "error_rate_24h": 0.0
-      },
-      "anomaly_flags": []
-    }
-  },
-  "node_type_averages": {
-    "trigger": {
-      "avg_ms": 5,
-      "p50_ms": 5,
-      "p95_ms": 5,
-      "count": 1
-    },
-    "retrieval": {
-      "avg_ms": 2340,
-      "p50_ms": 2340,
-      "p95_ms": 2340,
-      "count": 1
-    },
-    "llm": {
-      "avg_ms": 5400,
-      "p50_ms": 5400,
-      "p95_ms": 5400,
-      "count": 1
-    }
-  },
-  "slowest_per_pipeline": {
     "standard": {
-      "pipeline": "standard",
-      "node": "LLM Generation",
-      "node_type": "llm",
-      "total": 1,
-      "avg_ms": 5400,
-      "p50_ms": 5400,
-      "p95_ms": 5400,
-      "max_ms": 5400,
-      "pct_of_pipeline": 54.0,
-      "failure_rate": 0.0,
-      "avg_data_in_bytes": 41,
-      "avg_data_out_bytes": 36,
-      "rolling": {
-        "avg_1h_ms": 0,
-        "avg_6h_ms": 5400,
-        "avg_24h_ms": 5400,
-        "count_1h": 0,
-        "count_6h": 1,
-        "count_24h": 1,
-        "error_rate_1h": 0.0,
-        "error_rate_6h": 0.0,
-        "error_rate_24h": 0.0
-      },
-      "anomaly_flags": []
+      "total_executions": 44,
+      "avg_latency_ms": 47422,
+      "p95_latency_ms": 50893,
+      "error_rate": 0.0,
+      "throughput_per_hour": 2.9,
+      "earliest": "2026-03-09T16:46:41.993Z",
+      "latest": "2026-03-10T08:08:31.168Z"
     }
   },
+  "nodes": {},
+  "node_type_averages": {},
+  "slowest_per_pipeline": {},
   "anomalies": [],
   "bottlenecks": [],
   "cascading_delays": []
