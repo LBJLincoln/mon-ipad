@@ -1,6 +1,6 @@
-# Etat Systeme Complet — Post Session 94 (updated)
+# Etat Systeme Complet — Post Session 95
 
-> Date: 2026-03-10T04:00Z | Auteur: Claude Code Opus 4.6
+> Date: 2026-03-10T12:10Z | Auteur: Claude Code Opus 4.6
 
 ---
 
@@ -51,9 +51,9 @@
 |----------|--------|-------|-------|-------|
 | **Standard (n8n)** | **WORKING** | **5/5 (100%)** | S1, S3 | E5 search + Groq direct, multi-index RRF |
 | **RAG Proxy** | **WORKING** | **5/5 (100%)** | VM local | `ops/rag-proxy.py` — E5 + Groq, 5 key rotation |
-| Graph (n8n) | DATA GAP | 0/5 | S1 | Neo4j has only 1,325 entities (0 BTP/Industrie) |
-| Quant (n8n) | DATA GAP | 0/3 | S9 | Supabase tables empty/mismatched |
-| Orchestrator | **MISSING** | N/A | — | Workflow 404 on all Spaces |
+| **Graph (proxy)** | **WORKING** | **4/5 (80%)** | VM local | Neo4j 41K entities, E5 search |
+| Quant (n8n) | TABLES READY | untested | S9 | 212 rows in 3 Supabase tables |
+| **Orchestrator** | **DEPLOYED** | HTTP 200 | S1 | ID `qOSaFFrqO8Jb4VGb`, conv queries OK |
 | Enrichment | DEPLOYED | — | S1 | V4.0, 5 bugs fixed |
 | Auto-Healer | ACTIVE | — | S1 | Cron 30min, ID `Yqw7Pzn0e7m0C6i3` |
 
@@ -64,10 +64,10 @@
 
 ## 4. DONNEES SECTORIELLES
 
-### E5 Index — FULLY INGESTED
+### E5 Index — FULLY INGESTED + TAVILY
 - **Index**: sectors-e5-multilingual
-- **Vectors**: **12,502** (19 JSONL files, all 4 sectors)
-- **Scripts**: `ops/clean-ingest.py` (purge+reingest), `ops/ingest-integrated.py` (all files)
+- **Vectors**: **15,760** (19 JSONL files + 158 Tavily real docs)
+- **Scripts**: `ops/clean-ingest.py` (purge+reingest), `ops/ingest-integrated.py` (all files), `ops/ingest-tavily-documents.py` (real docs)
 
 ### Datasets disponibles (rag-data-ingestion)
 | Secteur | Fichiers | Records | Status |
@@ -109,23 +109,32 @@
 - **93 test cases Tavily** (real PME/ETI use cases)
 - **Groq models**: 5 models in fallback chain (70b→maverick→scout→qwen→8b)
 
-## 7. TLDR — Prochaines etapes
+## 7. S95 ACCOMPLISHMENTS
+- [x] Neo4j populated: 41,747 entities + 143K rels
+- [x] Orchestrator deployed: ID `qOSaFFrqO8Jb4VGb`, HTTP 200
+- [x] Tavily 158 docs ingested: E5 12.5K → 15.7K vectors
+- [x] Quant tables created: 212 rows, 3 Supabase tables
+- [x] Metrics architecture: collector + analyzer + profiling
+- [x] Expert-eval framework: LLM-as-Judge, multi-criteria scoring
+- [x] 7-stage progression plan: `technicals/PROGRESSION-PLAN.md`
+- [x] 4 LLM providers active: Groq(5), OpenAI(1), Gemini(1), OpenRouter(7)
 
-### IMMEDIAT (S95)
-1. **Populate Neo4j** — run enrichment pipeline to extract entities from 12.5K E5 docs → fix Graph 0/5
-2. **Deploy Orchestrator workflow** — currently 404 on all Spaces
-3. **Run full 220-question eval** via proxy (Groq rate limits permitting)
-4. **Fix Quant pipeline** — Supabase financial tables need re-population
-5. **Ingest Jina index** — currently only 2.4K vectors, needs parity with E5 (12.5K)
+## 8. PROGRESSION PLAN (see technicals/PROGRESSION-PLAN.md)
 
-### COURT TERME (S96-S97)
-6. Tester Docling sur vrais PDF sectoriels (upload direct)
-7. Ingerer les 158 documents Tavily via Docling
-8. Graph pipeline multi-index upgrade
-9. Connecter comptes BDD #2 aux pipelines
-10. Atteindre 80% accuracy sur 4 secteurs
+### Current: STAGE 0 → STAGE 1
+- Standard proxy: 5/5 smoke ✓ | Expert score: 2.9/5
+- Graph proxy: 4/5 smoke ✓
+- Orchestrator: deployed, conv queries OK
+- **Key gap**: n8n Standard 1/3 (not using E5 index)
+- **Next**: Align n8n → E5, run full 220q eval, start Stage 1
 
-### LONG TERME (S98+)
-11. 250K vecteurs par secteur
-12. Self-healing complet autonome
-13. Monetisation : chatbot expert + Stripe
+### Targets by Stage
+| Stage | Standard | Graph | Quant | Orch | E5 Vectors |
+|-------|----------|-------|-------|------|------------|
+| 0 (now) | smoke ✓ | smoke ✓ | tables ✓ | deployed | 15.7K |
+| 1 | 50% | 20% | 10% | 20% | 50K |
+| 2 | 65% | 50% | 30% | 40% | 100K |
+| 3 | 75% | 60% | 70% | 65% | 200K |
+| 4 | 85% | 70% | 80% | 80% | 500K |
+| 5 | 90% | 80% | 85% | 85% | 750K |
+| 6 | 95% | 90% | 90% | 90% | 1M |
