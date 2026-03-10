@@ -69,8 +69,8 @@ PROGRESS_DIR = os.path.join(REPO_ROOT, "data", "ingest")
 PROGRESS_FILE = os.path.join(PROGRESS_DIR, "docling-progress.json")
 LOG_FILE = os.path.join(PROGRESS_DIR, "docling-results.json")
 
-DEFAULT_DOCLING_TIMEOUT = 180   # seconds per PDF conversion
-DOCLING_TIMEOUT = 180           # active timeout (may be overridden by CLI)
+DEFAULT_DOCLING_TIMEOUT = 300   # seconds per PDF conversion (cpu-basic needs time)
+DOCLING_TIMEOUT = 300           # active timeout (may be overridden by CLI)
 PINECONE_TIMEOUT = 15           # seconds per upsert
 CHUNK_SIZE = 1000           # chars per chunk
 CHUNK_OVERLAP = 200         # overlap between chunks
@@ -215,16 +215,26 @@ def restart_docling_space():
         print(f"FAILED ({e})", flush=True)
         return False
 
-    # Wait for Space to come back (up to 120s)
+    # Wait for Space to come back (up to 300s — converter takes time to load)
     print("waiting for restart...", end=" ", flush=True)
-    for i in range(12):
+    health_ok = False
+    for i in range(30):
         time.sleep(10)
-        healthy, _ = docling_health()
+        healthy, info = docling_health()
         if healthy:
-            print(f"UP after {(i+1)*10}s", flush=True)
-            return True
+            converter_loaded = info.get("converter_loaded", False)
+            if converter_loaded:
+                print(f"UP + converter ready after {(i+1)*10}s", flush=True)
+                return True
+            elif not health_ok:
+                health_ok = True
+                print(f"health OK at {(i+1)*10}s, waiting for converter...", end=" ", flush=True)
 
-    print("TIMEOUT (Space did not respond after 120s)", flush=True)
+    if health_ok:
+        print("converter not loaded within 300s, proceeding anyway", flush=True)
+        return True
+
+    print("TIMEOUT (Space did not respond after 300s)", flush=True)
     return False
 
 
@@ -596,8 +606,11 @@ def process_documents(docs, dry_run=False):
         tracker.add_result(doc, len(chunks), upserted, failed, time.time() - doc_start)
         tracker.save()
 
-        # Longer delay after successful conversion (let Docling Space recover memory)
+        # After successful PDF conversion, proactively restart Docling Space
+        # cpu-basic runs out of memory after processing 1 PDF, so restart preemptively
         if i < len(docs) - 1:
+            print(f"    Proactive restart after successful conversion...", flush=True)
+            restart_docling_space()
             time.sleep(DELAY_AFTER_SUCCESS)
 
     # Final summary
