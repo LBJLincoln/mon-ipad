@@ -1,0 +1,161 @@
+{
+  "timestamp": "2026-03-10T23:08:49.216804+00:00",
+  "timestamp_end": "2026-03-10T23:08:57.044674+00:00",
+  "duration_s": 7.8,
+  "pipelines_tested": [
+    "standard"
+  ],
+  "total_tests": 3,
+  "results": [
+    {
+      "pipeline": "standard",
+      "space": "S9",
+      "query": "Quels sont les délais de prescription en droit civil français?",
+      "sector": "juridique",
+      "status": "error",
+      "latency_ms": 115,
+      "response_preview": "",
+      "response_length": 0,
+      "sources_count": 0,
+      "error": "HTTP 404: {\"code\":404,\"message\":\"The requested webhook \\\"POST rag-multi-index-v3\\\" is not registered.\",\"hint\":\"The workflow must be active for a production URL ",
+      "score": 0,
+      "score_details": {
+        "keywords": {
+          "hits": [],
+          "misses": [
+            "prescription",
+            "Code civil",
+            "ans",
+            "délai"
+          ],
+          "ratio": 0.0,
+          "score": 0
+        },
+        "sources": {
+          "expected_min": 2,
+          "actual": 0,
+          "score": 0
+        },
+        "length": {
+          "chars": 0,
+          "score": 0
+        },
+        "alive": {
+          "score": 0
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "standard",
+      "space": "S3",
+      "query": "Quelles sont les principales normes DTU pour l'isolation thermique?",
+      "sector": "btp",
+      "status": "error",
+      "latency_ms": 885,
+      "response_preview": "",
+      "response_length": 0,
+      "sources_count": 0,
+      "error": "HTTP 404: {\"code\":404,\"message\":\"Active version not found for workflow with id \\\"TmgyRP20N4JFd9CB\\\"\",\"stacktrace\":\"ResponseError: Active version not found for w",
+      "score": 0,
+      "score_details": {
+        "keywords": {
+          "hits": [],
+          "misses": [
+            "DTU",
+            "isolation",
+            "thermique",
+            "résistance"
+          ],
+          "ratio": 0.0,
+          "score": 0
+        },
+        "sources": {
+          "expected_min": 2,
+          "actual": 0,
+          "score": 0
+        },
+        "length": {
+          "chars": 0,
+          "score": 0
+        },
+        "alive": {
+          "score": 0
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "standard",
+      "space": "S1",
+      "query": "Quel est le ratio de solvabilité Bâle III minimum requis pour les banques?",
+      "sector": "finance",
+      "status": "error",
+      "latency_ms": 968,
+      "response_preview": "",
+      "response_length": 0,
+      "sources_count": 0,
+      "error": "HTTP 404: {\"code\":404,\"message\":\"The requested webhook \\\"POST rag-multi-index-v3\\\" is not registered.\",\"hint\":\"The workflow must be active for a production URL ",
+      "score": 0,
+      "score_details": {
+        "keywords": {
+          "hits": [],
+          "misses": [
+            "8%",
+            "CET1",
+            "fonds propres",
+            "Bâle III"
+          ],
+          "ratio": 0.0,
+          "score": 0
+        },
+        "sources": {
+          "expected_min": 3,
+          "actual": 0,
+          "score": 0
+        },
+        "length": {
+          "chars": 0,
+          "score": 0
+        },
+        "alive": {
+          "score": 0
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "passed": 0,
+    "failed": 3,
+    "weak": 0,
+    "timeouts": 0,
+    "avg_score": 0.0,
+    "avg_latency_ms": 656,
+    "by_pipeline": {
+      "standard": {
+        "total": 3,
+        "passed": 0,
+        "avg_score": 0.0,
+        "avg_latency_ms": 656,
+        "errors": 3
+      }
+    }
+  }
+}

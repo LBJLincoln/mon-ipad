@@ -1,0 +1,574 @@
+{
+  "timestamp": "2026-03-10T23:21:57.111231+00:00",
+  "timestamp_end": "2026-03-10T23:23:06.961921+00:00",
+  "duration_s": 69.9,
+  "pipelines_tested": [
+    "standard",
+    "graph",
+    "quant",
+    "orchestrator"
+  ],
+  "total_tests": 12,
+  "results": [
+    {
+      "pipeline": "quant",
+      "space": "S9",
+      "query": "Quel est le chiffre d'affaires de TotalEnergies en 2023?",
+      "sector": "finance",
+      "status": "ok",
+      "latency_ms": 267,
+      "response_preview": "NO_ANSWER",
+      "response_length": 9,
+      "sources_count": 0,
+      "error": null,
+      "score": 40,
+      "score_details": {
+        "keywords": {
+          "hits": [],
+          "misses": [
+            "TotalEnergies",
+            "chiffre",
+            "2023"
+          ],
+          "ratio": 0.0,
+          "score": 0
+        },
+        "sources": {
+          "expected_min": 0,
+          "actual": 0,
+          "score": 25
+        },
+        "length": {
+          "chars": 9,
+          "score": 0
+        },
+        "alive": {
+          "score": 15
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "quant",
+      "space": "S9",
+      "query": "Quel est le résultat net de BNP Paribas?",
+      "sector": "finance",
+      "status": "ok",
+      "latency_ms": 268,
+      "response_preview": "NO_ANSWER",
+      "response_length": 9,
+      "sources_count": 0,
+      "error": null,
+      "score": 40,
+      "score_details": {
+        "keywords": {
+          "hits": [],
+          "misses": [
+            "BNP",
+            "résultat",
+            "net"
+          ],
+          "ratio": 0.0,
+          "score": 0
+        },
+        "sources": {
+          "expected_min": 0,
+          "actual": 0,
+          "score": 25
+        },
+        "length": {
+          "chars": 9,
+          "score": 0
+        },
+        "alive": {
+          "score": 15
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "quant",
+      "space": "S9",
+      "query": "Compare la marge opérationnelle des banques françaises",
+      "sector": "finance",
+      "status": "ok",
+      "latency_ms": 1222,
+      "response_preview": "NO_ANSWER",
+      "response_length": 9,
+      "sources_count": 0,
+      "error": null,
+      "score": 40,
+      "score_details": {
+        "keywords": {
+          "hits": [],
+          "misses": [
+            "marge",
+            "opérationnelle"
+          ],
+          "ratio": 0.0,
+          "score": 0
+        },
+        "sources": {
+          "expected_min": 0,
+          "actual": 0,
+          "score": 25
+        },
+        "length": {
+          "chars": 9,
+          "score": 0
+        },
+        "alive": {
+          "score": 15
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "graph",
+      "space": "S1",
+      "query": "Quelles relations entre Code du travail et responsabilité employeur?",
+      "sector": "juridique",
+      "status": "ok",
+      "latency_ms": 10795,
+      "response_preview": "A: The context does not provide explicit information about the relationship between \"Code du travail\" and \"responsabilité employeur\". However, we can observe that \"Code du travail\" has multiple mentions connected to unknown entities. These unknown entities are further connected to various sectors or",
+      "response_length": 616,
+      "sources_count": 0,
+      "error": null,
+      "score": 75,
+      "score_details": {
+        "keywords": {
+          "hits": [
+            "Code du travail",
+            "employeur",
+            "responsabilité"
+          ],
+          "misses": [],
+          "ratio": 1.0,
+          "score": 40
+        },
+        "sources": {
+          "expected_min": 1,
+          "actual": 0,
+          "score": 0
+        },
+        "length": {
+          "chars": 616,
+          "score": 20
+        },
+        "alive": {
+          "score": 15
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "graph",
+      "space": "S1",
+      "query": "Quels sont les liens entre IFRS 9 et la gestion du risque crédit?",
+      "sector": "finance",
+      "status": "ok",
+      "latency_ms": 12047,
+      "response_preview": "Aucune information n'est disponible dans le contexte fourni pour répondre à la question sur les liens entre IFRS 9 et la gestion du risque crédit. Le contexte semble se concentrer sur des entités géographiques telles que Commune De Digne-Les-Bains et Communauté de Communes Combrailles, et sur des se",
+      "response_length": 546,
+      "sources_count": 0,
+      "error": null,
+      "score": 75,
+      "score_details": {
+        "keywords": {
+          "hits": [
+            "IFRS",
+            "risque",
+            "crédit"
+          ],
+          "misses": [],
+          "ratio": 1.0,
+          "score": 40
+        },
+        "sources": {
+          "expected_min": 1,
+          "actual": 0,
+          "score": 0
+        },
+        "length": {
+          "chars": 546,
+          "score": 20
+        },
+        "alive": {
+          "score": 15
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "graph",
+      "space": "S1",
+      "query": "Quelles entités sont liées aux normes Eurocode pour le béton armé?",
+      "sector": "btp",
+      "status": "ok",
+      "latency_ms": 13797,
+      "response_preview": "Les entités liées aux normes Eurocode pour le béton armé incluent BTP et BATIMENT. BTP est mentionné à la fois par UNION et EUROP, ce qui suggère qu'il existe un lien entre les normes Eurocode et les pratiques de construction (BTP) via les deux entités. De plus, BATIMENT, également mentionné par UNI",
+      "response_length": 589,
+      "sources_count": 0,
+      "error": null,
+      "score": 61,
+      "score_details": {
+        "keywords": {
+          "hits": [
+            "Eurocode",
+            "béton"
+          ],
+          "misses": [
+            "NF EN"
+          ],
+          "ratio": 0.67,
+          "score": 26
+        },
+        "sources": {
+          "expected_min": 1,
+          "actual": 0,
+          "score": 0
+        },
+        "length": {
+          "chars": 589,
+          "score": 20
+        },
+        "alive": {
+          "score": 15
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "orchestrator",
+      "space": "S1",
+      "query": "Quelles sont les obligations RGPD pour les entreprises?",
+      "sector": "juridique",
+      "status": "ok",
+      "latency_ms": 31230,
+      "response_preview": "Les sources fournies ne contiennent pas d'informations spécifiques sur les obligations RGPD (Règlement Général sur la Protection des Données) pour les entreprises. Les documents traitent principalement de réglementations sectorielles dans les domaines de l'énergie, de la culture, de l'emploi et de l",
+      "response_length": 1461,
+      "sources_count": 10,
+      "error": null,
+      "score": 100,
+      "score_details": {
+        "keywords": {
+          "hits": [
+            "RGPD",
+            "données",
+            "protection"
+          ],
+          "misses": [],
+          "ratio": 1.0,
+          "score": 40
+        },
+        "sources": {
+          "expected_min": 1,
+          "actual": 10,
+          "score": 25
+        },
+        "length": {
+          "chars": 1461,
+          "score": 20
+        },
+        "alive": {
+          "score": 15
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "standard",
+      "space": "S1",
+      "query": "Quel est le ratio de solvabilité Bâle III minimum requis pour les banques?",
+      "sector": "finance",
+      "status": "ok",
+      "latency_ms": 41945,
+      "response_preview": "Le ratio de solvabilité Bâle III minimum requis pour les banques est de 8% pour le ratio de fonds propres de base (Common Equity Tier 1 - CET1) [Source: Source 7]. Ce ratio représente la part des fonds propres de catégorie 1 (actions ordinaires et bénéfices non distribués) rapportée aux actifs pondé",
+      "response_length": 1010,
+      "sources_count": 10,
+      "error": null,
+      "score": 100,
+      "score_details": {
+        "keywords": {
+          "hits": [
+            "8%",
+            "CET1",
+            "fonds propres",
+            "Bâle III"
+          ],
+          "misses": [],
+          "ratio": 1.0,
+          "score": 40
+        },
+        "sources": {
+          "expected_min": 3,
+          "actual": 10,
+          "score": 25
+        },
+        "length": {
+          "chars": 1010,
+          "score": 20
+        },
+        "alive": {
+          "score": 15
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "standard",
+      "space": "S3",
+      "query": "Quelles sont les principales normes DTU pour l'isolation thermique?",
+      "sector": "btp",
+      "status": "ok",
+      "latency_ms": 44052,
+      "response_preview": "Les principales normes DTU (Documents Techniques Unifiés) pour l'isolation thermique dans le bâtiment sont les suivantes :\n\nDTU 45.10 - Isolation thermique des parois opaques verticales et inclinées : Cette norme définit les règles de mise en œuvre de l'isolation thermique par l'intérieur ou par l'e",
+      "response_length": 2211,
+      "sources_count": 10,
+      "error": null,
+      "score": 100,
+      "score_details": {
+        "keywords": {
+          "hits": [
+            "DTU",
+            "isolation",
+            "thermique",
+            "résistance"
+          ],
+          "misses": [],
+          "ratio": 1.0,
+          "score": 40
+        },
+        "sources": {
+          "expected_min": 2,
+          "actual": 10,
+          "score": 25
+        },
+        "length": {
+          "chars": 2211,
+          "score": 20
+        },
+        "alive": {
+          "score": 15
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "orchestrator",
+      "space": "S1",
+      "query": "Quel est le taux de TVA applicable en BTP en France?",
+      "sector": "btp",
+      "status": "ok",
+      "latency_ms": 42986,
+      "response_preview": "Les documents sources fournis ne contiennent aucune information sur les taux de TVA applicables en BTP en France. Ces sources sont des avis de marchés publics pour des travaux de construction et de rénovation, mais ne mentionnent pas les taux de TVA.\n\nPour répondre précisément à cette question, il f",
+      "response_length": 880,
+      "sources_count": 10,
+      "error": null,
+      "score": 100,
+      "score_details": {
+        "keywords": {
+          "hits": [
+            "TVA",
+            "BTP",
+            "10%",
+            "20%"
+          ],
+          "misses": [],
+          "ratio": 1.0,
+          "score": 40
+        },
+        "sources": {
+          "expected_min": 1,
+          "actual": 10,
+          "score": 25
+        },
+        "length": {
+          "chars": 880,
+          "score": 20
+        },
+        "alive": {
+          "score": 15
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "standard",
+      "space": "S9",
+      "query": "Quels sont les délais de prescription en droit civil français?",
+      "sector": "juridique",
+      "status": "ok",
+      "latency_ms": 52298,
+      "response_preview": "Les délais de prescription en droit civil français sont principalement régis par le Code civil, notamment par les articles 2219 et suivants. Voici les principaux délais applicables :\n\n**Délai de droit commun : 5 ans**\nLe délai de prescription de droit commun pour les actions personnelles ou mobilièr",
+      "response_length": 2226,
+      "sources_count": 10,
+      "error": null,
+      "score": 100,
+      "score_details": {
+        "keywords": {
+          "hits": [
+            "prescription",
+            "Code civil",
+            "ans",
+            "délai"
+          ],
+          "misses": [],
+          "ratio": 1.0,
+          "score": 40
+        },
+        "sources": {
+          "expected_min": 2,
+          "actual": 10,
+          "score": 25
+        },
+        "length": {
+          "chars": 2226,
+          "score": 20
+        },
+        "alive": {
+          "score": 15
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    },
+    {
+      "pipeline": "orchestrator",
+      "space": "S1",
+      "query": "Quels indicateurs financiers utiliser pour évaluer une PME?",
+      "sector": "finance",
+      "status": "ok",
+      "latency_ms": 43729,
+      "response_preview": "Pour évaluer une PME, plusieurs indicateurs financiers clés doivent être analysés :\n\n1. **Ratios de rentabilité** :\n   - **ROE (Return on Equity)** : Mesure la rentabilité des capitaux propres [Source: convfinqa.jsonl]\n   - **EBITDA** : Résultat avant intérêts, impôts, dépréciations et amortissement",
+      "response_length": 1578,
+      "sources_count": 10,
+      "error": null,
+      "score": 86,
+      "score_details": {
+        "keywords": {
+          "hits": [
+            "ratio",
+            "trésorerie"
+          ],
+          "misses": [
+            "EBE"
+          ],
+          "ratio": 0.67,
+          "score": 26
+        },
+        "sources": {
+          "expected_min": 1,
+          "actual": 10,
+          "score": 25
+        },
+        "length": {
+          "chars": 1578,
+          "score": 20
+        },
+        "alive": {
+          "score": 15
+        }
+      },
+      "node_metrics": [
+        {
+          "name": "_fetch_error",
+          "error": "'str' object has no attribute 'get'"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total": 12,
+    "passed": 8,
+    "failed": 0,
+    "weak": 4,
+    "timeouts": 0,
+    "avg_score": 76.4,
+    "avg_latency_ms": 24553,
+    "by_pipeline": {
+      "quant": {
+        "total": 3,
+        "passed": 0,
+        "avg_score": 40.0,
+        "avg_latency_ms": 586,
+        "errors": 0
+      },
+      "graph": {
+        "total": 3,
+        "passed": 2,
+        "avg_score": 70.3,
+        "avg_latency_ms": 12213,
+        "errors": 0
+      },
+      "orchestrator": {
+        "total": 3,
+        "passed": 3,
+        "avg_score": 95.3,
+        "avg_latency_ms": 39315,
+        "errors": 0
+      },
+      "standard": {
+        "total": 3,
+        "passed": 3,
+        "avg_score": 100.0,
+        "avg_latency_ms": 46098,
+        "errors": 0
+      }
+    }
+  }
+}
