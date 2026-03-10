@@ -28,7 +28,7 @@ PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY", "")
 NAMESPACE = "sectors"
 DATASETS_DIR = os.path.expanduser("~/rag-data-ingestion/datasets/sectors")
 
-EMBED_BATCH = 16  # texts per embedding call (small for stability)
+EMBED_BATCH = 4  # texts per embedding call (HF Space timeout-safe)
 UPSERT_BATCH = 50  # vectors per upsert call
 MAX_TEXT_LEN = 2000  # chars per text for embedding
 MIN_TEXT_LEN = 30  # skip very short texts
