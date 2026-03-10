@@ -76,8 +76,11 @@ CHUNK_SIZE = 1000           # chars per chunk
 CHUNK_OVERLAP = 200         # overlap between chunks
 MIN_CHUNK_LEN = 30          # skip tiny chunks
 MAX_TEXT_LEN = 1500          # cap text length for embedding
-DELAY_BETWEEN_DOCS = 3      # seconds between documents (be gentle to cpu-basic)
+DELAY_BETWEEN_DOCS = 5      # seconds between documents (be gentle to cpu-basic)
+DELAY_AFTER_SUCCESS = 10    # longer delay after a successful conversion (memory recovery)
 PINECONE_BATCH_SIZE = 5     # upsert this many records at once (one at a time for integrated)
+CONSECUTIVE_TIMEOUT_LIMIT = 3   # restart Space after this many consecutive timeouts
+HF_TOKEN = os.environ.get("HF_TOKEN", "")
 
 
 def url_hash(url: str) -> str:
@@ -120,16 +123,37 @@ def load_documents(sector_filter=None, priority_only=False, max_docs=None):
     if sector_filter:
         docs = [d for d in docs if d.get("sector", "").lower() == sector_filter.lower()]
 
-    # Filter: only processable URLs (PDFs or high-priority pages)
-    # Include PDFs (.pdf URLs) and high-priority web pages
-    # Docling can handle both PDFs and web pages via convert-url
+    # Filter: ONLY PDFs — Docling is a PDF converter, not HTML
+    # Check URL extension (.pdf) and Content-Type via HEAD request
     filtered = []
+    skipped_non_pdf = []
     for d in docs:
         url = d.get("url", "")
-        is_pdf = url.lower().rstrip("/").endswith(".pdf")
-        is_high = d.get("priority") == "high"
-        if is_pdf or is_high:
+        url_clean = url.lower().split("?")[0].split("#")[0].rstrip("/")
+        is_pdf = url_clean.endswith(".pdf")
+
+        if not is_pdf:
+            # Try HEAD request to check Content-Type
+            try:
+                req = urllib.request.Request(url, method="HEAD")
+                req.add_header("User-Agent", "Mozilla/5.0")
+                resp = urllib.request.urlopen(req, timeout=10)
+                ctype = resp.headers.get("Content-Type", "").lower()
+                is_pdf = "pdf" in ctype
+            except Exception:
+                pass  # If HEAD fails, skip non-.pdf URLs
+
+        if is_pdf:
             filtered.append(d)
+        else:
+            skipped_non_pdf.append(d.get("title", url)[:60])
+
+    if skipped_non_pdf:
+        print(f"  Skipped {len(skipped_non_pdf)} non-PDF URLs:")
+        for s in skipped_non_pdf[:5]:
+            print(f"    - {s}")
+        if len(skipped_non_pdf) > 5:
+            print(f"    ... and {len(skipped_non_pdf) - 5} more")
     docs = filtered
 
     # Deduplicate by URL
@@ -164,6 +188,44 @@ def docling_health():
             return True, data
     except Exception as e:
         return False, {"error": str(e)[:200]}
+
+
+def restart_docling_space():
+    """Restart the Docling HF Space and wait for it to come back."""
+    if not HF_TOKEN:
+        print("    WARN: No HF_TOKEN — cannot restart Space automatically", flush=True)
+        return False
+
+    print("    Restarting Docling HF Space...", end=" ", flush=True)
+    try:
+        restart_url = "https://huggingface.co/api/spaces/LBJLincoln/nomos-docling-api/restart"
+        if HAS_REQUESTS:
+            resp = requests.post(restart_url, headers={"Authorization": f"Bearer {HF_TOKEN}"}, timeout=30)
+            if resp.status_code not in (200, 202):
+                print(f"FAILED (HTTP {resp.status_code})", flush=True)
+                return False
+        else:
+            req = urllib.request.Request(
+                restart_url,
+                headers={"Authorization": f"Bearer {HF_TOKEN}"},
+                method="POST",
+            )
+            urllib.request.urlopen(req, timeout=30)
+    except Exception as e:
+        print(f"FAILED ({e})", flush=True)
+        return False
+
+    # Wait for Space to come back (up to 120s)
+    print("waiting for restart...", end=" ", flush=True)
+    for i in range(12):
+        time.sleep(10)
+        healthy, _ = docling_health()
+        if healthy:
+            print(f"UP after {(i+1)*10}s", flush=True)
+            return True
+
+    print("TIMEOUT (Space did not respond after 120s)", flush=True)
+    return False
 
 
 def docling_convert(doc_url: str, timeout=None):
@@ -451,6 +513,8 @@ def process_documents(docs, dry_run=False):
 
     print()
 
+    consecutive_timeouts = 0
+
     for i, doc in enumerate(docs):
         doc_start = time.time()
         sector = doc.get("sector", "unknown")
@@ -463,13 +527,33 @@ def process_documents(docs, dry_run=False):
         chunks, meta, elapsed, error = docling_convert(url)
 
         if error:
+            is_timeout = "timeout" in error.lower() or "timed out" in error.lower()
             print(f"  {prefix} {sector:10s} | ERROR  | {elapsed:.1f}s | {fname}")
             print(f"           {error[:100]}")
             tracker.add_result(doc, 0, 0, 0, time.time() - doc_start, error=error)
             tracker.save()
+
+            # Track consecutive timeouts — Space may need restart
+            if is_timeout:
+                consecutive_timeouts += 1
+                if consecutive_timeouts >= CONSECUTIVE_TIMEOUT_LIMIT:
+                    print(f"\n    {consecutive_timeouts} consecutive timeouts — Docling Space likely crashed", flush=True)
+                    if restart_docling_space():
+                        consecutive_timeouts = 0
+                        time.sleep(5)  # Extra time after restart
+                    else:
+                        print("    Could not restart. Continuing (may keep timing out)...", flush=True)
+                        time.sleep(10)
+            else:
+                # Non-timeout error (HTTP 400/500) — Space is responsive, just rejected the doc
+                consecutive_timeouts = 0
+
             if i < len(docs) - 1:
                 time.sleep(DELAY_BETWEEN_DOCS)
             continue
+
+        # Reset timeout counter on success
+        consecutive_timeouts = 0
 
         if not chunks:
             err_msg = "No usable chunks extracted"
@@ -512,9 +596,9 @@ def process_documents(docs, dry_run=False):
         tracker.add_result(doc, len(chunks), upserted, failed, time.time() - doc_start)
         tracker.save()
 
-        # Delay between documents
+        # Longer delay after successful conversion (let Docling Space recover memory)
         if i < len(docs) - 1:
-            time.sleep(DELAY_BETWEEN_DOCS)
+            time.sleep(DELAY_AFTER_SUCCESS)
 
     # Final summary
     print()
