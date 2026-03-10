@@ -1,6 +1,6 @@
 # Nomos Sector AI Expert — Tour de Controle
 
-> Last updated: 2026-03-09T12:00:00Z
+> Last updated: 2026-03-10T21:00:00Z
 
 **CE REPO (`mon-ipad`) EST LA TOUR DE CONTROLE.**
 VM Google Cloud permanente . Claude Code via Termius . Pilote 5 repos actifs + 2 archives
@@ -169,54 +169,65 @@ IP: 34.136.180.66 | Debian 11 | 1 vCPU | 969 MB RAM | 30 GB disk
 ### Active Workflow IDs
 | Pipeline | ID | Name |
 |----------|----|------|
-| Standard | `TmgyRP20N4JFd9CB` | WF5 Standard RAG V3.4 (Groq direct) |
+| Standard | `TmgyRP20N4JFd9CB` | WF5 Standard RAG V3.5 (Groq direct, multi-index) |
 | Graph | `6257AfT1l4FMC6lY` | WF2 Graph RAG V3.3 (Groq direct) |
 | Quant | `cjhEhVs0KV1ExHqX` | WF4 Quant V3.1 (LiteLLM) |
-| Orchestrator | `ALd4gOEqiKL5KR1p` | V11 Minimal (Groq routing) |
+| Orchestrator | `qOSaFFrqO8Jb4VGb` | V13 Minimal (regex routing, Groq) |
+| Auto-Healer | `Yqw7Pzn0e7m0C6i3` | V1.2b (10min, 4 Spaces, webhook pings) |
 
-### LLM Models (free tier)
+### LLM Models (Groq direct — free tier)
 | Modele | Roles | Cout |
 |--------|-------|------|
-| `meta-llama/llama-3.3-70b-instruct:free` | SQL, Intent, Planning, HyDE, QA | $0 |
-| `google/gemma-3-27b-it:free` | Fast, Lite | $0 |
-| `arcee-ai/trinity-large-preview:free` | Extraction, Summaries | $0 |
+| `llama-3.3-70b-versatile` | QA, HyDE, SQL, Planning | $0 |
+| `meta-llama/llama-4-scout-17b-16e-instruct` | Fast fallback | $0 |
+| `qwen/qwen3-32b` | Multilingual fallback | $0 |
 
 ---
 
-## 7. SELF-HEALING & AGENTIC MODE
+## 7. AGENTS & PROCESS SEGMENTE
 
-### Boucle autonome (chaque 15 min si cron actif)
-```
-L0: Health check all HF Spaces (parallel)
-L1: Smoke test 3 questions par secteur (12 total)
-L2: Si echec → match contre fixes-structured.json
-L3: Auto-fix P0-P2
-L4: Log → self-heal.jsonl
+### 5 Agents Specialises
+
+| Agent | Script | Cycle | Role |
+|-------|--------|-------|------|
+| **MONITOR** | `ops/monitor.py --loop 300` | 5min | Health check, error detection per node, JSONL logging |
+| **EVAL** | `eval/quick-test.py` | After each change | Accuracy baseline, before/after comparison |
+| **PIPELINE** | Manual (Claude Code) | On-demand | 1 fix → test → push or revert |
+| **INGEST** | `ops/fast-ingest.py` | Batch | E5 vectors, Tavily, PDF, Neo4j enrichment |
+| **DOCS** | Manual | After milestone | Update PROJECT-STATE, PILOTAGE, DEBUG-PLAYBOOK |
+
+### Lancer les agents
+```bash
+python3 ops/agents.py launch all     # Tous les agents background
+python3 ops/agents.py status         # Status de chaque agent
+python3 ops/agents.py stop all       # Arreter tous
+python3 ops/agents.py logs monitor   # Logs d'un agent
 ```
 
-### Boucle session (10% improvement garanti)
+### Process incremental (STRICT)
 ```
-1. Identifier secteur le plus faible
-2. Rechercher technique applicable (ROADMAP Section 6)
-3. Appliquer UN changement (prompt, retrieval, data, enrichment)
-4. Mesurer before/after
-5. Si gain >= 2pp → commit. Si regression → revert
-6. Session PAS terminee tant qu'un secteur n'a pas progresse
+STRATEGIZE → PLAN → BUILD → TEST → PUSH → AUTO-TEST → PUSH or FIX
+     ↑                                                        |
+     +————————————————— feedback loop ——————————————————————————+
 ```
 
-### Continuous Eval (pipelines saines)
-```
-Pipelines non-cassees → tournent evals en continu
-- Round-robin sur les HF Spaces (S1, S3, S5, S9)
-- 220 questions sectorielles par cycle
-- Resultats auto-logged dans docs/sector-accuracy.json
-- Alerter si accuracy drop > 5%
-```
+Regles :
+1. **AVANT tout fix** : chercher dans DEBUG-PLAYBOOK si pattern connu
+2. **1 seul changement par iteration** — jamais 2 fixes simultanement
+3. **Mesurer before/after** — pas de changement sans mesure
+4. **APRES tout fix** : logger le pattern dans DEBUG-PLAYBOOK
+5. **Auto-stop on 3 failures** — rapport structure, pas de boucle infinie
+
+### Monitoring continu
+- `ops/monitor.py` ecrit dans `logs/errors/pipeline-errors.jsonl`
+- `data/health-status.json` = snapshot sante live
+- Auto-Healer n8n (V1.2b) tourne toutes les 10min sur S1
+- Dashboard live : tmux cockpit (voir `docs/PILOTAGE.md`)
 
 ### Regression Guard
 ```
 Avant commit touchant n8n/ ou eval/:
-1. Run 20 questions critiques (5/secteur)
+1. Run 10 questions critiques (smoke test)
 2. Comparer aux derniers scores
 3. Bloquer si drop > 5% sur un secteur
 ```
@@ -250,27 +261,35 @@ Acquisition → Processing (Docling) → Chunking (par secteur) → Embedding �
 source .env.local
 cat directives/PROJECT-STATE.md
 
-# Sector Eval
-python3 eval/quick-test.py --sector all
-python3 eval/sector-eval.py --all-pipelines --questions 220
+# Agents (5 specialises)
+python3 ops/agents.py launch all          # Lancer tous les agents
+python3 ops/agents.py status              # Status agents
+python3 ops/agents.py stop all            # Arreter tous
+
+# Monitor
+python3 ops/monitor.py                    # One-shot dashboard
+python3 ops/monitor.py --loop 300         # Continu 5min
+python3 ops/monitor.py --errors-only      # Erreurs seulement
+
+# Eval
+python3 eval/quick-test.py --proxy --pipelines standard --questions 5
+python3 eval/expert-eval.py --sector all --questions 20
 
 # Pipeline Analysis
-python3 eval/node-analyzer.py --execution-id <ID>
-python3 ops/analyze_n8n_executions.py --execution-id <ID>
+python3 ops/n8n-execution-analyzer.py --hours 24
+python3 ops/n8n-smart-analyzer.py --deep
 
-# Operations
-python3 ops/self-heal-orchestrator.py
-python3 ops/pipeline-doctor.py
+# Ingestion
+python3 ops/fast-ingest.py --sector all
+python3 ops/tavily-mass-ingest.py
+python3 ops/local-pdf-ingest.py
+
+# Deployment
+python3 ops/deploy-standard-v35.py
 python3 ops/n8n-api.py list
-bash ops/keepalive-spaces.sh
 
 # Sync
-bash ops/push-directives.sh
-python3 n8n/sync.py
 git push origin main
-
-# Codespaces
-bash ops/codespace-control.sh list|launch|status|stop|results
 ```
 
 ---
@@ -317,11 +336,12 @@ bash ops/codespace-control.sh list|launch|status|stop|results
 
 ---
 
-## Etat actuel v9.0 (Session 92 — 2026-03-09)
+## Etat actuel v10.0 (Session 96 — 2026-03-10)
 
-**RESTRUCTURATION** : Pivot complet vers Expert IA Sectoriel + Monetisation
-**Pipelines** : 4/4 WORKING, objectif = expert sectoriel imbattable
-**Sectors** : Finance 80%, BTP 20% (DATA GAP), Juridique 80%, Industrie 80%
-**Ingestion** : 43K docs Supabase, 32K vecteurs Pinecone, cible 1M
-**Self-healing** : Architecture L0-L4, evals continus, regression guard
-**Sessions** : 92 | **Commits** : 1,100+
+**Pipelines** : 4/4 WORKING (Standard 98%, Graph 100%, Quant 100%, Orch 100%)
+**E5 Vectors** : 55,584 (Stage 1 gate PASSED)
+**Databases** : Supabase 43K docs, Neo4j ~42K nodes
+**Agents** : 5 specialises (monitor, eval, pipeline, ingest, docs)
+**Process** : Segmente, incremental, metrics-driven
+**Docs** : `docs/PILOTAGE.md` (Termius snippets + tmux cockpit)
+**Sessions** : 96 | **Commits** : 1,110+

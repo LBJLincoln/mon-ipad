@@ -134,6 +134,22 @@ health_check() {
         echo -e "  Last ingest: ${YELLOW}${ingest_info}${NC}"
     fi
 
+    # Agent status
+    echo -e "  ${CYAN}Agents:${NC}"
+    for agent in monitor eval ingest pipeline docs; do
+        pidfile="data/agents/${agent}.pid"
+        if [ -f "$pidfile" ]; then
+            pid=$(cat "$pidfile")
+            if kill -0 "$pid" 2>/dev/null; then
+                echo -e "    $agent: ${GREEN}RUNNING (PID $pid)${NC}"
+            else
+                echo -e "    $agent: ${RED}DEAD (stale PID $pid)${NC}"
+            fi
+        else
+            echo -e "    $agent: ${YELLOW}STOPPED${NC}"
+        fi
+    done
+
     # Git status
     local branch=$(git branch --show-current 2>/dev/null)
     local dirty=$(git status --porcelain 2>/dev/null | wc -l)
@@ -170,6 +186,10 @@ case "${1:-}" in
         # Interactive mode with auto session-start
         cleanup
         health_check
+        # Auto-launch agents if not running
+        echo -e "${CYAN}[Auto-launching agents]${NC}"
+        python3 ops/agents.py launch all 2>/dev/null || echo -e "  ${YELLOW}Agent launch skipped (manual: python3 ops/agents.py launch all)${NC}"
+        echo ""
         echo -e "${CYAN}Launching interactive Claude session (Opus 4.6)...${NC}"
         echo -e "${YELLOW}Skills: /session-start | /monitor | /eval | /status-check | /self-heal${NC}"
         echo ""
