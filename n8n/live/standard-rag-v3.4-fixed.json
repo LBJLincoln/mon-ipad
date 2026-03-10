@@ -143,7 +143,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.embeddings?.float?.[0] || $node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n,\n  \"namespace\": \"sectors\"\n}",
+        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['HyDE Embedding'].json.embeddings?.float?.[0] || $node['HyDE Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true,\n  \"namespace\": \"sectors\",\n  \"filter\": { \"sector\": { \"$eq\": \"{{ $node['Init & ACL Pre-Filter V3.4'].json.user_context.tenant_id }}\" } }\n}",
         "options": {
           "batching": {
             "batch": {
@@ -234,7 +234,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.embeddings?.float?.[0] || $node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true\n,\n  \"namespace\": \"sectors\"\n}",
+        "jsonBody": "={\n  \"vector\": {{ JSON.stringify($node['Original Embedding'].json.embeddings?.float?.[0] || $node['Original Embedding'].json.data?.[0]?.embedding || []) }},\n  \"topK\": {{ $node['Init & ACL Pre-Filter V3.4'].json.topK || 20 }},\n  \"includeMetadata\": true,\n  \"namespace\": \"sectors\",\n  \"filter\": { \"sector\": { \"$eq\": \"{{ $node['Init & ACL Pre-Filter V3.4'].json.user_context.tenant_id }}\" } }\n}",
         "options": {
           "batching": {
             "batch": {
@@ -277,7 +277,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT id, content, source, \n       ts_rank(to_tsvector('french', content), plainto_tsquery('french', $1)) as bm25_score\nFROM documents \nWHERE is_obsolete = false \n  AND tenant_id = $2\n  AND to_tsvector('french', content) @@ plainto_tsquery('french', $1)\nORDER BY bm25_score DESC LIMIT 20",
+        "query": "SELECT id, context as content, source, \n       ts_rank(to_tsvector('french', context), plainto_tsquery('french', $1)) as bm25_score\nFROM sector_documents \nWHERE sector = $2\n  AND to_tsvector('french', context) @@ plainto_tsquery('french', $1)\nORDER BY bm25_score DESC LIMIT 10",
         "options": {
           "queryReplacement": "=={{ $node['Init & ACL Pre-Filter V3.4'].json.query }},{{ $node['Init & ACL Pre-Filter V3.4'].json.user_context.tenant_id }}"
         }
