@@ -9,6 +9,7 @@ SPACES=(
   "https://lbjlincoln-nomos-rag-engine-7.hf.space"
   "https://lbjlincoln-nomos-rag-engine-9.hf.space"
   "https://lbjlincoln-nomos-embeddings-api.hf.space/health"
+  "https://lbjlincoln-nomos-docling-api.hf.space/health"
 )
 
 for url in "${SPACES[@]}"; do

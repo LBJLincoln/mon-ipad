@@ -130,7 +130,7 @@ IP: 34.136.180.66 | Debian 11 | 1 vCPU | 969 MB RAM | 30 GB disk
 | engine-7 (S7) | LiteLLM proxy — 9 models, key rotation | lbjlincoln-nomos-rag-engine-7.hf.space | CHECK |
 | engine-9 (S9) | n8n quaternary — overflow | lbjlincoln-nomos-rag-engine-9.hf.space | UP |
 | embeddings | Self-hosted Jina embeddings (1024 dims) | lbjlincoln-nomos-embeddings-api.hf.space | CHECK |
-| S6 (TODO) | Docling document processor | — | PLANNED |
+| engine-6 (S6) | Docling document processor | lbjlincoln-nomos-docling-api.hf.space | UP |
 | S8 (TODO) | Continuous eval runner | — | PLANNED |
 | S10 (TODO) | Self-heal monitor | — | PLANNED |
 | S2 (TODO) | Sector-specific pipeline | — | PLANNED |
