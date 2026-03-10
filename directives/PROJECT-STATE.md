@@ -47,29 +47,27 @@
 
 ## 3. PIPELINES RAG
 
-| Pipeline | Status | Version | Notes S94 |
-|----------|--------|---------|-----------|
-| Standard (n8n) | **PATCHED** but data flow broken | V3.5.0 | Groq direct + E5 search patched, but n8n execution returns 0 sources |
-| **RAG Proxy** | **WORKING** | V1.0 | `ops/rag-proxy.py` — E5 search + Groq LLM, bypasses n8n |
-| Graph | WORKING | V3.3 | Inchange |
-| Quant | WORKING | V3.1 | Inchange, uses LiteLLM (BROKEN) |
-| Orchestrator | WORKING | V10.1 | Inchange |
-| Enrichment | **DEPLOYED** | V4.0 | 5 bugs fixes, synced via cookie auth |
-| Auto-Healer | **ACTIVE** | V1.0 | Cron 30min, ID `Yqw7Pzn0e7m0C6i3` |
+| Pipeline | Status | Score | Hosts | Notes |
+|----------|--------|-------|-------|-------|
+| **Standard (n8n)** | **WORKING** | **5/5 (100%)** | S1, S3 | E5 search + Groq direct, multi-index RRF |
+| **RAG Proxy** | **WORKING** | **5/5 (100%)** | VM local | `ops/rag-proxy.py` — E5 + Groq, 5 key rotation |
+| Graph (n8n) | DATA GAP | 0/5 | S1 | Neo4j has only 1,325 entities (0 BTP/Industrie) |
+| Quant (n8n) | DATA GAP | 0/3 | S9 | Supabase tables empty/mismatched |
+| Orchestrator | **MISSING** | N/A | — | Workflow 404 on all Spaces |
+| Enrichment | DEPLOYED | — | S1 | V4.0, 5 bugs fixed |
+| Auto-Healer | ACTIVE | — | S1 | Cron 30min, ID `Yqw7Pzn0e7m0C6i3` |
 
-### RAG Proxy (RECOMMENDED — bypasses n8n)
-- **Script**: `ops/rag-proxy.py`
-- **How it works**: E5 integrated search → Groq LLM → response with sources
-- **Tested**: Finance (3M CapEx → $1,577M correct), BTP (BOAMP marches publics, score 0.86)
+### RAG Proxy (backup — bypasses n8n)
+- **Script**: `ops/rag-proxy.py` — E5 search + Groq LLM, 5 key rotation, 5 model fallback
 - **Usage**: `source .env.local && python3 ops/rag-proxy.py "question" [sector]`
+- **Eval**: `python3 eval/quick-test.py --proxy --pipelines standard --questions 5`
 
 ## 4. DONNEES SECTORIELLES
 
-### E5 Index — CLEAN INGESTION COMPLETE
+### E5 Index — FULLY INGESTED
 - **Index**: sectors-e5-multilingual
-- **Vectors**: 9,158 (purged junk, reingested clean data only)
-- **Script used**: `ops/clean-ingest.py`
-- **Whitelisted files**: 8 clean JSONL files from 4 sectors
+- **Vectors**: **12,502** (19 JSONL files, all 4 sectors)
+- **Scripts**: `ops/clean-ingest.py` (purge+reingest), `ops/ingest-integrated.py` (all files)
 
 ### Datasets disponibles (rag-data-ingestion)
 | Secteur | Fichiers | Records | Status |
@@ -99,18 +97,26 @@
 
 ## 6. EVAL
 
+### Quick-test results (S94 final)
+| Pipeline | n8n | Proxy | Notes |
+|----------|-----|-------|-------|
+| Standard | **5/5 (100%)** | **5/5 (100%)** | Both working perfectly |
+| Graph | 0/5 | 4/5 | n8n=Neo4j empty, proxy=E5 fallback |
+| Orchestrator | 404 | 3/3 | n8n workflow missing |
+| **Combined** | **5/5** | **12/13 (92%)** | |
+
 - **220 questions FR** reecrites (grounded in real sector data)
 - **93 test cases Tavily** (real PME/ETI use cases)
-- Multi-index pipeline teste: finance query retourne sources des DEUX indexes
+- **Groq models**: 5 models in fallback chain (70b→maverick→scout→qwen→8b)
 
 ## 7. TLDR — Prochaines etapes
 
 ### IMMEDIAT (S95)
-1. **Fix LiteLLM S7** — rebuild Space or fix DB (Graph+Quant depend on it)
-2. **Run full eval** via rag-proxy on 220 questions (wait Groq rate limit reset)
-3. **Update quick-test.py** to use rag-proxy instead of broken n8n webhooks
-4. **Ingest MORE data** — Jina index has ~43K but E5 only 9K, need parity
-5. **Fix n8n Standard pipeline** or replace with rag-proxy as webhook
+1. **Populate Neo4j** — run enrichment pipeline to extract entities from 12.5K E5 docs → fix Graph 0/5
+2. **Deploy Orchestrator workflow** — currently 404 on all Spaces
+3. **Run full 220-question eval** via proxy (Groq rate limits permitting)
+4. **Fix Quant pipeline** — Supabase financial tables need re-population
+5. **Ingest Jina index** — currently only 2.4K vectors, needs parity with E5 (12.5K)
 
 ### COURT TERME (S96-S97)
 6. Tester Docling sur vrais PDF sectoriels (upload direct)
