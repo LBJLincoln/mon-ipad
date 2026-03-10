@@ -6,11 +6,16 @@ Polls execution history from S1/S3/S9, extracts per-node performance,
 computes aggregated metrics (latency, error rate, throughput, anomalies),
 and stores results in rotating JSON files under data/metrics/.
 
+Deep analysis mode (--profile) produces node-by-node pipeline profiling:
+bottleneck detection, cascading delay analysis, and per-node-type stats.
+
 Usage:
   source .env.local
   python3 ops/metrics-collector.py              # One-shot collection
   python3 ops/metrics-collector.py --daemon 300  # Run every 300s (5min)
   python3 ops/metrics-collector.py --report       # Show latest metrics report
+  python3 ops/metrics-collector.py --profile      # Deep pipeline profiling
+  python3 ops/metrics-collector.py --profile standard  # Profile single pipeline
 """
 
 import json
@@ -21,6 +26,7 @@ import ssl
 import http.cookiejar
 import urllib.request
 import urllib.error
+from collections import defaultdict
 from datetime import datetime, timezone
 
 # ── Config ──────────────────────────────────────────────────────
@@ -63,6 +69,51 @@ _NAME_PATTERNS = [
     ("enrichment", ["enrichment", "enrichissement"]),
     ("auto-healer", ["auto-healer", "auto_healer", "autohealer"]),
 ]
+
+
+# ── Node type classification ─────────────────────────────────
+
+# Ordered list — checked top-to-bottom, first match wins
+_NODE_TYPE_RULES = [
+    ("trigger", ["trigger", "cron", "schedule", "manual"]),
+    ("llm", ["llm", "generation", "chat", "completion", "gpt", "hyde",
+             "entity extraction", "query decomposer", "answer", "synthesis"]),
+    ("retrieval", ["pinecone", "neo4j", "supabase", "postgres", "search",
+                   "query", "bm25", "embedding", "vector", "rerank"]),
+    ("routing", ["router", "switch", "if ", "merge", "wait", "branch",
+                 "decomposition", "orchestrat"]),
+    ("transform", ["set ", "code", "function", "item", "split", "aggregate",
+                   "filter", "transform", "map", "reduce", "edit fields"]),
+    ("http", ["http", "webhook", "api request", "fetch", "curl"]),
+]
+
+
+def _classify_node_type(name):
+    """Classify a node name into a functional category.
+    Rules are checked top-to-bottom; first match wins."""
+    name_lower = name.lower()
+    for ntype, keywords in _NODE_TYPE_RULES:
+        for kw in keywords:
+            if kw in name_lower:
+                return ntype
+    return "other"
+
+
+def _estimate_data_size(data):
+    """Rough byte-size estimate for nested n8n data arrays."""
+    try:
+        return len(json.dumps(data, ensure_ascii=False))
+    except (TypeError, ValueError, OverflowError):
+        return 0
+
+
+def _percentile(sorted_vals, pct):
+    """Compute percentile from a pre-sorted list. Returns 0 if empty."""
+    if not sorted_vals:
+        return 0
+    idx = int(len(sorted_vals) * pct / 100.0)
+    idx = min(idx, len(sorted_vals) - 1)
+    return sorted_vals[idx]
 
 
 def _resolve_pipeline(wf_id, wf_name):
@@ -245,29 +296,44 @@ def _parse_node(name, run):
     """Extract performance data for a single node run."""
     exec_time = run.get("executionTime", 0) or 0
     start_time = run.get("startTime", "")
+    node_type = _classify_node_type(name)
+
     error_msg = None
+    error_http_code = None
     if run.get("error"):
         err = run["error"]
-        error_msg = err.get("message", str(err)) if isinstance(err, dict) else str(err)
+        if isinstance(err, dict):
+            error_msg = err.get("message", str(err))[:500]
+            error_http_code = err.get("httpCode") or err.get("statusCode")
+        else:
+            error_msg = str(err)[:500]
 
-    # Count input/output items
+    # Count input/output items + estimate data sizes
     items_in = 0
     items_out = 0
+    data_size_in = 0
+    data_size_out = 0
     input_data = run.get("inputData", {}).get("main", [])
     output_data = run.get("data", {}).get("main", [])
     if isinstance(input_data, list):
         items_in = sum(len(d) for d in input_data if isinstance(d, list))
+        data_size_in = _estimate_data_size(input_data)
     if isinstance(output_data, list):
         items_out = sum(len(d) for d in output_data if isinstance(d, list))
+        data_size_out = _estimate_data_size(output_data)
 
     return {
         "name": name,
+        "node_type": node_type,
         "execution_time_ms": exec_time,
         "start_time": start_time,
         "status": "error" if error_msg else "success",
         "error": error_msg,
+        "error_http_code": error_http_code,
         "items_in": items_in,
         "items_out": items_out,
+        "data_size_bytes_in": data_size_in,
+        "data_size_bytes_out": data_size_out,
     }
 
 
@@ -361,12 +427,28 @@ def collect_all():
 # ── Aggregation ──────────────────────────────────────────────────
 
 def _update_node_performance(all_entries):
-    """Compute per-node and per-pipeline aggregated stats."""
+    """Compute per-node and per-pipeline aggregated stats with deep profiling."""
+    now = datetime.now(timezone.utc)
+    ts_1h = now.timestamp() - 3600
+    ts_6h = now.timestamp() - 21600
+    ts_24h = now.timestamp() - 86400
+
     pipeline_stats = {}  # pipeline -> {durations, errors, count, earliest, latest}
-    node_stats = {}      # node_name -> {durations, errors, count}
+    # node_key -> {pipeline, node, node_type, durations, errors, total, sizes_in, sizes_out,
+    #              durations_1h, durations_6h, durations_24h, errors_1h, errors_6h, errors_24h}
+    node_stats = {}
+    # node_type -> {durations} (global averages for bottleneck comparison)
+    type_stats = defaultdict(list)
+    # pipeline -> list of per-execution node timelines (for cascading delay detection)
+    pipeline_timelines = defaultdict(list)
 
     for entry in all_entries:
         pl = entry.get("pipeline", "unknown")
+        entry_ts = None
+        dt = _parse_iso(entry.get("started_at", ""))
+        if dt:
+            entry_ts = dt.timestamp()
+
         if pl not in pipeline_stats:
             pipeline_stats[pl] = {
                 "durations": [], "error_count": 0, "total": 0,
@@ -384,24 +466,88 @@ def _update_node_performance(all_entries):
         if entry.get("started_at", "") < ps["earliest"] or not ps["earliest"]:
             ps["earliest"] = entry["started_at"]
 
+        # Collect per-execution node timeline for cascading delay analysis
+        exec_timeline = []
+
         for node in entry.get("nodes", []):
             nn = node.get("name", "unknown")
+            ntype = node.get("node_type", _classify_node_type(nn))
             key = f"{pl}::{nn}"
             if key not in node_stats:
-                node_stats[key] = {"pipeline": pl, "node": nn, "durations": [], "error_count": 0, "total": 0}
+                node_stats[key] = {
+                    "pipeline": pl, "node": nn, "node_type": ntype,
+                    "durations": [], "error_count": 0, "total": 0,
+                    "sizes_in": [], "sizes_out": [],
+                    "durations_1h": [], "durations_6h": [], "durations_24h": [],
+                    "errors_1h": 0, "errors_6h": 0, "errors_24h": 0,
+                    "total_1h": 0, "total_6h": 0, "total_24h": 0,
+                }
             ns = node_stats[key]
             ns["total"] += 1
-            if node.get("execution_time_ms", 0) > 0:
-                ns["durations"].append(node["execution_time_ms"])
+            exec_ms = node.get("execution_time_ms", 0) or 0
+            if exec_ms > 0:
+                ns["durations"].append(exec_ms)
+                type_stats[ntype].append(exec_ms)
             if node.get("status") == "error":
                 ns["error_count"] += 1
+            # Data sizes
+            sz_in = node.get("data_size_bytes_in", 0) or 0
+            sz_out = node.get("data_size_bytes_out", 0) or 0
+            if sz_in > 0:
+                ns["sizes_in"].append(sz_in)
+            if sz_out > 0:
+                ns["sizes_out"].append(sz_out)
+
+            # Rolling window stats
+            if entry_ts is not None:
+                if entry_ts >= ts_1h:
+                    ns["total_1h"] += 1
+                    if exec_ms > 0:
+                        ns["durations_1h"].append(exec_ms)
+                    if node.get("status") == "error":
+                        ns["errors_1h"] += 1
+                if entry_ts >= ts_6h:
+                    ns["total_6h"] += 1
+                    if exec_ms > 0:
+                        ns["durations_6h"].append(exec_ms)
+                    if node.get("status") == "error":
+                        ns["errors_6h"] += 1
+                if entry_ts >= ts_24h:
+                    ns["total_24h"] += 1
+                    if exec_ms > 0:
+                        ns["durations_24h"].append(exec_ms)
+                    if node.get("status") == "error":
+                        ns["errors_24h"] += 1
+
+            # Timeline entry for cascading delay detection
+            exec_timeline.append({
+                "name": nn,
+                "node_type": ntype,
+                "start_time": node.get("start_time", ""),
+                "execution_time_ms": exec_ms,
+            })
+
+        if exec_timeline:
+            pipeline_timelines[pl].append(exec_timeline)
+
+    # Compute per-type global averages (for bottleneck comparison)
+    type_averages = {}
+    for ntype, durations in type_stats.items():
+        if durations:
+            s = sorted(durations)
+            type_averages[ntype] = {
+                "avg_ms": int(sum(s) / len(s)),
+                "p50_ms": _percentile(s, 50),
+                "p95_ms": _percentile(s, 95),
+                "count": len(s),
+            }
 
     # Summarize pipelines
     pipeline_summary = {}
     for pl, ps in pipeline_stats.items():
-        durations = ps["durations"]
+        durations = sorted(ps["durations"])
         avg_lat = int(sum(durations) / len(durations)) if durations else 0
-        p95_lat = int(sorted(durations)[int(len(durations) * 0.95)]) if len(durations) > 1 else avg_lat
+        p95_lat = _percentile(durations, 95)
         # Throughput: requests per hour based on time window
         dt_earliest = _parse_iso(ps["earliest"])
         dt_latest = _parse_iso(ps["latest"])
@@ -422,33 +568,107 @@ def _update_node_performance(all_entries):
             "latest": ps["latest"],
         }
 
-    # Summarize nodes + find anomalies
+    # Summarize nodes with deep stats
     node_summary = {}
     anomalies = []
+    bottlenecks = []
+
     for key, ns in node_stats.items():
-        durations = ns["durations"]
+        durations = sorted(ns["durations"])
         avg = int(sum(durations) / len(durations)) if durations else 0
         max_d = max(durations) if durations else 0
+        p50 = _percentile(durations, 50)
+        p95 = _percentile(durations, 95)
+
+        # Compute % of total pipeline time
+        pl = ns["pipeline"]
+        pl_total_avg = pipeline_summary.get(pl, {}).get("avg_latency_ms", 1) or 1
+        pct_of_total = round(avg / pl_total_avg * 100, 1) if avg > 0 else 0.0
+
+        # Rolling window averages
+        def _window_avg(dur_list):
+            return int(sum(dur_list) / len(dur_list)) if dur_list else 0
+
+        rolling = {
+            "avg_1h_ms": _window_avg(ns["durations_1h"]),
+            "avg_6h_ms": _window_avg(ns["durations_6h"]),
+            "avg_24h_ms": _window_avg(ns["durations_24h"]),
+            "count_1h": ns["total_1h"],
+            "count_6h": ns["total_6h"],
+            "count_24h": ns["total_24h"],
+            "error_rate_1h": round(ns["errors_1h"] / max(ns["total_1h"], 1) * 100, 1),
+            "error_rate_6h": round(ns["errors_6h"] / max(ns["total_6h"], 1) * 100, 1),
+            "error_rate_24h": round(ns["errors_24h"] / max(ns["total_24h"], 1) * 100, 1),
+        }
+
+        # Average data sizes
+        avg_size_in = int(sum(ns["sizes_in"]) / len(ns["sizes_in"])) if ns["sizes_in"] else 0
+        avg_size_out = int(sum(ns["sizes_out"]) / len(ns["sizes_out"])) if ns["sizes_out"] else 0
+
+        # Anomaly flags
+        anomaly_flags = []
+        ntype = ns["node_type"]
+        type_avg = type_averages.get(ntype, {}).get("avg_ms", 0)
+        # Flag: node is 2x slower than average for its type
+        if type_avg > 0 and avg > type_avg * 2 and avg > 500:
+            anomaly_flags.append(f"2x_slower_than_{ntype}_avg ({avg}ms vs {type_avg}ms)")
+        # Flag: P95 is 3x the median (high variance)
+        if p50 > 0 and p95 > p50 * 3 and p95 > 1000:
+            anomaly_flags.append(f"high_variance (P50={p50}ms, P95={p95}ms)")
+        # Flag: error rate above 10%
+        err_rate = round(ns["error_count"] / max(ns["total"], 1) * 100, 1)
+        if err_rate > 10:
+            anomaly_flags.append(f"high_error_rate ({err_rate}%)")
+        # Flag: 1h avg much higher than 24h avg (recent degradation)
+        if rolling["avg_24h_ms"] > 0 and rolling["avg_1h_ms"] > rolling["avg_24h_ms"] * 2:
+            anomaly_flags.append(
+                f"recent_degradation (1h={rolling['avg_1h_ms']}ms vs 24h={rolling['avg_24h_ms']}ms)")
+
         node_summary[key] = {
-            "pipeline": ns["pipeline"],
+            "pipeline": pl,
             "node": ns["node"],
+            "node_type": ntype,
             "total": ns["total"],
             "avg_ms": avg,
+            "p50_ms": p50,
+            "p95_ms": p95,
             "max_ms": max_d,
-            "failure_rate": round(ns["error_count"] / max(ns["total"], 1) * 100, 1),
+            "pct_of_pipeline": pct_of_total,
+            "failure_rate": err_rate,
+            "avg_data_in_bytes": avg_size_in,
+            "avg_data_out_bytes": avg_size_out,
+            "rolling": rolling,
+            "anomaly_flags": anomaly_flags,
         }
-        # Anomaly: max is 2x the average and above 1s
+
+        # Collect anomalies (backward-compatible: max > 2x avg and above 1s)
         if avg > 0 and max_d > avg * 2 and max_d > 1000:
             anomalies.append({
                 "node": ns["node"],
-                "pipeline": ns["pipeline"],
+                "pipeline": pl,
+                "node_type": ntype,
                 "avg_ms": avg,
                 "max_ms": max_d,
                 "ratio": round(max_d / avg, 1),
+                "flags": anomaly_flags,
+            })
+
+        # Bottleneck detection: node takes > 25% of pipeline time and > 2x its type avg
+        if pct_of_total > 25 and type_avg > 0 and avg > type_avg * 2:
+            bottlenecks.append({
+                "node": ns["node"],
+                "pipeline": pl,
+                "node_type": ntype,
+                "avg_ms": avg,
+                "p95_ms": p95,
+                "pct_of_pipeline": pct_of_total,
+                "type_avg_ms": type_avg,
+                "slowdown_ratio": round(avg / type_avg, 1),
             })
 
     # Sort anomalies by ratio descending
     anomalies.sort(key=lambda a: a["ratio"], reverse=True)
+    bottlenecks.sort(key=lambda b: b["pct_of_pipeline"], reverse=True)
 
     # Find slowest nodes per pipeline
     slowest_per_pipeline = {}
@@ -457,16 +677,91 @@ def _update_node_performance(all_entries):
         if pl not in slowest_per_pipeline or ns_info["avg_ms"] > slowest_per_pipeline[pl]["avg_ms"]:
             slowest_per_pipeline[pl] = ns_info
 
+    # Cascading delay detection across pipeline timelines
+    cascading_delays = _detect_cascading_delays(pipeline_timelines)
+
     result = {
         "updated_at": _ts_now(),
         "total_entries": len(all_entries),
         "pipelines": pipeline_summary,
         "nodes": node_summary,
+        "node_type_averages": type_averages,
         "slowest_per_pipeline": slowest_per_pipeline,
-        "anomalies": anomalies[:20],
+        "anomalies": anomalies[:30],
+        "bottlenecks": bottlenecks[:20],
+        "cascading_delays": cascading_delays[:20],
     }
     _save_json(NODE_PERF, result)
     return result
+
+
+def _detect_cascading_delays(pipeline_timelines):
+    """Detect cascading delays: when node A is slow, is node B consistently delayed?
+
+    Looks at per-execution timelines and correlates above-average node times with
+    delays in downstream nodes.
+    """
+    cascading = []
+
+    for pl, timelines in pipeline_timelines.items():
+        if len(timelines) < 3:
+            continue
+
+        # Compute baseline average per node across all executions
+        node_avgs = defaultdict(list)
+        for timeline in timelines:
+            for n in timeline:
+                if n["execution_time_ms"] > 0:
+                    node_avgs[n["name"]].append(n["execution_time_ms"])
+        baselines = {}
+        for nn, durations in node_avgs.items():
+            if durations:
+                baselines[nn] = int(sum(durations) / len(durations))
+
+        # For each execution, sort nodes by start_time and check if a slow upstream
+        # node correlates with a delayed downstream node
+        pair_correlations = defaultdict(lambda: {"slow_together": 0, "upstream_slow": 0})
+
+        for timeline in timelines:
+            # Sort by start_time
+            sorted_nodes = sorted(timeline, key=lambda n: str(n.get("start_time", "")))
+            for i, upstream in enumerate(sorted_nodes):
+                u_name = upstream["name"]
+                u_time = upstream["execution_time_ms"]
+                u_baseline = baselines.get(u_name, 0)
+                if u_baseline <= 0 or u_time <= u_baseline * 1.5:
+                    continue  # upstream not slow this run
+
+                # Check downstream nodes
+                for downstream in sorted_nodes[i + 1:]:
+                    d_name = downstream["name"]
+                    d_time = downstream["execution_time_ms"]
+                    d_baseline = baselines.get(d_name, 0)
+                    if d_baseline <= 0:
+                        continue
+
+                    pair_key = f"{u_name} -> {d_name}"
+                    pair_correlations[pair_key]["upstream_slow"] += 1
+                    if d_time > d_baseline * 1.5:
+                        pair_correlations[pair_key]["slow_together"] += 1
+
+        # Report pairs where downstream is slow > 60% of the time upstream is slow
+        for pair_key, data in pair_correlations.items():
+            if data["upstream_slow"] >= 3:
+                correlation = data["slow_together"] / data["upstream_slow"]
+                if correlation >= 0.6:
+                    parts = pair_key.split(" -> ")
+                    cascading.append({
+                        "pipeline": pl,
+                        "upstream": parts[0],
+                        "downstream": parts[1],
+                        "correlation": round(correlation, 2),
+                        "occurrences": data["upstream_slow"],
+                        "co_slow": data["slow_together"],
+                    })
+
+    cascading.sort(key=lambda c: c["correlation"], reverse=True)
+    return cascading
 
 
 def _update_error_catalog(all_entries):
@@ -694,6 +989,200 @@ def print_report():
     print(f"\n{'=' * 70}", flush=True)
 
 
+# ── Deep Pipeline Profiling ──────────────────────────────────
+
+def print_profile(pipeline_filter=None):
+    """Print deep node-by-node pipeline profiling from stored metrics.
+
+    For each pipeline, shows every node with avg/P50/P95 timing, % of total,
+    error count, data sizes, rolling trends, bottleneck flags, and cascading
+    delay chains.
+    """
+    perf = _load_json(NODE_PERF, {})
+    if not perf or not perf.get("nodes"):
+        print("\n  No node-level data found. Run a collection first.")
+        print("  (Ensure executions have runData — detail fetching must succeed.)\n")
+        return
+
+    pipelines = perf.get("pipelines", {})
+    nodes = perf.get("nodes", {})
+    type_avgs = perf.get("node_type_averages", {})
+    bottlenecks = perf.get("bottlenecks", [])
+    cascading = perf.get("cascading_delays", [])
+
+    target_pls = sorted(pipelines.keys())
+    if pipeline_filter:
+        target_pls = [p for p in target_pls if pipeline_filter.lower() in p.lower()]
+        if not target_pls:
+            print(f"\n  No pipeline matching '{pipeline_filter}'. "
+                  f"Available: {', '.join(sorted(pipelines.keys()))}\n")
+            return
+
+    print("=" * 80)
+    print("  NOMOS DEEP PIPELINE PROFILER")
+    print(f"  Updated: {perf.get('updated_at', '?')}")
+    print(f"  Total executions: {perf.get('total_entries', 0)}")
+    print("=" * 80, flush=True)
+
+    # Node type baseline averages
+    if type_avgs:
+        print(f"\n  NODE TYPE BASELINES (global):")
+        print(f"  {'Type':<12} {'Avg ms':>8} {'P50 ms':>8} {'P95 ms':>8} {'Samples':>8}")
+        print("  " + "-" * 48)
+        for ntype in sorted(type_avgs.keys()):
+            ta = type_avgs[ntype]
+            print(f"  {ntype:<12} {ta['avg_ms']:>8} {ta['p50_ms']:>8} "
+                  f"{ta['p95_ms']:>8} {ta['count']:>8}")
+
+    for pl in target_pls:
+        pl_info = pipelines.get(pl, {})
+        total_execs = pl_info.get("total_executions", 0)
+        avg_total = pl_info.get("avg_latency_ms", 0)
+        p95_total = pl_info.get("p95_latency_ms", 0)
+        err_rate = pl_info.get("error_rate", 0)
+
+        print(f"\n{'=' * 80}")
+        print(f"  {pl.upper()} PIPELINE PROFILE "
+              f"(avg over {total_execs} executions)")
+        print(f"  Total avg: {avg_total:,}ms | P95: {p95_total:,}ms | "
+              f"Error rate: {err_rate}%")
+        print(f"{'=' * 80}")
+
+        # Collect nodes for this pipeline, sorted by avg_ms descending
+        pl_nodes = []
+        for key, info in nodes.items():
+            if info.get("pipeline") == pl:
+                pl_nodes.append(info)
+        pl_nodes.sort(key=lambda n: n.get("avg_ms", 0), reverse=True)
+
+        if not pl_nodes:
+            print(f"  (no node data collected for this pipeline)")
+            continue
+
+        # Main profiling table
+        print(f"\n  {'Node':<30} {'Type':<10} {'Avg ms':>8} {'P50':>7} "
+              f"{'P95':>7} {'% total':>8} {'Errors':>7} {'Flags':>0}")
+        print("  " + "-" * 80)
+
+        for n in pl_nodes:
+            name = n["node"][:29]
+            ntype = n.get("node_type", "?")[:9]
+            avg = n.get("avg_ms", 0)
+            p50 = n.get("p50_ms", 0)
+            p95 = n.get("p95_ms", 0)
+            pct = n.get("pct_of_pipeline", 0)
+            errs = n.get("failure_rate", 0)
+            flags = n.get("anomaly_flags", [])
+
+            # Indicator characters for quick scanning
+            indicator = ""
+            if pct > 40:
+                indicator = " [BOTTLENECK]"
+            elif pct > 25:
+                indicator = " [HOT]"
+            elif flags:
+                indicator = " [!]"
+
+            err_str = f"{errs:.0f}%" if errs > 0 else "0"
+            print(f"  {name:<30} {ntype:<10} {avg:>7,} {p50:>7,} "
+                  f"{p95:>7,} {pct:>7.1f}% {err_str:>7}{indicator}")
+
+        # Data flow summary
+        nodes_with_data = [n for n in pl_nodes
+                           if n.get("avg_data_in_bytes", 0) > 0
+                           or n.get("avg_data_out_bytes", 0) > 0]
+        if nodes_with_data:
+            print(f"\n  DATA FLOW:")
+            print(f"  {'Node':<30} {'Avg In':>10} {'Avg Out':>10} {'Items In':>0}")
+            print("  " + "-" * 55)
+            for n in nodes_with_data[:15]:
+                name = n["node"][:29]
+                sz_in = n.get("avg_data_in_bytes", 0)
+                sz_out = n.get("avg_data_out_bytes", 0)
+
+                def _fmt_bytes(b):
+                    if b >= 1048576:
+                        return f"{b / 1048576:.1f} MB"
+                    if b >= 1024:
+                        return f"{b / 1024:.1f} KB"
+                    return f"{b} B"
+
+                print(f"  {name:<30} {_fmt_bytes(sz_in):>10} {_fmt_bytes(sz_out):>10}")
+
+        # Rolling trends for this pipeline's nodes
+        nodes_with_trend = [n for n in pl_nodes
+                            if n.get("rolling", {}).get("count_1h", 0) > 0
+                            or n.get("rolling", {}).get("count_24h", 0) > 0]
+        if nodes_with_trend:
+            print(f"\n  ROLLING TRENDS (node avg latency):")
+            print(f"  {'Node':<30} {'1h avg':>8} {'6h avg':>8} {'24h avg':>8} {'Trend':>0}")
+            print("  " + "-" * 60)
+            for n in nodes_with_trend[:15]:
+                name = n["node"][:29]
+                r = n.get("rolling", {})
+                a1 = r.get("avg_1h_ms", 0)
+                a6 = r.get("avg_6h_ms", 0)
+                a24 = r.get("avg_24h_ms", 0)
+                # Trend arrow
+                trend = ""
+                if a24 > 0 and a1 > 0:
+                    ratio = a1 / a24
+                    if ratio > 1.5:
+                        trend = "  DEGRADING"
+                    elif ratio < 0.7:
+                        trend = "  improving"
+                    else:
+                        trend = "  stable"
+                a1_s = f"{a1:,}" if a1 else "-"
+                a6_s = f"{a6:,}" if a6 else "-"
+                a24_s = f"{a24:,}" if a24 else "-"
+                print(f"  {name:<30} {a1_s:>8} {a6_s:>8} {a24_s:>8}{trend}")
+
+    # Global bottleneck summary
+    if bottlenecks:
+        print(f"\n{'=' * 80}")
+        print(f"  BOTTLENECK NODES (> 25% of pipeline, > 2x type average)")
+        print("=" * 80)
+        print(f"  {'Pipeline':<16} {'Node':<28} {'Avg ms':>8} {'% pipe':>7} "
+              f"{'Type avg':>9} {'Slowdown':>9}")
+        print("  " + "-" * 80)
+        for b in bottlenecks[:15]:
+            print(f"  {b['pipeline']:<16} {b['node'][:27]:<28} {b['avg_ms']:>7,} "
+                  f"{b['pct_of_pipeline']:>6.1f}% {b['type_avg_ms']:>8,} "
+                  f"{b['slowdown_ratio']:>8.1f}x")
+
+    # Cascading delay chains
+    if cascading:
+        print(f"\n{'=' * 80}")
+        print(f"  CASCADING DELAYS (upstream slow -> downstream slow correlation)")
+        print("=" * 80)
+        print(f"  {'Pipeline':<14} {'Upstream':<22} {'Downstream':<22} "
+              f"{'Corr':>5} {'Seen':>5}")
+        print("  " + "-" * 72)
+        for c in cascading[:15]:
+            print(f"  {c['pipeline']:<14} {c['upstream'][:21]:<22} "
+                  f"{c['downstream'][:21]:<22} {c['correlation']:>5.0%} "
+                  f"{c['occurrences']:>5}")
+
+    # Flagged nodes (any anomaly flags)
+    flagged = []
+    for key, info in nodes.items():
+        if info.get("anomaly_flags"):
+            flagged.append(info)
+    flagged.sort(key=lambda n: len(n.get("anomaly_flags", [])), reverse=True)
+
+    if flagged:
+        print(f"\n{'=' * 80}")
+        print(f"  FLAGGED NODES ({len(flagged)} nodes with anomalies)")
+        print("=" * 80)
+        for n in flagged[:20]:
+            print(f"  [{n['pipeline']}] {n['node']}")
+            for flag in n["anomaly_flags"]:
+                print(f"    - {flag}")
+
+    print(f"\n{'=' * 80}", flush=True)
+
+
 # ── Main ─────────────────────────────────────────────────────────
 
 def main():
@@ -702,6 +1191,14 @@ def main():
     # Parse args
     if "--report" in sys.argv:
         print_report()
+        return 0
+
+    if "--profile" in sys.argv:
+        idx = sys.argv.index("--profile")
+        pl_filter = None
+        if idx + 1 < len(sys.argv) and not sys.argv[idx + 1].startswith("--"):
+            pl_filter = sys.argv[idx + 1]
+        print_profile(pl_filter)
         return 0
 
     daemon_mode = False
