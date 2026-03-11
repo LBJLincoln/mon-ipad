@@ -413,8 +413,29 @@ def download_pdf(url, max_size=MAX_PDF_SIZE_BYTES):
         return None, 0
 
 
+def process_with_docling_remote(pdf_path):
+    """Process a PDF with remote Docling API (S6). Returns (full_text, tables, num_pages) or (None, [], 0)."""
+    DOCLING_URL = "https://lbjlincoln-nomos-docling-api.hf.space/convert"
+    try:
+        import requests
+        with open(pdf_path, "rb") as f:
+            resp = requests.post(DOCLING_URL, files={"file": f}, timeout=120)
+        if resp.status_code == 200:
+            data = resp.json()
+            full_text = data.get("markdown", data.get("text", ""))
+            tables = data.get("tables", [])
+            num_pages = data.get("num_pages", max(1, len(full_text) // 3000))
+            return full_text, tables, num_pages
+        else:
+            log(f"  Docling API error: {resp.status_code} {resp.text[:200]}", "X")
+            return None, [], 0
+    except Exception as e:
+        log(f"  Docling API failed: {e}", "X")
+        return None, [], 0
+
+
 def process_with_docling(pdf_path):
-    """Process a PDF with local Docling. Returns (full_text, tables, num_pages) or (None, [], 0)."""
+    """Process a PDF with local Docling, fallback to remote API. Returns (full_text, tables, num_pages) or (None, [], 0)."""
     try:
         from docling.document_converter import DocumentConverter, PdfFormatOption
         from docling.datamodel.pipeline_options import PdfPipelineOptions
@@ -467,10 +488,12 @@ def process_with_docling(pdf_path):
 
         return full_text, tables, num_pages
 
+    except ImportError:
+        log(f"Local Docling not installed, falling back to remote API...", "+")
+        return process_with_docling_remote(pdf_path)
     except Exception as e:
-        log(f"Docling processing failed: {e}", "ERROR")
-        log(traceback.format_exc(), "ERROR")
-        return None, [], 0
+        log(f"Local Docling failed: {e}, trying remote API...", "!")
+        return process_with_docling_remote(pdf_path)
 
 
 def pinecone_upsert(record_id, text, sector, source, title=""):
