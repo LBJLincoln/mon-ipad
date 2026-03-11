@@ -168,8 +168,8 @@ IP: 34.136.180.66 | Debian 11 | 1 vCPU | 969 MB RAM | 30 GB disk
 ### Active Workflow IDs
 | Pipeline | ID | Version | Name |
 |----------|----|---------|------|
-| Standard | `TmgyRP20N4JFd9CB` | V3.8 | Standard RAG (LiteLLM, multi-index) |
-| Graph | `6257AfT1l4FMC6lY` | V3.5 | Graph RAG (LiteLLM + self-hosted embeddings) |
+| Standard | `9FQdtx38JLPiT3Hx` | V3.5 | Standard RAG (E5+LiteLLM, multi-index) |
+| Graph | `6257AfT1l4FMC6lY` | V3.7 | Graph RAG (V3 keyword Cypher + LiteLLM) |
 | Quant | `cjhEhVs0KV1ExHqX` | V3.2 | Quantitative (LiteLLM, SQL generation) |
 | Orchestrator | `qOSaFFrqO8Jb4VGb` | V13 | Orchestrator (regex routing, delegates to sub-pipelines) |
 | Auto-Healer | `Yqw7Pzn0e7m0C6i3` | V1.2 | Auto-Healer (10min, 4 Spaces, webhook pings) |

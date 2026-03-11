@@ -47,7 +47,7 @@ SPACES = [
 ]
 
 PIPELINES = {
-    "TmgyRP20N4JFd9CB": "Standard",
+    "9FQdtx38JLPiT3Hx": "Standard",
     "6257AfT1l4FMC6lY": "Graph",
     "cjhEhVs0KV1ExHqX": "Quant",
     "qOSaFFrqO8Jb4VGb": "Orchestrator",

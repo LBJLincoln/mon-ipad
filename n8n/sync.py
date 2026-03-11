@@ -41,8 +41,8 @@ N8N_API_KEY = os.environ.get("N8N_API_KEY", "")
 
 WORKFLOW_IDS = {
     "standard": {
-        "id": "TmgyRP20N4JFd9CB",
-        "name": "WF5 Standard RAG V3.4",
+        "id": "9FQdtx38JLPiT3Hx",
+        "name": "Standard RAG V3.5 (E5+Groq)",
         "webhook": "/webhook/rag-multi-index-v3",
     },
     "graph": {

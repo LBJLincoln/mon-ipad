@@ -74,7 +74,7 @@ SPACES = {
 }
 
 WORKFLOW_IDS = {
-    "standard":     "TmgyRP20N4JFd9CB",
+    "standard":     "9FQdtx38JLPiT3Hx",
     "graph":        "6257AfT1l4FMC6lY",
     "quant":        "cjhEhVs0KV1ExHqX",
     "quantitative": "cjhEhVs0KV1ExHqX",
