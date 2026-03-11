@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-03-11T20:44:58.888619+00:00",
+  "category": "data_gap",
+  "target_sector": "btp",
+  "target_pipeline": "standard",
+  "actions_taken": [
+    {
+      "action": "expert_discovery",
+      "sector": "btp",
+      "return_code": 124,
+      "success": false,
+      "detail": "Timeout after 180s"
+    },
+    {
+      "action": "fast_ingest",
+      "sector": "btp",
+      "return_code": -15,
+      "success": false,
+      "detail": "================================================================\n  FAST PARALLEL INGESTION → Pinecone E5\n  Index: sectors-e5-multilingual | Namespace: sectors\n  Model: multilingual-e5-large (integrated)\n  Workers: 8 | Delay: 0.05s | Max: 200,000\n  Mode: LIVE\n  Sectors: btp\n================================================================\n\n──────────────────────────────────────────────────\n  SECTOR: BTP\n──────────────────────────────────────────────────\n    btp-boamp-marches.jsonl: 4,927 valid, 0 "
+    },
+    {
+      "action": "docling_process",
+      "sector": "btp",
+      "return_code": 1,
+      "success": false,
+      "detail": "======================================================================\n  DOCLING CONTINUOUS INGESTION CRON\n  Started:  2026-03-11T20:57:42.440586+00:00\n  Sectors:  btp\n  Max PDFs: 10\n  Mode:     LIVE\n  Neo4j:    ON\n======================================================================\n\n[2026-03-11T20:57:42Z] [+] Processed URLs tracker: 2 already processed\n[2026-03-11T20:57:42Z] [+] === Phase 1: Document Discovery ===\n[2026-03-11T20:57:42Z] [+] [btp] Searching for expert PDFs (10 queries)...\n[202"
+    }
+  ],
+  "docs_discovered": 0,
+  "docs_ingested": 0,
+  "vectors_added": 0,
+  "deployment": null,
+  "smoke_test": {
+    "pass": false,
+    "score": 20,
+    "response_length": 25,
+    "has_sources": false,
+    "status_code": 200
+  },
+  "success": false
+}

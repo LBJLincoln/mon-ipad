@@ -77,7 +77,7 @@ LOG_DIR = REPO_ROOT / "data" / "ingest"
 DOCLING_BASE = "https://lbjlincoln-nomos-docling-api.hf.space"
 DOCLING_CONVERT_URL = f"{DOCLING_BASE}/convert-url"
 DOCLING_HEALTH_URL = f"{DOCLING_BASE}/health"
-DOCLING_TIMEOUT = 300  # seconds — CPU-basic is slow
+DOCLING_TIMEOUT = 600  # seconds — CPU-basic is VERY slow (15-page PDF ~5min)
 
 # Pinecone E5 integrated inference
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY", "")
@@ -95,7 +95,7 @@ HF_TOKEN = os.environ.get("HF_TOKEN", "")
 # Size limits — conservative for CPU-basic
 MAX_FILE_SIZE_MB = 10
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
-MAX_ESTIMATED_PAGES = 30  # ~50KB per page heuristic
+MAX_ESTIMATED_PAGES = 20  # ~50KB per page heuristic (CPU-basic OOMs on large docs)
 BYTES_PER_PAGE_ESTIMATE = 50_000
 
 # Chunking — 500 tokens ~ 2000 chars (4 chars/token)

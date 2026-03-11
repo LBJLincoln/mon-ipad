@@ -1,0 +1,58 @@
+{
+  "plan_id": "plan-20260311-204422",
+  "target_sector": "btp",
+  "target_pipeline": "standard",
+  "category": "data_gap",
+  "actions": [
+    {
+      "step": 1,
+      "type": "eval",
+      "description": "Run targeted evaluation to identify specific BTP technical questions failing due to missing documentation",
+      "command": "python3 eval/parallel-eval.py --sector btp --pipeline standard --target 10",
+      "reason": "Need to identify the exact technical questions that are failing to understand which DTU norms, Eurocodes, or AFNOR standards are missing"
+    },
+    {
+      "step": 2,
+      "type": "script",
+      "description": "Discover expert BTP documents via Tavily search for missing technical standards",
+      "command": "python3 eval/expert-discovery.py --sector btp --keywords \"DTU Eurocode AFNOR CCTP RE2020\" --limit 20",
+      "reason": "Identify authoritative sources for DTU norms, Eurocodes, and other BTP technical standards that should be ingested"
+    },
+    {
+      "step": 3,
+      "type": "ingest",
+      "description": "Ingest DTU norms and Eurocodes into Pinecone via Docling processing",
+      "command": "python3 codespace/docling-cron.py --sector btp --document_type \"DTU_Eurocode\" --source_urls [from step 2]",
+      "reason": "Add foundational BTP technical standards to the knowledge base to address the critical data gaps"
+    },
+    {
+      "step": 4,
+      "type": "eval",
+      "description": "Re-run evaluation to measure improvement in BTP standard pipeline performance",
+      "command": "python3 eval/parallel-eval.py --sector btp --pipeline standard --target 20",
+      "reason": "Verify that the ingested DTU norms and Eurocodes improved the pass rate from 5.2% to target 25-30%"
+    },
+    {
+      "step": 5,
+      "type": "n8n_change",
+      "description": "Update RAG prompt to prioritize BTP technical standards when answering technical questions",
+      "command": "Modify n8n workflow prompt templates to include BTP-specific technical terminology weighting",
+      "reason": "Ensure the system properly leverages the newly ingested technical standards for BTP questions"
+    }
+  ],
+  "test_questions": [
+    {
+      "question": "Quelles sont les exigences du DTU 20.1 pour la mise en œuvre des enduits de mortier sur murs en briques?",
+      "sector": "btp",
+      "expected_behavior": "Answer should cite specific DTU 20.1 requirements with proper technical terminology and source citation"
+    },
+    {
+      "question": "Comment appliquer l'Eurocode 2 pour le calcul des structures en béton armé?",
+      "sector": "btp",
+      "expected_behavior": "Answer should reference Eurocode 2 clauses with accurate technical methodology and proper citations"
+    }
+  ],
+  "success_metric": "BTP standard pipeline score increases from 10.2 to >25, pass rate improves from 5.2% to >25%",
+  "estimated_duration_min": 45,
+  "risk_assessment": "Risk of rate limiting on Groq during heavy LLM calls, potential 503 errors from HF Spaces during ingestion, and possibility that discovered documents may not be authoritative enough for expert-level answers"
+}
