@@ -407,6 +407,8 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="Parallel Eval — 6 Spaces × 4 Pipelines")
     parser.add_argument("--smoke", action="store_true", help="Quick 20Q smoke test")
+    parser.add_argument("--dataset", help="Path to custom dataset JSON file")
+    parser.add_argument("--extended", action="store_true", help="Use extended 5K+ dataset")
     parser.add_argument("--sector", help="Filter by sector (finance, btp, juridique, industrie)")
     parser.add_argument("--pipeline", help="Filter by pipeline (standard, graph, quantitative, orchestrator)")
     parser.add_argument("--workers", type=int, default=12, help="Max parallel workers (default: 12)")
@@ -414,9 +416,16 @@ def main():
     args = parser.parse_args()
 
     # Load dataset
-    if args.smoke:
+    EXTENDED_PATH = os.path.join(os.path.dirname(__file__), "..", "sectors", "eval-datasets", "sector-full-eval-extended.json")
+    if args.dataset:
+        path = os.path.abspath(args.dataset)
+        print(f"Loading custom dataset: {path}")
+    elif args.smoke:
         path = os.path.abspath(SMOKE_PATH)
         print("Loading smoke test dataset (20Q)...")
+    elif args.extended:
+        path = os.path.abspath(EXTENDED_PATH)
+        print("Loading extended dataset (5K+)...")
     else:
         path = os.path.abspath(DATASET_PATH)
         print("Loading full eval dataset (220Q)...")

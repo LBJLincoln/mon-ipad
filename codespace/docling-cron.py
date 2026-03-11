@@ -422,12 +422,13 @@ def process_with_docling_remote(pdf_path):
             resp = requests.post(DOCLING_URL, files={"file": f}, timeout=300)
         if resp.status_code == 200:
             data = resp.json()
-            full_text = data.get("markdown", data.get("text", ""))
+            # API returns "full_text" (not "markdown" or "text")
+            full_text = data.get("full_text", data.get("markdown", data.get("text", "")))
             tables = data.get("tables", [])
             num_pages = data.get("num_pages", max(1, len(full_text) // 3000))
             return full_text, tables, num_pages
         else:
-            log(f"  Docling API error: {resp.status_code} {resp.text[:200]}", "X")
+            log(f"  Docling API error: {resp.status_code} {resp.text[:200]}", "ERROR")
             return None, [], 0
     except Exception as e:
         log(f"  Docling API failed: {e}", "X")
@@ -543,18 +544,28 @@ def supabase_insert(sector, title, context, source_url, doc_type="pdf", metadata
     if not SUPABASE_URL or not SUPABASE_API_KEY:
         return False
 
-    row = {
-        "sector": sector,
-        "title": title[:500] if title else "Untitled",
-        "context": context[:10000] if context else "",
+    import hashlib
+    doc_id = hashlib.md5(f"{source_url}-{title}-{sector}".encode()).hexdigest()[:16]
+
+    meta = {
         "source": source_url[:1000] if source_url else "",
         "doc_type": doc_type,
+        "title": title[:500] if title else "Untitled",
         "language": "fr",
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "session": "docling-cron",
     }
-
     if metadata:
-        row["metadata"] = json.dumps(metadata, ensure_ascii=False)
+        meta.update(metadata)
+
+    row = {
+        "id": f"expert-docling-{doc_id}",
+        "sector": sector,
+        "dataset_name": f"expert-docling-{doc_type}",
+        "pipeline": "standard",
+        "context": context[:10000] if context else "",
+        "metadata": json.dumps(meta, ensure_ascii=False),
+        "tenant_id": sector,
+    }
 
     payload = json.dumps(row, ensure_ascii=False).encode("utf-8")
 
