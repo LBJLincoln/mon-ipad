@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-03-11T21:43:00.722675+00:00",
+  "category": "fix_pipeline",
+  "target_sector": "finance",
+  "target_pipeline": "quantitative",
+  "actions_taken": [
+    {
+      "action": "confirm_broken",
+      "pipeline": "quantitative",
+      "working_spaces": 0,
+      "broken_spaces": 5,
+      "success": true,
+      "detail": "0/5 Spaces working, 5 broken"
+    },
+    {
+      "action": "diagnosis",
+      "pipeline": "quantitative",
+      "issues_found": [
+        "Disabled nodes found: OTEL Export (Shield #9)"
+      ],
+      "success": true,
+      "detail": "{\"pipeline\": \"quantitative\", \"sector\": \"finance\", \"broken_spaces\": [\"lbjlincoln-nomos-rag-engine.hf.space\", \"lbjlincoln26-nomos-rag-engine-2.hf.space\", \"lbjlincoln-nomos-rag-engine-3.hf.space\", \"lbjlincoln26-nomos-rag-engine-4.hf.space\", \"lbjlincoln-nomos-rag-engine-5.hf.space\"], \"working_spaces\": [], \"issues_found\": [\"Disabled nodes found: OTEL Export (Shield #9)\"], \"space_errors\": {\"lbjlincoln-nomos-rag-engine.hf.space\": \"Response shorter than 30 chars\", \"lbjlincoln26-nomos-rag-engine-2.hf.spa"
+    },
+    {
+      "action": "redeploy_staging",
+      "workflow": "/home/termius/mon-ipad/n8n/live/quantitative.json",
+      "return_code": 1,
+      "success": false,
+      "detail": "\u001b[96m========================================================================\u001b[0m\n\u001b[1m  STAGING -> PRODUCTION DEPLOYMENT PIPELINE\u001b[0m\n\u001b[96m========================================================================\u001b[0m\n  Time:              2026-03-11T21:55:04.467659\n  Pipeline:          quant\n  Workflo"
+    }
+  ],
+  "docs_discovered": 0,
+  "docs_ingested": 0,
+  "vectors_added": 0,
+  "deployment": null,
+  "smoke_test": {
+    "pass": false,
+    "score": 20,
+    "response_length": 0,
+    "has_sources": false,
+    "status_code": 200
+  },
+  "success": true
+}
