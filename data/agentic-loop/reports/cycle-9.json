@@ -1,0 +1,44 @@
+{
+  "cycle": 9,
+  "timestamp": "2026-03-11T20:14:14.892801+00:00",
+  "duration_s": 1971.6,
+  "strategy": {
+    "priority": "Ingest BTP-specific technical documents (DTU norms, Eurocodes, CCTP templates, AFNOR standards, RE2020 documentation)",
+    "category": "data_gap",
+    "target_sector": "btp",
+    "target_pipeline": "standard",
+    "expected_impact": "+15 points on BTP standard pipeline score"
+  },
+  "plan_id": "plan-20260311-194123",
+  "plan_steps": 5,
+  "baseline_scores": {
+    "overall_avg": 39.0,
+    "sector_avg": 39.0,
+    "pipeline_avg": 39.0
+  },
+  "current_scores": {
+    "overall_avg": 39.0,
+    "sector_avg": 39.0,
+    "pipeline_avg": 39.0
+  },
+  "deltas": {
+    "overall_avg": 0.0,
+    "sector_avg": 0.0,
+    "pipeline_avg": 0.0
+  },
+  "improved": false,
+  "sector_delta": 0.0,
+  "analysis": {
+    "health_score": 0,
+    "key_insight": "{\n  \"health_score\": 4,\n  \"health_justification\": \"The system shows critical data gaps in BTP sector with only 40% pass rate and 39/100 average score. The LLM judge scores reveal poor source citation (2.42/5) and factual accuracy issues. While the standard pipeline performs better than others (48.8% ",
+    "failure_pattern_count": 0,
+    "new_questions_generated": 0
+  },
+  "next_action": "Retry analysis",
+  "suggested_commands": [
+    "python3 eval/parallel-eval.py --sector btp --pipeline standard",
+    "python3 eval/continuous-judge.py --suggestions",
+    "python3 ops/metrics-collector.py --profile standard",
+    "# LLM suggestion: Retry analysis"
+  ]
+}

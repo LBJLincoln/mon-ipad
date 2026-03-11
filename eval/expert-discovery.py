@@ -113,6 +113,11 @@ SECTORS = ["finance", "btp", "juridique", "industrie"]
 MIN_CONTENT_LENGTH = 200  # minimum chars of useful content per document
 MAX_CONTENT_FOR_QA = 6000  # max chars to send to LLM for Q&A generation
 MAX_QA_PER_DOC = 5  # max Q&A pairs to generate per document
+MAX_PDF_SIZE = 10485760  # 10MB max PDF size for Docling processing
+
+# ─── Redis / Upstash config ──────────────────────────────────────────────
+UPSTASH_REDIS_REST_URL = "https://dynamic-frog-47846.upstash.io"
+UPSTASH_REDIS_REST_TOKEN = os.environ.get("UPSTASH_REDIS_REST_TOKEN", "")
 
 # ═══════════════════════════════════════════════════════════════════════════
 #  SECTOR-SPECIFIC TAVILY SEARCH QUERIES (10+ per sector)
@@ -431,6 +436,141 @@ class TavilyDiscovery:
         """Check if a URL is already in the registry."""
         return any(d["url"] == url for d in self.docs_db["sectors"].get(sector, []))
 
+    def _filter_url_by_head(self, url):
+        """
+        HEAD request to check PDF validity and size.
+        Returns (accepted: bool, metadata: dict) with content_type, size info.
+        - SKIP if Content-Type is not application/pdf (or octet-stream for ambiguous)
+        - SKIP if Content-Length > 10MB
+        - SKIP if URL doesn't end in .pdf and Content-Type isn't PDF
+        """
+        meta = {"url": url, "filtered": True, "filter_reason": None,
+                "content_type": None, "content_length": None, "size_mb": None}
+
+        try:
+            req = urllib.request.Request(url, method="HEAD")
+            req.add_header("User-Agent", "Mozilla/5.0 (compatible; NomosBot/1.0)")
+            with urllib.request.urlopen(req, timeout=15, context=_ssl_ctx) as resp:
+                content_type = (resp.headers.get("Content-Type", "") or "").lower().strip()
+                content_length_str = resp.headers.get("Content-Length", "")
+                content_length = int(content_length_str) if content_length_str.isdigit() else None
+
+                meta["content_type"] = content_type
+                meta["content_length"] = content_length
+                if content_length is not None:
+                    meta["size_mb"] = round(content_length / 1048576, 2)
+
+                is_pdf_url = url.lower().rstrip("/").endswith(".pdf")
+                is_pdf_type = "application/pdf" in content_type
+                is_octet = "application/octet-stream" in content_type
+
+                # Accept: PDF content type, or octet-stream (ambiguous) for .pdf URLs
+                if not is_pdf_type and not (is_octet and is_pdf_url):
+                    if not is_pdf_url:
+                        meta["filter_reason"] = "not_pdf"
+                        size_str = f"{meta['size_mb']}MB" if meta["size_mb"] is not None else "unknown"
+                        _log(f"SKIP: {url} (size: {size_str}, type: {content_type})", "SKIP")
+                        return False, meta
+
+                # Check size limit
+                if content_length is not None and content_length > MAX_PDF_SIZE:
+                    meta["filter_reason"] = "too_large"
+                    _log(f"SKIP: {url} (size: {meta['size_mb']}MB, type: {content_type})", "SKIP")
+                    return False, meta
+
+                # Accepted
+                meta["filtered"] = False
+                size_str = f"{meta['size_mb']}MB" if meta["size_mb"] is not None else "unknown"
+                _log(f"OK: {url} (size: {size_str})", "OK")
+                return True, meta
+
+        except urllib.error.HTTPError as e:
+            meta["filter_reason"] = f"http_error_{e.code}"
+            _log(f"SKIP: {url} (HEAD HTTP {e.code})", "SKIP")
+            return False, meta
+        except Exception as e:
+            # On HEAD failure (timeout, DNS, etc.), accept the URL anyway
+            # — better to let Docling try than to silently drop
+            meta["filter_reason"] = f"head_failed: {type(e).__name__}"
+            meta["filtered"] = False
+            _log(f"OK: {url} (HEAD failed: {type(e).__name__}, accepting anyway)", "WARN")
+            return True, meta
+
+    def _push_to_redis_queue(self, sector, accepted_docs):
+        """
+        Push accepted document URLs to Redis queue for Docling processing.
+        Uses Upstash REST API (VM can't resolve Upstash DNS via redis:// but
+        HTTPS works via IPv4 monkey-patch).
+        Queue name: docling:queue:{sector}
+        """
+        if not accepted_docs:
+            return
+
+        token = UPSTASH_REDIS_REST_TOKEN
+        if not token:
+            _log("Redis unavailable, skipping queue push (UPSTASH_REDIS_REST_TOKEN not set)", "WARN")
+            return
+
+        queued = 0
+        queue_name = f"docling:queue:{sector}"
+
+        try:
+            # Try importing redis module first
+            try:
+                import redis as redis_mod
+                redis_url = os.environ.get("REDIS_URL", "")
+                if redis_url:
+                    r = redis_mod.from_url(redis_url, socket_timeout=10,
+                                           socket_connect_timeout=10)
+                    for doc in accepted_docs:
+                        payload = json.dumps({
+                            "url": doc["url"],
+                            "sector": sector,
+                            "title": doc.get("title", ""),
+                            "discovered_at": _ts(),
+                        }, ensure_ascii=False)
+                        r.rpush(queue_name, payload)
+                        queued += 1
+                    _log(f"Queued {queued} docs to Redis {queue_name}", "OK")
+                    return
+            except Exception:
+                pass  # Fall through to Upstash REST API
+
+            # Upstash REST API fallback
+            for doc in accepted_docs:
+                payload = json.dumps({
+                    "url": doc["url"],
+                    "sector": sector,
+                    "title": doc.get("title", ""),
+                    "discovered_at": _ts(),
+                }, ensure_ascii=False)
+
+                # Upstash REST: POST with JSON body using pipeline command
+                rest_url = f"{UPSTASH_REDIS_REST_URL}"
+                headers = {
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json",
+                }
+                # Upstash REST API expects array of command parts
+                cmd_body = json.dumps(["RPUSH", queue_name, payload])
+                status, body, err = _http_request(
+                    rest_url, method="POST", data=cmd_body,
+                    headers=headers, timeout=15,
+                )
+                if status == 200 and not err:
+                    queued += 1
+                else:
+                    _log(f"Redis REST push failed: {err or f'HTTP {status}'}", "WARN")
+                    break  # Stop trying on first failure
+
+            if queued > 0:
+                _log(f"Queued {queued} docs to Redis {queue_name}", "OK")
+            else:
+                _log("Redis unavailable, skipping queue push", "WARN")
+
+        except Exception as e:
+            _log(f"Redis unavailable, skipping queue push ({type(e).__name__}: {e})", "WARN")
+
     def _tavily_search(self, query, sector):
         """Execute a Tavily search and return results."""
         payload = {
@@ -496,6 +636,10 @@ class TavilyDiscovery:
                 seen_hashes.add(ch)
                 seen_urls.add(url)
 
+                # ─── PDF size/format filter (HEAD request) ────────────
+                is_pdf_url = url.lower().rstrip("/").endswith(".pdf")
+                accepted, filter_meta = self._filter_url_by_head(url) if is_pdf_url else (True, {})
+
                 domain = extract_domain(url)
                 doc_entry = {
                     "url": url,
@@ -510,7 +654,16 @@ class TavilyDiscovery:
                     "discovered_at": _ts(),
                     "qa_generated": False,
                     "qa_count": 0,
+                    "pdf_filter": filter_meta if filter_meta else None,
+                    "pdf_accepted": accepted,
                 }
+
+                if not accepted:
+                    # Document failed PDF filter — record it but don't count as valid
+                    doc_entry["skipped"] = True
+                    self.docs_db["sectors"][sector].append(doc_entry)
+                    continue
+
                 new_docs.append(doc_entry)
                 self.docs_db["sectors"][sector].append(doc_entry)
                 valid_count += 1
@@ -522,6 +675,13 @@ class TavilyDiscovery:
             time.sleep(TAVILY_DELAY)
 
         self.save()
+
+        # ─── Push accepted docs to Redis queue for Docling ────────────
+        pdf_docs = [d for d in new_docs if d.get("pdf_accepted", True)
+                     and d["url"].lower().rstrip("/").endswith(".pdf")]
+        if pdf_docs:
+            self._push_to_redis_queue(sector, pdf_docs)
+
         return new_docs
 
     def discover_all(self):

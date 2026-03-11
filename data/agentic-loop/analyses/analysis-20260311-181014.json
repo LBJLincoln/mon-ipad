@@ -1,0 +1,13 @@
+{
+  "health_score": 0,
+  "health_justification": "JSON parse failed",
+  "failure_patterns": [],
+  "new_test_questions": [],
+  "key_insight": "{\n  \"health_score\": 6,\n  \"health_justification\": \"The system shows moderate functionality with 40% pass rate but significant data gaps in BTP sector. LLM judge scores are decent (3.44/5) but source citation remains weak (2.42/5). Build failures and missing documents indicate incomplete infrastructur",
+  "next_action": "Retry analysis",
+  "raw_response": "{\n  \"health_score\": 6,\n  \"health_justification\": \"The system shows moderate functionality with 40% pass rate but significant data gaps in BTP sector. LLM judge scores are decent (3.44/5) but source citation remains weak (2.42/5). Build failures and missing documents indicate incomplete infrastructure.\",\n  \"failure_patterns\": [\n    {\n      \"pattern\": \"BTP technical document gaps\",\n      \"root_cause\": \"Missing DTU norms, Eurocodes, CCTP templates, AFNOR standards, and RE2020 documentation in vector database\",\n      \"affected_sector\": \"btp\",\n      \"affected_pipeline\": \"standard\",\n      \"suggested_fix\": \"Ingest comprehensive BTP technical documents into Pinecone vector database\",\n      \"expected_improvement\": \"+15-20 points on BTP standard pipeline (from 33.0 to 48-53)\"\n    },\n    {\n      \"pattern\": \"Weak source citation\",\n      \"root_cause\": \"LLM judge scores show only 2.42/5 for source citation across all sectors\",\n      \"affected_sector\": \"all\",\n      \"affected_pipeline\": \"all\",\n      \"",
+  "baseline_snapshot": {
+    "sector_avg": 39.0,
+    "pipeline_avg": 39.0
+  }
+}

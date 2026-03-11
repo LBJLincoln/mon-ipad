@@ -1,0 +1,59 @@
+{
+  "health_score": 7,
+  "health_justification": "The system shows moderate performance with 39.0/100 average score and 40% pass rate. While the LLM judge scores are relatively decent (3.44/5 for BTP), the low pass rate indicates significant gaps in document coverage and retrieval effectiveness. The system is functional but not yet enterprise-ready for critical BTP applications.",
+  "failure_patterns": [
+    {
+      "pattern": "Missing BTP technical documentation",
+      "root_cause": "Critical construction documents like DTU norms, Eurocodes, and AFNOR standards are absent from the knowledge base",
+      "affected_sector": "btp",
+      "affected_pipeline": "standard",
+      "suggested_fix": "Ingest DTU (Document Technique Unifié) norms, Eurocodes, CCTP templates, AFNOR standards, and RE2020 documentation",
+      "expected_improvement": "+15-20 points on BTP standard pipeline (from 39.0 to ~55-60)"
+    },
+    {
+      "pattern": "Low source citation quality",
+      "root_cause": "LLM judge scores show sources at 2.42/5 for BTP, indicating poor citation practices or missing source documents",
+      "affected_sector": "btp",
+      "affected_pipeline": "standard",
+      "suggested_fix": "Improve source citation mechanisms and ensure all technical documents are properly indexed with metadata",
+      "expected_improvement": "+5-8 points on factual accuracy and source citation scores"
+    },
+    {
+      "pattern": "Terminology mismatch",
+      "root_cause": "BTP terminology score is 3.36/5, suggesting the system lacks industry-specific vocabulary and context",
+      "affected_sector": "btp",
+      "affected_pipeline": "standard",
+      "suggested_fix": "Add BTP-specific terminology dictionaries and ensure technical documents use proper construction terminology",
+      "expected_improvement": "+3-5 points on terminology scores"
+    }
+  ],
+  "new_test_questions": [
+    {
+      "question": "Quelles sont les exigences de l'Eurocode 2 pour le dimensionnement des structures en béton armé dans les zones sismiques?",
+      "sector": "btp",
+      "pipeline": "standard",
+      "expected_behavior": "Detailed answer citing specific Eurocode 2 sections, seismic design requirements, and concrete reinforcement specifications",
+      "edge_case_type": "Technical document retrieval - tests ability to find and cite specific Eurocode sections"
+    },
+    {
+      "question": "Comment appliquer la norme DTU 20.1 pour la mise en œuvre des charpentes en bois?",
+      "sector": "btp",
+      "pipeline": "standard",
+      "expected_behavior": "Comprehensive answer covering DTU 20.1 requirements, wood treatment, assembly methods, and quality control procedures",
+      "edge_case_type": "Specialized technical standard - tests retrieval of specific DTU documentation"
+    },
+    {
+      "question": "Quelles sont les principales obligations de la RE2020 pour les bâtiments résidentiels neufs?",
+      "sector": "btp",
+      "pipeline": "standard",
+      "expected_behavior": "Detailed response covering RE2020 energy performance requirements, carbon footprint calculations, and compliance procedures",
+      "edge_case_type": "Regulatory compliance - tests knowledge of recent environmental regulations"
+    }
+  ],
+  "key_insight": "The BTP sector's performance is fundamentally limited by missing critical technical documentation. The system cannot answer construction-specific questions accurately without access to DTU norms, Eurocodes, and other BTP technical standards that are essential for professional practice.",
+  "next_action": "Start ingestion workflow for DTU norms and Eurocodes as the highest priority technical documents for BTP sector, as this will address the most significant data gap and provide the foundation for answering core construction questions.",
+  "baseline_snapshot": {
+    "sector_avg": 39.0,
+    "pipeline_avg": 39.0
+  }
+}

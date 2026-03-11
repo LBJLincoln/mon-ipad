@@ -1,0 +1,13 @@
+{
+  "health_score": 0,
+  "health_justification": "JSON parse failed",
+  "failure_patterns": [],
+  "new_test_questions": [],
+  "key_insight": "{\n  \"health_score\": 4,\n  \"health_justification\": \"The system shows critical data gaps in BTP sector with only 40% pass rate and 39/100 average score. The LLM judge scores reveal poor source citation (2.42/5) and factual accuracy issues. While the standard pipeline performs better than others (48.8% ",
+  "next_action": "Retry analysis",
+  "raw_response": "{\n  \"health_score\": 4,\n  \"health_justification\": \"The system shows critical data gaps in BTP sector with only 40% pass rate and 39/100 average score. The LLM judge scores reveal poor source citation (2.42/5) and factual accuracy issues. While the standard pipeline performs better than others (48.8% pass rate), it's still far below targets. The build failure indicates ingestion pipeline issues, and the overall low scores across all sectors (1.7% pass rate) suggest fundamental retrieval and data coverage problems.\",\n  \"failure_patterns\": [\n    {\n      \"pattern\": \"Missing technical BTP documents\",\n      \"root_cause\": \"DTU norms, Eurocodes, CCTP templates, AFNOR standards, and RE2020 documentation not ingested\",\n      \"affected_sector\": \"btp\",\n      \"affected_pipeline\": \"standard\",\n      \"suggested_fix\": \"Start ingestion workflow for DTU norms and Eurocodes via n8n, prioritizing the most frequently cited standards in BTP questions\",\n      \"expected_improvement\": \"+15 points on BTP standard",
+  "baseline_snapshot": {
+    "sector_avg": 39.0,
+    "pipeline_avg": 39.0
+  }
+}

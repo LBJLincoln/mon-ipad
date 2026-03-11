@@ -1,0 +1,65 @@
+{
+  "plan_id": "plan-20260311-173637",
+  "target_sector": "btp",
+  "target_pipeline": "standard",
+  "category": "data_gap",
+  "actions": [
+    {
+      "step": 1,
+      "type": "eval",
+      "description": "Run targeted evaluation to identify specific BTP data gaps",
+      "command": "python3 eval/parallel-eval.py --sector btp --pipeline standard --output weak-questions.json",
+      "reason": "Identify the exact questions where BTP standard pipeline fails due to missing documents"
+    },
+    {
+      "step": 2,
+      "type": "eval",
+      "description": "Use expert discovery to find BTP technical documents",
+      "command": "python3 eval/expert-discovery.py --sector btp --query 'DTU norms Eurocodes CCTP templates AFNOR standards RE2020 construction' --output btp-documents.json",
+      "reason": "Discover authoritative sources for the missing BTP technical documents"
+    },
+    {
+      "step": 3,
+      "type": "ingest",
+      "description": "Ingest DTU norms documents into Pinecone",
+      "command": "python3 ops/staging-deploy.py --workflow ingest-btp-documents --documents btp-documents.json --namespace dtu-norms",
+      "reason": "Add critical DTU norms to the vector database for construction expertise"
+    },
+    {
+      "step": 4,
+      "type": "ingest",
+      "description": "Ingest Eurocodes documents into Pinecone",
+      "command": "python3 ops/staging-deploy.py --workflow ingest-btp-documents --documents btp-documents.json --namespace eurocodes",
+      "reason": "Add Eurocodes for structural and construction standards"
+    },
+    {
+      "step": 5,
+      "type": "ingest",
+      "description": "Ingest AFNOR standards and RE2020 documentation",
+      "command": "python3 ops/staging-deploy.py --workflow ingest-btp-documents --documents btp-documents.json --namespace afnor-re2020",
+      "reason": "Add French construction standards and environmental regulations"
+    },
+    {
+      "step": 6,
+      "type": "eval",
+      "description": "Re-run evaluation to measure improvement",
+      "command": "python3 eval/parallel-eval.py --sector btp --pipeline standard --compare weak-questions.json",
+      "reason": "Verify that the ingested documents resolved the data gaps"
+    }
+  ],
+  "test_questions": [
+    {
+      "question": "Quelles sont les principales dispositions du DTU 20.1 concernant les fondations superficielles?",
+      "sector": "btp",
+      "expected_behavior": "Answer cites specific DTU 20.1 articles with technical details about shallow foundations, soil bearing capacity, and construction methods"
+    },
+    {
+      "question": "Comment appliquer l'Eurocode 2 pour le calcul des structures en béton armé?",
+      "sector": "btp",
+      "expected_behavior": "Answer references Eurocode 2 clauses with formulas and design principles for reinforced concrete structures"
+    }
+  ],
+  "success_metric": "BTP standard pipeline score increases from 33.0 to above 50, with weak questions reduced from 2 to 0",
+  "estimated_duration_min": 180,
+  "risk_assessment": "High success probability as data gaps are clearly identified; main risk is document availability and ingestion time"
+}

@@ -121,6 +121,8 @@ MASS_QUESTION_SCRIPT = os.path.join(REPO_ROOT, "eval", "mass-question-generator.
 STAGING_DEPLOY_SCRIPT = os.path.join(REPO_ROOT, "ops", "staging-deploy.py")
 FAST_INGEST_SCRIPT = os.path.join(REPO_ROOT, "ops", "fast-ingest.py")
 DOCLING_CRON_SCRIPT = os.path.join(REPO_ROOT, "codespace", "docling-cron.py")
+DOCLING_S6_SCRIPT = os.path.join(REPO_ROOT, "ops", "docling-s6-ingest.py")
+INFRA_TEST_SCRIPT = os.path.join(REPO_ROOT, "ops", "infra-test.py")
 
 # Sectors and pipelines
 SECTORS = ["finance", "btp", "juridique", "industrie"]
@@ -503,6 +505,64 @@ def read_error_library():
     return None
 
 
+def read_debug_playbook(max_chars=4000):
+    """Read the DEBUG-PLAYBOOK.md fix library (90+ documented fixes).
+
+    This is the SINGLE SOURCE OF TRUTH for debugging pipelines.
+    Returns a condensed version focusing on fix entries and diagnostic trees.
+    """
+    path = os.path.join(REPO_ROOT, "technicals", "DEBUG-PLAYBOOK.md")
+    if not os.path.exists(path):
+        return None
+
+    try:
+        with open(path, "r") as f:
+            content = f.read()
+
+        # Extract the most useful sections for the LLM:
+        # 1. Quick Diagnostic Flowcharts (section 1)
+        # 2. Fixes Library entries (FIX-XX patterns)
+        # 3. Recurring Patterns (section 5)
+        import re
+
+        fixes = []
+        # Extract all FIX-XX entries
+        for match in re.finditer(r'(FIX-\d+[^#]*?)(?=\n## |\nFIX-|\n---|\Z)', content, re.DOTALL):
+            fix_text = match.group(1).strip()
+            if len(fix_text) > 20:
+                # Truncate each fix to 200 chars for context window efficiency
+                fixes.append(fix_text[:200])
+
+        # Extract diagnostic trees (indented code blocks)
+        diag_trees = []
+        for match in re.finditer(r'```\n(.*?)```', content, re.DOTALL):
+            tree = match.group(1).strip()
+            if len(tree) > 30 and ("YES" in tree or "NO" in tree or "→" in tree):
+                diag_trees.append(tree[:300])
+
+        # Extract recurring patterns (section 5)
+        patterns = []
+        for match in re.finditer(r'### (5\.\d+.*?)\n(.*?)(?=\n### |\n## |\Z)', content, re.DOTALL):
+            patterns.append(f"{match.group(1)}: {match.group(2)[:150]}")
+
+        result = {
+            "total_fixes": len(fixes),
+            "diagnostic_trees": diag_trees[:3],  # Top 3 trees
+            "fixes_summary": fixes[:30],  # Top 30 fixes
+            "patterns": patterns[:10],  # Top 10 patterns
+        }
+
+        # Compact to fit max_chars
+        result_str = json.dumps(result, ensure_ascii=False)
+        if len(result_str) > max_chars:
+            result["fixes_summary"] = fixes[:15]
+            result["patterns"] = patterns[:5]
+
+        return result
+    except Exception:
+        return None
+
+
 # ============================================================================
 # SUBPROCESS RUNNER — Calls other scripts safely
 # ============================================================================
@@ -560,6 +620,7 @@ def build_system_context():
         "error_patterns": None,
         "metrics_summary": None,
         "score_history": None,
+        "pipeline_health": None,
     }
 
     # Latest parallel-eval results
@@ -642,6 +703,11 @@ def build_system_context():
     if history:
         ctx["score_history"] = history
 
+    # DEBUG-PLAYBOOK fix library (90+ documented fixes — CRITICAL for diagnosis)
+    playbook = read_debug_playbook()
+    if playbook:
+        ctx["debug_playbook"] = playbook
+
     return ctx
 
 
@@ -652,6 +718,16 @@ def format_context_for_prompt(ctx, max_chars=6000):
     lines.append(f"Timestamp: {ctx['timestamp']}")
     lines.append(f"Sectors: {', '.join(ctx['sectors'])}")
     lines.append(f"Pipelines: {', '.join(ctx['pipelines'])}")
+
+    # Pipeline health (live smoke test results)
+    ph = ctx.get("pipeline_health")
+    if ph:
+        lines.append(f"\n--- Pipeline Health (live smoke test) ---")
+        for pname, pdata in sorted(ph.items()):
+            status_str = "OK" if pdata.get("status") == "ok" else f"BROKEN ({pdata.get('error', '?')[:60]})"
+            lines.append(f"  {pname}: {status_str} "
+                         f"(latency={pdata.get('latency_s', '?')}s, "
+                         f"response_len={pdata.get('response_length', 0)})")
 
     # Eval results
     er = ctx.get("eval_results", {})
@@ -736,6 +812,20 @@ def format_context_for_prompt(ctx, max_chars=6000):
             if sd:
                 lines.append(f"  Statuses: {json.dumps(sd)}")
 
+    # DEBUG-PLAYBOOK fixes (user-documented, 90+ entries)
+    playbook = ctx.get("debug_playbook")
+    if playbook:
+        lines.append(f"\n--- DEBUG-PLAYBOOK Fix Library ({playbook.get('total_fixes', 0)} fixes) ---")
+        # Include diagnostic trees
+        for i, tree in enumerate(playbook.get("diagnostic_trees", [])[:2]):
+            lines.append(f"  Diagnostic Tree {i+1}:\n{tree[:200]}")
+        # Include relevant fix summaries
+        for fix in playbook.get("fixes_summary", [])[:10]:
+            lines.append(f"  - {fix[:120]}")
+        # Include patterns
+        for pattern in playbook.get("patterns", [])[:5]:
+            lines.append(f"  Pattern: {pattern[:120]}")
+
     # Targets
     lines.append(f"\n--- Accuracy Targets ---")
     for s in SECTORS:
@@ -795,6 +885,27 @@ def phase_strategize(ctx, state, dry_run=False):
     log(f"{C.BOLD}PHASE 1: STRATEGIZE — Analyzing state, picking priority{C.RESET}", "PHASE")
     log(f"{'=' * 70}", "PHASE")
 
+    # --- Pipeline health smoke test (detect broken pipelines) ---
+    if not dry_run:
+        log("Running pipeline health smoke tests on production...", "INFO")
+        pipeline_health = _smoke_test_all_pipelines()
+        ctx["pipeline_health"] = pipeline_health
+
+        broken_pipelines = []
+        for pname, pdata in pipeline_health.items():
+            status_icon = "OK" if pdata["status"] == "ok" else "BROKEN"
+            latency_str = f"{pdata['latency_s']}s" if pdata.get("latency_s") else "?"
+            log(f"  {pname}: {status_icon} (latency={latency_str}, len={pdata.get('response_length', 0)})",
+                "OK" if pdata["status"] == "ok" else "ERROR")
+            if pdata["status"] != "ok":
+                broken_pipelines.append(pname)
+
+        if broken_pipelines:
+            log(f"BROKEN pipelines detected: {', '.join(broken_pipelines)} — will prioritize fixing", "WARN")
+    else:
+        pipeline_health = {}
+        broken_pipelines = []
+
     context_text = format_context_for_prompt(ctx)
 
     # Include previous cycle info if available
@@ -810,8 +921,28 @@ PREVIOUS CYCLE:
 - Total improvements so far: {state.get('total_improvements', 0)}
 If the previous priority did not improve scores, choose a DIFFERENT approach."""
 
+    # Inject broken pipeline info so LLM prioritizes fixing them
+    broken_info = ""
+    if broken_pipelines:
+        broken_details = []
+        for bp in broken_pipelines:
+            bdata = pipeline_health.get(bp, {})
+            broken_details.append(
+                f"  - {bp}: {bdata.get('error', 'unknown error')} "
+                f"(HTTP {bdata.get('http_status', '?')}, latency={bdata.get('latency_s', '?')}s)"
+            )
+        broken_info = f"""
+
+CRITICAL — BROKEN PIPELINES DETECTED (smoke test on production):
+{chr(10).join(broken_details)}
+
+A broken pipeline returns 0% accuracy FOREVER until fixed. This is the HIGHEST priority.
+You MUST choose category "fix_pipeline" and target one of the broken pipelines above.
+Do NOT choose "data_gap" if a pipeline is broken — fixing the pipeline comes first."""
+
     prompt = f"""{context_text}
 {prev_info}
+{broken_info}
 
 TASK: Based on all the data above, determine the SINGLE highest-impact improvement \
 to make in the next cycle.
@@ -885,11 +1016,24 @@ Respond ONLY with a JSON object (no markdown, no preamble):
     log(f"Impact:   {strategy.get('expected_impact', '?')}", "STRAT")
     log(f"Action:   {strategy.get('action', '?')}", "STRAT")
 
+    # Attach pipeline health for downstream phases (report)
+    if pipeline_health:
+        strategy["_pipeline_health"] = {
+            pname: {
+                "status": pdata.get("status", "unknown"),
+                "error": pdata.get("error"),
+                "latency_s": pdata.get("latency_s"),
+                "response_length": pdata.get("response_length", 0),
+            }
+            for pname, pdata in pipeline_health.items()
+        }
+
     # Persist
     log_jsonl(STRATEGY_LOG, {
         "event": "strategy_decided",
         "cycle": state.get("cycle", 0) + 1,
-        "strategy": strategy,
+        "strategy": {k: v for k, v in strategy.items() if not k.startswith("_")},
+        "pipeline_health": strategy.get("_pipeline_health"),
     })
 
     return strategy
@@ -1082,7 +1226,8 @@ def phase_build(strategy, plan, state, dry_run=False):
         if category == "data_gap":
             build_result = _build_data_gap(target_sector, target_pipeline, plan, build_result)
         elif category == "fix_pipeline":
-            build_result = _build_fix_pipeline(target_sector, target_pipeline, plan, build_result)
+            # Use the enhanced broken-pipeline handler which does diagnosis + redeployment
+            build_result = _build_fix_broken_pipeline(target_sector, target_pipeline, plan, build_result)
         elif category == "retrieval_quality":
             build_result = _build_retrieval_quality(target_sector, target_pipeline, plan, build_result)
         elif category == "prompt_engineering":
@@ -1207,13 +1352,18 @@ def _build_data_gap(sector, pipeline, plan, result):
                 if nums:
                     result["vectors_added"] += int(nums[0])
 
-    # Step 3: Process PDFs via Docling (if script exists)
-    if os.path.exists(DOCLING_CRON_SCRIPT):
-        log("Step 3: Processing PDFs via Docling...")
+    # Step 3: Process PDFs via Docling S6 API (adapted for HF Space CPU-basic)
+    # Prefer S6 adapter over codespace cron (S6 is always available)
+    docling_script = DOCLING_S6_SCRIPT if os.path.exists(DOCLING_S6_SCRIPT) else DOCLING_CRON_SCRIPT
+    if os.path.exists(docling_script):
+        log(f"Step 3: Processing PDFs via Docling ({os.path.basename(docling_script)})...")
+        doc_args = ["--from-discovered", "--sector", sector, "--max", "5"]
+        if docling_script == DOCLING_CRON_SCRIPT:
+            doc_args = ["--sector", sector, "--max-pdfs", "5"]
         doc_rc, doc_out, doc_err = run_script(
-            DOCLING_CRON_SCRIPT,
-            ["--sector", sector, "--max-pdfs", "10"],
-            timeout_s=600,
+            docling_script,
+            doc_args,
+            timeout_s=900,  # 15 min — S6 CPU-basic is slow
         )
         result["actions_taken"].append({
             "action": "docling_process",
@@ -1223,7 +1373,7 @@ def _build_data_gap(sector, pipeline, plan, result):
             "detail": doc_out[:500] if doc_out else doc_err[:500] if doc_err else "no output",
         })
     else:
-        log("Docling cron script not found, skipping PDF processing", "WARN")
+        log("No Docling script found (neither S6 adapter nor cron), skipping PDF processing", "WARN")
 
     return result
 
@@ -1308,6 +1458,238 @@ def _build_fix_pipeline(sector, pipeline, plan, result):
     else:
         log(f"Staging smoke FAILED — NOT promoting. Score: {smoke.get('score', 'N/A')}", "WARN")
         result["deployment"]["promoted"] = False
+
+    return result
+
+
+def _build_fix_broken_pipeline(sector, pipeline, plan, result):
+    """Diagnose and attempt to fix a broken pipeline detected by smoke tests.
+
+    Steps:
+    1. Re-confirm the pipeline is broken (re-test on multiple Spaces)
+    2. Inspect workflow JSON for obvious issues (wrong endpoints, missing creds)
+    3. Check n8n execution logs for recent error patterns
+    4. Log a detailed diagnosis
+    5. Attempt to redeploy the workflow if a valid one exists
+    """
+    log(f"FIX BROKEN PIPELINE: {pipeline} on {sector}", "STRAT")
+
+    # Step 1: Re-confirm on all production Spaces
+    log("Step 1: Re-testing pipeline across all production Spaces...")
+    space_results = {}
+    working_spaces = []
+    broken_spaces = []
+    for space_url in PRODUCTION_SPACES:
+        health = _smoke_test_all_pipelines(space_url=space_url, timeout=60)
+        p_health = health.get(pipeline, {})
+        space_results[space_url] = p_health
+        if p_health.get("status") == "ok":
+            working_spaces.append(space_url)
+        else:
+            broken_spaces.append(space_url)
+
+    result["actions_taken"].append({
+        "action": "confirm_broken",
+        "pipeline": pipeline,
+        "working_spaces": len(working_spaces),
+        "broken_spaces": len(broken_spaces),
+        "success": True,
+        "detail": f"{len(working_spaces)}/{len(PRODUCTION_SPACES)} Spaces working, "
+                  f"{len(broken_spaces)} broken",
+    })
+
+    if not broken_spaces:
+        log(f"Pipeline {pipeline} is actually working on all Spaces now (transient failure)", "OK")
+        result["actions_taken"].append({
+            "action": "diagnosis",
+            "detail": "Pipeline was transiently broken — now working on all Spaces",
+            "success": True,
+        })
+        return result
+
+    log(f"Confirmed broken on {len(broken_spaces)} Spaces: {', '.join(s[:30] for s in broken_spaces)}", "WARN")
+
+    # Step 1b: Run infra-test for precise component diagnosis
+    infra_test_script = os.path.join(REPO_ROOT, "ops", "infra-test.py")
+    if os.path.exists(infra_test_script):
+        log("Step 1b: Running infrastructure tests for component-level diagnosis...")
+        it_rc, it_out, it_err = run_script(infra_test_script, ["--json", "--component", "pipelines"], timeout_s=180)
+        if it_rc == 0 and it_out:
+            try:
+                it_data = json.loads(it_out)
+                for t in it_data.get("tests", []):
+                    if t.get("status") != "PASS":
+                        log(f"  INFRA FAIL: {t.get('component','?')}/{t.get('test','?')}: "
+                            f"{t.get('detail','?')[:100]}", "ERROR")
+                        diagnosis_details = t.get("detail", "")
+                        if "timeout" in diagnosis_details.lower():
+                            log("    → Likely: Node hanging on external call (Neo4j? Embedding?)", "WARN")
+                        elif "empty" in diagnosis_details.lower():
+                            log("    → Likely: Pipeline returns empty response (config issue)", "WARN")
+                result["actions_taken"].append({
+                    "action": "infra_test_diagnosis",
+                    "return_code": it_rc,
+                    "success": True,
+                    "detail": it_out[:500],
+                })
+            except (json.JSONDecodeError, KeyError):
+                pass
+
+    # Step 2: Check for workflow JSON files and inspect for known issues
+    log("Step 2: Inspecting workflow JSON for known issues...")
+    diagnosis = {
+        "pipeline": pipeline,
+        "sector": sector,
+        "broken_spaces": broken_spaces,
+        "working_spaces": working_spaces,
+        "issues_found": [],
+        "space_errors": {s: space_results[s].get("error", "?") for s in broken_spaces},
+    }
+
+    live_dir = os.path.join(REPO_ROOT, "n8n", "live")
+    workflow_file = None
+    if os.path.exists(live_dir):
+        candidates = [f for f in os.listdir(live_dir)
+                      if pipeline in f.lower() and f.endswith(".json")]
+        if candidates:
+            candidates.sort(key=lambda f: os.path.getmtime(os.path.join(live_dir, f)), reverse=True)
+            workflow_file = os.path.join(live_dir, candidates[0])
+
+    if workflow_file and os.path.exists(workflow_file):
+        log(f"  Inspecting: {workflow_file}")
+        try:
+            with open(workflow_file) as wf:
+                workflow_data = json.load(wf)
+
+            # Check for common issues in workflow JSON
+            workflow_str = json.dumps(workflow_data, ensure_ascii=False)
+
+            # Issue: Expired or placeholder API keys
+            if "sk-or-" in workflow_str or "YOUR_API_KEY" in workflow_str:
+                diagnosis["issues_found"].append("Hardcoded or placeholder API key found in workflow")
+
+            # Issue: Wrong LiteLLM endpoint
+            if "engine-7" not in workflow_str and "litellm" not in workflow_str.lower():
+                diagnosis["issues_found"].append("No LiteLLM S7 endpoint reference found — may use wrong LLM backend")
+
+            # Issue: Wrong embedding endpoint
+            if pipeline == "graph" and "embeddings-api" not in workflow_str:
+                diagnosis["issues_found"].append("Graph pipeline missing self-hosted embeddings reference")
+
+            # Issue: Check for disabled/inactive nodes
+            nodes = workflow_data.get("nodes", [])
+            if isinstance(nodes, list):
+                disabled_nodes = [n.get("name", "?") for n in nodes
+                                  if isinstance(n, dict) and n.get("disabled", False)]
+                if disabled_nodes:
+                    diagnosis["issues_found"].append(
+                        f"Disabled nodes found: {', '.join(disabled_nodes[:5])}")
+
+            # Issue: Check for HTTP Request nodes with wrong URLs
+            for node in (nodes if isinstance(nodes, list) else []):
+                if isinstance(node, dict) and node.get("type", "").endswith("httpRequest"):
+                    params = node.get("parameters", {})
+                    url_val = params.get("url", "")
+                    if "localhost" in str(url_val) or "127.0.0.1" in str(url_val):
+                        diagnosis["issues_found"].append(
+                            f"Node '{node.get('name', '?')}' points to localhost — needs HF Space URL")
+
+            log(f"  Issues found: {len(diagnosis['issues_found'])}")
+            for issue in diagnosis["issues_found"]:
+                log(f"    - {issue}", "WARN")
+
+        except (json.JSONDecodeError, IOError) as e:
+            log(f"  Failed to parse workflow: {e}", "ERROR")
+            diagnosis["issues_found"].append(f"Workflow JSON parse error: {str(e)[:80]}")
+    else:
+        log(f"  No workflow file found for {pipeline}", "WARN")
+        diagnosis["issues_found"].append(f"No workflow JSON found in n8n/live/ for {pipeline}")
+
+    result["actions_taken"].append({
+        "action": "diagnosis",
+        "pipeline": pipeline,
+        "issues_found": diagnosis["issues_found"],
+        "success": True,
+        "detail": json.dumps(diagnosis, ensure_ascii=False, default=str)[:500],
+    })
+
+    # Step 3: Collect error info from the broken Space responses
+    log("Step 3: Analyzing error patterns from Space responses...")
+    error_patterns = {}
+    for space_url, sdata in space_results.items():
+        err = sdata.get("error", "")
+        if err:
+            # Categorize the error
+            if "timeout" in err.lower() or "timed out" in err.lower():
+                error_patterns["timeout"] = error_patterns.get("timeout", 0) + 1
+            elif "500" in err or "502" in err or "503" in err:
+                error_patterns["server_error"] = error_patterns.get("server_error", 0) + 1
+            elif "404" in err:
+                error_patterns["not_found"] = error_patterns.get("not_found", 0) + 1
+            elif "401" in err or "403" in err:
+                error_patterns["auth_error"] = error_patterns.get("auth_error", 0) + 1
+            else:
+                error_patterns["other"] = error_patterns.get("other", 0) + 1
+
+    diagnosis["error_patterns"] = error_patterns
+    log(f"  Error patterns: {json.dumps(error_patterns)}")
+
+    # Step 4: Attempt to redeploy if we have a workflow file
+    if workflow_file and os.path.exists(STAGING_DEPLOY_SCRIPT):
+        log("Step 4: Attempting redeployment to broken Spaces...")
+        # Deploy to staging first for safety
+        deploy_rc, deploy_out, deploy_err = run_script(
+            STAGING_DEPLOY_SCRIPT,
+            ["--workflow", workflow_file, "--pipeline", pipeline, "--staging-only", "--skip-tests"],
+            timeout_s=180,
+        )
+        result["actions_taken"].append({
+            "action": "redeploy_staging",
+            "workflow": workflow_file,
+            "return_code": deploy_rc,
+            "success": deploy_rc == 0,
+            "detail": deploy_out[:300] if deploy_out else deploy_err[:300] if deploy_err else "",
+        })
+
+        if deploy_rc == 0:
+            # Smoke test staging
+            smoke = _smoke_test_staging(pipeline, sector)
+            if smoke.get("pass"):
+                log("Staging smoke PASSED after redeployment — promoting to production", "OK")
+                promote_rc, promote_out, promote_err = run_script(
+                    STAGING_DEPLOY_SCRIPT,
+                    ["--workflow", workflow_file, "--pipeline", pipeline,
+                     "--production-spaces", "--skip-tests"],
+                    timeout_s=300,
+                )
+                result["actions_taken"].append({
+                    "action": "promote_fix_to_production",
+                    "return_code": promote_rc,
+                    "success": promote_rc == 0,
+                    "detail": promote_out[:300] if promote_out else "",
+                })
+                result["deployment"] = {
+                    "target": "production",
+                    "workflow": workflow_file,
+                    "success": promote_rc == 0,
+                    "promoted": promote_rc == 0,
+                }
+            else:
+                log(f"Staging smoke FAILED after redeployment: {smoke.get('error', '?')}", "WARN")
+                result["actions_taken"].append({
+                    "action": "staging_smoke_after_redeploy",
+                    "success": False,
+                    "detail": f"Smoke failed: {smoke.get('error', 'unknown')}",
+                })
+    else:
+        log("Step 4: Cannot redeploy (no workflow file or deploy script missing)", "WARN")
+
+    # Save diagnosis to a dedicated file for debugging
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    diag_file = os.path.join(BUILDS_DIR, f"diagnosis-{pipeline}-{ts}.json")
+    with open(diag_file, "w") as f:
+        json.dump(diagnosis, f, indent=2, ensure_ascii=False, default=str)
+    log(f"Diagnosis saved: {diag_file}", "OK")
 
     return result
 
@@ -1487,6 +1869,105 @@ def _smoke_test_staging(pipeline, sector):
             return {"pass": False, "error": f"HTTP {status}", "status_code": status, "body": body[:200]}
     except Exception as e:
         return {"pass": False, "error": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# PIPELINE HEALTH CHECK — Quick smoke test on all pipelines (for STRATEGIZE)
+# ---------------------------------------------------------------------------
+def _smoke_test_all_pipelines(space_url=None, timeout=45):
+    """Run a quick smoke test on each pipeline to detect broken ones.
+
+    Tests Standard, Graph, Quantitative, and Orchestrator with a simple question.
+    Returns a dict: {pipeline_name: {status, error, latency_s, response_length}}.
+    Uses the first production Space by default.
+    """
+    if space_url is None:
+        space_url = PRODUCTION_SPACES[0] if PRODUCTION_SPACES else STAGING_SPACE
+
+    test_question = "Quels sont les principaux indicateurs financiers ?"
+    test_payload = {
+        "query": test_question,
+        "sector": "finance",
+        "chatInput": test_question,
+    }
+
+    results = {}
+    for pipeline, webhook_path in WEBHOOK_PATHS.items():
+        url = f"https://{space_url}{webhook_path}"
+        t0 = time.time()
+        try:
+            status_code, body = http_request(
+                url,
+                method="POST",
+                data=test_payload,
+                timeout=timeout,
+            )
+            latency = round(time.time() - t0, 1)
+
+            if status_code == 200:
+                try:
+                    resp = json.loads(body) if isinstance(body, str) else body
+                    if isinstance(resp, list) and resp:
+                        resp = resp[0]
+                    response_text = resp.get("response", resp.get("output", ""))
+                    has_content = len(response_text) > 30
+                    results[pipeline] = {
+                        "status": "ok" if has_content else "empty_response",
+                        "error": None if has_content else "Response shorter than 30 chars",
+                        "latency_s": latency,
+                        "response_length": len(response_text),
+                        "http_status": status_code,
+                    }
+                except (json.JSONDecodeError, AttributeError, TypeError) as e:
+                    results[pipeline] = {
+                        "status": "error",
+                        "error": f"Invalid JSON: {str(e)[:80]}",
+                        "latency_s": latency,
+                        "response_length": 0,
+                        "http_status": status_code,
+                    }
+            else:
+                results[pipeline] = {
+                    "status": "error",
+                    "error": f"HTTP {status_code}: {body[:120] if body else 'no body'}",
+                    "latency_s": latency,
+                    "response_length": 0,
+                    "http_status": status_code,
+                }
+        except Exception as e:
+            latency = round(time.time() - t0, 1)
+            results[pipeline] = {
+                "status": "error",
+                "error": f"Exception: {str(e)[:120]}",
+                "latency_s": latency,
+                "response_length": 0,
+                "http_status": 0,
+            }
+
+        # ── Classify failure type for smarter decisions ──
+        r = results[pipeline]
+        if r["status"] != "ok":
+            lat = r.get("latency_s", 0)
+            if lat >= timeout * 0.9:
+                r["failure_type"] = "timeout_hang"
+                r["likely_cause"] = "External call hanging (Neo4j, embedding, or LLM)"
+            elif lat <= 5:
+                r["failure_type"] = "instant_fail"
+                r["likely_cause"] = "Config error, wrong credential, or missing workflow"
+            elif r.get("http_status", 0) in (401, 403):
+                r["failure_type"] = "auth_error"
+                r["likely_cause"] = "Authentication failed (API key expired or wrong)"
+            elif r.get("http_status", 0) in (502, 503):
+                r["failure_type"] = "space_down"
+                r["likely_cause"] = "HF Space sleeping or crashed"
+            elif r["status"] == "empty_response":
+                r["failure_type"] = "empty_response"
+                r["likely_cause"] = "Workflow runs but returns no content (node config issue)"
+            else:
+                r["failure_type"] = "unknown"
+                r["likely_cause"] = r.get("error", "Unknown error")[:80]
+
+    return results
 
 
 # ============================================================================
@@ -1880,6 +2361,7 @@ def phase_report(strategy, plan, baseline, collected, analysis, state, cycle_sta
             "new_questions_generated": len(analysis.get("new_test_questions", [])) if analysis else 0,
         },
         "next_action": analysis.get("next_action", "?") if analysis else "Retry cycle",
+        "pipeline_health": strategy.get("_pipeline_health"),
         "suggested_commands": [],
     }
 
@@ -1907,6 +2389,9 @@ def phase_report(strategy, plan, baseline, collected, analysis, state, cycle_sta
         json.dump(report, f, indent=2, ensure_ascii=False)
 
     # Append summary to JSONL
+    ph = report.get("pipeline_health") or {}
+    pipelines_ok = sum(1 for p in ph.values() if p.get("status") == "ok")
+    pipelines_total = len(ph) if ph else 0
     summary = {
         "cycle": cycle_num,
         "timestamp": report["timestamp"],
@@ -1917,6 +2402,7 @@ def phase_report(strategy, plan, baseline, collected, analysis, state, cycle_sta
         "sector_delta": sector_delta,
         "improved": improved,
         "health": analysis.get("health_score", 0) if analysis else 0,
+        "pipelines_ok": f"{pipelines_ok}/{pipelines_total}" if pipelines_total else "?",
     }
     log_jsonl(CYCLE_SUMMARY_LOG, summary)
 
@@ -1942,6 +2428,22 @@ def _print_cycle_report(report):
     print(f"  {C.BOLD}Category:{C.RESET}  {strat.get('category', '?')}")
     print(f"  {C.BOLD}Duration:{C.RESET}  {report.get('duration_s', 0)}s")
     print()
+
+    # Pipeline health
+    ph = report.get("pipeline_health")
+    if ph:
+        print(f"  {C.BOLD}Pipeline Health:{C.RESET}")
+        for pname in sorted(ph.keys()):
+            pdata = ph[pname]
+            status = pdata.get("status", "unknown")
+            if status == "ok":
+                icon = f"{C.GREEN}OK{C.RESET}"
+            else:
+                icon = f"{C.RED}BROKEN{C.RESET}"
+            err_str = f" — {pdata.get('error', '')[:50]}" if pdata.get("error") else ""
+            lat_str = f"{pdata.get('latency_s', '?')}s"
+            print(f"    {pname:<15} {icon}  (latency={lat_str}, len={pdata.get('response_length', 0)}){err_str}")
+        print()
 
     # Scores
     bl = report.get("baseline_scores", {})
@@ -2024,6 +2526,62 @@ def run_cycle(state, dry_run=False):
     if not strategy:
         log("Strategy phase failed, aborting cycle", "ERROR")
         return None, state
+
+    # ── SMART OVERRIDE: Force fix_pipeline when smoke test detects broken ──
+    # The LLM often picks data_gap even when pipelines return 0%. Override it.
+    pipeline_health = ctx.get("pipeline_health", {})
+    broken_pipelines = [
+        p for p, d in pipeline_health.items()
+        if d.get("status") != "ok"
+    ]
+    if broken_pipelines and strategy.get("category") != "fix_pipeline":
+        # Classify broken type
+        for bp in broken_pipelines:
+            bdata = pipeline_health[bp]
+            latency = bdata.get("latency_s", 0)
+            err = bdata.get("error", "")
+            if latency >= 60 or "timeout" in str(err).lower():
+                failure_type = "TIMEOUT (likely Neo4j/embedding hang)"
+            elif latency <= 10:
+                failure_type = "INSTANT FAIL (likely credential/config error)"
+            else:
+                failure_type = f"ERROR ({err[:50]})"
+            log(f"OVERRIDE: {bp} is BROKEN — {failure_type}", "WARN")
+
+        # Pick the first broken pipeline to fix
+        target_bp = broken_pipelines[0]
+        old_cat = strategy.get("category")
+        old_target = strategy.get("target_pipeline")
+        strategy["category"] = "fix_pipeline"
+        strategy["target_pipeline"] = target_bp
+        strategy["priority"] = f"Fix broken {target_bp} pipeline ({pipeline_health[target_bp].get('error', 'unknown')[:80]})"
+        strategy["reasoning"] = (
+            f"OVERRIDDEN by smart detection: LLM chose '{old_cat}' for '{old_target}' "
+            f"but {len(broken_pipelines)} pipeline(s) are broken: {', '.join(broken_pipelines)}. "
+            f"A broken pipeline = 0% accuracy FOREVER. Must fix before any data work."
+        )
+        log(f"OVERRIDE: Forced fix_pipeline for {target_bp} (LLM wanted {old_cat}/{old_target})", "WARN")
+
+    # ── ANTI-STUCK: If same target for 3+ cycles with no improvement, rotate ──
+    consec = state.get("consecutive_no_improvement", 0)
+    last_sector = state.get("last_target_sector")
+    last_pipeline = state.get("last_target_pipeline")
+    if (consec >= 3
+        and strategy.get("target_sector") == last_sector
+        and strategy.get("target_pipeline") == last_pipeline
+        and strategy.get("category") != "fix_pipeline"):
+        # Find a different sector to work on
+        all_sectors = ["finance", "btp", "juridique", "industrie"]
+        other_sectors = [s for s in all_sectors if s != last_sector]
+        if other_sectors:
+            new_sector = other_sectors[0]  # Pick the first different one
+            log(f"ANTI-STUCK: {consec} cycles on {last_sector}/{last_pipeline} with no improvement. "
+                f"Rotating to {new_sector}", "WARN")
+            strategy["target_sector"] = new_sector
+            strategy["reasoning"] = (
+                f"ROTATED: {consec} consecutive cycles targeted {last_sector}/{last_pipeline} "
+                f"without improvement. Trying {new_sector} for fresh progress."
+            )
 
     # Phase 2: Plan
     if _shutdown_requested:
@@ -2305,10 +2863,34 @@ def run_daemon(interval_s, dry_run=False):
                     _print_failure_report(state)
                     break
                 if consec_no_imp >= MAX_CONSECUTIVE_FAILURES:
-                    log(f"AUTO-PAUSE: {consec_no_imp} cycles without improvement — pausing for strategy review", "WARN")
+                    log(f"AUTO-PAUSE: {consec_no_imp} cycles without improvement — escalating strategy", "WARN")
                     _print_failure_report(state)
-                    # Reset counter and continue (don't stop — just log)
+                    # ESCALATION: Run infra-test to get real component status
+                    infra_test = os.path.join(REPO_ROOT, "ops", "infra-test.py")
+                    if os.path.exists(infra_test):
+                        log("ESCALATION: Running infrastructure tests to find root cause...", "WARN")
+                        rc, out, err = run_script(infra_test, ["--json"], timeout_s=120)
+                        if rc == 0 and out:
+                            try:
+                                infra_results = json.loads(out)
+                                failed_tests = [t for t in infra_results.get("tests", [])
+                                               if t.get("status") != "PASS"]
+                                if failed_tests:
+                                    log(f"INFRA FAILURES FOUND: {len(failed_tests)} tests failed", "ERROR")
+                                    for ft in failed_tests[:5]:
+                                        log(f"  FAIL: {ft.get('component', '?')}/{ft.get('test', '?')}: {ft.get('detail', '?')[:80]}", "ERROR")
+                                    # Save escalation report
+                                    esc_file = os.path.join(REPORTS_DIR, f"escalation-{state.get('cycle', 0)}.json")
+                                    with open(esc_file, "w") as ef:
+                                        json.dump({"cycle": state.get("cycle", 0),
+                                                   "infra_failures": failed_tests,
+                                                   "consecutive_no_improvement": consec_no_imp,
+                                                   "timestamp": datetime.now(timezone.utc).isoformat()}, ef, indent=2)
+                            except (json.JSONDecodeError, KeyError):
+                                pass
+                    # Reset counter but CHANGE strategy — force different sector/pipeline
                     state["consecutive_no_improvement"] = 0
+                    state["_escalated_at"] = datetime.now(timezone.utc).isoformat()
                     save_state(state)
 
             if _shutdown_requested:

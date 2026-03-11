@@ -1,0 +1,47 @@
+{
+  "cycle": 8,
+  "timestamp": "2026-03-11T19:11:16.628125+00:00",
+  "duration_s": 1854.8,
+  "strategy": {
+    "priority": "Ingest BTP-specific technical documents (DTU norms, Eurocodes, CCTP templates, AFNOR standards, RE2020 documentation)",
+    "category": "data_gap",
+    "target_sector": "btp",
+    "target_pipeline": "standard",
+    "expected_impact": "+15-20 points on BTP standard pipeline (from 39.0 to ~55-60)"
+  },
+  "plan_id": "plan-20260311-184022",
+  "plan_steps": 7,
+  "baseline_scores": {
+    "overall_avg": 39.0,
+    "sector_avg": 39.0,
+    "pipeline_avg": 39.0
+  },
+  "current_scores": {
+    "overall_avg": 39.0,
+    "sector_avg": 39.0,
+    "pipeline_avg": 39.0
+  },
+  "deltas": {
+    "overall_avg": 0.0,
+    "sector_avg": 0.0,
+    "pipeline_avg": 0.0
+  },
+  "improved": false,
+  "sector_delta": 0.0,
+  "analysis": {
+    "health_score": 7,
+    "key_insight": "The BTP sector's performance is fundamentally limited by missing critical technical documentation. The system cannot answer construction-specific questions accurately without access to DTU norms, Eurocodes, and other BTP technical standards that are essential for professional practice.",
+    "failure_pattern_count": 3,
+    "new_questions_generated": 3
+  },
+  "next_action": "Start ingestion workflow for DTU norms and Eurocodes as the highest priority technical documents for BTP sector, as this will address the most significant data gap and provide the foundation for answering core construction questions.",
+  "suggested_commands": [
+    "# Missing BTP technical documentation: Ingest DTU (Document Technique Unifié) norms, Eurocodes, CCTP templates, AFNOR standards, and RE2020 documentation",
+    "# Low source citation quality: Improve source citation mechanisms and ensure all technical documents are properly indexed with metadata",
+    "# Terminology mismatch: Add BTP-specific terminology dictionaries and ensure technical documents use proper construction terminology",
+    "python3 eval/parallel-eval.py --sector btp --pipeline standard",
+    "python3 eval/continuous-judge.py --suggestions",
+    "python3 ops/metrics-collector.py --profile standard",
+    "# LLM suggestion: Start ingestion workflow for DTU norms and Eurocodes as the highest priority technical documents for BTP sector, as this will address the most significant data gap and provide the foundation for answering core construction questions."
+  ]
+}

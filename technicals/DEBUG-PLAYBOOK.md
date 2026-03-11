@@ -604,6 +604,30 @@ sleep 35
 - **Fix**: Add `"namespace": "sectors"` to ALL Pinecone query JSON bodies in ALL pipelines.
 - **Prevention**: ALWAYS specify namespace when querying Pinecone. Check `describe-index-stats` to verify.
 
+### FIX-97: Graph OTEL Init ignores `question` field — SpongeBob hallucination
+
+- **Session**: 100
+- **Symptom**: Graph pipeline returns SpongeBob/Plankton content for every question. 120s timeout. 0% accuracy on all eval.
+- **Root cause**: OTEL Init node checks `input.query`, `input.chatInput`, `input.task_query`, `input.current_task.query` but **NOT** `input.question`. Despite having `// Accept both query and question fields` comment 3 times. When `question` is sent, queryStr stays empty → validation error silently swallowed (`onError: "continueRegularOutput"`) → LLM entity extractor defaults to SpongeBob example from system prompt → Neo4j/Pinecone search for SpongeBob → hallucination.
+- **Fix**: Add `else if (typeof input.question === 'string') { queryStr = input.question; }` as Priorité 5 in OTEL Init code. Fixed in `graph-rag-v3.6-fixed.json` and deployed to all 6 Spaces.
+- **Prevention**: ALWAYS test with BOTH `query` AND `question` field names. All callers use different names.
+
+### FIX-98: Quant SSL cert error on S2-S5 — self-signed certificate chain
+
+- **Session**: 100
+- **Symptom**: Quant pipeline returns HTTP 500 in ~3s on S2, S3, S4, S5. Works on S1 and S9.
+- **Root cause**: Postgres node ("Schema Introspection") fails with `self-signed certificate in certificate chain` because Supabase pooler uses a cert chain that includes self-signed root. S1 has `NODE_TLS_REJECT_UNAUTHORIZED=0` in HF Space env vars, S2-S5 don't.
+- **Fix**: Add `NODE_TLS_REJECT_UNAUTHORIZED=0` as HF Space secret/env var on S2, S3, S4, S5.
+- **Prevention**: When deploying to new Spaces, copy ALL environment variables from S1, not just n8n secrets.
+
+### FIX-99: Quant eval has 90% wrong questions — BTP/Law questions routed to SQL pipeline
+
+- **Session**: 100
+- **Symptom**: Quant pipeline scores 0% even on S1 where it works. SQL executes correctly but returns empty results.
+- **Root cause**: Eval dataset assigns BTP construction, French law, and manufacturing questions to the `quantitative` pipeline. These can never be answered by SQL queries against `financials` table. Also `financials` only has 78 rows of US companies — no French companies (Total, BNP, etc.).
+- **Fix**: (1) Re-categorize eval questions — only finance SQL questions for Quant. (2) Ingest French financial data into `financials` table. (3) Make Quant aware of `sector_financial_tables` (3,876 rows) in Schema Introspection.
+- **Prevention**: Each eval question must be tagged with correct target pipeline. Quant = SQL financial queries ONLY.
+
 ---
 
 ## 3. IRON RULES
@@ -1229,3 +1253,7 @@ When a new problem is resolved and not in this document:
 | 58-62 | N8N_BLOCK_ENV_ACCESS_IN_NODE critical fix | 2026-02-24 to 2026-02-25 |
 | 75 | Session 75 critical discoveries (SQL validator, duplicate workflows, tenant_id) | 2026-03-07 |
 | 76 | DEBUG-PLAYBOOK.md consolidation from 3 separate files | 2026-03-07 |
+| 100 | FIX-97: Graph OTEL Init missing `question` field (SpongeBob hallucination) | 2026-03-11 |
+| 100 | FIX-98: Quant SSL cert error on S2-S5 (NODE_TLS_REJECT_UNAUTHORIZED missing) | 2026-03-11 |
+| 100 | FIX-99: Quant eval has 90% wrong questions (BTP/Law routed to SQL pipeline) | 2026-03-11 |
+| 100 | Agentic loop now reads DEBUG-PLAYBOOK (90+ fixes) in context | 2026-03-11 |
