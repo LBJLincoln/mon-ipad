@@ -5,14 +5,15 @@ Agentic Loop — Master Continuous Improvement Orchestrator
 The most important script in the Nomos Sector AI Expert project.
 
 Ties together ALL existing tools (eval, metrics, judge, discovery, ingestion)
-into a single autonomous 6-phase improvement loop:
+into a single autonomous 7-phase improvement loop:
 
   Phase 1: STRATEGIZE — Analyze state, pick highest-impact priority via LLM
   Phase 2: PLAN       — Create detailed action plan for the priority
-  Phase 3: OBSERVE    — Run targeted eval on the weak area (baseline)
-  Phase 4: COLLECT    — Gather execution metrics + LLM judge scores
-  Phase 5: ANALYZE    — Deep failure analysis, generate new test questions
-  Phase 6: REPORT     — Structured report, delta tracking, next cycle prep
+  Phase 3: BUILD      — Execute the plan (ingest, deploy, modify)
+  Phase 4: OBSERVE    — Run targeted eval on the weak area (measure impact)
+  Phase 5: COLLECT    — Gather execution metrics + LLM judge scores
+  Phase 6: ANALYZE    — Deep failure analysis, generate new test questions
+  Phase 7: REPORT     — Structured report, delta tracking, next cycle prep
 
 Each cycle moves the system closer to world-class sector expert accuracy.
 
@@ -103,6 +104,7 @@ BASELINES_DIR = os.path.join(DATA_DIR, "baselines")
 COLLECTED_DIR = os.path.join(DATA_DIR, "collected")
 ANALYSES_DIR = os.path.join(DATA_DIR, "analyses")
 REPORTS_DIR = os.path.join(DATA_DIR, "reports")
+BUILDS_DIR = os.path.join(DATA_DIR, "builds")
 CYCLE_SUMMARY_LOG = os.path.join(DATA_DIR, "cycle-summary.jsonl")
 STATE_FILE = os.path.join(DATA_DIR, "loop-state.json")
 
@@ -116,6 +118,9 @@ METRICS_COLLECTOR_SCRIPT = os.path.join(REPO_ROOT, "ops", "metrics-collector.py"
 CONTINUOUS_JUDGE_SCRIPT = os.path.join(REPO_ROOT, "eval", "continuous-judge.py")
 EXPERT_DISCOVERY_SCRIPT = os.path.join(REPO_ROOT, "eval", "expert-discovery.py")
 MASS_QUESTION_SCRIPT = os.path.join(REPO_ROOT, "eval", "mass-question-generator.py")
+STAGING_DEPLOY_SCRIPT = os.path.join(REPO_ROOT, "ops", "staging-deploy.py")
+FAST_INGEST_SCRIPT = os.path.join(REPO_ROOT, "ops", "fast-ingest.py")
+DOCLING_CRON_SCRIPT = os.path.join(REPO_ROOT, "codespace", "docling-cron.py")
 
 # Sectors and pipelines
 SECTORS = ["finance", "btp", "juridique", "industrie"]
@@ -127,6 +132,29 @@ TARGETS = {
     "btp":       {"standard": 85, "graph": 70, "quantitative": 80, "orchestrator": 75},
     "juridique": {"standard": 90, "graph": 80, "quantitative": 0,  "orchestrator": 80},
     "industrie": {"standard": 85, "graph": 70, "quantitative": 80, "orchestrator": 75},
+}
+
+# HF Space URLs for BUILD phase (staging = S9)
+STAGING_SPACE = "lbjlincoln-nomos-rag-engine-9.hf.space"
+PRODUCTION_SPACES = [
+    "lbjlincoln-nomos-rag-engine.hf.space",      # S1
+    "lbjlincoln26-nomos-rag-engine-2.hf.space",   # S2
+    "lbjlincoln-nomos-rag-engine-3.hf.space",     # S3
+    "lbjlincoln26-nomos-rag-engine-4.hf.space",   # S4
+    "lbjlincoln-nomos-rag-engine-5.hf.space",     # S5
+]
+DOCLING_API_URL = "https://lbjlincoln-nomos-docling-api.hf.space"
+
+# Pinecone E5 integrated inference
+PINECONE_E5_HOST = os.environ.get("PINECONE_E5_HOST", "")
+PINECONE_E5_KEY = os.environ.get("PINECONE_API_KEY", "")
+
+# Webhook paths for smoke testing on staging
+WEBHOOK_PATHS = {
+    "standard": "/webhook/rag-multi-index-v3",
+    "graph": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+    "quantitative": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+    "orchestrator": "/webhook/orchestrator-v2",
 }
 
 # Max consecutive failures before stopping
@@ -198,7 +226,7 @@ def log_jsonl(filepath, entry):
 # ============================================================================
 def ensure_directories():
     """Create all data directories on first run."""
-    for d in [DATA_DIR, PLANS_DIR, BASELINES_DIR, COLLECTED_DIR, ANALYSES_DIR, REPORTS_DIR]:
+    for d in [DATA_DIR, PLANS_DIR, BASELINES_DIR, BUILDS_DIR, COLLECTED_DIR, ANALYSES_DIR, REPORTS_DIR]:
         os.makedirs(d, exist_ok=True)
 
 
@@ -1011,15 +1039,466 @@ Respond ONLY with a JSON object (no markdown, no preamble):
 
 
 # ============================================================================
-# PHASE 3: OBSERVE (baseline measurement)
+# PHASE 3: BUILD — Execute the plan (THE MISSING PIECE)
+# ============================================================================
+def phase_build(strategy, plan, state, dry_run=False):
+    """Execute the plan: ingest data, deploy fixes, modify workflows.
+
+    This is the phase that actually DOES things — discovers documents,
+    processes PDFs via Docling, ingests into Pinecone E5, deploys to
+    staging (S9), and runs a smoke test before promoting to production.
+
+    Returns a build_result dict with actions taken and their outcomes.
+    """
+    log(f"\n{C.BOLD}{'=' * 70}{C.RESET}", "PHASE")
+    log(f"{C.BOLD}PHASE 3: BUILD — Executing the plan{C.RESET}", "PHASE")
+    log(f"{'=' * 70}", "PHASE")
+
+    category = strategy.get("category", plan.get("category", "unknown"))
+    target_sector = strategy.get("target_sector", "btp")
+    target_pipeline = strategy.get("target_pipeline", "standard")
+
+    build_result = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "category": category,
+        "target_sector": target_sector,
+        "target_pipeline": target_pipeline,
+        "actions_taken": [],
+        "docs_discovered": 0,
+        "docs_ingested": 0,
+        "vectors_added": 0,
+        "deployment": None,
+        "smoke_test": None,
+        "success": False,
+    }
+
+    if dry_run:
+        log("DRY RUN: Would execute plan actions", "WARN")
+        build_result["dry_run"] = True
+        build_result["success"] = True
+        return build_result
+
+    try:
+        if category == "data_gap":
+            build_result = _build_data_gap(target_sector, target_pipeline, plan, build_result)
+        elif category == "fix_pipeline":
+            build_result = _build_fix_pipeline(target_sector, target_pipeline, plan, build_result)
+        elif category == "retrieval_quality":
+            build_result = _build_retrieval_quality(target_sector, target_pipeline, plan, build_result)
+        elif category == "prompt_engineering":
+            build_result = _build_prompt_engineering(target_sector, target_pipeline, plan, build_result)
+        elif category == "test_coverage":
+            build_result = _build_test_coverage(target_sector, target_pipeline, plan, build_result)
+        else:
+            log(f"Unknown category '{category}', executing plan commands directly", "WARN")
+            build_result = _build_generic(plan, build_result)
+    except Exception as e:
+        log(f"BUILD phase error: {e}", "ERROR")
+        build_result["error"] = str(e)
+        build_result["actions_taken"].append({
+            "action": "error",
+            "detail": str(e),
+        })
+
+    # Always run smoke test on S9 staging after any build action
+    if build_result.get("actions_taken") and not build_result.get("dry_run"):
+        smoke = _smoke_test_staging(target_pipeline, target_sector)
+        build_result["smoke_test"] = smoke
+        if smoke.get("pass"):
+            log(f"Staging smoke test PASSED (score={smoke.get('score', '?')})", "OK")
+        else:
+            log(f"Staging smoke test FAILED: {smoke.get('error', 'unknown')}", "WARN")
+
+    # Determine success
+    actions_ok = sum(1 for a in build_result["actions_taken"] if a.get("success", False))
+    total_actions = len(build_result["actions_taken"])
+    build_result["success"] = actions_ok > 0
+
+    log(f"BUILD complete: {actions_ok}/{total_actions} actions succeeded", "OK" if build_result["success"] else "WARN")
+    if build_result["docs_ingested"] > 0:
+        log(f"  Docs ingested: {build_result['docs_ingested']}", "OK")
+    if build_result["vectors_added"] > 0:
+        log(f"  Vectors added: {build_result['vectors_added']}", "OK")
+
+    # Save build result
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    build_file = os.path.join(BUILDS_DIR, f"build-{ts}.json")
+    with open(build_file, "w") as f:
+        json.dump(build_result, f, indent=2, ensure_ascii=False, default=str)
+    log(f"Build result saved: {build_file}", "OK")
+
+    log_jsonl(STRATEGY_LOG, {
+        "event": "build_completed",
+        "cycle": state.get("cycle", 0) + 1,
+        "category": category,
+        "actions_ok": actions_ok,
+        "total_actions": total_actions,
+        "docs_ingested": build_result["docs_ingested"],
+        "vectors_added": build_result["vectors_added"],
+        "success": build_result["success"],
+    })
+
+    return build_result
+
+
+# ---------------------------------------------------------------------------
+# BUILD SUB-FUNCTIONS by category
+# ---------------------------------------------------------------------------
+
+def _build_data_gap(sector, pipeline, plan, result):
+    """Fill data gap: Tavily discovery → Docling PDF processing → E5 ingestion."""
+    log(f"DATA GAP build for {sector}", "STRAT")
+
+    # Step 1: Discover expert documents via Tavily
+    log("Step 1: Discovering expert documents via Tavily...")
+    disc_rc, disc_out, disc_err = run_script(
+        EXPERT_DISCOVERY_SCRIPT,
+        ["--sector", sector, "--max-queries", "5"],
+        timeout_s=180,
+    )
+    result["actions_taken"].append({
+        "action": "expert_discovery",
+        "sector": sector,
+        "return_code": disc_rc,
+        "success": disc_rc == 0,
+        "detail": disc_out[:500] if disc_out else disc_err[:500] if disc_err else "no output",
+    })
+
+    # Count discovered docs
+    disc_file = os.path.join(REPO_ROOT, "data", "eval", "expert-discovery", "discovered-documents.json")
+    discovered_count = 0
+    if os.path.exists(disc_file):
+        try:
+            with open(disc_file) as f:
+                disc_data = json.load(f)
+            discovered_count = len(disc_data) if isinstance(disc_data, list) else disc_data.get("total", 0)
+        except Exception:
+            pass
+    result["docs_discovered"] = discovered_count
+    log(f"  Discovered: {discovered_count} documents", "OK" if discovered_count > 0 else "WARN")
+
+    # Step 2: Ingest via fast-ingest (handles E5 embedding + Pinecone upsert + Supabase)
+    log("Step 2: Ingesting into E5 Pinecone + Supabase via fast-ingest...")
+    ingest_rc, ingest_out, ingest_err = run_script(
+        FAST_INGEST_SCRIPT,
+        ["--sector", sector],
+        timeout_s=300,
+    )
+    result["actions_taken"].append({
+        "action": "fast_ingest",
+        "sector": sector,
+        "return_code": ingest_rc,
+        "success": ingest_rc == 0,
+        "detail": ingest_out[:500] if ingest_out else ingest_err[:500] if ingest_err else "no output",
+    })
+
+    # Parse ingestion counts from output
+    if ingest_out:
+        for line in ingest_out.split("\n"):
+            if "ingested" in line.lower() or "upserted" in line.lower():
+                # Try to extract numbers
+                import re
+                nums = re.findall(r'(\d+)', line)
+                if nums:
+                    result["docs_ingested"] += int(nums[0])
+            if "vector" in line.lower():
+                import re
+                nums = re.findall(r'(\d+)', line)
+                if nums:
+                    result["vectors_added"] += int(nums[0])
+
+    # Step 3: Process PDFs via Docling (if script exists)
+    if os.path.exists(DOCLING_CRON_SCRIPT):
+        log("Step 3: Processing PDFs via Docling...")
+        doc_rc, doc_out, doc_err = run_script(
+            DOCLING_CRON_SCRIPT,
+            ["--sector", sector, "--max-pdfs", "10"],
+            timeout_s=600,
+        )
+        result["actions_taken"].append({
+            "action": "docling_process",
+            "sector": sector,
+            "return_code": doc_rc,
+            "success": doc_rc == 0,
+            "detail": doc_out[:500] if doc_out else doc_err[:500] if doc_err else "no output",
+        })
+    else:
+        log("Docling cron script not found, skipping PDF processing", "WARN")
+
+    return result
+
+
+def _build_fix_pipeline(sector, pipeline, plan, result):
+    """Fix a broken pipeline: deploy workflow fix to S9 staging, smoke test, promote."""
+    log(f"PIPELINE FIX build for {sector}/{pipeline}", "STRAT")
+
+    # Check if plan has specific workflow file to deploy
+    workflow_file = None
+    for action in plan.get("actions", []):
+        cmd = action.get("command", "")
+        if "staging-deploy" in cmd and "--workflow" in cmd:
+            # Extract workflow file from command
+            parts = cmd.split("--workflow")
+            if len(parts) > 1:
+                workflow_file = parts[1].strip().split()[0]
+                break
+
+    if not workflow_file:
+        # Find the latest live workflow for this pipeline
+        live_dir = os.path.join(REPO_ROOT, "n8n", "live")
+        if os.path.exists(live_dir):
+            candidates = [f for f in os.listdir(live_dir)
+                          if pipeline in f.lower() and f.endswith(".json")]
+            if candidates:
+                candidates.sort(key=lambda f: os.path.getmtime(os.path.join(live_dir, f)), reverse=True)
+                workflow_file = os.path.join("n8n", "live", candidates[0])
+
+    if not workflow_file:
+        log(f"No workflow file found for {pipeline}, cannot deploy", "WARN")
+        result["actions_taken"].append({
+            "action": "deploy_skipped",
+            "reason": f"No workflow file for {pipeline}",
+            "success": False,
+        })
+        return result
+
+    # Deploy to staging (S9) first
+    log(f"Deploying {workflow_file} to staging (S9)...")
+    deploy_rc, deploy_out, deploy_err = run_script(
+        STAGING_DEPLOY_SCRIPT,
+        ["--workflow", workflow_file, "--pipeline", pipeline, "--staging-only", "--skip-tests"],
+        timeout_s=180,
+    )
+    result["actions_taken"].append({
+        "action": "deploy_staging",
+        "workflow": workflow_file,
+        "pipeline": pipeline,
+        "return_code": deploy_rc,
+        "success": deploy_rc == 0,
+        "detail": deploy_out[:500] if deploy_out else deploy_err[:500] if deploy_err else "no output",
+    })
+    result["deployment"] = {
+        "target": "staging_s9",
+        "workflow": workflow_file,
+        "success": deploy_rc == 0,
+    }
+
+    if deploy_rc != 0:
+        log(f"Staging deploy failed (rc={deploy_rc}), aborting", "ERROR")
+        return result
+
+    # Smoke test on S9
+    smoke = _smoke_test_staging(pipeline, sector)
+    if smoke.get("pass"):
+        log("Staging smoke PASSED — promoting to production", "OK")
+        # Promote to all production Spaces
+        promote_rc, promote_out, promote_err = run_script(
+            STAGING_DEPLOY_SCRIPT,
+            ["--workflow", workflow_file, "--pipeline", pipeline, "--production-spaces", "--skip-tests"],
+            timeout_s=300,
+        )
+        result["actions_taken"].append({
+            "action": "promote_production",
+            "workflow": workflow_file,
+            "return_code": promote_rc,
+            "success": promote_rc == 0,
+            "detail": promote_out[:500] if promote_out else "",
+        })
+        result["deployment"]["promoted"] = promote_rc == 0
+    else:
+        log(f"Staging smoke FAILED — NOT promoting. Score: {smoke.get('score', 'N/A')}", "WARN")
+        result["deployment"]["promoted"] = False
+
+    return result
+
+
+def _build_retrieval_quality(sector, pipeline, plan, result):
+    """Improve retrieval: adjust parameters, reindex, or add reranking."""
+    log(f"RETRIEVAL QUALITY build for {sector}/{pipeline}", "STRAT")
+
+    # For now, retrieval quality improvements require running the plan's specific commands
+    result = _build_generic(plan, result)
+
+    # Additionally run fast-ingest to ensure vectors are up-to-date
+    log("Re-running fast-ingest to refresh vectors...")
+    ingest_rc, ingest_out, ingest_err = run_script(
+        FAST_INGEST_SCRIPT,
+        ["--sector", sector],
+        timeout_s=300,
+    )
+    result["actions_taken"].append({
+        "action": "refresh_vectors",
+        "sector": sector,
+        "return_code": ingest_rc,
+        "success": ingest_rc == 0,
+        "detail": ingest_out[:300] if ingest_out else "",
+    })
+
+    return result
+
+
+def _build_prompt_engineering(sector, pipeline, plan, result):
+    """Improve prompts: extract from plan commands and execute."""
+    log(f"PROMPT ENGINEERING build for {sector}/{pipeline}", "STRAT")
+
+    # Prompt changes are typically workflow modifications
+    # Execute any staging-deploy commands from the plan
+    deployed = False
+    for action in plan.get("actions", []):
+        cmd = action.get("command", "")
+        if "staging-deploy" in cmd:
+            # Parse and execute
+            parts = cmd.split()
+            args = parts[2:] if len(parts) > 2 else []  # skip "python3 ops/staging-deploy.py"
+            if not any("--staging-only" in a for a in args):
+                args.append("--staging-only")  # Always deploy to staging first
+            deploy_rc, deploy_out, deploy_err = run_script(STAGING_DEPLOY_SCRIPT, args, timeout_s=180)
+            result["actions_taken"].append({
+                "action": "deploy_prompt_change",
+                "command": cmd,
+                "return_code": deploy_rc,
+                "success": deploy_rc == 0,
+                "detail": deploy_out[:300] if deploy_out else deploy_err[:300] if deploy_err else "",
+            })
+            deployed = True
+
+    if not deployed:
+        # Fall back to generic plan execution
+        result = _build_generic(plan, result)
+        log("No staging-deploy commands in plan, executed generic actions", "WARN")
+
+    return result
+
+
+def _build_test_coverage(sector, pipeline, plan, result):
+    """Generate new test questions to improve coverage."""
+    log(f"TEST COVERAGE build for {sector}/{pipeline}", "STRAT")
+
+    log("Generating new test questions...")
+    gen_rc, gen_out, gen_err = run_script(
+        MASS_QUESTION_SCRIPT,
+        ["--sector", sector, "--count", "20"],
+        timeout_s=180,
+    )
+    result["actions_taken"].append({
+        "action": "generate_questions",
+        "sector": sector,
+        "return_code": gen_rc,
+        "success": gen_rc == 0,
+        "detail": gen_out[:500] if gen_out else gen_err[:300] if gen_err else "",
+    })
+
+    return result
+
+
+def _build_generic(plan, result):
+    """Execute plan commands generically (for unknown categories)."""
+    for action in plan.get("actions", []):
+        cmd = action.get("command", "")
+        if not cmd or cmd.startswith("#"):
+            continue
+
+        # Only execute python scripts from our repo (safety)
+        if not cmd.startswith("python3 "):
+            log(f"Skipping non-python command: {cmd[:80]}", "WARN")
+            result["actions_taken"].append({
+                "action": "skipped_command",
+                "command": cmd[:100],
+                "success": False,
+                "detail": "Only python3 commands are auto-executed",
+            })
+            continue
+
+        # Parse script and args
+        parts = cmd.split()
+        script_name = parts[1] if len(parts) > 1 else ""
+        script_path = os.path.join(REPO_ROOT, script_name)
+        args = parts[2:] if len(parts) > 2 else []
+
+        if not os.path.exists(script_path):
+            log(f"Script not found: {script_path}", "WARN")
+            result["actions_taken"].append({
+                "action": "script_not_found",
+                "command": cmd[:100],
+                "success": False,
+            })
+            continue
+
+        log(f"Executing: {cmd[:100]}...")
+        rc, out, err = run_script(script_path, args, timeout_s=300)
+        result["actions_taken"].append({
+            "action": "execute_command",
+            "command": cmd[:200],
+            "return_code": rc,
+            "success": rc == 0,
+            "detail": out[:300] if out else err[:300] if err else "",
+        })
+
+    return result
+
+
+def _smoke_test_staging(pipeline, sector):
+    """Run a quick smoke test on S9 staging to verify the build."""
+    log(f"Smoke testing {pipeline} on S9 staging...")
+
+    webhook_path = WEBHOOK_PATHS.get(pipeline, WEBHOOK_PATHS["standard"])
+    url = f"https://{STAGING_SPACE}{webhook_path}"
+
+    # Simple smoke question per sector
+    smoke_questions = {
+        "finance": "Quels sont les principaux ratios financiers pour analyser une entreprise du CAC40 ?",
+        "btp": "Quelles sont les principales normes DTU pour la construction en France ?",
+        "juridique": "Quels sont les principes fondamentaux du droit des contrats en France ?",
+        "industrie": "Quelles sont les normes ISO les plus importantes pour l'industrie manufacturière ?",
+    }
+
+    question = smoke_questions.get(sector, smoke_questions["finance"])
+
+    try:
+        status, body = http_request(
+            url,
+            method="POST",
+            data={"query": question, "sector": sector, "chatInput": question},
+            timeout=90,
+        )
+
+        if status == 200:
+            try:
+                resp = json.loads(body) if isinstance(body, str) else body
+                # Handle list response format
+                if isinstance(resp, list) and resp:
+                    resp = resp[0]
+                response_text = resp.get("response", resp.get("output", ""))
+                has_content = len(response_text) > 50
+                has_sources = "source" in response_text.lower() or "document" in response_text.lower()
+                score = 70 if has_content else 20
+                if has_sources:
+                    score += 20
+                return {
+                    "pass": has_content,
+                    "score": score,
+                    "response_length": len(response_text),
+                    "has_sources": has_sources,
+                    "status_code": status,
+                }
+            except (json.JSONDecodeError, AttributeError, TypeError):
+                return {"pass": False, "error": "Invalid JSON response", "status_code": status}
+        else:
+            return {"pass": False, "error": f"HTTP {status}", "status_code": status, "body": body[:200]}
+    except Exception as e:
+        return {"pass": False, "error": str(e)}
+
+
+# ============================================================================
+# PHASE 4: OBSERVE (measure impact after build)
 # ============================================================================
 def phase_observe(strategy, plan, state, dry_run=False):
-    """Run targeted eval on the weak area to establish a baseline.
+    """Run targeted eval to measure impact of the build phase.
 
     Returns a baseline dict or None on failure.
     """
     log(f"\n{C.BOLD}{'=' * 70}{C.RESET}", "PHASE")
-    log(f"{C.BOLD}PHASE 3: OBSERVE — Running baseline eval{C.RESET}", "PHASE")
+    log(f"{C.BOLD}PHASE 4: OBSERVE — Measuring impact{C.RESET}", "PHASE")
     log(f"{'=' * 70}", "PHASE")
 
     target_sector = strategy.get("target_sector", "finance")
@@ -1109,7 +1588,7 @@ def phase_observe(strategy, plan, state, dry_run=False):
 
 
 # ============================================================================
-# PHASE 4: COLLECT (gather execution data)
+# PHASE 5: COLLECT (gather execution data)
 # ============================================================================
 def phase_collect(strategy, plan, baseline, state, dry_run=False):
     """Gather all execution data: metrics + LLM judge scores.
@@ -1117,7 +1596,7 @@ def phase_collect(strategy, plan, baseline, state, dry_run=False):
     Returns a collected-data dict or None on failure.
     """
     log(f"\n{C.BOLD}{'=' * 70}{C.RESET}", "PHASE")
-    log(f"{C.BOLD}PHASE 4: COLLECT — Gathering execution data{C.RESET}", "PHASE")
+    log(f"{C.BOLD}PHASE 5: COLLECT — Gathering execution data{C.RESET}", "PHASE")
     log(f"{'=' * 70}", "PHASE")
 
     collected = {
@@ -1189,7 +1668,7 @@ def phase_collect(strategy, plan, baseline, state, dry_run=False):
 
 
 # ============================================================================
-# PHASE 5: ANALYZE (deep failure analysis + new question generation)
+# PHASE 6: ANALYZE (deep failure analysis + new question generation)
 # ============================================================================
 def phase_analyze(strategy, plan, baseline, collected, ctx, state, dry_run=False):
     """Deep analysis of all collected data. Generate insights + new questions.
@@ -1197,7 +1676,7 @@ def phase_analyze(strategy, plan, baseline, collected, ctx, state, dry_run=False
     Returns an analysis dict or None on failure.
     """
     log(f"\n{C.BOLD}{'=' * 70}{C.RESET}", "PHASE")
-    log(f"{C.BOLD}PHASE 5: ANALYZE — Deep failure analysis{C.RESET}", "PHASE")
+    log(f"{C.BOLD}PHASE 6: ANALYZE — Deep failure analysis{C.RESET}", "PHASE")
     log(f"{'=' * 70}", "PHASE")
 
     # Rebuild context with freshly collected data
@@ -1333,7 +1812,7 @@ Respond ONLY with a JSON object (no markdown, no preamble):
 
 
 # ============================================================================
-# PHASE 6: REPORT (structured output)
+# PHASE 7: REPORT (structured output)
 # ============================================================================
 def phase_report(strategy, plan, baseline, collected, analysis, state, cycle_start_time):
     """Generate a structured cycle report.
@@ -1341,7 +1820,7 @@ def phase_report(strategy, plan, baseline, collected, analysis, state, cycle_sta
     Returns the report dict.
     """
     log(f"\n{C.BOLD}{'=' * 70}{C.RESET}", "PHASE")
-    log(f"{C.BOLD}PHASE 6: REPORT — Generating cycle report{C.RESET}", "PHASE")
+    log(f"{C.BOLD}PHASE 7: REPORT — Generating cycle report{C.RESET}", "PHASE")
     log(f"{'=' * 70}", "PHASE")
 
     cycle_num = state.get("cycle", 0) + 1
@@ -1518,7 +1997,7 @@ def _print_cycle_report(report):
 # FULL CYCLE — Run all 6 phases
 # ============================================================================
 def run_cycle(state, dry_run=False):
-    """Run one complete agentic loop cycle (6 phases).
+    """Run one complete agentic loop cycle (7 phases).
 
     Returns (report, updated_state) or (None, state) on failure.
     """
@@ -1561,29 +2040,53 @@ def run_cycle(state, dry_run=False):
             "success_metric": "Any improvement",
         }
 
-    # Phase 3: Observe (baseline)
+    # Phase 3: BUILD — Execute the plan (ingest, deploy, modify)
+    if _shutdown_requested:
+        log("Shutdown requested, aborting cycle", "WARN")
+        return None, state
+
+    build_result = phase_build(strategy, plan, state, dry_run=dry_run)
+
+    # Phase 4: Observe (measure impact after build)
     if _shutdown_requested:
         log("Shutdown requested, aborting cycle", "WARN")
         return None, state
 
     baseline = phase_observe(strategy, plan, state, dry_run=dry_run)
 
-    # Phase 4: Collect
+    # Phase 5: Collect
     if _shutdown_requested:
         log("Shutdown requested, aborting cycle", "WARN")
         return None, state
 
     collected = phase_collect(strategy, plan, baseline, state, dry_run=dry_run)
+    # Attach build info to collected data
+    if collected and build_result:
+        collected["build_result"] = {
+            "success": build_result.get("success", False),
+            "docs_ingested": build_result.get("docs_ingested", 0),
+            "vectors_added": build_result.get("vectors_added", 0),
+            "actions_taken": len(build_result.get("actions_taken", [])),
+        }
 
-    # Phase 5: Analyze
+    # Phase 6: Analyze
     if _shutdown_requested:
         log("Shutdown requested, aborting cycle", "WARN")
         return None, state
 
     analysis = phase_analyze(strategy, plan, baseline, collected, ctx, state, dry_run=dry_run)
 
-    # Phase 6: Report
+    # Phase 7: Report
     report = phase_report(strategy, plan, baseline, collected, analysis, state, cycle_start)
+    # Attach build summary to report
+    if report and build_result:
+        report["build_summary"] = {
+            "success": build_result.get("success", False),
+            "docs_ingested": build_result.get("docs_ingested", 0),
+            "vectors_added": build_result.get("vectors_added", 0),
+            "smoke_test": build_result.get("smoke_test"),
+            "deployment": build_result.get("deployment"),
+        }
 
     # Update state
     state["cycle"] = cycle_num
@@ -1642,6 +2145,16 @@ def run_single_phase(phase_name, dry_run=False):
             if plan:
                 print(json.dumps(plan, indent=2, ensure_ascii=False))
 
+    elif phase_name == "build":
+        # Need strategy + plan first
+        strategy = phase_strategize(ctx, state, dry_run=dry_run)
+        if strategy:
+            plan = phase_plan(strategy, ctx, state, dry_run=dry_run)
+            if plan:
+                build_result = phase_build(strategy, plan, state, dry_run=dry_run)
+                if build_result:
+                    print(json.dumps(build_result, indent=2, ensure_ascii=False, default=str))
+
     elif phase_name == "observe":
         strategy = {
             "target_sector": state.get("last_target_sector", _find_weakest_sector(ctx)),
@@ -1684,7 +2197,7 @@ def run_single_phase(phase_name, dry_run=False):
         show_latest_report()
 
     else:
-        log(f"Unknown phase: {phase_name}. Valid: strategize, plan, observe, collect, analyze, report", "ERROR")
+        log(f"Unknown phase: {phase_name}. Valid: strategize, plan, build, observe, collect, analyze, report", "ERROR")
 
 
 # ============================================================================
@@ -1873,7 +2386,7 @@ Examples:
     )
     parser.add_argument(
         "--phase",
-        choices=["strategize", "plan", "observe", "collect", "analyze", "report"],
+        choices=["strategize", "plan", "build", "observe", "collect", "analyze", "report"],
         help="Run a single phase only",
     )
     parser.add_argument(
