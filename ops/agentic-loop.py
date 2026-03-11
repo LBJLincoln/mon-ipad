@@ -157,8 +157,8 @@ WEBHOOK_PATHS = {
     "orchestrator": "/webhook/orchestrator-v2",
 }
 
-# Max consecutive failures before stopping
-MAX_CONSECUTIVE_FAILURES = 3
+# Max consecutive failures before stopping (high to allow continuous operation)
+MAX_CONSECUTIVE_FAILURES = 10
 
 # Graceful shutdown
 _shutdown_requested = False
@@ -2296,13 +2296,19 @@ def run_daemon(interval_s, dry_run=False):
             report, state = run_cycle(state, dry_run=dry_run)
 
             if report:
-                # Check for auto-stop on consecutive failures
-                consec = state.get("consecutive_no_improvement", 0)
-                if consec >= MAX_CONSECUTIVE_FAILURES:
-                    log(f"AUTO-STOP: {consec} consecutive cycles with no improvement", "ERROR")
-                    log("Generating structured failure report...", "WARN")
+                # Check for auto-stop on consecutive REGRESSIONS (not just no-improvement)
+                consec_regr = state.get("total_regressions", 0)
+                consec_no_imp = state.get("consecutive_no_improvement", 0)
+                if consec_regr >= 3:
+                    log(f"AUTO-STOP: {consec_regr} regressions detected — need human review", "ERROR")
                     _print_failure_report(state)
                     break
+                if consec_no_imp >= MAX_CONSECUTIVE_FAILURES:
+                    log(f"AUTO-PAUSE: {consec_no_imp} cycles without improvement — pausing for strategy review", "WARN")
+                    _print_failure_report(state)
+                    # Reset counter and continue (don't stop — just log)
+                    state["consecutive_no_improvement"] = 0
+                    save_state(state)
 
             if _shutdown_requested:
                 break
