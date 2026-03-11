@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-03-11T12:11:31.681946",
+  "pipeline": "graph",
+  "workflow_file": "n8n/live/graph-rag-v3.6-fixed.json",
+  "staging_space": "S9",
+  "staging_deployed": true,
+  "smoke_tests": {
+    "passed": 3,
+    "total": 3,
+    "results": [
+      {
+        "query": "What entities are related to Boeing in FY2022?",
+        "sector": "finance",
+        "expected": "Boeing",
+        "latency_s": 45.5,
+        "passed": true,
+        "answer": "Based on the graph relationships provided, Boeing is not directly mentioned in the context. The graph shows ASU (likely referring to Accounting Standards Update) mentioning various unknown entities, which then mention other entities like ASC (Accounting Standards Codification), Goodwill, Total Liabilities Asset, Deferred Tax Assets, and others. Without Boeing being explicitly mentioned in the graph relationships, I cannot definitively state what entities are related to Boeing in FY2022 based solely on this information. The graph appears to be focused on accounting standards and financial reporting concepts rather than specific company relationships.",
+        "error": null
+      },
+      {
+        "query": "Quels articles du Code de l'energie concernent les certificats?",
+        "sector": "juridique",
+        "expected": "nergie",
+        "latency_s": 77.7,
+        "passed": true,
+        "answer": "Based on the graph relationships, the question appears to be about articles in the Code de l'énergie related to certificates. However, the provided context only shows mentions of the Cour de cassation and Code du travail, with no direct references to the Code de l'énergie or specific articles about certificates. The graph shows multiple mentions of \"cour de cassation\" and \"code du travail\" but lacks the specific information needed to identify relevant articles in the Code de l'énergie. Without additional context or data about the Code de l'énergie, I cannot provide a definitive answer about which articles concern certificates.",
+        "error": null
+      },
+      {
+        "query": "What relationships exist between construction safety standards?",
+        "sector": "btp",
+        "expected": "safety",
+        "latency_s": 51.8,
+        "passed": true,
+        "answer": "The graph shows multiple relationships between construction safety standards through the entities AMERICAN, TOWER, and NOTES. The AMERICAN entity mentions unknown entities that connect to TOWER and NOTES, creating a network of relationships. These connections suggest that construction safety standards involve multiple stakeholders and documentation systems, with AMERICAN likely representing an industry body or regulatory framework that interacts with both physical structures (TOWER) and documentation (NOTES). The repeated patterns indicate a cyclical relationship between these elements in the construction safety ecosystem.",
+        "error": null
+      }
+    ],
+    "all_passed": true
+  },
+  "promoted_to_production": false,
+  "production_spaces": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5"
+  ],
+  "production_results": {}
+}

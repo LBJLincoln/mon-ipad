@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-03-11T12:10:31.394606",
+  "pipeline": "standard",
+  "workflow_file": "n8n/live/standard-rag-v3.9-multi-index.json",
+  "staging_space": "S9",
+  "staging_deployed": true,
+  "smoke_tests": {
+    "passed": 2,
+    "total": 3,
+    "results": [
+      {
+        "query": "What is the FY2018 capital expenditure amount for 3M?",
+        "sector": "finance",
+        "expected": "1577",
+        "latency_s": 32.2,
+        "passed": false,
+        "answer": "The FY2018 capital expenditure amount for 3M is not provided in the given context.",
+        "error": "Expected '1577' not found in answer"
+      },
+      {
+        "query": "What is the minimum turning space diameter required?",
+        "sector": "btp",
+        "expected": "1500",
+        "latency_s": 40.2,
+        "passed": true,
+        "answer": "The minimum turning space diameter required is 1500mm.",
+        "error": null
+      },
+      {
+        "query": "Que dit l'article R151-19 du Code de l'urbanisme?",
+        "sector": "juridique",
+        "expected": "zone",
+        "latency_s": 43.7,
+        "passed": true,
+        "answer": "L'article R151-19 du Code de l'urbanisme définit les règles applicables aux constructions et installations nécessaires aux services publics ou d'intérêt collectif en zones agricoles, naturelles ou forestières.",
+        "error": null
+      }
+    ],
+    "all_passed": false
+  },
+  "promoted_to_production": false,
+  "production_spaces": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5"
+  ],
+  "production_results": {}
+}

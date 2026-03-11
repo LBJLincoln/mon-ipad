@@ -1,0 +1,47 @@
+{
+  "cycle": 1,
+  "timestamp": "2026-03-11T12:17:29.000844+00:00",
+  "duration_s": 331.1,
+  "strategy": {
+    "priority": "Ingest DTU norms, Eurocodes, CCTP templates, AFNOR standards, RE2020 documentation for BTP sector",
+    "category": "data_gap",
+    "target_sector": "btp",
+    "target_pipeline": "standard",
+    "expected_impact": "+15-20 points on BTP standard pipeline (from 25.0 to ~40-45)"
+  },
+  "plan_id": "plan-20260311-121334",
+  "plan_steps": 0,
+  "baseline_scores": {
+    "overall_avg": 25.0,
+    "sector_avg": 25.0,
+    "pipeline_avg": 25.0
+  },
+  "current_scores": {
+    "overall_avg": 25.0,
+    "sector_avg": 25.0,
+    "pipeline_avg": 25.0
+  },
+  "deltas": {
+    "overall_avg": 0,
+    "sector_avg": 0,
+    "pipeline_avg": 0
+  },
+  "improved": false,
+  "sector_delta": 0,
+  "analysis": {
+    "health_score": 4,
+    "key_insight": "The BTP sector's 0% pass rate with only 25.0/100 average score reveals a critical data gap - the system lacks essential technical construction documentation (DTU norms, Eurocodes, RE2020) that are fundamental to answering construction expertise questions. This is not a retrieval or LLM issue but a fundamental data completeness problem.",
+    "failure_pattern_count": 3,
+    "new_questions_generated": 3
+  },
+  "next_action": "Execute the ingestion workflow for DTU norms and Eurocodes documents into Pinecone vector database immediately, as this addresses the single highest-impact data gap affecting 40% of all weak questions in the system",
+  "suggested_commands": [
+    "# Missing technical construction documentation: Ingest DTU norms, Eurocodes, CCTP templates, AFNOR standards, RE2020 documentation into Pinecone vector database",
+    "# Zero keyword hit rate: Review and optimize embedding strategy, ensure technical construction terms are properly indexed, consider domain-specific embeddings",
+    "# No source citations in answers: Implement strict source citation requirements in LLM prompt, verify source extraction from retrieved documents",
+    "python3 eval/parallel-eval.py --sector btp --pipeline standard",
+    "python3 eval/continuous-judge.py --suggestions",
+    "python3 ops/metrics-collector.py --profile standard",
+    "# LLM suggestion: Execute the ingestion workflow for DTU norms and Eurocodes documents into Pinecone vector database immediately, as this addresses the single highest-impact data gap affecting 40% of all weak questions in the system"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "health_score": 4,
+  "health_justification": "The system shows critical weaknesses with only 25.0/100 average score and 0% pass rate for BTP standard pipeline. While LLM judge scores are moderate (3.44/5 overall), the pass rate indicates fundamental data gaps preventing correct answers. The system has 3 weak questions total, with BTP having 2 weak questions due to data gaps, suggesting incomplete technical documentation for construction expertise.",
+  "failure_patterns": [
+    {
+      "pattern": "Missing technical construction documentation",
+      "root_cause": "DTU norms, Eurocodes, RE2020 documentation not ingested into Pinecone vector database",
+      "affected_sector": "btp",
+      "affected_pipeline": "standard",
+      "suggested_fix": "Ingest DTU norms, Eurocodes, CCTP templates, AFNOR standards, RE2020 documentation into Pinecone vector database",
+      "expected_improvement": "+15-20 points on BTP standard pipeline (from 25.0 to ~40-45)"
+    },
+    {
+      "pattern": "Zero keyword hit rate",
+      "root_cause": "Documents in vector database don't contain relevant keywords for BTP questions, or embedding similarity isn't matching",
+      "affected_sector": "btp",
+      "affected_pipeline": "standard",
+      "suggested_fix": "Review and optimize embedding strategy, ensure technical construction terms are properly indexed, consider domain-specific embeddings",
+      "expected_improvement": "+10-15 points through better retrieval matching"
+    },
+    {
+      "pattern": "No source citations in answers",
+      "root_cause": "Retrieval pipeline not properly extracting and citing source documents, or LLM not following citation format",
+      "affected_sector": "btp",
+      "affected_pipeline": "standard",
+      "suggested_fix": "Implement strict source citation requirements in LLM prompt, verify source extraction from retrieved documents",
+      "expected_improvement": "+5-10 points through improved source_citation score"
+    }
+  ],
+  "new_test_questions": [
+    {
+      "question": "Quelles sont les exigences du DTU 20.1 pour la mise en œuvre des enduits hydrauliques sur murs extérieurs ?",
+      "sector": "btp",
+      "pipeline": "standard",
+      "expected_behavior": "Answer should cite specific DTU 20.1 requirements for hydraulic plaster application on exterior walls, including surface preparation, application conditions, and thickness specifications",
+      "edge_case_type": "Technical standard citation - tests if DTU norms are properly ingested and retrievable"
+    },
+    {
+      "question": "Comment calculer la résistance d'une dalle en béton armé selon l'Eurocode 2 ?",
+      "sector": "btp",
+      "pipeline": "standard",
+      "expected_behavior": "Answer should reference Eurocode 2 (EN 1992-1-1) calculation methods for reinforced concrete slab resistance, including formulas and safety factors",
+      "edge_case_type": "Eurocode technical calculation - tests if Eurocode standards are properly indexed and retrievable"
+    },
+    {
+      "question": "Quelles sont les exigences thermiques minimales pour une maison individuelle selon la RE2020 ?",
+      "sector": "btp",
+      "pipeline": "standard",
+      "expected_behavior": "Answer should cite RE2020 thermal requirements for single-family homes, including maximum primary energy consumption, thermal comfort criteria, and carbon impact limits",
+      "edge_case_type": "Recent regulatory standard - tests if current environmental regulations are properly ingested"
+    }
+  ],
+  "key_insight": "The BTP sector's 0% pass rate with only 25.0/100 average score reveals a critical data gap - the system lacks essential technical construction documentation (DTU norms, Eurocodes, RE2020) that are fundamental to answering construction expertise questions. This is not a retrieval or LLM issue but a fundamental data completeness problem.",
+  "next_action": "Execute the ingestion workflow for DTU norms and Eurocodes documents into Pinecone vector database immediately, as this addresses the single highest-impact data gap affecting 40% of all weak questions in the system",
+  "baseline_snapshot": {
+    "sector_avg": 25.0,
+    "pipeline_avg": 25.0
+  }
+}
