@@ -2286,6 +2286,7 @@ def show_history():
 # ============================================================================
 def run_daemon(interval_s, dry_run=False):
     """Run the agentic loop continuously at the given interval."""
+    global _shutdown_requested
     log(f"Starting agentic loop daemon (interval: {interval_s}s = {interval_s / 60:.0f} min)", "OK")
     log(f"Press Ctrl+C to stop gracefully", "INFO")
 
