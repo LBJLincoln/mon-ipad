@@ -628,6 +628,24 @@ sleep 35
 - **Fix**: (1) Re-categorize eval questions — only finance SQL questions for Quant. (2) Ingest French financial data into `financials` table. (3) Make Quant aware of `sector_financial_tables` (3,876 rows) in Schema Introspection.
 - **Prevention**: Each eval question must be tagged with correct target pipeline. Quant = SQL financial queries ONLY.
 
+### FIX-100: Standard S1 intermittent failures — conflicting webhook workflows
+
+- **Session**: 101
+- **Symptom**: Standard pipeline returns "Unable to generate answer" ~50% of the time on S1. S3/S5 work fine. Error is random.
+- **Root cause**: THREE active workflows on S1 share the webhook path `/webhook/rag-multi-index-v3`: (1) `9FQdtx38JLPiT3Hx` V3.5 E5+Groq (GOOD), (2) `TmgyRP20N4JFd9CB` V3.9 (re-deployed by staging-deploy.py), (3) `2Pk87ulicqq1CmMw` V3.4 (uses expired Jina API + archived Pinecone). n8n routes randomly between them.
+- **Fix**: Deactivated ALL old workflows across S1/S3/S5/S9. Updated staging-deploy.py to use `9FQdtx38JLPiT3Hx` as canonical Standard ID.
+- **Result**: Standard jumped from 38.2 → 59.2 avg (+55%), 32.9% → 65.0% pass rate.
+- **Prevention**: ALWAYS check for duplicate active workflows on same webhook before deploying. Use `ops/staging-deploy.py` which now has the correct ID.
+
+### FIX-101: Graph returns "Information not available" — Neo4j entity matching fails
+
+- **Session**: 101
+- **Symptom**: Graph pipeline always returns "Information not available in the knowledge graph" (49 chars). After S100 OTEL Init fix (FIX-97), no more SpongeBob but Neo4j queries return 0 results.
+- **Root cause**: Neo4j Query Builder searches by `n.name` matching extracted entities. But: (1) 30K SectorDocument nodes have NO `name` field (only `question`/`answer`). (2) Entity names are garbage from poor OCR extraction ("Bourges Acheteur", "NOTES", "OPTIONS"). (3) NLP entity extraction only finds proper nouns/acronyms, misses French technical terms.
+- **Fix**: Neo4j Query Builder V3 with dual search: (1) Entity name matching (existing), (2) SectorDocument keyword search on `question` field using French keyword extraction. Added UNION ALL Cypher query.
+- **Result**: Graph returns 629-699 chars real answers instead of 49 chars.
+- **Prevention**: Neo4j entity quality is poor. Long-term fix: re-run entity extraction with better NLP.
+
 ---
 
 ## 3. IRON RULES
@@ -1257,3 +1275,5 @@ When a new problem is resolved and not in this document:
 | 100 | FIX-98: Quant SSL cert error on S2-S5 (NODE_TLS_REJECT_UNAUTHORIZED missing) | 2026-03-11 |
 | 100 | FIX-99: Quant eval has 90% wrong questions (BTP/Law routed to SQL pipeline) | 2026-03-11 |
 | 100 | Agentic loop now reads DEBUG-PLAYBOOK (90+ fixes) in context | 2026-03-11 |
+| 101 | FIX-100: Standard S1 conflicting webhooks (17 workflows deactivated) | 2026-03-11 |
+| 101 | FIX-101: Graph Neo4j keyword search on SectorDocument.question | 2026-03-11 |
