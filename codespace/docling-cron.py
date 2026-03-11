@@ -419,7 +419,7 @@ def process_with_docling_remote(pdf_path):
     try:
         import requests
         with open(pdf_path, "rb") as f:
-            resp = requests.post(DOCLING_URL, files={"file": f}, timeout=120)
+            resp = requests.post(DOCLING_URL, files={"file": f}, timeout=300)
         if resp.status_code == 200:
             data = resp.json()
             full_text = data.get("markdown", data.get("text", ""))
@@ -761,6 +761,14 @@ def process_pdf(sector, url, title, processed_data, dry_run=False, skip_neo4j=Fa
             return stats
         stats["download_size"] = size
         log(f"  Downloaded: {size / 1024:.0f}KB")
+
+        # Skip files > 10MB — too large for free-tier Docling API
+        MAX_PDF_SIZE = 10 * 1024 * 1024  # 10MB
+        if size > MAX_PDF_SIZE:
+            stats["status"] = "skipped_too_large"
+            stats["errors"].append(f"PDF too large ({size / (1024*1024):.1f}MB > 10MB limit)")
+            log(f"  SKIP: PDF too large ({size / (1024*1024):.1f}MB) for free-tier Docling", "!")
+            return stats
 
         if dry_run:
             stats["status"] = "dry_run"
