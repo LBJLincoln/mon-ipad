@@ -115,10 +115,12 @@ Vercel (PRODUCTION SITES)
 |----------|-------|-------|
 | **URL** | https://lbjlincoln-nomos-rag-engine-7.hf.space | Proxy layer |
 | **Master Key** | `sk-litellm-nomos-2026` | See credentials section |
-| **Persistence** | Supabase Postgres | DATABASE_URL env var |
+| **Status** | **UP** | Confirmed working, all pipelines route through it |
+| **Persistence** | Supabase Postgres | DB partially broken (spend tracking only) |
 | **Config** | `hf-space/litellm-proxy/litellm-config.yaml` | Model routing |
 | **Key Pool** | 12+ keys (7 OpenRouter, 5 Groq, 1 Gemini) | Auto-rotation |
-| **Model Aliases** | default, fast, smart, llama-70b, gemma-27b, trinity, qwen-235b | Usage-based routing |
+| **Model Groups** | default(10), fast(11), **smart(13)**, llama-70b(12), gemma-27b(7), trinity(7), qwen-235b(7), gemini-flash(1), groq-llama(5) | All pipelines use `smart` |
+| **Fallback Chain** | OpenRouter → Gemini → Groq | Automatic on rate limit |
 
 ### GitHub Codespaces
 
@@ -545,26 +547,25 @@ rm -rf datasets/phase-N/
 
 ## Workflow Registry
 
-### Active Workflows (11 total, 8 active — Session 75)
+### Active Workflows (Session 96 — 2026-03-11)
 
-**RAG Pipelines (4)**:
+**RAG Pipelines (4) — ALL via LiteLLM S7**:
 
-| Workflow | Webhook Path | Field | DB | Docker ID | Status |
+| Workflow | Webhook Path | Field | DB | ID | Status |
 |----------|-------------|-------|-----|-----------|--------|
-| Standard RAG V3.4 | `/webhook/rag-multi-index-v3` | query | Pinecone | `TmgyRP20N4JFd9CB` | WORKING (42s) |
-| Graph RAG V3.3 | `/webhook/ff622742-6d71-4e91-af71-b5c666088717` | query | Neo4j + Supabase | `6257AfT1l4FMC6lY` | WORKING (32s) |
-| Quantitative V3.1 | `/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9` | query | Supabase REST API | `cjhEhVs0KV1ExHqX` | WORKING (7-9s, fixed S75) |
-| Orchestrator V10.1 | `/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0` | query | Routes to above | `ALd4gOEqiKL5KR1p` | BROKEN (404) |
+| Standard RAG V3.8 | `/webhook/rag-multi-index-v3` | query | Pinecone + Supabase | `TmgyRP20N4JFd9CB` | WORKING (41-50s) |
+| Graph RAG V3.5 | `/webhook/ff622742-6d71-4e91-af71-b5c666088717` | query | Neo4j + self-hosted embed | `6257AfT1l4FMC6lY` | WORKING (27-86s) |
+| Quantitative V3.2 | `/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9` | query | Supabase SQL | `cjhEhVs0KV1ExHqX` | WORKING (11-87s) |
+| Orchestrator V13 | `/webhook/orchestrator-v2` | query | Routes to above | `qOSaFFrqO8Jb4VGb` | WORKING (52s) |
 
-**Support Workflows (5 active)**:
+**Support Workflows**:
 
-| Workflow | Docker ID | Status |
-|----------|-----------|--------|
-| Ingestion V3.1 | `15sUKy5lGL4rYW0L` | ACTIVE |
-| Enrichissement V3.1 | `9V2UTVRbf4OJXPto` | ACTIVE |
-| Benchmark V3.0 | `LKZO1QQY9jvBltP0` | ACTIVE |
-| Dataset Ingestion Pipeline | `YaHS9rVb1osRUJpE` | ACTIVE |
-| SQL Executor Utility | `22k9541l9mHENlLD` | ACTIVE |
+| Workflow | ID | Status |
+|----------|----|--------|
+| Error Trigger Handler V1.0 | `AH3eXOmgxt5cOd93` | ACTIVE (all Spaces) |
+| Auto-Healer V1.2 | `Yqw7Pzn0e7m0C6i3` | ACTIVE (S1/S3/S5) |
+| Ingestion V4.0 | `nh1D4Up0wBZhuQbp` | ACTIVE |
+| Enrichissement V4.0 | `ORa01sX4xI0iRCJ8` | ACTIVE |
 
 **PME Workflows (3)**:
 

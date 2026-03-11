@@ -124,16 +124,15 @@ IP: 34.136.180.66 | Debian 11 | 1 vCPU | 969 MB RAM | 30 GB disk
 
 | Space | Role | URL | Status |
 |-------|------|-----|--------|
-| engine (S1) | n8n primary — Standard + Graph | lbjlincoln-nomos-rag-engine.hf.space | UP |
-| engine-3 (S3) | n8n secondary — load balancing | lbjlincoln-nomos-rag-engine-3.hf.space | UP |
-| engine-5 (S5) | n8n tertiary — eval dedicated | lbjlincoln-nomos-rag-engine-5.hf.space | UP |
-| engine-7 (S7) | LiteLLM proxy — 9 models, key rotation | lbjlincoln-nomos-rag-engine-7.hf.space | CHECK |
-| engine-9 (S9) | n8n quaternary — overflow | lbjlincoln-nomos-rag-engine-9.hf.space | UP |
-| embeddings | Self-hosted Jina embeddings (1024 dims) | lbjlincoln-nomos-embeddings-api.hf.space | CHECK |
+| engine (S1) | n8n primary — All 4 pipelines + AutoHealer | lbjlincoln-nomos-rag-engine.hf.space | UP |
+| engine-2 (S2) | n8n (lbjlincoln26) — same DB as S1 | lbjlincoln26-nomos-rag-engine-2.hf.space | UP |
+| engine-3 (S3) | n8n — All 4 pipelines (load balance) | lbjlincoln-nomos-rag-engine-3.hf.space | UP |
+| engine-4 (S4) | n8n (lbjlincoln26) — same DB | lbjlincoln26-nomos-rag-engine-4.hf.space | UP |
+| engine-5 (S5) | n8n — All 4 pipelines (load balance) | lbjlincoln-nomos-rag-engine-5.hf.space | UP |
+| engine-7 (S7) | LiteLLM proxy — 9 models, 13-provider fallback | lbjlincoln-nomos-rag-engine-7.hf.space | UP |
+| engine-9 (S9) | n8n — Standard + Quant | lbjlincoln-nomos-rag-engine-9.hf.space | UP |
+| embeddings | Self-hosted Jina embeddings (1024 dims) | lbjlincoln-nomos-embeddings-api.hf.space | UP |
 | engine-6 (S6) | Docling document processor | lbjlincoln-nomos-docling-api.hf.space | UP |
-| S8 (TODO) | Continuous eval runner | — | PLANNED |
-| S10 (TODO) | Self-heal monitor | — | PLANNED |
-| S2 (TODO) | Sector-specific pipeline | — | PLANNED |
 
 **Strategie** : Utiliser TOUS les slots HF gratuits pour demultiplier les pipelines. Chaque Space = une fonction specialisee.
 
@@ -167,20 +166,25 @@ IP: 34.136.180.66 | Debian 11 | 1 vCPU | 969 MB RAM | 30 GB disk
 | Orchestrator | `/webhook/orchestrator-v2` | Routage intelligent 4 secteurs | WORKING |
 
 ### Active Workflow IDs
-| Pipeline | ID | Name |
-|----------|----|------|
-| Standard | `TmgyRP20N4JFd9CB` | WF5 Standard RAG V3.5 (Groq direct, multi-index) |
-| Graph | `6257AfT1l4FMC6lY` | WF2 Graph RAG V3.3 (Groq direct) |
-| Quant | `cjhEhVs0KV1ExHqX` | WF4 Quant V3.1 (LiteLLM) |
-| Orchestrator | `qOSaFFrqO8Jb4VGb` | V13 Minimal (regex routing, Groq) |
-| Auto-Healer | `Yqw7Pzn0e7m0C6i3` | V1.2b (10min, 4 Spaces, webhook pings) |
+| Pipeline | ID | Version | Name |
+|----------|----|---------|------|
+| Standard | `TmgyRP20N4JFd9CB` | V3.8 | Standard RAG (LiteLLM, multi-index) |
+| Graph | `6257AfT1l4FMC6lY` | V3.5 | Graph RAG (LiteLLM + self-hosted embeddings) |
+| Quant | `cjhEhVs0KV1ExHqX` | V3.2 | Quantitative (LiteLLM, SQL generation) |
+| Orchestrator | `qOSaFFrqO8Jb4VGb` | V13 | Orchestrator (regex routing, delegates to sub-pipelines) |
+| Auto-Healer | `Yqw7Pzn0e7m0C6i3` | V1.2 | Auto-Healer (10min, 4 Spaces, webhook pings) |
+| Error Trigger | `AH3eXOmgxt5cOd93` | V1.0 | Error Trigger Handler (errors → Supabase) |
 
-### LLM Models (Groq direct — free tier)
-| Modele | Roles | Cout |
-|--------|-------|------|
-| `llama-3.3-70b-versatile` | QA, HyDE, SQL, Planning | $0 |
-| `meta-llama/llama-4-scout-17b-16e-instruct` | Fast fallback | $0 |
-| `qwen/qwen3-32b` | Multilingual fallback | $0 |
+### LLM Models (ALL via LiteLLM S7 — automatic key/model rotation)
+| Model Group | Providers | Usage |
+|-------------|-----------|-------|
+| `smart` | OpenRouter llama-70b → qwen-235b → Gemini Flash → Groq | **ALL pipelines** |
+| `fast` | OpenRouter trinity → gemma-27b → Gemini Flash | Quick tasks |
+| `default` | OpenRouter trinity → Gemini → Groq | Fallback |
+| `gemini-flash` | Google Gemini direct | Single provider |
+
+**LiteLLM URL**: `https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions`
+**LiteLLM Key**: `Bearer sk-litellm-nomos-2026`
 
 ---
 
@@ -336,12 +340,14 @@ git push origin main
 
 ---
 
-## Etat actuel v10.0 (Session 96 — 2026-03-10)
+## Etat actuel v11.0 (Session 96 — 2026-03-11)
 
-**Pipelines** : 4/4 WORKING (Standard 98%, Graph 100%, Quant 100%, Orch 100%)
-**E5 Vectors** : 55,584 (Stage 1 gate PASSED)
-**Databases** : Supabase 43K docs, Neo4j ~42K nodes
+**Pipelines** : 4/4 WORKING — 6/6 PASS smoke test (Standard V3.8, Graph V3.5, Quant V3.2, Orch V13)
+**LLM** : ALL via LiteLLM S7 (`smart` model group, 13-provider automatic fallback)
+**Embeddings** : Self-hosted Jina Space (1024 dims) — Graph uses it, Jina API keys expired
+**E5 Vectors** : 58,533 (target 100K)
+**Databases** : Supabase 43K docs + 212 financials, Neo4j ~72K nodes, Pinecone 58K+43K
 **Agents** : 5 specialises (monitor, eval, pipeline, ingest, docs)
 **Process** : Segmente, incremental, metrics-driven
 **Docs** : `docs/PILOTAGE.md` (Termius snippets + tmux cockpit)
-**Sessions** : 96 | **Commits** : 1,110+
+**Sessions** : 96 | **Commits** : 1,120+

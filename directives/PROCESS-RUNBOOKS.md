@@ -421,7 +421,7 @@ N8N_HOST=https://lbjlincoln-nomos-rag-engine.hf.space
 
 ---
 
-### LiteLLM Proxy (Space #7)
+### LiteLLM Proxy (Space #7) — ALL PIPELINES ROUTE THROUGH THIS
 
 ```bash
 LITELLM_URL=https://lbjlincoln-nomos-rag-engine-7.hf.space
@@ -430,13 +430,23 @@ LITELLM_KEY=sk-litellm-nomos-2026
 # Health check
 curl -s "$LITELLM_URL/health/liveliness"
 
-# Chat completion (auto key rotation: 7 OpenRouter + 5 Groq)
+# Chat completion (auto key/model rotation: OpenRouter + Gemini + Groq)
 curl -s -X POST "$LITELLM_URL/v1/chat/completions" \
   -H "Authorization: Bearer $LITELLM_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"llama-70b","messages":[{"role":"user","content":"test"}]}'
+  -d '{"model":"smart","messages":[{"role":"user","content":"test"}]}'
 
-# Available models: llama-70b, llama-70b-groq, trinity, gemma-27b, jina-embed, jina-rerank
+# Model groups (use 'smart' for all pipelines):
+#   smart (13 providers) — OpenRouter llama-70b + qwen-235b + Gemini + Groq
+#   default (10) — OpenRouter trinity + Gemini + Groq
+#   fast (11) — OpenRouter trinity + gemma-27b + Gemini
+#   llama-70b (12) — OpenRouter + Groq (5 keys)
+#   gemma-27b (7) — OpenRouter only
+#   gemini-flash (1) — Google direct
+#   groq-llama (5) — Groq only (AVOID: no fallback, rate-limited)
+
+# List all models
+curl -s "$LITELLM_URL/v1/models" -H "Authorization: Bearer $LITELLM_KEY"
 ```
 
 ---
@@ -526,25 +536,25 @@ curl -s -b /tmp/n8n-cookies.txt "$N8N_HOST/rest/executions?workflowId=<WF_ID>&li
 ```bash
 N8N_HOST=https://lbjlincoln-nomos-rag-engine.hf.space
 
-# Standard RAG (WORKING — 87.5% Phase 3)
+# Standard RAG V3.8 (WORKING — 6/6 PASS, all sectors, via LiteLLM)
 curl -s -X POST "$N8N_HOST/webhook/rag-multi-index-v3" \
   -H "Content-Type: application/json" \
-  -d '{"query": "What is the capital of Japan?"}'
+  -d '{"query": "Quels sont les ratios financiers pour evaluer la solvabilite?", "sector": "finance", "disable_acl": true}'
 
-# Graph RAG (WORKING — pipeline OK, data issues)
+# Graph RAG V3.5 (WORKING — self-hosted embeddings + LiteLLM)
 curl -s -X POST "$N8N_HOST/webhook/ff622742-6d71-4e91-af71-b5c666088717" \
   -H "Content-Type: application/json" \
-  -d '{"query": "Who founded Microsoft?", "topK": 100}'
+  -d '{"query": "Quelles entites sont liees aux normes IFRS?", "sector": "finance", "disable_acl": true}'
 
-# Quantitative RAG (WORKING — 7-9s, fixed Session 75)
+# Quantitative V3.2 (WORKING — SQL generation via LiteLLM)
 curl -s -X POST "$N8N_HOST/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9" \
   -H "Content-Type: application/json" \
-  -d '{"query": "What was Apple revenue in 2023?"}'
+  -d '{"query": "Quelles sont les 5 entreprises avec le plus gros revenu?", "sector": "finance", "disable_acl": true}'
 
-# Orchestrator (BROKEN — 404, empty body issue, ON HOLD)
-curl -s -X POST "$N8N_HOST/webhook/92217bb8-ffc8-459a-8331-3f553812c3d0" \
+# Orchestrator V13 (WORKING — routes to sub-pipelines)
+curl -s -X POST "$N8N_HOST/webhook/orchestrator-v2" \
   -H "Content-Type: application/json" \
-  -d '{"query": "What is the capital of Japan?"}'
+  -d '{"query": "Comment fonctionne la responsabilite delictuelle?", "sector": "juridique", "disable_acl": true}'
 ```
 
 ---
