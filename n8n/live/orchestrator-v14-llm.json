@@ -1,0 +1,531 @@
+{
+  "updatedAt": "2026-03-11T12:00:00.000Z",
+  "createdAt": "2026-03-10T11:28:56.893Z",
+  "id": "qOSaFFrqO8Jb4VGb",
+  "name": "V14 Orchestrator LLM Classify (Multi-Pipeline)",
+  "description": "LLM-based intent classification replacing regex. Supports multi-pipeline routing with parallel calls and merged results. Falls back to regex if LLM fails.",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "orchestrator-v2",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "orch-webhook",
+      "name": "Webhook IN",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        200,
+        500
+      ],
+      "webhookId": "orchestrator-v2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Node A: Extract query and build LLM classification prompt\nconst body = $input.first().json.body || $input.first().json;\nconst query = body.query || body.chatInput || body.task_query || '';\nconst tenant_id = body.tenant_id || body.sector || 'benchmark';\n\nconst prompt = `You are a query router for a sector-expert AI system with 3 specialized pipelines:\n\n1. STANDARD — General knowledge questions about a sector (regulations, norms, procedures, definitions, explanations). Use for: \"What is...\", \"Explain...\", \"What are the norms for...\", \"How does X work?\"\n\n2. GRAPH — Entity relationship questions (connections between companies, people, organizations, laws, standards). Use for: \"What is the relationship between X and Y?\", \"Which companies supply X?\", \"What laws apply to X?\", \"List all entities connected to X\"\n\n3. QUANTITATIVE — Numerical/financial data questions requiring SQL queries on structured data (revenue, margins, ratios, comparisons, counts, totals). Use for: \"What is the revenue of X?\", \"Compare margins of X and Y\", \"How many employees at X?\", \"What is the debt ratio?\"\n\nMULTI-PIPELINE: If the question needs MULTIPLE pipelines, list them ALL. Example: \"Give me a full analysis of Microsoft including financials and competitors\" → [\"standard\", \"quantitative\", \"graph\"]\n\nQuestion: \"${query.replace(/\"/g, '\\\\\"')}\"\n\nRespond in EXACTLY this JSON format, nothing else:\n{\"intents\": [\"standard\"], \"confidence\": 0.95, \"reasoning\": \"brief explanation\"}\n\nIf multiple pipelines needed:\n{\"intents\": [\"standard\", \"quantitative\"], \"confidence\": 0.85, \"reasoning\": \"needs both knowledge and numbers\"}`;\n\nreturn [{ json: { query, tenant_id, prompt, top_k: 10, include_sources: true } }];"
+      },
+      "id": "orch-prepare",
+      "name": "Prepare Classification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer sk-litellm-nomos-2026"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"fast\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a precise query classifier. Respond only with valid JSON.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($json.prompt) }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 100\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "orch-llm-classify",
+      "name": "LLM Classify",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        500
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Node C: Parse LLM classification response with regex fallback\nconst raw = $input.first().json;\nlet classification;\n\ntry {\n  const content = raw.choices?.[0]?.message?.content || '';\n  // Try parsing JSON directly\n  const jsonMatch = content.match(/\\{[\\s\\S]*\\}/);\n  if (jsonMatch) {\n    classification = JSON.parse(jsonMatch[0]);\n  }\n} catch(e) {\n  classification = null;\n}\n\n// Validate intents are valid pipeline names\nconst VALID_INTENTS = ['standard', 'graph', 'quantitative'];\nif (classification && Array.isArray(classification.intents)) {\n  classification.intents = classification.intents.filter(i => VALID_INTENTS.includes(i));\n  if (classification.intents.length === 0) classification = null;\n}\n\n// Fallback to regex if LLM fails or returns invalid\nif (!classification || !classification.intents || !Array.isArray(classification.intents)) {\n  const q = ($node['Prepare Classification'].json.query || '').toLowerCase();\n  let intent = 'standard';\n  if (/chiffre|revenue|bilan|profit|perte|total|montant|combien|marge|ratio|\\d+\\s*(euros?|%|millions?|milliards?)/.test(q)) {\n    intent = 'quantitative';\n  } else if (/relation|lien|connect|entre.*et|qui.*avec|réseau|graphe|fournisseur|client|partenaire/.test(q)) {\n    intent = 'graph';\n  }\n  classification = { intents: [intent], confidence: 0.5, reasoning: 'regex fallback (LLM unavailable)' };\n}\n\nconst initData = $node['Prepare Classification'].json;\nconst primaryIntent = classification.intents[0];\nconst multiPipeline = classification.intents.length > 1;\n\nreturn [{ json: {\n  query: initData.query,\n  tenant_id: initData.tenant_id,\n  top_k: initData.top_k,\n  include_sources: initData.include_sources,\n  intent: primaryIntent,\n  all_intents: classification.intents,\n  multi_pipeline: multiPipeline,\n  confidence: classification.confidence,\n  reasoning: classification.reasoning\n}}];"
+      },
+      "id": "orch-parse",
+      "name": "Parse Classification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        980,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "mp1",
+              "leftValue": "={{ $json.multi_pipeline }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "orch-if-multi",
+      "name": "Multi-Pipeline?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1240,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Fan out: call ALL pipelines listed in all_intents in parallel\nconst data = $input.first().json;\nconst intents = data.all_intents || ['standard'];\n\n// Build pipeline URL map\nconst PIPELINE_URLS = {\n  standard: 'https://lbjlincoln-nomos-rag-engine-3.hf.space/webhook/rag-multi-index-v3',\n  graph: 'https://lbjlincoln-nomos-rag-engine.hf.space/webhook/ff622742-6d71-4e91-af71-b5c666088717',\n  quantitative: 'https://lbjlincoln-nomos-rag-engine-9.hf.space/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9'\n};\n\n// Call all pipelines in parallel using Promise.all\nconst results = await Promise.all(intents.map(async (intent) => {\n  const url = PIPELINE_URLS[intent];\n  if (!url) return { intent, error: 'unknown pipeline', response: '', sources: [] };\n\n  const payload = {\n    query: data.query,\n    tenant_id: data.tenant_id,\n    top_k: data.top_k || 10,\n    include_sources: true\n  };\n\n  try {\n    const resp = await fetch(url, {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify(payload),\n      signal: AbortSignal.timeout(90000)\n    });\n    let result = await resp.json();\n    // Handle array responses\n    if (Array.isArray(result)) result = result[0] || {};\n    return {\n      intent,\n      response: result.response || result.answer || result.final_response || result.result || result.interpretation || '',\n      sources: result.sources || [],\n      engine: result.engine || intent\n    };\n  } catch(e) {\n    return { intent, error: e.message, response: '', sources: [] };\n  }\n}));\n\n// Merge all responses\nconst mergedParts = [];\nconst allSources = [];\nconst pipelines = [];\n\nfor (const r of results) {\n  pipelines.push(r.intent);\n  if (r.response) {\n    mergedParts.push(`[${r.intent.toUpperCase()}]\\n${r.response}`);\n  }\n  if (Array.isArray(r.sources)) {\n    allSources.push(...r.sources);\n  }\n}\n\n// Deduplicate sources by title or content\nconst seenTitles = new Set();\nconst uniqueSources = allSources.filter(s => {\n  const key = s.title || s.source || JSON.stringify(s);\n  if (seenTitles.has(key)) return false;\n  seenTitles.add(key);\n  return true;\n});\n\nreturn [{ json: {\n  response: mergedParts.join('\\n\\n---\\n\\n') || 'No response from pipelines',\n  sources: uniqueSources.slice(0, 15),\n  pipeline_used: pipelines.join('+'),\n  multi_pipeline: true,\n  pipelines_called: pipelines,\n  classification: {\n    intent: data.intent,\n    all_intents: data.all_intents,\n    confidence: data.confidence,\n    reasoning: data.reasoning\n  },\n  timestamp: new Date().toISOString()\n}}];"
+      },
+      "id": "orch-multi-call",
+      "name": "Call All Pipelines",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "id": "c1",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "standard",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "id": "c2",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "graph",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "id": "c3",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "quantitative",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "orch-switch",
+      "name": "Route",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1560,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://lbjlincoln-nomos-rag-engine-3.hf.space/webhook/rag-multi-index-v3",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": {{ JSON.stringify($json.query) }},\n  \"tenant_id\": {{ JSON.stringify($json.tenant_id) }},\n  \"top_k\": 10,\n  \"include_sources\": true\n}",
+        "options": {
+          "timeout": 90000
+        }
+      },
+      "id": "orch-call-std",
+      "name": "Call Standard",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1860,
+        460
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": {{ JSON.stringify($json.query) }},\n  \"tenant_id\": {{ JSON.stringify($json.tenant_id) }},\n  \"top_k\": 10\n}",
+        "options": {
+          "timeout": 90000
+        }
+      },
+      "id": "orch-call-graph",
+      "name": "Call Graph",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1860,
+        660
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://lbjlincoln-nomos-rag-engine-9.hf.space/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": {{ JSON.stringify($json.query) }},\n  \"tenant_id\": {{ JSON.stringify($json.tenant_id) }},\n  \"top_k\": 10\n}",
+        "options": {
+          "timeout": 90000
+        }
+      },
+      "id": "orch-call-quant",
+      "name": "Call Quant",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1860,
+        860
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://lbjlincoln-nomos-rag-engine-3.hf.space/webhook/rag-multi-index-v3",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": {{ JSON.stringify($json.query) }},\n  \"tenant_id\": {{ JSON.stringify($json.tenant_id) }},\n  \"top_k\": 10,\n  \"include_sources\": true\n}",
+        "options": {
+          "timeout": 90000
+        }
+      },
+      "id": "orch-call-std-fallback",
+      "name": "Call Standard (Fallback)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1860,
+        1060
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format response from single-pipeline call with classification metadata\nconst raw = $input.first().json;\nlet data = raw;\nif (Array.isArray(data)) data = data[0] || {};\nif (data.body) {\n  try { data = typeof data.body === 'string' ? JSON.parse(data.body) : data.body; } catch(e) {}\n  if (Array.isArray(data)) data = data[0] || {};\n}\n\nconst response = data.response || data.answer || data.final_response || data.result || data.interpretation || '';\nconst sources = data.sources || [];\n\n// Get classification metadata from Parse Classification node\nlet classificationMeta = {};\ntry {\n  const parseNode = $node['Parse Classification'].json;\n  classificationMeta = {\n    intent: parseNode.intent,\n    all_intents: parseNode.all_intents,\n    confidence: parseNode.confidence,\n    reasoning: parseNode.reasoning\n  };\n} catch(e) {\n  classificationMeta = { intent: 'unknown', all_intents: ['unknown'], confidence: 0, reasoning: 'metadata unavailable' };\n}\n\nreturn [{\n  json: {\n    response: response || 'No response from pipeline',\n    sources: Array.isArray(sources) ? sources.slice(0, 10) : [],\n    pipeline_used: data.engine || classificationMeta.intent || 'orchestrator',\n    multi_pipeline: false,\n    classification: classificationMeta,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "orch-format",
+      "name": "Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pass through multi-pipeline merged result (already formatted)\nconst data = $input.first().json;\nreturn [{ json: data }];"
+      },
+      "id": "orch-multi-format",
+      "name": "Format Multi",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Final merge: accept output from either single or multi pipeline path\nconst data = $input.first().json;\nreturn [{ json: data }];"
+      },
+      "id": "orch-respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2440,
+        500
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook IN": {
+      "main": [
+        [
+          {
+            "node": "Prepare Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Classification": {
+      "main": [
+        [
+          {
+            "node": "LLM Classify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Classify": {
+      "main": [
+        [
+          {
+            "node": "Parse Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Classification": {
+      "main": [
+        [
+          {
+            "node": "Multi-Pipeline?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Multi-Pipeline?": {
+      "main": [
+        [
+          {
+            "node": "Call All Pipelines",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call All Pipelines": {
+      "main": [
+        [
+          {
+            "node": "Format Multi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route": {
+      "main": [
+        [
+          {
+            "node": "Call Standard",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call Graph",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call Quant",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call Standard (Fallback)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Standard": {
+      "main": [
+        [
+          {
+            "node": "Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Graph": {
+      "main": [
+        [
+          {
+            "node": "Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Quant": {
+      "main": [
+        [
+          {
+            "node": "Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Standard (Fallback)": {
+      "main": [
+        [
+          {
+            "node": "Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Multi": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 180,
+    "availableInMCP": false,
+    "errorWorkflow": "AH3eXOmgxt5cOd93"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "8c19c174-e81e-4bf7-ba02-c940b4f2a152",
+  "activeVersionId": "8c19c174-e81e-4bf7-ba02-c940b4f2a152",
+  "versionCounter": 52,
+  "triggerCount": 1,
+  "tags": [],
+  "parentFolder": null
+}

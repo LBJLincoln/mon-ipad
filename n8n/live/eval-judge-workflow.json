@@ -1,0 +1,392 @@
+{
+  "name": "Eval Judge — LLM-as-Judge V1.0",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "eval-judge",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "ej-00001-node-4000-a000-000000000001",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        300,
+        500
+      ],
+      "webhookId": "eval-judge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─── Prepare Judge Prompt ───\n// Creates an expert judge prompt with 5 scoring criteria\nconst rawInput = $input.first().json;\nconst input = rawInput.body || rawInput;\n\nconst question = input.question || '';\nconst sector = input.sector || 'unknown';\nconst pipeline = input.pipeline || 'unknown';\nconst response = input.response || '';\nconst sources = input.sources || [];\nconst latencyMs = input.latency_ms || 0;\nconst space = input.space || 'unknown';\nconst executionId = input.execution_id || 'exec-' + Date.now();\n\n// Truncate response for judging (keep first 3000 chars)\nconst responseExcerpt = response.substring(0, 3000);\n\n// Format sources for the prompt\nconst sourcesText = Array.isArray(sources) && sources.length > 0\n  ? sources.map((s, i) => {\n      if (typeof s === 'string') return `[${i+1}] ${s}`;\n      return `[${i+1}] ${s.source || s.name || s.title || JSON.stringify(s).substring(0, 200)}`;\n    }).join('\\n')\n  : 'No sources provided';\n\n// Sector context for the judge\nconst SECTOR_CONTEXT = {\n  finance: 'Financial sector: expects terms like IFRS, EBITDA, BFR, marge brute, ratio de solvabilite, credit-bail, amortissement, tresorerie, bilan, compte de resultat. Professional French financial terminology.',\n  btp: 'Construction/BTP sector: expects terms like DTU, Eurocode, CCTP, RE2020, permis de construire, lot technique, maitre d\\'ouvrage, BOAMP, NF EN, parasismique. Professional French construction terminology.',\n  juridique: 'Legal/Juridique sector: expects terms like prescription, code civil, jurisprudence, RGPD, licenciement, SAS/SARL, greffe, tribunal, assignation, clause resolutoire. Professional French legal terminology.',\n  industrie: 'Industrial sector: expects terms like ISO 9001, AMDEC, lean manufacturing, FDS, maintenance preventive, TPM, Six Sigma, gamme de fabrication, cahier des charges. Professional French industrial terminology.'\n};\n\nconst PIPELINE_CONTEXT = {\n  standard: 'Standard RAG pipeline: vector search + BM25 + reranking. Should provide well-sourced, comprehensive answers.',\n  graph: 'Graph RAG pipeline: entity-relationship based retrieval from Neo4j. Should excel at relational questions.',\n  quantitative: 'Quantitative pipeline: SQL-based financial data retrieval. Should provide precise numerical answers.',\n  orchestrator: 'Orchestrator: routes to the best pipeline. Should pick the right engine and provide optimal answers.'\n};\n\nconst sectorCtx = SECTOR_CONTEXT[sector.toLowerCase()] || `Sector: ${sector}. Use appropriate professional terminology.`;\nconst pipelineCtx = PIPELINE_CONTEXT[pipeline.toLowerCase()] || `Pipeline: ${pipeline}.`;\n\n// Detect question language\nconst frenchIndicators = /[àâäéèêëïîôùûüÿçœæ]|\\b(le|la|les|des|du|un|une|est|sont|dans|pour|avec|sur|par|qui|que|quel|quels|quelle|quelles|comment|pourquoi)\\b/i;\nconst questionLang = frenchIndicators.test(question) ? 'French' : 'English';\n\nconst prompt = `You are an expert evaluation judge for a RAG (Retrieval-Augmented Generation) system specialized in ${sector} sector.\n\n## Context\n- Sector: ${sector.toUpperCase()}\n- ${sectorCtx}\n- Pipeline: ${pipeline}\n- ${pipelineCtx}\n- Question language detected: ${questionLang}\n- Response latency: ${latencyMs}ms\n\n## Question Asked\n${question}\n\n## Response to Evaluate\n${responseExcerpt}\n\n## Sources Cited\n${sourcesText}\n\n## Scoring Criteria (score each 0-20)\n\n1. **accuracy** (0-20): Does the response correctly and factually answer the question? Penalize hallucinations, incorrect facts, or misleading information heavily.\n\n2. **completeness** (0-20): Is the answer thorough with proper depth? Does it cover the main aspects of the question? A one-line answer to a complex question should score low.\n\n3. **terminology** (0-20): Does the response use correct sector-specific professional terms? For ${sector}, expected terminology includes domain-specific jargon, acronyms, and technical references.\n\n4. **sources** (0-20): Are sources cited in the response? Are they relevant to the question? Are specific documents/sections referenced? No sources = score 0-5 max.\n\n5. **language** (0-20): Does the response use the same language as the question? The question is in ${questionLang}. A response in a different language should score 0-5. Also assess grammar and clarity.\n\n## Instructions\n- Be a STRICT judge. Do not give high scores easily.\n- An empty or error response = all scores 0.\n- A generic response without sector expertise = max 10 per criterion.\n- Only truly expert-level responses with proper sourcing deserve 16+.\n- Provide a brief reasoning for each score.\n\nRespond ONLY with valid JSON in this exact format:\n{\n  \"accuracy\": <0-20>,\n  \"completeness\": <0-20>,\n  \"terminology\": <0-20>,\n  \"sources\": <0-20>,\n  \"language\": <0-20>,\n  \"reasoning\": {\n    \"accuracy\": \"brief explanation\",\n    \"completeness\": \"brief explanation\",\n    \"terminology\": \"brief explanation\",\n    \"sources\": \"brief explanation\",\n    \"language\": \"brief explanation\"\n  },\n  \"overall_comment\": \"1-2 sentence overall assessment\"\n}`;\n\nreturn [{\n  json: {\n    prompt,\n    question,\n    sector,\n    pipeline,\n    response_excerpt: responseExcerpt,\n    sources_text: sourcesText,\n    question_lang: questionLang,\n    latency_ms: latencyMs,\n    space,\n    execution_id: executionId,\n    original_sources: sources,\n    original_response_length: response.length\n  }\n}];"
+      },
+      "id": "ej-00002-node-4000-a000-000000000002",
+      "name": "Prepare Judge Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        500
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"smart\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a strict, impartial evaluation judge for RAG systems. You score responses on 5 criteria, each 0-20. Always respond with valid JSON only — no markdown, no commentary outside the JSON.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($json.prompt) }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 800,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          },
+          "timeout": 45000,
+          "retry": {
+            "maxTries": 3,
+            "waitBetweenTries": 3000
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer sk-litellm-nomos-2026"
+            }
+          ]
+        }
+      },
+      "id": "ej-00003-node-4000-a000-000000000003",
+      "name": "LLM Judge Call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        840,
+        500
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─── Parse Judge Response ───\n// Extracts scores from LLM response, handles various formats\nconst llmResponse = $input.first().json;\nconst prevData = $node['Prepare Judge Prompt'].json;\n\nlet scores = null;\nlet parseError = null;\nlet rawContent = '';\n\ntry {\n  // Extract content from LLM response\n  const choices = llmResponse.choices || [];\n  if (choices.length > 0) {\n    rawContent = choices[0].message?.content || '';\n  }\n\n  if (!rawContent && llmResponse.error) {\n    throw new Error('LLM error: ' + (typeof llmResponse.error === 'string' ? llmResponse.error : JSON.stringify(llmResponse.error)));\n  }\n\n  if (rawContent) {\n    let cleaned = rawContent.trim();\n\n    // Handle markdown JSON blocks\n    if (cleaned.includes('```json')) {\n      cleaned = cleaned.split('```json')[1].split('```')[0].trim();\n    } else if (cleaned.includes('```')) {\n      cleaned = cleaned.split('```')[1].split('```')[0].trim();\n    }\n\n    // Handle potential leading/trailing text around JSON\n    const jsonStart = cleaned.indexOf('{');\n    const jsonEnd = cleaned.lastIndexOf('}');\n    if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {\n      cleaned = cleaned.substring(jsonStart, jsonEnd + 1);\n    }\n\n    scores = JSON.parse(cleaned);\n  }\n} catch (err) {\n  parseError = `Parse error: ${err.message}. Raw: ${rawContent.substring(0, 500)}`;\n}\n\n// Extract individual scores with defaults\nconst accuracy = Math.min(20, Math.max(0, parseInt(scores?.accuracy) || 0));\nconst completeness = Math.min(20, Math.max(0, parseInt(scores?.completeness) || 0));\nconst terminology = Math.min(20, Math.max(0, parseInt(scores?.terminology) || 0));\nconst sourcesScore = Math.min(20, Math.max(0, parseInt(scores?.sources) || 0));\nconst language = Math.min(20, Math.max(0, parseInt(scores?.language) || 0));\n\nconst totalScore = accuracy + completeness + terminology + sourcesScore + language;\n\n// Classification\nlet classification = 'BAD';\nif (totalScore >= 75) classification = 'GOOD';\nelse if (totalScore >= 50) classification = 'MEDIUM';\n\n// Build judge reasoning\nconst reasoning = scores?.reasoning || {};\nconst overallComment = scores?.overall_comment || '';\nconst judgeReasoning = [\n  `Accuracy(${accuracy}/20): ${reasoning.accuracy || 'N/A'}`,\n  `Completeness(${completeness}/20): ${reasoning.completeness || 'N/A'}`,\n  `Terminology(${terminology}/20): ${reasoning.terminology || 'N/A'}`,\n  `Sources(${sourcesScore}/20): ${reasoning.sources || 'N/A'}`,\n  `Language(${language}/20): ${reasoning.language || 'N/A'}`,\n  overallComment ? `Overall: ${overallComment}` : ''\n].filter(Boolean).join(' | ');\n\nreturn [{\n  json: {\n    // Scores\n    total_score: totalScore,\n    accuracy_score: accuracy,\n    completeness_score: completeness,\n    terminology_score: terminology,\n    sources_score: sourcesScore,\n    language_score: language,\n    classification,\n    judge_reasoning: judgeReasoning.substring(0, 2000),\n    overall_comment: overallComment,\n\n    // Context from input\n    question: prevData.question,\n    sector: prevData.sector,\n    pipeline: prevData.pipeline,\n    response_excerpt: prevData.response_excerpt?.substring(0, 1000) || '',\n    space: prevData.space,\n    execution_id: prevData.execution_id,\n    latency_ms: prevData.latency_ms,\n    question_lang: prevData.question_lang,\n    original_response_length: prevData.original_response_length,\n    sources_count: Array.isArray(prevData.original_sources) ? prevData.original_sources.length : 0,\n    judged_at: new Date().toISOString(),\n\n    // Debug\n    parse_error: parseError,\n    raw_scores: scores\n  }\n}];"
+      },
+      "id": "ej-00004-node-4000-a000-000000000004",
+      "name": "Parse Judge Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        500
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/execution_scores",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$env.SUPABASE_SERVICE_KEY}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.SUPABASE_SERVICE_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"question\": {{ JSON.stringify(($json.question || '').substring(0, 1000)) }},\n  \"sector\": {{ JSON.stringify($json.sector || 'unknown') }},\n  \"pipeline\": {{ JSON.stringify($json.pipeline || 'unknown') }},\n  \"response_excerpt\": {{ JSON.stringify(($json.response_excerpt || '').substring(0, 2000)) }},\n  \"total_score\": {{ $json.total_score || 0 }},\n  \"accuracy_score\": {{ $json.accuracy_score || 0 }},\n  \"completeness_score\": {{ $json.completeness_score || 0 }},\n  \"terminology_score\": {{ $json.terminology_score || 0 }},\n  \"sources_score\": {{ $json.sources_score || 0 }},\n  \"language_score\": {{ $json.language_score || 0 }},\n  \"classification\": {{ JSON.stringify($json.classification || 'BAD') }},\n  \"judge_reasoning\": {{ JSON.stringify(($json.judge_reasoning || '').substring(0, 2000)) }},\n  \"space\": {{ JSON.stringify($json.space || 'unknown') }},\n  \"execution_id\": {{ JSON.stringify($json.execution_id || '') }},\n  \"latency_ms\": {{ $json.latency_ms || 0 }},\n  \"judged_at\": {{ JSON.stringify($json.judged_at || new Date().toISOString()) }}\n}",
+        "options": {
+          "timeout": 15000,
+          "retry": {
+            "maxTries": 3,
+            "waitBetweenTries": 2000
+          }
+        }
+      },
+      "id": "ej-00005-node-4000-a000-000000000005",
+      "name": "Store to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1400,
+        500
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "check-bad-score",
+              "leftValue": "={{ $node['Parse Judge Response'].json.total_score }}",
+              "rightValue": 50,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ej-00006-node-4000-a000-000000000006",
+      "name": "Check if BAD",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        500
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"smart\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a RAG pipeline failure analyst. Given a BAD evaluation result (score < 50/100), analyze the root cause and categorize the failure.\\n\\nRespond ONLY with valid JSON:\\n{\\n  \\\"failure_type\\\": \\\"empty_response|wrong_sector|timeout|hallucination|missing_sources|wrong_language|incomplete|generic_answer\\\",\\n  \\\"root_cause\\\": \\\"1-2 sentence explanation of what went wrong\\\",\\n  \\\"suggested_fix\\\": \\\"Specific actionable fix for this failure\\\",\\n  \\\"affected_node\\\": \\\"Which pipeline node likely caused this (e.g., Retrieval, Reranker, LLM Generation, Embedding)\\\",\\n  \\\"priority\\\": \\\"CRITICAL|HIGH|MEDIUM|LOW\\\",\\n  \\\"pattern_indicator\\\": \\\"A short tag to group similar failures (e.g., empty_finance, hallucination_btp, timeout_graph)\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('FAILED EVALUATION ANALYSIS\\n\\nSector: ' + $node['Parse Judge Response'].json.sector + '\\nPipeline: ' + $node['Parse Judge Response'].json.pipeline + '\\nSpace: ' + $node['Parse Judge Response'].json.space + '\\nLatency: ' + $node['Parse Judge Response'].json.latency_ms + 'ms\\n\\nQuestion: ' + $node['Parse Judge Response'].json.question + '\\n\\nResponse excerpt (first 1000 chars):\\n' + ($node['Parse Judge Response'].json.response_excerpt || 'EMPTY RESPONSE').substring(0, 1000) + '\\n\\nScores:\\n- Accuracy: ' + $node['Parse Judge Response'].json.accuracy_score + '/20\\n- Completeness: ' + $node['Parse Judge Response'].json.completeness_score + '/20\\n- Terminology: ' + $node['Parse Judge Response'].json.terminology_score + '/20\\n- Sources: ' + $node['Parse Judge Response'].json.sources_score + '/20\\n- Language: ' + $node['Parse Judge Response'].json.language_score + '/20\\nTotal: ' + $node['Parse Judge Response'].json.total_score + '/100\\n\\nJudge reasoning: ' + $node['Parse Judge Response'].json.judge_reasoning) }}\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 500,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          },
+          "timeout": 30000,
+          "retry": {
+            "maxTries": 2,
+            "waitBetweenTries": 3000
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer sk-litellm-nomos-2026"
+            }
+          ]
+        }
+      },
+      "id": "ej-00007-node-4000-a000-000000000007",
+      "name": "Pattern Analyzer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1960,
+        400
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─── Build final response for BAD executions (with failure analysis) ───\nconst judgeData = $node['Parse Judge Response'].json;\nconst analyzerResponse = $input.first().json;\n\nlet failureAnalysis = null;\nlet analyzeError = null;\n\ntry {\n  const choices = analyzerResponse.choices || [];\n  let rawContent = '';\n  if (choices.length > 0) {\n    rawContent = choices[0].message?.content || '';\n  }\n\n  if (rawContent) {\n    let cleaned = rawContent.trim();\n    // Handle markdown JSON blocks\n    if (cleaned.includes('```json')) {\n      cleaned = cleaned.split('```json')[1].split('```')[0].trim();\n    } else if (cleaned.includes('```')) {\n      cleaned = cleaned.split('```')[1].split('```')[0].trim();\n    }\n    const jsonStart = cleaned.indexOf('{');\n    const jsonEnd = cleaned.lastIndexOf('}');\n    if (jsonStart !== -1 && jsonEnd !== -1) {\n      cleaned = cleaned.substring(jsonStart, jsonEnd + 1);\n    }\n    failureAnalysis = JSON.parse(cleaned);\n  }\n} catch (err) {\n  analyzeError = 'Pattern analyzer parse error: ' + err.message;\n}\n\nreturn [{\n  json: {\n    total_score: judgeData.total_score,\n    classification: judgeData.classification,\n    scores: {\n      accuracy: judgeData.accuracy_score,\n      completeness: judgeData.completeness_score,\n      terminology: judgeData.terminology_score,\n      sources: judgeData.sources_score,\n      language: judgeData.language_score\n    },\n    judge_reasoning: judgeData.judge_reasoning,\n    overall_comment: judgeData.overall_comment,\n    failure_analysis: failureAnalysis || {\n      failure_type: 'unknown',\n      root_cause: analyzeError || 'Could not analyze failure',\n      suggested_fix: 'Manual investigation required',\n      affected_node: 'unknown',\n      priority: 'MEDIUM',\n      pattern_indicator: 'unknown_' + judgeData.sector\n    },\n    metadata: {\n      question: judgeData.question,\n      sector: judgeData.sector,\n      pipeline: judgeData.pipeline,\n      space: judgeData.space,\n      execution_id: judgeData.execution_id,\n      latency_ms: judgeData.latency_ms,\n      judged_at: judgeData.judged_at\n    }\n  }\n}];"
+      },
+      "id": "ej-00008-node-4000-a000-000000000008",
+      "name": "Build BAD Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        400
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─── Build final response for GOOD/MEDIUM executions (no failure analysis) ───\nconst judgeData = $node['Parse Judge Response'].json;\n\nreturn [{\n  json: {\n    total_score: judgeData.total_score,\n    classification: judgeData.classification,\n    scores: {\n      accuracy: judgeData.accuracy_score,\n      completeness: judgeData.completeness_score,\n      terminology: judgeData.terminology_score,\n      sources: judgeData.sources_score,\n      language: judgeData.language_score\n    },\n    judge_reasoning: judgeData.judge_reasoning,\n    overall_comment: judgeData.overall_comment,\n    failure_analysis: null,\n    metadata: {\n      question: judgeData.question,\n      sector: judgeData.sector,\n      pipeline: judgeData.pipeline,\n      space: judgeData.space,\n      execution_id: judgeData.execution_id,\n      latency_ms: judgeData.latency_ms,\n      judged_at: judgeData.judged_at\n    }\n  }\n}];"
+      },
+      "id": "ej-00009-node-4000-a000-000000000009",
+      "name": "Build OK Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1960,
+        620
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "ej-00010-node-4000-a000-000000000010",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        2520,
+        500
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Prepare Judge Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Judge Prompt": {
+      "main": [
+        [
+          {
+            "node": "LLM Judge Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Judge Call": {
+      "main": [
+        [
+          {
+            "node": "Parse Judge Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Judge Response": {
+      "main": [
+        [
+          {
+            "node": "Store to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Check if BAD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if BAD": {
+      "main": [
+        [
+          {
+            "node": "Pattern Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build OK Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pattern Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Build BAD Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build BAD Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build OK Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "a1b2c3d4-eval-judge-v100-000000000001",
+  "tags": [
+    {
+      "name": "eval"
+    },
+    {
+      "name": "llm-as-judge"
+    },
+    {
+      "name": "v1.0"
+    }
+  ]
+}
