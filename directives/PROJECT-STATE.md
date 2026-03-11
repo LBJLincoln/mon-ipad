@@ -1,6 +1,6 @@
-# Etat Systeme — Session 96 (continued #2)
+# Etat Systeme — Session 97
 
-> Date: 2026-03-11T01:30Z | Auteur: Claude Code Opus 4.6
+> Date: 2026-03-11T14:00Z | Auteur: Claude Code Opus 4.6
 
 ---
 
@@ -8,92 +8,86 @@
 
 | Composant | Status | Notes |
 |-----------|--------|-------|
-| **VM GCP** (34.136.180.66) | UP | 969MB RAM |
-| **S1** (engine) | UP | Standard+Graph+Orch+Quant+AutoHealer+ErrorTrigger |
-| **S3** (engine-3) | UP | Standard+Graph+Orch+Quant+ErrorTrigger |
-| **S5** (engine-5) | UP | Standard+Graph+Orch+Quant+ErrorTrigger |
-| **S9** (engine-9) | UP | Standard+ErrorTrigger |
-| **S6** (Docling) | UP | converter loaded, health OK |
-| **S7** (LiteLLM) | **UP** | 9 model groups, 13-provider fallback, DB partially broken (spend tracking only) |
+| **VM GCP** (34.136.180.66) | UP | 969MB RAM, 180MB free |
+| **S1** (engine) | UP | 11 active workflows |
+| **S2** (engine-2) | UP | 11 active workflows (mirror) |
+| **S3** (engine-3) | UP | 11 active workflows |
+| **S4** (engine-4) | UP | 11 active workflows (mirror) |
+| **S5** (engine-5) | UP | 11 active workflows (FIXED S97 — DB corruption) |
+| **S6** (Docling) | UP | converter loaded |
+| **S7** (LiteLLM) | UP | 9 model groups, 13-provider fallback |
+| **S8** (Eval Judge) | DOWN | Ready to deploy (eval-judge-workflow.json + deploy script) |
+| **S9** (Staging) | UP | 13 active workflows, staging Space for CI/CD |
+| **Embeddings** | UP | Self-hosted Jina v3, 1024 dims, no auth |
+| **Reranker** | UP | Self-hosted FlashRank, Jina/Cohere-compatible API |
 
 ## 2. DATABASES
 
-| DB | Used | Content |
-|----|------|---------|
-| **E5 Pinecone** | **58,533** vectors | Sectors (target 100K) |
-| **Jina Pinecone** | ~43K vectors | Legacy (still queried in multi-index) |
-| **Neo4j** | **71,890** nodes | Entity + SectorDocument |
-| **Supabase** | **43,357** docs | finance 25.8K, juridique 10.1K, btp 4.4K, industrie 2.9K |
-| **Supabase pipeline_errors** | Active | Auto-captures n8n errors via Error Trigger |
-| **Supabase financials** | **212** rows | Companies: Microsoft, JPMorgan, Boeing, etc. |
+| DB | Vectors/Docs | Content |
+|----|-------------|---------|
+| **E5 Pinecone** (`sectors-e5-multilingual`) | **58,533** | PRIMARY — integrated E5 inference |
+| **Jina Pinecone** (`website-sectors-jina-1024`) | **12,536** | SECONDARY — Jina embeddings |
+| **Legacy Pinecone** (`sota-rag-jina-1024`) | **0** | ARCHIVED — EMPTY, do not query |
+| **Neo4j** | Entity/Company/Org/Law/SectorDoc | UP |
+| **Supabase** | **43,357** docs, 78 financials | + execution_scores table (NEW) |
 
-## 3. PIPELINES — ALL VIA LiteLLM
+## 3. PIPELINES — LATEST VERSIONS
 
-### Smoke Test Results (V3.8 / V3.5 / V3.2 / V13 — ALL LiteLLM)
-| Pipeline | Pass | Latency | Status | LLM Provider |
-|----------|------|---------|--------|-------------|
-| **Standard** | 3/3 | 41-50s | **PASS** | LiteLLM → smart (13 fallbacks) |
-| **Orchestrator** | 1/1 | 52s | **PASS** | Routes to sub-pipelines |
-| **Graph** | 2/2 | 27-86s | **PASS** | LiteLLM → smart + self-hosted embeddings |
-| **Quant** | 3/3 | 11-87s | **PASS** | LiteLLM → smart |
-| Docling | - | - | UP | converter loaded |
+| Pipeline | Deployed | Latest (to deploy) | Key Changes |
+|----------|----------|-------------------|-------------|
+| **Standard** | V3.8 (LiteLLM) | **V3.9** (multi-index) | E5 58K vectors + fix Pinecone + self-hosted reranker |
+| **Graph** | V3.5 (LiteLLM) | **V3.6** (all endpoints) | Self-hosted embed + reranker + correct Pinecone |
+| **Quant** | V3.2 (LiteLLM) | V3.2 (current) | Working, no changes needed |
+| **Orchestrator** | V13 (regex) | **V14.1** (harness) | LLM intent + CoT planner + task engine + harness |
 
-### Workflow IDs
-| Pipeline | ID | Version | Spaces |
-|----------|----|---------|--------|
-| Standard | `TmgyRP20N4JFd9CB` | **V3.8** (LiteLLM) | S1/S3/S5 |
-| Graph | `6257AfT1l4FMC6lY` | **V3.5** (LiteLLM+self-hosted embed) | S1/S3 |
-| Quant | `cjhEhVs0KV1ExHqX` | **V3.2** (LiteLLM) | S1/S3/S5 |
-| Orchestrator | `qOSaFFrqO8Jb4VGb` | **V13** (LiteLLM) | S1/S3/S5 |
-| Auto-Healer | `Yqw7Pzn0e7m0C6i3` | V1.2 | S1/S3/S5 |
-| Error Trigger | `AH3eXOmgxt5cOd93` / `JyrwJ6UOQeSH9WXX` | V1.0 | ALL |
+## 4. S97 ACCOMPLISHMENTS
 
-## 4. LiteLLM S7 — KEY ROTATION ENGINE
+### New Scripts (15 files, 16K+ lines)
+- [x] `n8n/live/standard-rag-v3.9-multi-index.json` — E5 4th retrieval branch
+- [x] `n8n/live/graph-rag-v3.6-fixed.json` — All endpoints fixed
+- [x] `n8n/live/orchestrator-v14-llm.json` — LLM routing (lean)
+- [x] `n8n/live/orchestrator-v14.1-harness.json` — Full harness (building)
+- [x] `n8n/live/eval-judge-workflow.json` — LLM-as-Judge for S8
+- [x] `eval/continuous-judge.py` — Daemon scoring + good/bad board
+- [x] `eval/expert-discovery.py` — Tavily real doc discovery
+- [x] `eval/mass-question-generator.py` — 5000+ questions from templates
+- [x] `eval/queue-eval-orchestrator.py` — Redis-backed parallel eval
+- [x] `ops/staging-deploy.py` — CI/CD: staging → smoke → promote
+- [x] `ops/deploy-eval-judge.py` — Deploy eval judge to S8
+- [x] `ops/fix-s5-activate.py` — S5 reactivation tool
+- [x] `codespace/setup-docling.sh` — Docling setup on Codespace
+- [x] `codespace/docling-cron.py` — Continuous PDF ingestion cron
+- [x] `codespace/crontab.txt` — Cron schedule
 
-| Model Group | Providers | Fallback Chain |
-|-------------|-----------|----------------|
-| **smart** | 13 | OpenRouter llama-70b → qwen-235b → Gemini Flash → Groq llama |
-| **default** | 10 | OpenRouter trinity → Gemini Flash → Groq llama |
-| **fast** | 11 | OpenRouter trinity → gemma-27b → Gemini Flash |
-| **llama-70b** | 12 | OpenRouter llama → Groq (5 keys) |
-| **gemma-27b** | 7 | OpenRouter gemma |
-| **gemini-flash** | 1 | Gemini direct |
-| **groq-llama** | 5 | Groq only (NO fallback — avoid!) |
+### Fixes
+- [x] S5 DB corruption → rebooted + reactivated all workflows
+- [x] Graph timeout on S1 → workflow was deactivated, reactivated
+- [x] Pinecone wrong index → V3.9 queries correct index + E5
+- [x] Expired Jina embeddings → self-hosted embeddings Space
+- [x] Expired Jina reranker → self-hosted FlashRank Space
+- [x] Dataset expanded: 220 → 276 → 5,276 questions
 
-**All pipelines now use `smart` model group** = automatic failover when any provider hits rate limits.
+### Findings
+- **46K invisible vectors**: Pipelines queried archived index, missing 58K E5 vectors
+- **V10.1 orchestrator**: Full harness existed but was abandoned due to Groq limits
+- **Dual webhook paths**: Each Space has WF-WEB + our versions = 2x worker capacity
 
-## 5. S96 ACCOMPLISHMENTS (ALL)
-- [x] **LiteLLM MIGRATION** — All 4 pipelines migrated from Groq direct to LiteLLM with 13-provider fallback
-- [x] **Quant FIXED** — Was 0/3 (40/100) → now 3/3 SUCCESS with real financial data
-- [x] **S7 LiteLLM RECOVERED** — Was thought BROKEN, actually UP (just needs auth key)
-- [x] **SQL Validator V2** — Robust JSON parser handles markdown blocks, raw text, LLM quirks
-- [x] **ERROR TRIGGER n8n DEPLOYED** — All Spaces, linked to all pipelines
-- [x] **Standard V3.8** — LiteLLM + tenant_id fallback + BM25 GIN index
-- [x] **Juridique FIXED** — Was 91s timeout → 31s with 10 sources
-- [x] **Smart Smoke Test** — 12 golden Q&A, parallel, node-by-node comparison
-- [x] **Supabase pipeline_errors** — Auto-captures all n8n failures
-- [x] **Full workflow inventory** — 134 per Space, 129 archived
-- [x] **Eval Runner V2** — Auto-discover real PDFs per sector
-- [x] **Error Analyzer** — Success+failure tracking, error library
+## 5. EVAL CAPACITY
 
-## 6. CRITICAL FIXES THIS SESSION
-1. **Groq → LiteLLM**: All 5 Groq keys hit daily TPD limits. Migrated all pipelines to LiteLLM proxy with automatic key/model rotation
-2. **n8n predefinedCredentialType bug**: HTTP nodes had stored Groq credentials that OVERRODE manual Authorization headers. Fixed by setting `authentication: "none"`
-3. **Quant SQL Validator**: LLM responses wrapped in markdown code blocks. Added regex extraction fallback
-4. `tenant_id` fallback to `input.sector` (V3.7 fix carried forward)
+| Metric | Value |
+|--------|-------|
+| Workers | 48 (6 Spaces × 4 pipelines × 2 webhooks) |
+| Throughput | ~5,760 Q/hour |
+| Dataset | 5,276 questions |
+| Eval duration | ~55 min at full parallel |
+| Queue | Redis-backed (Upstash) with backpressure |
 
-## 7. GRAPH V3.5 FIXES
-1. Jina API keys expired → self-hosted embeddings Space (1024 dims, same format)
-2. Pinecone: legacy `sota-rag-jina-1024` → current `website-sectors-jina-1024`
-3. LLM prompt: ultra-short entity answers → expert-level 3-5 sentence responses
-4. Answer Formatter: degraded state detection (LOW_CONFIDENCE, DEGRADED status)
-5. Reranker: disabled (Jina expired), fallback handler catches it
-
-## 8. NEXT PRIORITIES
-1. **Sources count = 0** — Standard answers correctly but 0 sources (Pinecone query/response parsing)
-2. Run full 220q eval with V3.8
-3. Clean 100+ inactive workflows from Spaces
-4. Add more financial data to Supabase (TotalEnergies, French companies)
-5. Reranking integration (FlashRank or Cohere MCP)
-6. Get new Jina API keys or migrate Graph reranker to Cohere
-7. Docling: targeted use only (high-value PDFs, not bulk)
+## 6. NEXT PRIORITIES
+1. **Deploy V3.9 Standard** via staging-deploy.py (S9 first → promote)
+2. **Deploy V3.6 Graph** via staging-deploy.py
+3. **Deploy V14.1 Orchestrator** (harness with disabled memory)
+4. **Start S8** and deploy eval-judge workflow
+5. **Run full 5276Q eval** via queue-eval-orchestrator
+6. **Start Codespace** for Docling continuous ingestion
+7. **Generate LLM-augmented questions** (5000 templates → 10K+ with LLM variation)
+8. Re-enable V10.1 memory nodes once eval scores are solid
