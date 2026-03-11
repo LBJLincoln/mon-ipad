@@ -1,6 +1,6 @@
-# Etat Systeme — Session 96 (continued)
+# Etat Systeme — Session 96 (continued #2)
 
-> Date: 2026-03-10T23:25Z | Auteur: Claude Code Opus 4.6
+> Date: 2026-03-11T01:30Z | Auteur: Claude Code Opus 4.6
 
 ---
 
@@ -8,13 +8,13 @@
 
 | Composant | Status | Notes |
 |-----------|--------|-------|
-| **VM GCP** (34.136.180.66) | UP | 969MB RAM, 264MB free |
-| **S1** (engine) | UP | Standard+Graph+Orch+AutoHealer+ErrorTrigger |
-| **S3** (engine-3) | UP | Standard+ErrorTrigger (load balance) |
-| **S5** (engine-5) | UP | Standard+ErrorTrigger (load balance) |
-| **S9** (engine-9) | UP | Standard+Quant+ErrorTrigger |
+| **VM GCP** (34.136.180.66) | UP | 969MB RAM |
+| **S1** (engine) | UP | Standard+Graph+Orch+Quant+AutoHealer+ErrorTrigger |
+| **S3** (engine-3) | UP | Standard+Graph+Orch+Quant+ErrorTrigger |
+| **S5** (engine-5) | UP | Standard+Graph+Orch+Quant+ErrorTrigger |
+| **S9** (engine-9) | UP | Standard+ErrorTrigger |
 | **S6** (Docling) | UP | converter loaded, health OK |
-| **S7** (LiteLLM) | BROKEN | DB corruption |
+| **S7** (LiteLLM) | **UP** | 9 model groups, 13-provider fallback, DB partially broken (spend tracking only) |
 
 ## 2. DATABASES
 
@@ -24,62 +24,69 @@
 | **Jina Pinecone** | ~43K vectors | Legacy (still queried in multi-index) |
 | **Neo4j** | **71,890** nodes | Entity + SectorDocument |
 | **Supabase** | **43,357** docs | finance 25.8K, juridique 10.1K, btp 4.4K, industrie 2.9K |
-| **Supabase pipeline_errors** | NEW | Auto-captures n8n errors via Error Trigger |
+| **Supabase pipeline_errors** | Active | Auto-captures n8n errors via Error Trigger |
+| **Supabase financials** | **212** rows | Companies: Microsoft, JPMorgan, Boeing, etc. |
 
-## 3. PIPELINES — ALL WORKING
+## 3. PIPELINES — ALL VIA LiteLLM
 
-### Smart Smoke Test Results (V3.7)
-| Pipeline | Pass | Score | Latency | Status |
-|----------|------|-------|---------|--------|
-| **Standard** | 3/3 | **100/100** | 46s | OK |
-| **Orchestrator** | 3/3 | **95/100** | 39s | OK |
-| **Graph** | 2/3 | **70/100** | 12s | PARTIAL |
-| **Quant** | 0/3 | **40/100** | 0.6s | NEEDS FIX |
-| Docling | - | OK | - | converter loaded |
+### Smoke Test Results (V3.8 / V3.2 LiteLLM)
+| Pipeline | Pass | Latency | Status | LLM Provider |
+|----------|------|---------|--------|-------------|
+| **Standard** | 2/2 | 30-42s | **PASS** | LiteLLM → smart (13 fallbacks) |
+| **Orchestrator** | 1/1 | 32s | **PASS** | Routes to sub-pipelines |
+| **Graph** | 0/1 | 89s | **WEAK** | LiteLLM → smart |
+| **Quant** | 3/3 | 11-28s | **PASS** | LiteLLM → smart |
+| Docling | - | - | UP | converter loaded |
 
 ### Workflow IDs
 | Pipeline | ID | Version | Spaces |
 |----------|----|---------|--------|
-| Standard | `TmgyRP20N4JFd9CB` | V3.7 | S1/S3/S5/S9 |
-| Graph | `6257AfT1l4FMC6lY` | V3.4 | S1/S3/S5/S9 |
-| Quant | `cjhEhVs0KV1ExHqX` | V3.1 | S1/S3/S5 |
-| Orchestrator | `qOSaFFrqO8Jb4VGb` | V13 | S1/S3/S5 |
+| Standard | `TmgyRP20N4JFd9CB` | **V3.8** (LiteLLM) | S1/S3/S5 |
+| Graph | `6257AfT1l4FMC6lY` | **V3.4** (LiteLLM) | S1/S3/S5 |
+| Quant | `cjhEhVs0KV1ExHqX` | **V3.2** (LiteLLM) | S1/S3/S5 |
+| Orchestrator | `qOSaFFrqO8Jb4VGb` | **V13** (LiteLLM) | S1/S3/S5 |
 | Auto-Healer | `Yqw7Pzn0e7m0C6i3` | V1.2 | S1/S3/S5 |
 | Error Trigger | `AH3eXOmgxt5cOd93` / `JyrwJ6UOQeSH9WXX` | V1.0 | ALL |
-| Ingestion | `nh1D4Up0wBZhuQbp` | V4.0 | ALL |
-| Enrichissement | `ORa01sX4xI0iRCJ8` | V4.0 | ALL |
 
-## 4. MONITORING & TOOLS
+## 4. LiteLLM S7 — KEY ROTATION ENGINE
 
-| Component | File | Purpose |
-|-----------|------|---------|
-| Smart Smoke Test | `eval/smart-smoke.py` | 12 golden Q&A, node-by-node regression |
-| Error Trigger | `n8n/live/error-trigger-handler.json` | Auto-log errors to Supabase |
-| Error Analyzer | `ops/error-analyzer.py` | Success+error analysis, node metrics |
-| Workflow Cleanup | `ops/cleanup-workflows.py` | Export/delete 100+ inactive workflows |
-| Unified Monitor | `ops/monitor.py` | Live CLI dashboard, JSONL logging |
-| Deploy Tool | `ops/deploy-error-trigger.py` | Deploy Error Trigger to all Spaces |
-| Deploy Standard | `ops/deploy-standard-v35.py` | Deploy Standard to all Spaces |
+| Model Group | Providers | Fallback Chain |
+|-------------|-----------|----------------|
+| **smart** | 13 | OpenRouter llama-70b → qwen-235b → Gemini Flash → Groq llama |
+| **default** | 10 | OpenRouter trinity → Gemini Flash → Groq llama |
+| **fast** | 11 | OpenRouter trinity → gemma-27b → Gemini Flash |
+| **llama-70b** | 12 | OpenRouter llama → Groq (5 keys) |
+| **gemma-27b** | 7 | OpenRouter gemma |
+| **gemini-flash** | 1 | Gemini direct |
+| **groq-llama** | 5 | Groq only (NO fallback — avoid!) |
 
-## 5. S96 CONTINUED ACCOMPLISHMENTS
-- [x] **ERROR TRIGGER n8n DEPLOYED** — All 4 Spaces, linked to all pipelines
-- [x] **Standard V3.7** — tenant_id fallback to sector, BM25 GIN index
+**All pipelines now use `smart` model group** = automatic failover when any provider hits rate limits.
+
+## 5. S96 ACCOMPLISHMENTS (ALL)
+- [x] **LiteLLM MIGRATION** — All 4 pipelines migrated from Groq direct to LiteLLM with 13-provider fallback
+- [x] **Quant FIXED** — Was 0/3 (40/100) → now 3/3 SUCCESS with real financial data
+- [x] **S7 LiteLLM RECOVERED** — Was thought BROKEN, actually UP (just needs auth key)
+- [x] **SQL Validator V2** — Robust JSON parser handles markdown blocks, raw text, LLM quirks
+- [x] **ERROR TRIGGER n8n DEPLOYED** — All Spaces, linked to all pipelines
+- [x] **Standard V3.8** — LiteLLM + tenant_id fallback + BM25 GIN index
 - [x] **Juridique FIXED** — Was 91s timeout → 31s with 10 sources
 - [x] **Smart Smoke Test** — 12 golden Q&A, parallel, node-by-node comparison
 - [x] **Supabase pipeline_errors** — Auto-captures all n8n failures
-- [x] **Supabase FTS GIN index** — French text search on sector_documents.context
-- [x] **Full workflow inventory** — 134 per Space, ~20 active
-- [x] All 4 sectors Standard: 100/100 score, 10 sources each
+- [x] **Full workflow inventory** — 134 per Space, 129 archived
+- [x] **Eval Runner V2** — Auto-discover real PDFs per sector
+- [x] **Error Analyzer** — Success+failure tracking, error library
 
-## 6. V3.7 FIXES (CRITICAL)
-1. `tenant_id` now falls back to `input.sector` (was 'default' → 0 sources)
-2. BM25 GIN index: `to_tsvector('french', context)` on sector_documents
-3. Both fixes = juridique works (was impossible before)
+## 6. CRITICAL FIXES THIS SESSION
+1. **Groq → LiteLLM**: All 5 Groq keys hit daily TPD limits. Migrated all pipelines to LiteLLM proxy with automatic key/model rotation
+2. **n8n predefinedCredentialType bug**: HTTP nodes had stored Groq credentials that OVERRODE manual Authorization headers. Fixed by setting `authentication: "none"`
+3. **Quant SQL Validator**: LLM responses wrapped in markdown code blocks. Added regex extraction fallback
+4. `tenant_id` fallback to `input.sector` (V3.7 fix carried forward)
 
 ## 7. NEXT PRIORITIES
-1. Fix Quant pipeline (NO_ANSWER — financial data mapping issue)
-2. Run full 220q eval with V3.7
-3. Clean 100+ inactive workflows from Spaces
-4. E5 sector filter (integrated embedding API needs different format)
-5. Continuous error analysis via error-analyzer.py
-6. Reranking (FlashRank Space exists, not integrated)
+1. **Fix Graph** — Returns "Unknown", needs Neo4j query investigation
+2. **Sources count = 0** — Standard returns answers but 0 sources (Pinecone query issue)
+3. Run full 220q eval with V3.8
+4. Clean 100+ inactive workflows from Spaces
+5. Add more financial data to Supabase (TotalEnergies, French companies)
+6. Reranking integration (FlashRank)
+7. E5 sector filter optimization
