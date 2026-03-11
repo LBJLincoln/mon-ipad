@@ -1,40 +1,72 @@
 {
   "cycle": 3,
-  "timestamp": "2026-03-11T14:47:27.955571+00:00",
-  "duration_s": 0.0,
+  "timestamp": "2026-03-11T22:49:26.680039+00:00",
+  "duration_s": 1169.1,
   "strategy": {
-    "priority": "[dry-run] Placeholder priority",
-    "category": "data_gap",
+    "priority": "Fix quantitative pipeline timeout error (HTTP 0: The read operation timed out)",
+    "category": "fix_pipeline",
     "target_sector": "btp",
-    "target_pipeline": "standard",
-    "expected_impact": "+5 points"
+    "target_pipeline": "quantitative",
+    "expected_impact": "+100 points on quantitative pipeline accuracy (from 0% to baseline)"
   },
-  "plan_id": "plan-20260311-144727",
-  "plan_steps": 1,
+  "plan_id": "plan-20260311-222958",
+  "plan_steps": 5,
   "baseline_scores": {
-    "overall_avg": 0,
-    "sector_avg": 0,
+    "overall_avg": 58.2,
+    "sector_avg": 33.0,
     "pipeline_avg": 0
   },
   "current_scores": {
-    "overall_avg": 0,
-    "sector_avg": 0,
+    "overall_avg": 58.2,
+    "sector_avg": 33.0,
     "pipeline_avg": 0
   },
-  "deltas": {},
-  "improved": false,
-  "sector_delta": 0,
-  "analysis": {
-    "health_score": 5,
-    "key_insight": "[dry-run] No analysis performed",
-    "failure_pattern_count": 0,
-    "new_questions_generated": 0
+  "deltas": {
+    "overall_avg": 21.7,
+    "sector_avg": -2.4
   },
-  "next_action": "Run actual analysis",
+  "improved": false,
+  "sector_delta": -2.4,
+  "analysis": {
+    "health_score": 4,
+    "key_insight": "The quantitative pipeline timeout is a critical blocker preventing any meaningful system improvement - fixing this single issue would immediately enable data collection and improvement for all sectors, while the BTP sector's poor performance indicates a fundamental knowledge gap that requires immediate attention to core BTP documentation.",
+    "failure_pattern_count": 3,
+    "new_questions_generated": 3
+  },
+  "next_action": "Fix the quantitative pipeline timeout error by investigating LiteLLM configuration and SQL generation logic, as this is the highest-impact blocker affecting all sectors and preventing any progress on quantitative reasoning capabilities.",
+  "pipeline_health": {
+    "standard": {
+      "status": "ok",
+      "error": null,
+      "latency_s": 47.1,
+      "response_length": 247
+    },
+    "graph": {
+      "status": "ok",
+      "error": null,
+      "latency_s": 22.3,
+      "response_length": 612
+    },
+    "quantitative": {
+      "status": "empty_response",
+      "error": "Response shorter than 30 chars",
+      "latency_s": 29.3,
+      "response_length": 0
+    },
+    "orchestrator": {
+      "status": "ok",
+      "error": null,
+      "latency_s": 22.0,
+      "response_length": 210
+    }
+  },
   "suggested_commands": [
-    "python3 eval/parallel-eval.py --sector btp --pipeline standard",
+    "# Quantitative pipeline HTTP 0 timeout errors: Investigate LiteLLM timeout settings, optimize SQL generation logic, and check database connection pooling in the quantitative pipeline workflow",
+    "# BTP sector consistently low performance (33.0/100, 0% pass rate): Ingest comprehensive BTP documentation including DTU norms, Eurocodes, CCTP templates, AFNOR standards, and RE2020 documentation",
+    "# Juridique sector weak on source citations (2.65/5): Ingest comprehensive legal documentation including Code civil/commerce/travail articles, RGPD texts, and jurisprudence databases",
+    "python3 eval/parallel-eval.py --sector btp --pipeline quantitative",
     "python3 eval/continuous-judge.py --suggestions",
-    "python3 ops/metrics-collector.py --profile standard",
-    "# LLM suggestion: Run actual analysis"
+    "python3 ops/metrics-collector.py --profile quantitative",
+    "# LLM suggestion: Fix the quantitative pipeline timeout error by investigating LiteLLM configuration and SQL generation logic, as this is the highest-impact blocker affecting all sectors and preventing any progress on quantitative reasoning capabilities."
   ]
 }

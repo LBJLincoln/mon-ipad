@@ -1,0 +1,59 @@
+{
+  "health_score": 4,
+  "health_justification": "The system has a critical failure with the quantitative pipeline completely broken (0% accuracy, HTTP timeout errors), which is a blocker for any meaningful improvement. While other pipelines function, the overall average score of 58.2/100 and 60% pass rate indicate significant room for improvement. The quantitative pipeline timeout is preventing any data collection from that pipeline, making it impossible to measure or improve its performance.",
+  "failure_patterns": [
+    {
+      "pattern": "Quantitative pipeline HTTP 0 timeout errors",
+      "root_cause": "LiteLLM configuration or SQL generation logic causing read operation timeouts, likely due to complex query processing or database connection issues",
+      "affected_sector": "btp",
+      "affected_pipeline": "quantitative",
+      "suggested_fix": "Investigate LiteLLM timeout settings, optimize SQL generation logic, and check database connection pooling in the quantitative pipeline workflow",
+      "expected_improvement": "+100 points on quantitative pipeline accuracy (from 0% to baseline)"
+    },
+    {
+      "pattern": "BTP sector consistently low performance (33.0/100, 0% pass rate)",
+      "root_cause": "Missing critical BTP documentation in the knowledge base - DTU norms, Eurocodes, CCTP templates, AFNOR standards, RE2020 documentation",
+      "affected_sector": "btp",
+      "affected_pipeline": "standard",
+      "suggested_fix": "Ingest comprehensive BTP documentation including DTU norms, Eurocodes, CCTP templates, AFNOR standards, and RE2020 documentation",
+      "expected_improvement": "+50 points on BTP sector accuracy"
+    },
+    {
+      "pattern": "Juridique sector weak on source citations (2.65/5)",
+      "root_cause": "Insufficient legal source material in the knowledge base - missing Code civil/commerce/travail articles, RGPD texts, jurisprudence databases",
+      "affected_sector": "juridique",
+      "affected_pipeline": "standard",
+      "suggested_fix": "Ingest comprehensive legal documentation including Code civil/commerce/travail articles, RGPD texts, and jurisprudence databases",
+      "expected_improvement": "+15 points on juridique source citation scores"
+    }
+  ],
+  "new_test_questions": [
+    {
+      "question": "Quelle est la résistance minimale requise pour une dalle en béton armé selon l'Eurocode 2 pour un bâtiment résidentiel de 3 étages ?",
+      "sector": "btp",
+      "pipeline": "standard",
+      "expected_behavior": "Answer citing specific Eurocode 2 sections with exact resistance values and conditions",
+      "edge_case_type": "Technical BTP calculation requiring precise Eurocode citation"
+    },
+    {
+      "question": "Comment calculer la valeur actuelle nette (VAN) d'un investissement immobilier avec un taux d'actualisation de 5% sur 10 ans ?",
+      "sector": "finance",
+      "pipeline": "quantitative",
+      "expected_behavior": "Provide the NPV formula with step-by-step calculation and final numerical result",
+      "edge_case_type": "Complex financial calculation requiring quantitative reasoning"
+    },
+    {
+      "question": "Quelles sont les obligations légales d'un employeur en cas de harcèlement moral selon le Code du travail et la jurisprudence récente ?",
+      "sector": "juridique",
+      "pipeline": "standard",
+      "expected_behavior": "Cite specific Code du travail articles and relevant jurisprudence with detailed obligations",
+      "edge_case_type": "Legal question requiring multiple source citations and recent case law"
+    }
+  ],
+  "key_insight": "The quantitative pipeline timeout is a critical blocker preventing any meaningful system improvement - fixing this single issue would immediately enable data collection and improvement for all sectors, while the BTP sector's poor performance indicates a fundamental knowledge gap that requires immediate attention to core BTP documentation.",
+  "next_action": "Fix the quantitative pipeline timeout error by investigating LiteLLM configuration and SQL generation logic, as this is the highest-impact blocker affecting all sectors and preventing any progress on quantitative reasoning capabilities.",
+  "baseline_snapshot": {
+    "sector_avg": 33.0,
+    "pipeline_avg": 0
+  }
+}

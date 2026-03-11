@@ -1,47 +1,70 @@
 {
   "cycle": 2,
-  "timestamp": "2026-03-11T14:32:43.166417+00:00",
-  "duration_s": 503.7,
+  "timestamp": "2026-03-11T21:59:52.050712+00:00",
+  "duration_s": 1207.8,
   "strategy": {
-    "priority": "Ingest DTU norms, Eurocodes, CCTP templates, AFNOR standards, RE2020 documentation for BTP sector",
-    "category": "data_gap",
-    "target_sector": "btp",
-    "target_pipeline": "standard",
-    "expected_impact": "+15 points on BTP standard pipeline (from 33.0 to ~48.0)"
+    "priority": "Fix quantitative pipeline timeout error (HTTP 0: The read operation timed out)",
+    "category": "fix_pipeline",
+    "target_sector": "finance",
+    "target_pipeline": "quantitative",
+    "expected_impact": "+100 points on quantitative pipeline accuracy (currently broken)"
   },
-  "plan_id": "plan-20260311-142419",
+  "plan_id": "plan-20260311-213944",
   "plan_steps": 5,
   "baseline_scores": {
-    "overall_avg": 33.0,
-    "sector_avg": 33.0,
-    "pipeline_avg": 33.0
+    "overall_avg": 36.5,
+    "sector_avg": 35.4,
+    "pipeline_avg": 32.8
   },
   "current_scores": {
-    "overall_avg": 33.0,
-    "sector_avg": 33.0,
-    "pipeline_avg": 33.0
+    "overall_avg": 36.5,
+    "sector_avg": 35.4,
+    "pipeline_avg": 32.8
   },
   "deltas": {
-    "overall_avg": 8.0,
-    "sector_avg": 8.0,
-    "pipeline_avg": 8.0
+    "overall_avg": 34.3,
+    "sector_avg": 0,
+    "pipeline_avg": 25.1
   },
-  "improved": true,
-  "sector_delta": 8.0,
+  "improved": false,
+  "sector_delta": 0,
   "analysis": {
-    "health_score": 6,
-    "key_insight": "The BTP sector's poor performance (33.0/100, 20% pass rate) is primarily a data coverage problem rather than a technical pipeline issue. The system architecture is sound, but critical BTP technical documentation is missing from the knowledge base, making it impossible to answer domain-specific questions accurately.",
-    "failure_pattern_count": 3,
-    "new_questions_generated": 3
+    "health_score": 0,
+    "key_insight": "{\n  \"health_score\": 4,\n  \"health_justification\": \"The system is critically impaired with the quantitative pipeline completely broken (HTTP timeout errors), causing 0% accuracy on all quantitative questions. While other pipelines function, the core quantitative capability is non-operational, and over",
+    "failure_pattern_count": 0,
+    "new_questions_generated": 0
   },
-  "next_action": "Execute the n8n workflow to ingest DTU norms, Eurocodes, CCTP templates, AFNOR standards, and RE2020 documentation into the Pinecone vector database, then re-run the evaluation to measure the +15 point improvement impact on BTP standard pipeline performance.",
+  "next_action": "Retry analysis",
+  "pipeline_health": {
+    "standard": {
+      "status": "empty_response",
+      "error": "Response shorter than 30 chars",
+      "latency_s": 46.3,
+      "response_length": 25
+    },
+    "graph": {
+      "status": "ok",
+      "error": null,
+      "latency_s": 43.5,
+      "response_length": 49
+    },
+    "quantitative": {
+      "status": "error",
+      "error": "HTTP 0: The read operation timed out",
+      "latency_s": 46.0,
+      "response_length": 0
+    },
+    "orchestrator": {
+      "status": "ok",
+      "error": null,
+      "latency_s": 23.0,
+      "response_length": 171
+    }
+  },
   "suggested_commands": [
-    "# Missing BTP technical documentation: Execute n8n workflow to ingest the missing BTP documents into Pinecone vector database",
-    "# Low keyword hit rate (20%): Optimize embedding strategy with domain-specific tokenization and add more technical terminology to documents",
-    "# Source citation weakness (LLM judge score 2.42/5): Enhance prompt engineering to explicitly require source citations and verify citation format",
-    "python3 eval/parallel-eval.py --sector btp --pipeline standard",
+    "python3 eval/parallel-eval.py --sector finance --pipeline quantitative",
     "python3 eval/continuous-judge.py --suggestions",
-    "python3 ops/metrics-collector.py --profile standard",
-    "# LLM suggestion: Execute the n8n workflow to ingest DTU norms, Eurocodes, CCTP templates, AFNOR standards, and RE2020 documentation into the Pinecone vector database, then re-run the evaluation to measure the +15 point improvement impact on BTP standard pipeline performance."
+    "python3 ops/metrics-collector.py --profile quantitative",
+    "# LLM suggestion: Retry analysis"
   ]
 }
