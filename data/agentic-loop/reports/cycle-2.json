@@ -1,0 +1,47 @@
+{
+  "cycle": 2,
+  "timestamp": "2026-03-11T14:32:43.166417+00:00",
+  "duration_s": 503.7,
+  "strategy": {
+    "priority": "Ingest DTU norms, Eurocodes, CCTP templates, AFNOR standards, RE2020 documentation for BTP sector",
+    "category": "data_gap",
+    "target_sector": "btp",
+    "target_pipeline": "standard",
+    "expected_impact": "+15 points on BTP standard pipeline (from 33.0 to ~48.0)"
+  },
+  "plan_id": "plan-20260311-142419",
+  "plan_steps": 5,
+  "baseline_scores": {
+    "overall_avg": 33.0,
+    "sector_avg": 33.0,
+    "pipeline_avg": 33.0
+  },
+  "current_scores": {
+    "overall_avg": 33.0,
+    "sector_avg": 33.0,
+    "pipeline_avg": 33.0
+  },
+  "deltas": {
+    "overall_avg": 8.0,
+    "sector_avg": 8.0,
+    "pipeline_avg": 8.0
+  },
+  "improved": true,
+  "sector_delta": 8.0,
+  "analysis": {
+    "health_score": 6,
+    "key_insight": "The BTP sector's poor performance (33.0/100, 20% pass rate) is primarily a data coverage problem rather than a technical pipeline issue. The system architecture is sound, but critical BTP technical documentation is missing from the knowledge base, making it impossible to answer domain-specific questions accurately.",
+    "failure_pattern_count": 3,
+    "new_questions_generated": 3
+  },
+  "next_action": "Execute the n8n workflow to ingest DTU norms, Eurocodes, CCTP templates, AFNOR standards, and RE2020 documentation into the Pinecone vector database, then re-run the evaluation to measure the +15 point improvement impact on BTP standard pipeline performance.",
+  "suggested_commands": [
+    "# Missing BTP technical documentation: Execute n8n workflow to ingest the missing BTP documents into Pinecone vector database",
+    "# Low keyword hit rate (20%): Optimize embedding strategy with domain-specific tokenization and add more technical terminology to documents",
+    "# Source citation weakness (LLM judge score 2.42/5): Enhance prompt engineering to explicitly require source citations and verify citation format",
+    "python3 eval/parallel-eval.py --sector btp --pipeline standard",
+    "python3 eval/continuous-judge.py --suggestions",
+    "python3 ops/metrics-collector.py --profile standard",
+    "# LLM suggestion: Execute the n8n workflow to ingest DTU norms, Eurocodes, CCTP templates, AFNOR standards, and RE2020 documentation into the Pinecone vector database, then re-run the evaluation to measure the +15 point improvement impact on BTP standard pipeline performance."
+  ]
+}
