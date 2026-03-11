@@ -1106,18 +1106,25 @@ def expand_all_templates(target=5000, sectors=None):
     if sectors is None:
         sectors = SECTORS
 
-    # Distribute target proportionally: Finance 30%, Juridique 30%, BTP 20%, Industrie 20%
-    ratios = {"finance": 0.30, "btp": 0.20, "juridique": 0.30, "industrie": 0.20}
-    targets = {}
-    for s in sectors:
-        targets[s] = int(target * ratios.get(s, 0.25))
-    # Distribute remainder
-    remainder = target - sum(targets.values())
-    for s in sectors:
-        if remainder <= 0:
-            break
-        targets[s] += 1
-        remainder -= 1
+    # Distribute target proportionally
+    if len(sectors) == 1:
+        # Single sector gets full target
+        targets = {sectors[0]: target}
+    else:
+        # Multi-sector: Finance 30%, Juridique 30%, BTP 20%, Industrie 20%
+        ratios = {"finance": 0.30, "btp": 0.20, "juridique": 0.30, "industrie": 0.20}
+        # Normalize ratios for selected sectors
+        total_ratio = sum(ratios.get(s, 0.25) for s in sectors)
+        targets = {}
+        for s in sectors:
+            targets[s] = int(target * ratios.get(s, 0.25) / total_ratio)
+        # Distribute remainder
+        remainder = target - sum(targets.values())
+        for s in sectors:
+            if remainder <= 0:
+                break
+            targets[s] += 1
+            remainder -= 1
 
     all_questions = []
     expanders = {

@@ -1,0 +1,47 @@
+{
+  "cycle": 5,
+  "timestamp": "2026-03-11T16:03:51.352695+00:00",
+  "duration_s": 1580.9,
+  "strategy": {
+    "priority": "Ingest BTP-specific technical documents (DTU norms, Eurocodes, CCTP templates, AFNOR standards, RE2020 documentation)",
+    "category": "data_gap",
+    "target_sector": "btp",
+    "target_pipeline": "standard",
+    "expected_impact": "+15-20 points on BTP standard pipeline score"
+  },
+  "plan_id": "plan-20260311-153730",
+  "plan_steps": 7,
+  "baseline_scores": {
+    "overall_avg": 33.0,
+    "sector_avg": 33.0,
+    "pipeline_avg": 33.0
+  },
+  "current_scores": {
+    "overall_avg": 33.0,
+    "sector_avg": 33.0,
+    "pipeline_avg": 33.0
+  },
+  "deltas": {
+    "overall_avg": 0.0,
+    "sector_avg": 0.0,
+    "pipeline_avg": 0.0
+  },
+  "improved": false,
+  "sector_delta": 0.0,
+  "analysis": {
+    "health_score": 5,
+    "key_insight": "The system's fundamental weakness is missing authoritative technical and legal documents in vector stores, resulting in poor source citation scores (2.42-2.65/5) despite decent factual accuracy (3.31-3.88/5). This indicates the LLM has knowledge but cannot cite proper sources, which is critical for expert-level responses in professional domains.",
+    "failure_pattern_count": 3,
+    "new_questions_generated": 3
+  },
+  "next_action": "Execute the ingestion workflow for DTU norms and Eurocodes documents into the BTP vector store, as this addresses the most critical data gap affecting the sector with the lowest performance (20% pass rate, 33/100 avg score).",
+  "suggested_commands": [
+    "# Missing technical standards and norms: Ingest DTU norms, Eurocodes, CCTP templates, AFNOR standards, and RE2020 documentation into BTP vector store",
+    "# Weak source citation across all sectors: Expand document ingestion to include more authoritative sources: Code civil/commerce/travail articles, RGPD texts, jurisprudence databases, ISO norms, industry-specific regulations",
+    "# Inconsistent terminology usage: Add industry glossaries, technical dictionaries, and sector-specific terminology databases to vector stores",
+    "python3 eval/parallel-eval.py --sector btp --pipeline standard",
+    "python3 eval/continuous-judge.py --suggestions",
+    "python3 ops/metrics-collector.py --profile standard",
+    "# LLM suggestion: Execute the ingestion workflow for DTU norms and Eurocodes documents into the BTP vector store, as this addresses the most critical data gap affecting the sector with the lowest performance (20% pass rate, 33/100 avg score)."
+  ]
+}
