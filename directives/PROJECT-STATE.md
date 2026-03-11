@@ -29,20 +29,20 @@
 
 ## 3. PIPELINES — ALL VIA LiteLLM
 
-### Smoke Test Results (V3.8 / V3.2 LiteLLM)
+### Smoke Test Results (V3.8 / V3.5 / V3.2 / V13 — ALL LiteLLM)
 | Pipeline | Pass | Latency | Status | LLM Provider |
 |----------|------|---------|--------|-------------|
-| **Standard** | 2/2 | 30-42s | **PASS** | LiteLLM → smart (13 fallbacks) |
-| **Orchestrator** | 1/1 | 32s | **PASS** | Routes to sub-pipelines |
-| **Graph** | 0/1 | 89s | **WEAK** | LiteLLM → smart |
-| **Quant** | 3/3 | 11-28s | **PASS** | LiteLLM → smart |
+| **Standard** | 3/3 | 41-50s | **PASS** | LiteLLM → smart (13 fallbacks) |
+| **Orchestrator** | 1/1 | 52s | **PASS** | Routes to sub-pipelines |
+| **Graph** | 2/2 | 27-86s | **PASS** | LiteLLM → smart + self-hosted embeddings |
+| **Quant** | 3/3 | 11-87s | **PASS** | LiteLLM → smart |
 | Docling | - | - | UP | converter loaded |
 
 ### Workflow IDs
 | Pipeline | ID | Version | Spaces |
 |----------|----|---------|--------|
 | Standard | `TmgyRP20N4JFd9CB` | **V3.8** (LiteLLM) | S1/S3/S5 |
-| Graph | `6257AfT1l4FMC6lY` | **V3.4** (LiteLLM) | S1/S3/S5 |
+| Graph | `6257AfT1l4FMC6lY` | **V3.5** (LiteLLM+self-hosted embed) | S1/S3 |
 | Quant | `cjhEhVs0KV1ExHqX` | **V3.2** (LiteLLM) | S1/S3/S5 |
 | Orchestrator | `qOSaFFrqO8Jb4VGb` | **V13** (LiteLLM) | S1/S3/S5 |
 | Auto-Healer | `Yqw7Pzn0e7m0C6i3` | V1.2 | S1/S3/S5 |
@@ -82,11 +82,18 @@
 3. **Quant SQL Validator**: LLM responses wrapped in markdown code blocks. Added regex extraction fallback
 4. `tenant_id` fallback to `input.sector` (V3.7 fix carried forward)
 
-## 7. NEXT PRIORITIES
-1. **Fix Graph** — Returns "Unknown", needs Neo4j query investigation
-2. **Sources count = 0** — Standard returns answers but 0 sources (Pinecone query issue)
-3. Run full 220q eval with V3.8
-4. Clean 100+ inactive workflows from Spaces
-5. Add more financial data to Supabase (TotalEnergies, French companies)
-6. Reranking integration (FlashRank)
-7. E5 sector filter optimization
+## 7. GRAPH V3.5 FIXES
+1. Jina API keys expired → self-hosted embeddings Space (1024 dims, same format)
+2. Pinecone: legacy `sota-rag-jina-1024` → current `website-sectors-jina-1024`
+3. LLM prompt: ultra-short entity answers → expert-level 3-5 sentence responses
+4. Answer Formatter: degraded state detection (LOW_CONFIDENCE, DEGRADED status)
+5. Reranker: disabled (Jina expired), fallback handler catches it
+
+## 8. NEXT PRIORITIES
+1. **Sources count = 0** — Standard answers correctly but 0 sources (Pinecone query/response parsing)
+2. Run full 220q eval with V3.8
+3. Clean 100+ inactive workflows from Spaces
+4. Add more financial data to Supabase (TotalEnergies, French companies)
+5. Reranking integration (FlashRank or Cohere MCP)
+6. Get new Jina API keys or migrate Graph reranker to Cohere
+7. Docling: targeted use only (high-value PDFs, not bulk)
