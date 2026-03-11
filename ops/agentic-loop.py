@@ -1182,7 +1182,7 @@ def _build_data_gap(sector, pipeline, plan, result):
     ingest_rc, ingest_out, ingest_err = run_script(
         FAST_INGEST_SCRIPT,
         ["--sector", sector],
-        timeout_s=300,
+        timeout_s=600,
     )
     result["actions_taken"].append({
         "action": "fast_ingest",

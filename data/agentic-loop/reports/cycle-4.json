@@ -1,0 +1,44 @@
+{
+  "cycle": 4,
+  "timestamp": "2026-03-11T15:11:08.006774+00:00",
+  "duration_s": 1319.2,
+  "strategy": {
+    "priority": "Ingest BTP-specific technical documents (DTU norms, Eurocodes, CCTP templates, AFNOR standards, RE2020 documentation)",
+    "category": "data_gap",
+    "target_sector": "btp",
+    "target_pipeline": "standard",
+    "expected_impact": "+15-20 points on BTP standard pipeline score"
+  },
+  "plan_id": "plan-20260311-144908",
+  "plan_steps": 5,
+  "baseline_scores": {
+    "overall_avg": 33.0,
+    "sector_avg": 33.0,
+    "pipeline_avg": 33.0
+  },
+  "current_scores": {
+    "overall_avg": 33.0,
+    "sector_avg": 33.0,
+    "pipeline_avg": 33.0
+  },
+  "deltas": {
+    "overall_avg": 0,
+    "sector_avg": 0,
+    "pipeline_avg": 0
+  },
+  "improved": false,
+  "sector_delta": 0,
+  "analysis": {
+    "health_score": 0,
+    "key_insight": "{\n  \"health_score\": 7,\n  \"health_justification\": \"The system shows decent LLM judge scores (3.44-3.65/5) indicating good reasoning capability, but pass rates are critically low (20-40%) with significant data gaps. The BTP sector is particularly weak at 20% pass rate, and overall system latency is hi",
+    "failure_pattern_count": 0,
+    "new_questions_generated": 0
+  },
+  "next_action": "Retry analysis",
+  "suggested_commands": [
+    "python3 eval/parallel-eval.py --sector btp --pipeline standard",
+    "python3 eval/continuous-judge.py --suggestions",
+    "python3 ops/metrics-collector.py --profile standard",
+    "# LLM suggestion: Retry analysis"
+  ]
+}

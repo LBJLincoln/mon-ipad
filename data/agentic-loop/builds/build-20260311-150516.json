@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-03-11T14:49:59.367481+00:00",
+  "category": "data_gap",
+  "target_sector": "btp",
+  "target_pipeline": "standard",
+  "actions_taken": [
+    {
+      "action": "expert_discovery",
+      "sector": "btp",
+      "return_code": 0,
+      "success": true,
+      "detail": "\n\u001b[1m\u001b[96m\n  ╔══════════════════════════════════════════════════════════════╗\n  ║         EXPERT DISCOVERY ENGINE v1.0                        ║\n  ║         Tavily Search + LiteLLM Q&A Generation             ║\n  ╚══════════════════════════════════════════════════════════════╝\u001b[0m\n\n\u001b[2m[14:50:03]\u001b[0m \u001b[96m[=]\u001b[0m ======================================================================\n\u001b[2m[14:50:03]\u001b[0m \u001b[96m[=]\u001b[0m EXPERT DISCOVERY CYCLE — 2026-03-11T14:50:03Z\n\u001b[2m[14:50:03]\u001b[0m \u001b[96m[=]\u001b[0m Sector"
+    },
+    {
+      "action": "fast_ingest",
+      "sector": "btp",
+      "return_code": 124,
+      "success": false,
+      "detail": "Timeout after 300s"
+    },
+    {
+      "action": "docling_process",
+      "sector": "btp",
+      "return_code": 1,
+      "success": false,
+      "detail": "======================================================================\n  DOCLING CONTINUOUS INGESTION CRON\n  Started:  2026-03-11T14:57:49.871381+00:00\n  Sectors:  btp\n  Max PDFs: 10\n  Mode:     LIVE\n  Neo4j:    ON\n======================================================================\n\n[2026-03-11T14:57:49Z] [+] Processed URLs tracker: 0 already processed\n[2026-03-11T14:57:49Z] [+] === Phase 1: Document Discovery ===\n[2026-03-11T14:57:49Z] [+] [btp] Searching for expert PDFs (10 queries)...\n[202"
+    }
+  ],
+  "docs_discovered": 0,
+  "docs_ingested": 0,
+  "vectors_added": 0,
+  "deployment": null,
+  "smoke_test": {
+    "pass": true,
+    "score": 70,
+    "response_length": 231,
+    "has_sources": false,
+    "status_code": 200
+  },
+  "success": true
+}

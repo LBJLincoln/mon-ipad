@@ -1,0 +1,40 @@
+{
+  "cycle": 3,
+  "timestamp": "2026-03-11T14:47:27.955571+00:00",
+  "duration_s": 0.0,
+  "strategy": {
+    "priority": "[dry-run] Placeholder priority",
+    "category": "data_gap",
+    "target_sector": "btp",
+    "target_pipeline": "standard",
+    "expected_impact": "+5 points"
+  },
+  "plan_id": "plan-20260311-144727",
+  "plan_steps": 1,
+  "baseline_scores": {
+    "overall_avg": 0,
+    "sector_avg": 0,
+    "pipeline_avg": 0
+  },
+  "current_scores": {
+    "overall_avg": 0,
+    "sector_avg": 0,
+    "pipeline_avg": 0
+  },
+  "deltas": {},
+  "improved": false,
+  "sector_delta": 0,
+  "analysis": {
+    "health_score": 5,
+    "key_insight": "[dry-run] No analysis performed",
+    "failure_pattern_count": 0,
+    "new_questions_generated": 0
+  },
+  "next_action": "Run actual analysis",
+  "suggested_commands": [
+    "python3 eval/parallel-eval.py --sector btp --pipeline standard",
+    "python3 eval/continuous-judge.py --suggestions",
+    "python3 ops/metrics-collector.py --profile standard",
+    "# LLM suggestion: Run actual analysis"
+  ]
+}
