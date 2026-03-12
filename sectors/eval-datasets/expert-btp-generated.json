@@ -1,68 +1,248 @@
 {
   "sector": "btp",
-  "generated_at": "2026-03-12T15:27:19.843133+00:00",
-  "count": 6,
+  "generated_at": "2026-03-12T16:30:49.034848+00:00",
+  "count": 24,
   "source": "tavily+llm_expert_generation",
   "questions": [
     {
-      "question": "Quelles sont les zones climatiques françaises où le NF DTU 13.2 est applicable pour les fondations profondes, et quelles sont les exclusions spécifiques mentionnées dans le document ?",
-      "golden_answer": "Le NF DTU 13.2 est applicable dans toutes les zones climatiques françaises. Le document précise qu'il ne vise pas les pieux exécutés par battage, vibrofonçage ou jetage, ni les fondations en milieu particulièrement difficile comme les sols très meubles ou les zones sismiques.",
-      "expected_contains": "toutes les zones climatiques françaises",
+      "question": "Quels sont les deux grands types d'ouvrages distingués par la réglementation parasismique nationale selon l'article R. 563-2 du Code de l'Environnement, et comment sont-ils définis ?",
+      "golden_answer": "La réglementation parasismique nationale distingue les ouvrages 'à risque normal' et les ouvrages 'à risque spécial'. Les ouvrages à risque normal regroupent les bâtiments, équipements et installations pour lesquels les conséquences d'un séisme demeurent circonscrites à leurs occupants et à leur voisinage immédiat, tandis que les ouvrages à risque spécial correspondent à ceux pour lesquels les effets sur les personnes et les biens sont plus importants.",
+      "expected_contains": "risque normal et risque spécial",
       "pipeline": "standard",
       "difficulty": "expert",
+      "source_url": "https://www.bouches-du-rhone.gouv.fr/content/download/26794/160745/file/ANNEXE_4-4_R%C3%A9glementation_formatA4.pdf",
+      "source_title": "ANNEXE 4-4 Réglementation parasismique nationale Eurocode 8",
+      "category": "regulatory"
+    },
+    {
+      "question": "Depuis quelle date la norme NF EN 1998-1 :2005 (Eurocode 8) s'applique-t-elle au dimensionnement et à la construction parasismique des bâtiments neufs, selon le décret n°2010-1254 du 22 octobre 2010 ?",
+      "golden_answer": "Depuis le 1er mai 2014, la norme NF EN 1998-1 :2005 dite Eurocode 8 s'applique au dimensionnement et à la construction parasismique des bâtiments neufs, conformément à l'article 4 du décret n°2010-1254 du 22 octobre 2010.",
+      "expected_contains": "1er mai 2014",
+      "pipeline": "standard",
+      "difficulty": "hard",
+      "source_url": "https://www.ecologie.gouv.fr/sites/default/files/documents/Guide%20CPMI%20EC8%20-%20Z5-min.pdf",
+      "source_title": "Guide de construction parasismique des maisons individuelles",
+      "category": "regulatory"
+    },
+    {
+      "question": "Quels sont les deux séismes majeurs les plus meurtriers survenus en Martinique et Guadeloupe au XIXe siècle, avec leur nombre respectif de victimes ?",
+      "golden_answer": "En Martinique, le séisme de 1839 a fait plus de 300 morts, tandis qu'en Guadeloupe, le séisme de 1843 a provoqué plus de 3000 morts, selon les données historiques présentées dans le guide de construction parasismique.",
+      "expected_contains": "1839 (300 morts) et 1843 (3000 morts)",
+      "pipeline": "standard",
+      "difficulty": "hard",
+      "source_url": "https://www.ecologie.gouv.fr/sites/default/files/documents/Guide%20CPMI%20EC8%20-%20Z5-min.pdf",
+      "source_title": "Guide de construction parasismique des maisons individuelles",
+      "category": "factual"
+    },
+    {
+      "question": "Quels sont les trois séismes récents cités dans le guide comme exemples de catastrophes naturelles pouvant survenir à tout moment dans l'arc antillais ?",
+      "golden_answer": "Les séismes des Saintes en 2004, de Nord Martinique en 2007 et de Haïti en 2010 sont cités comme exemples récents de catastrophes naturelles pouvant survenir à tout moment dans l'arc antillais.",
+      "expected_contains": "Saintes 2004, Nord Martinique 2007, Haïti 2010",
+      "pipeline": "standard",
+      "difficulty": "hard",
+      "source_url": "https://www.ecologie.gouv.fr/sites/default/files/documents/Guide%20CPMI%20EC8%20-%20Z5-min.pdf",
+      "source_title": "Guide de construction parasismique des maisons individuelles",
+      "category": "factual"
+    },
+    {
+      "question": "Quel est le principal cadre législatif qui sert de base à la réglementation parasismique nationale, et quel est le numéro du décret qui l'a modifié en 2010 ?",
+      "golden_answer": "La réglementation parasismique nationale s'appuie principalement sur les articles R.563-1 à R563-8 du Code de l'Environnement, modifiés par le décret n°2010-1254 du 22 octobre 2010.",
+      "expected_contains": "articles R.563-1 à R563-8 et décret n°2010-1254",
+      "pipeline": "standard",
+      "difficulty": "hard",
+      "source_url": "https://www.bouches-du-rhone.gouv.fr/content/download/26794/160745/file/ANNEXE_4-4_R%C3%A9glementation_formatA4.pdf",
+      "source_title": "ANNEXE 4-4 Réglementation parasismique nationale Eurocode 8",
+      "category": "regulatory"
+    },
+    {
+      "question": "Selon le guide de construction parasismique, quelle est la seule méthode efficace de réduction du risque sismique sur les structures neuves ?",
+      "golden_answer": "Construire les bâtiments conformément aux règles parasismiques en vigueur est la seule méthode efficace de réduction du risque sismique sur les structures neuves.",
+      "expected_contains": "règles parasismiques en vigueur",
+      "pipeline": "standard",
+      "difficulty": "hard",
+      "source_url": "https://www.ecologie.gouv.fr/sites/default/files/documents/Guide%20CPMI%20EC8%20-%20Z5-min.pdf",
+      "source_title": "Guide de construction parasismique des maisons individuelles",
+      "category": "regulatory"
+    },
+    {
+      "question": "Quels sont les quatre procédés de fondations profondes spécifiquement mentionnés dans la NF DTU 13.2 comme étant couverts par cette norme ?",
+      "golden_answer": "La NF DTU 13.2 couvre les pieux forés et barrettes (NF EN 1536), les pieux avec refoulement du sol (NF EN 12699), les micropieux (NF EN 14199) et les puits.",
+      "expected_contains": "pieux forés et barrettes, pieux avec refoulement du sol, micropieux, puits",
+      "pipeline": "standard",
+      "difficulty": "hard",
+      "source_url": "https://www.capeb.fr/actualites/le-nf-dtu-13.2-de-mai-2020-concernant-les-fondations-profondes-est-paru",
+      "source_title": "Le NF DTU 13.2 de mai 2020 concernant les fondations profondes est paru",
+      "category": "factual"
+    },
+    {
+      "question": "Quels types de marchés et d'ouvrages sont explicitement exclus du domaine d'application de la NF DTU 13.2 ?",
+      "golden_answer": "La NF DTU 13.2 ne vise pas les pieux exclus de son domaine d'application, et n'est pas applicable aux ouvrages de génie civil tels que les stations d'épuration ou les bassins de rétention situés dans toutes les zones climatiques françaises.",
+      "expected_contains": "stations d'épuration, bassins de rétention, zones climatiques françaises",
+      "pipeline": "standard",
+      "difficulty": "hard",
       "source_url": "https://www.batirama.com/article/2254-nf-dtu-13.2-fondations-profondes.html",
       "source_title": "NF DTU 13.2 - Fondations profondes",
-      "category": "regulatory"
+      "category": "factual"
     },
     {
-      "question": "Selon le DTU 13, quels types de constructions sont couverts par ce document, et quelles sont les exclusions spécifiques mentionnées pour les ouvrages de génie civil ?",
-      "golden_answer": "Le DTU 13 s'applique principalement aux fondations des constructions bâties sur des terrains variés, incluant les bâtiments d'habitation, les bâtiments industriels et tertiaires. Il exclut les travaux liés aux structures de soutènement, aux fondations en milieu marin, et les fondations spécifiques pour certaines infrastructures comme les ponts.",
-      "expected_contains": "structures de soutènement, fondations en milieu marin",
+      "question": "Quelle est la date de publication de la version la plus récente de la NF DTU 13.2 mentionnée dans les sources ?",
+      "golden_answer": "La version la plus récente de la NF DTU 13.2 mentionnée dans les sources est celle de mai 2020.",
+      "expected_contains": "mai 2020",
       "pipeline": "standard",
-      "difficulty": "expert",
-      "source_url": "https://www.batiweb.com/actualites/vie-pratique/dtu-13-fondations-guide-complet-46409",
-      "source_title": "DTU 13 - Fondations : le guide complet",
-      "category": "regulatory"
+      "difficulty": "hard",
+      "source_url": "https://www.capeb.fr/actualites/le-nf-dtu-13.2-de-mai-2020-concernant-les-fondations-profondes-est-paru",
+      "source_title": "Le NF DTU 13.2 de mai 2020 concernant les fondations profondes est paru",
+      "category": "factual"
     },
     {
-      "question": "Quels sont les objectifs principaux du DTU 13 en matière de sécurité des constructions, et quelles sont les conditions de sol qui ne sont pas couvertes par ce document ?",
-      "golden_answer": "Le principal objectif du DTU 13 est de fournir un cadre précis et rigoureux pour garantir la sécurité des constructions vis-à-vis des risques liés au sol. Le document exclut toutefois les fondations en milieu particulièrement difficile, notamment les sols très meubles et les zones sismiques.",
-      "expected_contains": "sols très meubles, zones sismiques",
+      "question": "Quelles sont les normes d'exécution auxquelles la NF DTU 13.2 fait référence pour les différents procédés de fondations profondes ?",
+      "golden_answer": "La NF DTU 13.2 fait référence à la NF EN 1536 pour les pieux forés et barrettes, à la NF EN 12699 pour les pieux avec refoulement du sol, et à la NF EN 14199 pour les micropieux.",
+      "expected_contains": "NF EN 1536, NF EN 12699, NF EN 14199",
       "pipeline": "standard",
-      "difficulty": "expert",
-      "source_url": "https://www.batiweb.com/actualites/vie-pratique/dtu-13-fondations-guide-complet-46409",
-      "source_title": "DTU 13 - Fondations : le guide complet",
+      "difficulty": "hard",
+      "source_url": "https://www.capeb.fr/actualites/le-nf-dtu-13.2-de-mai-2020-concernant-les-fondations-profondes-est-paru",
+      "source_title": "Le NF DTU 13.2 de mai 2020 concernant les fondations profondes est paru",
+      "category": "factual"
+    },
+    {
+      "question": "Quels types d'ouvrages courants sont mentionnés comme pouvant être traités par les prescriptions de la NF DTU 13.2 ?",
+      "golden_answer": "Les prescriptions de la NF DTU 13.2 permettent de traiter le cas des ouvrages courants tels que ceux destinés aux logements et bâtiments scolaires.",
+      "expected_contains": "logements, bâtiments scolaires",
+      "pipeline": "standard",
+      "difficulty": "hard",
+      "source_url": "https://www.capeb.fr/actualites/le-nf-dtu-13.2-de-mai-2020-concernant-les-fondations-profondes-est-paru",
+      "source_title": "Le NF DTU 13.2 de mai 2020 concernant les fondations profondes est paru",
+      "category": "factual"
+    },
+    {
+      "question": "Quelle est la relation entre la NF DTU 13.2 et les normes d'exécution précitées pour les différents procédés ?",
+      "golden_answer": "La NF DTU 13.2 complète les normes d'exécution précitées (NF EN 1536, NF EN 12699, NF EN 14199) sans s'y substituer.",
+      "expected_contains": "complète les normes d'exécution, sans s'y substituer",
+      "pipeline": "standard",
+      "difficulty": "hard",
+      "source_url": "https://www.capeb.fr/actualites/le-nf-dtu-13.2-de-mai-2020-concernant-les-fondations-profondes-est-paru",
+      "source_title": "Le NF DTU 13.2 de mai 2020 concernant les fondations profondes est paru",
       "category": "analytical"
     },
     {
-      "question": "Quelles sont les principales références techniques et réglementaires mentionnées dans le CCTP des travaux de rénovation au Château de Compiègne, et comment sont-elles organisées selon les chapitres 3.1 à 3.6 ?",
-      "golden_answer": "Le CCTP du Château de Compiègne organise les références techniques et réglementaires en six sous-chapitres : 3.1 Généralités, 3.2 Décrets et règlements, 3.3 Documents techniques unifiés, 3.4 Normes françaises, 3.5 Autres publications, et 3.6 Prescriptions de sécurité incendie.",
-      "expected_contains": "3.1 à 3.6",
+      "question": "Quels sont les deux documents constitutifs du DCE mentionnés dans le CCTP et quelle est leur fonction respective dans le processus de consultation ?",
+      "golden_answer": "Le CCTP (Cahier des Clauses Techniques Particulières) et la DPGF (Décomposition du Prix Global et Forfaitaire) sont les deux documents constitutifs du DCE. Le CCTP comprend toutes les informations qualitatives liées à l'exécution des travaux, tandis que la DPGF détaille la décomposition du prix global et forfaitaire.",
+      "expected_contains": "CCTP et DPGF",
       "pipeline": "standard",
-      "difficulty": "expert",
-      "source_url": "https://chateaudecompiegne.fr/sites/compiegne/files/cctp_logement_fonction_appartement_bis.pdf",
-      "source_title": "CAHIER DES CLAUSES TECHNIQUES PARTICULIERES (CCTP) - Château de Compiègne",
-      "category": "regulatory"
-    },
-    {
-      "question": "Dans le CCTP applicable aux prestations de travaux pour la construction des ouvrages dédiés sous l'article L.342-2 du code de l'énergie, quelle documentation technique de référence est appliquée par EDF SEI et quel est son rôle principal ?",
-      "golden_answer": "EDF SEI applique et se réfère dans le présent cahier des charges à la documentation technique de référence (DTR) d'Enedis, qui sert de base technique pour les travaux de construction des ouvrages électriques.",
-      "expected_contains": "DTR d'Enedis",
-      "pipeline": "standard",
-      "difficulty": "expert",
-      "source_url": "https://www.cre.fr/fileadmin/Documents/Deliberations/import/SEI_-_L.342-2_-_CCTP_Travaux_vF.pdf",
-      "source_title": "Cahier des Charges Technique Particulier (CCTP) applicable - CRE",
-      "category": "regulatory"
-    },
-    {
-      "question": "Quels sont les documents associés mentionnés dans le CCTP SEI pour les travaux de construction des ouvrages dédiés, et quel est leur domaine d'application spécifique ?",
-      "golden_answer": "Les documents associés mentionnés sont PRDE G.1.6-01 pour le contrôle des chantiers et des ouvrages neufs et modifiés de réseaux et de branchements, PRDE G.2-01 pour les dispositions pratiques de sécurité et protection de la santé sur les chantiers, et PRDE J.6.3-01 pour la réglementation anti-endommagement DT-DICT.",
-      "expected_contains": "PRDE G.1.6-01, PRDE G.2-01, PRDE J.6.3-01",
-      "pipeline": "standard",
-      "difficulty": "expert",
-      "source_url": "https://www.cre.fr/fileadmin/Documents/Deliberations/import/SEI_-_L.342-2_-_CCTP_Travaux_vF.pdf",
-      "source_title": "Cahier des Charges Technique Particulier (CCTP) applicable - CRE",
+      "difficulty": "hard",
+      "source_url": "https://www.aglo.ai/cctp/",
+      "source_title": "Qu’est-ce qu’un CCTP ? Cahier des Clauses Techniques Particulières",
       "category": "factual"
+    },
+    {
+      "question": "Dans quel cadre spécifique le CCTP TCE s'inscrit-il et que signifie l'acronyme TCE dans ce contexte ?",
+      "golden_answer": "Le CCTP TCE s'inscrit dans le cadre des Travaux d'un Corps d'État. TCE signifie 'Travaux de Construction et d'Entretien' et désigne un document contenant des informations techniques sur la réalisation d'un projet de construction public ou privé.",
+      "expected_contains": "TCE signifie Travaux de Construction et d'Entretien",
+      "pipeline": "standard",
+      "difficulty": "expert",
+      "source_url": "https://www.jcb-ingenierie.fr/redaction-cctp-travaux-gros-oeuvre-batiment/",
+      "source_title": "Rédaction CCTP TCE – Cahier des clauses techniques particulières",
+      "category": "factual"
+    },
+    {
+      "question": "Quelles sont les phases du cycle de vie d'un projet de construction couvertes par la plateforme BatiScript selon les informations fournies ?",
+      "golden_answer": "La plateforme BatiScript couvre toutes les phases du cycle de vie d'un projet de construction, de la conception à la post-livraison, en passant par l'appel d'offres et le suivi du chantier.",
+      "expected_contains": "conception à la post-livraison",
+      "pipeline": "standard",
+      "difficulty": "hard",
+      "source_url": "https://www.batiscript.com/lexique/cctp/",
+      "source_title": "CCTP (Cahier des Charges Techniques Particulières) définition",
+      "category": "factual"
+    },
+    {
+      "question": "Quelle est la fonction principale du CCTP dans le cadre d'un projet de construction public ou privé ?",
+      "golden_answer": "Le CCTP est un document qui contient des informations techniques sur la réalisation d'un projet de construction public ou privé, servant de référence pour l'exécution des travaux.",
+      "expected_contains": "informations techniques sur la réalisation",
+      "pipeline": "standard",
+      "difficulty": "hard",
+      "source_url": "https://www.jcb-ingenierie.fr/redaction-cctp-travaux-gros-oeuvre-batiment/",
+      "source_title": "Rédaction CCTP TCE – Cahier des clauses techniques particulières",
+      "category": "factual"
+    },
+    {
+      "question": "Quels types de professionnels sont mentionnés comme utilisateurs de la plateforme Aglo dans le contexte de la gestion de projets de construction ?",
+      "golden_answer": "Les professionnels mentionnés comme utilisateurs de la plateforme Aglo sont les maîtres d'œuvre, les maîtres d'ouvrage, les économistes, les architectes, les BET ingénieurs, et les maîtres d'ouvrage publics.",
+      "expected_contains": "maîtres d'œuvre ou maîtres d'ouvrage",
+      "pipeline": "standard",
+      "difficulty": "hard",
+      "source_url": "https://www.aglo.ai/cctp/",
+      "source_title": "Qu’est-ce qu’un CCTP ? Cahier des Clauses Techniques Particulières",
+      "category": "factual"
+    },
+    {
+      "question": "Quelle est la nature collaborative de la plateforme BatiScript et comment cela se traduit-il dans son utilisation ?",
+      "golden_answer": "BatiScript est décrit comme une plateforme collaborative tout-en-un qui optimise la gestion des projets de construction et de rénovation, permettant à différents acteurs de travailler ensemble sur chaque phase du projet.",
+      "expected_contains": "plateforme collaborative tout-en-un",
+      "pipeline": "standard",
+      "difficulty": "expert",
+      "source_url": "https://www.batiscript.com/lexique/cctp/",
+      "source_title": "CCTP (Cahier des Charges Techniques Particulières) définition",
+      "category": "analytical"
+    },
+    {
+      "question": "Quelle est la date d'entrée en vigueur de la RE2020 pour les bâtiments résidentiels et tertiaires, et quelles sont les phases de déploiement prévues pour les différents types de constructions ?",
+      "golden_answer": "La RE2020 est entrée en vigueur le 1er janvier 2022 pour les bâtiments résidentiels et tertiaires. Le déploiement s'est fait en phases : les maisons individuelles et bâtiments collectifs à usage d'habitation à partir du 1er janvier 2022, les bureaux et établissements d'enseignement à partir du 1er juillet 2022, et les bâtiments d'accueil pour enfants petits et les catégories d'établissements à partir du 1er janvier 2023.",
+      "expected_contains": "1er janvier 2022",
+      "pipeline": "standard",
+      "difficulty": "expert",
+      "source_url": "https://www.eiffage-immobilier.fr/votre-service/re-2020-lessentiel-sur-la-nouvelle-reglementation-environnementale",
+      "source_title": "RE 2020 : l'essentiel sur la nouvelle réglementation environnementale",
+      "category": "factual"
+    },
+    {
+      "question": "Quels sont les trois indicateurs de performance énergétique introduits par la RE2020 pour évaluer la consommation énergétique des bâtiments neufs ?",
+      "golden_answer": "La RE2020 introduit trois indicateurs de performance énergétique : le Cep (Consommation d'Énergie Primaire), le Cep,nrj (Consommation d'Énergie Primaire non renouvelable), et le Cep,déf (Consommation d'Énergie Primaire dédiée au chauffage). Ces indicateurs permettent d'évaluer de manière plus complète la performance énergétique des bâtiments.",
+      "expected_contains": "Cep, Cep,nrj, Cep,déf",
+      "pipeline": "standard",
+      "difficulty": "expert",
+      "source_url": "https://infrastructures-construction.france.apave.com/fr-FR/Votre-secteur-dactivite/Construction/Reglementation-Environnementale-RE2020",
+      "source_title": "Réglementation Environnementale (RE2020) dans le bâtiment",
+      "category": "factual"
+    },
+    {
+      "question": "Comment la RE2020 modifie-t-elle l'approche de la performance énergétique par rapport à la RT2012, notamment en termes d'émissions de carbone et d'utilisation des énergies renouvelables ?",
+      "golden_answer": "La RE2020 modifie fondamentalement l'approche de la RT2012 en introduisant une double contrainte : la performance énergétique et l'empreinte carbone. Alors que la RT2012 se concentrait uniquement sur la consommation énergétique, la RE2020 prend en compte l'ensemble du cycle de vie du bâtiment, favorise les énergies renouvelables et impose des seuils d'émissions de carbone sur l'ensemble du cycle de vie du bâtiment.",
+      "expected_contains": "cycle de vie, émissions de carbone, énergies renouvelables",
+      "pipeline": "analytical",
+      "difficulty": "expert",
+      "source_url": "https://www.maisons-mca.com/guide-constructeur-maison/constructeur-maison-exigences-principales-re2020/",
+      "source_title": "Quelles sont les principales exigences de la RE2020 pour les constructions neuves ?",
+      "category": "analytical"
+    },
+    {
+      "question": "Quels sont les seuils d'émissions de carbone (en kgCO2/m².an) imposés par la RE2020 pour les bâtiments résidentiels et tertiaires, et comment évolueront-ils dans le temps ?",
+      "golden_answer": "La RE2020 impose des seuils d'émissions de carbone variant selon le type de bâtiment. Pour les bâtiments résidentiels, le seuil est de 4 kgCO2/m².an, et pour les bâtiments tertiaires, il varie entre 1 et 10 kgCO2/m².an selon la catégorie. Ces seuils seront progressivement abaissés tous les 3 ans jusqu'en 2031 pour atteindre des niveaux plus stricts.",
+      "expected_contains": "kgCO2/m².an, 4 kgCO2/m².an",
+      "pipeline": "quantitative",
+      "difficulty": "expert",
+      "source_url": "https://www.eiffage-immobilier.fr/votre-service/re-2020-lessentiel-sur-la-nouvelle-reglementation-environnementale",
+      "source_title": "RE 2020 : l'essentiel sur la nouvelle réglementation environnementale",
+      "category": "factual"
+    },
+    {
+      "question": "Quelles sont les principales différences entre la RE2020 et la RT2012 en termes de calcul de la consommation énergétique et d'évaluation de la performance globale des bâtiments ?",
+      "golden_answer": "La RE2020 diffère de la RT2012 sur plusieurs aspects : elle introduit le calcul de l'empreinte carbone sur l'ensemble du cycle de vie du bâtiment, prend en compte les émissions de carbone liées à la construction et à la déconstruction, intègre des indicateurs de confort d'été sans système actif, et modifie les coefficients de conversion énergétique pour favoriser les énergies renouvelables. La RT2012 ne prenait en compte que la consommation énergétique sur 5 usages.",
+      "expected_contains": "cycle de vie, confort d'été, coefficients de conversion",
+      "pipeline": "comparative",
+      "difficulty": "expert",
+      "source_url": "https://infrastructures-construction.france.apave.com/fr-FR/Votre-secteur-dactivite/Construction/Reglementation-Environnementale-RE2020",
+      "source_title": "Réglementation Environnementale (RE2020) dans le bâtiment",
+      "category": "comparative"
+    },
+    {
+      "question": "Quelles sont les obligations spécifiques de la RE2020 concernant l'utilisation de matériaux biosourcés et géosourcés dans la construction neuve, et quels sont les seuils minimaux requis ?",
+      "golden_answer": "La RE2020 impose l'utilisation de matériaux biosourcés et géosourcés avec des seuils minimaux variant selon le type de construction. Pour les bâtiments résidentiels collectifs, au moins 30% des matériaux de structure doivent être biosourcés ou géosourcés. Pour les bâtiments tertiaires, le seuil est de 20%. Ces exigences visent à réduire l'empreinte carbone des constructions neuves.",
+      "expected_contains": "biosourcés, géosourcés, 30%, 20%",
+      "pipeline": "standard",
+      "difficulty": "expert",
+      "source_url": "https://www.maisons-mca.com/guide-constructeur-maison/constructeur-maison-exigences-principales-re2020/",
+      "source_title": "Quelles sont les principales exigences de la RE2020 pour les constructions neuves ?",
+      "category": "regulatory"
     }
   ]
 }

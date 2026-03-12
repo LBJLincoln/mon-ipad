@@ -251,7 +251,7 @@ def generate_for_sector(sector, topics, questions_per_topic=4):
         # Build document context
         doc_texts = []
         for r in results[:3]:
-            content = r.get("raw_content", r.get("content", ""))[:1200]
+            content = (r.get("raw_content") or r.get("content") or "")[:1200]
             url = r.get("url", "")
             title = r.get("title", "")
             doc_texts.append(f"SOURCE: {title}\nURL: {url}\n{content}\n")

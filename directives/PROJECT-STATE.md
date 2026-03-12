@@ -1,22 +1,31 @@
-# Etat Systeme — Session 105
+# Etat Systeme — Session 106
 
-> Date: 2026-03-12T12:00Z | Auteur: Claude Code Opus 4.6
+> Date: 2026-03-12T16:40Z | Auteur: Claude Code Opus 4.6
 
 ---
 
 ## 1. INFRASTRUCTURE
 
+### LBJLincoln Spaces (7)
 | Composant | Status | Notes |
 |-----------|--------|-------|
 | **VM GCP** (34.136.180.66) | UP | 969MB RAM |
-| **S1** (engine) | UP | RAG: Standard V3.5 + Graph V3.7 + Quant V3.1 + Orch V13 |
+| **S1** (engine) | UP | RAG: Standard V3.5 + Graph V3.3 + Quant V3.1 + Orch V13 |
 | **S3** (engine-3) | UP | RAG: Same as S1 (shared DB) |
 | **S5** (engine-5) | UP | RAG: Same as S1 (shared DB) |
 | **S6** (Docling) | UP | CPU-basic, 10MB/20page limits |
 | **S7** (LiteLLM) | UP | `Bearer sk-litellm-nomos-2026` — ALL pipelines use it |
 | **S9** (INGEST) | UP | Ingestion V4.0 + Enrichment V4.0 workflows |
 | **Embeddings** | UP | Self-hosted Jina v3, 1024 dims |
-| **Reranker** | UP | Self-hosted FlashRank ms-marco-MiniLM |
+
+### Nomos42 Spaces (5) — NEW in S106
+| Composant | Status | Notes |
+|-----------|--------|-------|
+| **S11** (engine-11) | RUNNING | Standard + Orchestrator working, Graph/Quant TBD |
+| **Embeddings-2** | RUNNING | Jina v3 duplicate |
+| **Docling-2** | RUNNING | Gradio Docling duplicate |
+| **LiteLLM-2** | RUNNING | LiteLLM proxy duplicate |
+| **Worker-2** | RUNNING | n8n instance (no workflows loaded yet) |
 
 ## 2. DATABASES
 
@@ -25,16 +34,16 @@
 | **E5 Pinecone** (`sectors-e5-multilingual`) | **~78,000** (78% of 100K target — daemon active) | PRIMARY — integrated E5 inference |
 | **Jina Pinecone** (`website-sectors-jina-1024`) | **12,536** | SECONDARY — Jina embeddings |
 | **Neo4j** | **71,890** nodes (33K Entity, 30K SectorDoc, 5.2K Law, 1.6K Org), 143K rels | UP |
-| **Supabase** | **43K** docs, **225** financials (111 companies, 4 sectors), 3,876 sector_financial_tables, **29,564** eval questions in `eval_question_bank` | UP |
+| **Supabase** | **43K** docs, **225** financials (111 companies, 4 sectors), 3,876 sector_financial_tables, **29,693** eval questions in `eval_question_bank` | UP |
 
 ## 3. PIPELINES — CANONICAL VERSIONS
 
 | Pipeline | Workflow ID | Version | Spaces | Status |
 |----------|-----------|---------|--------|--------|
-| **Standard** | `9FQdtx38JLPiT3Hx` | V3.5 | S1, S3, S5 | WORKING |
-| **Graph** | `6257AfT1l4FMC6lY` | V3.7 | S1, S3, S5 | WORKING |
+| **Standard** | `9FQdtx38JLPiT3Hx` | V3.5 | S1, S3, S5, S11 | WORKING |
+| **Graph** | `6257AfT1l4FMC6lY` | V3.3 | S1, S3, S5 | WORKING (reactivated S106) |
 | **Quant** | `cjhEhVs0KV1ExHqX` | V3.1 | S1, S3, S5 | WORKING |
-| **Orchestrator** | `qOSaFFrqO8Jb4VGb` | V13 | S1, S3, S5 | WORKING |
+| **Orchestrator** | `qOSaFFrqO8Jb4VGb` | V13 | S1, S3, S5, S11 | WORKING |
 | **Ingestion** | `nh1D4Up0wBZhuQbp` | V4.0 | S9 | ACTIVE |
 | **Enrichment** | `ORa01sX4xI0iRCJ8` | V4.0 | S9 | ACTIVE |
 | Dashboard | — | — | S1 | ACTIVE |
@@ -42,64 +51,64 @@
 | Auto-Healer | `Yqw7Pzn0e7m0C6i3` | V1.2 | S1 | ACTIVE |
 | Error Trigger | `AH3eXOmgxt5cOd93` | V1.0 | S1 | ACTIVE |
 
-**10 n8n workflows active total.** S1/S3/S5: RAG. S9: Ingest+Enrichment.
+**10 n8n workflows active on S1.** S9: Ingest+Enrichment. S11: Standard+Orchestrator.
 
-## 4. S105 ACCOMPLISHMENTS
+## 4. S106 ACCOMPLISHMENTS
 
-### Post-Crash Recovery (S104 agentic loop crash)
-- [x] **Recovered from S104 agentic loop crash** — daemon restarted, state files restored
-- [x] **Agentic loop running**: cycle 19, 30min daemon intervals
-- [x] **Tokens updated**: N8N API + MCP + HF_TOKEN_3 (new HF account)
+### Graph Pipeline Recovery
+- [x] **Graph pipeline was DOWN** — credential unlinked (`Community Summaries Fetch` missing postgres)
+- [x] **Fixed & reactivated** — credential reassigned, workflow activated via API
 
-### Infrastructure Cleanup
-- [x] **Docs cleaned**: 2,582 → 2,251 files, 55M → 9.3M logs
-- [x] **STATUS.md created** as single source of truth
-- [x] **S9 repurposed**: Ingestion V4.0 (nh1D4Up0wBZhuQbp) + Enrichment V4.0 (ORa01sX4xI0iRCJ8) workflows active
+### Nomos42 Account (5 spaces deployed)
+- [x] **S11 (n8n engine)** — RUNNING, Standard + Orchestrator functional
+- [x] **Embeddings-2** — RUNNING, Jina v3 1024d duplicate
+- [x] **Docling-2** — RUNNING, Gradio Docling duplicate (fixed SDK from docker→gradio)
+- [x] **LiteLLM-2** — RUNNING, proxy duplicate
+- [x] **Worker-2** — RUNNING (fixed BUILD_ERROR: missing n8n-workflows dir)
 
-### Eval Scale-Up
-- [x] **29,564 eval questions** tracked in Supabase `eval_question_bank`
-- [x] **Mass eval running**: Standard + Graph 200q each
-- [x] **Eval blast**: 50q/run tracking results to Supabase
-- [x] **E5 vectors**: 74,718 → **~78,000** (+3.3K, daemon still growing)
+### Expert Question Generation (Tavily+LLM)
+- [x] **129 expert questions** generated across all 4 sectors (up from 69)
+- [x] Finance: 42 expert questions with golden answers + source URLs
+- [x] BTP: 45 expert questions
+- [x] Juridique: 21+ expert questions
+- [x] Industrie: 21+ expert questions
+- [x] Supabase schema extended: `golden_answer`, `source_url`, `category` columns added
 
-### Continuous Ingest Daemon
-- [x] **Daemon RUNNING** — Tavily (4 sectors) + fast-ingest + Docling S6
-- [x] **10 n8n workflows active** — 6 RAG + Ingestion V4.0 + Enrichment V4.0 + Dashboard + Debug
+### Dashboard & Documentation
+- [x] **Dashboard HTML regenerated** with live Supabase data
+- [x] **Unified System Reference** (600+ lines, 16 sections)
+- [x] **Two-system agent architecture** defined (ops/agents-separated.py)
 
-### Previous S104 Accomplishments (retained)
-- [x] continuous-ingest.py daemon — 24/7 hourly cycles
-- [x] Neo4j enrichment integrated into cycle
-- [x] 18/18 = 100% PASS on 4-pipeline eval
-- [x] Tavily JSONL output for Neo4j enrichment
+## 5. EVAL RESULTS (S106 — 208 results in 24h)
 
-## 5. EVAL RESULTS (S105)
+### Accuracy by Pipeline (24h window)
+| Pipeline | Pass/Total | Accuracy | Target | Gap |
+|----------|-----------|----------|--------|-----|
+| **Quantitative** | 107/108 | **99.1%** | 95% | +4.1% |
+| **Standard** | 41/58 | **70.7%** | 90% | -19.3% |
+| **Orchestrator** | 3/5 | **60.0%** | 85% | -25% (small sample) |
+| **Graph** | 17/37 | **45.9%** | 75% | -29.1% |
 
-### Accuracy by Pipeline (mass eval in progress)
-| Pipeline | Accuracy Range | Notes |
-|----------|---------------|-------|
-| **Standard** | ~38-50% (finance) | Weakest — data gaps, BTP worst |
-| **Graph** | ~85-90% | Strong on relationship queries |
-| **Quant** | ~98% | Near-perfect on financial data |
-| **Orchestrator** | Routing correct | Delegates to sub-pipelines |
-
-### Mass Eval Status
-- Standard: 200q batch running
-- Graph: 200q batch running
-- Eval blast: 50q/run → Supabase tracking
-- 29,564 eval questions in `eval_question_bank`
+### Accuracy by Sector (24h window)
+| Sector | Pass/Total | Accuracy | Target |
+|--------|-----------|----------|--------|
+| **Finance** | 69/81 | **85.2%** | 90% |
+| **Industrie** | 45/56 | **80.4%** | 85% |
+| **Juridique** | 26/33 | **78.8%** | 90% |
+| **BTP** | 28/38 | **73.7%** | 85% |
 
 ## 6. RUNNING PROCESSES
-- **Agentic loop daemon** — cycle 19, 30min intervals
+- **Agentic loop daemon** — eval blast 50q/run, 30min intervals
 - **Continuous-ingest daemon** — Tavily (4 sectors) + fast-ingest + Docling S6
-- **Mass eval** — Standard + Graph 200q each, eval blast 50q/run
+- **Expert question generator** — juridique + industrie batches in progress
+- **Eval blast** — 40q multi-pipeline in progress
 - Monitor agent (5min cycle)
-- 5 agents (monitor, eval, ingest, pipeline, docs)
 
 ## 7. NEXT PRIORITIES
-1. **Reach 100K vectors** — at ~78K (78%), daemon growing
-2. **Standard pipeline accuracy** — 38-50% finance is too low, BTP weakest (data gap)
-3. **Codespace Docling** — always-on PDF processing (1+ month request)
-4. **8 pipelines (4x2)** — prod+test identical (user demand)
+1. **Standard pipeline accuracy** — 70.7% vs 90% target. Biggest gap
+2. **Graph pipeline accuracy** — 45.9% vs 75% target. Data quality issue
+3. **Reach 100K vectors** — at ~78K (78%), daemon growing
+4. **S11 Graph+Quant** — need workflow import on Nomos42
 5. **Redis queue workers** — Upstash creds exist, workers not built
-6. **Expert eval 10K questions** — 29,564 in eval_question_bank, need quality curation
-7. **BTP data gap** — weakest sector, needs targeted ingestion
+6. **BTP data gap** — weakest sector (73.7%), needs targeted ingestion
+7. **Worker-2 workflows** — n8n running but no workflows imported
