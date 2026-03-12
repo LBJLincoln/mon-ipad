@@ -148,8 +148,8 @@ body {
     <h2>Pipeline Scores</h2>
     <div class="pipe-row">
       <span class="pipe-name">Standard</span>
-      <div class="pipe-bar"><div class="pipe-fill" style="width:59%;background:var(--yellow)"></div></div>
-      <span class="pipe-score" style="color:var(--yellow)">59</span>
+      <div class="pipe-bar"><div class="pipe-fill" style="width:100%;background:var(--green)"></div></div>
+      <span class="pipe-score" style="color:var(--green)">5/5</span>
     </div>
     <div class="pipe-row">
       <span class="pipe-name">Graph</span>
@@ -158,8 +158,8 @@ body {
     </div>
     <div class="pipe-row">
       <span class="pipe-name">Quant</span>
-      <div class="pipe-bar"><div class="pipe-fill" style="width:80%;background:var(--green)"></div></div>
-      <span class="pipe-score" style="color:var(--green)">4/5</span>
+      <div class="pipe-bar"><div class="pipe-fill" style="width:100%;background:var(--green)"></div></div>
+      <span class="pipe-score" style="color:var(--green)">5/5</span>
     </div>
     <div class="pipe-row">
       <span class="pipe-name">Orchestrator</span>
@@ -167,17 +167,17 @@ body {
       <span class="pipe-score" style="color:var(--green)">3/3</span>
     </div>
     <div style="margin-top:8px;font-size:10px;color:var(--muted)">
-      S103: Std 4/5, Graph 5/5, Quant 4/5 (4 sectors!), Orch 3/3<br>
-      Quant: 225 rows, 111 companies, all 4 sectors | Tavily ingesting 3 sectors
+      S103: ALL 18/18 = 100% (Std 5/5, Graph 5/5, Quant 5/5, Orch 3/3)<br>
+      Quant: 225 rows, 111 companies | E5: 70K vectors | 25 conflicting WFs cleaned
     </div>
   </div>
 
   <!-- Databases -->
   <div class="card">
     <h2>Databases</h2>
-    <div class="row"><span class="label"><span class="dot dot-up"></span>E5 Pinecone</span><span class="val">63,000+ vectors</span></div>
-    <div class="bar-wrap"><div class="bar-fill" style="width:63%;background:linear-gradient(90deg,var(--blue),var(--purple))"></div></div>
-    <div style="text-align:right;font-size:10px;color:var(--muted);margin-top:2px;">63% of 100K target</div>
+    <div class="row"><span class="label"><span class="dot dot-up"></span>E5 Pinecone</span><span class="val">70,000+ vectors</span></div>
+    <div class="bar-wrap"><div class="bar-fill" style="width:70%;background:linear-gradient(90deg,var(--blue),var(--purple))"></div></div>
+    <div style="text-align:right;font-size:10px;color:var(--muted);margin-top:2px;">70% of 100K target</div>
     <div class="row"><span class="label"><span class="dot dot-up"></span>Jina Pinecone</span><span class="val">12,536 vectors</span></div>
     <div class="row"><span class="label"><span class="dot dot-up"></span>Neo4j</span><span class="val">71,890 nodes</span></div>
     <div class="row"><span class="label"><span class="dot dot-up"></span>Supabase</span><span class="val">43,412 docs + 225 financials</span></div>
@@ -265,7 +265,7 @@ body {
   <!-- Session History -->
   <div class="card">
     <h2>Recent Sessions</h2>
-    <div class="row"><span class="label">S103</span><span class="val" style="font-size:11px">Quant 4-sector (225 rows), Tavily all sectors, eval 16/18</span></div>
+    <div class="row"><span class="label">S103</span><span class="val" style="font-size:11px;color:var(--green)">18/18 = 100%! Quant 4-sector, Orch fixed, 70K vectors, 25 WFs cleaned</span></div>
     <div class="row"><span class="label">S102</span><span class="val" style="font-size:11px">Space separation: RAG S1-S5, Ingest S9, 64 wf cleaned</span></div>
     <div class="row"><span class="label">S101</span><span class="val" style="font-size:11px">Graph+Standard fixed, 27 wf cleaned</span></div>
     <div class="row"><span class="label">S100</span><span class="val" style="font-size:11px">OTEL Init fix, infra-test, docling S6</span></div>

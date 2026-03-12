@@ -24,7 +24,7 @@
 
 | DB | Vectors/Docs | Content |
 |----|-------------|---------|
-| **E5 Pinecone** (`sectors-e5-multilingual`) | **63,500+** (growing) | PRIMARY — integrated E5 inference |
+| **E5 Pinecone** (`sectors-e5-multilingual`) | **70,000+** (growing) | PRIMARY — integrated E5 inference |
 | **Jina Pinecone** (`website-sectors-jina-1024`) | **12,536** | SECONDARY — Jina embeddings |
 | **Neo4j** | **71,890** nodes (34.9K Entity, 30.1K SectorDoc, 5.2K Law, 1.6K Org) | UP |
 | **Supabase** | **43,412** docs, **225** financials (111 companies, 4 sectors), 3,876 sector_financial_tables | UP |
@@ -57,16 +57,23 @@
 - [x] **Quant eval questions**: Updated for French data, correct sectors
 - [x] **Payload fixed**: Added `question` key + `sector` + `tenant_id: default`
 
+### Orchestrator Fixed
+- [x] **25 conflicting workflows deactivated** (7 old Orchestrators, 6 old Quants, etc.)
+- [x] **Call Quant updated**: Points to S5, sends `question`+`sector`+`tenant_id: default`
+- [x] **Classify Intent**: Forwards `sector` from input, also reads `question` key
+- [x] **Format node**: Checks `interpretation` first (Quant format) before `response`
+- [x] **Key fix**: n8n PATCH doesn't reload code — must deactivate/reactivate to apply changes
+
 ## 5. EVAL RESULTS (S103)
 
-### 4-Pipeline Eval (5Q each)
+### 4-Pipeline Eval (5Q each) — FINAL
 | Pipeline | Pass | Total | Score |
 |----------|------|-------|-------|
-| Standard | 4 | 5 | 80% |
+| Standard | 5 | 5 | **100%** |
 | Graph | 5 | 5 | **100%** |
-| Quant | 4 | 5 | 80% |
+| Quant | 5 | 5 | **100%** |
 | Orchestrator | 3 | 3 | **100%** |
-| **TOTAL** | **16** | **18** | **89%** |
+| **TOTAL** | **18** | **18** | **100%** |
 
 ### Quant Detailed (10Q, all sectors)
 | Sector | Pass | Total |
