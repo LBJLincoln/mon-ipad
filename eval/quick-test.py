@@ -112,9 +112,11 @@ SMOKE_QUESTIONS = {
         {"query": "What financial metrics are related to 3M capital expenditure?", "expected_contains": "3M", "sector": "finance"},
     ],
     "quantitative": [
-        {"query": "What is 3M's total revenue for FY2018?", "expected_contains": "revenue", "sector": "finance"},
-        {"query": "What are Boeing's operating expenses?", "expected_contains": "expense", "sector": "finance"},
-        {"query": "How many financial tables exist for AMD?", "expected_contains": "AMD", "sector": "finance"},
+        {"query": "Quel est le chiffre d'affaires de Apple en 2023?", "expected_contains": "383", "sector": "finance"},
+        {"query": "Quel est le résultat net de Bouygues?", "expected_contains": "net", "sector": "btp"},
+        {"query": "Comparez les revenus de Linklaters et Clifford Chance", "expected_contains": "Linklaters", "sector": "juridique"},
+        {"query": "Quel est l'EBITDA de Michelin en 2023?", "expected_contains": "5120", "sector": "industrie"},
+        {"query": "Quel est le EPS de Goldman Sachs en 2023?", "expected_contains": "22", "sector": "finance"},
     ],
     "orchestrator": [
         {"query": "What is the FY2018 capital expenditure for 3M?", "expected_contains": "1577", "sector": "finance"},
@@ -135,15 +137,19 @@ def normalize_for_match(text):
     return normalized.lower()
 
 
-def call_endpoint(endpoint, query, timeout=60, max_retries=3):
+def call_endpoint(endpoint, query, timeout=60, max_retries=3, sector=None):
     """Call a RAG endpoint with exponential backoff on 503/error."""
-    payload = json.dumps({
+    payload_dict = {
         "query": query,
-        "tenant_id": "benchmark",
+        "question": query,
+        "tenant_id": "default",
         "top_k": 10,
         "include_sources": True,
         "benchmark_mode": True,
-    }).encode()
+    }
+    if sector:
+        payload_dict["sector"] = sector
+    payload = json.dumps(payload_dict).encode()
     headers = {"Content-Type": "application/json"}
 
     for attempt in range(max_retries):
@@ -217,7 +223,7 @@ def run_quick_tests(pipelines, max_questions=3, trigger="manual"):
                 if i > 0:
                     time.sleep(3)  # 3s between questions — prevents n8n 503 (LIMIT=2)
                 endpoint = _rr_endpoint(pipe, webhook_path)
-                resp = call_endpoint(endpoint, q["query"], timeout=pipe_timeout, max_retries=pipe_max_retries)
+                resp = call_endpoint(endpoint, q["query"], timeout=pipe_timeout, max_retries=pipe_max_retries, sector=q.get("sector"))
             expected = q.get("expected_contains", "")
             passed = False
 

@@ -96,9 +96,47 @@ INDUSTRIE_QUERIES = [
     "automatisation industrielle 4.0 IoT",
 ]
 
+FINANCE_QUERIES = [
+    "IFRS normes comptables internationales",
+    "ratio financier analyse entreprise",
+    "bilan comptable actif passif explication",
+    "marché obligataire taux d intérêt France",
+    "gestion de portefeuille diversification risque",
+    "analyse fondamentale actions bourse",
+    "réglementation bancaire Bâle III IV",
+    "fiscalité entreprise impôt société France",
+    "fusion acquisition due diligence",
+    "trésorerie entreprise cash flow gestion",
+    "audit financier commissaire aux comptes",
+    "crédit scoring notation financière",
+    "assurance vie épargne placement",
+    "fintech blockchain finance décentralisée",
+    "ESG investissement responsable critères",
+]
+
+JURIDIQUE_QUERIES = [
+    "code civil responsabilité contractuelle articles",
+    "droit du travail licenciement procédure France",
+    "RGPD protection données personnelles conformité",
+    "droit des sociétés SAS SARL statuts",
+    "propriété intellectuelle brevet marque dépôt",
+    "contentieux commercial tribunal procédure",
+    "droit immobilier bail commercial résiliation",
+    "droit fiscal contrôle redressement",
+    "droit de la concurrence pratiques anticoncurrentielles",
+    "procédure collective sauvegarde liquidation judiciaire",
+    "contrat de travail clause non concurrence",
+    "droit administratif marché public recours",
+    "médiation arbitrage résolution litiges",
+    "droit pénal des affaires abus de biens sociaux",
+    "conformité compliance entreprise loi Sapin II",
+]
+
 SECTOR_QUERIES = {
     "btp": BTP_QUERIES,
     "industrie": INDUSTRIE_QUERIES,
+    "finance": FINANCE_QUERIES,
+    "juridique": JURIDIQUE_QUERIES,
 }
 
 
@@ -431,7 +469,7 @@ def ingest_sector(sector: str, queries: list[str], dry_run: bool = False, max_qu
 
 def main():
     parser = argparse.ArgumentParser(description="Tavily mass ingest for BTP + Industrie sectors")
-    parser.add_argument("--sector", required=True, choices=["btp", "industrie", "all"],
+    parser.add_argument("--sector", required=True, choices=["btp", "industrie", "finance", "juridique", "all"],
                         help="Sector to ingest (btp, industrie, or all)")
     parser.add_argument("--dry-run", action="store_true", help="Simulate without upserting")
     parser.add_argument("--max-queries", type=int, default=0, help="Limit number of queries (0=all)")
