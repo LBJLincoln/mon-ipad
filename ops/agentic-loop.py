@@ -1840,7 +1840,7 @@ def _smoke_test_staging(pipeline, sector):
         status, body = http_request(
             url,
             method="POST",
-            data={"query": question, "sector": sector, "chatInput": question},
+            data={"question": question, "query": question, "sector": sector, "chatInput": question},
             timeout=90,
         )
 
@@ -1886,6 +1886,7 @@ def _smoke_test_all_pipelines(space_url=None, timeout=45):
 
     test_question = "Quels sont les principaux indicateurs financiers ?"
     test_payload = {
+        "question": test_question,
         "query": test_question,
         "sector": "finance",
         "chatInput": test_question,

@@ -142,7 +142,7 @@ def call_endpoint(endpoint, query, timeout=60, max_retries=3, sector=None):
     payload_dict = {
         "query": query,
         "question": query,
-        "tenant_id": "default",
+        "tenant_id": sector or "default",
         "top_k": 10,
         "include_sources": True,
         "benchmark_mode": True,

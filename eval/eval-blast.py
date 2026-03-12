@@ -141,7 +141,7 @@ def call_pipeline(pipeline, question, sector, timeout=120):
 
     payload = json.dumps({
         "query": question, "question": question,
-        "tenant_id": "default", "sector": sector,
+        "tenant_id": sector, "sector": sector,
         "top_k": 10, "include_sources": True,
     }).encode()
 
