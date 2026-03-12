@@ -1,0 +1,68 @@
+{
+  "priority": [
+    "openrouter/optimus-alpha",
+    "openrouter/quasar-alpha",
+    "openai/gpt-4.1",
+    "moonshotai/kimi-k2"
+  ],
+  "fallback": [
+    "google/gemini-2.5-flash-preview",
+    "meta-llama/llama-4-maverick",
+    "qwen/qwen3-235b-a22b",
+    "deepseek/deepseek-r1",
+    "arcee-ai/trinity-large-preview:free"
+  ],
+  "models": {
+    "openrouter/optimus-alpha": {
+      "context": 1000,
+      "description": "OpenRouter flagship — 1M context, top-tier reasoning",
+      "costPer1k": 0.005
+    },
+    "openrouter/quasar-alpha": {
+      "context": 1000,
+      "description": "OpenRouter stealth model — high-quality, cost-effective",
+      "costPer1k": 0.003
+    },
+    "openai/gpt-4.1": {
+      "context": 1047,
+      "description": "GPT-4.1 — latest OpenAI, 1M+ context",
+      "costPer1k": 0.008
+    },
+    "moonshotai/kimi-k2": {
+      "context": 131,
+      "description": "Kimi K2 — excellent for code, fast",
+      "costPer1k": 0.002
+    },
+    "google/gemini-2.5-flash-preview": {
+      "context": 1000,
+      "description": "Gemini 2.5 Flash — ultra-fast, 1M context",
+      "costPer1k": 0.001
+    },
+    "meta-llama/llama-4-maverick": {
+      "context": 1000,
+      "description": "Llama 4 Maverick — open-source, massive context",
+      "costPer1k": 0.001
+    },
+    "qwen/qwen3-235b-a22b": {
+      "context": 131,
+      "description": "Qwen3 235B — strong multilingual + reasoning",
+      "costPer1k": 0.001
+    },
+    "deepseek/deepseek-r1": {
+      "context": 164,
+      "description": "DeepSeek R1 — strong code & math",
+      "costPer1k": 0.001
+    },
+    "arcee-ai/trinity-large-preview:free": {
+      "context": 32,
+      "description": "Trinity — free tier fallback",
+      "costPer1k": 0
+    }
+  },
+  "routing": {
+    "code": ["moonshotai/kimi-k2", "openai/gpt-4.1", "deepseek/deepseek-r1"],
+    "analysis": ["openrouter/optimus-alpha", "openai/gpt-4.1", "qwen/qwen3-235b-a22b"],
+    "fast": ["google/gemini-2.5-flash-preview", "openrouter/quasar-alpha"],
+    "free": ["arcee-ai/trinity-large-preview:free"]
+  }
+}

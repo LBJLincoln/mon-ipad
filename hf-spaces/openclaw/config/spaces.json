@@ -1,0 +1,145 @@
+{
+  "spaces": [
+    {
+      "id": "S1",
+      "name": "Engine (Primary)",
+      "hfId": "lbjlincoln/nomos-rag-engine",
+      "url": "https://lbjlincoln-nomos-rag-engine.hf.space",
+      "role": "n8n primary — All 4 RAG pipelines + AutoHealer",
+      "account": "lbjlincoln",
+      "tokenEnv": "HF_TOKEN"
+    },
+    {
+      "id": "S2",
+      "name": "Engine-2",
+      "hfId": "lbjlincoln26/nomos-rag-engine-2",
+      "url": "https://lbjlincoln26-nomos-rag-engine-2.hf.space",
+      "role": "n8n secondary — shared DB with S1",
+      "account": "lbjlincoln26",
+      "tokenEnv": "HF_TOKEN_2"
+    },
+    {
+      "id": "S3",
+      "name": "Engine-3",
+      "hfId": "lbjlincoln/nomos-rag-engine-3",
+      "url": "https://lbjlincoln-nomos-rag-engine-3.hf.space",
+      "role": "n8n load balancer — All 4 pipelines",
+      "account": "lbjlincoln",
+      "tokenEnv": "HF_TOKEN"
+    },
+    {
+      "id": "S4",
+      "name": "Engine-4",
+      "hfId": "lbjlincoln26/nomos-rag-engine-4",
+      "url": "https://lbjlincoln26-nomos-rag-engine-4.hf.space",
+      "role": "n8n secondary — shared DB",
+      "account": "lbjlincoln26",
+      "tokenEnv": "HF_TOKEN_2"
+    },
+    {
+      "id": "S5",
+      "name": "Engine-5",
+      "hfId": "lbjlincoln/nomos-rag-engine-5",
+      "url": "https://lbjlincoln-nomos-rag-engine-5.hf.space",
+      "role": "n8n load balancer — All 4 pipelines",
+      "account": "lbjlincoln",
+      "tokenEnv": "HF_TOKEN"
+    },
+    {
+      "id": "S6",
+      "name": "Docling",
+      "hfId": "lbjlincoln/nomos-docling-api",
+      "url": "https://lbjlincoln-nomos-docling-api.hf.space",
+      "role": "Docling document processor",
+      "account": "lbjlincoln",
+      "tokenEnv": "HF_TOKEN"
+    },
+    {
+      "id": "S7",
+      "name": "LiteLLM",
+      "hfId": "lbjlincoln/nomos-rag-engine-7",
+      "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space",
+      "role": "LiteLLM proxy — 9 models, 13-provider fallback",
+      "account": "lbjlincoln",
+      "tokenEnv": "HF_TOKEN"
+    },
+    {
+      "id": "S9",
+      "name": "Engine-9",
+      "hfId": "lbjlincoln/nomos-rag-engine-9",
+      "url": "https://lbjlincoln-nomos-rag-engine-9.hf.space",
+      "role": "n8n — Standard + Quant ingestion",
+      "account": "lbjlincoln",
+      "tokenEnv": "HF_TOKEN"
+    },
+    {
+      "id": "S11",
+      "name": "Engine-11",
+      "hfId": "nomos42/nomos-engine-11",
+      "url": "https://nomos42-nomos-engine-11.hf.space",
+      "role": "n8n — Standard + Orchestrator",
+      "account": "nomos42",
+      "tokenEnv": "HF_TOKEN_3"
+    },
+    {
+      "id": "embeddings",
+      "name": "Embeddings",
+      "hfId": "lbjlincoln/nomos-embeddings-api",
+      "url": "https://lbjlincoln-nomos-embeddings-api.hf.space",
+      "role": "Self-hosted Jina embeddings (1024 dims)",
+      "account": "lbjlincoln",
+      "tokenEnv": "HF_TOKEN"
+    },
+    {
+      "id": "embeddings-2",
+      "name": "Embeddings-2",
+      "hfId": "nomos42/nomos-embeddings-2",
+      "url": "https://nomos42-nomos-embeddings-2.hf.space",
+      "role": "Jina v3 duplicate",
+      "account": "nomos42",
+      "tokenEnv": "HF_TOKEN_3"
+    },
+    {
+      "id": "docling-2",
+      "name": "Docling-2",
+      "hfId": "nomos42/nomos-docling-2",
+      "url": "https://nomos42-nomos-docling-2.hf.space",
+      "role": "Gradio Docling duplicate",
+      "account": "nomos42",
+      "tokenEnv": "HF_TOKEN_3"
+    },
+    {
+      "id": "litellm-2",
+      "name": "LiteLLM-2",
+      "hfId": "nomos42/nomos-litellm-2",
+      "url": "https://nomos42-nomos-litellm-2.hf.space",
+      "role": "LiteLLM proxy backup",
+      "account": "nomos42",
+      "tokenEnv": "HF_TOKEN_3"
+    },
+    {
+      "id": "worker-2",
+      "name": "Worker-2 (THIS)",
+      "hfId": "nomos42/nomos-worker-2",
+      "url": "https://nomos42-nomos-worker-2.hf.space",
+      "role": "OpenClaw agent — THIS space",
+      "account": "nomos42",
+      "tokenEnv": "HF_TOKEN_3"
+    }
+  ],
+  "webhooks": {
+    "standard": "/webhook/rag-multi-index-v3",
+    "graph": "/webhook/ff622742-6d71-4e91-af71-b5c666088717",
+    "quantitative": "/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9",
+    "orchestrator": "/webhook/orchestrator-v2"
+  },
+  "defaultSpace": "S1",
+  "evalQuestions": {
+    "standard": [
+      {"question": "Quels sont les ratios de solvabilite requis par Bale III ?", "sector": "finance"},
+      {"question": "Quelle est la resistance au feu requise pour un ERP de categorie 1 ?", "sector": "btp"},
+      {"question": "Quel est le delai de prescription en droit commercial ?", "sector": "juridique"},
+      {"question": "Quelles sont les exigences ISO 9001 pour la maitrise des documents ?", "sector": "industrie"}
+    ]
+  }
+}
