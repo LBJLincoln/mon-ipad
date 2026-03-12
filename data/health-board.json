@@ -1,0 +1,190 @@
+{
+  "timestamp": "2026-03-11T22:55:52Z",
+  "spaces": {
+    "S1": {
+      "name": "S1",
+      "url": "https://lbjlincoln-nomos-rag-engine.hf.space",
+      "status": 200,
+      "ok": true,
+      "elapsed": 1.7
+    },
+    "S2": {
+      "name": "S2",
+      "url": "https://lbjlincoln26-nomos-rag-engine-2.hf.space",
+      "status": 200,
+      "ok": true,
+      "elapsed": 1.5
+    },
+    "S3": {
+      "name": "S3",
+      "url": "https://lbjlincoln-nomos-rag-engine-3.hf.space",
+      "status": 200,
+      "ok": true,
+      "elapsed": 1.5
+    },
+    "S4": {
+      "name": "S4",
+      "url": "https://lbjlincoln26-nomos-rag-engine-4.hf.space",
+      "status": 200,
+      "ok": true,
+      "elapsed": 1.5
+    },
+    "S5": {
+      "name": "S5",
+      "url": "https://lbjlincoln-nomos-rag-engine-5.hf.space",
+      "status": 200,
+      "ok": true,
+      "elapsed": 1.5
+    },
+    "S6": {
+      "name": "S6",
+      "url": "https://lbjlincoln-nomos-docling-api.hf.space",
+      "status": 503,
+      "ok": false,
+      "elapsed": 1.2
+    },
+    "S7": {
+      "name": "S7",
+      "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space",
+      "status": 404,
+      "ok": false,
+      "elapsed": 1.2
+    },
+    "S9": {
+      "name": "S9",
+      "url": "https://lbjlincoln-nomos-rag-engine-9.hf.space",
+      "status": 200,
+      "ok": true,
+      "elapsed": 1.2
+    },
+    "Embed": {
+      "name": "Embed",
+      "url": "https://lbjlincoln-nomos-embeddings-api.hf.space",
+      "status": 404,
+      "ok": false,
+      "elapsed": 1.2
+    },
+    "Rerank": {
+      "name": "Rerank",
+      "url": "https://lbjlincoln-nomos-reranker-api.hf.space",
+      "status": 404,
+      "ok": false,
+      "elapsed": 1.2
+    }
+  },
+  "databases": {
+    "e5": {
+      "name": "E5 (primary)",
+      "ok": true,
+      "count": 59827,
+      "elapsed": 0.7
+    },
+    "jina": {
+      "name": "Jina (secondary)",
+      "ok": true,
+      "count": 12536,
+      "elapsed": 0.7
+    },
+    "supabase": {
+      "ok": true,
+      "docs": 43412,
+      "queue": 0,
+      "latest": "2026-03-11 19:01:12.462066+00:00"
+    },
+    "neo4j": {
+      "ok": false,
+      "nodes": 0,
+      "elapsed": 1.0
+    }
+  },
+  "llm": {
+    "ok": true,
+    "status": 200,
+    "model": "arcee-ai/trinity-large-preview:free",
+    "elapsed": 1.0
+  },
+  "agents": {
+    "monitor": {
+      "pid": 906739,
+      "alive": true
+    },
+    "eval": {
+      "pid": 906740,
+      "alive": true
+    },
+    "ingest": {
+      "pid": 906741,
+      "alive": true
+    },
+    "pipeline": {
+      "pid": 906742,
+      "alive": true
+    },
+    "docs": {
+      "pid": 906743,
+      "alive": true
+    }
+  },
+  "agentic_loop": {
+    "running": true,
+    "pids": [
+      906003,
+      906004
+    ],
+    "last_cycle": {
+      "cycle": 9,
+      "timestamp": "2026-03-11T20:14:14.892801+00:00",
+      "duration_s": 1971.6,
+      "strategy": {
+        "priority": "Ingest BTP-specific technical documents (DTU norms, Eurocodes, CCTP templates, AFNOR standards, RE2020 documentation)",
+        "category": "data_gap",
+        "target_sector": "btp",
+        "target_pipeline": "standard",
+        "expected_impact": "+15 points on BTP standard pipeline score"
+      },
+      "plan_id": "plan-20260311-194123",
+      "plan_steps": 5,
+      "baseline_scores": {
+        "overall_avg": 39.0,
+        "sector_avg": 39.0,
+        "pipeline_avg": 39.0
+      },
+      "current_scores": {
+        "overall_avg": 39.0,
+        "sector_avg": 39.0,
+        "pipeline_avg": 39.0
+      },
+      "deltas": {
+        "overall_avg": 0.0,
+        "sector_avg": 0.0,
+        "pipeline_avg": 0.0
+      },
+      "improved": false,
+      "sector_delta": 0.0,
+      "analysis": {
+        "health_score": 0,
+        "key_insight": "{\n  \"health_score\": 4,\n  \"health_justification\": \"The system shows critical data gaps in BTP sector with only 40% pass rate and 39/100 average score. The LLM judge scores reveal poor source citation (2.42/5) and factual accuracy issues. While the standard pipeline performs better than others (48.8% ",
+        "failure_pattern_count": 0,
+        "new_questions_generated": 0
+      },
+      "next_action": "Retry analysis",
+      "suggested_commands": [
+        "python3 eval/parallel-eval.py --sector btp --pipeline standard",
+        "python3 eval/continuous-judge.py --suggestions",
+        "python3 ops/metrics-collector.py --profile standard",
+        "# LLM suggestion: Retry analysis"
+      ]
+    }
+  },
+  "eval": {
+    "running": false,
+    "pids": [],
+    "progress": "Summary saved to: /home/termius/mon-ipad/eval/../data/eval/parallel-eval-latest.json"
+  },
+  "codespaces": [
+    {
+      "name": "continuous-ingest-x565xw4r7q4qh6x4v",
+      "state": "Shutdown"
+    }
+  ]
+}
