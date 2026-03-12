@@ -598,9 +598,9 @@ def run_smoke(host, name, test):
             data = json.loads(body) if body else {{}}
             answer = ""
             if isinstance(data, dict):
-                answer = data.get("answer", data.get("response", data.get("output", "")))
+                answer = data.get("answer", data.get("response", data.get("output", data.get("interpretation", ""))))
             elif isinstance(data, list) and data:
-                answer = data[0].get("answer", data[0].get("output", "")) if isinstance(data[0], dict) else str(data[0])
+                answer = data[0].get("answer", data[0].get("output", data[0].get("interpretation", ""))) if isinstance(data[0], dict) else str(data[0])
             if answer and len(str(answer)) > 10:
                 return True, str(answer)[:200]
             else:

@@ -141,7 +141,7 @@ def check_pipeline(name, config, space_url="https://lbjlincoln-nomos-rag-engine.
             data = json.loads(body)
             if isinstance(data, list):
                 data = data[0] if data else {}
-            answer = str(data.get("response", data.get("answer", "")))
+            answer = str(data.get("response", data.get("answer", data.get("interpretation", ""))))
             answer_len = len(answer)
             if answer_len > 20 and "error" not in answer.lower()[:50]:
                 ok = True

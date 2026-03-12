@@ -1850,7 +1850,7 @@ def _smoke_test_staging(pipeline, sector):
                 # Handle list response format
                 if isinstance(resp, list) and resp:
                     resp = resp[0]
-                response_text = resp.get("response", resp.get("output", ""))
+                response_text = resp.get("response", resp.get("output", resp.get("interpretation", resp.get("answer", ""))))
                 has_content = len(response_text) > 50
                 has_sources = "source" in response_text.lower() or "document" in response_text.lower()
                 score = 70 if has_content else 20
@@ -1909,7 +1909,7 @@ def _smoke_test_all_pipelines(space_url=None, timeout=45):
                     resp = json.loads(body) if isinstance(body, str) else body
                     if isinstance(resp, list) and resp:
                         resp = resp[0]
-                    response_text = resp.get("response", resp.get("output", ""))
+                    response_text = resp.get("response", resp.get("output", resp.get("interpretation", resp.get("answer", ""))))
                     has_content = len(response_text) > 30
                     results[pipeline] = {
                         "status": "ok" if has_content else "empty_response",
