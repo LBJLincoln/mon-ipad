@@ -108,6 +108,22 @@ def normalize(text):
     text = re.sub(r'(\d)[,\s](\d)', r'\1\2', text)
     return text.replace('$', '').replace('%', '').lower()
 
+# ── LLM Judge ──
+try:
+    from eval.llm_judge import judge_answer as llm_judge
+    USE_LLM_JUDGE = True
+    log("LLM Judge loaded")
+except ImportError:
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        from llm_judge import judge_answer as llm_judge
+        USE_LLM_JUDGE = True
+        log("LLM Judge loaded (direct)")
+    except ImportError:
+        USE_LLM_JUDGE = False
+        log("WARNING: LLM Judge not available, using keyword matching")
+
 # ── Pipeline calls ──
 _rr = {}
 
@@ -186,18 +202,32 @@ def create_run(run_type, pipeline, sector, triggered_by="eval_blast"):
         return str(result[0][0])
     return None
 
-def save_result(run_id, q, resp, status, pipeline, sector):
+def save_result(run_id, q, resp, status, pipeline, sector, judge_result=None):
     sources_json = json.dumps(resp.get("sources", []))
     source_ids = [s.get("doc_id", "") for s in resp.get("sources", []) if s.get("doc_id")]
     answer = resp.get("answer", "") or resp.get("interpretation", "")
+
+    # Judge scores
+    j = judge_result or {}
+    accuracy_score = j.get("accuracy")
+    completeness_score = j.get("completeness")
+    terminology_score = j.get("terminology")
+    total_score = int((accuracy_score + completeness_score + terminology_score) / 3) if accuracy_score is not None else None
+    judge_reasoning = j.get("reasoning", "")
+    judge_method = j.get("judge_method", "keyword")
 
     db_execute("""
         INSERT INTO eval_results
             (run_id, question_id, question, sector, pipeline, expected_contains,
              answer, answer_preview, status, latency_ms, space, execution_id,
-             sources, source_count, source_doc_ids, difficulty, category, language, dataset_source)
+             sources, source_count, source_doc_ids,
+             accuracy_score, completeness_score, terminology_score, total_score,
+             judge_reasoning, classification,
+             difficulty, category, language, dataset_source)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                %s::jsonb, %s, %s, %s, %s, %s, %s)
+                %s::jsonb, %s, %s,
+                %s, %s, %s, %s, %s, %s,
+                %s, %s, %s, %s)
     """, (
         run_id, q.get("id", ""), q.get("question", ""), sector, pipeline,
         q.get("expected_contains", ""),
@@ -205,6 +235,8 @@ def save_result(run_id, q, resp, status, pipeline, sector):
         status, resp.get("latency_ms", 0), resp.get("space", ""),
         resp.get("execution_id", ""),
         sources_json, len(resp.get("sources", [])), source_ids or [],
+        accuracy_score, completeness_score, terminology_score, total_score,
+        judge_reasoning[:500] if judge_reasoning else "", judge_method,
         q.get("difficulty", "medium"), q.get("category", ""),
         q.get("language", "fr"), q.get("dataset_source", "generated"),
     ))
@@ -349,16 +381,24 @@ def run_blast(max_q=50, pipeline_filter=None, sector_filter=None,
         stats["total"] += 1
         stats["total_latency"] += resp.get("latency_ms", 0)
 
-        # Evaluate
+        # Evaluate — LLM Judge (with keyword fallback)
         passed = False
+        judge_result = None
         if resp["ok"] and resp["answer"]:
-            if expected:
-                if isinstance(expected, list):
-                    passed = any(normalize(e) in normalize(resp["answer"]) for e in expected if e)
-                else:
-                    passed = normalize(str(expected)) in normalize(resp["answer"])
+            if USE_LLM_JUDGE:
+                judge_result = llm_judge(
+                    question=question, answer=resp["answer"],
+                    expected_contains=expected, sector=sector, pipeline=pipeline,
+                )
+                passed = judge_result["pass"]
             else:
-                passed = len(resp["answer"]) > 10
+                if expected:
+                    if isinstance(expected, list):
+                        passed = any(normalize(e) in normalize(resp["answer"]) for e in expected if e)
+                    else:
+                        passed = normalize(str(expected)) in normalize(resp["answer"])
+                else:
+                    passed = len(resp["answer"]) > 10
 
         if not resp["ok"]:
             status = resp.get("status_hint", "error")
@@ -378,7 +418,7 @@ def run_blast(max_q=50, pipeline_filter=None, sector_filter=None,
 
         # Save to Supabase
         if run_id:
-            save_result(run_id, q, resp, status, pipeline, sector)
+            save_result(run_id, q, resp, status, pipeline, sector, judge_result)
             update_question_bank(q, status, resp.get("latency_ms", 0))
 
         # Track in state
