@@ -1,6 +1,6 @@
-# Etat Systeme — Session 101
+# Etat Systeme — Session 103
 
-> Date: 2026-03-11T22:40Z | Auteur: Claude Code Opus 4.6
+> Date: 2026-03-12T02:30Z | Auteur: Claude Code Opus 4.6
 
 ---
 
@@ -9,14 +9,14 @@
 | Composant | Status | Notes |
 |-----------|--------|-------|
 | **VM GCP** (34.136.180.66) | UP | 969MB RAM |
-| **S1** (engine) | UP | Standard V3.5 + Graph V3.7 + Quant V3.1 + Orch V13 |
-| **S2** (engine-2) | UP | Same workflows (lbjlincoln26 — can't set secrets) |
-| **S3** (engine-3) | UP | Standard V3.5 + Graph V3.7 + Quant V3.1 + Orch V13 |
-| **S4** (engine-4) | UP | Same workflows (lbjlincoln26 — can't set secrets) |
-| **S5** (engine-5) | UP | Standard V3.5 + Graph V3.7 + Quant V3.1 + Orch V13 |
+| **S1** (engine) | UP | RAG-ONLY: Standard V3.5 + Graph V3.7 + Quant V3.1 + Orch V13 |
+| **S2** (engine-2) | UP | Same DB as S1 (lbjlincoln26 — can't set secrets) |
+| **S3** (engine-3) | UP | RAG-ONLY: Same as S1 (shared DB) |
+| **S4** (engine-4) | UP | Same DB as S3 (lbjlincoln26 — can't set secrets) |
+| **S5** (engine-5) | UP | RAG-ONLY: Same as S1 (shared DB) |
 | **S6** (Docling) | UP | CPU-basic, 10MB/20page limits |
 | **S7** (LiteLLM) | UP | `Bearer sk-litellm-nomos-2026` — ALL pipelines use it |
-| **S9** (Staging) | UP | Graph V3.7 + Standard V3.5 (different ID: LVzddlzfif7DC059) |
+| **S9** (INGEST) | UP | INGEST-ONLY — n8n webhooks BROKEN (all return "could not be started") |
 | **Embeddings** | UP | Self-hosted Jina v3, 1024 dims |
 | **Reranker** | UP | Self-hosted FlashRank ms-marco-MiniLM |
 
@@ -24,68 +24,71 @@
 
 | DB | Vectors/Docs | Content |
 |----|-------------|---------|
-| **E5 Pinecone** (`sectors-e5-multilingual`) | **59,827** | PRIMARY — integrated E5 inference |
+| **E5 Pinecone** (`sectors-e5-multilingual`) | **63,500+** (growing) | PRIMARY — integrated E5 inference |
 | **Jina Pinecone** (`website-sectors-jina-1024`) | **12,536** | SECONDARY — Jina embeddings |
-| **Legacy Pinecone** (`sota-rag-jina-1024`) | **0** | ARCHIVED — EMPTY |
 | **Neo4j** | **71,890** nodes (34.9K Entity, 30.1K SectorDoc, 5.2K Law, 1.6K Org) | UP |
-| **Supabase** | **43,412** docs, 78 financials, 3,876 sector_financial_tables | UP |
+| **Supabase** | **43,412** docs, **225** financials (111 companies, 4 sectors), 3,876 sector_financial_tables | UP |
 
 ## 3. PIPELINES — CANONICAL VERSIONS
 
-| Pipeline | Workflow ID | Version | All Spaces | Status |
-|----------|-----------|---------|-----------|--------|
-| **Standard** | `9FQdtx38JLPiT3Hx` | V3.5 | S1-S5, S9 | WORKING — E5+Jina dual-index, LiteLLM |
-| **Graph** | `6257AfT1l4FMC6lY` | V3.7 | S1-S5, S9 | WORKING — V3 keyword Cypher + Neo4j |
-| **Quant** | `cjhEhVs0KV1ExHqX` | V3.1 | S1, S3, S5 | WORKING — SQL, data gap (78 US rows only) |
-| **Orchestrator** | `qOSaFFrqO8Jb4VGb` | V13 | S1, S3, S5 | WORKING — regex routing |
+| Pipeline | Workflow ID | Version | Spaces | Status |
+|----------|-----------|---------|--------|--------|
+| **Standard** | `9FQdtx38JLPiT3Hx` | V3.5 | S1, S3, S5 | WORKING — 4/5 eval |
+| **Graph** | `6257AfT1l4FMC6lY` | V3.7 | S1, S3, S5 | WORKING — 5/5 eval |
+| **Quant** | `cjhEhVs0KV1ExHqX` | V3.1 | S1, S3, S5 | WORKING — 4/5 eval (4 sectors!) |
+| **Orchestrator** | `qOSaFFrqO8Jb4VGb` | V13 | S1, S3, S5 | WORKING — 3/3 eval |
 
-**CRITICAL**: 17 conflicting old workflows were deactivated in S101. staging-deploy.py now uses correct Standard ID.
+**S1-S5: RAG-ONLY.** S9: INGEST-ONLY. 64+ conflicting workflows cleaned in S101-S102.
 
-## 4. S101 ACCOMPLISHMENTS
+## 4. S103 ACCOMPLISHMENTS
 
-### Critical Fixes
-- [x] **Standard S1 broken → FIXED**: Two active workflows on same webhook. Old V3.4 (2Pk87ulicqq1CmMw) intercepted requests. 17 conflicting workflows deactivated across S1/S3/S5/S9
-- [x] **Graph "Information not available" → Real answers**: Neo4j Query Builder V3 searches Entity.name + SectorDocument.question keywords. French keyword extraction. 629-699 chars real content
-- [x] **Pipeline comparison dashboard**: data/pipeline-comparison.json — all nodes verified SAME across Spaces
-- [x] **Workflow ID fix**: CLAUDE.md, staging-deploy.py, monitor.py, sync.py updated to `9FQdtx38JLPiT3Hx`
+### Quant Production-Ready
+- [x] **225 financial rows** (was 110): 42 finance, 34 industrie, 20 btp, 15 juridique companies
+- [x] **Juridique sector added**: Wolters Kluwer, Thomson Reuters, LexisNexis, Linklaters, Clifford Chance, French law firms
+- [x] **All 4 sectors pass**: 10/10 direct test, 4/5 eval
 
-### Root Causes Found
-- **Conflicting workflows**: n8n routes randomly when 2+ workflows share a webhook path
-- **Graph empty results**: Neo4j entities have garbage names; SectorDocuments have no `name` field. Fixed with keyword search on `question` field
-- **S2/S4 secrets**: Both HF tokens are LBJLincoln account — need lbjlincoln26 token
+### Ingestion System
+- [x] **Tavily all 4 sectors**: Added finance + juridique queries (was BTP + industrie only)
+- [x] **E5 vectors**: 59,827 → 63,500+ (+3,700 new from Tavily)
+- [x] **continuous-ingest.py**: Daemon for 24/7 ingestion (Tavily + fast-ingest + HF datasets)
 
-## 5. EVAL RESULTS
+### Eval System Fixed
+- [x] **N8N_ALL_HOSTS fixed**: Removed S9 (INGEST-ONLY), added S5 to rotation
+- [x] **Quant eval questions**: Updated for French data, correct sectors
+- [x] **Payload fixed**: Added `question` key + `sector` + `tenant_id: default`
 
-### S100 Baseline (before S101 fixes)
-| Pipeline | Avg | Pass% |
-|----------|-----|-------|
-| Standard | 38.2 | 32.9% |
-| Graph | 11.2 | 0% |
-| Quant | 32.8 | 30% |
-| Orchestrator | 47.8 | 60% |
+## 5. EVAL RESULTS (S103)
 
-### S101 Post-Fix (Standard only smoke)
-| Sector | Score | Pass% |
-|--------|-------|-------|
-| BTP | 47.0 | 40% |
-| Finance | 53.0 | 60% |
-| Industrie | 61.0 | 60% |
-| Juridique | 76.0 | 100% |
-| **Overall** | **59.2** | **65.0%** |
+### 4-Pipeline Eval (5Q each)
+| Pipeline | Pass | Total | Score |
+|----------|------|-------|-------|
+| Standard | 4 | 5 | 80% |
+| Graph | 5 | 5 | **100%** |
+| Quant | 4 | 5 | 80% |
+| Orchestrator | 3 | 3 | **100%** |
+| **TOTAL** | **16** | **18** | **89%** |
 
-**Standard: +21 points, +32% pass rate improvement**
-
-### Full 4-pipeline eval — RUNNING
+### Quant Detailed (10Q, all sectors)
+| Sector | Pass | Total |
+|--------|------|-------|
+| Finance | 4 | 4 |
+| BTP | 3 | 3 |
+| Juridique | 1 | 1 |
+| Industrie | 2 | 2 |
+| **TOTAL** | **10** | **10** = **100%** |
 
 ## 6. RUNNING PROCESSES
-- Agentic loop daemon (PID 906004, working on Quant BTP fix)
-- Monitor (PID 906738/906744, 5min cycle)
+- Tavily finance ingestion (background)
+- Tavily juridique ingestion (background)
+- Tavily industrie ingestion (background)
+- Monitor agent (5min cycle)
 - 5 agents (monitor, eval, ingest, pipeline, docs)
 
 ## 7. NEXT PRIORITIES
-1. **Full 4-pipeline eval** — verify Graph improvement
-2. **Quant data ingestion** — French financial data into `financials` table
-3. **BTP data gap** — DTU norms, Eurocodes (agentic loop working on it)
-4. **Codespace Docling** — always-on PDF processing
+1. **Start continuous-ingest daemon** — 24/7 ingestion loop
+2. **Reach 70K vectors** — Tavily still running
+3. **BTP data gap** — DTU norms, Eurocodes (Tavily ingesting)
+4. **Codespace Docling** — always-on PDF processing (1+ month request)
 5. **8 pipelines (4×2)** — prod+test identical (user demand)
-6. **S2/S4 SSL fix** — need lbjlincoln26 HF token
+6. **S9 n8n fix or rebuild** — webhooks completely broken
+7. **S2/S4 secrets** — need lbjlincoln26 HF token
