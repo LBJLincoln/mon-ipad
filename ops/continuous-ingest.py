@@ -75,7 +75,7 @@ def run_tavily_sector(sector: str, max_queries: int = 5) -> dict:
     ]
     try:
         result = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=600,
+            cmd, capture_output=True, text=True, timeout=1800,
             env={**os.environ, "PYTHONUNBUFFERED": "1"}
         )
         output = result.stdout + result.stderr
@@ -90,11 +90,11 @@ def run_tavily_sector(sector: str, max_queries: int = 5) -> dict:
                             upserted = int(parts[i - 1].replace(",", ""))
                         except ValueError:
                             pass
-            if "Total:" in line:
+            if "Total:" in line or "COMPLETE" in line:
                 log(f"    {line.strip()}")
         return {"sector": sector, "upserted": upserted, "ok": result.returncode == 0}
     except subprocess.TimeoutExpired:
-        log(f"    TIMEOUT for {sector}")
+        log(f"    TIMEOUT for {sector} (30min limit)")
         return {"sector": sector, "upserted": 0, "ok": False, "error": "timeout"}
     except Exception as e:
         log(f"    ERROR: {e}")
@@ -116,7 +116,7 @@ def run_fast_ingest(sector: str = "all") -> dict:
 
     try:
         result = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=300,
+            cmd, capture_output=True, text=True, timeout=900,
             env={**os.environ, "PYTHONUNBUFFERED": "1"}
         )
         output = result.stdout + result.stderr
@@ -197,6 +197,41 @@ def check_pinecone_count() -> int:
         return 0
 
 
+def run_neo4j_enrichment() -> dict:
+    """Run Neo4j entity enrichment from JSONL datasets."""
+    log("  Neo4j enrichment → populate-neo4j-entities.py")
+    cmd = [
+        sys.executable, str(OPS_DIR / "populate-neo4j-entities.py"),
+    ]
+    try:
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=600,
+            env={**os.environ, "PYTHONUNBUFFERED": "1"}
+        )
+        output = result.stdout + result.stderr
+        entities = 0
+        for line in output.split("\n"):
+            if "TOTAL:" in line or "unique entities" in line:
+                log(f"    {line.strip()}")
+                parts = line.split()
+                for p in parts:
+                    try:
+                        n = int(p.replace(",", ""))
+                        if n > entities:
+                            entities = n
+                    except ValueError:
+                        pass
+            if "WRITING TO NEO4J" in line or "Created" in line or "Merged" in line:
+                log(f"    {line.strip()}")
+        return {"entities": entities, "ok": result.returncode == 0}
+    except subprocess.TimeoutExpired:
+        log("    TIMEOUT")
+        return {"entities": 0, "ok": False, "error": "timeout"}
+    except Exception as e:
+        log(f"    ERROR: {e}")
+        return {"entities": 0, "ok": False, "error": str(e)}
+
+
 def run_cycle(state: dict, tavily_queries: int = 5) -> dict:
     """Run one full ingestion cycle."""
     cycle_start = datetime.now(timezone.utc)
@@ -215,13 +250,17 @@ def run_cycle(state: dict, tavily_queries: int = 5) -> dict:
     # 2. Tavily for each sector
     for sector in ["finance", "btp", "juridique", "industrie"]:
         r = run_tavily_sector(sector, tavily_queries)
-        results.append({"step": f"tavily-{sector}", **r})
+        results.append({"step": "tavily-%s" % sector, **r})
 
     # 3. HF datasets (one per cycle, rotating)
     hf_idx = (cycle_num - 1) % len(HF_DATASETS)
     sector, dataset, max_rec = HF_DATASETS[hf_idx]
     r = run_hf_ingest(sector, dataset, max_rec)
-    results.append({"step": f"hf-{sector}", **r})
+    results.append({"step": "hf-%s" % sector, **r})
+
+    # 4. Neo4j enrichment (every cycle — reads JSONL, extracts entities)
+    r = run_neo4j_enrichment()
+    results.append({"step": "neo4j-enrichment", **r})
 
     vectors_after = check_pinecone_count()
     new_vectors = vectors_after - vectors_before

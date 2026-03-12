@@ -346,6 +346,24 @@ def save_progress(progress: dict):
     PROGRESS_FILE.write_text(json.dumps(progress, indent=2, ensure_ascii=False))
 
 
+def save_chunk_jsonl(sector: str, chunk: str, source: str, title: str, url: str):
+    """Save chunk as JSONL record for Neo4j enrichment."""
+    datasets_dir = Path.home() / "rag-data-ingestion" / "datasets" / "sectors" / sector
+    datasets_dir.mkdir(parents=True, exist_ok=True)
+    jsonl_file = datasets_dir / "tavily_web.jsonl"
+    record = {
+        "id": hashlib.md5(chunk[:200].encode()).hexdigest()[:16],
+        "dataset": "tavily_web",
+        "sector": sector,
+        "text": chunk,
+        "title": title,
+        "source": source,
+        "url": url,
+    }
+    with open(jsonl_file, "a", encoding="utf-8") as f:
+        f.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+
 def ingest_sector(sector: str, queries: list[str], dry_run: bool = False, max_queries: int = 0) -> dict:
     """Run all queries for a sector, chunk results, upsert to E5."""
     stats = {
@@ -441,6 +459,11 @@ def ingest_sector(sector: str, queries: list[str], dry_run: bool = False, max_qu
                 ok = pinecone_upsert(record_id, chunk, sector, source)
                 if ok:
                     stats["chunks_upserted"] += 1
+                    # Also save as JSONL for Neo4j enrichment
+                    try:
+                        save_chunk_jsonl(sector, chunk, source, title, url)
+                    except Exception:
+                        pass
                 else:
                     stats["chunks_failed"] += 1
                     stats["errors"].append(record_id)
