@@ -197,6 +197,40 @@ def check_pinecone_count() -> int:
         return 0
 
 
+DOCLING_SECTORS = ["finance", "btp", "juridique", "industrie"]
+
+
+def run_docling_ingest(cycle_num: int, max_docs: int = 3) -> dict:
+    """Run Docling S6 PDF processing for discovered documents."""
+    sector = DOCLING_SECTORS[(cycle_num - 1) % len(DOCLING_SECTORS)]
+    log("  Docling S6 → %s (%d docs max)" % (sector, max_docs))
+    cmd = [
+        sys.executable, str(OPS_DIR / "docling-s6-ingest.py"),
+        "--from-discovered",
+        "--sector", sector,
+        "--max", str(max_docs),
+    ]
+    try:
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=1800,
+            env={**os.environ, "PYTHONUNBUFFERED": "1"}
+        )
+        output = result.stdout + result.stderr
+        processed = 0
+        for line in output.split("\n"):
+            if "processed" in line.lower() or "upserted" in line.lower() or "chunks" in line.lower():
+                log("    %s" % line.strip())
+            if "SUCCESS" in line:
+                processed += 1
+        return {"sector": sector, "processed": processed, "ok": result.returncode == 0}
+    except subprocess.TimeoutExpired:
+        log("    TIMEOUT (30min)")
+        return {"sector": sector, "processed": 0, "ok": False, "error": "timeout"}
+    except Exception as e:
+        log("    ERROR: %s" % str(e))
+        return {"sector": sector, "processed": 0, "ok": False, "error": str(e)}
+
+
 def run_neo4j_enrichment() -> dict:
     """Run Neo4j entity enrichment from JSONL datasets."""
     log("  Neo4j enrichment → populate-neo4j-entities.py")
@@ -258,7 +292,11 @@ def run_cycle(state: dict, tavily_queries: int = 5) -> dict:
     r = run_hf_ingest(sector, dataset, max_rec)
     results.append({"step": "hf-%s" % sector, **r})
 
-    # 4. Neo4j enrichment (every cycle — reads JSONL, extracts entities)
+    # 4. Docling S6 PDF processing (3 docs per cycle, rotating sectors)
+    r = run_docling_ingest(cycle_num)
+    results.append({"step": "docling-s6", **r})
+
+    # 5. Neo4j enrichment (every cycle — reads JSONL, extracts entities)
     r = run_neo4j_enrichment()
     results.append({"step": "neo4j-enrichment", **r})
 
