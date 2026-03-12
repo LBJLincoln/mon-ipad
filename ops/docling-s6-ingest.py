@@ -563,13 +563,15 @@ def supabase_upsert(doc_id, sector, chunk_text_content, source_url, title):
     insert_url = f"{SUPABASE_URL}/rest/v1/sector_documents"
 
     row = {
-        "doc_id": doc_id,
+        "id": doc_id,
         "sector": sector,
-        "content": chunk_text_content[:10000],
-        "source_url": source_url[:2000],
-        "source_type": "expert_pdf_docling",
-        "title": (title or "Untitled")[:500],
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "dataset_name": "docling-pdf",
+        "pipeline": "docling-s6",
+        "context": chunk_text_content[:10000],
+        "question": (title or "Untitled")[:500],
+        "answer": "",
+        "metadata": json.dumps({"source_url": source_url[:2000], "source_type": "expert_pdf_docling"}),
+        "tenant_id": "default",
     }
 
     payload = json.dumps(row, ensure_ascii=False).encode("utf-8")
@@ -708,10 +710,9 @@ def process_single_pdf(doc, processed_data, dry_run=False):
         chunk_id = make_chunk_id(sector, url, ci)
         record = {
             "_id": chunk_id,
-            "chunk_text": chunk,
+            "text": chunk,
             "sector": sector,
-            "source_type": "expert_pdf",
-            "source_url": url[:500],
+            "source": "docling-pdf",
             "title": title[:200] if title else "",
         }
 
