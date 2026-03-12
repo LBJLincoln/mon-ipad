@@ -207,14 +207,19 @@ def save_result(run_id, q, resp, status, pipeline, sector, judge_result=None):
     source_ids = [s.get("doc_id", "") for s in resp.get("sources", []) if s.get("doc_id")]
     answer = resp.get("answer", "") or resp.get("interpretation", "")
 
-    # Judge scores
+    # Judge scores — DB expects 0-20 per dimension, 0-100 total
     j = judge_result or {}
-    accuracy_score = j.get("accuracy")
-    completeness_score = j.get("completeness")
-    terminology_score = j.get("terminology")
-    total_score = int((accuracy_score + completeness_score + terminology_score) / 3) if accuracy_score is not None else None
+    accuracy_score = int(j["accuracy"] / 5) if j.get("accuracy") is not None else None
+    completeness_score = int(j["completeness"] / 5) if j.get("completeness") is not None else None
+    terminology_score = int(j["terminology"] / 5) if j.get("terminology") is not None else None
+    total_score = int((j.get("accuracy", 0) + j.get("completeness", 0) + j.get("terminology", 0)) / 3) if j.get("accuracy") is not None else None
     judge_reasoning = j.get("reasoning", "")
     judge_method = j.get("judge_method", "keyword")
+    # classification must be GOOD/MEDIUM/BAD
+    if total_score is not None:
+        classification = "GOOD" if total_score >= 70 else ("MEDIUM" if total_score >= 40 else "BAD")
+    else:
+        classification = None
 
     db_execute("""
         INSERT INTO eval_results
@@ -236,7 +241,7 @@ def save_result(run_id, q, resp, status, pipeline, sector, judge_result=None):
         resp.get("execution_id", ""),
         sources_json, len(resp.get("sources", [])), source_ids or [],
         accuracy_score, completeness_score, terminology_score, total_score,
-        judge_reasoning[:500] if judge_reasoning else "", judge_method,
+        judge_reasoning[:500] if judge_reasoning else "", classification,
         q.get("difficulty", "medium"), q.get("category", ""),
         q.get("language", "fr"), q.get("dataset_source", "generated"),
     ))
