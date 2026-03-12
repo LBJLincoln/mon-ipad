@@ -1,6 +1,6 @@
 # Infrastructure Reference — Multi-RAG Orchestrator SOTA 2026
 
-> Last updated: 2026-03-07T14:00:00Z
+> Last updated: 2026-03-12T12:00:00Z (Session 105)
 > Consolidated infrastructure documentation: architecture, stack, credentials, limits, storage strategy.
 
 ---
@@ -21,7 +21,7 @@
 
 ## Architecture Overview
 
-### Global Architecture (Session 75 — March 2026)
+### Global Architecture (Session 105 — March 2026)
 
 ```
 VM Google Cloud (34.136.180.66) — PERMANENT (PILOTAGE ONLY)
@@ -38,9 +38,29 @@ HF Spaces — DISTRIBUTED EXECUTION
     - Standard + Graph pipelines
     - LiteLLM proxy (Space #7)
 
-  Secondary (#2) : PENDING (user must provide valid HF_TOKEN_2)
-    - Quantitative + Orchestrator pipelines (planned)
-    - Separate 16GB instance for load distribution
+  Secondary (#2) : lbjlincoln26-nomos-rag-engine-2.hf.space
+    - n8n, same DB as S1 (shared Postgres)
+    - Load balancing
+
+  Engine-3 (#3) : lbjlincoln-nomos-rag-engine-3.hf.space
+    - n8n, all 4 pipelines (load balance)
+
+  Engine-4 (#4) : lbjlincoln26-nomos-rag-engine-4.hf.space
+    - n8n, same DB as S1
+
+  Engine-5 (#5) : lbjlincoln-nomos-rag-engine-5.hf.space
+    - n8n, all 4 pipelines (load balance)
+
+  Docling (#6) : lbjlincoln-nomos-docling-api.hf.space
+    - Docling document processor
+    - CPU-basic, 2 vCPU, 16GB RAM
+    - 10MB/20-page PDF limits, 600s timeout
+
+  Engine-9 (#9) : lbjlincoln-nomos-rag-engine-9.hf.space
+    - n8n, Standard + Quant (SEPARATE database)
+
+  Embeddings : lbjlincoln-nomos-embeddings-api.hf.space
+    - Self-hosted Jina embeddings (1024 dims)
 
 GitHub Codespaces (EPHEMERAL — 60h/month free tier)
   - rag-tests : NOT USED (eval runs from VM → HF Space webhooks)
@@ -98,7 +118,7 @@ Vercel (PRODUCTION SITES)
 | **n8n Version** | 2.8.3 | Latest | OK | SQLite + Redis |
 | **Workers** | 1 | 1 | OK | NOT queue mode |
 | **Credentials** | 12/12 imported | Unlimited | OK | See credentials section |
-| **Workflows** | 11 imported (8 active) | Unlimited | OK | Standard/Graph/Quant working |
+| **Workflows** | 10 active | Unlimited | OK | Standard/Graph/Quant/Orch + Ingestion/Enrichment |
 | **Concurrent Executions** | Unknown | Higher than VM | GOOD | More headroom |
 | **Uptime** | Best-effort | N/A | MEDIUM | Keep-alive cron every 30 min |
 | **Persistence** | SQLite (ephemeral) | No persistent storage | CRITICAL | PATCH changes lost on restart |
@@ -121,6 +141,24 @@ Vercel (PRODUCTION SITES)
 | **Key Pool** | 12+ keys (7 OpenRouter, 5 Groq, 1 Gemini) | Auto-rotation |
 | **Model Groups** | default(10), fast(11), **smart(13)**, llama-70b(12), gemma-27b(7), trinity(7), qwen-235b(7), gemini-flash(1), groq-llama(5) | All pipelines use `smart` |
 | **Fallback Chain** | OpenRouter → Gemini → Groq | Automatic on rate limit |
+
+### HF Space #6 — Docling (lbjlincoln-nomos-docling-api.hf.space)
+
+| Resource | Value | Notes |
+|----------|-------|-------|
+| **URL** | https://lbjlincoln-nomos-docling-api.hf.space | Document processor |
+| **Tier** | cpu-basic | 2 vCPU, 16GB RAM, $0 |
+| **Status** | **UP** | Processing PDFs for all 4 sectors |
+| **Max File Size** | 10 MB | Per upload |
+| **Max Pages** | 20 pages | Per PDF |
+| **Timeout** | 600s | Per document conversion |
+| **Output** | Markdown + JSON | Structured extraction (tables, formulas, layout) |
+| **Integration** | continuous-ingest daemon | `ops/continuous-ingest.py --loop 3600` |
+
+**Operational Rules**:
+- Large PDFs (>20 pages) must be split before upload
+- Tables and formulas extracted with high fidelity
+- Used by Ingestion V4.0 workflow (`nh1D4Up0wBZhuQbp`) and VM daemon
 
 ### GitHub Codespaces
 
@@ -148,8 +186,8 @@ Vercel (PRODUCTION SITES)
 | Resource | Current Usage | Hard Limit | Status | Notes |
 |----------|--------------|------------|--------|-------|
 | **Indexes Total** | 4 | 5 (Free tier) | OK | sota-rag-jina-1024, website-sectors-jina-1024, sota-rag-phase2-graph, sota-rag (legacy) |
-| **sota-rag-jina-1024** | 21,073 vectors | 100K per index | OK | Primary benchmark index, 1024-dim Jina |
-| **website-sectors-jina-1024** | 31,916 vectors | 100K per index | OK | Sectors (BTP, Finance, Industrie, Juridique) |
+| **sota-rag-jina-1024** | ~35,000 vectors | 100K per index | OK | Primary benchmark index, 1024-dim Jina |
+| **website-sectors-jina-1024** | ~43,000 vectors | 100K per index | OK | Sectors (BTP, Finance, Industrie, Juridique) — E5 total ~78K |
 | **sota-rag-phase2-graph** | 1,248 vectors | 100K per index | OK | e5-large, 1024-dim |
 | **sota-rag** | 10,411 vectors | 100K per index | OK | Legacy Cohere index |
 | **Dimensions** | 1024 | 20,000 | OK | jina-embeddings-v3 standard |
@@ -167,7 +205,7 @@ Vercel (PRODUCTION SITES)
 
 | Resource | Current Usage | Hard Limit | Status | Notes |
 |----------|--------------|------------|--------|-------|
-| **Nodes** | ~70,847 | 200,000 | OK | 35% used |
+| **Nodes** | ~71,890 | 200,000 | OK | 36% used (Entity 33,299 + SectorDoc 30,143 + Law 5,232 + Org 1,615 + Company 1,600) |
 | **Relationships** | 76,717 | 400,000 | OK | 19% used |
 | **Storage** | Unknown | 50 MB (Free tier) | OK | Graph data only |
 | **RAM** | Unknown | 1 GB (Free tier) | OK | Aura managed |
@@ -186,7 +224,7 @@ Vercel (PRODUCTION SITES)
 | Resource | Current Usage | Hard Limit | Status | Notes |
 |----------|--------------|------------|--------|-------|
 | **Tables** | 40 | Unlimited | OK | public schema |
-| **Rows** | ~12,432 | 500 MB storage | OK | Financial + benchmark data |
+| **Rows** | ~76K+ | 500 MB storage | OK | 43K sector_documents + 225 financials + 3,876 financial_tables + 29,564 eval_question_bank |
 | **Storage** | Unknown | 500 MB (Free tier) | OK | Estimated <100 MB |
 | **Project ref** | ayqviqmxifzmhphiqfmj | N/A | OK | EU West 1 |
 | **URL** | https://ayqviqmxifzmhphiqfmj.supabase.co | N/A | OK | REST API |
@@ -197,11 +235,19 @@ Vercel (PRODUCTION SITES)
 | **Bandwidth** | Unknown | 5 GB/month (Free tier) | OK | Minimal usage |
 | **tenant_id** | `benchmark` | N/A | CRITICAL | NOT 'default' (Session 75) |
 
+**Key Tables**:
+- `sector_documents` — 43K docs across 4 sectors
+- `sector_financial_data` — 225 financials (111 companies, 4 sectors)
+- `sector_financial_tables` — 3,876 structured financial tables
+- `eval_question_bank` — 29,564 questions (tracks `times_asked`, `score_trend`, `consecutive_fails`)
+- `eval_results` — Per-question evaluation results tracking
+
 **Operational Rules**:
 - Use Pooler endpoint (port 6543) for n8n to avoid connection exhaustion
 - 500 MB storage sufficient for 1M+ rows of financial data
 - exec_sql RPC for dynamic SQL generation (Quantitative pipeline)
 - Free tier pauses after 1 week inactivity (query to wake)
+- ALWAYS `SET search_path TO public` after psycopg2.connect() (pooler defaults to `n8n_engine_1` schema)
 
 ### GitHub / Vercel
 
@@ -288,6 +334,8 @@ Vercel (PRODUCTION SITES)
 - Late chunking enabled (`late_chunking=True`) for better context
 - Key 1 exhausted "Insufficient account balance" (Session 75)
 - **Key 2 active**: `jina_63fa...` (Session 75)
+- **Self-hosted Jina Space** (`lbjlincoln-nomos-embeddings-api.hf.space`) — Graph pipeline uses this, no API key needed
+- API keys expired for some operations; prefer self-hosted Space for embeddings
 
 ### Cohere (Trial Tier — EXHAUSTED)
 
@@ -309,9 +357,10 @@ Vercel (PRODUCTION SITES)
 | **API Key** | Active | N/A | hf_*** |
 | **Hub API Requests** | Unknown | Unlimited | OK |
 | **Datasets Download** | Unknown | Unlimited | Bandwidth throttled after heavy use |
-| **Spaces** | 1 (n8n) | 5 (Free tier) | cpu-basic, 16 GB RAM |
-| **Spaces Uptime** | Best-effort | N/A | May sleep after inactivity |
-| **Spaces Storage** | Unknown | 50 GB | Persistent storage |
+| **Spaces** | 9 across 2 accounts | 5 per account (Free tier) | cpu-basic, 16 GB RAM each |
+| **Spaces Uptime** | Best-effort | N/A | Keep-alive cron every 30 min |
+| **Spaces Storage** | Unknown | 50 GB per Space | Ephemeral (SQLite lost on restart) |
+| **HF Tokens** | 3 | N/A | HF_TOKEN (LBJLincoln), HF_TOKEN_2 (LBJLincoln), HF_TOKEN_3 (third account) |
 
 ---
 
@@ -394,8 +443,8 @@ Vercel (PRODUCTION SITES)
 | Variable | Description | Used By |
 |----------|-------------|---------|
 | `N8N_HOST` | `https://lbjlincoln-nomos-rag-engine.hf.space` | Scripts eval Python |
-| `N8N_API_KEY` | JWT n8n API auth | Scripts eval, sync.py |
-| `N8N_MCP_TOKEN` | Token MCP n8n server | Claude Code MCP |
+| `N8N_API_KEY` | JWT n8n API auth (updated 2026-03-12, subject f1c43c50) | Scripts eval, sync.py |
+| `N8N_MCP_TOKEN` | Token MCP n8n server (updated 2026-03-12, subject f1c43c50) | Claude Code MCP |
 | `PINECONE_API_KEY` | Pinecone API key | MCP pinecone, Docker |
 | `JINA_API_KEY` | Jina AI API key | MCP jina-embeddings |
 | `COHERE_API_KEY` | Cohere API key (trial exhausted) | MCP cohere |
@@ -404,8 +453,9 @@ Vercel (PRODUCTION SITES)
 | `SUPABASE_URL` | Supabase project URL | MCP supabase |
 | `SUPABASE_API_KEY` | Service role key | MCP supabase |
 | `SUPABASE_PASSWORD` | PostgreSQL password | MCP supabase |
-| `HF_TOKEN` | HuggingFace token | MCP huggingface, Docker |
-| `HF_TOKEN_2` | Secondary HF token | `scripts/deploy-hf-space.sh` (optional) |
+| `HF_TOKEN` | HuggingFace token (LBJLincoln) | MCP huggingface, Docker |
+| `HF_TOKEN_2` | Secondary HF token (LBJLincoln) | `scripts/deploy-hf-space.sh` (optional) |
+| `HF_TOKEN_3` | Third HF token (`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`) | Third account access |
 | `VERCEL_TOKEN` | Vercel deploy token | Deployment |
 | `ANTHROPIC_MODEL` | `claude-opus-4-6` | Claude Code |
 
@@ -463,9 +513,9 @@ git diff --cached | grep -iE 'sk-or-|pcsk_|jV_zGdx|sbp_|hf_|jina_|ghp_'
 
 | Service | Resource | Current | Limit | Headroom |
 |---------|----------|---------|-------|----------|
-| **Pinecone** | Vectors per index | 21,073 (jina-1024) | 100K | 78,927 (79%) |
+| **Pinecone** | E5 vectors total | ~78K (across 2 indexes) | 100K per index | ~22K per index headroom |
 | **Pinecone** | Indexes | 4 | 5 | 1 |
-| **Neo4j** | Nodes | ~70,847 | 200K | 129,153 (65%) |
+| **Neo4j** | Nodes | ~71,890 | 200K | 128,110 (64%) |
 | **Neo4j** | Relationships | 76,717 | 400K | 323,283 (81%) |
 | **Supabase** | Storage | ~100 MB | 500 MB | ~400 MB (80%) |
 | **Supabase** | Connections | Unknown | 60 (Pooler) | OK |
@@ -493,10 +543,10 @@ git diff --cached | grep -iE 'sk-or-|pcsk_|jV_zGdx|sbp_|hf_|jina_|ghp_'
 | Location | Used | Free | Contents |
 |----------|------|------|----------|
 | **VM disk** | 12 GB | 17 GB | Code, datasets (phase 1-3), eval results |
-| **Pinecone sota-rag-jina-1024** | 21,073 vectors | 100K limit | Benchmark + standard contexts |
-| **Pinecone website-sectors-jina-1024** | 31,916 vectors | 100K limit | 4 sectors (BTP, Finance, Industrie, Juridique) |
-| **Neo4j Aura** | 70,847 nodes / 76,717 rels | 200K / 400K limit | Entities + relationships |
-| **Supabase** | ~12,432 rows | 500MB limit | Financial tables, benchmark data |
+| **Pinecone sota-rag-jina-1024** | ~35K vectors | 100K limit | Benchmark + standard contexts |
+| **Pinecone website-sectors-jina-1024** | ~43K vectors | 100K limit | 4 sectors (BTP, Finance, Industrie, Juridique) |
+| **Neo4j Aura** | 71,890 nodes / 76,717 rels | 200K / 400K limit | Entities + relationships |
+| **Supabase** | ~76K+ rows | 500MB limit | 43K sector docs + 225 financials + 3,876 fin tables + 29,564 eval questions |
 | **GitHub LFS (rag-storage)** | ~200 MB | 1 GB limit | Archived datasets, snapshots |
 
 ### Strategy by Phase
@@ -547,7 +597,7 @@ rm -rf datasets/phase-N/
 
 ## Workflow Registry
 
-### Active Workflows (Session 96 — 2026-03-11)
+### Active Workflows (Session 105 — 2026-03-12)
 
 **RAG Pipelines (4) — ALL via LiteLLM S7**:
 
@@ -558,14 +608,14 @@ rm -rf datasets/phase-N/
 | Quantitative V3.2 | `/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9` | query | Supabase SQL | `cjhEhVs0KV1ExHqX` | WORKING (11-87s) |
 | Orchestrator V13 | `/webhook/orchestrator-v2` | query | Routes to above | `qOSaFFrqO8Jb4VGb` | WORKING (52s) |
 
-**Support Workflows**:
+**Support Workflows (6)**:
 
-| Workflow | ID | Status |
-|----------|----|--------|
-| Error Trigger Handler V1.0 | `AH3eXOmgxt5cOd93` | ACTIVE (all Spaces) |
-| Auto-Healer V1.2 | `Yqw7Pzn0e7m0C6i3` | ACTIVE (S1/S3/S5) |
-| Ingestion V4.0 | `nh1D4Up0wBZhuQbp` | ACTIVE |
-| Enrichissement V4.0 | `ORa01sX4xI0iRCJ8` | ACTIVE |
+| Workflow | ID | Status | Notes |
+|----------|----|--------|-------|
+| Error Trigger Handler V1.0 | `AH3eXOmgxt5cOd93` | ACTIVE (all Spaces) | Error logging to Supabase |
+| Auto-Healer V1.2 | `Yqw7Pzn0e7m0C6i3` | ACTIVE (S1/S3/S5) | 10min cycle, 4 Spaces, webhook pings |
+| Ingestion V4.0 | `nh1D4Up0wBZhuQbp` | ACTIVE | Docling + Pinecone + Supabase upserts |
+| Enrichissement V4.0 | `ORa01sX4xI0iRCJ8` | ACTIVE | Neo4j entity enrichment |
 
 **PME Workflows (3)**:
 
@@ -574,6 +624,17 @@ rm -rf datasets/phase-N/
 | PME Gateway | Main entry point | ACTIVE |
 | PME Slack Connector | Slack integration | ACTIVE |
 | PME Gmail Connector | Gmail integration | ACTIVE |
+
+### Continuous Ingestion Daemon
+
+| Resource | Value | Notes |
+|----------|-------|-------|
+| **Script** | `ops/continuous-ingest.py --loop 3600` | Runs on VM, 1-hour cycles |
+| **Pipeline** | Tavily search → Docling S6 → Chunking → Embedding → Pinecone + Supabase | All 4 sectors |
+| **Docling Integration** | Sends PDFs to S6 Space for processing | Markdown + structured extraction |
+| **n8n Workflows** | Ingestion V4.0 (`nh1D4Up0wBZhuQbp`) + Enrichment V4.0 (`ORa01sX4xI0iRCJ8`) | Pinecone + Supabase + Neo4j |
+| **Growth Rate** | ~7K vectors/cycle (Tavily-sourced) | From ~71K to ~78K in recent cycles |
+| **Status** | **RUNNING** | Daemon managed via `ops/agents.py` |
 
 ### Target Architecture (16 workflows)
 
@@ -627,8 +688,8 @@ docker logs n8n-n8n-1 --tail 100          # Recent logs (if VM)
 | 3 | **Codespaces Simultaneous** | 2 running | 0-2 | 0-2 | Stop one to start another |
 | 4 | **n8n Concurrent Webhooks** | ~3-5 | Variable | Low | Sequential testing only |
 | 5 | **OpenRouter Rate Limit** | ~20 RPM/model | Variable | Low | Retry with backoff |
-| 6 | **Pinecone Vectors/Index** | 100K | 21,073 | 78,927 | Create new index/namespace |
-| 7 | **Neo4j Nodes** | 200K | ~70,847 | 129,153 | Optimize graph, prune old |
+| 6 | **Pinecone Vectors/Index** | 100K | ~35K-43K per index | ~57K-65K | Create new index/namespace |
+| 7 | **Neo4j Nodes** | 200K | ~71,890 | 128,110 | Optimize graph, prune old |
 | 8 | **Jina Embeddings Quota** | 1M tokens/month | ~60K | ~940K | Batch requests, monitor |
 | 9 | **Cohere Trial Quota** | Exhausted | ~100% | None | Use Jina only |
 | 10 | **Session Duration** | 2h (recommended) | Variable | N/A | Finalize and restart |
@@ -642,5 +703,5 @@ docker logs n8n-n8n-1 --tail 100          # Recent logs (if VM)
 3. **"Unknown" usage** indicates monitoring not yet implemented.
 4. **This document is the SINGLE SOURCE OF TRUTH** for infrastructure reference.
 
-**Last Verified**: 2026-03-07 (Session 75)
-**Next Review**: After Phase 3 completion
+**Last Verified**: 2026-03-12 (Session 105)
+**Next Review**: After 100K vectors milestone or next infra change

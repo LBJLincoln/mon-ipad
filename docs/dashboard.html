@@ -259,8 +259,8 @@ body {
 // Option 1: Serve from VM (python3 -m http.server 8080)
 // Option 2: GitHub raw URL after push
 const DATA_SOURCES = {
-  health: './health-status.json',      // relative path when served from docs/
-  report: '../logs/monitor-report.json' // or full URL
+  health: '/data/health-status.json',      // served from repo root via http.server
+  report: '/logs/monitor-report.json'      // or full URL
 };
 
 // For local file access (when opened directly), use embedded data

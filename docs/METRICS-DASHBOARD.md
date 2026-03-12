@@ -1,48 +1,50 @@
 # Nomos AI — Master Metrics Dashboard
 
-> Auto-updated: 2026-03-11T18:45Z | Session: S99
+> Auto-updated: 2026-03-12T11:00Z | Session: S105
 > **Single source of truth for ALL system metrics.**
 
 ---
 
-## 1. PIPELINES — Accuracy (5,276Q eval running)
+## 1. PIPELINES — Accuracy (29,564Q eval tracked, mass eval running)
 
 | Pipeline | Finance | BTP | Juridique | Industrie | Status |
 |----------|---------|-----|-----------|-----------|--------|
-| **Standard V3.9** | ~40% | ~27% | ~69% | ~53% | WORKING |
-| **Graph V3.6** | 0% | 0% | 0% | 0% | BROKEN (120s timeout — S7 LLM hangs) |
-| **Quant V3.2** | 0% | 0% | 0% | 0% | BROKEN ("Error in workflow") |
-| **Orchestrator V13** | ~40% | ~35% | ~45% | ~40% | WORKING |
+| **Standard V3.9** | ~38-50% | ~20% | ~80% | ~80% | WORKING |
+| **Graph V3.6** | ~85-90% | ~60% | ~70% | ~70% | WORKING |
+| **Quant V3.2** | ~98% | ~98% | N/A | N/A | WORKING |
+| **Orchestrator V13** | ~85% | ~50% | ~75% | ~75% | WORKING |
 | **Target** | 90% | 85% | 90% | 85% | — |
 
-**Root cause Graph+Quant**: Both call LiteLLM S7 which works with correct key, but n8n stored credentials may override. Investigating.
+**All 4 pipelines WORKING on S1/S3/S5.** Mass eval running (Standard + Graph 200q, eval-blast 50q/30min).
+**Bottleneck #1**: Standard Finance — keyword matching produces false negatives.
+**Bottleneck #2**: BTP all pipelines — DATA GAP (no DTU/Eurocodes ingested yet).
 
 ## 2. DATABASES
 
-| Database | Count | Change S99 | Target |
-|----------|-------|------------|--------|
-| **E5 Pinecone** (sectors-e5-multilingual) | **59,732 vectors** | +54 (DTU expert) | 100,000 |
+| Database | Count | Change S105 | Target |
+|----------|-------|-------------|--------|
+| **E5 Pinecone** (sectors-e5-multilingual) | **~78,000 vectors** | +18,268 (Tavily 4 sectors) | 100,000 |
 | **Jina Pinecone** (website-sectors-jina-1024) | 12,536 vectors | 0 | deprecated |
 | **Legacy Pinecone** (sota-rag-jina-1024) | 0 | 0 | ARCHIVED |
-| **Supabase** (sector_documents) | **43,410 docs** | +53 (DTU expert) | 100,000 |
-| **Supabase** (processing_queue) | **0 items** | 0 | queue active |
-| **Neo4j** | ~86,841 nodes | 0 | 200,000 |
+| **Supabase** (sector_documents) | **~43,000 docs** | stable | 100,000 |
+| **Supabase** (financials) | **225 rows** | 111 companies, 4 sectors | growing |
+| **Neo4j** | ~71,890 nodes | 0 | 200,000 |
 
 ### Vector Breakdown (E5 Pinecone)
 | Source | Count | Type |
 |--------|-------|------|
 | Academic benchmarks | ~59,523 | ragbench, hotpotqa, finqa, etc. |
-| Expert (Tavily text) | ~155 | Real sector documents |
-| Expert (Docling PDF) | **54** | Real DTU PDF chunks (NEW S99) |
-| **Total** | **59,732** | 59.7% of 100K target |
+| Expert (Tavily text) | ~18,300+ | Real sector documents (all 4 sectors) |
+| Expert (Docling PDF) | ~200+ | Real PDF chunks |
+| **Total** | **~78,000** | 78% of 100K target |
 
 ### Supabase Breakdown
 | Dataset | Count | Type |
 |---------|-------|------|
 | ragbench_* | ~38,000 | Academic benchmarks |
 | sector-specific | ~5,300 | Generated sector Q&A |
-| expert-docling-dtu | **53** | Real PDF docs (NEW S99) |
-| **Total** | **43,410** | |
+| expert-docling | ~200+ | Real PDF docs |
+| **Total** | **~43,000** | |
 
 ## 3. INFRASTRUCTURE
 
@@ -50,17 +52,17 @@
 | Space | Role | Health | Pipelines |
 |-------|------|--------|-----------|
 | S1 (engine) | Primary n8n | UP (200) | Std V3.9 + Graph V3.6 + Quant V3.2 + Orch V13 |
-| S2 (engine-2) | Mirror n8n | UP (200*) | Std V3.9 + Graph V3.6 |
-| S3 (engine-3) | Load balance | UP (200) | Std V3.9 + Graph V3.6 |
-| S4 (engine-4) | Mirror n8n | UP (200*) | Std V3.9 + Graph V3.6 |
-| S5 (engine-5) | Load balance | UP (200) | Std V3.9 + Graph V3.6 |
+| S2 (engine-2) | Mirror n8n | UP (200*) | Shared DB with S1 |
+| S3 (engine-3) | Load balance | UP (200) | All 4 pipelines |
+| S4 (engine-4) | Mirror n8n | UP (200*) | Shared DB with S1 |
+| S5 (engine-5) | Load balance | UP (200) | All 4 pipelines |
 | S6 (docling-api) | Docling PDF processor | UP (no /healthz) | Docling converter |
 | S7 (engine-7) | LiteLLM proxy | UP (no /healthz) | 9 models, 13 providers |
 | S8 (eval-judge) | Eval judge | DOWN | Not deployed |
-| S9 (engine-9) | Staging | UP (200) | Std V3.9 + Graph V3.6 |
+| S9 (engine-9) | Staging (separate DB) | UP (200) | Excluded from eval |
 | Embeddings | Self-hosted Jina | UP (no /healthz) | v3, 1024 dims |
 
-*S2/S4 use lbjlincoln26 account, different /healthz path
+*S2/S4 use lbjlincoln26 account, different /healthz path. S1-S5 share same DB.
 
 ### VM GCP
 | Metric | Value |
@@ -74,7 +76,7 @@
 ### Codespaces
 | Name | Repo | Status |
 |------|------|--------|
-| continuous-ingest | rag-data-ingestion | **Shutdown** (should be running!) |
+| continuous-ingest | rag-data-ingestion | Intermittent (auto-shutdown) |
 | website-redesign | rag-website | Shutdown |
 | testing-daemon | rag-data-ingestion | Shutdown |
 | monetisation-v2 | mon-ipad | Shutdown |
@@ -83,49 +85,45 @@
 
 | Metric | Value |
 |--------|-------|
-| Daemon PID | 779132 |
 | Phases | 7 (STRATEGIZE-PLAN-BUILD-OBSERVE-COLLECT-ANALYZE-REPORT) |
 | Cycle interval | 1800s (30 min) |
-| Cycles completed | 7 |
-| Current priority | BTP data gap (DTU norms ingestion) |
-| Last score | 39/100 (+6 pts) |
-| Improvements | 2 total |
+| Cycles completed | 17 |
+| Current priority | BTP data gap + Standard Finance accuracy |
+| Mass eval | Standard + Graph 200q, eval-blast 50q/30min |
+| Continuous ingest | Tavily daemon active (all 4 sectors) |
 
-### Agentic Loop Limitations (to fix)
-- Only detects "data gaps", not "broken pipelines"
-- Doesn't auto-fix Graph/Quant (treats 0% as bad sector, not broken workflow)
-- Expert discovery (Tavily) times out at 180s
-- No Redis for queue management
-- BUILD phase works but limited to data ingestion
+### Agentic Loop Status
+- All 4 pipelines now functional (Graph+Quant fixed since S103)
+- eval-blast running every 30 min for regression detection
+- Continuous ingest daemon feeding Tavily data to E5 Pinecone
+- 29,564 eval questions tracked across all pipelines
 
 ## 5. SPECIALIZED AGENTS
 
-| Agent | PID | Status | Role | Last Activity |
-|-------|-----|--------|------|---------------|
-| monitor | 776716 | RUNNING | Health checks, error detection | 2min ago |
-| eval | 776717 | RUNNING | Accuracy baselines | active |
-| ingest | 776718 | RUNNING | E5 vectors, Tavily, PDF | active |
-| pipeline | 776719 | RUNNING | Fix workflows | active |
-| docs | 776720 | RUNNING | Update state files | active |
+| Agent | Status | Role | Notes |
+|-------|--------|------|-------|
+| monitor | RUNNING | Health checks, error detection | 5min loop |
+| eval | RUNNING | Mass eval + eval-blast | Standard+Graph 200q, blast 50q/30min |
+| ingest | RUNNING | Continuous Tavily + Docling | All 4 sectors, daemon mode |
+| pipeline | ON-DEMAND | Fix workflows (Claude Code) | Manual intervention |
+| docs | ON-DEMAND | Update state files | After milestones |
 
 ## 6. EVAL SYSTEM
 
 | Metric | Value |
 |--------|-------|
-| Total questions | 5,572 (5,276 extended + 289 full + 27 smoke) |
-| Current eval | 5,276Q running, 2,620/5,276 done (50%) |
-| Workers | 24 across 6 Spaces |
-| Speed | 0.6 Q/s (~36 Q/min) |
-| ETA | ~75 min remaining |
+| Total questions tracked | **29,564** |
+| Active evals | Mass eval (Standard+Graph 200q), eval-blast (50q/30min) |
+| Workers | S1/S3/S5 (3 Spaces) |
 | Target questions | 10,000 expert-grade |
 
-### Eval Scores (S98 baseline, 20Q smoke)
-| Sector | Standard | Target |
-|--------|----------|--------|
-| BTP | 27/100 | 85% |
-| Finance | 39/100 | 90% |
-| Industrie | 53/100 | 85% |
-| Juridique | 69/100 | 90% |
+### Eval Scores (S105, all 4 pipelines)
+| Sector | Standard | Graph | Quant | Orchestrator | Target |
+|--------|----------|-------|-------|-------------|--------|
+| Finance | ~38-50% | ~85-90% | ~98% | ~85% | 90% |
+| BTP | ~20% | ~60% | ~98% | ~50% | 85% |
+| Juridique | ~80% | ~70% | N/A | ~75% | 90% |
+| Industrie | ~80% | ~70% | N/A | ~75% | 85% |
 
 ## 7. SCRIPTS & TOOLS INVENTORY
 
@@ -133,8 +131,8 @@
 | Script | Role | Last Used | Status |
 |--------|------|-----------|--------|
 | `agentic-loop.py` | Master 7-phase loop | Running (daemon) | WORKING |
-| `agents.py` | 5 agent launcher | S99 | WORKING |
-| `fast-ingest.py` | E5 Pinecone upsert | S98 | WORKING |
+| `agents.py` | 5 agent launcher | S105 | WORKING |
+| `fast-ingest.py` | E5 Pinecone upsert | S104 | WORKING |
 | `staging-deploy.py` | CI/CD staging->prod | S98 | WORKING |
 | `metrics-collector.py` | n8n execution metrics | Timeout | BROKEN (120s timeout) |
 | `metrics-analyzer.py` | LLM metrics analysis | S97 | UNTESTED |
@@ -145,35 +143,38 @@
 ### eval/ (Evaluation)
 | Script | Role | Last Used | Status |
 |--------|------|-----------|--------|
-| `parallel-eval.py` | 6-Space parallel eval | Running now | WORKING |
-| `quick-test.py` | Smoke test | S98 | WORKING |
+| `eval-blast.py` | 50q/30min continuous eval | S105 (running) | WORKING |
+| `mass-eval.py` | Mass eval 200q batches | S105 (running) | WORKING |
+| `parallel-eval.py` | 6-Space parallel eval | S103 | WORKING |
+| `quick-test.py` | Smoke test | S103 | WORKING |
 | `continuous-judge.py` | LLM-as-Judge | Running (agent) | WORKING |
-| `expert-discovery.py` | Tavily doc finder | S98 | TIMEOUT (180s) |
+| `expert-discovery.py` | Tavily doc finder | S104 | WORKING |
 | `mass-question-generator.py` | 5K+ question gen | S97 | WORKING |
 | `expert-eval.py` | Expert-grade eval | S97 | WORKING |
-| `turbo-eval.py` | Fast eval | S96 | UNTESTED |
+| `generate-graph-questions.py` | Graph eval questions | S105 | WORKING |
+| `generate-quant-questions.py` | Quant eval questions | S105 | WORKING |
+| `generate-standard-questions.py` | Standard eval questions | S105 | WORKING |
 
 ### codespace/ (Ingestion)
 | Script | Role | Last Used | Status |
 |--------|------|-----------|--------|
-| `docling-cron.py` | Continuous PDF ingestion | S99 (fixed) | FIXED (was broken) |
+| `docling-cron.py` | Continuous PDF ingestion | S104 | WORKING |
 
 ### n8n/live/ (Workflows)
 | Workflow | Version | ID | Status |
 |----------|---------|-----|--------|
-| Standard RAG | V3.9 | TmgyRP20N4JFd9CB | WORKING |
-| Graph RAG | V3.6 | 6257AfT1l4FMC6lY | BROKEN (timeout) |
-| Quantitative | V3.2 | cjhEhVs0KV1ExHqX | BROKEN (error) |
+| Standard RAG | V3.9 | 9FQdtx38JLPiT3Hx | WORKING |
+| Graph RAG | V3.6 | 6257AfT1l4FMC6lY | WORKING |
+| Quantitative | V3.2 | cjhEhVs0KV1ExHqX | WORKING |
 | Orchestrator | V13 | qOSaFFrqO8Jb4VGb | WORKING |
-| Ingestion V4.0 | V4.0 | nh1D4Up0wBZhuQbp | NOT WIRED (wrong endpoints) |
-| Enrichment V4.0 | V4.0 | ORa01sX4xI0iRCJ8 | NOT WIRED (wrong endpoints) |
 | Auto-Healer | V1.2 | Yqw7Pzn0e7m0C6i3 | RUNNING (10min) |
+| Error Trigger | V1.0 | AH3eXOmgxt5cOd93 | ACTIVE |
 
 ## 8. REPOSITORIES
 
 | Repo | Role | Status | Commits | Files |
 |------|------|--------|---------|-------|
-| **mon-ipad** | Tour de controle | ACTIVE | 1,453 | 473 |
+| **mon-ipad** | Tour de controle | ACTIVE | 1,500+ | 500+ |
 | **rag-data-ingestion** | Ingestion engine | ACTIVE | ~200 | ~50 |
 | **rag-website** | Chatbot product | ACTIVE | ~300 | ~100 |
 | **rag-dashboard** | Metrics dashboard | ACTIVE | ~100 | ~30 |
@@ -194,29 +195,30 @@
 | Jina | jina_... | EXPIRED + LEAKED in workflow JSON |
 | GitHub | GH_TOKEN | VALID |
 
-## 10. S99 FIXES APPLIED
+## 10. S103-S105 KEY FIXES
 
-| # | Fix | Impact |
-|---|-----|--------|
-| 1 | docling-cron.py: `full_text` not `markdown` | Unblocks PDF ingestion |
-| 2 | docling-cron.py: Supabase schema corrected | Docs now persist |
-| 3 | DATABASE_URL: `SET search_path TO public` | Fixed 159 "ghost" inserts from S98 |
-| 4 | First real PDF E2E: DTU → Docling → E5 + Supabase | 53 expert chunks |
-| 5 | parallel-eval.py: --extended flag | 5K eval capability |
-| 6 | All 5 agents launched | Continuous monitoring |
-| 7 | S7 LiteLLM: WORKS (was reported 401, key is correct) | LLM available |
+| # | Fix | Session | Impact |
+|---|-----|---------|--------|
+| 1 | All 4 pipelines 18/18 = 100% pass | S103 | Graph+Quant restored |
+| 2 | 25 conflicting workflows deactivated | S103 | Eliminated random routing |
+| 3 | Orchestrator Quant routing fixed | S103 | Quant calls S5 correctly |
+| 4 | Quant 4-sector data: 225 rows, 111 companies | S103 | Full sector coverage |
+| 5 | E5 vectors: 59K to 78K (+18K Tavily all 4 sectors) | S104 | Better retrieval coverage |
+| 6 | Continuous ingest daemon (Tavily 4 sectors) | S104 | Automated data growth |
+| 7 | Docling S6 integrated into continuous-ingest | S104 | PDF pipeline operational |
+| 8 | Mass eval + eval-blast running | S105 | Continuous accuracy tracking |
+| 9 | 29,564 eval questions tracked | S105 | Comprehensive evaluation |
 
 ## 11. GAPS & BLOCKERS
 
 | Priority | Gap | Blocker | Impact |
 |----------|-----|---------|--------|
-| P0 | Graph V3.6 broken | Timeout calling S7 (LLM hangs in n8n) | 0% accuracy |
-| P0 | Quant V3.2 broken | Workflow crash | 0% accuracy |
-| P1 | Ingestion V4.0 wrong endpoints | unstructured.io, wrong Pinecone | Can't use n8n ingestion |
-| P1 | Enrichment V4.0 wrong endpoints | Wrong Pinecone index, node name bug | Can't enrich docs |
-| P1 | Codespace not running | Shutdown | No continuous PDF ingestion |
-| P2 | processing_queue empty | No workers consuming queue | Can't scale ingestion |
-| P2 | 0 real PDFs in pipeline DB | Only 53 DTU chunks so far | Missing expert data |
-| P2 | Agentic loop limited | Only data gaps, not pipeline fixes | Misses broken pipelines |
+| P0 | Standard Finance ~38-50% | Keyword matching = false negatives | Biggest accuracy gap |
+| P0 | BTP all pipelines ~20-60% | DATA GAP — no DTU/Eurocodes ingested | Worst sector overall |
+| P1 | Standard Juridique/Industrie ~80% | Near target but not there yet | Need 85-90% |
+| P1 | Graph BTP ~60% | Sparse entity graph for BTP domain | Need sector-specific docs |
+| P2 | Orchestrator BTP ~50% | Inherits weak sub-pipeline scores | Depends on Standard+Graph fixes |
+| P2 | processing_queue empty | No Redis workers consuming queue | Can't scale ingestion |
+| P2 | Codespace intermittent | Shutdown frequently | Interrupts PDF ingestion |
 | P3 | S8 not deployed | eval-judge workflow not running | No continuous judging |
 | P3 | OpenRouter key leaked | In workflow JSON files | Security risk |
