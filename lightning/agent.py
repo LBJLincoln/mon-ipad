@@ -48,14 +48,16 @@ REPOS = {
     "rag-dashboard": "https://github.com/LBJLincoln/rag-dashboard.git",
 }
 
-# LLM model fallback chain (via OpenRouter)
-MODEL_CHAIN = [
-    "openrouter/optimus-alpha",
-    "openai/gpt-4.1",
-    "openrouter/quasar-alpha",
-    "moonshotai/kimi-k2",
-    "google/gemini-2.5-flash-preview",
-    "qwen/qwen3-235b-a22b",
+# LiteLLM S7 (our own proxy — primary)
+LITELLM_URL = os.environ.get("LITELLM_URL", "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions")
+LITELLM_KEY = os.environ.get("LITELLM_KEY", "sk-litellm-nomos-2026")
+LITELLM_MODELS = ["smart", "fast", "default"]
+
+# OpenRouter free fallbacks
+OPENROUTER_MODELS = [
+    "google/gemini-2.0-flash-exp:free",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "qwen/qwen-2.5-72b-instruct:free",
 ]
 
 SYSTEM_PROMPT = """Tu es l'Agent Nomos Lightning — un agent IA autonome tournant sur un GPU NVIDIA T4 (Lightning.ai).
@@ -167,24 +169,23 @@ def run_in_repo(repo: str, cmd: str, timeout: int = 120) -> dict:
 # ============================================================
 
 async def llm_completion(messages: list[dict], max_tokens: int = 4000) -> str:
-    """Get LLM completion via OpenRouter with fallback chain."""
+    """Get LLM completion via LiteLLM S7 (primary) then OpenRouter fallbacks."""
 
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://nomos42.ai",
-        "X-Title": "Nomos Lightning Agent",
-    }
+    full_messages = [{"role": "system", "content": SYSTEM_PROMPT}] + messages
 
-    for model in MODEL_CHAIN:
+    # Try LiteLLM S7 first (our own proxy — free, 13 providers)
+    for model in LITELLM_MODELS:
         try:
-            async with httpx.AsyncClient(timeout=90) as client:
+            async with httpx.AsyncClient(timeout=90, verify=False) as client:
                 resp = await client.post(
-                    "https://openrouter.ai/api/v1/chat/completions",
-                    headers=headers,
+                    LITELLM_URL,
+                    headers={
+                        "Authorization": f"Bearer {LITELLM_KEY}",
+                        "Content-Type": "application/json",
+                    },
                     json={
                         "model": model,
-                        "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + messages,
+                        "messages": full_messages,
                         "max_tokens": max_tokens,
                         "temperature": 0.3,
                     },
@@ -192,16 +193,43 @@ async def llm_completion(messages: list[dict], max_tokens: int = 4000) -> str:
                 if resp.status_code == 200:
                     data = resp.json()
                     content = data["choices"][0]["message"]["content"]
-                    log.info(f"LLM OK: {model} ({data.get('usage', {}).get('total_tokens', '?')} tokens)")
+                    log.info(f"LLM OK: LiteLLM/{model}")
                     return content
                 else:
-                    log.warning(f"LLM {model}: HTTP {resp.status_code}")
-                    continue
+                    log.warning(f"LiteLLM/{model}: HTTP {resp.status_code}")
         except Exception as e:
-            log.warning(f"LLM {model} failed: {e}")
-            continue
+            log.warning(f"LiteLLM/{model} failed: {e}")
 
-    return "Erreur: tous les modeles LLM sont indisponibles."
+    # Fallback: OpenRouter free models
+    or_key = OPENROUTER_API_KEY
+    if or_key:
+        for model in OPENROUTER_MODELS:
+            try:
+                async with httpx.AsyncClient(timeout=90) as client:
+                    resp = await client.post(
+                        "https://openrouter.ai/api/v1/chat/completions",
+                        headers={
+                            "Authorization": f"Bearer {or_key}",
+                            "Content-Type": "application/json",
+                            "HTTP-Referer": "https://nomos42.ai",
+                            "X-Title": "Nomos Lightning Agent",
+                        },
+                        json={
+                            "model": model,
+                            "messages": full_messages,
+                            "max_tokens": max_tokens,
+                            "temperature": 0.3,
+                        },
+                    )
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        content = data["choices"][0]["message"]["content"]
+                        log.info(f"LLM OK: OpenRouter/{model}")
+                        return content
+            except Exception as e:
+                log.warning(f"OpenRouter/{model} failed: {e}")
+
+    return "Erreur: LiteLLM S7 et OpenRouter sont indisponibles."
 
 
 # ============================================================
@@ -281,7 +309,7 @@ Ou pose directement ta question — je suis un builder autonome."""
 {chr(10).join(repos_status)}
 
 *Uptime:* {int(time.time() - START_TIME)}s
-*LLM:* OpenRouter ({len(MODEL_CHAIN)} models)"""
+*LLM:* LiteLLM S7 ({len(LITELLM_MODELS)} models) + OpenRouter ({len(OPENROUTER_MODELS)} fallbacks)"""
 
     elif cmd == "/pull":
         results = []
