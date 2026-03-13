@@ -13,6 +13,7 @@
 | **Marketplace M&A** | [nomos42.vercel.app/marketplace](https://nomos42.vercel.app/marketplace) | Marketplace agents & entreprises — encheres, valorisation IA |
 | **Business Factory** | [nomos42.vercel.app/factory](https://nomos42.vercel.app/factory) | Automated Business Factory — Idea-to-Exit pipeline |
 | **Nomos Vault** | [nomos42.vercel.app/vault](https://nomos42.vercel.app/vault) | Secrets & credentials SOC dashboard — key rotation, audit log |
+| **Knowledge Graph** | [nomos42.vercel.app/graph](https://nomos42.vercel.app/graph) | Brain 3D interactif — 72K nodes Neo4j, force-directed, filtres secteur |
 | **Dashboard** | [nomos42.vercel.app/dashboard](https://nomos42.vercel.app/dashboard) | Dashboard qualite RAG — metriques live, eval stream |
 
 ---
