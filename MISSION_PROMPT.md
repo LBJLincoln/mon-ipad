@@ -14,7 +14,9 @@
 
 ## 2. STACK TECHNIQUE (INFRASTRUCTURE REELLE NOMOS)
 
-### Compute & Orchestration
+### Compute & Orchestration (3 tiers)
+
+**Tier 1 — Actif maintenant :**
 | Composant | Role | URL |
 |-----------|------|-----|
 | **VM GCP** (34.136.180.66) | Tour de controle, Claude Code, pilotage | SSH via Termius |
@@ -23,6 +25,20 @@
 | **S9** (n8n ingest) | Ingestion V4.0 + Enrichment V4.0 (30+ nodes) | `lbjlincoln-nomos-rag-engine-9.hf.space` |
 | **S7** (LiteLLM proxy) | 9 modeles, 13-provider fallback, rotation auto | `lbjlincoln-nomos-rag-engine-7.hf.space` |
 | **S11** (Nomos42 engine) | Standard + Orchestrator (load balance) | `nomos42-nomos-engine-11.hf.space` |
+
+**Tier 2 — Lightning.ai GPU (ACTIF) :**
+| Composant | Role | URL |
+|-----------|------|-----|
+| **Lightning.ai T4** | GPU NVIDIA T4 — compute lourd, inference locale, fine-tuning | `8000-01kkj0hqg9fq7twz8065b3e94m.cloudspaces.litng.ai` |
+| **Bridge FastAPI** | Tunnel port 8000 Lightning → OpenClaw HF | A deployer sur Lightning |
+| **Autoresearch GPU** | Karpathy reasoning loop en mode GPU-accelere | A migrer depuis VM (CPU) |
+
+> Lightning.ai est le upgrade compute pour : fine-tuning modeles locaux, autoresearch intensif, embeddings batch rapides.
+> **Port 8000** expose via HTTPS — FastAPI bridge a deployer pour connecter a OpenClaw.
+
+**Tier 3 — Scale futur :**
+- Modal / RunPod / Vast.ai pour GPU on-demand si Lightning insuffisant
+- HF Spaces GPU (A10G, L40) si budget disponible
 
 ### Intelligence
 | Composant | Role | Localisation |
