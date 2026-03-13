@@ -31,10 +31,12 @@ SPACES = [
 ]
 
 SITES = [
-    ("Expert", "https://nomos-ai-pied.vercel.app"),
-    ("Satellite", "https://nomos-ai-pied.vercel.app/satellite"),
-    ("Marketplace", "https://nomos-ai-pied.vercel.app/marketplace"),
-    ("Factory", "https://nomos-ai-pied.vercel.app/factory"),
+    ("Expert", "https://nomos42.vercel.app"),
+    ("Satellite", "https://nomos42.vercel.app/satellite"),
+    ("Marketplace", "https://nomos42.vercel.app/marketplace"),
+    ("Factory", "https://nomos42.vercel.app/factory"),
+    ("Vault", "https://nomos42.vercel.app/vault"),
+    ("Dashboard", "https://nomos42.vercel.app/dashboard"),
 ]
 
 
@@ -155,7 +157,7 @@ def build_report():
     lines.append("  Standard: 70.7% -> 90% target")
     lines.append("  Graph: 45.9% -> 75% target")
     lines.append("  Vectors: ~82K -> 100K target")
-    lines.append("  Sites: 4/4 live on Vercel")
+    lines.append("  Sites: 6/6 live on nomos42.vercel.app")
 
     return "\n".join(lines)
 

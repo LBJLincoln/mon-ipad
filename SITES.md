@@ -12,6 +12,7 @@
 | **Satellite OSINT** | [nomos42.vercel.app/satellite](https://nomos42.vercel.app/satellite) | Dashboard spy satellite — globe 3D, CRT shaders, data feeds live |
 | **Marketplace M&A** | [nomos42.vercel.app/marketplace](https://nomos42.vercel.app/marketplace) | Marketplace agents & entreprises — encheres, valorisation IA |
 | **Business Factory** | [nomos42.vercel.app/factory](https://nomos42.vercel.app/factory) | Automated Business Factory — Idea-to-Exit pipeline |
+| **Nomos Vault** | [nomos42.vercel.app/vault](https://nomos42.vercel.app/vault) | Secrets & credentials SOC dashboard — key rotation, audit log |
 | **Dashboard** | [nomos42.vercel.app/dashboard](https://nomos42.vercel.app/dashboard) | Dashboard qualite RAG — metriques live, eval stream |
 
 ---
@@ -59,7 +60,7 @@
 | Repo | URL | Role |
 |------|-----|------|
 | **mon-ipad** | [github.com/LBJLincoln/mon-ipad](https://github.com/LBJLincoln/mon-ipad) | Tour de controle |
-| **rag-website** | [github.com/LBJLincoln/rag-website](https://github.com/LBJLincoln/rag-website) | Site Next.js (4 sites) |
+| **rag-website** | [github.com/LBJLincoln/rag-website](https://github.com/LBJLincoln/rag-website) | Site Next.js (6 pages) |
 | **rag-data-ingestion** | [github.com/LBJLincoln/rag-data-ingestion](https://github.com/LBJLincoln/rag-data-ingestion) | Moteur ingestion |
 | **rag-dashboard** | [github.com/LBJLincoln/rag-dashboard](https://github.com/LBJLincoln/rag-dashboard) | Dashboard metriques |
 
