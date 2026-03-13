@@ -22,20 +22,22 @@ Le cerveau tourne sur un GPU NVIDIA T4 via Lightning AI.
 * **Agent API (Port 8000) :** `https://8000-01kkj0hqg9fq7twz8065b3e94m.cloudspaces.litng.ai/`
 * **Dashboard Satellite (Port 3000) :** Interface CesiumJS pour l'exploration visuelle des nœuds.
 
-### Commande d'Initialisation (COLLER DANS LE TERMINAL LIGHTNING) :
+### Commande d'Initialisation V2 (COLLER DANS LE TERMINAL LIGHTNING) :
 
 ```bash
 mkdir -p ~/nomos-agent && cd ~/nomos-agent && \
-curl -sL https://gist.githubusercontent.com/LBJLincoln/d927b5364df5009a102fd0985848ef50/raw/agent.py -o agent.py && \
-curl -sL https://gist.githubusercontent.com/LBJLincoln/d927b5364df5009a102fd0985848ef50/raw/requirements.txt -o requirements.txt && \
-export OPENROUTER_API_KEY='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' && \
+git clone https://github.com/LBJLincoln/mon-ipad.git repo 2>/dev/null || (cd repo && git pull) && \
+cp repo/lightning/agent.py . && \
+export LITELLM_URL='https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions' && \
+export LITELLM_KEY='sk-litellm-nomos-2026' && \
 export TELEGRAM_BOT_TOKEN='8672296360:AAEvfje0wpQkQK2WpgUCwZnPHVvGAlHUNqk' && \
 export ADMIN_TELEGRAM_ID='6582544948' && \
-export LITELLM_PROXY_URL='https://lbjlincoln-nomos-rag-engine-7.hf.space' && \
-export LITELLM_MASTER_KEY='sk-litellm-nomos-2026' && \
-pip install -q fastapi uvicorn httpx openai psycopg2-binary neo4j pinecone-client huggingface-hub GitPython && \
+pip install -q fastapi uvicorn httpx openai && \
 python3 agent.py
 ```
+
+> **Note:** L'ancien gist OpenRouter est mort. La V2 utilise LiteLLM S7 (13 providers, fallback auto).
+> Agent port: 8000. URL: `https://8000-<studio-id>.cloudspaces.litng.ai/`
 
 ## 🌍 Module Satellite : "God's Eye" (Inspiré de Bilawal Sidhu)
 
