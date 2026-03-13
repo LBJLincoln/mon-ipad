@@ -1,4 +1,31 @@
-Voici le fichier `README.md` ultime, conçu pour être le cœur de ton dépôt GitHub. Il compacte toutes tes demandes : l'infrastructure Lightning AI, le simulateur satellite façon Palantir (Sidhu), et tes deux piliers business (Marketplace & Business Factory) gérés par des graphes de connaissances (Nodes).
+## GCloud CLI Auth (VM Termius → Claude Code)
+
+**Page d'authentification :** `https://accounts.google.com/o/oauth2/auth`
+
+```bash
+# 1. Authentifier gcloud depuis la VM Termius (headless, sans navigateur)
+gcloud auth login --no-launch-browser
+# → Copie l'URL affichée, ouvre-la dans ton navigateur, autorise, colle le code
+
+# 2. Si besoin : auth application-default (pour les SDK)
+gcloud auth application-default login --no-launch-browser
+
+# 3. Vérifier l'auth
+gcloud auth list
+gcloud config set project <PROJECT_ID>
+
+# 4. Activer Claude Code CLI via gcloud (si utilisé comme compute)
+gcloud compute ssh <instance-name> --zone <zone>
+```
+
+> **VM actuelle :** `34.136.180.66` | Service account: `549962199864-compute@developer.gserviceaccount.com`
+> **gcloud est déjà installé** (v555.0.0) et authentifié avec le service account.
+
+---
+
+# NOMOS-SYSTEM : Intelligence Géospatiale & Business Factory
+
+Ce dépôt contient l'infrastructure de commandement du système **NOMOS**, un écosystème d'IA piloté par GPU pour la surveillance de marchés, la valorisation d'actifs et la génération automatisée de structures business.
 
 ---
 
