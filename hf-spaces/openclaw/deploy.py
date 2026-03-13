@@ -24,19 +24,37 @@ LOCAL_DIR = Path(__file__).parent
 
 # Secrets to configure on the Space
 SECRETS = {
+    # LLM Providers
     "OPENROUTER_API_KEY": os.environ.get("OPENROUTER_API_KEY", ""),
+    "OPENROUTER_KEY_STANDARD": os.environ.get("OPENROUTER_KEY_STANDARD", ""),
+    "OPENROUTER_KEY_GRAPH": os.environ.get("OPENROUTER_KEY_GRAPH", ""),
+    "OPENROUTER_KEY_QUANTITATIVE": os.environ.get("OPENROUTER_KEY_QUANTITATIVE", ""),
+    "OPENROUTER_KEY_ORCHESTRATOR": os.environ.get("OPENROUTER_KEY_ORCHESTRATOR", ""),
+    "OPENROUTER_KEY_SPARE": os.environ.get("OPENROUTER_KEY_SPARE", ""),
+    "GROQ_API_KEY": os.environ.get("GROQ_API_KEY", ""),
+    "GOOGLE_API_KEY": os.environ.get("GOOGLE_API_KEY", ""),
+    # LiteLLM
+    "LITELLM_PROXY_URL": os.environ.get("LITELLM_PROXY_URL", ""),
+    "LITELLM_MASTER_KEY": os.environ.get("LITELLM_MASTER_KEY", ""),
+    # Telegram
     "TELEGRAM_BOT_TOKEN": os.environ.get("TELEGRAM_BOT_TOKEN", ""),
     "ADMIN_TELEGRAM_ID": os.environ.get("ADMIN_TELEGRAM_ID", "6582544948"),
+    "TELEGRAM_CHANNEL_ID": os.environ.get("TELEGRAM_CHANNEL_ID", ""),
+    # Databases
     "DATABASE_URL": os.environ.get("DATABASE_URL", ""),
+    "SUPABASE_URL": os.environ.get("SUPABASE_URL", ""),
+    "SUPABASE_API_KEY": os.environ.get("SUPABASE_API_KEY", ""),
     "NEO4J_URI": os.environ.get("NEO4J_URI", ""),
     "NEO4J_PASSWORD": os.environ.get("NEO4J_PASSWORD", ""),
     "PINECONE_HOST": os.environ.get("PINECONE_HOST", ""),
     "PINECONE_API_KEY": os.environ.get("PINECONE_API_KEY", ""),
+    # Embeddings & Search
+    "JINA_API_KEY": os.environ.get("JINA_API_KEY", ""),
+    "TAVILY_API_KEY": os.environ.get("TAVILY_API_KEY", ""),
+    # HF Tokens (3 accounts)
     "HF_TOKEN": os.environ.get("HF_TOKEN", ""),
     "HF_TOKEN_2": os.environ.get("HF_TOKEN_2", ""),
     "HF_TOKEN_3": os.environ.get("HF_TOKEN_3", ""),
-    "LITELLM_PROXY_URL": os.environ.get("LITELLM_PROXY_URL", ""),
-    "LITELLM_MASTER_KEY": os.environ.get("LITELLM_MASTER_KEY", ""),
 }
 
 
