@@ -64,7 +64,7 @@ def log(msg):
     print(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}")
 
 
-def call_pipeline(space_url, pipeline, question, sector, timeout=60):
+def call_pipeline(space_url, pipeline, question, sector, timeout=90):
     """Call a RAG pipeline and return (answer, latency_ms, success)."""
     url = f"{space_url}{PIPELINES[pipeline]}"
     payload = json.dumps({
@@ -126,12 +126,20 @@ def load_eval_questions(pipeline=None, sector=None, max_q=10):
     questions = []
     try:
         with open(EVAL_QUESTIONS_FILE) as f:
-            all_q = json.load(f)
+            raw = json.load(f)
+        # Support both {questions: [...]} and flat [...]
+        all_q = raw.get("questions", raw) if isinstance(raw, dict) else raw
         for q in all_q:
+            if not isinstance(q, dict):
+                continue
             if pipeline and q.get("pipeline") != pipeline:
                 continue
             if sector and q.get("sector") != sector:
                 continue
+            # Normalize keywords field
+            if "keywords" not in q and "expected_contains" in q:
+                ec = q["expected_contains"]
+                q["keywords"] = [k.strip() for k in ec.split(",")] if isinstance(ec, str) else ec
             questions.append(q)
             if len(questions) >= max_q:
                 break
