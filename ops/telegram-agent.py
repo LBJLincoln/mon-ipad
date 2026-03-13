@@ -37,14 +37,15 @@ REPOS = {
     "autoresearch": "/home/termius/autoresearch",
 }
 
-# Model fallback chain — latest models
-MODEL_CHAIN = [
-    "openrouter/optimus-alpha",
-    "openai/gpt-4.1",
-    "openrouter/quasar-alpha",
-    "moonshotai/kimi-k2",
-    "google/gemini-2.5-flash-preview",
-    "qwen/qwen3-235b-a22b",
+# LiteLLM S7 (our own proxy) — primary
+LITELLM_URL = "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions"
+LITELLM_KEY = "sk-litellm-nomos-2026"
+
+# Fallback OpenRouter models
+OPENROUTER_MODELS = [
+    "google/gemini-2.0-flash-exp:free",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "qwen/qwen-2.5-72b-instruct:free",
 ]
 
 SYSTEM_PROMPT = """Tu es l'Agent Nomos — un assistant IA expert comme Claude Code CLI, accessible via Telegram.
@@ -85,37 +86,51 @@ def run_cmd(cmd, cwd=None, timeout=60):
 
 
 # ─── LLM ──────────────────────────────────────────────────────
-def llm_chat(messages, max_tokens=3000):
-    """Call OpenRouter with model fallback."""
-    for model in MODEL_CHAIN:
-        try:
-            data = json.dumps({
-                "model": model,
-                "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + messages,
-                "max_tokens": max_tokens,
-                "temperature": 0.3,
-            }).encode()
+def _call_llm(url, key, model, messages, max_tokens=3000, extra_headers=None):
+    """Call a single LLM endpoint. Returns content or raises."""
+    import ssl
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    data = json.dumps({
+        "model": model,
+        "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + messages,
+        "max_tokens": max_tokens,
+        "temperature": 0.3,
+    }).encode()
+    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    if extra_headers:
+        headers.update(extra_headers)
+    req = urllib.request.Request(url, data=data, headers=headers)
+    with urllib.request.urlopen(req, timeout=90, context=ctx) as resp:
+        result = json.loads(resp.read())
+        return result["choices"][0]["message"]["content"]
 
-            req = urllib.request.Request(
+def llm_chat(messages, max_tokens=3000):
+    """Call LiteLLM S7 first, then OpenRouter free models as fallback."""
+    # Try LiteLLM S7 (our own proxy — free, 13 providers)
+    for model in ["smart", "fast", "default"]:
+        try:
+            content = _call_llm(LITELLM_URL, LITELLM_KEY, model, messages, max_tokens)
+            print(f"  LLM OK: LiteLLM/{model}")
+            return content
+        except Exception as e:
+            print(f"  LiteLLM/{model} failed: {e}")
+
+    # Fallback: OpenRouter free models
+    for model in OPENROUTER_MODELS:
+        try:
+            content = _call_llm(
                 "https://openrouter.ai/api/v1/chat/completions",
-                data=data,
-                headers={
-                    "Authorization": f"Bearer {OPENROUTER_KEY}",
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": "https://nomos42.ai",
-                    "X-Title": "Nomos Telegram Agent",
-                },
+                OPENROUTER_KEY, model, messages, max_tokens,
+                {"HTTP-Referer": "https://nomos42.ai", "X-Title": "Nomos Agent"},
             )
-            with urllib.request.urlopen(req, timeout=90) as resp:
-                result = json.loads(resp.read())
-                content = result["choices"][0]["message"]["content"]
-                print(f"  LLM OK: {model} ({result.get('usage', {}).get('total_tokens', '?')} tokens)")
-                return content
+            print(f"  LLM OK: {model}")
+            return content
         except Exception as e:
             print(f"  LLM {model} failed: {e}")
-            continue
 
-    return "Erreur: tous les modeles LLM sont indisponibles."
+    return "Erreur: tous les modeles LLM sont indisponibles. LiteLLM S7 et OpenRouter down."
 
 
 # ─── Telegram helpers ─────────────────────────────────────────
@@ -299,7 +314,7 @@ def main():
     print(f"=== NOMOS TELEGRAM AGENT v2.0 ===")
     print(f"Bot: @Nomos42Bot")
     print(f"Admin: {ADMIN_ID}")
-    print(f"LLM: {len(MODEL_CHAIN)} models via OpenRouter")
+    print(f"LLM: LiteLLM S7 (smart/fast/default) + {len(OPENROUTER_MODELS)} OpenRouter fallbacks")
     print(f"Repos: {', '.join(REPOS.keys())}")
     print(f"Polling mode active...")
 
