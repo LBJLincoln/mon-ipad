@@ -22,17 +22,19 @@ Le cerveau tourne sur un GPU NVIDIA T4 via Lightning AI.
 * **Agent API (Port 8000) :** `https://8000-01kkj0hqg9fq7twz8065b3e94m.cloudspaces.litng.ai/`
 * **Dashboard Satellite (Port 3000) :** Interface CesiumJS pour l'exploration visuelle des nœuds.
 
-### Commande d'Initialisation :
+### Commande d'Initialisation (COLLER DANS LE TERMINAL LIGHTNING) :
 
 ```bash
-# Déploiement du nœud de contrôle Nomos
 mkdir -p ~/nomos-agent && cd ~/nomos-agent && \
-curl -sL "https://gist.githubusercontent.com/LBJLincoln/d927b5364df5009a102fd0985848ef50/raw" -o agent.py && \
+curl -sL https://gist.githubusercontent.com/LBJLincoln/d927b5364df5009a102fd0985848ef50/raw/agent.py -o agent.py && \
+curl -sL https://gist.githubusercontent.com/LBJLincoln/d927b5364df5009a102fd0985848ef50/raw/requirements.txt -o requirements.txt && \
+export OPENROUTER_API_KEY='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' && \
+export TELEGRAM_BOT_TOKEN='8672296360:AAEvfje0wpQkQK2WpgUCwZnPHVvGAlHUNqk' && \
+export ADMIN_TELEGRAM_ID='6582544948' && \
+export LITELLM_PROXY_URL='https://lbjlincoln-nomos-rag-engine-7.hf.space' && \
+export LITELLM_MASTER_KEY='sk-litellm-nomos-2026' && \
 pip install -q fastapi uvicorn httpx openai psycopg2-binary neo4j pinecone-client huggingface-hub GitPython && \
-export OPENROUTER_API_KEY='VOTRE_CLE' && \
-export TELEGRAM_BOT_TOKEN='VOTRE_TOKEN' && \
 python3 agent.py
-
 ```
 
 ## 🌍 Module Satellite : "God's Eye" (Inspiré de Bilawal Sidhu)
