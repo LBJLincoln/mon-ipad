@@ -495,10 +495,13 @@ HF_TOKEN_3            — HuggingFace (Nomos42)
 | Ingestion V4.0 | `nh1D4Up0wBZhuQbp` | YES | `/webhook/ingestion-v4` |
 | Enrichment V4.0 | `ORa01sX4xI0iRCJ8` | YES | `/webhook/enrichment-v4` |
 
-### 13.3 Total Workflows on S1
-- 100 workflows total (from historical iterations)
-- 6 ACTIVE, 94 inactive (legacy/duplicate)
-- Use `ops/cleanup-workflows.py` to clean duplicates
+### 13.3 Workflow Distribution (Audit S106)
+- S1-S5: **174 workflows total**, **10 ACTIVE** each (shared DB = same view)
+- S9: Separate DB (401 from VM — different API key)
+- S11 (Nomos42): Separate DB, RUNNING, Standard webhook responding
+- 164 inactive legacy workflows — use `ops/cleanup-workflows.py` to clean
+
+**IMPORTANT**: Since S1-S5 share the same DB, ALL active workflows run on ALL 5 spaces simultaneously. Webhook requests are load-balanced across whichever space handles the HTTP call. This means Ingestion/Enrichment/AutoHealer may fire multiple times per cycle.
 
 ---
 
