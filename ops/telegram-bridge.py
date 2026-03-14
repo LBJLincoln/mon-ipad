@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Telegram CLI Bridge v5.0 — Multi-Model AI from your phone.
+"""Telegram CLI Bridge v5.1 — Multi-Model AI from your phone.
 
 Five modes + multi-model commands:
 1. Claude mode (default): Messages go to Claude Code CLI — full AI assistant
@@ -9,6 +9,11 @@ Five modes + multi-model commands:
 5. Kimi mode (/kimi): Kimi Code headless
 
 Plus: /image (NanoBanana 2 image gen), /model, /all (parallel multi-model)
+
+v5.1 changes:
+- Silent retry on rate limits (exponential backoff, 3 retries, no user spam)
+- Multi-repo awareness: Claude has access to ALL repos on VM
+- Only genuine errors after all retries exhausted reach the user
 
 Usage:
     source .env.local
@@ -67,9 +72,8 @@ REPOS = {
     "rag-website": "/home/termius/rag-website",
     "rag-data-ingestion": "/home/termius/rag-data-ingestion",
     "rag-dashboard": "/home/termius/rag-dashboard",
-    "rag-storage": "/home/termius/rag-storage",
-    "rag-pme-usecases": "/home/termius/rag-pme-usecases",
-    "nomos-nba-agents": "/home/termius/nomos-nba-agents",
+    "nomos-nba-agent": "/home/termius/nomos-nba-agent",
+    "nomos-casino": "/home/termius/nomos-casino",
     "nomos-forge-tests": "/home/termius/nomos-forge-tests",
 }
 
@@ -93,6 +97,61 @@ CLI_TOOLS = {
     "gemini": {"bin": "gemini", "args": ["-p"], "timeout": 120},
     "kimi": {"bin": KIMI_CODE_BIN, "args": ["--print"], "timeout": 120},
 }
+
+
+# Rate limit patterns to detect across all CLI tools
+RATE_LIMIT_PATTERNS = [
+    "rate limit", "rate_limit", "ratelimit",
+    "too many requests", "429", "quota exceeded",
+    "overloaded", "capacity", "throttl",
+    "try again", "retry after", "backoff",
+    "resource_exhausted", "rate-limit",
+    "exceeded your current quota",
+    "server is busy", "service unavailable",
+    "overloaded_error",
+]
+
+MAX_RETRIES = 3
+RETRY_BASE_DELAY = 5  # seconds
+
+
+def is_rate_limited(output):
+    """Check if CLI output indicates a rate limit error."""
+    if not output:
+        return False
+    lower = output.lower()
+    return any(pattern in lower for pattern in RATE_LIMIT_PATTERNS)
+
+
+def retry_with_backoff(fn, *args, **kwargs):
+    """Execute fn with exponential backoff on rate limits.
+
+    Returns the result dict from fn. Only returns a rate-limit error
+    if ALL retries are exhausted.  Retries are completely silent —
+    the Telegram user never sees intermediate failures.
+    """
+    last_result = None
+    for attempt in range(MAX_RETRIES + 1):
+        result = fn(*args, **kwargs)
+        output = result.get("output", "")
+
+        # Success or non-rate-limit error: return immediately
+        if not is_rate_limited(output):
+            return result
+
+        last_result = result
+
+        # Don't sleep after the last attempt
+        if attempt < MAX_RETRIES:
+            delay = RETRY_BASE_DELAY * (2 ** attempt)  # 5, 10, 20 seconds
+            time.sleep(delay)
+
+    # All retries exhausted — return last result with a note
+    last_result["output"] = (
+        f"Service temporairement indisponible apres {MAX_RETRIES + 1} tentatives. "
+        f"Reessaie dans quelques minutes."
+    )
+    return last_result
 
 
 # ─── Env loader helper ───────────────────────────────────────
@@ -132,14 +191,14 @@ def run_cmd(cmd, cwd=None, timeout=120):
 
 
 # ─── Claude Code CLI ─────────────────────────────────────────
-def ask_claude(message, cwd=None):
-    """Send a message to Claude Code CLI and return the response."""
+def _ask_claude_once(message, cwd=None):
+    """Single attempt to send a message to Claude Code CLI."""
     env = load_env()
     start = time.time()
     try:
         r = subprocess.run(
             ["claude", "--print", "--dangerously-skip-permissions", message],
-            capture_output=True, text=True, timeout=120,
+            capture_output=True, text=True, timeout=180,
             cwd=cwd or BASE_DIR, env=env,
         )
         duration = time.time() - start
@@ -150,16 +209,21 @@ def ask_claude(message, cwd=None):
             output = output[:1800] + "\n...(tronque)...\n" + output[-1800:]
         return {"ok": True, "output": output or "(no output)", "duration": round(duration, 1)}
     except subprocess.TimeoutExpired:
-        return {"ok": False, "output": "Timeout (120s). Requete trop complexe.", "duration": 120}
+        return {"ok": False, "output": "Timeout (180s). Requete trop complexe.", "duration": 180}
     except FileNotFoundError:
         return {"ok": False, "output": "Claude CLI not found. Install: npm i -g @anthropic-ai/claude-code", "duration": 0}
     except Exception as e:
         return {"ok": False, "output": f"Erreur: {e}", "duration": time.time() - start}
 
 
+def ask_claude(message, cwd=None):
+    """Send a message to Claude Code CLI with silent retry on rate limits."""
+    return retry_with_backoff(_ask_claude_once, message, cwd=cwd)
+
+
 # ─── Gemini CLI ───────────────────────────────────────────────
-def ask_gemini(prompt, cwd=None):
-    """Send a prompt to Gemini CLI and return the response."""
+def _ask_gemini_once(prompt, cwd=None):
+    """Single attempt to send a prompt to Gemini CLI."""
     env = load_env()
     start = time.time()
     try:
@@ -178,14 +242,19 @@ def ask_gemini(prompt, cwd=None):
     except subprocess.TimeoutExpired:
         return {"ok": False, "output": "Timeout (120s).", "duration": 120}
     except FileNotFoundError:
-        return {"ok": False, "output": "Gemini CLI not found. Install: npm i -g @anthropic-ai/gemini-cli or pip install gemini-cli", "duration": 0}
+        return {"ok": False, "output": "Gemini CLI not found.", "duration": 0}
     except Exception as e:
         return {"ok": False, "output": f"Erreur: {e}", "duration": time.time() - start}
 
 
+def ask_gemini(prompt, cwd=None):
+    """Send a prompt to Gemini CLI with silent retry on rate limits."""
+    return retry_with_backoff(_ask_gemini_once, prompt, cwd=cwd)
+
+
 # ─── Kimi Code CLI ────────────────────────────────────────────
-def ask_kimi(prompt, cwd=None):
-    """Send a prompt to Kimi Code and return the response."""
+def _ask_kimi_once(prompt, cwd=None):
+    """Single attempt to send a prompt to Kimi Code."""
     env = load_env()
     start = time.time()
     try:
@@ -209,9 +278,14 @@ def ask_kimi(prompt, cwd=None):
         return {"ok": False, "output": f"Erreur: {e}", "duration": time.time() - start}
 
 
+def ask_kimi(prompt, cwd=None):
+    """Send a prompt to Kimi Code with silent retry on rate limits."""
+    return retry_with_backoff(_ask_kimi_once, prompt, cwd=cwd)
+
+
 # ─── LiteLLM query ───────────────────────────────────────────
-def ask_litellm(prompt):
-    """Send a prompt to LiteLLM and return the response."""
+def _ask_litellm_once(prompt):
+    """Single attempt to send a prompt to LiteLLM."""
     start = time.time()
     try:
         payload = json.dumps({
@@ -230,8 +304,20 @@ def ask_litellm(prompt):
             if len(output) > 3800:
                 output = output[:1800] + "\n...(tronque)...\n" + output[-1800:]
             return {"ok": True, "output": output, "duration": round(duration, 1), "model": model}
+    except urllib.error.HTTPError as e:
+        error_body = ""
+        try:
+            error_body = e.read().decode()[:500]
+        except Exception:
+            pass
+        return {"ok": False, "output": f"LiteLLM error {e.code}: {error_body or e.reason}", "duration": round(time.time() - start, 1), "model": "smart"}
     except Exception as e:
         return {"ok": False, "output": f"LiteLLM error: {e}", "duration": round(time.time() - start, 1), "model": "smart"}
+
+
+def ask_litellm(prompt):
+    """Send a prompt to LiteLLM with silent retry on rate limits."""
+    return retry_with_backoff(_ask_litellm_once, prompt)
 
 
 # ─── Image generation (NanoBanana 2) ─────────────────────────
@@ -336,22 +422,77 @@ def tg(method, data=None):
         return None
 
 
-def send(chat_id, text, parse_mode=None):
-    """Send message, auto-split if too long."""
+def filter_rate_limit_noise(text):
+    """Remove rate limit error messages from output before sending to user.
+    The user should NEVER see rate limit/retry messages."""
+    if not text:
+        return text
+    lines = text.split('\n')
+    filtered = []
+    for line in lines:
+        lower = line.lower()
+        # Skip lines that are purely rate limit noise
+        if any(p in lower for p in [
+            'rate limit', 'rate_limit', 'ratelimit', '429', 'too many requests',
+            'quota exceeded', 'overloaded_error', 'resource_exhausted',
+            'retry after', 'retrying in', 'attempt', 'backoff',
+            'service temporairement indisponible apres',
+            'exceeded your current quota', 'throttl',
+        ]):
+            continue
+        filtered.append(line)
+    result = '\n'.join(filtered).strip()
+    return result if result else text  # Return original if everything was filtered
+
+
+def send(chat_id, text, parse_mode=None, reply_markup=None):
+    """Send message, auto-split if too long. Filters rate limit noise."""
     if not text:
         text = "(empty)"
+    # Filter rate limit content
+    text = filter_rate_limit_noise(text)
     chunks = [text[i:i+4000] for i in range(0, len(text), 4000)]
-    for chunk in chunks:
+    for i, chunk in enumerate(chunks):
+        payload = {"chat_id": chat_id, "text": chunk}
         if parse_mode:
-            result = tg("sendMessage", {"chat_id": chat_id, "text": chunk, "parse_mode": parse_mode})
-            if not result or not result.get("ok"):
-                tg("sendMessage", {"chat_id": chat_id, "text": chunk})
-        else:
-            tg("sendMessage", {"chat_id": chat_id, "text": chunk})
+            payload["parse_mode"] = parse_mode
+        # Only attach buttons to the last chunk
+        if reply_markup and i == len(chunks) - 1:
+            payload["reply_markup"] = json.dumps(reply_markup)
+        result = tg("sendMessage", payload)
+        if not result or not result.get("ok"):
+            # Retry without parse_mode
+            fallback = {"chat_id": chat_id, "text": chunk}
+            if reply_markup and i == len(chunks) - 1:
+                fallback["reply_markup"] = json.dumps(reply_markup)
+            tg("sendMessage", fallback)
 
 
 def send_typing(chat_id):
     tg("sendChatAction", {"chat_id": chat_id, "action": "typing"})
+
+
+def quick_buttons():
+    """Return inline keyboard with most useful commands."""
+    return {
+        "inline_keyboard": [
+            [
+                {"text": "📊 Status", "callback_data": "/s"},
+                {"text": "🤖 Daemons", "callback_data": "/d"},
+                {"text": "📈 Eval", "callback_data": "/e"},
+            ],
+            [
+                {"text": "🌐 Sites", "callback_data": "/sites"},
+                {"text": "🚀 Spaces", "callback_data": "/spaces"},
+                {"text": "💾 Free", "callback_data": "/free"},
+            ],
+            [
+                {"text": "📥 Pull all", "callback_data": "/pull"},
+                {"text": "📁 Repos", "callback_data": "/repos"},
+                {"text": "🔄 Reset", "callback_data": "/reset"},
+            ],
+        ]
+    }
 
 
 # ─── LLM for AI mode ─────────────────────────────────────────
@@ -377,20 +518,26 @@ RULES:
 
 User says: {user_msg}"""
 
-    data = json.dumps({
-        "model": "smart",
-        "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 500,
-        "temperature": 0.1,
-    }).encode()
-    headers = {"Authorization": f"Bearer {LITELLM_KEY}", "Content-Type": "application/json"}
-    req = urllib.request.Request(LITELLM_URL, data=data, headers=headers)
-    try:
-        with urllib.request.urlopen(req, timeout=30, context=ctx) as resp:
-            result = json.loads(resp.read())
-            return result["choices"][0]["message"]["content"].strip()
-    except Exception as e:
-        return f"ANSWER: LLM error: {e}"
+    def _interpret_once():
+        data = json.dumps({
+            "model": "smart",
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": 500,
+            "temperature": 0.1,
+        }).encode()
+        headers = {"Authorization": f"Bearer {LITELLM_KEY}", "Content-Type": "application/json"}
+        req = urllib.request.Request(LITELLM_URL, data=data, headers=headers)
+        try:
+            with urllib.request.urlopen(req, timeout=30, context=ctx) as resp:
+                result = json.loads(resp.read())
+                return {"ok": True, "output": result["choices"][0]["message"]["content"].strip()}
+        except Exception as e:
+            return {"ok": False, "output": f"LLM error: {e}"}
+
+    result = retry_with_backoff(_interpret_once)
+    if not result.get("ok"):
+        return f"ANSWER: {result['output']}"
+    return result["output"]
 
 
 # ─── Quick status builders ───────────────────────────────────
@@ -511,6 +658,35 @@ def get_models_text():
     return "MODELES DISPONIBLES\n\n" + "\n".join(models)
 
 
+# ─── Multi-repo helper ────────────────────────────────────────
+def _detect_repo_cwd(text, current_cwd):
+    """Auto-detect which repo the user is talking about and return
+    the appropriate cwd.  If no repo is mentioned, return current_cwd.
+
+    Detects patterns like:
+    - "dans rag-website ..."
+    - "sur rag-data-ingestion ..."
+    - "on mon-ipad ..."
+    - "in nomos-forge-tests ..."
+    - "@rag-website ..."
+    """
+    lower = text.lower()
+    for name, path in REPOS.items():
+        # Match repo name preceded by common prepositions or @
+        patterns = [
+            f"dans {name.lower()}",
+            f"sur {name.lower()}",
+            f"on {name.lower()}",
+            f"in {name.lower()}",
+            f"@{name.lower()}",
+            f"repo {name.lower()}",
+        ]
+        if any(p in lower for p in patterns):
+            if Path(path).exists():
+                return path
+    return current_cwd
+
+
 # ─── Command router ──────────────────────────────────────────
 def handle_message(chat_id, text, username):
     """Route incoming message to the right handler."""
@@ -525,11 +701,12 @@ def handle_message(chat_id, text, username):
     cmd_lower = text.lower().split()[0] if text.startswith("/") else ""
 
     if cmd_lower in ("/start", "/help"):
-        send(chat_id, """NOMOS TELEGRAM BRIDGE v5.0 — Multi-Model
+        send(chat_id, """NOMOS TELEGRAM BRIDGE v5.1 — Multi-Model + Multi-Repo
 Claude Code + Gemini + Kimi + LiteLLM depuis ton telephone.
+Silent retry on rate limits. Acces a TOUS les repos de la VM.
 
 MODES:
-  Default = Claude Code (IA complete, comme Termius)
+  Default = Claude Code (IA complete, comme Termius sur tous les repos)
   /shell = commandes bash directes
   /ai = NLP → bash via LLM
   /claude = retour mode Claude (defaut)
@@ -553,12 +730,20 @@ QUICK COMMANDS:
   /cd <path> = changer repertoire
   /bg <cmd> = commande en arriere-plan
   /sites = checker tous les sites
+  /spaces = checker tous les HF Spaces
   /query <question> = interroger pipeline RAG
   /yt <url> = transcript YouTube
   /web <recherche> = recherche web via LLM
   /reset = reset conversation Claude
 
-Ecris en langage naturel — Claude Code comprend tout.""")
+MULTI-REPO (acces a tous les repos de la VM):
+  /repos = voir tous les repos + status git
+  /repo <name> = switcher vers un repo
+  Mention directe: "dans rag-website, ..." ou "@rag-website ..."
+  Repos: """ + ", ".join(REPOS.keys()) + """
+
+Rate limits: retries silencieux. Pas de spam.""",
+            reply_markup=quick_buttons())
         return
 
     if cmd_lower == "/claude":
@@ -687,7 +872,7 @@ Ecris en langage naturel — Claude Code comprend tout.""")
 
     if cmd_lower == "/s":
         send_typing(chat_id)
-        send(chat_id, get_status_text())
+        send(chat_id, get_status_text(), reply_markup=quick_buttons())
         return
 
     if cmd_lower == "/d":
@@ -913,7 +1098,42 @@ except ImportError:
         print('Pas de sous-titres disponibles pour cette video.')
         print(r.stderr[:500] if r.stderr else 'Installez: pip install youtube-transcript-api')
 " 2>&1""", timeout=30)
-        send(chat_id, r["output"])
+        transcript_text = r["output"]
+        send(chat_id, transcript_text)
+
+        # Analyze transcript for software/code/tools and offer implementation
+        if len(transcript_text) > 100:
+            send_typing(chat_id)
+            analyze_prompt = f"""Analyse ce transcript YouTube. Identifie:
+1. S'il mentionne des logiciels, outils, librairies, frameworks ou techniques open-source
+2. S'il contient des concepts implementables (code, architecture, process)
+3. S'il contient des idees business applicables
+
+Reponds en 3 sections MAX:
+- OUTILS DETECTES: liste des outils/libs (avec liens si possible)
+- IMPLEMENTABLE: ce qu'on pourrait implementer dans nos repos
+- PERTINENCE: note /10 pour notre projet Nomos AI (expert IA sectoriel)
+
+Si rien d'implementable, dis-le en 1 ligne.
+Sois concis (max 500 mots).
+
+TRANSCRIPT:
+{transcript_text[:3000]}"""
+
+            analysis = ask_litellm(analyze_prompt)
+            if analysis.get("ok") and analysis.get("output"):
+                impl_buttons = {
+                    "inline_keyboard": [
+                        [
+                            {"text": "✅ Implementer", "callback_data": "/impl_yt_yes"},
+                            {"text": "❌ Ignorer", "callback_data": "/impl_yt_no"},
+                        ],
+                        [
+                            {"text": "📋 Details", "callback_data": "/impl_yt_details"},
+                        ],
+                    ]
+                }
+                send(chat_id, f"ANALYSE:\n{analysis['output']}", reply_markup=impl_buttons)
         return
 
     if cmd_lower == "/web":
@@ -923,28 +1143,33 @@ except ImportError:
             return
         query = parts[1].strip()
         send_typing(chat_id)
-        # Use LiteLLM to search & synthesize (since no direct search API)
-        try:
-            payload = json.dumps({
-                "model": "smart",
-                "messages": [
-                    {"role": "system", "content": "Tu es un assistant de recherche. L'utilisateur te donne une requete. Reponds avec les informations les plus recentes et pertinentes que tu connais. Sois concis, factuel, cite des sources quand possible. Max 3000 caracteres."},
-                    {"role": "user", "content": f"Recherche: {query}"}
-                ],
-                "temperature": 0.3,
-                "max_tokens": 1500,
-            }).encode()
-            req = urllib.request.Request(
-                LITELLM_URL, payload,
-                {"Content-Type": "application/json", "Authorization": f"Bearer {LITELLM_KEY}"}
-            )
-            with urllib.request.urlopen(req, timeout=30, context=ctx) as resp:
-                result = json.loads(resp.read())
-                answer = result.get("choices", [{}])[0].get("message", {}).get("content", "Pas de resultat")
-                model = result.get("model", "?")
-                send(chat_id, f"[{model}]\n{answer[:3800]}")
-        except Exception as e:
-            send(chat_id, f"Erreur recherche: {e}")
+        # Use LiteLLM with silent retry
+        web_prompt = f"Recherche: {query}"
+        def _web_search_once():
+            try:
+                payload = json.dumps({
+                    "model": "smart",
+                    "messages": [
+                        {"role": "system", "content": "Tu es un assistant de recherche. L'utilisateur te donne une requete. Reponds avec les informations les plus recentes et pertinentes que tu connais. Sois concis, factuel, cite des sources quand possible. Max 3000 caracteres."},
+                        {"role": "user", "content": web_prompt}
+                    ],
+                    "temperature": 0.3,
+                    "max_tokens": 1500,
+                }).encode()
+                req = urllib.request.Request(
+                    LITELLM_URL, payload,
+                    {"Content-Type": "application/json", "Authorization": f"Bearer {LITELLM_KEY}"}
+                )
+                with urllib.request.urlopen(req, timeout=30, context=ctx) as resp:
+                    result = json.loads(resp.read())
+                    answer = result.get("choices", [{}])[0].get("message", {}).get("content", "Pas de resultat")
+                    model = result.get("model", "?")
+                    return {"ok": True, "output": f"[{model}]\n{answer[:3800]}"}
+            except Exception as e:
+                return {"ok": False, "output": f"Erreur recherche: {e}"}
+
+        result = retry_with_backoff(_web_search_once)
+        send(chat_id, result["output"])
         return
 
     if cmd_lower == "/query":
@@ -954,19 +1179,24 @@ except ImportError:
             return
         question = parts[1]
         send_typing(chat_id)
-        try:
-            payload = json.dumps({"question": question, "tenant_id": "finance"}).encode()
-            req = urllib.request.Request(
-                "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/orchestrator-v2",
-                payload, {"Content-Type": "application/json"}
-            )
-            with urllib.request.urlopen(req, timeout=60, context=ctx) as resp:
-                result = json.loads(resp.read())
-                answer = result.get("response") or result.get("answer") or result.get("output", "No answer")
-                pipeline = result.get("selected_pipeline", "?")
-                send(chat_id, f"[{pipeline}] {answer[:3500]}")
-        except Exception as e:
-            send(chat_id, f"Pipeline error: {e}")
+
+        def _query_pipeline_once():
+            try:
+                payload = json.dumps({"question": question, "tenant_id": "finance"}).encode()
+                req = urllib.request.Request(
+                    "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/orchestrator-v2",
+                    payload, {"Content-Type": "application/json"}
+                )
+                with urllib.request.urlopen(req, timeout=60, context=ctx) as resp:
+                    result = json.loads(resp.read())
+                    answer = result.get("response") or result.get("answer") or result.get("output", "No answer")
+                    pipeline = result.get("selected_pipeline", "?")
+                    return {"ok": True, "output": f"[{pipeline}] {answer[:3500]}"}
+            except Exception as e:
+                return {"ok": False, "output": f"Pipeline error: {e}"}
+
+        result = retry_with_backoff(_query_pipeline_once)
+        send(chat_id, result["output"])
         return
 
     # ─── Non-slash: claude, shell or AI mode ──────────────
@@ -974,11 +1204,18 @@ except ImportError:
     cwd = chat_cwd.get(chat_id, BASE_DIR)
 
     if mode == "claude":
-        # Claude Code CLI mode — full AI assistant
+        # Claude Code CLI mode — full AI assistant with multi-repo awareness
         send_typing(chat_id)
-        result = ask_claude(text, cwd=cwd)
+        # Auto-detect repo references and switch cwd
+        effective_cwd = _detect_repo_cwd(text, cwd)
+        result = ask_claude(text, cwd=effective_cwd)
         duration_tag = f" ({result['duration']}s)" if result.get('duration') else ""
-        send(chat_id, result["output"] + duration_tag)
+        output = result["output"] + duration_tag
+        # Don't send rate limit errors — just skip silently
+        if is_rate_limited(output):
+            send(chat_id, "En cours de traitement, reessaie dans 30s.")
+            return
+        send(chat_id, output)
     elif mode == "ai":
         send_typing(chat_id)
         interpreted = llm_interpret(text, f"Current directory: {cwd}")
@@ -1034,22 +1271,24 @@ def check_all_sites():
 # ─── Main loop ────────────────────────────────────────────────
 def main():
     ts = datetime.now().strftime("%H:%M:%S")
-    print(f"[{ts}] === NOMOS TELEGRAM BRIDGE v5.0 — Multi-Model ===")
+    print(f"[{ts}] === NOMOS TELEGRAM BRIDGE v5.1 — Multi-Model + Multi-Repo ===")
     print(f"[{ts}] Bot: @Nomos42Bot | Admin: {ADMIN_ID}")
     print(f"[{ts}] Models: Claude Code + Gemini CLI + Kimi Code + LiteLLM + NanoBanana 2")
+    print(f"[{ts}] Repos: {', '.join(REPOS.keys())}")
+    print(f"[{ts}] Silent retry: {MAX_RETRIES} retries, exponential backoff")
     print(f"[{ts}] Mode: Claude Code CLI (default)")
     print(f"[{ts}] Polling...")
 
     tg("deleteWebhook")
 
     # Notify admin that bridge is up
-    send(ADMIN_ID, "BRIDGE v5.0 ONLINE — Multi-Model\nClaude + Gemini + Kimi + LiteLLM + Image Gen\n/help pour toutes les options.")
+    send(ADMIN_ID, "BRIDGE v5.1 ONLINE — Multi-Model + Multi-Repo\nSilent retry on rate limits (3 retries, backoff)\nAcces a tous les repos de la VM\n/help pour toutes les options.")
 
     offset = 0
     errors = 0
     while True:
         try:
-            result = tg("getUpdates", {"offset": offset, "timeout": 25, "allowed_updates": ["message"]})
+            result = tg("getUpdates", {"offset": offset, "timeout": 25, "allowed_updates": ["message", "callback_query"]})
             if not result or not result.get("ok"):
                 errors += 1
                 if errors > 10:
@@ -1062,6 +1301,28 @@ def main():
             errors = 0
             for update in result.get("result", []):
                 offset = update["update_id"] + 1
+
+                # Handle callback queries (inline button presses)
+                callback = update.get("callback_query")
+                if callback:
+                    cb_chat_id = callback.get("message", {}).get("chat", {}).get("id")
+                    cb_data = callback.get("data", "")
+                    cb_id = callback.get("id")
+                    username = callback.get("from", {}).get("username", "?")
+
+                    # Answer the callback to remove loading indicator
+                    tg("answerCallbackQuery", {"callback_query_id": cb_id, "text": f"Executing {cb_data}..."})
+
+                    if cb_chat_id and cb_data:
+                        ts = datetime.now().strftime("%H:%M:%S")
+                        print(f"[{ts}] @{username} [button]: {cb_data}")
+                        try:
+                            handle_message(cb_chat_id, cb_data, username)
+                        except Exception as e:
+                            print(f"[{ts}] Callback handler error: {e}")
+                            send(cb_chat_id, f"Error: {e}")
+                    continue
+
                 msg = update.get("message", {})
                 text = msg.get("text", "")
                 chat_id = msg.get("chat", {}).get("id")
