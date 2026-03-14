@@ -192,7 +192,7 @@ L'agent Amelioration identifie la metrique la plus faible, propose des actions c
 
 | Service | Pourquoi | Lien | Gratuit ? |
 |---------|----------|------|-----------|
-| [Tavily](https://tavily.com) | Recherche web pour enrichissement de donnees | Inscription | Oui (1000 requetes) |
+| [Exa.AI](https://exa.ai) | Recherche web pour enrichissement de donnees | Inscription | Oui |
 | [Google Search Console](https://search.google.com/search-console) | SEO et visibilite | Connexion Google | Oui |
 | [Sentry](https://sentry.io/signup/) | Monitoring d'erreurs en production | Inscription | Oui (5K events/mois) |
 

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Mass Ingestion Scaler — Scale documents to 1M via n8n workflows.
 
-Discovers content via Tavily web search, then feeds to n8n Ingestion V4.0
+Discovers content via Exa.AI web search, then feeds to n8n Ingestion V4.0
 which handles: chunking, embedding, Pinecone, Supabase, Neo4j enrichment.
 
 Current: ~43K docs (mostly 'benchmark' tenant) + 12K Pinecone vectors
 Target: 1M docs across 4 sectors
 
 Strategy:
-  1. Use Tavily to discover real sector documents/articles
+  1. Use Exa.AI to discover real sector documents/articles
   2. Feed each to n8n Ingestion V4.0 webhook with proper sector tenant_id
   3. n8n handles all processing (Docling, chunking, embedding, storage)
   4. Run enrichment chain for Neo4j graph
@@ -61,7 +61,7 @@ if os.path.exists(ENV_FILE):
                 if k and v:
                     os.environ.setdefault(k, v)
 
-TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY", "")
+EXA_API_KEY = os.environ.get("EXA_API_KEY", "")
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
 # n8n endpoints
@@ -222,24 +222,23 @@ SECTOR_QUERIES = {
 }
 
 
-def tavily_search(query, max_results=5):
-    """Search via Tavily API for real web documents."""
-    if not TAVILY_API_KEY:
-        log("No TAVILY_API_KEY")
+def exa_search(query, max_results=5):
+    """Search via Exa.AI API for real web documents."""
+    if not EXA_API_KEY:
+        log("No EXA_API_KEY")
         return []
 
     payload = json.dumps({
-        "api_key": TAVILY_API_KEY,
         "query": query,
-        "search_depth": "advanced",
-        "max_results": max_results,
-        "include_raw_content": True,
+        "numResults": max_results,
+        "type": "auto",
+        "contents": {"text": True},
     }).encode()
 
     req = urllib.request.Request(
-        "https://api.tavily.com/search",
+        "https://api.exa.ai/search",
         data=payload,
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", "x-api-key": EXA_API_KEY},
     )
 
     try:
@@ -248,7 +247,7 @@ def tavily_search(query, max_results=5):
             results = data.get("results", [])
             return results
     except Exception as e:
-        log(f"Tavily error: {e}")
+        log(f"Exa.AI error: {e}")
         return []
 
 
@@ -261,7 +260,7 @@ def is_duplicate(doc_id):
     return bool(result)
 
 
-def store_document_direct(title, content, url, sector, source="tavily"):
+def store_document_direct(title, content, url, sector, source="exa"):
     """Store document in Supabase sector_documents + document_registry."""
     if not content or len(content) < 200:
         return False
@@ -280,7 +279,7 @@ def store_document_direct(title, content, url, sector, source="tavily"):
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s, now())
         ON CONFLICT (id) DO NOTHING
     """, (
-        doc_id, sector, f"tavily_{source}", "standard",
+        doc_id, sector, f"exa_{source}", "standard",
         title[:500],  # question = title (for discovery)
         content[:5000],  # answer = content summary
         content[:30000],  # context = full content
@@ -289,8 +288,8 @@ def store_document_direct(title, content, url, sector, source="tavily"):
 
     # Also register in document_registry for tracking (best-effort)
     content_hash = hashlib.md5(content[:5000].encode()).hexdigest()
-    # source_type must be: pdf, html, json, csv, api, tavily, manual, dataset
-    registry_source = "tavily" if source == "tavily" else "api" if source == "llm_generated" else "manual"
+    # source_type must be: pdf, html, json, csv, api, exa, manual, dataset
+    registry_source = "exa" if source == "exa" else "api" if source == "llm_generated" else "manual"
     db_execute("""
         INSERT INTO document_registry
             (sector, source_type, source_url, title, char_count, language,
@@ -314,7 +313,7 @@ def feed_to_n8n(title, content, url, sector):
         "filename": f"{title[:80]}.txt",
         "content_text": content[:30000],
         "content_url": url,
-        "source": "tavily_mass",
+        "source": "exa_mass",
         "tenant_id": sector,
         "metadata": {
             "title": title,
@@ -340,7 +339,7 @@ def feed_to_n8n(title, content, url, sector):
 
 
 def generate_expert_document(sector, topic):
-    """Generate expert-level document content via LLM when Tavily is unavailable."""
+    """Generate expert-level document content via LLM when Exa.AI is unavailable."""
     prompt = f"""Tu es un expert du secteur {sector}. Ecris un document technique detaille sur le sujet suivant:
 
 SUJET: {topic}
@@ -386,14 +385,14 @@ def ingest_sector_batch(sector, batch_size=10):
 
     stored = 0
 
-    # Try Tavily first
-    if TAVILY_API_KEY:
+    # Try Exa.AI first
+    if EXA_API_KEY:
         query = random.choice(queries)
-        log(f"{sector}: Tavily search '{query[:50]}...'")
-        results = tavily_search(query, max_results=batch_size)
+        log(f"{sector}: Exa.AI search '{query[:50]}...'")
+        results = exa_search(query, max_results=batch_size)
         for r in results:
             title = r.get("title", "")
-            content = r.get("raw_content") or r.get("content", "")
+            content = r.get("text", "")
             url = r.get("url", "")
             if content and len(content) >= 200:
                 if store_document_direct(title, content, url, sector):
@@ -404,11 +403,11 @@ def ingest_sector_batch(sector, batch_size=10):
                         pass
 
         if stored > 0:
-            log(f"{sector}: stored {stored}/{len(results)} via Tavily")
+            log(f"{sector}: stored {stored}/{len(results)} via Exa.AI")
             return stored
 
     # Fallback: generate expert documents via LLM
-    log(f"{sector}: Tavily unavailable, generating expert docs via LLM")
+    log(f"{sector}: Exa.AI unavailable, generating expert docs via LLM")
     topics = random.sample(queries, min(batch_size, len(queries)))
 
     for topic in topics:
@@ -545,7 +544,7 @@ def main():
             stored = ingest_sector_batch(sector, args.batch)
             cycle_total += stored
             total_ingested += stored
-            time.sleep(3)  # Rate limit Tavily
+            time.sleep(3)  # Rate limit Exa.AI
 
         log(f"Cycle {cycle}: +{cycle_total} docs (session total: {total_ingested:,})")
 

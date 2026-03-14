@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Ingest 158 real French sector documents via Tavily Extract -> Pinecone E5.
+Ingest 158 real French sector documents via Exa.AI -> Pinecone E5.
 
 Flow:
 1. Read document list from sectors/real-documents-to-ingest.json
-2. Fetch full content via Tavily Extract API (sequential, 45s hard timeout)
+2. Fetch full content via Exa.AI search API (sequential, 45s hard timeout)
 3. Chunk content (max 1500 chars, paragraph boundaries, cap 100K chars/doc)
 4. Upsert chunks to Pinecone E5 integrated embedding (sequential)
 5. Track and report stats
@@ -24,11 +24,11 @@ from urllib.parse import urlparse
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY", "")
+EXA_API_KEY = os.environ.get("EXA_API_KEY", "")
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY", "")
 PINECONE_HOST = "https://sectors-e5-multilingual-a4mkzmz.svc.aped-4627-b74a.pinecone.io"
 PINECONE_UPSERT_URL = f"{PINECONE_HOST}/records/namespaces/sectors/upsert"
-TAVILY_EXTRACT_URL = "https://api.tavily.com/extract"
+EXA_SEARCH_URL = "https://api.exa.ai/search"
 
 DOC_LIST_PATH = "/home/termius/mon-ipad/sectors/real-documents-to-ingest.json"
 
@@ -36,7 +36,7 @@ CHUNK_MAX = 1500
 CHUNK_MIN = 50
 CONTENT_CAP = 100_000  # Cap content at 100K chars (avoids 1000+ chunk docs)
 UPSERT_DELAY = 0.25  # seconds between upserts
-FETCH_TIMEOUT = 45  # hard timeout per Tavily call
+FETCH_TIMEOUT = 45  # hard timeout per Exa.AI call
 
 # SSL context that skips verification
 SSL_CTX = ssl.create_default_context()
@@ -84,15 +84,20 @@ def timeout_handler(signum, frame):
 
 
 # ---------------------------------------------------------------------------
-# Tavily Extract
+# Exa.AI Fetch
 # ---------------------------------------------------------------------------
-def tavily_extract(url: str) -> str | None:
-    """Fetch full content of a URL via Tavily Extract API. Returns raw_content or None."""
-    payload = json.dumps({"api_key": TAVILY_API_KEY, "urls": [url]}).encode()
+def exa_fetch(url: str) -> str | None:
+    """Fetch full content of a URL via Exa.AI search API. Returns text or None."""
+    payload = json.dumps({
+        "query": url,
+        "numResults": 1,
+        "type": "auto",
+        "contents": {"text": True},
+    }).encode()
     req = urllib.request.Request(
-        TAVILY_EXTRACT_URL,
+        EXA_SEARCH_URL,
         data=payload,
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", "x-api-key": EXA_API_KEY},
         method="POST",
     )
 
@@ -106,8 +111,8 @@ def tavily_extract(url: str) -> str | None:
 
         data = json.loads(raw)
         results = data.get("results", [])
-        if results and results[0].get("raw_content"):
-            content = results[0]["raw_content"].strip()
+        if results and results[0].get("text"):
+            content = results[0]["text"].strip()
             if len(content) >= CHUNK_MIN:
                 # Cap content to avoid monster documents
                 if len(content) > CONTENT_CAP:
@@ -236,8 +241,8 @@ def main():
         if arg.startswith("--skip="):
             skip = int(arg.split("=")[1])
 
-    if not TAVILY_API_KEY:
-        log("ERROR: TAVILY_API_KEY not set")
+    if not EXA_API_KEY:
+        log("ERROR: EXA_API_KEY not set")
         sys.exit(1)
     if not PINECONE_API_KEY:
         log("ERROR: PINECONE_API_KEY not set")
@@ -257,13 +262,13 @@ def main():
 
     mode = "DRY RUN" if dry_run else "LIVE"
     log(f"\n{'='*60}")
-    log(f"Tavily Document Ingestion -- {mode}")
+    log(f"Exa.AI Document Ingestion -- {mode}")
     log(f"Documents: {len(docs)} | Content cap: {CONTENT_CAP} chars")
     log(f"Pinecone: sectors-e5-multilingual / sectors namespace")
     log(f"{'='*60}\n")
 
     # Phase 1: Fetch all documents (sequential to avoid hangs)
-    log("[Phase 1] Fetching documents via Tavily Extract...")
+    log("[Phase 1] Fetching documents via Exa.AI...")
     fetched = []
     t0 = time.time()
 
@@ -275,11 +280,11 @@ def main():
         domain = urlparse(url).netloc.replace("www.", "")
         idx = skip + i  # Preserve original index for record IDs
 
-        content = tavily_extract(url)
+        content = exa_fetch(url)
         if content:
             inc_stat("docs_fetched")
             inc_sector_stat(sector, "fetched")
-            fetched.append({"doc": doc, "content": content, "source_type": "tavily-full", "domain": domain, "idx": idx})
+            fetched.append({"doc": doc, "content": content, "source_type": "exa-full", "domain": domain, "idx": idx})
             log(f"  [{i+1:3d}/{len(docs)}] OK (full)     {sector:10s} | {len(content):6d} chars | {title[:55]}")
         elif snippet and len(snippet) >= CHUNK_MIN:
             inc_stat("docs_snippet_fallback")
@@ -310,8 +315,8 @@ def main():
         chunks = chunk_text(prefixed)
 
         for ci, chunk in enumerate(chunks):
-            record_id = f"tavily-{sector}-{idx:04d}-{ci:03d}"
-            source = f"tavily-{domain}"
+            record_id = f"exa-{sector}-{idx:04d}-{ci:03d}"
+            source = f"exa-{domain}"
             all_chunks.append({
                 "record_id": record_id,
                 "text": chunk,

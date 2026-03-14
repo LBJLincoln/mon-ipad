@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Expert Question Generator — Uses Tavily + LLM to create expert-level eval questions.
+Expert Question Generator — Uses Exa.AI + LLM to create expert-level eval questions.
 
 Flow:
-  1. Tavily searches real sector documents per topic
+  1. Exa.AI searches real sector documents per topic
   2. LLM generates expert-level questions WITH golden answers FROM real data
   3. Questions stored in eval_question_bank with dataset_source='expert_generated'
   4. Each question tagged with source URL and document reference
@@ -54,7 +54,7 @@ _ssl = ssl.create_default_context()
 _ssl.check_hostname = False
 _ssl.verify_mode = ssl.CERT_NONE
 
-TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY", "")
+EXA_API_KEY = os.environ.get("EXA_API_KEY", "")
 LITELLM_URL = "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions"
 LITELLM_KEY = os.environ.get("LITELLM_MASTER_KEY", "sk-litellm-nomos-2026")
 DB_URL = os.environ.get("DATABASE_URL", "")
@@ -150,19 +150,21 @@ Respond with EXACTLY this JSON format (no markdown, no extra text):
 ]"""
 
 
-def tavily_search(query, max_results=5):
-    """Search Tavily for real documents."""
+def exa_search(query, max_results=5):
+    """Search Exa.AI for real documents."""
     data = json.dumps({
-        "api_key": TAVILY_API_KEY,
         "query": query,
-        "search_depth": "advanced",
-        "max_results": max_results,
-        "include_raw_content": True,
+        "numResults": max_results,
+        "type": "auto",
+        "contents": {"text": True},
     }).encode()
     req = urllib.request.Request(
-        "https://api.tavily.com/search",
+        "https://api.exa.ai/search",
         data=data,
-        headers={"Content-Type": "application/json"},
+        headers={
+            "Content-Type": "application/json",
+            "x-api-key": EXA_API_KEY,
+        },
         method="POST",
     )
     try:
@@ -170,7 +172,7 @@ def tavily_search(query, max_results=5):
             result = json.loads(resp.read().decode())
             return result.get("results", [])
     except Exception as e:
-        print(f"  Tavily error: {e}")
+        print(f"  Exa.AI error: {e}")
         return []
 
 
@@ -242,8 +244,8 @@ def generate_for_sector(sector, topics, questions_per_topic=4):
 
     all_questions = []
     for i, topic in enumerate(topics):
-        print(f"\n  [{i+1}/{len(topics)}] Tavily: {topic[:50]}...")
-        results = tavily_search(topic, max_results=3)
+        print(f"\n  [{i+1}/{len(topics)}] Exa.AI: {topic[:50]}...")
+        results = exa_search(topic, max_results=3)
         if not results:
             print(f"    No results, skipping")
             continue
@@ -251,7 +253,7 @@ def generate_for_sector(sector, topics, questions_per_topic=4):
         # Build document context
         doc_texts = []
         for r in results[:3]:
-            content = (r.get("raw_content") or r.get("content") or "")[:1200]
+            content = (r.get("text") or "")[:1200]
             url = r.get("url", "")
             title = r.get("title", "")
             doc_texts.append(f"SOURCE: {title}\nURL: {url}\n{content}\n")
@@ -306,7 +308,7 @@ def generate_for_sector(sector, topics, questions_per_topic=4):
             "sector": sector,
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "count": len(all_questions),
-            "source": "tavily+llm_expert_generation",
+            "source": "exa+llm_expert_generation",
             "questions": all_questions,
         }, f, indent=2, ensure_ascii=False)
     print(f"  Saved to {output_file}")
@@ -324,13 +326,13 @@ def main():
                         help="Max topics per sector (0=all)")
     args = parser.parse_args()
 
-    if not TAVILY_API_KEY:
-        print("ERROR: TAVILY_API_KEY not set")
+    if not EXA_API_KEY:
+        print("ERROR: EXA_API_KEY not set")
         sys.exit(1)
 
     print(f"\n{'='*60}")
     print(f"  EXPERT QUESTION GENERATOR")
-    print(f"  Tavily + LLM → Expert-level eval questions")
+    print(f"  Exa.AI + LLM → Expert-level eval questions")
     print(f"  {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
     print(f"{'='*60}")
 

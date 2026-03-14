@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Agent Ingest Feed — Tavily → n8n Ingestion/Enrichment → Docling → DBs
+Agent Ingest Feed — Exa.AI → n8n Ingestion/Enrichment → Docling → DBs
 
-Feeds Tavily search results into the n8n Ingestion V4.0 and Enrichment V4.0
+Feeds Exa.AI search results into the n8n Ingestion V4.0 and Enrichment V4.0
 workflows. This is the SEPARATE ingestion system (not RAG pipelines).
 
 Architecture:
-  1. Tavily search (per sector, rotating queries)
+  1. Exa.AI search (per sector, rotating queries)
   2. For each result with PDF/document:
      a. POST to n8n Ingestion V4.0 webhook → Docling S6 → Pinecone + Supabase
      b. POST to n8n Enrichment V4.0 webhook → Neo4j entities
@@ -51,7 +51,7 @@ N8N_HOST = "https://lbjlincoln-nomos-rag-engine.hf.space"
 INGESTION_WEBHOOK = f"{N8N_HOST}/webhook/rag-v6-ingestion"
 ENRICHMENT_WEBHOOK = f"{N8N_HOST}/webhook/rag-v6-enrichment"
 
-TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY", "")
+EXA_API_KEY = os.environ.get("EXA_API_KEY", "")
 
 DB_URL = os.environ.get("DATABASE_URL", "")
 _db = None
@@ -88,7 +88,7 @@ def log(msg):
     ts = datetime.now(timezone.utc).strftime("%H:%M:%S")
     print(f"[{ts}] INGEST: {msg}")
 
-# ── Sector Tavily queries ──
+# ── Sector Exa.AI queries ──
 SECTOR_QUERIES = {
     "finance": [
         "IFRS 2024 normes comptables internationales",
@@ -123,29 +123,40 @@ SECTOR_QUERIES = {
 _query_index = {}
 
 
-def tavily_search(query, max_results=5):
-    """Search via Tavily API."""
-    if not TAVILY_API_KEY:
-        log("No TAVILY_API_KEY — skipping search")
+def exa_search(query, max_results=5):
+    """Search via Exa.AI API."""
+    if not EXA_API_KEY:
+        log("No EXA_API_KEY — skipping search")
         return []
 
     payload = json.dumps({
-        "api_key": TAVILY_API_KEY,
         "query": query,
-        "max_results": max_results,
-        "include_raw_content": True,
-        "search_depth": "advanced",
+        "numResults": max_results,
+        "type": "auto",
+        "contents": {"text": True},
     }).encode()
 
     try:
-        req = request.Request("https://api.tavily.com/search",
-                              data=payload,
-                              headers={"Content-Type": "application/json"})
+        req = request.Request(
+            "https://api.exa.ai/search",
+            data=payload,
+            headers={
+                "Content-Type": "application/json",
+                "x-api-key": EXA_API_KEY,
+            },
+        )
         with request.urlopen(req, timeout=30) as resp:
             data = json.loads(resp.read().decode())
-            return data.get("results", [])
+            results = data.get("results", [])
+            # Normalise: map Exa `text` field to `raw_content`/`content`
+            for r in results:
+                if "text" in r and "raw_content" not in r:
+                    r["raw_content"] = r["text"]
+                if "text" in r and "content" not in r:
+                    r["content"] = r["text"]
+            return results
     except Exception as e:
-        log(f"Tavily error: {e}")
+        log(f"Exa.AI error: {e}")
         return []
 
 
@@ -156,7 +167,7 @@ def feed_to_n8n_ingestion(doc, sector):
         "title": doc.get("title", ""),
         "content": doc.get("raw_content", doc.get("content", "")),
         "sector": sector,
-        "source": "tavily",
+        "source": "exa",
         "source_domain": doc.get("url", "").split("/")[2] if "/" in doc.get("url", "") else "",
     }).encode()
 
@@ -200,7 +211,7 @@ def direct_ingest(docs, sector):
     """Fallback: direct E5 Pinecone ingest via fast-ingest."""
     # Save to JSONL for fast-ingest
     jsonl_path = os.path.expanduser(
-        f"~/rag-data-ingestion/datasets/sectors/{sector}/tavily_web.jsonl")
+        f"~/rag-data-ingestion/datasets/sectors/{sector}/exa_web.jsonl")
     os.makedirs(os.path.dirname(jsonl_path), exist_ok=True)
 
     new_count = 0
@@ -277,7 +288,7 @@ def register_document(doc, sector, status):
     db_execute("""
         INSERT INTO document_registry (sector, source_type, source_url, source_domain,
                                        title, processing_status, content_hash)
-        VALUES (%s, 'tavily', %s, %s, %s, %s, %s)
+        VALUES (%s, 'exa', %s, %s, %s, %s, %s)
         ON CONFLICT DO NOTHING
     """, (sector, url, domain, doc.get("title", "")[:500], status, h))
 
@@ -304,7 +315,7 @@ def run_cycle(sector_filter=None):
         _query_index[sector] = idx + 1
 
         log(f"\n  [{sector}] Query: {query[:50]}...")
-        results = tavily_search(query, max_results=5)
+        results = exa_search(query, max_results=5)
         log(f"  [{sector}] Got {len(results)} results")
         total_docs += len(results)
 

@@ -630,10 +630,10 @@ rm -rf datasets/phase-N/
 | Resource | Value | Notes |
 |----------|-------|-------|
 | **Script** | `ops/continuous-ingest.py --loop 3600` | Runs on VM, 1-hour cycles |
-| **Pipeline** | Tavily search → Docling S6 → Chunking → Embedding → Pinecone + Supabase | All 4 sectors |
+| **Pipeline** | Exa.AI search → Docling S6 → Chunking → Embedding → Pinecone + Supabase | All 4 sectors |
 | **Docling Integration** | Sends PDFs to S6 Space for processing | Markdown + structured extraction |
 | **n8n Workflows** | Ingestion V4.0 (`nh1D4Up0wBZhuQbp`) + Enrichment V4.0 (`ORa01sX4xI0iRCJ8`) | Pinecone + Supabase + Neo4j |
-| **Growth Rate** | ~7K vectors/cycle (Tavily-sourced) | From ~71K to ~78K in recent cycles |
+| **Growth Rate** | ~7K vectors/cycle (Exa.AI-sourced) | From ~71K to ~78K in recent cycles |
 | **Status** | **RUNNING** | Daemon managed via `ops/agents.py` |
 
 ### Target Architecture (16 workflows)

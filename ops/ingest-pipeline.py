@@ -9,7 +9,7 @@ The SCRIPT finds documents. The N8N WORKFLOW processes them.
                          → Community Detection → Cross-doc Linking
 
 Flow:
-  1. Source discovery (Tavily web, HF datasets, local JSONL, PDF URLs)
+  1. Source discovery (Exa.AI web, HF datasets, local JSONL, PDF URLs)
   2. Dedup (check Supabase document_registry)
   3. POST each document to n8n Ingestion V4.0 webhook
   4. n8n handles: Docling/Unstructured, chunking, embedding, storage, NER
@@ -20,7 +20,7 @@ n8n Ingestion payload:
 
 Usage:
   source .env.local
-  python3 ops/ingest-pipeline.py --source tavily --sector finance --max 5
+  python3 ops/ingest-pipeline.py --source exa --sector finance --max 5
   python3 ops/ingest-pipeline.py --source pdf --urls urls.txt --sector btp
   python3 ops/ingest-pipeline.py --source jsonl --sector all
   python3 ops/ingest-pipeline.py --daemon 1800 --sector all
@@ -69,7 +69,7 @@ if os.path.exists(ENV_FILE):
                 if k and v:
                     os.environ.setdefault(k, v)
 
-TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY", "")
+EXA_API_KEY = os.environ.get("EXA_API_KEY", "")
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 DATASETS_DIR = Path.home() / "rag-data-ingestion" / "datasets" / "sectors"
 
@@ -92,8 +92,8 @@ def _handle_sig(s, f):
 signal.signal(signal.SIGINT, _handle_sig)
 signal.signal(signal.SIGTERM, _handle_sig)
 
-# ── Tavily queries per sector ──
-TAVILY_QUERIES = {
+# ── Exa.AI queries per sector ──
+EXA_QUERIES = {
     "finance": [
         "analyse financière entreprise EBITDA marge nette bilan",
         "IFRS 17 assurance normes comptables application",
@@ -165,7 +165,7 @@ def call_n8n_ingest(doc, timeout=90):
     payload = {
         "documentId": doc_id,
         "filename": doc.get("filename", doc.get("title", "document")) + ".html",
-        "source": doc.get("source", "tavily"),
+        "source": doc.get("source", "exa"),
         "tenant_id": doc.get("sector", "finance"),
         "metadata": {
             "sector": doc.get("sector", "finance"),
@@ -233,24 +233,26 @@ def call_n8n_enrich(doc_id, sector, timeout=90):
     return {"ok": False, "error": "All Spaces failed"}
 
 
-# ── Source: Tavily ──
-def tavily_search(query, sector, max_results=5):
-    if not TAVILY_API_KEY:
-        log("TAVILY_API_KEY not set", "WARN")
+# ── Source: Exa.AI ──
+def exa_search(query, sector, max_results=5):
+    if not EXA_API_KEY:
+        log("EXA_API_KEY not set", "WARN")
         return []
 
     payload = json.dumps({
-        "api_key": TAVILY_API_KEY,
         "query": query,
-        "search_depth": "advanced",
-        "include_raw_content": True,
-        "max_results": max_results,
+        "numResults": max_results,
+        "type": "auto",
+        "contents": {"text": True},
     }).encode()
 
     req = urllib.request.Request(
-        "https://api.tavily.com/search",
+        "https://api.exa.ai/search",
         data=payload,
-        headers={"Content-Type": "application/json"},
+        headers={
+            "Content-Type": "application/json",
+            "x-api-key": EXA_API_KEY,
+        },
         method="POST"
     )
 
@@ -259,19 +261,20 @@ def tavily_search(query, sector, max_results=5):
             data = json.loads(resp.read())
             results = []
             for r in data.get("results", []):
-                content = r.get("raw_content") or r.get("content", "")
+                content = r.get("text", "")
                 if content and len(content) > MIN_TEXT_LEN:
                     results.append({
                         "title": r.get("title", ""),
                         "url": r.get("url", ""),
                         "content": content,
+                        "raw_content": content,
                         "sector": sector,
-                        "source": "tavily",
+                        "source": "exa",
                         "filename": r.get("title", "document")[:100],
                     })
             return results
     except Exception as e:
-        log(f"Tavily search failed: {e}", "ERROR")
+        log(f"Exa.AI search failed: {e}", "ERROR")
         return []
 
 
@@ -347,20 +350,20 @@ def ingest_batch(docs, enrich=True, delay=2.0):
     return {"total": len(docs), "ok": ok, "fail": fail, "enriched": enriched}
 
 
-def run_tavily_cycle(sectors, max_queries=3, enrich=True):
-    """Run Tavily → n8n ingestion cycle."""
+def run_exa_cycle(sectors, max_queries=3, enrich=True):
+    """Run Exa.AI → n8n ingestion cycle."""
     all_docs = []
     for sector in sectors:
-        queries = TAVILY_QUERIES.get(sector, [])[:max_queries]
+        queries = EXA_QUERIES.get(sector, [])[:max_queries]
         for query in queries:
             if _shutdown:
                 break
-            log(f"Tavily: {query[:50]}... ({sector})")
-            results = tavily_search(query, sector, max_results=5)
+            log(f"Exa.AI: {query[:50]}... ({sector})")
+            results = exa_search(query, sector, max_results=5)
             all_docs.extend(results)
-            time.sleep(1.5)  # Tavily rate limit
+            time.sleep(1.5)  # Exa.AI rate limit
 
-    log(f"Tavily found {len(all_docs)} documents across {len(sectors)} sectors")
+    log(f"Exa.AI found {len(all_docs)} documents across {len(sectors)} sectors")
     return ingest_batch(all_docs, enrich=enrich)
 
 
@@ -395,16 +398,16 @@ def run_url_cycle(urls_file, sector, enrich=True):
 
 
 def run_daemon(sectors, interval, max_queries=3):
-    """Run ingestion daemon: Tavily → JSONL rotation."""
+    """Run ingestion daemon: Exa.AI → JSONL rotation."""
     cycle = 0
     while not _shutdown:
         cycle += 1
-        source = "tavily" if cycle % 2 == 1 else "jsonl"
+        source = "exa" if cycle % 2 == 1 else "jsonl"
         log(f"=== Ingestion cycle {cycle} (source={source}) ===")
 
         try:
-            if source == "tavily":
-                result = run_tavily_cycle(sectors, max_queries=max_queries)
+            if source == "exa":
+                result = run_exa_cycle(sectors, max_queries=max_queries)
             else:
                 result = run_jsonl_cycle(sectors, max_per_sector=50)
 
@@ -433,9 +436,9 @@ def run_daemon(sectors, interval, max_queries=3):
 
 def main():
     parser = argparse.ArgumentParser(description="Unified Ingestion Pipeline (n8n-backed)")
-    parser.add_argument("--source", choices=["tavily", "jsonl", "pdf", "all"], default="tavily")
+    parser.add_argument("--source", choices=["exa", "jsonl", "pdf", "all"], default="exa")
     parser.add_argument("--sector", default="all", help="Sector or 'all'")
-    parser.add_argument("--max-queries", type=int, default=2, help="Max Tavily queries per sector")
+    parser.add_argument("--max-queries", type=int, default=2, help="Max Exa.AI queries per sector")
     parser.add_argument("--daemon", type=int, help="Run as daemon with N second interval")
     parser.add_argument("--urls", help="File with URLs (one per line)")
     parser.add_argument("--no-enrich", action="store_true", help="Skip enrichment trigger")
@@ -449,16 +452,16 @@ def main():
         run_daemon(sectors, args.daemon, max_queries=args.max_queries)
         return
 
-    if args.source == "tavily":
-        result = run_tavily_cycle(sectors, max_queries=args.max_queries, enrich=enrich)
+    if args.source == "exa":
+        result = run_exa_cycle(sectors, max_queries=args.max_queries, enrich=enrich)
     elif args.source == "jsonl":
         result = run_jsonl_cycle(sectors, enrich=enrich)
     elif args.source == "pdf" and args.urls:
         result = run_url_cycle(args.urls, sectors[0], enrich=enrich)
     elif args.source == "all":
-        r1 = run_tavily_cycle(sectors, max_queries=args.max_queries, enrich=enrich)
+        r1 = run_exa_cycle(sectors, max_queries=args.max_queries, enrich=enrich)
         r2 = run_jsonl_cycle(sectors, enrich=enrich)
-        result = {"tavily": r1, "jsonl": r2}
+        result = {"exa": r1, "jsonl": r2}
     else:
         log("No valid source specified", "ERROR")
         return

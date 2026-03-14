@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tavily-Powered Sector Research Tool
+Exa.AI-Powered Sector Research Tool
 ====================================
 Discovers what real French PME/ETI need, finds real documents,
 and generates expert-level test cases for our 4 RAG pipelines.
@@ -24,7 +24,7 @@ from datetime import datetime, timezone
 # Configuration
 # ---------------------------------------------------------------------------
 
-TAVILY_URL = "https://api.tavily.com/search"
+EXA_URL = "https://api.exa.ai/search"
 RATE_LIMIT_SECONDS = 1.1  # slightly above 1s for safety
 
 SECTOR_QUERIES = {
@@ -128,29 +128,28 @@ DIFFICULTY_KEYWORDS = {
 # ---------------------------------------------------------------------------
 
 def load_api_key():
-    """Load Tavily API key from environment."""
-    key = os.environ.get("TAVILY_API_KEY")
+    """Load Exa.AI API key from environment."""
+    key = os.environ.get("EXA_API_KEY")
     if not key:
-        print("[ERROR] TAVILY_API_KEY not found in environment.")
+        print("[ERROR] EXA_API_KEY not found in environment.")
         print("        Run: source .env.local")
         sys.exit(1)
     return key
 
 
-def tavily_search(api_key: str, query: str, max_results: int = 5) -> dict:
-    """Call Tavily search API using urllib."""
+def exa_search(api_key: str, query: str, max_results: int = 5) -> dict:
+    """Call Exa.AI search API using urllib."""
     payload = json.dumps({
-        "api_key": api_key,
         "query": query,
-        "search_depth": "advanced",
-        "include_answer": True,
-        "max_results": max_results,
+        "numResults": max_results,
+        "type": "auto",
+        "contents": {"text": True},
     }).encode("utf-8")
 
     req = urllib.request.Request(
-        TAVILY_URL,
+        EXA_URL,
         data=payload,
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", "x-api-key": api_key},
         method="POST",
     )
 
@@ -182,7 +181,7 @@ def classify_difficulty(question: str) -> str:
 
 
 def extract_documents(results: list) -> list:
-    """Extract document references from Tavily results."""
+    """Extract document references from Exa.AI results."""
     docs = []
     seen_urls = set()
     for r in results:
@@ -225,14 +224,14 @@ def generate_test_cases(sector: str, all_results: list, all_answers: list) -> li
                     source_url = results_list[0].get("url", "")
 
         test_cases.append({
-            "id": f"tavily-{sector[:3]}-{i+1:02d}",
+            "id": f"exa-{sector[:3]}-{i+1:02d}",
             "question": question,
             "expected_answer": expected,
             "source_url": source_url,
             "difficulty": classify_difficulty(question),
             "sector": sector,
             "pipeline": "standard",
-            "origin": "tavily-template",
+            "origin": "exa-template",
         })
 
     # 2) Questions derived directly from Tavily answers
@@ -244,14 +243,14 @@ def generate_test_cases(sector: str, all_results: list, all_answers: list) -> li
         for j, sentence in enumerate(sentences[:2]):  # max 2 per answer
             q = f"Selon la réglementation française, est-il vrai que {sentence.lower().rstrip('.')} ?"
             test_cases.append({
-                "id": f"tavily-{sector[:3]}-derived-{idx+1:02d}-{j+1}",
+                "id": f"exa-{sector[:3]}-derived-{idx+1:02d}-{j+1}",
                 "question": q,
                 "expected_answer": sentence,
                 "source_url": all_results[idx][0].get("url", "") if idx < len(all_results) and all_results[idx] else "",
                 "difficulty": "intermediate",
                 "sector": sector,
                 "pipeline": "standard",
-                "origin": "tavily-derived",
+                "origin": "exa-derived",
             })
 
     return test_cases
@@ -292,7 +291,7 @@ def generate_expert_questions(sector: str, all_answers: list) -> list:
 # ---------------------------------------------------------------------------
 
 def research_sector(api_key: str, sector: str) -> dict:
-    """Run full Tavily research for one sector."""
+    """Run full Exa.AI research for one sector."""
     queries = SECTOR_QUERIES[sector]
     all_results = []
     all_answers = []
@@ -306,7 +305,7 @@ def research_sector(api_key: str, sector: str) -> dict:
 
     for i, query in enumerate(queries):
         print(f"\n  [{i+1}/{len(queries)}] {query}")
-        result = tavily_search(api_key, query)
+        result = exa_search(api_key, query)
 
         if "error" in result and result.get("results") == []:
             print(f"         FAILED - skipping")
@@ -316,13 +315,14 @@ def research_sector(api_key: str, sector: str) -> dict:
             continue
 
         results = result.get("results", []) or []
-        answer = result.get("answer", "") or ""
+        # Exa.AI returns text in results[].text; build a synthetic answer from first result
+        answer = results[0].get("text", "") if results else ""
 
         print(f"         {len(results)} results, answer: {len(answer)} chars")
         for r in results[:3]:
             title = r.get("title", "")[:60]
             url = r.get("url", "")
-            score = r.get("score", 0)
+            score = r.get("score", 0) or 0
             print(f"           - [{score:.2f}] {title}")
             print(f"             {url}")
 
@@ -335,6 +335,7 @@ def research_sector(api_key: str, sector: str) -> dict:
                 seen_urls.add(doc["url"])
                 doc["sector"] = sector
                 doc["query"] = query
+                doc["source"] = "exa"
                 all_documents.append(doc)
 
         time.sleep(RATE_LIMIT_SECONDS)
@@ -381,7 +382,7 @@ def research_sector(api_key: str, sector: str) -> dict:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Tavily-powered sector research for French PME/ETI"
+        description="Exa.AI-powered sector research for French PME/ETI"
     )
     parser.add_argument(
         "--sector",
@@ -411,7 +412,7 @@ def main():
     api_key = load_api_key()
 
     print("=" * 60)
-    print("  TAVILY SECTOR RESEARCH TOOL")
+    print("  EXA.AI SECTOR RESEARCH TOOL")
     print(f"  Sectors: {', '.join(s.upper() for s in sectors)}")
     print(f"  Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
     total_queries = sum(len(SECTOR_QUERIES[s]) for s in sectors)
@@ -421,7 +422,7 @@ def main():
 
     output = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "tool": "tavily-sector-research",
+        "tool": "exa-sector-research",
         "version": "1.0",
         "sectors": {},
     }
@@ -436,7 +437,7 @@ def main():
     # --- Write main output ---
     out_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "sectors", "eval-datasets")
     os.makedirs(out_dir, exist_ok=True)
-    out_path = os.path.join(out_dir, "tavily-real-world-tests.json")
+    out_path = os.path.join(out_dir, "exa-real-world-tests.json")
 
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)

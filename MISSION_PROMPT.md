@@ -61,7 +61,7 @@
 ### Daemons actifs (VM GCP)
 | Process | Cycle | Role |
 |---------|-------|------|
-| `ingest-pipeline.py` | 1800s | Tavily research → n8n S9 ingestion |
+| `ingest-pipeline.py` | 1800s | Exa.AI research → n8n S9 ingestion |
 | `ingest-enrich-chain.py` | 900s | Enrichment docs non-enrichis via n8n S9 |
 | `eval-blast.py` | 1800s | 50Q eval continu, toutes pipelines |
 | `agent-improver.py` | 3600s | Detecte secteur faible, ingere donnees ciblees |
@@ -77,7 +77,7 @@
 **Concept**: Plateforme de vente/encheres d'entreprises (IA-natives ou reelles) et d'agents specialises.
 
 **Module Valuator (Due Diligence):**
-- **Valeur Idee**: Analyse de rarete via autoresearch (Karpathy reasoning loop) + Tavily mass search.
+- **Valeur Idee**: Analyse de rarete via autoresearch (Karpathy reasoning loop) + Exa.AI mass search.
 - **Valeur Execution**: Preuve de travail extraite des logs n8n, metriques eval-blast, `data/metrics/execution_log.json`.
 - **Revenus Reels**: Analyse transparente des flux financiers via `sector_financial_tables` (3,876 tables, 225 companies).
 - **Scoring**: Calcul automatique base sur `document_registry.quality_score` + Neo4j entity graph density.
@@ -99,12 +99,12 @@
 2. **Etude de marche autonome** via `autoresearch` reasoning loop → resultats dans `document_registry`.
 3. **Deploiement agents**: n8n workflows parametriques (1 workflow = 1 agent) sur Spaces libres (S2, S4, Worker-2).
 4. **Monitoring**: eval-blast continu + OpenClaw health checks toutes les 5min + Telegram alertes admin.
-5. **Data pipeline**: Ingestion sectorielle automatique (Tavily → n8n S9 → Pinecone + Neo4j + Supabase).
+5. **Data pipeline**: Ingestion sectorielle automatique (Exa.AI → n8n S9 → Pinecone + Neo4j + Supabase).
 
 **Agents ABF (deployes comme workflows n8n):**
 | Agent | Role | Space |
 |-------|------|-------|
-| Market Research | Autoresearch + Tavily → rapport | S9 |
+| Market Research | Autoresearch + Exa.AI → rapport | S9 |
 | Content Agent | Generation contenu expert → ingestion | S1/S3/S5 |
 | Sales Agent | Leads via eval questions + responses | OpenClaw |
 | Analytics Agent | Metriques via eval-blast + execution_log | VM daemon |

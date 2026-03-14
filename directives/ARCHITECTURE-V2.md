@@ -34,11 +34,11 @@ Trouver, telecharger, traiter (Docling), chunker, embedder, et stocker des docum
 |--------|------|--------|
 | `ops/ingest-pipeline.py` | **NEW** — Script unifie remplacant les 5 chemins | A CREER |
 | `ops/docling-s6-ingest.py` | PDF processing via Docling S6 | KEEP + FIX |
-| `ops/tavily-mass-ingest.py` | Web document acquisition | KEEP + REFACTOR |
+| `ops/exa-mass-ingest.py` | Web document acquisition | KEEP + REFACTOR |
 
 ### Flux
 ```
-1. Source discovery (Tavily, HF datasets, PDF URLs, local files)
+1. Source discovery (Exa.AI, HF datasets, PDF URLs, local files)
 2. Document download + dedup (check Supabase document_registry)
 3. Processing: Docling S6 for PDFs, raw text for web content
 4. Chunking: semantic chunks (1000 chars, 200 overlap, paragraph-aware)
@@ -209,7 +209,7 @@ Trouver des documents reels, generer des questions/reponses d'expert, alimenter 
 ### Scripts
 | Script | Role | Status |
 |--------|------|--------|
-| `eval/generate-expert-questions.py` | Expert Q&A via Tavily+LLM | KEEP + IMPROVE |
+| `eval/generate-expert-questions.py` | Expert Q&A via Exa.AI+LLM | KEEP + IMPROVE |
 | `eval/generate-standard-questions.py` | Standard Q&A generation | KEEP |
 | `eval/generate-graph-questions.py` | Graph-specific Q&A | KEEP |
 | `eval/generate-quant-questions.py` | Quantitative Q&A | KEEP |
@@ -228,7 +228,7 @@ Trouver des documents reels, generer des questions/reponses d'expert, alimenter 
 
 ### Flux
 ```
-1. Tavily search for real documents per sector
+1. Exa.AI search for real documents per sector
 2. LLM generates expert-level questions from documents
 3. LLM generates golden answers with source citations
 4. Questions tagged by: sector, pipeline, difficulty, doc_type

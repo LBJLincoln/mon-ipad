@@ -2,12 +2,12 @@
 """
 Expert Discovery — Continuous Expert Document & Q&A Discovery Engine
 =====================================================================
-Uses Tavily API to discover REAL expert-level documents across 4 sectors
+Uses Exa.AI to discover REAL expert-level documents across 4 sectors
 (finance, btp, juridique, industrie) and generates expert-grade Q&A pairs
 via LiteLLM proxy for RAG evaluation.
 
 Pipeline:
-  1. Tavily searches with sector-specific expert queries (10+ per sector)
+  1. Exa.AI searches with sector-specific expert queries (10+ per sector)
   2. Filter & deduplicate discovered documents
   3. LiteLLM (smart model group → llama-70b/qwen/gemini) generates expert Q&A
   4. Saves everything to data/eval/expert-discovery/
@@ -90,9 +90,9 @@ class C:
 
 
 # ─── Config ──────────────────────────────────────────────────────────────
-TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY", "")
-TAVILY_URL = "https://api.tavily.com/search"
-TAVILY_DELAY = 1.5  # seconds between Tavily requests (rate limit)
+EXA_API_KEY = os.environ.get("EXA_API_KEY", "")
+EXA_URL = "https://api.exa.ai/search"
+EXA_DELAY = 1.5  # seconds between Exa.AI requests (rate limit)
 
 LITELLM_URL = "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions"
 LITELLM_KEY = "sk-litellm-nomos-2026"
@@ -411,11 +411,11 @@ def extract_domain(url):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  PHASE 1 — TAVILY DOCUMENT DISCOVERY
+#  PHASE 1 — EXA.AI DOCUMENT DISCOVERY
 # ═══════════════════════════════════════════════════════════════════════════
 
-class TavilyDiscovery:
-    """Discovers expert-level documents via Tavily search API."""
+class ExaDiscovery:
+    """Discovers expert-level documents via Exa.AI search API."""
 
     def __init__(self, sectors=None, max_queries=0):
         self.sectors = sectors or SECTORS
@@ -571,27 +571,30 @@ class TavilyDiscovery:
         except Exception as e:
             _log(f"Redis unavailable, skipping queue push ({type(e).__name__}: {e})", "WARN")
 
-    def _tavily_search(self, query, sector):
-        """Execute a Tavily search and return results."""
+    def _exa_search(self, query, sector):
+        """Execute an Exa.AI search and return results."""
         payload = {
-            "api_key": TAVILY_API_KEY,
             "query": query,
-            "search_depth": "advanced",
-            "max_results": 8,
-            "include_raw_content": True,
+            "numResults": 8,
+            "type": "auto",
+            "contents": {"text": True},
         }
 
-        status, body, err = _http_request(TAVILY_URL, method="POST", data=payload, timeout=60)
+        status, body, err = _http_request(
+            EXA_URL, method="POST", data=payload,
+            headers={"Content-Type": "application/json", "x-api-key": EXA_API_KEY},
+            timeout=60,
+        )
 
         if err or status != 200:
-            _log(f"[{sector}] Tavily error for '{query[:40]}...': {err or f'HTTP {status}'}", "ERROR")
+            _log(f"[{sector}] Exa.AI error for '{query[:40]}...': {err or f'HTTP {status}'}", "ERROR")
             return []
 
         try:
             data = json.loads(body)
             return data.get("results", [])
         except json.JSONDecodeError:
-            _log(f"[{sector}] Invalid JSON from Tavily", "ERROR")
+            _log(f"[{sector}] Invalid JSON from Exa.AI", "ERROR")
             return []
 
     def discover_sector(self, sector):
@@ -611,7 +614,7 @@ class TavilyDiscovery:
         for qi, query in enumerate(queries):
             _log(f"[{sector}] [{qi+1}/{len(queries)}] Query: \"{query[:60]}...\"")
 
-            results = self._tavily_search(query, sector)
+            results = self._exa_search(query, sector)
             valid_count = 0
 
             for result in results:
@@ -621,7 +624,9 @@ class TavilyDiscovery:
                 content = result.get("content", "") or ""
 
                 # Use raw_content if available, fall back to content
-                text = raw_content if len(raw_content) > len(content) else content
+                # Exa.AI returns text in result["text"]; also check raw_content/content for compat
+                exa_text = result.get("text", "") or ""
+                text = exa_text if exa_text else (raw_content if len(raw_content) > len(content) else content)
                 text = clean_web_content(text)
 
                 if not text or len(text) < MIN_CONTENT_LENGTH:
@@ -671,8 +676,8 @@ class TavilyDiscovery:
             if valid_count > 0:
                 _log(f"[{sector}] Found {valid_count} new docs from '{query[:40]}...'", "OK")
 
-            # Rate limit Tavily
-            time.sleep(TAVILY_DELAY)
+            # Rate limit Exa.AI
+            time.sleep(EXA_DELAY)
 
         self.save()
 
@@ -687,7 +692,7 @@ class TavilyDiscovery:
     def discover_all(self):
         """Discover documents for all configured sectors."""
         _log("=" * 70, "STAGE")
-        _log("PHASE 1: EXPERT DOCUMENT DISCOVERY (Tavily)", "STAGE")
+        _log("PHASE 1: EXPERT DOCUMENT DISCOVERY (Exa.AI)", "STAGE")
         _log("=" * 70, "STAGE")
 
         total_new = 0

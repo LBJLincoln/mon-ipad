@@ -67,6 +67,30 @@ REPOS = {
     "rag-website": "/home/termius/rag-website",
     "rag-data-ingestion": "/home/termius/rag-data-ingestion",
     "rag-dashboard": "/home/termius/rag-dashboard",
+    "rag-storage": "/home/termius/rag-storage",
+    "rag-pme-usecases": "/home/termius/rag-pme-usecases",
+    "nomos-nba-agents": "/home/termius/nomos-nba-agents",
+}
+
+HF_SPACES = {
+    "S1": "https://lbjlincoln-nomos-rag-engine.hf.space",
+    "S2": "https://lbjlincoln26-nomos-rag-engine-2.hf.space",
+    "S3": "https://lbjlincoln-nomos-rag-engine-3.hf.space",
+    "S4": "https://lbjlincoln26-nomos-rag-engine-4.hf.space",
+    "S5": "https://lbjlincoln-nomos-rag-engine-5.hf.space",
+    "S6": "https://lbjlincoln-nomos-docling-api.hf.space",
+    "S7": "https://lbjlincoln-nomos-rag-engine-7.hf.space",
+    "S8": "https://lbjlincoln26-nomos-rag-engine-8.hf.space",
+    "S9": "https://lbjlincoln-nomos-rag-engine-9.hf.space",
+    "S10": "https://lbjlincoln26-nomos-rag-engine-10.hf.space",
+    "Embed": "https://lbjlincoln-nomos-embeddings-api.hf.space",
+    "BoltProxy": "https://lbjlincoln-nomos-neo4j-proxy.hf.space",
+}
+
+CLI_TOOLS = {
+    "claude": {"bin": "claude", "args": ["--print", "--dangerously-skip-permissions"], "timeout": 120},
+    "gemini": {"bin": "gemini", "args": ["-p"], "timeout": 120},
+    "kimi": {"bin": KIMI_CODE_BIN, "args": ["--print"], "timeout": 120},
 }
 
 
@@ -695,6 +719,63 @@ Ecris en langage naturel — Claude Code comprend tout.""")
                 icon = "OK" if r["ok"] else "FAIL"
                 results.append(f"  [{icon}] {name}")
         send(chat_id, "Git pull:\n" + "\n".join(results))
+        return
+
+    if cmd_lower == "/repos":
+        send_typing(chat_id)
+        lines = ["REPOS (git status):"]
+        for name, path in REPOS.items():
+            if Path(path).exists():
+                r = run_cmd("git log --oneline -1 2>/dev/null", cwd=path, timeout=10)
+                branch = run_cmd("git branch --show-current 2>/dev/null", cwd=path, timeout=5)
+                lines.append(f"  {name} [{branch['output'].strip()}]: {r['output'][:60]}")
+            else:
+                lines.append(f"  {name}: NOT CLONED")
+        send(chat_id, "\n".join(lines))
+        return
+
+    if cmd_lower == "/repo":
+        parts = text.split(maxsplit=1)
+        if len(parts) < 2:
+            send(chat_id, "Usage: /repo <name>\nSwitch CWD to a repo.\nAvailable: " + ", ".join(REPOS.keys()))
+            return
+        name = parts[1].strip()
+        if name in REPOS and Path(REPOS[name]).exists():
+            chat_cwd[chat_id] = REPOS[name]
+            send(chat_id, f"CWD -> {REPOS[name]}")
+        else:
+            send(chat_id, f"Unknown repo: {name}\nAvailable: " + ", ".join(REPOS.keys()))
+        return
+
+    if cmd_lower == "/spaces":
+        send_typing(chat_id)
+        lines = ["HF SPACES STATUS:"]
+        for name, url in HF_SPACES.items():
+            try:
+                req = urllib.request.Request(url, method="HEAD")
+                req.add_header("User-Agent", "Nomos-Bot/5.0")
+                start = time.time()
+                with urllib.request.urlopen(req, timeout=8, context=ctx) as resp:
+                    latency = int((time.time() - start) * 1000)
+                    lines.append(f"  {name}: UP ({resp.status}) {latency}ms")
+            except Exception as e:
+                lines.append(f"  {name}: DOWN ({str(e)[:30]})")
+        send(chat_id, "\n".join(lines))
+        return
+
+    if cmd_lower == "/rates":
+        send_typing(chat_id)
+        r = run_cmd("source .env.local && python3 ops/rate-limits-tracker.py --once 2>&1 | tail -40", timeout=90)
+        send(chat_id, r["output"])
+        return
+
+    if cmd_lower == "/agents":
+        send_typing(chat_id)
+        r = run_cmd("python3 agents/launcher.py status 2>&1")
+        # Strip ANSI color codes for Telegram
+        import re as _re
+        clean = _re.sub(r'\033\[[0-9;]*m', '', r["output"])
+        send(chat_id, clean)
         return
 
     if cmd_lower == "/eval":

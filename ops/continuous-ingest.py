@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Continuous Ingestion Daemon — runs Tavily + fast-ingest in cycles.
+Continuous Ingestion Daemon — runs Exa.AI + fast-ingest in cycles.
 
 Runs as a background daemon on the VM, continuously:
-1. Tavily web search → chunk → E5 Pinecone (all 4 sectors)
+1. Exa.AI web search → chunk → E5 Pinecone (all 4 sectors)
 2. HF dataset download → chunk → E5 Pinecone
 3. Neo4j enrichment check
 
@@ -65,11 +65,11 @@ def save_state(state: dict):
     STATE_FILE.write_text(json.dumps(state, indent=2, default=str))
 
 
-def run_tavily_sector(sector: str, max_queries: int = 5) -> dict:
-    """Run tavily-mass-ingest for one sector."""
-    log(f"  Tavily → {sector} ({max_queries} queries)")
+def run_exa_sector(sector: str, max_queries: int = 5) -> dict:
+    """Run exa-mass-ingest for one sector."""
+    log(f"  Exa.AI → {sector} ({max_queries} queries)")
     cmd = [
-        sys.executable, str(OPS_DIR / "tavily-mass-ingest.py"),
+        sys.executable, str(OPS_DIR / "exa-mass-ingest.py"),
         "--sector", sector,
         "--max-queries", str(max_queries),
     ]
@@ -266,7 +266,7 @@ def run_neo4j_enrichment() -> dict:
         return {"entities": 0, "ok": False, "error": str(e)}
 
 
-def run_cycle(state: dict, tavily_queries: int = 5) -> dict:
+def run_cycle(state: dict, exa_queries: int = 5) -> dict:
     """Run one full ingestion cycle."""
     cycle_start = datetime.now(timezone.utc)
     cycle_num = state["cycles"] + 1
@@ -281,10 +281,10 @@ def run_cycle(state: dict, tavily_queries: int = 5) -> dict:
     r = run_fast_ingest("all")
     results.append({"step": "fast-ingest", **r})
 
-    # 2. Tavily for each sector
+    # 2. Exa.AI for each sector
     for sector in ["finance", "btp", "juridique", "industrie"]:
-        r = run_tavily_sector(sector, tavily_queries)
-        results.append({"step": "tavily-%s" % sector, **r})
+        r = run_exa_sector(sector, exa_queries)
+        results.append({"step": "exa-%s" % sector, **r})
 
     # 3. HF datasets (one per cycle, rotating)
     hf_idx = (cycle_num - 1) % len(HF_DATASETS)
@@ -332,26 +332,26 @@ def run_cycle(state: dict, tavily_queries: int = 5) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="Continuous Ingestion Daemon")
     parser.add_argument("--loop", type=int, default=0, help="Loop interval in seconds (0=one-shot)")
-    parser.add_argument("--tavily-queries", type=int, default=5, help="Tavily queries per sector per cycle")
+    parser.add_argument("--exa-queries", type=int, default=5, help="Exa.AI queries per sector per cycle")
     parser.add_argument("--daemon", action="store_true", help="Run as background daemon")
     args = parser.parse_args()
 
     log("Continuous Ingestion Daemon starting")
     log(f"  Mode: {'loop every {0}s'.format(args.loop) if args.loop else 'one-shot'}")
-    log(f"  Tavily queries/sector: {args.tavily_queries}")
+    log(f"  Exa.AI queries/sector: {args.exa_queries}")
 
     state = load_state()
 
     if args.loop:
         while True:
             try:
-                run_cycle(state, args.tavily_queries)
+                run_cycle(state, args.exa_queries)
             except Exception as e:
                 log(f"  CYCLE ERROR: {e}")
             log(f"  Sleeping {args.loop}s until next cycle...")
             time.sleep(args.loop)
     else:
-        run_cycle(state, args.tavily_queries)
+        run_cycle(state, args.exa_queries)
 
     log("Daemon stopped")
 

@@ -25,12 +25,12 @@
 **Plan**: Ajouter colonne `full_answer TEXT` dans eval_results
 
 ### A3. Origine internet des documents
-**Demande**: Tracer l'URL source (Tavily, PDF) pour chaque document ingéré.
-**Status**: ✓ PARTIEL — expert-discovery tracke URL+hash+domain. Tavily ingest tracke source dans Pinecone metadata.
+**Demande**: Tracer l'URL source (Exa.AI, PDF) pour chaque document ingéré.
+**Status**: ✓ PARTIEL — expert-discovery tracke URL+hash+domain. Exa.AI ingest tracke source dans Pinecone metadata.
 **Manque**: Pas de table centralisée `document_registry` avec toutes les URLs sources.
 **Plan**:
 1. Créer/populer table `document_registry` (url, domain, sector, ingested_at, pinecone_ids[], supabase_doc_id)
-2. Modifier tavily-mass-ingest.py et docling-s6-ingest.py pour écrire dans cette table
+2. Modifier exa-mass-ingest.py et docling-s6-ingest.py pour écrire dans cette table
 
 ---
 
@@ -125,13 +125,13 @@
 
 ### E1. Ingérer DTU/Eurocodes/CCTP pour BTP
 **Demande**: BTP est à ~20% accuracy car DATA GAP massif.
-**Status**: ✗ Tavily tourne mais ne trouve pas de DTU complets (paywall).
+**Status**: ✗ Exa.AI tourne mais ne trouve pas de DTU complets (paywall).
 **Plan**:
 1. Chercher des sources ouvertes: CSTB, Légifrance (codes construction)
 2. Ingérer les Eurocodes disponibles en PDF
 3. Cibler CCTP templates publics (marchés publics = BOAMP)
 
-### E2. Continuous Tavily→Docling→Ingestion→Enrichment
+### E2. Continuous Exa.AI→Docling→Ingestion→Enrichment
 **Status**: ✓ FAIT — continuous-ingest.py daemon tourne 24/7, 5 streams.
 
 ### E3. 100+ types de documents par secteur

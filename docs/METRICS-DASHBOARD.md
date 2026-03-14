@@ -23,7 +23,7 @@
 
 | Database | Count | Change S105 | Target |
 |----------|-------|-------------|--------|
-| **E5 Pinecone** (sectors-e5-multilingual) | **~78,000 vectors** | +18,268 (Tavily 4 sectors) | 100,000 |
+| **E5 Pinecone** (sectors-e5-multilingual) | **~78,000 vectors** | +18,268 (Exa.AI 4 sectors) | 100,000 |
 | **Jina Pinecone** (website-sectors-jina-1024) | 12,536 vectors | 0 | deprecated |
 | **Legacy Pinecone** (sota-rag-jina-1024) | 0 | 0 | ARCHIVED |
 | **Supabase** (sector_documents) | **~43,000 docs** | stable | 100,000 |
@@ -34,7 +34,7 @@
 | Source | Count | Type |
 |--------|-------|------|
 | Academic benchmarks | ~59,523 | ragbench, hotpotqa, finqa, etc. |
-| Expert (Tavily text) | ~18,300+ | Real sector documents (all 4 sectors) |
+| Expert (Exa.AI text) | ~18,300+ | Real sector documents (all 4 sectors) |
 | Expert (Docling PDF) | ~200+ | Real PDF chunks |
 | **Total** | **~78,000** | 78% of 100K target |
 
@@ -90,12 +90,12 @@
 | Cycles completed | 17 |
 | Current priority | BTP data gap + Standard Finance accuracy |
 | Mass eval | Standard + Graph 200q, eval-blast 50q/30min |
-| Continuous ingest | Tavily daemon active (all 4 sectors) |
+| Continuous ingest | Exa.AI daemon active (all 4 sectors) |
 
 ### Agentic Loop Status
 - All 4 pipelines now functional (Graph+Quant fixed since S103)
 - eval-blast running every 30 min for regression detection
-- Continuous ingest daemon feeding Tavily data to E5 Pinecone
+- Continuous ingest daemon feeding Exa.AI data to E5 Pinecone
 - 29,564 eval questions tracked across all pipelines
 
 ## 5. SPECIALIZED AGENTS
@@ -104,7 +104,7 @@
 |-------|--------|------|-------|
 | monitor | RUNNING | Health checks, error detection | 5min loop |
 | eval | RUNNING | Mass eval + eval-blast | Standard+Graph 200q, blast 50q/30min |
-| ingest | RUNNING | Continuous Tavily + Docling | All 4 sectors, daemon mode |
+| ingest | RUNNING | Continuous Exa.AI + Docling | All 4 sectors, daemon mode |
 | pipeline | ON-DEMAND | Fix workflows (Claude Code) | Manual intervention |
 | docs | ON-DEMAND | Update state files | After milestones |
 
@@ -148,7 +148,7 @@
 | `parallel-eval.py` | 6-Space parallel eval | S103 | WORKING |
 | `quick-test.py` | Smoke test | S103 | WORKING |
 | `continuous-judge.py` | LLM-as-Judge | Running (agent) | WORKING |
-| `expert-discovery.py` | Tavily doc finder | S104 | WORKING |
+| `expert-discovery.py` | Exa.AI doc finder | S104 | WORKING |
 | `mass-question-generator.py` | 5K+ question gen | S97 | WORKING |
 | `expert-eval.py` | Expert-grade eval | S97 | WORKING |
 | `generate-graph-questions.py` | Graph eval questions | S105 | WORKING |
@@ -187,7 +187,7 @@
 | Pinecone | PINECONE_API_KEY | VALID |
 | Supabase | SUPABASE_API_KEY (anon) | VALID (read-only for REST) |
 | Supabase | DATABASE_URL (pooler) | VALID (write, needs `SET search_path TO public`) |
-| Tavily | TAVILY_API_KEY | VALID |
+| Exa.AI | EXA_API_KEY | VALID |
 | LiteLLM | sk-litellm-nomos-2026 | VALID |
 | Neo4j | NEO4J_URI + AUTH | VALID |
 | HuggingFace | HF_TOKEN | VALID |
@@ -203,8 +203,8 @@
 | 2 | 25 conflicting workflows deactivated | S103 | Eliminated random routing |
 | 3 | Orchestrator Quant routing fixed | S103 | Quant calls S5 correctly |
 | 4 | Quant 4-sector data: 225 rows, 111 companies | S103 | Full sector coverage |
-| 5 | E5 vectors: 59K to 78K (+18K Tavily all 4 sectors) | S104 | Better retrieval coverage |
-| 6 | Continuous ingest daemon (Tavily 4 sectors) | S104 | Automated data growth |
+| 5 | E5 vectors: 59K to 78K (+18K Exa.AI all 4 sectors) | S104 | Better retrieval coverage |
+| 6 | Continuous ingest daemon (Exa.AI 4 sectors) | S104 | Automated data growth |
 | 7 | Docling S6 integrated into continuous-ingest | S104 | PDF pipeline operational |
 | 8 | Mass eval + eval-blast running | S105 | Continuous accuracy tracking |
 | 9 | 29,564 eval questions tracked | S105 | Comprehensive evaluation |

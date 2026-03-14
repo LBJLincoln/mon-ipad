@@ -34,19 +34,19 @@
 | Agentic loop (30min cycles) | 906004 | Running, cycle 18, 8 no-improvement | Mar 11 20:58 |
 | Monitor (5min) | 906738 | Running | Mar 11 20:58 |
 | Agents (5 spécialisés) | 906739-43 | Running | Mar 11 20:58 |
-| Continuous ingest (1h) | 1178647 | Running (Tavily 4 sectors) | Mar 12 07:47 |
+| Continuous ingest (1h) | 1178647 | Running (Exa.AI 4 sectors) | Mar 12 07:47 |
 | Mass eval Standard | 1220081 | Running 155/200 | Mar 12 09:50 |
 | Mass eval Graph | 1220080 | Running ~done | Mar 12 09:50 |
 | Eval blast (50q/run) | 1253793 | Running | Mar 12 11:17 |
-| Tavily BTP | 1258980 | Running | Mar 12 ~11:30 |
-| Tavily Juridique | 1257580 | Running | Mar 12 ~11:15 |
+| Exa.AI BTP | 1258980 | Running | Mar 12 ~11:30 |
+| Exa.AI Juridique | 1257580 | Running | Mar 12 ~11:15 |
 
 ## SÉPARATION RAG vs INGESTION
 
 ```
 RAG PIPELINES (query-time)          INGESTION (data-time)
 ━━━━━━━━━━━━━━━━━━━━━━━━          ━━━━━━━━━━━━━━━━━━━━━
-Standard → S1/S3/S5                Tavily → VM scripts
+Standard → S1/S3/S5                Exa.AI → VM scripts
 Graph → S1/S3/S5                   Docling → S6 HF Space
 Quant → S1/S3/S5                   fast-ingest → Pinecone E5
 Orchestrator → S1/S3/S5            Neo4j enrichment → VM
@@ -73,7 +73,7 @@ Orchestrator → S1/S3/S5            Neo4j enrichment → VM
 
 ### CE QUI MANQUE (recommandations utilisateur)
 1. **Table `question_source_map`** — lier chaque question à son document/vector source
-2. **Traçabilité Tavily→question** — les 78K vectors n'ont pas de lien vers les questions générées
+2. **Traçabilité Exa.AI→question** — les 78K vectors n'ont pas de lien vers les questions générées
 3. **Phases autonomes progressives** — l'agentic loop est bloquée 8 cycles sans progression
 4. **Dashboard live Vercel** — deploye mais snapshot statique, pas de refresh automatique
 
@@ -115,7 +115,7 @@ Orchestrator → S1/S3/S5            Neo4j enrichment → VM
 5. ✗ **Table question_source_map** — Traçabilité question→document manquante
 6. ✗ **Dashboard live auto-refresh** — Vercel = snapshot statique
 7. ✓ Commander dashboard → https://lbjlincoln.github.io/rag-dashboard/docs/
-8. ✓ Continuous Tavily→Ingestion daemon → `ops/continuous-ingest.py`
+8. ✓ Continuous Exa.AI→Ingestion daemon → `ops/continuous-ingest.py`
 9. ✓ 29K+ eval questions (objectif 10K dépassé)
 10. ✓ Pipelines séparés RAG vs Ingestion
 

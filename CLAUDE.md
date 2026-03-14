@@ -197,7 +197,7 @@ IP: 34.136.180.66 | Debian 11 | 1 vCPU | 969 MB RAM | 30 GB disk
 | **MONITOR** | `ops/monitor.py --loop 300` | 5min | Health check, error detection per node, JSONL logging |
 | **EVAL** | `eval/quick-test.py` | After each change | Accuracy baseline, before/after comparison |
 | **PIPELINE** | Manual (Claude Code) | On-demand | 1 fix → test → push or revert |
-| **INGEST** | `ops/fast-ingest.py` | Batch | E5 vectors, Tavily, PDF, Neo4j enrichment |
+| **INGEST** | `ops/fast-ingest.py` | Batch | E5 vectors, Exa.AI, PDF, Neo4j enrichment |
 | **DOCS** | Manual | After milestone | Update PROJECT-STATE, PILOTAGE, DEBUG-PLAYBOOK |
 
 ### Lancer les agents
@@ -285,7 +285,7 @@ python3 ops/n8n-smart-analyzer.py --deep
 
 # Ingestion
 python3 ops/fast-ingest.py --sector all
-python3 ops/tavily-mass-ingest.py
+python3 ops/exa-mass-ingest.py
 python3 ops/local-pdf-ingest.py
 
 # Deployment

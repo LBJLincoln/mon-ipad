@@ -120,7 +120,7 @@ python3 ops/deploy-standard-v35.py        # Déployer Standard V3.5
 ### Agent 4: Ingestion/Enrichment
 ```bash
 python3 ops/fast-ingest.py --sector all   # Ingestion parallèle E5
-python3 ops/tavily-mass-ingest.py         # Recherche + ingestion Tavily
+python3 ops/exa-mass-ingest.py            # Recherche + ingestion Exa.AI
 python3 ops/local-pdf-ingest.py           # PDFs locaux
 python3 ops/populate-neo4j-entities.py    # Enrichissement Neo4j
 ```

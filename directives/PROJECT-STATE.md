@@ -66,7 +66,7 @@
 - [x] **LiteLLM-2** — RUNNING, proxy duplicate
 - [x] **Worker-2** — RUNNING (fixed BUILD_ERROR: missing n8n-workflows dir)
 
-### Expert Question Generation (Tavily+LLM)
+### Expert Question Generation (Exa.AI+LLM)
 - [x] **129 expert questions** generated across all 4 sectors (up from 69)
 - [x] Finance: 42 expert questions with golden answers + source URLs
 - [x] BTP: 45 expert questions
@@ -99,7 +99,7 @@
 
 ## 6. RUNNING PROCESSES
 - **Agentic loop daemon** — eval blast 50q/run, 30min intervals
-- **Continuous-ingest daemon** — Tavily (4 sectors) + fast-ingest + Docling S6
+- **Continuous-ingest daemon** — Exa.AI (4 sectors) + fast-ingest + Docling S6
 - **Expert question generator** — juridique + industrie batches in progress
 - **Eval blast** — 40q multi-pipeline in progress
 - Monitor agent (5min cycle)

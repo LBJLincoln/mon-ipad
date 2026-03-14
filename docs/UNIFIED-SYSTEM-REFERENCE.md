@@ -34,7 +34,7 @@
 ```
 SYSTEM 1: DATA PIPELINE              SYSTEM 2: RAG PIPELINES
 ┌─────────────────────────┐           ┌─────────────────────────┐
-│ Tavily API              │           │ User Question           │
+│ Exa.AI API              │           │ User Question           │
 │   ↓                     │           │   ↓                     │
 │ Docling S6 (PDF→text)   │           │ Orchestrator V13        │
 │   ↓                     │           │   ↓ routes to:          │
@@ -215,7 +215,7 @@ webhook_entity, user, settings, tag_entity, migrations
 ### 5.1 System 1: Data Pipeline
 
 ```
-Tavily API (search) → Docling S6 (PDF processing) → Chunking → Embedding (Jina/E5)
+Exa.AI API (search) → Docling S6 (PDF processing) → Chunking → Embedding (Jina/E5)
   → Pinecone (vector store) + Neo4j (entity graph) + Supabase (metadata)
   → Enrichment V4.0 (entity extraction, relation mapping)
 ```
@@ -223,14 +223,14 @@ Tavily API (search) → Docling S6 (PDF processing) → Chunking → Embedding (
 ### 5.2 n8n Workflows (on S9)
 | Workflow | ID | Role |
 |----------|-----|------|
-| Ingestion V4.0 | `nh1D4Up0wBZhuQbp` | Tavily → process → store |
+| Ingestion V4.0 | `nh1D4Up0wBZhuQbp` | Exa.AI → process → store |
 | Enrichment V4.0 | `ORa01sX4xI0iRCJ8` | Docs → entities → Neo4j |
 
 ### 5.3 VM Scripts
 | Script | Role | Schedule |
 |--------|------|----------|
-| `ops/continuous-ingest.py` | 24/7 daemon: Tavily + fast-ingest + Docling | 1h cycles |
-| `ops/tavily-mass-ingest.py` | Bulk Tavily search + ingest per sector | On-demand |
+| `ops/continuous-ingest.py` | 24/7 daemon: Exa.AI + fast-ingest + Docling | 1h cycles |
+| `ops/exa-mass-ingest.py` | Bulk Exa.AI search + ingest per sector | On-demand |
 | `ops/agent-ingest-feed.py` | Feed docs to enrichment pipeline | 1h daemon |
 | `ops/clean-ingest.py` | Dedup, clean, validate ingested data | On-demand |
 
@@ -258,8 +258,8 @@ Tavily API (search) → Docling S6 (PDF processing) → Chunking → Embedding (
 | Auto-generated (standard) | ~10,000 | Medium |
 | Auto-generated (graph) | ~5,000 | Medium |
 | Auto-generated (quant) | ~10,000 | Medium |
-| Tavily real-world | ~500 | High |
-| Expert-generated (LLM+Tavily) | Growing | High |
+| Exa.AI real-world | ~500 | High |
+| Expert-generated (Exa.AI+LLM) | Growing | High |
 | **Total** | **29,564** | |
 
 ### 6.2 LLM Judge
@@ -275,7 +275,7 @@ Tavily API (search) → Docling S6 (PDF processing) → Chunking → Embedding (
 |--------|---------|
 | `eval/eval-blast.py` | High-speed eval (20-50 questions, all pipelines) |
 | `eval/full-system-test.py` | 12-component infrastructure test |
-| `eval/generate-expert-questions.py` | Tavily+LLM expert question generation |
+| `eval/generate-expert-questions.py` | Exa.AI+LLM expert question generation |
 | `eval/generate-standard-questions.py` | Bulk standard question generation |
 | `eval/generate-graph-questions.py` | Graph-specific question generation |
 | `eval/generate-quant-questions.py` | Quantitative question generation |
@@ -330,7 +330,7 @@ agent-fixer.py               — 1h fix analysis
 agent-ingest-feed.py         — 1h enrichment feed
 agent-regression.py          — 15min regression checks
 eval-blast.py                — 30min eval runs (50 questions)
-tavily-mass-ingest.py (×2)   — BTP + Finance bulk ingest
+exa-mass-ingest.py (×2)      — BTP + Finance bulk ingest
 5 v1 agents (_runner scripts) — monitor, eval, ingest, pipeline, docs
 ```
 
@@ -390,7 +390,7 @@ All keys managed via LiteLLM config. Direct keys in .env.local:
 | `eval-blast.py` | 22K | High-speed multi-pipeline eval |
 | `full-system-test.py` | 20K | 12-component system test |
 | `llm_judge.py` | 10K | LLM-based semantic evaluation |
-| `generate-expert-questions.py` | 13K | Tavily+LLM expert questions |
+| `generate-expert-questions.py` | 13K | Exa.AI+LLM expert questions |
 | `generate-standard-questions.py` | 55K | Standard question generation |
 | `generate-graph-questions.py` | 45K | Graph question generation |
 | `generate-quant-questions.py` | 26K | Quant question generation |
@@ -461,7 +461,7 @@ GROQ_API_KEY          — Groq LLM access
 GOOGLE_API_KEY        — Google Gemini access
 JINA_API_KEY          — Jina embeddings (expired, using self-hosted)
 COHERE_API_KEY        — Cohere reranking
-TAVILY_API_KEY        — Tavily search API
+EXA_API_KEY           — Exa.AI search API
 LITELLM_MASTER_KEY    — LiteLLM proxy auth
 N8N_API_KEY           — n8n REST API key
 N8N_PASSWORD          — n8n admin password
@@ -582,7 +582,7 @@ HF_TOKEN_3            — HuggingFace (Nomos42)
 6. **100 workflows on S1** — 94 inactive legacy, should clean
 7. **No Redis queue** — Ingestion sequential (Upstash creds exist)
 8. **Dashboard only static HTML** — Needs auto-refresh mechanism
-9. **Expert questions** — Being generated via Tavily+LLM (S106)
+9. **Expert questions** — Being generated via Exa.AI+LLM (S106)
 10. **Quantitative `interpretation` field** — All scripts now handle it, but easy to forget
 
 ---
