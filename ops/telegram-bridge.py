@@ -70,6 +70,7 @@ REPOS = {
     "rag-storage": "/home/termius/rag-storage",
     "rag-pme-usecases": "/home/termius/rag-pme-usecases",
     "nomos-nba-agents": "/home/termius/nomos-nba-agents",
+    "nomos-forge-tests": "/home/termius/nomos-forge-tests",
 }
 
 HF_SPACES = {
