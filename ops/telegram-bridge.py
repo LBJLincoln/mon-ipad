@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
-"""Telegram CLI Bridge v4.0 — Talk to Claude Code from your phone.
+"""Telegram CLI Bridge v5.0 — Multi-Model AI from your phone.
 
-Three modes:
+Five modes + multi-model commands:
 1. Claude mode (default): Messages go to Claude Code CLI — full AI assistant
 2. Shell mode (/shell): Direct bash commands (like Termius)
 3. AI mode (/ai): Natural language → bash via LLM
+4. Gemini mode (/gemini): Gemini CLI headless
+5. Kimi mode (/kimi): Kimi Code headless
+
+Plus: /image (NanoBanana 2 image gen), /model, /all (parallel multi-model)
 
 Usage:
     source .env.local
@@ -21,6 +25,10 @@ import urllib.request
 import urllib.error
 import ssl
 import re
+import base64
+import io
+import uuid
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -33,6 +41,12 @@ BASE_DIR = "/home/termius/mon-ipad"
 
 LITELLM_URL = "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions"
 LITELLM_KEY = "sk-litellm-nomos-2026"
+
+GEMINI_API_KEY = "AIzaSyBWN3yEuZc6hCpmYo3WKCPpVXf2r8ktnrU"
+GEMINI_IMAGE_MODEL = "gemini-2.0-flash-exp-image-generation"
+GEMINI_IMAGE_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_IMAGE_MODEL}:generateContent?key={GEMINI_API_KEY}"
+
+KIMI_CODE_BIN = "/home/termius/.local/bin/kimi-code"
 
 # SSL context for HF spaces
 ctx = ssl.create_default_context()
@@ -55,11 +69,11 @@ REPOS = {
     "rag-dashboard": "/home/termius/rag-dashboard",
 }
 
-# ─── Shell executor ──────────────────────────────────────────
-def run_cmd(cmd, cwd=None, timeout=120):
-    """Execute shell command like Termius would."""
+
+# ─── Env loader helper ───────────────────────────────────────
+def load_env():
+    """Load .env.local into a copy of os.environ."""
     env = os.environ.copy()
-    # Source .env.local vars
     env_file = Path(BASE_DIR) / ".env.local"
     if env_file.exists():
         for line in env_file.read_text().splitlines():
@@ -70,6 +84,13 @@ def run_cmd(cmd, cwd=None, timeout=120):
                 k, v = line.split("=", 1)
                 v = v.strip("'\"")
                 env[k.strip()] = v
+    return env
+
+
+# ─── Shell executor ──────────────────────────────────────────
+def run_cmd(cmd, cwd=None, timeout=120):
+    """Execute shell command like Termius would."""
+    env = load_env()
     try:
         r = subprocess.run(
             cmd, shell=True, cwd=cwd or BASE_DIR,
@@ -88,18 +109,7 @@ def run_cmd(cmd, cwd=None, timeout=120):
 # ─── Claude Code CLI ─────────────────────────────────────────
 def ask_claude(message, cwd=None):
     """Send a message to Claude Code CLI and return the response."""
-    env = os.environ.copy()
-    env_file = Path(BASE_DIR) / ".env.local"
-    if env_file.exists():
-        for line in env_file.read_text().splitlines():
-            line = line.strip()
-            if line and not line.startswith("#") and "=" in line:
-                if line.startswith("export "):
-                    line = line[7:]
-                k, v = line.split("=", 1)
-                v = v.strip("'\"")
-                env[k.strip()] = v
-
+    env = load_env()
     start = time.time()
     try:
         r = subprocess.run(
@@ -120,6 +130,170 @@ def ask_claude(message, cwd=None):
         return {"ok": False, "output": "Claude CLI not found. Install: npm i -g @anthropic-ai/claude-code", "duration": 0}
     except Exception as e:
         return {"ok": False, "output": f"Erreur: {e}", "duration": time.time() - start}
+
+
+# ─── Gemini CLI ───────────────────────────────────────────────
+def ask_gemini(prompt, cwd=None):
+    """Send a prompt to Gemini CLI and return the response."""
+    env = load_env()
+    start = time.time()
+    try:
+        r = subprocess.run(
+            ["gemini", "-p", prompt, "-o", "text"],
+            capture_output=True, text=True, timeout=120,
+            cwd=cwd or BASE_DIR, env=env,
+        )
+        duration = time.time() - start
+        output = (r.stdout or "").strip()
+        if r.returncode != 0 and r.stderr:
+            output = output + "\n" + r.stderr.strip() if output else r.stderr.strip()
+        if len(output) > 3800:
+            output = output[:1800] + "\n...(tronque)...\n" + output[-1800:]
+        return {"ok": r.returncode == 0, "output": output or "(no output)", "duration": round(duration, 1)}
+    except subprocess.TimeoutExpired:
+        return {"ok": False, "output": "Timeout (120s).", "duration": 120}
+    except FileNotFoundError:
+        return {"ok": False, "output": "Gemini CLI not found. Install: npm i -g @anthropic-ai/gemini-cli or pip install gemini-cli", "duration": 0}
+    except Exception as e:
+        return {"ok": False, "output": f"Erreur: {e}", "duration": time.time() - start}
+
+
+# ─── Kimi Code CLI ────────────────────────────────────────────
+def ask_kimi(prompt, cwd=None):
+    """Send a prompt to Kimi Code and return the response."""
+    env = load_env()
+    start = time.time()
+    try:
+        r = subprocess.run(
+            [KIMI_CODE_BIN, "--print", prompt],
+            capture_output=True, text=True, timeout=120,
+            cwd=cwd or BASE_DIR, env=env,
+        )
+        duration = time.time() - start
+        output = (r.stdout or "").strip()
+        if r.returncode != 0 and r.stderr:
+            output = output + "\n" + r.stderr.strip() if output else r.stderr.strip()
+        if len(output) > 3800:
+            output = output[:1800] + "\n...(tronque)...\n" + output[-1800:]
+        return {"ok": r.returncode == 0, "output": output or "(no output)", "duration": round(duration, 1)}
+    except subprocess.TimeoutExpired:
+        return {"ok": False, "output": "Timeout (120s).", "duration": 120}
+    except FileNotFoundError:
+        return {"ok": False, "output": f"Kimi Code not found at {KIMI_CODE_BIN}", "duration": 0}
+    except Exception as e:
+        return {"ok": False, "output": f"Erreur: {e}", "duration": time.time() - start}
+
+
+# ─── LiteLLM query ───────────────────────────────────────────
+def ask_litellm(prompt):
+    """Send a prompt to LiteLLM and return the response."""
+    start = time.time()
+    try:
+        payload = json.dumps({
+            "model": "smart",
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": 2000,
+            "temperature": 0.3,
+        }).encode()
+        headers = {"Authorization": f"Bearer {LITELLM_KEY}", "Content-Type": "application/json"}
+        req = urllib.request.Request(LITELLM_URL, data=payload, headers=headers)
+        with urllib.request.urlopen(req, timeout=60, context=ctx) as resp:
+            result = json.loads(resp.read())
+            duration = time.time() - start
+            output = result["choices"][0]["message"]["content"].strip()
+            model = result.get("model", "smart")
+            if len(output) > 3800:
+                output = output[:1800] + "\n...(tronque)...\n" + output[-1800:]
+            return {"ok": True, "output": output, "duration": round(duration, 1), "model": model}
+    except Exception as e:
+        return {"ok": False, "output": f"LiteLLM error: {e}", "duration": round(time.time() - start, 1), "model": "smart"}
+
+
+# ─── Image generation (NanoBanana 2) ─────────────────────────
+def generate_image(prompt):
+    """Generate image via Gemini API and return the local file path + any text."""
+    payload = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]},
+    }).encode()
+    headers = {"Content-Type": "application/json"}
+    req = urllib.request.Request(GEMINI_IMAGE_URL, data=payload, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=120, context=ctx) as resp:
+            result = json.loads(resp.read())
+    except Exception as e:
+        return {"ok": False, "error": f"API error: {e}", "image_path": None, "text": None}
+
+    # Parse response parts
+    text_parts = []
+    image_path = None
+    candidates = result.get("candidates", [])
+    if not candidates:
+        return {"ok": False, "error": "No candidates in response", "image_path": None, "text": None}
+
+    parts = candidates[0].get("content", {}).get("parts", [])
+    for part in parts:
+        if "text" in part:
+            text_parts.append(part["text"])
+        elif "inlineData" in part:
+            b64_data = part["inlineData"].get("data", "")
+            mime_type = part["inlineData"].get("mimeType", "image/png")
+            if b64_data:
+                ext = "png" if "png" in mime_type else "jpg"
+                ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+                image_path = f"/tmp/nomos-img-{ts}.{ext}"
+                with open(image_path, "wb") as f:
+                    f.write(base64.b64decode(b64_data))
+
+    return {
+        "ok": True,
+        "image_path": image_path,
+        "text": "\n".join(text_parts) if text_parts else None,
+        "error": None,
+    }
+
+
+def send_photo(chat_id, image_path, caption=None):
+    """Send a photo to Telegram chat using multipart/form-data via urllib."""
+    url = f"{API_URL}/sendPhoto"
+    boundary = f"----NomosForm{uuid.uuid4().hex[:16]}"
+
+    # Build multipart body
+    body = io.BytesIO()
+
+    # chat_id field
+    body.write(f"--{boundary}\r\n".encode())
+    body.write(f'Content-Disposition: form-data; name="chat_id"\r\n\r\n'.encode())
+    body.write(f"{chat_id}\r\n".encode())
+
+    # caption field (optional)
+    if caption:
+        body.write(f"--{boundary}\r\n".encode())
+        body.write(f'Content-Disposition: form-data; name="caption"\r\n\r\n'.encode())
+        body.write(f"{caption[:1024]}\r\n".encode())
+
+    # photo file field
+    filename = os.path.basename(image_path)
+    body.write(f"--{boundary}\r\n".encode())
+    body.write(f'Content-Disposition: form-data; name="photo"; filename="{filename}"\r\n'.encode())
+    body.write(f"Content-Type: image/png\r\n\r\n".encode())
+    with open(image_path, "rb") as f:
+        body.write(f.read())
+    body.write(b"\r\n")
+
+    # End boundary
+    body.write(f"--{boundary}--\r\n".encode())
+
+    body_bytes = body.getvalue()
+    req = urllib.request.Request(
+        url, data=body_bytes,
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read())
+    except Exception as e:
+        return {"ok": False, "description": str(e)}
 
 
 # ─── Telegram helpers ────────────────────────────────────────
@@ -258,6 +432,60 @@ def get_eval_text():
     return "No recent eval data. Run: source .env.local && python3 eval/quick-test.py --proxy --pipelines standard --questions 5"
 
 
+# ─── Multi-model: /all ────────────────────────────────────────
+def run_all_models(prompt, cwd=None):
+    """Run prompt on all models in parallel and return combined results."""
+    results = {}
+
+    def _claude():
+        return ("Claude", ask_claude(prompt, cwd=cwd))
+
+    def _gemini():
+        return ("Gemini", ask_gemini(prompt, cwd=cwd))
+
+    def _litellm():
+        r = ask_litellm(prompt)
+        return ("LiteLLM", r)
+
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        futures = [pool.submit(fn) for fn in [_claude, _gemini, _litellm]]
+        for future in as_completed(futures):
+            try:
+                name, result = future.result()
+                results[name] = result
+            except Exception as e:
+                results["?"] = {"ok": False, "output": str(e), "duration": 0}
+
+    return results
+
+
+# ─── Model listing ────────────────────────────────────────────
+def get_models_text():
+    """List all available AI models on this VM."""
+    models = []
+
+    # Claude Code
+    r = run_cmd("claude --version 2>&1 | head -1", timeout=10)
+    claude_ver = r["output"].strip() if r["ok"] else "not found"
+    models.append(f"  Claude Code: {claude_ver}")
+
+    # Gemini CLI
+    r = run_cmd("which gemini 2>/dev/null && gemini --version 2>&1 | head -1 || echo 'not found'", timeout=10)
+    models.append(f"  Gemini CLI: {r['output'].strip()}")
+
+    # Kimi Code
+    r = run_cmd(f"test -f {KIMI_CODE_BIN} && {KIMI_CODE_BIN} --version 2>&1 | head -1 || echo 'not found'", timeout=10)
+    models.append(f"  Kimi Code: {r['output'].strip()}")
+
+    # LiteLLM
+    models.append(f"  LiteLLM S7: smart/fast/default (13-provider fallback)")
+
+    # Image gen
+    models.append(f"  NanoBanana 2: {GEMINI_IMAGE_MODEL} (image gen)")
+
+    return "MODELES DISPONIBLES\n\n" + "\n".join(models)
+
+
 # ─── Command router ──────────────────────────────────────────
 def handle_message(chat_id, text, username):
     """Route incoming message to the right handler."""
@@ -272,14 +500,21 @@ def handle_message(chat_id, text, username):
     cmd_lower = text.lower().split()[0] if text.startswith("/") else ""
 
     if cmd_lower in ("/start", "/help"):
-        send(chat_id, """NOMOS TELEGRAM BRIDGE v4.0
-Claude Code depuis ton telephone.
+        send(chat_id, """NOMOS TELEGRAM BRIDGE v5.0 — Multi-Model
+Claude Code + Gemini + Kimi + LiteLLM depuis ton telephone.
 
 MODES:
   Default = Claude Code (IA complete, comme Termius)
   /shell = commandes bash directes
   /ai = NLP → bash via LLM
   /claude = retour mode Claude (defaut)
+
+MULTI-MODEL:
+  /gemini <prompt> = Gemini CLI
+  /kimi <prompt> = Kimi Code
+  /image <prompt> = NanoBanana 2 (image gen)
+  /model = modeles disponibles
+  /all <prompt> = all models en parallele
 
 QUICK COMMANDS:
   /s = status complet
@@ -320,6 +555,110 @@ Ecris en langage naturel — Claude Code comprend tout.""")
         claude_history.pop(chat_id, None)
         send(chat_id, "Conversation Claude reinitialised.")
         return
+
+    # ─── Multi-model commands ─────────────────────────────
+
+    if cmd_lower == "/gemini":
+        parts = text.split(maxsplit=1)
+        if len(parts) < 2:
+            send(chat_id, "Usage: /gemini <prompt>\nEnvoie un prompt au Gemini CLI.")
+            return
+        prompt = parts[1].strip()
+        send_typing(chat_id)
+        send(chat_id, "Gemini en cours...")
+        cwd = chat_cwd.get(chat_id, BASE_DIR)
+        result = ask_gemini(prompt, cwd=cwd)
+        tag = f"[Gemini] ({result['duration']}s)"
+        icon = "OK" if result["ok"] else "ERR"
+        send(chat_id, f"{tag} [{icon}]\n{result['output']}")
+        return
+
+    if cmd_lower == "/kimi":
+        parts = text.split(maxsplit=1)
+        if len(parts) < 2:
+            send(chat_id, "Usage: /kimi <prompt>\nEnvoie un prompt a Kimi Code.")
+            return
+        prompt = parts[1].strip()
+        send_typing(chat_id)
+        send(chat_id, "Kimi Code en cours...")
+        cwd = chat_cwd.get(chat_id, BASE_DIR)
+        result = ask_kimi(prompt, cwd=cwd)
+        tag = f"[Kimi] ({result['duration']}s)"
+        icon = "OK" if result["ok"] else "ERR"
+        send(chat_id, f"{tag} [{icon}]\n{result['output']}")
+        return
+
+    if cmd_lower == "/image":
+        parts = text.split(maxsplit=1)
+        if len(parts) < 2:
+            send(chat_id, "Usage: /image <prompt>\nGenere une image via NanoBanana 2 (Gemini).")
+            return
+        prompt = parts[1].strip()
+        send_typing(chat_id)
+        send(chat_id, "Generation image en cours...")
+        result = generate_image(prompt)
+        if not result["ok"]:
+            send(chat_id, f"[Image ERR] {result['error']}")
+            return
+        # Send text if any
+        if result["text"]:
+            send(chat_id, f"[NanoBanana 2] {result['text'][:2000]}")
+        # Send image if generated
+        if result["image_path"] and os.path.exists(result["image_path"]):
+            caption = f"NanoBanana 2: {prompt[:200]}"
+            photo_result = send_photo(chat_id, result["image_path"], caption=caption)
+            if not photo_result or not photo_result.get("ok"):
+                send(chat_id, f"Image saved but Telegram upload failed: {result['image_path']}")
+            # Cleanup
+            try:
+                os.remove(result["image_path"])
+            except Exception:
+                pass
+        else:
+            send(chat_id, "[Image] Pas d'image dans la reponse. Le modele n'a retourne que du texte.")
+        return
+
+    if cmd_lower == "/model":
+        send_typing(chat_id)
+        send(chat_id, get_models_text())
+        return
+
+    if cmd_lower == "/all":
+        parts = text.split(maxsplit=1)
+        if len(parts) < 2:
+            send(chat_id, "Usage: /all <prompt>\nEnvoie le meme prompt a Claude + Gemini + LiteLLM en parallele.")
+            return
+        prompt = parts[1].strip()
+        send_typing(chat_id)
+        send(chat_id, "Envoi a tous les modeles en parallele...")
+        cwd = chat_cwd.get(chat_id, BASE_DIR)
+        results = run_all_models(prompt, cwd=cwd)
+
+        # Format combined output
+        lines = ["ALL MODELS RESPONSE", ""]
+        for name in ["Claude", "Gemini", "LiteLLM"]:
+            if name in results:
+                r = results[name]
+                dur = r.get("duration", "?")
+                icon = "OK" if r.get("ok") else "ERR"
+                model_info = r.get("model", "")
+                header = f"--- {name} ({dur}s) [{icon}]"
+                if model_info:
+                    header += f" [{model_info}]"
+                header += " ---"
+                lines.append(header)
+                # Truncate each model's output to fit in message
+                output = r.get("output", "(no output)")
+                if len(output) > 1200:
+                    output = output[:1100] + "\n...(tronque)..."
+                lines.append(output)
+                lines.append("")
+
+        combined = "\n".join(lines)
+        send(chat_id, combined)
+        return
+
+    # ─── Existing quick commands ──────────────────────────
 
     if cmd_lower == "/s":
         send_typing(chat_id)
@@ -613,15 +952,16 @@ def check_all_sites():
 # ─── Main loop ────────────────────────────────────────────────
 def main():
     ts = datetime.now().strftime("%H:%M:%S")
-    print(f"[{ts}] === NOMOS TELEGRAM BRIDGE v4.0 ===")
+    print(f"[{ts}] === NOMOS TELEGRAM BRIDGE v5.0 — Multi-Model ===")
     print(f"[{ts}] Bot: @Nomos42Bot | Admin: {ADMIN_ID}")
+    print(f"[{ts}] Models: Claude Code + Gemini CLI + Kimi Code + LiteLLM + NanoBanana 2")
     print(f"[{ts}] Mode: Claude Code CLI (default)")
     print(f"[{ts}] Polling...")
 
     tg("deleteWebhook")
 
     # Notify admin that bridge is up
-    send(ADMIN_ID, "BRIDGE v4.0 ONLINE\nMode Claude Code actif. Parle naturellement.\n/help pour toutes les options.")
+    send(ADMIN_ID, "BRIDGE v5.0 ONLINE — Multi-Model\nClaude + Gemini + Kimi + LiteLLM + Image Gen\n/help pour toutes les options.")
 
     offset = 0
     errors = 0
