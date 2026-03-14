@@ -98,11 +98,17 @@ def log_event(category, event_type, data):
 
 
 def http_get(url, headers=None, timeout=15):
-    """Simple HTTP GET."""
+    """Simple HTTP GET. Tries JSON parse, falls back to raw text."""
     req = urllib.request.Request(url, headers=headers or {})
+    req.add_header("User-Agent", "Nomos-Agent/1.0")
     try:
         with urllib.request.urlopen(req, timeout=timeout, context=ctx) as resp:
-            return {"ok": True, "status": resp.status, "body": json.loads(resp.read())}
+            raw = resp.read()
+            try:
+                body = json.loads(raw)
+            except (json.JSONDecodeError, ValueError):
+                body = raw[:500].decode("utf-8", errors="replace") if raw else None
+            return {"ok": True, "status": resp.status, "body": body}
     except urllib.error.HTTPError as e:
         return {"ok": False, "status": e.code, "body": None}
     except Exception as e:
