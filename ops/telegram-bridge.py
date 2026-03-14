@@ -294,6 +294,8 @@ QUICK COMMANDS:
   /bg <cmd> = commande en arriere-plan
   /sites = checker tous les sites
   /query <question> = interroger pipeline RAG
+  /yt <url> = transcript YouTube
+  /web <recherche> = recherche web via LLM
   /reset = reset conversation Claude
 
 Ecris en langage naturel — Claude Code comprend tout.""")
@@ -432,6 +434,96 @@ Ecris en langage naturel — Claude Code comprend tout.""")
             timeout=300
         )
         send(chat_id, r["output"] if r["output"].strip() else "Improver script not found. Building it...")
+        return
+
+    if cmd_lower == "/yt":
+        parts = text.split(maxsplit=1)
+        if len(parts) < 2:
+            send(chat_id, "Usage: /yt <youtube_url_or_video_id>\nExtrait le transcript d'une video YouTube.")
+            return
+        url_or_id = parts[1].strip()
+        send_typing(chat_id)
+        send(chat_id, "Extraction du transcript...")
+        # Extract video ID from URL
+        r = run_cmd(f"""python3 -c "
+import sys, re, json
+url = '{url_or_id}'
+# Extract video ID
+vid = url
+for pattern in [r'v=([a-zA-Z0-9_-]{{11}})', r'youtu\\.be/([a-zA-Z0-9_-]{{11}})', r'^([a-zA-Z0-9_-]{{11}})$']:
+    m = re.search(pattern, url)
+    if m:
+        vid = m.group(1)
+        break
+
+try:
+    from youtube_transcript_api import YouTubeTranscriptApi
+    ytt = YouTubeTranscriptApi()
+    transcript = ytt.fetch(vid, languages=['fr', 'en'])
+    lines = [s.text for s in transcript.snippets]
+    full_text = ' '.join(lines)
+    # Truncate for Telegram
+    if len(full_text) > 3500:
+        full_text = full_text[:3500] + '...(tronque)'
+    print(f'VIDEO: {{vid}}')
+    print(f'Longueur: {{len(lines)}} segments')
+    print('---')
+    print(full_text)
+except ImportError:
+    # Fallback: yt-dlp subtitle extraction
+    import subprocess
+    r = subprocess.run(['yt-dlp', '--skip-download', '--write-auto-sub', '--sub-lang', 'fr,en', '--sub-format', 'json3', '-o', '/tmp/yt_sub', f'https://www.youtube.com/watch?v={{vid}}'], capture_output=True, text=True, timeout=30)
+    import glob, os
+    subs = glob.glob('/tmp/yt_sub*.json3')
+    if subs:
+        with open(subs[0]) as f:
+            data = json.load(f)
+        segments = [e.get('segs', [{{}}])[0].get('utf8', '') for e in data.get('events', []) if e.get('segs')]
+        full_text = ' '.join(s.strip() for s in segments if s.strip())
+        if len(full_text) > 3500:
+            full_text = full_text[:3500] + '...(tronque)'
+        print(f'VIDEO: {{vid}} (via yt-dlp)')
+        print(f'Longueur: {{len(segments)}} segments')
+        print('---')
+        print(full_text)
+        for s in subs:
+            os.remove(s)
+    else:
+        print('Pas de sous-titres disponibles pour cette video.')
+        print(r.stderr[:500] if r.stderr else 'Installez: pip install youtube-transcript-api')
+" 2>&1""", timeout=30)
+        send(chat_id, r["output"])
+        return
+
+    if cmd_lower == "/web":
+        parts = text.split(maxsplit=1)
+        if len(parts) < 2:
+            send(chat_id, "Usage: /web <recherche>\nRecherche Google via LLM.")
+            return
+        query = parts[1].strip()
+        send_typing(chat_id)
+        # Use LiteLLM to search & synthesize (since no direct search API)
+        try:
+            payload = json.dumps({
+                "model": "smart",
+                "messages": [
+                    {"role": "system", "content": "Tu es un assistant de recherche. L'utilisateur te donne une requete. Reponds avec les informations les plus recentes et pertinentes que tu connais. Sois concis, factuel, cite des sources quand possible. Max 3000 caracteres."},
+                    {"role": "user", "content": f"Recherche: {query}"}
+                ],
+                "temperature": 0.3,
+                "max_tokens": 1500,
+            }).encode()
+            req = urllib.request.Request(
+                LITELLM_URL, payload,
+                {"Content-Type": "application/json", "Authorization": f"Bearer {LITELLM_KEY}"}
+            )
+            with urllib.request.urlopen(req, timeout=30, context=ctx) as resp:
+                result = json.loads(resp.read())
+                answer = result.get("choices", [{}])[0].get("message", {}).get("content", "Pas de resultat")
+                model = result.get("model", "?")
+                send(chat_id, f"[{model}]\n{answer[:3800]}")
+        except Exception as e:
+            send(chat_id, f"Erreur recherche: {e}")
         return
 
     if cmd_lower == "/query":
