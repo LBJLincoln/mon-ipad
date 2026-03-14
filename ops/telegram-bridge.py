@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-"""Telegram CLI Bridge — Talk to your VM like Termius.
+"""Telegram CLI Bridge v4.0 — Talk to Claude Code from your phone.
 
-Replaces the old telegram-agent.py. Three modes:
-1. Shell mode (default): Messages execute as bash commands
-2. AI mode (/ai): Natural language interpreted by LLM into commands
-3. OpenClaw mode (/claw): Forward to clawhub CLI
-
-Karpathy loop integrated: every message can trigger measure→experiment→improve.
+Three modes:
+1. Claude mode (default): Messages go to Claude Code CLI — full AI assistant
+2. Shell mode (/shell): Direct bash commands (like Termius)
+3. AI mode (/ai): Natural language → bash via LLM
 
 Usage:
     source .env.local
@@ -43,10 +41,12 @@ ctx.verify_mode = ssl.CERT_NONE
 
 # Working directory state per chat
 chat_cwd = {}
-# Mode per chat: "shell" or "ai"
+# Mode per chat: "claude", "shell" or "ai"
 chat_mode = {}
 # Running background tasks
 bg_tasks = {}
+# Claude conversation history per chat (for multi-turn)
+claude_history = {}
 
 REPOS = {
     "mon-ipad": "/home/termius/mon-ipad",
@@ -83,6 +83,43 @@ def run_cmd(cmd, cwd=None, timeout=120):
         return {"ok": False, "output": f"TIMEOUT after {timeout}s", "code": -1}
     except Exception as e:
         return {"ok": False, "output": str(e), "code": -1}
+
+
+# ─── Claude Code CLI ─────────────────────────────────────────
+def ask_claude(message, cwd=None):
+    """Send a message to Claude Code CLI and return the response."""
+    env = os.environ.copy()
+    env_file = Path(BASE_DIR) / ".env.local"
+    if env_file.exists():
+        for line in env_file.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                if line.startswith("export "):
+                    line = line[7:]
+                k, v = line.split("=", 1)
+                v = v.strip("'\"")
+                env[k.strip()] = v
+
+    start = time.time()
+    try:
+        r = subprocess.run(
+            ["claude", "--print", "--dangerously-skip-permissions", message],
+            capture_output=True, text=True, timeout=120,
+            cwd=cwd or BASE_DIR, env=env,
+        )
+        duration = time.time() - start
+        output = (r.stdout or "").strip()
+        if r.returncode != 0 and r.stderr:
+            output = output + "\n" + r.stderr.strip() if output else r.stderr.strip()
+        if len(output) > 3800:
+            output = output[:1800] + "\n...(tronque)...\n" + output[-1800:]
+        return {"ok": True, "output": output or "(no output)", "duration": round(duration, 1)}
+    except subprocess.TimeoutExpired:
+        return {"ok": False, "output": "Timeout (120s). Requete trop complexe.", "duration": 120}
+    except FileNotFoundError:
+        return {"ok": False, "output": "Claude CLI not found. Install: npm i -g @anthropic-ai/claude-code", "duration": 0}
+    except Exception as e:
+        return {"ok": False, "output": f"Erreur: {e}", "duration": time.time() - start}
 
 
 # ─── Telegram helpers ────────────────────────────────────────
@@ -235,41 +272,51 @@ def handle_message(chat_id, text, username):
     cmd_lower = text.lower().split()[0] if text.startswith("/") else ""
 
     if cmd_lower in ("/start", "/help"):
-        send(chat_id, """NOMOS TELEGRAM BRIDGE v3.0
-Your VM terminal in Telegram.
+        send(chat_id, """NOMOS TELEGRAM BRIDGE v4.0
+Claude Code depuis ton telephone.
 
 MODES:
-  Default = shell (type commands directly)
-  /ai = AI interprets your words into commands
-  /shell = back to direct shell mode
+  Default = Claude Code (IA complete, comme Termius)
+  /shell = commandes bash directes
+  /ai = NLP → bash via LLM
+  /claude = retour mode Claude (defaut)
 
 QUICK COMMANDS:
-  /s = full status
-  /d = active daemons
-  /e = latest eval results
-  /ps = running processes
-  /free = memory usage
-  /pull = git pull all repos
-  /eval [n] = run quick eval
-  /kill <pid> = kill process
-  /cd <path> = change working dir
-  /claw <cmd> = run clawhub command
-  /bg <cmd> = run command in background
-  /sites = check all websites
-  /improve = run Karpathy improvement cycle
+  /s = status complet
+  /d = daemons actifs
+  /e = derniers resultats eval
+  /ps = processus en cours
+  /free = memoire dispo
+  /pull = git pull tous les repos
+  /eval [n] = lancer eval rapide
+  /kill <pid> = tuer un processus
+  /cd <path> = changer repertoire
+  /bg <cmd> = commande en arriere-plan
+  /sites = checker tous les sites
+  /query <question> = interroger pipeline RAG
+  /reset = reset conversation Claude
 
-Or just type any bash command directly.
-Like Termius, but from your phone.""")
+Ecris en langage naturel — Claude Code comprend tout.""")
+        return
+
+    if cmd_lower == "/claude":
+        chat_mode[chat_id] = "claude"
+        send(chat_id, "Mode Claude Code actif. Parle naturellement.")
         return
 
     if cmd_lower == "/ai":
         chat_mode[chat_id] = "ai"
-        send(chat_id, "AI mode ON. I'll interpret your words into commands.\n/shell to go back.")
+        send(chat_id, "Mode AI ON. Je traduis tes mots en commandes.\n/claude pour revenir.")
         return
 
     if cmd_lower == "/shell":
         chat_mode[chat_id] = "shell"
-        send(chat_id, "Shell mode. Type commands directly.")
+        send(chat_id, "Mode shell. Commandes bash directes.\n/claude pour revenir.")
+        return
+
+    if cmd_lower == "/reset":
+        claude_history.pop(chat_id, None)
+        send(chat_id, "Conversation Claude reinitialised.")
         return
 
     if cmd_lower == "/s":
@@ -409,11 +456,17 @@ Like Termius, but from your phone.""")
             send(chat_id, f"Pipeline error: {e}")
         return
 
-    # ─── Non-slash: shell or AI mode ──────────────────────
-    mode = chat_mode.get(chat_id, "shell")
+    # ─── Non-slash: claude, shell or AI mode ──────────────
+    mode = chat_mode.get(chat_id, "claude")
     cwd = chat_cwd.get(chat_id, BASE_DIR)
 
-    if mode == "ai":
+    if mode == "claude":
+        # Claude Code CLI mode — full AI assistant
+        send_typing(chat_id)
+        result = ask_claude(text, cwd=cwd)
+        duration_tag = f" ({result['duration']}s)" if result.get('duration') else ""
+        send(chat_id, result["output"] + duration_tag)
+    elif mode == "ai":
         send_typing(chat_id)
         interpreted = llm_interpret(text, f"Current directory: {cwd}")
         if interpreted.startswith("ANSWER:"):
@@ -468,15 +521,15 @@ def check_all_sites():
 # ─── Main loop ────────────────────────────────────────────────
 def main():
     ts = datetime.now().strftime("%H:%M:%S")
-    print(f"[{ts}] === NOMOS TELEGRAM BRIDGE v3.0 ===")
+    print(f"[{ts}] === NOMOS TELEGRAM BRIDGE v4.0 ===")
     print(f"[{ts}] Bot: @Nomos42Bot | Admin: {ADMIN_ID}")
-    print(f"[{ts}] Mode: Direct shell (like Termius)")
+    print(f"[{ts}] Mode: Claude Code CLI (default)")
     print(f"[{ts}] Polling...")
 
     tg("deleteWebhook")
 
     # Notify admin that bridge is up
-    send(ADMIN_ID, "BRIDGE v3.0 ONLINE\nShell mode active. Type commands directly.\n/help for all options.")
+    send(ADMIN_ID, "BRIDGE v4.0 ONLINE\nMode Claude Code actif. Parle naturellement.\n/help pour toutes les options.")
 
     offset = 0
     errors = 0
