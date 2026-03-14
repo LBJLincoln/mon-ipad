@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-03-12T15:24:00.844582+00:00",
+  "system1": {
+    "ingest": {
+      "name": "INGEST Agent",
+      "running": false,
+      "pid": null,
+      "objective": "Grow E5 vectors from 78K to 100K target. Tavily\u2192Docling\u2192Pinecone."
+    },
+    "enrich": {
+      "name": "ENRICH Agent",
+      "running": false,
+      "pid": null,
+      "objective": "Enrich all docs with Neo4j entities. Target 95%+ enrichment rate."
+    },
+    "quality": {
+      "name": "QUALITY Agent",
+      "running": false,
+      "pid": null,
+      "objective": "Monitor data quality: dedup ratio, chunk sizes, embedding coverage."
+    }
+  },
+  "system2": {
+    "eval": {
+      "name": "EVAL Agent",
+      "running": false,
+      "pid": null,
+      "objective": "Run continuous eval across all pipelines+sectors. Track accuracy trends."
+    },
+    "regression": {
+      "name": "REGRESSION Agent",
+      "running": false,
+      "pid": null,
+      "objective": "Detect accuracy drops > 5%. Block regressions > 10%."
+    },
+    "fixer": {
+      "name": "FIXER Agent",
+      "running": false,
+      "pid": null,
+      "objective": "Diagnose chronic failures. Generate fix recommendations."
+    },
+    "monitor": {
+      "name": "MONITOR Agent",
+      "running": false,
+      "pid": null,
+      "objective": "Health check all Spaces, pipelines, databases. Alert on failures."
+    }
+  }
+}

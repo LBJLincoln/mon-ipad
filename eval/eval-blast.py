@@ -320,6 +320,9 @@ def select_questions(all_questions, max_q, pipeline_filter, sector_filter, state
     if sector_filter and sector_filter != "all":
         pool = [q for q in pool if q.get("sector") == sector_filter]
 
+    # Quant pipeline only has finance data — skip quant for other sectors
+    pool = [q for q in pool if not (q.get("pipeline") == "quantitative" and q.get("sector") != "finance")]
+
     if not pool:
         log("No questions match filters!")
         return []
