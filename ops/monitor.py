@@ -85,9 +85,14 @@ def get_opener(host):
         return None
 
 def api_get(opener, host, path, timeout=30):
-    req = urllib.request.Request(f"{host}/rest{path}", method="GET")
+    url = f"{host}/rest{path}"
+    req = urllib.request.Request(url, method="GET")
     resp = opener.open(req, timeout=timeout)
-    data = json.loads(resp.read().decode())
+    raw = resp.read().decode()
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        raise ValueError(f"Non-JSON response from {url}: {raw[:200]}")
     return data.get("data", data) if isinstance(data, dict) else data
 
 # ─── Execution Analysis ───────────────────────────────────────────────
