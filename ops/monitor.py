@@ -88,7 +88,12 @@ def get_opener(host):
 def api_get(opener, host, path, timeout=30):
     url = f"{host}/rest{path}"
     req = urllib.request.Request(url, method="GET")
-    resp = opener.open(req, timeout=timeout)
+    try:
+        resp = opener.open(req, timeout=timeout)
+    except urllib.error.HTTPError as e:
+        raise ConnectionError(f"HTTP {e.code} from {url}: {e.reason}") from e
+    except urllib.error.URLError as e:
+        raise ConnectionError(f"Connection failed for {url}: {e.reason}") from e
     raw = resp.read().decode()
     try:
         data = json.loads(raw)
