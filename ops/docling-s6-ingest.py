@@ -3,8 +3,13 @@
 Docling S6 Ingest — CPU-basic-safe PDF ingestion via HF Space S6
 =================================================================
 Processes PDFs through the Docling API on HF Space S6 (CPU-basic, 2 vCPU,
-16GB RAM) with conservative limits to avoid OOM, then upserts chunks to
-Pinecone E5 (integrated inference) and Supabase sector_documents.
+16GB RAM) with conservative limits to avoid OOM.
+
+ARCHITECTURE (v2 — n8n-first):
+  Docling S6 extracts text from PDFs → extracted text sent to n8n Ingestion
+  webhook for FULL pipeline processing (chunking, QA, NER, Neo4j enrichment).
+  If n8n webhook fails after 3 retries, falls back to direct Pinecone+Supabase
+  upsert (legacy path).
 
 Key constraints for CPU-basic:
   - MAX 10MB per PDF (not 50MB — OOM risk on large files)
@@ -19,6 +24,7 @@ Usage:
   python3 ops/docling-s6-ingest.py --url "https://example.com/doc.pdf" --sector btp
   python3 ops/docling-s6-ingest.py --urls urls.txt --sector juridique
   python3 ops/docling-s6-ingest.py --from-discovered --sector all --max 20 --dry-run
+  python3 ops/docling-s6-ingest.py --from-discovered --sector all --direct  # bypass n8n
 
 Env vars required:
   PINECONE_API_KEY, SUPABASE_URL, SUPABASE_API_KEY  (via .env.local)
@@ -110,6 +116,16 @@ PINECONE_DELAY = 0.05  # seconds between upserts
 CONSECUTIVE_TIMEOUT_LIMIT = 3  # restart Space after N consecutive timeouts
 
 SECTORS = ["finance", "btp", "juridique", "industrie"]
+
+# ── n8n Webhook Configuration (primary ingestion path) ───────────────────
+N8N_SPACES = [
+    "https://lbjlincoln-nomos-rag-engine-9.hf.space",   # S9 — primary
+    "https://lbjlincoln-nomos-rag-engine.hf.space",      # S1 — fallback
+    "https://lbjlincoln-nomos-rag-engine-3.hf.space",    # S3 — fallback
+]
+N8N_INGEST_PATH = "/webhook/rag-v6-ingestion"
+N8N_TIMEOUT = 120  # seconds for n8n webhook call
+N8N_MAX_RETRIES = 3
 
 
 # =========================================================================
@@ -226,6 +242,81 @@ def http_request(url, data=None, headers=None, method="GET", timeout=30):
         return e.code, body, f"HTTP {e.code}"
     except Exception as e:
         return 0, b"", f"{type(e).__name__}: {str(e)[:200]}"
+
+
+# =========================================================================
+# n8n WEBHOOK — Send extracted text for full pipeline processing
+# =========================================================================
+
+def send_to_n8n(full_text, sector, source_url, title, doc_id=None):
+    """
+    Send Docling-extracted text to n8n Ingestion V6 webhook for full pipeline
+    processing (chunking, QA generation, NER, Neo4j enrichment, Pinecone, Supabase).
+
+    Tries each n8n Space in order. Retries up to N8N_MAX_RETRIES times total.
+    Returns (success: bool, result_dict: dict).
+    """
+    if not doc_id:
+        doc_id = f"docling-{sector}-{url_hash(source_url)}"
+
+    payload = json.dumps({
+        "content": full_text[:50000],  # Cap content to avoid payload too large
+        "sector": sector,
+        "tenant_id": sector,
+        "source": "docling",
+        "documentId": doc_id,
+        "metadata": {
+            "source_url": source_url[:2000],
+            "title": (title or "Untitled")[:500],
+            "origin": "docling-s6-ingest",
+            "source_type": "expert_pdf_docling",
+            "extracted_chars": len(full_text),
+        }
+    }, ensure_ascii=False).encode("utf-8")
+
+    headers = {"Content-Type": "application/json"}
+
+    for attempt in range(N8N_MAX_RETRIES):
+        for space_url in N8N_SPACES:
+            webhook_url = f"{space_url}{N8N_INGEST_PATH}"
+            status, body, err = http_request(
+                webhook_url,
+                data=payload,
+                headers=headers,
+                method="POST",
+                timeout=N8N_TIMEOUT,
+            )
+
+            if status in (200, 201, 202):
+                result = {}
+                try:
+                    result = json.loads(body.decode("utf-8"))
+                except Exception:
+                    pass
+                space_name = space_url.split("//")[1].split(".")[0]
+                log(f"n8n OK ({space_name}, attempt {attempt + 1})", "OK")
+                return True, {"space": space_name, "result": result, "doc_id": doc_id}
+
+            # Log which Space failed
+            space_short = space_url.split("//")[1].split(".")[0][-15:]
+            if err:
+                log(f"n8n {space_short}: {err} (attempt {attempt + 1})", "WARN")
+            elif status:
+                body_preview = ""
+                try:
+                    body_preview = body.decode("utf-8")[:100]
+                except Exception:
+                    pass
+                log(f"n8n {space_short}: HTTP {status} {body_preview} (attempt {attempt + 1})", "WARN")
+
+        # Wait before next retry round
+        if attempt < N8N_MAX_RETRIES - 1:
+            wait = min(5 * (attempt + 1), 15)
+            log(f"n8n: all Spaces failed, retrying in {wait}s (attempt {attempt + 1}/{N8N_MAX_RETRIES})", "WARN")
+            time.sleep(wait)
+
+    log(f"n8n: ALL {N8N_MAX_RETRIES} retries exhausted across all Spaces", "ERROR")
+    return False, {"error": "All n8n Spaces failed after retries", "doc_id": doc_id}
 
 
 # =========================================================================
@@ -609,15 +700,16 @@ def supabase_upsert(doc_id, sector, chunk_text_content, source_url, title):
 # MAIN PROCESSING
 # =========================================================================
 
-def process_single_pdf(doc, processed_data, dry_run=False):
+def process_single_pdf(doc, processed_data, dry_run=False, direct_mode=False):
     """
     Full pipeline for one PDF:
       1. HEAD check size
       2. Docling S6 /convert-url
-      3. Chunk text
-      4. Upsert chunks to Pinecone E5
-      5. Upsert representative doc to Supabase
-      6. Track as processed
+      3. Send extracted text to n8n for full pipeline (chunking, QA, NER, Neo4j)
+      4. FALLBACK: If n8n fails, do direct Pinecone E5 + Supabase upsert
+      5. Track as processed
+
+    If direct_mode=True, skip n8n and go straight to Pinecone+Supabase (legacy).
 
     Returns stats dict.
     """
@@ -633,9 +725,12 @@ def process_single_pdf(doc, processed_data, dry_run=False):
         "status": "started",
         "file_size_bytes": 0,
         "num_chunks": 0,
+        "n8n_ok": False,
+        "n8n_space": None,
         "pinecone_ok": 0,
         "pinecone_fail": 0,
         "supabase_ok": 0,
+        "path": "n8n" if not direct_mode else "direct",
         "elapsed_s": 0,
         "error": None,
     }
@@ -701,54 +796,75 @@ def process_single_pdf(doc, processed_data, dry_run=False):
         f"pages: {meta.get('num_pages', '?')}, "
         f"tables: {meta.get('num_tables', '?')})", "OK")
 
-    # ── Step 3: Upsert chunks to Pinecone E5 ────────────────────────
-    log(f"Upserting {len(chunks)} chunks to Pinecone E5...", "INFO")
-    pc_ok = 0
-    pc_fail = 0
-
-    for ci, chunk in enumerate(chunks):
-        chunk_id = make_chunk_id(sector, url, ci)
-        record = {
-            "_id": chunk_id,
-            "text": chunk,
-            "sector": sector,
-            "source": "docling-pdf",
-            "title": title[:200] if title else "",
-        }
-
-        if pinecone_upsert_single(record):
-            pc_ok += 1
+    # ── Step 3: Send to n8n for full pipeline processing ─────────────
+    n8n_success = False
+    if not direct_mode:
+        log("Sending extracted text to n8n for full pipeline (chunking, QA, NER, Neo4j)...", "INFO")
+        n8n_success, n8n_result = send_to_n8n(
+            full_text, sector, url, title,
+            doc_id=make_chunk_id(sector, url, 0),
+        )
+        if n8n_success:
+            stats["n8n_ok"] = True
+            stats["n8n_space"] = n8n_result.get("space", "unknown")
+            stats["path"] = "n8n"
+            log(f"n8n pipeline: document sent for full processing ({stats['n8n_space']})", "OK")
         else:
-            pc_fail += 1
+            log("n8n pipeline failed — falling back to direct Pinecone+Supabase upsert", "WARN")
+            stats["path"] = "direct-fallback"
 
-        time.sleep(PINECONE_DELAY)
+    # ── Step 4: FALLBACK — Direct Pinecone+Supabase upsert ──────────
+    # Only runs if: (a) n8n failed, or (b) direct_mode=True
+    if not n8n_success:
+        log(f"Upserting {len(chunks)} chunks to Pinecone E5 (direct)...", "INFO")
+        pc_ok = 0
+        pc_fail = 0
 
-        # Progress every 50 chunks
-        if (ci + 1) % 50 == 0:
-            log(f"  Pinecone progress: {ci + 1}/{len(chunks)}", "INFO")
+        for ci, chunk in enumerate(chunks):
+            chunk_id = make_chunk_id(sector, url, ci)
+            record = {
+                "_id": chunk_id,
+                "text": chunk,
+                "sector": sector,
+                "source": "docling-pdf",
+                "title": title[:200] if title else "",
+            }
 
-    stats["pinecone_ok"] = pc_ok
-    stats["pinecone_fail"] = pc_fail
-    log(f"Pinecone: {pc_ok} OK, {pc_fail} failed out of {len(chunks)}", "OK" if pc_fail == 0 else "WARN")
+            if pinecone_upsert_single(record):
+                pc_ok += 1
+            else:
+                pc_fail += 1
 
-    # ── Step 4: Upsert representative doc to Supabase ────────────────
-    # Insert first chunk as representative document
-    first_chunk_id = make_chunk_id(sector, url, 0)
-    representative_text = (clean_text(full_text) or "")[:10000]
-    sb_ok = supabase_upsert(first_chunk_id, sector, representative_text, url, title)
-    if sb_ok:
-        stats["supabase_ok"] = 1
-        log("Supabase: 1 document upserted", "OK")
-    else:
-        log("Supabase: upsert failed (non-critical)", "WARN")
+            time.sleep(PINECONE_DELAY)
+
+            # Progress every 50 chunks
+            if (ci + 1) % 50 == 0:
+                log(f"  Pinecone progress: {ci + 1}/{len(chunks)}", "INFO")
+
+        stats["pinecone_ok"] = pc_ok
+        stats["pinecone_fail"] = pc_fail
+        log(f"Pinecone: {pc_ok} OK, {pc_fail} failed out of {len(chunks)}", "OK" if pc_fail == 0 else "WARN")
+
+        # Supabase — representative doc
+        first_chunk_id = make_chunk_id(sector, url, 0)
+        representative_text = (clean_text(full_text) or "")[:10000]
+        sb_ok = supabase_upsert(first_chunk_id, sector, representative_text, url, title)
+        if sb_ok:
+            stats["supabase_ok"] = 1
+            log("Supabase: 1 document upserted", "OK")
+        else:
+            log("Supabase: upsert failed (non-critical)", "WARN")
 
     # ── Step 5: Mark as processed ────────────────────────────────────
     mark_as_processed(processed_data, url, {
         "sector": sector,
         "title": title[:200],
         "chunks": len(chunks),
-        "pinecone_ok": pc_ok,
-        "supabase_ok": 1 if sb_ok else 0,
+        "path": stats["path"],
+        "n8n_ok": stats["n8n_ok"],
+        "n8n_space": stats.get("n8n_space"),
+        "pinecone_ok": stats.get("pinecone_ok", 0),
+        "supabase_ok": stats.get("supabase_ok", 0),
         "processed_at": datetime.now(timezone.utc).isoformat(),
     })
     save_processed(processed_data)
@@ -758,9 +874,10 @@ def process_single_pdf(doc, processed_data, dry_run=False):
     return stats
 
 
-def run(docs, dry_run=False):
+def run(docs, dry_run=False, direct_mode=False):
     """
     Process a list of documents sequentially through the full pipeline.
+    If direct_mode=True, bypass n8n and go straight to Pinecone+Supabase.
     Returns summary dict.
     """
     processed_data = load_processed()
@@ -794,7 +911,8 @@ def run(docs, dry_run=False):
     print(f"  Chunk:       {CHUNK_SIZE_CHARS} chars, {CHUNK_OVERLAP_CHARS} overlap", flush=True)
     print(f"  Timeout:     {DOCLING_TIMEOUT}s per PDF", flush=True)
     print(f"  Already done:{existing}", flush=True)
-    print(f"  Mode:        {'DRY RUN' if dry_run else 'LIVE'}", flush=True)
+    mode_str = "DRY RUN" if dry_run else ("DIRECT (Pinecone+Supabase)" if direct_mode else "LIVE → n8n pipeline (fallback: direct)")
+    print(f"  Mode:        {mode_str}", flush=True)
     print("=" * 70, flush=True)
     print("", flush=True)
 
@@ -819,7 +937,7 @@ def run(docs, dry_run=False):
         prefix = f"[{i + 1}/{len(docs)}]"
         log(f"{prefix} Processing: {doc['url'][:80]}", "INFO")
 
-        stats = process_single_pdf(doc, processed_data, dry_run=dry_run)
+        stats = process_single_pdf(doc, processed_data, dry_run=dry_run, direct_mode=direct_mode)
         summary["processed"] += 1
 
         status = stats["status"]
@@ -827,7 +945,10 @@ def run(docs, dry_run=False):
             summary["ok"] += 1
             summary["chunks_total"] += stats["num_chunks"]
             consecutive_timeouts = 0
-            result_line = f"OK ({stats['num_chunks']} chunks, {stats['pinecone_ok']} to Pinecone)"
+            if stats.get("n8n_ok"):
+                result_line = f"OK via n8n ({stats['num_chunks']} chunks → {stats.get('n8n_space', '?')})"
+            else:
+                result_line = f"OK direct ({stats['num_chunks']} chunks, {stats['pinecone_ok']} to Pinecone)"
         elif status == "dry_run":
             summary["ok"] += 1
             consecutive_timeouts = 0
@@ -936,6 +1057,11 @@ def main():
         default=DOCLING_TIMEOUT,
         help=f"Timeout per PDF in seconds (default: {DOCLING_TIMEOUT})",
     )
+    parser.add_argument(
+        "--direct",
+        action="store_true",
+        help="Bypass n8n and upsert directly to Pinecone+Supabase (legacy mode)",
+    )
 
     args = parser.parse_args()
 
@@ -972,7 +1098,7 @@ def main():
 
     log(f"Loaded {len(docs)} document(s) to process", "INFO")
 
-    summary = run(docs, dry_run=args.dry_run)
+    summary = run(docs, dry_run=args.dry_run, direct_mode=args.direct)
 
     # Exit code
     if summary["ok"] > 0 or summary["processed"] == 0:

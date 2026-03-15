@@ -6,6 +6,12 @@ Multi-threaded upsert using concurrent.futures.ThreadPoolExecutor.
 Each worker sends 1 record at a time (Pinecone integrated embedding limit)
 but N workers run in parallel for N× throughput.
 
+ARCHITECTURE (v2 — n8n enrichment):
+  Vectors go to Pinecone fast (direct) for speed.
+  ALSO fires async POST to n8n enrichment webhook per batch so Neo4j
+  entity extraction happens for all ingested data. This is fire-and-forget:
+  enrichment failures do NOT block ingestion.
+
 Target: sectors-e5-multilingual index, namespace=sectors
 Model:  multilingual-e5-large (1024 dims, built into Pinecone)
 
@@ -16,6 +22,7 @@ Usage:
   python3 ops/fast-ingest.py --dry-run
   python3 ops/fast-ingest.py --workers 8 --skip-existing
   python3 ops/fast-ingest.py --workers 8 --hf-dataset sujet-ai/Sujet-Finance-Instruct-177k --max 10000
+  python3 ops/fast-ingest.py --workers 8 --all --no-enrich  # skip n8n enrichment
 """
 
 import argparse
@@ -70,6 +77,16 @@ ERROR_LOG = os.path.join(METRICS_DIR, "ingestion_errors.json")
 INGEST_PROGRESS_DIR = os.path.expanduser("~/mon-ipad/data/ingest")
 INGEST_PROGRESS_FILE = os.path.join(INGEST_PROGRESS_DIR, "progress.json")
 
+# ── n8n Enrichment Config (async Neo4j entity extraction) ────
+N8N_ENRICH_SPACES = [
+    "https://lbjlincoln-nomos-rag-engine-9.hf.space",   # S9
+    "https://lbjlincoln-nomos-rag-engine.hf.space",      # S1
+    "https://lbjlincoln-nomos-rag-engine-3.hf.space",    # S3
+]
+N8N_ENRICH_PATH = "/webhook/rag-v6-enrichment"
+N8N_ENRICH_TIMEOUT = 30  # short timeout — fire and forget
+ENRICH_BATCH_SIZE = 50   # send enrichment request every N upserted records
+
 
 # ── Thread-safe counters ────────────────────────────────────────
 class Stats:
@@ -81,6 +98,9 @@ class Stats:
         self.upserted = 0
         self.skipped = 0
         self.errors = 0
+        self.enrichment_sent = 0
+        self.enrichment_ok = 0
+        self.enrichment_fail = 0
         self.start_time = time.monotonic()
         self._error_details = []
 
@@ -452,6 +472,52 @@ def prepare_records_from_hf(dataset_name, sector, max_records=10000):
     return records, skipped
 
 
+# ── n8n Enrichment (fire-and-forget) ───────────────────────────
+def fire_n8n_enrichment(record_ids, sector, stats):
+    """
+    Fire-and-forget POST to n8n enrichment webhook.
+    Sends a batch of record IDs for Neo4j entity extraction.
+    Runs in a background thread to not block ingestion.
+    """
+    payload = json.dumps({
+        "doc_ids": record_ids,
+        "sector": sector,
+        "source": "fast-ingest",
+        "batch_size": len(record_ids),
+    }).encode("utf-8")
+
+    for space_url in N8N_ENRICH_SPACES:
+        url = f"{space_url}{N8N_ENRICH_PATH}"
+        try:
+            req = urllib.request.Request(
+                url,
+                data=payload,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            urllib.request.urlopen(req, timeout=N8N_ENRICH_TIMEOUT)
+            with stats._lock:
+                stats.enrichment_ok += 1
+            return
+        except Exception:
+            pass  # Try next Space
+
+    with stats._lock:
+        stats.enrichment_fail += 1
+
+
+def _fire_enrichment_async(record_ids, sector, stats):
+    """Launch enrichment in a background thread (fire-and-forget)."""
+    with stats._lock:
+        stats.enrichment_sent += 1
+    t = threading.Thread(
+        target=fire_n8n_enrichment,
+        args=(record_ids, sector, stats),
+        daemon=True,
+    )
+    t.start()
+
+
 # ── Worker function ─────────────────────────────────────────────
 def worker_upsert(record, stats, sector, delay):
     """Worker function: upsert one record, update stats."""
@@ -482,8 +548,10 @@ def worker_upsert(record, stats, sector, delay):
 
 
 # ── Main ingestion logic ────────────────────────────────────────
-def ingest_records(records, sector, stats, workers, delay, skip_existing):
-    """Ingest a list of prepared records using thread pool."""
+def ingest_records(records, sector, stats, workers, delay, skip_existing, enrich=True):
+    """Ingest a list of prepared records using thread pool.
+    If enrich=True, also fires async n8n enrichment for Neo4j entity extraction.
+    """
     if not records:
         return
 
@@ -505,11 +573,15 @@ def ingest_records(records, sector, stats, workers, delay, skip_existing):
 
     stats.total += len(records)
 
+    enrich_label = " + n8n enrichment" if enrich else ""
     print(
         f"  [{sector}] Starting {len(records):,} records with {workers} workers "
-        f"(delay={delay}s/req)",
+        f"(delay={delay}s/req){enrich_label}",
         flush=True,
     )
+
+    # Track IDs for enrichment batching
+    enrich_buffer = []
 
     # Process in batches to avoid memory issues on constrained VMs
     batch_size = min(200, len(records))
@@ -524,10 +596,21 @@ def ingest_records(records, sector, stats, workers, delay, skip_existing):
             # Wait for batch to complete
             for future in as_completed(futures):
                 try:
-                    future.result()
+                    result = future.result()
+                    if result and enrich:
+                        record = futures[future]
+                        enrich_buffer.append(record["_id"])
+                        # Fire enrichment every ENRICH_BATCH_SIZE records
+                        if len(enrich_buffer) >= ENRICH_BATCH_SIZE:
+                            _fire_enrichment_async(list(enrich_buffer), sector, stats)
+                            enrich_buffer.clear()
                 except Exception as e:
                     record = futures[future]
                     stats.inc_error(record["_id"], f"future exception: {e}")
+
+    # Flush remaining enrichment buffer
+    if enrich and enrich_buffer:
+        _fire_enrichment_async(list(enrich_buffer), sector, stats)
 
 
 # ── CLI ─────────────────────────────────────────────────────────
@@ -585,6 +668,11 @@ def parse_args():
         default="finance",
         help="Sector to assign to HF dataset records (default: finance)",
     )
+    parser.add_argument(
+        "--no-enrich",
+        action="store_true",
+        help="Skip async n8n enrichment (Neo4j entity extraction)",
+    )
     return parser.parse_args()
 
 
@@ -618,6 +706,8 @@ def main():
     print(f"  Mode: {'DRY RUN' if args.dry_run else 'LIVE'}")
     if args.skip_existing:
         print(f"  Dedup: ON (skip existing IDs)")
+    enrich = not args.no_enrich
+    print(f"  n8n Enrich: {'ON (async Neo4j entity extraction)' if enrich else 'OFF'}")
     if args.hf_dataset:
         print(f"  HF Dataset: {args.hf_dataset} → sector={args.hf_sector}")
     else:
@@ -640,7 +730,7 @@ def main():
         if args.dry_run:
             print(f"\n  DRY RUN: {len(records):,} records would be ingested")
         else:
-            ingest_records(records, sector, stats, workers, args.delay, args.skip_existing)
+            ingest_records(records, sector, stats, workers, args.delay, args.skip_existing, enrich=enrich)
 
     # ── Local JSONL mode ──
     else:
@@ -681,7 +771,7 @@ def main():
                 continue
 
             ingest_records(
-                sector_records, sector, stats, workers, args.delay, args.skip_existing
+                sector_records, sector, stats, workers, args.delay, args.skip_existing, enrich=enrich
             )
 
             # Check if we hit the cap
@@ -703,6 +793,9 @@ def main():
         print(f"  Errors:    {stats.errors}")
         print(f"  Rate:      {stats.rate:.1f} rec/s")
         print(f"  Elapsed:   {elapsed:.1f}s ({elapsed / 60:.1f}m)")
+        if stats.enrichment_sent > 0:
+            print(f"  Enrichment: {stats.enrichment_ok} OK, {stats.enrichment_fail} failed "
+                  f"(of {stats.enrichment_sent} batches sent to n8n)")
         if stats.errors > 0:
             stats.save_errors()
             print(f"  Error log: {ERROR_LOG}")
