@@ -41,10 +41,7 @@ REPOS = {
     "rag-website": {
         "path": "/home/termius/rag-website",
         "type": "nextjs",
-        "prompt": """Analyze this Next.js website repo. Find the single highest-impact improvement you can make RIGHT NOW.
-Focus on: UI/UX quality, missing features, broken pages, Stripe integration, AI negotiator bot, unique page identity, cross-navigation, mobile responsiveness.
-Apply the improvement. Keep changes minimal and focused. Commit with descriptive message.
-Rules: No test files. No README changes. Fix real issues only.""",
+        "prompt": """Read src/app/ directory listing. Pick ONE page that needs improvement. Read that page's code. Make ONE specific improvement: fix a bug, improve a visual element, add missing functionality, or enhance mobile responsiveness. The change must be small (under 50 lines diff). Do NOT rewrite entire files.""",
     },
     "nomos-nba-agent": {
         "path": "/home/termius/nomos-nba-agent",
@@ -141,7 +138,7 @@ def improve_repo(repo_name):
             ["claude", "--print", "--dangerously-skip-permissions", prompt],
             capture_output=True,
             text=True,
-            timeout=300,  # 5 min max
+            timeout=600,  # 10 min max
             cwd=repo_path,
         )
         duration = round(time.time() - start, 1)
@@ -188,12 +185,12 @@ def improve_repo(repo_name):
         }
 
     except subprocess.TimeoutExpired:
-        log(f"  Timeout (300s) for {repo_name}", "WARN")
+        log(f"  Timeout (600s) for {repo_name}", "WARN")
         return {
             "ok": False,
             "repo": repo_name,
             "error": "timeout",
-            "duration": 300,
+            "duration": 600,
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
