@@ -82,6 +82,7 @@ def get_opener(host):
         opener.open(req, timeout=15)
         return opener
     except Exception as e:
+        print(f"[WARN] Login failed for {host}: {e}", file=sys.stderr)
         return None
 
 def api_get(opener, host, path, timeout=30):
