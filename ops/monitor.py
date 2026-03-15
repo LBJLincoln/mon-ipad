@@ -405,8 +405,8 @@ def run_monitor(hours=None, errors_only=False, json_output=False):
             stopped = ex.get("stoppedAt", "")
             if started and stopped:
                 try:
-                    t0 = datetime.fromisoformat(started.replace("Z", ""))
-                    t1 = datetime.fromisoformat(stopped.replace("Z", ""))
+                    t0 = datetime.fromisoformat(started.replace("Z", "").replace("+00:00", ""))
+                    t1 = datetime.fromisoformat(stopped.replace("Z", "").replace("+00:00", ""))
                     ms = int((t1 - t0).total_seconds() * 1000)
                     stats["times"].append(ms)
                 except (ValueError, TypeError):
