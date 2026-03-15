@@ -177,7 +177,7 @@ def analyze_execution_nodes(opener, host, exec_id):
             continue
         run = runs[0] if isinstance(runs[0], dict) else {}
         err = run.get("error")
-        exec_time = run.get("executionTime", 0)
+        exec_time = run.get("executionTime") or 0
         total_ms += exec_time
 
         main_data = run.get("data", {})
