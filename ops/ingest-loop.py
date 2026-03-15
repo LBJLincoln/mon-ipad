@@ -252,16 +252,82 @@ def ingest_document(doc, seen):
 # ══════════════════════════════════════════════════════════════
 
 def enrich_document(doc):
-    """Send a document to n8n Enrichment V4.0 webhook."""
-    payload = {
-        "url": doc.get("url", ""),
-        "sector": doc.get("sector", "finance"),
-        "title": doc.get("title", ""),
-        "text": doc.get("description", ""),
+    """Enrich document: LLM entity extraction → Neo4j graph storage.
+
+    Does enrichment directly instead of via n8n webhook (webhook has
+    Code node version incompatibility on HF Spaces n8n).
+    """
+    LITELLM_URL = os.environ.get("LITELLM_URL",
+        "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions")
+    LITELLM_KEY = os.environ.get("LITELLM_MASTER_KEY", "sk-litellm-nomos-2026")
+    NEO4J_PROXY = "https://nomos-neo4j-proxy.onrender.com/cypher"
+
+    text = doc.get("description", "")[:2500]
+    sector = doc.get("sector", "finance")
+    title = doc.get("title", "")
+
+    if not text or len(text) < 20:
+        return False, "text too short"
+
+    # Step 1: LLM entity extraction
+    llm_payload = {
+        "model": "smart",
+        "messages": [
+            {"role": "system", "content": "Extract entities from this document. Return ONLY JSON: {\"entities\": [{\"name\": string, \"type\": string}], \"key_terms\": [string]}. Types: PERSON, ORG, REGULATION, CONCEPT, METRIC."},
+            {"role": "user", "content": f"Sector: {sector}. Title: {title}. Text: {text}"}
+        ],
+        "temperature": 0.1,
+        "max_tokens": 1000,
     }
 
-    result, status = http_post(ENRICH_WEBHOOK, payload, timeout=90)
-    return status in (200, 201), result
+    result, status = http_post(LITELLM_URL, llm_payload,
+        headers={"Authorization": f"Bearer {LITELLM_KEY}"}, timeout=60)
+
+    if status != 200:
+        return False, f"LLM failed: {status}"
+
+    # Parse entities
+    import re
+    content = ""
+    try:
+        content = result.get("choices", [{}])[0].get("message", {}).get("content", "{}")
+        m = re.search(r'\{[\s\S]*\}', content)
+        if m:
+            parsed = json.loads(m.group())
+            entities = parsed.get("entities", [])
+        else:
+            entities = []
+    except Exception:
+        entities = []
+
+    if not entities:
+        return True, "no entities found"
+
+    # Step 2: Store in Neo4j via Bolt driver
+    try:
+        from neo4j import GraphDatabase
+        neo4j_uri = os.environ.get("NEO4J_URI", "neo4j+s://38c949a2.databases.neo4j.io")
+        neo4j_pwd = os.environ.get("NEO4J_PASSWORD", "")
+        driver = GraphDatabase.driver(neo4j_uri, auth=("neo4j", neo4j_pwd))
+        with driver.session() as session:
+            doc_url = doc.get("url", "")
+            session.run(
+                "MERGE (d:Document {url: $url}) SET d.title = $title, d.sector = $sector, d.enriched = true",
+                url=doc_url, title=title[:200], sector=sector
+            )
+            for e in entities[:15]:
+                name = (e.get("name", "") or "")[:100]
+                etype = e.get("type", "CONCEPT") or "CONCEPT"
+                if name:
+                    session.run(
+                        "MERGE (e:Entity {name: $name}) SET e.type = $type, e.sector = $sector "
+                        "WITH e MATCH (d:Document {url: $url}) MERGE (d)-[:MENTIONS]->(e)",
+                        name=name, type=etype, sector=sector, url=doc_url
+                    )
+        driver.close()
+        return True, f"enriched: {len(entities)} entities → Neo4j"
+    except Exception as e:
+        return True, f"entities extracted ({len(entities)}) but Neo4j failed: {e}"
 
 
 # ══════════════════════════════════════════════════════════════

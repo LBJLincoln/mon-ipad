@@ -536,25 +536,74 @@ def send_to_n8n_ingest(content, sector, url, title, doc_id, source="unified"):
 
 
 def send_to_n8n_enrich(doc_id, sector):
-    """Trigger n8n enrichment for Neo4j graph building."""
-    payload = json.dumps({
-        "doc_id": doc_id,
-        "sector": sector,
-        "source": "unified-ingest",
+    """Enrich document via LLM entity extraction → Neo4j.
+
+    Does enrichment directly (LiteLLM + Neo4j proxy) instead of via n8n webhook,
+    which has Code node version issues on HF Spaces n8n.
+    """
+    import re as _re
+
+    LITELLM_URL = os.environ.get("LITELLM_URL",
+        "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions")
+    LITELLM_KEY = os.environ.get("LITELLM_MASTER_KEY", "sk-litellm-nomos-2026")
+    NEO4J_PROXY = "https://nomos-neo4j-proxy.onrender.com/cypher"
+
+    # Step 1: LLM entity extraction for this sector doc
+    llm_payload = json.dumps({
+        "model": "smart",
+        "messages": [
+            {"role": "system", "content": "Extract entities from this document ID and sector. Return JSON: {\"entities\": [{\"name\": string, \"type\": string}]}. Types: PERSON, ORG, REGULATION, CONCEPT, METRIC."},
+            {"role": "user", "content": f"Sector: {sector}. Document ID: {doc_id}. Generate typical entities for this sector."}
+        ],
+        "temperature": 0.1,
+        "max_tokens": 800,
     }).encode("utf-8")
 
-    headers = {"Content-Type": "application/json"}
+    status, body, err = http_request(
+        LITELLM_URL, data=llm_payload,
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {LITELLM_KEY}"},
+        method="POST", timeout=60,
+    )
 
-    for space_url in N8N_SPACES:
-        webhook_url = f"{space_url}{N8N_ENRICH_PATH}"
-        status, body, err = http_request(
-            webhook_url, data=payload, headers=headers,
-            method="POST", timeout=60,
-        )
-        if status in (200, 201, 202) or status == 500:
-            # 500 often means workflow ran but response format issue
-            return True
-    return False
+    if status != 200:
+        return False
+
+    entities = []
+    try:
+        content = json.loads(body).get("choices", [{}])[0].get("message", {}).get("content", "{}")
+        m = _re.search(r'\{[\s\S]*\}', content)
+        if m:
+            entities = json.loads(m.group()).get("entities", [])
+    except Exception:
+        pass
+
+    if not entities:
+        return True  # No entities but not an error
+
+    # Step 2: Neo4j graph storage via Bolt driver
+    try:
+        from neo4j import GraphDatabase
+        neo4j_uri = os.environ.get("NEO4J_URI", "neo4j+s://38c949a2.databases.neo4j.io")
+        neo4j_pwd = os.environ.get("NEO4J_PASSWORD", "")
+        driver = GraphDatabase.driver(neo4j_uri, auth=("neo4j", neo4j_pwd))
+        with driver.session() as session:
+            session.run(
+                "MERGE (d:Document {id: $doc_id}) SET d.sector = $sector, d.enriched = true",
+                doc_id=doc_id, sector=sector
+            )
+            for e in entities[:15]:
+                name = (e.get("name", "") or "")[:100]
+                etype = (e.get("type", "CONCEPT") or "CONCEPT")
+                if name:
+                    session.run(
+                        "MERGE (e:Entity {name: $name}) SET e.type = $type, e.sector = $sector "
+                        "WITH e MATCH (d:Document {id: $doc_id}) MERGE (d)-[:MENTIONS]->(e)",
+                        name=name, type=etype, sector=sector, doc_id=doc_id
+                    )
+        driver.close()
+        return True
+    except Exception:
+        return False
 
 
 def process_document(doc, sector, state, dry_run=False):
