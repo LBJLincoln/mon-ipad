@@ -384,7 +384,8 @@ def run_monitor(hours=None, errors_only=False, json_output=False):
 
         try:
             execs = fetch_executions(opener, space["url"], limit=50, hours=hours)
-        except Exception:
+        except Exception as e:
+            print(f"[WARN] Failed to fetch executions from {space['name']}: {e}", file=sys.stderr)
             continue
 
         for ex in execs:
