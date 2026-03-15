@@ -133,7 +133,8 @@ def analyze_execution_nodes(opener, host, exec_id):
     """Deep-analyze a single execution: extract every node's status, timing, errors."""
     try:
         data = api_get(opener, host, f"/executions/{exec_id}?includeData=true")
-    except Exception:
+    except Exception as e:
+        print(f"[WARN] Failed to fetch execution {exec_id} from {host}: {e}", file=sys.stderr)
         return None
 
     exec_data_raw = data.get("data", "")
