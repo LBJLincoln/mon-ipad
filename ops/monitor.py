@@ -24,6 +24,7 @@ import sys
 import time
 import socket
 import argparse
+import traceback
 import urllib.request
 import urllib.error
 import http.cookiejar
@@ -525,6 +526,7 @@ def main():
             break
         except Exception as e:
             print(f"Monitor error: {e}", file=sys.stderr)
+            traceback.print_exc(file=sys.stderr)
 
         if args.loop <= 0:
             break
