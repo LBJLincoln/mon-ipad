@@ -915,6 +915,7 @@ def run_cycle(batch_size, sector_filter, stats):
 # =========================================================================
 
 def main():
+    global _shutdown_requested
     parser = argparse.ArgumentParser(
         description="Enrichment Pipeline V5.0 — Standalone document enrichment daemon"
     )
