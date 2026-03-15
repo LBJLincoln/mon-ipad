@@ -228,8 +228,21 @@ class KarpathyEngine:
         scores = measure_fn(repo_config)
         log(f"[{name}] Scores: {', '.join(str(s) for s in scores)}")
 
-        # ── 2. FIND WEAKEST ──
+        # ── 2. FIND WEAKEST (skip categories that failed 3+ times in a row) ──
         actionable = [s for s in scores if s.gap > 0]
+
+        # Filter out categories with 3+ consecutive failures
+        filtered = []
+        for s in actionable:
+            recent_failures = self.memory.get_history(
+                name, s.category, success=False, limit=3)
+            recent_successes = self.memory.get_history(
+                name, s.category, success=True, limit=1)
+            if len(recent_failures) >= 3 and not recent_successes:
+                log(f"[{name}] Skipping {s.category} — 3+ consecutive failures")
+                continue
+            filtered.append(s)
+        actionable = filtered if filtered else actionable  # fallback to all if everything filtered
         if not actionable:
             log(f"[{name}] All targets met!")
             return CycleResult(
@@ -248,7 +261,9 @@ class KarpathyEngine:
         # ── 4. EXECUTE ──
         snapshot = git_head(path)
         prompt = self._build_execution_prompt(repo_config, weakest, hypothesis)
-        result = execute_claude(path, prompt)
+        # Adaptive timeout: small changes = short timeout
+        timeout = 180 if weakest.gap > 50 else 300 if weakest.gap > 20 else 240
+        result = execute_claude(path, prompt, timeout=timeout)
         log(f"[{name}] Claude: ok={result['ok']}, changes={result['has_changes']}")
 
         if not result["has_changes"]:
@@ -371,26 +386,45 @@ Reply in 1-2 sentences, no code."""
 
     def _build_execution_prompt(self, repo_config: dict, weakest: Score,
                                 hypothesis: str) -> str:
-        """Build the prompt for Claude Code CLI execution."""
+        """Build the prompt for Claude Code CLI execution.
+
+        Key insight: when gap is huge (>50), make TINY steps.
+        When gap is small (<20), be more precise/surgical.
+        """
         name = repo_config["name"]
         cat = weakest.category
+        gap = weakest.gap
+
+        # Adaptive scope based on gap size
+        if gap > 50:
+            scope = ("Make the SMALLEST possible change that moves the needle. "
+                     "Create ONE file or edit ONE file. Under 30 lines of changes. "
+                     "Example: add 1 test file with 2-3 basic tests, or create a README with 20 lines.")
+        elif gap > 20:
+            scope = ("Make a focused change in 1-2 files. Under 40 lines total. "
+                     "Build on what exists — don't create new frameworks.")
+        else:
+            scope = ("Make a precise, surgical change. 1 file, under 20 lines. "
+                     "Fine-tune what's already there.")
 
         return f"""You are improving the repository '{name}'.
 
 TASK: {hypothesis}
 
-CATEGORY: {cat} (score: {weakest.value:.0f}/{weakest.target:.0f})
+CATEGORY: {cat} (score: {weakest.value:.0f}/{weakest.target:.0f}, gap={gap:.0f})
 DETAILS: {json.dumps(weakest.details, ensure_ascii=False)[:300]}
 
+SCOPE: {scope}
+
 RULES:
-1. Make exactly ONE focused change (1-3 files max)
+1. {scope}
 2. The change must directly improve the '{cat}' dimension
 3. Do NOT break existing functionality
 4. Do NOT touch CLAUDE.md, .env files, or credentials
-5. Edit under 50 lines total — surgical, not rewrite
-6. No TODOs, no placeholders — commit-ready code only
+5. No TODOs, no placeholders — commit-ready code only
+6. Read the relevant files first, understand the structure, then make your change
 
-Read the relevant files first, then make the change."""
+Make the change now."""
 
 
 def log(msg: str):
