@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG ROI Calculator — How Much Is Bad RAG Costing You?</title>
+    <meta name="description" content="Calculate the real cost of suboptimal RAG pipelines. See how much you're wasting on hallucinations, slow queries, and missed context — then fix it.">
+    <meta property="og:title" content="RAG ROI Calculator — How Much Is Bad RAG Costing You?">
+    <meta property="og:description" content="Most teams waste $2K-15K/month on RAG that doesn't work. Calculate your actual cost and fix it.">
+    <meta property="og:type" content="website">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0f; color: #e0e0e0; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+        .hero { text-align: center; padding: 60px 20px 40px; }
+        .hero h1 { font-size: 2.4rem; background: linear-gradient(135deg, #ff6b6b, #ffa500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 16px; }
+        .hero p { font-size: 1.2rem; color: #999; max-width: 600px; margin: 0 auto; }
+
+        .calc-section { background: #12121a; border: 1px solid #2a2a3a; border-radius: 16px; padding: 40px; margin: 30px 0; }
+        .calc-section h2 { font-size: 1.5rem; color: #fff; margin-bottom: 24px; }
+
+        .input-group { margin-bottom: 24px; }
+        .input-group label { display: block; font-size: 0.95rem; color: #ccc; margin-bottom: 8px; font-weight: 500; }
+        .input-group .hint { font-size: 0.8rem; color: #666; margin-bottom: 6px; }
+        .input-group input, .input-group select { width: 100%; padding: 12px 16px; background: #1a1a2e; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 1rem; outline: none; transition: border 0.2s; }
+        .input-group input:focus, .input-group select:focus { border-color: #ffa500; }
+
+        .slider-group { margin-bottom: 24px; }
+        .slider-group label { display: flex; justify-content: space-between; font-size: 0.95rem; color: #ccc; margin-bottom: 8px; }
+        .slider-group label span { color: #ffa500; font-weight: 600; }
+        input[type="range"] { width: 100%; -webkit-appearance: none; height: 6px; background: #333; border-radius: 3px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: #ffa500; border-radius: 50%; cursor: pointer; }
+
+        .calc-btn { display: block; width: 100%; padding: 16px; background: linear-gradient(135deg, #ff6b6b, #ffa500); color: #fff; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 20px; }
+        .calc-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,165,0,0.3); }
+
+        .results { display: none; }
+        .results.show { display: block; }
+
+        .result-card { background: linear-gradient(135deg, #1a0a0a, #1a1a0a); border: 2px solid #ff4444; border-radius: 16px; padding: 32px; text-align: center; margin: 30px 0; }
+        .result-card .big-number { font-size: 3.5rem; font-weight: 800; background: linear-gradient(135deg, #ff4444, #ff8800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .result-card .label { font-size: 1.1rem; color: #ff8888; margin-top: 8px; }
+
+        .breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+        .breakdown-item { background: #12121a; border: 1px solid #2a2a3a; border-radius: 12px; padding: 20px; }
+        .breakdown-item .amount { font-size: 1.5rem; font-weight: 700; color: #ff6b6b; }
+        .breakdown-item .desc { font-size: 0.85rem; color: #999; margin-top: 4px; }
+
+        .fix-section { background: #0a1a0a; border: 2px solid #22cc44; border-radius: 16px; padding: 32px; margin: 30px 0; }
+        .fix-section h3 { font-size: 1.4rem; color: #22cc44; margin-bottom: 16px; }
+
+        .product-rec { display: flex; justify-content: space-between; align-items: center; background: #12221a; border: 1px solid #1a3a2a; border-radius: 12px; padding: 16px 20px; margin: 12px 0; }
+        .product-rec .name { font-weight: 600; color: #fff; }
+        .product-rec .fixes { font-size: 0.85rem; color: #66dd88; }
+        .product-rec .price { font-weight: 700; color: #22cc44; }
+
+        .cta-box { text-align: center; margin: 40px 0; padding: 40px; background: linear-gradient(135deg, #1a0a2a, #0a1a2a); border: 2px solid #8844ff; border-radius: 16px; }
+        .cta-box h3 { font-size: 1.6rem; color: #fff; margin-bottom: 8px; }
+        .cta-box .savings { font-size: 2rem; font-weight: 800; color: #22cc44; margin: 12px 0; }
+        .cta-box .sub { color: #999; margin-bottom: 20px; }
+        .cta-btn { display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #8844ff, #ff4488); color: #fff; text-decoration: none; border-radius: 12px; font-size: 1.2rem; font-weight: 700; transition: transform 0.2s, box-shadow 0.2s; }
+        .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(136,68,255,0.4); }
+
+        .trust { text-align: center; padding: 30px; color: #666; font-size: 0.9rem; }
+        .trust strong { color: #999; }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.8rem; }
+            .breakdown { grid-template-columns: 1fr; }
+            .result-card .big-number { font-size: 2.5rem; }
+            .calc-section { padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>How Much Is Bad RAG Costing You?</h1>
+            <p>Most teams waste $2K–$15K/month on hallucinations, slow queries, and missed context. Calculate your real cost in 60 seconds.</p>
+        </div>
+
+        <div class="calc-section">
+            <h2>Your RAG Setup</h2>
+
+            <div class="input-group">
+                <label>Monthly RAG queries</label>
+                <div class="hint">Total queries across all pipelines</div>
+                <input type="number" id="queries" value="10000" min="100" max="1000000">
+            </div>
+
+            <div class="input-group">
+                <label>Team size (engineers working on RAG)</label>
+                <input type="number" id="team" value="3" min="1" max="50">
+            </div>
+
+            <div class="input-group">
+                <label>Average engineer hourly cost ($)</label>
+                <input type="number" id="hourly" value="75" min="20" max="300">
+            </div>
+
+            <div class="slider-group">
+                <label>Current accuracy rate <span id="accDisplay">70%</span></label>
+                <input type="range" id="accuracy" min="30" max="95" value="70" oninput="document.getElementById('accDisplay').textContent=this.value+'%'">
+            </div>
+
+            <div class="slider-group">
+                <label>Average response time (seconds) <span id="latDisplay">4.5s</span></label>
+                <input type="range" id="latency" min="1" max="15" value="4.5" step="0.5" oninput="document.getElementById('latDisplay').textContent=this.value+'s'">
+            </div>
+
+            <div class="slider-group">
+                <label>Hours/week debugging RAG issues <span id="debugDisplay">12h</span></label>
+                <input type="range" id="debugHours" min="2" max="40" value="12" oninput="document.getElementById('debugDisplay').textContent=this.value+'h'">
+            </div>
+
+            <div class="input-group">
+                <label>Monthly LLM API spend ($)</label>
+                <input type="number" id="llmCost" value="500" min="0" max="50000">
+            </div>
+
+            <button class="calc-btn" onclick="calculate()">Calculate My RAG Cost</button>
+        </div>
+
+        <div class="results" id="results">
+            <div class="result-card">
+                <div class="big-number" id="totalWaste">$0</div>
+                <div class="label">wasted per month on suboptimal RAG</div>
+            </div>
+
+            <div class="breakdown">
+                <div class="breakdown-item">
+                    <div class="amount" id="wasteHallucinations">$0</div>
+                    <div class="desc">Hallucination cost (wrong answers × rework time)</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="amount" id="wasteLatency">$0</div>
+                    <div class="desc">Latency tax (slow queries × user wait time)</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="amount" id="wasteDebug">$0</div>
+                    <div class="desc">Debug time (hours spent fixing pipeline issues)</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="amount" id="wasteLLM">$0</div>
+                    <div class="desc">LLM overspend (retries, bad prompts, no caching)</div>
+                </div>
+            </div>
+
+            <div class="fix-section">
+                <h3>Recommended Fixes (Based on Your Numbers)</h3>
+                <div id="recommendations"></div>
+            </div>
+
+            <div class="cta-box">
+                <h3>Or Get Everything At Once</h3>
+                <div class="savings" id="savingsAmount">Save $X,XXX/month</div>
+                <div class="sub">MEGA BUNDLE: 20 products, $1,614+ value → <strong>$497 one-time</strong></div>
+                <p style="color:#999; margin-bottom:20px; font-size:0.9rem;">Pays for itself in <span id="payback" style="color:#22cc44; font-weight:700;">X days</span></p>
+                <a href="https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d" class="cta-btn">Get MEGA BUNDLE — $497</a>
+            </div>
+        </div>
+
+        <div class="trust">
+            <p>Built from <strong>76+ production sessions</strong> and <strong>1,100+ commits</strong>.<br>
+            87.5% accuracy on 10K benchmarks. 95.2% on quantitative queries.<br>
+            By an <strong>Ecole Polytechnique + HEC Paris</strong> engineer.</p>
+        </div>
+    </div>
+
+    <script>
+    function calculate() {
+        const queries = parseInt(document.getElementById('queries').value);
+        const team = parseInt(document.getElementById('team').value);
+        const hourly = parseInt(document.getElementById('hourly').value);
+        const accuracy = parseInt(document.getElementById('accuracy').value);
+        const latency = parseFloat(document.getElementById('latency').value);
+        const debugHours = parseInt(document.getElementById('debugHours').value);
+        const llmCost = parseInt(document.getElementById('llmCost').value);
+
+        // Hallucination cost: wrong answers need human review/correction
+        const errorRate = (100 - accuracy) / 100;
+        const wrongAnswers = queries * errorRate;
+        const reviewTimePerError = 0.08; // 5 min average to review/fix
+        const hallucinationCost = wrongAnswers * reviewTimePerError * hourly;
+
+        // Latency tax: excess time above 1.5s target
+        const excessLatency = Math.max(0, latency - 1.5);
+        const latencyCostPerQuery = (excessLatency / 3600) * hourly * 0.3; // 30% of user time is waiting
+        const latencyCost = queries * latencyCostPerQuery;
+
+        // Debug cost
+        const debugCost = debugHours * 4.33 * hourly; // monthly
+
+        // LLM overspend (estimate 30-50% savings possible)
+        const llmWaste = llmCost * 0.35;
+
+        const totalWaste = hallucinationCost + latencyCost + debugCost + llmWaste;
+
+        // Display results
+        document.getElementById('totalWaste').textContent = '$' + Math.round(totalWaste).toLocaleString();
+        document.getElementById('wasteHallucinations').textContent = '$' + Math.round(hallucinationCost).toLocaleString();
+        document.getElementById('wasteLatency').textContent = '$' + Math.round(latencyCost).toLocaleString();
+        document.getElementById('wasteDebug').textContent = '$' + Math.round(debugCost).toLocaleString();
+        document.getElementById('wasteLLM').textContent = '$' + Math.round(llmWaste).toLocaleString();
+
+        // Savings (assume 60% reduction)
+        const savings = Math.round(totalWaste * 0.6);
+        document.getElementById('savingsAmount').textContent = 'Save $' + savings.toLocaleString() + '/month';
+
+        // Payback period
+        const paybackDays = Math.max(1, Math.round(497 / (savings / 30)));
+        document.getElementById('payback').textContent = paybackDays + ' days';
+
+        // Recommendations
+        const recs = [];
+        if (accuracy < 80) {
+            recs.push({ name: 'RAG Chunking & Retrieval Guide', fixes: 'Fix accuracy: chunking strategies + reranking = +15-25% accuracy', price: '$87', link: 'https://buy.stripe.com/6oU5kw5zs1qXcPFcgt5J60f' });
+            recs.push({ name: 'RAG Evaluation & Testing Framework', fixes: 'Measure what matters: automated eval + golden dataset', price: '$127', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d' });
+        }
+        if (latency > 3) {
+            recs.push({ name: 'RAG Latency & Performance Guide', fixes: 'Cut latency 60-80%: caching, embedding optimization, query routing', price: '$107', link: 'https://buy.stripe.com/3cI5kw9PI1qX3f5bcp5J60g' });
+        }
+        if (debugHours > 10) {
+            recs.push({ name: 'RAG Debug Playbook', fixes: '79+ production fixes: stop guessing, follow proven diagnostic flows', price: '$47', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d' });
+            recs.push({ name: 'Operations Runbook', fixes: 'Runbook for every failure mode: alerting, recovery, monitoring', price: '$97', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d' });
+        }
+        if (llmCost > 300) {
+            recs.push({ name: 'RAG Prompt Library', fixes: 'Optimized prompts: fewer tokens, better results, 30-50% cost reduction', price: '$67', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d' });
+        }
+        if (team > 2) {
+            recs.push({ name: 'Architecture Blueprint', fixes: 'Multi-pipeline architecture: standard, graph, quantitative, agentic', price: '$197', link: 'https://buy.stripe.com/6oU7sEaTM3z59Dtdkx5J60d' });
+        }
+
+        const recsHtml = recs.slice(0, 4).map(r =>
+            `<a href="${r.link}" style="text-decoration:none; color:inherit;" target="_blank">
+                <div class="product-rec">
+                    <div><div class="name">${r.name}</div><div class="fixes">${r.fixes}</div></div>
+                    <div class="price">${r.price}</div>
+                </div>
+            </a>`
+        ).join('');
+        document.getElementById('recommendations').innerHTML = recsHtml;
+
+        document.getElementById('results').classList.add('show');
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{"ok": false, "repo": "rag-website", "error": "timeout", "duration": 300, "timestamp": "2026-03-15T00:38:57.109791+00:00"}
+{"ok": false, "repo": "nomos-nba-agent", "error": "timeout", "duration": 300, "timestamp": "2026-03-15T00:54:03.859085+00:00"}
+{"ok": false, "repo": "nomos-casino", "error": "timeout", "duration": 300, "timestamp": "2026-03-15T01:09:09.601846+00:00"}
+{"ok": true, "repo": "nomos-forge-tests", "duration": 333.0, "has_changes": true, "pushed": true, "output_preview": "**The fix**: The scoring system (`score_response` in `forge-tester.py` and `check_7_categories`/`check_expert_depth` in `test-forge-api.py`) was checking for a nested `expertAnalysis` object with fields like `agentCapabilities`, `marketActors`, `apis`, `executionPlan` \u2014 none of which exist in the actual API response. The API returns a flat structure with `keyMetrics`, `competitors`, `moat`, `risks`, `tam`, etc.\n\n**Impact**: 50% of every quality score was permanently zero. A high-quality response", "timestamp": "2026-03-15T01:17:10.832257+00:00"}
+{"ok": false, "repo": "nomos-forge-tests", "error": "timeout", "duration": 300, "timestamp": "2026-03-15T01:24:14.023188+00:00"}

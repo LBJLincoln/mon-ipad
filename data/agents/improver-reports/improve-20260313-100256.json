@@ -1,0 +1,52 @@
+{
+  "timestamp": "2026-03-13T10:02:56.537514+00:00",
+  "weakness": {
+    "pipeline": "graph",
+    "sector": "juridique",
+    "accuracy": 1.5,
+    "total": 66,
+    "good": 1,
+    "target": 80,
+    "gap": -78.5
+  },
+  "failure_patterns": {
+    "WRONG_ANSWER": 20
+  },
+  "dominant_pattern": "WRONG_ANSWER",
+  "hypothesis": {
+    "type": "QUALITY_GAP",
+    "action": "Improve retrieval quality for juridique in graph",
+    "detail": "graph returns answers but they're wrong for juridique. Likely needs better embeddings, more data, or prompt tuning.",
+    "auto_fixable": true
+  },
+  "action_taken": {
+    "docs_ingested": 0,
+    "auto_fixed": true
+  },
+  "snapshot": {
+    "graph": {
+      "btp": 0.0,
+      "finance": 2.9,
+      "industrie": 0.0,
+      "juridique": 1.5
+    },
+    "orchestrator": {
+      "btp": 66.7,
+      "finance": 0.0,
+      "industrie": 66.7,
+      "juridique": 88.9
+    },
+    "quantitative": {
+      "btp": 24.6,
+      "finance": 51.9,
+      "industrie": 32.9,
+      "juridique": 39.0
+    },
+    "standard": {
+      "btp": 63.6,
+      "finance": 65.2,
+      "industrie": 59.1,
+      "juridique": 84.4
+    }
+  }
+}

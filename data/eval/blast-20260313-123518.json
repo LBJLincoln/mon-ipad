@@ -1,0 +1,576 @@
+{
+  "run_id": "8034c25a-9e2e-4002-8939-148c25b7790f",
+  "timestamp": "20260313-123518",
+  "stats": {
+    "total": 50,
+    "pass": 27,
+    "fail": 22,
+    "error": 1,
+    "total_latency": 2523903
+  },
+  "pipeline_stats": {
+    "graph": {
+      "pass": 0,
+      "fail": 10,
+      "error": 0,
+      "timeout": 0,
+      "total": 10,
+      "latency": []
+    },
+    "quantitative": {
+      "pass": 10,
+      "fail": 11,
+      "error": 1,
+      "timeout": 0,
+      "total": 22,
+      "latency": []
+    },
+    "standard": {
+      "pass": 17,
+      "fail": 1,
+      "error": 0,
+      "timeout": 0,
+      "total": 18,
+      "latency": []
+    }
+  },
+  "sector_stats": {
+    "btp": {
+      "pass": 4,
+      "fail": 4,
+      "error": 0,
+      "timeout": 0,
+      "total": 8,
+      "latency": [
+        126278,
+        126744,
+        53500,
+        54985,
+        32508,
+        127992,
+        26497,
+        30833
+      ]
+    },
+    "finance": {
+      "pass": 17,
+      "fail": 16,
+      "error": 1,
+      "timeout": 0,
+      "total": 34,
+      "latency": [
+        45496,
+        13752,
+        28752,
+        11002,
+        44264,
+        25500,
+        16997,
+        24751,
+        18500,
+        24005,
+        24753,
+        44233,
+        132763,
+        51490,
+        28747,
+        36748,
+        36248,
+        13993,
+        30242,
+        124521,
+        125484,
+        43495,
+        23753,
+        125763,
+        36751,
+        125498,
+        36749,
+        17258,
+        27250,
+        25750,
+        19086,
+        23497,
+        28239
+      ]
+    },
+    "juridique": {
+      "pass": 4,
+      "fail": 2,
+      "error": 0,
+      "timeout": 0,
+      "total": 6,
+      "latency": [
+        127743,
+        40747,
+        125482,
+        21492,
+        36745,
+        30510
+      ]
+    },
+    "industrie": {
+      "pass": 2,
+      "fail": 0,
+      "error": 0,
+      "timeout": 0,
+      "total": 2,
+      "latency": [
+        95270,
+        31247
+      ]
+    }
+  },
+  "results": [
+    {
+      "id": "graph-gen-01661",
+      "pipeline": "graph",
+      "sector": "btp",
+      "status": "fail",
+      "latency_ms": 126278,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "quant-gen-10495",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 45496,
+      "sources": 0,
+      "answer_preview": "D'après les données financières disponibles, il n'y a pas d'information sur le bénéfice par action (EPS) d'Euronext pour les années 2022 et 2023. Les résultats de la requête SQL ne retournent aucune d"
+    },
+    {
+      "id": "quant-gen-10543",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 13752,
+      "sources": 0,
+      "answer_preview": "The SQL results are empty, which means there is no data available for General Mills Inc's operating income from FY2020 to FY2022. This could be due to several reasons:\n\n1. The company name may not be "
+    },
+    {
+      "id": "std-gen-fin-0847",
+      "pipeline": "standard",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 28752,
+      "sources": 5,
+      "answer_preview": "The key components of stock exchange listing requirements include organizational documents (articles/certificate of incorporation, by-laws, operating agreements), meeting minutes and consents, organiz"
+    },
+    {
+      "id": "graph-gen-02466",
+      "pipeline": "graph",
+      "sector": "juridique",
+      "status": "fail",
+      "latency_ms": 127743,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "quant-gen-03514",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 11002,
+      "sources": 0,
+      "answer_preview": "Le résultat opérationnel de Meta Platforms en 2022 est de 28,944 milliards de dollars."
+    },
+    {
+      "id": "quant-gen-11402",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 44264,
+      "sources": 0,
+      "answer_preview": "The SQL query executed successfully but returned no results. This means there is no data available for TotalEnergies' net income in FY2022 and FY2023 in the database. The query was designed to fetch t"
+    },
+    {
+      "id": "quant-gen-02838",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 25500,
+      "sources": 0,
+      "answer_preview": "The EPS for General Mills Inc in FY2019 is not available in the provided data."
+    },
+    {
+      "id": "std-gen-jur-0839",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "status": "pass",
+      "latency_ms": 40747,
+      "sources": 5,
+      "answer_preview": "Les principales exigences de sursis à statuer en urbanisme concernent les projets qui peuvent compromettre l'exécution de travaux publics, la réalisation d'une opération d'aménagement, ou porter attei"
+    },
+    {
+      "id": "quant-gen-01832",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 16997,
+      "sources": 0,
+      "answer_preview": "Amundi's gross profit in fiscal year 2022 was 3153."
+    },
+    {
+      "id": "quant-gen-03994",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 24751,
+      "sources": 0,
+      "answer_preview": "Le nombre d'actions de Nike Inc en 2019 était de 1571 millions d'actions."
+    },
+    {
+      "id": "quant-gen-10741",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 18500,
+      "sources": 0,
+      "answer_preview": "The SQL query executed successfully but returned no results, indicating that there is no available data for Mastercard's net income for fiscal years 2022 and 2023 in the database. Therefore, it is not"
+    },
+    {
+      "id": "quant-gen-04316",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 24005,
+      "sources": 0,
+      "answer_preview": "The FY2022 capital expenditure for PepsiCo Inc is not available in the database. The query returned an empty result, indicating that there is no recorded capital expenditure data for PepsiCo Inc for t"
+    },
+    {
+      "id": "graph-gen-03961",
+      "pipeline": "graph",
+      "sector": "juridique",
+      "status": "fail",
+      "latency_ms": 125482,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "std-gen-jur-0057",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "status": "pass",
+      "latency_ms": 21492,
+      "sources": 5,
+      "answer_preview": "Le droit de propriété est le droit d'un propriétaire sur un bien, lui permettant d'en jouir et d'en disposer. Les servitudes sont des charges imposées sur un bien immobilier au profit d'un autre bien,"
+    },
+    {
+      "id": "std-gen-fin-1287",
+      "pipeline": "standard",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 24753,
+      "sources": 5,
+      "answer_preview": "BNP Paribas a recentré ses activités de banque de financement et d'investissement (BFI) sur une liste plus sélective de clients, en particulier sur des \"clients stratégiques-clés\". La banque a égaleme"
+    },
+    {
+      "id": "graph-gen-01458",
+      "pipeline": "graph",
+      "sector": "btp",
+      "status": "fail",
+      "latency_ms": 126744,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "std-gen-ind-0343",
+      "pipeline": "standard",
+      "sector": "industrie",
+      "status": "pass",
+      "latency_ms": 95270,
+      "sources": 5,
+      "answer_preview": "Les composants clés des indicateurs de maintenance MTBF et MTTR sont le MTBF (Mean Time Between Failures), qui mesure le temps moyen entre deux pannes et indique la fiabilité de l'équipement, et le MT"
+    },
+    {
+      "id": "std-gen-btp-1377",
+      "pipeline": "standard",
+      "sector": "btp",
+      "status": "fail",
+      "latency_ms": 53500,
+      "sources": 5,
+      "answer_preview": "Les obligations liées à l'utilisation structurelle du bois lamellé-collé incluent le respect des classes de service (classe 2 minimum), des critères stricts de qualité et durabilité, des tolérances d'"
+    },
+    {
+      "id": "quant-gen-02857",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 44233,
+      "sources": 0,
+      "answer_preview": "The executed SQL query returned no results for General Mills Inc's revenue in fiscal year 2020. This could be due to several reasons:\n\n1. The data for fiscal year 2020 might not be available in the da"
+    },
+    {
+      "id": "graph-gen-00833",
+      "pipeline": "graph",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 132763,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "std-gen-btp-1552",
+      "pipeline": "standard",
+      "sector": "btp",
+      "status": "pass",
+      "latency_ms": 54985,
+      "sources": 5,
+      "answer_preview": "Le béton armé dosage et résistance se rapporte à la composition et à la résistance du béton, tandis que l'acier de construction nuances et propriétés concerne les caractéristiques de l'acier utilisé c"
+    },
+    {
+      "id": "quant-gen-15020",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 51490,
+      "sources": 0,
+      "answer_preview": "D'après les résultats de la requête SQL, il n'y a pas de données disponibles pour la marge brute de Coface en 2023. La table des résultats est vide, ce qui signifie que soit les données financières de"
+    },
+    {
+      "id": "quant-gen-03484",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 28747,
+      "sources": 0,
+      "answer_preview": "Le résultat net de Mastercard en 2023 est de 11,195 milliards de dollars."
+    },
+    {
+      "id": "quant-gen-04658",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 36748,
+      "sources": 0,
+      "answer_preview": "Tesla Inc reported an EBITDA of $13,781 million in FY2023."
+    },
+    {
+      "id": "std-gen-jur-0938",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "status": "pass",
+      "latency_ms": 36745,
+      "sources": 5,
+      "answer_preview": "The key principles of cession de contrat conditions include that contracts involving the alienation of property or the transfer of another right are subject to specific rules (C. civ., art. 1196). Whe"
+    },
+    {
+      "id": "quant-gen-10935",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 36248,
+      "sources": 0,
+      "answer_preview": "En 2022, Morgan Stanley a enregistré un résultat opérationnel de 9 536 millions de dollars. En 2023, ce chiffre est passé à 10 185 millions de dollars, soit une augmentation de 649 millions de dollars"
+    },
+    {
+      "id": "quant-gen-03444",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 13993,
+      "sources": 0,
+      "answer_preview": "Le résultat opérationnel de Mastercard en 2022 est de 12,461 milliards de dollars."
+    },
+    {
+      "id": "std-gen-fin-1143",
+      "pipeline": "standard",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 30242,
+      "sources": 5,
+      "answer_preview": "JPMorgan's key activities include providing lending-related financial instruments such as commitments and guarantees to address clients' financing needs, offering clearing services for securities and "
+    },
+    {
+      "id": "graph-gen-00719",
+      "pipeline": "graph",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 124521,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "std-gen-btp-0741",
+      "pipeline": "standard",
+      "sector": "btp",
+      "status": "pass",
+      "latency_ms": 32508,
+      "sources": 5,
+      "answer_preview": "Le schéma de cohérence territoriale (SCoT) est un document d'urbanisme qui détermine l'organisation spatiale et les grandes orientations de développement d'un territoire à l'échelle d'un bassin de vie"
+    },
+    {
+      "id": "quant-gen-13303",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "error",
+      "latency_ms": 0,
+      "sources": 0,
+      "answer_preview": ""
+    },
+    {
+      "id": "graph-gen-01385",
+      "pipeline": "graph",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 125484,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "std-gen-fin-1580",
+      "pipeline": "standard",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 43495,
+      "sources": 5,
+      "answer_preview": "Pour appliquer les investissements alternatifs dans un projet concret, il est recommandé de diversifier ses investissements en répartissant de petites sommes sur plusieurs projets à la fois, notamment"
+    },
+    {
+      "id": "std-gen-fin-1429",
+      "pipeline": "standard",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 23753,
+      "sources": 5,
+      "answer_preview": "Les obligations liées aux systemic risk buffers incluent l'augmentation des exigences en matière de fonds propres, l'introduction de nouvelles règles en matière de liquidité et de gouvernance d'entrep"
+    },
+    {
+      "id": "graph-gen-01433",
+      "pipeline": "graph",
+      "sector": "btp",
+      "status": "fail",
+      "latency_ms": 127992,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "graph-gen-04801",
+      "pipeline": "graph",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 125763,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "quant-gen-11474",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 36751,
+      "sources": 0,
+      "answer_preview": "Le résultat opérationnel de Walmart Inc a augmenté entre 2018 et 2019, passant de 20 437 millions de dollars en 2018 à 21 957 millions de dollars en 2019, soit une hausse d'environ 7,4 %."
+    },
+    {
+      "id": "graph-gen-00879",
+      "pipeline": "graph",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 125498,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "quant-gen-02616",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 36749,
+      "sources": 0,
+      "answer_preview": "The SQL results show an empty object (`{}`), which indicates that there is no data available for the FY2023 EPS of Crédit Agricole. This could be due to several reasons:\n\n1. The data might not have be"
+    },
+    {
+      "id": "std-gen-fin-0465",
+      "pipeline": "standard",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 17258,
+      "sources": 5,
+      "answer_preview": "L'Expected Shortfall (ES) est une mesure de risque qui évalue la perte moyenne dans le pire des cas, au-delà d'un certain seuil de confiance. Elle complète le Value at Risk (VaR) en fournissant une es"
+    },
+    {
+      "id": "std-gen-fin-1573",
+      "pipeline": "standard",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 27250,
+      "sources": 5,
+      "answer_preview": "Les obligations liées aux critères ESG incluent le reporting ESG détaillé imposé par la directive CSRD, la classification et publication des impacts ESG des produits financiers selon la SFDR, et le de"
+    },
+    {
+      "id": "quant-gen-04841",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 25750,
+      "sources": 0,
+      "answer_preview": "The FY2019 EBITDA for The Kraft Heinz Company is not available in the database. The query returned an empty result, indicating that the EBITDA data for The Kraft Heinz Company for the fiscal year 2019"
+    },
+    {
+      "id": "quant-gen-03884",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 19086,
+      "sources": 0,
+      "answer_preview": "D'après les données financières disponibles, il n'y a pas d'information sur la marge brute de Natixis pour l'année 2023. Les résultats de la requête SQL ne contiennent aucune donnée pour cette entrepr"
+    },
+    {
+      "id": "quant-gen-03331",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 23497,
+      "sources": 0,
+      "answer_preview": "The FY2022 cost of revenue for LVMH is 28,670 million euros."
+    },
+    {
+      "id": "std-gen-btp-0560",
+      "pipeline": "standard",
+      "sector": "btp",
+      "status": "pass",
+      "latency_ms": 26497,
+      "sources": 5,
+      "answer_preview": "CCTP peinture revêtements muraux joue un rôle crucial dans le secteur BTP en tant que document contractuel qui détaille les spécifications techniques des travaux de peinture et revêtements muraux. Il "
+    },
+    {
+      "id": "std-gen-jur-1775",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "status": "pass",
+      "latency_ms": 30510,
+      "sources": 5,
+      "answer_preview": "The main provisions of the Code de la sécurité sociale include the calculation of demographic compensation between employee and non-employee regimes, the mutual recognition of loss of autonomy for eld"
+    },
+    {
+      "id": "std-gen-ind-1198",
+      "pipeline": "standard",
+      "sector": "industrie",
+      "status": "pass",
+      "latency_ms": 31247,
+      "sources": 5,
+      "answer_preview": "Les obligations liées aux mesures de prévention de la pollution incluent la réalisation de mesures et contrôles périodiques (émissions atmosphériques, rejets aqueux, bruit), la transmission annuelle d"
+    },
+    {
+      "id": "std-gen-btp-0366",
+      "pipeline": "standard",
+      "sector": "btp",
+      "status": "pass",
+      "latency_ms": 30833,
+      "sources": 5,
+      "answer_preview": "The RE2020 carbon impact thresholds are based on the principle of Life Cycle Analysis (LCA), which calculates the environmental impacts of a building over its entire life cycle. The regulation introdu"
+    },
+    {
+      "id": "quant-gen-02504",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 28239,
+      "sources": 0,
+      "answer_preview": "Le chiffre d'affaires de Coface en 2023 est de 1868 (unité monétaire non spécifiée, probablement en millions d'euros)."
+    }
+  ]
+}

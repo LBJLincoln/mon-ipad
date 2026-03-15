@@ -1,0 +1,585 @@
+{
+  "run_id": "68c38a3d-f6af-43e5-8e5f-4e59fe468dc8",
+  "timestamp": "20260313-034309",
+  "stats": {
+    "total": 50,
+    "pass": 19,
+    "fail": 31,
+    "error": 0,
+    "total_latency": 2162962
+  },
+  "pipeline_stats": {
+    "graph": {
+      "pass": 0,
+      "fail": 10,
+      "error": 0,
+      "timeout": 0,
+      "total": 10,
+      "latency": []
+    },
+    "standard": {
+      "pass": 13,
+      "fail": 2,
+      "error": 0,
+      "timeout": 0,
+      "total": 15,
+      "latency": []
+    },
+    "quantitative": {
+      "pass": 5,
+      "fail": 19,
+      "error": 0,
+      "timeout": 0,
+      "total": 24,
+      "latency": []
+    },
+    "orchestrator": {
+      "pass": 1,
+      "fail": 0,
+      "error": 0,
+      "timeout": 0,
+      "total": 1,
+      "latency": []
+    }
+  },
+  "sector_stats": {
+    "finance": {
+      "pass": 5,
+      "fail": 8,
+      "error": 0,
+      "timeout": 0,
+      "total": 13,
+      "latency": [
+        36276,
+        17252,
+        101501,
+        49250,
+        41007,
+        55242,
+        11277,
+        30251,
+        94743,
+        38497,
+        36274,
+        35746,
+        46002
+      ]
+    },
+    "juridique": {
+      "pass": 6,
+      "fail": 5,
+      "error": 0,
+      "timeout": 0,
+      "total": 11,
+      "latency": [
+        29214,
+        30490,
+        19495,
+        25228,
+        12995,
+        58743,
+        44030,
+        15499,
+        12004,
+        37746,
+        40001
+      ]
+    },
+    "industrie": {
+      "pass": 4,
+      "fail": 11,
+      "error": 0,
+      "timeout": 0,
+      "total": 15,
+      "latency": [
+        126744,
+        22992,
+        36498,
+        38751,
+        33505,
+        14999,
+        13498,
+        32491,
+        63249,
+        115738,
+        48495,
+        35489,
+        54272,
+        41739,
+        50249
+      ]
+    },
+    "btp": {
+      "pass": 4,
+      "fail": 7,
+      "error": 0,
+      "timeout": 0,
+      "total": 11,
+      "latency": [
+        12256,
+        32250,
+        55762,
+        47252,
+        39490,
+        25736,
+        25755,
+        128512,
+        15488,
+        23247,
+        109742
+      ]
+    }
+  },
+  "results": [
+    {
+      "id": "graph-gen-01165",
+      "pipeline": "graph",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 36276,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "std-gen-jur-0764",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "status": "pass",
+      "latency_ms": 29214,
+      "sources": 5,
+      "answer_preview": "La zone naturelle N du PLU joue un rôle crucial dans le secteur juridique en définissant les règles d'urbanisme pour les secteurs à protéger en raison de leur paysage, faune, flore ou exploitation for"
+    },
+    {
+      "id": "quant-gen-08110",
+      "pipeline": "quantitative",
+      "sector": "industrie",
+      "status": "fail",
+      "latency_ms": 126744,
+      "sources": 0,
+      "answer_preview": "Il semble qu'il y ait eu une erreur dans la requête SQL exécutée. La requête n'a pas été correctement formulée, car elle ne commence pas par le mot-clé \"SELECT\" comme requis. \n\nPar conséquent, il n'y "
+    },
+    {
+      "id": "quant-gen-15237",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 17252,
+      "sources": 0,
+      "answer_preview": "The SQL results are empty, which means that there is no data available for NVIDIA's operating margin in FY2023. This could be due to several reasons:\n\n1. The data might not have been uploaded or updat"
+    },
+    {
+      "id": "quant-gen-11029",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 101501,
+      "sources": 0,
+      "answer_preview": "The SQL query executed returned an error message indicating that the query must start with SELECT. This suggests that the query was not properly formatted or was incomplete. Without a valid SQL query,"
+    },
+    {
+      "id": "quant-gen-00265",
+      "pipeline": "quantitative",
+      "sector": "btp",
+      "status": "fail",
+      "latency_ms": 12256,
+      "sources": 0,
+      "answer_preview": "D'après les données financières disponibles, Bouygues n'a déclaré aucune dépense d'investissement (capex) pour l'exercice 2022. Le résultat de la requête SQL renvoie une valeur vide, indiquant que cet"
+    },
+    {
+      "id": "quant-gen-10435",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 49250,
+      "sources": 0,
+      "answer_preview": "En 2023, le bénéfice par action (EPS) de CNP Assurances était de 8,95 €, contre 7,82 € en 2022. Cela représente une augmentation de 1,13 €, soit une hausse de 14,4 % d'une année sur l'autre."
+    },
+    {
+      "id": "std-gen-btp-0155",
+      "pipeline": "standard",
+      "sector": "btp",
+      "status": "pass",
+      "latency_ms": 32250,
+      "sources": 5,
+      "answer_preview": "Les principales exigences de l'Eurocode 2 pour le design des structures en béton sont la résistance mécanique et stabilité, la sécurité en cas d'incendie, la sécurité d'utilisation et durabilité, ains"
+    },
+    {
+      "id": "std-gen-jur-0140",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "status": "pass",
+      "latency_ms": 30490,
+      "sources": 5,
+      "answer_preview": "Le licenciement pour motif personnel joue un rôle central dans le secteur juridique car il repose sur des faits inhérents au salarié, comme l'insuffisance professionnelle ou les absences répétées. Cet"
+    },
+    {
+      "id": "std-gen-btp-1583",
+      "pipeline": "standard",
+      "sector": "btp",
+      "status": "pass",
+      "latency_ms": 55762,
+      "sources": 5,
+      "answer_preview": "Choisissez le DTU 20.1 pour les murs en maçonnerie plutôt que le plâtre et les plaques de plâtre BA13 dans les cas suivants : pour les murs porteurs, refends, façades ou murs enterrés nécessitant une "
+    },
+    {
+      "id": "std-gen-btp-1184",
+      "pipeline": "standard",
+      "sector": "btp",
+      "status": "pass",
+      "latency_ms": 47252,
+      "sources": 5,
+      "answer_preview": "Les avantages et inconvénients du DTU 60.11 ne sont pas explicitement mentionnés dans les documents fournis. Cependant, on peut en déduire que ce DTU concerne les canalisations sanitaires et de chauff"
+    },
+    {
+      "id": "std-gen-fin-0425",
+      "pipeline": "standard",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 41007,
+      "sources": 5,
+      "answer_preview": "The purpose of counterparty credit risk is to assess the probability that a borrower will fail to meet its financial obligations, such as missing interest payments or being unable to repay principal o"
+    },
+    {
+      "id": "quant-gen-13426",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 55242,
+      "sources": 0,
+      "answer_preview": "Based on the SQL query results, there is no data available for EBITDA across all finance companies in FY2021. The query returned 0 rows, indicating that no matching records were found in the database "
+    },
+    {
+      "id": "std-gen-ind-1389",
+      "pipeline": "standard",
+      "sector": "industrie",
+      "status": "pass",
+      "latency_ms": 22992,
+      "sources": 5,
+      "answer_preview": "Les avantages de l'intégration des énergies renouvelables incluent la réduction des émissions de gaz à effet de serre et l'amélioration de l'efficacité énergétique (-30% par rapport à RT2012). Les inc"
+    },
+    {
+      "id": "std-gen-ind-1198",
+      "pipeline": "standard",
+      "sector": "industrie",
+      "status": "fail",
+      "latency_ms": 36498,
+      "sources": 5,
+      "answer_preview": "Les obligations liées aux mesures de prévention de la pollution incluent la révision des règles de stockage, le suivi quotidien des matières dangereuses, l'intégration des produits de décomposition da"
+    },
+    {
+      "id": "gen-gjur-o-00122",
+      "pipeline": "orchestrator",
+      "sector": "juridique",
+      "status": "pass",
+      "latency_ms": 19495,
+      "sources": 5,
+      "answer_preview": "L'analyse croisée de la résolution pour inexécution sous l'angle du Code civil et de la jurisprudence récente en droit du numérique révèle une évolution significative. La jurisprudence récente, notamm"
+    },
+    {
+      "id": "std-gen-jur-1736",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "status": "pass",
+      "latency_ms": 25228,
+      "sources": 5,
+      "answer_preview": "Le Code civil français, adopté durant le Premier Empire, s'applique à l'ensemble du droit civil français, incluant des domaines tels que la propriété, les contrats, la famille, et les successions. Il "
+    },
+    {
+      "id": "quant-gen-02504",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 11277,
+      "sources": 0,
+      "answer_preview": "Le chiffre d'affaires de Coface en 2023 est de 1868. \n\nNotez que le chiffre d'affaires est probablement exprimé en millions d'euros ou dans une autre unité monétaire, mais l'unité n'est pas spécifiée "
+    },
+    {
+      "id": "std-gen-jur-0219",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "status": "pass",
+      "latency_ms": 12995,
+      "sources": 5,
+      "answer_preview": "Les principales exigences de la procédure de rupture conventionnelle sont : la convocation à un entretien préalable par lettre recommandée avec accusé de réception au moins 5 jours ouvrés avant, la pr"
+    },
+    {
+      "id": "quant-gen-00821",
+      "pipeline": "quantitative",
+      "sector": "btp",
+      "status": "fail",
+      "latency_ms": 39490,
+      "sources": 0,
+      "answer_preview": "The FY2022 EPS for Legrand is not available in the database. The query returned an empty result, indicating that there is no EPS data for Legrand for the fiscal year 2022."
+    },
+    {
+      "id": "quant-gen-00883",
+      "pipeline": "quantitative",
+      "sector": "btp",
+      "status": "fail",
+      "latency_ms": 25736,
+      "sources": 0,
+      "answer_preview": "The SQL query executed to find Manitou's net income for FY2022 returned no results. This could be due to several reasons:\n\n1. There is no data available for Manitou in the financials table for FY2022."
+    },
+    {
+      "id": "std-gen-fin-1217",
+      "pipeline": "standard",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 30251,
+      "sources": 5,
+      "answer_preview": "D'après les documents fournis, il n'y a aucune information sur les activités principales de Nike. Les documents traitent principalement de sujets comme les cookies, la fabrication, les normes et certi"
+    },
+    {
+      "id": "graph-gen-02394",
+      "pipeline": "graph",
+      "sector": "juridique",
+      "status": "fail",
+      "latency_ms": 58743,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "quant-gen-01359",
+      "pipeline": "quantitative",
+      "sector": "btp",
+      "status": "fail",
+      "latency_ms": 25755,
+      "sources": 0,
+      "answer_preview": "Le marge brute de Spie en 2023 n'est pas disponible car les résultats de la requête SQL sont vides. Cela signifie que la requête n'a pas pu trouver de données correspondant aux critères spécifiés, à s"
+    },
+    {
+      "id": "quant-gen-11760",
+      "pipeline": "quantitative",
+      "sector": "industrie",
+      "status": "fail",
+      "latency_ms": 38751,
+      "sources": 0,
+      "answer_preview": "Les données financières pour Adobe Inc en 2015 et 2016 ne sont pas disponibles dans la base de données. La requête n'a retourné aucun résultat, ce qui signifie qu'il n'y a pas d'informations sur le ch"
+    },
+    {
+      "id": "quant-gen-15292",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 94743,
+      "sources": 0,
+      "answer_preview": "The SQL query executed returned an error message indicating that the query must start with SELECT. This suggests that there was an issue with the query syntax or structure. Without a valid query, I ca"
+    },
+    {
+      "id": "graph-gen-04526",
+      "pipeline": "graph",
+      "sector": "juridique",
+      "status": "fail",
+      "latency_ms": 44030,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "quant-gen-15067",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 38497,
+      "sources": 0,
+      "answer_preview": "The gross margin for General Mills Inc in FY2020 is not available in the database. The query returned an empty result, indicating that the gross profit and revenue data for that specific fiscal year i"
+    },
+    {
+      "id": "std-gen-jur-1522",
+      "pipeline": "standard",
+      "sector": "juridique",
+      "status": "pass",
+      "latency_ms": 15499,
+      "sources": 5,
+      "answer_preview": "Le registre du commerce et des sociétés (RCS) offre une meilleure fiabilité et transparence des données d'entreprise par rapport aux actes de commerce. Il centralise les informations officielles sur l"
+    },
+    {
+      "id": "quant-gen-15433",
+      "pipeline": "quantitative",
+      "sector": "industrie",
+      "status": "fail",
+      "latency_ms": 33505,
+      "sources": 0,
+      "answer_preview": "The SQL results are empty, which means that there is no data available for Adobe Inc's gross margin in FY2015 based on the executed query. This could be due to several reasons:\n\n* The company name may"
+    },
+    {
+      "id": "quant-gen-07573",
+      "pipeline": "quantitative",
+      "sector": "industrie",
+      "status": "pass",
+      "latency_ms": 14999,
+      "sources": 0,
+      "answer_preview": "The query executed successfully but returned no results, indicating that there is no available data for Netflix Inc's R&D spending in FY2017 in the database. This could be due to several reasons:\n\n1. "
+    },
+    {
+      "id": "std-gen-fin-1601",
+      "pipeline": "standard",
+      "sector": "finance",
+      "status": "pass",
+      "latency_ms": 36274,
+      "sources": 5,
+      "answer_preview": "Pour appliquer le high-frequency trading dans un projet concret, il faut d'abord développer des algorithmes de trading automatisés capables d'analyser rapidement les données de marché et d'exécuter de"
+    },
+    {
+      "id": "quant-gen-06364",
+      "pipeline": "quantitative",
+      "sector": "industrie",
+      "status": "fail",
+      "latency_ms": 13498,
+      "sources": 0,
+      "answer_preview": "Il semble que les résultats de la requête SQL soient vides, ce qui signifie qu'il n'y a pas de données disponibles pour le nombre d'actions de American Water Works Company Inc en 2022. Cela pourrait ê"
+    },
+    {
+      "id": "graph-gen-01426",
+      "pipeline": "graph",
+      "sector": "btp",
+      "status": "fail",
+      "latency_ms": 128512,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "quant-gen-06371",
+      "pipeline": "quantitative",
+      "sector": "industrie",
+      "status": "pass",
+      "latency_ms": 32491,
+      "sources": 0,
+      "answer_preview": "The SQL results show an empty object `{}`, which indicates that there is no R&D spending data available for American Water Works Company Inc in FY2022. This could be due to the data not being reported"
+    },
+    {
+      "id": "quant-gen-15805",
+      "pipeline": "quantitative",
+      "sector": "industrie",
+      "status": "fail",
+      "latency_ms": 63249,
+      "sources": 0,
+      "answer_preview": "The SQL query executed returned an error message stating \"Query must start with SELECT\" with a status of \"error\". This indicates that the query was not properly formatted or executed. Therefore, I am "
+    },
+    {
+      "id": "quant-gen-13128",
+      "pipeline": "quantitative",
+      "sector": "juridique",
+      "status": "fail",
+      "latency_ms": 12004,
+      "sources": 0,
+      "answer_preview": "The SQL results are empty, which means that there is no data available for LexisNexis (RELX)'s EBITDA from FY2022 to FY2023 based on the executed query. This could be due to several reasons such as:\n\n"
+    },
+    {
+      "id": "quant-gen-07763",
+      "pipeline": "quantitative",
+      "sector": "industrie",
+      "status": "fail",
+      "latency_ms": 115738,
+      "sources": 0,
+      "answer_preview": "The SQL query executed returned an error message stating \"Query must start with SELECT\" with a status of \"error\". This indicates that the query was not properly formatted or executed. Therefore, I can"
+    },
+    {
+      "id": "quant-gen-10727",
+      "pipeline": "quantitative",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 35746,
+      "sources": 0,
+      "answer_preview": "The SQL query executed successfully but returned no data rows. This means that there is no available financial data for LVMH's gross profit in FY2022 and FY2023 in the database. The query was structur"
+    },
+    {
+      "id": "quant-gen-12689",
+      "pipeline": "quantitative",
+      "sector": "industrie",
+      "status": "fail",
+      "latency_ms": 48495,
+      "sources": 0,
+      "answer_preview": "Désolé, mais il n'y a pas de données disponibles pour Stellantis pour les années fiscales 2022 et 2023 dans la base de données. Les résultats de la requête SQL sont vides, ce qui signifie qu'il n'y a "
+    },
+    {
+      "id": "graph-gen-04836",
+      "pipeline": "graph",
+      "sector": "finance",
+      "status": "fail",
+      "latency_ms": 46002,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "quant-gen-00360",
+      "pipeline": "quantitative",
+      "sector": "btp",
+      "status": "fail",
+      "latency_ms": 15488,
+      "sources": 0,
+      "answer_preview": "D'après les résultats de la requête SQL, il n'y a aucune donnée disponible pour le chiffre d'affaires de Colas pour l'exercice 2023. La table des résultats est vide, ce qui signifie que soit les donné"
+    },
+    {
+      "id": "graph-gen-03496",
+      "pipeline": "graph",
+      "sector": "industrie",
+      "status": "fail",
+      "latency_ms": 35489,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "std-gen-ind-1432",
+      "pipeline": "standard",
+      "sector": "industrie",
+      "status": "pass",
+      "latency_ms": 54272,
+      "sources": 5,
+      "answer_preview": "Customer satisfaction measurement in ISO 9001 is addressed in Section 9 (performance evaluation), which requires organizations to monitor and measure customer satisfaction as part of their quality man"
+    },
+    {
+      "id": "graph-gen-05484",
+      "pipeline": "graph",
+      "sector": "juridique",
+      "status": "fail",
+      "latency_ms": 37746,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "graph-gen-03608",
+      "pipeline": "graph",
+      "sector": "industrie",
+      "status": "fail",
+      "latency_ms": 41739,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "graph-gen-04139",
+      "pipeline": "graph",
+      "sector": "juridique",
+      "status": "fail",
+      "latency_ms": 40001,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    },
+    {
+      "id": "std-gen-btp-0693",
+      "pipeline": "standard",
+      "sector": "btp",
+      "status": "pass",
+      "latency_ms": 23247,
+      "sources": 5,
+      "answer_preview": "Les équipements de protection individuelle (EPI) BTP sont des dispositifs destinés à protéger les salariés contre les risques professionnels sur les chantiers. Ils comprennent casques, chaussures de s"
+    },
+    {
+      "id": "quant-gen-00303",
+      "pipeline": "quantitative",
+      "sector": "btp",
+      "status": "fail",
+      "latency_ms": 109742,
+      "sources": 0,
+      "answer_preview": "The SQL query executed returned an error message stating \"Query must start with SELECT\" with a status of \"error\". This indicates that the query was not properly formatted to retrieve the desired data."
+    },
+    {
+      "id": "graph-gen-03303",
+      "pipeline": "graph",
+      "sector": "industrie",
+      "status": "fail",
+      "latency_ms": 50249,
+      "sources": 0,
+      "answer_preview": "Information not available in the knowledge graph."
+    }
+  ]
+}

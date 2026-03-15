@@ -41,36 +41,37 @@ REPOS = {
     "rag-website": {
         "path": "/home/termius/rag-website",
         "type": "nextjs",
-        "prompt": """Read src/app/ directory listing. Pick ONE page that needs improvement. Read that page's code. Make ONE specific improvement: fix a bug, improve a visual element, add missing functionality, or enhance mobile responsiveness. The change must be small (under 50 lines diff). Do NOT rewrite entire files.""",
+        "prompt": "Run: ls src/app/*/page.tsx. Pick the FIRST file. Read it. Fix ONE thing: a typo, missing alt text, a hardcoded string, or add a missing aria-label. Edit under 10 lines. Do NOT rewrite the file.",
     },
     "nomos-nba-agent": {
         "path": "/home/termius/nomos-nba-agent",
         "type": "python",
-        "prompt": """Analyze this NBA AI agent repo. Find the single highest-impact improvement.
-Focus on: eval accuracy, expert data coverage, betting model quality, NBA knowledge base completeness, agent performance.
-Apply the improvement. Keep changes minimal and focused. Commit with descriptive message.""",
+        "prompt": "Run: ls *.py ops/*.py. Read the FIRST .py file found. Fix ONE thing: add a missing type hint, fix a potential None error, or improve an error message. Edit under 10 lines. Do NOT rewrite.",
     },
     "nomos-casino": {
         "path": "/home/termius/nomos-casino",
         "type": "python",
-        "prompt": """Analyze this casino/game testing repo. Find the single highest-impact improvement.
-Focus on: test coverage, game engagement scoring, user persona coverage, sync quality.
-Apply the improvement. Keep changes minimal and focused. Commit with descriptive message.""",
+        "prompt": "Run: ls *.py ops/*.py tests/*.py. Read the FIRST .py file. Fix ONE thing: add error handling for a bare except, fix a missing import, or add a docstring. Edit under 10 lines.",
     },
     "nomos-forge-tests": {
         "path": "/home/termius/nomos-forge-tests",
         "type": "python",
-        "prompt": """Analyze this Factory test repo. Find the single highest-impact improvement.
-Focus on: test accuracy, category coverage (7 categories), evaluation depth, reporting quality.
-Apply the improvement. Keep changes minimal and focused. Commit with descriptive message.""",
+        "prompt": "Run: ls *.py tests/*.py. Read the FIRST .py file. Fix ONE thing: improve a test assertion, add a missing edge case, or fix a typo. Edit under 10 lines.",
     },
     "mon-ipad": {
         "path": "/home/termius/mon-ipad",
         "type": "python",
-        "prompt": """Analyze this control tower repo. Find the single highest-impact improvement in ops/ scripts.
-Focus on: monitor accuracy, eval coverage, ingestion efficiency, agent reliability.
-Apply the improvement. Keep changes minimal and focused. Commit with descriptive message.
-DO NOT modify directives/ or CLAUDE.md.""",
+        "prompt": "Run: ls ops/*.py. Read ops/monitor.py. Fix ONE thing: improve an error message, add a missing timeout, or fix a potential crash. Edit under 10 lines. Do NOT touch CLAUDE.md or directives/.",
+    },
+    "rag-data-ingestion": {
+        "path": "/home/termius/rag-data-ingestion",
+        "type": "python",
+        "prompt": "Run: ls *.py src/*.py. Read the FIRST .py file. Fix ONE thing: add a missing type hint, improve error handling, or fix a docstring. Edit under 10 lines.",
+    },
+    "rag-dashboard": {
+        "path": "/home/termius/rag-dashboard",
+        "type": "nextjs",
+        "prompt": "Run: ls src/app/page.tsx src/app/*/page.tsx. Read the FIRST file. Fix ONE thing: a typo, missing alt text, or improve accessibility. Edit under 10 lines.",
     },
 }
 
@@ -135,10 +136,10 @@ def improve_repo(repo_name):
 
     try:
         result = subprocess.run(
-            ["claude", "--print", "--dangerously-skip-permissions", prompt],
+            ["claude", "-p", "--dangerously-skip-permissions", prompt],
             capture_output=True,
             text=True,
-            timeout=600,  # 10 min max
+            timeout=300,  # 5 min max (surgical prompts should finish fast)
             cwd=repo_path,
         )
         duration = round(time.time() - start, 1)
@@ -185,12 +186,12 @@ def improve_repo(repo_name):
         }
 
     except subprocess.TimeoutExpired:
-        log(f"  Timeout (600s) for {repo_name}", "WARN")
+        log(f"  Timeout (300s) for {repo_name}", "WARN")
         return {
             "ok": False,
             "repo": repo_name,
             "error": "timeout",
-            "duration": 600,
+            "duration": 300,
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:

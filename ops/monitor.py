@@ -88,7 +88,7 @@ def api_get(opener, host, path, timeout=30):
     req = urllib.request.Request(f"{host}/rest{path}", method="GET")
     resp = opener.open(req, timeout=timeout)
     data = json.loads(resp.read().decode())
-    return data.get("data", data)
+    return data.get("data", data) if isinstance(data, dict) else data
 
 # ─── Execution Analysis ───────────────────────────────────────────────
 
