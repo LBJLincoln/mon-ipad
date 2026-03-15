@@ -364,7 +364,8 @@ def run_monitor(hours=None, errors_only=False, json_output=False):
     # 1. Check Space health
     for space in SPACES:
         try:
-            urllib.request.urlopen(f"{space['url']}/healthz", timeout=10)
+            resp = urllib.request.urlopen(f"{space['url']}/healthz", timeout=10)
+            resp.close()
             report["spaces"].append({"name": space["name"], "url": space["url"], "status": "UP"})
         except Exception:
             report["spaces"].append({"name": space["name"], "url": space["url"], "status": "DOWN"})
