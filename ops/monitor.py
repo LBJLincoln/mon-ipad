@@ -94,7 +94,7 @@ def api_get(opener, host, path, timeout=30):
         raise ConnectionError(f"HTTP {e.code} from {url}: {e.reason}") from e
     except urllib.error.URLError as e:
         raise ConnectionError(f"Connection failed for {url}: {e.reason}") from e
-    raw = resp.read().decode()
+    raw = resp.read().decode(errors="replace")
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
