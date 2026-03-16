@@ -1,0 +1,311 @@
+# Promptfoo Evaluation Config — Nomos Sector AI (4 RAG Pipelines)
+# Run: npx promptfoo@latest eval -c eval/promptfoo-config.yaml
+# View: npx promptfoo@latest view
+#
+# Tests 4 pipelines x 4 sectors (finance, btp, juridique, industrie)
+# 20 questions derived from real ingested sector data
+
+description: "Nomos RAG Pipeline Evaluation — 4 Sectors x 4 Pipelines"
+
+# ---------------------------------------------------------------------------
+# PROVIDERS — one per RAG pipeline, all HTTP POST webhooks
+# ---------------------------------------------------------------------------
+providers:
+  # 1. Standard RAG — vector search across sector documents
+  - id: https
+    label: standard-rag
+    config:
+      url: "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/rag-multi-index-v3"
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        query: "{{query}}"
+        sector: "{{sector}}"
+        tenant_id: "{{sector}}"
+      transformResponse: "json.response"
+      responseParser: "json.response"
+
+  # 2. Graph RAG — entity/relationship traversal via Neo4j
+  - id: https
+    label: graph-rag
+    config:
+      url: "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/ff622742-6d71-4e91-af71-b5c666088717"
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        query: "{{query}}"
+        sector: "{{sector}}"
+        tenant_id: "{{sector}}"
+      transformResponse: "json.response"
+      responseParser: "json.response"
+
+  # 3. Quantitative RAG — SQL generation over financial tables
+  - id: https
+    label: quant-rag
+    config:
+      url: "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9"
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        query: "{{query}}"
+        sector: "{{sector}}"
+        tenant_id: "{{sector}}"
+      transformResponse: "json.interpretation || json.response || JSON.stringify(json.raw_results)"
+      responseParser: "json.interpretation || json.response || JSON.stringify(json.raw_results)"
+
+  # 4. Orchestrator — intelligent router across all sub-pipelines
+  - id: https
+    label: orchestrator
+    config:
+      url: "https://lbjlincoln-nomos-rag-engine.hf.space/webhook/orchestrator-v2"
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        query: "{{query}}"
+        sector: "{{sector}}"
+        tenant_id: "{{sector}}"
+      transformResponse: "json.response"
+      responseParser: "json.response"
+
+# ---------------------------------------------------------------------------
+# PROMPTS — pass-through (the query IS the prompt for webhook providers)
+# ---------------------------------------------------------------------------
+prompts:
+  - "{{query}}"
+
+# ---------------------------------------------------------------------------
+# DEFAULT TEST SETTINGS
+# ---------------------------------------------------------------------------
+defaultTest:
+  options:
+    timeout: 60000
+  assert:
+    # Every response must be non-empty
+    - type: javascript
+      value: "output !== null && output !== undefined && String(output).trim().length > 0"
+      metric: response-not-empty
+    # Every response must be longer than 50 chars (real expert answer)
+    - type: javascript
+      value: "String(output).length > 50"
+      metric: response-min-length
+
+# ---------------------------------------------------------------------------
+# EVAL OPTIONS
+# ---------------------------------------------------------------------------
+evaluateOptions:
+  maxConcurrency: 2
+  cache: true
+
+commandLineOptions:
+  output:
+    - eval/promptfoo-results.json
+
+# ---------------------------------------------------------------------------
+# TESTS — 20 questions, 5 per sector
+# ---------------------------------------------------------------------------
+tests:
+  # =========================================================================
+  # FINANCE (5 questions — English)
+  # =========================================================================
+  - description: "[FIN-01] 3M FY2018 capital expenditure"
+    vars:
+      query: "What is the FY2018 capital expenditure amount for 3M based on the cash flow statement?"
+      sector: finance
+    assert:
+      - type: icontains
+        value: "1577"
+        metric: keyword-accuracy
+      - type: javascript
+        value: "/[a-zA-Z]/.test(output)"
+        metric: language-english
+
+  - description: "[FIN-02] Boeing primary customers FY2022"
+    vars:
+      query: "Who are the primary customers of Boeing as of FY2022?"
+      sector: finance
+    assert:
+      - type: icontains
+        value: "government"
+        metric: keyword-accuracy
+
+  - description: "[FIN-03] Pfizer PPNE growth FY20-FY21"
+    vars:
+      query: "Did Pfizer grow its PPNE between FY20 and FY21?"
+      sector: finance
+    assert:
+      - type: javascript
+        value: "/positive|grew|increased|growth|higher/i.test(output)"
+        metric: keyword-accuracy
+
+  - description: "[FIN-04] Net cash operating activities 2009"
+    vars:
+      query: "What was the net cash from operating activities in 2009 for the company discussed in the credit union systems segment?"
+      sector: finance
+    assert:
+      - type: icontains
+        value: "206588"
+        metric: keyword-accuracy
+
+  - description: "[FIN-05] SGA expense reduction drivers"
+    vars:
+      query: "What drove the reduction in SG&A expense as a percent of net sales?"
+      sector: finance
+    assert:
+      - type: icontains
+        value: "marketing"
+        metric: keyword-accuracy
+
+  # =========================================================================
+  # BTP (5 questions — English, building codes)
+  # =========================================================================
+  - description: "[BTP-01] Maximum riser height for steps"
+    vars:
+      query: "What is the maximum riser height for steps in an exit according to building codes?"
+      sector: btp
+    assert:
+      - type: icontains
+        value: "180"
+        metric: keyword-accuracy
+
+  - description: "[BTP-02] Minimum headroom escape routes"
+    vars:
+      query: "What is the minimum clear headroom for means of escape routes in buildings other than dwellings?"
+      sector: btp
+    assert:
+      - type: icontains
+        value: "2m"
+        metric: keyword-accuracy
+
+  - description: "[BTP-03] Max cold water pipe temperature"
+    vars:
+      query: "What is the maximum temperature allowed in cold water pipe systems according to building regulations?"
+      sector: btp
+    assert:
+      - type: icontains
+        value: "20"
+        metric: keyword-accuracy
+
+  - description: "[BTP-04] Wheelchair turning space diameter"
+    vars:
+      query: "What is the minimum turning space diameter required in a dwelling for persons with mobility impairment?"
+      sector: btp
+    assert:
+      - type: icontains
+        value: "1500"
+        metric: keyword-accuracy
+
+  - description: "[BTP-05] Water system integrity testing"
+    vars:
+      query: "What must be tested using water to ensure the integrity of the water system in construction?"
+      sector: btp
+    assert:
+      - type: icontains
+        value: "pressure"
+        metric: keyword-accuracy
+
+  # =========================================================================
+  # JURIDIQUE (5 questions — French)
+  # =========================================================================
+  - description: "[JUR-01] Article R641-3 Code de l'energie"
+    vars:
+      query: "Que dit l'article R641-3 du Code de l'énergie concernant l'autorité compétente pour prononcer l'amende ?"
+      sector: juridique
+    assert:
+      - type: icontains
+        value: "ministre"
+        metric: keyword-accuracy
+      # French question must get French response
+      - type: javascript
+        value: "/[àâäéèêëïîôùûüçœæ]|\\b(le|la|les|des|du|un|une|est|dans|pour|qui|que|avec|sur|par)\\b/i.test(output)"
+        metric: language-french
+
+  - description: "[JUR-02] Article 1186 code civil caducite"
+    vars:
+      query: "Selon l'article 1186 du code civil, quelles sont les conditions de caducité des contrats interdépendants dans une opération incluant une location financière ?"
+      sector: juridique
+    assert:
+      - type: icontains
+        value: "caducit"
+        metric: keyword-accuracy
+      - type: javascript
+        value: "/[àâäéèêëïîôùûüçœæ]|\\b(le|la|les|des|du|un|une|est|dans|pour|qui|que|avec|sur|par)\\b/i.test(output)"
+        metric: language-french
+
+  - description: "[JUR-03] Article R151-19 Code urbanisme"
+    vars:
+      query: "Que dit l'article R151-19 du Code de l'urbanisme concernant les zones urbaines d'un plan local d'urbanisme intercommunal ?"
+      sector: juridique
+    assert:
+      - type: icontains
+        value: "zone"
+        metric: keyword-accuracy
+
+  - description: "[JUR-04] Article L315-2 action sociale"
+    vars:
+      query: "Quelles sont les conditions de création des établissements et services sociaux et médico-sociaux publics selon l'article L315-2 du Code de l'action sociale ?"
+      sector: juridique
+    assert:
+      - type: icontains
+        value: "arrêté"
+        metric: keyword-accuracy
+
+  - description: "[JUR-05] Superprivilege des salaires AGS"
+    vars:
+      query: "Selon la Cour de cassation, le superprivilège des salaires est-il exclusivement attaché à la personne des salariés lorsque l'AGS est subrogée dans leurs droits ?"
+      sector: juridique
+    assert:
+      - type: icontains
+        value: "subrog"
+        metric: keyword-accuracy
+
+  # =========================================================================
+  # INDUSTRIE (5 questions — English, device manuals)
+  # =========================================================================
+  - description: "[IND-01] TV Natural picture mode"
+    vars:
+      query: "How do I select Natural mode on the TV picture settings?"
+      sector: industrie
+    assert:
+      - type: icontains
+        value: "Settings"
+        metric: keyword-accuracy
+
+  - description: "[IND-02] IP control device connection"
+    vars:
+      query: "How do I connect an IP control device to the TV?"
+      sector: industrie
+    assert:
+      - type: icontains
+        value: "Remote"
+        metric: keyword-accuracy
+
+  - description: "[IND-03] Prevent screen burn"
+    vars:
+      query: "How to prevent screen burn on the TV?"
+      sector: industrie
+    assert:
+      - type: javascript
+        value: "/still image|pixel|screen saver|burn/i.test(output)"
+        metric: keyword-accuracy
+
+  - description: "[IND-04] Install apps on TV"
+    vars:
+      query: "How do I install apps on the TV?"
+      sector: industrie
+    assert:
+      - type: icontains
+        value: "Select"
+        metric: keyword-accuracy
+
+  - description: "[IND-05] Smart Security TV"
+    vars:
+      query: "What is the use of Smart Security on the TV?"
+      sector: industrie
+    assert:
+      - type: icontains
+        value: "hacking"
+        metric: keyword-accuracy

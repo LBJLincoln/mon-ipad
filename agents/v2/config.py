@@ -18,7 +18,7 @@ Goals are AMBITIOUS but ACHIEVABLE:
 
 from measures import (
     measure_mon_ipad, measure_rag_website, measure_rag_ingestion,
-    measure_rag_dashboard, measure_nba_agent, measure_casino,
+    measure_rag_dashboard, measure_nba_agent,
     measure_forge_tests,
 )
 
@@ -133,27 +133,11 @@ REPOS = [
             "amelioration":  70,
         },
     },
-    {
-        "name": "nomos-casino",
-        "path": "/home/termius/nomos-casino",
-        "measure_fn": measure_casino,
-        "priority": 4,
-        "improve_context": (
-            "Atari-style retro games (breakout, crash, snake, slots, wheel). "
-            "HTML/JS games + Python tester agent with 6 personas. "
-            "Key: games/*.html, agents/casino-tester.py. Focus on engagement "
-            "(time on page > 3min, return rate > 30%)."
-        ),
-        "goals": {
-            "strategie":     75,
-            "produit":       80,
-            "business":      50,
-            "communication": 70,
-            "admin":         70,
-            "test_eval":     70,
-            "amelioration":  65,
-        },
-    },
+    # nomos-casino — DE CÔTÉ (S120)
+    # {
+    #     "name": "nomos-casino",
+    #     ...
+    # },
     {
         "name": "nomos-forge-tests",
         "path": "/home/termius/nomos-forge-tests",

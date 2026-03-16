@@ -37,6 +37,7 @@ SITES = [
     ("Factory", "https://nomos42.vercel.app/factory"),
     ("Vault", "https://nomos42.vercel.app/vault"),
     ("Dashboard", "https://nomos42.vercel.app/dashboard"),
+    ("NBA", "https://nomos42.vercel.app/nba"),
 ]
 
 

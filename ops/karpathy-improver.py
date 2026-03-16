@@ -61,6 +61,7 @@ SITES = [
     ("dashboard", "https://nomos42.vercel.app/dashboard"),
     ("valorisation", "https://nomos42.vercel.app/valorisation"),
     ("graph", "https://nomos42.vercel.app/graph"),
+    ("nba", "https://nomos42.vercel.app/nba"),
 ]
 
 EVAL_QUESTIONS = {
