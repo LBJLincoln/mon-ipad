@@ -103,7 +103,9 @@ Tu es Claude Code (`claude-opus-4-6`) executant depuis **Termius** sur la **VM G
 5. **Sector smoke before sync** — `quick-test.py --sector all` avant `n8n/sync.py`
 6. **Commit + push regularly** — Toutes les 15-20 min. Git email: `alexis.moret6@outlook.fr`
 7. **Update state files** — `PROJECT-STATE.md` apres milestone
-8. **VM = pilotage ONLY** — No n8n, no eval compute. Tout sur HF Spaces
+8. **VM = pilotage ONLY** — No n8n, no eval compute, **ZERO ML training**. Tout sur HF Spaces
+15. **ZERO ML ON VM** — La VM a 1GB RAM. TOUT training (karpathy, improve-loop, backtest, Optuna) DOIT tourner sur HF Spaces / Lightning AI / Google Colab. JAMAIS lancer de modele ML sur la VM locale. Seuls scripts autorises sur VM : data-server, quant-daemon (leger), monitoring.
+16. **ALL Spaces = full credentials** — Chaque HF Space doit avoir les 101 secrets de .env.local. Utiliser `huggingface_hub.add_space_secret()` pour synchro.
 9. **Push before shutdown** — Codespaces ephemeres : resultats vers GitHub AVANT arret
 10. **3+ regressions → REVERT**
 11. **Auto-stop on 3 failures** — Rapport structure, pas de boucle infinie
@@ -133,8 +135,18 @@ IP: 34.136.180.66 | Debian 11 | 1 vCPU | 969 MB RAM | 30 GB disk
 | engine-9 (S9) | n8n — Standard + Quant | lbjlincoln-nomos-rag-engine-9.hf.space | UP |
 | embeddings | Self-hosted Jina embeddings (1024 dims) | lbjlincoln-nomos-embeddings-api.hf.space | UP |
 | engine-6 (S6) | Docling document processor | lbjlincoln-nomos-docling-api.hf.space | UP |
+| nba-quant (S10) | NBA ML training loop 24/7 (Karpathy) | lbjlincoln-nomos-nba-quant.hf.space | UP |
+| nba-quant-2 (S11) | NBA ML training loop #2 (parallel) | lbjlincoln-nomos-nba-quant-2.hf.space | UP |
 
 **Strategie** : Utiliser TOUS les slots HF gratuits pour demultiplier les pipelines. Chaque Space = une fonction specialisee.
+
+### ⚠️ REGLE ABSOLUE : ZERO ML SUR VM
+```
+La VM (1 vCPU / 969 MB RAM) ne peut PAS faire de ML.
+TOUT training, Optuna, backtest, karpathy-loop → HF Spaces (16GB RAM)
+VM autorisee UNIQUEMENT pour : data-server, quant-daemon, monitoring, git, Claude Code
+```
+Spaces NBA : S10 (nomos-nba-quant) + S11 (nomos-nba-quant-2) — 101 secrets chacun
 
 ### Databases (SECTOR-ONLY)
 
@@ -340,11 +352,37 @@ git push origin main
 
 ---
 
-## Etat actuel v11.0 (Session 96 — 2026-03-11)
+## 13. NBA QUANT AI — 4-AGENT SWARM
+
+### Architecture (2026-03-16)
+```
+VM (Claude Code CLI only)
+    ↓ pilotage
+HF Spaces (ALL compute):
+├── nomos-nba-quant (S10)    — Karpathy training loop 24/7
+├── nomos-nba-quant-2 (S11)  — Parallel training instance
+├── nomos-nba-swarm (S12)    — 4-Agent Swarm Orchestrator:
+│   ├── Claude Code CLI      — strategic planning, complex analysis
+│   ├── Gemini CLI           — free autonomous coding (headless+YOLO)
+│   ├── Kimi Code CLI        — cheap high-volume code improvement
+│   └── OpenClaw             — automation hub, skill-based tasks
+└── Website → nomos42.vercel.app/nba (8 games, 20 value bets)
+```
+
+### VM Authorized Processes (ONLY)
+- Claude Code CLI (Termius session)
+- nba-data-server.py (12MB, serves JSON to Vercel)
+- monitor.py (lightweight health checks)
+- MCP servers (for Claude Code)
+
+---
+
+## Etat actuel v12.0 (Session 121 — 2026-03-16)
 
 **Pipelines** : 4/4 WORKING — 6/6 PASS smoke test (Standard V3.8, Graph V3.5, Quant V3.2, Orch V13)
 **LLM** : ALL via LiteLLM S7 (`smart` model group, 13-provider automatic fallback)
 **Embeddings** : Self-hosted Jina Space (1024 dims) — Graph uses it, Jina API keys expired
+**NBA Quant** : 3 HF Spaces (quant, quant-2, swarm) — 4-agent improvement loop, 101 secrets each
 **E5 Vectors** : 58,533 (target 100K)
 **Databases** : Supabase 43K docs + 212 financials, Neo4j ~72K nodes, Pinecone 58K+43K
 **Agents** : 5 specialises (monitor, eval, pipeline, ingest, docs)
