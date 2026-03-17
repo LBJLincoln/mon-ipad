@@ -516,17 +516,35 @@ Be a quantitative PhD. Consider the stagnation level and current params. If stag
 
       if (remoteLog) {
         const logTail = remoteLog.log_tail || [];
-        const errorLogs = logTail.filter(l => /ERROR|WARN/.test(l));
+        const errorLogs = logTail.filter(l => /\[ERROR\]/.test(l));
         if (errorLogs.length > 0 && this.state.healCount % 3 === 0) {
-          this._log('monk', `S10 has ${errorLogs.length} warnings: ${errorLogs.slice(-2).join(' | ').substring(0, 200)}`);
-        }
-        // Check if evolution is stuck at STARTING
-        const startingLogs = logTail.filter(l => /STARTING|no data|NOT ENOUGH/.test(l));
-        if (startingLogs.length > 0) {
-          this._log('monk', 'S10 appears stuck at STARTING. May need data or restart.');
-          this._recordError('heal', 'S10 stuck at STARTING state');
+          this._log('monk', `S10 has ${errorLogs.length} errors: ${errorLogs.slice(-2).join(' | ').substring(0, 200)}`);
         }
       }
+
+      // Check actual S10 status via API (not log text which always contains "STARTING")
+      try {
+        const statusResp = await fetch('https://lbjlincoln-nomos-nba-quant.hf.space/api/status',
+          { signal: AbortSignal.timeout(10000) });
+        if (statusResp.ok) {
+          const s10Status = await statusResp.json();
+          const status = s10Status.status || '';
+          // Only flag as stuck if status is literally "STARTING" for 5+ minutes
+          if (status === 'STARTING' && s10Status.generation === 0 && s10Status.games === 0) {
+            const startedAt = new Date(s10Status.started_at);
+            const minutesStuck = (Date.now() - startedAt.getTime()) / 60000;
+            if (minutesStuck > 5) {
+              this._log('monk', `S10 stuck at STARTING for ${minutesStuck.toFixed(0)}min. Requesting reset.`);
+              this._recordError('heal', `S10 stuck at STARTING for ${minutesStuck.toFixed(0)} minutes`);
+            }
+          } else if (/EVOLVING/.test(status)) {
+            // S10 is healthy and evolving — log progress periodically
+            if (this.state.healCount % 6 === 0) {
+              this._log('monk', `S10 healthy: Gen ${s10Status.generation}, Brier ${s10Status.best_brier}, Pop ${s10Status.pop_size}`);
+            }
+          }
+        }
+      } catch {}
     } catch {}
 
     // 2. Check for unfixed local errors
