@@ -149,11 +149,12 @@ class AgenticLoop {
     // STATE SAVE — every 2 min
     this.intervals.push(setInterval(() => this._save(), 2 * 60 * 1000));
 
-    // Run first cycles immediately (staggered)
+    // Run first cycles immediately (staggered) — observe first, then evaluate quickly
     setTimeout(() => this._safeRun('observe', () => this._observe()), 3000);
-    setTimeout(() => this._safeRun('research', () => this._research()), 10000);
-    setTimeout(() => this._safeRun('heal', () => this._heal()), 20000);
-    setTimeout(() => this._safeRun('data', () => this._dataCheck()), 30000);
+    setTimeout(() => this._safeRun('evaluate', () => this._evaluate()), 8000);
+    setTimeout(() => this._safeRun('research', () => this._research()), 15000);
+    setTimeout(() => this._safeRun('heal', () => this._heal()), 25000);
+    setTimeout(() => this._safeRun('data', () => this._dataCheck()), 35000);
 
     logger.info('Agentic loop v2 started — FULL BLAST 24/7 Karpathy mode');
     this._save();
@@ -244,17 +245,16 @@ class AgenticLoop {
       this._log('cain', `ROI improvement: ${parsed.roi.toFixed(1)}%! Model: ${parsed.model}.`);
     }
 
-    // ── Stagnation detection with AUTO-FIX ──
-    if (parsed.stagnation > 5) {
+    // ── Stagnation detection with AUTO-FIX (aggressive) ──
+    if (parsed.stagnation > 2) {
       this.state.stagnationCount++;
       this._log('nos', `STAGNATION ALERT: ${parsed.stagnation} generations flat. Count: ${this.state.stagnationCount}.`);
 
-      // Progressive response to stagnation
-      if (this.state.stagnationCount % 2 === 0) {
-        this._log('nos', 'Triggering improvement cycle...');
-        await this._improve(parsed);
-      }
-      if (this.state.stagnationCount >= 6) {
+      // Trigger improvement every stagnation cycle (not every 2nd)
+      this._log('nos', 'Triggering improvement cycle...');
+      await this._improve(parsed);
+
+      if (this.state.stagnationCount >= 4) {
         this._log('monk', 'CRITICAL stagnation. Initiating emergency diversification: mutation boost, population restart, new feature injection.');
         await this._emergencyDiversify(parsed);
       }
@@ -263,6 +263,13 @@ class AgenticLoop {
         this._log('nos', `Stagnation broken! Back to improving. Previous stag count: ${this.state.stagnationCount}`);
       }
       this.state.stagnationCount = 0;
+    }
+
+    // ── Time-based improve: force every 30 min if Brier > 0.21 ──
+    const timeSinceImprove = this.state.lastImprove ? Date.now() - new Date(this.state.lastImprove).getTime() : Infinity;
+    if (parsed.brier > 0.21 && timeSinceImprove > 30 * 60 * 1000) {
+      this._log('nos', `Brier ${parsed.brier.toFixed(4)} > 0.21 and no improve in ${Math.round(timeSinceImprove / 60000)}min. Forcing improvement.`);
+      await this._improve(parsed);
     }
 
     // ── Feature pool check ──
@@ -400,9 +407,9 @@ Be quantitative and specific. Think like a quant fund PM reviewing their model.`
     if (result.content) {
       this._log('nos', `Analysis: ${result.content.substring(0, 350)}`);
 
-      // Auto-trigger improvement if problems detected
-      if (problems.length >= 2) {
-        this._log('monk', `${problems.length} problems detected. Auto-triggering improvement + heal cycle.`);
+      // Auto-trigger improvement if ANY problem detected (was >= 2, now >= 1)
+      if (problems.length >= 1) {
+        this._log('monk', `${problems.length} problem(s) detected: ${problems.join(', ')}. Auto-triggering improvement.`);
         const lastEvo = history[history.length - 1];
         await this._improve(lastEvo);
       }
