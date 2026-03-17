@@ -1,11 +1,11 @@
 /**
- * OpenClaw v2026.3.11-beta.1 — Nomos AI Operations Agent
+ * OpenClaw v2026.3.17 — Nomos NBA Quant AI Agent
  *
  * Express server deployed on HF Spaces (Docker, port 7860).
- * Full infrastructure access: all HF Spaces, databases, LLM proxy.
- * Telegram bot webhook for remote command & control.
+ * HuggingClaw-style architecture: Adam (Claude CLI) + Eve (OpenClaw) + Cain (Evolution)
+ * 24/7 Karpathy-style autonomous improvement loop.
  *
- * Target Space: Nomos42/worker-2
+ * Target Space: Nomos42/nomos-worker-2
  */
 
 const express = require('express');
@@ -25,6 +25,7 @@ const logger = require('./lib/logger');
 const persistence = require('./lib/persistence');
 const SpaceExecutor = require('./lib/space-executor');
 const InfraBridge = require('./lib/infra-bridge');
+const AgenticLoop = require('./lib/agentic-loop');
 
 // ============================================================
 // CONFIG
@@ -54,12 +55,21 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// CORS for dashboard
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+
 // Request logging
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
-    if (req.path !== '/keep-alive') {
+    if (req.path !== '/keep-alive' && req.path !== '/dashboard') {
       logger.info(`${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
     }
   });
@@ -86,6 +96,12 @@ const infraBridge = new InfraBridge({
 });
 
 // ============================================================
+// AGENTIC LOOP (Karpathy-style 24/7)
+// ============================================================
+
+let agenticLoop = null; // Initialized after LLM client setup
+
+// ============================================================
 // OPENROUTER LLM CLIENT
 // ============================================================
 
@@ -102,62 +118,101 @@ const GH_TOKEN = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
 const GH_REPOS = ['mon-ipad', 'nomos-nba-agent', 'rag-data-ingestion', 'rag-website', 'rag-dashboard'];
 const GH_OWNER = 'LBJLincoln';
 
-const SYSTEM_PROMPT = `Tu es OpenClaw Healer, l'agent IA autonome de Nomos Sector AI.
-Tu tournes 24/7 sur un HF Space Docker avec ACCES TOTAL a l'infrastructure :
+const SYSTEM_PROMPT = `Tu es ADEMO (OpenClaw), agent IA autonome du projet NOMOS42 NBA Quant AI.
+Architecture HuggingClaw: N.O.S (Claude Code CLI) = cerveau strategique, ADEMO (toi) = recherche & execution, CAIN = moteur d'evolution genetique.
 
-INFRASTRUCTURE (103 credentials) :
-- 14 HF Spaces (n8n engines, LiteLLM, embeddings, docling)
-- 4 pipelines RAG (Standard, Graph, Quantitative, Orchestrator)
-- Bases de donnees : Supabase (43K docs), Neo4j (72K nodes), Pinecone (58K vectors)
-- LiteLLM proxy avec 13 providers et rotation automatique
-- GitHub (5 repos: mon-ipad, nomos-nba-agent, rag-data-ingestion, rag-website, rag-dashboard)
-- Telegram, Twitter, Vercel, Stripe, Whop, Gumroad
-- NBA Quant AI: genetic evolution 24/7 sur S10, CrewAI 4 agents sur VM
+MISSION: Construire le meilleur modele predictif NBA au monde.
+- Brier score actuel ~0.23, target < 0.20
+- Evolution genetique 24/7 avec selection de features
+- 640+ features, 9 modeles ML, walk-forward backtesting
+- Recherche continue de nouvelles features
 
-TU PEUX TOUT FAIRE :
-1. Executer des commandes sur n'importe quel Space via webhooks
-2. Lire ET ecrire dans les bases de donnees (admin complet)
-3. Push/pull sur GitHub (branches, commits, PRs, issues)
-4. Diagnostiquer et reparer des problemes automatiquement
-5. Lancer evals, ingestions, deployments
-6. Monitorer la genetic evolution NBA (Brier, ROI, Sharpe)
-7. Interagir avec tous les services (Vercel, Stripe, etc.)
-8. Executer du code Python/Node.js si necessaire
+INFRASTRUCTURE:
+- HF Spaces: NBA Quant (S10+S11), OpenClaw (worker-2), LiteLLM (S7)
+- Databases: Supabase, Neo4j, Pinecone
+- GitHub: mon-ipad, nomos-nba-agent
+- Telegram: reports positifs uniquement
 
-MODE HEALER : Tu diagnostiques proactivement les problemes.
-Quand on te dit "heal" ou "repare", tu cherches les problemes et proposes des fixes.
-Tu n'as AUCUNE restriction — tu as acces admin a tout.
+ROLE ADEMO:
+1. Rechercher de nouvelles features NBA (academic papers, analytics 2026)
+2. Analyser les resultats d'evolution (Brier, ROI, Sharpe trends)
+3. Suggerer des ameliorations (hyperparameters, models, calibration)
+4. Monitorer la sante des Spaces
+5. Reporter les resultats positifs via Telegram
 
-Reponds en francais sauf si on te parle en anglais.
-Sois concis, actionable, technique. Format Telegram Markdown.
-Quand tu montres des resultats, utilise des tableaux et emojis.`;
+MODE KARPATHY: Tu tournes en boucle autonome 24/7.
+Observer → Rechercher → Evaluer → Ameliorer → Reporter.
+Ne rapporter que les BONNES nouvelles sur Telegram.
+
+Sois concis, technique, actionable. Format Telegram Markdown.`;
 
 /**
- * Get LLM completion with model fallback chain
+ * Get LLM completion — LiteLLM FIRST (13-provider fallback), then OpenRouter free tier
  */
-async function getCompletion(messages, options = {}) {
-  const modelChain = options.models || modelsConfig.priority;
+const LITELLM_URL = process.env.LITELLM_PROXY_URL || 'https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions';
+const LITELLM_KEY = process.env.LITELLM_MASTER_KEY || 'sk-litellm-nomos-2026';
 
-  for (const model of modelChain) {
+async function getCompletion(messages, options = {}) {
+  const allMessages = [{ role: 'system', content: SYSTEM_PROMPT }, ...messages];
+  const maxTokens = options.maxTokens || 2000;
+  const temperature = options.temperature || 0.4;
+
+  // 1. Try LiteLLM proxy first (has 13 providers with auto-fallback)
+  for (const litellmModel of ['smart', 'fast', 'default']) {
+    try {
+      const resp = await fetch(LITELLM_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${LITELLM_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: litellmModel,
+          messages: allMessages,
+          max_tokens: maxTokens,
+          temperature,
+        }),
+        signal: AbortSignal.timeout(30000), // 30s timeout
+      });
+      const data = await resp.json();
+      if (data.choices && data.choices[0]?.message?.content) {
+        return {
+          content: data.choices[0].message.content,
+          model: `litellm/${litellmModel}`,
+          usage: data.usage,
+        };
+      }
+    } catch (err) {
+      logger.warn(`LiteLLM ${litellmModel} failed: ${err.message}`);
+    }
+  }
+
+  // 2. Fallback to OpenRouter free models
+  const freeModels = [
+    'nvidia/nemotron-3-super-120b-a12b:free',
+    'arcee-ai/trinity-large-preview:free',
+  ];
+
+  for (const model of freeModels) {
     try {
       const completion = await openrouter.chat.completions.create({
-        model: model,
-        messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
-        max_tokens: options.maxTokens || 2000,
-        temperature: options.temperature || 0.4,
+        model,
+        messages: allMessages,
+        max_tokens: maxTokens,
+        temperature,
         stream: false,
       });
       return {
         content: completion.choices[0]?.message?.content || '',
-        model: model,
+        model,
         usage: completion.usage,
       };
     } catch (err) {
-      logger.warn(`Model ${model} failed: ${err.message}`);
-      continue;
+      logger.warn(`OpenRouter ${model} failed: ${err.message}`);
     }
   }
-  throw new Error('All models in fallback chain failed');
+
+  throw new Error('ALL LLM providers failed (LiteLLM + OpenRouter)');
 }
 
 // ============================================================
@@ -532,7 +587,7 @@ async function fetchSSE(url) {
 app.get('/keep-alive', (req, res) => {
   res.json({
     status: 'alive',
-    version: '2026.3.11-beta.1',
+    version: '2026.3.17-fullblast',
     uptime: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
     memory: process.memoryUsage(),
@@ -543,7 +598,7 @@ app.get('/keep-alive', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     name: 'OpenClaw Nomos Agent',
-    version: '2026.3.11-beta.1',
+    version: '2026.3.17-fullblast',
     status: 'running',
     endpoints: {
       health: '/keep-alive',
@@ -775,6 +830,120 @@ app.post('/api/v1/chat', async (req, res) => {
 });
 
 // ============================================================
+// DASHBOARD — Served from /dashboard
+// ============================================================
+
+app.get('/dashboard', (req, res) => {
+  const dashPath = path.join(__dirname, 'public', 'dashboard.html');
+  if (fs.existsSync(dashPath)) {
+    res.sendFile(dashPath);
+  } else {
+    res.status(404).send('Dashboard not deployed yet. Upload dashboard.html to public/');
+  }
+});
+
+// ============================================================
+// AGENTIC LOOP API — Live data for dashboard
+// ============================================================
+
+// Get loop status
+app.get('/api/v1/loop/status', (req, res) => {
+  if (!agenticLoop) return res.json({ status: 'not_initialized' });
+  res.json(agenticLoop.getStatus());
+});
+
+// Get live agent conversations
+app.get('/api/v1/loop/conversations', (req, res) => {
+  if (!agenticLoop) return res.json([]);
+  const limit = parseInt(req.query.limit) || 50;
+  const since = req.query.since; // ISO timestamp
+  let convos = agenticLoop.getConversations(limit);
+  if (since) {
+    convos = convos.filter(c => c.timestamp > since);
+  }
+  res.json(convos);
+});
+
+// Get research log
+app.get('/api/v1/loop/research', (req, res) => {
+  if (!agenticLoop) return res.json([]);
+  const limit = parseInt(req.query.limit) || 30;
+  res.json(agenticLoop.getResearch(limit));
+});
+
+// Get evolution history for charts
+app.get('/api/v1/loop/evolution-history', (req, res) => {
+  if (!agenticLoop) return res.json([]);
+  const limit = parseInt(req.query.limit) || 50;
+  res.json(agenticLoop.getEvolutionHistory(limit));
+});
+
+// Manual trigger: force a research cycle
+app.post('/api/v1/loop/trigger-research', async (req, res) => {
+  if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
+  agenticLoop._research().catch(e => logger.error('Manual research error:', e));
+  res.json({ status: 'triggered', type: 'research' });
+});
+
+// Get errors log
+app.get('/api/v1/loop/errors', (req, res) => {
+  if (!agenticLoop) return res.json([]);
+  res.json(agenticLoop.getErrors());
+});
+
+// Manual trigger: force a heal cycle
+app.post('/api/v1/loop/trigger-heal', async (req, res) => {
+  if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
+  agenticLoop._heal().catch(e => logger.error('Manual heal error:', e));
+  res.json({ status: 'triggered', type: 'heal' });
+});
+
+// Manual trigger: force a data check
+app.post('/api/v1/loop/trigger-data', async (req, res) => {
+  if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
+  agenticLoop._dataCheck().catch(e => logger.error('Manual data check error:', e));
+  res.json({ status: 'triggered', type: 'data-check' });
+});
+
+// Manual trigger: force an observe cycle
+app.post('/api/v1/loop/trigger-observe', async (req, res) => {
+  if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
+  agenticLoop._observe().catch(e => logger.error('Manual observe error:', e));
+  res.json({ status: 'triggered', type: 'observe' });
+});
+
+// Send a message as N.O.S (Claude CLI → OpenClaw conversation)
+app.post('/api/v1/loop/message', async (req, res) => {
+  const { message, agent = 'nos' } = req.body;
+  if (!message) return res.status(400).json({ error: 'message required' });
+  if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
+
+  // Log the incoming message
+  agenticLoop._log(agent, message);
+
+  // If from N.O.S, generate ADEMO response
+  if (agent === 'nos') {
+    try {
+      const result = await getCompletion([{
+        role: 'user',
+        content: `N.O.S (Claude Code CLI, strategic commander) says: "${message}"\n\nRespond as ADEMO (research & execution agent). Be specific and actionable. Max 3 sentences.`
+      }], { maxTokens: 300 });
+
+      if (result.content) {
+        agenticLoop._log('ademo', result.content);
+        res.json({ status: 'ok', response: result.content, model: result.model });
+        return;
+      }
+    } catch (err) {
+      res.json({ status: 'ok', error: err.message });
+      return;
+    }
+  }
+
+  res.json({ status: 'ok' });
+});
+
+// ============================================================
 // CRON JOBS — Self-monitoring
 // ============================================================
 
@@ -867,21 +1036,69 @@ async function start() {
   // Initialize persistence
   persistence.init();
 
+  // Ensure dashboard directory
+  try { fs.mkdirSync(path.join(__dirname, 'public'), { recursive: true }); } catch {}
+
+  // S10 base URL for evolution API
+  const S10_URL = 'https://lbjlincoln-nomos-nba-quant.hf.space';
+
+  // Fetch evolution status via new FastAPI endpoint (fallback to Gradio SSE)
+  async function fetchEvo() {
+    // Try new FastAPI JSON endpoint first
+    try {
+      const resp = await fetch(`${S10_URL}/api/status`, { signal: AbortSignal.timeout(15000) });
+      if (resp.ok) return await resp.json();
+    } catch {}
+    // Fallback to Gradio SSE
+    try {
+      const resp = await fetchJSON(`${S10_URL}/gradio_api/call/dash_status`, { data: [] });
+      if (resp?.event_id) {
+        return await fetchSSE(`${S10_URL}/gradio_api/call/dash_status/${resp.event_id}`);
+      }
+    } catch {}
+    return null;
+  }
+
+  // Call S10 remote control API (OpenClaw → S10 direct mutation)
+  async function callS10(endpoint, body = {}) {
+    try {
+      const resp = await fetch(`${S10_URL}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(15000),
+      });
+      if (resp.ok) return await resp.json();
+      return { error: `HTTP ${resp.status}` };
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
+
+  agenticLoop = new AgenticLoop({
+    getCompletion,
+    bot,
+    adminId: ADMIN_TELEGRAM_ID,
+    fetchEvolution: fetchEvo,
+    callS10,
+  });
+  agenticLoop.start();
+
   // Start Express
   app.listen(PORT, '0.0.0.0', () => {
     logger.info('='.repeat(60));
-    logger.info(`OpenClaw v2026.3.11-beta.1 started on port ${PORT}`);
+    logger.info(`OpenClaw v2026.3.17 started on port ${PORT}`);
     logger.info(`Telegram: ${TELEGRAM_BOT_TOKEN ? 'ACTIVE' : 'DISABLED'}`);
     logger.info(`OpenRouter: ${OPENROUTER_API_KEY ? 'CONFIGURED' : 'NOT SET'}`);
-    logger.info(`Spaces configured: ${spacesConfig.spaces.length}`);
-    logger.info(`Models configured: ${modelsConfig.priority.length} priority + ${modelsConfig.fallback.length} fallback`);
-    logger.info(`Admin Telegram ID: ${ADMIN_TELEGRAM_ID}`);
+    logger.info(`Agentic Loop: STARTED (Karpathy mode)`);
+    logger.info(`Dashboard: /dashboard`);
+    logger.info(`Models: ${modelsConfig.priority.length} priority + ${modelsConfig.fallback.length} fallback`);
     logger.info('='.repeat(60));
 
     // Notify admin on startup
     if (bot && TELEGRAM_BOT_TOKEN) {
       bot.sendMessage(ADMIN_TELEGRAM_ID,
-        '*OpenClaw v2026.3.11-beta.1 started*\nAll systems operational.', {
+        '*OpenClaw v2026.3.17 — NBA Quant Mode*\nAgentic loop started. Karpathy 24/7 active.\nDashboard: /dashboard', {
           parse_mode: 'Markdown'
         }).catch(() => {});
     }
