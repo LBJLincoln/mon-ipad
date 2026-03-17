@@ -1,12 +1,22 @@
 {
   "priority": [
     "smart",
-    "nvidia/nemotron-3-super-120b-a12b:free",
-    "arcee-ai/trinity-large-preview:free"
+    "deepseek/deepseek-r1-0528:free",
+    "deepseek/deepseek-chat-v3-0324:free",
+    "qwen/qwen3-235b-a22b:free",
+    "qwen/qwen3-32b:free"
   ],
   "fallback": [
     "fast",
-    "default"
+    "default",
+    "nvidia/nemotron-3-super-120b-a12b:free",
+    "meta-llama/llama-4-maverick:free",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "microsoft/phi-4-reasoning-plus:free",
+    "mistralai/mistral-small-3.1-24b-instruct:free",
+    "google/gemma-3-27b-it:free",
+    "arcee-ai/trinity-large-preview:free",
+    "rekaai/reka-flash-3:free"
   ],
   "litellm": {
     "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
@@ -16,7 +26,7 @@
   "models": {
     "smart": {
       "context": 128,
-      "description": "LiteLLM smart group — 13-provider auto-fallback (Groq/OpenRouter/Gemini)",
+      "description": "LiteLLM smart group — 13-provider auto-fallback",
       "costPer1k": 0,
       "provider": "litellm"
     },
@@ -32,23 +42,84 @@
       "costPer1k": 0,
       "provider": "litellm"
     },
+    "deepseek/deepseek-r1-0528:free": {
+      "context": 64,
+      "description": "DeepSeek R1 — best free reasoning model",
+      "costPer1k": 0,
+      "provider": "openrouter"
+    },
+    "deepseek/deepseek-chat-v3-0324:free": {
+      "context": 64,
+      "description": "DeepSeek Chat V3 — strong general purpose",
+      "costPer1k": 0,
+      "provider": "openrouter"
+    },
+    "qwen/qwen3-235b-a22b:free": {
+      "context": 128,
+      "description": "Qwen3 235B MoE — massive free model",
+      "costPer1k": 0,
+      "provider": "openrouter"
+    },
+    "qwen/qwen3-32b:free": {
+      "context": 128,
+      "description": "Qwen3 32B — fast reasoning",
+      "costPer1k": 0,
+      "provider": "openrouter"
+    },
     "nvidia/nemotron-3-super-120b-a12b:free": {
       "context": 32,
-      "description": "Nemotron 3 Super 120B — free tier backup",
+      "description": "Nemotron 3 Super 120B",
+      "costPer1k": 0,
+      "provider": "openrouter"
+    },
+    "meta-llama/llama-4-maverick:free": {
+      "context": 128,
+      "description": "Llama 4 Maverick — Meta's latest",
+      "costPer1k": 0,
+      "provider": "openrouter"
+    },
+    "meta-llama/llama-3.3-70b-instruct:free": {
+      "context": 128,
+      "description": "Llama 3.3 70B — reliable workhorse",
+      "costPer1k": 0,
+      "provider": "openrouter"
+    },
+    "microsoft/phi-4-reasoning-plus:free": {
+      "context": 32,
+      "description": "Phi-4 Reasoning Plus — strong for analysis",
+      "costPer1k": 0,
+      "provider": "openrouter"
+    },
+    "mistralai/mistral-small-3.1-24b-instruct:free": {
+      "context": 128,
+      "description": "Mistral Small 3.1 — fast and capable",
+      "costPer1k": 0,
+      "provider": "openrouter"
+    },
+    "google/gemma-3-27b-it:free": {
+      "context": 128,
+      "description": "Gemma 3 27B — Google's latest",
       "costPer1k": 0,
       "provider": "openrouter"
     },
     "arcee-ai/trinity-large-preview:free": {
       "context": 32,
-      "description": "Trinity — free tier backup",
+      "description": "Trinity Large Preview",
+      "costPer1k": 0,
+      "provider": "openrouter"
+    },
+    "rekaai/reka-flash-3:free": {
+      "context": 128,
+      "description": "Reka Flash 3 — fast multimodal",
       "costPer1k": 0,
       "provider": "openrouter"
     }
   },
   "routing": {
-    "code": ["smart", "nvidia/nemotron-3-super-120b-a12b:free"],
-    "analysis": ["smart", "nvidia/nemotron-3-super-120b-a12b:free"],
-    "fast": ["fast", "arcee-ai/trinity-large-preview:free"],
-    "free": ["nvidia/nemotron-3-super-120b-a12b:free", "arcee-ai/trinity-large-preview:free"]
-  }
+    "code": ["smart", "deepseek/deepseek-chat-v3-0324:free", "qwen/qwen3-32b:free"],
+    "analysis": ["smart", "deepseek/deepseek-r1-0528:free", "qwen/qwen3-235b-a22b:free"],
+    "fast": ["fast", "mistralai/mistral-small-3.1-24b-instruct:free", "google/gemma-3-27b-it:free"],
+    "free": ["deepseek/deepseek-r1-0528:free", "qwen/qwen3-235b-a22b:free", "meta-llama/llama-4-maverick:free"]
+  },
+  "note": "Model Health Monitor auto-discovers and rotates models. This config is the static base — live list is dynamic."
 }

@@ -27,6 +27,10 @@ const SpaceExecutor = require('./lib/space-executor');
 const InfraBridge = require('./lib/infra-bridge');
 const AgenticLoop = require('./lib/agentic-loop');
 const VMBridge = require('./lib/vm-bridge');
+const AnticipationEngine = require('./lib/anticipation-engine');
+const OrderExecutor = require('./lib/order-executor');
+const ModelHealthMonitor = require('./lib/model-health-monitor');
+const RuleEngine = require('./lib/rule-engine');
 
 // ============================================================
 // CONFIG
@@ -108,6 +112,10 @@ const vmBridge = new VMBridge({
 // ============================================================
 
 let agenticLoop = null; // Initialized after LLM client setup
+let anticipationEngine = null;
+let orderExecutor = null;
+let modelMonitor = null;
+let ruleEngine = null;
 
 // ============================================================
 // OPENROUTER LLM CLIENT
@@ -166,42 +174,56 @@ async function getCompletion(messages, options = {}) {
   const temperature = options.temperature || 0.4;
 
   // 1. Try LiteLLM proxy first (has 13 providers with auto-fallback)
-  for (const litellmModel of ['smart', 'fast', 'default']) {
-    try {
-      const resp = await fetch(LITELLM_URL, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${LITELLM_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: litellmModel,
-          messages: allMessages,
-          max_tokens: maxTokens,
-          temperature,
-        }),
-        signal: AbortSignal.timeout(30000), // 30s timeout
-      });
-      const data = await resp.json();
-      if (data.choices && data.choices[0]?.message?.content) {
-        return {
-          content: data.choices[0].message.content,
-          model: `litellm/${litellmModel}`,
-          usage: data.usage,
-        };
+  if (!modelMonitor || modelMonitor.litellm.alive !== false) {
+    for (const litellmModel of ['smart', 'fast', 'default']) {
+      try {
+        const resp = await fetch(LITELLM_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${LITELLM_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: litellmModel,
+            messages: allMessages,
+            max_tokens: maxTokens,
+            temperature,
+          }),
+          signal: AbortSignal.timeout(30000),
+        });
+        const data = await resp.json();
+        if (data.choices && data.choices[0]?.message?.content) {
+          if (ruleEngine) ruleEngine.resetLLMFailures();
+          return {
+            content: data.choices[0].message.content,
+            model: `litellm/${litellmModel}`,
+            usage: data.usage,
+          };
+        }
+      } catch (err) {
+        logger.warn(`LiteLLM ${litellmModel} failed: ${err.message}`);
       }
-    } catch (err) {
-      logger.warn(`LiteLLM ${litellmModel} failed: ${err.message}`);
     }
   }
 
-  // 2. Fallback to OpenRouter free models
-  const freeModels = [
+  // 2. Use Model Health Monitor's live ranked list of working free models
+  const aliveModels = modelMonitor ? modelMonitor.getAliveModels() : [
+    'deepseek/deepseek-r1-0528:free',
+    'deepseek/deepseek-chat-v3-0324:free',
+    'qwen/qwen3-235b-a22b:free',
+    'qwen/qwen3-32b:free',
     'nvidia/nemotron-3-super-120b-a12b:free',
+    'meta-llama/llama-4-maverick:free',
+    'meta-llama/llama-4-scout:free',
+    'meta-llama/llama-3.3-70b-instruct:free',
+    'microsoft/phi-4-reasoning-plus:free',
+    'mistralai/mistral-small-3.1-24b-instruct:free',
+    'google/gemma-3-27b-it:free',
     'arcee-ai/trinity-large-preview:free',
+    'rekaai/reka-flash-3:free',
   ];
 
-  for (const model of freeModels) {
+  for (const model of aliveModels) {
     try {
       const completion = await openrouter.chat.completions.create({
         model,
@@ -210,17 +232,22 @@ async function getCompletion(messages, options = {}) {
         temperature,
         stream: false,
       });
-      return {
-        content: completion.choices[0]?.message?.content || '',
-        model,
-        usage: completion.usage,
-      };
+      const content = completion.choices?.[0]?.message?.content || '';
+      if (content.length > 0) {
+        if (modelMonitor) modelMonitor.markAlive(model);
+        if (ruleEngine) ruleEngine.resetLLMFailures();
+        return { content, model, usage: completion.usage };
+      }
     } catch (err) {
       logger.warn(`OpenRouter ${model} failed: ${err.message}`);
+      if (modelMonitor) modelMonitor.markFailed(model);
     }
   }
 
-  throw new Error('ALL LLM providers failed (LiteLLM + OpenRouter)');
+  // 3. If ALL failed, record for rule engine
+  if (ruleEngine) ruleEngine.recordLLMFailure();
+  logger.error(`ALL LLM providers failed. Alive models: ${aliveModels.length}. Rule engine taking over: ${ruleEngine?.shouldTakeOver()}`);
+  throw new Error('ALL LLM providers failed — rule engine active for critical actions');
 }
 
 // ============================================================
@@ -240,27 +267,40 @@ if (TELEGRAM_BOT_TOKEN) {
  */
 const COMMANDS = {
   '/start': async (msg) => {
-    return `*OpenClaw v2026.3.17 — FULL ACCESS*
+    return `*OpenClaw v3 — FULL AGENTIC MODE*
 Agent IA autonome NOMOS42 NBA Quant AI
+H24 Karpathy loop + Anticipation Engine
+
+*ORDRES EN LANGAGE NATUREL:*
+Tape directement ce que tu veux:
+"boost mutation to 0.2"
+"restart S10"
+"inject features"
+"force research"
+"emergency diversify"
+"mode aggressive"
+"rollback to last good config"
+"status evolution"
+"status anticipation"
 
 *Infrastructure:*
 /status — Sante complete
 /spaces — HF Spaces actifs
-/models — Modeles LLM
-/ping — Test connectivite
+/orders — Liste des ordres possibles
+/anticipation — Bottleneck prevention status
+/loop — Status agentic loop
 
 *VM Remote (SSH):*
 /vm <cmd> — Executer sur la VM
 /vm sysinfo — Info systeme VM
-/vm ping — Test SSH
 
 *Git & Code:*
-/git <repo> [action] — GitHub status/commits/issues
+/git <repo> [action] — GitHub status
 /gitpush <repo> <msg> — Commit + push
-/read <path> — Lire un fichier VM
+/read <path> — Lire fichier VM
 
 *HF Space Management:*
-/hfspace <id> <action> — restart/pause/resume/logs
+/hfspace <id> <action> — restart/pause/resume
 /deploy <space> — Deployer
 /logs <space> — Logs Space
 
@@ -271,9 +311,7 @@ Agent IA autonome NOMOS42 NBA Quant AI
 *AI & Evolution:*
 /evolution — Status GA S10
 /heal — Self-healing scan
-/eval — Smoke test
-
-Ou posez directement votre question !`;
+/eval — Smoke test`;
   },
 
   '/status': async (msg) => {
@@ -581,6 +619,115 @@ Ou posez directement votre question !`;
     }
   },
 
+  '/models_health': async (msg) => {
+    if (!modelMonitor) return 'Model monitor pas initialise.';
+    const s = modelMonitor.getStatus();
+    let text = `*Model Health Monitor*
+Alive: *${s.alive}* / ${s.total} | Dead: ${s.dead} | Untested: ${s.untested}
+Best: \`${s.bestModel}\`
+LiteLLM: ${s.litellm.alive ? 'UP' : 'DOWN'}
+Probes: ${s.totalProbes} | Switches: ${s.switchCount}
+
+*Top 5 alive:*\n`;
+    for (const m of s.top5) {
+      text += `- \`${m}\`\n`;
+    }
+    return text;
+  },
+
+  '/orders': async (msg) => {
+    return `*Ordres disponibles (langage naturel):*
+
+*GA Parameters:*
+"set mutation to 0.15"
+"set population to 200"
+"set crossover to 0.85"
+"set features to 250"
+
+*Actions immédiates:*
+"diversify" / "boost mutation"
+"reset population"
+"inject features"
+"emergency diversify"
+
+*Mode:*
+"mode aggressive" (mutation 0.18, pop 200)
+"mode conservative" (mutation 0.06, pop 100)
+
+*Loop control:*
+"force research" / "force heal"
+"force observe" / "force improve"
+"pause loop" / "resume loop"
+
+*Rollback:*
+"rollback to last good config"
+"snapshot config"
+
+*Space management:*
+"restart S10" / "restart S11"
+"check VM"
+
+*Status:*
+"status evolution"
+"status anticipation"
+"status loop"
+"show research" / "show errors"
+
+Tape directement — pas besoin de /commande !`;
+  },
+
+  '/anticipation': async (msg) => {
+    if (!anticipationEngine) return 'Anticipation engine pas encore initialise.';
+    const status = anticipationEngine.getStatus();
+    let text = `*Anticipation Engine*
+Prevented: *${status.totalPrevented}* | Occurred: *${status.totalOccurred}*
+Prevention rate: *${status.preventionRate}*
+Snapshots: ${status.snapshots}\n`;
+
+    text += '\n*Bottlenecks:*\n';
+    for (const [key, bn] of Object.entries(status.bottlenecks)) {
+      const icon = bn.inWarningZone ? '⚠️' : '✅';
+      const since = bn.minutesSinceLast !== null ? `${bn.minutesSinceLast}min ago` : 'never seen';
+      text += `${icon} *${bn.name}*\n  ${since} (avg every ${bn.avgIntervalMin}min)\n  Prevented: ${bn.prevented} | Occurred: ${bn.occurred}\n`;
+    }
+
+    if (status.recentActions.length > 0) {
+      text += '\n*Recent preemptive actions:*\n';
+      for (const a of status.recentActions.slice(-3)) {
+        text += `- [${a.id}] ${a.applied}\n`;
+      }
+    }
+
+    return text;
+  },
+
+  '/loop': async (msg) => {
+    if (!agenticLoop) return 'Agentic loop pas encore initialise.';
+    const s = agenticLoop.getStatus();
+    return `*Agentic Loop v3*
+Status: *${s.status}* | Running: ${s.running ? '✅' : '❌'}
+Cycles: ${s.cycleCount}
+
+*Metrics:*
+Best Brier: *${s.bestBrier?.toFixed(4) || '?'}*
+Best ROI: ${s.bestROI?.toFixed(1) || '?'}%
+Stagnation: ${s.stagnationCount}
+
+*Research:*
+Total: ${s.researchCount} | New: ${s.newFeatures} | Suggested: ${s.suggestedFeatures}
+
+*Health:*
+Errors: ${s.errorCount} unfixed
+Agents: ${Object.keys(s.agents).length} active
+
+*Timers:*
+Last observe: ${s.lastObserve || 'never'}
+Last research: ${s.lastResearch || 'never'}
+Last evaluate: ${s.lastEvaluate || 'never'}
+Last anticipate: ${s.lastAnticipate || 'never'}
+Last heal: ${s.lastHeal || 'never'}`;
+  },
+
   '/read': async (msg) => {
     if (msg.from.id !== ADMIN_TELEGRAM_ID) return 'Admin only.';
     const filePath = msg.text.replace('/read', '').trim();
@@ -758,12 +905,21 @@ async function handleTelegramUpdate(update) {
 
   let reply;
 
-  // Check commands
+  // Check commands first
   const cmd = text.split(' ')[0].split('@')[0].toLowerCase();
   if (COMMANDS[cmd]) {
     reply = await COMMANDS[cmd](msg);
-  } else {
-    // AI completion with conversation context
+  }
+  // Then check if it's a natural language order (only for admin)
+  else if (orderExecutor && msg.from?.id === ADMIN_TELEGRAM_ID && orderExecutor.isOrder(text)) {
+    logger.info(`[ORDER] Detected order from admin: ${text.substring(0, 80)}`);
+    const result = await orderExecutor.execute(text);
+    if (result && result.executed) {
+      reply = `*ORDER EXECUTED* [${result.intent}]\n\n${result.result}`;
+    }
+  }
+  // Fallback: AI completion with conversation context
+  if (!reply) {
     const history = persistence.getHistory(chatId, 10);
     const messages = history.map(h => ({ role: h.role, content: h.content }));
     messages.push({ role: 'user', content: text });
@@ -1146,6 +1302,85 @@ app.post('/api/v1/loop/trigger-data', async (req, res) => {
   res.json({ status: 'triggered', type: 'data-check' });
 });
 
+// Manual trigger: force anticipation check
+app.post('/api/v1/loop/trigger-anticipate', async (req, res) => {
+  if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
+  agenticLoop._anticipate().catch(e => logger.error('Manual anticipation error:', e));
+  res.json({ status: 'triggered', type: 'anticipate' });
+});
+
+// ============================================================
+// ANTICIPATION ENGINE API
+// ============================================================
+
+// Get anticipation status
+app.get('/api/v1/anticipation/status', (req, res) => {
+  if (!anticipationEngine) return res.json({ status: 'not_initialized' });
+  res.json(anticipationEngine.getStatus());
+});
+
+// Rollback to last good config
+app.post('/api/v1/anticipation/rollback', async (req, res) => {
+  if (!anticipationEngine) return res.status(503).json({ error: 'Not initialized' });
+  const result = await anticipationEngine.rollback();
+  res.json(result);
+});
+
+// Get bottleneck history
+app.get('/api/v1/anticipation/history', (req, res) => {
+  if (!anticipationEngine) return res.json([]);
+  res.json(anticipationEngine.history.slice(-50));
+});
+
+// ============================================================
+// ORDER EXECUTOR API
+// ============================================================
+
+// Execute an order via REST (same as Telegram natural language)
+app.post('/api/v1/order', async (req, res) => {
+  if (!orderExecutor) return res.status(503).json({ error: 'Not initialized' });
+  const { text } = req.body;
+  if (!text) return res.status(400).json({ error: 'text required' });
+  const result = await orderExecutor.execute(text);
+  res.json(result || { executed: false, reason: 'Not recognized as an order' });
+});
+
+// Get order history
+app.get('/api/v1/order/history', (req, res) => {
+  if (!orderExecutor) return res.json([]);
+  res.json(orderExecutor.getHistory());
+});
+
+// ============================================================
+// MODEL HEALTH MONITOR API
+// ============================================================
+
+// Get model health status
+app.get('/api/v1/models/health', (req, res) => {
+  if (!modelMonitor) return res.json({ status: 'not_initialized' });
+  res.json(modelMonitor.getStatus());
+});
+
+// Force probe all models
+app.post('/api/v1/models/probe', async (req, res) => {
+  if (!modelMonitor) return res.status(503).json({ error: 'Not initialized' });
+  const alive = await modelMonitor._probeAll();
+  res.json({ alive: alive.length, models: alive.slice(0, 10) });
+});
+
+// Discover new free models
+app.post('/api/v1/models/discover', async (req, res) => {
+  if (!modelMonitor) return res.status(503).json({ error: 'Not initialized' });
+  await modelMonitor.discoverFreeModels();
+  res.json({ total: Object.keys(modelMonitor.models).length });
+});
+
+// Rule engine status
+app.get('/api/v1/rules/status', (req, res) => {
+  if (!ruleEngine) return res.json({ status: 'not_initialized' });
+  res.json(ruleEngine.getStatus());
+});
+
 // Manual trigger: force an observe cycle
 app.post('/api/v1/loop/trigger-observe', async (req, res) => {
   if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
@@ -1316,26 +1551,73 @@ async function start() {
     }
   }
 
+  // Initialize Model Health Monitor — NEVER let thinking stop
+  modelMonitor = new ModelHealthMonitor({
+    openrouterApiKey: OPENROUTER_API_KEY,
+    openrouterClient: openrouter,
+    litellmUrl: LITELLM_URL,
+    litellmKey: LITELLM_KEY,
+    bot,
+    adminId: ADMIN_TELEGRAM_ID,
+  });
+  modelMonitor.start();
+  // Discover new free models from OpenRouter API at startup
+  modelMonitor.discoverFreeModels().catch(() => {});
+  // Re-discover every 30 min
+  setInterval(() => modelMonitor.discoverFreeModels().catch(() => {}), 30 * 60 * 1000);
+  logger.info('Model Health Monitor initialized — tracking 20+ free models');
+
+  // Initialize Rule Engine — deterministic fallback when LLMs are all down
+  ruleEngine = new RuleEngine({ callS10 });
+  logger.info('Rule Engine initialized — deterministic fallback active');
+
+  // Initialize Anticipation Engine (predictive bottleneck prevention)
+  anticipationEngine = new AnticipationEngine({
+    callS10,
+    bot,
+    adminId: ADMIN_TELEGRAM_ID,
+    fetchEvolution: fetchEvo,
+  });
+  logger.info('Anticipation Engine initialized — predictive bottleneck prevention active');
+
+  // Initialize Agentic Loop with anticipation + rule engine
   agenticLoop = new AgenticLoop({
     getCompletion,
     bot,
     adminId: ADMIN_TELEGRAM_ID,
     fetchEvolution: fetchEvo,
     callS10,
+    anticipationEngine,
+    ruleEngine,
   });
   agenticLoop.start();
+
+  // Initialize Order Executor (natural language → actions)
+  orderExecutor = new OrderExecutor({
+    callS10,
+    agenticLoop,
+    anticipationEngine,
+    vmBridge,
+    spaceExecutor,
+    bot,
+    adminId: ADMIN_TELEGRAM_ID,
+  });
+  logger.info('Order Executor initialized — Telegram natural language orders active');
 
   // Start Express
   app.listen(PORT, '0.0.0.0', () => {
     logger.info('='.repeat(60));
-    logger.info(`OpenClaw v2026.3.17-godmode started on port ${PORT}`);
+    logger.info(`OpenClaw v3 — FULL AGENTIC GOD MODE on port ${PORT}`);
     logger.info(`Telegram: ${TELEGRAM_BOT_TOKEN ? 'ACTIVE' : 'DISABLED'}`);
     logger.info(`OpenRouter: ${OPENROUTER_API_KEY ? 'CONFIGURED' : 'NOT SET'}`);
     logger.info(`VM Bridge: ${process.env.SSH_PRIVATE_KEY ? 'ACTIVE (SSH)' : 'NOT SET'}`);
     logger.info(`GitHub: ${GH_TOKEN ? 'ACTIVE' : 'NOT SET'}`);
-    logger.info(`Agentic Loop: STARTED (Karpathy mode)`);
+    logger.info(`Agentic Loop: STARTED (Karpathy v3 + Anticipation)`);
+    logger.info(`Model Monitor: ACTIVE (${Object.keys(modelMonitor.models).length} free models tracked)`);
+    logger.info(`Rule Engine: ACTIVE (${ruleEngine.rules.length} deterministic rules)`);
+    logger.info(`Anticipation: ACTIVE (7 bottleneck signatures)`);
+    logger.info(`Order Executor: ACTIVE (natural language → actions)`);
     logger.info(`Dashboard: /dashboard`);
-    logger.info(`Models: ${modelsConfig.priority.length} priority + ${modelsConfig.fallback.length} fallback`);
     logger.info('='.repeat(60));
 
     // Test VM connectivity at startup
@@ -1349,8 +1631,20 @@ async function start() {
     if (bot && TELEGRAM_BOT_TOKEN) {
       const vmStatus = process.env.SSH_PRIVATE_KEY ? 'SSH ACTIVE' : 'NO SSH';
       const ghStatus = GH_TOKEN ? 'ACTIVE' : 'NO TOKEN';
+      const modelCount = Object.keys(modelMonitor.models).length;
       bot.sendMessage(ADMIN_TELEGRAM_ID,
-        `*OpenClaw v2026.3.17 — GOD MODE*\nAgentic loop: Karpathy 24/7\nVM Bridge: ${vmStatus}\nGitHub: ${ghStatus}\nDashboard: /dashboard`, {
+        `*OpenClaw v3 — FULL AGENTIC GOD MODE*
+
+*Agentic Loop:* Karpathy v3 + Anticipation
+*Model Monitor:* ${modelCount} free models tracked
+*Rule Engine:* ${ruleEngine.rules.length} deterministic rules
+*Anticipation:* 7 bottleneck signatures
+*Order Executor:* Natural language via Telegram
+*VM Bridge:* ${vmStatus}
+*GitHub:* ${ghStatus}
+
+Tape /orders pour voir les commandes dispo.
+Ou donne des ordres en langage naturel !`, {
           parse_mode: 'Markdown'
         }).catch(() => {});
     }

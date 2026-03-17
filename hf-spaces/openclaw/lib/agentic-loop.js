@@ -68,18 +68,21 @@ const FEATURE_CATEGORIES = [
 ];
 
 class AgenticLoop {
-  constructor({ getCompletion, bot, adminId, fetchEvolution, callS10 }) {
+  constructor({ getCompletion, bot, adminId, fetchEvolution, callS10, anticipationEngine, ruleEngine }) {
     this.getCompletion = getCompletion;
     this.bot = bot;
     this.adminId = adminId;
     this.fetchEvolution = fetchEvolution;
     this.callS10 = callS10 || (async () => ({ error: 'callS10 not configured' }));
+    this.anticipation = anticipationEngine || null;
+    this.ruleEngine = ruleEngine || null;
 
     this.conversations = [];
     this.state = {
       status: 'idle',
       lastObserve: null, lastResearch: null, lastEvaluate: null,
       lastImprove: null, lastReport: null, lastHeal: null,
+      lastAnticipate: null,
       cycleCount: 0, healCount: 0,
       bestBrier: 1.0, bestROI: -100,
       researchItems: [],
@@ -138,6 +141,8 @@ class AgenticLoop {
 
     // OBSERVE — every 5 min
     this.intervals.push(setInterval(() => this._safeRun('observe', () => this._observe()), 5 * 60 * 1000));
+    // ANTICIPATE — every 7 min (predictive bottleneck prevention)
+    this.intervals.push(setInterval(() => this._safeRun('anticipate', () => this._anticipate()), 7 * 60 * 1000));
     // RESEARCH — every 20 min (increased frequency for FULL BLAST)
     this.intervals.push(setInterval(() => this._safeRun('research', () => this._research()), 20 * 60 * 1000));
     // EVALUATE — every 10 min
@@ -151,12 +156,13 @@ class AgenticLoop {
 
     // Run first cycles immediately (staggered) — observe first, then evaluate quickly
     setTimeout(() => this._safeRun('observe', () => this._observe()), 3000);
-    setTimeout(() => this._safeRun('evaluate', () => this._evaluate()), 8000);
-    setTimeout(() => this._safeRun('research', () => this._research()), 15000);
-    setTimeout(() => this._safeRun('heal', () => this._heal()), 25000);
-    setTimeout(() => this._safeRun('data', () => this._dataCheck()), 35000);
+    setTimeout(() => this._safeRun('anticipate', () => this._anticipate()), 6000);
+    setTimeout(() => this._safeRun('evaluate', () => this._evaluate()), 10000);
+    setTimeout(() => this._safeRun('research', () => this._research()), 18000);
+    setTimeout(() => this._safeRun('heal', () => this._heal()), 28000);
+    setTimeout(() => this._safeRun('data', () => this._dataCheck()), 38000);
 
-    logger.info('Agentic loop v2 started — FULL BLAST 24/7 Karpathy mode');
+    logger.info('Agentic loop v3 started — FULL BLAST 24/7 + ANTICIPATION ENGINE');
     this._save();
   }
 
@@ -170,6 +176,7 @@ class AgenticLoop {
   }
 
   // ── Safe runner — catches errors, logs them, never crashes ──
+  // If LLM-dependent phase fails, rule engine takes over
   async _safeRun(phase, fn) {
     try {
       await fn();
@@ -184,6 +191,22 @@ class AgenticLoop {
       if (this.errors.length > 100) this.errors = this.errors.slice(-100);
       this._log('monk', `ERROR in ${phase}: ${err.message}. Logging for auto-fix.`);
       this._saveErrors();
+
+      // If LLM failed, use rule engine for critical actions
+      if (/LLM providers failed/i.test(err.message) && this.ruleEngine) {
+        const lastEvo = this.state.evolutionHistory.length > 0
+          ? this.state.evolutionHistory[this.state.evolutionHistory.length - 1] : null;
+        if (lastEvo) {
+          this._log('monk', 'LLM down — Rule Engine taking over for critical actions.');
+          const actions = await this.ruleEngine.evaluate(lastEvo);
+          for (const action of actions) {
+            this._log('monk', `[RULE] ${action.ruleId}: ${action.result}`);
+          }
+          if (actions.length > 0) {
+            this._report(`Rule Engine: ${actions.length} actions while LLM down: ${actions.map(a => a.ruleId).join(', ')}`);
+          }
+        }
+      }
     }
   }
 
@@ -199,6 +222,9 @@ class AgenticLoop {
     if (!evoData) {
       this._log('cain', 'Evolution Space unreachable. MONK will investigate.');
       this._recordError('observe', 'Evolution Space unreachable');
+      if (this.anticipation) {
+        this.anticipation.record('connectivity_loss', { target: 'S10', phase: 'observe' });
+      }
       return;
     }
 
@@ -245,10 +271,18 @@ class AgenticLoop {
       this._log('cain', `ROI improvement: ${parsed.roi.toFixed(1)}%! Model: ${parsed.model}.`);
     }
 
-    // ── Stagnation detection with AUTO-FIX (aggressive) ──
+    // ── Stagnation detection with AUTO-FIX (aggressive) + ANTICIPATION RECORDING ──
     if (parsed.stagnation > 2) {
       this.state.stagnationCount++;
       this._log('nos', `STAGNATION ALERT: ${parsed.stagnation} generations flat. Count: ${this.state.stagnationCount}.`);
+
+      // Record for anticipation engine
+      if (this.anticipation) {
+        this.anticipation.record('ga_stagnation', {
+          generation: parsed.generation, brier: parsed.brier,
+          stagnation: parsed.stagnation, mutationRate: parsed.mutationRate,
+        });
+      }
 
       // Trigger improvement every stagnation cycle (not every 2nd)
       this._log('nos', 'Triggering improvement cycle...');
@@ -261,6 +295,7 @@ class AgenticLoop {
     } else {
       if (this.state.stagnationCount > 0) {
         this._log('nos', `Stagnation broken! Back to improving. Previous stag count: ${this.state.stagnationCount}`);
+        if (this.anticipation) this.anticipation.resolve('ga_stagnation');
       }
       this.state.stagnationCount = 0;
     }
@@ -281,6 +316,41 @@ class AgenticLoop {
     if (this.state.cycleCount % 4 === 0) {
       this._log('nos', `Status: Gen ${parsed.generation} | Brier ${parsed.brier.toFixed(4)} | ROI ${parsed.roi.toFixed(1)}% | ${parsed.features} feats | Pop ${parsed.population}`);
       this._log('ademo', `Candidates: ${parsed.featureCandidates || '?'} | Mutation: ${parsed.mutationRate} | Stag: ${parsed.stagnation} | Models: ${this.state.modelsActive.length}/${this.state.modelsTarget.length}`);
+    }
+  }
+
+  // ══════════════════════════════════════════
+  //  ANTICIPATE — Predictive bottleneck prevention
+  // ══════════════════════════════════════════
+
+  async _anticipate() {
+    if (!this.anticipation) return;
+    this.state.lastAnticipate = new Date().toISOString();
+
+    const lastEvo = this.state.evolutionHistory.length > 0
+      ? this.state.evolutionHistory[this.state.evolutionHistory.length - 1] : null;
+
+    const actions = await this.anticipation.check(lastEvo);
+
+    if (actions.length > 0) {
+      for (const action of actions) {
+        this._log('nos', `ANTICIPATION [${action.id}]: ${action.applied}`);
+
+        // If anticipation says we need research boost, trigger extra research
+        if (action.needsResearchBoost) {
+          this._log('ademo', 'Anticipation requested research acceleration. Triggering extra cycle.');
+          this._safeRun('research', () => this._research());
+        }
+
+        // If anticipation says we need a restart
+        if (action.needsRestart) {
+          this._log('monk', `Anticipation requests space restart for ${action.id}. Alerting admin.`);
+          this._report(`ANTICIPATION: ${action.name} — Space restart recommended`);
+        }
+      }
+      this._log('nos', `Anticipation: ${actions.length} preemptive actions taken this cycle.`);
+    } else if (this.state.cycleCount % 6 === 0) {
+      this._log('nos', 'Anticipation: all clear, no preemptive actions needed.');
     }
   }
 
@@ -371,10 +441,16 @@ Be extremely specific. No generic suggestions. Think like a PhD sports analytics
     const trend = briers.length >= 2 ? briers[briers.length - 1] - briers[0] : 0;
     const avgBrier = briers.reduce((a, b) => a + b, 0) / briers.length;
 
-    // Detect specific problems
+    // Detect specific problems + record for anticipation
     const problems = [];
-    if (trend > 0.002) problems.push('DEGRADING: Brier getting worse');
-    if (briers.length > 5 && Math.max(...briers) - Math.min(...briers) < 0.001) problems.push('PLATEAU: No variance in Brier');
+    if (trend > 0.002) {
+      problems.push('DEGRADING: Brier getting worse');
+      if (this.anticipation) this.anticipation.record('brier_regression', { trend, briers });
+    }
+    if (briers.length > 5 && Math.max(...briers) - Math.min(...briers) < 0.001) {
+      problems.push('PLATEAU: No variance in Brier');
+      if (this.anticipation) this.anticipation.record('feature_plateau', { features, briers });
+    }
     if (features.length > 0 && features[features.length - 1] < 80) problems.push('LOW_FEATURES: Under 80 selected');
     if (rois.length > 0 && rois[rois.length - 1] < 0) problems.push('NEGATIVE_ROI: Losing money');
 
