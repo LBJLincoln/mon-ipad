@@ -207,7 +207,8 @@ async function getCompletion(messages, options = {}) {
   }
 
   // 2. Use Model Health Monitor's live ranked list of working free models
-  const aliveModels = modelMonitor ? modelMonitor.getAliveModels() : [
+  // If alive list is empty (race condition at startup, or all probed dead), use static fallback
+  const DEFAULT_FREE_MODELS = [
     'deepseek/deepseek-r1-0528:free',
     'deepseek/deepseek-chat-v3-0324:free',
     'qwen/qwen3-235b-a22b:free',
@@ -217,11 +218,17 @@ async function getCompletion(messages, options = {}) {
     'meta-llama/llama-4-scout:free',
     'meta-llama/llama-3.3-70b-instruct:free',
     'microsoft/phi-4-reasoning-plus:free',
+    'microsoft/phi-4-reasoning:free',
     'mistralai/mistral-small-3.1-24b-instruct:free',
     'google/gemma-3-27b-it:free',
+    'google/gemma-3-12b-it:free',
     'arcee-ai/trinity-large-preview:free',
     'rekaai/reka-flash-3:free',
+    'qwen/qwen-2.5-coder-32b-instruct:free',
+    'nousresearch/deephermes-3-llama-3-8b-preview:free',
   ];
+  const monitorModels = modelMonitor ? modelMonitor.getAliveModels() : [];
+  const aliveModels = monitorModels.length > 0 ? monitorModels : DEFAULT_FREE_MODELS;
 
   for (const model of aliveModels) {
     try {
