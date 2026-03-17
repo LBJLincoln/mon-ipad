@@ -55,6 +55,9 @@ SECRETS = {
     "HF_TOKEN": os.environ.get("HF_TOKEN", ""),
     "HF_TOKEN_2": os.environ.get("HF_TOKEN_2", ""),
     "HF_TOKEN_3": os.environ.get("HF_TOKEN_3", ""),
+    # GitHub
+    "GH_TOKEN": os.environ.get("GH_TOKEN", os.environ.get("GITHUB_TOKEN", "")),
+    "GITHUB_TOKEN": os.environ.get("GITHUB_TOKEN", os.environ.get("GH_TOKEN", "")),
 }
 
 

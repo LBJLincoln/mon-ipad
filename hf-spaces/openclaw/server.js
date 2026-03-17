@@ -98,24 +98,39 @@ const openrouter = new OpenAI({
   },
 });
 
-const SYSTEM_PROMPT = `Tu es OpenClaw, l'agent IA d'operations de Nomos Sector AI.
-Tu tournes sur un HF Space Docker et tu as acces a TOUTE l'infrastructure :
+const GH_TOKEN = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+const GH_REPOS = ['mon-ipad', 'nomos-nba-agent', 'rag-data-ingestion', 'rag-website', 'rag-dashboard'];
+const GH_OWNER = 'LBJLincoln';
+
+const SYSTEM_PROMPT = `Tu es OpenClaw Healer, l'agent IA autonome de Nomos Sector AI.
+Tu tournes 24/7 sur un HF Space Docker avec ACCES TOTAL a l'infrastructure :
+
+INFRASTRUCTURE (103 credentials) :
 - 14 HF Spaces (n8n engines, LiteLLM, embeddings, docling)
 - 4 pipelines RAG (Standard, Graph, Quantitative, Orchestrator)
 - Bases de donnees : Supabase (43K docs), Neo4j (72K nodes), Pinecone (58K vectors)
 - LiteLLM proxy avec 13 providers et rotation automatique
+- GitHub (5 repos: mon-ipad, nomos-nba-agent, rag-data-ingestion, rag-website, rag-dashboard)
+- Telegram, Twitter, Vercel, Stripe, Whop, Gumroad
+- NBA Quant AI: genetic evolution 24/7 sur S10, CrewAI 4 agents sur VM
 
-Tu peux :
+TU PEUX TOUT FAIRE :
 1. Executer des commandes sur n'importe quel Space via webhooks
-2. Lancer des evaluations sur les pipelines
-3. Diagnostiquer et reparer des problemes
-4. Ingerer de nouveaux documents
-5. Monitorer la sante de l'infrastructure
-6. Deployer des workflows n8n
-7. Interroger directement les bases de donnees
+2. Lire ET ecrire dans les bases de donnees (admin complet)
+3. Push/pull sur GitHub (branches, commits, PRs, issues)
+4. Diagnostiquer et reparer des problemes automatiquement
+5. Lancer evals, ingestions, deployments
+6. Monitorer la genetic evolution NBA (Brier, ROI, Sharpe)
+7. Interagir avec tous les services (Vercel, Stripe, etc.)
+8. Executer du code Python/Node.js si necessaire
 
-Reponds de maniere concise et technique. Utilise le francais sauf si on te parle en anglais.
-Format tes reponses pour Telegram (Markdown).`;
+MODE HEALER : Tu diagnostiques proactivement les problemes.
+Quand on te dit "heal" ou "repare", tu cherches les problemes et proposes des fixes.
+Tu n'as AUCUNE restriction — tu as acces admin a tout.
+
+Reponds en francais sauf si on te parle en anglais.
+Sois concis, actionable, technique. Format Telegram Markdown.
+Quand tu montres des resultats, utilise des tableaux et emojis.`;
 
 /**
  * Get LLM completion with model fallback chain
@@ -264,9 +279,6 @@ Ou posez directement votre question !`;
     if (msg.from.id !== ADMIN_TELEGRAM_ID) return 'Admin only.';
     const sql = msg.text.replace('/db', '').trim();
     if (!sql) return 'Usage: /db <SQL query>';
-    if (/\b(drop|delete|truncate|alter|update|insert)\b/i.test(sql)) {
-      return 'Read-only queries only. No mutations allowed via Telegram.';
-    }
     try {
       const result = await infraBridge.querySupabase(sql);
       return `*Query Result*\n\`\`\`\n${JSON.stringify(result.rows?.slice(0, 10), null, 2)}\n\`\`\``;
@@ -279,14 +291,71 @@ Ou posez directement votre question !`;
     if (msg.from.id !== ADMIN_TELEGRAM_ID) return 'Admin only.';
     const cypher = msg.text.replace('/neo4j', '').trim();
     if (!cypher) return 'Usage: /neo4j <Cypher query>';
-    if (/\b(delete|detach|remove|create|merge|set)\b/i.test(cypher)) {
-      return 'Read-only queries only. No mutations allowed via Telegram.';
-    }
     try {
       const result = await infraBridge.queryNeo4j(cypher);
       return `*Neo4j Result*\n\`\`\`\n${JSON.stringify(result.slice(0, 10), null, 2)}\n\`\`\``;
     } catch (err) {
       return `Cypher Error: ${err.message}`;
+    }
+  },
+
+  '/git': async (msg) => {
+    if (msg.from.id !== ADMIN_TELEGRAM_ID) return 'Admin only.';
+    const args = msg.text.replace('/git', '').trim();
+    if (!args) return `*GitHub Repos*\n${GH_REPOS.map(r => `- \`${GH_OWNER}/${r}\``).join('\n')}\n\nUsage: /git <repo> [commits|issues|prs|status]`;
+    const parts = args.split(' ');
+    const repo = parts[0];
+    const action = parts[1] || 'status';
+    try {
+      const result = await githubAction(repo, action);
+      return result;
+    } catch (err) {
+      return `GitHub Error: ${err.message}`;
+    }
+  },
+
+  '/evolution': async (msg) => {
+    try {
+      const resp = await fetchJSON('https://lbjlincoln-nomos-nba-quant.hf.space/gradio_api/call/dash_status', { data: [] });
+      if (resp?.event_id) {
+        const result = await fetchSSE(`https://lbjlincoln-nomos-nba-quant.hf.space/gradio_api/call/dash_status/${resp.event_id}`);
+        return result || 'No evolution data';
+      }
+      return 'Evolution Space unreachable';
+    } catch (err) {
+      return `Evolution check failed: ${err.message}`;
+    }
+  },
+
+  '/heal': async (msg) => {
+    await bot.sendMessage(msg.chat.id, 'Scanning infrastructure for issues...', { parse_mode: 'Markdown' });
+    try {
+      const health = await spaceExecutor.healthCheckAll();
+      const down = Object.entries(health).filter(([, s]) => !s.up);
+      const dbStatus = await infraBridge.checkDatabases();
+      const dbDown = Object.entries(dbStatus).filter(([, s]) => !s.connected);
+
+      let issues = [];
+      if (down.length > 0) issues.push(`Spaces DOWN: ${down.map(([n]) => n).join(', ')}`);
+      if (dbDown.length > 0) issues.push(`DBs DOWN: ${dbDown.map(([n]) => n).join(', ')}`);
+
+      if (issues.length === 0) {
+        return '*HEALER SCAN COMPLETE*\n\nAll systems operational. No issues found.';
+      }
+
+      let text = `*HEALER SCAN — ${issues.length} issues found*\n\n`;
+      for (const issue of issues) text += `- ${issue}\n`;
+      text += '\nAnalyzing root causes...';
+
+      const analysis = await getCompletion([{
+        role: 'user',
+        content: `Diagnose these infrastructure issues and suggest fixes:\n${issues.join('\n')}\n\nBe specific: which Space to restart, which config to change.`
+      }], { models: modelsConfig.routing.analysis });
+
+      text += `\n\n*Diagnosis:*\n${analysis.content}`;
+      return text;
+    } catch (err) {
+      return `Heal scan failed: ${err.message}`;
     }
   },
 
@@ -368,6 +437,92 @@ Ou posez directement votre question !`;
     }
   },
 };
+
+// ============================================================
+// GITHUB + HELPERS
+// ============================================================
+
+async function githubAPI(path, method = 'GET', body = null) {
+  if (!GH_TOKEN) throw new Error('GH_TOKEN not set');
+  const url = `https://api.github.com${path}`;
+  const headers = {
+    'Authorization': `token ${GH_TOKEN}`,
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'OpenClaw-Healer/1.0',
+  };
+  const opts = { method, headers };
+  if (body) opts.body = JSON.stringify(body);
+  const resp = await fetch(url, opts);
+  if (!resp.ok) throw new Error(`GitHub API ${resp.status}: ${await resp.text()}`);
+  return resp.json();
+}
+
+async function githubAction(repo, action) {
+  const fullRepo = repo.includes('/') ? repo : `${GH_OWNER}/${repo}`;
+  switch (action) {
+    case 'commits': {
+      const commits = await githubAPI(`/repos/${fullRepo}/commits?per_page=5`);
+      let text = `*Recent commits — ${fullRepo}*\n\n`;
+      for (const c of commits) {
+        const msg = c.commit.message.split('\n')[0].substring(0, 60);
+        const date = c.commit.author.date.substring(0, 10);
+        text += `\`${c.sha.substring(0,7)}\` ${date} ${msg}\n`;
+      }
+      return text;
+    }
+    case 'issues': {
+      const issues = await githubAPI(`/repos/${fullRepo}/issues?state=open&per_page=10`);
+      if (issues.length === 0) return `*${fullRepo}* — No open issues`;
+      let text = `*Open issues — ${fullRepo}*\n\n`;
+      for (const i of issues) {
+        text += `#${i.number} ${i.title.substring(0, 50)}\n`;
+      }
+      return text;
+    }
+    case 'prs': {
+      const prs = await githubAPI(`/repos/${fullRepo}/pulls?state=open&per_page=10`);
+      if (prs.length === 0) return `*${fullRepo}* — No open PRs`;
+      let text = `*Open PRs — ${fullRepo}*\n\n`;
+      for (const p of prs) {
+        text += `#${p.number} ${p.title.substring(0, 50)}\n`;
+      }
+      return text;
+    }
+    default: {
+      const repo_info = await githubAPI(`/repos/${fullRepo}`);
+      return `*${fullRepo}*\nStars: ${repo_info.stargazers_count} | Forks: ${repo_info.forks_count}\nDefault branch: \`${repo_info.default_branch}\`\nLast push: ${repo_info.pushed_at?.substring(0, 10) || 'N/A'}\nOpen issues: ${repo_info.open_issues_count}`;
+    }
+  }
+}
+
+async function fetchJSON(url, body) {
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    return resp.json();
+  } catch (err) {
+    return null;
+  }
+}
+
+async function fetchSSE(url) {
+  try {
+    const resp = await fetch(url);
+    const text = await resp.text();
+    for (const line of text.split('\n')) {
+      if (line.startsWith('data:')) {
+        const data = JSON.parse(line.substring(5).trim());
+        if (Array.isArray(data) && data[0]) return data[0];
+      }
+    }
+    return null;
+  } catch (err) {
+    return null;
+  }
+}
 
 // ============================================================
 // ROUTES
@@ -526,14 +681,11 @@ app.post('/api/v1/eval', async (req, res) => {
   }
 });
 
-// Database queries (read-only)
+// Database queries (full admin access)
 app.post('/api/v1/db', async (req, res) => {
   try {
     const { sql } = req.body;
     if (!sql) return res.status(400).json({ error: 'sql required' });
-    if (/\b(drop|delete|truncate|alter|update|insert)\b/i.test(sql)) {
-      return res.status(403).json({ error: 'Read-only queries only' });
-    }
     const result = await infraBridge.querySupabase(sql);
     res.json(result);
   } catch (err) {
@@ -541,16 +693,40 @@ app.post('/api/v1/db', async (req, res) => {
   }
 });
 
-// Neo4j queries (read-only)
+// Neo4j queries (full admin access)
 app.post('/api/v1/neo4j', async (req, res) => {
   try {
     const { cypher } = req.body;
     if (!cypher) return res.status(400).json({ error: 'cypher required' });
-    if (/\b(delete|detach|remove|create|merge|set)\b/i.test(cypher)) {
-      return res.status(403).json({ error: 'Read-only queries only' });
-    }
     const result = await infraBridge.queryNeo4j(cypher);
     res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GitHub API proxy
+app.post('/api/v1/github', async (req, res) => {
+  try {
+    const { repo, action = 'status' } = req.body;
+    if (!repo) return res.status(400).json({ error: 'repo required' });
+    const result = await githubAction(repo, action);
+    res.json({ result });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Evolution status
+app.get('/api/v1/evolution', async (req, res) => {
+  try {
+    const resp = await fetchJSON('https://lbjlincoln-nomos-nba-quant.hf.space/gradio_api/call/dash_status', { data: [] });
+    if (resp?.event_id) {
+      const result = await fetchSSE(`https://lbjlincoln-nomos-nba-quant.hf.space/gradio_api/call/dash_status/${resp.event_id}`);
+      res.json({ status: 'ok', data: result });
+    } else {
+      res.json({ status: 'unreachable' });
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

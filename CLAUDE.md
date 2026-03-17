@@ -1,23 +1,49 @@
-# Nomos Sector AI Expert — Tour de Controle
+# Nomos42 — NBA Quant AI + THE FORGE
 
-> Last updated: 2026-03-10T21:00:00Z
+> Last updated: 2026-03-17T00:45:00Z
 
 **CE REPO (`mon-ipad`) EST LA TOUR DE CONTROLE.**
-VM Google Cloud permanente . Claude Code via Termius . Pilote 5 repos actifs + 2 archives
+VM Google Cloud permanente . Claude Code via Termius . Architecture HuggingClaw-style.
 
-**MISSION : Construire le meilleur assistant IA expert sectoriel au monde sur 4 secteurs.**
-**Chaque pipeline doit devenir un expert imbattable dans son domaine.**
+**MISSION : Construire le meilleur modele predictif NBA AI au monde.**
+**+ THE FORGE : permettre aux users de deployer leurs propres agents autonomes.**
+
+**FOCUS ACTUEL : 100% NBA QUANT AI MODEL**
 
 **MODELE PRINCIPAL : `claude-opus-4-6` (abonnement Max)**
 **DELEGATION : Sonnet 4.6 (execution) + Haiku 4.5 (exploration) via Task tool**
 
 ---
 
-## 1. IDENTITY & MISSION
+## 1. IDENTITY & ARCHITECTURE
 
-Tu es Claude Code (`claude-opus-4-6`) executant depuis **Termius** sur la **VM Google Cloud** (`34.136.180.66`).
+Tu es **Claude Code CLI (Adam)** — le cerveau strategique executant depuis Termius sur la VM.
+Tu travailles en duo 24/7 avec **OpenClaw Healer (Eve)** — agent autonome sur HF Space.
 
-**Mission** : Transformer nos 4 pipelines RAG en experts sectoriels de classe mondiale capables de traiter les documents les plus complexes de chaque industrie et de repondre avec la precision d'un expert senior.
+### Architecture HuggingClaw-Style
+
+```
+ADAM (Claude Code CLI)          EVE (OpenClaw Healer)
+├── Strategic decisions         ├── 24/7 autonomous monitoring
+├── Code writing/editing        ├── Telegram interface (@Nomos42Bot)
+├── Complex analysis            ├── Auto-healing infrastructure
+├── User interaction            ├── Research & feature discovery
+└── Git operations              └── Alert & reporting
+        │                              │
+        └──── A2A REST API ◄──────────┘
+                    │
+                    ▼
+            CAIN (Evolution Loop)
+            ├── nba-quant (S10) — Genetic algo 24/7
+            ├── nba-quant-2 (S11) — Parallel training
+            └── Walk-forward backtest, model stacking
+```
+
+| Agent | Role | Where | Model |
+|-------|------|-------|-------|
+| **Adam** (Claude Code CLI) | Architect, coder, strategist | VM Termius | Opus 4.6 |
+| **Eve** (OpenClaw Healer) | 24/7 monitor, Telegram, auto-heal | HF Space worker-2 | Healer Alpha (FREE) |
+| **Cain** (Evolution Loop) | ML training, genetic algo | HF Space nba-quant | XGBoost/LightGBM |
 
 | Tache | Modele | Mecanisme |
 |-------|--------|-----------|
@@ -25,367 +51,230 @@ Tu es Claude Code (`claude-opus-4-6`) executant depuis **Termius** sur la **VM G
 | Recherches web, batch commands | Sonnet 4.6 | `Task(model: "sonnet")` |
 | Exploration codebase | Haiku 4.5 | `Task(model: "haiku")` |
 
-**JAMAIS deleguer** : analyse workflows, decisions debug, redaction directives, evaluation resultats, communication utilisateur.
+**JAMAIS deleguer** : decisions architecture, evaluation resultats, communication utilisateur.
 
 ---
 
-## 2. DEUX AXES STRATEGIQUES
+## 2. PROJETS
 
-### AXE 1 : Expert IA Sectoriel (priorite technique)
-- 4 secteurs : **Finance**, **BTP**, **Juridique**, **Industrie**
-- 4 pipelines RAG specialisees tournant en continu
-- Ingestion capable de traiter 100+ types de documents, les plus complexes
-- Scale a 1M documents par secteur
-- Evals parfaits mesurant la qualite expert
-- Self-healing : pipelines cassees se reparent, bonnes pipelines testent en continu
+### AXE 1 : NBA Quant AI (FOCUS ACTUEL)
+- Genetic evolution 24/7 (population 50+, multi-objective fitness)
+- 580+ features across 10 categories
+- Ensemble models : XGBoost, LightGBM, CatBoost, Stacking
+- Walk-forward backtest (3 seasons)
+- Target : Brier < 0.20, ROI > 5%, Sharpe > 1.5
+- Live predictions : nomos42.vercel.app/nba
+- Current best : Brier 0.2205, Accuracy 64.5%
 
-### AXE 2 : Monetisation (priorite revenue)
-- Directives separees (fournies par l'utilisateur)
-- Infra deja prete : 19 Stripe + 14 Whop + RapidAPI + 20 packages ZIP
-- Focus : pourquoi pas de revenue ? restructurer autour de ce qui vend
-
-### Priorites session (STRICT)
-1. Pipelines DOWN → diagnostiquer + reparer
-2. Pipelines UP → lancer evals continus jusqu'aux objectifs
-3. Ingestion → nouveaux documents complexes
-4. Monetisation → selon directives utilisateur
+### AXE 2 : THE FORGE (a venir)
+- Generateur automatique d'entreprise via agents autonomes
+- Users deploient leurs propres agentic loops
+- Templates bases sur nos patterns NBA + RAG
+- nomos42.vercel.app = page d'accueil THE FORGE
 
 ---
 
-## 3. SECTEURS & OBJECTIFS
-
-### Accuracy Targets (AMBITIEUX)
-
-| Secteur | Standard | Graph | Quant | Orchestrator | Current Best |
-|---------|----------|-------|-------|-------------|-------------|
-| **Finance** | >= 90% | >= 75% | >= 95% | >= 85% | Std 80%, Quant 95.2% |
-| **BTP** | >= 85% | >= 70% | >= 80% | >= 75% | Std 20% (DATA GAP) |
-| **Juridique** | >= 90% | >= 80% | N/A | >= 80% | Std 80% |
-| **Industrie** | >= 85% | >= 70% | >= 80% | >= 75% | Std 80% |
-
-### Quality Targets (Expert-level)
-
-| Metric | Target | Current |
-|--------|--------|---------|
-| Source citation | >= 90% answers cite specific document | ~50% |
-| Sector terminology | >= 80% use correct professional terms | ~60% |
-| Response language match | 100% respond in question language | ~85% |
-| Response time | <= 30s average | ~36s |
-| Complex document handling | 100+ doc types per sector | ~20 types |
-
-### Data Scale Targets
-
-| Secteur | Pinecone Vectors | Supabase Docs | Neo4j Nodes | Target 6mo |
-|---------|-----------------|---------------|-------------|-----------|
-| Finance | ~10K | 2,150 | ~20K | 250K total |
-| BTP | ~8K | 1,844 | ~15K | 200K total |
-| Juridique | ~8K | 2,500 | ~25K | 300K total |
-| Industrie | ~6K | 1,015 | ~10K | 250K total |
-
-### Sector Config Files
-
-| Fichier | Contenu |
-|---------|---------|
-| `sectors/finance/` | Eval questions, golden answers, doc type registry |
-| `sectors/btp/` | Eval questions, golden answers, doc type registry |
-| `sectors/juridique/` | Eval questions, golden answers, doc type registry |
-| `sectors/industrie/` | Eval questions, golden answers, doc type registry |
-| `sectors/eval-datasets/` | Master eval dataset (220+ questions) |
-
----
-
-## 4. CORE RULES
-
-1. **Read before act** — `DEBUG-PLAYBOOK.md` avant debug, `PROJECT-STATE.md` avant action complexe
-2. **source .env.local** — TOUJOURS avant scripts Python
-3. **ZERO credentials in git** — `git diff --cached | grep -iE 'sk-or-|pcsk_|jV_zGdx|sbp_|hf_|jina_|ghp_'`
-4. **1 fix per iteration** — Jamais plusieurs noeuds simultanement
-5. **Sector smoke before sync** — `quick-test.py --sector all` avant `n8n/sync.py`
-6. **Commit + push regularly** — Toutes les 15-20 min. Git email: `alexis.moret6@outlook.fr`
-7. **Update state files** — `PROJECT-STATE.md` apres milestone
-8. **VM = pilotage ONLY** — No n8n, no eval compute, **ZERO ML training**. Tout sur HF Spaces
-15. **ZERO ML ON VM** — La VM a 1GB RAM. TOUT training (karpathy, improve-loop, backtest, Optuna) DOIT tourner sur HF Spaces / Lightning AI / Google Colab. JAMAIS lancer de modele ML sur la VM locale. Seuls scripts autorises sur VM : data-server, quant-daemon (leger), monitoring.
-16. **ALL Spaces = full credentials** — Chaque HF Space doit avoir les 101 secrets de .env.local. Utiliser `huggingface_hub.add_space_secret()` pour synchro.
-9. **Push before shutdown** — Codespaces ephemeres : resultats vers GitHub AVANT arret
-10. **3+ regressions → REVERT**
-11. **Auto-stop on 3 failures** — Rapport structure, pas de boucle infinie
-12. **10% improvement per session** — Chaque session doit ameliorer le secteur le plus faible
-13. **Self-healing first** — Pipeline cassee = priorite absolue avant tout autre travail
-14. **Continuous eval** — Bonnes pipelines tournent leurs tests 24/7 jusqu'aux objectifs
-
----
-
-## 5. INFRASTRUCTURE
+## 3. INFRASTRUCTURE
 
 ### VM Google Cloud (pilotage ONLY)
 ```
 IP: 34.136.180.66 | Debian 11 | 1 vCPU | 969 MB RAM | 30 GB disk
 ```
 
-### HF Spaces (10 slots — maximiser utilisation)
-
-| Space | Role | URL | Status |
-|-------|------|-----|--------|
-| engine (S1) | n8n primary — All 4 pipelines + AutoHealer | lbjlincoln-nomos-rag-engine.hf.space | UP |
-| engine-2 (S2) | n8n (lbjlincoln26) — same DB as S1 | lbjlincoln26-nomos-rag-engine-2.hf.space | UP |
-| engine-3 (S3) | n8n — All 4 pipelines (load balance) | lbjlincoln-nomos-rag-engine-3.hf.space | UP |
-| engine-4 (S4) | n8n (lbjlincoln26) — same DB | lbjlincoln26-nomos-rag-engine-4.hf.space | UP |
-| engine-5 (S5) | n8n — All 4 pipelines (load balance) | lbjlincoln-nomos-rag-engine-5.hf.space | UP |
-| engine-7 (S7) | LiteLLM proxy — 9 models, 13-provider fallback | lbjlincoln-nomos-rag-engine-7.hf.space | UP |
-| engine-9 (S9) | n8n — Standard + Quant | lbjlincoln-nomos-rag-engine-9.hf.space | UP |
-| embeddings | Self-hosted Jina embeddings (1024 dims) | lbjlincoln-nomos-embeddings-api.hf.space | UP |
-| engine-6 (S6) | Docling document processor | lbjlincoln-nomos-docling-api.hf.space | UP |
-| nba-quant (S10) | NBA ML training loop 24/7 (Karpathy) | lbjlincoln-nomos-nba-quant.hf.space | UP |
-| nba-quant-2 (S11) | NBA ML training loop #2 (parallel) | lbjlincoln-nomos-nba-quant-2.hf.space | UP |
-
-**Strategie** : Utiliser TOUS les slots HF gratuits pour demultiplier les pipelines. Chaque Space = une fonction specialisee.
-
 ### ⚠️ REGLE ABSOLUE : ZERO ML SUR VM
 ```
 La VM (1 vCPU / 969 MB RAM) ne peut PAS faire de ML.
-TOUT training, Optuna, backtest, karpathy-loop → HF Spaces (16GB RAM)
-VM autorisee UNIQUEMENT pour : data-server, quant-daemon, monitoring, git, Claude Code
+TOUT training, Optuna, backtest, genetic algo → HF Spaces (16GB RAM)
+VM autorisee UNIQUEMENT pour : data-server, monitoring, git, Claude Code
 ```
-Spaces NBA : S10 (nomos-nba-quant) + S11 (nomos-nba-quant-2) — 101 secrets chacun
 
-### Databases (SECTOR-ONLY)
+### HF Spaces ACTIFS
 
-| Service | Contenu | Index/Table | Limite |
-|---------|---------|-------------|--------|
-| Pinecone `website-sectors-jina-1024` | Sector vectors | **PRIMARY** | 100K max |
-| Pinecone `sota-rag-jina-1024` | Legacy benchmarks | **ARCHIVE** (ne plus ecrire) | 46K frozen |
-| Neo4j Aura | ~86,841 nodes, enrichment 95% | Sector entities | 200K/400K |
-| Supabase | 43,357 sector docs + 3,876 financial tables | `sector_documents` | 500MB |
+| Space | Account | Role | URL |
+|-------|---------|------|-----|
+| **nba-quant** (S10) | lbjlincoln | Genetic evolution 24/7 | lbjlincoln-nomos-nba-quant.hf.space |
+| **nba-quant-2** (S11) | lbjlincoln | Parallel training | lbjlincoln-nomos-nba-quant-2.hf.space |
+| **LiteLLM** (S7) | lbjlincoln | LLM proxy, 13 providers | lbjlincoln-nomos-rag-engine-7.hf.space |
+| **OpenClaw** | Nomos42 | Eve — 24/7 agent, Telegram | nomos42-nomos-worker-2.hf.space |
+| **LiteLLM-2** | Nomos42 | LLM proxy backup | nomos42-nomos-litellm-2.hf.space |
 
-### Batch sizes
-| Pipeline | Batch | Concurrency | Timeout |
-|----------|-------|-------------|---------|
-| Standard | 10 | 5 | 90s |
-| Graph | 5 | 3 | 90s |
-| Quantitative | 3 | 1 | 120s |
-| Orchestrator | 2 | 1 | 180s |
+**RAG Spaces** : ALL PAUSED (archived 2026-03-17). See `archive/rag-full-archive.md`.
 
----
+### Account Split
 
-## 6. PIPELINES RAG (Sector Expert Mode)
+| Compte HF | Role | Spaces |
+|-----------|------|--------|
+| **lbjlincoln** | NBA AI Quant compute | nba-quant, nba-quant-2, LiteLLM |
+| **Nomos42** | THE FORGE + OpenClaw | worker-2, litellm-2 |
+| **lbjlincoln26** | FREE (available) | 0 active |
 
-### Webhooks
-| Pipeline | Webhook Path | Role Sectoriel | Status |
-|----------|-------------|----------------|--------|
-| Standard | `/webhook/rag-multi-index-v3` | Recherche vectorielle sectorielle | WORKING |
-| Graph | `/webhook/ff622742-6d71-4e91-af71-b5c666088717` | Relations entites sectorielles | WORKING |
-| Quantitative | `/webhook/3e0f8010-39e0-4bca-9d19-35e5094391a9` | Donnees financieres SQL | WORKING |
-| Orchestrator | `/webhook/orchestrator-v2` | Routage intelligent 4 secteurs | WORKING |
+### Databases
 
-### Active Workflow IDs
-| Pipeline | ID | Version | Name |
-|----------|----|---------|------|
-| Standard | `9FQdtx38JLPiT3Hx` | V3.5 | Standard RAG (E5+LiteLLM, multi-index) |
-| Graph | `6257AfT1l4FMC6lY` | V3.7 | Graph RAG (V3 keyword Cypher + LiteLLM) |
-| Quant | `cjhEhVs0KV1ExHqX` | V3.2 | Quantitative (LiteLLM, SQL generation) |
-| Orchestrator | `qOSaFFrqO8Jb4VGb` | V13 | Orchestrator (regex routing, delegates to sub-pipelines) |
-| Auto-Healer | `Yqw7Pzn0e7m0C6i3` | V1.2 | Auto-Healer (10min, 4 Spaces, webhook pings) |
-| Error Trigger | `AH3eXOmgxt5cOd93` | V1.0 | Error Trigger Handler (errors → Supabase) |
+| Service | Usage | Status |
+|---------|-------|--------|
+| Supabase | NBA data storage, predictions, bankroll | ACTIVE |
+| Neo4j | Player/team relationships | AVAILABLE |
+| Pinecone | Feature vectors if needed | AVAILABLE |
 
-### LLM Models (ALL via LiteLLM S7 — automatic key/model rotation)
-| Model Group | Providers | Usage |
-|-------------|-----------|-------|
-| `smart` | OpenRouter llama-70b → qwen-235b → Gemini Flash → Groq | **ALL pipelines** |
-| `fast` | OpenRouter trinity → gemma-27b → Gemini Flash | Quick tasks |
-| `default` | OpenRouter trinity → Gemini → Groq | Fallback |
-| `gemini-flash` | Google Gemini direct | Single provider |
+### LLM Config
 
-**LiteLLM URL**: `https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions`
-**LiteLLM Key**: `Bearer sk-litellm-nomos-2026`
+| Endpoint | URL | Key |
+|----------|-----|-----|
+| LiteLLM S7 | lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions | sk-litellm-nomos-2026 |
+| OpenClaw | nomos42-nomos-worker-2.hf.space/api/v1/chat | (internal) |
 
 ---
 
-## 7. AGENTS & PROCESS SEGMENTE
+## 4. REPOS
 
-### 5 Agents Specialises
+| Repo | Role | Status |
+|------|------|--------|
+| **mon-ipad** (CE REPO) | Tour de controle, ops, OpenClaw config | **ACTIF** |
+| **nomos-nba-agent** | NBA models, features, evolution, agents | **ACTIF** |
+| **rag-website** | Next.js frontend (NBA + FORGE pages) | **ACTIF** |
+| **rag-data-ingestion** | ARCHIVED (RAG ingestion) | **ARCHIVE** |
+| **rag-dashboard** | ARCHIVED (RAG metrics) | **ARCHIVE** |
+| **rag-storage** | ARCHIVED (LFS benchmark) | **ARCHIVE** |
 
-| Agent | Script | Cycle | Role |
-|-------|--------|-------|------|
-| **MONITOR** | `ops/monitor.py --loop 300` | 5min | Health check, error detection per node, JSONL logging |
-| **EVAL** | `eval/quick-test.py` | After each change | Accuracy baseline, before/after comparison |
-| **PIPELINE** | Manual (Claude Code) | On-demand | 1 fix → test → push or revert |
-| **INGEST** | `ops/fast-ingest.py` | Batch | E5 vectors, Exa.AI, PDF, Neo4j enrichment |
-| **DOCS** | Manual | After milestone | Update PROJECT-STATE, PILOTAGE, DEBUG-PLAYBOOK |
+---
 
-### Lancer les agents
+## 5. NBA QUANT AI — DETAILS
+
+### Models & Performance
+
+| Model | Brier | Accuracy | ROI |
+|-------|-------|----------|-----|
+| Stacking (best) | 0.2205 | — | — |
+| XGBoost | 0.2206 | 64.5% | -0.3% |
+| Random Forest | 0.2218 | 63.9% | 0.0% |
+| Logistic | 0.2225 | 64.2% | -3.3% |
+| LightGBM | 0.2394 | 62.5% | -13.0% |
+
+### Feature Engine (580+ candidates, ~94 selected)
+
+| Category | Count | Examples |
+|----------|-------|---------|
+| Rolling Performance | 96 | Win%, points, margins (3/5/7/10/15/20 windows) |
+| Four Factors | 32 | eFG%, TOV%, ORB%, FTR |
+| Momentum & Streaks | 16 | Hot/cold trends, weighted wins |
+| Rest & Schedule | 20 | Days rest, B2B, travel |
+| Opponent-Adjusted | 24 | SOS, strength of location |
+| Matchup & ELO | 18 | H2H records, style matchups |
+| Market Microstructure | 30+ | CLV, line movement, steam |
+| Context | 20 | Playoff implications, revenge |
+
+### Genetic Evolution
+
+```
+Population: 50 individuals
+Fitness: Brier 40% + ROI 25% + Sharpe 20% + Calibration 15%
+Selection: Tournament (k=7)
+Crossover: Two-point, rate 0.7
+Mutation: Adaptive, base 0.03
+Elitism: Top 5 preserved
+Stagnation: Fresh injection at 10 idle gens
+```
+
+### CrewAI 4-Agent Swarm
+
+| Agent | Role | Output |
+|-------|------|--------|
+| Research | Find papers, techniques | crew-research.json |
+| Market | Monitor odds, detect value | crew-market.json |
+| Feature | Improve feature set | crew-features.json |
+| Evolution | Diagnose GA, tune params | crew-evolution.json |
+
+### Key Files
+
+| File | Location | Role |
+|------|----------|------|
+| predict_today.py | nomos-nba-agent/ | Daily prediction pipeline |
+| nba_crew.py | nomos-nba-agent/agents/ | 4-agent swarm |
+| loop.py | nomos-nba-agent/evolution/ | Genetic algorithm |
+| engine.py | nomos-nba-agent/features/ | 580+ features |
+| app.py | nomos-nba-agent/hf-space/ | HF Space Gradio dashboard |
+| nba-data-server.py | mon-ipad/scripts/ | JSON API for Vercel |
+
+---
+
+## 6. COMMUNICATION ADAM ↔ EVE
+
+### Claude Code CLI → OpenClaw
 ```bash
-python3 ops/agents.py launch all     # Tous les agents background
-python3 ops/agents.py status         # Status de chaque agent
-python3 ops/agents.py stop all       # Arreter tous
-python3 ops/agents.py logs monitor   # Logs d'un agent
+curl -X POST https://nomos42-nomos-worker-2.hf.space/api/v1/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"messages":[{"role":"user","content":"..."}]}'
 ```
 
-### Process incremental (STRICT)
-```
-STRATEGIZE → PLAN → BUILD → TEST → PUSH → AUTO-TEST → PUSH or FIX
-     ↑                                                        |
-     +————————————————— feedback loop ——————————————————————————+
-```
+### OpenClaw → Claude Code CLI
+- Telegram alerts to admin
+- HTTP callback to VM: `http://34.136.180.66:8080/callback/evolution`
+- Git push triggers (OpenClaw pushes → Claude Code reviews)
 
-Regles :
-1. **AVANT tout fix** : chercher dans DEBUG-PLAYBOOK si pattern connu
-2. **1 seul changement par iteration** — jamais 2 fixes simultanement
-3. **Mesurer before/after** — pas de changement sans mesure
-4. **APRES tout fix** : logger le pattern dans DEBUG-PLAYBOOK
-5. **Auto-stop on 3 failures** — rapport structure, pas de boucle infinie
-
-### Monitoring continu
-- `ops/monitor.py` ecrit dans `logs/errors/pipeline-errors.jsonl`
-- `data/health-status.json` = snapshot sante live
-- Auto-Healer n8n (V1.2b) tourne toutes les 10min sur S1
-- Dashboard live : tmux cockpit (voir `docs/PILOTAGE.md`)
-
-### Regression Guard
-```
-Avant commit touchant n8n/ ou eval/:
-1. Run 10 questions critiques (smoke test)
-2. Comparer aux derniers scores
-3. Bloquer si drop > 5% sur un secteur
-```
+### OpenClaw Endpoints
+| Endpoint | Method | Role |
+|----------|--------|------|
+| /api/v1/chat | POST | LLM conversation |
+| /api/v1/spaces | GET | Health of all spaces |
+| /api/v1/db | POST | Supabase queries |
+| /api/v1/neo4j | POST | Neo4j queries |
+| /api/v1/github | POST | GitHub operations |
+| /api/v1/evolution | GET | Evolution status |
+| /api/v1/eval | POST | Run evaluations |
+| /keep-alive | GET | Health check |
 
 ---
 
-## 8. INGESTION & DOCLING
+## 7. CORE RULES
 
-### Architecture ingestion (rag-data-ingestion)
-```
-Acquisition → Processing (Docling) → Chunking (par secteur) → Embedding → Storage
-```
-
-### Document Types par secteur (cible : 100+)
-- **Finance** : SEC filings, IFRS standards, annual reports, balance sheets, 10-K/10-Q, earnings calls
-- **BTP** : DTU, Eurocodes, CCTP, AFNOR normes, BOAMP, permis, etudes sol, DQE
-- **Juridique** : Codes (civil, commerce, travail), jurisprudence, contrats, CGV, statuts, RGPD
-- **Industrie** : ISO normes, manuels maintenance, fiches securite, AMDEC, procedures qualite
-
-### Eval Docling
-- Mesurer qualite extraction : tableaux, formules, mise en page complexe
-- Comparer chunks Docling vs chunks simples
-- Target : 95% fidelite sur documents complexes
+1. **ZERO ML ON VM** — ALL training on HF Spaces
+2. **source .env.local** — TOUJOURS avant scripts Python
+3. **ZERO credentials in git**
+4. **1 fix per iteration** — Jamais plusieurs changements simultanes
+5. **Commit + push regularly** — Toutes les 15-20 min
+6. **3+ regressions → REVERT**
+7. **Auto-stop on 3 failures** — Rapport structure, pas de boucle infinie
 
 ---
 
-## 9. COMMANDS
+## 8. COMMANDS
 
 ```bash
 # Session
 source .env.local
-cat directives/PROJECT-STATE.md
 
-# Agents (5 specialises)
-python3 ops/agents.py launch all          # Lancer tous les agents
-python3 ops/agents.py status              # Status agents
-python3 ops/agents.py stop all            # Arreter tous
+# NBA Data Server
+python3 scripts/nba-data-server.py &
 
-# Monitor
-python3 ops/monitor.py                    # One-shot dashboard
-python3 ops/monitor.py --loop 300         # Continu 5min
-python3 ops/monitor.py --errors-only      # Erreurs seulement
+# NBA Pilot (control from mon-ipad)
+python3 ops/nba-pilot.py
 
-# Eval
-python3 eval/quick-test.py --proxy --pipelines standard --questions 5
-python3 eval/expert-eval.py --sector all --questions 20
+# OpenClaw Test
+curl -s https://nomos42-nomos-worker-2.hf.space/keep-alive
 
-# Pipeline Analysis
-python3 ops/n8n-execution-analyzer.py --hours 24
-python3 ops/n8n-smart-analyzer.py --deep
+# Evolution Status
+curl -s https://nomos42-nomos-worker-2.hf.space/api/v1/evolution
 
-# Ingestion
-python3 ops/fast-ingest.py --sector all
-python3 ops/exa-mass-ingest.py
-python3 ops/local-pdf-ingest.py
-
-# Deployment
-python3 ops/deploy-standard-v35.py
-python3 ops/n8n-api.py list
-
-# Sync
+# Git
 git push origin main
 ```
 
 ---
 
-## 10. REPOS (5 actifs + 2 archives)
+## 9. ARCHIVE
 
-| Repo | Role | Status |
-|------|------|--------|
-| **mon-ipad** (CE REPO) | Tour de controle, eval, ops, MCP | **ACTIF** |
-| **rag-data-ingestion** | Moteur ingestion 1M docs, Docling, 100+ types | **ACTIF** |
-| **rag-website** | Produit chatbot expert sectoriel, Next.js | **ACTIF** |
-| **rag-dashboard** | Dashboard sector accuracy, metriques live | **ACTIF** |
-| **rag-storage** | Archive LFS + benchmark legacy | **ARCHIVE** |
-| **rag-pme-connectors** | Next.js 15, 15 apps (deprioritise) | **ARCHIVE** |
-| **rag-tests** | Fusionne dans mon-ipad (datasets sectoriels) | **ARCHIVE** |
+All RAG pipeline documentation preserved in `archive/rag-full-archive.md`.
+RAG databases (Supabase, Neo4j, Pinecone) remain intact — read-only.
+RAG HF Spaces paused (can be reactivated if needed).
 
 ---
 
-## 11. STATE FILES
+## Etat actuel v13.0 (2026-03-17)
 
-| Fichier | Role | MAJ |
-|---------|------|-----|
-| `directives/PROJECT-STATE.md` | Memoire de travail + resume session | Apres chaque milestone |
-| `directives/PROCESS-RUNBOOKS.md` | Processus, endpoints, methodologie | Quand process change |
-| `technicals/DEBUG-PLAYBOOK.md` | 90+ fixes, knowledge base, diagnostic | Pendant session |
-| `technicals/INFRASTRUCTURE.md` | Stack, credentials, env vars, limites | Quand infra change |
-| `technicals/PROJECT-ROADMAP.md` | Roadmap sectorielle, bottlenecks, recherche | Quand strategie change |
-| `docs/status.json` | Metriques live (auto-genere) | Ne PAS editer |
-| `docs/sector-accuracy.json` | Accuracy par secteur (auto-genere) | Ne PAS editer |
-
----
-
-## 12. DETAILED DOCS
-
-| Fichier | Contenu |
-|---------|---------|
-| `technicals/INFRASTRUCTURE.md` | Stack, credentials, env vars, limites, storage |
-| `technicals/PROJECT-ROADMAP.md` | Roadmap sectorielle, bottlenecks, recherche SOTA |
-| `technicals/DEBUG-PLAYBOOK.md` | 90+ fixes, knowledge base, diagnostic flowchart |
-| `technicals/data/sector-datasets.md` | 1000+ types documents par secteur |
-| `directives/PROJECT-STATE.md` | Etat courant, secteurs, pipelines, next steps |
-| `directives/PROCESS-RUNBOOKS.md` | Processus, endpoints, methodologie |
-| `directives/repos/` | Directives par repo satellite |
-
----
-
-## 13. NBA QUANT AI — 4-AGENT SWARM
-
-### Architecture (2026-03-16)
-```
-VM (Claude Code CLI only)
-    ↓ pilotage
-HF Spaces (ALL compute):
-├── nomos-nba-quant (S10)    — Karpathy training loop 24/7
-├── nomos-nba-quant-2 (S11)  — Parallel training instance
-├── nomos-nba-swarm (S12)    — 4-Agent Swarm Orchestrator:
-│   ├── Claude Code CLI      — strategic planning, complex analysis
-│   ├── Gemini CLI           — free autonomous coding (headless+YOLO)
-│   ├── Kimi Code CLI        — cheap high-volume code improvement
-│   └── OpenClaw             — automation hub, skill-based tasks
-└── Website → nomos42.vercel.app/nba (8 games, 20 value bets)
-```
-
-### VM Authorized Processes (ONLY)
-- Claude Code CLI (Termius session)
-- nba-data-server.py (12MB, serves JSON to Vercel)
-- monitor.py (lightweight health checks)
-- MCP servers (for Claude Code)
-
----
-
-## Etat actuel v12.0 (Session 121 — 2026-03-16)
-
-**Pipelines** : 4/4 WORKING — 6/6 PASS smoke test (Standard V3.8, Graph V3.5, Quant V3.2, Orch V13)
-**LLM** : ALL via LiteLLM S7 (`smart` model group, 13-provider automatic fallback)
-**Embeddings** : Self-hosted Jina Space (1024 dims) — Graph uses it, Jina API keys expired
-**NBA Quant** : 3 HF Spaces (quant, quant-2, swarm) — 4-agent improvement loop, 101 secrets each
-**E5 Vectors** : 58,533 (target 100K)
-**Databases** : Supabase 43K docs + 212 financials, Neo4j ~72K nodes, Pinecone 58K+43K
-**Agents** : 5 specialises (monitor, eval, pipeline, ingest, docs)
-**Process** : Segmente, incremental, metrics-driven
-**Docs** : `docs/PILOTAGE.md` (Termius snippets + tmux cockpit)
-**Sessions** : 96 | **Commits** : 1,120+
+**Architecture** : HuggingClaw-style (Adam + Eve + Cain)
+**Focus** : 100% NBA Quant AI Model
+**HF Spaces** : 5 actifs (2 NBA, 1 OpenClaw, 2 LiteLLM)
+**RAG** : ARCHIVED (9 spaces paused, 269 files archived)
+**NBA Best** : Brier 0.2205, 64.5% accuracy, 94 features selected
+**OpenClaw** : LIVE avec Healer Alpha (FREE), Telegram connected
+**Website** : nomos42.vercel.app/nba
