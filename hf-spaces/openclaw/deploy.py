@@ -58,6 +58,14 @@ SECRETS = {
     # GitHub
     "GH_TOKEN": os.environ.get("GH_TOKEN", os.environ.get("GITHUB_TOKEN", "")),
     "GITHUB_TOKEN": os.environ.get("GITHUB_TOKEN", os.environ.get("GH_TOKEN", "")),
+    # VM SSH Access
+    "SSH_PRIVATE_KEY": os.environ.get("SSH_PRIVATE_KEY", ""),
+    "VM_HOST": os.environ.get("VM_HOST", "34.136.180.66"),
+    "VM_USER": os.environ.get("VM_USER", "termius"),
+    # Search APIs
+    "BRAVE_API_KEY": os.environ.get("BRAVE_API_KEY", ""),
+    "EXA_API_KEY": os.environ.get("EXA_API_KEY", ""),
+    "ODDS_API_KEY": os.environ.get("ODDS_API_KEY", ""),
 }
 
 
@@ -101,7 +109,7 @@ def main():
             repo_id=SPACE_ID,
             repo_type="space",
             operations=operations,
-            commit_message="Deploy OpenClaw v2026.3.11-beta.1",
+            commit_message="Deploy OpenClaw v2026.3.17-godmode — VM SSH + GitHub + HF Space full access",
         )
         print("Files uploaded successfully!")
     except Exception as e:
@@ -120,7 +128,7 @@ def main():
                 repo_id=SPACE_ID,
                 repo_type="space",
                 operations=operations,
-                commit_message="Deploy OpenClaw v2026.3.11-beta.1",
+                commit_message="Deploy OpenClaw v2026.3.17-godmode — VM SSH + GitHub + HF Space full access",
             )
             print("Files uploaded successfully!")
         else:

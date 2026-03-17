@@ -26,6 +26,7 @@ const persistence = require('./lib/persistence');
 const SpaceExecutor = require('./lib/space-executor');
 const InfraBridge = require('./lib/infra-bridge');
 const AgenticLoop = require('./lib/agentic-loop');
+const VMBridge = require('./lib/vm-bridge');
 
 // ============================================================
 // CONFIG
@@ -93,6 +94,13 @@ const infraBridge = new InfraBridge({
   neo4jPassword: process.env.NEO4J_PASSWORD,
   pineconeHost: process.env.PINECONE_HOST,
   pineconeApiKey: process.env.PINECONE_API_KEY,
+});
+
+// VM Bridge — SSH remote execution (same power as Claude Code CLI)
+const vmBridge = new VMBridge({
+  host: process.env.VM_HOST || '34.136.180.66',
+  username: process.env.VM_USER || 'termius',
+  privateKey: process.env.SSH_PRIVATE_KEY || '',
 });
 
 // ============================================================
@@ -232,21 +240,38 @@ if (TELEGRAM_BOT_TOKEN) {
  */
 const COMMANDS = {
   '/start': async (msg) => {
-    return `*OpenClaw v2026.3.11-beta.1*
-Agent IA d'operations Nomos Sector AI
+    return `*OpenClaw v2026.3.17 — FULL ACCESS*
+Agent IA autonome NOMOS42 NBA Quant AI
 
-Commandes disponibles :
-/status — Sante de l'infrastructure
-/spaces — Liste des HF Spaces
-/eval — Lancer un smoke test
-/query <question> — Interroger un pipeline RAG
-/db <sql> — Requete Supabase directe
-/neo4j <cypher> — Requete Neo4j directe
-/deploy <space> — Deployer sur un Space
-/logs <space> — Voir les logs d'un Space
-/ingest <sector> — Lancer une ingestion
-/models — Modeles LLM configures
-/ping — Test de connectivite
+*Infrastructure:*
+/status — Sante complete
+/spaces — HF Spaces actifs
+/models — Modeles LLM
+/ping — Test connectivite
+
+*VM Remote (SSH):*
+/vm <cmd> — Executer sur la VM
+/vm sysinfo — Info systeme VM
+/vm ping — Test SSH
+
+*Git & Code:*
+/git <repo> [action] — GitHub status/commits/issues
+/gitpush <repo> <msg> — Commit + push
+/read <path> — Lire un fichier VM
+
+*HF Space Management:*
+/hfspace <id> <action> — restart/pause/resume/logs
+/deploy <space> — Deployer
+/logs <space> — Logs Space
+
+*Databases:*
+/db <sql> — Supabase SQL
+/neo4j <cypher> — Neo4j Cypher
+
+*AI & Evolution:*
+/evolution — Status GA S10
+/heal — Self-healing scan
+/eval — Smoke test
 
 Ou posez directement votre question !`;
   },
@@ -491,6 +516,86 @@ Ou posez directement votre question !`;
       return `Exec failed: ${err.message}`;
     }
   },
+
+  '/vm': async (msg) => {
+    if (msg.from.id !== ADMIN_TELEGRAM_ID) return 'Admin only.';
+    const command = msg.text.replace('/vm', '').trim();
+    if (!command) return `*VM Remote Execution*\n\nUsage: /vm <command>\n\nExamples:\n\`/vm ls -la\`\n\`/vm git status\`\n\`/vm python3 scripts/nba-data-server.py\`\n\`/vm sysinfo\`\n\`/vm ping\``;
+
+    // Special sub-commands
+    if (command === 'ping') {
+      const result = await vmBridge.ping();
+      return result.reachable
+        ? `*VM Online* — ${result.latency}ms latency`
+        : `*VM Unreachable* — ${result.error}`;
+    }
+    if (command === 'sysinfo') {
+      const info = await vmBridge.sysinfo();
+      if (info.error) return `VM Error: ${info.error}`;
+      return `*VM System Info*\nHost: \`${info.hostname}\`\nUptime: ${info.uptime}\nDisk: ${info.disk}\nMemory: ${info.mem}\nLoad: ${info.load}`;
+    }
+
+    await bot.sendMessage(msg.chat.id, `Executing on VM...`, { parse_mode: 'Markdown' });
+    try {
+      const result = await vmBridge.exec(command, { timeout: 60000 });
+      let output = result.stdout || result.stderr || '(no output)';
+      if (output.length > 3500) output = output.substring(0, 3500) + '\n...(truncated)';
+      return `*VM Output* (code: ${result.code})\n\`\`\`\n${output}\n\`\`\``;
+    } catch (err) {
+      return `VM Error: ${err.message}`;
+    }
+  },
+
+  '/gitpush': async (msg) => {
+    if (msg.from.id !== ADMIN_TELEGRAM_ID) return 'Admin only.';
+    const args = msg.text.replace('/gitpush', '').trim();
+    if (!args) return 'Usage: /gitpush <repo> <commit message>';
+    const parts = args.split(' ');
+    const repo = parts[0];
+    const commitMsg = parts.slice(1).join(' ') || 'Update from OpenClaw';
+
+    await bot.sendMessage(msg.chat.id, `Git commit+push on *${repo}*...`, { parse_mode: 'Markdown' });
+    try {
+      const result = await vmBridge.gitCommitPush(repo, commitMsg);
+      return `*Git Push — ${repo}*\n\`\`\`\n${(result.stdout + '\n' + result.stderr).substring(0, 3000)}\n\`\`\``;
+    } catch (err) {
+      return `Git Error: ${err.message}`;
+    }
+  },
+
+  '/hfspace': async (msg) => {
+    if (msg.from.id !== ADMIN_TELEGRAM_ID) return 'Admin only.';
+    const args = msg.text.replace('/hfspace', '').trim();
+    if (!args) return `*HF Space Management*\n\nUsage: /hfspace <space-id> <action>\nActions: restart, pause, resume, logs\n\nExamples:\n\`/hfspace lbjlincoln/nomos-nba-quant restart\`\n\`/hfspace Nomos42/nomos-worker-2 logs\``;
+
+    const parts = args.split(' ');
+    const spaceId = parts[0];
+    const action = parts[1] || 'restart';
+
+    await bot.sendMessage(msg.chat.id, `HF Space *${action}* on *${spaceId}*...`, { parse_mode: 'Markdown' });
+    try {
+      const result = await vmBridge.hfSpaceAction(spaceId, action);
+      return `*HF ${action} — ${spaceId}*\n\`\`\`\n${(result.stdout || result.stderr || 'OK').substring(0, 3000)}\n\`\`\``;
+    } catch (err) {
+      return `HF Error: ${err.message}`;
+    }
+  },
+
+  '/read': async (msg) => {
+    if (msg.from.id !== ADMIN_TELEGRAM_ID) return 'Admin only.';
+    const filePath = msg.text.replace('/read', '').trim();
+    if (!filePath) return 'Usage: /read <file-path>';
+
+    try {
+      const content = await vmBridge.readFile(filePath);
+      if (content.length > 3500) {
+        return `*File: ${filePath}*\n\`\`\`\n${content.substring(0, 3500)}\n...(truncated)\n\`\`\``;
+      }
+      return `*File: ${filePath}*\n\`\`\`\n${content}\n\`\`\``;
+    } catch (err) {
+      return `Read Error: ${err.message}`;
+    }
+  },
 };
 
 // ============================================================
@@ -587,7 +692,7 @@ async function fetchSSE(url) {
 app.get('/keep-alive', (req, res) => {
   res.json({
     status: 'alive',
-    version: '2026.3.17-fullblast',
+    version: '2026.3.17-godmode',
     uptime: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
     memory: process.memoryUsage(),
@@ -598,7 +703,7 @@ app.get('/keep-alive', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     name: 'OpenClaw Nomos Agent',
-    version: '2026.3.17-fullblast',
+    version: '2026.3.17-godmode',
     status: 'running',
     endpoints: {
       health: '/keep-alive',
@@ -609,11 +714,19 @@ app.get('/', (req, res) => {
       query: '/api/v1/query',
       db: '/api/v1/db',
       metrics: '/api/v1/metrics',
+      vm_exec: '/api/v1/vm/exec',
+      vm_git: '/api/v1/vm/git',
+      vm_read: '/api/v1/vm/read',
+      vm_write: '/api/v1/vm/write',
+      github_file: '/api/v1/github/file',
+      hf_space: '/api/v1/vm/hf-space',
     },
     infra: {
       spaces: spacesConfig.spaces.length,
       models: modelsConfig.priority.length,
       telegram: !!TELEGRAM_BOT_TOKEN,
+      vm_ssh: !!process.env.SSH_PRIVATE_KEY,
+      github: !!GH_TOKEN,
     },
   });
 });
@@ -808,6 +921,134 @@ app.post('/api/v1/ingest', async (req, res) => {
     const { sector = 'all' } = req.body;
     const result = await spaceExecutor.triggerIngestion(sector);
     res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================================
+// VM BRIDGE API — Full VM access (same power as Claude Code CLI)
+// ============================================================
+
+// Execute command on VM
+app.post('/api/v1/vm/exec', async (req, res) => {
+  try {
+    const { command, cwd, timeout } = req.body;
+    if (!command) return res.status(400).json({ error: 'command required' });
+    const result = await vmBridge.exec(command, { cwd, timeout });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// VM ping/health
+app.get('/api/v1/vm/ping', async (req, res) => {
+  try {
+    const result = await vmBridge.ping();
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// VM system info
+app.get('/api/v1/vm/sysinfo', async (req, res) => {
+  try {
+    const info = await vmBridge.sysinfo();
+    res.json(info);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Git operations on VM repos
+app.post('/api/v1/vm/git', async (req, res) => {
+  try {
+    const { repo, command } = req.body;
+    if (!repo || !command) return res.status(400).json({ error: 'repo and command required' });
+    const result = await vmBridge.git(repo, command);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Git commit + push
+app.post('/api/v1/vm/git-push', async (req, res) => {
+  try {
+    const { repo, message, files = '.' } = req.body;
+    if (!repo || !message) return res.status(400).json({ error: 'repo and message required' });
+    const result = await vmBridge.gitCommitPush(repo, message, files);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Read file from VM
+app.post('/api/v1/vm/read', async (req, res) => {
+  try {
+    const { path: filePath } = req.body;
+    if (!filePath) return res.status(400).json({ error: 'path required' });
+    const content = await vmBridge.readFile(filePath);
+    res.json({ content, path: filePath });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Write file to VM
+app.post('/api/v1/vm/write', async (req, res) => {
+  try {
+    const { path: filePath, content } = req.body;
+    if (!filePath || content === undefined) return res.status(400).json({ error: 'path and content required' });
+    const result = await vmBridge.writeFile(filePath, content);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// HF Space management via VM
+app.post('/api/v1/vm/hf-space', async (req, res) => {
+  try {
+    const { spaceId, action, params = {} } = req.body;
+    if (!spaceId || !action) return res.status(400).json({ error: 'spaceId and action required' });
+    const result = await vmBridge.hfSpaceAction(spaceId, action, params);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GitHub file operations (create/update files via API)
+app.post('/api/v1/github/file', async (req, res) => {
+  try {
+    const { repo, path: filePath, content, message, branch = 'main' } = req.body;
+    if (!repo || !filePath || content === undefined) {
+      return res.status(400).json({ error: 'repo, path, and content required' });
+    }
+
+    const fullRepo = repo.includes('/') ? repo : `${GH_OWNER}/${repo}`;
+    const b64Content = Buffer.from(content).toString('base64');
+
+    // Check if file exists (to get sha for updates)
+    let sha;
+    try {
+      const existing = await githubAPI(`/repos/${fullRepo}/contents/${filePath}?ref=${branch}`);
+      sha = existing.sha;
+    } catch {}
+
+    const body = {
+      message: message || `Update ${filePath} via OpenClaw`,
+      content: b64Content,
+      branch,
+    };
+    if (sha) body.sha = sha;
+
+    const result = await githubAPI(`/repos/${fullRepo}/contents/${filePath}`, 'PUT', body);
+    res.json({ ok: true, sha: result.content?.sha, url: result.content?.html_url });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -1087,18 +1328,29 @@ async function start() {
   // Start Express
   app.listen(PORT, '0.0.0.0', () => {
     logger.info('='.repeat(60));
-    logger.info(`OpenClaw v2026.3.17 started on port ${PORT}`);
+    logger.info(`OpenClaw v2026.3.17-godmode started on port ${PORT}`);
     logger.info(`Telegram: ${TELEGRAM_BOT_TOKEN ? 'ACTIVE' : 'DISABLED'}`);
     logger.info(`OpenRouter: ${OPENROUTER_API_KEY ? 'CONFIGURED' : 'NOT SET'}`);
+    logger.info(`VM Bridge: ${process.env.SSH_PRIVATE_KEY ? 'ACTIVE (SSH)' : 'NOT SET'}`);
+    logger.info(`GitHub: ${GH_TOKEN ? 'ACTIVE' : 'NOT SET'}`);
     logger.info(`Agentic Loop: STARTED (Karpathy mode)`);
     logger.info(`Dashboard: /dashboard`);
     logger.info(`Models: ${modelsConfig.priority.length} priority + ${modelsConfig.fallback.length} fallback`);
     logger.info('='.repeat(60));
 
+    // Test VM connectivity at startup
+    if (process.env.SSH_PRIVATE_KEY) {
+      vmBridge.ping().then(result => {
+        logger.info(`VM Bridge: ${result.reachable ? `CONNECTED (${result.latency}ms)` : `UNREACHABLE: ${result.error}`}`);
+      }).catch(() => {});
+    }
+
     // Notify admin on startup
     if (bot && TELEGRAM_BOT_TOKEN) {
+      const vmStatus = process.env.SSH_PRIVATE_KEY ? 'SSH ACTIVE' : 'NO SSH';
+      const ghStatus = GH_TOKEN ? 'ACTIVE' : 'NO TOKEN';
       bot.sendMessage(ADMIN_TELEGRAM_ID,
-        '*OpenClaw v2026.3.17 — NBA Quant Mode*\nAgentic loop started. Karpathy 24/7 active.\nDashboard: /dashboard', {
+        `*OpenClaw v2026.3.17 — GOD MODE*\nAgentic loop: Karpathy 24/7\nVM Bridge: ${vmStatus}\nGitHub: ${ghStatus}\nDashboard: /dashboard`, {
           parse_mode: 'Markdown'
         }).catch(() => {});
     }

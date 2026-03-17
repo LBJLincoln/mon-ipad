@@ -58,13 +58,15 @@ ADAM (Claude Code CLI)          EVE (OpenClaw Healer)
 ## 2. PROJETS
 
 ### AXE 1 : NBA Quant AI (FOCUS ACTUEL)
-- Genetic evolution 24/7 (population 50+, multi-objective fitness)
-- 580+ features across 10 categories
-- Ensemble models : XGBoost, LightGBM, CatBoost, Stacking
-- Walk-forward backtest (3 seasons)
+- Genetic evolution 24/7 (population 60+, multi-objective fitness)
+- 640+ features across 15 categories (referee, player impact, quarter, defense, polymarket)
+- Ensemble models : XGBoost, LightGBM, CatBoost, RF, Stacking
+- Walk-forward backtest (3 seasons, 9500+ games)
 - Target : Brier < 0.20, ROI > 5%, Sharpe > 1.5
 - Live predictions : nomos42.vercel.app/nba
-- Current best : Brier 0.2205, Accuracy 64.5%
+- Current best : Brier 0.2333 (Gen 11, cycle 2), ROI 7.5%
+- **Karpathy agentic loop** : OpenClaw auto-researches features + evaluates + reports
+- **Dashboard** : nomos42-nomos-worker-2.hf.space/dashboard (PNL pixel-art live)
 
 ### AXE 2 : THE FORGE (a venir)
 - Generateur automatique d'entreprise via agents autonomes

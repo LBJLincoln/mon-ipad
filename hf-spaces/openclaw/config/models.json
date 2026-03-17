@@ -1,62 +1,54 @@
 {
   "priority": [
-    "openrouter/healer-alpha",
-    "openai/gpt-4.1",
-    "google/gemini-2.5-flash-preview",
-    "qwen/qwen3-235b-a22b"
-  ],
-  "fallback": [
-    "meta-llama/llama-4-maverick",
-    "deepseek/deepseek-r1",
+    "smart",
     "nvidia/nemotron-3-super-120b-a12b:free",
     "arcee-ai/trinity-large-preview:free"
   ],
+  "fallback": [
+    "fast",
+    "default"
+  ],
+  "litellm": {
+    "url": "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions",
+    "key": "sk-litellm-nomos-2026",
+    "models": ["smart", "fast", "default"]
+  },
   "models": {
-    "openrouter/healer-alpha": {
-      "context": 1000,
-      "description": "Healer Alpha — FREE multimodal reasoning model, primary for OpenClaw",
-      "costPer1k": 0
+    "smart": {
+      "context": 128,
+      "description": "LiteLLM smart group — 13-provider auto-fallback (Groq/OpenRouter/Gemini)",
+      "costPer1k": 0,
+      "provider": "litellm"
     },
-    "openai/gpt-4.1": {
-      "context": 1047,
-      "description": "GPT-4.1 — latest OpenAI, 1M+ context",
-      "costPer1k": 0.008
+    "fast": {
+      "context": 128,
+      "description": "LiteLLM fast group — low latency models",
+      "costPer1k": 0,
+      "provider": "litellm"
     },
-    "google/gemini-2.5-flash-preview": {
-      "context": 1000,
-      "description": "Gemini 2.5 Flash — ultra-fast, 1M context",
-      "costPer1k": 0.001
-    },
-    "qwen/qwen3-235b-a22b": {
-      "context": 131,
-      "description": "Qwen3 235B — strong multilingual + reasoning",
-      "costPer1k": 0.001
-    },
-    "meta-llama/llama-4-maverick": {
-      "context": 1000,
-      "description": "Llama 4 Maverick — open-source, massive context",
-      "costPer1k": 0.001
-    },
-    "deepseek/deepseek-r1": {
-      "context": 164,
-      "description": "DeepSeek R1 — strong code & math",
-      "costPer1k": 0.001
+    "default": {
+      "context": 128,
+      "description": "LiteLLM default group — reliable fallback",
+      "costPer1k": 0,
+      "provider": "litellm"
     },
     "nvidia/nemotron-3-super-120b-a12b:free": {
       "context": 32,
-      "description": "Nemotron 3 Super 120B — NVIDIA flagship, free",
-      "costPer1k": 0
+      "description": "Nemotron 3 Super 120B — free tier backup",
+      "costPer1k": 0,
+      "provider": "openrouter"
     },
     "arcee-ai/trinity-large-preview:free": {
       "context": 32,
-      "description": "Trinity — free tier fallback",
-      "costPer1k": 0
+      "description": "Trinity — free tier backup",
+      "costPer1k": 0,
+      "provider": "openrouter"
     }
   },
   "routing": {
-    "code": ["openrouter/healer-alpha", "openai/gpt-4.1", "deepseek/deepseek-r1"],
-    "analysis": ["openrouter/healer-alpha", "openai/gpt-4.1", "qwen/qwen3-235b-a22b"],
-    "fast": ["google/gemini-2.5-flash-preview", "openrouter/healer-alpha"],
-    "free": ["openrouter/healer-alpha", "nvidia/nemotron-3-super-120b-a12b:free", "arcee-ai/trinity-large-preview:free"]
+    "code": ["smart", "nvidia/nemotron-3-super-120b-a12b:free"],
+    "analysis": ["smart", "nvidia/nemotron-3-super-120b-a12b:free"],
+    "fast": ["fast", "arcee-ai/trinity-large-preview:free"],
+    "free": ["nvidia/nemotron-3-super-120b-a12b:free", "arcee-ai/trinity-large-preview:free"]
   }
 }

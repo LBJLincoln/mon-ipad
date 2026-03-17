@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOMOS42 — NBA Quant AI Control Center</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0a0a0f;
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', monospace;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ── VHS SCANLINES ── */
+#scanlines {
+  position: fixed; inset: 0; z-index: 100; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+}
+
+/* ── 3D SCENE (full background) ── */
+#scene3d {
+  position: fixed; inset: 0; z-index: 1;
+}
+
+/* ── HUD OVERLAY ── */
+#hud {
+  position: fixed; inset: 0; z-index: 50;
+  pointer-events: none;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 320px 1fr 320px;
+  padding: 10px;
+  gap: 10px;
+}
+
+/* ── HEADER BAR ── */
+#header {
+  grid-column: 1 / -1;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 16px;
+  background: rgba(10,10,15,0.85);
+  border: 1px solid rgba(124,58,237,0.3);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+.title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  background: linear-gradient(90deg, #7c3aed, #08d9d6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glitch 8s infinite;
+}
+@keyframes glitch {
+  0%,100%{text-shadow:none}
+  20%{text-shadow:-2px 0 #ff00ff,2px 0 #08d9d6}
+  40%{text-shadow:2px 0 #ff00ff,-2px 0 #08d9d6}
+}
+.header-stats {
+  display: flex; gap: 14px; font-size: 10px; color: #94a3b8;
+}
+.stat-val { color: #39ff14; font-weight: 700; }
+.stat-bad { color: #ff2e63; }
+.dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; }
+.dot-green { background: #39ff14; box-shadow: 0 0 6px #39ff14; }
+.dot-red { background: #ff2e63; box-shadow: 0 0 6px #ff2e63; }
+.dot-amber { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+
+/* ── LEFT PANEL: Conversations ── */
+#conv-panel {
+  pointer-events: auto;
+  background: rgba(10,10,15,0.88);
+  border: 1px solid rgba(124,58,237,0.25);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.panel-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(124,58,237,0.2);
+  color: #7c3aed;
+  text-transform: uppercase;
+}
+#conv-feed {
+  flex: 1; overflow-y: auto; padding: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #7c3aed33 transparent;
+}
+.msg {
+  padding: 6px 8px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  font-size: 10px;
+  line-height: 1.4;
+  border-left: 3px solid;
+  background: rgba(20,20,30,0.6);
+}
+.msg-nos { border-color: #7c3aed; }
+.msg-ademo { border-color: #08d9d6; }
+.msg-cain { border-color: #f59e0b; }
+.msg-name {
+  font-weight: 700;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.msg-nos .msg-name { color: #7c3aed; }
+.msg-ademo .msg-name { color: #08d9d6; }
+.msg-cain .msg-name { color: #f59e0b; }
+.msg-time { color: #475569; font-size: 8px; float: right; }
+.msg-text { color: #cbd5e1; margin-top: 2px; }
+
+/* ── RIGHT PANEL: Metrics + Research ── */
+#right-panel {
+  pointer-events: auto;
+  display: flex; flex-direction: column; gap: 10px;
+}
+#metrics-panel, #research-panel {
+  background: rgba(10,10,15,0.88);
+  border: 1px solid rgba(8,217,214,0.25);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+#metrics-panel { flex: 0 0 auto; }
+#research-panel { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 8px;
+}
+.metric-card {
+  background: rgba(20,20,35,0.7);
+  border-radius: 6px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.metric-label { font-size: 8px; text-transform: uppercase; color: #64748b; letter-spacing: 1px; }
+.metric-value { font-size: 18px; font-weight: 700; margin-top: 2px; }
+.metric-value.green { color: #39ff14; }
+.metric-value.cyan { color: #08d9d6; }
+.metric-value.purple { color: #7c3aed; }
+.metric-value.amber { color: #f59e0b; }
+.metric-value.red { color: #ff2e63; }
+.metric-value.pink { color: #ff2e63; }
+
+#research-feed {
+  flex: 1; overflow-y: auto; padding: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #08d9d633 transparent;
+}
+.research-item {
+  padding: 5px 8px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+  font-size: 9px;
+  background: rgba(8,217,214,0.06);
+  border-left: 2px solid #08d9d6;
+}
+.research-name { color: #08d9d6; font-weight: 700; }
+.research-meta { color: #64748b; font-size: 8px; }
+
+/* ── BOTTOM BAR: Evolution Chart ── */
+#bottom-bar {
+  grid-column: 1 / -1;
+  display: flex; gap: 10px;
+}
+#evo-chart-panel {
+  flex: 1;
+  pointer-events: auto;
+  background: rgba(10,10,15,0.88);
+  border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  padding: 8px 12px;
+  height: 120px;
+}
+#evo-chart {
+  width: 100%; height: 80px;
+}
+#agent-status-bar {
+  pointer-events: auto;
+  background: rgba(10,10,15,0.88);
+  border: 1px solid rgba(57,255,20,0.25);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  padding: 8px 12px;
+  width: 280px;
+  display: flex; flex-direction: column; justify-content: center; gap: 6px;
+}
+.agent-row {
+  display: flex; align-items: center; gap: 8px; font-size: 10px;
+}
+.agent-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700;
+  border: 2px solid;
+}
+.av-nos { background: rgba(124,58,237,0.2); border-color: #7c3aed; color: #7c3aed; }
+.av-ademo { background: rgba(8,217,214,0.2); border-color: #08d9d6; color: #08d9d6; }
+.av-cain { background: rgba(245,158,11,0.2); border-color: #f59e0b; color: #f59e0b; }
+.agent-info { flex: 1; }
+.agent-name { font-weight: 700; font-size: 10px; }
+.agent-role { color: #64748b; font-size: 8px; }
+.agent-pulse { width: 8px; height: 8px; border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+/* ── SEND MESSAGE ── */
+#msg-input-bar {
+  grid-column: 1 / -1;
+  display: none; /* hidden by default, show on click */
+  pointer-events: auto;
+}
+</style>
+</head>
+<body>
+<canvas id="scene3d"></canvas>
+<div id="scanlines"></div>
+
+<div id="hud">
+  <!-- HEADER -->
+  <div id="header">
+    <div class="title">NOMOS42 NBA QUANT AI</div>
+    <div class="header-stats">
+      <span><span class="dot dot-green" id="loop-dot"></span>LOOP <span class="stat-val" id="h-status">...</span></span>
+      <span>CYCLES <span class="stat-val" id="h-cycles">0</span></span>
+      <span>BRIER <span class="stat-val" id="h-brier">—</span></span>
+      <span>ROI <span class="stat-val" id="h-roi">—</span></span>
+      <span>FEATURES <span class="stat-val" id="h-features">—</span></span>
+      <span>STAGNATION <span class="stat-val stat-bad" id="h-stag">—</span></span>
+    </div>
+  </div>
+
+  <!-- LEFT: Conversations -->
+  <div id="conv-panel">
+    <div class="panel-title">Agent Conversations</div>
+    <div id="conv-feed"></div>
+  </div>
+
+  <!-- CENTER: empty (3D scene shows through) -->
+  <div></div>
+
+  <!-- RIGHT: Metrics + Research -->
+  <div id="right-panel">
+    <div id="metrics-panel">
+      <div class="panel-title" style="color:#08d9d6">Live Metrics</div>
+      <div class="metrics-grid">
+        <div class="metric-card"><div class="metric-label">Brier Score</div><div class="metric-value cyan" id="m-brier">—</div></div>
+        <div class="metric-card"><div class="metric-label">Accuracy</div><div class="metric-value green" id="m-acc">—</div></div>
+        <div class="metric-card"><div class="metric-label">ROI</div><div class="metric-value green" id="m-roi">—</div></div>
+        <div class="metric-card"><div class="metric-label">Features</div><div class="metric-value purple" id="m-feat">—</div></div>
+        <div class="metric-card"><div class="metric-label">Generation</div><div class="metric-value amber" id="m-gen">—</div></div>
+        <div class="metric-card"><div class="metric-label">Population</div><div class="metric-value purple" id="m-pop">—</div></div>
+        <div class="metric-card"><div class="metric-label">Loop Cycles</div><div class="metric-value cyan" id="m-cycles">—</div></div>
+        <div class="metric-card"><div class="metric-label">Discovered</div><div class="metric-value amber" id="m-disc">—</div></div>
+      </div>
+    </div>
+    <div id="research-panel">
+      <div class="panel-title" style="color:#f59e0b">Feature Research</div>
+      <div id="research-feed"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM: Evolution Chart + Agent Status -->
+  <div id="bottom-bar">
+    <div id="evo-chart-panel">
+      <div class="panel-title" style="color:#f59e0b; padding:0 0 4px 0">Evolution Progress</div>
+      <canvas id="evo-chart"></canvas>
+    </div>
+    <div id="agent-status-bar">
+      <div class="agent-row">
+        <div class="agent-avatar av-nos">N</div>
+        <div class="agent-info"><div class="agent-name" style="color:#7c3aed">N.O.S</div><div class="agent-role">Strategic Commander</div></div>
+        <div class="agent-pulse" style="background:#7c3aed"></div>
+      </div>
+      <div class="agent-row">
+        <div class="agent-avatar av-ademo">A</div>
+        <div class="agent-info"><div class="agent-name" style="color:#08d9d6">ADEMO</div><div class="agent-role">Research & Execution</div></div>
+        <div class="agent-pulse" style="background:#08d9d6"></div>
+      </div>
+      <div class="agent-row">
+        <div class="agent-avatar av-cain">C</div>
+        <div class="agent-info"><div class="agent-name" style="color:#f59e0b">CAIN</div><div class="agent-role">Evolution Engine</div></div>
+        <div class="agent-pulse" style="background:#f59e0b"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  NOMOS42 NBA QUANT AI — 3D THREE.JS DASHBOARD
+//  PNL "Dans la Légende" style — Urban neon, moon, characters
+// ═══════════════════════════════════════════════════════════════
+
+const API_BASE = 'https://nomos42-nomos-worker-2.hf.space';
+
+// ── THREE.JS SCENE SETUP ──
+const canvas = document.getElementById('scene3d');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.8;
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x0a0a1a, 0.008);
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 8, 25);
+camera.lookAt(0, 4, 0);
+
+// ── COLORS ──
+const COL = {
+  nos: 0x7c3aed, ademo: 0x08d9d6, cain: 0xf59e0b,
+  green: 0x39ff14, pink: 0xff2e63, neon: 0xff00ff,
+  sky1: 0x0a0a1a, sky2: 0x1a1b41, ground: 0x111118,
+  building: 0x0d0d18, moon: 0xf0e6d6,
+};
+
+// ── LIGHTING ──
+const ambientLight = new THREE.AmbientLight(0x1a1a3a, 0.4);
+scene.add(ambientLight);
+
+// Moon light (main directional)
+const moonLight = new THREE.DirectionalLight(0xc8d8ff, 0.6);
+moonLight.position.set(-10, 30, -20);
+moonLight.castShadow = true;
+moonLight.shadow.mapSize.width = 1024;
+moonLight.shadow.mapSize.height = 1024;
+scene.add(moonLight);
+
+// Neon fill lights
+const nosLight = new THREE.PointLight(COL.nos, 1.5, 20);
+nosLight.position.set(-6, 3, 2);
+scene.add(nosLight);
+
+const ademoLight = new THREE.PointLight(COL.ademo, 1.5, 20);
+ademoLight.position.set(6, 3, 2);
+scene.add(ademoLight);
+
+const cainLight = new THREE.PointLight(COL.cain, 2, 15);
+cainLight.position.set(0, 8, 0);
+scene.add(cainLight);
+
+// Pink accent from below
+const pinkLight = new THREE.PointLight(COL.pink, 0.8, 30);
+pinkLight.position.set(0, 0.5, 10);
+scene.add(pinkLight);
+
+// ── SKY DOME ──
+const skyGeo = new THREE.SphereGeometry(200, 32, 32);
+const skyMat = new THREE.ShaderMaterial({
+  side: THREE.BackSide,
+  uniforms: {
+    topColor: { value: new THREE.Color(0x000005) },
+    bottomColor: { value: new THREE.Color(0x1a1b41) },
+    offset: { value: 20 },
+    exponent: { value: 0.4 }
+  },
+  vertexShader: `
+    varying vec3 vWorldPos;
+    void main() {
+      vec4 wp = modelMatrix * vec4(position, 1.0);
+      vWorldPos = wp.xyz;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform vec3 topColor;
+    uniform vec3 bottomColor;
+    uniform float offset;
+    uniform float exponent;
+    varying vec3 vWorldPos;
+    void main() {
+      float h = normalize(vWorldPos + offset).y;
+      gl_FragColor = vec4(mix(bottomColor, topColor, max(pow(max(h, 0.0), exponent), 0.0)), 1.0);
+    }
+  `
+});
+scene.add(new THREE.Mesh(skyGeo, skyMat));
+
+// ── STARS ──
+const starsGeo = new THREE.BufferGeometry();
+const starsPos = [];
+const starsSizes = [];
+for (let i = 0; i < 2000; i++) {
+  const theta = Math.random() * Math.PI * 2;
+  const phi = Math.acos(Math.random() * 0.7 + 0.3); // upper hemisphere
+  const r = 150 + Math.random() * 40;
+  starsPos.push(r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
+  starsSizes.push(0.3 + Math.random() * 1.2);
+}
+starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(starsPos, 3));
+starsGeo.setAttribute('size', new THREE.Float32BufferAttribute(starsSizes, 1));
+const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5, sizeAttenuation: true, transparent: true, opacity: 0.8 });
+scene.add(new THREE.Points(starsGeo, starsMat));
+
+// ── MOON ──
+const moonGeo = new THREE.SphereGeometry(8, 32, 32);
+const moonMat = new THREE.MeshStandardMaterial({
+  color: COL.moon, emissive: 0xf0e6d6, emissiveIntensity: 0.3,
+  roughness: 0.9, metalness: 0
+});
+const moon = new THREE.Mesh(moonGeo, moonMat);
+moon.position.set(-25, 45, -80);
+scene.add(moon);
+
+// Moon glow
+const glowGeo = new THREE.SphereGeometry(10, 32, 32);
+const glowMat = new THREE.MeshBasicMaterial({ color: 0xf0e6d6, transparent: true, opacity: 0.08 });
+const moonGlow = new THREE.Mesh(glowGeo, glowMat);
+moonGlow.position.copy(moon.position);
+scene.add(moonGlow);
+
+// Moon craters (bumps)
+for (let i = 0; i < 8; i++) {
+  const craterGeo = new THREE.SphereGeometry(0.6 + Math.random() * 1.2, 8, 8);
+  const craterMat = new THREE.MeshStandardMaterial({ color: 0xd4c8b0, roughness: 1 });
+  const crater = new THREE.Mesh(craterGeo, craterMat);
+  const angle1 = Math.random() * Math.PI * 2;
+  const angle2 = Math.random() * Math.PI - Math.PI / 2;
+  crater.position.set(
+    moon.position.x + 7.8 * Math.cos(angle2) * Math.cos(angle1),
+    moon.position.y + 7.8 * Math.sin(angle2),
+    moon.position.z + 7.8 * Math.cos(angle2) * Math.sin(angle1)
+  );
+  scene.add(crater);
+}
+
+// ── GROUND (basketball court style) ──
+const groundGeo = new THREE.PlaneGeometry(200, 200);
+const groundMat = new THREE.MeshStandardMaterial({
+  color: 0x0d0d18, roughness: 0.8, metalness: 0.1,
+});
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = 0;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// Court lines (neon)
+const courtMat = new THREE.MeshBasicMaterial({ color: COL.nos, transparent: true, opacity: 0.3 });
+const courtLine1 = new THREE.Mesh(new THREE.PlaneGeometry(20, 0.05), courtMat);
+courtLine1.rotation.x = -Math.PI / 2;
+courtLine1.position.set(0, 0.01, 5);
+scene.add(courtLine1);
+const courtLine2 = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 12), courtMat);
+courtLine2.rotation.x = -Math.PI / 2;
+courtLine2.position.set(0, 0.01, 5);
+scene.add(courtLine2);
+
+// Court circle
+const circleGeo = new THREE.RingGeometry(3, 3.05, 64);
+const circleMesh = new THREE.Mesh(circleGeo, courtMat);
+circleMesh.rotation.x = -Math.PI / 2;
+circleMesh.position.set(0, 0.01, 5);
+scene.add(circleMesh);
+
+// ── BUILDINGS (PNL urban skyline) ──
+function createBuilding(x, z, w, h, d, color) {
+  const geo = new THREE.BoxGeometry(w, h, d);
+  const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.7, metalness: 0.3 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(x, h / 2, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+
+  // Windows (emissive rectangles)
+  const windowColors = [0xffcc44, 0x08d9d6, 0x7c3aed, 0xff2e63, 0x39ff14];
+  const rows = Math.floor(h / 1.5);
+  const cols = Math.floor(w / 1.2);
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (Math.random() > 0.6) {
+        const wGeo = new THREE.PlaneGeometry(0.4, 0.6);
+        const wColor = windowColors[Math.floor(Math.random() * windowColors.length)];
+        const wMat = new THREE.MeshBasicMaterial({
+          color: wColor, transparent: true,
+          opacity: 0.3 + Math.random() * 0.5
+        });
+        const wMesh = new THREE.Mesh(wGeo, wMat);
+        wMesh.position.set(
+          x - w / 2 + 0.8 + c * 1.2,
+          1 + r * 1.5,
+          z + d / 2 + 0.01
+        );
+        scene.add(wMesh);
+        // Store for flickering
+        windowMeshes.push({ mesh: wMesh, baseOpacity: wMat.opacity, speed: Math.random() * 2 });
+      }
+    }
+  }
+  return mesh;
+}
+
+const windowMeshes = [];
+
+// Back row (far skyline)
+createBuilding(-30, -40, 6, 35, 5, 0x0a0a15);
+createBuilding(-20, -45, 8, 45, 6, 0x0b0b18);
+createBuilding(-10, -38, 5, 28, 4, 0x0c0c1a);
+createBuilding(0, -42, 7, 40, 5, 0x0a0a16);
+createBuilding(10, -40, 6, 32, 5, 0x0b0b17);
+createBuilding(20, -45, 8, 50, 6, 0x0a0a14);
+createBuilding(30, -38, 5, 25, 4, 0x0c0c1a);
+
+// Mid row
+createBuilding(-18, -20, 5, 20, 4, 0x0d0d1c);
+createBuilding(-8, -22, 6, 25, 5, 0x0e0e1e);
+createBuilding(8, -20, 5, 18, 4, 0x0d0d1c);
+createBuilding(18, -24, 7, 30, 5, 0x0c0c1a);
+
+// Close buildings (sides)
+createBuilding(-20, -5, 4, 15, 4, 0x101020);
+createBuilding(20, -5, 4, 12, 4, 0x101020);
+
+// ── N.O.S CHARACTER (dark hooded figure — left) ──
+function createNOS() {
+  const group = new THREE.Group();
+
+  // Body (dark hoodie)
+  const bodyGeo = new THREE.CylinderGeometry(0.7, 0.5, 3.2, 8);
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1a1a2e, roughness: 0.9 });
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  body.position.y = 2.6;
+  group.add(body);
+
+  // Hood
+  const hoodGeo = new THREE.SphereGeometry(0.85, 12, 12, 0, Math.PI * 2, 0, Math.PI * 0.7);
+  const hoodMat = new THREE.MeshStandardMaterial({ color: 0x111122, roughness: 0.9 });
+  const hood = new THREE.Mesh(hoodGeo, hoodMat);
+  hood.position.set(0, 4.4, 0.1);
+  hood.rotation.x = 0.15;
+  group.add(hood);
+
+  // Face (shadowed, only eyes visible)
+  const faceGeo = new THREE.SphereGeometry(0.65, 12, 12);
+  const faceMat = new THREE.MeshStandardMaterial({ color: 0x0a0a15, roughness: 1, emissive: 0x000000 });
+  const face = new THREE.Mesh(faceGeo, faceMat);
+  face.position.set(0, 4.3, 0.3);
+  face.scale.set(1, 1, 0.7);
+  group.add(face);
+
+  // Glowing eyes (purple)
+  const eyeGeo = new THREE.SphereGeometry(0.08, 8, 8);
+  const eyeMat = new THREE.MeshBasicMaterial({ color: COL.nos });
+  const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+  leftEye.position.set(-0.18, 4.35, 0.7);
+  group.add(leftEye);
+  const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+  rightEye.position.set(0.18, 4.35, 0.7);
+  group.add(rightEye);
+
+  // Eye glow
+  const eyeGlow = new THREE.PointLight(COL.nos, 0.5, 3);
+  eyeGlow.position.set(0, 4.35, 0.8);
+  group.add(eyeGlow);
+
+  // Arms
+  const armGeo = new THREE.CylinderGeometry(0.18, 0.15, 2.2, 6);
+  const armMat = new THREE.MeshStandardMaterial({ color: 0x1a1a2e, roughness: 0.9 });
+  const leftArm = new THREE.Mesh(armGeo, armMat);
+  leftArm.position.set(-0.9, 2.8, 0);
+  leftArm.rotation.z = 0.15;
+  group.add(leftArm);
+  const rightArm = new THREE.Mesh(armGeo, armMat);
+  rightArm.position.set(0.9, 2.8, 0);
+  rightArm.rotation.z = -0.15;
+  group.add(rightArm);
+
+  // Legs
+  const legGeo = new THREE.CylinderGeometry(0.2, 0.18, 2, 6);
+  const legMat = new THREE.MeshStandardMaterial({ color: 0x0d0d1a, roughness: 0.8 });
+  const leftLeg = new THREE.Mesh(legGeo, legMat);
+  leftLeg.position.set(-0.3, 0.8, 0);
+  group.add(leftLeg);
+  const rightLeg = new THREE.Mesh(legGeo, legMat);
+  rightLeg.position.set(0.3, 0.8, 0);
+  group.add(rightLeg);
+
+  // Sneakers (purple glow)
+  const shoeGeo = new THREE.BoxGeometry(0.35, 0.2, 0.5);
+  const shoeMat = new THREE.MeshStandardMaterial({ color: COL.nos, emissive: COL.nos, emissiveIntensity: 0.3, roughness: 0.5 });
+  const leftShoe = new THREE.Mesh(shoeGeo, shoeMat);
+  leftShoe.position.set(-0.3, 0.05, 0.1);
+  group.add(leftShoe);
+  const rightShoe = new THREE.Mesh(shoeGeo, shoeMat);
+  rightShoe.position.set(0.3, 0.05, 0.1);
+  group.add(rightShoe);
+
+  // Name tag floating above
+  group.userData = { baseY: 0, bobSpeed: 1.5, bobAmp: 0.08 };
+  group.position.set(-6, 0, 3);
+  group.castShadow = true;
+  return group;
+}
+
+// ── ADEMO CHARACTER (colorful streetwear — right) ──
+function createADEMO() {
+  const group = new THREE.Group();
+
+  // Body (red/pink jacket)
+  const bodyGeo = new THREE.CylinderGeometry(0.7, 0.55, 3.2, 8);
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0xff2e63, roughness: 0.6, metalness: 0.1 });
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  body.position.y = 2.6;
+  group.add(body);
+
+  // Head
+  const headGeo = new THREE.SphereGeometry(0.7, 12, 12);
+  const headMat = new THREE.MeshStandardMaterial({ color: 0xd4a574, roughness: 0.8 }); // skin tone
+  const head = new THREE.Mesh(headGeo, headMat);
+  head.position.set(0, 4.5, 0);
+  group.add(head);
+
+  // Bucket hat (cyan)
+  const hatGeo = new THREE.CylinderGeometry(0.95, 0.85, 0.35, 12);
+  const hatMat = new THREE.MeshStandardMaterial({ color: COL.ademo, roughness: 0.5, emissive: COL.ademo, emissiveIntensity: 0.15 });
+  const hat = new THREE.Mesh(hatGeo, hatMat);
+  hat.position.set(0, 5.05, 0);
+  group.add(hat);
+  // Hat crown
+  const crownGeo = new THREE.CylinderGeometry(0.6, 0.7, 0.5, 12);
+  const crown = new THREE.Mesh(crownGeo, hatMat);
+  crown.position.set(0, 5.3, 0);
+  group.add(crown);
+
+  // Eyes (expressive)
+  const eyeWhiteGeo = new THREE.SphereGeometry(0.12, 8, 8);
+  const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const eyeBlackGeo = new THREE.SphereGeometry(0.06, 8, 8);
+  const eyeBlackMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
+
+  const lEyeW = new THREE.Mesh(eyeWhiteGeo, eyeWhiteMat);
+  lEyeW.position.set(-0.22, 4.55, 0.6);
+  group.add(lEyeW);
+  const rEyeW = new THREE.Mesh(eyeWhiteGeo, eyeWhiteMat);
+  rEyeW.position.set(0.22, 4.55, 0.6);
+  group.add(rEyeW);
+  const lEyeB = new THREE.Mesh(eyeBlackGeo, eyeBlackMat);
+  lEyeB.position.set(-0.22, 4.55, 0.7);
+  group.add(lEyeB);
+  const rEyeB = new THREE.Mesh(eyeBlackGeo, eyeBlackMat);
+  rEyeB.position.set(0.22, 4.55, 0.7);
+  group.add(rEyeB);
+
+  // Smile
+  const smileGeo = new THREE.TorusGeometry(0.15, 0.025, 8, 12, Math.PI);
+  const smileMat = new THREE.MeshBasicMaterial({ color: 0x333333 });
+  const smile = new THREE.Mesh(smileGeo, smileMat);
+  smile.position.set(0, 4.3, 0.65);
+  smile.rotation.x = 0.2;
+  group.add(smile);
+
+  // Arms
+  const armGeo = new THREE.CylinderGeometry(0.18, 0.15, 2.2, 6);
+  const armMat = new THREE.MeshStandardMaterial({ color: 0xff2e63, roughness: 0.6 });
+  const leftArm = new THREE.Mesh(armGeo, armMat);
+  leftArm.position.set(-0.9, 2.8, 0);
+  leftArm.rotation.z = 0.2;
+  group.add(leftArm);
+  const rightArm = new THREE.Mesh(armGeo, armMat);
+  rightArm.position.set(0.9, 2.6, 0.3);
+  rightArm.rotation.z = -0.4;
+  rightArm.rotation.x = -0.3;
+  group.add(rightArm);
+
+  // Hands (skin)
+  const handGeo = new THREE.SphereGeometry(0.15, 8, 8);
+  const handMat = new THREE.MeshStandardMaterial({ color: 0xd4a574, roughness: 0.8 });
+  const rHand = new THREE.Mesh(handGeo, handMat);
+  rHand.position.set(1.1, 1.7, 0.5);
+  group.add(rHand);
+
+  // Legs (dark jeans)
+  const legGeo = new THREE.CylinderGeometry(0.22, 0.2, 2, 6);
+  const legMat = new THREE.MeshStandardMaterial({ color: 0x1a1a2e, roughness: 0.8 });
+  const leftLeg = new THREE.Mesh(legGeo, legMat);
+  leftLeg.position.set(-0.3, 0.8, 0);
+  group.add(leftLeg);
+  const rightLeg = new THREE.Mesh(legGeo, legMat);
+  rightLeg.position.set(0.3, 0.8, 0);
+  group.add(rightLeg);
+
+  // Sneakers (cyan glow)
+  const shoeGeo = new THREE.BoxGeometry(0.35, 0.2, 0.5);
+  const shoeMat = new THREE.MeshStandardMaterial({ color: COL.ademo, emissive: COL.ademo, emissiveIntensity: 0.3, roughness: 0.5 });
+  const leftShoe = new THREE.Mesh(shoeGeo, shoeMat);
+  leftShoe.position.set(-0.3, 0.05, 0.1);
+  group.add(leftShoe);
+  const rightShoe = new THREE.Mesh(shoeGeo, shoeMat);
+  rightShoe.position.set(0.3, 0.05, 0.1);
+  group.add(rightShoe);
+
+  group.userData = { baseY: 0, bobSpeed: 1.8, bobAmp: 0.06 };
+  group.position.set(6, 0, 3);
+  group.castShadow = true;
+  return group;
+}
+
+// ── CAIN (DNA double helix — floating center) ──
+function createCAIN() {
+  const group = new THREE.Group();
+  const helixParts = [];
+
+  // Double helix strands
+  const n = 40;
+  for (let i = 0; i < n; i++) {
+    const t = (i / n) * Math.PI * 4;
+    const y = (i / n) * 6 - 3;
+
+    // Strand 1
+    const s1Geo = new THREE.SphereGeometry(0.12, 6, 6);
+    const s1Mat = new THREE.MeshStandardMaterial({
+      color: COL.cain, emissive: COL.cain, emissiveIntensity: 0.4,
+      roughness: 0.3, metalness: 0.5
+    });
+    const s1 = new THREE.Mesh(s1Geo, s1Mat);
+    s1.position.set(Math.cos(t) * 0.8, y, Math.sin(t) * 0.8);
+    group.add(s1);
+    helixParts.push(s1);
+
+    // Strand 2
+    const s2 = new THREE.Mesh(s1Geo.clone(), s1Mat.clone());
+    s2.position.set(Math.cos(t + Math.PI) * 0.8, y, Math.sin(t + Math.PI) * 0.8);
+    group.add(s2);
+    helixParts.push(s2);
+
+    // Cross-links (base pairs)
+    if (i % 4 === 0) {
+      const linkGeo = new THREE.CylinderGeometry(0.03, 0.03, 1.6, 4);
+      const linkColors = [0xff2e63, 0x39ff14, 0x08d9d6, 0x7c3aed];
+      const linkMat = new THREE.MeshBasicMaterial({
+        color: linkColors[Math.floor(i / 4) % linkColors.length],
+        transparent: true, opacity: 0.6
+      });
+      const link = new THREE.Mesh(linkGeo, linkMat);
+      link.position.set(0, y, 0);
+      link.rotation.z = Math.PI / 2;
+      link.rotation.y = t;
+      group.add(link);
+    }
+  }
+
+  // Central eye (consciousness)
+  const eyeGeo = new THREE.SphereGeometry(0.35, 16, 16);
+  const eyeMat = new THREE.MeshBasicMaterial({ color: COL.cain });
+  const eye = new THREE.Mesh(eyeGeo, eyeMat);
+  eye.position.set(0, 0, 0);
+  group.add(eye);
+
+  // Pupil
+  const pupilGeo = new THREE.SphereGeometry(0.15, 8, 8);
+  const pupilMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+  const pupil = new THREE.Mesh(pupilGeo, pupilMat);
+  pupil.position.set(0, 0, 0.3);
+  group.add(pupil);
+
+  // Glow sphere
+  const glowGeo2 = new THREE.SphereGeometry(1.5, 16, 16);
+  const glowMat2 = new THREE.MeshBasicMaterial({ color: COL.cain, transparent: true, opacity: 0.05 });
+  const glow = new THREE.Mesh(glowGeo2, glowMat2);
+  group.add(glow);
+
+  group.userData = { helixParts, rotSpeed: 0.5 };
+  group.position.set(0, 7, -2);
+  return group;
+}
+
+const nosChar = createNOS();
+scene.add(nosChar);
+const ademoChar = createADEMO();
+scene.add(ademoChar);
+const cainChar = createCAIN();
+scene.add(cainChar);
+
+// ── DATA PARTICLES (floating between agents) ──
+const particleCount = 300;
+const particlesGeo = new THREE.BufferGeometry();
+const pPositions = new Float32Array(particleCount * 3);
+const pColors = new Float32Array(particleCount * 3);
+const pVelocities = [];
+const particleColors = [
+  new THREE.Color(COL.nos), new THREE.Color(COL.ademo),
+  new THREE.Color(COL.cain), new THREE.Color(COL.green),
+  new THREE.Color(COL.pink)
+];
+
+for (let i = 0; i < particleCount; i++) {
+  pPositions[i * 3] = (Math.random() - 0.5) * 30;
+  pPositions[i * 3 + 1] = Math.random() * 15;
+  pPositions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+  const c = particleColors[Math.floor(Math.random() * particleColors.length)];
+  pColors[i * 3] = c.r;
+  pColors[i * 3 + 1] = c.g;
+  pColors[i * 3 + 2] = c.b;
+  pVelocities.push({
+    x: (Math.random() - 0.5) * 0.03,
+    y: (Math.random() - 0.5) * 0.02,
+    z: (Math.random() - 0.5) * 0.03
+  });
+}
+particlesGeo.setAttribute('position', new THREE.Float32BufferAttribute(pPositions, 3));
+particlesGeo.setAttribute('color', new THREE.Float32BufferAttribute(pColors, 3));
+const particlesMat = new THREE.PointsMaterial({
+  size: 0.15, vertexColors: true, transparent: true, opacity: 0.7,
+  blending: THREE.AdditiveBlending, sizeAttenuation: true
+});
+const particles = new THREE.Points(particlesGeo, particlesMat);
+scene.add(particles);
+
+// ── NEON SIGNS (graffiti-style floating text) ──
+function createNeonSign(text, color, x, y, z, scale) {
+  const canvas2 = document.createElement('canvas');
+  canvas2.width = 512; canvas2.height = 128;
+  const ctx = canvas2.getContext('2d');
+  ctx.fillStyle = 'transparent';
+  ctx.fillRect(0, 0, 512, 128);
+  ctx.font = 'bold 60px "Courier New"';
+  ctx.fillStyle = '#' + new THREE.Color(color).getHexString();
+  ctx.shadowColor = '#' + new THREE.Color(color).getHexString();
+  ctx.shadowBlur = 20;
+  ctx.textAlign = 'center';
+  ctx.fillText(text, 256, 80);
+  // Double draw for extra glow
+  ctx.fillText(text, 256, 80);
+
+  const tex = new THREE.CanvasTexture(canvas2);
+  const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide, blending: THREE.AdditiveBlending });
+  const geo = new THREE.PlaneGeometry(6 * scale, 1.5 * scale);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(x, y, z);
+  return mesh;
+}
+
+scene.add(createNeonSign('NOMOS42', COL.nos, -12, 12, -18, 1));
+scene.add(createNeonSign('NBA QUANT', COL.ademo, 14, 10, -16, 0.8));
+scene.add(createNeonSign('EVOLUTION', COL.cain, 0, 14, -22, 0.7));
+
+// ── BASKETBALL HOOP ──
+const poleGeo = new THREE.CylinderGeometry(0.1, 0.1, 6, 8);
+const poleMat = new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.8, roughness: 0.3 });
+const pole = new THREE.Mesh(poleGeo, poleMat);
+pole.position.set(12, 3, -4);
+scene.add(pole);
+
+const backboardGeo = new THREE.BoxGeometry(2, 1.3, 0.05);
+const backboardMat = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.3, roughness: 0.1 });
+const backboard = new THREE.Mesh(backboardGeo, backboardMat);
+backboard.position.set(12, 5.8, -4);
+scene.add(backboard);
+
+const rimGeo = new THREE.TorusGeometry(0.35, 0.03, 8, 16);
+const rimMat = new THREE.MeshStandardMaterial({ color: 0xff4400, metalness: 0.7, roughness: 0.3 });
+const rim = new THREE.Mesh(rimGeo, rimMat);
+rim.position.set(12, 5.3, -3.5);
+rim.rotation.x = Math.PI / 2;
+scene.add(rim);
+
+// ── ANIMATION LOOP ──
+const clock = new THREE.Clock();
+let mouseX = 0, mouseY = 0;
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  const dt = clock.getDelta();
+
+  // Camera subtle movement following mouse
+  camera.position.x += (mouseX * 3 - camera.position.x) * 0.02;
+  camera.position.y += (8 - mouseY * 2 - camera.position.y) * 0.02;
+  camera.lookAt(0, 4, 0);
+
+  // N.O.S idle animation (subtle bob + slight sway)
+  nosChar.position.y = Math.sin(t * 1.5) * 0.08;
+  nosChar.rotation.y = Math.sin(t * 0.5) * 0.05;
+  // Eye glow pulsing
+  nosLight.intensity = 1.2 + Math.sin(t * 2) * 0.3;
+
+  // ADEMO idle animation
+  ademoChar.position.y = Math.sin(t * 1.8 + 1) * 0.06;
+  ademoChar.rotation.y = Math.sin(t * 0.7 + 0.5) * 0.08;
+  ademoLight.intensity = 1.2 + Math.sin(t * 2.5) * 0.3;
+
+  // CAIN rotation + float
+  cainChar.rotation.y = t * 0.5;
+  cainChar.position.y = 7 + Math.sin(t * 0.8) * 0.5;
+  cainLight.intensity = 1.5 + Math.sin(t * 1.5) * 0.5;
+  // Helix scale pulse
+  const s = 1 + Math.sin(t * 1.2) * 0.05;
+  cainChar.scale.set(s, s, s);
+
+  // Window flickering
+  for (const w of windowMeshes) {
+    if (Math.random() > 0.998) {
+      w.mesh.material.opacity = w.mesh.material.opacity > 0.1 ? 0 : w.baseOpacity;
+    }
+  }
+
+  // Particles movement
+  const pos = particles.geometry.attributes.position.array;
+  for (let i = 0; i < particleCount; i++) {
+    pos[i * 3] += pVelocities[i].x;
+    pos[i * 3 + 1] += pVelocities[i].y;
+    pos[i * 3 + 2] += pVelocities[i].z;
+    // Bounds reset
+    if (pos[i * 3 + 1] > 15) pos[i * 3 + 1] = 0;
+    if (pos[i * 3 + 1] < 0) pos[i * 3 + 1] = 15;
+    if (Math.abs(pos[i * 3]) > 15) pos[i * 3] *= -0.9;
+    if (Math.abs(pos[i * 3 + 2]) > 15) pos[i * 3 + 2] *= -0.9;
+  }
+  particles.geometry.attributes.position.needsUpdate = true;
+
+  // Moon subtle glow
+  moonGlow.scale.setScalar(1 + Math.sin(t * 0.3) * 0.05);
+
+  renderer.render(scene, camera);
+}
+animate();
+
+// ═══════════════════════════════════════════════════════════════
+//  LIVE DATA FETCHING
+// ═══════════════════════════════════════════════════════════════
+
+let lastConvTimestamp = null;
+let evoHistory = [];
+
+async function fetchConversations() {
+  try {
+    const url = lastConvTimestamp
+      ? `${API_BASE}/api/v1/loop/conversations?limit=50&since=${encodeURIComponent(lastConvTimestamp)}`
+      : `${API_BASE}/api/v1/loop/conversations?limit=50`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      renderConversations(data);
+      lastConvTimestamp = data[data.length - 1].timestamp;
+    }
+  } catch (e) { console.warn('Conv fetch:', e); }
+}
+
+async function fetchLoopStatus() {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/loop/status`);
+    const data = await res.json();
+    updateMetrics(data);
+  } catch (e) { console.warn('Status fetch:', e); }
+}
+
+async function fetchResearch() {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/loop/research`);
+    const data = await res.json();
+    if (Array.isArray(data)) renderResearch(data);
+  } catch (e) { console.warn('Research fetch:', e); }
+}
+
+async function fetchEvolution() {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/loop/evolution-history`);
+    const data = await res.json();
+    if (Array.isArray(data)) {
+      evoHistory = data;
+      renderEvoChart();
+    }
+  } catch (e) { console.warn('Evo fetch:', e); }
+}
+
+// ── RENDER FUNCTIONS ──
+
+function renderConversations(convos) {
+  const feed = document.getElementById('conv-feed');
+  // Append new messages
+  for (const c of convos) {
+    const existing = feed.querySelector(`[data-id="${c.id}"]`);
+    if (existing) continue;
+
+    const div = document.createElement('div');
+    div.className = `msg msg-${c.agent}`;
+    div.setAttribute('data-id', c.id);
+    const time = new Date(c.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    div.innerHTML = `
+      <span class="msg-time">${time}</span>
+      <div class="msg-name">${c.agentName || c.agent}</div>
+      <div class="msg-text">${escapeHtml(c.message).substring(0, 200)}</div>
+    `;
+    feed.appendChild(div);
+  }
+  // Auto-scroll
+  feed.scrollTop = feed.scrollHeight;
+  // Trim old messages
+  while (feed.children.length > 100) feed.removeChild(feed.firstChild);
+}
+
+function updateMetrics(data) {
+  const dot = document.getElementById('loop-dot');
+  dot.className = `dot ${data.running ? 'dot-green' : 'dot-red'}`;
+
+  setText('h-status', data.running ? 'ACTIVE' : 'STOPPED');
+  setText('h-cycles', data.cycleCount || 0);
+  setText('h-brier', data.bestBrier < 1 ? data.bestBrier.toFixed(4) : '—');
+  setText('h-roi', data.bestROI > -100 ? data.bestROI.toFixed(1) + '%' : '—');
+  setText('h-features', data.researchCount || 0);
+  setText('h-stag', data.stagnationCount || 0);
+
+  // Metrics panel
+  const lastEvo = data.evolutionHistory && data.evolutionHistory.length > 0
+    ? data.evolutionHistory[data.evolutionHistory.length - 1] : null;
+
+  setText('m-brier', data.bestBrier < 1 ? data.bestBrier.toFixed(4) : '—');
+  setText('m-acc', lastEvo ? ((1 - lastEvo.brier) * 100).toFixed(1) + '%' : '—');
+  setText('m-roi', data.bestROI > -100 ? data.bestROI.toFixed(1) + '%' : '—');
+  setText('m-feat', lastEvo ? lastEvo.features : '—');
+  setText('m-gen', lastEvo ? lastEvo.generation : '—');
+  setText('m-pop', lastEvo ? lastEvo.population : '—');
+  setText('m-cycles', data.cycleCount || 0);
+  setText('m-disc', data.newFeatures || 0);
+}
+
+function renderResearch(items) {
+  const feed = document.getElementById('research-feed');
+  feed.innerHTML = '';
+  for (const item of items.slice(-15).reverse()) {
+    const div = document.createElement('div');
+    div.className = 'research-item';
+    div.innerHTML = `
+      <span class="research-name">${escapeHtml(item.name)}</span>
+      <span class="research-meta"> — ${item.power || '?'} power, ${item.complexity || '?'} complexity</span>
+    `;
+    feed.appendChild(div);
+  }
+}
+
+function renderEvoChart() {
+  const canvas = document.getElementById('evo-chart');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.clientWidth - 24;
+  const H = 80;
+  canvas.width = W;
+  canvas.height = H;
+
+  ctx.clearRect(0, 0, W, H);
+
+  if (evoHistory.length < 2) {
+    ctx.fillStyle = '#475569';
+    ctx.font = '10px JetBrains Mono';
+    ctx.fillText('Waiting for evolution data...', 10, 40);
+    return;
+  }
+
+  const briers = evoHistory.map(e => e.brier).filter(b => b > 0);
+  if (briers.length < 2) return;
+
+  const minB = Math.min(...briers) - 0.005;
+  const maxB = Math.max(...briers) + 0.005;
+  const range = maxB - minB || 0.01;
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(124,58,237,0.15)';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i < 5; i++) {
+    const y = (i / 4) * H;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // Brier line
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 2;
+  ctx.shadowColor = '#f59e0b';
+  ctx.shadowBlur = 8;
+  ctx.beginPath();
+  for (let i = 0; i < briers.length; i++) {
+    const x = (i / (briers.length - 1)) * W;
+    const y = H - ((briers[i] - minB) / range) * H;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#f59e0b';
+  ctx.font = '9px JetBrains Mono';
+  ctx.fillText(`Best: ${Math.min(...briers).toFixed(4)}`, 4, 12);
+  ctx.fillStyle = '#64748b';
+  ctx.fillText(`${briers.length} observations`, W - 100, 12);
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── POLLING ──
+fetchConversations();
+fetchLoopStatus();
+fetchResearch();
+fetchEvolution();
+
+setInterval(fetchConversations, 10000);   // 10s
+setInterval(fetchLoopStatus, 30000);      // 30s
+setInterval(fetchResearch, 60000);        // 60s
+setInterval(fetchEvolution, 60000);       // 60s
+
+</script>
+</body>
+</html>
