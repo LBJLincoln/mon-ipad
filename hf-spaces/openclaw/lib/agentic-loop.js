@@ -97,7 +97,7 @@ const FORCED_ACTIONS = [
   { name: 'check_run_stats', fn: 'runStats', desc: 'Pull run statistics from S10' },
   { name: 'check_cuts', fn: 'cuts', desc: 'Pull feature cut data from S10' },
   { name: 'status_deep_check', fn: 'status', desc: 'Deep status health check' },
-  { name: 'status_deep_check_2', fn: 'status', desc: 'Second status check for trend analysis' },
+  { name: 'analyze_population_diversity', fn: 'status', desc: 'Analyze population diversity metrics from S10 status' },
   { name: 'check_brier_trend_2', fn: 'brierTrend', desc: 'Second Brier trend pull' },
 ];
 
@@ -369,6 +369,19 @@ class AgenticLoop {
     // ── ALWAYS pull brier trend + run stats (real S10 calls every observe) ──
     await this._pullS10Data(parsed);
 
+    // ── MONK intelligent analysis — observe, don't auto-act ──
+    if (parsed.stagnation > 15 && parsed.mutationRate > 0.08) {
+      this._log('monk', `OBSERVATION: GA is thrashing — high mutation (${parsed.mutationRate}) prevents convergence at stagnation ${parsed.stagnation}. Need to LOWER mutation.`);
+    }
+    if (parsed.features > 120) {
+      this._log('monk', `OBSERVATION: Feature bloat detected (${parsed.features} features) — models may be overfitting.`);
+    }
+    // Check model monoculture from recent history
+    const recentModels = this.state.evolutionHistory.slice(-5).map(h => h.model).filter(Boolean);
+    if (recentModels.length >= 5 && new Set(recentModels).size === 1) {
+      this._log('monk', `OBSERVATION: Model monoculture — all top 5 observations use "${recentModels[0]}". Diversity injection needed.`);
+    }
+
     // ── Stagnation detection with AUTO-FIX (aggressive) ──
     if (parsed.stagnation > 2) {
       this.state.stagnationCount++;
@@ -581,19 +594,13 @@ Be extremely specific. No generic suggestions. Think like a PhD sports analytics
       this._log('ademo', `Research complete. +${added} new. Total: ${this.research.length}. ${this.research.filter(r => r.status === 'new').length} untested.`);
       this._trackAction('research', `discovered_${added}_features`, { category: focusCategory.name, added });
 
-      // ALWAYS ACT: inject newly discovered features into S10 immediately
+      // Features must be validated by Adam (CLI) before injection
+      // Log discoveries with needs_validation status — do NOT auto-inject into S10
       if (added > 0) {
-        const toInject = this.research.filter(r => r.status === 'new').slice(0, 3);
-        if (toInject.length > 0) {
-          const injectResult = await this.callS10('/api/inject-features', {
-            features: toInject.map(f => ({ name: f.name, category: f.category, description: f.description })),
-          });
-          for (const feat of toInject) feat.status = 'injected';
-          this._cycleActionCount++;
-          this.state.totalS10Calls++;
-          this._log('ademo', `AUTO-INJECTED ${toInject.length} features into S10: ${injectResult.status || injectResult.error}`);
-          this._trackAction('research', 'auto_inject_features', { count: toInject.length });
-        }
+        const pending = this.research.filter(r => r.status === 'new').slice(0, 3);
+        for (const feat of pending) feat.status = 'needs_validation';
+        this._log('ademo', `${pending.length} new features logged as needs_validation. Awaiting Adam (CLI) review before injection.`);
+        this._trackAction('research', 'features_pending_validation', { count: pending.length, names: pending.map(f => f.name) });
       }
     }
 
@@ -699,22 +706,25 @@ Be quantitative and specific. Think like a quant fund PM reviewing their model.`
   // ══════════════════════════════════════════
 
   async _improve(currentState) {
+    // Cooldown: only apply improvements every 30 min
+    const lastImprove = this.state.lastImproveApplied || 0;
+    if (Date.now() - new Date(lastImprove).getTime() < 30 * 60 * 1000) {
+      this._log('nos', 'Improve cooldown active (30min). Observing only.');
+      return;
+    }
+
     this.state.lastImprove = new Date().toISOString();
     this._log('nos', 'IMPROVE mode — APPLYING changes via S10 API.');
 
-    // 1. Inject researched features into S10
+    // Features must be validated by Adam (CLI) before injection
+    // 1. Log pending features but do NOT auto-inject into S10
     const newFeatures = this.research.filter(r => r.status === 'new');
     if (newFeatures.length > 0) {
       const top5 = newFeatures.slice(0, 5);
-      const injectResult = await this.callS10('/api/inject-features', {
-        features: top5.map(f => ({ name: f.name, category: f.category, description: f.description })),
-      });
-      for (const feat of top5) feat.status = 'injected';
+      for (const feat of top5) feat.status = 'needs_validation';
       this._saveResearch();
-      this._log('ademo', `INJECTED ${top5.length} features: ${injectResult.status || injectResult.error}`);
-      this._trackAction('improve', 'inject_features', { count: top5.length, features: top5.map(f => f.name) });
-      this._cycleActionCount++;
-      this.state.totalS10Calls++;
+      this._log('ademo', `${top5.length} features marked needs_validation: ${top5.map(f => f.name).join(', ')}. Awaiting Adam review.`);
+      this._trackAction('improve', 'features_pending_validation', { count: top5.length, features: top5.map(f => f.name) });
     }
 
     // 2. Ask LLM for parameter changes
@@ -769,6 +779,7 @@ Be conservative. Small adjustments. Do NOT diversify or boost_mutation unless st
           this._trackAction('improve', 'config_change', configParams);
           this._cycleActionCount++;
           this.state.totalS10Calls++;
+          this.state.lastImproveApplied = new Date().toISOString();
         }
 
         // Execute command
@@ -1022,19 +1033,12 @@ Prioritize by expected Brier improvement. 3 recommendations, 1 sentence each.`
     this._log('nos', `FORCE-ACT: only ${this._cycleActionCount} actions this cycle. Forcing S10 interaction.`);
     await this._forceS10Action('force_act_cycle');
 
-    // If we have untested research features, inject them
+    // Features must be validated by Adam (CLI) before injection — do not auto-inject
     const untested = this.research.filter(r => r.status === 'new');
     if (untested.length > 0) {
-      const toInject = untested.slice(0, 2);
-      const result = await this.callS10('/api/inject-features', {
-        features: toInject.map(f => ({ name: f.name, category: f.category, description: f.description })),
-      });
-      for (const f of toInject) f.status = 'injected';
+      for (const f of untested.slice(0, 2)) f.status = 'needs_validation';
       this._saveResearch();
-      this._log('ademo', `FORCE-ACT injected ${toInject.length} features: ${result.status || result.error}`);
-      this._trackAction('force_act', 'inject_features', { count: toInject.length });
-      this._cycleActionCount++;
-      this.state.totalS10Calls++;
+      this._log('ademo', `FORCE-ACT: ${untested.slice(0, 2).length} features marked needs_validation. No auto-injection.`);
     }
   }
 
@@ -1155,7 +1159,17 @@ Prioritize by expected Brier improvement. 3 recommendations, 1 sentence each.`
         this._cycleActionCount++;
         this.state.totalS10Calls++;
         this._trackAction('force', action.name, result);
-        this._log('nos', `FORCE S10 result: ${JSON.stringify(result).substring(0, 150)}`);
+
+        // Special handling: log diversity metrics for population analysis
+        if (action.name === 'analyze_population_diversity') {
+          const modelTypes = result.model_types || result.best_model_type || 'unknown';
+          const popSize = result.pop_size || '?';
+          const features = result.best_features || '?';
+          const stagnation = result.stagnation || 0;
+          this._log('monk', `DIVERSITY CHECK: pop=${popSize}, features=${features}, stagnation=${stagnation}, model=${modelTypes}`);
+        } else {
+          this._log('nos', `FORCE S10 result: ${JSON.stringify(result).substring(0, 150)}`);
+        }
       }
     } catch (e) {
       this._log('monk', `Force S10 action failed: ${e.message}`);
@@ -1201,8 +1215,10 @@ Prioritize by expected Brier improvement. 3 recommendations, 1 sentence each.`
   }
 
   _markRecentActions(outcome, delta) {
-    // Mark actions from the last 15 min as improvement or regression
-    const cutoff = Date.now() - 15 * 60 * 1000;
+    // Only mark as improvement if delta > 0.001 (meaningful change)
+    // Use 60-min window to capture full GA cycle effects
+    if (outcome === 'improvement' && Math.abs(delta) < 0.001) outcome = 'neutral';
+    const cutoff = Date.now() - 60 * 60 * 1000;  // was 15 min
     let marked = 0;
     for (let i = this.actionLog.length - 1; i >= 0; i--) {
       const entry = this.actionLog[i];
@@ -1320,6 +1336,7 @@ Prioritize by expected Brier improvement. 3 recommendations, 1 sentence each.`
       researchCount: this.research.length,
       newFeatures: this.research.filter(r => r.status === 'new').length,
       suggestedFeatures: this.research.filter(r => r.status === 'suggested').length,
+      pendingValidation: this.research.filter(r => r.status === 'needs_validation').length,
       errorCount: this.errors.filter(e => !e.fixed).length,
       agents: AGENTS,
       featureCategories: FEATURE_CATEGORIES.length,
