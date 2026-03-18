@@ -19,8 +19,8 @@ from huggingface_hub import HfApi, CommitOperationAdd
 from pathlib import Path
 
 # Config
-SPACE_ID = "lbjlincoln26/nomos-rgwa"
-HF_TOKEN = os.environ.get("HF_TOKEN_2")  # lbjlincoln26 account
+SPACE_ID = "lbjlincoln/nomos-rgwa"
+HF_TOKEN = os.environ.get("HF_TOKEN_2")  # lbjlincoln account
 # Reuse Eve's codebase — RGWA runs the same code with different env vars
 LOCAL_DIR = Path(__file__).parent.parent / "openclaw"
 
@@ -167,7 +167,7 @@ def main():
         print(f"Restart warning: {e}")
 
     print(f"\nDone! RGWA will be available at:")
-    print(f"  https://lbjlincoln26-nomos-rgwa.hf.space")
+    print(f"  https://lbjlincoln-nomos-rgwa.hf.space")
     print(f"\nTelegram: @RGWAbot")
     print(f"\nMonitor build at:")
     print(f"  https://huggingface.co/spaces/{SPACE_ID}")
