@@ -344,7 +344,7 @@ Tape directement ce que tu veux:
   },
 
   '/spaces': async (msg) => {
-    let text = '*HF Spaces (14 actifs)*\n\n';
+    let text = `*HF Spaces (${spacesConfig.spaces.length} actifs)*\n\n`;
     for (const space of spacesConfig.spaces) {
       text += `*${space.name}* (${space.id})\n`;
       text += `  Role: ${space.role}\n`;
@@ -886,15 +886,14 @@ app.get('/', (req, res) => {
 });
 
 // -- Telegram webhook --
-app.post('/webhook/telegram', async (req, res) => {
-  try {
-    if (bot) {
-      await handleTelegramUpdate(req.body);
-    }
-    res.sendStatus(200);
-  } catch (err) {
-    logger.error('Telegram webhook error:', err);
-    res.sendStatus(200); // Always 200 for Telegram
+// CRITICAL: respond 200 IMMEDIATELY, then process async.
+// Telegram webhooks timeout after ~10s — our handlers (healthcheck, DB queries) can take longer.
+app.post('/webhook/telegram', (req, res) => {
+  res.sendStatus(200);  // ACK immediately — prevents Telegram read timeout
+  if (bot) {
+    handleTelegramUpdate(req.body).catch(err => {
+      logger.error('Telegram handler error:', err);
+    });
   }
 });
 
