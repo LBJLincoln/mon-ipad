@@ -19,7 +19,7 @@ from huggingface_hub import HfApi, CommitOperationAdd
 from pathlib import Path
 
 # Config
-SPACE_ID = "lbjlincoln/nomos-rgwa"
+SPACE_ID = "LBJLincoln/nomos-rgwa"
 HF_TOKEN = os.environ.get("HF_TOKEN_2")  # lbjlincoln account
 # Reuse Eve's codebase — RGWA runs the same code with different env vars
 LOCAL_DIR = Path(__file__).parent.parent / "openclaw"
