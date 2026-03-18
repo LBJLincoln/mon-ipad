@@ -27,10 +27,12 @@ const SpaceExecutor = require('./lib/space-executor');
 const InfraBridge = require('./lib/infra-bridge');
 const AgenticLoop = require('./lib/agentic-loop');
 const VMBridge = require('./lib/vm-bridge');
-const AnticipationEngine = require('./lib/anticipation-engine');
 const OrderExecutor = require('./lib/order-executor');
 const ModelHealthMonitor = require('./lib/model-health-monitor');
 const RuleEngine = require('./lib/rule-engine');
+const DataWorker = require('./lib/data-worker');
+const Watchdog = require('./lib/watchdog');
+const A2AProtocol = require('./lib/a2a-protocol');
 
 // ============================================================
 // CONFIG
@@ -112,10 +114,12 @@ const vmBridge = new VMBridge({
 // ============================================================
 
 let agenticLoop = null; // Initialized after LLM client setup
-let anticipationEngine = null;
 let orderExecutor = null;
 let modelMonitor = null;
 let ruleEngine = null;
+let dataWorker = null;
+let watchdog = null;
+let a2aProtocol = null;
 
 // ============================================================
 // OPENROUTER LLM CLIENT
@@ -274,28 +278,26 @@ if (TELEGRAM_BOT_TOKEN) {
  */
 const COMMANDS = {
   '/start': async (msg) => {
-    return `*OpenClaw v3 — FULL AGENTIC MODE*
+    return `⚡ *OpenClaw v4 — DATA-DRIVEN AUTONOMOUS*
 Agent IA autonome NOMOS42 NBA Quant AI
-H24 Karpathy loop + Anticipation Engine
+A2A Protocol + Data Worker + Watchdog
+
+*DATA & MONITORING:*
+/data — Odds & scores collection status
+/watchdog — S10 evolution monitoring
+/a2a — Adam ↔ Eve protocol status
+/loop — Agentic loop cycles
 
 *ORDRES EN LANGAGE NATUREL:*
-Tape directement ce que tu veux:
 "boost mutation to 0.2"
 "restart S10"
-"inject features"
-"force research"
-"emergency diversify"
-"mode aggressive"
-"rollback to last good config"
 "status evolution"
-"status anticipation"
+"fetch odds"
 
 *Infrastructure:*
 /status — Sante complete
 /spaces — HF Spaces actifs
-/orders — Liste des ordres possibles
-/anticipation — Bottleneck prevention status
-/loop — Status agentic loop
+/orders — Liste des ordres
 
 *VM Remote (SSH):*
 /vm <cmd> — Executer sur la VM
@@ -683,56 +685,100 @@ Probes: ${s.totalProbes} | Switches: ${s.switchCount}
 Tape directement — pas besoin de /commande !`;
   },
 
-  '/anticipation': async (msg) => {
-    if (!anticipationEngine) return 'Anticipation engine pas encore initialise.';
-    const status = anticipationEngine.getStatus();
-    let text = `*Anticipation Engine*
-Prevented: *${status.totalPrevented}* | Occurred: *${status.totalOccurred}*
-Prevention rate: *${status.preventionRate}*
-Snapshots: ${status.snapshots}\n`;
+  '/watchdog': async (msg) => {
+    if (!watchdog) return 'Watchdog not initialized.';
+    const s = watchdog.getStatus();
+    let text = `*Watchdog (Observation Only)*
+Checks: ${s.stats.checks} | Alerts: ${s.stats.alertsSent}
+Spaces Restarted: ${s.stats.spacesRestarted}\n`;
 
-    text += '\n*Bottlenecks:*\n';
-    for (const [key, bn] of Object.entries(status.bottlenecks)) {
-      const icon = bn.inWarningZone ? '⚠️' : '✅';
-      const since = bn.minutesSinceLast !== null ? `${bn.minutesSinceLast}min ago` : 'never seen';
-      text += `${icon} *${bn.name}*\n  ${since} (avg every ${bn.avgIntervalMin}min)\n  Prevented: ${bn.prevented} | Occurred: ${bn.occurred}\n`;
-    }
-
-    if (status.recentActions.length > 0) {
-      text += '\n*Recent preemptive actions:*\n';
-      for (const a of status.recentActions.slice(-3)) {
-        text += `- [${a.id}] ${a.applied}\n`;
+    if (s.trends) {
+      const t = s.trends;
+      text += `\n*Current:*
+  Brier: ${t.current.brier?.toFixed(4) || '?'} | Gen: ${t.current.generation || '?'}
+  Features: ${t.current.features || '?'} | Stagnation: ${t.current.stagnation ?? '?'}`;
+      if (t.brierTrend !== null) {
+        const emoji = t.brierTrend < 0 ? '📉' : t.brierTrend > 0 ? '📈' : '➡️';
+        text += `\n  Brier trend (1h): ${emoji} ${t.brierTrend > 0 ? '+' : ''}${t.brierTrend}`;
       }
     }
 
+    if (s.recentAlerts.length > 0) {
+      text += '\n\n*Recent Alerts:*\n';
+      for (const a of s.recentAlerts.slice(-5)) {
+        text += `[${a.level}] ${a.message}\n`;
+      }
+    }
+    return text;
+  },
+
+  '/data': async (msg) => {
+    if (!dataWorker) return 'Data worker not initialized.';
+    const s = dataWorker.getStatus();
+    let text = `*Data Worker*
+Odds API: ${s.oddsApiKey}
+Supabase: ${s.supabase}
+
+*Stats:*
+  Odds fetches: ${s.stats.oddsFetches}
+  Odds stored: ${s.stats.oddsStored}
+  Scores fetches: ${s.stats.scoresFetches}
+  Games tracked: ${s.stats.gamesTracked}
+  Errors: ${s.stats.errors}
+  API quota left: ${s.stats.apiQuotaRemaining || '?'}
+
+Last odds: ${s.lastOddsFetch || 'never'}
+Last scores: ${s.lastScoresFetch || 'never'}`;
+
+    if (s.recentMovements.length > 0) {
+      text += '\n\n*Recent Line Movements:*\n';
+      for (const m of s.recentMovements.slice(-5)) {
+        text += `${m.steam ? '🔥' : '📊'} ${m.game}: ${m.prev_spread} → ${m.curr_spread}\n`;
+      }
+    }
+    return text;
+  },
+
+  '/a2a': async (msg) => {
+    if (!a2aProtocol) return 'A2A protocol not initialized.';
+    const s = a2aProtocol.getStatus();
+    let text = `*A2A Protocol (Adam ↔ Eve)*
+Commands: ${s.stats.commandsReceived} received, ${s.stats.commandsExecuted} executed
+Reports: ${s.stats.reportsPosted} | Alerts: ${s.stats.alertsPosted}
+Inbox: ${s.unreadInbox} unread / ${s.totalInbox} total
+Last command: ${s.stats.lastCommandAt || 'never'}
+Last report: ${s.stats.lastReportAt || 'never'}`;
+
+    if (s.recentCommands.length > 0) {
+      text += '\n\n*Recent Commands:*\n';
+      for (const c of s.recentCommands.slice(0, 3)) {
+        text += `[${c.status}] ${c.action}\n`;
+      }
+    }
     return text;
   },
 
   '/loop': async (msg) => {
-    if (!agenticLoop) return 'Agentic loop pas encore initialise.';
+    if (!agenticLoop) return 'Agentic loop not initialized.';
     const s = agenticLoop.getStatus();
-    return `*Agentic Loop v3*
-Status: *${s.status}* | Running: ${s.running ? '✅' : '❌'}
-Cycles: ${s.cycleCount}
+    const evo = s.state?.lastEvoStatus;
+    return `*Agentic Loop v4 — Data-Driven*
+Running: ${s.running ? '✅' : '❌'} | Uptime: ${s.uptime}
+Cycles: ${s.state?.cycles || 0}
 
-*Metrics:*
-Best Brier: *${s.bestBrier?.toFixed(4) || '?'}*
-Best ROI: ${s.bestROI?.toFixed(1) || '?'}%
-Stagnation: ${s.stagnationCount}
+*S10 Evolution:*
+  Brier: ${evo?.brier?.toFixed(4) || '?'} | Gen: ${evo?.generation || '?'}
+  Features: ${evo?.features || '?'} | Pop: ${evo?.population || '?'}
+  Stagnation: ${evo?.stagnation ?? '?'}
 
-*Research:*
-Total: ${s.researchCount} | New: ${s.newFeatures} | Suggested: ${s.suggestedFeatures}
+*Last Cycles:*
+  Observe: ${s.state?.lastObserve || 'never'}
+  Data: ${s.state?.lastData || 'never'}
+  Health: ${s.state?.lastHealth || 'never'}
+  Report: ${s.state?.lastReport || 'never'}
+  Heartbeat: ${s.state?.lastHeartbeat || 'never'}
 
-*Health:*
-Errors: ${s.errorCount} unfixed
-Agents: ${Object.keys(s.agents).length} active
-
-*Timers:*
-Last observe: ${s.lastObserve || 'never'}
-Last research: ${s.lastResearch || 'never'}
-Last evaluate: ${s.lastEvaluate || 'never'}
-Last anticipate: ${s.lastAnticipate || 'never'}
-Last heal: ${s.lastHeal || 'never'}`;
+*Errors (last 24h):* ${s.state?.errors?.filter(e => new Date(e.timestamp) > new Date(Date.now() - 86400000)).length || 0}`;
   },
 
   '/read': async (msg) => {
@@ -846,7 +892,7 @@ async function fetchSSE(url) {
 app.get('/keep-alive', (req, res) => {
   res.json({
     status: 'alive',
-    version: '2026.3.17-godmode',
+    version: '2026.3.18-v4-data-driven',
     uptime: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
     memory: process.memoryUsage(),
@@ -857,7 +903,7 @@ app.get('/keep-alive', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     name: 'OpenClaw Nomos Agent',
-    version: '2026.3.17-godmode',
+    version: '2026.3.18-v4-data-driven',
     status: 'running',
     endpoints: {
       health: '/keep-alive',
@@ -1246,7 +1292,7 @@ app.get('/dashboard', (req, res) => {
 });
 
 // ============================================================
-// AGENTIC LOOP API — Live data for dashboard
+// AGENTIC LOOP API — v4 data-driven endpoints
 // ============================================================
 
 // Get loop status
@@ -1255,87 +1301,145 @@ app.get('/api/v1/loop/status', (req, res) => {
   res.json(agenticLoop.getStatus());
 });
 
-// Get live agent conversations
-app.get('/api/v1/loop/conversations', (req, res) => {
-  if (!agenticLoop) return res.json([]);
-  const limit = parseInt(req.query.limit) || 50;
-  const since = req.query.since; // ISO timestamp
-  let convos = agenticLoop.getConversations(limit);
-  if (since) {
-    convos = convos.filter(c => c.timestamp > since);
-  }
-  res.json(convos);
-});
-
-// Get research log
-app.get('/api/v1/loop/research', (req, res) => {
-  if (!agenticLoop) return res.json([]);
-  const limit = parseInt(req.query.limit) || 30;
-  res.json(agenticLoop.getResearch(limit));
-});
-
-// Get evolution history for charts
-app.get('/api/v1/loop/evolution-history', (req, res) => {
-  if (!agenticLoop) return res.json([]);
-  const limit = parseInt(req.query.limit) || 50;
-  res.json(agenticLoop.getEvolutionHistory(limit));
-});
-
-// Manual trigger: force a research cycle
-app.post('/api/v1/loop/trigger-research', async (req, res) => {
+// Manual trigger: force observe
+app.post('/api/v1/loop/trigger-observe', async (req, res) => {
   if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
-  agenticLoop._research().catch(e => logger.error('Manual research error:', e));
-  res.json({ status: 'triggered', type: 'research' });
+  agenticLoop._cycle('observe').catch(e => logger.error('Manual observe error:', e));
+  res.json({ status: 'triggered', type: 'observe' });
 });
 
-// Get errors log
-app.get('/api/v1/loop/errors', (req, res) => {
-  if (!agenticLoop) return res.json([]);
-  res.json(agenticLoop.getErrors());
-});
-
-// Manual trigger: force a heal cycle
-app.post('/api/v1/loop/trigger-heal', async (req, res) => {
-  if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
-  agenticLoop._heal().catch(e => logger.error('Manual heal error:', e));
-  res.json({ status: 'triggered', type: 'heal' });
-});
-
-// Manual trigger: force a data check
+// Manual trigger: force data fetch
 app.post('/api/v1/loop/trigger-data', async (req, res) => {
   if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
-  agenticLoop._dataCheck().catch(e => logger.error('Manual data check error:', e));
-  res.json({ status: 'triggered', type: 'data-check' });
+  agenticLoop._cycle('data').catch(e => logger.error('Manual data error:', e));
+  res.json({ status: 'triggered', type: 'data' });
 });
 
-// Manual trigger: force anticipation check
-app.post('/api/v1/loop/trigger-anticipate', async (req, res) => {
+// Manual trigger: force health check
+app.post('/api/v1/loop/trigger-health', async (req, res) => {
   if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
-  agenticLoop._anticipate().catch(e => logger.error('Manual anticipation error:', e));
-  res.json({ status: 'triggered', type: 'anticipate' });
+  agenticLoop._cycle('health').catch(e => logger.error('Manual health error:', e));
+  res.json({ status: 'triggered', type: 'health' });
+});
+
+// Manual trigger: force heartbeat
+app.post('/api/v1/loop/trigger-heartbeat', async (req, res) => {
+  if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
+  agenticLoop._cycle('heartbeat').catch(e => logger.error('Manual heartbeat error:', e));
+  res.json({ status: 'triggered', type: 'heartbeat' });
 });
 
 // ============================================================
-// ANTICIPATION ENGINE API
+// A2A PROTOCOL API — Adam ↔ Eve communication
 // ============================================================
 
-// Get anticipation status
-app.get('/api/v1/anticipation/status', (req, res) => {
-  if (!anticipationEngine) return res.json({ status: 'not_initialized' });
-  res.json(anticipationEngine.getStatus());
-});
-
-// Rollback to last good config
-app.post('/api/v1/anticipation/rollback', async (req, res) => {
-  if (!anticipationEngine) return res.status(503).json({ error: 'Not initialized' });
-  const result = await anticipationEngine.rollback();
+// Adam sends a command to Eve
+app.post('/api/v1/a2a/command', async (req, res) => {
+  if (!a2aProtocol) return res.status(503).json({ error: 'A2A not initialized' });
+  const { action, params } = req.body;
+  if (!action) return res.status(400).json({ error: 'action required' });
+  const result = await a2aProtocol.receiveCommand({ action, params });
   res.json(result);
 });
 
-// Get bottleneck history
-app.get('/api/v1/anticipation/history', (req, res) => {
-  if (!anticipationEngine) return res.json([]);
-  res.json(anticipationEngine.history.slice(-50));
+// Adam reads Eve's inbox (reports, alerts, data)
+app.get('/api/v1/a2a/inbox', (req, res) => {
+  if (!a2aProtocol) return res.json([]);
+  const options = {
+    unread: req.query.unread === 'true',
+    limit: parseInt(req.query.limit) || 50,
+    level: req.query.level,
+    type: req.query.type,
+    since: req.query.since,
+  };
+  res.json(a2aProtocol.getInbox(options));
+});
+
+// Adam acknowledges messages
+app.post('/api/v1/a2a/ack', (req, res) => {
+  if (!a2aProtocol) return res.status(503).json({ error: 'A2A not initialized' });
+  const { ids, all } = req.body;
+  if (all) {
+    res.json(a2aProtocol.acknowledgeAll());
+  } else if (ids && Array.isArray(ids)) {
+    res.json(a2aProtocol.acknowledge(ids));
+  } else {
+    res.status(400).json({ error: 'ids array or all:true required' });
+  }
+});
+
+// A2A protocol status
+app.get('/api/v1/a2a/status', (req, res) => {
+  if (!a2aProtocol) return res.json({ status: 'not_initialized' });
+  res.json(a2aProtocol.getStatus());
+});
+
+// Command history
+app.get('/api/v1/a2a/commands', (req, res) => {
+  if (!a2aProtocol) return res.json([]);
+  const limit = parseInt(req.query.limit) || 20;
+  res.json(a2aProtocol.getCommands(limit));
+});
+
+// ============================================================
+// WATCHDOG API — Statistical monitoring
+// ============================================================
+
+// Get watchdog status
+app.get('/api/v1/watchdog/status', (req, res) => {
+  if (!watchdog) return res.json({ status: 'not_initialized' });
+  res.json(watchdog.getStatus());
+});
+
+// Get trends
+app.get('/api/v1/watchdog/trends', (req, res) => {
+  if (!watchdog) return res.json(null);
+  res.json(watchdog.getTrends());
+});
+
+// Get metrics history
+app.get('/api/v1/watchdog/metrics', (req, res) => {
+  if (!watchdog) return res.json([]);
+  const limit = parseInt(req.query.limit) || 100;
+  res.json(watchdog.metrics.slice(-limit));
+});
+
+// ============================================================
+// DATA WORKER API — Real NBA data
+// ============================================================
+
+// Get data worker status
+app.get('/api/v1/data/status', (req, res) => {
+  if (!dataWorker) return res.json({ status: 'not_initialized' });
+  res.json(dataWorker.getStatus());
+});
+
+// Force odds fetch
+app.post('/api/v1/data/fetch-odds', async (req, res) => {
+  if (!dataWorker) return res.status(503).json({ error: 'Not initialized' });
+  const result = await dataWorker.fetchOdds();
+  res.json(result || { error: 'Fetch failed' });
+});
+
+// Force scores fetch
+app.post('/api/v1/data/fetch-scores', async (req, res) => {
+  if (!dataWorker) return res.status(503).json({ error: 'Not initialized' });
+  const result = await dataWorker.fetchScores();
+  res.json(result || { error: 'Fetch failed' });
+});
+
+// Compute CLV
+app.post('/api/v1/data/clv', async (req, res) => {
+  if (!dataWorker) return res.status(503).json({ error: 'Not initialized' });
+  const result = await dataWorker.computeCLV();
+  res.json(result || { error: 'CLV computation failed' });
+});
+
+// Get line movements
+app.get('/api/v1/data/movements', (req, res) => {
+  if (!dataWorker) return res.json([]);
+  const limit = parseInt(req.query.limit) || 20;
+  res.json(dataWorker.lineMovements.slice(-limit));
 });
 
 // ============================================================
@@ -1387,65 +1491,11 @@ app.get('/api/v1/rules/status', (req, res) => {
   res.json(ruleEngine.getStatus());
 });
 
-// Manual trigger: force an observe cycle
-app.post('/api/v1/loop/trigger-observe', async (req, res) => {
-  if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
-  agenticLoop._observe().catch(e => logger.error('Manual observe error:', e));
-  res.json({ status: 'triggered', type: 'observe' });
-});
-
-// Send a message as N.O.S (Claude CLI → OpenClaw conversation)
-app.post('/api/v1/loop/message', async (req, res) => {
-  const { message, agent = 'nos' } = req.body;
-  if (!message) return res.status(400).json({ error: 'message required' });
-  if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
-
-  // Log the incoming message
-  agenticLoop._log(agent, message);
-
-  // If from N.O.S, generate ADEMO response
-  if (agent === 'nos') {
-    try {
-      const result = await getCompletion([{
-        role: 'user',
-        content: `N.O.S (Claude Code CLI, strategic commander) says: "${message}"\n\nRespond as ADEMO (research & execution agent). Be specific and actionable. Max 3 sentences.`
-      }], { maxTokens: 300 });
-
-      if (result.content) {
-        agenticLoop._log('ademo', result.content);
-        res.json({ status: 'ok', response: result.content, model: result.model });
-        return;
-      }
-    } catch (err) {
-      res.json({ status: 'ok', error: err.message });
-      return;
-    }
-  }
-
-  res.json({ status: 'ok' });
-});
-
 // ============================================================
 // CRON JOBS — Self-monitoring
 // ============================================================
 
-// Health check every 5 minutes
-cron.schedule('*/5 * * * *', async () => {
-  try {
-    const health = await spaceExecutor.healthCheckAll();
-    const down = Object.entries(health).filter(([, s]) => !s.up);
-
-    if (down.length > 0 && bot) {
-      const names = down.map(([n]) => n).join(', ');
-      bot.sendMessage(ADMIN_TELEGRAM_ID,
-        `[OpenClaw Alert] Spaces DOWN: ${names}`).catch(() => {});
-    }
-
-    logger.info(`Health check: ${Object.keys(health).length - down.length}/${Object.keys(health).length} UP`);
-  } catch (err) {
-    logger.error('Health cron error:', err);
-  }
-});
+// Watchdog handles health checks now (every 10 min via agentic loop)
 
 // Keep-alive self-ping every 4 minutes (prevent HF sleep)
 cron.schedule('*/4 * * * *', () => {
@@ -1577,24 +1627,49 @@ async function start() {
   ruleEngine = new RuleEngine({ callS10 });
   logger.info('Rule Engine initialized — deterministic fallback active');
 
-  // Initialize Anticipation Engine (predictive bottleneck prevention)
-  anticipationEngine = new AnticipationEngine({
-    callS10,
+  // Initialize A2A Protocol — Adam ↔ Eve communication
+  a2aProtocol = new A2AProtocol({
+    onCommand: async (cmd) => {
+      // Delegate to agentic loop command handler
+      if (agenticLoop) {
+        return await agenticLoop.executeCommand(cmd);
+      }
+      throw new Error('Agentic loop not initialized');
+    },
+  });
+  logger.info('A2A Protocol initialized — Adam ↔ Eve communication active');
+
+  // Initialize Data Worker — Real NBA data collection
+  dataWorker = new DataWorker({
+    oddsApiKey: process.env.ODDS_API_KEY,
+    infraBridge,
+    spaceExecutor,
     bot,
     adminId: ADMIN_TELEGRAM_ID,
-    fetchEvolution: fetchEvo,
   });
-  logger.info('Anticipation Engine initialized — predictive bottleneck prevention active');
+  logger.info(`Data Worker initialized — ODDS_API_KEY: ${process.env.ODDS_API_KEY ? 'SET' : 'NOT SET'}`);
 
-  // Initialize Agentic Loop with anticipation + rule engine
+  // Initialize Watchdog — Statistical evolution monitoring (OBSERVE ONLY)
+  watchdog = new Watchdog({
+    fetchEvolution: fetchEvo,
+    spaceExecutor,
+    bot,
+    adminId: ADMIN_TELEGRAM_ID,
+    a2a: a2aProtocol,
+  });
+  logger.info('Watchdog initialized — statistical monitoring (observation only)');
+
+  // Initialize Agentic Loop v4 — data-driven operations
   agenticLoop = new AgenticLoop({
+    fetchEvolution: fetchEvo,
+    callS10,
     getCompletion,
     bot,
     adminId: ADMIN_TELEGRAM_ID,
-    fetchEvolution: fetchEvo,
-    callS10,
-    anticipationEngine,
-    ruleEngine,
+    watchdog,
+    dataWorker,
+    a2a: a2aProtocol,
+    spaceExecutor,
   });
   agenticLoop.start();
 
@@ -1602,7 +1677,7 @@ async function start() {
   orderExecutor = new OrderExecutor({
     callS10,
     agenticLoop,
-    anticipationEngine,
+    anticipationEngine: null,
     vmBridge,
     spaceExecutor,
     bot,
@@ -1613,15 +1688,17 @@ async function start() {
   // Start Express
   app.listen(PORT, '0.0.0.0', () => {
     logger.info('='.repeat(60));
-    logger.info(`OpenClaw v3 — FULL AGENTIC GOD MODE on port ${PORT}`);
+    logger.info(`OpenClaw v4 — DATA-DRIVEN AUTONOMOUS AGENT on port ${PORT}`);
     logger.info(`Telegram: ${TELEGRAM_BOT_TOKEN ? 'ACTIVE' : 'DISABLED'}`);
     logger.info(`OpenRouter: ${OPENROUTER_API_KEY ? 'CONFIGURED' : 'NOT SET'}`);
     logger.info(`VM Bridge: ${process.env.SSH_PRIVATE_KEY ? 'ACTIVE (SSH)' : 'NOT SET'}`);
     logger.info(`GitHub: ${GH_TOKEN ? 'ACTIVE' : 'NOT SET'}`);
-    logger.info(`Agentic Loop: STARTED (Karpathy v3 + Anticipation)`);
+    logger.info(`Agentic Loop: v4 data-driven (observe/data/health/report/command/heartbeat)`);
+    logger.info(`Data Worker: ${process.env.ODDS_API_KEY ? 'ACTIVE (odds + scores)' : 'NO ODDS_API_KEY'}`);
+    logger.info(`Watchdog: ACTIVE (statistical monitoring, observation only)`);
+    logger.info(`A2A Protocol: ACTIVE (Adam ↔ Eve bidirectional)`);
     logger.info(`Model Monitor: ACTIVE (${Object.keys(modelMonitor.models).length} free models tracked)`);
     logger.info(`Rule Engine: ACTIVE (${ruleEngine.rules.length} deterministic rules)`);
-    logger.info(`Anticipation: ACTIVE (7 bottleneck signatures)`);
     logger.info(`Order Executor: ACTIVE (natural language → actions)`);
     logger.info(`Dashboard: /dashboard`);
     logger.info('='.repeat(60));
@@ -1639,18 +1716,22 @@ async function start() {
       const ghStatus = GH_TOKEN ? 'ACTIVE' : 'NO TOKEN';
       const modelCount = Object.keys(modelMonitor.models).length;
       bot.sendMessage(ADMIN_TELEGRAM_ID,
-        `*OpenClaw v3 — FULL AGENTIC GOD MODE*
+        `⚡ *OpenClaw v4 — DATA-DRIVEN AUTONOMOUS*
 
-*Agentic Loop:* Karpathy v3 + Anticipation
-*Model Monitor:* ${modelCount} free models tracked
-*Rule Engine:* ${ruleEngine.rules.length} deterministic rules
-*Anticipation:* 7 bottleneck signatures
-*Order Executor:* Natural language via Telegram
-*VM Bridge:* ${vmStatus}
-*GitHub:* ${ghStatus}
+*NEW:*
+📡 Data Worker: Real odds + scores → Supabase
+🔍 Watchdog: Statistical monitoring (observe only)
+🔗 A2A Protocol: Adam ↔ Eve structured commands
 
-Tape /orders pour voir les commandes dispo.
-Ou donne des ordres en langage naturel !`, {
+*Loop v4:* observe/data/health/report/heartbeat
+*Models:* ${modelCount} free models tracked
+*VM:* ${vmStatus} | *GitHub:* ${ghStatus}
+
+/data — odds & scores status
+/watchdog — evolution monitoring
+/a2a — Adam ↔ Eve protocol
+/loop — agentic loop status
+/orders — natural language commands`, {
           parse_mode: 'Markdown'
         }).catch(() => {});
     }

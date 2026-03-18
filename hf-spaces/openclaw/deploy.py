@@ -109,7 +109,7 @@ def main():
             repo_id=SPACE_ID,
             repo_type="space",
             operations=operations,
-            commit_message="Deploy OpenClaw v3 — full agentic god mode + model monitor + anticipation + orders",
+            commit_message="Deploy OpenClaw v4 — data-driven autonomous + A2A protocol + watchdog + data worker",
         )
         print("Files uploaded successfully!")
     except Exception as e:
@@ -128,7 +128,7 @@ def main():
                 repo_id=SPACE_ID,
                 repo_type="space",
                 operations=operations,
-                commit_message="Deploy OpenClaw v3 — full agentic god mode + model monitor + anticipation + orders",
+                commit_message="Deploy OpenClaw v4 — data-driven autonomous + A2A protocol + watchdog + data worker",
             )
             print("Files uploaded successfully!")
         else:
