@@ -2,7 +2,8 @@
  * Data Worker — Real NBA Data Collection (Eve's primary job)
  *
  * Fetches REAL data from external APIs and stores in Supabase:
- *   1. Live NBA odds (The Odds API) — every 30 min during season
+ *   1. Live NBA odds — OddsHarvester (Playwright scraping, 80+ bookmakers, FREE)
+ *      Fallback: The Odds API (paid, quota limited)
  *   2. NBA scores & schedule (free API) — every 15 min during games
  *   3. Line movement tracking — computes CLV for past predictions
  *
@@ -12,10 +13,14 @@
  * NO LLM NEEDED. Pure data work.
  */
 
+const { execFile } = require('child_process');
+const path = require('path');
 const logger = require('./logger');
 
 const ODDS_API_BASE = 'https://api.the-odds-api.com/v4';
 const NBA_SPORT = 'basketball_nba';
+const ODDSHARVESTER_SCRIPT = path.join(__dirname, '..', 'scripts', 'fetch-odds.py');
+const PYTHON_BIN = '/app/oddsvenv/bin/python3';
 
 class DataWorker {
   constructor({ oddsApiKey, infraBridge, spaceExecutor, bot, adminId }) {
@@ -43,12 +48,121 @@ class DataWorker {
   }
 
   // ══════════════════════════════════════════
-  //  ODDS FETCHER — The Odds API
+  //  ODDS FETCHER — OddsHarvester (primary) + The Odds API (fallback)
   // ══════════════════════════════════════════
 
   async fetchOdds() {
+    // 1. Try OddsHarvester first (free, unlimited, 80+ bookmakers)
+    const harvesterResult = await this._fetchViaHarvester();
+    if (harvesterResult && harvesterResult.games && harvesterResult.games.length > 0) {
+      return harvesterResult;
+    }
+
+    // 2. Fallback to The Odds API
+    return await this._fetchViaOddsAPI();
+  }
+
+  /**
+   * Fetch odds via OddsHarvester (Python/Playwright subprocess)
+   */
+  async _fetchViaHarvester() {
+    return new Promise((resolve) => {
+      const timeout = 120000; // 2 min — Playwright scraping is slow
+
+      execFile(PYTHON_BIN, [ODDSHARVESTER_SCRIPT], { timeout }, (err, stdout, stderr) => {
+        if (err) {
+          logger.warn(`[DATA-WORKER] OddsHarvester failed: ${err.message}`);
+          if (stderr) logger.debug(`[DATA-WORKER] OddsHarvester stderr: ${stderr.substring(0, 500)}`);
+          resolve(null);
+          return;
+        }
+
+        try {
+          const data = JSON.parse(stdout);
+          if (data.error) {
+            logger.warn(`[DATA-WORKER] OddsHarvester error: ${data.error}`);
+            resolve(null);
+            return;
+          }
+
+          if (data.games && data.games.length > 0) {
+            logger.info(`[DATA-WORKER] OddsHarvester: ${data.games.length} NBA games from 80+ bookmakers`);
+            this.stats.oddsFetches++;
+            this.stats.oddsSource = 'oddsharvester';
+            this.lastOddsFetch = new Date().toISOString();
+
+            // Convert to standard format and store
+            const processed = data.games.map(g => ({
+              game_id: `oh_${g.home_team}_${g.away_team}`.replace(/\s+/g, '_'),
+              home_team: g.home_team,
+              away_team: g.away_team,
+              commence_time: g.commence_time,
+              fetched_at: data.timestamp,
+              bookmakers: g.bookmakers || {},
+              consensus: this._computeHarvesterConsensus(g.bookmakers || {}),
+            }));
+
+            // Store in Supabase
+            this._storeOdds(processed).then(stored => {
+              this.stats.oddsStored += stored;
+            }).catch(() => {});
+
+            // Detect line movements
+            this._detectLineMovements(processed);
+
+            this.oddsHistory.push({
+              timestamp: this.lastOddsFetch,
+              source: 'oddsharvester',
+              gameCount: processed.length,
+            });
+            if (this.oddsHistory.length > 100) this.oddsHistory = this.oddsHistory.slice(-100);
+
+            resolve({ games: processed, stored: processed.length, source: 'oddsharvester' });
+            return;
+          }
+
+          resolve(null);
+        } catch (parseErr) {
+          logger.warn(`[DATA-WORKER] OddsHarvester JSON parse failed: ${parseErr.message}`);
+          resolve(null);
+        }
+      });
+    });
+  }
+
+  /**
+   * Compute consensus from OddsHarvester bookmaker data
+   */
+  _computeHarvesterConsensus(bookmakers) {
+    const homeOdds = [];
+    const awayOdds = [];
+
+    for (const [bk, odds] of Object.entries(bookmakers)) {
+      if (odds.home) homeOdds.push(parseFloat(odds.home));
+      if (odds.away) awayOdds.push(parseFloat(odds.away));
+    }
+
+    const avg = arr => arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+    const decimalToProb = d => d > 1 ? 1 / d : null;
+
+    const avgHome = avg(homeOdds);
+    const avgAway = avg(awayOdds);
+
+    return {
+      moneyline_home: avgHome,
+      moneyline_away: avgAway,
+      implied_home_prob: avgHome ? decimalToProb(avgHome) : null,
+      implied_away_prob: avgAway ? decimalToProb(avgAway) : null,
+      bookmaker_count: Object.keys(bookmakers).length,
+    };
+  }
+
+  /**
+   * Fallback: Fetch odds via The Odds API (paid, quota limited)
+   */
+  async _fetchViaOddsAPI() {
     if (!this.oddsApiKey) {
-      logger.warn('[DATA-WORKER] No ODDS_API_KEY — skipping odds fetch');
+      logger.warn('[DATA-WORKER] No ODDS_API_KEY — skipping odds API fallback');
       return null;
     }
 
@@ -67,6 +181,7 @@ class DataWorker {
 
       const games = await resp.json();
       this.stats.oddsFetches++;
+      this.stats.oddsSource = 'odds-api';
       this.lastOddsFetch = new Date().toISOString();
 
       if (!games || games.length === 0) {

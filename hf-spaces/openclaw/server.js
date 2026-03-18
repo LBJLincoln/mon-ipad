@@ -42,9 +42,11 @@ const PORT = process.env.PORT || 7860;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const ADMIN_TELEGRAM_ID = parseInt(process.env.ADMIN_TELEGRAM_ID || '6582544948');
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+// SPACE_HOST is set by HF Spaces infrastructure, but may not be available at startup.
+// Hardcode the known URL as fallback to ensure Telegram webhook works.
 const HF_SPACE_URL = process.env.SPACE_HOST
   ? `https://${process.env.SPACE_HOST}`
-  : `http://localhost:${PORT}`;
+  : 'https://nomos42-nomos-worker-2.hf.space';
 
 // Load model + space configs
 const modelsConfig = JSON.parse(
