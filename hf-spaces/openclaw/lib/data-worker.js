@@ -17,6 +17,10 @@ const logger = require('./logger');
 const ODDS_API_BASE = 'https://api.the-odds-api.com/v4';
 const NBA_SPORT = 'basketball_nba';
 const ESPN_SCOREBOARD = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard';
+const ESPN_INJURIES = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/injuries';
+const NBA_CDN_BOXSCORE = 'https://cdn.nba.com/static/json/liveData/boxscore/boxscore_';
+const NBA_CDN_SCOREBOARD = 'https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json';
+const NBA_CDN_HEADERS = { 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.nba.com' };
 
 class DataWorker {
   constructor({ oddsApiKey, infraBridge, spaceExecutor, bot, adminId }) {
@@ -29,13 +33,20 @@ class DataWorker {
     // State
     this.lastOddsFetch = null;
     this.lastScoresFetch = null;
+    this.lastInjuriesFetch = null;
+    this.lastBoxScoresFetch = null;
     this.oddsHistory = [];       // Ring buffer of recent fetches
     this.lineMovements = [];     // Detected line movements
     this.stats = {
       oddsFetches: 0,
       scoresFetches: 0,
+      injuriesFetches: 0,
+      boxScoresFetches: 0,
+      todaysGamesFetches: 0,
       gamesTracked: 0,
       oddsStored: 0,
+      injuriesStored: 0,
+      playerStatsStored: 0,
       errors: 0,
       lastError: null,
       apiQuotaUsed: null,
@@ -531,6 +542,443 @@ class DataWorker {
   }
 
   // ══════════════════════════════════════════
+  //  INJURIES FETCHER — ESPN free API (no auth)
+  // ══════════════════════════════════════════
+
+  /**
+   * Fetch NBA injuries from ESPN free API.
+   * Parses player name, team, status (Out/Day-to-Day/Questionable), injury type.
+   * Stores in Supabase nba_injuries table.
+   */
+  async fetchInjuries() {
+    try {
+      const resp = await fetch(ESPN_INJURIES, { signal: AbortSignal.timeout(15000) });
+
+      if (!resp.ok) {
+        throw new Error(`ESPN Injuries ${resp.status}: ${await resp.text()}`);
+      }
+
+      const data = await resp.json();
+      const injuries = [];
+
+      for (const team of (data.items || [])) {
+        const teamName = team.team?.displayName || team.team?.name || 'Unknown';
+        const teamAbbr = team.team?.abbreviation || '';
+
+        for (const entry of (team.injuries || [])) {
+          injuries.push({
+            player_name: entry.athlete?.displayName || entry.athlete?.fullName || 'Unknown',
+            player_id: entry.athlete?.id || null,
+            team: teamName,
+            team_abbr: teamAbbr,
+            status: entry.status || 'Unknown',
+            injury_type: entry.type?.description || entry.details?.type || entry.description || 'Unknown',
+            detail: entry.details?.detail || entry.longComment || null,
+            updated_at: new Date().toISOString(),
+          });
+        }
+      }
+
+      this.stats.injuriesFetches++;
+      this.lastInjuriesFetch = new Date().toISOString();
+
+      logger.info(`[DATA-WORKER] ESPN injuries: ${injuries.length} players across ${(data.items || []).length} teams`);
+
+      // Store in Supabase
+      let stored = 0;
+      if (injuries.length > 0 && this.infra?.pgPool) {
+        stored = await this._storeInjuries(injuries);
+      }
+
+      this.stats.injuriesStored += stored;
+
+      return {
+        source: 'espn',
+        total: injuries.length,
+        stored,
+        injuries,
+      };
+    } catch (err) {
+      this.stats.errors++;
+      this.stats.lastError = `injuries: ${err.message} @ ${new Date().toISOString()}`;
+      logger.error(`[DATA-WORKER] ESPN injuries fetch failed: ${err.message}`);
+      return null;
+    }
+  }
+
+  /**
+   * Store injuries in Supabase nba_injuries table
+   */
+  async _storeInjuries(injuries) {
+    if (!this.infra?.pgPool) return 0;
+    let stored = 0;
+
+    try {
+      const client = await this.infra.pgPool.connect();
+      try {
+        await client.query('SET search_path TO public');
+
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS nba_injuries (
+            id SERIAL PRIMARY KEY,
+            player_name TEXT NOT NULL,
+            player_id TEXT,
+            team TEXT NOT NULL,
+            team_abbr TEXT,
+            status TEXT NOT NULL,
+            injury_type TEXT,
+            detail TEXT,
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(player_name, team)
+          )
+        `);
+
+        for (const inj of injuries) {
+          try {
+            await client.query(`
+              INSERT INTO nba_injuries (player_name, player_id, team, team_abbr, status, injury_type, detail, updated_at)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+              ON CONFLICT (player_name, team) DO UPDATE SET
+                player_id = EXCLUDED.player_id,
+                team_abbr = EXCLUDED.team_abbr,
+                status = EXCLUDED.status,
+                injury_type = EXCLUDED.injury_type,
+                detail = EXCLUDED.detail,
+                updated_at = EXCLUDED.updated_at,
+                recorded_at = NOW()
+            `, [
+              inj.player_name,
+              inj.player_id,
+              inj.team,
+              inj.team_abbr,
+              inj.status,
+              inj.injury_type,
+              inj.detail,
+              inj.updated_at,
+            ]);
+            stored++;
+          } catch (e) {
+            if (!e.message.includes('duplicate')) {
+              logger.warn(`[DATA-WORKER] Store injury error: ${e.message}`);
+            }
+          }
+        }
+      } finally {
+        client.release();
+      }
+    } catch (err) {
+      logger.error(`[DATA-WORKER] Injuries storage failed: ${err.message}`);
+    }
+
+    return stored;
+  }
+
+  // ══════════════════════════════════════════
+  //  BOX SCORES FETCHER — NBA.com CDN (free, no auth)
+  // ══════════════════════════════════════════
+
+  /**
+   * Fetch box score for a specific game from NBA.com CDN.
+   * Extracts per-player stats: minutes, points, rebounds, assists, plus_minus, etc.
+   * Stores in Supabase nba_player_stats table.
+   * @param {string} gameId — NBA game ID (e.g. "0022300123")
+   */
+  async fetchBoxScores(gameId) {
+    if (!gameId) {
+      logger.warn('[DATA-WORKER] fetchBoxScores called without gameId');
+      return null;
+    }
+
+    try {
+      const url = `${NBA_CDN_BOXSCORE}${gameId}.json`;
+      const resp = await fetch(url, {
+        signal: AbortSignal.timeout(15000),
+        headers: NBA_CDN_HEADERS,
+      });
+
+      if (!resp.ok) {
+        throw new Error(`NBA CDN BoxScore ${resp.status} for game ${gameId}`);
+      }
+
+      const data = await resp.json();
+      const game = data.game;
+      if (!game) {
+        throw new Error(`No game data in response for ${gameId}`);
+      }
+
+      const playerStats = [];
+      const gameStatus = game.gameStatus || 0;
+      const gameStatusText = game.gameStatusText || '';
+      const gameDateUTC = game.gameTimeUTC || new Date().toISOString();
+
+      // Process both home and away teams
+      for (const side of ['homeTeam', 'awayTeam']) {
+        const team = game[side];
+        if (!team) continue;
+
+        const teamName = team.teamName || '';
+        const teamAbbr = team.teamTricode || '';
+        const teamCity = team.teamCity || '';
+        const isHome = side === 'homeTeam';
+
+        for (const player of (team.players || [])) {
+          const stats = player.statistics || {};
+          playerStats.push({
+            game_id: gameId,
+            game_date: gameDateUTC,
+            player_name: player.name || `${player.firstName || ''} ${player.familyName || ''}`.trim(),
+            player_id: String(player.personId || ''),
+            team: `${teamCity} ${teamName}`.trim(),
+            team_abbr: teamAbbr,
+            is_home: isHome,
+            starter: player.starter === '1' || player.starter === true,
+            minutes: stats.minutes || stats.minutesCalculated || '0:00',
+            points: parseInt(stats.points) || 0,
+            rebounds: parseInt(stats.reboundsTotal) || 0,
+            offensive_rebounds: parseInt(stats.reboundsOffensive) || 0,
+            defensive_rebounds: parseInt(stats.reboundsDefensive) || 0,
+            assists: parseInt(stats.assists) || 0,
+            steals: parseInt(stats.steals) || 0,
+            blocks: parseInt(stats.blocks) || 0,
+            turnovers: parseInt(stats.turnovers) || 0,
+            personal_fouls: parseInt(stats.foulsPersonal) || 0,
+            fg_made: parseInt(stats.fieldGoalsMade) || 0,
+            fg_attempted: parseInt(stats.fieldGoalsAttempted) || 0,
+            fg_pct: parseFloat(stats.fieldGoalsPercentage) || 0,
+            three_made: parseInt(stats.threePointersMade) || 0,
+            three_attempted: parseInt(stats.threePointersAttempted) || 0,
+            three_pct: parseFloat(stats.threePointersPercentage) || 0,
+            ft_made: parseInt(stats.freeThrowsMade) || 0,
+            ft_attempted: parseInt(stats.freeThrowsAttempted) || 0,
+            ft_pct: parseFloat(stats.freeThrowsPercentage) || 0,
+            plus_minus: parseFloat(stats.plusMinusPoints) || 0,
+            game_status: gameStatus,
+            game_status_text: gameStatusText,
+          });
+        }
+      }
+
+      this.stats.boxScoresFetches++;
+      this.lastBoxScoresFetch = new Date().toISOString();
+
+      logger.info(`[DATA-WORKER] NBA CDN box score: game ${gameId}, ${playerStats.length} players, status: ${gameStatusText}`);
+
+      // Store in Supabase
+      let stored = 0;
+      if (playerStats.length > 0 && this.infra?.pgPool) {
+        stored = await this._storePlayerStats(playerStats);
+      }
+
+      this.stats.playerStatsStored += stored;
+
+      return {
+        source: 'nba-cdn',
+        gameId,
+        gameStatus,
+        gameStatusText,
+        playerCount: playerStats.length,
+        stored,
+        players: playerStats,
+      };
+    } catch (err) {
+      this.stats.errors++;
+      this.stats.lastError = `boxscore: ${err.message} @ ${new Date().toISOString()}`;
+      logger.error(`[DATA-WORKER] NBA CDN box score failed (${gameId}): ${err.message}`);
+      return null;
+    }
+  }
+
+  /**
+   * Store player stats in Supabase nba_player_stats table
+   */
+  async _storePlayerStats(playerStats) {
+    if (!this.infra?.pgPool) return 0;
+    let stored = 0;
+
+    try {
+      const client = await this.infra.pgPool.connect();
+      try {
+        await client.query('SET search_path TO public');
+
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS nba_player_stats (
+            id SERIAL PRIMARY KEY,
+            game_id TEXT NOT NULL,
+            game_date TIMESTAMPTZ,
+            player_name TEXT NOT NULL,
+            player_id TEXT,
+            team TEXT NOT NULL,
+            team_abbr TEXT,
+            is_home BOOLEAN,
+            starter BOOLEAN DEFAULT FALSE,
+            minutes TEXT,
+            points INT DEFAULT 0,
+            rebounds INT DEFAULT 0,
+            offensive_rebounds INT DEFAULT 0,
+            defensive_rebounds INT DEFAULT 0,
+            assists INT DEFAULT 0,
+            steals INT DEFAULT 0,
+            blocks INT DEFAULT 0,
+            turnovers INT DEFAULT 0,
+            personal_fouls INT DEFAULT 0,
+            fg_made INT DEFAULT 0,
+            fg_attempted INT DEFAULT 0,
+            fg_pct REAL DEFAULT 0,
+            three_made INT DEFAULT 0,
+            three_attempted INT DEFAULT 0,
+            three_pct REAL DEFAULT 0,
+            ft_made INT DEFAULT 0,
+            ft_attempted INT DEFAULT 0,
+            ft_pct REAL DEFAULT 0,
+            plus_minus REAL DEFAULT 0,
+            game_status INT DEFAULT 0,
+            game_status_text TEXT,
+            recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(game_id, player_id)
+          )
+        `);
+
+        for (const ps of playerStats) {
+          try {
+            await client.query(`
+              INSERT INTO nba_player_stats (
+                game_id, game_date, player_name, player_id, team, team_abbr, is_home, starter,
+                minutes, points, rebounds, offensive_rebounds, defensive_rebounds,
+                assists, steals, blocks, turnovers, personal_fouls,
+                fg_made, fg_attempted, fg_pct, three_made, three_attempted, three_pct,
+                ft_made, ft_attempted, ft_pct, plus_minus, game_status, game_status_text
+              )
+              VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30)
+              ON CONFLICT (game_id, player_id) DO UPDATE SET
+                player_name = EXCLUDED.player_name,
+                team = EXCLUDED.team,
+                team_abbr = EXCLUDED.team_abbr,
+                minutes = EXCLUDED.minutes,
+                points = EXCLUDED.points,
+                rebounds = EXCLUDED.rebounds,
+                offensive_rebounds = EXCLUDED.offensive_rebounds,
+                defensive_rebounds = EXCLUDED.defensive_rebounds,
+                assists = EXCLUDED.assists,
+                steals = EXCLUDED.steals,
+                blocks = EXCLUDED.blocks,
+                turnovers = EXCLUDED.turnovers,
+                personal_fouls = EXCLUDED.personal_fouls,
+                fg_made = EXCLUDED.fg_made,
+                fg_attempted = EXCLUDED.fg_attempted,
+                fg_pct = EXCLUDED.fg_pct,
+                three_made = EXCLUDED.three_made,
+                three_attempted = EXCLUDED.three_attempted,
+                three_pct = EXCLUDED.three_pct,
+                ft_made = EXCLUDED.ft_made,
+                ft_attempted = EXCLUDED.ft_attempted,
+                ft_pct = EXCLUDED.ft_pct,
+                plus_minus = EXCLUDED.plus_minus,
+                game_status = EXCLUDED.game_status,
+                game_status_text = EXCLUDED.game_status_text,
+                recorded_at = NOW()
+            `, [
+              ps.game_id, ps.game_date, ps.player_name, ps.player_id,
+              ps.team, ps.team_abbr, ps.is_home, ps.starter,
+              ps.minutes, ps.points, ps.rebounds, ps.offensive_rebounds, ps.defensive_rebounds,
+              ps.assists, ps.steals, ps.blocks, ps.turnovers, ps.personal_fouls,
+              ps.fg_made, ps.fg_attempted, ps.fg_pct,
+              ps.three_made, ps.three_attempted, ps.three_pct,
+              ps.ft_made, ps.ft_attempted, ps.ft_pct,
+              ps.plus_minus, ps.game_status, ps.game_status_text,
+            ]);
+            stored++;
+          } catch (e) {
+            if (!e.message.includes('duplicate')) {
+              logger.warn(`[DATA-WORKER] Store player stats error: ${e.message}`);
+            }
+          }
+        }
+      } finally {
+        client.release();
+      }
+    } catch (err) {
+      logger.error(`[DATA-WORKER] Player stats storage failed: ${err.message}`);
+    }
+
+    return stored;
+  }
+
+  // ══════════════════════════════════════════
+  //  TODAY'S GAMES — NBA.com CDN Scoreboard (free, no auth)
+  // ══════════════════════════════════════════
+
+  /**
+   * Fetch today's NBA games from NBA.com CDN.
+   * Returns game IDs that can be passed to fetchBoxScores().
+   * Stores game IDs and statuses.
+   */
+  async fetchTodaysGames() {
+    try {
+      const resp = await fetch(NBA_CDN_SCOREBOARD, {
+        signal: AbortSignal.timeout(15000),
+        headers: NBA_CDN_HEADERS,
+      });
+
+      if (!resp.ok) {
+        throw new Error(`NBA CDN Scoreboard ${resp.status}: ${await resp.text()}`);
+      }
+
+      const data = await resp.json();
+      const scoreboard = data.scoreboard;
+      if (!scoreboard) {
+        throw new Error('No scoreboard data in response');
+      }
+
+      const games = [];
+      for (const game of (scoreboard.games || [])) {
+        const homeTeam = game.homeTeam || {};
+        const awayTeam = game.awayTeam || {};
+
+        games.push({
+          game_id: game.gameId,
+          game_code: game.gameCode || '',
+          game_status: game.gameStatus || 0,
+          game_status_text: game.gameStatusText || '',
+          game_time_utc: game.gameTimeUTC || '',
+          period: game.period || 0,
+          game_clock: game.gameClock || '',
+          home_team: `${homeTeam.teamCity || ''} ${homeTeam.teamName || ''}`.trim(),
+          home_abbr: homeTeam.teamTricode || '',
+          home_score: parseInt(homeTeam.score) || 0,
+          away_team: `${awayTeam.teamCity || ''} ${awayTeam.teamName || ''}`.trim(),
+          away_abbr: awayTeam.teamTricode || '',
+          away_score: parseInt(awayTeam.score) || 0,
+        });
+      }
+
+      this.stats.todaysGamesFetches++;
+
+      const completed = games.filter(g => g.game_status === 3);
+      const live = games.filter(g => g.game_status === 2);
+      const scheduled = games.filter(g => g.game_status === 1);
+
+      logger.info(`[DATA-WORKER] NBA CDN scoreboard: ${games.length} games (${completed.length} final, ${live.length} live, ${scheduled.length} scheduled)`);
+
+      return {
+        source: 'nba-cdn',
+        date: scoreboard.gameDate || new Date().toISOString().slice(0, 10),
+        total: games.length,
+        completed: completed.length,
+        live: live.length,
+        scheduled: scheduled.length,
+        games,
+        gameIds: games.map(g => g.game_id),
+      };
+    } catch (err) {
+      this.stats.errors++;
+      this.stats.lastError = `todaysGames: ${err.message} @ ${new Date().toISOString()}`;
+      logger.error(`[DATA-WORKER] NBA CDN scoreboard failed: ${err.message}`);
+      return null;
+    }
+  }
+
+  // ══════════════════════════════════════════
   //  STATUS
   // ══════════════════════════════════════════
 
@@ -538,6 +986,8 @@ class DataWorker {
     return {
       lastOddsFetch: this.lastOddsFetch,
       lastScoresFetch: this.lastScoresFetch,
+      lastInjuriesFetch: this.lastInjuriesFetch,
+      lastBoxScoresFetch: this.lastBoxScoresFetch,
       oddsApiKey: this.oddsApiKey ? 'configured' : 'MISSING',
       supabase: this.infra?.pgPool ? 'connected' : 'not connected',
       stats: this.stats,
