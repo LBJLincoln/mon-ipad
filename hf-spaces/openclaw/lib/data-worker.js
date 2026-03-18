@@ -1,18 +1,21 @@
 /**
- * Data Worker — Real NBA Data Collection (Eve's primary job)
+ * Data Worker — Real NBA Data Collection
  *
  * Fetches REAL data from external APIs and stores in Supabase:
  *   1. Live NBA odds — The Odds API (dormant until quota resets April 1)
  *   2. NBA scores — ESPN free API (no auth, unlimited)
  *   3. Line movement tracking — computes CLV for past predictions
- *
- * ESPN API (free, no auth):
- *   GET https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=YYYYMMDD
+ *   4. Injuries — ESPN free API
+ *   5. Box scores — NBA.com CDN
+ *   6. Lineups — RotoWire (via Chromium scraping)
+ *   7. Referee assignments — NBA.com (via Chromium scraping)
+ *   8. Basketball Reference — advanced stats (via Chromium scraping)
  *
  * NO LLM NEEDED. Pure data work.
  */
 
 const logger = require('./logger');
+let browser; // lazy-loaded
 
 const ODDS_API_BASE = 'https://api.the-odds-api.com/v4';
 const NBA_SPORT = 'basketball_nba';
@@ -974,6 +977,333 @@ class DataWorker {
       this.stats.errors++;
       this.stats.lastError = `todaysGames: ${err.message} @ ${new Date().toISOString()}`;
       logger.error(`[DATA-WORKER] NBA CDN scoreboard failed: ${err.message}`);
+      return null;
+    }
+  }
+
+  // ══════════════════════════════════════════
+  //  BROWSER-BASED SCRAPING (Chromium headless)
+  // ══════════════════════════════════════════
+
+  async _getBrowser() {
+    if (!browser) {
+      try {
+        browser = require('./browser');
+      } catch (err) {
+        logger.warn(`[DATA-WORKER] Browser module not available: ${err.message}`);
+        return null;
+      }
+    }
+    return browser;
+  }
+
+  /**
+   * Scrape RotoWire for today's NBA lineups (starting 5 + injury status).
+   * Requires Chromium — page is JS-rendered.
+   */
+  async fetchLineups() {
+    const b = await this._getBrowser();
+    if (!b) return null;
+
+    try {
+      const html = await b.scrape('https://www.rotowire.com/basketball/nba-lineups.php', {
+        waitFor: '.lineup__main',
+        timeout: 20000,
+      });
+
+      if (!html || typeof html !== 'string') {
+        logger.warn('[DATA-WORKER] RotoWire returned no HTML');
+        return null;
+      }
+
+      // Parse lineups from HTML — extract game cards
+      const cheerio = require('cheerio');
+      const $ = cheerio.load(html);
+      const lineups = [];
+
+      $('.lineup__main .lineup__matchup, .lineup').each((_, el) => {
+        const teams = $(el).find('.lineup__team');
+        if (teams.length < 2) return;
+
+        const awayTeam = $(teams[0]).find('.lineup__abbr').text().trim();
+        const homeTeam = $(teams[1]).find('.lineup__abbr').text().trim();
+        const awayPlayers = [];
+        const homePlayers = [];
+
+        $(teams[0]).closest('.lineup').find('.lineup__player').each((i, p) => {
+          awayPlayers.push({
+            name: $(p).find('a').text().trim(),
+            position: $(p).find('.lineup__pos').text().trim(),
+            status: $(p).find('.lineup__inj').text().trim() || 'Active',
+          });
+        });
+
+        $(teams[1]).closest('.lineup').find('.lineup__player').each((i, p) => {
+          homePlayers.push({
+            name: $(p).find('a').text().trim(),
+            position: $(p).find('.lineup__pos').text().trim(),
+            status: $(p).find('.lineup__inj').text().trim() || 'Active',
+          });
+        });
+
+        if (awayTeam && homeTeam) {
+          lineups.push({
+            away_team: awayTeam,
+            home_team: homeTeam,
+            away_players: awayPlayers.slice(0, 8),
+            home_players: homePlayers.slice(0, 8),
+          });
+        }
+      });
+
+      logger.info(`[DATA-WORKER] RotoWire lineups: ${lineups.length} games scraped`);
+
+      // Store in Supabase
+      if (lineups.length > 0 && this.infra?.pgPool) {
+        await this._storeLineups(lineups);
+      }
+
+      return { source: 'rotowire', games: lineups.length, lineups };
+    } catch (err) {
+      this.stats.errors++;
+      logger.error(`[DATA-WORKER] RotoWire lineups scrape failed: ${err.message}`);
+      return null;
+    }
+  }
+
+  async _storeLineups(lineups) {
+    if (!this.infra?.pgPool) return;
+    try {
+      const client = await this.infra.pgPool.connect();
+      try {
+        await client.query('SET search_path TO public');
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS nba_lineups (
+            id SERIAL PRIMARY KEY,
+            game_date DATE NOT NULL DEFAULT CURRENT_DATE,
+            away_team TEXT NOT NULL,
+            home_team TEXT NOT NULL,
+            away_players JSONB,
+            home_players JSONB,
+            recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(game_date, away_team, home_team)
+          )
+        `);
+
+        for (const lu of lineups) {
+          await client.query(`
+            INSERT INTO nba_lineups (away_team, home_team, away_players, home_players)
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT (game_date, away_team, home_team) DO UPDATE SET
+              away_players = EXCLUDED.away_players,
+              home_players = EXCLUDED.home_players,
+              recorded_at = NOW()
+          `, [lu.away_team, lu.home_team, JSON.stringify(lu.away_players), JSON.stringify(lu.home_players)]);
+        }
+      } finally { client.release(); }
+    } catch (err) {
+      logger.error(`[DATA-WORKER] Lineups storage failed: ${err.message}`);
+    }
+  }
+
+  /**
+   * Scrape referee assignments for today's NBA games.
+   * Source: official NBA or basketballinsiders.
+   */
+  async fetchReferees() {
+    const b = await this._getBrowser();
+    if (!b) return null;
+
+    try {
+      const html = await b.scrape('https://official.nba.com/referee-assignments/', {
+        waitFor: 'table',
+        timeout: 20000,
+      });
+
+      if (!html || typeof html !== 'string') return null;
+
+      const cheerio = require('cheerio');
+      const $ = cheerio.load(html);
+      const assignments = [];
+
+      $('table tbody tr').each((_, row) => {
+        const cells = $(row).find('td');
+        if (cells.length < 4) return;
+
+        assignments.push({
+          game_date: new Date().toISOString().slice(0, 10),
+          matchup: $(cells[0]).text().trim(),
+          crew_chief: $(cells[1]).text().trim(),
+          referee: $(cells[2]).text().trim(),
+          umpire: $(cells[3]).text().trim(),
+        });
+      });
+
+      logger.info(`[DATA-WORKER] Referee assignments: ${assignments.length} games`);
+
+      if (assignments.length > 0 && this.infra?.pgPool) {
+        await this._storeReferees(assignments);
+      }
+
+      return { source: 'nba-official', count: assignments.length, assignments };
+    } catch (err) {
+      this.stats.errors++;
+      logger.error(`[DATA-WORKER] Referee scrape failed: ${err.message}`);
+      return null;
+    }
+  }
+
+  async _storeReferees(assignments) {
+    if (!this.infra?.pgPool) return;
+    try {
+      const client = await this.infra.pgPool.connect();
+      try {
+        await client.query('SET search_path TO public');
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS nba_referees (
+            id SERIAL PRIMARY KEY,
+            game_date DATE NOT NULL,
+            matchup TEXT NOT NULL,
+            crew_chief TEXT,
+            referee TEXT,
+            umpire TEXT,
+            recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(game_date, matchup)
+          )
+        `);
+
+        for (const ref of assignments) {
+          await client.query(`
+            INSERT INTO nba_referees (game_date, matchup, crew_chief, referee, umpire)
+            VALUES ($1, $2, $3, $4, $5)
+            ON CONFLICT (game_date, matchup) DO UPDATE SET
+              crew_chief = EXCLUDED.crew_chief,
+              referee = EXCLUDED.referee,
+              umpire = EXCLUDED.umpire,
+              recorded_at = NOW()
+          `, [ref.game_date, ref.matchup, ref.crew_chief, ref.referee, ref.umpire]);
+        }
+      } finally { client.release(); }
+    } catch (err) {
+      logger.error(`[DATA-WORKER] Referees storage failed: ${err.message}`);
+    }
+  }
+
+  /**
+   * Scrape Basketball Reference for team advanced stats.
+   * Gets: ORtg, DRtg, Pace, eFG%, TOV%, FTr, etc.
+   */
+  async fetchAdvancedStats() {
+    const b = await this._getBrowser();
+    if (!b) return null;
+
+    try {
+      const html = await b.scrape('https://www.basketball-reference.com/leagues/NBA_2026.html', {
+        waitFor: '#advanced-team',
+        timeout: 25000,
+      });
+
+      if (!html || typeof html !== 'string') return null;
+
+      const cheerio = require('cheerio');
+      const $ = cheerio.load(html);
+      const teams = [];
+
+      $('#advanced-team tbody tr:not(.thead)').each((_, row) => {
+        const cells = $(row).find('td');
+        if (cells.length < 15) return;
+
+        const teamLink = $(row).find('td[data-stat="team_name"] a');
+        teams.push({
+          team: teamLink.text().trim() || $(cells[0]).text().trim(),
+          age: parseFloat($(row).find('td[data-stat="age"]').text()) || 0,
+          wins: parseInt($(row).find('td[data-stat="wins"]').text()) || 0,
+          losses: parseInt($(row).find('td[data-stat="losses"]').text()) || 0,
+          pace: parseFloat($(row).find('td[data-stat="pace"]').text()) || 0,
+          off_rtg: parseFloat($(row).find('td[data-stat="off_rtg"]').text()) || 0,
+          def_rtg: parseFloat($(row).find('td[data-stat="def_rtg"]').text()) || 0,
+          net_rtg: parseFloat($(row).find('td[data-stat="net_rtg"]').text()) || 0,
+          efg_pct: parseFloat($(row).find('td[data-stat="efg_pct"]').text()) || 0,
+          tov_pct: parseFloat($(row).find('td[data-stat="tov_pct"]').text()) || 0,
+          orb_pct: parseFloat($(row).find('td[data-stat="orb_pct"]').text()) || 0,
+          ft_rate: parseFloat($(row).find('td[data-stat="ft_rate"]').text()) || 0,
+          opp_efg_pct: parseFloat($(row).find('td[data-stat="opp_efg_pct"]').text()) || 0,
+          opp_tov_pct: parseFloat($(row).find('td[data-stat="opp_tov_pct"]').text()) || 0,
+          updated_at: new Date().toISOString(),
+        });
+      });
+
+      logger.info(`[DATA-WORKER] Basketball Reference advanced stats: ${teams.length} teams`);
+
+      if (teams.length > 0 && this.infra?.pgPool) {
+        await this._storeAdvancedStats(teams);
+      }
+
+      return { source: 'basketball-reference', teams: teams.length, data: teams };
+    } catch (err) {
+      this.stats.errors++;
+      logger.error(`[DATA-WORKER] Basketball Reference scrape failed: ${err.message}`);
+      return null;
+    }
+  }
+
+  async _storeAdvancedStats(teams) {
+    if (!this.infra?.pgPool) return;
+    try {
+      const client = await this.infra.pgPool.connect();
+      try {
+        await client.query('SET search_path TO public');
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS nba_advanced_stats (
+            id SERIAL PRIMARY KEY,
+            team TEXT NOT NULL,
+            season TEXT NOT NULL DEFAULT '2025-26',
+            wins INT, losses INT,
+            pace REAL, off_rtg REAL, def_rtg REAL, net_rtg REAL,
+            efg_pct REAL, tov_pct REAL, orb_pct REAL, ft_rate REAL,
+            opp_efg_pct REAL, opp_tov_pct REAL,
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(team, season)
+          )
+        `);
+
+        for (const t of teams) {
+          await client.query(`
+            INSERT INTO nba_advanced_stats (team, wins, losses, pace, off_rtg, def_rtg, net_rtg, efg_pct, tov_pct, orb_pct, ft_rate, opp_efg_pct, opp_tov_pct, updated_at)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+            ON CONFLICT (team, season) DO UPDATE SET
+              wins=EXCLUDED.wins, losses=EXCLUDED.losses, pace=EXCLUDED.pace,
+              off_rtg=EXCLUDED.off_rtg, def_rtg=EXCLUDED.def_rtg, net_rtg=EXCLUDED.net_rtg,
+              efg_pct=EXCLUDED.efg_pct, tov_pct=EXCLUDED.tov_pct, orb_pct=EXCLUDED.orb_pct,
+              ft_rate=EXCLUDED.ft_rate, opp_efg_pct=EXCLUDED.opp_efg_pct, opp_tov_pct=EXCLUDED.opp_tov_pct,
+              updated_at=EXCLUDED.updated_at
+          `, [t.team, t.wins, t.losses, t.pace, t.off_rtg, t.def_rtg, t.net_rtg, t.efg_pct, t.tov_pct, t.orb_pct, t.ft_rate, t.opp_efg_pct, t.opp_tov_pct, t.updated_at]);
+        }
+      } finally { client.release(); }
+    } catch (err) {
+      logger.error(`[DATA-WORKER] Advanced stats storage failed: ${err.message}`);
+    }
+  }
+
+  /**
+   * Scrape generic web page — for RGWA or any agent to fetch arbitrary data.
+   * @param {string} url — URL to scrape
+   * @param {object} options — { waitFor, timeout, extractText }
+   */
+  async scrapePage(url, options = {}) {
+    const b = await this._getBrowser();
+    if (!b) return null;
+
+    try {
+      const result = await b.scrape(url, {
+        waitFor: options.waitFor,
+        timeout: options.timeout || 20000,
+      });
+
+      logger.info(`[DATA-WORKER] Scraped: ${url} (${typeof result === 'string' ? result.length : 0} chars)`);
+      return { source: url, content: result };
+    } catch (err) {
+      logger.error(`[DATA-WORKER] Scrape failed (${url}): ${err.message}`);
       return null;
     }
   }

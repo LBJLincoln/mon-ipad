@@ -274,6 +274,45 @@ class AgenticLoop {
       }
     }
 
+    // Fetch injuries (ESPN free)
+    const injResult = await this.dataWorker.fetchInjuries();
+    if (injResult && this.a2a) {
+      this.a2a.postDataReport('injuries', { total: injResult.total, stored: injResult.stored });
+    }
+
+    // Fetch today's games + box scores for completed games (NBA.com CDN)
+    const todayResult = await this.dataWorker.fetchTodaysGames();
+    if (todayResult?.gameIds?.length > 0) {
+      // Fetch box scores for completed games only
+      const completedGames = todayResult.games?.filter(g => g.game_status === 3) || [];
+      for (const game of completedGames.slice(0, 15)) {
+        await this.dataWorker.fetchBoxScores(game.game_id);
+      }
+      if (this.a2a) {
+        this.a2a.postDataReport('todays_games', {
+          total: todayResult.total,
+          completed: todayResult.completed,
+          live: todayResult.live,
+          boxScoresFetched: completedGames.length,
+        });
+      }
+    }
+
+    // Browser-based scraping (Chromium) — less frequent, run every other cycle
+    const cycle = this.state.cycleCount || 0;
+    if (cycle % 2 === 0) {
+      // Lineups (RotoWire) — changes pre-game
+      await this.dataWorker.fetchLineups().catch(e => logger.warn(`[LOOP] Lineups: ${e.message}`));
+
+      // Referee assignments
+      await this.dataWorker.fetchReferees().catch(e => logger.warn(`[LOOP] Referees: ${e.message}`));
+    }
+
+    // Advanced stats (Basketball Reference) — once per day
+    if (cycle % 12 === 0) {
+      await this.dataWorker.fetchAdvancedStats().catch(e => logger.warn(`[LOOP] AdvStats: ${e.message}`));
+    }
+
     // Fetch evolved model predictions from S10 and store for feedback loop
     await this._ingestPredictions();
 

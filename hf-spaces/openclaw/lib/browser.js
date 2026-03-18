@@ -1,7 +1,7 @@
 /**
  * Browser utility — Puppeteer-based scraping for JS-rendered sources.
  *
- * Uses Google Chrome installed via apt in Dockerfile.
+ * Uses Chromium from Debian apt (not Google Chrome).
  * Lazy-initialized: browser only launches when first needed.
  */
 const puppeteer = require('puppeteer-core');
@@ -13,7 +13,7 @@ async function getBrowser() {
   if (browser && browser.connected) return browser;
 
   browser = await puppeteer.launch({
-    executablePath: process.env.CHROME_BIN || '/usr/bin/google-chrome-stable',
+    executablePath: process.env.CHROME_BIN || '/usr/bin/chromium',
     headless: 'shell',
     args: [
       '--no-sandbox',
