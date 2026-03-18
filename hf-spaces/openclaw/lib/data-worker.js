@@ -2,25 +2,21 @@
  * Data Worker — Real NBA Data Collection (Eve's primary job)
  *
  * Fetches REAL data from external APIs and stores in Supabase:
- *   1. Live NBA odds — OddsHarvester (Playwright scraping, 80+ bookmakers, FREE)
- *      Fallback: The Odds API (paid, quota limited)
- *   2. NBA scores & schedule (free API) — every 15 min during games
+ *   1. Live NBA odds — The Odds API (dormant until quota resets April 1)
+ *   2. NBA scores — ESPN free API (no auth, unlimited)
  *   3. Line movement tracking — computes CLV for past predictions
  *
- * This is what makes Eve USEFUL — she collects data 24/7 that Adam
- * and the GA evolution need to make better predictions.
+ * ESPN API (free, no auth):
+ *   GET https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=YYYYMMDD
  *
  * NO LLM NEEDED. Pure data work.
  */
 
-const { execFile } = require('child_process');
-const path = require('path');
 const logger = require('./logger');
 
 const ODDS_API_BASE = 'https://api.the-odds-api.com/v4';
 const NBA_SPORT = 'basketball_nba';
-const ODDSHARVESTER_SCRIPT = path.join(__dirname, '..', 'scripts', 'fetch-odds.py');
-const PYTHON_BIN = '/app/oddsvenv/bin/python3';
+const ESPN_SCOREBOARD = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard';
 
 class DataWorker {
   constructor({ oddsApiKey, infraBridge, spaceExecutor, bot, adminId }) {
@@ -48,117 +44,18 @@ class DataWorker {
   }
 
   // ══════════════════════════════════════════
-  //  ODDS FETCHER — OddsHarvester (primary) + The Odds API (fallback)
+  //  ODDS FETCHER — The Odds API (dormant until quota resets)
   // ══════════════════════════════════════════
 
   async fetchOdds() {
-    // 1. Try OddsHarvester first (free, unlimited, 80+ bookmakers)
-    const harvesterResult = await this._fetchViaHarvester();
-    if (harvesterResult && harvesterResult.games && harvesterResult.games.length > 0) {
-      return harvesterResult;
-    }
-
-    // 2. Fallback to The Odds API
+    // Odds API only — OddsHarvester removed (Playwright can't build on HF Spaces)
+    // Quota resets monthly. When exhausted, silently skip.
     return await this._fetchViaOddsAPI();
   }
 
   /**
-   * Fetch odds via OddsHarvester (Python/Playwright subprocess)
-   */
-  async _fetchViaHarvester() {
-    return new Promise((resolve) => {
-      const timeout = 120000; // 2 min — Playwright scraping is slow
-
-      execFile(PYTHON_BIN, [ODDSHARVESTER_SCRIPT], { timeout }, (err, stdout, stderr) => {
-        if (err) {
-          logger.warn(`[DATA-WORKER] OddsHarvester failed: ${err.message}`);
-          if (stderr) logger.debug(`[DATA-WORKER] OddsHarvester stderr: ${stderr.substring(0, 500)}`);
-          resolve(null);
-          return;
-        }
-
-        try {
-          const data = JSON.parse(stdout);
-          if (data.error) {
-            logger.warn(`[DATA-WORKER] OddsHarvester error: ${data.error}`);
-            resolve(null);
-            return;
-          }
-
-          if (data.games && data.games.length > 0) {
-            logger.info(`[DATA-WORKER] OddsHarvester: ${data.games.length} NBA games from 80+ bookmakers`);
-            this.stats.oddsFetches++;
-            this.stats.oddsSource = 'oddsharvester';
-            this.lastOddsFetch = new Date().toISOString();
-
-            // Convert to standard format and store
-            const processed = data.games.map(g => ({
-              game_id: `oh_${g.home_team}_${g.away_team}`.replace(/\s+/g, '_'),
-              home_team: g.home_team,
-              away_team: g.away_team,
-              commence_time: g.commence_time,
-              fetched_at: data.timestamp,
-              bookmakers: g.bookmakers || {},
-              consensus: this._computeHarvesterConsensus(g.bookmakers || {}),
-            }));
-
-            // Store in Supabase
-            this._storeOdds(processed).then(stored => {
-              this.stats.oddsStored += stored;
-            }).catch(() => {});
-
-            // Detect line movements
-            this._detectLineMovements(processed);
-
-            this.oddsHistory.push({
-              timestamp: this.lastOddsFetch,
-              source: 'oddsharvester',
-              gameCount: processed.length,
-            });
-            if (this.oddsHistory.length > 100) this.oddsHistory = this.oddsHistory.slice(-100);
-
-            resolve({ games: processed, stored: processed.length, source: 'oddsharvester' });
-            return;
-          }
-
-          resolve(null);
-        } catch (parseErr) {
-          logger.warn(`[DATA-WORKER] OddsHarvester JSON parse failed: ${parseErr.message}`);
-          resolve(null);
-        }
-      });
-    });
-  }
-
-  /**
-   * Compute consensus from OddsHarvester bookmaker data
-   */
-  _computeHarvesterConsensus(bookmakers) {
-    const homeOdds = [];
-    const awayOdds = [];
-
-    for (const [bk, odds] of Object.entries(bookmakers)) {
-      if (odds.home) homeOdds.push(parseFloat(odds.home));
-      if (odds.away) awayOdds.push(parseFloat(odds.away));
-    }
-
-    const avg = arr => arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
-    const decimalToProb = d => d > 1 ? 1 / d : null;
-
-    const avgHome = avg(homeOdds);
-    const avgAway = avg(awayOdds);
-
-    return {
-      moneyline_home: avgHome,
-      moneyline_away: avgAway,
-      implied_home_prob: avgHome ? decimalToProb(avgHome) : null,
-      implied_away_prob: avgAway ? decimalToProb(avgAway) : null,
-      bookmaker_count: Object.keys(bookmakers).length,
-    };
-  }
-
-  /**
-   * Fallback: Fetch odds via The Odds API (paid, quota limited)
+   * Fetch odds via The Odds API (paid, quota limited)
+   * Dormant when quota exhausted (returns null gracefully).
    */
   async _fetchViaOddsAPI() {
     if (!this.oddsApiKey) {
@@ -379,55 +276,126 @@ class DataWorker {
   }
 
   // ══════════════════════════════════════════
-  //  SCORES FETCHER
+  //  SCORES FETCHER — ESPN free API (no auth, unlimited)
   // ══════════════════════════════════════════
 
-  async fetchScores() {
-    if (!this.oddsApiKey) return null;
-
+  async fetchScores(dateStr) {
     try {
-      // The Odds API also provides scores
-      const url = `${ODDS_API_BASE}/sports/${NBA_SPORT}/scores/?apiKey=${this.oddsApiKey}&daysFrom=1`;
+      // Default to today if no date specified
+      const d = dateStr ? dateStr.replace(/-/g, '') : new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      const url = `${ESPN_SCOREBOARD}?dates=${d}`;
       const resp = await fetch(url, { signal: AbortSignal.timeout(15000) });
 
       if (!resp.ok) {
-        throw new Error(`Scores API ${resp.status}`);
+        throw new Error(`ESPN ${resp.status}`);
       }
 
-      this.stats.apiQuotaUsed = resp.headers.get('x-requests-used');
-      this.stats.apiQuotaRemaining = resp.headers.get('x-requests-remaining');
+      const data = await resp.json();
+      const games = [];
 
-      const games = await resp.json();
+      for (const event of (data.events || [])) {
+        const competition = event.competitions?.[0];
+        if (!competition) continue;
+
+        const competitors = competition.competitors || [];
+        const home = competitors.find(c => c.homeAway === 'home');
+        const away = competitors.find(c => c.homeAway === 'away');
+        if (!home || !away) continue;
+
+        const completed = competition.status?.type?.completed || false;
+        games.push({
+          id: event.id,
+          home: home.team?.displayName || home.team?.name,
+          away: away.team?.displayName || away.team?.name,
+          home_score: parseInt(home.score) || 0,
+          away_score: parseInt(away.score) || 0,
+          commence: event.date,
+          completed,
+          status: competition.status?.type?.description || 'Unknown',
+        });
+      }
+
       this.stats.scoresFetches++;
       this.lastScoresFetch = new Date().toISOString();
 
       const completed = games.filter(g => g.completed);
-      const live = games.filter(g => !g.completed && g.scores);
+      const live = games.filter(g => !g.completed && g.status !== 'Scheduled');
+      const upcoming = games.length - completed.length - live.length;
 
-      logger.info(`[DATA-WORKER] Scores: ${completed.length} completed, ${live.length} live, ${games.length - completed.length - live.length} upcoming`);
+      logger.info(`[DATA-WORKER] ESPN scores: ${completed.length} completed, ${live.length} live, ${upcoming} upcoming`);
 
       // Store completed game results in Supabase
       if (completed.length > 0 && this.infra?.pgPool) {
-        await this._storeScores(completed);
+        await this._storeScoresESPN(completed);
       }
 
       return {
+        source: 'espn',
         total: games.length,
         completed: completed.length,
         live: live.length,
-        games: games.map(g => ({
-          id: g.id,
-          home: g.home_team,
-          away: g.away_team,
-          commence: g.commence_time,
-          completed: g.completed,
-          scores: g.scores,
-        })),
+        games,
       };
     } catch (err) {
       this.stats.errors++;
-      logger.error(`[DATA-WORKER] Scores fetch failed: ${err.message}`);
+      logger.error(`[DATA-WORKER] ESPN scores failed: ${err.message}`);
       return null;
+    }
+  }
+
+  /**
+   * Store ESPN scores in Supabase nba_scores table
+   */
+  async _storeScoresESPN(completedGames) {
+    if (!this.infra?.pgPool) return;
+
+    try {
+      const client = await this.infra.pgPool.connect();
+      try {
+        await client.query('SET search_path TO public');
+
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS nba_scores (
+            id SERIAL PRIMARY KEY,
+            game_id TEXT UNIQUE NOT NULL,
+            home_team TEXT NOT NULL,
+            away_team TEXT NOT NULL,
+            commence_time TIMESTAMPTZ,
+            home_score INT,
+            away_score INT,
+            completed BOOLEAN DEFAULT FALSE,
+            recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+          )
+        `);
+
+        for (const game of completedGames) {
+          try {
+            await client.query(`
+              INSERT INTO nba_scores (game_id, home_team, away_team, commence_time, home_score, away_score, completed)
+              VALUES ($1, $2, $3, $4, $5, $6, TRUE)
+              ON CONFLICT (game_id) DO UPDATE SET
+                home_score = EXCLUDED.home_score,
+                away_score = EXCLUDED.away_score,
+                completed = TRUE
+            `, [
+              `espn_${game.id}`,
+              game.home,
+              game.away,
+              game.commence || new Date().toISOString(),
+              game.home_score,
+              game.away_score,
+            ]);
+          } catch (e) {
+            if (!e.message.includes('duplicate')) {
+              logger.warn(`[DATA-WORKER] Store ESPN score error: ${e.message}`);
+            }
+          }
+        }
+      } finally {
+        client.release();
+      }
+    } catch (err) {
+      logger.error(`[DATA-WORKER] ESPN scores storage failed: ${err.message}`);
     }
   }
 
@@ -499,58 +467,7 @@ class DataWorker {
     return stored;
   }
 
-  async _storeScores(completedGames) {
-    if (!this.infra?.pgPool) return;
-
-    try {
-      const client = await this.infra.pgPool.connect();
-      try {
-        await client.query('SET search_path TO public');
-
-        await client.query(`
-          CREATE TABLE IF NOT EXISTS nba_scores (
-            id SERIAL PRIMARY KEY,
-            game_id TEXT UNIQUE NOT NULL,
-            home_team TEXT NOT NULL,
-            away_team TEXT NOT NULL,
-            commence_time TIMESTAMPTZ NOT NULL,
-            home_score INT,
-            away_score INT,
-            completed BOOLEAN DEFAULT FALSE,
-            recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-          )
-        `);
-
-        for (const game of completedGames) {
-          const homeScore = game.scores?.find(s => s.name === game.home_team);
-          const awayScore = game.scores?.find(s => s.name === game.away_team);
-
-          try {
-            await client.query(`
-              INSERT INTO nba_scores (game_id, home_team, away_team, commence_time, home_score, away_score, completed)
-              VALUES ($1, $2, $3, $4, $5, $6, TRUE)
-              ON CONFLICT (game_id) DO UPDATE SET
-                home_score = EXCLUDED.home_score,
-                away_score = EXCLUDED.away_score,
-                completed = TRUE
-            `, [
-              game.id, game.home_team, game.away_team, game.commence_time,
-              homeScore ? parseInt(homeScore.score) : null,
-              awayScore ? parseInt(awayScore.score) : null,
-            ]);
-          } catch (e) {
-            if (!e.message.includes('duplicate')) {
-              logger.warn(`[DATA-WORKER] Store score error: ${e.message}`);
-            }
-          }
-        }
-      } finally {
-        client.release();
-      }
-    } catch (err) {
-      logger.error(`[DATA-WORKER] Supabase scores storage failed: ${err.message}`);
-    }
-  }
+  // _storeScores removed — replaced by _storeScoresESPN above
 
   // ══════════════════════════════════════════
   //  CLV ANALYSIS — Closing Line Value

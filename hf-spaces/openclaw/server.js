@@ -33,6 +33,8 @@ const RuleEngine = require('./lib/rule-engine');
 const DataWorker = require('./lib/data-worker');
 const Watchdog = require('./lib/watchdog');
 const A2AProtocol = require('./lib/a2a-protocol');
+const FeedbackLoop = require('./lib/feedback-loop');
+const ResearchAgent = require('./lib/research-agent');
 
 // ============================================================
 // CONFIG
@@ -122,6 +124,8 @@ let ruleEngine = null;
 let dataWorker = null;
 let watchdog = null;
 let a2aProtocol = null;
+let feedbackLoop = null;   // Phase 1: Prediction vs Reality
+let researchAgent = null;  // Phase 3: Autonomous research
 
 // ============================================================
 // OPENROUTER LLM CLIENT
@@ -280,9 +284,14 @@ if (TELEGRAM_BOT_TOKEN) {
  */
 const COMMANDS = {
   '/start': async (msg) => {
-    return `⚡ *OpenClaw v4 — DATA-DRIVEN AUTONOMOUS*
+    return `⚡ *OpenClaw v5 — INTELLIGENT AUTONOMOUS*
 Agent IA autonome NOMOS42 NBA Quant AI
-A2A Protocol + Data Worker + Watchdog
+Feedback Loop + Analyst + Research Agent
+
+*INTELLIGENCE (NEW v5):*
+/eval [date] — Prediction accuracy vs reality
+/research — Latest research findings
+/insight — Latest analyst recommendation
 
 *DATA & MONITORING:*
 /data — Odds & scores collection status
@@ -293,8 +302,8 @@ A2A Protocol + Data Worker + Watchdog
 *ORDRES EN LANGAGE NATUREL:*
 "boost mutation to 0.2"
 "restart S10"
+"force analyze" / "force research"
 "status evolution"
-"fetch odds"
 
 *Infrastructure:*
 /status — Sante complete
@@ -303,7 +312,6 @@ A2A Protocol + Data Worker + Watchdog
 
 *VM Remote (SSH):*
 /vm <cmd> — Executer sur la VM
-/vm sysinfo — Info systeme VM
 
 *Git & Code:*
 /git <repo> [action] — GitHub status
@@ -312,8 +320,6 @@ A2A Protocol + Data Worker + Watchdog
 
 *HF Space Management:*
 /hfspace <id> <action> — restart/pause/resume
-/deploy <space> — Deployer
-/logs <space> — Logs Space
 
 *Databases:*
 /db <sql> — Supabase SQL
@@ -321,8 +327,7 @@ A2A Protocol + Data Worker + Watchdog
 
 *AI & Evolution:*
 /evolution — Status GA S10
-/heal — Self-healing scan
-/eval — Smoke test`;
+/heal — Self-healing scan`;
   },
 
   '/status': async (msg) => {
@@ -358,23 +363,27 @@ A2A Protocol + Data Worker + Watchdog
   },
 
   '/eval': async (msg) => {
+    if (!feedbackLoop) return 'FeedbackLoop not initialized.';
+
     const args = msg.text.split(' ').slice(1);
-    const pipeline = args[0] || 'standard';
-    const count = parseInt(args[1]) || 5;
+    const dateStr = args[0] || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
     await bot.sendMessage(msg.chat.id,
-      `Lancement eval: *${pipeline}* x${count} questions...`, { parse_mode: 'Markdown' });
+      `Evaluating predictions for *${dateStr}*...`, { parse_mode: 'Markdown' });
 
     try {
-      const results = await spaceExecutor.runEval(pipeline, count);
-      let text = `*Eval Results — ${pipeline}*\n\n`;
-      text += `Score: *${results.accuracy}%* (${results.passed}/${results.total})\n`;
-      text += `Avg latency: ${results.avgLatency}ms\n`;
-      if (results.failures?.length > 0) {
-        text += '\nFailures:\n';
-        for (const f of results.failures.slice(0, 3)) {
-          text += `- ${f.question.substring(0, 60)}...\n`;
-        }
+      const result = await feedbackLoop.evaluateDay(dateStr);
+      if (result.error) return `Eval: ${result.error}`;
+
+      let text = `*Prediction Eval — ${dateStr}*\n\n`;
+      text += `🎯 Accuracy: *${(result.accuracy * 100).toFixed(1)}%* (${result.correct}/${result.total_games})\n`;
+      text += `📊 Brier Score: *${result.brier_score.toFixed(4)}* (target < 0.20)\n`;
+
+      const trend = await feedbackLoop.getTrend();
+      if (trend?.avg_brier_7d) {
+        text += `\n*7-Day Average:*\n`;
+        text += `  Brier: ${trend.avg_brier_7d} | Accuracy: ${trend.avg_accuracy_7d ? (trend.avg_accuracy_7d * 100).toFixed(1) + '%' : '?'}`;
+        text += `\n  Trending: ${trend.improving ? '📈 Improving' : '📉 Declining'}`;
       }
       return text;
     } catch (err) {
@@ -783,6 +792,35 @@ Cycles: ${s.state?.cycles || 0}
 *Errors (last 24h):* ${s.state?.errors?.filter(e => new Date(e.timestamp) > new Date(Date.now() - 86400000)).length || 0}`;
   },
 
+  '/research': async (msg) => {
+    if (!researchAgent) return 'Research agent not initialized.';
+    const s = researchAgent.getStatus();
+    let text = `*Research Agent*
+Cycles: ${s.stats.cyclesRun} | Findings: ${s.stats.findingsTotal}
+Web searches: ${s.stats.webSearches} | LLM analyses: ${s.stats.llmAnalyses}
+Last research: ${s.lastResearch || 'never'}\n`;
+
+    if (s.recentFindings.length > 0) {
+      text += '\n*Recent Findings:*\n';
+      for (const f of s.recentFindings) {
+        text += `${f.actionable ? '🎯' : '📝'} *${f.topic}* (${f.relevance})\n`;
+        text += `${f.finding.substring(0, 150)}\n\n`;
+      }
+    } else {
+      text += '\nNo findings yet. Research runs every 12h.';
+    }
+    return text;
+  },
+
+  '/insight': async (msg) => {
+    if (!agenticLoop) return 'Agentic loop not initialized.';
+    const status = agenticLoop.getStatus();
+    if (status.lastInsight) {
+      return `*Latest Analyst Insight*\n\n${status.lastInsight}`;
+    }
+    return 'No analyst insight yet. Analysis runs every 2h.';
+  },
+
   '/read': async (msg) => {
     if (msg.from.id !== ADMIN_TELEGRAM_ID) return 'Admin only.';
     const filePath = msg.text.replace('/read', '').trim();
@@ -894,7 +932,7 @@ async function fetchSSE(url) {
 app.get('/keep-alive', (req, res) => {
   res.json({
     status: 'alive',
-    version: '2026.3.18-v4-data-driven',
+    version: '2026.3.18-v5-intelligent',
     uptime: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
     memory: process.memoryUsage(),
@@ -905,14 +943,18 @@ app.get('/keep-alive', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     name: 'OpenClaw Nomos Agent',
-    version: '2026.3.18-v4-data-driven',
+    version: '2026.3.18-v5-intelligent',
     status: 'running',
     endpoints: {
       health: '/keep-alive',
       webhook: '/webhook/telegram',
       api: '/api/v1',
       spaces: '/api/v1/spaces',
-      eval: '/api/v1/eval',
+      eval_latest: '/api/v1/eval/latest',
+      eval_history: '/api/v1/eval/history',
+      eval_trend: '/api/v1/eval/trend',
+      analyst_insight: '/api/v1/analyst/insight',
+      research_findings: '/api/v1/research/findings',
       query: '/api/v1/query',
       db: '/api/v1/db',
       metrics: '/api/v1/metrics',
@@ -946,7 +988,8 @@ app.post('/webhook/telegram', (req, res) => {
 });
 
 async function handleTelegramUpdate(update) {
-  const msg = update.message;
+  // Handle both regular messages and edited messages
+  const msg = update.message || update.edited_message;
   if (!msg || !msg.text) return;
 
   const chatId = msg.chat.id;
@@ -959,44 +1002,68 @@ async function handleTelegramUpdate(update) {
 
   let reply;
 
-  // Check commands first
-  const cmd = text.split(' ')[0].split('@')[0].toLowerCase();
-  if (COMMANDS[cmd]) {
-    reply = await COMMANDS[cmd](msg);
-  }
-  // Then check if it's a natural language order (only for admin)
-  else if (orderExecutor && msg.from?.id === ADMIN_TELEGRAM_ID && orderExecutor.isOrder(text)) {
-    logger.info(`[ORDER] Detected order from admin: ${text.substring(0, 80)}`);
-    const result = await orderExecutor.execute(text);
-    if (result && result.executed) {
-      reply = `*ORDER EXECUTED* [${result.intent}]\n\n${result.result}`;
+  try {
+    // 1. Check slash commands first
+    const cmd = text.split(' ')[0].split('@')[0].toLowerCase();
+    if (COMMANDS[cmd]) {
+      try {
+        reply = await COMMANDS[cmd](msg);
+      } catch (cmdErr) {
+        logger.error(`[TG] Command ${cmd} crashed: ${cmdErr.message}`);
+        reply = `Command ${cmd} failed: ${cmdErr.message}`;
+      }
     }
-  }
-  // Fallback: AI completion with conversation context
-  if (!reply) {
-    const history = persistence.getHistory(chatId, 10);
-    const messages = history.map(h => ({ role: h.role, content: h.content }));
-    messages.push({ role: 'user', content: text });
-
-    try {
-      const result = await getCompletion(messages);
-      reply = result.content;
-      logger.info(`[LLM] Model: ${result.model}, tokens: ${result.usage?.total_tokens || '?'}`);
-    } catch (err) {
-      logger.error('LLM error:', err);
-      reply = 'Erreur LLM. Tous les modeles sont indisponibles. Reessayez.';
+    // 2. Check natural language orders (admin only)
+    else if (orderExecutor && msg.from?.id === ADMIN_TELEGRAM_ID && orderExecutor.isOrder(text)) {
+      logger.info(`[ORDER] Detected order from admin: ${text.substring(0, 80)}`);
+      try {
+        const result = await orderExecutor.execute(text);
+        if (result && result.executed) {
+          reply = `*ORDER EXECUTED* [${result.intent}]\n\n${result.result}`;
+        } else {
+          // Order recognized but not executed — fall through to LLM
+          logger.info(`[ORDER] Order not executed: ${result?.reason || 'unknown'}`);
+        }
+      } catch (orderErr) {
+        logger.error(`[ORDER] Execute failed: ${orderErr.message}`);
+        reply = `Order failed: ${orderErr.message}`;
+      }
     }
+
+    // 3. Fallback: AI completion with conversation context
+    if (!reply) {
+      const history = persistence.getHistory(chatId, 10);
+      const messages = history.map(h => ({ role: h.role, content: h.content }));
+      messages.push({ role: 'user', content: text });
+
+      try {
+        const result = await getCompletion(messages);
+        reply = result.content;
+        logger.info(`[LLM] Model: ${result.model}, tokens: ${result.usage?.total_tokens || '?'}`);
+      } catch (err) {
+        logger.error(`[TG] LLM fallback failed: ${err.message}`);
+        reply = `Eve is here but all LLM providers are down. Try a /command instead.\n\nAvailable: /status /eval /data /watchdog /loop /insight /research`;
+      }
+    }
+  } catch (topLevelErr) {
+    // Absolute last resort — ALWAYS reply something
+    logger.error(`[TG] Handler top-level crash: ${topLevelErr.message}`);
+    reply = `Internal error: ${topLevelErr.message}\nTry /status or /eval`;
   }
 
+  // ALWAYS send a reply — never leave the user hanging
   if (reply) {
-    // Telegram message limit: 4096 chars
     const chunks = splitMessage(reply, 4000);
     for (const chunk of chunks) {
       try {
         await bot.sendMessage(chatId, chunk, { parse_mode: 'Markdown' });
       } catch (err) {
         // Retry without markdown if parsing fails
-        await bot.sendMessage(chatId, chunk).catch(() => {});
+        try {
+          await bot.sendMessage(chatId, chunk);
+        } catch (err2) {
+          logger.error(`[TG] Send failed even without markdown: ${err2.message}`);
+        }
       }
     }
     persistence.saveMessage(chatId, 'assistant', reply);
@@ -1445,6 +1512,91 @@ app.get('/api/v1/data/movements', (req, res) => {
 });
 
 // ============================================================
+// FEEDBACK LOOP API — Prediction evaluation (Phase 1)
+// ============================================================
+
+// Get latest evaluation
+app.get('/api/v1/eval/latest', async (req, res) => {
+  if (!feedbackLoop) return res.json({ status: 'not_initialized' });
+  const latest = await feedbackLoop.getLatest();
+  res.json(latest || { message: 'No evaluations yet' });
+});
+
+// Get evaluation history
+app.get('/api/v1/eval/history', async (req, res) => {
+  if (!feedbackLoop) return res.json([]);
+  const days = parseInt(req.query.days) || 30;
+  const history = await feedbackLoop.getHistory(days);
+  res.json(history);
+});
+
+// Get evaluation trend (7-day rolling)
+app.get('/api/v1/eval/trend', async (req, res) => {
+  if (!feedbackLoop) return res.json(null);
+  const trend = await feedbackLoop.getTrend();
+  res.json(trend);
+});
+
+// Trigger evaluation for a specific date
+app.post('/api/v1/eval/run', async (req, res) => {
+  if (!feedbackLoop) return res.status(503).json({ error: 'Not initialized' });
+  const { date } = req.body;
+  const dateStr = date || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const result = await feedbackLoop.evaluateDay(dateStr);
+  res.json(result);
+});
+
+// Store predictions manually
+app.post('/api/v1/eval/predictions', async (req, res) => {
+  if (!feedbackLoop) return res.status(503).json({ error: 'Not initialized' });
+  const { predictions, date } = req.body;
+  if (!predictions || !date) return res.status(400).json({ error: 'predictions and date required' });
+  const stored = await feedbackLoop.storePredictions(predictions, date);
+  res.json({ stored, date });
+});
+
+// ============================================================
+// RESEARCH AGENT API — Autonomous research (Phase 3)
+// ============================================================
+
+// Get research status and findings
+app.get('/api/v1/research/status', (req, res) => {
+  if (!researchAgent) return res.json({ status: 'not_initialized' });
+  res.json(researchAgent.getStatus());
+});
+
+// Get recent findings
+app.get('/api/v1/research/findings', (req, res) => {
+  if (!researchAgent) return res.json([]);
+  const limit = parseInt(req.query.limit) || 20;
+  res.json(researchAgent.getFindings(limit));
+});
+
+// Trigger research cycle manually
+app.post('/api/v1/research/run', async (req, res) => {
+  if (!researchAgent) return res.status(503).json({ error: 'Not initialized' });
+  agenticLoop._cycle('research').catch(e => logger.error(`Manual research: ${e.message}`));
+  res.json({ status: 'triggered', type: 'research' });
+});
+
+// ============================================================
+// ANALYST API — LLM-powered insights (Phase 2)
+// ============================================================
+
+// Get latest insight
+app.get('/api/v1/analyst/insight', (req, res) => {
+  if (!agenticLoop) return res.json({ status: 'not_initialized' });
+  res.json({ insight: agenticLoop.lastInsight, lastAnalyze: agenticLoop.state.lastAnalyze });
+});
+
+// Trigger analysis manually
+app.post('/api/v1/analyst/run', async (req, res) => {
+  if (!agenticLoop) return res.status(503).json({ error: 'Not initialized' });
+  agenticLoop._cycle('analyze').catch(e => logger.error(`Manual analyze: ${e.message}`));
+  res.json({ status: 'triggered', type: 'analyze' });
+});
+
+// ============================================================
 // ORDER EXECUTOR API
 // ============================================================
 
@@ -1638,7 +1790,7 @@ async function start() {
   });
   logger.info('A2A Protocol initialized — Adam ↔ Eve communication active');
 
-  // Initialize Data Worker — Real NBA data collection
+  // Initialize Data Worker — Real NBA data collection (ESPN scores + Odds API when quota allows)
   dataWorker = new DataWorker({
     oddsApiKey: process.env.ODDS_API_KEY,
     infraBridge,
@@ -1646,9 +1798,9 @@ async function start() {
     bot,
     adminId: ADMIN_TELEGRAM_ID,
   });
-  logger.info(`Data Worker initialized — ODDS_API_KEY: ${process.env.ODDS_API_KEY ? 'SET' : 'NOT SET'}`);
+  logger.info(`Data Worker initialized — ESPN scores (free) + Odds API: ${process.env.ODDS_API_KEY ? 'SET (dormant until quota resets)' : 'NOT SET'}`);
 
-  // Initialize Watchdog — Statistical evolution monitoring (OBSERVE ONLY)
+  // Initialize Watchdog — Statistical evolution monitoring (OBSERVE ONLY, now with recommendations)
   watchdog = new Watchdog({
     fetchEvolution: fetchEvo,
     spaceExecutor,
@@ -1656,9 +1808,28 @@ async function start() {
     adminId: ADMIN_TELEGRAM_ID,
     a2a: a2aProtocol,
   });
-  logger.info('Watchdog initialized — statistical monitoring (observation only)');
+  logger.info('Watchdog initialized — statistical monitoring with recommendations');
 
-  // Initialize Agentic Loop v4 — data-driven operations
+  // Initialize Feedback Loop — Prediction vs Reality (Phase 1: THE critical addition)
+  feedbackLoop = new FeedbackLoop({
+    infraBridge,
+    bot,
+    adminId: ADMIN_TELEGRAM_ID,
+    a2a: a2aProtocol,
+  });
+  logger.info('FeedbackLoop initialized — prediction evaluation active');
+
+  // Initialize Research Agent — Autonomous NBA quant research (Phase 3)
+  researchAgent = new ResearchAgent({
+    getCompletion,
+    infraBridge,
+    a2a: a2aProtocol,
+    bot,
+    adminId: ADMIN_TELEGRAM_ID,
+  });
+  logger.info(`Research Agent initialized — Brave Search: ${process.env.BRAVE_SEARCH_API_KEY ? 'CONFIGURED' : 'NOT SET (LLM-only mode)'}`);
+
+  // Initialize Agentic Loop v5 — intelligent autonomous operations
   agenticLoop = new AgenticLoop({
     fetchEvolution: fetchEvo,
     callS10,
@@ -1669,6 +1840,8 @@ async function start() {
     dataWorker,
     a2a: a2aProtocol,
     spaceExecutor,
+    feedbackLoop,
+    researchAgent,
   });
   agenticLoop.start();
 
@@ -1687,14 +1860,16 @@ async function start() {
   // Start Express
   app.listen(PORT, '0.0.0.0', () => {
     logger.info('='.repeat(60));
-    logger.info(`OpenClaw v4 — DATA-DRIVEN AUTONOMOUS AGENT on port ${PORT}`);
+    logger.info(`OpenClaw v5 — INTELLIGENT AUTONOMOUS AGENT on port ${PORT}`);
     logger.info(`Telegram: ${TELEGRAM_BOT_TOKEN ? 'ACTIVE' : 'DISABLED'}`);
     logger.info(`OpenRouter: ${OPENROUTER_API_KEY ? 'CONFIGURED' : 'NOT SET'}`);
     logger.info(`VM Bridge: ${process.env.SSH_PRIVATE_KEY ? 'ACTIVE (SSH)' : 'NOT SET'}`);
     logger.info(`GitHub: ${GH_TOKEN ? 'ACTIVE' : 'NOT SET'}`);
-    logger.info(`Agentic Loop: v4 data-driven (observe/data/health/report/command/heartbeat)`);
-    logger.info(`Data Worker: ${process.env.ODDS_API_KEY ? 'ACTIVE (odds + scores)' : 'NO ODDS_API_KEY'}`);
-    logger.info(`Watchdog: ACTIVE (statistical monitoring, observation only)`);
+    logger.info(`Agentic Loop: v5 intelligent (9 cycles — analyze:30m, eval:15m, research:4h)`);
+    logger.info(`Data Worker: ESPN scores (free) + Odds API (${process.env.ODDS_API_KEY ? 'dormant' : 'NOT SET'})`);
+    logger.info(`FeedbackLoop: ACTIVE (prediction vs reality evaluation)`);
+    logger.info(`Research Agent: ACTIVE (autonomous NBA quant research)`);
+    logger.info(`Watchdog: ACTIVE (statistical monitoring with recommendations)`);
     logger.info(`A2A Protocol: ACTIVE (Adam ↔ Eve bidirectional)`);
     logger.info(`Model Monitor: ACTIVE (${Object.keys(modelMonitor.models).length} free models tracked)`);
     logger.info(`Rule Engine: ACTIVE (${ruleEngine.rules.length} deterministic rules)`);
@@ -1715,22 +1890,22 @@ async function start() {
       const ghStatus = GH_TOKEN ? 'ACTIVE' : 'NO TOKEN';
       const modelCount = Object.keys(modelMonitor.models).length;
       bot.sendMessage(ADMIN_TELEGRAM_ID,
-        `⚡ *OpenClaw v4 — DATA-DRIVEN AUTONOMOUS*
+        `⚡ *OpenClaw v5 — INTELLIGENT AUTONOMOUS*
 
-*NEW:*
-📡 Data Worker: Real odds + scores → Supabase
-🔍 Watchdog: Statistical monitoring (observe only)
-🔗 A2A Protocol: Adam ↔ Eve structured commands
+*NEW in v5:*
+📊 FeedbackLoop: Predictions vs ESPN real scores
+💡 Analyst: LLM reasoning every 2h
+🔬 Research: Autonomous NBA quant research 2x/day
+🎯 Smart watchdog: Recommendations with alerts
 
-*Loop v4:* observe/data/health/report/heartbeat
+*9 Cycles:* observe/data/health/report/heartbeat/eval/analyze/research/command
 *Models:* ${modelCount} free models tracked
 *VM:* ${vmStatus} | *GitHub:* ${ghStatus}
 
-/data — odds & scores status
-/watchdog — evolution monitoring
-/a2a — Adam ↔ Eve protocol
-/loop — agentic loop status
-/orders — natural language commands`, {
+/eval — prediction accuracy
+/insight — analyst recommendation
+/research — research findings
+/data — ESPN scores + odds`, {
           parse_mode: 'Markdown'
         }).catch(() => {});
     }

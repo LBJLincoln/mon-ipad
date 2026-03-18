@@ -1,16 +1,13 @@
-# OpenClaw v4 — HF Spaces Docker Deployment
+# OpenClaw v5 — HF Spaces Docker Deployment
 FROM node:20-slim
 
 ENV PORT=7860
 ENV NODE_ENV=production
 ENV DEBIAN_FRONTEND=noninteractive
 
-# System deps: curl + Python 3 (for future OddsHarvester)
+# System deps: curl only (Python removed — no more OddsHarvester/Playwright)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    python3 \
-    python3-pip \
-    python3-venv \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

@@ -162,7 +162,13 @@ class Watchdog {
     if (allSameGen) {
       return this._alert('WARNING', 'generation_stall',
         `Generation stuck at ${obs.generation} for 30+ min`,
-        { generation: obs.generation, duration: '30+ min' });
+        {
+          generation: obs.generation, duration: '30+ min',
+          recommendation: {
+            action: 'check_s10_health',
+            reasoning: `Generation ${obs.generation} hasn't advanced in 30+ min. S10 may be stuck or training slowly.`,
+          },
+        });
     }
 
     // If Brier hasn't improved in 60+ minutes (12+ checks)
@@ -173,15 +179,30 @@ class Watchdog {
       if (oldBrier && newBrier && Math.abs(newBrier - oldBrier) < 0.0001) {
         return this._alert('WARNING', 'brier_plateau',
           `Brier unchanged at ${newBrier?.toFixed(4)} for 60+ min`,
-          { brier: newBrier, duration: '60+ min' });
+          {
+            brier: newBrier, duration: '60+ min',
+            recommendation: {
+              action: 'boost_mutation',
+              params: { mutation_rate: 0.08 },
+              reasoning: `Brier plateau at ${newBrier?.toFixed(4)} for 60+ min. Increasing mutation from ${obs.mutationRate || '?'} to 0.08 could help escape local minimum.`,
+            },
+          });
       }
     }
 
     // Explicit stagnation counter from S10
     if (obs.stagnation >= 8) {
+      const suggestedMutation = obs.mutationRate < 0.10 ? 0.15 : 0.20;
       return this._alert('CRITICAL', 'high_stagnation',
         `S10 stagnation counter: ${obs.stagnation} (GA stuck)`,
-        { stagnation: obs.stagnation, brier: obs.brier });
+        {
+          stagnation: obs.stagnation, brier: obs.brier,
+          recommendation: {
+            action: 'boost_mutation',
+            params: { mutation_rate: suggestedMutation },
+            reasoning: `Stagnation at ${obs.stagnation} with mutation ${obs.mutationRate || '?'}. Need more exploration — boost to ${suggestedMutation}.`,
+          },
+        });
     }
 
     return null;
@@ -195,7 +216,13 @@ class Watchdog {
     if (delta > 0.005) {
       return this._alert('WARNING', 'brier_regression',
         `Brier regressed: ${this.lastBrier?.toFixed(4)} → ${obs.brier?.toFixed(4)} (+${delta.toFixed(4)})`,
-        { prev: this.lastBrier, curr: obs.brier, delta });
+        {
+          prev: this.lastBrier, curr: obs.brier, delta,
+          recommendation: {
+            action: 'increase_elitism',
+            reasoning: `Brier regressed by ${delta.toFixed(4)}. Consider increasing elitism to preserve the best individual, or check if feature set changed.`,
+          },
+        });
     }
 
     // Check longer-term regression (1 hour)
@@ -205,7 +232,13 @@ class Watchdog {
       if (hourDelta > 0.01) {
         return this._alert('CRITICAL', 'brier_regression_1h',
           `Brier regressed over 1h: ${hourAgo[0].brier?.toFixed(4)} → ${obs.brier?.toFixed(4)} (+${hourDelta.toFixed(4)})`,
-          { prev1h: hourAgo[0].brier, curr: obs.brier, delta: hourDelta });
+          {
+            prev1h: hourAgo[0].brier, curr: obs.brier, delta: hourDelta,
+            recommendation: {
+              action: 'rollback_config',
+              reasoning: `Sustained 1h regression of ${hourDelta.toFixed(4)} is significant. Consider rolling back to previous best config or diversifying population.`,
+            },
+          });
       }
     }
 
@@ -218,13 +251,27 @@ class Watchdog {
     if (obs.features > 200) {
       return this._alert('WARNING', 'feature_bloat',
         `Feature count high: ${obs.features} (risk of overfitting)`,
-        { features: obs.features });
+        {
+          features: obs.features,
+          recommendation: {
+            action: 'reduce_features',
+            params: { target_features: 120 },
+            reasoning: `${obs.features} features likely causes overfitting. Target 80-120 features for better generalization.`,
+          },
+        });
     }
 
     if (obs.features < 20) {
       return this._alert('WARNING', 'feature_collapse',
         `Feature count dangerously low: ${obs.features}`,
-        { features: obs.features });
+        {
+          features: obs.features,
+          recommendation: {
+            action: 'expand_features',
+            params: { target_features: 80 },
+            reasoning: `Only ${obs.features} features may be underfitting. Target 60-100 features for better coverage.`,
+          },
+        });
     }
 
     return null;
@@ -236,10 +283,25 @@ class Watchdog {
     if (obs.population < 20) {
       return this._alert('CRITICAL', 'population_collapse',
         `Population collapsed to ${obs.population} — evolution may be stuck`,
-        { population: obs.population });
+        {
+          population: obs.population,
+          recommendation: {
+            action: 'reset_population',
+            params: { population_size: 100 },
+            reasoning: `Population at ${obs.population} is too small for genetic diversity. Reset to 100+ individuals.`,
+          },
+        });
     }
 
     return null;
+  }
+
+  // ══════════════════════════════════════════
+  //  RECENT ALERTS — For analyst context
+  // ══════════════════════════════════════════
+
+  getRecentAlerts(limit = 10) {
+    return this.alerts.slice(-limit);
   }
 
   // ══════════════════════════════════════════
