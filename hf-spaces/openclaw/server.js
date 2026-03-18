@@ -1943,6 +1943,7 @@ async function start() {
     bot,
     adminId: ADMIN_TELEGRAM_ID,
     a2a: a2aProtocol,
+    callS10,
   });
   logger.info('FeedbackLoop initialized — prediction evaluation active');
 

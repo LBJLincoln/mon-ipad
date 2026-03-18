@@ -68,6 +68,14 @@ class AgenticLoop {
     // Auto-execute: Karpathy pattern — act on insights automatically
     this.autoExecuteEnabled = true;
 
+    // Conversation memory: last N insights for multi-turn reasoning
+    this.analysisHistory = [];
+    this.MAX_ANALYSIS_HISTORY = 10;
+
+    // Execution feedback: track what we did and what happened
+    this.executionLog = [];
+    this.MAX_EXECUTION_LOG = 20;
+
     // State
     this.state = {
       startedAt: null,
@@ -564,17 +572,39 @@ class AgenticLoop {
       },
     };
 
-    const prompt = `You are Eve, an NBA quant analyst AI. Analyze this data and give ONE concrete recommendation.
+    // Build conversation memory context
+    const memoryContext = this.analysisHistory.length > 0
+      ? `\n\nPREVIOUS INSIGHTS (most recent first):\n${this.analysisHistory.slice(-5).reverse().map((h, i) =>
+          `[${i + 1}] ${h.timestamp}: ${h.insight.substring(0, 150)}${h.actions?.length ? ` → EXECUTED: ${h.actions.join(', ')}` : ''}`
+        ).join('\n')}`
+      : '';
 
+    // Build execution feedback context
+    const feedbackContext = this.executionLog.length > 0
+      ? `\n\nRECENT EXECUTIONS & RESULTS:\n${this.executionLog.slice(-5).reverse().map((e, i) =>
+          `[${i + 1}] ${e.timestamp}: ${e.action} → ${e.result} | Brier before: ${e.brierBefore?.toFixed(4) || '?'}, after: ${e.brierAfter?.toFixed(4) || 'pending'}`
+        ).join('\n')}`
+      : '';
+
+    const prompt = `You are Eve, an NBA quant analyst AI. Analyze this data and give concrete recommendations.
+
+CURRENT STATE:
 ${JSON.stringify(context, null, 2)}
+${memoryContext}
+${feedbackContext}
 
 Rules:
 - Use NUMBERS, not vague statements
 - Compare to targets: Brier < 0.20, ROI > 5%, accuracy > 65%
-- If recommending a GA change, output: ACTION: set_config(param=value)
-  Valid params: mutation_rate, target_features, crossover_rate, tournament_size
-  Example: ACTION: set_config(mutation_rate=0.06)
-- If recommending diversify: ACTION: diversify
+- You can output MULTIPLE actions, one per line:
+  ACTION: set_config(param=value)
+  ACTION: set_config(param2=value2)
+  ACTION: diversify
+  ACTION: inject_features(feature1, feature2, feature3)
+  ACTION: rollback
+  Valid set_config params: mutation_rate, target_features, crossover_rate, tournament_size
+- Do NOT repeat the same actions from previous insights unless you have new evidence
+- If an execution's result was negative, do NOT retry the same action
 - If everything looks good, say "STATUS: OK" and give brief summary
 - Max 200 words`;
 
@@ -605,9 +635,22 @@ Rules:
           });
         }
 
-        // Auto-execute: Karpathy pattern — act on insights
+        // Auto-execute: Karpathy pattern — act on ALL insights
+        let executedActions = [];
         if (this.autoExecuteEnabled) {
-          await this._tryAutoExecute(result.content, context);
+          executedActions = await this._tryAutoExecute(result.content, context);
+        }
+
+        // Save to conversation memory
+        this.analysisHistory.push({
+          timestamp: new Date().toISOString(),
+          insight: result.content,
+          actions: executedActions,
+          brier: context.evolution?.brier,
+          model: result.model,
+        });
+        if (this.analysisHistory.length > this.MAX_ANALYSIS_HISTORY) {
+          this.analysisHistory = this.analysisHistory.slice(-this.MAX_ANALYSIS_HISTORY);
         }
 
         logger.info(`[LOOP] Analyst insight generated (${result.model}): ${result.content.substring(0, 100)}...`);
@@ -624,12 +667,9 @@ Rules:
   // ══════════════════════════════════════════
 
   async _tryAutoExecute(insight, context) {
-    // Parse ACTION lines from insight
-    const actionMatch = insight.match(/ACTION:\s*(\w+)(?:\(([^)]*)\))?/);
-    if (!actionMatch) return;
-
-    const actionType = actionMatch[1];
-    const actionArgs = actionMatch[2] || '';
+    // Parse ALL ACTION lines from insight (not just first)
+    const actionMatches = [...insight.matchAll(/ACTION:\s*(\w+)(?:\(([^)]*)\))?/g)];
+    if (actionMatches.length === 0) return [];
 
     // Safety gate: monotonic ratchet — only execute if Brier is near checkpoint best
     const currentBrier = context.evolution?.brier;
@@ -641,39 +681,97 @@ Rules:
       logger.debug('[LOOP] No checkpoint data available for ratchet check');
     }
 
-    if (bestCheckpointBrier && currentBrier && currentBrier > bestCheckpointBrier + 0.005) {
+    // Ratchet applies to config changes, NOT to rollback (rollback is emergency)
+    const hasRollback = actionMatches.some(m => m[1] === 'rollback');
+
+    if (!hasRollback && bestCheckpointBrier && currentBrier && currentBrier > bestCheckpointBrier + 0.005) {
       logger.info(`[LOOP] Auto-execute BLOCKED: Brier ${currentBrier?.toFixed(4)} > checkpoint ${bestCheckpointBrier?.toFixed(4)} + 0.005`);
       if (this.a2a) {
         this.a2a.postReport({
           type: 'auto_execute_blocked',
           level: 'WARNING',
-          message: `Ratchet blocked: ${actionType}(${actionArgs}). Brier ${currentBrier?.toFixed(4)} too far from best ${bestCheckpointBrier?.toFixed(4)}`,
+          message: `Ratchet blocked ${actionMatches.length} action(s). Brier ${currentBrier?.toFixed(4)} too far from best ${bestCheckpointBrier?.toFixed(4)}`,
         });
       }
-      return;
+      return [];
     }
 
-    try {
-      if (actionType === 'set_config') {
-        // Parse param=value pairs
-        const params = {};
-        for (const pair of actionArgs.split(',')) {
-          const [key, val] = pair.trim().split('=');
-          if (key && val) params[key.trim()] = parseFloat(val.trim()) || val.trim();
-        }
-        if (Object.keys(params).length > 0) {
-          await this.callS10('/api/config', { method: 'POST', body: JSON.stringify(params) });
-          logger.info(`[LOOP] Auto-executed: set_config(${JSON.stringify(params)})`);
-        }
-      } else if (actionType === 'diversify') {
-        await this.callS10('/api/command', { method: 'POST', body: JSON.stringify({ command: 'diversify' }) });
-        logger.info('[LOOP] Auto-executed: diversify');
-      } else {
-        logger.debug(`[LOOP] Unknown action type: ${actionType}`);
-        return;
-      }
+    const executedActions = [];
 
-      // Create checkpoint after successful execution
+    for (const match of actionMatches) {
+      const actionType = match[1];
+      const actionArgs = match[2] || '';
+
+      try {
+        let result = 'unknown';
+
+        if (actionType === 'set_config') {
+          const params = {};
+          for (const pair of actionArgs.split(',')) {
+            const [key, val] = pair.trim().split('=');
+            if (key && val) params[key.trim()] = parseFloat(val.trim()) || val.trim();
+          }
+          if (Object.keys(params).length > 0) {
+            await this.callS10('/api/config', { method: 'POST', body: JSON.stringify(params) });
+            result = `set_config(${JSON.stringify(params)})`;
+            logger.info(`[LOOP] Auto-executed: ${result}`);
+          }
+
+        } else if (actionType === 'diversify') {
+          await this.callS10('/api/command', { method: 'POST', body: JSON.stringify({ command: 'diversify' }) });
+          result = 'diversify';
+          logger.info('[LOOP] Auto-executed: diversify');
+
+        } else if (actionType === 'inject_features') {
+          // Parse feature names from args
+          const features = actionArgs.split(',').map(f => f.trim()).filter(Boolean);
+          if (features.length > 0) {
+            await this.callS10('/api/features/inject', {
+              method: 'POST',
+              body: JSON.stringify({ features }),
+            });
+            result = `inject_features(${features.join(', ')})`;
+            logger.info(`[LOOP] Auto-executed: ${result}`);
+          }
+
+        } else if (actionType === 'rollback') {
+          await this.callS10('/api/checkpoint/restore', { method: 'POST', body: '{}' });
+          result = 'rollback to best checkpoint';
+          logger.info('[LOOP] Auto-executed: rollback to best checkpoint');
+
+        } else {
+          logger.debug(`[LOOP] Unknown action type: ${actionType}`);
+          continue;
+        }
+
+        executedActions.push(result);
+
+        // Track execution for recursive feedback
+        this.executionLog.push({
+          timestamp: new Date().toISOString(),
+          action: result,
+          brierBefore: currentBrier,
+          brierAfter: null, // Will be filled by _checkExecutionFeedback
+          result: 'pending',
+        });
+        if (this.executionLog.length > this.MAX_EXECUTION_LOG) {
+          this.executionLog = this.executionLog.slice(-this.MAX_EXECUTION_LOG);
+        }
+
+      } catch (err) {
+        logger.warn(`[LOOP] Auto-execute ${actionType} failed: ${err.message}`);
+        this.executionLog.push({
+          timestamp: new Date().toISOString(),
+          action: `${actionType}(${actionArgs})`,
+          brierBefore: currentBrier,
+          brierAfter: null,
+          result: `FAILED: ${err.message}`,
+        });
+      }
+    }
+
+    // Create checkpoint after successful executions
+    if (executedActions.length > 0) {
       try {
         await this.callS10('/api/checkpoint', { method: 'POST', body: '{}' });
         logger.info('[LOOP] Post-execute checkpoint created');
@@ -685,12 +783,116 @@ Rules:
         this.a2a.postReport({
           type: 'auto_execute',
           level: 'INFO',
-          message: `Executed: ${actionType}(${actionArgs})`,
-          data: { actionType, actionArgs, currentBrier, bestCheckpointBrier },
+          message: `Executed ${executedActions.length} action(s): ${executedActions.join(' | ')}`,
+          data: { actions: executedActions, currentBrier, bestCheckpointBrier },
+        });
+      }
+
+      // Schedule feedback check: after 20 min, compare Brier to see if it improved
+      setTimeout(() => this._checkExecutionFeedback(currentBrier), 20 * 60 * 1000);
+    }
+
+    return executedActions;
+  }
+
+  // ══════════════════════════════════════════
+  //  EXECUTION FEEDBACK — Recursive learning
+  // ══════════════════════════════════════════
+
+  async _checkExecutionFeedback(brierBefore) {
+    try {
+      const evo = await this.fetchEvolution();
+      const brierAfter = evo?.brier || evo?.best_brier;
+
+      if (!brierAfter) return;
+
+      // Update pending execution logs with actual result
+      for (const entry of this.executionLog) {
+        if (entry.result === 'pending') {
+          entry.brierAfter = brierAfter;
+          entry.result = brierAfter < brierBefore
+            ? `improvement (${brierBefore?.toFixed(4)} → ${brierAfter.toFixed(4)})`
+            : brierAfter > brierBefore
+              ? `regression (${brierBefore?.toFixed(4)} → ${brierAfter.toFixed(4)})`
+              : `neutral (${brierAfter.toFixed(4)})`;
+        }
+      }
+
+      const delta = brierBefore ? brierAfter - brierBefore : 0;
+      const emoji = delta < 0 ? '📉' : delta > 0 ? '📈' : '➡️';
+
+      logger.info(`[LOOP] Execution feedback: Brier ${brierBefore?.toFixed(4)} → ${brierAfter.toFixed(4)} (${emoji} ${delta > 0 ? '+' : ''}${delta.toFixed(4)})`);
+
+      if (this.a2a) {
+        this.a2a.postReport({
+          type: 'execution_feedback',
+          level: delta > 0.005 ? 'WARNING' : 'INFO',
+          message: `${emoji} Post-execution Brier: ${brierBefore?.toFixed(4)} → ${brierAfter.toFixed(4)}`,
+          data: { brierBefore, brierAfter, delta },
         });
       }
     } catch (err) {
-      logger.warn(`[LOOP] Auto-execute failed: ${err.message}`);
+      logger.debug(`[LOOP] Execution feedback check failed: ${err.message}`);
+    }
+  }
+
+  // ══════════════════════════════════════════
+  //  AUTO-INJECT — Research findings → Feature injection
+  // ══════════════════════════════════════════
+
+  async _autoInjectFromResearch(findings) {
+    if (!this.getCompletion || !this.callS10) return;
+
+    const actionable = findings.filter(f => f.actionable && f.relevance >= 0.6);
+    if (actionable.length === 0) return;
+
+    // Ask LLM to extract concrete feature names from findings
+    const prompt = `Extract concrete NBA feature names from these research findings for our genetic algorithm.
+
+FINDINGS:
+${actionable.map(f => `- ${f.topic}: ${f.finding}`).join('\n')}
+
+CURRENT FEATURE CATEGORIES: rolling_performance, four_factors, momentum, rest_schedule, opponent_adjusted, matchup_elo, market_microstructure, context, referee, player_impact
+
+Output ONLY a JSON array of feature names that could be added. Use snake_case.
+Example: ["pace_differential_5g", "contested_rebound_rate", "clutch_ft_pct"]
+If no concrete features can be extracted, output: []
+Max 5 features.`;
+
+    try {
+      const result = await this.getCompletion([{ role: 'user', content: prompt }], {
+        maxTokens: 200,
+        temperature: 0.2,
+      });
+
+      if (!result?.content) return;
+
+      // Parse JSON array from response
+      const jsonMatch = result.content.match(/\[[\s\S]*?\]/);
+      if (!jsonMatch) return;
+
+      const features = JSON.parse(jsonMatch[0]);
+      if (!Array.isArray(features) || features.length === 0) return;
+
+      // Inject top 3 features
+      const toInject = features.slice(0, 3);
+      await this.callS10('/api/features/inject', {
+        method: 'POST',
+        body: JSON.stringify({ features: toInject, source: 'research_auto' }),
+      });
+
+      logger.info(`[LOOP] Auto-injected ${toInject.length} features from research: ${toInject.join(', ')}`);
+
+      if (this.a2a) {
+        this.a2a.postReport({
+          type: 'research_auto_inject',
+          level: 'INFO',
+          message: `Auto-injected ${toInject.length} features from research`,
+          data: { features: toInject, findings: actionable.map(f => f.topic) },
+        });
+      }
+    } catch (err) {
+      logger.debug(`[LOOP] Auto-inject from research failed: ${err.message}`);
     }
   }
 
@@ -724,6 +926,9 @@ Rules:
 
     if (findings && findings.length > 0) {
       logger.info(`[LOOP] Research complete: ${findings.length} findings`);
+
+      // Auto-inject: extract feature names from actionable findings and inject
+      await this._autoInjectFromResearch(findings);
     }
 
     this._save();

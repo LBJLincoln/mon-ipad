@@ -40,11 +40,12 @@ function normalizeTeam(name) {
 }
 
 class FeedbackLoop {
-  constructor({ infraBridge, bot, adminId, a2a }) {
+  constructor({ infraBridge, bot, adminId, a2a, callS10 }) {
     this.infra = infraBridge;
     this.bot = bot;
     this.adminId = adminId;
     this.a2a = a2a;
+    this.callS10 = callS10;
 
     this.lastEval = null;
     this.evalHistory = [];  // In-memory cache of recent evals
@@ -53,6 +54,7 @@ class FeedbackLoop {
       predictionsStored: 0,
       lastEvalDate: null,
       lastError: null,
+      autoRollbacks: 0,
     };
 
     this._ensureTables().catch(e => logger.warn(`[FEEDBACK] Table init: ${e.message}`));
@@ -327,25 +329,43 @@ class FeedbackLoop {
       const allWorse = last3.every(e => e.brier > bestHistorical + 0.02);
 
       if (allWorse) {
-        const msg = `Live regression: last 3 days Brier avg ${(last3.reduce((s, e) => s + e.brier, 0) / 3).toFixed(4)} > best ${bestHistorical.toFixed(4)} + 0.02`;
+        const avg3 = (last3.reduce((s, e) => s + e.brier, 0) / 3).toFixed(4);
+        const msg = `Live regression: last 3 days Brier avg ${avg3} > best ${bestHistorical.toFixed(4)} + 0.02`;
         logger.warn(`[FEEDBACK] ${msg}`);
+
+        // AUTO-ROLLBACK: 3+ consecutive regressions → rollback to best checkpoint
+        let rollbackResult = null;
+        if (this.callS10) {
+          try {
+            await this.callS10('/api/checkpoint/restore', { method: 'POST', body: '{}' });
+            this.stats.autoRollbacks++;
+            rollbackResult = 'SUCCESS';
+            logger.info('[FEEDBACK] AUTO-ROLLBACK executed: restored best checkpoint');
+          } catch (e) {
+            rollbackResult = `FAILED: ${e.message}`;
+            logger.error(`[FEEDBACK] AUTO-ROLLBACK failed: ${e.message}`);
+          }
+        }
 
         if (this.a2a) {
           this.a2a.postReport({
             type: 'live_regression',
-            level: 'WARNING',
-            message: msg,
+            level: 'CRITICAL',
+            message: `${msg}${rollbackResult ? ` | Auto-rollback: ${rollbackResult}` : ''}`,
             data: {
               last3: last3.map(e => ({ date: e.date, brier: e.brier })),
               bestHistorical,
-              recommendedAction: 'rollback',
+              action: rollbackResult ? `auto_rollback_${rollbackResult}` : 'recommended_rollback',
             },
           });
         }
 
         if (this.bot && this.adminId) {
+          const rollbackLine = rollbackResult
+            ? `🔄 Auto-rollback: *${rollbackResult}*`
+            : '⚡ Recommend: manual rollback';
           await this.bot.sendMessage(this.adminId,
-            `⚠️ *LIVE REGRESSION*\n${msg}\nRecommend: rollback to best checkpoint`,
+            `🚨 *LIVE REGRESSION (AUTO-ROLLBACK)*\n${msg}\n${rollbackLine}`,
             { parse_mode: 'Markdown' }
           ).catch(() => {});
         }
