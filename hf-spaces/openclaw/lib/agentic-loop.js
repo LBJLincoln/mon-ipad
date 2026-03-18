@@ -90,13 +90,15 @@ const FEATURE_CATEGORIES = [
 ];
 
 // ── FORCED ACTIONS — when nothing else to do, pick one randomly ──
+// IMPORTANT: S10 has HARD CAPS — mutation ≤ 0.10, features ≤ 150, pop ≤ 80
+// Eve should OBSERVE more and INTERFERE less. Good evolution needs stability.
 const FORCED_ACTIONS = [
   { name: 'check_brier_trend', fn: 'brierTrend', desc: 'Pull Brier trend data from S10' },
   { name: 'check_run_stats', fn: 'runStats', desc: 'Pull run statistics from S10' },
   { name: 'check_cuts', fn: 'cuts', desc: 'Pull feature cut data from S10' },
-  { name: 'micro_mutation_bump', fn: 'config', params: () => ({ mutation_rate: 0.03 + Math.random() * 0.12 }), desc: 'Random micro-mutation adjustment' },
-  { name: 'diversify_pulse', fn: 'command', params: () => ({ command: 'diversify' }), desc: 'Diversify population' },
   { name: 'status_deep_check', fn: 'status', desc: 'Deep status health check' },
+  { name: 'status_deep_check_2', fn: 'status', desc: 'Second status check for trend analysis' },
+  { name: 'check_brier_trend_2', fn: 'brierTrend', desc: 'Second Brier trend pull' },
 ];
 
 class AgenticLoop {
@@ -504,10 +506,11 @@ class AgenticLoop {
         this._cycleActionCount++;
         this.state.totalS10Calls++;
         // Quick health validation
-        if (status.stagnation > 5 && status.mutation_rate < 0.08) {
-          this._log('nos', `Anticipation quick-check: stagnation ${status.stagnation} with low mutation ${status.mutation_rate}. Bumping.`);
-          await this.callS10('/api/config', { mutation_rate: Math.min(0.20, status.mutation_rate * 1.5) });
-          this._trackAction('anticipate', 'auto_mutation_bump', { oldRate: status.mutation_rate });
+        if (status.stagnation > 10 && status.mutation_rate < 0.06) {
+          // Only bump if truly stuck AND mutation is very low. S10 caps at 0.10.
+          this._log('nos', `Anticipation: stagnation ${status.stagnation} with low mutation ${status.mutation_rate}. Gentle bump.`);
+          await this.callS10('/api/config', { mutation_rate: Math.min(0.08, status.mutation_rate * 1.3) });
+          this._trackAction('anticipate', 'gentle_mutation_bump', { oldRate: status.mutation_rate });
         }
       }
     }
@@ -725,17 +728,22 @@ Current population: ${currentState?.population || 150}
 
 Self-improvement stats: ${this.state.improvementActions} improvements vs ${this.state.regressionActions} regressions out of ${this.state.totalActions} total actions.
 
+IMPORTANT: S10 has HARD CAPS — mutation ≤ 0.10, pop ≤ 80, features ≤ 150.
+The goal is Brier < 0.20 (best predictor), NOT high ROI.
+Fitness = Brier 60% + Calibration 20% + ROI 10% + Sharpe 10%.
+STABILITY beats aggression. Low mutation + tight features = convergence.
+
 You MUST respond in this exact JSON format — nothing else:
 {
-  "mutation_rate": <float between 0.02 and 0.25>,
-  "pop_size": <int between 60 and 300>,
-  "target_features": <int between 80 and 400>,
-  "crossover_rate": <float between 0.5 and 0.95>,
-  "command": "<one of: diversify, boost_mutation, or none>",
+  "mutation_rate": <float between 0.02 and 0.10>,
+  "pop_size": <int between 40 and 80>,
+  "target_features": <int between 60 and 150>,
+  "crossover_rate": <float between 0.6 and 0.85>,
+  "command": "none",
   "reasoning": "<1 sentence why>"
 }
 
-Be a quantitative PhD. Consider the stagnation level and current params. If stagnation > 10, be aggressive.`
+Be conservative. Small adjustments. Do NOT diversify or boost_mutation unless stagnation > 15.`
     }], { maxTokens: 300 });
 
     if (result.content) {
@@ -749,10 +757,11 @@ Be a quantitative PhD. Consider the stagnation level and current params. If stag
 
         // Apply config
         const configParams = {};
-        if (suggestion.mutation_rate) configParams.mutation_rate = Math.max(0.02, Math.min(0.25, suggestion.mutation_rate));
-        if (suggestion.pop_size) configParams.pop_size = Math.max(60, Math.min(300, suggestion.pop_size));
-        if (suggestion.target_features) configParams.target_features = Math.max(80, Math.min(400, suggestion.target_features));
-        if (suggestion.crossover_rate) configParams.crossover_rate = Math.max(0.5, Math.min(0.95, suggestion.crossover_rate));
+        // HARD CAPS — respect S10 limits
+        if (suggestion.mutation_rate) configParams.mutation_rate = Math.max(0.02, Math.min(0.10, suggestion.mutation_rate));
+        if (suggestion.pop_size) configParams.pop_size = Math.max(40, Math.min(80, suggestion.pop_size));
+        if (suggestion.target_features) configParams.target_features = Math.max(60, Math.min(150, suggestion.target_features));
+        if (suggestion.crossover_rate) configParams.crossover_rate = Math.max(0.6, Math.min(0.85, suggestion.crossover_rate));
 
         if (Object.keys(configParams).length > 0) {
           const configResult = await this.callS10('/api/config', configParams);
@@ -774,10 +783,10 @@ Be a quantitative PhD. Consider the stagnation level and current params. If stag
         this._log('nos', `APPLIED: ${suggestion.reasoning || 'improvement applied'}`);
         this._report(`Improvement applied: ${suggestion.reasoning || JSON.stringify(configParams)}`);
       } catch (parseErr) {
-        this._log('monk', `Parse failed: ${parseErr.message}. Applying default diversify.`);
-        const fallbackResult = await this.callS10('/api/command', { command: 'diversify' });
-        this._log('cain', `FALLBACK diversify: ${fallbackResult.status || fallbackResult.error}`);
-        this._trackAction('improve', 'fallback_diversify', null);
+        this._log('monk', `Parse failed: ${parseErr.message}. Pulling status instead of intervening.`);
+        const fallbackResult = await this._callS10Direct('GET', '/api/status');
+        this._log('cain', `FALLBACK status check: ${fallbackResult?.generation || fallbackResult?.error || 'ok'}`);
+        this._trackAction('improve', 'fallback_status_check', null);
         this._cycleActionCount++;
         this.state.totalS10Calls++;
       }
@@ -1094,7 +1103,8 @@ Prioritize by expected Brier improvement. 3 recommendations, 1 sentence each.`
   // ══════════════════════════════════════════
 
   async _emergencyDiversify(currentState) {
-    this._log('monk', 'EMERGENCY DIVERSIFICATION — Critical stagnation. APPLYING reset + boost NOW.');
+    // CONTROLLED emergency — reset population but keep parameters conservative
+    this._log('monk', 'CONTROLLED EMERGENCY — Resetting population (keeping elites) with stable params.');
 
     const resetResult = await this.callS10('/api/reset');
     this._log('monk', `Population RESET: ${resetResult.status || resetResult.error}`);
@@ -1102,40 +1112,21 @@ Prioritize by expected Brier improvement. 3 recommendations, 1 sentence each.`
     this._cycleActionCount++;
     this.state.totalS10Calls++;
 
-    const boostResult = await this.callS10('/api/command', { command: 'boost_mutation' });
-    this._log('cain', `Mutation BOOSTED: ${boostResult.status || boostResult.error}`);
-    this._trackAction('emergency', 'boost_mutation', null);
-    this._cycleActionCount++;
-    this.state.totalS10Calls++;
-
-    const aggressiveParams = {
-      mutation_rate: 0.20,
-      target_features: 250,
-      crossover_rate: 0.90,
+    // Set STABLE params — NOT aggressive. The goal is convergence, not chaos.
+    const stableParams = {
+      mutation_rate: 0.06,
+      target_features: 80,
+      crossover_rate: 0.80,
     };
-    const configResult = await this.callS10('/api/config', aggressiveParams);
-    this._log('nos', `Emergency config: ${JSON.stringify(aggressiveParams)} -> ${configResult.status || configResult.error}`);
-    this._trackAction('emergency', 'aggressive_config', aggressiveParams);
+    const configResult = await this.callS10('/api/config', stableParams);
+    this._log('nos', `Stable config after reset: ${JSON.stringify(stableParams)} -> ${configResult.status || configResult.error}`);
+    this._trackAction('emergency', 'stable_config', stableParams);
     this._cycleActionCount++;
     this.state.totalS10Calls++;
-
-    // Inject ALL pending research features
-    const allNew = this.research.filter(r => r.status === 'new' || r.status === 'suggested');
-    if (allNew.length > 0) {
-      await this.callS10('/api/inject-features', {
-        features: allNew.map(f => ({ name: f.name, category: f.category, description: f.description })),
-      });
-      for (const f of allNew) f.status = 'injected';
-      this._saveResearch();
-      this._log('ademo', `Injected ${allNew.length} features during emergency.`);
-      this._trackAction('emergency', 'mass_inject_features', { count: allNew.length });
-      this._cycleActionCount++;
-      this.state.totalS10Calls++;
-    }
 
     this.state.stagnationCount = 0;
 
-    this._report(`EMERGENCY: Reset + mutation 0.20 + ${allNew.length} features. Brier was ${currentState?.brier?.toFixed(4)}.`);
+    this._report(`CONTROLLED RESET: Pop reset + stable params (mut 0.06, feat 80). Brier was ${currentState?.brier?.toFixed(4)}.`);
   }
 
   // ══════════════════════════════════════════
