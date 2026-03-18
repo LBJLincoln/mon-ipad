@@ -5,9 +5,9 @@ ENV PORT=7860
 ENV NODE_ENV=production
 ENV DEBIAN_FRONTEND=noninteractive
 
-# System deps: curl only (Python removed — no more OddsHarvester/Playwright)
+# System deps: curl + python3 (for DNS resolver)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
+    curl python3 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -16,5 +16,11 @@ RUN npm install --omit=dev
 COPY . .
 RUN mkdir -p /data/conversations /data/logs /data/executions /data/odds /data/a2a /data/watchdog /data/agentic-loop && chmod -R 777 /data
 
+# DNS fix: preload dns-fix.cjs which patches dns.lookup with DoH fallback
+# This fixes HF Spaces blocking api.telegram.org DNS resolution
+ENV NODE_OPTIONS="--require /app/scripts/dns-fix.cjs"
+
 EXPOSE 7860
-CMD ["node", "server.js"]
+
+# Startup: resolve DNS via DoH first, then start Node
+CMD python3 /app/scripts/dns-resolve.py /tmp/dns-resolved.json && node server.js
