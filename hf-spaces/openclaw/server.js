@@ -1014,15 +1014,22 @@ async function handleTelegramUpdate(update) {
       }
     }
     // 2. Check natural language orders (admin only)
-    else if (orderExecutor && msg.from?.id === ADMIN_TELEGRAM_ID && orderExecutor.isOrder(text)) {
-      logger.info(`[ORDER] Detected order from admin: ${text.substring(0, 80)}`);
+    // Only match if message starts with "!" prefix to avoid matching casual conversation
+    else if (orderExecutor && msg.from?.id === ADMIN_TELEGRAM_ID
+             && (text.startsWith('!') || text.startsWith('/order '))
+             && orderExecutor.isOrder(text.replace(/^[!/](?:order\s+)?/, ''))) {
+      const orderText = text.replace(/^[!/](?:order\s+)?/, '');
+      logger.info(`[ORDER] Detected order from admin: ${orderText.substring(0, 80)}`);
       try {
-        const result = await orderExecutor.execute(text);
+        // Timeout order execution at 15 seconds to prevent hanging
+        const orderPromise = orderExecutor.execute(orderText);
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Order timed out after 15s')), 15000));
+        const result = await Promise.race([orderPromise, timeoutPromise]);
         if (result && result.executed) {
           reply = `*ORDER EXECUTED* [${result.intent}]\n\n${result.result}`;
         } else {
-          // Order recognized but not executed — fall through to LLM
-          logger.info(`[ORDER] Order not executed: ${result?.reason || 'unknown'}`);
+          reply = `Order recognized but not executed: ${result?.reason || 'unknown'}. Falling through to AI...`;
         }
       } catch (orderErr) {
         logger.error(`[ORDER] Execute failed: ${orderErr.message}`);
@@ -1037,12 +1044,16 @@ async function handleTelegramUpdate(update) {
       messages.push({ role: 'user', content: text });
 
       try {
-        const result = await getCompletion(messages);
+        // Timeout LLM call at 25 seconds
+        const llmPromise = getCompletion(messages);
+        const llmTimeout = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('LLM timed out after 25s')), 25000));
+        const result = await Promise.race([llmPromise, llmTimeout]);
         reply = result.content;
         logger.info(`[LLM] Model: ${result.model}, tokens: ${result.usage?.total_tokens || '?'}`);
       } catch (err) {
         logger.error(`[TG] LLM fallback failed: ${err.message}`);
-        reply = `Eve is here but all LLM providers are down. Try a /command instead.\n\nAvailable: /status /eval /data /watchdog /loop /insight /research`;
+        reply = `Eve is here but LLM call failed (${err.message}). Try a /command instead.\n\nAvailable: /status /eval /data /watchdog /loop /insight /research`;
       }
     }
   } catch (topLevelErr) {
@@ -1052,6 +1063,9 @@ async function handleTelegramUpdate(update) {
   }
 
   // ALWAYS send a reply — never leave the user hanging
+  if (!reply) {
+    reply = 'Eve received your message but could not generate a response. Try /status or /eval';
+  }
   if (reply) {
     const chunks = splitMessage(reply, 4000);
     for (const chunk of chunks) {
