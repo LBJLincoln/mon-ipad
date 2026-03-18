@@ -989,8 +989,11 @@ class DataWorker {
     if (!browser) {
       try {
         browser = require('./browser');
+        // Test if chromium is actually available
+        await browser.getBrowser();
       } catch (err) {
-        logger.warn(`[DATA-WORKER] Browser module not available: ${err.message}`);
+        logger.warn(`[DATA-WORKER] Local browser not available, using Jina Reader: ${err.message}`);
+        browser = null;
         return null;
       }
     }
@@ -998,15 +1001,58 @@ class DataWorker {
   }
 
   /**
+   * Fetch rendered HTML via Jina Reader API (free, no browser needed).
+   * Falls back from local Chromium → Jina Reader → raw fetch.
+   */
+  async _fetchRendered(url, options = {}) {
+    // Try local browser first
+    const b = await this._getBrowser();
+    if (b) {
+      try {
+        return await b.scrape(url, options);
+      } catch (err) {
+        logger.warn(`[DATA-WORKER] Local browser failed, falling back to Jina: ${err.message}`);
+      }
+    }
+
+    // Fallback: Jina Reader API (renders JS, returns clean HTML/text)
+    try {
+      const jinaUrl = `https://r.jina.ai/${url}`;
+      const headers = { 'Accept': 'text/html' };
+      if (process.env.JINA_API_KEY) {
+        headers['Authorization'] = `Bearer ${process.env.JINA_API_KEY}`;
+      }
+      const resp = await fetch(jinaUrl, {
+        headers,
+        signal: AbortSignal.timeout(options.timeout || 20000),
+      });
+      if (!resp.ok) throw new Error(`Jina ${resp.status}`);
+      return await resp.text();
+    } catch (err) {
+      logger.warn(`[DATA-WORKER] Jina Reader failed for ${url}: ${err.message}`);
+    }
+
+    // Last resort: raw fetch (won't render JS)
+    try {
+      const resp = await fetch(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+        signal: AbortSignal.timeout(options.timeout || 15000),
+      });
+      if (!resp.ok) throw new Error(`Raw fetch ${resp.status}`);
+      return await resp.text();
+    } catch (err) {
+      logger.error(`[DATA-WORKER] All fetch methods failed for ${url}: ${err.message}`);
+      return null;
+    }
+  }
+
+  /**
    * Scrape RotoWire for today's NBA lineups (starting 5 + injury status).
    * Requires Chromium — page is JS-rendered.
    */
   async fetchLineups() {
-    const b = await this._getBrowser();
-    if (!b) return null;
-
     try {
-      const html = await b.scrape('https://www.rotowire.com/basketball/nba-lineups.php', {
+      const html = await this._fetchRendered('https://www.rotowire.com/basketball/nba-lineups.php', {
         waitFor: '.lineup__main',
         timeout: 20000,
       });
@@ -1111,11 +1157,8 @@ class DataWorker {
    * Source: official NBA or basketballinsiders.
    */
   async fetchReferees() {
-    const b = await this._getBrowser();
-    if (!b) return null;
-
     try {
-      const html = await b.scrape('https://official.nba.com/referee-assignments/', {
+      const html = await this._fetchRendered('https://official.nba.com/referee-assignments/', {
         waitFor: 'table',
         timeout: 20000,
       });
@@ -1194,11 +1237,8 @@ class DataWorker {
    * Gets: ORtg, DRtg, Pace, eFG%, TOV%, FTr, etc.
    */
   async fetchAdvancedStats() {
-    const b = await this._getBrowser();
-    if (!b) return null;
-
     try {
-      const html = await b.scrape('https://www.basketball-reference.com/leagues/NBA_2026.html', {
+      const html = await this._fetchRendered('https://www.basketball-reference.com/leagues/NBA_2026.html', {
         waitFor: '#advanced-team',
         timeout: 25000,
       });
@@ -1291,11 +1331,8 @@ class DataWorker {
    * @param {object} options — { waitFor, timeout, extractText }
    */
   async scrapePage(url, options = {}) {
-    const b = await this._getBrowser();
-    if (!b) return null;
-
     try {
-      const result = await b.scrape(url, {
+      const result = await this._fetchRendered(url, {
         waitFor: options.waitFor,
         timeout: options.timeout || 20000,
       });
