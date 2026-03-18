@@ -1,5 +1,5 @@
 /**
- * OpenClaw v2026.3.17 — Nomos NBA Quant AI Agent
+ * OpenClaw v2026.3.18 — Nomos NBA Quant AI Agent
  *
  * Express server deployed on HF Spaces (Docker, port 7860).
  * HuggingClaw-style architecture: Adam (Claude CLI) + Eve (OpenClaw) + Cain (Evolution)
@@ -7,6 +7,15 @@
  *
  * Target Space: Nomos42/nomos-worker-2
  */
+
+// CRITICAL: HF Spaces uses self-signed certs for Supabase pooler connections.
+// pg-pool crashes the process without this. Must be set BEFORE any imports.
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+// Prevent unhandled rejections from crashing the process
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[FATAL] Unhandled rejection (caught):', reason?.message || reason);
+});
 
 const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
