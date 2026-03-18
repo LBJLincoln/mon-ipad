@@ -58,6 +58,10 @@ class AgenticLoop {
     this.feedbackLoop = feedbackLoop;
     this.researchAgent = researchAgent;
 
+    // Agent role — determines which cycles are active
+    this.agentName = process.env.AGENT_NAME || 'Eve';
+    this.isNBA = (process.env.AGENT_ROLE || 'nba-quant') === 'nba-quant';
+
     // Timers
     this.timers = {};
     this.running = false;
@@ -107,34 +111,34 @@ class AgenticLoop {
 
     logger.info('[LOOP] Agentic Loop v5 started — intelligent autonomous operations');
 
-    // OBSERVE: Every 5 min
-    this.timers.observe = setInterval(() => this._cycle('observe'), 5 * 60 * 1000);
+    // OBSERVE: Every 3 min (was 5)
+    this.timers.observe = setInterval(() => this._cycle('observe'), 3 * 60 * 1000);
 
-    // DATA: Every 30 min
-    this.timers.data = setInterval(() => this._cycle('data'), 30 * 60 * 1000);
+    // DATA: Every 10 min (was 30) — injuries, scores, box scores, lineups, referees
+    this.timers.data = setInterval(() => this._cycle('data'), 10 * 60 * 1000);
 
-    // HEALTH: Every 10 min
-    this.timers.health = setInterval(() => this._cycle('health'), 10 * 60 * 1000);
+    // HEALTH: Every 5 min (was 10)
+    this.timers.health = setInterval(() => this._cycle('health'), 5 * 60 * 1000);
 
-    // REPORT: Every 30 min (offset from DATA by 15 min)
+    // REPORT: Every 15 min (was 30, offset 5 min from DATA)
     setTimeout(() => {
-      this.timers.report = setInterval(() => this._cycle('report'), 30 * 60 * 1000);
-    }, 15 * 60 * 1000);
+      this.timers.report = setInterval(() => this._cycle('report'), 15 * 60 * 1000);
+    }, 5 * 60 * 1000);
 
-    // COMMAND: Every 2 min (fast poll for Adam's commands)
-    this.timers.command = setInterval(() => this._cycle('command'), 2 * 60 * 1000);
+    // COMMAND: Every 1 min (was 2) — fast poll for Adam's commands
+    this.timers.command = setInterval(() => this._cycle('command'), 60 * 1000);
 
-    // HEARTBEAT: Every 60 min
-    this.timers.heartbeat = setInterval(() => this._cycle('heartbeat'), 60 * 60 * 1000);
+    // HEARTBEAT: Every 30 min (was 60)
+    this.timers.heartbeat = setInterval(() => this._cycle('heartbeat'), 30 * 60 * 1000);
 
-    // EVAL: Check every 15 min, runs once per day per date (yesterday + 2 days ago catch-up)
-    this.timers.eval = setInterval(() => this._maybeEval(), 15 * 60 * 1000);
+    // EVAL: Check every 10 min (was 15), runs once per day per date
+    this.timers.eval = setInterval(() => this._maybeEval(), 10 * 60 * 1000);
 
-    // ANALYZE: Every 30 min — Eve stays aware of the system in near real-time
-    this.timers.analyze = setInterval(() => this._cycle('analyze'), 30 * 60 * 1000);
+    // ANALYZE: Every 15 min (was 30) — agent stays aware in near real-time
+    this.timers.analyze = setInterval(() => this._cycle('analyze'), 15 * 60 * 1000);
 
-    // RESEARCH: Every 4 hours — 6x/day gives solid coverage with free LLM models
-    this.timers.research = setInterval(() => this._cycle('research'), 4 * 60 * 60 * 1000);
+    // RESEARCH: Every 2 hours (was 4) — 12x/day
+    this.timers.research = setInterval(() => this._cycle('research'), 2 * 60 * 60 * 1000);
 
     // Run initial cycles
     setTimeout(() => this._cycle('observe'), 5000);    // 5s after start
@@ -216,105 +220,103 @@ class AgenticLoop {
       await this.watchdog.check();
     }
 
-    // Also fetch for our own state tracking
-    try {
-      const evo = await this.fetchEvolution();
-      if (evo) {
-        this.state.lastEvoStatus = {
-          brier: evo.brier || evo.best_brier,
-          generation: evo.generation,
-          population: evo.population || evo.pop_size,
-          features: evo.features || evo.selected_features,
-          stagnation: evo.stagnation,
-          mutationRate: evo.mutation_rate,
-          roi: evo.roi,
-          status: evo.status,
-          fetchedAt: this.state.lastObserve,
-        };
+    // NBA-only: fetch S10 evolution status
+    if (this.isNBA) {
+      try {
+        const evo = await this.fetchEvolution();
+        if (evo) {
+          this.state.lastEvoStatus = {
+            brier: evo.brier || evo.best_brier,
+            generation: evo.generation,
+            population: evo.population || evo.pop_size,
+            features: evo.features || evo.selected_features,
+            stagnation: evo.stagnation,
+            mutationRate: evo.mutation_rate,
+            roi: evo.roi,
+            status: evo.status,
+            fetchedAt: this.state.lastObserve,
+          };
+        }
+      } catch (err) {
+        logger.debug(`[LOOP] Observe fetch: ${err.message}`);
       }
-    } catch (err) {
-      // Watchdog already handles this
-      logger.debug(`[LOOP] Observe fetch: ${err.message}`);
     }
 
     this._save();
   }
 
   // ══════════════════════════════════════════
-  //  DATA — Fetch real NBA data
+  //  DATA — Fetch data (NBA-specific for Eve, generic for others)
   // ══════════════════════════════════════════
 
   async _fetchData() {
     this.state.lastData = new Date().toISOString();
+    this.state.cycleCount = (this.state.cycleCount || 0) + 1;
+    const cycle = this.state.cycleCount;
 
     if (!this.dataWorker) return;
 
-    // Fetch odds (dormant when quota exhausted — returns null gracefully)
-    const oddsResult = await this.dataWorker.fetchOdds();
-    if (oddsResult) {
-      if (this.a2a) {
+    if (this.isNBA) {
+      // ── NBA-SPECIFIC DATA COLLECTION ──
+
+      // Fetch odds (dormant when quota exhausted — returns null gracefully)
+      const oddsResult = await this.dataWorker.fetchOdds();
+      if (oddsResult && this.a2a) {
         this.a2a.postDataReport('odds', {
           games: oddsResult.games?.length || 0,
           stored: oddsResult.stored || 0,
           movements: oddsResult.lineMovements?.length || 0,
         });
       }
-    }
 
-    // Fetch scores via ESPN (free, always works)
-    const scoresResult = await this.dataWorker.fetchScores();
-    if (scoresResult) {
-      if (this.a2a) {
+      // Fetch scores via ESPN (free, always works)
+      const scoresResult = await this.dataWorker.fetchScores();
+      if (scoresResult && this.a2a) {
         this.a2a.postDataReport('scores', {
-          source: 'espn',
-          total: scoresResult.total,
-          completed: scoresResult.completed,
-          live: scoresResult.live,
+          source: 'espn', total: scoresResult.total,
+          completed: scoresResult.completed, live: scoresResult.live,
         });
       }
-    }
 
-    // Fetch injuries (ESPN free)
-    const injResult = await this.dataWorker.fetchInjuries();
-    if (injResult && this.a2a) {
-      this.a2a.postDataReport('injuries', { total: injResult.total, stored: injResult.stored });
-    }
-
-    // Fetch today's games + box scores for completed games (NBA.com CDN)
-    const todayResult = await this.dataWorker.fetchTodaysGames();
-    if (todayResult?.gameIds?.length > 0) {
-      // Fetch box scores for completed games only
-      const completedGames = todayResult.games?.filter(g => g.game_status === 3) || [];
-      for (const game of completedGames.slice(0, 15)) {
-        await this.dataWorker.fetchBoxScores(game.game_id);
+      // Fetch injuries (ESPN free)
+      const injResult = await this.dataWorker.fetchInjuries();
+      if (injResult && this.a2a) {
+        this.a2a.postDataReport('injuries', { total: injResult.total, stored: injResult.stored });
       }
-      if (this.a2a) {
-        this.a2a.postDataReport('todays_games', {
-          total: todayResult.total,
-          completed: todayResult.completed,
-          live: todayResult.live,
-          boxScoresFetched: completedGames.length,
-        });
+
+      // Fetch today's games + box scores for completed games (NBA.com CDN)
+      const todayResult = await this.dataWorker.fetchTodaysGames();
+      if (todayResult?.gameIds?.length > 0) {
+        const completedGames = todayResult.games?.filter(g => g.game_status === 3) || [];
+        for (const game of completedGames.slice(0, 15)) {
+          await this.dataWorker.fetchBoxScores(game.game_id);
+        }
+        if (this.a2a) {
+          this.a2a.postDataReport('todays_games', {
+            total: todayResult.total, completed: todayResult.completed,
+            live: todayResult.live, boxScoresFetched: completedGames.length,
+          });
+        }
       }
+
+      // Browser-based scraping — every other cycle
+      if (cycle % 2 === 0) {
+        await this.dataWorker.fetchLineups().catch(e => logger.warn(`[LOOP] Lineups: ${e.message}`));
+        await this.dataWorker.fetchReferees().catch(e => logger.warn(`[LOOP] Referees: ${e.message}`));
+      }
+
+      // Advanced stats — once per day (every 12 cycles at 10min = 2h)
+      if (cycle % 12 === 0) {
+        await this.dataWorker.fetchAdvancedStats().catch(e => logger.warn(`[LOOP] AdvStats: ${e.message}`));
+      }
+
+      // Fetch evolved model predictions from S10
+      await this._ingestPredictions();
+    } else {
+      // ── GENERAL-PURPOSE AGENT (RGWA etc.) ──
+      // No NBA data collection — agent waits for commands or runs generic tasks
+      logger.info(`[LOOP] ${this.agentName} data cycle — awaiting commands (no NBA collection)`);
     }
-
-    // Browser-based scraping (Chromium) — less frequent, run every other cycle
-    const cycle = this.state.cycleCount || 0;
-    if (cycle % 2 === 0) {
-      // Lineups (RotoWire) — changes pre-game
-      await this.dataWorker.fetchLineups().catch(e => logger.warn(`[LOOP] Lineups: ${e.message}`));
-
-      // Referee assignments
-      await this.dataWorker.fetchReferees().catch(e => logger.warn(`[LOOP] Referees: ${e.message}`));
-    }
-
-    // Advanced stats (Basketball Reference) — once per day
-    if (cycle % 12 === 0) {
-      await this.dataWorker.fetchAdvancedStats().catch(e => logger.warn(`[LOOP] AdvStats: ${e.message}`));
-    }
-
-    // Fetch evolved model predictions from S10 and store for feedback loop
-    await this._ingestPredictions();
 
     this._save();
   }
@@ -324,6 +326,7 @@ class AgenticLoop {
   // ══════════════════════════════════════════
 
   async _ingestPredictions() {
+    if (!this.isNBA) return; // NBA-only
     if (!this.feedbackLoop || !this.callS10) return;
 
     const today = new Date().toISOString().slice(0, 10);
@@ -466,31 +469,35 @@ class AgenticLoop {
 
     // Build concise Telegram message
     const lines = [
-      `⚡ *EVE HEARTBEAT* — ${new Date().toLocaleTimeString('fr-FR', { timeZone: 'Europe/Paris' })}`,
+      `⚡ *${this.agentName} HEARTBEAT* — ${new Date().toLocaleTimeString('fr-FR', { timeZone: 'Europe/Paris' })}`,
       '',
     ];
 
-    // Evolution status
-    if (evo) {
-      lines.push(`📊 *S10*: Brier ${evo.brier?.toFixed(4) || '?'} | Gen ${evo.generation || '?'} | Stag ${evo.stagnation ?? '?'}`);
+    if (this.isNBA) {
+      // NBA-specific heartbeat
+      if (evo) {
+        lines.push(`📊 *S10*: Brier ${evo.brier?.toFixed(4) || '?'} | Gen ${evo.generation || '?'} | Stag ${evo.stagnation ?? '?'}`);
+      } else {
+        lines.push('📊 *S10*: No data');
+      }
+
+      lines.push(`📡 *Data*: ${dataStatus?.stats?.scoresFetches || 0} ESPN | ${dataStatus?.stats?.oddsFetches || 0} odds | ${dataStatus?.stats?.injuriesFetches || 0} injuries`);
+
+      if (evalStatus?.lastEval) {
+        const e = evalStatus.lastEval;
+        lines.push(`📈 *Yesterday*: ${e.correct}/${e.total} correct (${(e.accuracy * 100).toFixed(1)}%) | Brier ${e.brier?.toFixed(4)}`);
+      }
+
+      if (watchdogStatus?.trends?.brierTrend !== null && watchdogStatus?.trends?.brierTrend !== undefined) {
+        const trend = watchdogStatus.trends.brierTrend;
+        const emoji = trend < 0 ? '📉' : trend > 0 ? '📈' : '➡️';
+        lines.push(`🔍 Brier trend (1h): ${emoji} ${trend > 0 ? '+' : ''}${trend}`);
+      }
     } else {
-      lines.push('📊 *S10*: No data');
-    }
-
-    // Data collection
-    lines.push(`📡 *Data*: ${dataStatus?.stats?.scoresFetches || 0} ESPN fetches | ${dataStatus?.stats?.oddsFetches || 0} odds`);
-
-    // Evaluation (from feedback loop)
-    if (evalStatus?.lastEval) {
-      const e = evalStatus.lastEval;
-      lines.push(`📈 *Yesterday*: ${e.correct}/${e.total} correct (${(e.accuracy * 100).toFixed(1)}%) | Brier ${e.brier?.toFixed(4)}`);
-    }
-
-    // Watchdog
-    if (watchdogStatus?.trends?.brierTrend !== null && watchdogStatus?.trends?.brierTrend !== undefined) {
-      const trend = watchdogStatus.trends.brierTrend;
-      const emoji = trend < 0 ? '📉' : trend > 0 ? '📈' : '➡️';
-      lines.push(`🔍 Brier trend (1h): ${emoji} ${trend > 0 ? '+' : ''}${trend}`);
+      // General agent heartbeat
+      lines.push(`🤖 *Role*: General-purpose agent`);
+      lines.push(`🌐 *Browser*: Chromium available`);
+      lines.push(`🔧 *Infra*: VM SSH + GitHub + DBs`);
     }
 
     // Analyst insight (from _analyze cycle)
@@ -527,6 +534,7 @@ class AgenticLoop {
    * Checks every 15 min but only evals each date once.
    */
   async _maybeEval() {
+    if (!this.isNBA) return; // NBA-only
     if (!this.running || !this.feedbackLoop) return;
 
     const now = new Date();
@@ -595,6 +603,28 @@ class AgenticLoop {
 
     if (!this.getCompletion) return;
 
+    // Non-NBA agents: simple status analysis, no NBA-specific actions
+    if (!this.isNBA) {
+      const prompt = `You are ${this.agentName}, a general-purpose autonomous AI agent.
+You are NOT focused on NBA. You handle other projects and tasks.
+Report your status briefly. If you have no pending tasks, say "STATUS: IDLE — awaiting commands".
+Max 100 words.`;
+
+      try {
+        const result = await this.getCompletion([{ role: 'user', content: prompt }], {
+          maxTokens: 200, temperature: 0.3,
+        });
+        if (result?.content) {
+          this.lastInsight = result.content.substring(0, 300);
+        }
+      } catch (err) {
+        logger.warn(`[LOOP] ${this.agentName} analyze failed: ${err.message}`);
+      }
+      return;
+    }
+
+    // ── NBA-SPECIFIC ANALYSIS ──
+
     // Gather ALL available context
     const context = {
       evolution: this.state.lastEvoStatus,
@@ -625,7 +655,7 @@ class AgenticLoop {
         ).join('\n')}`
       : '';
 
-    const prompt = `You are Eve, an NBA quant analyst AI. Analyze this data and give concrete recommendations.
+    const prompt = `You are ${this.agentName}, an NBA quant analyst AI. Analyze this data and give concrete recommendations.
 
 CURRENT STATE:
 ${JSON.stringify(context, null, 2)}
