@@ -153,8 +153,12 @@ const GH_TOKEN = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
 const GH_REPOS = ['mon-ipad', 'nomos-nba-agent', 'rag-data-ingestion', 'rag-website', 'rag-dashboard'];
 const GH_OWNER = 'LBJLincoln';
 
-const SYSTEM_PROMPT = `Tu es ADEMO (OpenClaw), agent IA autonome du projet NOMOS42 NBA Quant AI.
-Architecture HuggingClaw: N.O.S (Claude Code CLI) = cerveau strategique, ADEMO (toi) = recherche & execution, CAIN = moteur d'evolution genetique.
+// Dynamic agent identity — allows same codebase for Eve, RGWA, etc.
+const AGENT_NAME = process.env.AGENT_NAME || 'Eve';
+const AGENT_ROLE = process.env.AGENT_ROLE || 'nba-quant';
+
+const SYSTEM_PROMPT = `Tu es ${AGENT_NAME} (OpenClaw), agent IA autonome du projet NOMOS42.
+Architecture HuggingClaw: Adam (Claude Code CLI) = cerveau strategique, ${AGENT_NAME} (toi) = recherche & execution, CAIN = moteur d'evolution genetique.
 
 MISSION: Construire le meilleur modele predictif NBA au monde.
 - Brier score actuel ~0.23, target < 0.20
@@ -168,7 +172,7 @@ INFRASTRUCTURE:
 - GitHub: mon-ipad, nomos-nba-agent
 - Telegram: reports positifs uniquement
 
-ROLE ADEMO:
+ROLE ${AGENT_NAME}:
 1. Rechercher de nouvelles features NBA (academic papers, analytics 2026)
 2. Analyser les resultats d'evolution (Brier, ROI, Sharpe trends)
 3. Suggerer des ameliorations (hyperparameters, models, calibration)
@@ -293,8 +297,8 @@ if (TELEGRAM_BOT_TOKEN) {
  */
 const COMMANDS = {
   '/start': async (msg) => {
-    return `⚡ *OpenClaw v5 — INTELLIGENT AUTONOMOUS*
-Agent IA autonome NOMOS42 NBA Quant AI
+    return `⚡ *${AGENT_NAME} — INTELLIGENT AUTONOMOUS*
+Agent IA autonome NOMOS42
 Feedback Loop + Analyst + Research Agent
 
 *INTELLIGENCE (NEW v5):*
@@ -305,7 +309,7 @@ Feedback Loop + Analyst + Research Agent
 *DATA & MONITORING:*
 /data — Odds & scores collection status
 /watchdog — S10 evolution monitoring
-/a2a — Adam ↔ Eve protocol status
+/a2a — Adam ↔ ${AGENT_NAME} protocol status
 /loop — Agentic loop cycles
 
 *ORDRES EN LANGAGE NATUREL:*
@@ -762,7 +766,7 @@ Last scores: ${s.lastScoresFetch || 'never'}`;
   '/a2a': async (msg) => {
     if (!a2aProtocol) return 'A2A protocol not initialized.';
     const s = a2aProtocol.getStatus();
-    let text = `*A2A Protocol (Adam ↔ Eve)*
+    let text = `*A2A Protocol (Adam ↔ ${AGENT_NAME})*
 Commands: ${s.stats.commandsReceived} received, ${s.stats.commandsExecuted} executed
 Reports: ${s.stats.reportsPosted} | Alerts: ${s.stats.alertsPosted}
 Inbox: ${s.unreadInbox} unread / ${s.totalInbox} total
@@ -951,7 +955,7 @@ app.get('/keep-alive', (req, res) => {
 // -- Root / landing --
 app.get('/', (req, res) => {
   res.json({
-    name: 'OpenClaw Nomos Agent',
+    name: `${AGENT_NAME} — OpenClaw Agent`,
     version: '2026.3.18-v5-intelligent',
     status: 'running',
     endpoints: {
@@ -1062,7 +1066,7 @@ async function handleTelegramUpdate(update) {
         logger.info(`[LLM] Model: ${result.model}, tokens: ${result.usage?.total_tokens || '?'}`);
       } catch (err) {
         logger.error(`[TG] LLM fallback failed: ${err.message}`);
-        reply = `Eve is here but LLM call failed (${err.message}). Try a /command instead.\n\nAvailable: /status /eval /data /watchdog /loop /insight /research`;
+        reply = `${AGENT_NAME} is here but LLM call failed (${err.message}). Try a /command instead.\n\nAvailable: /status /eval /data /watchdog /loop /insight /research`;
       }
     }
   } catch (topLevelErr) {
@@ -1073,7 +1077,7 @@ async function handleTelegramUpdate(update) {
 
   // ALWAYS send a reply — never leave the user hanging
   if (!reply) {
-    reply = 'Eve received your message but could not generate a response. Try /status or /eval';
+    reply = `${AGENT_NAME} received your message but could not generate a response. Try /status or /eval`;
   }
   if (reply) {
     const chunks = splitMessage(reply, 4000);
@@ -1354,8 +1358,8 @@ app.post('/api/v1/github/file', async (req, res) => {
   }
 });
 
-// ── Eve Chat System ──
-const EVE_SYSTEM_PROMPT = `You are Eve, the autonomous NBA Quant AI agent for Nomos42.
+// ── Agent Chat System ──
+const EVE_SYSTEM_PROMPT = `You are ${AGENT_NAME}, an autonomous AI agent for Nomos42.
 You monitor genetic evolution 24/7, track live Brier scores, manage HF Spaces.
 Report on: evolution status, daily evaluations, watchdog alerts, research findings.
 Speak concisely with numbers. You are a quant analyst, not a chatbot.
@@ -1526,7 +1530,7 @@ app.post('/api/v1/loop/trigger-heartbeat', async (req, res) => {
 });
 
 // ============================================================
-// A2A PROTOCOL API — Adam ↔ Eve communication
+// A2A PROTOCOL API — Adam ↔ ${AGENT_NAME} communication
 // ============================================================
 
 // Adam sends a command to Eve
@@ -1905,7 +1909,7 @@ async function start() {
   ruleEngine = new RuleEngine({ callS10 });
   logger.info('Rule Engine initialized — deterministic fallback active');
 
-  // Initialize A2A Protocol — Adam ↔ Eve communication
+  // Initialize A2A Protocol — Adam ↔ ${AGENT_NAME} communication
   a2aProtocol = new A2AProtocol({
     onCommand: async (cmd) => {
       // Delegate to agentic loop command handler
@@ -1915,7 +1919,7 @@ async function start() {
       throw new Error('Agentic loop not initialized');
     },
   });
-  logger.info('A2A Protocol initialized — Adam ↔ Eve communication active');
+  logger.info('A2A Protocol initialized — Adam ↔ ${AGENT_NAME} communication active');
 
   // Initialize Data Worker — Real NBA data collection (ESPN scores + Odds API when quota allows)
   dataWorker = new DataWorker({
@@ -1988,7 +1992,7 @@ async function start() {
   // Start Express
   app.listen(PORT, '0.0.0.0', () => {
     logger.info('='.repeat(60));
-    logger.info(`OpenClaw v5 — INTELLIGENT AUTONOMOUS AGENT on port ${PORT}`);
+    logger.info(`${AGENT_NAME} (OpenClaw v5) — INTELLIGENT AUTONOMOUS AGENT on port ${PORT}`);
     logger.info(`Telegram: ${TELEGRAM_BOT_TOKEN ? 'ACTIVE' : 'DISABLED'}`);
     logger.info(`OpenRouter: ${OPENROUTER_API_KEY ? 'CONFIGURED' : 'NOT SET'}`);
     logger.info(`VM Bridge: ${process.env.SSH_PRIVATE_KEY ? 'ACTIVE (SSH)' : 'NOT SET'}`);
@@ -1998,7 +2002,7 @@ async function start() {
     logger.info(`FeedbackLoop: ACTIVE (prediction vs reality evaluation)`);
     logger.info(`Research Agent: ACTIVE (autonomous NBA quant research)`);
     logger.info(`Watchdog: ACTIVE (statistical monitoring with recommendations)`);
-    logger.info(`A2A Protocol: ACTIVE (Adam ↔ Eve bidirectional)`);
+    logger.info(`A2A Protocol: ACTIVE (Adam ↔ ${AGENT_NAME} bidirectional)`);
     logger.info(`Model Monitor: ACTIVE (${Object.keys(modelMonitor.models).length} free models tracked)`);
     logger.info(`Rule Engine: ACTIVE (${ruleEngine.rules.length} deterministic rules)`);
     logger.info(`Order Executor: ACTIVE (natural language → actions)`);
@@ -2018,9 +2022,9 @@ async function start() {
       const ghStatus = GH_TOKEN ? 'ACTIVE' : 'NO TOKEN';
       const modelCount = Object.keys(modelMonitor.models).length;
       bot.sendMessage(ADMIN_TELEGRAM_ID,
-        `⚡ *OpenClaw v5 — INTELLIGENT AUTONOMOUS*
+        `⚡ *${AGENT_NAME} (OpenClaw v5) — ONLINE*
 
-*NEW in v5:*
+*Capabilities:*
 📊 FeedbackLoop: Predictions vs ESPN real scores
 💡 Analyst: LLM reasoning every 2h
 🔬 Research: Autonomous NBA quant research 2x/day
