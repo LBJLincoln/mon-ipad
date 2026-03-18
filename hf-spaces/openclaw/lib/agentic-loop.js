@@ -65,6 +65,9 @@ class AgenticLoop {
     // Last analyst insight (shown in heartbeat)
     this.lastInsight = null;
 
+    // Auto-execute: Karpathy pattern — act on insights automatically
+    this.autoExecuteEnabled = true;
+
     // State
     this.state = {
       startedAt: null,
@@ -568,8 +571,11 @@ ${JSON.stringify(context, null, 2)}
 Rules:
 - Use NUMBERS, not vague statements
 - Compare to targets: Brier < 0.20, ROI > 5%, accuracy > 65%
-- If recommending a GA change, specify exact parameter and value
-- If everything looks good, say so briefly
+- If recommending a GA change, output: ACTION: set_config(param=value)
+  Valid params: mutation_rate, target_features, crossover_rate, tournament_size
+  Example: ACTION: set_config(mutation_rate=0.06)
+- If recommending diversify: ACTION: diversify
+- If everything looks good, say "STATUS: OK" and give brief summary
 - Max 200 words`;
 
     try {
@@ -599,6 +605,11 @@ Rules:
           });
         }
 
+        // Auto-execute: Karpathy pattern — act on insights
+        if (this.autoExecuteEnabled) {
+          await this._tryAutoExecute(result.content, context);
+        }
+
         logger.info(`[LOOP] Analyst insight generated (${result.model}): ${result.content.substring(0, 100)}...`);
       }
     } catch (err) {
@@ -606,6 +617,81 @@ Rules:
     }
 
     this._save();
+  }
+
+  // ══════════════════════════════════════════
+  //  AUTO-EXECUTE — Karpathy pattern (act on insights)
+  // ══════════════════════════════════════════
+
+  async _tryAutoExecute(insight, context) {
+    // Parse ACTION lines from insight
+    const actionMatch = insight.match(/ACTION:\s*(\w+)(?:\(([^)]*)\))?/);
+    if (!actionMatch) return;
+
+    const actionType = actionMatch[1];
+    const actionArgs = actionMatch[2] || '';
+
+    // Safety gate: monotonic ratchet — only execute if Brier is near checkpoint best
+    const currentBrier = context.evolution?.brier;
+    let bestCheckpointBrier = null;
+    try {
+      const cpResp = await this.callS10('/api/checkpoint/best');
+      bestCheckpointBrier = cpResp?.brier;
+    } catch (e) {
+      logger.debug('[LOOP] No checkpoint data available for ratchet check');
+    }
+
+    if (bestCheckpointBrier && currentBrier && currentBrier > bestCheckpointBrier + 0.005) {
+      logger.info(`[LOOP] Auto-execute BLOCKED: Brier ${currentBrier?.toFixed(4)} > checkpoint ${bestCheckpointBrier?.toFixed(4)} + 0.005`);
+      if (this.a2a) {
+        this.a2a.postReport({
+          type: 'auto_execute_blocked',
+          level: 'WARNING',
+          message: `Ratchet blocked: ${actionType}(${actionArgs}). Brier ${currentBrier?.toFixed(4)} too far from best ${bestCheckpointBrier?.toFixed(4)}`,
+        });
+      }
+      return;
+    }
+
+    try {
+      if (actionType === 'set_config') {
+        // Parse param=value pairs
+        const params = {};
+        for (const pair of actionArgs.split(',')) {
+          const [key, val] = pair.trim().split('=');
+          if (key && val) params[key.trim()] = parseFloat(val.trim()) || val.trim();
+        }
+        if (Object.keys(params).length > 0) {
+          await this.callS10('/api/config', { method: 'POST', body: JSON.stringify(params) });
+          logger.info(`[LOOP] Auto-executed: set_config(${JSON.stringify(params)})`);
+        }
+      } else if (actionType === 'diversify') {
+        await this.callS10('/api/command', { method: 'POST', body: JSON.stringify({ command: 'diversify' }) });
+        logger.info('[LOOP] Auto-executed: diversify');
+      } else {
+        logger.debug(`[LOOP] Unknown action type: ${actionType}`);
+        return;
+      }
+
+      // Create checkpoint after successful execution
+      try {
+        await this.callS10('/api/checkpoint', { method: 'POST', body: '{}' });
+        logger.info('[LOOP] Post-execute checkpoint created');
+      } catch (e) {
+        logger.warn(`[LOOP] Checkpoint after auto-execute failed: ${e.message}`);
+      }
+
+      if (this.a2a) {
+        this.a2a.postReport({
+          type: 'auto_execute',
+          level: 'INFO',
+          message: `Executed: ${actionType}(${actionArgs})`,
+          data: { actionType, actionArgs, currentBrier, bestCheckpointBrier },
+        });
+      }
+    } catch (err) {
+      logger.warn(`[LOOP] Auto-execute failed: ${err.message}`);
+    }
   }
 
   // ══════════════════════════════════════════

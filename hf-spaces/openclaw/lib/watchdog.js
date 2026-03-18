@@ -124,6 +124,10 @@ class Watchdog {
     const popAlert = this._checkPopulation(observation);
     if (popAlert) alerts.push(popAlert);
 
+    // 5b. Check for live Brier regression (7-day moving average)
+    const liveRegAlert = this._checkLiveRegression(observation);
+    if (liveRegAlert) alerts.push(liveRegAlert);
+
     // 6. Check space status (status string may contain cycle info like "EVOLVING (cycle 14)")
     const statusStr = (observation.status || '').toString().toUpperCase();
     if (statusStr && !statusStr.includes('EVOLVING') && !statusStr.includes('RUNNING')) {
@@ -289,6 +293,37 @@ class Watchdog {
             action: 'reset_population',
             params: { population_size: 100 },
             reasoning: `Population at ${obs.population} is too small for genetic diversity. Reset to 100+ individuals.`,
+          },
+        });
+    }
+
+    return null;
+  }
+
+  _checkLiveRegression(obs) {
+    // Check if Brier is consistently worse than 7-day moving average
+    const recentMetrics = this.metrics.slice(-84);  // ~7 days at 5-min intervals (12*7=84)
+    if (recentMetrics.length < 36) return null;  // Need at least 3 days
+
+    const olderHalf = recentMetrics.slice(0, Math.floor(recentMetrics.length / 2));
+    const newerHalf = recentMetrics.slice(Math.floor(recentMetrics.length / 2));
+
+    const avgOlder = olderHalf.reduce((s, m) => s + (m.brier || 0), 0) / olderHalf.length;
+    const avgNewer = newerHalf.reduce((s, m) => s + (m.brier || 0), 0) / newerHalf.length;
+
+    // 3 consecutive checks where newer is worse
+    const last3 = this.metrics.slice(-3);
+    const allWorse = last3.every(m => (m.brier || 0) > avgOlder + 0.003);
+
+    if (allWorse && avgNewer > avgOlder + 0.002) {
+      return this._alert('WARNING', 'live_brier_regression',
+        `Brier trending worse: ${avgOlder.toFixed(4)} → ${avgNewer.toFixed(4)} (7-day)`,
+        {
+          avgOlder, avgNewer,
+          delta: avgNewer - avgOlder,
+          recommendation: {
+            action: 'rollback_to_checkpoint',
+            reasoning: `Brier has been consistently increasing over 7 days. Consider rolling back to best checkpoint.`,
           },
         });
     }

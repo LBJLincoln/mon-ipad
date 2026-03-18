@@ -1345,20 +1345,124 @@ app.post('/api/v1/github/file', async (req, res) => {
   }
 });
 
-// LLM chat (direct OpenRouter)
+// ── Eve Chat System ──
+const EVE_SYSTEM_PROMPT = `You are Eve, the autonomous NBA Quant AI agent for Nomos42.
+You monitor genetic evolution 24/7, track live Brier scores, manage HF Spaces.
+Report on: evolution status, daily evaluations, watchdog alerts, research findings.
+Speak concisely with numbers. You are a quant analyst, not a chatbot.
+Current targets: Brier < 0.20, ROI > 5%, accuracy > 65%, Sharpe > 1.5.`;
+
+const chatSessions = new Map(); // sessionId → { messages: [], created: Date }
+
+function getOrCreateSession(sessionId) {
+  if (!chatSessions.has(sessionId)) {
+    chatSessions.set(sessionId, {
+      messages: [],
+      created: new Date().toISOString(),
+    });
+  }
+  // Cleanup old sessions (>24h)
+  const now = Date.now();
+  for (const [id, sess] of chatSessions) {
+    if (now - new Date(sess.created).getTime() > 24 * 60 * 60 * 1000) {
+      chatSessions.delete(id);
+    }
+  }
+  return chatSessions.get(sessionId);
+}
+
+function buildEveContext() {
+  const ctx = {};
+  if (agenticLoop) {
+    ctx.evolution = agenticLoop.state?.lastEvoStatus || {};
+    ctx.lastInsight = agenticLoop.lastInsight || 'none';
+    ctx.uptime = agenticLoop._uptime?.() || 'unknown';
+    ctx.cycles = agenticLoop.state?.cycles || 0;
+  }
+  if (watchdog) {
+    ctx.trends = watchdog.getTrends?.() || {};
+    ctx.recentAlerts = watchdog.getRecentAlerts?.(5) || [];
+  }
+  if (feedbackLoop) {
+    ctx.lastEval = feedbackLoop.lastEval || {};
+    ctx.evalHistory = feedbackLoop.evalHistory?.slice(-7) || [];
+  }
+  return ctx;
+}
+
+// LLM chat (direct OpenRouter) — now with Eve sessions
 app.post('/api/v1/chat', async (req, res) => {
   try {
-    const { messages, model, maxTokens = 2000 } = req.body;
+    const { messages, model, maxTokens = 2000, sessionId } = req.body;
     if (!messages) return res.status(400).json({ error: 'messages required' });
 
-    const result = await getCompletion(messages, {
+    let finalMessages = messages;
+
+    // If sessionId provided, use Eve persona + session history
+    if (sessionId) {
+      const session = getOrCreateSession(sessionId);
+      const systemCtx = buildEveContext();
+      const systemMsg = {
+        role: 'system',
+        content: `${EVE_SYSTEM_PROMPT}\n\nCurrent system status:\n${JSON.stringify(systemCtx, null, 2)}`,
+      };
+
+      // Get the last user message from the request
+      const userMsg = messages[messages.length - 1];
+      session.messages.push(userMsg);
+
+      // Build conversation: system + last 30 messages
+      finalMessages = [systemMsg, ...session.messages.slice(-30)];
+    }
+
+    const result = await getCompletion(finalMessages, {
       models: model ? [model] : undefined,
       maxTokens,
     });
+
+    // Store assistant reply in session
+    if (sessionId && result?.content) {
+      const session = getOrCreateSession(sessionId);
+      session.messages.push({ role: 'assistant', content: result.content });
+    }
+
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// Chat history for a session
+app.get('/api/v1/chat/history', (req, res) => {
+  const { sessionId, limit = 50 } = req.query;
+  if (!sessionId) return res.status(400).json({ error: 'sessionId required' });
+  const session = chatSessions.get(sessionId);
+  if (!session) return res.json({ messages: [], sessionId });
+  res.json({
+    sessionId,
+    messages: session.messages.slice(-parseInt(limit)),
+    created: session.created,
+  });
+});
+
+// List active sessions
+app.get('/api/v1/chat/sessions', (req, res) => {
+  const sessions = [];
+  for (const [id, sess] of chatSessions) {
+    sessions.push({
+      sessionId: id,
+      messageCount: sess.messages.length,
+      created: sess.created,
+    });
+  }
+  res.json(sessions);
+});
+
+// Create a session explicitly
+app.post('/api/v1/chat/session', (req, res) => {
+  const sessionId = req.body.sessionId || `eve-${Date.now()}`;
+  getOrCreateSession(sessionId);
+  res.json({ sessionId, created: new Date().toISOString() });
 });
 
 // ============================================================

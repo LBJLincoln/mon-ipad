@@ -305,8 +305,54 @@ class FeedbackLoop {
     this.stats.evalsRun++;
     this.stats.lastEvalDate = dateStr;
 
+    // ── Live regression detection ──
+    await this._checkLiveRegression(avgBrier, dateStr);
+
     logger.info(`[FEEDBACK] Eval ${dateStr}: ${correct}/${matched} correct (${(accuracy * 100).toFixed(1)}%), Brier ${avgBrier.toFixed(4)}`);
     return evalResult;
+  }
+
+  // ══════════════════════════════════════════
+  //  LIVE REGRESSION DETECTION
+  // ══════════════════════════════════════════
+
+  async _checkLiveRegression(avgBrier, dateStr) {
+    try {
+      // Compare to historical best from recent evals
+      const recent = this.evalHistory.slice(-14);  // 2 weeks
+      if (recent.length < 3) return;
+
+      const bestHistorical = Math.min(...recent.map(e => e.brier));
+      const last3 = this.evalHistory.slice(-3);
+      const allWorse = last3.every(e => e.brier > bestHistorical + 0.02);
+
+      if (allWorse) {
+        const msg = `Live regression: last 3 days Brier avg ${(last3.reduce((s, e) => s + e.brier, 0) / 3).toFixed(4)} > best ${bestHistorical.toFixed(4)} + 0.02`;
+        logger.warn(`[FEEDBACK] ${msg}`);
+
+        if (this.a2a) {
+          this.a2a.postReport({
+            type: 'live_regression',
+            level: 'WARNING',
+            message: msg,
+            data: {
+              last3: last3.map(e => ({ date: e.date, brier: e.brier })),
+              bestHistorical,
+              recommendedAction: 'rollback',
+            },
+          });
+        }
+
+        if (this.bot && this.adminId) {
+          await this.bot.sendMessage(this.adminId,
+            `⚠️ *LIVE REGRESSION*\n${msg}\nRecommend: rollback to best checkpoint`,
+            { parse_mode: 'Markdown' }
+          ).catch(() => {});
+        }
+      }
+    } catch (err) {
+      logger.debug(`[FEEDBACK] Regression check error: ${err.message}`);
+    }
   }
 
   // ══════════════════════════════════════════
