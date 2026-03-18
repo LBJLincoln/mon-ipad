@@ -124,8 +124,9 @@ class Watchdog {
     const popAlert = this._checkPopulation(observation);
     if (popAlert) alerts.push(popAlert);
 
-    // 6. Check space status
-    if (observation.status && observation.status !== 'EVOLVING' && observation.status !== 'running') {
+    // 6. Check space status (status string may contain cycle info like "EVOLVING (cycle 14)")
+    const statusStr = (observation.status || '').toString().toUpperCase();
+    if (statusStr && !statusStr.includes('EVOLVING') && !statusStr.includes('RUNNING')) {
       alerts.push(this._alert('WARNING', 's10_not_evolving',
         `S10 status: ${observation.status} (expected EVOLVING)`,
         { status: observation.status }));

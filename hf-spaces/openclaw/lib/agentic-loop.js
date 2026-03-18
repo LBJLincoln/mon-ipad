@@ -336,7 +336,7 @@ class AgenticLoop {
       lines.push('');
       lines.push(`🔍 *Watchdog*`);
       lines.push(`  Checks: ${watchdogStatus.stats?.checks || 0} | Alerts: ${watchdogStatus.stats?.alertsSent || 0}`);
-      if (watchdogStatus.trends?.brierTrend !== null) {
+      if (watchdogStatus.trends && watchdogStatus.trends.brierTrend !== null && watchdogStatus.trends.brierTrend !== undefined) {
         const trend = watchdogStatus.trends.brierTrend;
         const emoji = trend < 0 ? '📉' : trend > 0 ? '📈' : '➡️';
         lines.push(`  Brier trend (1h): ${emoji} ${trend > 0 ? '+' : ''}${trend}`);

@@ -85,7 +85,16 @@ class A2AProtocol {
     try {
       const result = await this.onCommand(command);
       entry.status = 'completed';
-      entry.result = result;
+      // Safe serialize: avoid circular references by truncating deep objects
+      try {
+        entry.result = JSON.parse(JSON.stringify(result, (key, value) => {
+          // Skip deeply nested objects that could be circular
+          if (key === 'a2a' || key === 'recentCommands' || key === 'recentReports') return '[truncated]';
+          return value;
+        }));
+      } catch {
+        entry.result = { summary: 'Result too complex to serialize' };
+      }
       entry.completedAt = new Date().toISOString();
       this.stats.commandsExecuted++;
       logger.info(`[A2A] Command completed: ${command.action} (${id})`);

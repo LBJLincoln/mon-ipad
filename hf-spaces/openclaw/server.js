@@ -1556,12 +1556,9 @@ async function start() {
       logger.info(`Telegram webhook set: ${webhookUrl}`);
     } catch (err) {
       logger.warn(`Telegram webhook failed: ${err.message}`);
-      logger.info('Falling back to polling mode...');
-      bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
-      bot.on('message', async (msg) => {
-        await handleTelegramUpdate({ message: msg });
-      });
-      logger.info('Telegram polling started');
+      // Do NOT fall back to polling — it crashes on HF Spaces due to DNS/connectivity issues.
+      // Webhook will be set correctly once the Space has its public URL.
+      logger.warn('Telegram webhook not set — bot will use webhook mode once URL is resolved');
     }
   }
 
