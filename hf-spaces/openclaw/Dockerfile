@@ -16,9 +16,9 @@ RUN npm install --omit=dev
 COPY . .
 RUN mkdir -p /data/conversations /data/logs /data/executions /data/odds /data/a2a /data/watchdog /data/agentic-loop && chmod -R 777 /data
 
-# DNS fix: preload dns-fix.cjs which patches dns.lookup with DoH fallback
+# DNS fix: preload dns-fix.cjs (patches dns.lookup) + telegram-proxy.cjs (patches fetch)
 # This fixes HF Spaces blocking api.telegram.org DNS resolution
-ENV NODE_OPTIONS="--require /app/scripts/dns-fix.cjs"
+ENV NODE_OPTIONS="--require /app/scripts/dns-fix.cjs --require /app/scripts/telegram-proxy.cjs"
 
 EXPOSE 7860
 
