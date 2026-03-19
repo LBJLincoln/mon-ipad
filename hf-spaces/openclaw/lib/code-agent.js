@@ -1,8 +1,11 @@
 /**
  * Code Agent — Autonomous code generation, testing, and deployment.
  *
- * Uses LiteLLM proxy (Groq Llama 3.3 70B) as primary coding LLM.
- * Fallback chain: Groq → free OpenRouter models → Kimi (when fixed).
+ * Multi-LLM fallback chain:
+ *   1. Google Gemini 2.5 Flash (fastest, free tier)
+ *   2. Groq Llama 3.3 70B via LiteLLM proxy
+ *   3. OpenRouter (paid fallback — Gemini 2.5 Flash)
+ *
  * Can: generate code, create files on GitHub, run tests via VM SSH,
  * create branches, submit PRs, and iterate on feedback.
  */
@@ -12,7 +15,6 @@ const logger = require('./logger');
 // LiteLLM proxy (routes to Groq, Gemini, etc.)
 const LITELLM_BASE = process.env.LITELLM_PROXY_URL || 'https://lbjlincoln-nomos-rag-engine-7.hf.space/v1';
 const LITELLM_KEY = process.env.LITELLM_MASTER_KEY || 'sk-litellm-nomos-2026';
-const CODE_MODEL = 'groq/llama-3.3-70b-versatile';
 
 class CodeAgent {
   constructor({ ghToken, ghOwner, vmBridge, bot, adminId, a2a } = {}) {
@@ -40,36 +42,84 @@ class CodeAgent {
   }
 
   get enabled() {
-    return !!this.litellmKey;
+    return this._getProviders().length > 0;
   }
 
   // ══════════════════════════════════════════
-  //  LLM — via LiteLLM proxy (Groq Llama 3.3 70B)
+  //  LLM — Multi-provider fallback chain
+  //  Gemini (free/fast) → Groq/LiteLLM → OpenRouter (paid)
   // ══════════════════════════════════════════
 
   async askLLM(messages, { maxTokens = 4096, temperature = 0.3 } = {}) {
-    const resp = await fetch(`${this.litellmBase}/chat/completions`, {
+    const providers = this._getProviders();
+    for (const provider of providers) {
+      try {
+        return await this._callProvider(provider, messages, { maxTokens, temperature });
+      } catch (err) {
+        logger.warn(`[CODE-AGENT] ${provider.name} failed: ${err.message}, trying next...`);
+      }
+    }
+    throw new Error('All LLM providers failed');
+  }
+
+  _getProviders() {
+    const providers = [];
+    // Gemini (fastest, free tier generous)
+    const googleKey = process.env.GOOGLE_API_KEY;
+    if (googleKey) {
+      providers.push({
+        name: 'Gemini',
+        url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+        key: googleKey,
+        model: 'gemini-2.5-flash',
+      });
+    }
+    // Groq via LiteLLM
+    if (this.litellmKey) {
+      providers.push({
+        name: 'Groq/LiteLLM',
+        url: this.litellmBase + '/chat/completions',
+        key: this.litellmKey,
+        model: 'groq/llama-3.3-70b-versatile',
+      });
+    }
+    // OpenRouter (paid fallback)
+    const orKey = process.env.OPENROUTER_API_KEY;
+    if (orKey) {
+      providers.push({
+        name: 'OpenRouter',
+        url: 'https://openrouter.ai/api/v1/chat/completions',
+        key: orKey,
+        model: 'google/gemini-2.5-flash',
+      });
+    }
+    return providers;
+  }
+
+  async _callProvider(provider, messages, { maxTokens, temperature }) {
+    const resp = await fetch(provider.url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.litellmKey}`,
+        'Authorization': `Bearer ${provider.key}`,
       },
       body: JSON.stringify({
-        model: CODE_MODEL,
+        model: provider.model,
         messages,
         max_tokens: maxTokens,
         temperature,
       }),
       signal: AbortSignal.timeout(90000),
     });
-
     if (!resp.ok) {
       const text = await resp.text();
-      throw new Error(`LLM API ${resp.status}: ${text.substring(0, 200)}`);
+      throw new Error(`${provider.name} ${resp.status}: ${text.substring(0, 200)}`);
     }
-
     const data = await resp.json();
-    return data.choices?.[0]?.message?.content || '';
+    const content = data.choices?.[0]?.message?.content || '';
+    if (!content) throw new Error(`${provider.name}: empty response`);
+    logger.info(`[CODE-AGENT] ${provider.name} (${provider.model}) responded OK`);
+    return content;
   }
 
   // ══════════════════════════════════════════
@@ -167,7 +217,7 @@ class CodeAgent {
    * Execute a coding task end-to-end:
    * 1. Understand the task
    * 2. Read relevant files
-   * 3. Generate code with LLM (Groq)
+   * 3. Generate code with LLM (Gemini/Groq/OpenRouter fallback)
    * 4. Write to GitHub (branch)
    * 5. Test via VM
    * 6. Create PR or commit to main
@@ -175,7 +225,7 @@ class CodeAgent {
    */
   async executeTask(task) {
     if (!this.enabled) {
-      return { success: false, error: 'Code agent not enabled (no LiteLLM key)' };
+      return { success: false, error: 'Code agent not enabled (no LLM providers available)' };
     }
 
     this.currentTask = {
@@ -223,7 +273,7 @@ class CodeAgent {
       // Step 6: Create PR
       const pr = await this.createPR(task.repo, {
         title: task.description || `${this.agentName}: code update`,
-        body: `## ${this.agentName} Auto-Generated Code\n\n**Task:** ${task.description}\n\n**Plan:**\n${plan.substring(0, 500)}\n\n**Files modified:** ${Object.keys(code).join(', ')}\n\n**Test result:** ${testResult ? (testResult.error ? 'FAILED' : 'PASSED') : 'skipped'}\n\n---\n*Generated by ${this.agentName} using ${CODE_MODEL}*`,
+        body: `## ${this.agentName} Auto-Generated Code\n\n**Task:** ${task.description}\n\n**Plan:**\n${plan.substring(0, 500)}\n\n**Files modified:** ${Object.keys(code).join(', ')}\n\n**Test result:** ${testResult ? (testResult.error ? 'FAILED' : 'PASSED') : 'skipped'}\n\n---\n*Generated by ${this.agentName} using multi-LLM fallback (Gemini/Groq/OpenRouter)*`,
         head: branch,
       });
       this.currentTask.steps.push({ step: 'pr', url: pr.html_url, number: pr.number });
@@ -386,9 +436,11 @@ Generate clean, production-ready code. Include only files that need changes.`;
   }
 
   getStatus() {
+    const providers = this._getProviders();
     return {
       enabled: this.enabled,
-      model: CODE_MODEL,
+      providers: providers.map(p => ({ name: p.name, model: p.model })),
+      providerCount: providers.length,
       currentTask: this.currentTask ? {
         description: this.currentTask.description,
         status: this.currentTask.status,
