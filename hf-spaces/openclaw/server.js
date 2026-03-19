@@ -45,6 +45,7 @@ const Watchdog = require('./lib/watchdog');
 const A2AProtocol = require('./lib/a2a-protocol');
 const FeedbackLoop = require('./lib/feedback-loop');
 const ResearchAgent = require('./lib/research-agent');
+const MultiAgentCoordinator = require('./lib/multi-agent');
 
 // ============================================================
 // CONFIG
@@ -137,6 +138,7 @@ let a2aProtocol = null;
 let feedbackLoop = null;   // Phase 1: Prediction vs Reality
 let researchAgent = null;  // Phase 3: Autonomous research
 let codeAgent = null;      // Code Agent: Groq/LiteLLM coding LLM
+let multiAgent = null;     // Multi-Agent Coordinator: 6 specialized agents
 
 // ============================================================
 // OPENROUTER LLM CLIENT
@@ -257,14 +259,8 @@ async function getCompletion(messages, options = {}) {
     }
   }
 
-  // 2. Direct premium providers — Gemini, OpenAI (Codex), Kimi
+  // 2. Direct premium providers — Codex (OpenAI) → Kimi → Gemini
   const DIRECT_PROVIDERS = [
-    {
-      name: 'gemini',
-      url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
-      key: process.env.GOOGLE_API_KEY,
-      model: 'gemini-2.5-flash',
-    },
     {
       name: 'openai',
       url: 'https://api.openai.com/v1/chat/completions',
@@ -276,6 +272,12 @@ async function getCompletion(messages, options = {}) {
       url: 'https://api.moonshot.cn/v1/chat/completions',
       key: process.env.KIMI_API_KEY,
       model: 'moonshot-v1-8k',
+    },
+    {
+      name: 'gemini',
+      url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+      key: process.env.GOOGLE_API_KEY,
+      model: 'gemini-2.5-flash',
     },
   ];
 
@@ -1340,6 +1342,10 @@ app.get('/api/v1/evolution', async (req, res) => {
 });
 
 // Metrics endpoint
+app.get('/api/v1/agents', (req, res) => {
+  res.json(multiAgent ? multiAgent.getStatus() : { running: false, agents: [] });
+});
+
 app.get('/api/v1/metrics', async (req, res) => {
   try {
     const metrics = {
@@ -2329,6 +2335,17 @@ async function start() {
 
   // Process code task queue every 5 min (codeAgent initialized above, before AgenticLoop)
   setInterval(() => codeAgent.processQueue(), 5 * 60 * 1000);
+
+  // Initialize Multi-Agent Coordinator — 6 specialized AI agents in parallel
+  multiAgent = new MultiAgentCoordinator({
+    infraBridge,
+    a2a: a2aProtocol,
+    bot,
+    adminId: ADMIN_TELEGRAM_ID,
+    getCompletion,
+  });
+  multiAgent.start();
+  logger.info('Multi-Agent Coordinator: 6 agents started (Feature Scout, Model Architect, Calibrator, Evolution Tuner, Market Intel, Research Scholar)');
 
   // Start Express
   app.listen(PORT, '0.0.0.0', () => {
