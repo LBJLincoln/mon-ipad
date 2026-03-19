@@ -37,6 +37,7 @@ const InfraBridge = require('./lib/infra-bridge');
 const AgenticLoop = require('./lib/agentic-loop');
 const VMBridge = require('./lib/vm-bridge');
 const OrderExecutor = require('./lib/order-executor');
+const CodeAgent = require('./lib/code-agent');
 const ModelHealthMonitor = require('./lib/model-health-monitor');
 const RuleEngine = require('./lib/rule-engine');
 const DataWorker = require('./lib/data-worker');
@@ -1076,6 +1077,54 @@ async function handleTelegramUpdate(update) {
       }
     }
 
+    // 2b. Code Agent orders via Telegram (!code <repo> <description>)
+    else if (codeAgent?.enabled && msg.from?.id === ADMIN_TELEGRAM_ID
+             && text.startsWith('!code ')) {
+      const parts = text.replace('!code ', '').trim();
+      const repoMatch = parts.match(/^(\S+)\s+(.+)/);
+      if (repoMatch) {
+        const [, repo, description] = repoMatch;
+        codeAgent.addTask({ description, repo });
+        codeAgent.processQueue().catch(err => logger.error(`[CODE] ${err.message}`));
+        reply = `🤖 *Code Task Queued*\nRepo: ${repo}\nTask: ${description}\n\nKimi 2.5 is working on it...`;
+      } else {
+        reply = 'Usage: !code <repo> <description>\nExample: !code nomos-nba-agent Add Platt scaling to calibration';
+      }
+    }
+
+    // 2c. Web scrape via Telegram (!scrape <url>)
+    else if (msg.from?.id === ADMIN_TELEGRAM_ID && text.startsWith('!scrape ')) {
+      const url = text.replace('!scrape ', '').trim();
+      try {
+        const jinaUrl = `https://r.jina.ai/${url}`;
+        const headers = { 'Accept': 'text/markdown' };
+        if (process.env.JINA_API_KEY) headers['Authorization'] = `Bearer ${process.env.JINA_API_KEY}`;
+        const resp = await fetch(jinaUrl, { headers, signal: AbortSignal.timeout(15000) });
+        const content = await resp.text();
+        reply = `🌐 *Scraped:* ${url}\n\n${content.substring(0, 3500)}`;
+      } catch (err) {
+        reply = `Scrape failed: ${err.message}`;
+      }
+    }
+
+    // 2d. Web search via Telegram (!search <query>)
+    else if (msg.from?.id === ADMIN_TELEGRAM_ID && text.startsWith('!search ') && process.env.BRAVE_API_KEY) {
+      const query = text.replace('!search ', '').trim();
+      try {
+        const resp = await fetch(`https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=5`, {
+          headers: { 'Accept': 'application/json', 'X-Subscription-Token': process.env.BRAVE_API_KEY },
+          signal: AbortSignal.timeout(10000),
+        });
+        const data = await resp.json();
+        const results = (data.web?.results || []).slice(0, 5);
+        reply = `🔍 *Search:* ${query}\n\n` + results.map((r, i) =>
+          `${i + 1}. [${r.title}](${r.url})\n${r.description?.substring(0, 100) || ''}`
+        ).join('\n\n');
+      } catch (err) {
+        reply = `Search failed: ${err.message}`;
+      }
+    }
+
     // 3. Fallback: AI completion with conversation context
     if (!reply) {
       const history = persistence.getHistory(chatId, 10);
@@ -1562,6 +1611,99 @@ app.post('/api/v1/loop/trigger-heartbeat', async (req, res) => {
 });
 
 // ============================================================
+// CODE AGENT API — Kimi 2.5 powered autonomous coding
+// ============================================================
+
+// Submit a coding task
+app.post('/api/v1/code/task', async (req, res) => {
+  if (!codeAgent?.enabled) {
+    return res.status(503).json({ error: 'Code agent not available (no KIMI_API_KEY)' });
+  }
+  const { description, repo, files, context, testCommand } = req.body;
+  if (!description || !repo) {
+    return res.status(400).json({ error: 'description and repo required' });
+  }
+  codeAgent.addTask({ description, repo, files, context, testCommand });
+  // Execute immediately (don't wait for queue timer)
+  codeAgent.processQueue().catch(err => logger.error(`[CODE] Queue error: ${err.message}`));
+  res.json({ status: 'queued', queueLength: codeAgent.tasks.length + 1 });
+});
+
+// Execute a coding task synchronously (wait for result)
+app.post('/api/v1/code/execute', async (req, res) => {
+  if (!codeAgent?.enabled) {
+    return res.status(503).json({ error: 'Code agent not available' });
+  }
+  try {
+    const result = await codeAgent.executeTask(req.body);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Ask Kimi directly (raw code generation)
+app.post('/api/v1/code/ask', async (req, res) => {
+  if (!codeAgent?.enabled) {
+    return res.status(503).json({ error: 'Code agent not available' });
+  }
+  try {
+    const { prompt, maxTokens, temperature } = req.body;
+    const result = await codeAgent.askKimi(
+      [{ role: 'user', content: prompt }],
+      { maxTokens: maxTokens || 4096, temperature: temperature || 0.3 }
+    );
+    res.json({ result, model: 'kimi-2.5' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Code agent status
+app.get('/api/v1/code/status', (req, res) => {
+  res.json(codeAgent?.getStatus() || { enabled: false });
+});
+
+// Web scraping via Jina Reader (accessible to all agents)
+app.post('/api/v1/scrape', async (req, res) => {
+  const { url, format } = req.body;
+  if (!url) return res.status(400).json({ error: 'url required' });
+  try {
+    const jinaUrl = `https://r.jina.ai/${url}`;
+    const headers = { 'Accept': format === 'markdown' ? 'text/markdown' : 'text/html' };
+    if (process.env.JINA_API_KEY) headers['Authorization'] = `Bearer ${process.env.JINA_API_KEY}`;
+    const resp = await fetch(jinaUrl, { headers, signal: AbortSignal.timeout(20000) });
+    if (!resp.ok) throw new Error(`Jina ${resp.status}`);
+    const content = await resp.text();
+    res.json({ url, content: content.substring(0, 50000), length: content.length });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Web search via Brave
+app.post('/api/v1/search', async (req, res) => {
+  const { query, count } = req.body;
+  if (!query) return res.status(400).json({ error: 'query required' });
+  const braveKey = process.env.BRAVE_API_KEY;
+  if (!braveKey) return res.status(503).json({ error: 'BRAVE_API_KEY not set' });
+  try {
+    const resp = await fetch(`https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${count || 10}`, {
+      headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip', 'X-Subscription-Token': braveKey },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!resp.ok) throw new Error(`Brave ${resp.status}`);
+    const data = await resp.json();
+    const results = (data.web?.results || []).map(r => ({
+      title: r.title, url: r.url, description: r.description,
+    }));
+    res.json({ query, results });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================================
 // A2A PROTOCOL API — Adam ↔ ${AGENT_NAME} communication
 // ============================================================
 
@@ -2021,6 +2163,24 @@ async function start() {
   });
   logger.info('Order Executor initialized — Telegram natural language orders active');
 
+  // Initialize Code Agent (Kimi 2.5 — coding LLM)
+  let codeAgent = null;
+  if (process.env.KIMI_API_KEY) {
+    codeAgent = new CodeAgent({
+      kimiApiKey: process.env.KIMI_API_KEY,
+      ghToken: GH_TOKEN,
+      ghOwner: GH_OWNER,
+      vmBridge,
+      bot,
+      adminId: ADMIN_TELEGRAM_ID,
+      a2a: a2aProtocol,
+    });
+    logger.info(`Code Agent initialized — Kimi 2.5 coding LLM (${AGENT_NAME})`);
+
+    // Process code task queue every 5 min
+    setInterval(() => codeAgent.processQueue(), 5 * 60 * 1000);
+  }
+
   // Start Express
   app.listen(PORT, '0.0.0.0', () => {
     logger.info('='.repeat(60));
@@ -2037,6 +2197,7 @@ async function start() {
     logger.info(`A2A Protocol: ACTIVE (Adam ↔ ${AGENT_NAME} bidirectional)`);
     logger.info(`Model Monitor: ACTIVE (${Object.keys(modelMonitor.models).length} free models tracked)`);
     logger.info(`Rule Engine: ACTIVE (${ruleEngine.rules.length} deterministic rules)`);
+    logger.info(`Code Agent: ${codeAgent ? 'ACTIVE (Kimi 2.5)' : 'DISABLED (no KIMI_API_KEY)'}`);
     logger.info(`Order Executor: ACTIVE (natural language → actions)`);
     logger.info(`Dashboard: /dashboard`);
     logger.info('='.repeat(60));

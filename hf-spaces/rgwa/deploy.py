@@ -68,6 +68,8 @@ SECRETS = {
     "BRAVE_API_KEY": os.environ.get("BRAVE_API_KEY", ""),
     "EXA_API_KEY": os.environ.get("EXA_API_KEY", ""),
     "ODDS_API_KEY": os.environ.get("ODDS_API_KEY", ""),
+    # Kimi 2.5 — coding LLM
+    "KIMI_API_KEY": os.environ.get("KIMI_API_KEY", ""),
     # RGWA-specific identity & peer config
     "AGENT_NAME": "RGWA",
     "AGENT_ROLE": "general",
