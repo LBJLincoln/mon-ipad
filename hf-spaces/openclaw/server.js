@@ -2142,7 +2142,18 @@ async function start() {
   });
   logger.info(`Research Agent initialized — Brave Search: ${process.env.BRAVE_SEARCH_API_KEY ? 'CONFIGURED' : 'NOT SET (LLM-only mode)'}`);
 
-  // Initialize Agentic Loop v5 — intelligent autonomous operations
+  // Initialize Code Agent (Groq Llama 3.3 70B via LiteLLM) — BEFORE AgenticLoop so it can be passed in
+  codeAgent = new CodeAgent({
+    ghToken: GH_TOKEN,
+    ghOwner: GH_OWNER,
+    vmBridge,
+    bot,
+    adminId: ADMIN_TELEGRAM_ID,
+    a2a: a2aProtocol,
+  });
+  logger.info(`Code Agent initialized — Groq/LiteLLM (${AGENT_NAME})`);
+
+  // Initialize Agentic Loop v5 — intelligent autonomous operations (with Code Agent integration)
   agenticLoop = new AgenticLoop({
     fetchEvolution: fetchEvo,
     callS10,
@@ -2155,6 +2166,7 @@ async function start() {
     spaceExecutor,
     feedbackLoop,
     researchAgent,
+    codeAgent,
   });
   agenticLoop.start();
 
@@ -2170,18 +2182,7 @@ async function start() {
   });
   logger.info('Order Executor initialized — Telegram natural language orders active');
 
-  // Initialize Code Agent (Groq Llama 3.3 70B via LiteLLM)
-  codeAgent = new CodeAgent({
-    ghToken: GH_TOKEN,
-    ghOwner: GH_OWNER,
-    vmBridge,
-    bot,
-    adminId: ADMIN_TELEGRAM_ID,
-    a2a: a2aProtocol,
-  });
-  logger.info(`Code Agent initialized — Groq/LiteLLM (${AGENT_NAME})`);
-
-  // Process code task queue every 5 min
+  // Process code task queue every 5 min (codeAgent initialized above, before AgenticLoop)
   setInterval(() => codeAgent.processQueue(), 5 * 60 * 1000);
 
   // Start Express

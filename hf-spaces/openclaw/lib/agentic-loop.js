@@ -45,6 +45,7 @@ class AgenticLoop {
     spaceExecutor,
     feedbackLoop,
     researchAgent,
+    codeAgent,
   }) {
     this.fetchEvolution = fetchEvolution;
     this.callS10 = callS10;
@@ -57,6 +58,7 @@ class AgenticLoop {
     this.spaces = spaceExecutor;
     this.feedbackLoop = feedbackLoop;
     this.researchAgent = researchAgent;
+    this.codeAgent = codeAgent;
 
     // Agent role — determines which cycles are active
     this.agentName = process.env.AGENT_NAME || 'Eve';
@@ -665,18 +667,30 @@ ${feedbackContext}
 Rules:
 - Use NUMBERS, not vague statements
 - Compare to targets: Brier < 0.20, ROI > 5%, accuracy > 65%
-- You can output actions ONE PER LINE in EXACTLY this format:
-  ACTION: set_config(mutation_rate=0.05)
-  ACTION: diversify
-  ACTION: inject_features(feature_name_1, feature_name_2)
-  ACTION: rollback
-  Valid set_config params: mutation_rate, target_features, crossover_rate, tournament_size
+- Output recommendations ONE PER LINE in EXACTLY one of these formats:
+
+  For CONFIG changes (mutation rate, population, hyperparams):
+  RECOMMENDATION: {"type":"config","key":"mutation_rate","value":0.05}
+  RECOMMENDATION: {"type":"config","key":"crossover_rate","value":0.7}
+  Valid config keys: mutation_rate, target_features, crossover_rate, tournament_size
+
+  For CODE changes (new features, calibration, model architecture):
+  RECOMMENDATION: {"type":"code","description":"add Platt scaling to calibration pipeline","files":["features/calibration.py","evolution/loop.py"],"context":"Brier stuck at 0.23, calibration would help"}
+
+  For RESTART of HF Spaces:
+  RECOMMENDATION: {"type":"restart","target":"S10"}
+
+  For evolution commands (diversify, inject, rollback):
+  RECOMMENDATION: {"type":"evolve","action":"diversify"}
+  RECOMMENDATION: {"type":"evolve","action":"inject_features","features":["feature_a","feature_b"]}
+  RECOMMENDATION: {"type":"evolve","action":"rollback"}
+
 - IMPORTANT: Do NOT output actions you already executed recently (check RECENT EXECUTIONS above)
 - IMPORTANT: If Brier went UP after an action, do NOT repeat that action
 - If Brier > 0.5, something is broken — only rollback, nothing else
-- If everything looks normal, say "STATUS: OK" and give brief summary. NO actions needed.
-- Max 1-2 actions per response. Quality over quantity.
-- Max 150 words`;
+- If everything looks normal, say "STATUS: OK" and give brief summary. NO recommendations needed.
+- Max 1-2 recommendations per response. Quality over quantity.
+- Max 200 words`;
 
     try {
       const result = await this.getCompletion([{ role: 'user', content: prompt }], {
@@ -739,15 +753,29 @@ Rules:
   async _tryAutoExecute(insight, context) {
     if (!this.isNBA || !this.callS10) return [];
 
-    // Improved parser: handles set_config({json}), inject_features("a","b"), rollback, diversify
-    const actions = [];
+    // ── PARSE STRUCTURED RECOMMENDATIONS ──
+    // New format: RECOMMENDATION: {"type":"code|config|restart|evolve", ...}
+    // Legacy format: ACTION: set_config(...) / diversify / rollback / inject_features(...)
+    const recommendations = [];
     for (const line of insight.split('\n')) {
+      // New structured format
+      const recMatch = line.match(/RECOMMENDATION:\s*(\{.+\})/i);
+      if (recMatch) {
+        try {
+          const rec = JSON.parse(recMatch[1]);
+          if (rec.type) recommendations.push(rec);
+        } catch (e) {
+          logger.debug(`[AUTO-EXEC] Failed to parse recommendation JSON: ${recMatch[1].substring(0, 80)}`);
+        }
+        continue;
+      }
+
+      // Legacy ACTION format — convert to structured recommendations
       const actionMatch = line.match(/ACTION:\s*(.+)/i);
       if (!actionMatch) continue;
       const raw = actionMatch[1].trim();
 
       if (/^set_config/i.test(raw)) {
-        // Parse set_config(key=val) or set_config({"key":val})
         const jsonMatch = raw.match(/\{([^}]+)\}/);
         const kvMatch = raw.match(/\(([^)]+)\)/);
         const params = {};
@@ -759,107 +787,179 @@ Rules:
             if (k && v) params[k] = isNaN(v) ? v : parseFloat(v);
           }
         }
-        if (Object.keys(params).length > 0) actions.push({ type: 'set_config', params });
+        if (Object.keys(params).length > 0) {
+          // Convert each param to a config recommendation
+          for (const [key, value] of Object.entries(params)) {
+            recommendations.push({ type: 'config', key, value });
+          }
+        }
       } else if (/^inject_features/i.test(raw)) {
         const featureMatch = raw.match(/\(([^)]+)\)/);
         if (featureMatch) {
           const features = featureMatch[1].split(',').map(f => f.trim().replace(/['"]/g, '')).filter(Boolean);
-          if (features.length > 0) actions.push({ type: 'inject_features', features });
+          if (features.length > 0) recommendations.push({ type: 'evolve', action: 'inject_features', features });
         }
       } else if (/^rollback/i.test(raw)) {
-        actions.push({ type: 'rollback' });
+        recommendations.push({ type: 'evolve', action: 'rollback' });
       } else if (/^diversify/i.test(raw)) {
-        actions.push({ type: 'diversify' });
+        recommendations.push({ type: 'evolve', action: 'diversify' });
       } else {
-        logger.debug(`[LOOP] Unrecognized action: ${raw.substring(0, 80)}`);
+        logger.debug(`[AUTO-EXEC] Unrecognized action: ${raw.substring(0, 80)}`);
       }
     }
 
-    if (actions.length === 0) return [];
+    if (recommendations.length === 0) return [];
 
-    // DEDUP: Skip actions identical to recent executions (last 30 min)
+    // ── DEDUP: Skip recommendations identical to recent executions (last 30 min) ──
     const recentCutoff = Date.now() - 30 * 60 * 1000;
     const recentActions = this.executionLog
       .filter(e => new Date(e.timestamp).getTime() > recentCutoff)
       .map(e => e.action);
 
-    const dedupedActions = actions.filter(a => {
-      const sig = a.type === 'inject_features' ? `inject_features(${a.features.sort().join(',')})` :
-                  a.type === 'set_config' ? `set_config(${JSON.stringify(a.params)})` : a.type;
+    const dedupedRecs = recommendations.filter(rec => {
+      const sig = this._recommendationSignature(rec);
       if (recentActions.includes(sig)) {
-        logger.info(`[LOOP] DEDUP: Skipping ${sig} (already executed in last 30min)`);
+        logger.info(`[AUTO-EXEC] DEDUP: Skipping ${sig} (already executed in last 30min)`);
         return false;
       }
       return true;
     });
 
-    if (dedupedActions.length === 0) {
-      logger.info('[LOOP] All actions skipped (dedup). Waiting for new insights.');
+    if (dedupedRecs.length === 0) {
+      logger.info('[AUTO-EXEC] All recommendations skipped (dedup). Waiting for new insights.');
       return [];
     }
 
-    // COOLDOWN: Max 3 auto-executions per hour
+    // ── COOLDOWN: Max 3 auto-executions per hour (code tasks exempt — they create PRs, not direct changes) ──
     const hourCutoff = Date.now() - 60 * 60 * 1000;
-    const execsThisHour = this.executionLog.filter(e => new Date(e.timestamp).getTime() > hourCutoff).length;
-    if (execsThisHour >= 3) {
-      logger.info(`[LOOP] COOLDOWN: ${execsThisHour} executions this hour (max 3). Skipping.`);
-      return [];
+    const nonCodeExecsThisHour = this.executionLog
+      .filter(e => new Date(e.timestamp).getTime() > hourCutoff && !e.action.startsWith('code_task:'))
+      .length;
+    const directRecs = dedupedRecs.filter(r => r.type !== 'code');
+    if (nonCodeExecsThisHour >= 3 && directRecs.length > 0) {
+      logger.info(`[AUTO-EXEC] COOLDOWN: ${nonCodeExecsThisHour} direct executions this hour (max 3). Skipping non-code recs.`);
+      // Still allow code tasks through — they create PRs, not direct mutations
+      const codeOnly = dedupedRecs.filter(r => r.type === 'code');
+      if (codeOnly.length === 0) return [];
+      dedupedRecs.length = 0;
+      dedupedRecs.push(...codeOnly);
     }
 
-    // Safety gate: monotonic ratchet
+    // ── SAFETY GATE: Monotonic ratchet (for direct execution only) ──
     const currentBrier = context.evolution?.brier;
     let bestCheckpointBrier = null;
     try {
       const cpResp = await this.callS10('/api/checkpoint/best');
       bestCheckpointBrier = cpResp?.brier;
     } catch (e) {
-      logger.debug('[LOOP] No checkpoint data available for ratchet check');
+      logger.debug('[AUTO-EXEC] No checkpoint data available for ratchet check');
     }
 
-    const hasRollback = dedupedActions.some(a => a.type === 'rollback');
+    const hasRollback = dedupedRecs.some(r => r.type === 'evolve' && r.action === 'rollback');
+    const hasCodeOnly = dedupedRecs.every(r => r.type === 'code');
 
-    if (!hasRollback && bestCheckpointBrier && currentBrier && currentBrier > bestCheckpointBrier + 0.005) {
-      logger.info(`[LOOP] Auto-execute BLOCKED: Brier ${currentBrier?.toFixed(4)} > checkpoint ${bestCheckpointBrier?.toFixed(4)} + 0.005`);
+    // Ratchet blocks direct mutations but NOT code tasks (those create PRs for review)
+    if (!hasRollback && !hasCodeOnly && bestCheckpointBrier && currentBrier && currentBrier > bestCheckpointBrier + 0.005) {
+      logger.info(`[AUTO-EXEC] Direct execution BLOCKED: Brier ${currentBrier?.toFixed(4)} > checkpoint ${bestCheckpointBrier?.toFixed(4)} + 0.005`);
       if (this.a2a) {
         this.a2a.postReport({
           type: 'auto_execute_blocked',
           level: 'WARNING',
-          message: `Ratchet blocked ${dedupedActions.length} action(s). Brier ${currentBrier?.toFixed(4)} too far from best ${bestCheckpointBrier?.toFixed(4)}`,
+          message: `Ratchet blocked direct action(s). Brier ${currentBrier?.toFixed(4)} too far from best ${bestCheckpointBrier?.toFixed(4)}. Code tasks still allowed.`,
         });
       }
-      return [];
+      // Filter to only code tasks
+      const codeOnly = dedupedRecs.filter(r => r.type === 'code');
+      if (codeOnly.length === 0) return [];
+      dedupedRecs.length = 0;
+      dedupedRecs.push(...codeOnly);
     }
 
+    // ── EXECUTE RECOMMENDATIONS BY TYPE ──
     const executedActions = [];
 
-    for (const action of dedupedActions) {
-      const actionType = action.type;
-
+    for (const rec of dedupedRecs) {
       try {
         let result = 'unknown';
 
-        if (actionType === 'set_config') {
-          await this.callS10('/api/config', { method: 'POST', body: JSON.stringify(action.params) });
-          result = `set_config(${JSON.stringify(action.params)})`;
-          logger.info(`[LOOP] Auto-executed: ${result}`);
+        switch (rec.type) {
+          // ── CODE: Route to Code Agent (creates branch + PR) ──
+          case 'code': {
+            if (this.codeAgent) {
+              this.codeAgent.addTask({
+                repo: rec.repo || 'nomos-nba-agent',
+                description: rec.description || 'LLM-recommended code improvement',
+                files: rec.files || [],
+                context: rec.context || '',
+              });
+              this.codeAgent.processQueue().catch(err =>
+                logger.error(`[AUTO-EXEC] Code task failed: ${err.message}`)
+              );
+              result = `code_task: ${(rec.description || '').substring(0, 80)}`;
+              logger.info(`[AUTO-EXEC] Code Agent task queued: ${result}`);
+            } else {
+              logger.warn('[AUTO-EXEC] Code recommendation received but codeAgent not available');
+              result = `code_task_skipped: no codeAgent`;
+            }
+            break;
+          }
 
-        } else if (actionType === 'diversify') {
-          await this.callS10('/api/command', { method: 'POST', body: JSON.stringify({ command: 'diversify' }) });
-          result = 'diversify';
-          logger.info('[LOOP] Auto-executed: diversify');
+          // ── CONFIG: Set evolution parameters via S10 API ──
+          case 'config': {
+            const params = { [rec.key]: rec.value };
+            await this.callS10('/api/config', { method: 'POST', body: JSON.stringify(params) });
+            result = `set_config(${rec.key}=${rec.value})`;
+            logger.info(`[AUTO-EXEC] Config applied: ${result}`);
+            break;
+          }
 
-        } else if (actionType === 'inject_features') {
-          await this.callS10('/api/features/inject', {
-            method: 'POST',
-            body: JSON.stringify({ features: action.features }),
-          });
-          result = `inject_features(${action.features.join(',')})`;
-          logger.info(`[LOOP] Auto-executed: ${result}`);
+          // ── RESTART: Restart HF Space via Space Executor ──
+          case 'restart': {
+            const target = (rec.target || '').toUpperCase();
+            if (this.spaces && target) {
+              try {
+                await this.spaces.restart(target);
+                result = `restart(${target})`;
+                logger.info(`[AUTO-EXEC] Space restarted: ${target}`);
+              } catch (err) {
+                result = `restart_failed(${target}): ${err.message}`;
+                logger.warn(`[AUTO-EXEC] Space restart failed: ${err.message}`);
+              }
+            } else {
+              result = `restart_skipped: no spaceExecutor or no target`;
+              logger.warn(`[AUTO-EXEC] Restart skipped — spaceExecutor: ${!!this.spaces}, target: ${target}`);
+            }
+            break;
+          }
 
-        } else if (actionType === 'rollback') {
-          await this.callS10('/api/checkpoint/restore', { method: 'POST', body: '{}' });
-          result = 'rollback to best checkpoint';
-          logger.info('[LOOP] Auto-executed: rollback to best checkpoint');
+          // ── EVOLVE: Evolution commands (diversify, inject, rollback) via S10 API ──
+          case 'evolve': {
+            const action = rec.action;
+            if (action === 'diversify') {
+              await this.callS10('/api/command', { method: 'POST', body: JSON.stringify({ command: 'diversify' }) });
+              result = 'diversify';
+              logger.info('[AUTO-EXEC] Executed: diversify');
+            } else if (action === 'inject_features' && rec.features?.length > 0) {
+              await this.callS10('/api/features/inject', {
+                method: 'POST',
+                body: JSON.stringify({ features: rec.features }),
+              });
+              result = `inject_features(${rec.features.join(',')})`;
+              logger.info(`[AUTO-EXEC] Executed: ${result}`);
+            } else if (action === 'rollback') {
+              await this.callS10('/api/checkpoint/restore', { method: 'POST', body: '{}' });
+              result = 'rollback to best checkpoint';
+              logger.info('[AUTO-EXEC] Executed: rollback to best checkpoint');
+            } else {
+              result = `evolve_unknown(${action})`;
+              logger.debug(`[AUTO-EXEC] Unknown evolve action: ${action}`);
+            }
+            break;
+          }
+
+          default:
+            logger.debug(`[AUTO-EXEC] Unknown recommendation type: ${rec.type}`);
+            result = `unknown_type(${rec.type})`;
         }
 
         executedActions.push(result);
@@ -870,17 +970,18 @@ Rules:
           action: result,
           brierBefore: currentBrier,
           brierAfter: null, // Will be filled by _checkExecutionFeedback
-          result: 'pending',
+          result: rec.type === 'code' ? 'pr_pending' : 'pending',
         });
         if (this.executionLog.length > this.MAX_EXECUTION_LOG) {
           this.executionLog = this.executionLog.slice(-this.MAX_EXECUTION_LOG);
         }
 
       } catch (err) {
-        logger.warn(`[LOOP] Auto-execute ${actionType} failed: ${err.message}`);
+        const sig = this._recommendationSignature(rec);
+        logger.warn(`[AUTO-EXEC] ${rec.type} failed: ${err.message}`);
         this.executionLog.push({
           timestamp: new Date().toISOString(),
-          action: `${actionType}(${actionArgs})`,
+          action: sig,
           brierBefore: currentBrier,
           brierAfter: null,
           result: `FAILED: ${err.message}`,
@@ -888,29 +989,49 @@ Rules:
       }
     }
 
-    // Create checkpoint after successful executions
-    if (executedActions.length > 0) {
+    // Create checkpoint after successful direct executions (not code tasks)
+    const directExecutions = executedActions.filter(a => !a.startsWith('code_task'));
+    if (directExecutions.length > 0) {
       try {
         await this.callS10('/api/checkpoint', { method: 'POST', body: '{}' });
-        logger.info('[LOOP] Post-execute checkpoint created');
+        logger.info('[AUTO-EXEC] Post-execute checkpoint created');
       } catch (e) {
-        logger.warn(`[LOOP] Checkpoint after auto-execute failed: ${e.message}`);
-      }
-
-      if (this.a2a) {
-        this.a2a.postReport({
-          type: 'auto_execute',
-          level: 'INFO',
-          message: `Executed ${executedActions.length} action(s): ${executedActions.join(' | ')}`,
-          data: { actions: executedActions, currentBrier, bestCheckpointBrier },
-        });
+        logger.warn(`[AUTO-EXEC] Checkpoint after auto-execute failed: ${e.message}`);
       }
 
       // Schedule feedback check: after 20 min, compare Brier to see if it improved
       setTimeout(() => this._checkExecutionFeedback(currentBrier), 20 * 60 * 1000);
     }
 
+    if (executedActions.length > 0 && this.a2a) {
+      this.a2a.postReport({
+        type: 'auto_execute',
+        level: 'INFO',
+        message: `Executed ${executedActions.length} action(s): ${executedActions.join(' | ')}`,
+        data: { actions: executedActions, currentBrier, bestCheckpointBrier },
+      });
+    }
+
     return executedActions;
+  }
+
+  /**
+   * Generate a dedup signature for a recommendation
+   */
+  _recommendationSignature(rec) {
+    switch (rec.type) {
+      case 'code':
+        return `code_task: ${(rec.description || '').substring(0, 80)}`;
+      case 'config':
+        return `set_config(${rec.key}=${rec.value})`;
+      case 'restart':
+        return `restart(${(rec.target || '').toUpperCase()})`;
+      case 'evolve':
+        if (rec.action === 'inject_features') return `inject_features(${(rec.features || []).sort().join(',')})`;
+        return rec.action || 'evolve';
+      default:
+        return `${rec.type}:${JSON.stringify(rec).substring(0, 60)}`;
+    }
   }
 
   // ══════════════════════════════════════════
