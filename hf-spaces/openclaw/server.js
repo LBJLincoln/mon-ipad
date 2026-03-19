@@ -1688,6 +1688,18 @@ app.post('/api/v1/scrape', async (req, res) => {
   }
 });
 
+// Browser automation — navigate, fill forms, click
+app.post('/api/v1/browser', async (req, res) => {
+  const { url, actions } = req.body;
+  if (!url) return res.status(400).json({ error: 'url required' });
+  try {
+    const result = await dataWorker.browserAction(url, actions || []);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Web search via Brave
 app.post('/api/v1/search', async (req, res) => {
   const { query, count } = req.body;

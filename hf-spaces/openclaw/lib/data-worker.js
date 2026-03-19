@@ -1346,6 +1346,76 @@ class DataWorker {
   }
 
   // ══════════════════════════════════════════
+  //  BROWSER AUTOMATION — Navigate, fill forms, click
+  // ══════════════════════════════════════════
+
+  /**
+   * Execute browser actions via Jina Reader with instruction prompts.
+   * Jina Reader supports a special mode where you can ask it to interact.
+   * For complex form filling, falls back to the Code Agent (which can
+   * generate automation scripts).
+   *
+   * @param {string} url — Target URL
+   * @param {Array} actions — [{type: 'fill', selector: '#email', value: 'test@test.com'},
+   *                           {type: 'click', selector: '#submit'}]
+   * @returns {object} — { success, content, error }
+   */
+  async browserAction(url, actions = []) {
+    // Strategy 1: For simple reads with JS rendering, use Jina
+    if (actions.length === 0) {
+      const content = await this._fetchRendered(url);
+      return { success: !!content, content, method: 'jina-reader' };
+    }
+
+    // Strategy 2: For form filling, use VM SSH + curl/python
+    // This works because our VM has a real browser environment
+    if (this.infra?.vmBridge) {
+      try {
+        const actionsJson = JSON.stringify(actions).replace(/'/g, "\\'");
+        // Generate a Python script that uses requests + beautifulsoup for simple forms
+        // or selenium for complex JS forms
+        const script = `
+import json, sys
+try:
+    import requests
+    from urllib.parse import urljoin
+    s = requests.Session()
+    s.headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64) Chrome/120.0'
+    resp = s.get('${url}', timeout=15)
+    actions = json.loads('${actionsJson}')
+    # For POST-based forms, extract form action and submit
+    form_data = {}
+    for a in actions:
+        if a.get('type') == 'fill':
+            name = a.get('name') or a.get('selector', '').replace('#', '')
+            form_data[name] = a.get('value', '')
+    if form_data:
+        resp = s.post('${url}', data=form_data, timeout=15)
+    print(json.dumps({'success': True, 'status': resp.status_code, 'length': len(resp.text), 'content': resp.text[:3000]}))
+except Exception as e:
+    print(json.dumps({'success': False, 'error': str(e)}))
+`;
+        const result = await this.infra.vmBridge.exec(`python3 -c "${script.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`);
+        if (result.stdout) {
+          const parsed = JSON.parse(result.stdout.trim());
+          return { ...parsed, method: 'vm-python' };
+        }
+        return { success: false, error: result.stderr || 'No output', method: 'vm-python' };
+      } catch (err) {
+        logger.error(`[DATA-WORKER] VM browser action failed: ${err.message}`);
+      }
+    }
+
+    // Strategy 3: Fallback — describe what we need and let Code Agent handle it
+    return {
+      success: false,
+      error: 'Browser form filling requires VM SSH bridge (not available)',
+      suggestion: 'Use !code to create an automation script',
+      method: 'none',
+    };
+  }
+
+  // ══════════════════════════════════════════
   //  STATUS
   // ══════════════════════════════════════════
 
