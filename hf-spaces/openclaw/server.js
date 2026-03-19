@@ -136,7 +136,7 @@ let watchdog = null;
 let a2aProtocol = null;
 let feedbackLoop = null;   // Phase 1: Prediction vs Reality
 let researchAgent = null;  // Phase 3: Autonomous research
-let codeAgent = null;      // Code Agent: Kimi 2.5 coding LLM
+let codeAgent = null;      // Code Agent: Groq/LiteLLM coding LLM
 
 // ============================================================
 // OPENROUTER LLM CLIENT
@@ -1087,7 +1087,7 @@ async function handleTelegramUpdate(update) {
         const [, repo, description] = repoMatch;
         codeAgent.addTask({ description, repo });
         codeAgent.processQueue().catch(err => logger.error(`[CODE] ${err.message}`));
-        reply = `🤖 *Code Task Queued*\nRepo: ${repo}\nTask: ${description}\n\nKimi 2.5 is working on it...`;
+        reply = `🤖 *Code Task Queued*\nRepo: ${repo}\nTask: ${description}\n\nGroq Llama 3.3 is working on it...`;
       } else {
         reply = 'Usage: !code <repo> <description>\nExample: !code nomos-nba-agent Add Platt scaling to calibration';
       }
@@ -1132,11 +1132,17 @@ async function handleTelegramUpdate(update) {
       const messages = history.map(h => ({ role: h.role, content: h.content }));
       messages.push({ role: 'user', content: text });
 
+      // For complex messages (>120 chars), send ack immediately and process async
+      const isComplex = text.length > 120;
+      if (isComplex) {
+        bot.sendMessage(chatId, `⏳ Processing your request...`).catch(() => {});
+      }
+
       try {
-        // Timeout LLM call at 25 seconds
+        // Timeout LLM call at 120 seconds (complex tasks need time)
         const llmPromise = getCompletion(messages);
         const llmTimeout = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('LLM timed out after 25s')), 25000));
+          setTimeout(() => reject(new Error('LLM timed out after 120s')), 120000));
         const result = await Promise.race([llmPromise, llmTimeout]);
         reply = result.content;
         logger.info(`[LLM] Model: ${result.model}, tokens: ${result.usage?.total_tokens || '?'}`);
@@ -1643,18 +1649,18 @@ app.post('/api/v1/code/execute', async (req, res) => {
   }
 });
 
-// Ask Kimi directly (raw code generation)
+// Ask LLM directly (raw code generation)
 app.post('/api/v1/code/ask', async (req, res) => {
   if (!codeAgent?.enabled) {
     return res.status(503).json({ error: 'Code agent not available' });
   }
   try {
     const { prompt, maxTokens, temperature } = req.body;
-    const result = await codeAgent.askKimi(
+    const result = await codeAgent.askLLM(
       [{ role: 'user', content: prompt }],
       { maxTokens: maxTokens || 4096, temperature: temperature || 0.3 }
     );
-    res.json({ result, model: 'kimi-2.5' });
+    res.json({ result, model: 'groq/llama-3.3-70b-versatile' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -2164,22 +2170,19 @@ async function start() {
   });
   logger.info('Order Executor initialized — Telegram natural language orders active');
 
-  // Initialize Code Agent (Kimi 2.5 — coding LLM)
-  if (process.env.KIMI_API_KEY) {
-    codeAgent = new CodeAgent({
-      kimiApiKey: process.env.KIMI_API_KEY,
-      ghToken: GH_TOKEN,
-      ghOwner: GH_OWNER,
-      vmBridge,
-      bot,
-      adminId: ADMIN_TELEGRAM_ID,
-      a2a: a2aProtocol,
-    });
-    logger.info(`Code Agent initialized — Kimi 2.5 coding LLM (${AGENT_NAME})`);
+  // Initialize Code Agent (Groq Llama 3.3 70B via LiteLLM)
+  codeAgent = new CodeAgent({
+    ghToken: GH_TOKEN,
+    ghOwner: GH_OWNER,
+    vmBridge,
+    bot,
+    adminId: ADMIN_TELEGRAM_ID,
+    a2a: a2aProtocol,
+  });
+  logger.info(`Code Agent initialized — Groq/LiteLLM (${AGENT_NAME})`);
 
-    // Process code task queue every 5 min
-    setInterval(() => codeAgent.processQueue(), 5 * 60 * 1000);
-  }
+  // Process code task queue every 5 min
+  setInterval(() => codeAgent.processQueue(), 5 * 60 * 1000);
 
   // Start Express
   app.listen(PORT, '0.0.0.0', () => {
@@ -2197,7 +2200,7 @@ async function start() {
     logger.info(`A2A Protocol: ACTIVE (Adam ↔ ${AGENT_NAME} bidirectional)`);
     logger.info(`Model Monitor: ACTIVE (${Object.keys(modelMonitor.models).length} free models tracked)`);
     logger.info(`Rule Engine: ACTIVE (${ruleEngine.rules.length} deterministic rules)`);
-    logger.info(`Code Agent: ${codeAgent ? 'ACTIVE (Kimi 2.5)' : 'DISABLED (no KIMI_API_KEY)'}`);
+    logger.info(`Code Agent: ${codeAgent?.enabled ? 'ACTIVE (Groq/LiteLLM)' : 'DISABLED'}`);
     logger.info(`Order Executor: ACTIVE (natural language → actions)`);
     logger.info(`Dashboard: /dashboard`);
     logger.info('='.repeat(60));
