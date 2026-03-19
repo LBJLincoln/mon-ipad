@@ -293,16 +293,23 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
       logger.warn(`[MULTI-AGENT] ${agent.name}: LLM returned empty`);
       return;
     }
+    logger.info(`[MULTI-AGENT] ${agent.name} got ${response.length} char response`);
 
     // 3. Parse experiments from response
     const experiments = this._parseExperiments(response, agent);
 
     // 4. Submit to Supabase queue
+    let submitted = 0;
     for (const exp of experiments) {
-      await this._submitExperiment(exp, agent);
+      try {
+        await this._submitExperiment(exp, agent);
+        submitted++;
+      } catch (err) {
+        logger.warn(`[MULTI-AGENT] ${agent.name} submit failed: ${err.message}`);
+      }
     }
 
-    logger.info(`[MULTI-AGENT] ${agent.name} submitted ${experiments.length} experiments`);
+    logger.info(`[MULTI-AGENT] ${agent.name}: parsed ${experiments.length}, submitted ${submitted} experiments`);
   }
 
   async _callProvider(providerName, prompt) {
@@ -360,24 +367,49 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
 
   _parseExperiments(text, agent) {
     const experiments = [];
+
+    // Strategy 1: EXPERIMENT: {...} on a single line
     for (const line of text.split('\n')) {
       const match = line.match(/EXPERIMENT:\s*(\{.+\})/i);
       if (!match) continue;
-      try {
-        const exp = JSON.parse(match[1]);
-        if (exp.type && exp.description && exp.params) {
-          experiments.push(exp);
-        }
-      } catch (e) {
-        // Try to fix common JSON issues
-        try {
-          const fixed = match[1].replace(/'/g, '"').replace(/,\s*}/g, '}');
-          const exp = JSON.parse(fixed);
-          if (exp.type && exp.description && exp.params) experiments.push(exp);
-        } catch {} // eslint-disable-line no-empty
+      const parsed = this._tryParseJSON(match[1]);
+      if (parsed) experiments.push(parsed);
+    }
+
+    // Strategy 2: Extract JSON objects from code blocks or multiline
+    if (experiments.length === 0) {
+      const jsonBlocks = text.match(/```(?:json)?\s*\n?([\s\S]*?)```/g) || [];
+      for (const block of jsonBlocks) {
+        const json = block.replace(/```(?:json)?/g, '').trim();
+        const parsed = this._tryParseJSON(json);
+        if (parsed) experiments.push(parsed);
       }
     }
+
+    // Strategy 3: Find any JSON objects with "type" and "params" keys
+    if (experiments.length === 0) {
+      const jsonMatches = text.match(/\{[^{}]*"type"\s*:\s*"[^"]+?"[^{}]*"params"\s*:\s*\{[^}]*\}[^{}]*\}/g) || [];
+      for (const m of jsonMatches) {
+        const parsed = this._tryParseJSON(m);
+        if (parsed) experiments.push(parsed);
+      }
+    }
+
+    if (experiments.length === 0) {
+      logger.debug(`[MULTI-AGENT] ${agent.name}: No experiments parsed from ${text.length} char response. First 200 chars: ${text.substring(0, 200)}`);
+    }
+
     return experiments.slice(0, 5); // Max 5 per cycle
+  }
+
+  _tryParseJSON(str) {
+    for (const s of [str, str.replace(/'/g, '"').replace(/,\s*}/g, '}')]) {
+      try {
+        const obj = JSON.parse(s);
+        if (obj.type && (obj.description || obj.hypothesis) && obj.params) return obj;
+      } catch {} // eslint-disable-line no-empty
+    }
+    return null;
   }
 
   async _submitExperiment(exp, agent) {
