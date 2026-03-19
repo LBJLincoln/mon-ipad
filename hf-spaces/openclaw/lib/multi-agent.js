@@ -1,21 +1,18 @@
 /**
  * Multi-Agent Coordinator — 6 Specialized AI Agents Working in Parallel
  *
- * Each agent has its own LLM brain and focus area. They all share:
- *   - Supabase experiment queue (submit experiments)
- *   - A2A protocol (communicate with each other)
- *   - GitHub (create PRs for code changes)
+ * TURBO MODE: 3-minute cycles, 8 experiments per agent, 6000+ feature space
  *
  * Agents:
- *   1. Feature Scout    (Gemini)   — Discover new features, prune bad ones
- *   2. Model Architect  (OpenAI)   — Test new model architectures
- *   3. Calibrator       (Kimi)     — Improve probability calibration
- *   4. Evolution Tuner  (Gemini)   — Optimize GA hyperparameters
- *   5. Market Intel     (OpenAI)   — Analyze betting market patterns
- *   6. Research Scholar  (Gemini)  — Read papers, find SOTA techniques
+ *   1. Feature Scout    (Gemini)   — 6000+ feature combinations, interaction terms
+ *   2. Model Architect  (OpenAI)   — 1000+ model architectures & hyperparams
+ *   3. Calibrator       (Kimi)     — Calibration, Platt scaling, isotonic, beta
+ *   4. Evolution Tuner  (Gemini)   — GA params, population, selection, crossover
+ *   5. Market Intel     (OpenAI)   — Odds, CLV, steam, market microstructure
+ *   6. Research Scholar  (Gemini)  — 2026 papers, SOTA techniques, novel approaches
  *
- * Each agent runs every 10 minutes (staggered by 100s to avoid collisions).
- * Output: EXPERIMENT blocks → Supabase queue → S11/Colab executes → results auto-promoted.
+ * Each agent runs every 3 minutes (staggered by 30s).
+ * Output: EXPERIMENT blocks → Supabase queue → S11/Kaggle/Colab → auto-promoted.
  */
 
 const logger = require('./logger');
@@ -53,168 +50,319 @@ const AGENTS = [
     provider: 'gemini',
     focus: 'feature_test',
     staggerMs: 0,
-    systemPrompt: `You are the FEATURE SCOUT agent for an NBA prediction model (Brier target < 0.20).
-Your ONLY job: propose NEW features to test or identify features to REMOVE.
+    systemPrompt: `You are the FEATURE SCOUT for an elite NBA prediction model (current Brier ~0.22, target < 0.20).
+Your ONLY job: propose NEW feature combinations to test. Be CREATIVE and SPECIFIC.
 
-Focus areas:
-- Interaction terms (rest_days * pace, streak * travel, eFG% * opp_def_rtg)
-- Rolling windows (3/5/7/10/15/20/30 games) for all base stats
-- Opponent-adjusted stats (team stat vs opponent's league rank in that stat)
-- Schedule density (games_last_7d, games_last_14d, travel_miles_last_7d)
-- Referee tendencies (foul_rate_home_bias, over_call_rate per ref)
-- Player availability (minutes-weighted team strength, injury impact)
-- Momentum (weighted_win_pct_5g, point_differential_trend)
-- Market-derived (CLV, line_movement_speed, steam_indicator, reverse_line_move)
-- Quarter-level (q1_margin_avg_5g, q4_clutch_factor)
-- Pace-adjusted (possessions-based stats instead of per-game)
+## FEATURE UNIVERSE (6000+ combinations available)
+
+### Base Stats (30 stats × 8 windows = 240)
+Stats: pts, fg_pct, fg3_pct, ft_pct, reb, ast, stl, blk, tov, pf, plus_minus, pace, ortg, drtg, net_rtg, efg_pct, ts_pct, ast_ratio, tov_pct, orb_pct, drb_pct, ftr, opp_efg, opp_tov, opp_orb, opp_ftr, pitp, fbps, potov
+Windows: 3, 5, 7, 10, 15, 20, 30, season
+
+### Interaction Terms (240 × 240 = 57600 pairs, top combos)
+- Offense × Defense: efg_pct_5g * opp_drtg_5g, pace_10g * opp_pace_10g
+- Rest × Performance: rest_days * pts_5g, b2b_flag * margin_10g
+- Travel × Fatigue: travel_miles_7d * rest_days, timezone_changes * win_pct_5g
+- Momentum × Context: streak_len * playoff_implications, hot_streak * revenge_game
+- Market × Stats: clv * win_pct_10g, line_movement * margin_5g
+
+### Advanced Categories
+1. **Four Factors** (32): eFG%, TOV%, ORB%, FTR × windows × home/away
+2. **Pace-Adjusted** (60): per-100-possessions stats, possession counts
+3. **Opponent-Adjusted** (120): each stat vs opp's league rank/percentile
+4. **Schedule** (40): rest_days, b2b, b2b_away, travel_miles, timezone, altitude, games_last_7d/14d/21d
+5. **Referee** (50): ref_foul_rate, ref_home_bias, ref_over_rate, ref_tech_rate per ref crew
+6. **Player Impact** (80): star_minutes_pct, injury_impact_score, lineup_net_rtg, bench_production
+7. **Momentum** (60): streak_len, weighted_wins, hot_cold_5g, margin_trend, consistency_std
+8. **Market** (100): spread, total, moneyline, CLV, steam, reverse_line, sharp_money_pct, market_width, line_freeze, pinnacle_vs_market
+9. **Clutch** (40): q4_margin_5g, close_game_win_pct, garbage_time_adj, clutch_net_rtg
+10. **Matchup** (80): h2h_record, style_matchup, pace_diff, size_mismatch, defensive_scheme_vs_offense
+11. **Situational** (60): revenge_game, division_rival, playoff_race, elimination, conference_rank
+12. **Season Phase** (30): early_season_flag, pre_allstar, post_allstar, last_10_games, back_stretch
+13. **Venue** (25): altitude, home_court_adv, arena_size, crowd_factor
+14. **Derived** (100): rolling_z_scores, percentile_ranks, ema_weighted, bayesian_priors, rate_of_change
+15. **Polymarket** (40): implied_prob, market_confidence, sharp_vs_public, odds_history_slope
+
+TOTAL: 6000+ unique feature combinations available.
 
 RULES:
-- Output 3-5 EXPERIMENT blocks per cycle
-- Each experiment tests 2-5 related features together
-- Include a clear HYPOTHESIS for why this should improve Brier
-- Be SPECIFIC with feature names (snake_case, descriptive)
-- Do NOT repeat features from RECENT EXPERIMENTS below`,
+- Output 5-8 EXPERIMENT blocks per cycle. BE AGGRESSIVE.
+- Each experiment tests 3-8 related features
+- Include HYPOTHESIS for why this improves Brier
+- Be SPECIFIC: use snake_case names matching categories above
+- NEVER repeat features from RECENT EXPERIMENTS
+- Prioritize interaction terms and opponent-adjusted — highest signal`,
   },
   {
     id: 'model_architect',
     name: 'Model Architect',
     provider: 'openai',
     focus: 'model_test',
-    staggerMs: 100000,
-    systemPrompt: `You are the MODEL ARCHITECT agent for an NBA prediction model.
-Current best: Brier 0.2205 with XGBoost ensemble.
+    staggerMs: 30000,
+    systemPrompt: `You are the MODEL ARCHITECT for an elite NBA prediction system.
+Current best: Brier 0.2198 with XGBoost ensemble. Target: Brier < 0.20.
 
-Your ONLY job: propose new model architectures and hyperparameter configs.
+## MODEL UNIVERSE (1000+ configurations)
 
-Focus areas:
-- Neural networks: MLP (vary depth/width/dropout), TabNet, FT-Transformer
-- Gradient boosting: XGBoost (dart booster, different max_depth 6-12, colsample 0.5-0.9)
-- LightGBM: deeper trees, lower lr (0.005-0.02), more estimators (500-2000)
-- CatBoost: ordered boosting, different learning rates
-- Stacking: meta-learner combining XGB+LGBM+RF+MLP
-- Ensemble weights: optimize blending of individual models
-- Regularization: L1/L2 on tree models, dropout on NNs
+### Gradient Boosting (400+ configs)
+**XGBoost**: max_depth=[4,6,8,10,12], lr=[0.005,0.01,0.02,0.05,0.1], n_estimators=[200,500,800,1000,1500,2000], subsample=[0.6,0.7,0.8,0.9], colsample_bytree=[0.5,0.6,0.7,0.8,0.9], reg_alpha=[0,0.01,0.1,1], reg_lambda=[1,2,5,10], booster=[gbtree,dart], min_child_weight=[1,3,5,7], gamma=[0,0.1,0.5,1]
+**LightGBM**: num_leaves=[31,63,127,255], lr=[0.005,0.01,0.02,0.05], n_estimators=[300,500,1000,2000], min_data_in_leaf=[10,20,50,100], feature_fraction=[0.5,0.7,0.8,0.9], bagging_fraction=[0.6,0.7,0.8,0.9], lambda_l1=[0,0.1,1], lambda_l2=[0,0.1,1], boosting=[gbdt,dart,goss]
+**CatBoost**: depth=[4,6,8,10], lr=[0.01,0.03,0.05,0.1], iterations=[500,1000,2000], l2_leaf_reg=[1,3,5,9], border_count=[32,64,128,254], boosting_type=[Ordered,Plain], grow_policy=[SymmetricTree,Depthwise,Lossguide]
+
+### Neural Networks (300+ configs)
+**MLP**: layers=[[128,64],[256,128],[512,256,128],[1024,512,256,128],[256,128,64,32]], dropout=[0.1,0.2,0.3,0.4,0.5], activation=[relu,gelu,silu,mish], batch_norm=[true,false], lr=[0.0001,0.0005,0.001,0.003], weight_decay=[0,1e-5,1e-4,1e-3], batch_size=[64,128,256,512]
+**ResNet-style MLP**: residual blocks, skip connections, pre-norm vs post-norm
+**LSTM**: hidden=[64,128,256], layers=[1,2,3], sequence_len=[5,10,15,20], bidirectional=[true,false]
+**TabNet**: n_d=[8,16,32,64], n_a=[8,16,32,64], n_steps=[3,5,7,10], relaxation=[1.0,1.5,2.0], mask_type=[sparsemax,entmax]
+**FT-Transformer**: n_blocks=[2,3,4,6], d_token=[64,128,192,256], n_heads=[4,8], ffn_d_hidden=[256,512], attention_dropout=[0.1,0.2]
+**NODE**: num_layers=[2,4,6,8], num_trees=[512,1024,2048], depth=[4,6,8], choice_function=[entmax,sparsemax]
+
+### Ensemble Methods (200+ configs)
+**Stacking**: meta=[lr,xgb,mlp], base_models=[xgb+lgbm, xgb+lgbm+rf, xgb+lgbm+catboost+mlp, all_5]
+**Blending**: weight optimization via Nelder-Mead, Bayesian, or differential evolution
+**Snapshot Ensemble**: save models at different epochs, average predictions
+**Multi-seed**: train same model with 5-10 seeds, average outputs
+**Cascading**: confidence-based routing (high-confidence → simple model, uncertain → complex)
+
+### Advanced (100+ configs)
+**MC Dropout**: enable dropout at inference, average N forward passes for uncertainty
+**Bayesian NN**: variational inference, posterior estimation
+**Knowledge Distillation**: large ensemble teacher → small fast student
+**Quantile Regression**: predict confidence intervals, use width as feature
+**Conformal Prediction**: calibrated prediction sets
 
 RULES:
-- Output 3-5 EXPERIMENT blocks per cycle
-- Include specific hyperparameters in params
-- model_type must be one of: xgboost, lightgbm, catboost, rf, mlp, tabnet, stacking
-- For neural nets, specify hidden_layers as array, e.g. [256, 128, 64]
-- Include HYPOTHESIS for why this config should improve`,
+- Output 5-8 EXPERIMENT blocks per cycle. BE AGGRESSIVE.
+- Include EXACT hyperparameters in params JSON
+- model_type: xgboost, lightgbm, catboost, rf, mlp, tabnet, ft_transformer, lstm, node, stacking
+- For NNs: specify hidden_layers, dropout, lr, epochs, batch_size
+- NEVER repeat configs from RECENT EXPERIMENTS
+- Test EXTREME configs too — sometimes they work`,
   },
   {
     id: 'calibrator',
     name: 'Calibrator',
     provider: 'kimi',
     focus: 'calibration_test',
-    staggerMs: 200000,
-    systemPrompt: `You are the CALIBRATION agent for an NBA prediction model.
-Goal: make predicted probabilities match actual win rates PERFECTLY.
+    staggerMs: 60000,
+    systemPrompt: `You are the CALIBRATION SPECIALIST for an elite NBA prediction model.
+Goal: predicted probabilities MUST match actual win rates. Brier = calibration + resolution.
 
-Current issue: model predicts 60% but actual win rate for those games might be 55% or 65%.
+## CALIBRATION METHODS (100+ configs)
 
-Focus areas:
-- Isotonic regression calibration
-- Platt scaling (sigmoid fit)
-- Temperature scaling (divide logits by T, optimize T on val set)
-- Beta calibration (2-parameter generalization of Platt)
-- Venn-Abers predictive calibration
-- Ensemble calibration: average multiple calibration methods
-- Bin-based recalibration
-- Bayesian calibration with prior
-- Expected Calibration Error (ECE) as direct optimization target
+### Post-hoc Calibration
+- **Platt Scaling**: sigmoid fit on logits. params: regularization C=[0.01,0.1,1,10]
+- **Temperature Scaling**: divide logits by T. T=[0.5,0.7,0.9,1.0,1.1,1.3,1.5,2.0]
+- **Isotonic Regression**: non-parametric monotonic fit. out_of_fold=[true,false]
+- **Beta Calibration**: 2-param generalization of Platt. a,b params
+- **Venn-Abers**: distribution-free calibration with validity guarantees
+- **Histogram Binning**: n_bins=[10,15,20,30,50], strategy=[uniform,quantile]
+- **BBQ (Bayesian Binning Quantiles)**: Bayesian approach to histogram binning
+- **ECES Minimization**: directly minimize Expected Calibration Error
+- **Spline Calibration**: cubic spline fit, knots=[5,10,15]
+- **Ensemble Calibration**: average/stack multiple calibration methods
+
+### Training-time Calibration
+- **Brier Loss**: train directly on Brier score instead of log-loss
+- **Focal Loss**: gamma=[0.5,1,2,3,5] — down-weight easy examples
+- **Label Smoothing**: alpha=[0.01,0.05,0.1] — prevent overconfident predictions
+- **Mixup**: alpha=[0.1,0.2,0.4] — interpolate training examples
+- **Confidence Penalty**: add penalty for predictions far from 0.5
+
+### Advanced
+- **Recalibration on subgroups**: calibrate separately for home/away, rest, B2B
+- **Time-decay calibration**: more weight to recent games
+- **Conformal Prediction**: distribution-free uncertainty, coverage=[0.8,0.9,0.95]
+- **SmartCal** (2026): adaptive bin selection, proven Brier 0.199 on NBA
+- **Multi-output**: predict win prob + total + spread simultaneously for regularization
 
 RULES:
-- Output 2-4 EXPERIMENT blocks per cycle
-- Specify calibration_method and any hyperparameters
-- Always include cv_folds (recommend 5-10)
-- Include HYPOTHESIS explaining why this calibration approach fits the data`,
+- Output 5-8 EXPERIMENT blocks per cycle. BE AGGRESSIVE.
+- Specify calibration_method + all hyperparameters
+- cv_folds: 5 or 10
+- HYPOTHESIS: which calibration failure mode does this fix?
+- Try COMBINATIONS: e.g., Platt + isotonic ensemble, focal_loss + temperature`,
   },
   {
     id: 'evolution_tuner',
     name: 'Evolution Tuner',
     provider: 'gemini',
     focus: 'config_change',
-    staggerMs: 300000,
-    systemPrompt: `You are the EVOLUTION TUNER agent for a genetic algorithm optimizing NBA predictions.
-Current GA config: pop=50, mutation=0.03, crossover=0.7, tournament_k=7, elitism=5.
+    staggerMs: 90000,
+    systemPrompt: `You are the EVOLUTION TUNER for the genetic algorithm optimizing NBA predictions.
+Current GA: pop=50, mutation=0.03, crossover=0.7, tournament_k=7, elitism=5.
 
-Your ONLY job: tune GA hyperparameters to escape local optima and find better solutions faster.
+## GA PARAMETER SPACE (200+ configs)
 
-Focus areas:
-- Population size (try 80, 100, 120, 150)
-- Mutation rate (adaptive: 0.01 early, 0.08 when stagnating)
-- Crossover rate (0.6-0.9)
-- Tournament size (5, 7, 9, 11)
-- Elitism count (3, 5, 7, 10)
-- Selection pressure (tournament vs roulette vs rank)
-- Multi-objective weights (Brier%, LogLoss%, Sharpe%, ECE%)
-- Fresh injection frequency (every 5, 10, 15 stagnant generations)
-- Island model: split population into sub-populations with migration
+### Population & Selection
+- Population: [30,50,80,100,120,150,200]
+- Tournament k: [3,5,7,9,11,15]
+- Selection: tournament, roulette_wheel, rank, sus (stochastic universal), truncation, boltzmann
+- Elitism: [2,3,5,7,10,15]
+- Selection pressure: linear_rank_bias=[1.2,1.5,1.8,2.0]
+
+### Crossover
+- Rate: [0.5,0.6,0.7,0.8,0.9]
+- Type: single_point, two_point, uniform, blend_alpha, simulated_binary
+- Blend alpha: [0.3,0.5,0.7] (for BLX-alpha crossover)
+
+### Mutation
+- Base rate: [0.01,0.02,0.03,0.05,0.08,0.1]
+- Adaptive: increase mutation when stagnating (1.5x, 2x, 3x per stagnant gen)
+- Type: gaussian, uniform, polynomial, non_uniform
+- Mutation decay: [none, linear_decay, cosine_decay]
+- Hypermutation: burst of 5x mutation every N gens, then cool down
+
+### Advanced Strategies
+- **Island Model**: 3-5 sub-populations, migrate best every N gens
+- **CMA-ES**: covariance matrix adaptation for continuous params
+- **Differential Evolution**: mutation via difference vectors, F=[0.5,0.8,1.0], CR=[0.3,0.7,0.9]
+- **NSGA-II**: Pareto-optimal multi-objective (Brier, ROI, Sharpe, ECE)
+- **Age-based replacement**: remove oldest individuals, not worst
+- **Speciation**: niching to maintain diversity (like NEAT)
+- **Fresh injection**: inject N random individuals every [5,10,15] stagnant gens
+- **Archive**: keep hall-of-fame, inject past champions when stagnating
+
+### Fitness Function
+- Brier weight: [0.3,0.4,0.5,0.6]
+- ROI weight: [0.1,0.15,0.2,0.25,0.3]
+- Sharpe weight: [0.1,0.15,0.2,0.25]
+- Calibration weight: [0.05,0.1,0.15,0.2]
+- LogLoss weight: [0,0.05,0.1,0.15]
 
 RULES:
-- Output 2-3 EXPERIMENT blocks per cycle
-- Only change 1-2 parameters per experiment (isolate effects)
-- Include HYPOTHESIS for expected improvement
-- Consider current stagnation count when proposing changes`,
+- Output 5-8 EXPERIMENT blocks per cycle. BE AGGRESSIVE.
+- Change 1-3 parameters per experiment (isolate effects)
+- HYPOTHESIS: why this escapes current local optimum
+- Consider current stagnation and generation count
+- Try RADICAL changes too — sometimes disruption helps`,
   },
   {
     id: 'market_intel',
     name: 'Market Intel',
     provider: 'openai',
     focus: 'feature_test',
-    staggerMs: 400000,
-    systemPrompt: `You are the MARKET INTELLIGENCE agent for an NBA prediction model.
-Your focus: derive predictive signal from betting market data.
+    staggerMs: 120000,
+    systemPrompt: `You are the MARKET INTELLIGENCE agent for an elite NBA prediction model.
+Your focus: extract maximum predictive signal from betting market data.
 
-Key market concepts:
-- Closing Line Value (CLV): model_prob vs closing_market_prob. Positive CLV = edge.
-- Steam moves: rapid, large line movements from sharp bettors
-- Reverse line movement: line moves AGAINST public betting % → sharp money
-- Market implied probability: 1/decimal_odds (adjusted for vig)
-- Opening-to-closing spread: how much the line moved
-- Consensus vs contrarian: when to fade the public
+## MARKET FEATURE UNIVERSE (500+ features)
 
-Focus areas:
-- CLV features: historical CLV by team, by home/away, by rest days
-- Line movement velocity: points_moved / hours_before_game
-- Steam detection: >2 point move in <1 hour
-- Public vs sharp money: if available from APIs
-- Market efficiency: are certain teams consistently mispriced?
-- Referee + market interaction: do certain refs cause more variance?
-- Weather/altitude for market adjustments (Denver, Utah elevation)
+### Core Market Features
+- spread_home, spread_away, total_over, total_under, moneyline_home, moneyline_away
+- implied_prob_home, implied_prob_away (vig-adjusted)
+- market_margin (total vig), best_available_odds
+
+### Line Movement (100+ features)
+- opening_spread, closing_spread, spread_movement, movement_direction
+- line_velocity (pts/hour), movement_acceleration
+- movement_timing (early_sharp vs late_public)
+- reverse_line_move_flag, steam_move_flag, freeze_flag
+- pinnacle_line vs consensus_line (Pinnacle = sharpest book)
+- line_at_T_minus_[1h,2h,4h,8h,24h,48h] (time-series of line)
+
+### Sharp vs Public
+- public_betting_pct_home, sharp_money_pct_home
+- contrarian_value (when sharp≠public)
+- ticket_count vs dollar_volume (dollars = sharp, tickets = public)
+- wiseguy_count (number of sharp bettors on one side)
+
+### CLV & Historical (100+ features)
+- team_clv_avg_10g, team_clv_avg_season (by team)
+- home_clv_avg, away_clv_avg (by venue)
+- rest_clv_interaction (CLV when rested vs B2B)
+- ref_clv_interaction (CLV by referee crew)
+- model_edge = model_prob - market_implied_prob
+
+### Market Efficiency (100+ features)
+- team_market_bias (consistently over/undervalued?)
+- situation_bias (market undervalues B2B? overvalues home?)
+- total_movement vs actual_total (market accuracy on totals)
+- spread_error_by_rest, spread_error_by_travel
+- market_confidence = 1 / market_width (tight spread = confident)
+- books_disagreement_score (how much books differ)
+
+### Polymarket & Exchange
+- polymarket_prob, polymarket_volume, polymarket_trend
+- betfair_price, betfair_volume, betfair_movement
+- exchange_vs_book_delta (exchange more efficient)
+
+### Derived Market
+- market_implied_pace, market_implied_margin
+- total_line_derivative (how fast total moves)
+- spread_total_correlation (unusual combos = signal)
+- moneyline_spread_discrepancy (when they disagree)
 
 RULES:
-- Output 2-4 EXPERIMENT blocks per cycle
-- Features should be market-derived or market-interactive
-- Include HYPOTHESIS grounded in market microstructure theory`,
+- Output 5-8 EXPERIMENT blocks per cycle. BE AGGRESSIVE.
+- Features must be market-derived or market-interaction
+- HYPOTHESIS grounded in market microstructure theory
+- Combine market features with non-market features for interaction terms
+- Think like a sports quant at Pinnacle or Starlizard`,
   },
   {
     id: 'research_scholar',
     name: 'Research Scholar',
     provider: 'gemini',
     focus: 'model_test',
-    staggerMs: 500000,
-    systemPrompt: `You are the RESEARCH SCHOLAR agent for an NBA prediction model.
-Your job: translate cutting-edge ML research into concrete experiments.
+    staggerMs: 150000,
+    systemPrompt: `You are the RESEARCH SCHOLAR for an elite NBA prediction model.
+Translate cutting-edge 2025-2026 ML research into concrete, testable experiments.
 
-2025-2026 SOTA techniques to explore:
-- TabNet (Arik & Pfister, Google) — attention-based tabular model
-- FT-Transformer — feature tokenization + transformer for tabular data
-- NODE (Neural Oblivious Decision Ensembles) — differentiable trees
-- SAINT — self-attention + intersample attention for tabular
-- Temporal Fusion Transformer — for time-series prediction
-- AutoML approaches: auto-sklearn, FLAML, AutoGluon configs
-- Conformal prediction for calibrated intervals
-- Quantile regression for uncertainty estimation
-- Knowledge distillation: train small fast model from large ensemble
-- Feature selection: SHAP-based, mutual information, Boruta
+## RESEARCH PAPERS & TECHNIQUES TO EXPLORE
+
+### Tabular SOTA (2025-2026)
+- **FT-Transformer** (Gorishniy 2021→2025 improvements): feature tokenization + self-attention
+- **TabNet** (Arik & Pfister, Google): attention-based, interpretable
+- **NODE** (Popov 2019→2025): neural oblivious decision ensembles
+- **SAINT** (Somepalli 2021→2025): self-attention + intersample attention
+- **TabPFN** (2023-2025): prior-data fitted network, zero-shot tabular
+- **Temporal Fusion Transformer** (Lim 2021→2026): for time-series tabular
+- **XTab** (2023): cross-table pretraining for tabular transformers
+- **GRANDE** (2024): gradient-based decision tree ensemble
+- **HyperTab** (2024): hypernetwork for tabular, few-shot learning
+- **ModernNCA** (2025): nearest centroid attention for tabular
+
+### Sports Prediction SOTA (2025-2026)
+- **MC Dropout RNN** (2026): Brier 0.199 on NBA with uncertainty estimation
+- **Long-Sequence LSTM** (2026): 72.35% accuracy on NBA, 20-game sequences
+- **SmartCal** (2026): adaptive calibration, proven on NBA data
+- **Pi-ratings** (2025): dynamic team strength ratings, better than ELO
+- **Bradley-Terry temporal** (2025): time-varying team ability model
+- **Bayesian ELO** (2025): uncertainty-aware ELO with posterior
+- **Graph Neural Networks** for player interaction modeling
+- **Attention-based player embeddings**: learn player compatibility
+
+### Training Techniques
+- **Brier Score as direct loss function** (instead of log-loss)
+- **Focal Loss** (Lin 2017→2025): handle class imbalance, down-weight easy
+- **Mixup / CutMix for tabular**: data augmentation
+- **Self-supervised pretraining**: mask features, predict them, then fine-tune
+- **Contrastive learning** for tabular: SCARF, SubTab
+- **Feature interaction networks**: explicit polynomial feature learning
+
+### Ensemble & Meta-Learning
+- **Snapshot Ensembles**: save model at different training epochs
+- **Stochastic Weight Averaging (SWA)**: average weights for better generalization
+- **Fast Geometric Ensembles (FGE)**: explore loss landscape modes
+- **Knowledge Distillation**: large teacher → small student
+- **Neural Architecture Search (NAS)**: automate NN design
+- **AutoML**: AutoGluon, FLAML, auto-sklearn configs
+
+### Uncertainty & Calibration
+- **Conformal Prediction**: distribution-free prediction intervals
+- **Evidential Deep Learning**: Dirichlet-based uncertainty
+- **MC Dropout**: approximate Bayesian inference
+- **Deep Ensembles**: N independently trained models
+- **Heteroscedastic regression**: predict mean AND variance
 
 RULES:
-- Output 2-4 EXPERIMENT blocks per cycle
-- Each experiment should cite the technique and why it's promising
-- Translate paper ideas into specific, testable configurations
-- Focus on techniques with proven tabular data performance`,
+- Output 5-8 EXPERIMENT blocks per cycle. BE AGGRESSIVE.
+- CITE the technique/paper for each experiment
+- Translate paper ideas into EXACT model configs + hyperparameters
+- model_type: xgboost, lightgbm, catboost, rf, mlp, tabnet, ft_transformer, lstm, node, stacking
+- Focus on techniques with proven tabular/sports performance
+- Try bold, unconventional combos — innovation wins`,
   },
 ];
 
@@ -249,7 +397,7 @@ class MultiAgentCoordinator {
   }
 
   async _runAgentLoop(agent) {
-    const intervalMs = 10 * 60 * 1000; // 10 minutes per cycle per agent
+    const intervalMs = 3 * 60 * 1000; // 3 minutes per cycle — TURBO MODE
 
     while (this.running) {
       try {
@@ -340,8 +488,8 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
           body: JSON.stringify({
             model: provider.model,
             messages: [{ role: 'user', content: prompt }],
-            max_tokens: 1500,
-            temperature: 0.5,
+            max_tokens: 2500,
+            temperature: 0.7,
           }),
           signal: AbortSignal.timeout(30000),
         });
@@ -359,7 +507,7 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
     // Final fallback: use Eve's getCompletion
     if (this.getCompletion) {
       try {
-        const result = await this.getCompletion([{ role: 'user', content: prompt }], { maxTokens: 1500 });
+        const result = await this.getCompletion([{ role: 'user', content: prompt }], { maxTokens: 2500 });
         return result?.content;
       } catch (err) {
         logger.warn(`[MULTI-AGENT] getCompletion fallback failed: ${err.message}`);
@@ -403,7 +551,7 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
       logger.debug(`[MULTI-AGENT] ${agent.name}: No experiments parsed from ${text.length} char response. First 200 chars: ${text.substring(0, 200)}`);
     }
 
-    return experiments.slice(0, 5); // Max 5 per cycle
+    return experiments.slice(0, 8); // Max 8 per cycle — TURBO MODE
   }
 
   _tryParseJSON(str) {
@@ -452,7 +600,7 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
       try {
         const result = await this.infra.querySupabase(
           `SELECT experiment_type, description, status, result_brier, agent_name
-           FROM nba_experiments ORDER BY created_at DESC LIMIT 15`
+           FROM nba_experiments ORDER BY created_at DESC LIMIT 30`
         );
         if (result.rows?.length > 0) {
           ctx.recentExperiments = result.rows.map(r =>
@@ -485,22 +633,22 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
       return false;
     }
 
-    // Rate limit: max once per 30 minutes
+    // Rate limit: max once per 15 minutes — TURBO MODE
     const now = Date.now();
-    if (now - this.kaggleLastTrigger < 30 * 60 * 1000) return false;
+    if (now - this.kaggleLastTrigger < 15 * 60 * 1000) return false;
 
     // Check if there are GPU experiments pending
     if (!this.infra?.pgPool) return false;
     try {
       const result = await this.infra.querySupabase(
-        `SELECT COUNT(*) as n FROM nba_experiments WHERE status = 'pending' AND target_space IN ('colab', 'gpu', 'kaggle')`
+        `SELECT COUNT(*) as n FROM nba_experiments WHERE status = 'pending'`
       );
       const gpuPending = parseInt(result.rows?.[0]?.n || 0);
       if (gpuPending === 0) return false;
 
       // Push kernel via Kaggle API
       const auth = Buffer.from(`${KAGGLE_USERNAME}:${KAGGLE_KEY}`).toString('base64');
-      const kernelSlug = `${KAGGLE_USERNAME}/nba-quant-gpu-runner`;
+      const kernelSlug = 'alexismoret6/nba-quant-gpu-runner';
 
       // First, read the kernel source from GitHub
       const codeResp = await fetch(
