@@ -1,10 +1,11 @@
 /**
- * Agentic Loop v5 — Intelligent Autonomous NBA Quant Operations
+ * Agentic Loop v6 — Multi-Agent Experiment System
  *
- * Builds on v4's data-driven foundation with:
+ * Builds on v5's intelligent foundation with:
  *   - EVAL cycle: compare predictions to real game outcomes (feedback loop)
- *   - ANALYZE cycle: LLM-powered insight generation from collected data
+ *   - ANALYZE cycle: 5 specialized agent roles rotate each cycle
  *   - RESEARCH cycle: autonomous web research for model improvement
+ *   - EXPERIMENT cycle: dispatch experiments to S11, auto-promote winners to S10
  *
  * Design principles:
  *   1. DATA > LLM — Fetch real data, compute real metrics. No hallucinations.
@@ -12,17 +13,26 @@
  *   3. STRUCTURED OUTPUT — All observations go to A2A inbox for Adam.
  *   4. FEEDBACK LOOP — Predictions vs reality. This changes everything.
  *   5. INTELLIGENT REASONING — Eve THINKS about data, not just relays it.
+ *   6. EXPERIMENT-DRIVEN — Propose, test on S11, promote if better.
  *
  * Cycles:
- *   OBSERVE   (5 min)   — Poll S10, feed metrics to Watchdog
- *   DATA      (30 min)  — Fetch odds + scores from APIs, store in Supabase
- *   HEALTH    (10 min)  — Check all 5 HF Spaces are up
- *   REPORT    (30 min)  — Generate structured report for Adam (A2A)
- *   COMMAND   (2 min)   — Check A2A command queue from Adam
- *   HEARTBEAT (60 min)  — Telegram summary to admin (now with insights)
- *   EVAL      (15 min)  — Check & eval yesterday + 2 days ago (once per date/day)
- *   ANALYZE   (30 min)  — LLM reasoning over all collected data — near real-time awareness
- *   RESEARCH  (4 hours) — Autonomous web research — 6x/day
+ *   OBSERVE    (3 min)   — Poll S10, feed metrics to Watchdog
+ *   DATA       (10 min)  — Fetch odds + scores from APIs, store in Supabase
+ *   HEALTH     (5 min)   — Check all 5 HF Spaces are up
+ *   REPORT     (15 min)  — Generate structured report for Adam (A2A)
+ *   COMMAND    (1 min)   — Check A2A command queue from Adam
+ *   HEARTBEAT  (30 min)  — Telegram summary to admin (now with insights)
+ *   EVAL       (10 min)  — Check & eval yesterday + 2 days ago (once per date/day)
+ *   ANALYZE    (15 min)  — 5 specialized agent roles rotate (feature/model/calibration/evolution/market)
+ *   RESEARCH   (2 hours) — Autonomous web research — 12x/day
+ *   EXPERIMENT (3 min)   — Dispatch pending experiments to S11
+ *
+ * Agent Roles (rotate each ANALYZE cycle):
+ *   1. feature_discovery   — Find new features, prune bad ones
+ *   2. model_architecture  — Test new models, hyperparams, stacking configs
+ *   3. calibration         — Improve probability calibration
+ *   4. evolution_tuner     — Optimize GA parameters
+ *   5. market_intelligence — Analyze odds patterns, CLV
  */
 
 const fs = require('fs');
@@ -62,7 +72,9 @@ class AgenticLoop {
 
     // Agent role — determines which cycles are active
     this.agentName = process.env.AGENT_NAME || 'Eve';
-    this.isNBA = (process.env.AGENT_ROLE || 'nba-quant') === 'nba-quant';
+    const role = process.env.AGENT_ROLE || 'nba-quant';
+    this.isNBA = role === 'nba-quant' || role === 'nba-market';
+    this.isMarketAgent = role === 'nba-market';
 
     // Timers
     this.timers = {};
@@ -258,8 +270,41 @@ class AgenticLoop {
 
     if (!this.dataWorker) return;
 
-    if (this.isNBA) {
-      // ── NBA-SPECIFIC DATA COLLECTION ──
+    if (this.isMarketAgent) {
+      // ── NBA MARKET INTELLIGENCE — odds, line movements, CLV only ──
+      // Skip scores/injuries/box scores (Eve handles those)
+
+      // Fetch odds + line movements (primary focus)
+      const oddsResult = await this.dataWorker.fetchOdds();
+      if (oddsResult && this.a2a) {
+        this.a2a.postDataReport('market_odds', {
+          games: oddsResult.games?.length || 0,
+          stored: oddsResult.stored || 0,
+          movements: oddsResult.lineMovements?.length || 0,
+          agent: this.agentName,
+        });
+      }
+
+      // Track line movements every cycle (market microstructure)
+      if (oddsResult?.lineMovements?.length > 0) {
+        this.state._lastLineMovements = oddsResult.lineMovements.slice(0, 20);
+        logger.info(`[LOOP] ${this.agentName} tracked ${oddsResult.lineMovements.length} line movements`);
+      }
+
+      // Fetch today's games (for game context — no box scores)
+      const todayResult = await this.dataWorker.fetchTodaysGames();
+      if (todayResult && this.a2a) {
+        this.a2a.postDataReport('market_games', {
+          total: todayResult.total, live: todayResult.live,
+          agent: this.agentName,
+        });
+      }
+
+      // Fetch evolved model predictions from S10 (for CLV comparison)
+      await this._ingestPredictions();
+
+    } else if (this.isNBA) {
+      // ── NBA-SPECIFIC DATA COLLECTION (Eve) ──
 
       // Fetch odds (dormant when quota exhausted — returns null gracefully)
       const oddsResult = await this.dataWorker.fetchOdds();
@@ -315,7 +360,7 @@ class AgenticLoop {
       // Fetch evolved model predictions from S10
       await this._ingestPredictions();
     } else {
-      // ── GENERAL-PURPOSE AGENT (RGWA etc.) ──
+      // ── GENERAL-PURPOSE AGENT ──
       // No NBA data collection — agent waits for commands or runs generic tasks
       logger.info(`[LOOP] ${this.agentName} data cycle — awaiting commands (no NBA collection)`);
     }
@@ -475,8 +520,19 @@ class AgenticLoop {
       '',
     ];
 
-    if (this.isNBA) {
-      // NBA-specific heartbeat
+    if (this.isMarketAgent) {
+      // Market Intelligence agent heartbeat
+      lines.push(`📊 *Role*: NBA Market Intelligence`);
+      lines.push(`📡 *Odds fetches*: ${dataStatus?.stats?.oddsFetches || 0} | Line movements tracked: ${this.state._lastLineMovements?.length || 0}`);
+
+      if (evo) {
+        lines.push(`🎯 *S10*: Brier ${evo.brier?.toFixed(4) || '?'} | Gen ${evo.generation || '?'}`);
+      }
+
+      const experiments = this.state._marketExperimentsSubmitted || 0;
+      lines.push(`🧪 *Experiments submitted*: ${experiments}`);
+    } else if (this.isNBA) {
+      // NBA-specific heartbeat (Eve)
       if (evo) {
         lines.push(`📊 *S10*: Brier ${evo.brier?.toFixed(4) || '?'} | Gen ${evo.generation || '?'} | Stag ${evo.stagnation ?? '?'}`);
       } else {
@@ -625,7 +681,7 @@ Max 100 words.`;
       return;
     }
 
-    // ── NBA-SPECIFIC ANALYSIS ──
+    // ── NBA ANALYSIS (both Eve and Market Agent, with different prompts) ──
 
     // Gather ALL available context
     const context = {
@@ -643,6 +699,12 @@ Max 100 words.`;
       },
     };
 
+    // Market agent: add market-specific context
+    if (this.isMarketAgent) {
+      context.lineMovements = this.state._lastLineMovements || [];
+      context.marketExperimentsSubmitted = this.state._marketExperimentsSubmitted || 0;
+    }
+
     // Build conversation memory context
     const memoryContext = this.analysisHistory.length > 0
       ? `\n\nPREVIOUS INSIGHTS (most recent first):\n${this.analysisHistory.slice(-5).reverse().map((h, i) =>
@@ -657,7 +719,48 @@ Max 100 words.`;
         ).join('\n')}`
       : '';
 
-    const prompt = `You are ${this.agentName}, an NBA quant analyst AI. Analyze this data and give concrete recommendations.
+    // ── MARKET INTELLIGENCE PROMPT (RGWA) ──
+    let prompt;
+    if (this.isMarketAgent) {
+      const oddsSummary = JSON.stringify(context.dataStatus?.stats || {});
+      const movements = JSON.stringify((context.lineMovements || []).slice(0, 10));
+      const clvData = context.recentEvals?.length
+        ? JSON.stringify(context.recentEvals.slice(0, 5))
+        : 'No CLV data yet';
+
+      prompt = `You are the MARKET INTELLIGENCE agent for an NBA prediction model.
+Your focus: analyzing betting market data to improve predictions.
+
+Current odds data: ${oddsSummary}
+Recent line movements: ${movements}
+CLV tracking: ${clvData}
+Evolution status: ${JSON.stringify(context.evolution || {})}
+${memoryContext}
+${feedbackContext}
+
+Propose experiments that use market data to improve the model:
+- New market microstructure features (steam moves, reverse line movement)
+- CLV patterns (closing line value as a feature)
+- Opening vs closing line analysis
+- Sharp money indicators
+- Odds-derived features (consensus vs sharp books)
+
+Output EXPERIMENT blocks for the S11 experiment queue.
+Each experiment should be in this format:
+EXPERIMENT: {"name":"<short_name>","description":"<what_to_test>","feature_type":"market","hypothesis":"<why_this_helps>","implementation":"<pseudo_code_or_steps>"}
+
+Rules:
+- Use NUMBERS from the data, not vague statements
+- Compare to targets: Brier < 0.20, ROI > 5%
+- Focus ONLY on market-derived features — leave game stats to Eve
+- Max 2-3 experiments per cycle. Quality over quantity.
+- Do NOT repeat experiments from PREVIOUS INSIGHTS
+- If no actionable market signal, say "STATUS: MONITORING — no new market patterns detected"
+- Max 300 words`;
+
+    } else {
+      // ── STANDARD NBA ANALYST PROMPT (Eve) ──
+      prompt = `You are ${this.agentName}, an NBA quant analyst AI. Analyze this data and give concrete recommendations.
 
 CURRENT STATE:
 ${JSON.stringify(context, null, 2)}
@@ -691,6 +794,7 @@ Rules:
 - If everything looks normal, say "STATUS: OK" and give brief summary. NO recommendations needed.
 - Max 1-2 recommendations per response. Quality over quantity.
 - Max 200 words`;
+    }
 
     try {
       const result = await this.getCompletion([{ role: 'user', content: prompt }], {
@@ -719,9 +823,47 @@ Rules:
           });
         }
 
-        // Auto-execute: Karpathy pattern — act on ALL insights
+        // Market agent: parse EXPERIMENT blocks and submit to Supabase queue
+        if (this.isMarketAgent) {
+          const experiments = [];
+          for (const line of result.content.split('\n')) {
+            const expMatch = line.match(/EXPERIMENT:\s*(\{.+\})/i);
+            if (expMatch) {
+              try {
+                const exp = JSON.parse(expMatch[1]);
+                if (exp.name) experiments.push(exp);
+              } catch (e) {
+                logger.debug(`[MARKET] Failed to parse experiment JSON: ${expMatch[1].substring(0, 80)}`);
+              }
+            }
+          }
+
+          if (experiments.length > 0) {
+            logger.info(`[MARKET] ${experiments.length} experiment(s) proposed: ${experiments.map(e => e.name).join(', ')}`);
+
+            // Submit experiments to A2A for S11 queue
+            if (this.a2a) {
+              for (const exp of experiments) {
+                this.a2a.postReport({
+                  type: 'market_experiment',
+                  level: 'INFO',
+                  message: `EXPERIMENT: ${exp.name} — ${exp.description || ''}`.substring(0, 200),
+                  data: {
+                    experiment: exp,
+                    source: this.agentName,
+                    submittedAt: new Date().toISOString(),
+                  },
+                });
+              }
+            }
+
+            this.state._marketExperimentsSubmitted = (this.state._marketExperimentsSubmitted || 0) + experiments.length;
+          }
+        }
+
+        // Auto-execute: Karpathy pattern — act on ALL insights (Eve only, market agent uses experiments)
         let executedActions = [];
-        if (this.autoExecuteEnabled) {
+        if (this.autoExecuteEnabled && !this.isMarketAgent) {
           executedActions = await this._tryAutoExecute(result.content, context);
         }
 

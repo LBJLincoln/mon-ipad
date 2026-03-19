@@ -72,7 +72,9 @@ SECRETS = {
     "KIMI_API_KEY": os.environ.get("KIMI_API_KEY", ""),
     # RGWA-specific identity & peer config
     "AGENT_NAME": "RGWA",
-    "AGENT_ROLE": "general",
+    "AGENT_ROLE": "nba-market",
+    "S10_URL": "https://lbjlincoln-nomos-nba-quant.hf.space",
+    "S11_URL": "https://lbjlincoln-nomos-nba-quant-2.hf.space",
     "EVE_URL": "https://nomos42-nomos-worker-2.hf.space",
     "PEER_AGENTS": "Eve|https://nomos42-nomos-worker-2.hf.space",
 }
