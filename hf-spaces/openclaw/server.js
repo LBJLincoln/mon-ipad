@@ -136,6 +136,7 @@ let watchdog = null;
 let a2aProtocol = null;
 let feedbackLoop = null;   // Phase 1: Prediction vs Reality
 let researchAgent = null;  // Phase 3: Autonomous research
+let codeAgent = null;      // Code Agent: Kimi 2.5 coding LLM
 
 // ============================================================
 // OPENROUTER LLM CLIENT
@@ -2164,7 +2165,6 @@ async function start() {
   logger.info('Order Executor initialized — Telegram natural language orders active');
 
   // Initialize Code Agent (Kimi 2.5 — coding LLM)
-  let codeAgent = null;
   if (process.env.KIMI_API_KEY) {
     codeAgent = new CodeAgent({
       kimiApiKey: process.env.KIMI_API_KEY,
