@@ -665,17 +665,18 @@ ${feedbackContext}
 Rules:
 - Use NUMBERS, not vague statements
 - Compare to targets: Brier < 0.20, ROI > 5%, accuracy > 65%
-- You can output MULTIPLE actions, one per line:
-  ACTION: set_config(param=value)
-  ACTION: set_config(param2=value2)
+- You can output actions ONE PER LINE in EXACTLY this format:
+  ACTION: set_config(mutation_rate=0.05)
   ACTION: diversify
-  ACTION: inject_features(feature1, feature2, feature3)
+  ACTION: inject_features(feature_name_1, feature_name_2)
   ACTION: rollback
   Valid set_config params: mutation_rate, target_features, crossover_rate, tournament_size
-- Do NOT repeat the same actions from previous insights unless you have new evidence
-- If an execution's result was negative, do NOT retry the same action
-- If everything looks good, say "STATUS: OK" and give brief summary
-- Max 200 words`;
+- IMPORTANT: Do NOT output actions you already executed recently (check RECENT EXECUTIONS above)
+- IMPORTANT: If Brier went UP after an action, do NOT repeat that action
+- If Brier > 0.5, something is broken — only rollback, nothing else
+- If everything looks normal, say "STATUS: OK" and give brief summary. NO actions needed.
+- Max 1-2 actions per response. Quality over quantity.
+- Max 150 words`;
 
     try {
       const result = await this.getCompletion([{ role: 'user', content: prompt }], {
@@ -736,11 +737,76 @@ Rules:
   // ══════════════════════════════════════════
 
   async _tryAutoExecute(insight, context) {
-    // Parse ALL ACTION lines from insight (not just first)
-    const actionMatches = [...insight.matchAll(/ACTION:\s*(\w+)(?:\(([^)]*)\))?/g)];
-    if (actionMatches.length === 0) return [];
+    if (!this.isNBA || !this.callS10) return [];
 
-    // Safety gate: monotonic ratchet — only execute if Brier is near checkpoint best
+    // Improved parser: handles set_config({json}), inject_features("a","b"), rollback, diversify
+    const actions = [];
+    for (const line of insight.split('\n')) {
+      const actionMatch = line.match(/ACTION:\s*(.+)/i);
+      if (!actionMatch) continue;
+      const raw = actionMatch[1].trim();
+
+      if (/^set_config/i.test(raw)) {
+        // Parse set_config(key=val) or set_config({"key":val})
+        const jsonMatch = raw.match(/\{([^}]+)\}/);
+        const kvMatch = raw.match(/\(([^)]+)\)/);
+        const params = {};
+        if (jsonMatch) {
+          try { Object.assign(params, JSON.parse(`{${jsonMatch[1]}}`)); } catch {}
+        } else if (kvMatch) {
+          for (const pair of kvMatch[1].split(',')) {
+            const [k, v] = pair.split('=').map(s => s.trim().replace(/['"]/g, ''));
+            if (k && v) params[k] = isNaN(v) ? v : parseFloat(v);
+          }
+        }
+        if (Object.keys(params).length > 0) actions.push({ type: 'set_config', params });
+      } else if (/^inject_features/i.test(raw)) {
+        const featureMatch = raw.match(/\(([^)]+)\)/);
+        if (featureMatch) {
+          const features = featureMatch[1].split(',').map(f => f.trim().replace(/['"]/g, '')).filter(Boolean);
+          if (features.length > 0) actions.push({ type: 'inject_features', features });
+        }
+      } else if (/^rollback/i.test(raw)) {
+        actions.push({ type: 'rollback' });
+      } else if (/^diversify/i.test(raw)) {
+        actions.push({ type: 'diversify' });
+      } else {
+        logger.debug(`[LOOP] Unrecognized action: ${raw.substring(0, 80)}`);
+      }
+    }
+
+    if (actions.length === 0) return [];
+
+    // DEDUP: Skip actions identical to recent executions (last 30 min)
+    const recentCutoff = Date.now() - 30 * 60 * 1000;
+    const recentActions = this.executionLog
+      .filter(e => new Date(e.timestamp).getTime() > recentCutoff)
+      .map(e => e.action);
+
+    const dedupedActions = actions.filter(a => {
+      const sig = a.type === 'inject_features' ? `inject_features(${a.features.sort().join(',')})` :
+                  a.type === 'set_config' ? `set_config(${JSON.stringify(a.params)})` : a.type;
+      if (recentActions.includes(sig)) {
+        logger.info(`[LOOP] DEDUP: Skipping ${sig} (already executed in last 30min)`);
+        return false;
+      }
+      return true;
+    });
+
+    if (dedupedActions.length === 0) {
+      logger.info('[LOOP] All actions skipped (dedup). Waiting for new insights.');
+      return [];
+    }
+
+    // COOLDOWN: Max 3 auto-executions per hour
+    const hourCutoff = Date.now() - 60 * 60 * 1000;
+    const execsThisHour = this.executionLog.filter(e => new Date(e.timestamp).getTime() > hourCutoff).length;
+    if (execsThisHour >= 3) {
+      logger.info(`[LOOP] COOLDOWN: ${execsThisHour} executions this hour (max 3). Skipping.`);
+      return [];
+    }
+
+    // Safety gate: monotonic ratchet
     const currentBrier = context.evolution?.brier;
     let bestCheckpointBrier = null;
     try {
@@ -750,8 +816,7 @@ Rules:
       logger.debug('[LOOP] No checkpoint data available for ratchet check');
     }
 
-    // Ratchet applies to config changes, NOT to rollback (rollback is emergency)
-    const hasRollback = actionMatches.some(m => m[1] === 'rollback');
+    const hasRollback = dedupedActions.some(a => a.type === 'rollback');
 
     if (!hasRollback && bestCheckpointBrier && currentBrier && currentBrier > bestCheckpointBrier + 0.005) {
       logger.info(`[LOOP] Auto-execute BLOCKED: Brier ${currentBrier?.toFixed(4)} > checkpoint ${bestCheckpointBrier?.toFixed(4)} + 0.005`);
@@ -759,7 +824,7 @@ Rules:
         this.a2a.postReport({
           type: 'auto_execute_blocked',
           level: 'WARNING',
-          message: `Ratchet blocked ${actionMatches.length} action(s). Brier ${currentBrier?.toFixed(4)} too far from best ${bestCheckpointBrier?.toFixed(4)}`,
+          message: `Ratchet blocked ${dedupedActions.length} action(s). Brier ${currentBrier?.toFixed(4)} too far from best ${bestCheckpointBrier?.toFixed(4)}`,
         });
       }
       return [];
@@ -767,24 +832,16 @@ Rules:
 
     const executedActions = [];
 
-    for (const match of actionMatches) {
-      const actionType = match[1];
-      const actionArgs = match[2] || '';
+    for (const action of dedupedActions) {
+      const actionType = action.type;
 
       try {
         let result = 'unknown';
 
         if (actionType === 'set_config') {
-          const params = {};
-          for (const pair of actionArgs.split(',')) {
-            const [key, val] = pair.trim().split('=');
-            if (key && val) params[key.trim()] = parseFloat(val.trim()) || val.trim();
-          }
-          if (Object.keys(params).length > 0) {
-            await this.callS10('/api/config', { method: 'POST', body: JSON.stringify(params) });
-            result = `set_config(${JSON.stringify(params)})`;
-            logger.info(`[LOOP] Auto-executed: ${result}`);
-          }
+          await this.callS10('/api/config', { method: 'POST', body: JSON.stringify(action.params) });
+          result = `set_config(${JSON.stringify(action.params)})`;
+          logger.info(`[LOOP] Auto-executed: ${result}`);
 
         } else if (actionType === 'diversify') {
           await this.callS10('/api/command', { method: 'POST', body: JSON.stringify({ command: 'diversify' }) });
@@ -792,25 +849,17 @@ Rules:
           logger.info('[LOOP] Auto-executed: diversify');
 
         } else if (actionType === 'inject_features') {
-          // Parse feature names from args
-          const features = actionArgs.split(',').map(f => f.trim()).filter(Boolean);
-          if (features.length > 0) {
-            await this.callS10('/api/features/inject', {
-              method: 'POST',
-              body: JSON.stringify({ features }),
-            });
-            result = `inject_features(${features.join(', ')})`;
-            logger.info(`[LOOP] Auto-executed: ${result}`);
-          }
+          await this.callS10('/api/features/inject', {
+            method: 'POST',
+            body: JSON.stringify({ features: action.features }),
+          });
+          result = `inject_features(${action.features.join(',')})`;
+          logger.info(`[LOOP] Auto-executed: ${result}`);
 
         } else if (actionType === 'rollback') {
           await this.callS10('/api/checkpoint/restore', { method: 'POST', body: '{}' });
           result = 'rollback to best checkpoint';
           logger.info('[LOOP] Auto-executed: rollback to best checkpoint');
-
-        } else {
-          logger.debug(`[LOOP] Unknown action type: ${actionType}`);
-          continue;
         }
 
         executedActions.push(result);
