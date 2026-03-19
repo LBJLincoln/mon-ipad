@@ -973,7 +973,7 @@ async function fetchSSE(url) {
 app.get('/keep-alive', (req, res) => {
   res.json({
     status: 'alive',
-    version: '2026.3.18-v5-intelligent',
+    version: '2026.3.19-v6-multi-agent',
     uptime: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
     memory: process.memoryUsage(),
@@ -984,7 +984,7 @@ app.get('/keep-alive', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     name: `${AGENT_NAME} — OpenClaw Agent`,
-    version: '2026.3.18-v5-intelligent',
+    version: '2026.3.19-v6-multi-agent',
     status: 'running',
     endpoints: {
       health: '/keep-alive',
@@ -996,6 +996,9 @@ app.get('/', (req, res) => {
       eval_trend: '/api/v1/eval/trend',
       analyst_insight: '/api/v1/analyst/insight',
       research_findings: '/api/v1/research/findings',
+      experiment_submit: '/api/v1/experiment/submit',
+      experiment_status: '/api/v1/experiment/status',
+      experiment_history: '/api/v1/experiment/history',
       query: '/api/v1/query',
       db: '/api/v1/db',
       metrics: '/api/v1/metrics',
@@ -1921,6 +1924,85 @@ app.post('/api/v1/analyst/run', async (req, res) => {
 });
 
 // ============================================================
+// EXPERIMENT API — Multi-agent experiment system (v6)
+// ============================================================
+
+// Submit an experiment to the queue
+app.post('/api/v1/experiment/submit', async (req, res) => {
+  if (!agenticLoop) return res.status(503).json({ error: 'Loop not initialized' });
+  if (!infraBridge?.pgPool) return res.status(503).json({ error: 'Database not available' });
+
+  try {
+    const { type, description, hypothesis, params, priority, agent_name } = req.body;
+    if (!type || !description) {
+      return res.status(400).json({ error: 'type and description required' });
+    }
+
+    const exp = {
+      type: type || 'general',
+      description,
+      hypothesis: hypothesis || '',
+      params: params || {},
+      priority: priority || 5,
+      agent_name: agent_name || 'api',
+    };
+
+    await agenticLoop._submitExperiment(exp);
+    res.json({ status: 'queued', experiment: exp });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get experiment queue status (pending, running, recent completed)
+app.get('/api/v1/experiment/status', async (req, res) => {
+  if (!infraBridge?.pgPool) return res.json({ status: 'database_unavailable' });
+
+  try {
+    const pending = await infraBridge.querySupabase(
+      `SELECT experiment_id, agent_name, experiment_type, description, priority, created_at
+       FROM nba_experiments WHERE status = 'pending' ORDER BY priority, created_at`
+    );
+    const running = await infraBridge.querySupabase(
+      `SELECT experiment_id, agent_name, experiment_type, description, started_at
+       FROM nba_experiments WHERE status = 'running'`
+    );
+    const recent = await infraBridge.querySupabase(
+      `SELECT experiment_id, agent_name, experiment_type, description, status, result_brier, baseline_brier, completed_at
+       FROM nba_experiments WHERE status IN ('completed', 'promoted', 'failed')
+       ORDER BY completed_at DESC LIMIT 10`
+    );
+
+    res.json({
+      pending: pending.rows || [],
+      running: running.rows || [],
+      recent: recent.rows || [],
+      stats: agenticLoop?.experimentStats || {},
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get full experiment history
+app.get('/api/v1/experiment/history', async (req, res) => {
+  if (!infraBridge?.pgPool) return res.json([]);
+
+  try {
+    const limit = parseInt(req.query.limit) || 50;
+    const status = req.query.status; // optional filter
+    let query = `SELECT * FROM nba_experiments`;
+    if (status) query += ` WHERE status = '${status.replace(/'/g, "''")}'`;
+    query += ` ORDER BY created_at DESC LIMIT ${limit}`;
+
+    const result = await infraBridge.querySupabase(query);
+    res.json(result.rows || []);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================================
 // ORDER EXECUTOR API
 // ============================================================
 
@@ -2165,7 +2247,7 @@ async function start() {
   });
   logger.info(`Code Agent initialized — Groq/LiteLLM (${AGENT_NAME})`);
 
-  // Initialize Agentic Loop v5 — intelligent autonomous operations (with Code Agent integration)
+  // Initialize Agentic Loop v6 — multi-agent experiment system (with Code Agent + InfraBridge)
   agenticLoop = new AgenticLoop({
     fetchEvolution: fetchEvo,
     callS10,
@@ -2179,6 +2261,7 @@ async function start() {
     feedbackLoop,
     researchAgent,
     codeAgent,
+    infraBridge,
   });
   agenticLoop.start();
 
@@ -2200,12 +2283,12 @@ async function start() {
   // Start Express
   app.listen(PORT, '0.0.0.0', () => {
     logger.info('='.repeat(60));
-    logger.info(`${AGENT_NAME} (OpenClaw v5) — INTELLIGENT AUTONOMOUS AGENT on port ${PORT}`);
+    logger.info(`${AGENT_NAME} (OpenClaw v6) — MULTI-AGENT EXPERIMENT SYSTEM on port ${PORT}`);
     logger.info(`Telegram: ${TELEGRAM_BOT_TOKEN ? 'ACTIVE' : 'DISABLED'}`);
     logger.info(`OpenRouter: ${OPENROUTER_API_KEY ? 'CONFIGURED' : 'NOT SET'}`);
     logger.info(`VM Bridge: ${process.env.SSH_PRIVATE_KEY ? 'ACTIVE (SSH)' : 'NOT SET'}`);
     logger.info(`GitHub: ${GH_TOKEN ? 'ACTIVE' : 'NOT SET'}`);
-    logger.info(`Agentic Loop: v5 intelligent (9 cycles — analyze:30m, eval:15m, research:4h)`);
+    logger.info(`Agentic Loop: v6 multi-agent (10 cycles — 5 roles rotate, experiment:3m, analyze:15m)`);
     logger.info(`Data Worker: ESPN scores (free) + Odds API (${process.env.ODDS_API_KEY ? 'dormant' : 'NOT SET'})`);
     logger.info(`FeedbackLoop: ACTIVE (prediction vs reality evaluation)`);
     logger.info(`Research Agent: ACTIVE (autonomous NBA quant research)`);
@@ -2231,15 +2314,20 @@ async function start() {
       const ghStatus = GH_TOKEN ? 'ACTIVE' : 'NO TOKEN';
       const modelCount = Object.keys(modelMonitor.models).length;
       bot.sendMessage(ADMIN_TELEGRAM_ID,
-        `⚡ *${AGENT_NAME} (OpenClaw v5) — ONLINE*
+        `⚡ *${AGENT_NAME} (OpenClaw v6) — ONLINE*
+
+*NEW: Multi-Agent Experiment System*
+🧪 5 specialized roles rotate every 15min
+🔬 Experiments dispatched to S11 automatically
+🏆 Auto-promote winners to S10 (Brier +0.002)
 
 *Capabilities:*
 📊 FeedbackLoop: Predictions vs ESPN real scores
-💡 Analyst: LLM reasoning every 2h
-🔬 Research: Autonomous NBA quant research 2x/day
+💡 5 Agents: feature/model/calibration/evolution/market
+🔬 Research: Autonomous NBA quant research 12x/day
 🎯 Smart watchdog: Recommendations with alerts
 
-*9 Cycles:* observe/data/health/report/heartbeat/eval/analyze/research/command
+*10 Cycles:* observe/data/health/report/heartbeat/eval/analyze/research/command/experiment
 *Models:* ${modelCount} free models tracked
 *VM:* ${vmStatus} | *GitHub:* ${ghStatus}
 

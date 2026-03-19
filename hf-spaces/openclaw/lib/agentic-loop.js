@@ -40,7 +40,131 @@ const path = require('path');
 const logger = require('./logger');
 
 const LOOP_DATA_DIR = '/data/agentic-loop';
-const STATE_FILE = path.join(LOOP_DATA_DIR, 'state-v5.json');
+const STATE_FILE = path.join(LOOP_DATA_DIR, 'state-v6.json');
+
+// ══════════════════════════════════════════
+//  SPECIALIZED AGENT ROLES
+// ══════════════════════════════════════════
+
+const AGENT_ROLES = [
+  'feature_discovery',    // Find new features, prune bad ones
+  'model_architecture',   // Test new models, hyperparams, stacking configs
+  'calibration',          // Improve probability calibration
+  'evolution_tuner',      // Optimize GA parameters
+  'market_intelligence',  // Analyze odds patterns, CLV
+];
+
+const ROLE_PROMPTS = {
+  feature_discovery: (ctx) => `You are the FEATURE DISCOVERY agent for an NBA prediction model.
+Current best Brier: ${ctx.brier || '?'}. Selected features: ${ctx.features || '?'}.
+Model type: ${ctx.modelType || 'ensemble'}. Population: ${ctx.population || '?'}.
+Recent experiments: ${ctx.recentExperiments || 'none'}
+
+Your job: propose NEW features to test or identify features to REMOVE.
+Focus on:
+- Interaction terms (e.g., rest_days * opponent_pace, home_streak * travel_distance)
+- Rolling windows variants (try 3/5/7/10/15/20 game windows)
+- Opponent-adjusted stats (eFG% vs opponent defensive rating)
+- Advanced analytics: RAPTOR, EPM, DARKO components
+- Schedule density features (games in last N days)
+- Referee tendencies (foul rate, home whistle bias)
+- Player availability impact (minutes-weighted team strength)
+
+Output 1-3 EXPERIMENT blocks:
+EXPERIMENT: {"type":"feature_test","description":"...","hypothesis":"...","params":{"features_to_add":["feat1"],"features_to_remove":["feat2"]}}
+
+Also output 0-1 RECOMMENDATION blocks for direct config changes if needed.
+Max 300 words.`,
+
+  model_architecture: (ctx) => `You are the MODEL ARCHITECTURE agent for an NBA prediction model.
+Current best Brier: ${ctx.brier || '?'}. Current model: ${ctx.modelType || 'ensemble'}.
+Generation: ${ctx.generation || '?'}. Stagnation: ${ctx.stagnation || '?'}.
+Recent experiments: ${ctx.recentExperiments || 'none'}
+
+Your job: propose model architecture changes to test.
+Focus on:
+- Stacking configurations (meta-learner choice: logistic, ridge, xgboost)
+- Hyperparameter search (learning_rate, max_depth, n_estimators, reg_alpha/lambda)
+- New base models (CatBoost, Extra Trees, Neural Net, KNN ensemble)
+- Calibration methods (Platt, isotonic, beta calibration, Venn-Abers)
+- Feature selection methods (mutual info, Boruta, permutation importance)
+- Ensemble weighting (Brier-weighted, Bayesian model averaging)
+
+Output 1-3 EXPERIMENT blocks:
+EXPERIMENT: {"type":"model_test","description":"...","hypothesis":"...","params":{"model_type":"xgboost","hyperparams":{"max_depth":6,"learning_rate":0.05}}}
+
+Also output 0-1 RECOMMENDATION blocks for direct config changes if needed.
+Max 300 words.`,
+
+  calibration: (ctx) => `You are the CALIBRATION agent for an NBA prediction model.
+Current best Brier: ${ctx.brier || '?'}. Accuracy: ${ctx.accuracy || '?'}.
+Recent eval Brier scores: ${ctx.evalBriers || 'none'}.
+Recent experiments: ${ctx.recentExperiments || 'none'}
+
+Your job: improve probability calibration (Brier decomposition: reliability + resolution).
+Focus on:
+- Platt scaling parameters (fit on last 500 vs 1000 games)
+- Isotonic regression (min samples per bin: 50, 100, 200)
+- Beta calibration (parametric, better for extreme probs)
+- Venn-Abers predictors (valid probability intervals)
+- Calibration by context (home/away, back-to-back, favorites/underdogs)
+- Temperature scaling (single parameter, simple but effective)
+- Histogram binning (10, 15, 20 bins)
+- Recalibration frequency (daily, weekly, rolling 30-day)
+
+Output 1-3 EXPERIMENT blocks:
+EXPERIMENT: {"type":"calibration_test","description":"...","hypothesis":"...","params":{"method":"platt","fit_window":500}}
+
+Also output 0-1 RECOMMENDATION blocks for direct config changes if needed.
+Max 300 words.`,
+
+  evolution_tuner: (ctx) => `You are the EVOLUTION TUNER agent for an NBA prediction genetic algorithm.
+Current best Brier: ${ctx.brier || '?'}. Generation: ${ctx.generation || '?'}.
+Population: ${ctx.population || '?'}. Stagnation: ${ctx.stagnation || '?'}.
+Mutation rate: ${ctx.mutationRate || '?'}. Features: ${ctx.features || '?'}.
+Recent experiments: ${ctx.recentExperiments || 'none'}
+
+Your job: optimize the genetic algorithm parameters.
+Focus on:
+- Population size (50-200, larger = more exploration)
+- Mutation rate (0.01-0.30, adaptive vs fixed)
+- Crossover rate (0.5-0.9, uniform vs two-point)
+- Tournament size (3-10, selection pressure)
+- Elitism count (3-10, preservation of best)
+- Stagnation threshold (5-20 generations before injection)
+- Fresh injection ratio (10-30% of population)
+- Multi-objective weights (Brier/ROI/Sharpe/Calibration balance)
+- Island model (parallel sub-populations with migration)
+
+Output 1-3 EXPERIMENT blocks:
+EXPERIMENT: {"type":"evolution_test","description":"...","hypothesis":"...","params":{"mutation_rate":0.08,"population":80,"tournament_size":5}}
+
+Also output 0-1 RECOMMENDATION blocks for direct config changes if needed.
+Max 300 words.`,
+
+  market_intelligence: (ctx) => `You are the MARKET INTELLIGENCE agent for an NBA prediction model.
+Current best Brier: ${ctx.brier || '?'}. ROI: ${ctx.roi || '?'}.
+Data status: odds fetches=${ctx.oddsFetches || '?'}, line movements=${ctx.lineMovements || '?'}.
+Recent experiments: ${ctx.recentExperiments || 'none'}
+
+Your job: analyze odds patterns and improve market-based features.
+Focus on:
+- CLV (Closing Line Value) — are we beating the closing line?
+- Steam moves detection (sharp money indicators)
+- Line movement features (opening vs current vs closing)
+- Market consensus features (Pinnacle vs average vs offshore)
+- Reverse line movement (public vs sharp divergence)
+- Totals correlation with spread (over/under as side indicator)
+- Market efficiency by time (early vs late value)
+- Prop market signals (player props → team performance)
+- Live odds integration (pre-game model + live adjustment)
+
+Output 1-3 EXPERIMENT blocks:
+EXPERIMENT: {"type":"market_test","description":"...","hypothesis":"...","params":{"features":["clv_spread","steam_indicator","rlm_flag"]}}
+
+Also output 0-1 RECOMMENDATION blocks for direct config changes if needed.
+Max 300 words.`,
+};
 
 class AgenticLoop {
   constructor({
@@ -56,6 +180,7 @@ class AgenticLoop {
     feedbackLoop,
     researchAgent,
     codeAgent,
+    infraBridge,
   }) {
     this.fetchEvolution = fetchEvolution;
     this.callS10 = callS10;
@@ -69,12 +194,17 @@ class AgenticLoop {
     this.feedbackLoop = feedbackLoop;
     this.researchAgent = researchAgent;
     this.codeAgent = codeAgent;
+    this.infra = infraBridge;
 
     // Agent role — determines which cycles are active
     this.agentName = process.env.AGENT_NAME || 'Eve';
     const role = process.env.AGENT_ROLE || 'nba-quant';
     this.isNBA = role === 'nba-quant' || role === 'nba-market';
     this.isMarketAgent = role === 'nba-market';
+
+    // S10/S11 URLs
+    this.S10_URL = process.env.S10_URL || 'https://lbjlincoln-nomos-nba-quant.hf.space';
+    this.S11_URL = process.env.S11_URL || 'https://lbjlincoln-nomos-nba-quant-2.hf.space';
 
     // Timers
     this.timers = {};
@@ -86,6 +216,9 @@ class AgenticLoop {
     // Auto-execute: Karpathy pattern — act on insights automatically
     this.autoExecuteEnabled = true;
 
+    // Specialized agent role rotation (0-4, cycles through AGENT_ROLES)
+    this.analyzeRoleIndex = 0;
+
     // Conversation memory: last N insights for multi-turn reasoning
     this.analysisHistory = [];
     this.MAX_ANALYSIS_HISTORY = 10;
@@ -93,6 +226,15 @@ class AgenticLoop {
     // Execution feedback: track what we did and what happened
     this.executionLog = [];
     this.MAX_EXECUTION_LOG = 20;
+
+    // Experiment tracking
+    this.experimentStats = {
+      submitted: 0,
+      dispatched: 0,
+      completed: 0,
+      promoted: 0,
+      failed: 0,
+    };
 
     // State
     this.state = {
@@ -107,6 +249,7 @@ class AgenticLoop {
       lastEval: null,
       lastAnalyze: null,
       lastResearch: null,
+      lastExperiment: null,
       lastEvoStatus: null,
       errors: [],
     };
@@ -123,36 +266,39 @@ class AgenticLoop {
     this.running = true;
     this.state.startedAt = new Date().toISOString();
 
-    logger.info('[LOOP] Agentic Loop v5 started — intelligent autonomous operations');
+    logger.info('[LOOP] Agentic Loop v6 started — multi-agent experiment system');
 
-    // OBSERVE: Every 3 min (was 5)
+    // OBSERVE: Every 3 min
     this.timers.observe = setInterval(() => this._cycle('observe'), 3 * 60 * 1000);
 
-    // DATA: Every 10 min (was 30) — injuries, scores, box scores, lineups, referees
+    // DATA: Every 10 min — injuries, scores, box scores, lineups, referees
     this.timers.data = setInterval(() => this._cycle('data'), 10 * 60 * 1000);
 
-    // HEALTH: Every 5 min (was 10)
+    // HEALTH: Every 5 min
     this.timers.health = setInterval(() => this._cycle('health'), 5 * 60 * 1000);
 
-    // REPORT: Every 15 min (was 30, offset 5 min from DATA)
+    // REPORT: Every 15 min (offset 5 min from DATA)
     setTimeout(() => {
       this.timers.report = setInterval(() => this._cycle('report'), 15 * 60 * 1000);
     }, 5 * 60 * 1000);
 
-    // COMMAND: Every 1 min (was 2) — fast poll for Adam's commands
+    // COMMAND: Every 1 min — fast poll for Adam's commands
     this.timers.command = setInterval(() => this._cycle('command'), 60 * 1000);
 
-    // HEARTBEAT: Every 30 min (was 60)
+    // HEARTBEAT: Every 30 min
     this.timers.heartbeat = setInterval(() => this._cycle('heartbeat'), 30 * 60 * 1000);
 
-    // EVAL: Check every 10 min (was 15), runs once per day per date
+    // EVAL: Check every 10 min, runs once per day per date
     this.timers.eval = setInterval(() => this._maybeEval(), 10 * 60 * 1000);
 
-    // ANALYZE: Every 15 min (was 30) — agent stays aware in near real-time
+    // ANALYZE: Every 15 min — 5 specialized roles rotate
     this.timers.analyze = setInterval(() => this._cycle('analyze'), 15 * 60 * 1000);
 
-    // RESEARCH: Every 2 hours (was 4) — 12x/day
+    // RESEARCH: Every 2 hours — 12x/day
     this.timers.research = setInterval(() => this._cycle('research'), 2 * 60 * 60 * 1000);
+
+    // EXPERIMENT: Every 3 min — dispatch pending experiments to S11
+    this.timers.experiment = setInterval(() => this._cycle('experiment'), 3 * 60 * 1000);
 
     // Run initial cycles
     setTimeout(() => this._cycle('observe'), 5000);    // 5s after start
@@ -161,6 +307,7 @@ class AgenticLoop {
     setTimeout(() => this._cycle('heartbeat'), 60000);  // 1 min — startup notification
     setTimeout(() => this._maybeEval(), 90000);          // 1.5 min — check if eval needed
     setTimeout(() => this._cycle('analyze'), 3 * 60 * 1000);  // 3 min — first analysis
+    setTimeout(() => this._cycle('experiment'), 4 * 60 * 1000);  // 4 min — first experiment dispatch
   }
 
   stop() {
@@ -169,7 +316,7 @@ class AgenticLoop {
       clearInterval(timer);
     }
     this.timers = {};
-    logger.info('[LOOP] Agentic Loop v5 stopped');
+    logger.info('[LOOP] Agentic Loop v6 stopped');
   }
 
   // ══════════════════════════════════════════
@@ -208,6 +355,9 @@ class AgenticLoop {
           break;
         case 'research':
           await this._research();
+          break;
+        case 'experiment':
+          await this._runExperiment();
           break;
       }
     } catch (err) {
@@ -383,8 +533,7 @@ class AgenticLoop {
 
     try {
       // Call S10's /api/predict endpoint with today's date
-      const s10Base = process.env.S10_URL || 'https://lbjlincoln-nomos-nba-quant.hf.space';
-      const resp = await fetch(`${s10Base}/api/predict`, {
+      const resp = await fetch(`${this.S10_URL}/api/predict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ date: today }),
@@ -476,6 +625,8 @@ class AgenticLoop {
         evaluation: evalStatus || 'not_initialized',
         trends: watchdogTrends,
         insight: this.lastInsight,
+        experiments: this.experimentStats,
+        currentRole: AGENT_ROLES[this.analyzeRoleIndex],
         loop: {
           cycles: this.state.cycles,
           uptime: this._uptime(),
@@ -551,6 +702,15 @@ class AgenticLoop {
         const emoji = trend < 0 ? '📉' : trend > 0 ? '📈' : '➡️';
         lines.push(`🔍 Brier trend (1h): ${emoji} ${trend > 0 ? '+' : ''}${trend}`);
       }
+
+      // Experiment stats
+      const es = this.experimentStats;
+      if (es.submitted > 0 || es.dispatched > 0) {
+        lines.push(`🧪 *Experiments*: ${es.submitted} queued, ${es.dispatched} running, ${es.completed} done, ${es.promoted} promoted`);
+      }
+
+      // Current agent role
+      lines.push(`🤖 *Agent Role*: ${AGENT_ROLES[this.analyzeRoleIndex]}`);
     } else {
       // General agent heartbeat
       lines.push(`🤖 *Role*: General-purpose agent`);
@@ -653,7 +813,7 @@ class AgenticLoop {
   }
 
   // ══════════════════════════════════════════
-  //  ANALYZE — LLM-powered insight generation (Phase 2)
+  //  ANALYZE — 5 Specialized Agent Roles (Phase 2)
   // ══════════════════════════════════════════
 
   async _analyze() {
@@ -681,7 +841,13 @@ Max 100 words.`;
       return;
     }
 
-    // ── NBA ANALYSIS (both Eve and Market Agent, with different prompts) ──
+    // ── NBA ANALYSIS — Rotating specialized agent roles ──
+
+    // Select current role
+    const currentRole = AGENT_ROLES[this.analyzeRoleIndex];
+    this.analyzeRoleIndex = (this.analyzeRoleIndex + 1) % AGENT_ROLES.length;
+
+    logger.info(`[LOOP] Analyze cycle — role: ${currentRole} (next: ${AGENT_ROLES[this.analyzeRoleIndex]})`);
 
     // Gather ALL available context
     const context = {
@@ -705,10 +871,48 @@ Max 100 words.`;
       context.marketExperimentsSubmitted = this.state._marketExperimentsSubmitted || 0;
     }
 
+    // Fetch recent experiment results from Supabase
+    let recentExperimentsStr = 'none';
+    if (this.infra?.pgPool) {
+      try {
+        const expResult = await this.infra.querySupabase(
+          `SELECT experiment_type, description, status, result_brier, result_details
+           FROM nba_experiments
+           ORDER BY created_at DESC LIMIT 10`
+        );
+        if (expResult.rows?.length > 0) {
+          recentExperimentsStr = expResult.rows.map(r =>
+            `[${r.status}] ${r.experiment_type}: ${(r.description || '').substring(0, 80)}${r.result_brier ? ` → Brier ${r.result_brier}` : ''}`
+          ).join('\n');
+        }
+      } catch (e) {
+        logger.debug(`[LOOP] Failed to fetch recent experiments: ${e.message}`);
+      }
+    }
+
+    // Build role-specific context
+    const evo = this.state.lastEvoStatus;
+    const evalHistory = context.recentEvals || [];
+    const roleCtx = {
+      brier: evo?.brier?.toFixed(4),
+      features: evo?.features,
+      population: evo?.population,
+      generation: evo?.generation,
+      stagnation: evo?.stagnation,
+      mutationRate: evo?.mutationRate,
+      modelType: 'ensemble',
+      roi: evo?.roi,
+      accuracy: evalHistory[0]?.accuracy ? (evalHistory[0].accuracy * 100).toFixed(1) + '%' : null,
+      evalBriers: evalHistory.slice(0, 5).map(e => e.brier_score).filter(Boolean).join(', '),
+      oddsFetches: context.dataStatus?.stats?.oddsFetches || 0,
+      lineMovements: context.dataStatus?.recentMovements?.length || 0,
+      recentExperiments: recentExperimentsStr,
+    };
+
     // Build conversation memory context
     const memoryContext = this.analysisHistory.length > 0
       ? `\n\nPREVIOUS INSIGHTS (most recent first):\n${this.analysisHistory.slice(-5).reverse().map((h, i) =>
-          `[${i + 1}] ${h.timestamp}: ${h.insight.substring(0, 150)}${h.actions?.length ? ` → EXECUTED: ${h.actions.join(', ')}` : ''}`
+          `[${i + 1}] ${h.timestamp} (${h.role || 'general'}): ${h.insight.substring(0, 150)}${h.actions?.length ? ` → EXECUTED: ${h.actions.join(', ')}` : ''}`
         ).join('\n')}`
       : '';
 
@@ -719,7 +923,7 @@ Max 100 words.`;
         ).join('\n')}`
       : '';
 
-    // ── MARKET INTELLIGENCE PROMPT (RGWA) ──
+    // Build the prompt based on role (market agent overrides)
     let prompt;
     if (this.isMarketAgent) {
       const oddsSummary = JSON.stringify(context.dataStatus?.stats || {});
@@ -738,68 +942,42 @@ Evolution status: ${JSON.stringify(context.evolution || {})}
 ${memoryContext}
 ${feedbackContext}
 
-Propose experiments that use market data to improve the model:
-- New market microstructure features (steam moves, reverse line movement)
-- CLV patterns (closing line value as a feature)
-- Opening vs closing line analysis
-- Sharp money indicators
-- Odds-derived features (consensus vs sharp books)
-
-Output EXPERIMENT blocks for the S11 experiment queue.
-Each experiment should be in this format:
-EXPERIMENT: {"name":"<short_name>","description":"<what_to_test>","feature_type":"market","hypothesis":"<why_this_helps>","implementation":"<pseudo_code_or_steps>"}
+Propose experiments that use market data to improve the model.
+Output EXPERIMENT blocks:
+EXPERIMENT: {"type":"market_test","description":"...","hypothesis":"...","params":{"features":["clv_spread","steam_indicator"]}}
 
 Rules:
 - Use NUMBERS from the data, not vague statements
-- Compare to targets: Brier < 0.20, ROI > 5%
-- Focus ONLY on market-derived features — leave game stats to Eve
+- Focus ONLY on market-derived features
 - Max 2-3 experiments per cycle. Quality over quantity.
 - Do NOT repeat experiments from PREVIOUS INSIGHTS
-- If no actionable market signal, say "STATUS: MONITORING — no new market patterns detected"
 - Max 300 words`;
 
-    } else {
-      // ── STANDARD NBA ANALYST PROMPT (Eve) ──
-      prompt = `You are ${this.agentName}, an NBA quant analyst AI. Analyze this data and give concrete recommendations.
-
-CURRENT STATE:
-${JSON.stringify(context, null, 2)}
-${memoryContext}
-${feedbackContext}
-
-Rules:
+    } else if (ROLE_PROMPTS[currentRole]) {
+      // Use specialized role prompt
+      prompt = ROLE_PROMPTS[currentRole](roleCtx);
+      prompt += `\n\nCURRENT STATE:\n${JSON.stringify(context.evolution || {}, null, 2)}`;
+      prompt += memoryContext;
+      prompt += feedbackContext;
+      prompt += `\n\nRules:
 - Use NUMBERS, not vague statements
 - Compare to targets: Brier < 0.20, ROI > 5%, accuracy > 65%
-- Output recommendations ONE PER LINE in EXACTLY one of these formats:
-
-  For CONFIG changes (mutation rate, population, hyperparams):
-  RECOMMENDATION: {"type":"config","key":"mutation_rate","value":0.05}
-  RECOMMENDATION: {"type":"config","key":"crossover_rate","value":0.7}
-  Valid config keys: mutation_rate, target_features, crossover_rate, tournament_size
-
-  For CODE changes (new features, calibration, model architecture):
-  RECOMMENDATION: {"type":"code","description":"add Platt scaling to calibration pipeline","files":["features/calibration.py","evolution/loop.py"],"context":"Brier stuck at 0.23, calibration would help"}
-
-  For RESTART of HF Spaces:
-  RECOMMENDATION: {"type":"restart","target":"S10"}
-
-  For evolution commands (diversify, inject, rollback):
-  RECOMMENDATION: {"type":"evolve","action":"diversify"}
-  RECOMMENDATION: {"type":"evolve","action":"inject_features","features":["feature_a","feature_b"]}
-  RECOMMENDATION: {"type":"evolve","action":"rollback"}
-
-- IMPORTANT: Do NOT output actions you already executed recently (check RECENT EXECUTIONS above)
+- IMPORTANT: Do NOT repeat experiments from RECENT EXECUTIONS above
 - IMPORTANT: If Brier went UP after an action, do NOT repeat that action
-- If Brier > 0.5, something is broken — only rollback, nothing else
-- If everything looks normal, say "STATUS: OK" and give brief summary. NO recommendations needed.
-- Max 1-2 recommendations per response. Quality over quantity.
-- Max 200 words`;
+- If Brier > 0.5, something is broken — only RECOMMENDATION: {"type":"evolve","action":"rollback"}
+- If everything looks normal, say "STATUS: OK" and give brief summary`;
+    } else {
+      // Fallback generic prompt
+      prompt = `You are ${this.agentName}, an NBA quant analyst AI (role: ${currentRole}). Analyze and give recommendations.
+CURRENT STATE: ${JSON.stringify(context, null, 2)}
+${memoryContext}${feedbackContext}
+Max 200 words.`;
     }
 
     try {
       const result = await this.getCompletion([{ role: 'user', content: prompt }], {
-        maxTokens: 500,
-        temperature: 0.3,
+        maxTokens: 600,
+        temperature: 0.4,
       });
 
       if (result?.content) {
@@ -810,8 +988,9 @@ Rules:
           this.a2a.postReport({
             type: 'analyst_insight',
             level: 'INFO',
-            message: result.content.substring(0, 200),
+            message: `[${currentRole}] ${result.content.substring(0, 200)}`,
             data: {
+              role: currentRole,
               fullAnalysis: result.content,
               model: result.model,
               context: {
@@ -823,7 +1002,19 @@ Rules:
           });
         }
 
-        // Market agent: parse EXPERIMENT blocks and submit to Supabase queue
+        // Parse EXPERIMENT blocks from the analysis output
+        const expMatches = result.content.matchAll(/EXPERIMENT:\s*(\{[\s\S]*?\})/g);
+        for (const m of expMatches) {
+          try {
+            const exp = JSON.parse(m[1]);
+            exp.agent_name = currentRole;
+            await this._submitExperiment(exp);
+          } catch (e) {
+            logger.debug(`[LOOP] Failed to parse EXPERIMENT block: ${e.message}`);
+          }
+        }
+
+        // Market agent: also track experiments via A2A
         if (this.isMarketAgent) {
           const experiments = [];
           for (const line of result.content.split('\n')) {
@@ -831,45 +1022,33 @@ Rules:
             if (expMatch) {
               try {
                 const exp = JSON.parse(expMatch[1]);
-                if (exp.name) experiments.push(exp);
-              } catch (e) {
-                logger.debug(`[MARKET] Failed to parse experiment JSON: ${expMatch[1].substring(0, 80)}`);
-              }
+                if (exp.type || exp.name) experiments.push(exp);
+              } catch (e) {}
             }
           }
-
-          if (experiments.length > 0) {
-            logger.info(`[MARKET] ${experiments.length} experiment(s) proposed: ${experiments.map(e => e.name).join(', ')}`);
-
-            // Submit experiments to A2A for S11 queue
-            if (this.a2a) {
-              for (const exp of experiments) {
-                this.a2a.postReport({
-                  type: 'market_experiment',
-                  level: 'INFO',
-                  message: `EXPERIMENT: ${exp.name} — ${exp.description || ''}`.substring(0, 200),
-                  data: {
-                    experiment: exp,
-                    source: this.agentName,
-                    submittedAt: new Date().toISOString(),
-                  },
-                });
-              }
+          if (experiments.length > 0 && this.a2a) {
+            for (const exp of experiments) {
+              this.a2a.postReport({
+                type: 'market_experiment',
+                level: 'INFO',
+                message: `EXPERIMENT: ${exp.description || exp.name || ''}`.substring(0, 200),
+                data: { experiment: exp, source: this.agentName },
+              });
             }
-
             this.state._marketExperimentsSubmitted = (this.state._marketExperimentsSubmitted || 0) + experiments.length;
           }
         }
 
-        // Auto-execute: Karpathy pattern — act on ALL insights (Eve only, market agent uses experiments)
+        // Auto-execute RECOMMENDATION blocks: Karpathy pattern (not for market agent)
         let executedActions = [];
         if (this.autoExecuteEnabled && !this.isMarketAgent) {
           executedActions = await this._tryAutoExecute(result.content, context);
         }
 
-        // Save to conversation memory
+        // Save to conversation memory (with role)
         this.analysisHistory.push({
           timestamp: new Date().toISOString(),
+          role: currentRole,
           insight: result.content,
           actions: executedActions,
           brier: context.evolution?.brier,
@@ -879,10 +1058,231 @@ Rules:
           this.analysisHistory = this.analysisHistory.slice(-this.MAX_ANALYSIS_HISTORY);
         }
 
-        logger.info(`[LOOP] Analyst insight generated (${result.model}): ${result.content.substring(0, 100)}...`);
+        logger.info(`[LOOP] Analyst insight generated (${currentRole}, ${result.model}): ${result.content.substring(0, 100)}...`);
       }
     } catch (err) {
-      logger.warn(`[LOOP] Analyze failed: ${err.message}`);
+      logger.warn(`[LOOP] Analyze failed (${currentRole}): ${err.message}`);
+    }
+
+    this._save();
+  }
+
+  // ══════════════════════════════════════════
+  //  EXPERIMENT SUBMISSION — Write to Supabase queue
+  // ══════════════════════════════════════════
+
+  /**
+   * Submit an experiment to the nba_experiments queue in Supabase.
+   * Max 50 pending experiments at any time.
+   */
+  async _submitExperiment(exp) {
+    if (!this.infra?.pgPool) {
+      logger.debug('[EXPERIMENT] No infra bridge — cannot submit experiment');
+      return;
+    }
+
+    try {
+      // Check queue size — max 50 pending
+      const countResult = await this.infra.querySupabase(
+        `SELECT COUNT(*) as cnt FROM nba_experiments WHERE status = 'pending'`
+      );
+      const pendingCount = parseInt(countResult.rows?.[0]?.cnt || '0');
+      if (pendingCount >= 50) {
+        logger.info(`[EXPERIMENT] Queue full (${pendingCount}/50 pending). Skipping: ${(exp.description || '').substring(0, 60)}`);
+        return;
+      }
+
+      const id = `exp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      const agentName = exp.agent_name || 'unknown';
+      const expType = exp.type || 'general';
+      const description = (exp.description || '').substring(0, 500);
+      const hypothesis = (exp.hypothesis || '').substring(0, 500);
+      const params = JSON.stringify(exp.params || {});
+      const priority = exp.priority || 5;
+      const baselineBrier = this.state.lastEvoStatus?.brier || null;
+
+      await this.infra.querySupabase(
+        `INSERT INTO nba_experiments (experiment_id, agent_name, experiment_type, description, hypothesis, params, priority, status, target_space, baseline_brier, created_at)
+         VALUES ('${id}', '${agentName}', '${expType}', '${description.replace(/'/g, "''")}', '${hypothesis.replace(/'/g, "''")}', '${params.replace(/'/g, "''")}'::jsonb, ${priority}, 'pending', 'S11', ${baselineBrier || 'NULL'}, NOW())`
+      );
+
+      this.experimentStats.submitted++;
+      logger.info(`[EXPERIMENT] Submitted: ${id} (${expType}) by ${agentName}: ${description.substring(0, 60)}`);
+
+      if (this.a2a) {
+        this.a2a.postReport({
+          type: 'experiment_submitted',
+          level: 'INFO',
+          message: `Experiment queued: [${agentName}] ${expType} — ${description.substring(0, 100)}`,
+          data: { id, agentName, expType, description, priority },
+        });
+      }
+    } catch (err) {
+      logger.warn(`[EXPERIMENT] Submit failed: ${err.message}`);
+    }
+  }
+
+  // ══════════════════════════════════════════
+  //  EXPERIMENT DISPATCH — S11 runner
+  // ══════════════════════════════════════════
+
+  /**
+   * Experiment scheduler cycle (runs every 3 min).
+   * 1. Query Supabase for next pending experiment
+   * 2. Check if S11 is idle
+   * 3. Dispatch experiment to S11
+   * 4. Wait for result (5 min timeout)
+   * 5. Store results, auto-promote if improved by 0.002+
+   */
+  async _runExperiment() {
+    this.state.lastExperiment = new Date().toISOString();
+
+    if (!this.isNBA) return;
+    if (!this.infra?.pgPool) return;
+
+    try {
+      // 1. Query next pending experiment
+      const pendingResult = await this.infra.querySupabase(
+        `SELECT * FROM nba_experiments WHERE status = 'pending' ORDER BY priority, created_at LIMIT 1`
+      );
+      const experiment = pendingResult.rows?.[0];
+      if (!experiment) {
+        logger.debug('[EXPERIMENT] No pending experiments in queue');
+        return;
+      }
+
+      // 2. Check if S11 is idle
+      let s11Status;
+      try {
+        const statusResp = await fetch(`${this.S11_URL}/api/status`, {
+          signal: AbortSignal.timeout(10000),
+        });
+        if (!statusResp.ok) {
+          logger.debug(`[EXPERIMENT] S11 status check returned ${statusResp.status}`);
+          return;
+        }
+        s11Status = await statusResp.json();
+      } catch (e) {
+        logger.debug(`[EXPERIMENT] S11 unreachable: ${e.message}`);
+        return;
+      }
+
+      // S11 busy — skip this cycle
+      if (s11Status.status === 'running' || s11Status.busy) {
+        logger.debug('[EXPERIMENT] S11 is busy — skipping dispatch');
+        return;
+      }
+
+      // 3. Dispatch experiment to S11
+      logger.info(`[EXPERIMENT] Dispatching: ${experiment.experiment_id} (${experiment.experiment_type}) to S11`);
+
+      // Update status to running
+      await this.infra.querySupabase(
+        `UPDATE nba_experiments SET status = 'running', started_at = NOW() WHERE experiment_id = '${experiment.experiment_id}'`
+      );
+      this.experimentStats.dispatched++;
+
+      // Send to S11
+      let expResult;
+      try {
+        const expResp = await fetch(`${this.S11_URL}/api/experiment/run`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            experiment_id: experiment.experiment_id,
+            type: experiment.experiment_type,
+            description: experiment.description,
+            params: typeof experiment.params === 'string' ? JSON.parse(experiment.params) : experiment.params,
+            baseline_brier: experiment.baseline_brier,
+          }),
+          signal: AbortSignal.timeout(5 * 60 * 1000), // 5 min timeout
+        });
+
+        if (!expResp.ok) {
+          throw new Error(`S11 returned ${expResp.status}: ${await expResp.text().catch(() => 'no body')}`);
+        }
+
+        expResult = await expResp.json();
+      } catch (e) {
+        // Experiment failed — update status
+        logger.warn(`[EXPERIMENT] Dispatch failed for ${experiment.experiment_id}: ${e.message}`);
+        await this.infra.querySupabase(
+          `UPDATE nba_experiments SET status = 'failed', result_details = '${JSON.stringify({ error: e.message }).replace(/'/g, "''")}'::jsonb, completed_at = NOW() WHERE experiment_id = '${experiment.experiment_id}'`
+        );
+        this.experimentStats.failed++;
+        return;
+      }
+
+      // 4. Store results
+      const resultBrier = expResult.brier || expResult.result_brier || null;
+      const resultDetails = JSON.stringify(expResult).replace(/'/g, "''");
+
+      await this.infra.querySupabase(
+        `UPDATE nba_experiments SET status = 'completed', result_brier = ${resultBrier || 'NULL'}, result_details = '${resultDetails}'::jsonb, completed_at = NOW() WHERE experiment_id = '${experiment.experiment_id}'`
+      );
+      this.experimentStats.completed++;
+
+      logger.info(`[EXPERIMENT] Completed: ${experiment.experiment_id} — result Brier: ${resultBrier || 'N/A'}`);
+
+      // 5. Auto-promote if result beats baseline by 0.002+
+      const baselineBrier = experiment.baseline_brier;
+      if (resultBrier && baselineBrier && (baselineBrier - resultBrier) >= 0.002) {
+        logger.info(`[EXPERIMENT] PROMOTION: ${experiment.experiment_id} improved Brier by ${(baselineBrier - resultBrier).toFixed(4)} (${baselineBrier.toFixed(4)} → ${resultBrier.toFixed(4)})`);
+
+        // Promote to S10 via config or feature injection
+        try {
+          const params = typeof experiment.params === 'string' ? JSON.parse(experiment.params) : experiment.params;
+
+          if (experiment.experiment_type === 'feature_test' && params.features_to_add) {
+            await this.callS10('/api/features/inject', {
+              method: 'POST',
+              body: JSON.stringify({ features: params.features_to_add, source: `experiment:${experiment.experiment_id}` }),
+            });
+          } else if (experiment.experiment_type === 'evolution_test') {
+            await this.callS10('/api/config', {
+              method: 'POST',
+              body: JSON.stringify(params),
+            });
+          } else if (expResult.config) {
+            // Generic config promotion from S11 result
+            await this.callS10('/api/config', {
+              method: 'POST',
+              body: JSON.stringify(expResult.config),
+            });
+          }
+
+          await this.infra.querySupabase(
+            `UPDATE nba_experiments SET status = 'promoted' WHERE experiment_id = '${experiment.experiment_id}'`
+          );
+          this.experimentStats.promoted++;
+
+          // Telegram notification for promotions
+          if (this.bot) {
+            await this.bot.sendMessage(this.adminId,
+              `🏆 *EXPERIMENT PROMOTED*\n\n` +
+              `ID: \`${experiment.experiment_id}\`\n` +
+              `Type: ${experiment.experiment_type}\n` +
+              `Agent: ${experiment.agent_name}\n` +
+              `Brier: ${baselineBrier.toFixed(4)} → ${resultBrier.toFixed(4)} (${(baselineBrier - resultBrier).toFixed(4)} improvement)\n\n` +
+              `${experiment.description}`,
+              { parse_mode: 'Markdown' }
+            ).catch(() => {});
+          }
+
+          if (this.a2a) {
+            this.a2a.postReport({
+              type: 'experiment_promoted',
+              level: 'INFO',
+              message: `Experiment promoted to S10: ${experiment.experiment_id} (Brier ${baselineBrier.toFixed(4)} → ${resultBrier.toFixed(4)})`,
+              data: { id: experiment.experiment_id, baselineBrier, resultBrier, improvement: baselineBrier - resultBrier },
+            });
+          }
+        } catch (e) {
+          logger.warn(`[EXPERIMENT] Promotion failed for ${experiment.experiment_id}: ${e.message}`);
+        }
+      }
+    } catch (err) {
+      logger.warn(`[EXPERIMENT] Scheduler error: ${err.message}`);
     }
 
     this._save();
@@ -1383,6 +1783,10 @@ Max 5 features.`;
         this._cycle('eval').catch(e => logger.error(`Force eval: ${e.message}`));
         return { status: 'triggered', type: 'eval' };
 
+      case 'force_experiment':
+        this._cycle('experiment').catch(e => logger.error(`Force experiment: ${e.message}`));
+        return { status: 'triggered', type: 'experiment' };
+
       // Status queries
       case 'get_status':
         return this.getStatus();
@@ -1392,6 +1796,9 @@ Max 5 features.`;
 
       case 'get_data_status':
         return this.dataWorker?.getStatus();
+
+      case 'get_experiment_stats':
+        return this.experimentStats;
 
       default:
         throw new Error(`Unknown command: ${action}`);
@@ -1404,11 +1811,14 @@ Max 5 features.`;
 
   getStatus() {
     return {
-      version: 'v5-intelligent',
+      version: 'v6-multi-agent-experiments',
       running: this.running,
       state: this.state,
       uptime: this._uptime(),
       lastInsight: this.lastInsight ? this.lastInsight.substring(0, 200) : null,
+      currentRole: AGENT_ROLES[this.analyzeRoleIndex],
+      nextRole: AGENT_ROLES[(this.analyzeRoleIndex + 1) % AGENT_ROLES.length],
+      experimentStats: this.experimentStats,
       watchdog: this.watchdog?.getStatus(),
       dataWorker: this.dataWorker?.getStatus(),
       feedbackLoop: this.feedbackLoop?.getStatus(),
@@ -1436,10 +1846,11 @@ Max 5 features.`;
   _load() {
     try {
       if (!fs.existsSync(LOOP_DATA_DIR)) fs.mkdirSync(LOOP_DATA_DIR, { recursive: true });
-      // Try v5 state first, fall back to v4
-      const v5File = STATE_FILE;
+      // Try v6 state first, fall back to v5, then v4
+      const v6File = STATE_FILE;
+      const v5File = path.join(LOOP_DATA_DIR, 'state-v5.json');
       const v4File = path.join(LOOP_DATA_DIR, 'state-v4.json');
-      const fileToLoad = fs.existsSync(v5File) ? v5File : (fs.existsSync(v4File) ? v4File : null);
+      const fileToLoad = fs.existsSync(v6File) ? v6File : (fs.existsSync(v5File) ? v5File : (fs.existsSync(v4File) ? v4File : null));
       if (fileToLoad) {
         const saved = JSON.parse(fs.readFileSync(fileToLoad, 'utf8'));
         this.state = { ...this.state, ...saved };
