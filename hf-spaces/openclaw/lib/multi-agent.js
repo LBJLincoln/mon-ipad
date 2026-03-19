@@ -226,6 +226,7 @@ class MultiAgentCoordinator {
     this.adminId = adminId;
     this.getCompletion = getCompletion; // fallback
     this.running = false;
+    this.kaggleLastTrigger = 0;
     this.stats = {};
     for (const agent of AGENTS) {
       this.stats[agent.id] = { runs: 0, experiments: 0, errors: 0, lastRun: null };
@@ -255,6 +256,9 @@ class MultiAgentCoordinator {
         await this._runAgentCycle(agent);
         this.stats[agent.id].runs++;
         this.stats[agent.id].lastRun = new Date().toISOString();
+
+        // After submitting experiments, auto-trigger Kaggle if GPU work pending
+        await this.triggerKaggleGPU().catch(() => {});
       } catch (err) {
         this.stats[agent.id].errors++;
         logger.warn(`[MULTI-AGENT] ${agent.name} error: ${err.message}`);
@@ -468,6 +472,93 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
     return ctx;
   }
 
+  /**
+   * Trigger Kaggle GPU kernel via Kaggle REST API.
+   * Pushes the kernel code directly — no browser, no VM SSH needed.
+   * Rate-limited to once per 30 minutes.
+   */
+  async triggerKaggleGPU() {
+    const KAGGLE_USERNAME = process.env.KAGGLE_USERNAME;
+    const KAGGLE_KEY = process.env.KAGGLE_KEY;
+    if (!KAGGLE_USERNAME || !KAGGLE_KEY) {
+      logger.debug('[MULTI-AGENT] Kaggle credentials not set — skipping GPU trigger');
+      return false;
+    }
+
+    // Rate limit: max once per 30 minutes
+    const now = Date.now();
+    if (now - this.kaggleLastTrigger < 30 * 60 * 1000) return false;
+
+    // Check if there are GPU experiments pending
+    if (!this.infra?.pgPool) return false;
+    try {
+      const result = await this.infra.querySupabase(
+        `SELECT COUNT(*) as n FROM nba_experiments WHERE status = 'pending' AND target_space IN ('colab', 'gpu', 'kaggle')`
+      );
+      const gpuPending = parseInt(result.rows?.[0]?.n || 0);
+      if (gpuPending === 0) return false;
+
+      // Push kernel via Kaggle API
+      const auth = Buffer.from(`${KAGGLE_USERNAME}:${KAGGLE_KEY}`).toString('base64');
+      const kernelSlug = `${KAGGLE_USERNAME}/nba-quant-gpu-runner`;
+
+      // First, read the kernel source from GitHub
+      const codeResp = await fetch(
+        `https://raw.githubusercontent.com/LBJLincoln/nomos-nba-agent/main/kaggle/nba_gpu_runner.py`,
+        { signal: AbortSignal.timeout(10000) }
+      );
+      const code = await codeResp.text();
+
+      // Push to Kaggle
+      const resp = await fetch('https://www.kaggle.com/api/v1/kernels/push', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${auth}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: kernelSlug,
+          slug: 'nba-quant-gpu-runner',
+          newTitle: 'NBA Quant GPU Runner',
+          text: code,
+          language: 'python',
+          kernelType: 'script',
+          isPrivate: true,
+          enableGpu: true,
+          enableInternet: true,
+          datasetDataSources: [],
+          competitionDataSources: [],
+          kernelDataSources: [],
+          categoryIds: [],
+        }),
+        signal: AbortSignal.timeout(30000),
+      });
+
+      const data = await resp.json();
+      this.kaggleLastTrigger = now;
+
+      if (data.error) {
+        logger.warn(`[MULTI-AGENT] Kaggle push error: ${data.error}`);
+        return false;
+      }
+
+      logger.info(`[MULTI-AGENT] Kaggle GPU kernel triggered! ${gpuPending} GPU experiments pending. Response: ${JSON.stringify(data).substring(0, 200)}`);
+
+      // Notify via Telegram
+      if (this.bot) {
+        this.bot.sendMessage(this.adminId,
+          `🖥️ *Kaggle GPU Runner Triggered*\n${gpuPending} GPU experiments pending\nKernel: ${kernelSlug}`,
+          { parse_mode: 'Markdown' }
+        ).catch(() => {});
+      }
+
+      return true;
+    } catch (err) {
+      logger.warn(`[MULTI-AGENT] Kaggle trigger failed: ${err.message}`);
+      return false;
+    }
+  }
+
   getStatus() {
     const agents = AGENTS.map(a => ({
       id: a.id,
@@ -477,7 +568,12 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
       ...this.stats[a.id],
     }));
     const totalExperiments = Object.values(this.stats).reduce((s, a) => s + a.experiments, 0);
-    return { running: this.running, agents, totalExperiments };
+    return {
+      running: this.running,
+      agents,
+      totalExperiments,
+      kaggleLastTrigger: this.kaggleLastTrigger ? new Date(this.kaggleLastTrigger).toISOString() : null,
+    };
   }
 }
 
