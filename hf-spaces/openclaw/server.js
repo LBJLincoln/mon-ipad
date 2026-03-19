@@ -1759,6 +1759,43 @@ app.post('/api/v1/browser', async (req, res) => {
   }
 });
 
+// Browser form filling (real Chromium headless)
+app.post('/api/v1/browser/form', async (req, res) => {
+  const { url, fields, submitSelector, cookies } = req.body;
+  if (!url || !fields) return res.status(400).json({ error: 'url and fields required' });
+  try {
+    const { fillForm } = require('./lib/browser');
+    const result = await fillForm(url, fields, submitSelector, { cookies });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Browser screenshot
+app.get('/api/v1/browser/screenshot', async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ error: 'url query param required' });
+  try {
+    const { screenshot } = require('./lib/browser');
+    const img = await screenshot(url);
+    res.json({ screenshot: img });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Trigger Kaggle GPU kernel
+app.post('/api/v1/kaggle/trigger', async (req, res) => {
+  try {
+    const { triggerKaggle } = require('./lib/browser');
+    const result = await triggerKaggle(vmBridge);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Web search via Brave
 app.post('/api/v1/search', async (req, res) => {
   const { query, count } = req.body;

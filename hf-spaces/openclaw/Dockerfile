@@ -5,10 +5,13 @@ ENV PORT=7860
 ENV NODE_ENV=production
 ENV DEBIAN_FRONTEND=noninteractive
 
-# System deps: curl (health checks), python3 (DNS resolver)
+# System deps: curl, python3, chromium (headless browser for scraping + form filling)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl python3 \
+    curl python3 chromium \
     && rm -rf /var/lib/apt/lists/*
+
+ENV CHROME_BIN=/usr/bin/chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 WORKDIR /app
 COPY package.json ./

@@ -1152,6 +1152,27 @@ Max 200 words.`;
       for (const row of (queueResult.rows || [])) counts[row.status] = parseInt(row.n);
       logger.info(`[EXPERIMENT] Queue: ${counts.pending || 0} pending, ${counts.running || 0} running, ${counts.completed || 0} completed, ${counts.failed || 0} failed`);
 
+      // Auto-trigger Kaggle GPU runner if there are GPU experiments pending
+      if (counts.pending > 0) {
+        try {
+          const gpuResult = await this.infra.querySupabase(
+            `SELECT COUNT(*) as n FROM nba_experiments WHERE status = 'pending' AND target_space IN ('colab', 'gpu', 'kaggle')`
+          );
+          const gpuPending = parseInt(gpuResult.rows?.[0]?.n || 0);
+          if (gpuPending > 0) {
+            const { triggerKaggle } = require('./browser');
+            const vmBridge = require('./vm-bridge');
+            // Only trigger if we have a VM bridge instance
+            if (this.infra?.vmBridge) {
+              await triggerKaggle(this.infra.vmBridge);
+              logger.info(`[EXPERIMENT] Triggered Kaggle GPU runner for ${gpuPending} pending GPU experiments`);
+            }
+          }
+        } catch (e) {
+          logger.debug(`[EXPERIMENT] Kaggle trigger skipped: ${e.message}`);
+        }
+      }
+
       // 2. Check for recently completed experiments that haven't been promoted
       const completedResult = await this.infra.querySupabase(
         `SELECT * FROM nba_experiments WHERE status = 'completed' AND promoted_at IS NULL AND result_brier IS NOT NULL ORDER BY completed_at DESC LIMIT 5`
