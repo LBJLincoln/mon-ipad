@@ -214,7 +214,7 @@ Sois concis, technique, actionable. Format Telegram Markdown.`;
 const SYSTEM_PROMPT = AGENT_ROLE === 'nba-quant' ? SYSTEM_PROMPT_NBA : SYSTEM_PROMPT_GENERAL;
 
 /**
- * Get LLM completion — LiteLLM FIRST (13-provider fallback), then OpenRouter free tier
+ * Get LLM completion — LiteLLM → Gemini/OpenAI/Kimi direct → OpenRouter free tier
  */
 const LITELLM_URL = process.env.LITELLM_PROXY_URL || 'https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions';
 const LITELLM_KEY = process.env.LITELLM_MASTER_KEY || 'sk-litellm-nomos-2026';
@@ -257,7 +257,57 @@ async function getCompletion(messages, options = {}) {
     }
   }
 
-  // 2. Use Model Health Monitor's live ranked list of working free models
+  // 2. Direct premium providers — Gemini, OpenAI (Codex), Kimi
+  const DIRECT_PROVIDERS = [
+    {
+      name: 'gemini',
+      url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+      key: process.env.GOOGLE_API_KEY,
+      model: 'gemini-2.5-flash',
+    },
+    {
+      name: 'openai',
+      url: 'https://api.openai.com/v1/chat/completions',
+      key: process.env.OPENAI_API_KEY,
+      model: 'gpt-4.1-mini',
+    },
+    {
+      name: 'kimi',
+      url: 'https://api.moonshot.cn/v1/chat/completions',
+      key: process.env.KIMI_API_KEY,
+      model: 'moonshot-v1-8k',
+    },
+  ];
+
+  for (const provider of DIRECT_PROVIDERS) {
+    if (!provider.key) continue;
+    try {
+      const resp = await fetch(provider.url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${provider.key}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: provider.model,
+          messages: allMessages,
+          max_tokens: maxTokens,
+          temperature,
+        }),
+        signal: AbortSignal.timeout(25000),
+      });
+      const data = await resp.json();
+      const content = data.choices?.[0]?.message?.content;
+      if (content?.length > 0) {
+        if (ruleEngine) ruleEngine.resetLLMFailures();
+        return { content, model: `${provider.name}/${provider.model}`, usage: data.usage };
+      }
+    } catch (err) {
+      logger.warn(`${provider.name} direct failed: ${err.message}`);
+    }
+  }
+
+  // 3. Use Model Health Monitor's live ranked list of working free models
   // If alive list is empty (race condition at startup, or all probed dead), use static fallback
   const DEFAULT_FREE_MODELS = [
     'deepseek/deepseek-r1-0528:free',
@@ -302,7 +352,7 @@ async function getCompletion(messages, options = {}) {
     }
   }
 
-  // 3. If ALL failed, record for rule engine
+  // 4. If ALL failed, record for rule engine
   if (ruleEngine) ruleEngine.recordLLMFailure();
   logger.error(`ALL LLM providers failed. Alive models: ${aliveModels.length}. Rule engine taking over: ${ruleEngine?.shouldTakeOver()}`);
   throw new Error('ALL LLM providers failed — rule engine active for critical actions');
