@@ -1141,118 +1141,53 @@ Max 200 words.`;
     if (!this.infra?.pgPool) return;
 
     try {
-      // 1. Query next pending experiment
-      const pendingResult = await this.infra.querySupabase(
-        `SELECT * FROM nba_experiments WHERE status = 'pending' ORDER BY priority, created_at LIMIT 1`
+      // S11 polls its own Supabase queue — Eve just monitors and promotes results.
+      // Check for completed experiments that need promotion.
+
+      // 1. Check queue depth (for logging)
+      const queueResult = await this.infra.querySupabase(
+        `SELECT status, COUNT(*) as n FROM nba_experiments GROUP BY status`
       );
-      const experiment = pendingResult.rows?.[0];
-      if (!experiment) {
-        logger.debug('[EXPERIMENT] No pending experiments in queue');
-        return;
-      }
+      const counts = {};
+      for (const row of (queueResult.rows || [])) counts[row.status] = parseInt(row.n);
+      logger.info(`[EXPERIMENT] Queue: ${counts.pending || 0} pending, ${counts.running || 0} running, ${counts.completed || 0} completed, ${counts.failed || 0} failed`);
 
-      // 2. Check if S11 is idle
-      let s11Status;
-      try {
-        const statusResp = await fetch(`${this.S11_URL}/api/status`, {
-          signal: AbortSignal.timeout(10000),
-        });
-        if (!statusResp.ok) {
-          logger.debug(`[EXPERIMENT] S11 status check returned ${statusResp.status}`);
-          return;
-        }
-        s11Status = await statusResp.json();
-      } catch (e) {
-        logger.debug(`[EXPERIMENT] S11 unreachable: ${e.message}`);
-        return;
-      }
-
-      // S11 busy — skip this cycle
-      if (s11Status.status === 'running' || s11Status.busy) {
-        logger.debug('[EXPERIMENT] S11 is busy — skipping dispatch');
-        return;
-      }
-
-      // 3. Dispatch experiment to S11
-      logger.info(`[EXPERIMENT] Dispatching: ${experiment.experiment_id} (${experiment.experiment_type}) to S11`);
-
-      // Update status to running
-      await this.infra.querySupabase(
-        `UPDATE nba_experiments SET status = 'running', started_at = NOW() WHERE experiment_id = '${experiment.experiment_id}'`
+      // 2. Check for recently completed experiments that haven't been promoted
+      const completedResult = await this.infra.querySupabase(
+        `SELECT * FROM nba_experiments WHERE status = 'completed' AND promoted_at IS NULL AND result_brier IS NOT NULL ORDER BY completed_at DESC LIMIT 5`
       );
-      this.experimentStats.dispatched++;
 
-      // Send to S11
-      let expResult;
-      try {
-        const expResp = await fetch(`${this.S11_URL}/api/experiment/run`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            experiment_id: experiment.experiment_id,
-            type: experiment.experiment_type,
-            description: experiment.description,
-            params: typeof experiment.params === 'string' ? JSON.parse(experiment.params) : experiment.params,
-            baseline_brier: experiment.baseline_brier,
-          }),
-          signal: AbortSignal.timeout(5 * 60 * 1000), // 5 min timeout
-        });
+      for (const experiment of (completedResult.rows || [])) {
+        const resultBrier = parseFloat(experiment.result_brier);
+        const baselineBrier = parseFloat(experiment.baseline_brier) || this.state._lastBrier || 0.25;
 
-        if (!expResp.ok) {
-          throw new Error(`S11 returned ${expResp.status}: ${await expResp.text().catch(() => 'no body')}`);
-        }
+        logger.info(`[EXPERIMENT] Evaluating ${experiment.experiment_id}: result=${resultBrier?.toFixed(4)}, baseline=${baselineBrier.toFixed(4)}`);
 
-        expResult = await expResp.json();
-      } catch (e) {
-        // Experiment failed — update status
-        logger.warn(`[EXPERIMENT] Dispatch failed for ${experiment.experiment_id}: ${e.message}`);
-        await this.infra.querySupabase(
-          `UPDATE nba_experiments SET status = 'failed', result_details = '${JSON.stringify({ error: e.message }).replace(/'/g, "''")}'::jsonb, completed_at = NOW() WHERE experiment_id = '${experiment.experiment_id}'`
-        );
-        this.experimentStats.failed++;
-        return;
-      }
+        // Auto-promote if result beats baseline by 0.002+
+        if (resultBrier && baselineBrier && (baselineBrier - resultBrier) >= 0.002) {
+          logger.info(`[EXPERIMENT] PROMOTION: ${experiment.experiment_id} improved Brier by ${(baselineBrier - resultBrier).toFixed(4)}`);
 
-      // 4. Store results
-      const resultBrier = expResult.brier || expResult.result_brier || null;
-      const resultDetails = JSON.stringify(expResult).replace(/'/g, "''");
+          try {
+            const params = typeof experiment.params === 'string' ? JSON.parse(experiment.params) : experiment.params;
 
-      await this.infra.querySupabase(
-        `UPDATE nba_experiments SET status = 'completed', result_brier = ${resultBrier || 'NULL'}, result_details = '${resultDetails}'::jsonb, completed_at = NOW() WHERE experiment_id = '${experiment.experiment_id}'`
-      );
-      this.experimentStats.completed++;
-
-      logger.info(`[EXPERIMENT] Completed: ${experiment.experiment_id} — result Brier: ${resultBrier || 'N/A'}`);
-
-      // 5. Auto-promote if result beats baseline by 0.002+
-      const baselineBrier = experiment.baseline_brier;
-      if (resultBrier && baselineBrier && (baselineBrier - resultBrier) >= 0.002) {
-        logger.info(`[EXPERIMENT] PROMOTION: ${experiment.experiment_id} improved Brier by ${(baselineBrier - resultBrier).toFixed(4)} (${baselineBrier.toFixed(4)} → ${resultBrier.toFixed(4)})`);
-
-        // Promote to S10 via config or feature injection
-        try {
-          const params = typeof experiment.params === 'string' ? JSON.parse(experiment.params) : experiment.params;
-
-          if (experiment.experiment_type === 'feature_test' && params.features_to_add) {
-            await this.callS10('/api/features/inject', {
-              method: 'POST',
-              body: JSON.stringify({ features: params.features_to_add, source: `experiment:${experiment.experiment_id}` }),
-            });
-          } else if (experiment.experiment_type === 'evolution_test') {
-            await this.callS10('/api/config', {
-              method: 'POST',
-              body: JSON.stringify(params),
-            });
-          } else if (expResult.config) {
-            // Generic config promotion from S11 result
-            await this.callS10('/api/config', {
-              method: 'POST',
-              body: JSON.stringify(expResult.config),
-            });
-          }
+            if (experiment.experiment_type === 'feature_test' && params.features_to_add) {
+              await fetch(`${this.S10_URL}/api/inject-features`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ features: params.features_to_add, source: `experiment:${experiment.experiment_id}` }),
+                signal: AbortSignal.timeout(10000),
+              });
+            } else if (experiment.experiment_type === 'config_change' && params) {
+              await fetch(`${this.S10_URL}/api/config`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(params),
+                signal: AbortSignal.timeout(10000),
+              });
+            }
 
           await this.infra.querySupabase(
-            `UPDATE nba_experiments SET status = 'promoted' WHERE experiment_id = '${experiment.experiment_id}'`
+            `UPDATE nba_experiments SET status = 'promoted', promoted_at = NOW() WHERE experiment_id = '${experiment.experiment_id}'`
           );
           this.experimentStats.promoted++;
 
@@ -1279,6 +1214,9 @@ Max 200 words.`;
           }
         } catch (e) {
           logger.warn(`[EXPERIMENT] Promotion failed for ${experiment.experiment_id}: ${e.message}`);
+        }
+        } else {
+          logger.debug(`[EXPERIMENT] ${experiment.experiment_id}: no improvement (need 0.002+, got ${(baselineBrier - resultBrier).toFixed(4)})`);
         }
       }
     } catch (err) {
