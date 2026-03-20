@@ -259,7 +259,7 @@ async function getCompletion(messages, options = {}) {
     }
   }
 
-  // 2. Direct premium providers — Codex (OpenAI) → Kimi → Gemini
+  // 2. Direct premium providers — OpenAI → Gemini (conversational only, no coding models)
   const DIRECT_PROVIDERS = [
     {
       name: 'openai',
@@ -268,18 +268,12 @@ async function getCompletion(messages, options = {}) {
       model: 'gpt-4.1-mini',
     },
     {
-      name: 'kimi',
-      url: 'https://api.kimi.com/coding/v1/messages',
-      key: process.env.KIMI_API_KEY,
-      model: 'kimi-for-coding',
-      format: 'anthropic',
-    },
-    {
       name: 'gemini',
       url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
       key: process.env.GOOGLE_API_KEY,
       model: 'gemini-2.5-flash',
     },
+    // Kimi for Coding removed — it's a coding model, produces code-style output not conversation
   ];
 
   for (const provider of DIRECT_PROVIDERS) {
@@ -314,22 +308,27 @@ async function getCompletion(messages, options = {}) {
 
   // 3. Use Model Health Monitor's live ranked list of working free models
   // If alive list is empty (race condition at startup, or all probed dead), use static fallback
+  // Prioritize CONVERSATIONAL models first, reasoning/coding models last
+  // Reasoning models (DeepSeek R1, Phi-4 reasoning, Qwen3) output <think> blocks = cryptic Telegram messages
   const DEFAULT_FREE_MODELS = [
-    'deepseek/deepseek-r1-0528:free',
+    // Tier 1: Best conversational (no <think> tags)
     'deepseek/deepseek-chat-v3-0324:free',
-    'qwen/qwen3-235b-a22b:free',
-    'qwen/qwen3-32b:free',
-    'nvidia/nemotron-3-super-120b-a12b:free',
     'meta-llama/llama-4-maverick:free',
     'meta-llama/llama-4-scout:free',
     'meta-llama/llama-3.3-70b-instruct:free',
-    'microsoft/phi-4-reasoning-plus:free',
-    'microsoft/phi-4-reasoning:free',
     'mistralai/mistral-small-3.1-24b-instruct:free',
     'google/gemma-3-27b-it:free',
-    'google/gemma-3-12b-it:free',
+    'nvidia/nemotron-3-super-120b-a12b:free',
     'arcee-ai/trinity-large-preview:free',
     'rekaai/reka-flash-3:free',
+    'google/gemma-3-12b-it:free',
+    // Tier 2: Reasoning models (may output <think> — cleaned up in post-processing)
+    'qwen/qwen3-235b-a22b:free',
+    'qwen/qwen3-32b:free',
+    'deepseek/deepseek-r1-0528:free',
+    'microsoft/phi-4-reasoning-plus:free',
+    'microsoft/phi-4-reasoning:free',
+    // Tier 3: Coding models (last resort for conversation)
     'qwen/qwen-2.5-coder-32b-instruct:free',
     'nousresearch/deephermes-3-llama-3-8b-preview:free',
   ];
@@ -1277,6 +1276,21 @@ async function handleTelegramUpdate(update) {
   if (!reply) {
     reply = `${AGENT_NAME} received your message but could not generate a response. Try /status or /eval`;
   }
+
+  // Clean up LLM artifacts that make messages "cryptic"
+  if (reply) {
+    // Remove DeepSeek R1 / reasoning model <think>...</think> blocks
+    reply = reply.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+    // Remove Qwen3 thinking blocks
+    reply = reply.replace(/<\|begin_of_thought\|>[\s\S]*?<\|end_of_thought\|>/g, '').trim();
+    // Remove any remaining XML-style reasoning tags
+    reply = reply.replace(/<(?:reasoning|thought|reflection|internal)>[\s\S]*?<\/(?:reasoning|thought|reflection|internal)>/g, '').trim();
+    // If reply is now empty after cleaning, provide fallback
+    if (!reply || reply.length < 5) {
+      reply = `${AGENT_NAME} processed your message but the response was all internal reasoning. Try rephrasing or use /status.`;
+    }
+  }
+
   if (reply) {
     const chunks = splitMessage(reply, 4000);
     for (const chunk of chunks) {
