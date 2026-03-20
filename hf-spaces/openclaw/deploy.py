@@ -18,8 +18,8 @@ from huggingface_hub import HfApi, CommitOperationAdd
 from pathlib import Path
 
 # Config
-SPACE_ID = "lbjlincoln26/nomos-worker-2"
-HF_TOKEN = os.environ.get("HF_TOKEN_2")
+SPACE_ID = "LBJLincoln/nomos-openclaw"
+HF_TOKEN = os.environ.get("HF_TOKEN_2")  # lbjlincoln account (same as RGWA)
 LOCAL_DIR = Path(__file__).parent
 
 # Secrets to configure on the Space

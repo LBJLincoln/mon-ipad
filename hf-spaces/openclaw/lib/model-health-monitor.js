@@ -17,52 +17,19 @@ const logger = require('./logger');
 
 // ── All known OpenRouter free models (updated 2026-03) ──
 // This list is refreshed dynamically via OpenRouter /models API
+// REDUCED model list — only 3 premium providers + 2 free fallbacks
+// HF flagged us for TCP fan-out (probing 29 models = 300 destinations/300s)
+// HuggingClaw pattern: use Claude Code + Kimi + Gemini as primary agents
 const KNOWN_FREE_MODELS = [
-  'nvidia/nemotron-3-super-120b-a12b:free',
-  'arcee-ai/trinity-large-preview:free',
-  'google/gemma-3-27b-it:free',
-  'google/gemma-3-12b-it:free',
-  'google/gemma-3-4b-it:free',
-  'mistralai/mistral-small-3.1-24b-instruct:free',
-  'qwen/qwen3-235b-a22b:free',
-  'qwen/qwen3-32b:free',
-  'qwen/qwen3-30b-a3b:free',
-  'qwen/qwen3-14b:free',
-  'qwen/qwen3-8b:free',
-  'qwen/qwen3-4b:free',
-  'qwen/qwen3-1.7b:free',
-  'qwen/qwen3-0.6b:free',
-  'qwen/qwen-2.5-coder-32b-instruct:free',
-  'deepseek/deepseek-chat-v3-0324:free',
-  'deepseek/deepseek-r1-0528:free',
-  'meta-llama/llama-4-maverick:free',
-  'meta-llama/llama-4-scout:free',
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'microsoft/phi-4-reasoning-plus:free',
-  'microsoft/phi-4-reasoning:free',
-  'microsoft/mai-ds-r1:free',
-  'moonshotai/kimi-vl-a3b-thinking:free',
-  'nousresearch/deephermes-3-llama-3-8b-preview:free',
-  'open-r1/olympiccoder-32b:free',
-  'rekaai/reka-flash-3:free',
-  'allenai/molmo-7b-d-0924:free',
+  'deepseek/deepseek-r1-0528:free',         // Best free reasoning
+  'qwen/qwen3-235b-a22b:free',              // Largest free MoE
 ];
 
-// Minimum quality models for NBA quant analysis (need reasoning ability)
+// Primary providers: LiteLLM proxy (Kimi, Gemini, Claude via API keys)
+// Free fallbacks: only 2 OpenRouter models (minimal TCP footprint)
 const PREFERRED_MODELS = [
   'deepseek/deepseek-r1-0528:free',
-  'deepseek/deepseek-chat-v3-0324:free',
   'qwen/qwen3-235b-a22b:free',
-  'qwen/qwen3-32b:free',
-  'nvidia/nemotron-3-super-120b-a12b:free',
-  'meta-llama/llama-4-maverick:free',
-  'meta-llama/llama-4-scout:free',
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'microsoft/phi-4-reasoning-plus:free',
-  'mistralai/mistral-small-3.1-24b-instruct:free',
-  'google/gemma-3-27b-it:free',
-  'arcee-ai/trinity-large-preview:free',
-  'rekaai/reka-flash-3:free',
 ];
 
 const PROBE_MESSAGE = [
@@ -116,10 +83,10 @@ class ModelHealthMonitor {
     // Probe immediately on start
     this._probeAll().catch(e => logger.warn('Initial probe error:', e.message));
 
-    // Then every 10 min
+    // Then every 30 min (reduced from 10 min to avoid HF TCP fan-out flag)
     this.probeInterval = setInterval(() => {
       this._probeAll().catch(e => logger.warn('Probe error:', e.message));
-    }, 10 * 60 * 1000);
+    }, 30 * 60 * 1000);
 
     logger.info(`[MODEL-MONITOR] Started — tracking ${KNOWN_FREE_MODELS.length} free models`);
   }
@@ -187,17 +154,13 @@ class ModelHealthMonitor {
     // First check LiteLLM
     await this._probeLiteLLM();
 
-    // Probe preferred models first (parallel, batches of 5)
-    const allModels = [...PREFERRED_MODELS, ...KNOWN_FREE_MODELS.filter(m => !PREFERRED_MODELS.includes(m))];
-    const batchSize = 5;
-
-    for (let i = 0; i < allModels.length; i += batchSize) {
-      const batch = allModels.slice(i, i + batchSize);
-      await Promise.all(batch.map(m => this._probeModel(m)));
-
-      // If we have 5+ alive preferred models, skip the rest
-      const alivePreferred = PREFERRED_MODELS.filter(m => this.models[m]?.alive === true);
-      if (alivePreferred.length >= 5 && i >= PREFERRED_MODELS.length) break;
+    // Probe ONLY top 5 preferred models SEQUENTIALLY with delay
+    // HF flagged us for "proxy TCP fan-out: 300 unique destinations in 300s"
+    // So we probe fewer models, one at a time, with 3s delay between each
+    const topModels = PREFERRED_MODELS.slice(0, 5);
+    for (const model of topModels) {
+      await this._probeModel(model);
+      await new Promise(r => setTimeout(r, 3000)); // 3s delay between probes
     }
 
     this._rebuildAliveList();
