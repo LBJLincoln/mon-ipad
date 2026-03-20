@@ -472,11 +472,17 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
 
     // ── PHASE 2: Write actual code (SEPARATE LLM call) ──
     let codeWrites = 0;
-    if (this.codeAgent && experiments.length > 0) {
+    if (!this.codeAgent) {
+      logger.warn(`[MULTI-AGENT] ${agent.name}: NO codeAgent available — skipping code generation`);
+    } else if (experiments.length === 0) {
+      logger.debug(`[MULTI-AGENT] ${agent.name}: no experiments, skipping code gen`);
+    } else {
+      logger.info(`[MULTI-AGENT] ${agent.name}: PHASE 2 — generating code for top experiment...`);
       try {
         codeWrites = await this._writeCodeForExperiments(agent, experiments, context);
+        logger.info(`[MULTI-AGENT] ${agent.name}: PHASE 2 result: ${codeWrites} code writes`);
       } catch (err) {
-        logger.warn(`[MULTI-AGENT] ${agent.name} code phase error: ${err.message}`);
+        logger.error(`[MULTI-AGENT] ${agent.name} PHASE 2 ERROR: ${err.message}\n${err.stack?.substring(0, 300)}`);
       }
     }
 
@@ -531,9 +537,12 @@ Output format — ONLY this, nothing else:
     // Use Gemini for code gen (free, reliable), codex/o3 as fallback when quota available
     const codeProvider = 'gemini';
     const codeResponse = await this._callProvider(codeProvider, codePrompt);
-    if (!codeResponse) return 0;
+    if (!codeResponse) {
+      logger.warn(`[MULTI-AGENT] ${agent.name}: code LLM returned EMPTY — all providers failed`);
+      return 0;
+    }
 
-    logger.info(`[MULTI-AGENT] ${agent.name} code LLM responded: ${codeResponse.length} chars`);
+    logger.info(`[MULTI-AGENT] ${agent.name} code LLM responded: ${codeResponse.length} chars. First 200: ${codeResponse.substring(0, 200)}`);
 
     // Parse code blocks
     let codeBlocks = this._parseCodeBlocks(codeResponse);
@@ -553,6 +562,11 @@ Output format — ONLY this, nothing else:
       if (codeLines.length > lines.length * 0.6 && codeResponse.length > 50) {
         codeBlocks = [{ filePath: target.file, code: codeResponse.trim() }];
       }
+    }
+
+    logger.info(`[MULTI-AGENT] ${agent.name}: parsed ${codeBlocks.length} code blocks from response`);
+    if (codeBlocks.length === 0) {
+      logger.warn(`[MULTI-AGENT] ${agent.name}: NO code blocks found. Response preview: ${codeResponse.substring(0, 300)}`);
     }
 
     let writes = 0;
