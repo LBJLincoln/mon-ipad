@@ -772,14 +772,13 @@ def main():
                     return
                 while not stop_event.is_set():
                     print("[SYNC] Starting conversation-loop.py (Adam & Eve orchestrator)...")
-                    log = open("/tmp/conversation-loop.log", "a")
+                    # Output to STDOUT so it's visible in HF logs (like HuggingClaw)
                     conv_loop_proc = subprocess.Popen(
                         [sys.executable, "-u", script],
-                        stdout=log, stderr=subprocess.STDOUT,
+                        stdout=sys.stdout, stderr=sys.stderr,
                     )
                     print(f"[SYNC] conversation-loop.py started (PID {conv_loop_proc.pid})")
                     exit_code = conv_loop_proc.wait()
-                    log.close()
                     if stop_event.is_set():
                         break
                     print(f"[SYNC] conversation-loop.py exited ({exit_code}), restarting in 30s...")
