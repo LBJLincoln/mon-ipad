@@ -4,7 +4,8 @@
  * Provides NBA-specific tools for the agentic loop:
  *   - nba_evolution_status: Check genetic evolution progress on S10/S11
  *   - nba_games_today: Get today's NBA schedule
- *   - nba_predictions: Get current model predictions
+ *   - nba_evolution_command: Send commands to evolution engine
+ *   - submit_gpu_experiment: Submit GPU training experiments to Kaggle/Colab runners
  */
 
 const S10_URL = 'https://lbjlincoln-nomos-nba-quant.hf.space';
@@ -118,6 +119,103 @@ export default function register(api) {
       },
     });
 
-    log.info('[NBA-AGENT] Registered 3 tools: nba_evolution_status, nba_games_today, nba_evolution_command');
+    // ── Tool: Submit GPU Experiment ──
+    api.registerTool({
+      name: 'submit_gpu_experiment',
+      description: 'Submit a GPU training experiment to the queue. Kaggle and Colab GPU runners will pick it up automatically.',
+      label: 'GPU Experiment',
+      parameters: {
+        type: 'object',
+        properties: {
+          model_type: {
+            type: 'string',
+            description: 'GPU model to train: mlp, mlp_residual, lstm, ft_transformer, tabnet, node, mc_dropout_rnn, saint, tft, xgboost_gpu, lightgbm_gpu, catboost_gpu',
+          },
+          experiment_type: {
+            type: 'string',
+            enum: ['model_test', 'gpu_benchmark', 'feature_test', 'calibration_test'],
+            description: 'Type of experiment',
+          },
+          description: {
+            type: 'string',
+            description: 'What this experiment tests',
+          },
+          hyperparams: {
+            type: 'object',
+            description: 'Model hyperparameters (optional)',
+          },
+          priority: {
+            type: 'number',
+            description: 'Priority 1-10 (default 8)',
+          },
+        },
+        required: ['model_type', 'experiment_type', 'description'],
+      },
+      execute: async (_toolCallId, params) => {
+        const { model_type, experiment_type, description, hyperparams, priority } = params;
+
+        // Build experiment payload
+        const exp_id = `exp_eve_${Date.now().toString(36)}`;
+        const payload = {
+          experiment_id: exp_id,
+          agent_name: 'eve',
+          experiment_type: experiment_type,
+          description: description,
+          params: JSON.stringify({
+            model_type: model_type,
+            hyperparams: hyperparams || {},
+          }),
+          priority: priority || 8,
+          status: 'pending',
+          target_space: 'gpu',
+          baseline_brier: 0.2205,
+        };
+
+        // Insert into Supabase via REST API
+        const supabaseUrl = process.env.SUPABASE_URL;
+        const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+        if (!supabaseUrl || !supabaseKey) {
+          return text(JSON.stringify({
+            success: true,
+            experiment_id: exp_id,
+            note: 'Experiment created but Supabase REST API not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.',
+          }, null, 2));
+        }
+
+        try {
+          const resp = await fetch(`${supabaseUrl}/rest/v1/nba_experiments`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': supabaseKey,
+              'Authorization': `Bearer ${supabaseKey}`,
+              'Prefer': 'return=representation',
+            },
+            body: JSON.stringify(payload),
+            signal: AbortSignal.timeout(15000),
+          });
+
+          if (resp.ok) {
+            const data = await resp.json();
+            return text(JSON.stringify({
+              success: true,
+              experiment_id: exp_id,
+              message: `GPU experiment ${exp_id} submitted. Kaggle/Colab runners will pick it up.`,
+              model_type: model_type,
+              experiment_type: experiment_type,
+              priority: priority || 8,
+              data: data,
+            }, null, 2));
+          } else {
+            return text(`Supabase insert failed: ${resp.status} ${await resp.text()}`);
+          }
+        } catch (e) {
+          return text(`GPU experiment submit failed: ${e.message}`);
+        }
+      },
+    });
+
+    log.info('[NBA-AGENT] Registered 4 tools: nba_evolution_status, nba_games_today, nba_evolution_command, submit_gpu_experiment');
   }
 }
