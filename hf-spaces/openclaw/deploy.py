@@ -18,8 +18,8 @@ from huggingface_hub import HfApi, CommitOperationAdd
 from pathlib import Path
 
 # Config
-SPACE_ID = "LBJLincoln/nomos-openclaw"
-HF_TOKEN = os.environ.get("HF_TOKEN_2")  # lbjlincoln account (same as RGWA)
+SPACE_ID = "Nomos42/nomos-eve"
+HF_TOKEN = os.environ.get("HF_TOKEN_3")  # nomos42 account (fresh, unflagged)
 LOCAL_DIR = Path(__file__).parent
 
 # Secrets to configure on the Space
@@ -156,8 +156,8 @@ def main():
     except Exception as e:
         print(f"Restart warning: {e}")
 
-    print(f"\nDone! OpenClaw will be available at:")
-    print(f"  https://lbjlincoln26-nomos-worker-2.hf.space")
+    print(f"\nDone! Eve will be available at:")
+    print(f"  https://nomos42-nomos-eve.hf.space")
     print(f"\nMonitor build at:")
     print(f"  https://huggingface.co/spaces/{SPACE_ID}")
 

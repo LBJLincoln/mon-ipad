@@ -5,7 +5,7 @@
  * HuggingClaw-style architecture: Adam (Claude CLI) + Eve (OpenClaw) + Cain (Evolution)
  * 24/7 Karpathy-style autonomous improvement loop.
  *
- * Target Space: lbjlincoln26/nomos-worker-2
+ * Target Space: Nomos42/nomos-eve
  */
 
 // CRITICAL: HF Spaces uses self-signed certs for Supabase pooler connections.
@@ -60,7 +60,7 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 // Hardcode the known URL as fallback to ensure Telegram webhook works.
 const HF_SPACE_URL = process.env.SPACE_HOST
   ? `https://${process.env.SPACE_HOST}`
-  : 'https://lbjlincoln26-nomos-worker-2.hf.space';
+  : 'https://nomos42-nomos-eve.hf.space';
 
 // Load model + space configs
 const modelsConfig = JSON.parse(
@@ -220,7 +220,8 @@ const SYSTEM_PROMPT = AGENT_ROLE === 'nba-quant' ? SYSTEM_PROMPT_NBA : SYSTEM_PR
 /**
  * Get LLM completion — LiteLLM → Gemini/OpenAI/Kimi direct → OpenRouter free tier
  */
-const LITELLM_URL = process.env.LITELLM_PROXY_URL || 'https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions';
+const _litellmBase = process.env.LITELLM_PROXY_URL || 'https://lbjlincoln-nomos-rag-engine-7.hf.space';
+const LITELLM_URL = _litellmBase.endsWith('/v1/chat/completions') ? _litellmBase : `${_litellmBase.replace(/\/$/, '')}/v1/chat/completions`;
 const LITELLM_KEY = process.env.LITELLM_MASTER_KEY || 'sk-litellm-nomos-2026';
 
 async function getCompletion(messages, options = {}) {

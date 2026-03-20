@@ -534,7 +534,8 @@ class AgentExecutor {
     // Provider chain: LiteLLM -> Direct providers -> OpenRouter free models
     // Each must receive tools in the request body.
 
-    const LITELLM_URL = process.env.LITELLM_PROXY_URL || 'https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions';
+    const litellmBase = process.env.LITELLM_PROXY_URL || 'https://lbjlincoln-nomos-rag-engine-7.hf.space';
+    const LITELLM_URL = litellmBase.endsWith('/v1/chat/completions') ? litellmBase : `${litellmBase.replace(/\/$/, '')}/v1/chat/completions`;
     const LITELLM_KEY = process.env.LITELLM_MASTER_KEY || 'sk-litellm-nomos-2026';
     const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
