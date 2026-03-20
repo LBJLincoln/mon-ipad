@@ -528,8 +528,8 @@ Output format — ONLY this, nothing else:
 # Your Python code here
 ===END===`;
 
-    // Use CODEX for code generation (best coding model), fallback to cross-provider
-    const codeProvider = 'codex';
+    // Use Gemini for code gen (free, reliable), codex/o3 as fallback when quota available
+    const codeProvider = 'gemini';
     const codeResponse = await this._callProvider(codeProvider, codePrompt);
     if (!codeResponse) return 0;
 
@@ -678,9 +678,13 @@ Output format — ONLY this, nothing else:
             max_tokens: 2500,
             temperature: 0.7,
           }),
-          signal: AbortSignal.timeout(30000),
+          signal: AbortSignal.timeout(60000),
         });
         const data = await resp.json();
+        if (data.error) {
+          logger.warn(`[MULTI-AGENT] ${name}/${provider.model} API error: ${data.error?.message || JSON.stringify(data.error).substring(0, 100)}`);
+          continue; // try next provider
+        }
         const content = data.choices?.[0]?.message?.content;
         if (content?.length > 10) {
           logger.debug(`[MULTI-AGENT] ${name}/${provider.model} responded (${content.length} chars)`);
@@ -929,8 +933,8 @@ Output format — ONLY this, nothing else:
       const code = await this.codeAgent.readFile(repo, filePath);
       if (!code) return;
 
-      // 2. Ask o3 (reasoning model) to review code quality
-      const reviewProvider = 'o3';
+      // 2. Cross-review: use different provider than the one that wrote the code
+      const reviewProvider = agent.provider === 'gemini' ? 'kimi' : 'gemini';
       const reviewPrompt = `You are a code reviewer for an NBA prediction model. Review this code for:
 1. Python syntax errors
 2. Logic bugs
