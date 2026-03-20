@@ -186,8 +186,61 @@ Create and submit a new experiment to the Supabase nba_experiments table for GPU
     log(agent_name, f"Workspace ready at {workspace}")
 
 
+def check_gpu_queue():
+    """Check pending GPU experiments in Supabase and send Telegram alert if needed."""
+    db_url = os.environ.get("DATABASE_URL", "")
+    if not db_url:
+        return 0
+    try:
+        import urllib.request
+        # Use Supabase REST API to check pending GPU experiments
+        supa_url = os.environ.get("SUPABASE_URL", "")
+        supa_key = os.environ.get("SUPABASE_ANON_KEY", "")
+        if supa_url and supa_key:
+            url = f"{supa_url}/rest/v1/nba_experiments?status=eq.pending&target_space=in.(gpu,colab,any)&select=id&limit=1"
+            req = urllib.request.Request(url)
+            req.add_header("apikey", supa_key)
+            req.add_header("Authorization", f"Bearer {supa_key}")
+            req.add_header("Prefer", "count=exact")
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                count = resp.headers.get("content-range", "")
+                # Format: "0-0/5" or "*/0"
+                if "/" in count:
+                    total = int(count.split("/")[1])
+                else:
+                    data = json.loads(resp.read())
+                    total = len(data)
+                return total
+    except Exception as e:
+        log("GPU", f"Queue check failed: {e}")
+    return 0
+
+
+def send_telegram(text):
+    """Send a Telegram message to admin."""
+    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    admin_id = os.environ.get("TELEGRAM_ADMIN_ID", "")
+    if not bot_token or not admin_id:
+        return
+    try:
+        import urllib.request
+        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        data = json.dumps({"chat_id": admin_id, "text": text, "parse_mode": "Markdown"}).encode()
+        req = urllib.request.Request(url, data=data, method="POST")
+        req.add_header("Content-Type", "application/json")
+        urllib.request.urlopen(req, timeout=10)
+    except Exception as e:
+        log("TG", f"Send failed: {e}")
+
+
+# Track GPU alert state to avoid spamming
+_gpu_last_alert = 0
+COLAB_LINK = "https://colab.research.google.com/github/LBJLincoln/nomos-nba-agent/blob/main/colab/nba_gpu_runner.ipynb"
+
+
 def gather_context():
     """Gather current system state."""
+    global _gpu_last_alert
     ctx = {"timestamp": datetime.datetime.utcnow().isoformat()}
 
     # S10 status
@@ -237,6 +290,20 @@ def gather_context():
         ctx["games"] = games
     except:
         ctx["games"] = []
+
+    # Check GPU experiment queue
+    gpu_pending = check_gpu_queue()
+    ctx["gpu_pending"] = gpu_pending
+    if gpu_pending > 0:
+        now = time.time()
+        # Alert max once per hour
+        if now - _gpu_last_alert > 3600:
+            _gpu_last_alert = now
+            send_telegram(
+                f"🖥️ *{gpu_pending} GPU experiments pending*\n"
+                f"Open Colab to run them:\n{COLAB_LINK}"
+            )
+            log("GPU", f"{gpu_pending} pending experiments — Telegram alert sent")
 
     # Update shared state
     with state_lock:
