@@ -109,7 +109,7 @@ RULES:
   {
     id: 'model_architect',
     name: 'Model Architect',
-    provider: 'groq',
+    provider: 'kimi',
     focus: 'model_test',
     staggerMs: 30000,
     systemPrompt: `You are the MODEL ARCHITECT for an elite NBA prediction system.
@@ -316,7 +316,7 @@ RULES:
   {
     id: 'research_scholar',
     name: 'Research Scholar',
-    provider: 'groq',
+    provider: 'kimi',
     focus: 'model_test',
     staggerMs: 150000,
     systemPrompt: `You are the RESEARCH SCHOLAR for an elite NBA prediction model.
