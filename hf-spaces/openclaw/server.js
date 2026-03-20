@@ -259,8 +259,15 @@ async function getCompletion(messages, options = {}) {
     }
   }
 
-  // 2. Direct premium providers — OpenAI → Gemini (conversational only, no coding models)
+  // 2. Direct premium providers — Kimi → OpenAI → Gemini
   const DIRECT_PROVIDERS = [
+    {
+      name: 'kimi',
+      url: 'https://api.kimi.com/coding/v1/messages',
+      key: process.env.KIMI_API_KEY,
+      model: 'kimi-for-coding',
+      format: 'anthropic',
+    },
     {
       name: 'openai',
       url: 'https://api.openai.com/v1/chat/completions',
@@ -273,7 +280,6 @@ async function getCompletion(messages, options = {}) {
       key: process.env.GOOGLE_API_KEY,
       model: 'gemini-2.5-flash',
     },
-    // Kimi for Coding removed — it's a coding model, produces code-style output not conversation
   ];
 
   for (const provider of DIRECT_PROVIDERS) {
