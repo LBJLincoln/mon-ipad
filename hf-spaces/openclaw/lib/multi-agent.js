@@ -4,12 +4,12 @@
  * TURBO MODE: 3-minute cycles, 8 experiments per agent, 6000+ feature space
  *
  * Agents:
- *   1. Feature Scout    (Gemini)   — 6000+ feature combinations, interaction terms
- *   2. Model Architect  (OpenAI)   — 1000+ model architectures & hyperparams
- *   3. Calibrator       (Kimi)     — Calibration, Platt scaling, isotonic, beta
- *   4. Evolution Tuner  (Gemini)   — GA params, population, selection, crossover
- *   5. Market Intel     (OpenAI)   — Odds, CLV, steam, market microstructure
- *   6. Research Scholar  (Gemini)  — 2026 papers, SOTA techniques, novel approaches
+ *   1. Feature Scout    (Kimi)   — 6000+ feature combinations, interaction terms
+ *   2. Model Architect  (Kimi)   — 1000+ model architectures & hyperparams
+ *   3. Calibrator       (Kimi)   — Calibration, Platt scaling, isotonic, beta
+ *   4. Evolution Tuner  (Kimi)   — GA params, population, selection, crossover
+ *   5. Market Intel     (Kimi)   — Odds, CLV, steam, market microstructure
+ *   6. Research Scholar  (Kimi)  — 2026 papers, SOTA techniques, novel approaches
  *
  * Each agent runs every 3 minutes (staggered by 30s).
  * Output: EXPERIMENT blocks → Supabase queue → S11/Kaggle/Colab → auto-promoted.
@@ -60,7 +60,7 @@ const AGENTS = [
   {
     id: 'feature_scout',
     name: 'Feature Scout',
-    provider: 'groq',
+    provider: 'kimi',
     focus: 'feature_test',
     staggerMs: 0,
     systemPrompt: `You are the FEATURE SCOUT for an elite NBA prediction model (current Brier ~0.22, target < 0.20).
@@ -155,7 +155,7 @@ RULES:
   {
     id: 'calibrator',
     name: 'Calibrator',
-    provider: 'groq',
+    provider: 'kimi',
     focus: 'calibration_test',
     staggerMs: 60000,
     systemPrompt: `You are the CALIBRATION SPECIALIST for an elite NBA prediction model.
@@ -199,7 +199,7 @@ RULES:
   {
     id: 'evolution_tuner',
     name: 'Evolution Tuner',
-    provider: 'groq',
+    provider: 'kimi',
     focus: 'config_change',
     staggerMs: 90000,
     systemPrompt: `You are the EVOLUTION TUNER for the genetic algorithm optimizing NBA predictions.
@@ -253,7 +253,7 @@ RULES:
   {
     id: 'market_intel',
     name: 'Market Intel',
-    provider: 'groq',
+    provider: 'kimi',
     focus: 'feature_test',
     staggerMs: 120000,
     systemPrompt: `You are the MARKET INTELLIGENCE agent for an elite NBA prediction model.
@@ -535,8 +535,8 @@ Output format — ONLY this, nothing else:
 # Your Python code here
 ===END===`;
 
-    // Use Groq for code gen (free, working), other providers as fallback
-    const codeProvider = 'groq';
+    // Use Kimi for code gen (free, coding-specialized), other providers as fallback
+    const codeProvider = 'kimi';
     const codeResponse = await this._callProvider(codeProvider, codePrompt);
     if (!codeResponse) {
       logger.warn(`[MULTI-AGENT] ${agent.name}: code LLM returned EMPTY — all providers failed`);
@@ -668,7 +668,7 @@ Output format — ONLY this, nothing else:
 
   async _callProvider(providerName, prompt) {
     // Try the designated provider, then fallback chain
-    const chain = [providerName, 'groq', 'gemini', 'codex', 'openai', 'o3', 'kimi'];
+    const chain = [providerName, 'kimi', 'groq', 'gemini', 'codex', 'openai', 'o3'];
     const tried = new Set();
 
     for (const name of chain) {
@@ -953,7 +953,7 @@ Output format — ONLY this, nothing else:
       if (!code) return;
 
       // 2. Cross-review: use different provider than the one that wrote the code
-      const reviewProvider = agent.provider === 'gemini' ? 'kimi' : 'gemini';
+      const reviewProvider = agent.provider === 'kimi' ? 'groq' : 'kimi';
       const reviewPrompt = `You are a code reviewer for an NBA prediction model. Review this code for:
 1. Python syntax errors
 2. Logic bugs
