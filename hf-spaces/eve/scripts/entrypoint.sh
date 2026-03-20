@@ -3,8 +3,30 @@ set -e
 
 BOOT_START=$(date +%s)
 
-echo "[entrypoint] OpenClaw HuggingFace Spaces Entrypoint"
+echo "[entrypoint] Eve — Real HuggingClaw Entrypoint"
 echo "[entrypoint] ======================================="
+
+# ── Restore OAuth credentials from secrets ────────────────────────────────
+# Claude Code CLI OAuth (Max subscription)
+if [ -n "$CLAUDE_CREDENTIALS_B64" ]; then
+  mkdir -p /home/node/.claude
+  echo "$CLAUDE_CREDENTIALS_B64" | base64 -d > /home/node/.claude/.credentials.json
+  chmod 600 /home/node/.claude/.credentials.json
+  echo "[entrypoint] Claude Code OAuth credentials restored"
+fi
+
+# Kimi Code CLI OAuth (subscription)
+if [ -n "$KIMI_CREDENTIALS_B64" ]; then
+  mkdir -p /home/node/.kimi/credentials
+  echo "$KIMI_CREDENTIALS_B64" | base64 -d > /home/node/.kimi/credentials/kimi-code.json
+  chmod 600 /home/node/.kimi/credentials/kimi-code.json
+  echo "[entrypoint] Kimi Code OAuth credentials restored"
+fi
+if [ -n "$KIMI_CONFIG_B64" ]; then
+  mkdir -p /home/node/.kimi
+  echo "$KIMI_CONFIG_B64" | base64 -d > /home/node/.kimi/config.toml
+  echo "[entrypoint] Kimi Code config restored"
+fi
 
 # ── DNS pre-resolution (background — non-blocking) ───────────────────────
 # Resolves WhatsApp domains via DoH for dns-fix.cjs to consume.

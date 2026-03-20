@@ -24,11 +24,19 @@ RUN echo "[build] Installing system deps..." && START=$(date +%s) \
   && chown -R node:node /home/node \
   && echo "[build] System deps: $(($(date +%s) - START))s"
 
-# ── Claude Code CLI + ACP (acpx) ────────────────────────────────────────────
+# ── Claude Code CLI + ACP (acpx) + Kimi CLI ─────────────────────────────────
 # Claude Code is the primary coding agent; acpx manages it via ACP
+# Kimi Code CLI installed via uv (needs Python 3.12+, uses isolated venv)
 RUN echo "[build] Installing Claude Code CLI + acpx..." && START=$(date +%s) \
   && npm install -g @anthropic-ai/claude-code acpx@latest \
   && echo "[build] Claude Code + acpx: $(($(date +%s) - START))s"
+
+# Install uv + Kimi CLI as root (uv manages its own Python 3.12+ venv)
+RUN echo "[build] Installing uv + Kimi CLI..." && START=$(date +%s) \
+  && curl -LsSf https://astral.sh/uv/install.sh | sh \
+  && /root/.local/bin/uv tool install kimi-cli --python 3.12 \
+  && ln -sf /root/.local/share/uv/tools/kimi-cli/bin/kimi /usr/local/bin/kimi \
+  && echo "[build] Kimi CLI: $(($(date +%s) - START))s"
 
 # ── Copy pre-built OpenClaw (skips clone + install + build entirely) ─────────
 COPY --from=openclaw-prebuilt --chown=node:node /app /app/openclaw
