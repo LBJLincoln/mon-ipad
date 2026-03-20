@@ -556,12 +556,15 @@ Output format — ONLY this, nothing else:
       }
     }
 
-    // Even more fallback: if response is mostly code (no markdown), use it directly
+    // Last resort fallback: only accept if response is overwhelmingly code
     if (codeBlocks.length === 0) {
-      const lines = codeResponse.split('\n');
-      const codeLines = lines.filter(l => l.match(/^(import |from |def |class |#|    |\s*$)/));
-      if (codeLines.length > lines.length * 0.6 && codeResponse.length > 50) {
+      const lines = codeResponse.split('\n').filter(l => l.trim().length > 0);
+      const codeLines = lines.filter(l => l.match(/^(import |from |def |class |    |@|\s+return |\s+if |\s+for |\s+self\.|#\s)/));
+      const hasDef = lines.some(l => /^(def |class )/.test(l));
+      // Require 80%+ match, minimum 5 actual code lines, and at least one def/class
+      if (codeLines.length > lines.length * 0.8 && codeLines.length >= 5 && hasDef) {
         codeBlocks = [{ filePath: target.file, code: codeResponse.trim() }];
+        logger.info(`[MULTI-AGENT] ${agent.name}: used raw-response fallback (${codeLines.length}/${lines.length} code lines)`);
       }
     }
 
@@ -632,38 +635,146 @@ Output format — ONLY this, nothing else:
 
     logger.info(`[MULTI-AGENT] ${agent.name} writing code to ${repo}/${filePath}`);
 
+    // ── GATE 1: Python syntax validation (ast.parse) ──
+    if (filePath.endsWith('.py')) {
+      const syntaxOk = await this._validatePythonSyntax(block.code);
+      if (!syntaxOk) {
+        logger.warn(`[MULTI-AGENT] ${agent.name} code REJECTED — Python syntax error in ${filePath}`);
+        if (this.bot && this.adminId) {
+          this.bot.sendMessage(this.adminId,
+            `❌ *Code BLOCKED* (syntax error)\n${agent.name} → \`${filePath}\`\nCode failed \`ast.parse()\` — not committed.`,
+            { parse_mode: 'Markdown' }
+          ).catch(() => {});
+        }
+        throw new Error('Python syntax validation failed');
+      }
+    }
+
+    // ── GATE 2: Cross-LLM review BEFORE commit ──
+    const reviewResult = await this._preCommitReview(block.code, agent, filePath, repo);
+    if (reviewResult === 'REJECT') {
+      logger.warn(`[MULTI-AGENT] ${agent.name} code REJECTED by cross-LLM review for ${filePath}`);
+      throw new Error('Cross-LLM review rejected the code');
+    }
+
     // Read current file content
     const currentContent = await this.codeAgent.readFile(repo, filePath);
 
     let newContent;
     if (currentContent) {
-      // Append new code before the last line (or at end)
-      // Look for a safe injection point
       const marker = `\n\n### BEGIN ${agent.name} addition (${new Date().toISOString().split('T')[0]}) ###\n`;
       const endMarker = `\n### END ${agent.name} addition ###\n`;
       newContent = currentContent + marker + block.code + endMarker;
     } else {
-      // New file
       newContent = block.code;
     }
 
-    // Commit directly to main (agents are autonomous)
+    // Commit only after both gates pass
     const message = `feat(${agent.id}): ${block.filePath.split('/').pop()} — auto-generated improvement`;
     await this.codeAgent.writeFile(repo, filePath, newContent, message);
 
-    logger.info(`[MULTI-AGENT] ${agent.name} committed code to ${repo}/${filePath}`);
+    logger.info(`[MULTI-AGENT] ${agent.name} committed VALIDATED code to ${repo}/${filePath}`);
 
     // Notify via Telegram
     if (this.bot && this.adminId) {
       this.bot.sendMessage(this.adminId,
-        `🔧 *${agent.name}* wrote code\n\`${repo}/${filePath}\`\n${block.code.substring(0, 100)}...`,
+        `✅ *${agent.name}* wrote validated code\n\`${repo}/${filePath}\`\n${block.code.substring(0, 100)}...`,
         { parse_mode: 'Markdown' }
       ).catch(() => {});
     }
+  }
 
-    // Auto-review: cross-LLM review of the committed code
-    await this._autoReviewCode(agent, filePath, repo).catch(e =>
-      logger.warn(`[MULTI-AGENT] Review failed: ${e.message}`));
+  /**
+   * Validate Python syntax using ast.parse via VM SSH or inline check.
+   * Returns true if code is syntactically valid.
+   */
+  async _validatePythonSyntax(code) {
+    try {
+      // Try VM SSH if available
+      if (this.infra?.vmBridge?.exec) {
+        const escaped = code.replace(/'/g, "'\\''");
+        const result = await this.infra.vmBridge.exec(
+          `python3 -c "import ast; ast.parse('''${escaped}''')" 2>&1 && echo "SYNTAX_OK" || echo "SYNTAX_FAIL"`,
+          { timeout: 10000 }
+        ).catch(() => null);
+        if (result) {
+          return result.includes('SYNTAX_OK');
+        }
+      }
+
+      // Fallback: basic heuristic checks (no VM access)
+      const lines = code.split('\n');
+      // Check for common syntax errors
+      const hasUnmatchedParens = (code.match(/\(/g) || []).length !== (code.match(/\)/g) || []).length;
+      const hasUnmatchedBrackets = (code.match(/\[/g) || []).length !== (code.match(/\]/g) || []).length;
+      const hasIndentAfterColon = lines.some((l, i) => {
+        if (l.match(/:\s*$/) && i < lines.length - 1) {
+          const nextNonEmpty = lines.slice(i + 1).find(nl => nl.trim().length > 0);
+          return nextNonEmpty && !nextNonEmpty.match(/^\s+/);
+        }
+        return false;
+      });
+      const hasPrintWithoutParens = lines.some(l => l.match(/^\s*print [^(]/));
+
+      if (hasUnmatchedParens || hasUnmatchedBrackets || hasIndentAfterColon || hasPrintWithoutParens) {
+        logger.warn(`[MULTI-AGENT] Heuristic syntax check failed: parens=${hasUnmatchedParens} brackets=${hasUnmatchedBrackets} indent=${hasIndentAfterColon}`);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      logger.warn(`[MULTI-AGENT] Syntax validation error: ${err.message}`);
+      return true; // Fail-open if validation itself errors
+    }
+  }
+
+  /**
+   * Cross-LLM review BEFORE commit (not after).
+   * Returns 'APPROVE' or 'REJECT'.
+   */
+  async _preCommitReview(code, agent, filePath, repo) {
+    try {
+      const reviewProvider = agent.provider === 'kimi' ? 'groq' : 'kimi';
+      const reviewPrompt = `You are a strict code reviewer for an NBA prediction model (Python, scikit-learn, XGBoost).
+
+Review this code that will be APPENDED to ${repo}/${filePath}:
+
+\`\`\`python
+${code.substring(0, 3000)}
+\`\`\`
+
+Check for:
+1. Python syntax errors (unmatched brackets, bad indentation, invalid statements)
+2. Missing imports that would cause ImportError
+3. Functions that reference undefined variables
+4. Code that would crash on execution
+5. Logic that makes no sense for NBA prediction
+
+Reply with EXACTLY one line:
+- "APPROVED: <reason>" if code is valid and would run
+- "REJECTED: <reason>" if code has errors or would crash`;
+
+      const review = await this._callProvider(reviewProvider, reviewPrompt);
+      if (!review) return 'APPROVE'; // Fail-open if review provider down
+
+      if (review.toUpperCase().includes('REJECTED:') || review.toUpperCase().includes('REVERT:')) {
+        const reason = review.match(/(?:REJECTED|REVERT):\s*(.*)/i)?.[1] || 'quality issue';
+        logger.warn(`[MULTI-AGENT] Pre-commit review REJECTED ${filePath}: ${reason}`);
+
+        if (this.bot && this.adminId) {
+          this.bot.sendMessage(this.adminId,
+            `⚠️ *Code BLOCKED by review*\n${agent.name} → \`${repo}/${filePath}\`\nReason: ${reason.substring(0, 200)}`,
+            { parse_mode: 'Markdown' }
+          ).catch(() => {});
+        }
+        return 'REJECT';
+      }
+
+      logger.info(`[MULTI-AGENT] Pre-commit review APPROVED: ${filePath}`);
+      return 'APPROVE';
+    } catch (err) {
+      logger.warn(`[MULTI-AGENT] Pre-commit review error: ${err.message}`);
+      return 'APPROVE'; // Fail-open
+    }
   }
 
   async _callProvider(providerName, prompt) {
@@ -765,10 +876,23 @@ Output format — ONLY this, nothing else:
   }
 
   _tryParseJSON(str) {
+    const VALID_TYPES = ['feature_test', 'model_test', 'config_change', 'calibration_test', 'ensemble_test', 'hyperparameter_test'];
     for (const s of [str, str.replace(/'/g, '"').replace(/,\s*}/g, '}')]) {
       try {
         const obj = JSON.parse(s);
-        if (obj.type && (obj.description || obj.hypothesis) && obj.params) return obj;
+        // Must have type, description/hypothesis, and params object
+        if (!obj.type || !(obj.description || obj.hypothesis) || !obj.params) continue;
+        // Type must be in valid list
+        if (!VALID_TYPES.includes(obj.type)) {
+          logger.debug(`[MULTI-AGENT] Rejected experiment with invalid type: ${obj.type}`);
+          continue;
+        }
+        // Params must be a non-empty object
+        if (typeof obj.params !== 'object' || Object.keys(obj.params).length === 0) {
+          logger.debug(`[MULTI-AGENT] Rejected experiment with empty params`);
+          continue;
+        }
+        return obj;
       } catch {} // eslint-disable-line no-empty
     }
     return null;
@@ -940,66 +1064,7 @@ Output format — ONLY this, nothing else:
     }
   }
 
-  /**
-   * Auto-review: after code is committed, test it and revert if broken.
-   * Called after each cycle if code was written.
-   */
-  async _autoReviewCode(agent, filePath, repo) {
-    if (!this.codeAgent) return;
-
-    try {
-      // 1. Read the committed code
-      const code = await this.codeAgent.readFile(repo, filePath);
-      if (!code) return;
-
-      // 2. Cross-review: use different provider than the one that wrote the code
-      const reviewProvider = agent.provider === 'kimi' ? 'groq' : 'kimi';
-      const reviewPrompt = `You are a code reviewer for an NBA prediction model. Review this code for:
-1. Python syntax errors
-2. Logic bugs
-3. Missing imports
-4. Security issues
-5. Performance problems
-
-If the code has CRITICAL issues, output: REVERT: reason
-If the code is acceptable, output: APPROVED: brief summary
-
-CODE (${repo}/${filePath}):
-\`\`\`python
-${code.substring(Math.max(0, code.length - 3000))}
-\`\`\``;
-
-      const review = await this._callProvider(reviewProvider, reviewPrompt);
-      if (!review) return;
-
-      if (review.toUpperCase().includes('REVERT:')) {
-        const reason = review.match(/REVERT:\s*(.*)/i)?.[1] || 'quality issue';
-        logger.warn(`[MULTI-AGENT] Code review REJECTED ${repo}/${filePath}: ${reason}`);
-
-        // Log the rejection — we don't revert automatically to avoid race conditions
-        // Instead, flag it in Supabase for human review
-        if (this.infra?.pgPool) {
-          await this.infra.querySupabase(`
-            INSERT INTO nba_experiments (experiment_id, agent_name, experiment_type, description, status, params)
-            VALUES ('review_${Date.now().toString(36)}', '${agent.id}_reviewer', 'code_review',
-                    'REJECTED: ${reason.replace(/'/g, "''").substring(0, 200)}', 'failed',
-                    '${JSON.stringify({ file: `${repo}/${filePath}`, action: 'revert_needed' }).replace(/'/g, "''")}')
-          `).catch(() => {});
-        }
-
-        if (this.bot && this.adminId) {
-          this.bot.sendMessage(this.adminId,
-            `⚠️ *Code Review REJECTED*\n${agent.name} → \`${repo}/${filePath}\`\nReason: ${reason.substring(0, 200)}`,
-            { parse_mode: 'Markdown' }
-          ).catch(() => {});
-        }
-      } else {
-        logger.info(`[MULTI-AGENT] Code review APPROVED: ${repo}/${filePath}`);
-      }
-    } catch (err) {
-      logger.warn(`[MULTI-AGENT] Auto-review error: ${err.message}`);
-    }
-  }
+  // _autoReviewCode removed — replaced by _preCommitReview (review BEFORE commit, not after)
 
   getStatus() {
     const agents = AGENTS.map(a => ({

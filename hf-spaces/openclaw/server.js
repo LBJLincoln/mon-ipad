@@ -1166,7 +1166,65 @@ async function handleTelegramUpdate(update) {
       }
     }
 
-    // 2d. Web search via Telegram (!search <query>)
+    // 2d. Browse with Chromium (!browse <url>) — full JS rendering + screenshot
+    else if (msg.from?.id === ADMIN_TELEGRAM_ID && text.startsWith('!browse ')) {
+      const url = text.replace('!browse ', '').trim();
+      try {
+        const { scrape, screenshot } = require('./lib/browser');
+        const [content, shot] = await Promise.all([
+          scrape(url, { timeout: 20000 }).catch(() => null),
+          screenshot(url, { timeout: 20000 }).catch(() => null),
+        ]);
+        let msg_text = `🌐 *Browsed (Chromium):* ${url}\n\n`;
+        if (content) {
+          // Extract text content, strip HTML
+          const text_content = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+          msg_text += text_content.substring(0, 3000);
+        } else {
+          msg_text += '_Page loaded but no text extracted_';
+        }
+        reply = msg_text;
+        // Send screenshot if available
+        if (shot && bot) {
+          try {
+            const buf = Buffer.from(shot, 'base64');
+            await bot.sendPhoto(chatId, buf, { caption: `Screenshot: ${url}` });
+          } catch (e) { /* screenshot send failed, not critical */ }
+        }
+      } catch (err) {
+        reply = `Browse failed: ${err.message}`;
+      }
+    }
+
+    // 2e. Fill form with Chromium (!form <url> field1=val1 field2=val2 submit=#btn)
+    else if (msg.from?.id === ADMIN_TELEGRAM_ID && text.startsWith('!form ')) {
+      const parts = text.replace('!form ', '').trim().split(/\s+/);
+      const url = parts[0];
+      const fields = {};
+      let submitSelector = 'button[type="submit"]';
+      for (let i = 1; i < parts.length; i++) {
+        const [key, ...vals] = parts[i].split('=');
+        const val = vals.join('=');
+        if (key === 'submit') {
+          submitSelector = val;
+        } else {
+          fields[key] = val;
+        }
+      }
+      try {
+        const { fillForm } = require('./lib/browser');
+        const result = await fillForm(url, fields, submitSelector, { timeout: 30000 });
+        reply = `📝 *Form filled:* ${url}\n` +
+          `Fields: ${Object.keys(fields).join(', ')}\n` +
+          `Submit: ${submitSelector}\n` +
+          `Result: ${result?.status || 'submitted'}` +
+          (result?.finalUrl ? `\nRedirected to: ${result.finalUrl}` : '');
+      } catch (err) {
+        reply = `Form fill failed: ${err.message}`;
+      }
+    }
+
+    // 2f. Web search via Telegram (!search <query>)
     else if (msg.from?.id === ADMIN_TELEGRAM_ID && text.startsWith('!search ') && process.env.BRAVE_API_KEY) {
       const query = text.replace('!search ', '').trim();
       try {

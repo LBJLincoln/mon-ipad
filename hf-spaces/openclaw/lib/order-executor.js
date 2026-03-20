@@ -98,6 +98,14 @@ const INTENT_PATTERNS = [
     intent: 'aggressive_mode', extract: () => ({}) },
   { regex: /(?:mode|go|passe)\s+(?:en\s+)?(?:conserv|safe|prudent|calm)/i,
     intent: 'conservative_mode', extract: () => ({}) },
+
+  // Web browsing & forms
+  { regex: /(?:browse|navigate|go\s+to|open|ouvre)\s+(.+)/i,
+    intent: 'browse_url', extract: (m) => ({ url: m[1].trim() }) },
+  { regex: /(?:create|sign\s*up|register|inscri|cr[eé]e)\s+(?:a\s+)?(?:account|compte)\s+(?:on|sur|at)\s+(.+)/i,
+    intent: 'create_account', extract: (m) => ({ site: m[1].trim() }) },
+  { regex: /(?:fill|rempli)\s+(?:form|formulaire)\s+(?:on|sur|at)\s+(.+)/i,
+    intent: 'fill_form', extract: (m) => ({ url: m[1].trim() }) },
 ];
 
 class OrderExecutor {
@@ -411,6 +419,33 @@ class OrderExecutor {
         return { status: 'CONSERVATIVE MODE', config: conservativeConfig, result };
       }
 
+      case 'browse_url': {
+        try {
+          const { scrape, screenshot } = require('./browser');
+          const content = await scrape(params.url, { timeout: 20000 });
+          const text = content ? content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 2000) : 'No content';
+          let shot = null;
+          try { shot = await screenshot(params.url, { timeout: 15000 }); } catch (e) {}
+          return { url: params.url, content: text, hasScreenshot: !!shot, screenshot: shot };
+        } catch (err) {
+          return { error: `Browse failed: ${err.message}` };
+        }
+      }
+
+      case 'fill_form': {
+        try {
+          const { fillForm } = require('./browser');
+          // URL is in params, fields need to be provided via structured command
+          return { status: 'READY', message: `Use !form ${params.url} field1=val1 field2=val2 submit=#btn` };
+        } catch (err) {
+          return { error: `Form setup failed: ${err.message}` };
+        }
+      }
+
+      case 'create_account': {
+        return { status: 'MANUAL', message: `Account creation on ${params.site} requires interactive OAuth flow. Use !browse ${params.site} first, then !form with credentials.` };
+      }
+
       default:
         return { error: `Unknown intent: ${intent}` };
     }
@@ -537,6 +572,16 @@ Errors: ${r.errorCount} unfixed`;
 
       case 'conservative_mode':
         return `*CONSERVATIVE MODE ACTIVE*\nMutation: 0.06 | Pop: 100 | Crossover: 0.70 | Features: 120`;
+
+      case 'browse_url':
+        if (result.error) return `Browse failed: ${result.error}`;
+        return `🌐 *Browsed:* ${result.url}\n\n${(result.content || '').substring(0, 2000)}`;
+
+      case 'fill_form':
+        return `📝 ${result.message || result.status}`;
+
+      case 'create_account':
+        return `🔐 ${result.message}`;
 
       default:
         return JSON.stringify(result).substring(0, 500);
