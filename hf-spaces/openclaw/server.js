@@ -2373,16 +2373,17 @@ async function start() {
   // Process code task queue every 5 min (codeAgent initialized above, before AgenticLoop)
   setInterval(() => codeAgent.processQueue(), 5 * 60 * 1000);
 
-  // Initialize Multi-Agent Coordinator — 6 specialized AI agents in parallel
+  // Initialize Multi-Agent Coordinator — 6 specialized AI agents with CODE WRITING
   multiAgent = new MultiAgentCoordinator({
     infraBridge,
     a2a: a2aProtocol,
     bot,
     adminId: ADMIN_TELEGRAM_ID,
     getCompletion,
+    codeAgent, // Pass CodeAgent so agents can write code to GitHub
   });
   multiAgent.start();
-  logger.info('Multi-Agent Coordinator: 6 agents started (Feature Scout, Model Architect, Calibrator, Evolution Tuner, Market Intel, Research Scholar)');
+  logger.info('Multi-Agent Coordinator: 6 CODE-WRITING agents started (Feature Scout, Model Architect, Calibrator, Evolution Tuner, Market Intel, Research Scholar)');
 
   // Start Express
   app.listen(PORT, '0.0.0.0', () => {

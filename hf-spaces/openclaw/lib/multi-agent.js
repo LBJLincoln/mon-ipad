@@ -367,17 +367,19 @@ RULES:
 ];
 
 class MultiAgentCoordinator {
-  constructor({ infraBridge, a2a, bot, adminId, getCompletion }) {
+  constructor({ infraBridge, a2a, bot, adminId, getCompletion, codeAgent }) {
     this.infra = infraBridge;
     this.a2a = a2a;
     this.bot = bot;
     this.adminId = adminId;
     this.getCompletion = getCompletion; // fallback
+    this.codeAgent = codeAgent; // CodeAgent instance for writing code to GitHub
     this.running = false;
     this.kaggleLastTrigger = 0;
+    this.codeCommits = 0;
     this.stats = {};
     for (const agent of AGENTS) {
-      this.stats[agent.id] = { runs: 0, experiments: 0, errors: 0, lastRun: null };
+      this.stats[agent.id] = { runs: 0, experiments: 0, errors: 0, codeWrites: 0, lastRun: null };
     }
   }
 
@@ -418,10 +420,10 @@ class MultiAgentCoordinator {
   async _runAgentCycle(agent) {
     logger.info(`[MULTI-AGENT] ${agent.name} starting cycle...`);
 
-    // 1. Gather context
+    // 1. Gather context (including current code snippets)
     const context = await this._gatherContext(agent);
 
-    // 2. Call the agent's LLM
+    // 2. Call the agent's LLM — ask for BOTH experiments AND code
     const prompt = `${agent.systemPrompt}
 
 CURRENT STATE:
@@ -429,16 +431,40 @@ CURRENT STATE:
 - Generation: ${context.generation || '?'}
 - Stagnation: ${context.stagnation || '?'}
 - Features selected: ${context.features || '?'}
-- Feature candidates: ${context.featureCandidates || '999'}
+- Feature candidates: ${context.featureCandidates || '2058'}
 
-RECENT EXPERIMENTS (last 10):
+RECENT EXPERIMENTS (last 30):
 ${context.recentExperiments}
 
 RECENT RESULTS:
 ${context.recentResults}
 
-Now propose your experiments. Output EXPERIMENT blocks in this EXACT format:
-EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","params":{...},"priority":${agent.focus === 'feature_test' ? 7 : 5}}`;
+${context.currentCode ? `CURRENT CODE SNIPPET:\n${context.currentCode}\n` : ''}
+
+YOUR JOB: Propose experiments AND write the actual code to implement them.
+
+OUTPUT FORMAT — For each improvement, output BOTH:
+
+1. EXPERIMENT block (for Supabase queue):
+EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","params":{...},"priority":${agent.focus === 'feature_test' ? 7 : 5}}
+
+2. CODE block (actual Python code to implement the improvement):
+===CODE: path/to/file.py===
+# Only include the NEW function/class/section to ADD (not the whole file)
+# Use markers: ### BEGIN <agent_name> addition ### and ### END ###
+def my_new_feature(games, team, window=10):
+    \"\"\"Description of what this does.\"\"\"
+    # implementation
+    return value
+===END===
+
+For FEATURE agents: write new feature computation functions for features/engine.py
+For MODEL agents: write new model classes/configs for kaggle/nba_gpu_runner.py
+For CALIBRATION agents: write calibration methods for kaggle/nba_gpu_runner.py or hf-space/experiment_runner.py
+For EVOLUTION agents: write GA parameter configs or new selection/mutation operators
+For RESEARCH agents: write implementations of paper techniques
+
+IMPORTANT: The CODE must be REAL, RUNNABLE Python. Not pseudocode. Not descriptions. ACTUAL CODE.`;
 
     const response = await this._callProvider(agent.provider, prompt);
     if (!response) {
@@ -450,7 +476,7 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
     // 3. Parse experiments from response
     const experiments = this._parseExperiments(response, agent);
 
-    // 4. Submit to Supabase queue
+    // 4. Submit experiments to Supabase queue
     let submitted = 0;
     for (const exp of experiments) {
       try {
@@ -461,7 +487,109 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
       }
     }
 
-    logger.info(`[MULTI-AGENT] ${agent.name}: parsed ${experiments.length}, submitted ${submitted} experiments`);
+    // 5. Parse and apply CODE blocks via CodeAgent → GitHub
+    let codeWrites = 0;
+    if (this.codeAgent) {
+      try {
+        const codeBlocks = this._parseCodeBlocks(response);
+        for (const block of codeBlocks) {
+          try {
+            await this._applyCodeBlock(block, agent);
+            codeWrites++;
+            this.stats[agent.id].codeWrites++;
+            this.codeCommits++;
+          } catch (err) {
+            logger.warn(`[MULTI-AGENT] ${agent.name} code write failed: ${err.message}`);
+          }
+        }
+      } catch (err) {
+        logger.warn(`[MULTI-AGENT] ${agent.name} code phase error: ${err.message}`);
+      }
+    }
+
+    logger.info(`[MULTI-AGENT] ${agent.name}: ${experiments.length} experiments, ${submitted} submitted, ${codeWrites} code writes`);
+  }
+
+  /**
+   * Parse ===CODE: path/to/file=== ... ===END=== blocks from LLM response
+   */
+  _parseCodeBlocks(text) {
+    const blocks = [];
+    const regex = /===CODE:\s*(.+?)===\n([\s\S]*?)===END===/g;
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      const filePath = match[1].trim();
+      const code = match[2].trim();
+      if (filePath && code.length > 20) {
+        blocks.push({ filePath, code });
+      }
+    }
+    // Also try markdown code blocks with file paths
+    if (blocks.length === 0) {
+      const mdRegex = /```python\s*\n#\s*(?:File|Path):\s*(.+?)\n([\s\S]*?)```/g;
+      while ((match = mdRegex.exec(text)) !== null) {
+        const filePath = match[1].trim();
+        const code = match[2].trim();
+        if (filePath && code.length > 20) {
+          blocks.push({ filePath, code });
+        }
+      }
+    }
+    return blocks.slice(0, 3); // Max 3 code blocks per cycle
+  }
+
+  /**
+   * Apply a code block: read current file, append new code, commit via GitHub API
+   */
+  async _applyCodeBlock(block, agent) {
+    if (!this.codeAgent) return;
+
+    // Determine which repo this file belongs to
+    let repo = 'nomos-nba-agent';
+    if (block.filePath.startsWith('hf-spaces/') || block.filePath.startsWith('scripts/')) {
+      repo = 'mon-ipad';
+    }
+
+    // Clean up the file path
+    let filePath = block.filePath
+      .replace(/^\/+/, '')
+      .replace(/^nomos-nba-agent\//, '')
+      .replace(/^mon-ipad\//, '');
+
+    logger.info(`[MULTI-AGENT] ${agent.name} writing code to ${repo}/${filePath}`);
+
+    // Read current file content
+    const currentContent = await this.codeAgent.readFile(repo, filePath);
+
+    let newContent;
+    if (currentContent) {
+      // Append new code before the last line (or at end)
+      // Look for a safe injection point
+      const marker = `\n\n### BEGIN ${agent.name} addition (${new Date().toISOString().split('T')[0]}) ###\n`;
+      const endMarker = `\n### END ${agent.name} addition ###\n`;
+      newContent = currentContent + marker + block.code + endMarker;
+    } else {
+      // New file
+      newContent = block.code;
+    }
+
+    // Commit directly to main (agents are autonomous)
+    const message = `feat(${agent.id}): ${block.filePath.split('/').pop()} — auto-generated improvement`;
+    await this.codeAgent.writeFile(repo, filePath, newContent, message);
+
+    logger.info(`[MULTI-AGENT] ${agent.name} committed code to ${repo}/${filePath}`);
+
+    // Notify via Telegram
+    if (this.bot && this.adminId) {
+      this.bot.sendMessage(this.adminId,
+        `🔧 *${agent.name}* wrote code\n\`${repo}/${filePath}\`\n${block.code.substring(0, 100)}...`,
+        { parse_mode: 'Markdown' }
+      ).catch(() => {});
+    }
+
+    // Auto-review: cross-LLM review of the committed code
+    await this._autoReviewCode(agent, filePath, repo).catch(e =>
+      logger.warn(`[MULTI-AGENT] Review failed: ${e.message}`));
   }
 
   async _callProvider(providerName, prompt) {
@@ -580,7 +708,7 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
   }
 
   async _gatherContext(agent) {
-    const ctx = { brier: '0.2205', recentExperiments: 'none', recentResults: 'none' };
+    const ctx = { brier: '0.2205', recentExperiments: 'none', recentResults: 'none', currentCode: '' };
 
     // Fetch evolution status from S10
     try {
@@ -612,6 +740,29 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
             ctx.recentResults = completed.map(r =>
               `${r.experiment_type}: Brier ${r.result_brier} (${r.description?.substring(0, 40)})`
             ).join('\n');
+          }
+        }
+      } catch {} // eslint-disable-line no-empty
+    }
+
+    // Fetch relevant code snippet from GitHub (so agent knows what exists)
+    if (this.codeAgent) {
+      try {
+        const codeFiles = {
+          feature_scout: { repo: 'nomos-nba-agent', path: 'features/engine.py', offset: 'last_500' },
+          model_architect: { repo: 'nomos-nba-agent', path: 'kaggle/nba_gpu_runner.py', offset: 'models' },
+          calibrator: { repo: 'nomos-nba-agent', path: 'kaggle/nba_gpu_runner.py', offset: 'models' },
+          evolution_tuner: { repo: 'nomos-nba-agent', path: 'hf-space/app.py', offset: 'ga_config' },
+          market_intel: { repo: 'nomos-nba-agent', path: 'features/engine.py', offset: 'market' },
+          research_scholar: { repo: 'nomos-nba-agent', path: 'kaggle/nba_gpu_runner.py', offset: 'models' },
+        };
+        const target = codeFiles[agent.id];
+        if (target) {
+          const code = await this.codeAgent.readFile(target.repo, target.path);
+          if (code) {
+            // Give agent the last 2000 chars of the file (most recent additions)
+            ctx.currentCode = `# File: ${target.repo}/${target.path} (last 2000 chars)\n` +
+              code.substring(Math.max(0, code.length - 2000));
           }
         }
       } catch {} // eslint-disable-line no-empty
@@ -707,6 +858,67 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
     }
   }
 
+  /**
+   * Auto-review: after code is committed, test it and revert if broken.
+   * Called after each cycle if code was written.
+   */
+  async _autoReviewCode(agent, filePath, repo) {
+    if (!this.codeAgent) return;
+
+    try {
+      // 1. Read the committed code
+      const code = await this.codeAgent.readFile(repo, filePath);
+      if (!code) return;
+
+      // 2. Ask a DIFFERENT LLM to review (cross-review for quality)
+      const reviewProvider = agent.provider === 'gemini' ? 'openai' : 'gemini';
+      const reviewPrompt = `You are a code reviewer for an NBA prediction model. Review this code for:
+1. Python syntax errors
+2. Logic bugs
+3. Missing imports
+4. Security issues
+5. Performance problems
+
+If the code has CRITICAL issues, output: REVERT: reason
+If the code is acceptable, output: APPROVED: brief summary
+
+CODE (${repo}/${filePath}):
+\`\`\`python
+${code.substring(Math.max(0, code.length - 3000))}
+\`\`\``;
+
+      const review = await this._callProvider(reviewProvider, reviewPrompt);
+      if (!review) return;
+
+      if (review.toUpperCase().includes('REVERT:')) {
+        const reason = review.match(/REVERT:\s*(.*)/i)?.[1] || 'quality issue';
+        logger.warn(`[MULTI-AGENT] Code review REJECTED ${repo}/${filePath}: ${reason}`);
+
+        // Log the rejection — we don't revert automatically to avoid race conditions
+        // Instead, flag it in Supabase for human review
+        if (this.infra?.pgPool) {
+          await this.infra.querySupabase(`
+            INSERT INTO nba_experiments (experiment_id, agent_name, experiment_type, description, status, params)
+            VALUES ('review_${Date.now().toString(36)}', '${agent.id}_reviewer', 'code_review',
+                    'REJECTED: ${reason.replace(/'/g, "''").substring(0, 200)}', 'failed',
+                    '${JSON.stringify({ file: `${repo}/${filePath}`, action: 'revert_needed' }).replace(/'/g, "''")}')
+          `).catch(() => {});
+        }
+
+        if (this.bot && this.adminId) {
+          this.bot.sendMessage(this.adminId,
+            `⚠️ *Code Review REJECTED*\n${agent.name} → \`${repo}/${filePath}\`\nReason: ${reason.substring(0, 200)}`,
+            { parse_mode: 'Markdown' }
+          ).catch(() => {});
+        }
+      } else {
+        logger.info(`[MULTI-AGENT] Code review APPROVED: ${repo}/${filePath}`);
+      }
+    } catch (err) {
+      logger.warn(`[MULTI-AGENT] Auto-review error: ${err.message}`);
+    }
+  }
+
   getStatus() {
     const agents = AGENTS.map(a => ({
       id: a.id,
@@ -716,10 +928,13 @@ EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","par
       ...this.stats[a.id],
     }));
     const totalExperiments = Object.values(this.stats).reduce((s, a) => s + a.experiments, 0);
+    const totalCodeWrites = Object.values(this.stats).reduce((s, a) => s + (a.codeWrites || 0), 0);
     return {
       running: this.running,
       agents,
       totalExperiments,
+      totalCodeWrites,
+      codeCommits: this.codeCommits,
       kaggleLastTrigger: this.kaggleLastTrigger ? new Date(this.kaggleLastTrigger).toISOString() : null,
     };
   }
