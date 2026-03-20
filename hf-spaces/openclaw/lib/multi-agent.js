@@ -423,10 +423,7 @@ class MultiAgentCoordinator {
     // 1. Gather context (including current code snippets)
     const context = await this._gatherContext(agent);
 
-    // 2. Call the agent's LLM — ask for BOTH experiments AND code
-    const prompt = `${agent.systemPrompt}
-
-CURRENT STATE:
+    const stateBlock = `CURRENT STATE:
 - Best Brier: ${context.brier || '0.2205'}
 - Generation: ${context.generation || '?'}
 - Stagnation: ${context.stagnation || '?'}
@@ -437,46 +434,19 @@ RECENT EXPERIMENTS (last 30):
 ${context.recentExperiments}
 
 RECENT RESULTS:
-${context.recentResults}
+${context.recentResults}`;
 
-${context.currentCode ? `CURRENT CODE SNIPPET:\n${context.currentCode}\n` : ''}
+    // ── PHASE 1: Propose experiments ──
+    const expPrompt = `${agent.systemPrompt}\n\n${stateBlock}\n\nNow propose your experiments. Output EXPERIMENT blocks in this EXACT format:
+EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","params":{...},"priority":${agent.focus === 'feature_test' ? 7 : 5}}`;
 
-YOUR JOB: Propose experiments AND write the actual code to implement them.
-
-OUTPUT FORMAT — For each improvement, output BOTH:
-
-1. EXPERIMENT block (for Supabase queue):
-EXPERIMENT: {"type":"${agent.focus}","description":"...","hypothesis":"...","params":{...},"priority":${agent.focus === 'feature_test' ? 7 : 5}}
-
-2. CODE block (actual Python code to implement the improvement):
-===CODE: path/to/file.py===
-# Only include the NEW function/class/section to ADD (not the whole file)
-# Use markers: ### BEGIN <agent_name> addition ### and ### END ###
-def my_new_feature(games, team, window=10):
-    \"\"\"Description of what this does.\"\"\"
-    # implementation
-    return value
-===END===
-
-For FEATURE agents: write new feature computation functions for features/engine.py
-For MODEL agents: write new model classes/configs for kaggle/nba_gpu_runner.py
-For CALIBRATION agents: write calibration methods for kaggle/nba_gpu_runner.py or hf-space/experiment_runner.py
-For EVOLUTION agents: write GA parameter configs or new selection/mutation operators
-For RESEARCH agents: write implementations of paper techniques
-
-IMPORTANT: The CODE must be REAL, RUNNABLE Python. Not pseudocode. Not descriptions. ACTUAL CODE.`;
-
-    const response = await this._callProvider(agent.provider, prompt);
-    if (!response) {
+    const expResponse = await this._callProvider(agent.provider, expPrompt);
+    if (!expResponse) {
       logger.warn(`[MULTI-AGENT] ${agent.name}: LLM returned empty`);
       return;
     }
-    logger.info(`[MULTI-AGENT] ${agent.name} got ${response.length} char response`);
 
-    // 3. Parse experiments from response
-    const experiments = this._parseExperiments(response, agent);
-
-    // 4. Submit experiments to Supabase queue
+    const experiments = this._parseExperiments(expResponse, agent);
     let submitted = 0;
     for (const exp of experiments) {
       try {
@@ -486,28 +456,105 @@ IMPORTANT: The CODE must be REAL, RUNNABLE Python. Not pseudocode. Not descripti
         logger.warn(`[MULTI-AGENT] ${agent.name} submit failed: ${err.message}`);
       }
     }
+    logger.info(`[MULTI-AGENT] ${agent.name}: ${experiments.length} experiments, ${submitted} submitted`);
 
-    // 5. Parse and apply CODE blocks via CodeAgent → GitHub
+    // ── PHASE 2: Write actual code (SEPARATE LLM call) ──
     let codeWrites = 0;
-    if (this.codeAgent) {
+    if (this.codeAgent && experiments.length > 0) {
       try {
-        const codeBlocks = this._parseCodeBlocks(response);
-        for (const block of codeBlocks) {
-          try {
-            await this._applyCodeBlock(block, agent);
-            codeWrites++;
-            this.stats[agent.id].codeWrites++;
-            this.codeCommits++;
-          } catch (err) {
-            logger.warn(`[MULTI-AGENT] ${agent.name} code write failed: ${err.message}`);
-          }
-        }
+        codeWrites = await this._writeCodeForExperiments(agent, experiments, context);
       } catch (err) {
         logger.warn(`[MULTI-AGENT] ${agent.name} code phase error: ${err.message}`);
       }
     }
 
-    logger.info(`[MULTI-AGENT] ${agent.name}: ${experiments.length} experiments, ${submitted} submitted, ${codeWrites} code writes`);
+    logger.info(`[MULTI-AGENT] ${agent.name} DONE: ${submitted} experiments, ${codeWrites} code writes`);
+  }
+
+  /**
+   * PHASE 2: Ask LLM to write actual Python code implementing the top experiment.
+   * This is a SEPARATE call from experiment proposal — dedicated to code generation.
+   */
+  async _writeCodeForExperiments(agent, experiments, context) {
+    const CODE_TARGETS = {
+      feature_scout: { repo: 'nomos-nba-agent', file: 'features/engine.py', what: 'new feature computation functions' },
+      model_architect: { repo: 'nomos-nba-agent', file: 'kaggle/nba_gpu_runner.py', what: 'new model class or training function' },
+      calibrator: { repo: 'nomos-nba-agent', file: 'kaggle/nba_gpu_runner.py', what: 'new calibration method or loss function' },
+      evolution_tuner: { repo: 'nomos-nba-agent', file: 'hf-space/app.py', what: 'new selection/mutation operator or GA config' },
+      market_intel: { repo: 'nomos-nba-agent', file: 'features/engine.py', what: 'new market-derived feature functions' },
+      research_scholar: { repo: 'nomos-nba-agent', file: 'kaggle/nba_gpu_runner.py', what: 'implementation of research paper technique' },
+    };
+
+    const target = CODE_TARGETS[agent.id];
+    if (!target) return 0;
+
+    // Pick the top experiment to implement
+    const topExp = experiments[0];
+
+    const codePrompt = `You are an expert Python developer. Write PRODUCTION-READY code to implement this improvement for an NBA prediction model.
+
+IMPROVEMENT TO IMPLEMENT:
+- Type: ${topExp.type}
+- Description: ${topExp.description || 'See params'}
+- Hypothesis: ${topExp.hypothesis || 'N/A'}
+- Params: ${JSON.stringify(topExp.params)}
+
+TARGET FILE: ${target.repo}/${target.file}
+WHAT TO WRITE: ${target.what}
+
+${context.currentCode ? `CURRENT END OF FILE:\n\`\`\`python\n${context.currentCode}\n\`\`\`\n` : ''}
+
+CRITICAL RULES:
+1. Output ONLY the Python code to APPEND to the file — not the whole file
+2. Code must be syntactically correct and runnable
+3. Include all necessary imports at the top of your code block
+4. Use proper indentation (4 spaces)
+5. Add a comment header with what this implements
+
+Output format — ONLY this, nothing else:
+===CODE: ${target.file}===
+# Your Python code here
+===END===`;
+
+    // Use a DIFFERENT provider for code generation (cross-pollination)
+    const codeProvider = agent.provider === 'openai' ? 'gemini' : 'openai';
+    const codeResponse = await this._callProvider(codeProvider, codePrompt);
+    if (!codeResponse) return 0;
+
+    logger.info(`[MULTI-AGENT] ${agent.name} code LLM responded: ${codeResponse.length} chars`);
+
+    // Parse code blocks
+    let codeBlocks = this._parseCodeBlocks(codeResponse);
+
+    // Fallback: if no ===CODE=== blocks, try to extract any Python code block
+    if (codeBlocks.length === 0) {
+      const pyMatch = codeResponse.match(/```python\n([\s\S]*?)```/);
+      if (pyMatch && pyMatch[1].length > 30) {
+        codeBlocks = [{ filePath: target.file, code: pyMatch[1].trim() }];
+      }
+    }
+
+    // Even more fallback: if response is mostly code (no markdown), use it directly
+    if (codeBlocks.length === 0) {
+      const lines = codeResponse.split('\n');
+      const codeLines = lines.filter(l => l.match(/^(import |from |def |class |#|    |\s*$)/));
+      if (codeLines.length > lines.length * 0.6 && codeResponse.length > 50) {
+        codeBlocks = [{ filePath: target.file, code: codeResponse.trim() }];
+      }
+    }
+
+    let writes = 0;
+    for (const block of codeBlocks.slice(0, 1)) { // Max 1 code write per cycle per agent
+      try {
+        await this._applyCodeBlock(block, agent);
+        writes++;
+        this.stats[agent.id].codeWrites++;
+        this.codeCommits++;
+      } catch (err) {
+        logger.warn(`[MULTI-AGENT] ${agent.name} code write failed: ${err.message}`);
+      }
+    }
+    return writes;
   }
 
   /**
