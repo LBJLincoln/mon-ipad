@@ -296,14 +296,38 @@ def gather_context():
     ctx["gpu_pending"] = gpu_pending
     if gpu_pending > 0:
         now = time.time()
-        # Alert max once per hour
+        # Trigger max once per hour
         if now - _gpu_last_alert > 3600:
             _gpu_last_alert = now
-            send_telegram(
-                f"🖥️ *{gpu_pending} GPU experiments pending*\n"
-                f"Open Colab to run them:\n{COLAB_LINK}"
-            )
-            log("GPU", f"{gpu_pending} pending experiments — Telegram alert sent")
+            # Try browser trigger first
+            try:
+                trigger_script = os.path.join(os.path.dirname(__file__), "colab-trigger.js")
+                if os.path.exists(trigger_script):
+                    log("GPU", f"{gpu_pending} pending — launching Colab via Puppeteer...")
+                    result = subprocess.run(
+                        ["node", trigger_script, COLAB_LINK],
+                        capture_output=True, text=True, timeout=120
+                    )
+                    if result.returncode == 0:
+                        log("GPU", "Colab triggered successfully via browser")
+                        send_telegram(f"🖥️ *Colab GPU Runner auto-triggered*\n{gpu_pending} experiments pending")
+                    else:
+                        log("GPU", f"Browser trigger failed: {result.stderr[:200]}")
+                        send_telegram(
+                            f"🖥️ *{gpu_pending} GPU experiments pending*\n"
+                            f"Auto-trigger failed — open manually:\n{COLAB_LINK}"
+                        )
+                else:
+                    send_telegram(
+                        f"🖥️ *{gpu_pending} GPU experiments pending*\n"
+                        f"Open Colab to run them:\n{COLAB_LINK}"
+                    )
+            except Exception as e:
+                log("GPU", f"Trigger error: {e}")
+                send_telegram(
+                    f"🖥️ *{gpu_pending} GPU experiments pending*\n"
+                    f"Open Colab: {COLAB_LINK}"
+                )
 
     # Update shared state
     with state_lock:

@@ -15,6 +15,7 @@ SHELL ["/bin/bash", "-c"]
 RUN echo "[build] Installing system deps..." && START=$(date +%s) \
   && apt-get update \
   && apt-get install -y --no-install-recommends git ca-certificates curl python3 python3-pip \
+     chromium fonts-liberation libgbm1 libnss3 libatk-bridge2.0-0 libgtk-3-0 \
   && rm -rf /var/lib/apt/lists/* \
   && pip3 install --no-cache-dir --break-system-packages huggingface_hub requests \
   && corepack enable \
@@ -23,6 +24,12 @@ RUN echo "[build] Installing system deps..." && START=$(date +%s) \
   && mkdir -p /home/node/.openclaw/workspace /home/node/.openclaw/credentials \
   && chown -R node:node /home/node \
   && echo "[build] System deps: $(($(date +%s) - START))s"
+
+# ── Puppeteer (headless browser for Colab trigger + web automation) ────────
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+RUN npm install -g puppeteer-core \
+  && echo "[build] Puppeteer ready (using system Chromium)"
 
 # ── Claude Code CLI + ACP (acpx) + Kimi CLI ─────────────────────────────────
 # Claude Code is the primary coding agent; acpx manages it via ACP
