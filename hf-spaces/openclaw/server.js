@@ -1247,10 +1247,35 @@ async function handleTelegramUpdate(update) {
       }
     }
 
-    // 3. Fallback: AI completion with conversation context
+    // 3. Fallback: AI completion with REAL system context (prevents hallucination)
     if (!reply) {
       const history = persistence.getHistory(chatId, 10);
       const messages = history.map(h => ({ role: h.role, content: h.content }));
+
+      // Inject real system state so LLM doesn't hallucinate metrics
+      let realContext = '';
+      try {
+        const sysCtx = buildEveContext();
+        if (sysCtx.evolution && Object.keys(sysCtx.evolution).length > 0) {
+          realContext += `\n\nREAL SYSTEM STATE (use these EXACT numbers, do NOT invent):\n`;
+          realContext += `Evolution: ${JSON.stringify(sysCtx.evolution)}\n`;
+        }
+        if (sysCtx.lastInsight && sysCtx.lastInsight !== 'none') {
+          realContext += `Last insight: ${sysCtx.lastInsight.substring(0, 300)}\n`;
+        }
+        if (sysCtx.lastEval && Object.keys(sysCtx.lastEval).length > 0) {
+          realContext += `Last eval: ${JSON.stringify(sysCtx.lastEval)}\n`;
+        }
+        if (sysCtx.cycles) {
+          realContext += `Cycles: ${sysCtx.cycles}, Uptime: ${sysCtx.uptime}\n`;
+        }
+      } catch (ctxErr) {
+        logger.warn(`[TG] Context build failed: ${ctxErr.message}`);
+      }
+
+      if (realContext) {
+        messages.unshift({ role: 'system', content: `${SYSTEM_PROMPT}${realContext}\n\nIMPORTANT: Only report numbers from REAL SYSTEM STATE above. If you don't have a number, say "I don't have that data" — NEVER invent metrics.` });
+      }
       messages.push({ role: 'user', content: text });
 
       // For complex messages (>120 chars), send ack immediately and process async
