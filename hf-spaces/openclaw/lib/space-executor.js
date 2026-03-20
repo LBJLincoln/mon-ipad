@@ -310,9 +310,9 @@ class SpaceExecutor {
    * Get the correct HF token for a space's account
    */
   getTokenForSpace(space) {
-    if (space.account === 'nomos42') return this.hfToken;
     if (space.account === 'lbjlincoln26') return this.hfToken2;
-    return this.hfToken2; // Default to main account
+    if (space.account === 'nomos42') return this.hfToken;  // litellm-2 (legacy)
+    return this.hfToken2; // Default to main account (lbjlincoln)
   }
 }
 

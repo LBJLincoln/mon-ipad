@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deploy OpenClaw to Nomos42/worker-2 HF Space.
+"""Deploy OpenClaw to lbjlincoln26/nomos-worker-2 HF Space.
 
 Uploads all files via HF Hub API, configures secrets, and starts the Space.
 
@@ -18,7 +18,7 @@ from huggingface_hub import HfApi, CommitOperationAdd
 from pathlib import Path
 
 # Config
-SPACE_ID = "LBJLincoln/nomos-openclaw"
+SPACE_ID = "lbjlincoln26/nomos-worker-2"
 HF_TOKEN = os.environ.get("HF_TOKEN_2")
 LOCAL_DIR = Path(__file__).parent
 
@@ -73,7 +73,7 @@ SECRETS = {
 
 def main():
     if not HF_TOKEN:
-        print("ERROR: HF_TOKEN_3 not set. Run: source .env.local")
+        print("ERROR: HF_TOKEN_2 not set. Run: source .env.local")
         sys.exit(1)
 
     api = HfApi(token=HF_TOKEN)
@@ -157,7 +157,7 @@ def main():
         print(f"Restart warning: {e}")
 
     print(f"\nDone! OpenClaw will be available at:")
-    print(f"  https://lbjlincoln-nomos-openclaw.hf.space")
+    print(f"  https://lbjlincoln26-nomos-worker-2.hf.space")
     print(f"\nMonitor build at:")
     print(f"  https://huggingface.co/spaces/{SPACE_ID}")
 

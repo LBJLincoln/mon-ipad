@@ -5,7 +5,7 @@
  * HuggingClaw-style architecture: Adam (Claude CLI) + Eve (OpenClaw) + Cain (Evolution)
  * 24/7 Karpathy-style autonomous improvement loop.
  *
- * Target Space: Nomos42/nomos-worker-2
+ * Target Space: lbjlincoln26/nomos-worker-2
  */
 
 // CRITICAL: HF Spaces uses self-signed certs for Supabase pooler connections.
@@ -46,6 +46,7 @@ const A2AProtocol = require('./lib/a2a-protocol');
 const FeedbackLoop = require('./lib/feedback-loop');
 const ResearchAgent = require('./lib/research-agent');
 const MultiAgentCoordinator = require('./lib/multi-agent');
+const AgentExecutor = require('./lib/agent-executor');
 
 // ============================================================
 // CONFIG
@@ -59,7 +60,7 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 // Hardcode the known URL as fallback to ensure Telegram webhook works.
 const HF_SPACE_URL = process.env.SPACE_HOST
   ? `https://${process.env.SPACE_HOST}`
-  : 'https://nomos42-nomos-worker-2.hf.space';
+  : 'https://lbjlincoln26-nomos-worker-2.hf.space';
 
 // Load model + space configs
 const modelsConfig = JSON.parse(
@@ -139,6 +140,7 @@ let feedbackLoop = null;   // Phase 1: Prediction vs Reality
 let researchAgent = null;  // Phase 3: Autonomous research
 let codeAgent = null;      // Code Agent: Groq/LiteLLM coding LLM
 let multiAgent = null;     // Multi-Agent Coordinator: 6 specialized agents
+let agentExecutor = null;  // ReAct Agent Executor: LLM with tool-calling
 
 // ============================================================
 // OPENROUTER LLM CLIENT
@@ -1059,6 +1061,8 @@ app.get('/', (req, res) => {
       experiment_submit: '/api/v1/experiment/submit',
       experiment_status: '/api/v1/experiment/status',
       experiment_history: '/api/v1/experiment/history',
+      agent: '/api/v1/agent',
+      agent_status: '/api/v1/agent/status',
       query: '/api/v1/query',
       db: '/api/v1/db',
       metrics: '/api/v1/metrics',
@@ -1656,12 +1660,44 @@ function buildEveContext() {
   return ctx;
 }
 
-// LLM chat (direct OpenRouter) — now with Eve sessions
+// LLM chat (direct OpenRouter) — now with Eve sessions + optional agent mode
 app.post('/api/v1/chat', async (req, res) => {
   try {
-    const { messages, model, maxTokens = 2000, sessionId } = req.body;
+    const { messages, model, maxTokens = 2000, sessionId, agent = false, maxIterations } = req.body;
     if (!messages) return res.status(400).json({ error: 'messages required' });
 
+    // ── Agent Mode: delegate to AgentExecutor for real tool-calling ──
+    if (agent && agentExecutor) {
+      let agentMessages = messages;
+
+      // If sessionId, inject session context
+      if (sessionId) {
+        const session = getOrCreateSession(sessionId);
+        const systemCtx = buildEveContext();
+        const systemMsg = {
+          role: 'system',
+          content: `${EVE_SYSTEM_PROMPT}\n\nCurrent system status:\n${JSON.stringify(systemCtx, null, 2)}\n\nYou have access to tools. Use them to answer the user's question with real data.`,
+        };
+        const userMsg = messages[messages.length - 1];
+        session.messages.push(userMsg);
+        agentMessages = [systemMsg, ...session.messages.slice(-30)];
+      }
+
+      const result = await agentExecutor.execute(agentMessages, {
+        maxIterations: maxIterations || 10,
+        maxTokens,
+      });
+
+      // Store assistant reply in session
+      if (sessionId && result?.content) {
+        const session = getOrCreateSession(sessionId);
+        session.messages.push({ role: 'assistant', content: result.content });
+      }
+
+      return res.json(result);
+    }
+
+    // ── Standard Mode: plain LLM completion (no tools) ──
     let finalMessages = messages;
 
     // If sessionId provided, use Eve persona + session history
@@ -1729,6 +1765,69 @@ app.post('/api/v1/chat/session', (req, res) => {
   const sessionId = req.body.sessionId || `eve-${Date.now()}`;
   getOrCreateSession(sessionId);
   res.json({ sessionId, created: new Date().toISOString() });
+});
+
+// ============================================================
+// AGENT EXECUTOR API — ReAct tool-calling loop
+// ============================================================
+
+// Full agentic endpoint: LLM reasons + calls tools autonomously
+app.post('/api/v1/agent', async (req, res) => {
+  if (!agentExecutor) {
+    return res.status(503).json({ error: 'Agent executor not initialized' });
+  }
+
+  try {
+    const { messages, maxIterations = 10, maxTokens = 2000, temperature = 0.3, sessionId } = req.body;
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return res.status(400).json({ error: 'messages array required (at least one message)' });
+    }
+
+    let agentMessages = messages;
+
+    // If sessionId, weave in session history + system context
+    if (sessionId) {
+      const session = getOrCreateSession(sessionId);
+      const systemCtx = buildEveContext();
+      const systemMsg = {
+        role: 'system',
+        content: `${EVE_SYSTEM_PROMPT}\n\nCurrent system status:\n${JSON.stringify(systemCtx, null, 2)}\n\nYou are an autonomous agent with access to real tools. Use them to gather data, execute actions, and answer questions with verified information. Never guess — always use tools to confirm.`,
+      };
+      const userMsg = messages[messages.length - 1];
+      session.messages.push(userMsg);
+      agentMessages = [systemMsg, ...session.messages.slice(-30)];
+    }
+
+    const result = await agentExecutor.execute(agentMessages, {
+      maxIterations,
+      maxTokens,
+      temperature,
+    });
+
+    // Store assistant reply in session
+    if (sessionId && result?.content) {
+      const session = getOrCreateSession(sessionId);
+      session.messages.push({ role: 'assistant', content: result.content });
+    }
+
+    res.json(result);
+  } catch (err) {
+    logger.error(`[AGENT-API] Execution failed: ${err.message}`);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Agent status and available tools
+app.get('/api/v1/agent/status', (req, res) => {
+  if (!agentExecutor) return res.json({ status: 'not_initialized' });
+  res.json(agentExecutor.getStatus());
+});
+
+// Agent execution log
+app.get('/api/v1/agent/log', (req, res) => {
+  if (!agentExecutor) return res.json([]);
+  const limit = parseInt(req.query.limit) || 20;
+  res.json(agentExecutor.executionLog.slice(-limit));
 });
 
 // ============================================================
@@ -2491,6 +2590,20 @@ async function start() {
   multiAgent.start();
   logger.info('Multi-Agent Coordinator: 6 CODE-WRITING agents started (Feature Scout, Model Architect, Calibrator, Evolution Tuner, Market Intel, Research Scholar)');
 
+  // Initialize Agent Executor — ReAct tool-calling loop (the REAL agentic system)
+  agentExecutor = new AgentExecutor({
+    getCompletion,
+    infraBridge,
+    vmBridge,
+    dataWorker,
+    fetchEvolution: fetchEvo,
+    ghToken: GH_TOKEN,
+    ghOwner: GH_OWNER,
+    braveApiKey: process.env.BRAVE_API_KEY || process.env.BRAVE_SEARCH_API_KEY,
+    systemPrompt: `${EVE_SYSTEM_PROMPT}\n\nYou are an autonomous agent with access to real tools. Use them to gather data, execute actions, and answer questions with verified information. Never guess — always use a tool to confirm facts.`,
+  });
+  logger.info(`Agent Executor initialized — ReAct loop with ${agentExecutor.getToolDefinitions().length} tools available`);
+
   // Start Express
   app.listen(PORT, '0.0.0.0', () => {
     logger.info('='.repeat(60));
@@ -2508,6 +2621,7 @@ async function start() {
     logger.info(`Model Monitor: ACTIVE (${Object.keys(modelMonitor.models).length} free models tracked)`);
     logger.info(`Rule Engine: ACTIVE (${ruleEngine.rules.length} deterministic rules)`);
     logger.info(`Code Agent: ${codeAgent?.enabled ? 'ACTIVE (Groq/LiteLLM)' : 'DISABLED'}`);
+    logger.info(`Agent Executor: ACTIVE (ReAct loop, ${agentExecutor.getToolDefinitions().length} tools)`);
     logger.info(`Order Executor: ACTIVE (natural language → actions)`);
     logger.info(`Dashboard: /dashboard`);
     logger.info('='.repeat(60));
