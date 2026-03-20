@@ -59,7 +59,7 @@ const AGENTS = [
   {
     id: 'feature_scout',
     name: 'Feature Scout',
-    provider: 'gemini',
+    provider: 'groq',
     focus: 'feature_test',
     staggerMs: 0,
     systemPrompt: `You are the FEATURE SCOUT for an elite NBA prediction model (current Brier ~0.22, target < 0.20).
@@ -108,7 +108,7 @@ RULES:
   {
     id: 'model_architect',
     name: 'Model Architect',
-    provider: 'openai',
+    provider: 'groq',
     focus: 'model_test',
     staggerMs: 30000,
     systemPrompt: `You are the MODEL ARCHITECT for an elite NBA prediction system.
@@ -154,7 +154,7 @@ RULES:
   {
     id: 'calibrator',
     name: 'Calibrator',
-    provider: 'kimi',
+    provider: 'groq',
     focus: 'calibration_test',
     staggerMs: 60000,
     systemPrompt: `You are the CALIBRATION SPECIALIST for an elite NBA prediction model.
@@ -198,7 +198,7 @@ RULES:
   {
     id: 'evolution_tuner',
     name: 'Evolution Tuner',
-    provider: 'gemini',
+    provider: 'groq',
     focus: 'config_change',
     staggerMs: 90000,
     systemPrompt: `You are the EVOLUTION TUNER for the genetic algorithm optimizing NBA predictions.
@@ -252,7 +252,7 @@ RULES:
   {
     id: 'market_intel',
     name: 'Market Intel',
-    provider: 'openai',
+    provider: 'groq',
     focus: 'feature_test',
     staggerMs: 120000,
     systemPrompt: `You are the MARKET INTELLIGENCE agent for an elite NBA prediction model.
@@ -315,7 +315,7 @@ RULES:
   {
     id: 'research_scholar',
     name: 'Research Scholar',
-    provider: 'gemini',
+    provider: 'groq',
     focus: 'model_test',
     staggerMs: 150000,
     systemPrompt: `You are the RESEARCH SCHOLAR for an elite NBA prediction model.
@@ -411,7 +411,7 @@ class MultiAgentCoordinator {
   }
 
   async _runAgentLoop(agent) {
-    const intervalMs = 3 * 60 * 1000; // 3 minutes per cycle — TURBO MODE
+    const intervalMs = 5 * 60 * 1000; // 5 minutes — balanced for Groq rate limits
 
     while (this.running) {
       try {
@@ -534,8 +534,8 @@ Output format — ONLY this, nothing else:
 # Your Python code here
 ===END===`;
 
-    // Use Gemini for code gen (free, reliable), codex/o3 as fallback when quota available
-    const codeProvider = 'gemini';
+    // Use Groq for code gen (free, working), other providers as fallback
+    const codeProvider = 'groq';
     const codeResponse = await this._callProvider(codeProvider, codePrompt);
     if (!codeResponse) {
       logger.warn(`[MULTI-AGENT] ${agent.name}: code LLM returned EMPTY — all providers failed`);
@@ -667,7 +667,7 @@ Output format — ONLY this, nothing else:
 
   async _callProvider(providerName, prompt) {
     // Try the designated provider, then fallback chain
-    const chain = [providerName, 'codex', 'gemini', 'openai', 'o3', 'kimi', 'groq'];
+    const chain = [providerName, 'groq', 'gemini', 'codex', 'openai', 'o3', 'kimi'];
     const tried = new Set();
 
     for (const name of chain) {
