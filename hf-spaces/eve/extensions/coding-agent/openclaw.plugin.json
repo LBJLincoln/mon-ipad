@@ -1,0 +1,38 @@
+{
+  "id": "coding-agent",
+  "name": "Coding Agent",
+  "description": "Claude Code sub-agent for autonomous coding on HF Spaces — powered by Zhipu GLM via z.ai",
+  "version": "2.0.0",
+  "defaultConfig": {
+    "targetSpace": "",
+    "targetDataset": "",
+    "hfToken": "",
+    "zaiApiKey": ""
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "targetSpace": {
+        "type": "string",
+        "description": "HuggingFace Space repo ID to manage (e.g. tao-shen/HuggingClaw-Cain)"
+      },
+      "targetDataset": {
+        "type": "string",
+        "description": "HuggingFace Dataset repo ID for persistent data (e.g. tao-shen/HuggingClaw-Cain-data)"
+      },
+      "hfToken": {
+        "type": "string",
+        "description": "HuggingFace API token (or use HF_TOKEN env var)"
+      },
+      "zaiApiKey": {
+        "type": "string",
+        "description": "Z.AI API key for Claude Code backend (or use ZAI_API_KEY / ZHIPU_API_KEY env var)"
+      }
+    }
+  },
+  "uiHints": {
+    "hfToken": { "sensitive": true },
+    "zaiApiKey": { "sensitive": true }
+  }
+}

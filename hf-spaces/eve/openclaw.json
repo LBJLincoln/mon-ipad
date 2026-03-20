@@ -1,0 +1,79 @@
+{
+  "gateway": {
+    "mode": "local",
+    "bind": "lan",
+    "port": 7860,
+    "auth": { "token": "${GATEWAY_TOKEN}" },
+    "trustedProxies": ["0.0.0.0/0"],
+    "controlUi": {
+      "allowInsecureAuth": true,
+      "dangerouslyDisableDeviceAuth": true,
+      "allowedOrigins": [
+        "https://huggingface.co",
+        "https://*.hf.space"
+      ]
+    }
+  },
+  "session": { "scope": "global" },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "kimi": {
+        "baseUrl": "https://api.moonshot.cn/v1",
+        "apiKey": "${KIMI_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          { "id": "moonshot-v1-auto", "name": "Kimi Auto (Best)" },
+          { "id": "kimi-k2-0520", "name": "Kimi K2 (Coding)" }
+        ]
+      },
+      "gemini": {
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "apiKey": "${GOOGLE_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          { "id": "gemini-2.5-flash", "name": "Gemini 2.5 Flash" },
+          { "id": "gemini-2.5-pro", "name": "Gemini 2.5 Pro" }
+        ]
+      },
+      "openrouter": {
+        "baseUrl": "https://openrouter.ai/api/v1",
+        "apiKey": "${OPENROUTER_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          { "id": "deepseek/deepseek-r1-0528:free", "name": "DeepSeek R1 (Free)" },
+          { "id": "qwen/qwen3-235b-a22b:free", "name": "Qwen3 235B (Free)" }
+        ]
+      }
+    }
+  },
+  "acp": {
+    "enabled": true,
+    "backend": "acpx",
+    "defaultAgent": "claude",
+    "allowedAgents": ["claude"],
+    "maxConcurrentSessions": 4,
+    "dispatch": { "enabled": true },
+    "runtime": { "ttlMinutes": 120 }
+  },
+  "plugins": {
+    "allow": ["telegram", "acpx", "coding-agent", "a2a-gateway", "nba-agent"],
+    "entries": {
+      "telegram": { "enabled": true },
+      "acpx": {
+        "enabled": true,
+        "config": { "permissionMode": "approve-all" }
+      },
+      "coding-agent": { "enabled": true },
+      "nba-agent": { "enabled": true }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "workspace": "~/.openclaw/workspace",
+      "model": {
+        "primary": "kimi/moonshot-v1-auto"
+      }
+    }
+  }
+}
