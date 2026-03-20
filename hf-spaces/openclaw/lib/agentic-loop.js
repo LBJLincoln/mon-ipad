@@ -285,17 +285,17 @@ class AgenticLoop {
     // COMMAND: Every 1 min — fast poll for Adam's commands
     this.timers.command = setInterval(() => this._cycle('command'), 60 * 1000);
 
-    // HEARTBEAT: Every 30 min
-    this.timers.heartbeat = setInterval(() => this._cycle('heartbeat'), 30 * 60 * 1000);
+    // HEARTBEAT: Every 2 hours (reduced from 30 min — was too spammy)
+    this.timers.heartbeat = setInterval(() => this._cycle('heartbeat'), 2 * 60 * 60 * 1000);
 
     // EVAL: Check every 10 min, runs once per day per date
     this.timers.eval = setInterval(() => this._maybeEval(), 10 * 60 * 1000);
 
-    // ANALYZE: Every 15 min — 5 specialized roles rotate
-    this.timers.analyze = setInterval(() => this._cycle('analyze'), 15 * 60 * 1000);
+    // ANALYZE: Every 1 hour (reduced from 15 min — was too spammy)
+    this.timers.analyze = setInterval(() => this._cycle('analyze'), 60 * 60 * 1000);
 
-    // RESEARCH: Every 2 hours — 12x/day
-    this.timers.research = setInterval(() => this._cycle('research'), 2 * 60 * 60 * 1000);
+    // RESEARCH: Every 6 hours — 4x/day (reduced from 2h — was too spammy)
+    this.timers.research = setInterval(() => this._cycle('research'), 6 * 60 * 60 * 1000);
 
     // EXPERIMENT: Every 3 min — dispatch pending experiments to S11
     this.timers.experiment = setInterval(() => this._cycle('experiment'), 3 * 60 * 1000);

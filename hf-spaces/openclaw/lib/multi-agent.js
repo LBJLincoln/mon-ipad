@@ -18,6 +18,21 @@
 const logger = require('./logger');
 const { v4: uuidv4 } = require('uuid');
 
+// ── Telegram Notification Throttle ──
+// Only send max 1 non-critical Telegram message per 10 minutes
+// "code blocked" messages are logged but NOT sent to Telegram (too spammy)
+const _tgThrottle = { lastSent: 0, suppressed: 0 };
+function _shouldSendTg(isCritical = false) {
+  if (isCritical) return true;
+  const now = Date.now();
+  if (now - _tgThrottle.lastSent < 10 * 60 * 1000) {
+    _tgThrottle.suppressed++;
+    return false;
+  }
+  _tgThrottle.lastSent = now;
+  return true;
+}
+
 // ── LLM Provider Configs ──
 const PROVIDERS = {
   gemini: {
@@ -640,12 +655,7 @@ Output format — ONLY this, nothing else:
       const syntaxOk = await this._validatePythonSyntax(block.code);
       if (!syntaxOk) {
         logger.warn(`[MULTI-AGENT] ${agent.name} code REJECTED — Python syntax error in ${filePath}`);
-        if (this.bot && this.adminId) {
-          this.bot.sendMessage(this.adminId,
-            `❌ *Code BLOCKED* (syntax error)\n${agent.name} → \`${filePath}\`\nCode failed \`ast.parse()\` — not committed.`,
-            { parse_mode: 'Markdown' }
-          ).catch(() => {});
-        }
+        // Suppressed: syntax errors are logged but NOT sent to Telegram (too spammy)
         throw new Error('Python syntax validation failed');
       }
     }
@@ -675,8 +685,8 @@ Output format — ONLY this, nothing else:
 
     logger.info(`[MULTI-AGENT] ${agent.name} committed VALIDATED code to ${repo}/${filePath}`);
 
-    // Notify via Telegram
-    if (this.bot && this.adminId) {
+    // Throttled Telegram notification (max 1 per 10 min for code writes)
+    if (this.bot && this.adminId && _shouldSendTg(false)) {
       this.bot.sendMessage(this.adminId,
         `✅ *${agent.name}* wrote validated code\n\`${repo}/${filePath}\`\n${block.code.substring(0, 100)}...`,
         { parse_mode: 'Markdown' }
@@ -760,12 +770,7 @@ Reply with EXACTLY one line:
         const reason = review.match(/(?:REJECTED|REVERT):\s*(.*)/i)?.[1] || 'quality issue';
         logger.warn(`[MULTI-AGENT] Pre-commit review REJECTED ${filePath}: ${reason}`);
 
-        if (this.bot && this.adminId) {
-          this.bot.sendMessage(this.adminId,
-            `⚠️ *Code BLOCKED by review*\n${agent.name} → \`${repo}/${filePath}\`\nReason: ${reason.substring(0, 200)}`,
-            { parse_mode: 'Markdown' }
-          ).catch(() => {});
-        }
+        // Suppressed: "code blocked by review" logged but NOT sent to Telegram (too spammy)
         return 'REJECT';
       }
 
@@ -1049,10 +1054,10 @@ Reply with EXACTLY one line:
 
       logger.info(`[MULTI-AGENT] Kaggle GPU kernel triggered! ${gpuPending} GPU experiments pending. Response: ${JSON.stringify(data).substring(0, 200)}`);
 
-      // Notify via Telegram
-      if (this.bot) {
+      // Throttled Telegram notification
+      if (this.bot && _shouldSendTg(false)) {
         this.bot.sendMessage(this.adminId,
-          `🖥️ *Kaggle GPU Runner Triggered*\n${gpuPending} GPU experiments pending\nKernel: ${kernelSlug}`,
+          `🖥️ *GPU Runner Triggered*\n${gpuPending} GPU experiments pending`,
           { parse_mode: 'Markdown' }
         ).catch(() => {});
       }
