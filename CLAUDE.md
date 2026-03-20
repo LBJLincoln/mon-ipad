@@ -66,7 +66,7 @@ ADAM (Claude Code CLI)          EVE (OpenClaw Healer)
 - Live predictions : nomos42.vercel.app/nba
 - Current best : Brier 0.2333 (Gen 11, cycle 2), ROI 7.5%
 - **Karpathy agentic loop** : OpenClaw auto-researches features + evaluates + reports
-- **Dashboard** : nomos42-nomos-worker-2.hf.space/dashboard (PNL pixel-art live)
+- **Dashboard** : nomos42-nomos-eve.hf.space/dashboard (PNL pixel-art live)
 
 ### AXE 2 : THE FORGE (a venir)
 - Generateur automatique d'entreprise via agents autonomes
@@ -97,7 +97,7 @@ VM autorisee UNIQUEMENT pour : data-server, monitoring, git, Claude Code
 | **nba-quant** (S10) | lbjlincoln | Genetic evolution 24/7 | lbjlincoln-nomos-nba-quant.hf.space |
 | **nba-quant-2** (S11) | lbjlincoln | Parallel training | lbjlincoln-nomos-nba-quant-2.hf.space |
 | **LiteLLM** (S7) | lbjlincoln | LLM proxy, 13 providers | lbjlincoln-nomos-rag-engine-7.hf.space |
-| **OpenClaw** | Nomos42 | Eve — 24/7 agent, Telegram | nomos42-nomos-worker-2.hf.space |
+| **Eve** | Nomos42 | Eve — 24/7 agentic agent, Telegram | nomos42-nomos-eve.hf.space |
 | **LiteLLM-2** | Nomos42 | LLM proxy backup | nomos42-nomos-litellm-2.hf.space |
 
 **RAG Spaces** : ALL PAUSED (archived 2026-03-17). See `archive/rag-full-archive.md`.
@@ -123,7 +123,7 @@ VM autorisee UNIQUEMENT pour : data-server, monitoring, git, Claude Code
 | Endpoint | URL | Key |
 |----------|-----|-----|
 | LiteLLM S7 | lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions | sk-litellm-nomos-2026 |
-| OpenClaw | nomos42-nomos-worker-2.hf.space/api/v1/chat | (internal) |
+| OpenClaw | nomos42-nomos-eve.hf.space/api/v1/chat | (internal) |
 
 ---
 
@@ -203,7 +203,7 @@ Stagnation: Fresh injection at 10 idle gens
 
 ### Claude Code CLI → OpenClaw
 ```bash
-curl -X POST https://nomos42-nomos-worker-2.hf.space/api/v1/chat \
+curl -X POST https://nomos42-nomos-eve.hf.space/api/v1/chat \
   -H 'Content-Type: application/json' \
   -d '{"messages":[{"role":"user","content":"..."}]}'
 ```
@@ -252,10 +252,10 @@ python3 scripts/nba-data-server.py &
 python3 ops/nba-pilot.py
 
 # OpenClaw Test
-curl -s https://nomos42-nomos-worker-2.hf.space/keep-alive
+curl -s https://nomos42-nomos-eve.hf.space/keep-alive
 
 # Evolution Status
-curl -s https://nomos42-nomos-worker-2.hf.space/api/v1/evolution
+curl -s https://nomos42-nomos-eve.hf.space/api/v1/evolution
 
 # Git
 git push origin main
