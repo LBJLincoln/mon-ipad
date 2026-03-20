@@ -43,9 +43,10 @@ const PROVIDERS = {
     model: 'o3-mini',
   },
   kimi: {
-    url: 'https://api.moonshot.cn/v1/chat/completions',
+    url: 'https://api.kimi.com/coding/v1/messages',
     key: () => process.env.KIMI_API_KEY,
-    model: 'moonshot-v1-8k',
+    model: 'kimi-for-coding',
+    format: 'anthropic',  // Uses Anthropic Messages API format
   },
   groq: {
     url: 'https://api.groq.com/openai/v1/chat/completions',
@@ -680,18 +681,19 @@ Output format — ONLY this, nothing else:
       if (!key) continue;
 
       try {
+        // Kimi Code uses Anthropic Messages API format
+        const isAnthropic = provider.format === 'anthropic';
+        const headers = isAnthropic
+          ? { 'x-api-key': key, 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' }
+          : { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' };
+        const body = isAnthropic
+          ? { model: provider.model, max_tokens: 2500, messages: [{ role: 'user', content: prompt }] }
+          : { model: provider.model, messages: [{ role: 'user', content: prompt }], max_tokens: 2500, temperature: 0.7 };
+
         const resp = await fetch(provider.url, {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${key}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: provider.model,
-            messages: [{ role: 'user', content: prompt }],
-            max_tokens: 2500,
-            temperature: 0.7,
-          }),
+          headers,
+          body: JSON.stringify(body),
           signal: AbortSignal.timeout(60000),
         });
         const data = await resp.json();
@@ -699,7 +701,10 @@ Output format — ONLY this, nothing else:
           logger.warn(`[MULTI-AGENT] ${name}/${provider.model} API error: ${data.error?.message || JSON.stringify(data.error).substring(0, 100)}`);
           continue; // try next provider
         }
-        const content = data.choices?.[0]?.message?.content;
+        // Parse response: Anthropic = content[0].text, OpenAI = choices[0].message.content
+        const content = isAnthropic
+          ? data.content?.[0]?.text
+          : data.choices?.[0]?.message?.content;
         if (content?.length > 10) {
           logger.debug(`[MULTI-AGENT] ${name}/${provider.model} responded (${content.length} chars)`);
           return content;

@@ -269,9 +269,10 @@ async function getCompletion(messages, options = {}) {
     },
     {
       name: 'kimi',
-      url: 'https://api.moonshot.cn/v1/chat/completions',
+      url: 'https://api.kimi.com/coding/v1/messages',
       key: process.env.KIMI_API_KEY,
-      model: 'moonshot-v1-8k',
+      model: 'kimi-for-coding',
+      format: 'anthropic',
     },
     {
       name: 'gemini',
@@ -284,22 +285,24 @@ async function getCompletion(messages, options = {}) {
   for (const provider of DIRECT_PROVIDERS) {
     if (!provider.key) continue;
     try {
+      const isAnthropic = provider.format === 'anthropic';
+      const headers = isAnthropic
+        ? { 'x-api-key': provider.key, 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' }
+        : { 'Authorization': `Bearer ${provider.key}`, 'Content-Type': 'application/json' };
+      const body = isAnthropic
+        ? { model: provider.model, max_tokens: maxTokens, messages: allMessages }
+        : { model: provider.model, messages: allMessages, max_tokens: maxTokens, temperature };
+
       const resp = await fetch(provider.url, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${provider.key}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: provider.model,
-          messages: allMessages,
-          max_tokens: maxTokens,
-          temperature,
-        }),
+        headers,
+        body: JSON.stringify(body),
         signal: AbortSignal.timeout(25000),
       });
       const data = await resp.json();
-      const content = data.choices?.[0]?.message?.content;
+      const content = isAnthropic
+        ? data.content?.[0]?.text
+        : data.choices?.[0]?.message?.content;
       if (content?.length > 0) {
         if (ruleEngine) ruleEngine.resetLLMFailures();
         return { content, model: `${provider.name}/${provider.model}`, usage: data.usage };
