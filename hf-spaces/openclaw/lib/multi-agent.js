@@ -30,6 +30,18 @@ const PROVIDERS = {
     key: () => process.env.OPENAI_API_KEY,
     model: 'gpt-4.1-mini',
   },
+  // GPT-5 Codex — the BEST coding model from OpenAI (for Phase 2 code generation)
+  codex: {
+    url: 'https://api.openai.com/v1/chat/completions',
+    key: () => process.env.OPENAI_API_KEY,
+    model: 'gpt-5.1-codex-mini',
+  },
+  // o3 — OpenAI reasoning model (for complex architecture decisions)
+  o3: {
+    url: 'https://api.openai.com/v1/chat/completions',
+    key: () => process.env.OPENAI_API_KEY,
+    model: 'o3-mini',
+  },
   kimi: {
     url: 'https://api.moonshot.cn/v1/chat/completions',
     key: () => process.env.KIMI_API_KEY,
@@ -516,8 +528,8 @@ Output format — ONLY this, nothing else:
 # Your Python code here
 ===END===`;
 
-    // Use a DIFFERENT provider for code generation (cross-pollination)
-    const codeProvider = agent.provider === 'openai' ? 'gemini' : 'openai';
+    // Use CODEX for code generation (best coding model), fallback to cross-provider
+    const codeProvider = 'codex';
     const codeResponse = await this._callProvider(codeProvider, codePrompt);
     if (!codeResponse) return 0;
 
@@ -641,7 +653,7 @@ Output format — ONLY this, nothing else:
 
   async _callProvider(providerName, prompt) {
     // Try the designated provider, then fallback chain
-    const chain = [providerName, 'gemini', 'openai', 'kimi', 'groq'];
+    const chain = [providerName, 'codex', 'gemini', 'openai', 'o3', 'kimi', 'groq'];
     const tried = new Set();
 
     for (const name of chain) {
@@ -917,8 +929,8 @@ Output format — ONLY this, nothing else:
       const code = await this.codeAgent.readFile(repo, filePath);
       if (!code) return;
 
-      // 2. Ask a DIFFERENT LLM to review (cross-review for quality)
-      const reviewProvider = agent.provider === 'gemini' ? 'openai' : 'gemini';
+      // 2. Ask o3 (reasoning model) to review code quality
+      const reviewProvider = 'o3';
       const reviewPrompt = `You are a code reviewer for an NBA prediction model. Review this code for:
 1. Python syntax errors
 2. Logic bugs
