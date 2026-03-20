@@ -1014,7 +1014,8 @@ Max 200 words.`;
           }
         }
 
-        // Market agent: also track experiments via A2A
+        // Market agent: ALSO submit experiments to Supabase (fixed: was only posting A2A reports)
+        // This ensures market experiments actually reach S11 for evaluation
         if (this.isMarketAgent) {
           const experiments = [];
           for (const line of result.content.split('\n')) {
@@ -1026,8 +1027,12 @@ Max 200 words.`;
               } catch (e) {}
             }
           }
-          if (experiments.length > 0 && this.a2a) {
-            for (const exp of experiments) {
+          for (const exp of experiments) {
+            // Actually submit to Supabase queue (was missing before)
+            exp.agent_name = exp.agent_name || this.agentName;
+            await this._submitExperiment(exp);
+            // Also report via A2A for visibility
+            if (this.a2a) {
               this.a2a.postReport({
                 type: 'market_experiment',
                 level: 'INFO',
@@ -1035,13 +1040,13 @@ Max 200 words.`;
                 data: { experiment: exp, source: this.agentName },
               });
             }
-            this.state._marketExperimentsSubmitted = (this.state._marketExperimentsSubmitted || 0) + experiments.length;
           }
+          this.state._marketExperimentsSubmitted = (this.state._marketExperimentsSubmitted || 0) + experiments.length;
         }
 
-        // Auto-execute RECOMMENDATION blocks: Karpathy pattern (not for market agent)
+        // Auto-execute RECOMMENDATION blocks: Karpathy pattern (all agents)
         let executedActions = [];
-        if (this.autoExecuteEnabled && !this.isMarketAgent) {
+        if (this.autoExecuteEnabled) {
           executedActions = await this._tryAutoExecute(result.content, context);
         }
 
