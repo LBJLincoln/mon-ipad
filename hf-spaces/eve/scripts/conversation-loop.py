@@ -444,33 +444,26 @@ def run_claude_code(task, repo_key="nba", agent_name="Cain"):
     2. Fall back to direct LLM API if acpx is unavailable or fails
     3. Commit and push any changes to GitHub
     """
+    log(agent_name, f"[DEBUG] Acquiring cc_lock...")
     with cc_lock:
-        log(agent_name, f"Starting task: {task[:100]}...")
+        log(agent_name, f"[DEBUG] cc_lock acquired. Task: {task[:100]}...")
 
         # 1. Ensure repo is up to date
+        log(agent_name, "[DEBUG] ensure_repo...")
         workspace = ensure_repo(repo_key)
         if not workspace:
             log(agent_name, f"Failed to prepare repo {repo_key}")
             return None, False
+        log(agent_name, f"[DEBUG] workspace={workspace}")
 
+        log(agent_name, "[DEBUG] write_claude_md...")
         write_claude_md(workspace, agent_name)
-
-        # 2. Set up env for acpx claude (HuggingClaw pattern)
-        env = os.environ.copy()
-        env["CI"] = "true"
-        env["DISABLE_UPDATE_CHECK"] = "1"
-        env["DO_NOT_TRACK"] = "1"
-        # Route Claude Code to LiteLLM proxy via Anthropic-compatible endpoint
-        if LITELLM_URL and not env.get("ANTHROPIC_API_KEY"):
-            base = LITELLM_URL.rsplit("/v1/", 1)[0]
-            env["ANTHROPIC_BASE_URL"] = f"{base}/anthropic"
-            env["ANTHROPIC_API_KEY"] = LITELLM_KEY
+        log(agent_name, "[DEBUG] write_claude_md done")
 
         # 3. Use direct LLM API (lightweight — no subprocess, no OOM risk)
-        # acpx claude crashes the process on HF Spaces (even with 16GB RAM)
-        # TODO: re-enable acpx once root cause is found
-        log(agent_name, "Using direct LLM API (lightweight mode)")
+        log(agent_name, "[DEBUG] calling _run_llm_api...")
         response, has_file_changes = _run_llm_api(task, workspace, agent_name)
+        log(agent_name, f"[DEBUG] _run_llm_api returned: response={bool(response)}, changes={has_file_changes}")
         if not response:
             return None, False
 
@@ -662,8 +655,10 @@ def eve_worker():
 # ══════════════════════════════════════════════════════════════════════════════
 
 def adam_worker():
-    log("ADAM", "Strategist agent starting (Claude Code CLI)...")
-    time.sleep(90)  # Start 90s after Eve (give OpenClaw time to initialize)
+    log("ADAM", "Strategist agent starting...")
+    log("ADAM", "Sleeping 90s before first task...")
+    time.sleep(90)
+    log("ADAM", "Sleep done, starting first task...")
 
     while True:
         with state_lock:
@@ -843,9 +838,25 @@ print("=" * 60, flush=True)
 print("[LOOP] All 3 agents running — Claude Code CLI on real repos", flush=True)
 print("=" * 60, flush=True)
 
-# Main thread: heartbeat + watchdog
+# Main thread: heartbeat + watchdog + hang detector
+_last_heartbeat = time.time()
+
+
+def _hang_detector():
+    """Kill process if main loop hasn't run for 5 minutes (deadlock protection)."""
+    while True:
+        time.sleep(120)
+        if time.time() - _last_heartbeat > 300:
+            print(f"[HANG-DETECTOR] No heartbeat for 5 min! Force exit.", flush=True)
+            os._exit(1)  # Force kill — sync_hf.py will restart us
+
+
+hang_thread = threading.Thread(target=_hang_detector, daemon=True)
+hang_thread.start()
+
 while True:
     time.sleep(60)
+    _last_heartbeat = time.time()
 
     with state_lock:
         log("HEARTBEAT",
