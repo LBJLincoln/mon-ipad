@@ -263,6 +263,13 @@ def apply_file_changes(workspace, response_text):
     for filepath, content in seen.items():
         target = Path(workspace) / filepath
         if target.exists() or filepath.count("/") <= 2:
+            # SAFETY: reject if new content is drastically smaller than existing file
+            if target.exists():
+                old_size = target.stat().st_size
+                new_size = len(content.encode())
+                if old_size > 5000 and new_size < old_size * 0.5:
+                    log("WRITE", f"REJECTED {filepath}: would shrink from {old_size} to {new_size} bytes ({new_size*100//old_size}%)")
+                    continue
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(content)
             applied.append(filepath)
@@ -467,19 +474,21 @@ def _run_llm_api(task, workspace, agent_name):
         f"You are {agent_name}, an autonomous NBA Quant AI agent.\n"
         f"Current best: Brier 0.2205 | Target: Brier < 0.20, ROI > 5%\n\n"
         f"OUTPUT FORMAT — CRITICAL:\n"
-        f"You MUST output modified files using this EXACT format:\n\n"
-        f"```features/engine.py\n"
-        f"<complete file content here>\n"
+        f"You MUST output a NEW Python file that adds functionality. Use this format:\n\n"
+        f"```models/new_ensemble.py\n"
+        f"<new file content here>\n"
         f"```\n\n"
-        f"The triple-backtick line MUST contain the file path (e.g. features/engine.py), NOT a language name.\n"
-        f"Do NOT use ```python — use ```features/engine.py instead.\n"
-        f"Only return files you ACTUALLY changed. Include the FULL file content.\n\n"
-        f"RULES:\n"
-        f"1. Make MINIMAL, targeted changes (1-2 files max)\n"
-        f"2. Focus on high-impact improvements that reduce Brier score\n"
-        f"3. Do NOT just analyze — WRITE CODE. Every response must include at least one modified file.\n"
-        f"4. Brief explanation (2-3 lines max) then the code blocks.\n\n"
-        f"REPOSITORY FILES:\n{file_context}"
+        f"IMPORTANT RULES:\n"
+        f"1. NEVER rewrite existing large files (engine.py, loop.py). They are READ-ONLY references.\n"
+        f"2. Instead, CREATE NEW files or MODIFY SMALL files (<200 lines).\n"
+        f"3. For features: create a new file like features/advanced_pace.py that adds new features.\n"
+        f"4. For models: create a new file like models/calibrated_blend.py.\n"
+        f"5. For evolution: create helpers like evolution/diversity_inject.py.\n"
+        f"6. The triple-backtick line MUST contain the file path, NOT a language name.\n"
+        f"7. Do NOT use ```python — use ```models/my_new_file.py instead.\n"
+        f"8. Every response MUST include at least one code file.\n"
+        f"9. Brief explanation (2-3 lines max) then the code blocks.\n\n"
+        f"REPOSITORY FILES (READ-ONLY REFERENCE):\n{file_context}"
     )
 
     messages = [
