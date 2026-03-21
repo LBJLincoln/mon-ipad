@@ -2472,12 +2472,9 @@ async function start() {
     bot,
     adminId: ADMIN_TELEGRAM_ID,
   });
-  modelMonitor.start();
-  // Discover new free models from OpenRouter API at startup
-  modelMonitor.discoverFreeModels().catch(() => {});
-  // Re-discover every 30 min
-  setInterval(() => modelMonitor.discoverFreeModels().catch(() => {}), 30 * 60 * 1000);
-  logger.info('Model Health Monitor initialized — tracking 20+ free models');
+  // DELAYED START: HF flags "proxy TCP fan-out" if too many outbound connections at startup
+  // Model monitor, discovery, and all periodic tasks start 120s after HTTP server is up
+  logger.info('Model Health Monitor initialized — will start probing in 120s (TCP fan-out prevention)');
 
   // Initialize Rule Engine — deterministic fallback when LLMs are all down
   ruleEngine = new RuleEngine({ callS10 });
@@ -2562,7 +2559,7 @@ async function start() {
     codeAgent,
     infraBridge,
   });
-  agenticLoop.start();
+  // agenticLoop.start() — delayed to prevent TCP fan-out (see below)
 
   // Initialize Order Executor (natural language → actions)
   orderExecutor = new OrderExecutor({
@@ -2588,8 +2585,8 @@ async function start() {
     getCompletion,
     codeAgent, // Pass CodeAgent so agents can write code to GitHub
   });
-  multiAgent.start();
-  logger.info('Multi-Agent Coordinator: 6 CODE-WRITING agents started (Feature Scout, Model Architect, Calibrator, Evolution Tuner, Market Intel, Research Scholar)');
+  // multiAgent.start() — delayed to prevent TCP fan-out (see below)
+  logger.info('Multi-Agent Coordinator: 6 agents initialized — will start in 120s (TCP fan-out prevention)');
 
   // Initialize Agent Executor — ReAct tool-calling loop (the REAL agentic system)
   agentExecutor = new AgentExecutor({

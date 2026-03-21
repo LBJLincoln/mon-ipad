@@ -299,6 +299,10 @@ def run_claude_code(task, repo_key="nba", agent_name="Cain"):
         env = os.environ.copy()
         env["CI"] = "true"
         env["CLAUDE_CODE_MAX_TURNS"] = "15"
+        # Speed up startup: disable update checks and telemetry
+        env["DISABLE_UPDATE_CHECK"] = "1"
+        env["CLAUDE_CODE_DISABLE_UPDATES"] = "1"
+        env["DO_NOT_TRACK"] = "1"
 
         cmd = ["claude", "-p", task, "--output-format", "text"]
         log(agent_name, f"Running: claude -p '{task[:80]}...' in {workspace}")
@@ -691,9 +695,13 @@ log("INIT", "Verifying Claude Code CLI...")
 which_claude = subprocess.run(["which", "claude"], capture_output=True, text=True)
 if which_claude.returncode == 0:
     log("INIT", f"Claude CLI found: {which_claude.stdout.strip()}")
-    # Check version
-    ver = subprocess.run(["claude", "--version"], capture_output=True, text=True, timeout=10)
-    log("INIT", f"Claude CLI version: {ver.stdout.strip()[:100]}")
+    try:
+        ver = subprocess.run(["claude", "--version"], capture_output=True, text=True, timeout=15)
+        log("INIT", f"Claude CLI version: {ver.stdout.strip()[:100]}")
+    except subprocess.TimeoutExpired:
+        log("INIT", "Claude CLI --version timed out (OK, CLI is present)")
+    except Exception as e:
+        log("INIT", f"Claude CLI version check failed: {e} (OK, CLI is present)")
 else:
     log("INIT", "WARNING: 'claude' not found in PATH — agents will not be able to code")
 
