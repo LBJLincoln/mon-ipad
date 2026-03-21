@@ -110,22 +110,49 @@ def send_telegram(text):
         return
     try:
         import urllib.request, ssl
-        # Try Telegram API mirror first (HF blocks api.telegram.org DNS)
-        mirrors = [
-            "https://telegram-api.mykdigi.com",
-            f"https://api.telegram.org",
-        ]
-        for base in mirrors:
+
+        # Strategy 1: Use resolved IP with Host header (bypasses DNS block)
+        resolved_ip = _get_telegram_ip()
+        if resolved_ip:
             try:
-                url = f"{base}/bot{bot_token}/sendMessage"
+                url = f"https://{resolved_ip}/bot{bot_token}/sendMessage"
                 data = json.dumps({"chat_id": admin_id, "text": text[:4000]}).encode()
+                ctx = ssl.create_default_context()
+                ctx.check_hostname = False  # IP doesn't match cert hostname
+                ctx.verify_mode = ssl.CERT_NONE
+                req = urllib.request.Request(url, data=data, method="POST")
+                req.add_header("Content-Type", "application/json")
+                req.add_header("Host", "api.telegram.org")
+                urllib.request.urlopen(req, timeout=10, context=ctx)
+                return  # Success
+            except Exception as e:
+                log("TG", f"IP method failed ({resolved_ip}): {e}")
+
+        # Strategy 2: Try direct domain (works if DNS not blocked)
+        try:
+            url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+            data = json.dumps({"chat_id": admin_id, "text": text[:4000]}).encode()
+            req = urllib.request.Request(url, data=data, method="POST")
+            req.add_header("Content-Type", "application/json")
+            urllib.request.urlopen(req, timeout=10)
+            return
+        except Exception:
+            pass
+
+        # Strategy 3: Use LiteLLM proxy as Telegram relay (POST to our own proxy)
+        try:
+            proxy_url = os.environ.get("LITELLM_URL", "").replace("/v1/chat/completions", "")
+            if proxy_url:
+                url = f"{proxy_url}/telegram/send"
+                data = json.dumps({"chat_id": admin_id, "text": text[:4000], "bot_token": bot_token}).encode()
                 req = urllib.request.Request(url, data=data, method="POST")
                 req.add_header("Content-Type", "application/json")
                 urllib.request.urlopen(req, timeout=10)
-                return  # Success
-            except Exception:
-                continue
-        log("TG", "All Telegram mirrors failed")
+                return
+        except Exception:
+            pass
+
+        log("TG", "All Telegram methods failed")
     except Exception as e:
         log("TG", f"Send failed: {e}")
 
@@ -198,26 +225,49 @@ def read_repo_files(workspace, file_patterns):
 def apply_file_changes(workspace, response_text):
     """Parse LLM response for file changes and apply them.
 
-    Expected format in response:
-    ```path/to/file.py
-    <full file content>
-    ```
+    Handles multiple formats:
+      1. ```path/to/file.py\n<content>\n```
+      2. ```python:path/to/file.py\n<content>\n```
+      3. ```python\n# file: path/to/file.py\n<content>\n```
+      4. [FILE path/to/file.py]\n```\n<content>\n```
     """
     changes = []
-    # Match ```path/to/file.py ... ``` blocks
-    pattern = r'```(\S+\.(?:py|js|json|yaml|yml|toml|cfg|txt|md|ipynb))\n(.*?)```'
-    matches = re.findall(pattern, response_text, re.DOTALL)
-    for filepath, content in matches:
-        # Skip if it's a language identifier like ```python
-        if filepath in ("python", "javascript", "json", "bash", "shell", "yaml", "toml"):
-            continue
+    LANG_IDS = {"python", "javascript", "json", "bash", "shell", "yaml", "toml",
+                "js", "py", "typescript", "ts", "sh", "css", "html", "sql", "text"}
+    FILE_EXTS = r'\.(?:py|js|json|yaml|yml|toml|cfg|txt|md|ipynb|ts|css|html|sql)'
+
+    # Format 1: ```path/to/file.py
+    for m in re.finditer(r'```(\S+' + FILE_EXTS + r')\n(.*?)```', response_text, re.DOTALL):
+        fp, content = m.group(1), m.group(2)
+        if fp not in LANG_IDS:
+            changes.append((fp, content))
+
+    # Format 2: ```python:path/to/file.py
+    for m in re.finditer(r'```\w+:(\S+' + FILE_EXTS + r')\n(.*?)```', response_text, re.DOTALL):
+        changes.append((m.group(1), m.group(2)))
+
+    # Format 3: ```python\n# file: path/to/file.py
+    for m in re.finditer(r'```\w+\n#\s*file:\s*(\S+' + FILE_EXTS + r')\n(.*?)```', response_text, re.DOTALL):
+        changes.append((m.group(1), m.group(2)))
+
+    # Format 4: [FILE path/to/file.py]\n```
+    for m in re.finditer(r'\[FILE\s+(\S+' + FILE_EXTS + r')\]\s*\n```(?:\w*)\n(.*?)```', response_text, re.DOTALL):
+        changes.append((m.group(1), m.group(2)))
+
+    # Deduplicate (last occurrence wins)
+    seen = {}
+    for fp, content in changes:
+        seen[fp] = content
+
+    applied = []
+    for filepath, content in seen.items():
         target = Path(workspace) / filepath
-        if target.exists() or filepath.count("/") <= 2:  # Only create files in shallow dirs
+        if target.exists() or filepath.count("/") <= 2:
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(content)
-            changes.append(filepath)
+            applied.append(filepath)
             log("WRITE", f"Updated {filepath} ({len(content)} chars)")
-    return changes
+    return applied
 
 
 def ensure_repo(repo_key):
@@ -416,12 +466,19 @@ def _run_llm_api(task, workspace, agent_name):
     system_prompt = (
         f"You are {agent_name}, an autonomous NBA Quant AI agent.\n"
         f"Current best: Brier 0.2205 | Target: Brier < 0.20, ROI > 5%\n\n"
+        f"OUTPUT FORMAT — CRITICAL:\n"
+        f"You MUST output modified files using this EXACT format:\n\n"
+        f"```features/engine.py\n"
+        f"<complete file content here>\n"
+        f"```\n\n"
+        f"The triple-backtick line MUST contain the file path (e.g. features/engine.py), NOT a language name.\n"
+        f"Do NOT use ```python — use ```features/engine.py instead.\n"
+        f"Only return files you ACTUALLY changed. Include the FULL file content.\n\n"
         f"RULES:\n"
         f"1. Make MINIMAL, targeted changes (1-2 files max)\n"
-        f"2. Return COMPLETE modified files in ```path/to/file.py\\n...``` blocks\n"
-        f"3. Do NOT modify files unnecessarily — only return files you changed\n"
-        f"4. Focus on high-impact improvements\n"
-        f"5. Each code block MUST start with the filepath after the triple backticks\n\n"
+        f"2. Focus on high-impact improvements that reduce Brier score\n"
+        f"3. Do NOT just analyze — WRITE CODE. Every response must include at least one modified file.\n"
+        f"4. Brief explanation (2-3 lines max) then the code blocks.\n\n"
         f"REPOSITORY FILES:\n{file_context}"
     )
 
