@@ -461,14 +461,18 @@ def _run_llm_api(task, workspace, agent_name):
     ])
     log(agent_name, f"Read {len(key_files)} files for API task")
 
-    # Send compact summaries (first 50 lines) to keep context small
+    # Build compact context — full content for small files, summary for large files
     file_context = ""
+    LARGE_THRESHOLD = 200  # lines
     for fpath, content in sorted(key_files.items()):
         lines = content.split("\n")
-        # Show header (imports + docstring) only — enough to understand structure
-        preview_lines = min(50, len(lines))
-        truncated = "\n".join(lines[:preview_lines])
-        file_context += f"\n### {fpath} ({len(lines)} lines total)\n```python\n{truncated}\n```\n"
+        if len(lines) > LARGE_THRESHOLD:
+            # Large file: show only structure summary (functions/classes), NOT content
+            funcs = [l.strip() for l in lines if l.strip().startswith("def ") or l.strip().startswith("class ")]
+            file_context += f"\n### {fpath} (DO NOT MODIFY — {len(lines)} lines)\nFunctions: {', '.join(f[:40] for f in funcs[:20])}\n"
+        else:
+            # Small file: show full content (OK to modify)
+            file_context += f"\n### {fpath} ({len(lines)} lines — OK to modify)\n```python\n{content}\n```\n"
 
     system_prompt = (
         f"You are {agent_name}, an autonomous NBA Quant AI agent.\n"
