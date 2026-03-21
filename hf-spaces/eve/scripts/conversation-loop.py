@@ -151,8 +151,8 @@ def parse_tasks(text):
 
 LITELLM_URL = os.environ.get("LITELLM_URL", "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions")
 LITELLM_KEY = os.environ.get("LITELLM_KEY", "sk-litellm-nomos-2026")
-# Models to try in order (Kimi first per user preference)
-LLM_MODELS = ["kimi/moonshot-v1-auto", "anthropic/claude-sonnet-4-20250514", "google/gemini-2.5-flash"]
+# Models to try in order (LiteLLM uses friendly names)
+LLM_MODELS = ["smart", "fast", "gemini-flash", "default"]
 
 
 def call_llm(messages, model=None):
