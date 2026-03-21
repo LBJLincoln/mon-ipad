@@ -17,8 +17,8 @@ import json, time, re, sys, os, subprocess, threading, datetime, uuid, traceback
 from pathlib import Path
 from collections import deque
 
-sys.stdout.reconfigure(line_buffering=True)
-sys.stderr.reconfigure(line_buffering=True)
+# Don't reconfigure stdout (shared with parent process, causes IO deadlocks)
+# Output uses os.write(1, ...) directly instead
 
 # ── Config ────────────────────────────────────────────────────────────────────
 S10_URL = "https://lbjlincoln-nomos-nba-quant.hf.space"
@@ -70,11 +70,17 @@ cc_lock = threading.Lock()  # Only one Claude Code process at a time
 #  CORE HELPERS
 # ══════════════════════════════════════════════════════════════════════════════
 
+_log_lock = threading.Lock()
+
+
 def log(agent, msg):
     ts = datetime.datetime.utcnow().strftime("%H:%M:%S")
-    print(f"[{ts}] [{agent}] {msg}", flush=True)
+    line = f"[{ts}] [{agent}] {msg}\n"
+    # Use os.write() to bypass Python IO layer deadlocks with flush=True
+    with _log_lock:
+        os.write(1, line.encode())
     with state_lock:
-        state["action_log"].append(f"[{ts}] [{agent}] {msg}")
+        state["action_log"].append(line.rstrip())
 
 
 def fetch_json(url, timeout=15):
