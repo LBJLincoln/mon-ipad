@@ -104,22 +104,22 @@ def send_telegram(text):
         return
     try:
         import urllib.request, ssl
-        # Try resolved IP first (HF blocks api.telegram.org DNS)
-        tg_ip = _get_telegram_ip()
-        if tg_ip:
-            url = f"https://{tg_ip}/bot{bot_token}/sendMessage"
-            ctx = ssl.create_default_context()
-            ctx.check_hostname = False
-            ctx.verify_mode = ssl.CERT_NONE
-        else:
-            url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-            ctx = None
-        data = json.dumps({"chat_id": admin_id, "text": text[:4000], "parse_mode": "Markdown"}).encode()
-        req = urllib.request.Request(url, data=data, method="POST")
-        req.add_header("Content-Type", "application/json")
-        if tg_ip:
-            req.add_header("Host", "api.telegram.org")
-        urllib.request.urlopen(req, timeout=10, context=ctx)
+        # Try Telegram API mirror first (HF blocks api.telegram.org DNS)
+        mirrors = [
+            "https://telegram-api.mykdigi.com",
+            f"https://api.telegram.org",
+        ]
+        for base in mirrors:
+            try:
+                url = f"{base}/bot{bot_token}/sendMessage"
+                data = json.dumps({"chat_id": admin_id, "text": text[:4000]}).encode()
+                req = urllib.request.Request(url, data=data, method="POST")
+                req.add_header("Content-Type", "application/json")
+                urllib.request.urlopen(req, timeout=10)
+                return  # Success
+            except Exception:
+                continue
+        log("TG", "All Telegram mirrors failed")
     except Exception as e:
         log("TG", f"Send failed: {e}")
 
@@ -466,16 +466,13 @@ def run_claude_code(task, repo_key="nba", agent_name="Cain"):
             env["ANTHROPIC_BASE_URL"] = f"{base}/anthropic"
             env["ANTHROPIC_API_KEY"] = LITELLM_KEY
 
-        # 3. Try acpx claude first
-        result = _run_acpx_claude(task, workspace, agent_name, env)
-        used_acpx = result is not None
-
-        if not used_acpx:
-            # 4. Fall back to direct LLM API
-            log(agent_name, "acpx not available, using direct LLM API")
-            response, has_file_changes = _run_llm_api(task, workspace, agent_name)
-            if not response:
-                return None, False
+        # 3. Use direct LLM API (lightweight — no subprocess, no OOM risk)
+        # acpx claude crashes the process on HF Spaces (even with 16GB RAM)
+        # TODO: re-enable acpx once root cause is found
+        log(agent_name, "Using direct LLM API (lightweight mode)")
+        response, has_file_changes = _run_llm_api(task, workspace, agent_name)
+        if not response:
+            return None, False
 
         # 5. Commit any changes
         status = subprocess.run(["git", "status", "--porcelain"],
