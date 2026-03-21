@@ -64,7 +64,7 @@ ADAM (Claude Code CLI)          EVE (OpenClaw Healer)
 - Walk-forward backtest (3 seasons, 9500+ games)
 - Target : Brier < 0.20, ROI > 5%, Sharpe > 1.5
 - Live predictions : nomos42.vercel.app/nba
-- Current best : Brier 0.2333 (Gen 11, cycle 2), ROI 7.5%
+- Current best : Brier 0.2198 (Stacking, 96 features, 2026-03-21)
 - **Karpathy agentic loop** : OpenClaw auto-researches features + evaluates + reports
 - **Dashboard** : nomos42-nomos-eve.hf.space/dashboard (PNL pixel-art live)
 
@@ -86,9 +86,24 @@ IP: 34.136.180.66 | Debian 11 | 1 vCPU | 969 MB RAM | 30 GB disk
 ### ⚠️ REGLE ABSOLUE : ZERO ML SUR VM
 ```
 La VM (1 vCPU / 969 MB RAM) ne peut PAS faire de ML.
-TOUT training, Optuna, backtest, genetic algo → HF Spaces (16GB RAM)
+TOUT training → HF Spaces OU Google Colab
 VM autorisee UNIQUEMENT pour : data-server, monitoring, git, Claude Code
 ```
+
+### Compute Split : HF Spaces vs Google Colab
+
+| Aspect | HF Spaces (S10/S11) | Google Colab |
+|--------|---------------------|--------------|
+| **Quand** | 24/7 continu | On-demand, sessions manuelles |
+| **Hardware** | 16GB RAM, CPU only | T4 GPU, 12GB RAM |
+| **Code** | `evolution/loop.py` (island model) | `notebooks/nba-quant-evolution.ipynb` |
+| **Population** | 500 (5 islands × 100) | 80 (single pop) |
+| **Generations** | 100/cycle, continu | 60 par session |
+| **Force** | Exploration large, diversite | GPU-accelerated, Optuna deep |
+| **Qui lance** | Automatique (app.py) | User manuellement |
+
+**HF Spaces** = exploration continue, large population, decouverte de nouvelles regions.
+**Google Colab** = sessions intensives GPU, Optuna profond, ameliorations ciblees.
 
 ### HF Spaces ACTIFS
 
@@ -146,11 +161,12 @@ VM autorisee UNIQUEMENT pour : data-server, monitoring, git, Claude Code
 
 | Model | Brier | Accuracy | ROI |
 |-------|-------|----------|-----|
-| Stacking (best) | 0.2205 | — | — |
-| XGBoost | 0.2206 | 64.5% | -0.3% |
-| Random Forest | 0.2218 | 63.9% | 0.0% |
-| Logistic | 0.2225 | 64.2% | -3.3% |
-| LightGBM | 0.2394 | 62.5% | -13.0% |
+| Stacking (best) | 0.2198 | — | — |
+| XGBoost | 0.2205 | 64.4% | -0.8% |
+| Random Forest | 0.2214 | 64.0% | -0.1% |
+| Logistic | 0.2223 | 63.5% | -3.5% |
+| CatBoost | 0.2279 | 63.5% | -6.9% |
+| LightGBM | 0.2393 | 62.8% | -12.7% |
 
 ### Feature Engine (580+ candidates, ~94 selected)
 
@@ -277,6 +293,6 @@ RAG HF Spaces paused (can be reactivated if needed).
 **Focus** : 100% NBA Quant AI Model
 **HF Spaces** : 5 actifs (2 NBA, 1 OpenClaw, 2 LiteLLM)
 **RAG** : ARCHIVED (9 spaces paused, 269 files archived)
-**NBA Best** : Brier 0.2205, 64.5% accuracy, 94 features selected
+**NBA Best** : Brier 0.2198 (Stacking), 96 features selected
 **OpenClaw** : LIVE avec Healer Alpha (FREE), Telegram connected
 **Website** : nomos42.vercel.app/nba
