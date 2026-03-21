@@ -235,18 +235,25 @@ http.Server.prototype.emit = function (event, ...args) {
       let config = null, startupLog = null;
       try { config = JSON.parse(fs.readFileSync(configPath, 'utf8')); } catch (e) { config = { error: e.message }; }
       try { startupLog = fs.readFileSync(startupLogPath, 'utf8').split('\n').slice(-80); } catch (e) { startupLog = [e.message]; }
+      // Also read OpenClaw runtime log
+      let runtimeLog = [];
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const rtPath = `/tmp/openclaw/openclaw-${today}.log`;
+        runtimeLog = fs.readFileSync(rtPath, 'utf8').split('\n').slice(-50);
+      } catch (e) { runtimeLog = [e.message]; }
       const envCheck = {
         TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN ? 'SET' : 'MISSING',
         TELEGRAM_API_ROOT: process.env.TELEGRAM_API_ROOT || 'NOT SET',
         TELEGRAM_API_BASE: process.env.TELEGRAM_API_BASE || 'NOT SET',
-        GOOGLE_API_KEY: process.env.GOOGLE_API_KEY ? 'SET' : 'MISSING',
+        GROQ_API_KEY: process.env.GROQ_API_KEY ? 'SET' : 'MISSING',
         KIMI_API_KEY: process.env.KIMI_API_KEY ? 'SET' : 'MISSING',
         OPENCLAW_DEFAULT_MODEL: process.env.OPENCLAW_DEFAULT_MODEL || 'NOT SET',
         RUN_ORCHESTRATOR: process.env.RUN_ORCHESTRATOR || 'NOT SET',
         GITHUB_TOKEN: process.env.GITHUB_TOKEN ? 'SET' : 'MISSING',
       };
       res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
-      res.end(JSON.stringify({ config, startupLog, envCheck }, null, 2));
+      res.end(JSON.stringify({ config, startupLog, runtimeLog, envCheck }, null, 2));
       return true;
     }
 

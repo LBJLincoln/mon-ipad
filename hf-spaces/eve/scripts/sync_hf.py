@@ -447,20 +447,19 @@ class OpenClawFullSync:
             data.setdefault("agents", {}).setdefault("defaults", {}).setdefault("model", {})
             data.setdefault("session", {})["scope"] = "global"
 
-            # ── Providers — always ensure Gemini is configured ──────────────
+            # ── Providers — always ensure Groq/Kimi K2 is configured ──────────
             data.setdefault("models", {}).setdefault("providers", {})
-            # Always set Gemini provider (primary LLM for Telegram + agents)
-            if os.environ.get("GOOGLE_API_KEY"):
-                data["models"]["providers"]["gemini"] = {
-                    "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
-                    "apiKey": "${GOOGLE_API_KEY}",
+            # Always set Groq provider with Kimi K2 (primary LLM — FREE, working)
+            if os.environ.get("GROQ_API_KEY"):
+                data["models"]["providers"]["groq"] = {
+                    "baseUrl": "https://api.groq.com/openai/v1",
+                    "apiKey": "${GROQ_API_KEY}",
                     "api": "openai-completions",
                     "models": [
-                        {"id": "gemini-2.5-flash", "name": "Gemini 2.5 Flash"},
-                        {"id": "gemini-2.5-pro", "name": "Gemini 2.5 Pro"}
+                        {"id": "moonshotai/kimi-k2-instruct", "name": "Kimi K2 (Groq)"}
                     ]
                 }
-                print("[SYNC] Gemini provider configured (GOOGLE_API_KEY set)")
+                print("[SYNC] Groq/Kimi K2 provider configured (GROQ_API_KEY set)")
             # Remove providers with dead API keys
             for pid in list(data["models"]["providers"].keys()):
                 pcfg = data["models"]["providers"][pid]
@@ -471,6 +470,10 @@ class OpenClawFullSync:
 
             if OPENCLAW_DEFAULT_MODEL:
                 data["agents"]["defaults"]["model"]["primary"] = OPENCLAW_DEFAULT_MODEL
+            elif os.environ.get("GROQ_API_KEY"):
+                # Default to Kimi K2 via Groq when no explicit model is set
+                data["agents"]["defaults"]["model"]["primary"] = "groq/moonshotai/kimi-k2-instruct"
+                print("[SYNC] Default model set to groq/moonshotai/kimi-k2-instruct")
 
             # ── ACP (Agent Client Protocol) — native Claude Code integration ──
             data["acp"] = {

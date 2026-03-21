@@ -10,5 +10,5 @@ pinned: true
 
 # Eve — Real HuggingClaw
 
-Official OpenClaw + Claude Code CLI + Kimi + Gemini.
+Official OpenClaw + Claude Code CLI + Kimi K2 via Groq (FREE).
 NBA Quant AI autonomous agent.

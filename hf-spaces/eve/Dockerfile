@@ -1,7 +1,7 @@
-# Eve — Real HuggingClaw (OpenClaw + Claude Code CLI + Kimi + Gemini)
+# Eve — Real HuggingClaw (OpenClaw + Claude Code CLI + Kimi K2 via Groq)
 # Based on official HuggingClaw pattern: https://github.com/win4r/HuggingClaw
 #
-# Architecture: OpenClaw binary → ACP → Claude Code CLI (+ Kimi CLI + Gemini CLI)
+# Architecture: OpenClaw binary → ACP → Claude Code CLI (+ Kimi CLI)
 # NOT a custom Express server — this IS the real OpenClaw.
 
 # ── Stage 1: Pull pre-built OpenClaw ─────────────────────────────────────────
