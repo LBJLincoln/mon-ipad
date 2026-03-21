@@ -447,27 +447,27 @@ class OpenClawFullSync:
             data.setdefault("agents", {}).setdefault("defaults", {}).setdefault("model", {})
             data.setdefault("session", {})["scope"] = "global"
 
-            # ── Provider cleanup ─────────────────────────────────────────────
-            # Don't manage providers — let OpenClaw handle them natively from
-            # its own env var support. We only clean up stale providers that
-            # were restored from the dataset backup with hardcoded API keys
-            # that no longer exist in the current environment.
-            restored_providers = data.get("models", {}).get("providers", {})
-            if restored_providers:
-                stale = []
-                for pid, pcfg in list(restored_providers.items()):
-                    api_key = pcfg.get("apiKey", "")
-                    # Skip placeholder-style keys (${VAR}) — OpenClaw resolves these
-                    if not api_key or str(api_key).startswith("${"):
-                        continue
-                    # Hardcoded key from backup — check if it's still in env
-                    # We can't know which env var it came from, so check if
-                    # the exact key value exists in any current env var
-                    if api_key not in os.environ.values():
-                        stale.append(pid)
-                for pid in stale:
-                    del restored_providers[pid]
-                    print(f"[SYNC] Removed stale provider '{pid}' (API key no longer in environment)")
+            # ── Providers — always ensure Gemini is configured ──────────────
+            data.setdefault("models", {}).setdefault("providers", {})
+            # Always set Gemini provider (primary LLM for Telegram + agents)
+            if os.environ.get("GOOGLE_API_KEY"):
+                data["models"]["providers"]["gemini"] = {
+                    "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
+                    "apiKey": "${GOOGLE_API_KEY}",
+                    "api": "openai-completions",
+                    "models": [
+                        {"id": "gemini-2.5-flash", "name": "Gemini 2.5 Flash"},
+                        {"id": "gemini-2.5-pro", "name": "Gemini 2.5 Pro"}
+                    ]
+                }
+                print("[SYNC] Gemini provider configured (GOOGLE_API_KEY set)")
+            # Remove providers with dead API keys
+            for pid in list(data["models"]["providers"].keys()):
+                pcfg = data["models"]["providers"][pid]
+                api_key = pcfg.get("apiKey", "")
+                if api_key and not str(api_key).startswith("${") and api_key not in os.environ.values():
+                    del data["models"]["providers"][pid]
+                    print(f"[SYNC] Removed stale provider '{pid}'")
 
             if OPENCLAW_DEFAULT_MODEL:
                 data["agents"]["defaults"]["model"]["primary"] = OPENCLAW_DEFAULT_MODEL

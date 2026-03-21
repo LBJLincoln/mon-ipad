@@ -228,6 +228,28 @@ http.Server.prototype.emit = function (event, ...args) {
       return true;
     }
 
+    // GET /api/debug → runtime debug info (config, startup log, env check)
+    if (pathname === '/api/debug' && req.method === 'GET') {
+      const configPath = path.join(process.env.HOME || '/home/node', '.openclaw', 'openclaw.json');
+      const startupLogPath = path.join(process.env.HOME || '/home/node', '.openclaw', 'workspace', 'startup.log');
+      let config = null, startupLog = null;
+      try { config = JSON.parse(fs.readFileSync(configPath, 'utf8')); } catch (e) { config = { error: e.message }; }
+      try { startupLog = fs.readFileSync(startupLogPath, 'utf8').split('\n').slice(-80); } catch (e) { startupLog = [e.message]; }
+      const envCheck = {
+        TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN ? 'SET' : 'MISSING',
+        TELEGRAM_API_ROOT: process.env.TELEGRAM_API_ROOT || 'NOT SET',
+        TELEGRAM_API_BASE: process.env.TELEGRAM_API_BASE || 'NOT SET',
+        GOOGLE_API_KEY: process.env.GOOGLE_API_KEY ? 'SET' : 'MISSING',
+        KIMI_API_KEY: process.env.KIMI_API_KEY ? 'SET' : 'MISSING',
+        OPENCLAW_DEFAULT_MODEL: process.env.OPENCLAW_DEFAULT_MODEL || 'NOT SET',
+        RUN_ORCHESTRATOR: process.env.RUN_ORCHESTRATOR || 'NOT SET',
+        GITHUB_TOKEN: process.env.GITHUB_TOKEN ? 'SET' : 'MISSING',
+      };
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify({ config, startupLog, envCheck }, null, 2));
+      return true;
+    }
+
     // POST /api/bubble → set bubble text (used by conversation orchestrator)
     if (pathname === '/api/bubble' && req.method === 'POST') {
       let body = '';
