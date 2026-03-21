@@ -87,18 +87,39 @@ def fetch_json(url, timeout=15):
         return {"error": str(e)}
 
 
+def _get_telegram_ip():
+    """Get resolved Telegram API IP from DNS resolver (HF blocks api.telegram.org)."""
+    try:
+        with open("/tmp/dns-resolved.json") as f:
+            resolved = json.load(f)
+        return resolved.get("api.telegram.org")
+    except Exception:
+        return None
+
+
 def send_telegram(text):
     bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
     admin_id = os.environ.get("TELEGRAM_ADMIN_ID", "")
     if not bot_token or not admin_id:
         return
     try:
-        import urllib.request
-        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        import urllib.request, ssl
+        # Try resolved IP first (HF blocks api.telegram.org DNS)
+        tg_ip = _get_telegram_ip()
+        if tg_ip:
+            url = f"https://{tg_ip}/bot{bot_token}/sendMessage"
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+        else:
+            url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+            ctx = None
         data = json.dumps({"chat_id": admin_id, "text": text[:4000], "parse_mode": "Markdown"}).encode()
         req = urllib.request.Request(url, data=data, method="POST")
         req.add_header("Content-Type", "application/json")
-        urllib.request.urlopen(req, timeout=10)
+        if tg_ip:
+            req.add_header("Host", "api.telegram.org")
+        urllib.request.urlopen(req, timeout=10, context=ctx)
     except Exception as e:
         log("TG", f"Send failed: {e}")
 
@@ -230,13 +251,26 @@ DATABASE_URL is in the environment.
     }))
 
 
+def _output_reader(proc, output_lines, stop_event):
+    """Read subprocess output in a separate thread (avoids blocking main loop)."""
+    try:
+        for line in proc.stdout:
+            if stop_event.is_set():
+                break
+            output_lines.append(line.rstrip())
+    except Exception:
+        pass
+
+
 def run_claude_code(task, repo_key="nba", agent_name="Cain"):
     """
     THE KEY FUNCTION — Like HuggingClaw's action_claude_code().
     1. Clone/pull the real repo
     2. Write CLAUDE.md + slash commands
-    3. Run Claude Code CLI via acpx
+    3. Run Claude Code CLI (claude -p) directly
     4. Auto-push changes back to GitHub
+
+    Uses threaded output reader to prevent blocking on readline().
     """
     with cc_lock:
         log(agent_name, f"Starting Claude Code: {task[:100]}...")
@@ -255,12 +289,19 @@ def run_claude_code(task, repo_key="nba", agent_name="Cain"):
                                 cwd=workspace, capture_output=True, text=True)
         head_before = before.stdout.strip() if before.returncode == 0 else "unknown"
 
-        # 4. Run Claude Code CLI
-        env = os.environ.copy()
-        env["CI"] = "true"  # Non-interactive mode
+        # 4. Verify claude is available
+        which = subprocess.run(["which", "claude"], capture_output=True, text=True)
+        if which.returncode != 0:
+            log(agent_name, "ERROR: 'claude' not found in PATH")
+            return None, False
 
-        cmd = ["acpx", "claude", task]
-        log(agent_name, f"Running: acpx claude '{task[:80]}...' in {workspace}")
+        # 5. Run Claude Code CLI in print mode (non-interactive)
+        env = os.environ.copy()
+        env["CI"] = "true"
+        env["CLAUDE_CODE_MAX_TURNS"] = "15"
+
+        cmd = ["claude", "-p", task, "--output-format", "text"]
+        log(agent_name, f"Running: claude -p '{task[:80]}...' in {workspace}")
 
         try:
             proc = subprocess.Popen(
@@ -268,28 +309,52 @@ def run_claude_code(task, repo_key="nba", agent_name="Cain"):
                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                 text=True, bufsize=1,
             )
+            log(agent_name, f"Claude Code PID: {proc.pid}")
 
+            # Threaded output reader — never blocks the main loop
             output_lines = []
+            stop_event = threading.Event()
+            reader = threading.Thread(
+                target=_output_reader, args=(proc, output_lines, stop_event),
+                daemon=True
+            )
+            reader.start()
+
             start = time.time()
+            last_count = 0
             last_output = start
+            NO_OUTPUT_TIMEOUT = 120  # Kill if no output for 2 min
 
             while True:
+                time.sleep(3)
                 elapsed = time.time() - start
+
+                # Hard timeout
                 if elapsed > CC_TIMEOUT:
                     proc.kill()
                     log(agent_name, f"Claude Code timed out after {CC_TIMEOUT}s")
                     break
 
-                line = proc.stdout.readline()
-                if not line and proc.poll() is not None:
+                # Process exited
+                if proc.poll() is not None:
                     break
-                if line:
-                    stripped = line.rstrip()
-                    output_lines.append(stripped)
+
+                # Track output progress
+                current_count = len(output_lines)
+                if current_count > last_count:
                     last_output = time.time()
-                    # Log every 20th line to avoid spam
-                    if len(output_lines) % 20 == 0:
-                        log(agent_name, f"  CC [{len(output_lines)} lines]: {stripped[:100]}")
+                    # Log new lines for live visibility
+                    for i in range(last_count, min(current_count, last_count + 5)):
+                        log(agent_name, f"  CC [{i+1}]: {output_lines[i][:120]}")
+                    last_count = current_count
+                elif time.time() - last_output > NO_OUTPUT_TIMEOUT:
+                    proc.kill()
+                    log(agent_name, f"No output for {NO_OUTPUT_TIMEOUT}s — killed")
+                    break
+
+            # Cleanup reader thread
+            stop_event.set()
+            reader.join(timeout=5)
 
             exit_code = proc.returncode or 0
             output = "\n".join(output_lines[-50:])
@@ -297,6 +362,11 @@ def run_claude_code(task, repo_key="nba", agent_name="Cain"):
 
         except Exception as e:
             log(agent_name, f"Claude Code error: {e}")
+            traceback.print_exc()
+            try:
+                proc.kill()
+            except Exception:
+                pass
             return None, False
 
         # 5. Check if there are new commits
@@ -494,7 +564,7 @@ def eve_worker():
 
 def adam_worker():
     log("ADAM", "Strategist agent starting (Claude Code CLI)...")
-    time.sleep(120)  # Start 2 min after Eve
+    time.sleep(90)  # Start 90s after Eve (give OpenClaw time to initialize)
 
     while True:
         with state_lock:
@@ -615,6 +685,23 @@ print(f"[LOOP] S10: {S10_URL}", flush=True)
 print(f"[LOOP] S11: {S11_URL}", flush=True)
 print(f"[LOOP] GitHub token: {'SET' if GITHUB_TOKEN else 'NOT SET'}", flush=True)
 print(f"[LOOP] Eve: {EVE_INTERVAL}s | Adam: {ADAM_INTERVAL}s | CC timeout: {CC_TIMEOUT}s", flush=True)
+
+# ── Startup checks ──
+log("INIT", "Verifying Claude Code CLI...")
+which_claude = subprocess.run(["which", "claude"], capture_output=True, text=True)
+if which_claude.returncode == 0:
+    log("INIT", f"Claude CLI found: {which_claude.stdout.strip()}")
+    # Check version
+    ver = subprocess.run(["claude", "--version"], capture_output=True, text=True, timeout=10)
+    log("INIT", f"Claude CLI version: {ver.stdout.strip()[:100]}")
+else:
+    log("INIT", "WARNING: 'claude' not found in PATH — agents will not be able to code")
+
+creds_path = Path.home() / ".claude" / ".credentials.json"
+log("INIT", f"Claude credentials: {'FOUND' if creds_path.exists() else 'MISSING'}")
+
+tg_ip = _get_telegram_ip()
+log("INIT", f"Telegram resolved IP: {tg_ip or 'NOT AVAILABLE'}")
 
 # Pre-clone repos
 log("INIT", "Cloning repos...")
