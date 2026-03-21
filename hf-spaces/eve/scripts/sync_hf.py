@@ -770,15 +770,38 @@ def main():
                 if not os.path.exists(script):
                     print(f"[SYNC] conversation-loop.py not found at {script}")
                     return
+                log_path = "/tmp/conversation-loop.log"
                 while not stop_event.is_set():
                     print("[SYNC] Starting conversation-loop.py (Adam & Eve orchestrator)...")
-                    # Output to STDOUT so it's visible in HF logs (like HuggingClaw)
+                    # Tee output to both stdout AND log file (for /api/conv-loop-log endpoint)
+                    log_file = open(log_path, "a", buffering=1)
                     conv_loop_proc = subprocess.Popen(
                         [sys.executable, "-u", script],
-                        stdout=sys.stdout, stderr=sys.stderr,
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                     )
                     print(f"[SYNC] conversation-loop.py started (PID {conv_loop_proc.pid})")
+
+                    def tee_output(proc, lf):
+                        """Read stdout line by line, write to both stdout and log file."""
+                        try:
+                            for raw_line in iter(proc.stdout.readline, b''):
+                                line = raw_line.decode("utf-8", errors="replace")
+                                sys.stdout.write(line)
+                                sys.stdout.flush()
+                                lf.write(line)
+                                lf.flush()
+                                # Keep log file under 500KB (truncate old lines)
+                                if lf.tell() > 500_000:
+                                    lf.seek(0)
+                                    lf.truncate()
+                        except Exception:
+                            pass
+                    tee_thread = threading.Thread(target=tee_output, args=(conv_loop_proc, log_file), daemon=True)
+                    tee_thread.start()
+
                     exit_code = conv_loop_proc.wait()
+                    tee_thread.join(timeout=5)
+                    log_file.close()
                     if stop_event.is_set():
                         break
                     print(f"[SYNC] conversation-loop.py exited ({exit_code}), restarting in 30s...")
