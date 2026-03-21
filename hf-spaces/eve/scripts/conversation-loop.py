@@ -139,8 +139,80 @@ def parse_tasks(text):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  CLAUDE CODE CLI — The core action (like HuggingClaw's action_claude_code)
+#  LLM API — Lightweight agent that reads code, calls LLM, writes changes
+#  Uses LiteLLM proxy (already running at S7) — zero extra memory footprint
 # ══════════════════════════════════════════════════════════════════════════════
+
+LITELLM_URL = os.environ.get("LITELLM_URL", "https://lbjlincoln-nomos-rag-engine-7.hf.space/v1/chat/completions")
+LITELLM_KEY = os.environ.get("LITELLM_KEY", "sk-litellm-nomos-2026")
+# Models to try in order (Kimi first per user preference)
+LLM_MODELS = ["kimi/moonshot-v1-auto", "anthropic/claude-sonnet-4-20250514", "google/gemini-2.5-flash"]
+
+
+def call_llm(messages, model=None):
+    """Call LLM via LiteLLM proxy. Returns response text or None."""
+    import urllib.request
+    for m in ([model] if model else LLM_MODELS):
+        try:
+            data = json.dumps({
+                "model": m,
+                "messages": messages,
+                "max_tokens": 8000,
+                "temperature": 0.3,
+            }).encode()
+            req = urllib.request.Request(LITELLM_URL, data=data, method="POST")
+            req.add_header("Content-Type", "application/json")
+            req.add_header("Authorization", f"Bearer {LITELLM_KEY}")
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                result = json.loads(resp.read())
+            content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+            if content:
+                log("LLM", f"Got response from {m} ({len(content)} chars)")
+                return content
+        except Exception as e:
+            log("LLM", f"Failed with {m}: {e}")
+            continue
+    return None
+
+
+def read_repo_files(workspace, file_patterns):
+    """Read multiple files from workspace. Returns dict of {path: content}."""
+    ws = Path(workspace)
+    files = {}
+    for pattern in file_patterns:
+        for fpath in ws.glob(pattern):
+            if fpath.is_file() and fpath.stat().st_size < 100_000:  # Skip huge files
+                try:
+                    files[str(fpath.relative_to(ws))] = fpath.read_text()
+                except Exception:
+                    pass
+    return files
+
+
+def apply_file_changes(workspace, response_text):
+    """Parse LLM response for file changes and apply them.
+
+    Expected format in response:
+    ```path/to/file.py
+    <full file content>
+    ```
+    """
+    changes = []
+    # Match ```path/to/file.py ... ``` blocks
+    pattern = r'```(\S+\.(?:py|js|json|yaml|yml|toml|cfg|txt|md|ipynb))\n(.*?)```'
+    matches = re.findall(pattern, response_text, re.DOTALL)
+    for filepath, content in matches:
+        # Skip if it's a language identifier like ```python
+        if filepath in ("python", "javascript", "json", "bash", "shell", "yaml", "toml"):
+            continue
+        target = Path(workspace) / filepath
+        if target.exists() or filepath.count("/") <= 2:  # Only create files in shallow dirs
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(content)
+            changes.append(filepath)
+            log("WRITE", f"Updated {filepath} ({len(content)} chars)")
+    return changes
+
 
 def ensure_repo(repo_key):
     """Clone or pull a repo. Returns the local directory path."""
@@ -251,29 +323,129 @@ DATABASE_URL is in the environment.
     }))
 
 
-def _output_reader(proc, output_lines, stop_event):
-    """Read subprocess output in a separate thread (avoids blocking main loop)."""
+def _run_acpx_claude(task, workspace, agent_name, env):
+    """Try running acpx claude (HuggingClaw-style). Returns (output, success) or None if unavailable."""
     try:
-        for line in proc.stdout:
-            if stop_event.is_set():
+        which = subprocess.run(["which", "acpx"], capture_output=True, text=True)
+        if which.returncode != 0:
+            return None
+
+        cmd = ["acpx", "claude", task]
+        log(agent_name, f"Running: acpx claude '{task[:80]}...'")
+
+        proc = subprocess.Popen(
+            cmd, cwd=workspace, env=env,
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            text=True, bufsize=1,
+        )
+        log(agent_name, f"acpx PID: {proc.pid}")
+
+        # Threaded reader to prevent blocking
+        output_lines = []
+        stop_event = threading.Event()
+
+        def reader():
+            try:
+                for line in proc.stdout:
+                    if stop_event.is_set():
+                        break
+                    output_lines.append(line.rstrip())
+            except Exception:
+                pass
+
+        t = threading.Thread(target=reader, daemon=True)
+        t.start()
+
+        start = time.time()
+        last_count = 0
+        last_output = start
+
+        while True:
+            time.sleep(3)
+            elapsed = time.time() - start
+            if elapsed > CC_TIMEOUT:
+                proc.kill()
+                log(agent_name, f"acpx timed out after {CC_TIMEOUT}s")
                 break
-            output_lines.append(line.rstrip())
-    except Exception:
-        pass
+            if proc.poll() is not None:
+                break
+            cur = len(output_lines)
+            if cur > last_count:
+                last_output = time.time()
+                for i in range(last_count, min(cur, last_count + 3)):
+                    log(agent_name, f"  CC [{i+1}]: {output_lines[i][:120]}")
+                last_count = cur
+            elif time.time() - last_output > 120:  # 2 min no output
+                proc.kill()
+                log(agent_name, "acpx: no output for 120s — killed")
+                break
+
+        stop_event.set()
+        t.join(timeout=5)
+        output = "\n".join(output_lines[-50:])
+        log(agent_name, f"acpx finished (exit={proc.returncode}, {len(output_lines)} lines, {elapsed:.0f}s)")
+        return output, proc.returncode == 0
+    except Exception as e:
+        log(agent_name, f"acpx failed: {e}")
+        return None
+
+
+def _run_llm_api(task, workspace, agent_name):
+    """Run coding task via direct LLM API call (lightweight fallback)."""
+    key_files = read_repo_files(workspace, [
+        "features/engine.py", "evolution/loop.py",
+        "models/*.py", "predict_today.py",
+        "colab/*.py", "agents/*.py",
+    ])
+    log(agent_name, f"Read {len(key_files)} files for API task")
+
+    file_context = ""
+    for fpath, content in sorted(key_files.items()):
+        lines = content.split("\n")
+        truncated = "\n".join(lines[:200])
+        if len(lines) > 200:
+            truncated += f"\n... ({len(lines) - 200} more lines)"
+        file_context += f"\n### {fpath}\n```python\n{truncated}\n```\n"
+
+    system_prompt = (
+        f"You are {agent_name}, an autonomous NBA Quant AI agent.\n"
+        f"Current best: Brier 0.2205 | Target: Brier < 0.20, ROI > 5%\n\n"
+        f"RULES:\n"
+        f"1. Make MINIMAL, targeted changes (1-2 files max)\n"
+        f"2. Return COMPLETE modified files in ```path/to/file.py\\n...``` blocks\n"
+        f"3. Do NOT modify files unnecessarily — only return files you changed\n"
+        f"4. Focus on high-impact improvements\n"
+        f"5. Each code block MUST start with the filepath after the triple backticks\n\n"
+        f"REPOSITORY FILES:\n{file_context}"
+    )
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": task},
+    ]
+
+    log(agent_name, "Calling LLM API...")
+    response = call_llm(messages)
+    if not response:
+        log(agent_name, "LLM API returned no response")
+        return None, False
+
+    log(agent_name, f"LLM response: {len(response)} chars")
+    changes = apply_file_changes(workspace, response)
+    return response, len(changes) > 0
 
 
 def run_claude_code(task, repo_key="nba", agent_name="Cain"):
     """
     THE KEY FUNCTION — Like HuggingClaw's action_claude_code().
-    1. Clone/pull the real repo
-    2. Write CLAUDE.md + slash commands
-    3. Run Claude Code CLI (claude -p) directly
-    4. Auto-push changes back to GitHub
 
-    Uses threaded output reader to prevent blocking on readline().
+    Strategy:
+    1. Try acpx claude (HuggingClaw-style, uses ANTHROPIC_BASE_URL for API routing)
+    2. Fall back to direct LLM API if acpx is unavailable or fails
+    3. Commit and push any changes to GitHub
     """
     with cc_lock:
-        log(agent_name, f"Starting Claude Code: {task[:100]}...")
+        log(agent_name, f"Starting task: {task[:100]}...")
 
         # 1. Ensure repo is up to date
         workspace = ensure_repo(repo_key)
@@ -281,119 +453,45 @@ def run_claude_code(task, repo_key="nba", agent_name="Cain"):
             log(agent_name, f"Failed to prepare repo {repo_key}")
             return None, False
 
-        # 2. Write workspace config
         write_claude_md(workspace, agent_name)
 
-        # 3. Check git status before
-        before = subprocess.run(["git", "rev-parse", "HEAD"],
-                                cwd=workspace, capture_output=True, text=True)
-        head_before = before.stdout.strip() if before.returncode == 0 else "unknown"
-
-        # 4. Verify claude is available
-        which = subprocess.run(["which", "claude"], capture_output=True, text=True)
-        if which.returncode != 0:
-            log(agent_name, "ERROR: 'claude' not found in PATH")
-            return None, False
-
-        # 5. Run Claude Code CLI in print mode (non-interactive)
+        # 2. Set up env for acpx claude (HuggingClaw pattern)
         env = os.environ.copy()
         env["CI"] = "true"
-        env["CLAUDE_CODE_MAX_TURNS"] = "15"
-        # Speed up startup: disable update checks and telemetry
         env["DISABLE_UPDATE_CHECK"] = "1"
-        env["CLAUDE_CODE_DISABLE_UPDATES"] = "1"
         env["DO_NOT_TRACK"] = "1"
+        # Route Claude Code to LiteLLM proxy via Anthropic-compatible endpoint
+        if LITELLM_URL and not env.get("ANTHROPIC_API_KEY"):
+            base = LITELLM_URL.rsplit("/v1/", 1)[0]
+            env["ANTHROPIC_BASE_URL"] = f"{base}/anthropic"
+            env["ANTHROPIC_API_KEY"] = LITELLM_KEY
 
-        cmd = ["claude", "-p", task, "--output-format", "text"]
-        log(agent_name, f"Running: claude -p '{task[:80]}...' in {workspace}")
+        # 3. Try acpx claude first
+        result = _run_acpx_claude(task, workspace, agent_name, env)
+        used_acpx = result is not None
 
-        try:
-            proc = subprocess.Popen(
-                cmd, cwd=workspace, env=env,
-                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                text=True, bufsize=1,
-            )
-            log(agent_name, f"Claude Code PID: {proc.pid}")
+        if not used_acpx:
+            # 4. Fall back to direct LLM API
+            log(agent_name, "acpx not available, using direct LLM API")
+            response, has_file_changes = _run_llm_api(task, workspace, agent_name)
+            if not response:
+                return None, False
 
-            # Threaded output reader — never blocks the main loop
-            output_lines = []
-            stop_event = threading.Event()
-            reader = threading.Thread(
-                target=_output_reader, args=(proc, output_lines, stop_event),
-                daemon=True
-            )
-            reader.start()
-
-            start = time.time()
-            last_count = 0
-            last_output = start
-            NO_OUTPUT_TIMEOUT = 120  # Kill if no output for 2 min
-
-            while True:
-                time.sleep(3)
-                elapsed = time.time() - start
-
-                # Hard timeout
-                if elapsed > CC_TIMEOUT:
-                    proc.kill()
-                    log(agent_name, f"Claude Code timed out after {CC_TIMEOUT}s")
-                    break
-
-                # Process exited
-                if proc.poll() is not None:
-                    break
-
-                # Track output progress
-                current_count = len(output_lines)
-                if current_count > last_count:
-                    last_output = time.time()
-                    # Log new lines for live visibility
-                    for i in range(last_count, min(current_count, last_count + 5)):
-                        log(agent_name, f"  CC [{i+1}]: {output_lines[i][:120]}")
-                    last_count = current_count
-                elif time.time() - last_output > NO_OUTPUT_TIMEOUT:
-                    proc.kill()
-                    log(agent_name, f"No output for {NO_OUTPUT_TIMEOUT}s — killed")
-                    break
-
-            # Cleanup reader thread
-            stop_event.set()
-            reader.join(timeout=5)
-
-            exit_code = proc.returncode or 0
-            output = "\n".join(output_lines[-50:])
-            log(agent_name, f"Claude Code finished (exit={exit_code}, {len(output_lines)} lines, {elapsed:.0f}s)")
-
-        except Exception as e:
-            log(agent_name, f"Claude Code error: {e}")
-            traceback.print_exc()
-            try:
-                proc.kill()
-            except Exception:
-                pass
-            return None, False
-
-        # 5. Check if there are new commits
-        after = subprocess.run(["git", "rev-parse", "HEAD"],
-                               cwd=workspace, capture_output=True, text=True)
-        head_after = after.stdout.strip() if after.returncode == 0 else "unknown"
-
-        has_changes = head_before != head_after
-
-        # 6. Also check for uncommitted changes and commit them
+        # 5. Commit any changes
         status = subprocess.run(["git", "status", "--porcelain"],
                                 cwd=workspace, capture_output=True, text=True)
-        if status.stdout.strip():
-            log(agent_name, "Found uncommitted changes, committing...")
+        has_changes = bool(status.stdout.strip())
+
+        if has_changes:
+            log(agent_name, f"Committing changes...")
             subprocess.run(["git", "add", "-A"], cwd=workspace, capture_output=True)
             subprocess.run(
-                ["git", "commit", "-m", f"feat({agent_name.lower()}): auto-improvement\n\nCo-Authored-By: {agent_name} Agent <eve@nomos42.ai>"],
+                ["git", "commit", "-m",
+                 f"feat({agent_name.lower()}): auto-improvement\n\nCo-Authored-By: {agent_name} Agent <eve@nomos42.ai>"],
                 cwd=workspace, capture_output=True
             )
-            has_changes = True
 
-        # 7. Push to GitHub
-        if has_changes:
+            # Push to GitHub
             push_result = subprocess.run(
                 ["git", "push", "origin", REPOS[repo_key]["branch"]],
                 cwd=workspace, capture_output=True, text=True, timeout=30
@@ -403,8 +501,8 @@ def run_claude_code(task, repo_key="nba", agent_name="Cain"):
                     state["pushes"] += 1
                     state["last_push_time"] = time.time()
                     state["idle_turns"] = 0
-                log(agent_name, f"Pushed changes to {repo_key} (total pushes: {state['pushes']})")
-                send_telegram(f"✅ *{agent_name}* pushed code to `{repo_key}`\n{task[:200]}")
+                log(agent_name, f"Pushed to {repo_key} (total: {state['pushes']})")
+                send_telegram(f"✅ *{agent_name}* pushed to `{repo_key}`\n{task[:200]}")
             else:
                 log(agent_name, f"Push failed: {push_result.stderr[:200]}")
         else:
@@ -412,7 +510,7 @@ def run_claude_code(task, repo_key="nba", agent_name="Cain"):
             with state_lock:
                 state["idle_turns"] += 1
 
-        return output, has_changes
+        return "ok", has_changes
 
 
 # ══════════════════════════════════════════════════════════════════════════════
