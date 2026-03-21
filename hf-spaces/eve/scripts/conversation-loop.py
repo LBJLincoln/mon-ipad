@@ -458,17 +458,17 @@ def _run_llm_api(task, workspace, agent_name):
     key_files = read_repo_files(workspace, [
         "features/engine.py", "evolution/loop.py",
         "models/*.py", "predict_today.py",
-        "colab/*.py", "agents/*.py",
     ])
     log(agent_name, f"Read {len(key_files)} files for API task")
 
+    # Send compact summaries (first 50 lines) to keep context small
     file_context = ""
     for fpath, content in sorted(key_files.items()):
         lines = content.split("\n")
-        truncated = "\n".join(lines[:200])
-        if len(lines) > 200:
-            truncated += f"\n... ({len(lines) - 200} more lines)"
-        file_context += f"\n### {fpath}\n```python\n{truncated}\n```\n"
+        # Show header (imports + docstring) only — enough to understand structure
+        preview_lines = min(50, len(lines))
+        truncated = "\n".join(lines[:preview_lines])
+        file_context += f"\n### {fpath} ({len(lines)} lines total)\n```python\n{truncated}\n```\n"
 
     system_prompt = (
         f"You are {agent_name}, an autonomous NBA Quant AI agent.\n"
@@ -541,9 +541,12 @@ def run_claude_code(task, repo_key="nba", agent_name="Cain"):
         if has_changes:
             log(agent_name, f"Committing changes...")
             subprocess.run(["git", "add", "-A"], cwd=workspace, capture_output=True)
+            # Generate commit message from the changed files
+            changed_files = status.stdout.strip().split("\n")
+            file_list = ", ".join(f.split()[-1] for f in changed_files[:3])
+            commit_msg = f"feat({agent_name.lower()}): {file_list}\n\nCo-Authored-By: {agent_name} Agent <eve@nomos42.ai>"
             subprocess.run(
-                ["git", "commit", "-m",
-                 f"feat({agent_name.lower()}): auto-improvement\n\nCo-Authored-By: {agent_name} Agent <eve@nomos42.ai>"],
+                ["git", "commit", "-m", commit_msg],
                 cwd=workspace, capture_output=True
             )
 
