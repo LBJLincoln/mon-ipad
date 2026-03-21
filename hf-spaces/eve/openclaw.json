@@ -18,15 +18,6 @@
   "models": {
     "mode": "merge",
     "providers": {
-      "kimi": {
-        "baseUrl": "https://api.moonshot.cn/v1",
-        "apiKey": "${KIMI_API_KEY}",
-        "api": "openai-completions",
-        "models": [
-          { "id": "moonshot-v1-auto", "name": "Kimi Auto (Best)" },
-          { "id": "kimi-k2-0520", "name": "Kimi K2 (Coding)" }
-        ]
-      },
       "gemini": {
         "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
         "apiKey": "${GOOGLE_API_KEY}",
@@ -63,7 +54,7 @@
     "defaults": {
       "workspace": "~/.openclaw/workspace",
       "model": {
-        "primary": "kimi/moonshot-v1-auto"
+        "primary": "gemini/gemini-2.5-flash"
       }
     }
   }
