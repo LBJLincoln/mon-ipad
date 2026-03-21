@@ -63,8 +63,8 @@ state = {
     "action_log": deque(maxlen=100),
     "action_history": [],  # Persist to prevent repeating same actions
 }
-state_lock = threading.Lock()
-cc_lock = threading.Lock()  # Only one Claude Code process at a time
+state_lock = threading.RLock()  # RLock: reentrant — log() acquires state_lock, called from within state_lock blocks
+cc_lock = threading.Lock()     # Only one Claude Code process at a time
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  CORE HELPERS
@@ -450,26 +450,20 @@ def run_claude_code(task, repo_key="nba", agent_name="Cain"):
     2. Fall back to direct LLM API if acpx is unavailable or fails
     3. Commit and push any changes to GitHub
     """
-    log(agent_name, f"[DEBUG] Acquiring cc_lock...")
     with cc_lock:
-        log(agent_name, f"[DEBUG] cc_lock acquired. Task: {task[:100]}...")
+        log(agent_name, f"Starting task: {task[:100]}...")
 
         # 1. Ensure repo is up to date
-        log(agent_name, "[DEBUG] ensure_repo...")
         workspace = ensure_repo(repo_key)
         if not workspace:
             log(agent_name, f"Failed to prepare repo {repo_key}")
             return None, False
-        log(agent_name, f"[DEBUG] workspace={workspace}")
 
-        log(agent_name, "[DEBUG] write_claude_md...")
         write_claude_md(workspace, agent_name)
-        log(agent_name, "[DEBUG] write_claude_md done")
 
-        # 3. Use direct LLM API (lightweight — no subprocess, no OOM risk)
-        log(agent_name, "[DEBUG] calling _run_llm_api...")
+        # 2. Use direct LLM API via LiteLLM proxy (routes to Kimi/Gemini/Claude)
+        log(agent_name, "Calling LLM API...")
         response, has_file_changes = _run_llm_api(task, workspace, agent_name)
-        log(agent_name, f"[DEBUG] _run_llm_api returned: response={bool(response)}, changes={has_file_changes}")
         if not response:
             return None, False
 
