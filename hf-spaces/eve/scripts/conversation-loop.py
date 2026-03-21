@@ -455,23 +455,34 @@ def _run_acpx_claude(task, workspace, agent_name, env):
 
 def _run_llm_api(task, workspace, agent_name):
     """Run coding task via direct LLM API call (lightweight fallback)."""
+    # Only read SMALL files — skip engine.py and loop.py (too large, LLM tries to rewrite them)
     key_files = read_repo_files(workspace, [
-        "features/engine.py", "evolution/loop.py",
         "models/*.py", "predict_today.py",
+        "features/helpers/*.py", "features/utils/*.py",
+        "analysis/*.py", "scripts/*.py",
     ])
+    # Also read just the first 50 lines of engine.py for reference (imports + feature list)
+    engine_path = Path(workspace) / "features" / "engine.py"
+    engine_summary = ""
+    if engine_path.exists():
+        lines = engine_path.read_text().split("\n")
+        # Extract feature category names and function signatures only
+        categories = [l.strip() for l in lines if "# Category" in l or "# ===" in l][:15]
+        funcs = [l.strip() for l in lines if l.strip().startswith("def ")][:30]
+        engine_summary = (
+            f"\n### features/engine.py — LOCKED (DO NOT CREATE THIS FILE)\n"
+            f"This file has {len(lines)} lines. You CANNOT modify or recreate it.\n"
+            f"Categories: {', '.join(c[:50] for c in categories[:10]) or 'see function list'}\n"
+            f"Functions: {', '.join(f[:50] for f in funcs[:15])}\n"
+        )
+
     log(agent_name, f"Read {len(key_files)} files for API task")
 
-    # Build compact context — full content for small files, summary for large files
-    file_context = ""
-    LARGE_THRESHOLD = 200  # lines
+    # Build compact context — only small files
+    file_context = engine_summary
     for fpath, content in sorted(key_files.items()):
         lines = content.split("\n")
-        if len(lines) > LARGE_THRESHOLD:
-            # Large file: show only structure summary (functions/classes), NOT content
-            funcs = [l.strip() for l in lines if l.strip().startswith("def ") or l.strip().startswith("class ")]
-            file_context += f"\n### {fpath} (DO NOT MODIFY — {len(lines)} lines)\nFunctions: {', '.join(f[:40] for f in funcs[:20])}\n"
-        else:
-            # Small file: show full content (OK to modify)
+        if len(lines) <= 300:
             file_context += f"\n### {fpath} ({len(lines)} lines — OK to modify)\n```python\n{content}\n```\n"
 
     system_prompt = (
@@ -479,20 +490,19 @@ def _run_llm_api(task, workspace, agent_name):
         f"Current best: Brier 0.2205 | Target: Brier < 0.20, ROI > 5%\n\n"
         f"OUTPUT FORMAT — CRITICAL:\n"
         f"You MUST output working Python code in a NEW file. Example:\n\n"
-        f"Adding a pace-adjusted feature helper:\n\n"
-        f"```features/pace_helper.py\n"
+        f"```features/helpers/pace_adjusted.py\n"
         f"import numpy as np\n"
         f"def compute_pace_adjusted(pts, pace, league_pace=100.0):\n"
         f"    return (pts / pace) * league_pace if pace > 0 else pts\n"
         f"```\n\n"
-        f"RULES:\n"
-        f"1. NEVER rewrite engine.py or loop.py — they are large, complex files. READ ONLY.\n"
-        f"2. CREATE NEW files with useful helpers, models, or analysis scripts.\n"
-        f"3. Triple-backtick line = file path (e.g. ```features/my_file.py), NOT ```python.\n"
-        f"4. Write REAL working code. Do NOT use placeholders like 'content here'.\n"
-        f"5. Keep files focused: one concern per file, 50-300 lines.\n"
-        f"6. Brief explanation (2-3 lines) then code. No long analysis.\n\n"
-        f"REPOSITORY FILES (READ-ONLY REFERENCE):\n{file_context}"
+        f"ABSOLUTE RULES:\n"
+        f"1. NEVER output engine.py or loop.py — you CANNOT create or modify these files.\n"
+        f"2. ONLY create NEW files in: features/helpers/, analysis/, scripts/, models/\n"
+        f"3. File path goes on the triple-backtick line: ```features/helpers/my_file.py\n"
+        f"4. Write REAL working code. No placeholders, no pseudo-code.\n"
+        f"5. One file per code block. 50-200 lines per file.\n"
+        f"6. Brief explanation (2-3 lines) then code blocks. No long analysis.\n\n"
+        f"EXISTING FILES (READ-ONLY REFERENCE):\n{file_context}"
     )
 
     messages = [
@@ -707,8 +717,9 @@ def eve_worker():
                     f"\n\nSystem state: S10 brier={s10.get('brier','?')}, "
                     f"gen={s10.get('generation','?')}, "
                     f"games today={len(ctx.get('games',[]))}\n\n"
-                    f"Fix the most urgent problem. Focus on features/engine.py or evolution/loop.py. "
-                    f"Make minimal, targeted changes. Commit and push."
+                    f"Fix the most urgent problem by creating a NEW helper file.\n"
+                    f"DO NOT modify engine.py or loop.py — create new files in features/helpers/ or scripts/.\n"
+                    f"Write complete, working code."
                 )
                 output, pushed = run_claude_code(task, "nba", "Eve")
                 if pushed:
@@ -746,47 +757,42 @@ def adam_worker():
 
             # Adam's strategic task — varies by turn
             if turn % 4 == 1:
-                # Feature improvement turn
+                # Feature helper creation turn
                 task = (
                     f"You are Adam, the strategist. Current Brier: {s10.get('brier', '?')}. Target: < 0.20.\n"
-                    f"STRATEGIC TASK: Improve the feature engine.\n"
-                    f"Read features/engine.py. Add 1-2 high-impact features (e.g., pace-adjusted stats, "
-                    f"rest-weighted performance, opponent strength decomposition).\n"
-                    f"Keep changes minimal. Commit and push."
+                    f"TASK: Create a NEW helper file in features/helpers/ with 1-2 useful feature functions.\n"
+                    f"Ideas: pace-adjusted stats, rest-weighted performance, opponent strength decomposition,\n"
+                    f"clutch time stats, back-to-back fatigue, home court advantage quantification.\n"
+                    f"DO NOT touch engine.py — create features/helpers/YOUR_NEW_FILE.py instead.\n"
+                    f"Each function should take a pandas DataFrame and return a new column."
                 )
             elif turn % 4 == 2:
-                # Evolution tuning turn
+                # Analysis/utility creation turn
                 task = (
                     f"You are Adam, the strategist. Current Brier: {s10.get('brier', '?')}. "
                     f"Generation: {s10.get('generation', '?')}.\n"
-                    f"STRATEGIC TASK: Tune the genetic evolution.\n"
-                    f"Read evolution/loop.py. Consider: mutation rate, crossover strategy, "
-                    f"population diversity, fitness weights, stagnation detection.\n"
-                    f"Make 1 targeted improvement. Commit and push."
+                    f"TASK: Create a NEW analysis script in analysis/ or scripts/.\n"
+                    f"Ideas: feature importance analyzer, calibration curve plotter,\n"
+                    f"model comparison report, prediction accuracy by game type.\n"
+                    f"DO NOT modify engine.py or loop.py. Create NEW files only."
                 )
             elif turn % 4 == 3:
-                # GPU experiment submission turn
+                # Model helper creation turn
                 task = (
                     f"You are Adam, the strategist. Current Brier: {s10.get('brier', '?')}.\n"
-                    f"STRATEGIC TASK: Submit a GPU experiment to test a neural model.\n"
-                    f"Insert a row into the Supabase nba_experiments table:\n"
-                    f"  - experiment_id: 'exp_adam_{{random_hex}}'\n"
-                    f"  - agent_name: 'adam_strategist'\n"
-                    f"  - experiment_type: 'model_test'\n"
-                    f"  - params: choose from ft_transformer, node, saint, mc_dropout_rnn\n"
-                    f"  - status: 'pending', target_space: 'gpu', priority: 8\n"
-                    f"  - baseline_brier: 0.2205\n"
-                    f"Use DATABASE_URL from environment. Use psycopg2 or curl Supabase REST API."
+                    f"TASK: Create a NEW model helper in models/ directory.\n"
+                    f"Ideas: custom loss function, probability calibrator, ensemble weight optimizer,\n"
+                    f"cross-validation splitter with temporal awareness, prediction confidence estimator.\n"
+                    f"Write a complete, working Python module. DO NOT modify existing model files."
                 )
             else:
-                # Research and analysis turn
+                # Research implementation turn
                 task = (
                     f"You are Adam, the strategist. Current Brier: {s10.get('brier', '?')}.\n"
-                    f"Pushes so far: {state['pushes']}. Cain tasks: {state['cain_tasks']}.\n"
-                    f"STRATEGIC TASK: Analyze the codebase and find the highest-impact improvement.\n"
-                    f"Read the key files (features/engine.py, evolution/loop.py, models/).\n"
-                    f"Identify what's limiting performance and implement 1 specific fix.\n"
-                    f"Commit and push."
+                    f"Pushes so far: {state['pushes']}. Idle turns: {state['idle_turns']}.\n"
+                    f"TASK: Create a NEW useful file that improves prediction accuracy.\n"
+                    f"Create something in features/helpers/, analysis/, or models/.\n"
+                    f"Write complete, working Python code. DO NOT modify engine.py or loop.py."
                 )
 
             output, pushed = run_claude_code(task, "nba", "Adam")
@@ -804,9 +810,30 @@ def adam_worker():
 #  CAIN — Coder Agent (on demand, processes task queue via Claude Code CLI)
 # ══════════════════════════════════════════════════════════════════════════════
 
+CAIN_SELF_TASKS = [
+    "Create features/helpers/momentum.py with functions to compute team momentum indicators: "
+    "win streak weighted by opponent strength, recent margin trends, hot/cold detection.",
+    "Create features/helpers/rest_impact.py with functions to quantify rest effects: "
+    "days since last game, back-to-back fatigue, travel distance impact, timezone adjustment.",
+    "Create analysis/feature_correlation.py — script that loads game data and computes "
+    "pairwise correlation between top features, identifying redundant features to remove.",
+    "Create models/calibration.py with Platt scaling and isotonic regression calibrators "
+    "that can wrap any sklearn/xgboost model to improve probability outputs.",
+    "Create features/helpers/matchup_stats.py with head-to-head record functions: "
+    "season series, style matchup (pace vs defense), home/away splits against specific opponents.",
+    "Create scripts/backtest_report.py — generate a backtest summary from prediction CSV: "
+    "Brier by month, ROI by confidence bucket, calibration curve data points.",
+    "Create features/helpers/four_factors.py with Dean Oliver's Four Factors calculations: "
+    "eFG%, TOV%, ORB%, FTR for both offense and defense, plus opponent-adjusted versions.",
+    "Create models/ensemble_weights.py with functions to optimize stacking weights via "
+    "cross-validated log-loss minimization using scipy.optimize.",
+]
+
+
 def cain_worker():
     log("CAIN", "Coder agent starting (Claude Code CLI)...")
-    time.sleep(60)  # Start 1 min after Eve
+    time.sleep(180)  # Start 3 min after Eve (stagger to avoid LLM contention)
+    cain_self_idx = 0
 
     while True:
         task_info = None
@@ -825,19 +852,23 @@ def cain_worker():
             task = task_info["task"]
             from_agent = task_info.get("from", "unknown")
             repo_key = task_info.get("repo", "nba")
-
             log("CAIN", f"Task from {from_agent} (queue: {len(state['task_queue'])} remaining)")
-
-            output, pushed = run_claude_code(task, repo_key, "Cain")
-
-            with state_lock:
-                state["cain_tasks"] += 1
-                if pushed:
-                    state["cain_successes"] += 1
-
-            log("CAIN", f"Task done (pushed={pushed})")
         else:
-            time.sleep(30)
+            # Self-directed: pick next task from rotation
+            task = CAIN_SELF_TASKS[cain_self_idx % len(CAIN_SELF_TASKS)]
+            cain_self_idx += 1
+            repo_key = "nba"
+            log("CAIN", f"Self-directed task #{cain_self_idx}")
+
+        output, pushed = run_claude_code(task, repo_key, "Cain")
+
+        with state_lock:
+            state["cain_tasks"] += 1
+            if pushed:
+                state["cain_successes"] += 1
+
+        log("CAIN", f"Task done (pushed={pushed})")
+        time.sleep(600)  # Wait 10 min between Cain tasks
 
 
 # ══════════════════════════════════════════════════════════════════════════════
