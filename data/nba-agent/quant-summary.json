@@ -1,13 +1,35 @@
 {
-  "timestamp": "2026-03-16T16:22:41.753682+00:00",
+  "timestamp": "2026-03-22T03:00:00.000000+00:00",
   "bankroll": 100.0,
   "growth_pct": 0.0,
   "record": "0W-0L-0P",
   "roi_pct": 0.0,
-  "research_papers": 10,
+  "best_brier": 0.2203,
+  "best_model": "catboost",
+  "features": 115,
+  "games_trained": 9333,
+  "research_papers": 12,
   "latest_picks": 10,
   "latest_exposure": "18.6%",
   "latest_ev": 16.43,
+  "models": {
+    "catboost": { "brier": 0.2203, "weight": 0.16, "status": "BEST" },
+    "xgboost": { "brier": 0.2204, "weight": 0.15, "status": "ACTIVE" },
+    "lightgbm": { "brier": 0.2208, "weight": 0.14, "status": "ACTIVE" },
+    "xgboost_cal": { "brier": 0.2210, "weight": 0.10, "status": "ACTIVE" },
+    "random_forest": { "brier": 0.2214, "weight": 0.12, "status": "ACTIVE" },
+    "logistic": { "brier": 0.2234, "weight": 0.08, "status": "ACTIVE" },
+    "stacking": { "brier": 0.2198, "weight": 0.15, "status": "FIXING" },
+    "meta_learner": { "brier": 0.2198, "weight": 0.10, "status": "FIXING" }
+  },
+  "evolution": {
+    "generations": 60,
+    "population": 80,
+    "optuna_trials": 100,
+    "raw_features": 248,
+    "selected_features": 115,
+    "total_runtime_s": 8755
+  },
   "calibration": {
     "elo_k_factor": 22,
     "home_court_advantage": 2.8,
@@ -19,7 +41,7 @@
     "weight_elo": 0.2,
     "weight_poisson": 0.15,
     "weight_mc": 0.3,
-    "reasoning": "Recent NBA analytics indicate slight increases in scoring efficiency and home court advantage. The ELO K-factor adjustment accounts for increased season volatility. Monte Carlo standard deviation reduction reflects improved model convergence. Poisson average score increase aligns with current offensive trends."
+    "reasoning": "v3 evolution: CatBoost now best single model (0.2203), LightGBM massive improvement (-185 brier pts). Stacking CUDA crash fixed (task_type=CPU). 4-model stacking (XGB+LGBM+CatBoost+ExtraTrees) with calibrated meta-learner."
   },
   "daemon_status": "RUNNING"
 }
