@@ -1,58 +1,69 @@
 # Nomos42 — NBA Quant AI
 
-> Last updated: 2026-03-24
+> Architecture v14 — Brain + Muscle | Updated: 2026-03-24
 
 ## Mission
 Build the best NBA prediction AI in the world.
-Best: Brier 0.2198 (Stacking) | Target: < 0.20, ROI > 5%, Sharpe > 1.5
+**Best:** Brier 0.2200 | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 
-## Architecture (Claude Code 2026)
+## 24/7 Autonomous Architecture
 
 ```
-Claude Code CLI (Opus 4.6)
-├── Hooks: post-commit tests, pre-push engine parity
-├── Skills: /eval, /status-check, /improve, /monitor, /karpathy-loop
-├── Cron: /karpathy-loop every 6h, health checks, evolution monitoring
-├── Subagents: Sonnet (execution), Haiku (exploration)
-└── MCP: Supabase, Neo4j, HuggingFace
+☁️  CLOUD BRAIN (Sonnet 4.6, every 4h at :00)
+    ├── Monitor S10/S11 via public APIs (7 endpoints)
+    ├── Read crew results + analyze trends
+    ├── DECIDE: tune GA / diversify / inject features / checkpoint
+    ├── ACT on S10 via POST /api/config
+    └── Write health-status.json + push
+    Trigger: trig_01BS3ixBvt2uKHY9p5EemcgD
+
+🔧 VM MUSCLE (cron, every 4h at :30)
+    ├── Run crew research (4 agents via key_rotator)
+    ├── Run predict_today.py (if NBA games)
+    ├── Push results to git
+    └── Auto-restart data server
+    Script: scripts/autonomous-cycle.sh
+
+🖥️  HF SPACES (always-on)
+    ├── S10 (nba-quant): 24/7 genetic evolution (5×100 islands, NSGA-II)
+    └── S11 (nba-quant-2): Experiment queue runner
+
+⏰ SYSTEM CRONS
+    ├── */30  keepalive-spaces.sh
+    ├── 12,18 nba-daily-odds.py
+    └── :30   autonomous-cycle.sh
 ```
 
-## Active Infrastructure
+## Skills
 
-| Component | Where | Purpose |
-|-----------|-------|---------|
-| **S10** (nba-quant) | HF Space (lbjlincoln) | 24/7 genetic evolution |
-| **S11** (nba-quant-2) | HF Space (lbjlincoln) | Experiment queue runner |
-| **Supabase** | Cloud | NBA data, experiments, predictions, research_proposals |
-| **VM** (this) | GCP 34.136.180.66 | Claude Code, data server, git |
-
-## Repos
-
-| Repo | Role |
-|------|------|
-| **mon-ipad** (this) | Control tower, ops, config |
-| **nomos-nba-agent** | Models, features, evolution, predictions |
-| **rag-website** | Next.js frontend (nomos42.vercel.app/nba) |
+| Skill | Purpose |
+|-------|---------|
+| `/karpathy-loop` | Autonomous research cycle (crew → proposals → quick wins) |
+| `/tony-bloom` | Daily predictions + value bets (Starlizard pattern) |
+| `/monitor` | System health check |
+| `/improve` | Highest-impact improvement |
+| `/status-check` | Infrastructure status |
 
 ## Rules
 
-1. **ZERO ML on VM** — 1 vCPU / 969 MB RAM. ALL training on HF Spaces / Colab
+1. **ZERO ML on VM** — 1 vCPU / 969 MB RAM. ALL training on HF Spaces
 2. **Feature engine parity** — `features/engine.py` = `hf-space/features/engine.py` always
 3. **1 fix per iteration** — never multiple simultaneous changes
 4. **All experiments tagged** with `feature_engine_version` in Supabase
 
-## Key Commands
+## MCP Servers
 
-```bash
-source .env.local
-python3 scripts/nba-data-server.py &          # JSON API for Vercel
-python3 -c "from features.engine import ENGINE_VERSION; print(ENGINE_VERSION)"  # Check engine
-```
+| Server | Purpose |
+|--------|---------|
+| Supabase | NBA data, experiments, research_proposals |
+| Neo4j | Knowledge graph |
+| HuggingFace | Space management |
 
 ## Delegation
 
 | Task | Model | Mechanism |
 |------|-------|-----------|
 | Analysis, decisions, pilotage | Opus 4.6 | Direct |
+| 24/7 brain trigger | Sonnet 4.6 | Remote trigger |
 | Batch execution, search | Sonnet 4.6 | Agent(model: "sonnet") |
 | Codebase exploration | Haiku 4.5 | Agent(model: "haiku") |
