@@ -1,115 +1,95 @@
 {
-  "timestamp": "2026-03-24T21:00:00Z",
+  "timestamp": "2026-03-24T23:02:00Z",
   "trigger": "nomos-brain-24-7",
   "s10": {
-    "status": "BUILDING_FEATURES",
-    "cycle": 0,
-    "generation": 0,
-    "best_brier_current_run": 1.0,
-    "best_brier_all_time": 0.22005,
-    "stagnation_gens": 0,
-    "trend": "restarted_optimal",
-    "trend_detail": "THIRD restart today at 20:55:24 UTC. MAJOR POSITIVE: S10 now running with OPTIMAL PARAMS BAKED IN as defaults (Pop=60, 5x12 islands, target_feat=63, mut=0.09->0.05 decay, cx=0.8). Remote-log is completely empty — no pending interventions needed. This is the best starting state since restarts began. Previous diversify command (queued at 20:00 UTC) was cleared by this restart without being consumed. Gen=0, still building features at query time (~21:00 UTC).",
-    "active_params": {
-      "pop_size": 60,
-      "n_islands": 5,
-      "island_size": 12,
-      "target_features": 63,
-      "mutation_rate": 0.09,
-      "mutation_decay": "0.998/gen",
-      "crossover": 0.8,
-      "migration_every": 8,
-      "migration_per_island": 3
-    },
-    "feature_candidates": 0,
-    "pending_interventions": {
-      "commands_queued": [],
-      "config_queued": {},
-      "injected_features_count": 0,
-      "note": "Remote-log completely empty. Optimal params are now baked into S10 defaults — no injection required."
-    },
+    "status": "EVOLVING",
+    "cycle": 5,
+    "generation": 15,
+    "best_brier": 0.22004,
+    "best_brier_achieved_at_gen": 9,
+    "best_model": "extra_trees",
+    "best_features": 52,
+    "best_calibration": "isotonic",
+    "best_roi": 0.3256,
+    "best_sharpe": 8.1459,
+    "stagnation_gens": 6,
+    "stagnation_api": 1,
+    "mutation_rate": 0.1494,
+    "pop_size": 60,
+    "trend": "new_s10_record",
+    "trend_detail": "NEW S10 ALL-TIME RECORD: 0.22004 (prev best: 0.22005). Achieved at gen 9 via extra_trees+isotonic, 52 features, ROI=32.6%, Sharpe=8.15. Gens 12-15 regressed to 0.2474 (stacking) but run best_brier held at 0.22004. CHECKPOINT EXECUTED.",
     "db_stats": {
-      "total_generations": 1352,
-      "total_cycles": 440,
-      "best_brier_ever": 0.22005
+      "total_generations": 1377,
+      "total_cycles": 447,
+      "best_brier_ever": 0.22004
     },
-    "started_at": "2026-03-24T20:55:24Z",
-    "last_update": "2026-03-24T20:55:27Z"
+    "started_at": "2026-03-24T22:18:19Z",
+    "last_update": "2026-03-24T23:01:28Z"
   },
   "s11": {
-    "status": "BUILDING_FEATURES",
-    "mode": "EXPERIMENT_RUNNER",
-    "games": 9551,
-    "feature_candidates": 0,
-    "experiments_completed_today": 0,
-    "s11_best_today": 0.2199,
-    "s11_best_model": "CatBoost",
+    "status": "READY_POLLING",
     "queue_depth": 0,
-    "last_update": "2026-03-24T20:55:27Z",
-    "note": "S11 also restarted at 20:55:24 UTC (same time as S10). Building features, queue empty, ready for experiments once initialized."
+    "best_today": 0.2199,
+    "best_model": "CatBoost",
+    "feature_candidates": 3102,
+    "experiments_completed_today": 0,
+    "last_update": "2026-03-24T22:55:45Z",
+    "note": "S11 initialized and polling, no experiments queued. Feature matrix ready (3102 features). Empty queue — VM should submit CatBoost experiment."
   },
   "engine_parity": {
     "match": true,
     "sha_features_engine": "cbe7a44edf283ec2961b7466b6017721a961e391",
     "sha_hf_space_engine": "cbe7a44edf283ec2961b7466b6017721a961e391",
     "version": "v3.0-35cat",
-    "note": "Parity verified previous cycle. No code changes detected. data/results dir missing from git — cannot verify crew output."
+    "note": "Parity confirmed. SHA unchanged from previous cycle."
   },
   "research_findings": [
     {
-      "title": "Calibration-First Model Selection Yields +34.69% ROI vs -35.17% ROI (accuracy-based) on NBA Data",
-      "source": "Wang et al. arxiv 2303.06021 — cited in 2025 literature",
-      "key_insight": "Isotonic regression post-processing as model selection criterion dramatically outperforms accuracy-based selection for NBA betting ROI. Tree ensembles (Extra Trees) benefit most from post-hoc calibration. scikit-learn 1.8 adds temperature scaling (preferred when calibration samples < 2000). Current S10 optimizing Brier is calibration-aligned — good. S11 experiments should explicitly use CalibratedClassifierCV with isotonic method.",
+      "note": "Hour 23 — skipped research (23 % 3 = 2). Using cached findings from previous cycle.",
+      "title": "[Cached] Calibration-First Model Selection Yields +34.69% ROI on NBA Data",
+      "source": "Wang et al. arxiv 2303.06021",
+      "key_insight": "Isotonic regression post-processing dramatically outperforms accuracy-based model selection. Current S10 best individual already uses isotonic calibration — validates this approach.",
       "actionability": "high"
-    },
-    {
-      "title": "Adaptive Conformal Inference via Coin Betting — Parameter-Free, Distribution-Shift Robust Coverage",
-      "source": "arxiv 2412.19318v1 (2024/2025); arxiv 2405.16246 (ensemble conformal)",
-      "key_insight": "New adaptive conformal inference eliminates learning-rate hyperparameter — easy to implement, valid coverage under non-stationary conditions (roster changes mid-season). Ensemble score aggregation reduces prediction set conservatism. Neither requires retraining. High-value add for prediction interval generation on top of current Brier-optimized models.",
-      "actionability": "high"
-    },
-    {
-      "title": "GA Mutation ~0.20 Outperforms Lower Rates for Feature Selection; Pop 10-50 Sufficient",
-      "source": "journals.umcs.pl/ai/article/viewFile/3298/2492; arxiv 2409.14563",
-      "key_insight": "Empirical: mutation rate ~0.20 prevents premature convergence better than 0.05-0.10 in sports betting GA implementations. However, S10's proven optimal is 0.09 from 1244 experiments — trust system data over generic finding. Pop 10-50 sufficient for feature selection (S10 already at 60). Warning: always hold out test set to detect overfitting.",
-      "actionability": "medium"
     }
   ],
   "action_taken": {
-    "type": "none",
-    "details": "No API call made this cycle.",
-    "reason": "S10 restarted at 20:55 UTC and is NOW RUNNING WITH OPTIMAL PARAMS BAKED IN (Pop=60, target=63, mut=0.09, cx=0.8). Remote-log is completely empty — perfect clean state. Injecting any command or config would be redundant or disruptive. The correct action is to let S10 evolve with these proven params and wait for first real Brier reading (expected gen 2-3, ~30-60 min). 1-fix-per-iteration rule → WAIT."
+    "type": "CHECKPOINT",
+    "details": "POST /api/checkpoint → {status: checkpoint saved, brier: 0.22004, generation: 9}",
+    "reason": "NEW S10 ALL-TIME RECORD: 0.22004 < 0.22005 (previous health-status best). Individual: extra_trees + isotonic calibration, 52 features, ROI=32.6%, Sharpe=8.15. Preserving this configuration before evolution drifts further. Run-stats confirm best_brier_ever=0.22004 in Supabase."
   },
   "delta_from_last_cycle": {
-    "brier_change": 0.0,
-    "generations_evolved_this_run": 0,
-    "total_db_generations": 1352,
-    "intervention_consumed": false,
-    "note": "Diversify command queued at 20:00 UTC was cleared by the 20:55 restart WITHOUT being consumed (same pattern as all previous restarts).",
+    "brier_change": -0.00001,
+    "s10_status_change": "BUILDING_FEATURES → EVOLVING",
+    "generations_this_run": 15,
+    "total_db_generations_delta": 25,
+    "checkpoint_executed": true,
+    "new_s10_record": true,
+    "intervention_consumed": true,
     "new_events": [
-      "S10 restarted THIRD TIME today at 20:55:24 UTC (previous: 18:05, 19:51 UTC)",
-      "CRITICAL POSITIVE: S10 now starts with OPTIMAL PARAMS AS DEFAULTS (Pop=60, target=63, mut=0.09, cx=0.8) — no injection needed",
-      "S11 also restarted at 20:55:24 UTC — simultaneous restart suggests VM keepalive script triggered both",
-      "Previous diversify command cleared by restart — NOT consumed",
-      "Remote-log completely empty — cleanest state this cycle",
-      "Crew result files still missing from git (data/results dir does not exist)",
-      "Research cycle run (21%3=0): 3 findings written above"
+      "S10 EVOLVING successfully — first real run after optimal-params restart at 22:18 UTC",
+      "NEW S10 ALL-TIME RECORD at gen 9: Brier=0.22004 (extra_trees+isotonic, 52 feats, ROI=32.6%)",
+      "Gens 1-8 stuck at 0.22435 (lightgbm), migration at gen 8 unlocked breakthrough",
+      "Gens 12-15 regressed to 0.24738 (stacking) — run best still 0.22004",
+      "CHECKPOINT EXECUTED and confirmed by API",
+      "S11 ready but queue empty — no experiments run",
+      "Engine parity confirmed (SHA unchanged)",
+      "Mutation auto-elevated from 0.09 to 0.15-0.20 (adaptive response to stagnation at gens 1-8)",
+      "data/results dir still missing from git — crew output not available"
     ]
   },
   "key_insights": {
-    "optimal_params_now_default": "BREAKTHROUGH: The proven optimal params (Pop=60, target=63, mut=0.09, cx=0.8, migration=8/3) are now baked into S10's startup config. Previous restarts were catastrophic because they reset to bad defaults (Pop=500, mut=0.12, target=80). This new run should behave fundamentally differently — first Brier reading will be the key signal.",
-    "simultaneous_restart_pattern": "S10+S11 restarted at EXACTLY the same second (20:55:24). This is almost certainly the VM keepalive-spaces.sh script. Pattern: :30 keepalive triggers restart. Three restarts suggest HF Spaces is having stability issues OR keepalive is too aggressive.",
-    "wall_prediction": "Previous 0.22861 wall was driven by bad defaults (Pop=500 → high selection pressure → fast convergence to local min). With Pop=60 + target=63, we expect first stable Brier around gen 3-5. If it hits 0.22861 again, that indicates a deeper issue; if it beats it, we're on track.",
-    "calibration_research_signal": "Research finding #1 is highly actionable: explicit isotonic calibration in model selection boosted NBA ROI by 70 percentage points. Should integrate CalibratedClassifierCV into S11 experiment pipeline.",
-    "gap_to_target": "All-time best: 0.22005. Target: 0.20. Gap: 0.02005 (9% improvement). S11 CatBoost best: 0.2199. Next milestone: break 0.22005."
+    "migration_effect": "Gen 8 migration (3 individuals exchanged between 5 islands) directly triggered gen 9 breakthrough to 0.22004. Island diversity is working as designed.",
+    "isotonic_calibration_signal": "Best individual uses isotonic calibration — validates research finding #1 from previous cycle (calibration-first selection). Brier=0.22004, calibration_error=0.0178.",
+    "regression_analysis": "Gens 12-15 at 0.2474 (stacking, no calibration) — population exploring stacking combinations. Normal GA behavior. Mutation at 0.15 is allowing broad exploration. Best held at 0.22004.",
+    "gap_to_target": "All-time S10 GA: 0.22004. System-wide best (S11 exp #734): 0.21867. Target: 0.20. Gap to S11 best: 0.00137. Gap to target: 0.02004 (9.1%).",
+    "optimal_params_working": "Pop=60 + target_feat=63 + island model is delivering results. Gen 9 at 52 features (below target=63) suggests pruning is effective."
   },
   "recommendations": [
-    "WATCH: First Brier reading from current run (expected ~21:30-22:00 UTC, gen 2-3). If > 0.22861 → something wrong with optimal params. If < 0.22861 → optimal params working.",
-    "NEXT CYCLE: If gen >= 5 and best_brier still 0.22861 → POST /api/command {\"command\": \"diversify\"}. If gen >= 5 and best_brier < 0.22861 → let it run, no action.",
-    "NEXT CYCLE: If best_brier < 0.22005 → POST /api/checkpoint immediately + flag CHECKPOINT in report",
-    "VM SHOULD RUN: Submit CatBoost S11 experiment with isotonic calibration — use CalibratedClassifierCV(method='isotonic') wrapper, pop=50, gens=20, target_features=150. Research shows isotonic calibration significantly improves NBA betting ROI.",
-    "VM SHOULD RUN: Crew cycle — data/results directory is still missing from git. nba_crew.py must run and commit outputs. This is the 4th+ consecutive cycle with missing crew files.",
-    "WATCH: Space restart frequency — if S10 restarts before gen=10 again, this is a systemic HF Spaces stability issue. Consider reducing keepalive-spaces.sh aggressiveness or filing HF Space issue.",
-    "INVESTIGATE: Why are S10+S11 restarting simultaneously at :55 each hour? Keepalive script may be running at wrong offset vs. brain cycle."
+    "WATCH: Current run gen 15, stagnation_api=1 (only 1 gen since last composite improvement). Let it evolve — do NOT diversify yet. Check next cycle if stagnation_api > 8.",
+    "VM SHOULD RUN: Submit CatBoost S11 experiment — isotonic calibration wrapper, target_features=80, pop=50, gens=20. S11 queue is empty and feature matrix is loaded (3102 features). This is high-priority.",
+    "NEXT CYCLE: If best_brier improves below 0.22004 → CHECKPOINT again immediately",
+    "NEXT CYCLE: If stagnation_api > 8 AND remote-log empty → POST /api/command {\"command\": \"diversify\"}",
+    "WATCH: The parallel brier-trend series at 0.2211 — may indicate a second competitive individual. Monitor if it converges toward 0.22004.",
+    "INVESTIGATE: Why data/results dir is still missing from git. VM crew cycle must not be committing outputs. Critical for brain to read crew research."
   ]
 }
