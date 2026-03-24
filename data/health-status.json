@@ -1,28 +1,36 @@
 {
-  "timestamp": "2026-03-24T15:51:38.908427Z",
-  "spaces": [
-    {
-      "name": "S1",
-      "url": "https://lbjlincoln-nomos-rag-engine.hf.space",
-      "status": "DOWN"
-    },
-    {
-      "name": "S3",
-      "url": "https://lbjlincoln-nomos-rag-engine-3.hf.space",
-      "status": "DOWN"
-    },
-    {
-      "name": "S5",
-      "url": "https://lbjlincoln-nomos-rag-engine-5.hf.space",
-      "status": "DOWN"
-    },
-    {
-      "name": "S9",
-      "url": "https://lbjlincoln-nomos-rag-engine-9.hf.space",
-      "status": "DOWN"
-    }
-  ],
-  "pipelines": {},
-  "error_count_24h": 0,
-  "new_errors": 0
+  "timestamp": "2026-03-24T17:26:06.548656+00:00",
+  "s10": {
+    "status": "EVOLVING (cycle 1)",
+    "cycle": 1,
+    "generation": 1,
+    "best_brier": 1.0,
+    "best_features": 0,
+    "games": 9551,
+    "note": "Early stage - cycle just started"
+  },
+  "s11": {
+    "status": "EXPERIMENT: READY (polling)",
+    "games": 9551
+  },
+  "engine_parity": true,
+  "engine_hash": "1ccf6622dddb85ea28429ede19e7fd5d47dd7b30a3be35c7d7728441d1df0a8b",
+  "engine_version": "v3.0-35cat",
+  "crew_cycle": {
+    "completed": true,
+    "duration_seconds": 7,
+    "timestamp": "2026-03-24T17:25:35Z",
+    "providers_status": "ALL PROVIDERS FAILED - KeyRotator: 0 keys",
+    "top_proposals": [],
+    "note": "No LLM API keys configured - crew agents returned null"
+  },
+  "predictions": {
+    "games_today": 4,
+    "games_sample": [
+      "Sacramento Kings @ Charlotte Hornets",
+      "New Orleans Pelicans @ New York Knicks"
+    ],
+    "value_bets": 0,
+    "note": "predict_today.py skipped - numpy not on VM (ZERO ML rule)"
+  }
 }
