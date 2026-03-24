@@ -1,24 +1,31 @@
 {
-  "timestamp": "2026-03-24T18:00:00Z",
+  "timestamp": "2026-03-24T19:00:00Z",
   "trigger": "nomos-brain-24-7",
   "s10": {
-    "status": "STAGNATING",
+    "status": "RESTARTED+STAGNATING",
     "cycle": 1,
-    "generation": 13,
+    "generation_inmemory": 1,
+    "generation_db": 13,
     "best_brier_current_run": 0.22861,
     "best_brier_all_time": 0.22005,
     "stagnation_gens": 12,
-    "trend": "regressing_then_flat",
-    "trend_detail": "New run regressed from all-time best 0.22005 to 0.22861; flat gens 2-13 (12 consecutive identical Brier)",
+    "trend": "flat+restarted",
+    "trend_detail": "Space restarted between 18:00-18:20 UTC (gen counter reset 13→1, best_brier reset to 1.0 in-memory). DB brier-trend confirms gens 1-13 all at 0.22861 (except gen1=0.44769 cold start). All 5 config params + 2 commands + 7 injected features are STILL PENDING — not yet consumed by the GA loop post-restart.",
     "feature_candidates": 3102,
     "pop_size": 500,
-    "mutation_rate_active": 0.12,
+    "mutation_rate_active": 0.15,
     "pending_interventions": {
       "commands_queued": ["diversify", "boost_mutation"],
-      "config_queued": {"mutation_rate": 0.2, "crossover_rate": 0.95, "tournament_size": 7},
+      "config_queued": {
+        "mutation_rate": 0.2,
+        "crossover_rate": 0.95,
+        "tournament_size": 7,
+        "pop_size": 250,
+        "target_features": 60
+      },
+      "injected_features_count": 7,
       "injected_features": ["a_injury_impact", "line_movement", "h_usage_rate3", "h_pace3", "a_def_rating3", "pace_vs_defense", "rest_line_movement"],
-      "injected_count": 7,
-      "queued_by": "previous_brain_cycle_17:41_UTC"
+      "note": "Queued across 17:36-18:20 UTC by prior brain cycles. Appear to persist in remote-log despite space restart. Will apply on next GA evolution cycle."
     },
     "db_stats": {
       "total_generations": 1352,
@@ -26,24 +33,26 @@
       "best_brier_ever": 0.22005
     },
     "started_at": "2026-03-24T16:16:22Z",
-    "last_update": "2026-03-24T17:41:43Z"
+    "last_update": "2026-03-24T18:20:50Z"
   },
   "s11": {
     "status": "READY",
     "mode": "EXPERIMENT_RUNNER",
     "games": 9551,
     "feature_candidates": 999,
-    "experiments_completed_today": 4,
+    "experiments_completed_today": 6,
     "experiment_results": [
       {"id": "submit-1774374116", "description": "XGBoost 200 features, high mutation", "best_brier": 0.2211, "elapsed_s": 166.4},
       {"id": "submit-1774374117", "description": "LightGBM 250 features, aggressive search", "best_brier": 0.2209, "elapsed_s": 135.6},
       {"id": "submit-1774374118", "description": "CatBoost 180 features", "best_brier": 0.2199, "elapsed_s": 194.1},
-      {"id": "submit-1774374119", "description": "Voting ensemble 120 curated features", "best_brier": 0.2215, "elapsed_s": 148.6}
+      {"id": "submit-1774374119", "description": "Voting ensemble 120 curated features", "best_brier": 0.2215, "elapsed_s": 148.6},
+      {"id": "submit-1774375986", "description": "CatBoost deep search — validate 0.2199 signal", "best_brier": 0.2205, "elapsed_s": 136.7},
+      {"id": "submit-1774375987", "description": "CatBoost wide search — 250 features", "best_brier": 0.2209, "elapsed_s": 174.1}
     ],
     "s11_best_today": 0.2199,
     "s11_best_model": "CatBoost",
     "queue_depth": 0,
-    "last_update": "2026-03-24T17:53:35Z"
+    "last_update": "2026-03-24T18:18:52Z"
   },
   "engine_parity": {
     "match": true,
@@ -54,27 +63,38 @@
   "crew_analysis": {
     "last_cycle": null,
     "files_in_git": false,
-    "note": "crew-research.json, crew-evolution.json, crew-features.json, crew-cycle-latest.json all MISSING from git — VM has not committed crew results",
+    "note": "crew-research.json, crew-evolution.json, crew-features.json, crew-cycle-latest.json still MISSING from git. VM crew cycle has not run or not committed.",
     "top_proposals": [],
-    "ga_diagnosis": "stagnating — 12 consecutive gens at Brier 0.22861 in new run (regression from all-time best 0.22005)"
+    "ga_diagnosis": "stagnating — 12 consecutive gens at Brier 0.22861; space restart ~18:05-18:20 UTC reset in-memory state; pending interventions not yet consumed"
   },
   "action_taken": {
     "type": "none",
     "details": "No new action issued this cycle",
-    "reason": "Previous brain cycle (17:36-17:41 UTC) already queued: [diversify, boost_mutation] commands + config change (mutation_rate=0.2, crossover_rate=0.95, tournament_size=7). Per 1-fix-per-iteration rule, stacking additional interventions before these are consumed would be counterproductive. Pending interventions are appropriate for the observed stagnation pattern."
+    "reason": "S10 remote-log shows 5 config params + 2 commands + 7 injected features already pending (from 17:36-18:20 UTC cycles). Per 1-fix-per-iteration rule, stacking additional interventions before these are consumed is counterproductive. S10 just restarted and will apply all queued changes on the next GA evolution cycle. S11 queue is empty but CatBoost follow-up experiments (0.2205, 0.2209) weakened the initial 0.2199 signal — not a strong enough new result to warrant an S11 submission this cycle."
+  },
+  "delta_from_last_cycle": {
+    "brier_change": 0.0,
+    "generations_evolved": 0,
+    "intervention_consumed": false,
+    "new_events": [
+      "S10 space restarted ~18:05-18:20 UTC — gen counter reset from 13 to 1, best_brier reset to 1.0 in-memory",
+      "2 new S11 CatBoost experiments completed (VM acted on prior recommendations): 0.2205, 0.2209",
+      "New S10 config queued at 18:20 UTC: pop_size=250, target_features=60 (origin: VM or overlapping cycle)"
+    ]
   },
   "key_insights": {
-    "s11_catboost_signal": "CatBoost 180-feature experiment achieved Brier 0.2199 — closest to record (0.22005) of all 4 experiments today. CatBoost consistently outperforms XGBoost and LightGBM in S11 mini-runs. S10 island specializations already include CatBoost but only on island 2.",
-    "s10_regression_root_cause": "New S10 restart began at gen 1 with Brier 0.44769 (cold start), settled at 0.22861 by gen 2 but cannot break past it. The all-time best of 0.22005 came from 440 cycles of accumulated evolution — new run needs time + the queued diversify/boost_mutation to escape.",
-    "trend_concern": "Brier-trend shows gens 196-232 of previous run all flat at 0.22005 — suggesting the previous run was also fully stagnated before the restart. Root cause of both stagnations may be premature convergence.",
-    "gap_to_target": "Current: 0.22861, Target: 0.20, Gap: 0.02861 (~12.5% improvement needed)"
+    "space_restart_recovery": "S10 restarted since 18:00 report. Queued interventions appear to persist in remote-log (likely stored in DB or module-level dict). Evolution will resume with all queued changes applied on next cycle — this should be the big test of the 17:36-18:20 intervention stack.",
+    "catboost_signal_weakening": "CatBoost 0.2199 from initial experiment NOT replicated in follow-ups (0.2205, 0.2209). With pop=20/gens=5, noise is high. Original 0.2199 was likely sampling luck. CatBoost still consistently best among model types (~0.02 above others) but not a breakthrough.",
+    "lgbm_gen0_anomaly": "LightGBM experiment gen-0 Brier=0.2189 — best single result today, better than CatBoost 0.2199. But final reported Brier=0.2209. This 0.002 gap may reflect train vs test split or warm-start vs final-eval. Worth a targeted follow-up with larger pop.",
+    "intervention_queue_overloaded": "5 config params + 2 commands + 7 features queued simultaneously. Effects will be hard to disentangle. Future cycles: single focused interventions only.",
+    "gap_to_target": "Current best: 0.22861 (run), All-time: 0.22005. Target: 0.20. Gap: 0.02861 (12.5% improvement needed)."
   },
   "recommendations": [
-    "NEXT CYCLE: Verify queued interventions (diversify+boost_mutation+mut=0.2) were consumed by S10 and check if Brier improved below 0.22861",
-    "VM SHOULD RUN: Submit CatBoost-focused S11 experiment with larger pop (pop=50, gens=10, target_feat=100) to validate the 0.2199 signal at greater depth",
-    "VM SHOULD RUN: Crew cycle to generate fresh research and feature proposals — crew result files are missing from git",
-    "VM SHOULD CHECK: Why S10 status API reports best_brier=1.0 when Supabase shows 0.22861 — potential in-memory state sync bug",
-    "IF NEXT CYCLE STILL STAGNATING: Consider S10 reset command with fresh population seeded from CatBoost best features from S11",
-    "WATCH: If any run achieves Brier < 0.22005 → CHECKPOINT immediately"
+    "NEXT CYCLE: Verify ALL pending interventions consumed — check remote-log for empty queued_commands and pending_params. If consumed and Brier still >= 0.22861 → S10 reset command with fresh seed from CatBoost best features",
+    "NEXT CYCLE: If ANY run achieves Brier < 0.22005 → CHECKPOINT immediately",
+    "VM SHOULD RUN: Crew cycle — crew result files still missing from git after multiple cycles",
+    "WATCH: LightGBM gen-0 anomaly (0.2189 vs final 0.2209) — if real, LightGBM + aggressive feature selection may be the path to sub-0.22",
+    "WATCH: Confirm pending S10 interventions actually apply post-restart (remote-log should show empty queues after next GA cycle)",
+    "IF NEXT CYCLE STILL STAGNATING after all interventions consumed: Submit S11 LightGBM experiment with pop=50, gens=15, target_feat=120 to stress-test the 0.2189 gen-0 signal"
   ]
 }
