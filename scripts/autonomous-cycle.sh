@@ -12,6 +12,8 @@ S10_URL="https://lbjlincoln-nomos-nba-quant.hf.space"
 S11_URL="https://lbjlincoln-nomos-nba-quant-2.hf.space"
 S12_URL="https://lbjlincoln26-nba-evo-3.hf.space"
 S13_URL="https://lbjlincoln26-nba-evo-4.hf.space"
+S14_URL="https://nomos42-nba-evo-5.hf.space"
+S15_URL="https://nomos42-nba-evo-6.hf.space"
 HEALTH="$MON_DIR/data/health-status.json"
 
 mkdir -p "$(dirname "$LOG")" "$MON_DIR/logs"
@@ -39,7 +41,10 @@ S11_ALIVE=$(echo "$S11_STATUS" | python3 -c "import sys,json; d=json.load(sys.st
 S12_BRIER=$(curl -s --max-time 10 "$S12_URL/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 S13_BRIER=$(curl -s --max-time 10 "$S13_URL/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
 
-log "[HEALTH] S10: brier=$S10_BRIER gen=$S10_GEN stag=$S10_STAG | S11: brier=? | S12: brier=$S12_BRIER | S13: brier=$S13_BRIER"
+S14_BRIER=$(curl -s --max-time 10 "$S14_URL/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+S15_BRIER=$(curl -s --max-time 10 "$S15_URL/api/status" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('best_brier','?'))" 2>/dev/null || echo "?")
+
+log "[HEALTH] S10=$S10_BRIER S11=? S12=$S12_BRIER S13=$S13_BRIER S14=$S14_BRIER S15=$S15_BRIER gen=$S10_GEN stag=$S10_STAG"
 
 # ── Phase 1: Crew Research ───────────────────────────────────
 # Research is now handled by the Cloud Brain (Claude Code remote trigger at :00)
