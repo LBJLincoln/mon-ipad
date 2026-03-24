@@ -11,8 +11,8 @@ Best: Brier 0.2198 (Stacking) | Target: < 0.20, ROI > 5%, Sharpe > 1.5
 ```
 Claude Code CLI (Opus 4.6)
 ├── Hooks: post-commit tests, pre-push engine parity
-├── Skills: /eval, /status-check, /improve, /monitor
-├── Cron: health checks, daily predictions, evolution monitoring
+├── Skills: /eval, /status-check, /improve, /monitor, /karpathy-loop
+├── Cron: /karpathy-loop every 6h, health checks, evolution monitoring
 ├── Subagents: Sonnet (execution), Haiku (exploration)
 └── MCP: Supabase, Neo4j, Pinecone, HuggingFace
 ```
@@ -24,7 +24,7 @@ Claude Code CLI (Opus 4.6)
 | **S10** (nba-quant) | HF Space (lbjlincoln) | 24/7 genetic evolution |
 | **S11** (nba-quant-2) | HF Space (lbjlincoln) | Experiment queue runner |
 | **LiteLLM** (S7) | HF Space (lbjlincoln) | LLM proxy |
-| **Supabase** | Cloud | NBA data, experiments, predictions |
+| **Supabase** | Cloud | NBA data, experiments, predictions, research_proposals |
 | **VM** (this) | GCP 34.136.180.66 | Claude Code, data server, git |
 
 ## Repos
