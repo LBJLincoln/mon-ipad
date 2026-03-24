@@ -1,17 +1,24 @@
-Run one Karpathy auto-research cycle: crew agents research → extract proposals → evaluate → report.
+Run one Karpathy auto-research cycle: Claude Code agents research → extract proposals → evaluate → report.
 
 Arguments: $ARGUMENTS (optional: "research-only", "eval-only", or target like "brier:0.20")
 
 This is the autonomous improvement loop inspired by Karpathy's auto-research pattern.
-It runs the 4-agent CrewAI swarm, parses outputs, extracts actionable proposals, and generates next steps.
+It runs 4 Claude Code subagents in parallel, parses outputs, extracts actionable proposals, and generates next steps.
 
 ## Steps
 
-1. **Run crew cycle** (skip if $ARGUMENTS = "eval-only"):
-   ```bash
-   cd /home/termius/nomos-nba-agent && source .env.local && python3 agents/nba_crew.py --once
-   ```
-   This runs 4 agents: Research → Market → Feature → Evolution (~5-15 min total).
+1. **Run agent cycle** (skip if $ARGUMENTS = "eval-only"):
+   Launch 4 Claude Code subagents **in parallel** using the Agent tool:
+   - `research-analyst` (model: sonnet) — Search latest NBA quant papers, techniques
+   - `market-analyst` (model: sonnet) — Fetch live odds, detect steam moves, CLV
+   - `feature-engineer` (model: sonnet) — Analyze features, propose improvements
+   - `evolution-optimizer` (model: sonnet) — Check S10/S11, diagnose GA health
+
+   Each agent reads context from `/home/termius/nomos-nba-agent/data/results/` and writes its output JSON there.
+   Agent definitions: `.claude/agents/*.md`
+
+   **DO NOT** use `python3 agents/nba_crew.py` — that uses dead external LLMs.
+   Use Claude Code's Agent tool with `model: "sonnet"` for all 4 agents.
 
 2. **Read crew outputs** — parse all 4 JSON files:
    - `/home/termius/nomos-nba-agent/data/results/crew-research.json` — papers, techniques, feature ideas
@@ -74,5 +81,5 @@ It runs the 4-agent CrewAI swarm, parses outputs, extracts actionable proposals,
 - ZERO ML on VM (1 vCPU / 969 MB RAM)
 - Feature engine changes must maintain parity (root = hf-space)
 - All experiments must include feature_engine_version
-- Kimi is priority LLM (key_rotator handles this)
+- Use Claude Code (Sonnet subagents) for all research — NOT external LLMs
 - 1 change per iteration — never batch multiple proposals
