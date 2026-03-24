@@ -14,7 +14,7 @@ Claude Code CLI (Opus 4.6)
 ├── Skills: /eval, /status-check, /improve, /monitor, /karpathy-loop
 ├── Cron: /karpathy-loop every 6h, health checks, evolution monitoring
 ├── Subagents: Sonnet (execution), Haiku (exploration)
-└── MCP: Supabase, Neo4j, Pinecone, HuggingFace
+└── MCP: Supabase, Neo4j, HuggingFace
 ```
 
 ## Active Infrastructure
@@ -23,7 +23,6 @@ Claude Code CLI (Opus 4.6)
 |-----------|-------|---------|
 | **S10** (nba-quant) | HF Space (lbjlincoln) | 24/7 genetic evolution |
 | **S11** (nba-quant-2) | HF Space (lbjlincoln) | Experiment queue runner |
-| **LiteLLM** (S7) | HF Space (lbjlincoln) | LLM proxy |
 | **Supabase** | Cloud | NBA data, experiments, predictions, research_proposals |
 | **VM** (this) | GCP 34.136.180.66 | Claude Code, data server, git |
 
