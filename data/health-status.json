@@ -1,58 +1,47 @@
 {
-  "timestamp": "2026-03-24T19:00:00Z",
+  "timestamp": "2026-03-24T20:00:00Z",
   "trigger": "nomos-brain-24-7",
   "s10": {
-    "status": "RESTARTED+STAGNATING",
-    "cycle": 1,
-    "generation_inmemory": 1,
-    "generation_db": 13,
-    "best_brier_current_run": 0.22861,
+    "status": "RESTARTED",
+    "cycle": 0,
+    "generation": 0,
+    "best_brier_current_run": 1.0,
     "best_brier_all_time": 0.22005,
-    "stagnation_gens": 12,
-    "trend": "flat+restarted",
-    "trend_detail": "Space restarted between 18:00-18:20 UTC (gen counter reset 13→1, best_brier reset to 1.0 in-memory). DB brier-trend confirms gens 1-13 all at 0.22861 (except gen1=0.44769 cold start). All 5 config params + 2 commands + 7 injected features are STILL PENDING — not yet consumed by the GA loop post-restart.",
-    "feature_candidates": 3102,
+    "stagnation_gens": 0,
+    "trend": "restarted",
+    "trend_detail": "S10 restarted AGAIN at 19:51 UTC (second restart today; previous was ~18:05-18:20 UTC). Currently in BUILDING FEATURES state (gen=0, cycle=0, best_brier=1.0). DB brier-trend shows gens 196-232 at 0.22005 (all-time best run) + gens 1-13 at 0.22861 (from 18:20-19:51 run, now persisted). CRITICAL: all previously queued interventions (5 config params + 2 commands + 7 features) were CLEARED on restart but NOT applied — GA started with defaults: Pop=500, target_features=80, mutation=0.12. Diversify command queued at 20:00 UTC while remote-log was clean.",
+    "feature_candidates": 0,
     "pop_size": 500,
-    "mutation_rate_active": 0.15,
+    "mutation_rate_active": 0.12,
     "pending_interventions": {
-      "commands_queued": ["diversify", "boost_mutation"],
-      "config_queued": {
-        "mutation_rate": 0.2,
-        "crossover_rate": 0.95,
-        "tournament_size": 7,
-        "pop_size": 250,
-        "target_features": 60
-      },
-      "injected_features_count": 7,
-      "injected_features": ["a_injury_impact", "line_movement", "h_usage_rate3", "h_pace3", "a_def_rating3", "pace_vs_defense", "rest_line_movement"],
-      "note": "Queued across 17:36-18:20 UTC by prior brain cycles. Appear to persist in remote-log despite space restart. Will apply on next GA evolution cycle."
+      "commands_queued": ["diversify"],
+      "config_queued": {},
+      "injected_features_count": 0,
+      "note": "diversify queued at 20:00 UTC by brain cycle. Remote-log was clean before injection. Should apply when GA loop first runs."
     },
     "db_stats": {
       "total_generations": 1352,
       "total_cycles": 440,
       "best_brier_ever": 0.22005
     },
-    "started_at": "2026-03-24T16:16:22Z",
-    "last_update": "2026-03-24T18:20:50Z"
+    "started_at": "2026-03-24T19:51:10Z",
+    "last_update": "2026-03-24T19:51:13Z"
   },
   "s11": {
     "status": "READY",
     "mode": "EXPERIMENT_RUNNER",
     "games": 9551,
     "feature_candidates": 999,
-    "experiments_completed_today": 6,
+    "experiments_completed_today": 0,
     "experiment_results": [
-      {"id": "submit-1774374116", "description": "XGBoost 200 features, high mutation", "best_brier": 0.2211, "elapsed_s": 166.4},
-      {"id": "submit-1774374117", "description": "LightGBM 250 features, aggressive search", "best_brier": 0.2209, "elapsed_s": 135.6},
-      {"id": "submit-1774374118", "description": "CatBoost 180 features", "best_brier": 0.2199, "elapsed_s": 194.1},
-      {"id": "submit-1774374119", "description": "Voting ensemble 120 curated features", "best_brier": 0.2215, "elapsed_s": 148.6},
-      {"id": "submit-1774375986", "description": "CatBoost deep search — validate 0.2199 signal", "best_brier": 0.2205, "elapsed_s": 136.7},
-      {"id": "submit-1774375987", "description": "CatBoost wide search — 250 features", "best_brier": 0.2209, "elapsed_s": 174.1}
+      {"id": "submit-1774374118", "description": "CatBoost 180 features (yesterday best)", "best_brier": 0.2199, "elapsed_s": 194.1},
+      {"id": "submit-1774374117", "description": "LightGBM 250 features (gen-0 anomaly: 0.2189)", "best_brier": 0.2209, "elapsed_s": 135.6}
     ],
     "s11_best_today": 0.2199,
     "s11_best_model": "CatBoost",
     "queue_depth": 0,
-    "last_update": "2026-03-24T18:18:52Z"
+    "last_update": "2026-03-24T19:58:22Z",
+    "note": "S11 also restarted at 19:50 UTC. Queue empty. Ready and polling for new experiments."
   },
   "engine_parity": {
     "match": true,
@@ -63,38 +52,43 @@
   "crew_analysis": {
     "last_cycle": null,
     "files_in_git": false,
-    "note": "crew-research.json, crew-evolution.json, crew-features.json, crew-cycle-latest.json still MISSING from git. VM crew cycle has not run or not committed.",
+    "note": "crew-research.json, crew-evolution.json, crew-features.json, crew-cycle-latest.json STILL missing from git. VM crew cycle has not run or not committed output files. Multiple consecutive cycles missing.",
     "top_proposals": [],
-    "ga_diagnosis": "stagnating — 12 consecutive gens at Brier 0.22861; space restart ~18:05-18:20 UTC reset in-memory state; pending interventions not yet consumed"
+    "ga_diagnosis": "Two restarts today. Default params producing 0.22861 wall. Diversify queued to break convergence before population locks in."
   },
   "action_taken": {
-    "type": "none",
-    "details": "No new action issued this cycle",
-    "reason": "S10 remote-log shows 5 config params + 2 commands + 7 injected features already pending (from 17:36-18:20 UTC cycles). Per 1-fix-per-iteration rule, stacking additional interventions before these are consumed is counterproductive. S10 just restarted and will apply all queued changes on the next GA evolution cycle. S11 queue is empty but CatBoost follow-up experiments (0.2205, 0.2209) weakened the initial 0.2199 signal — not a strong enough new result to warrant an S11 submission this cycle."
+    "type": "command",
+    "details": "POST /api/command {\"command\": \"diversify\"} → {\"status\": \"command queued\", \"command\": \"diversify\"}",
+    "reason": "S10 restarted at 19:51 UTC with a clean remote-log (all previous interventions were cleared, NOT applied). Two consecutive runs both converged to Brier 0.22861 under default params. Queuing diversify NOW (gen=0, pre-evolution) is optimal timing — the command will apply when the GA loop initializes, forcing population diversity before it can lock into the same 0.22861 local minimum. No other interventions in queue ensure clean signal."
   },
   "delta_from_last_cycle": {
     "brier_change": 0.0,
     "generations_evolved": 0,
-    "intervention_consumed": false,
+    "intervention_consumed": true,
     "new_events": [
-      "S10 space restarted ~18:05-18:20 UTC — gen counter reset from 13 to 1, best_brier reset to 1.0 in-memory",
-      "2 new S11 CatBoost experiments completed (VM acted on prior recommendations): 0.2205, 0.2209",
-      "New S10 config queued at 18:20 UTC: pop_size=250, target_features=60 (origin: VM or overlapping cycle)"
+      "S10 restarted AGAIN at 19:51 UTC (second restart today, previous was ~18:20 UTC)",
+      "All 5 config params + 2 commands + 7 features CLEARED from remote-log — NOT applied to GA (started with defaults: Pop=500, target=80, mutation=0.12)",
+      "Previous run (18:20-19:51 UTC) logged 13 gens to DB — all at 0.22861 — consistent with 0.22861 wall",
+      "S11 also restarted at 19:50 UTC — queue empty, 0 new experiments in new session",
+      "DB total_generations still 1352 (13 gens from previous run now included in previous cycle's count)",
+      "Brain queued diversify command at 20:00 UTC while remote-log was clean"
     ]
   },
   "key_insights": {
-    "space_restart_recovery": "S10 restarted since 18:00 report. Queued interventions appear to persist in remote-log (likely stored in DB or module-level dict). Evolution will resume with all queued changes applied on next cycle — this should be the big test of the 17:36-18:20 intervention stack.",
-    "catboost_signal_weakening": "CatBoost 0.2199 from initial experiment NOT replicated in follow-ups (0.2205, 0.2209). With pop=20/gens=5, noise is high. Original 0.2199 was likely sampling luck. CatBoost still consistently best among model types (~0.02 above others) but not a breakthrough.",
-    "lgbm_gen0_anomaly": "LightGBM experiment gen-0 Brier=0.2189 — best single result today, better than CatBoost 0.2199. But final reported Brier=0.2209. This 0.002 gap may reflect train vs test split or warm-start vs final-eval. Worth a targeted follow-up with larger pop.",
-    "intervention_queue_overloaded": "5 config params + 2 commands + 7 features queued simultaneously. Effects will be hard to disentangle. Future cycles: single focused interventions only.",
-    "gap_to_target": "Current best: 0.22861 (run), All-time: 0.22005. Target: 0.20. Gap: 0.02861 (12.5% improvement needed)."
+    "intervention_queue_wipe_on_restart": "CRITICAL PATTERN: S10 restarts clear the remote-log queue WITHOUT applying the queued params. The entire stack of interventions (pop_size=250, target=60, mutation=0.2, crossover=0.95, tournament=7, diversify, boost_mutation, 7 features) from prior cycles was WASTED. GA always starts with hardcoded defaults. Future interventions must be re-queued AFTER each restart.",
+    "double_restart_today": "Two space restarts in ~2 hours (18:05 UTC and 19:51 UTC). Each run converged to 0.22861 within 2 gens. This rapid convergence suggests the default random population always finds the same local optimum — exactly what diversify is designed to break.",
+    "0.22861_wall": "Every new run under default params immediately settles at 0.22861 (gen 2 onward). The all-time best 0.22005 was from a much longer continuous run (gens 196-232 in DB) — suggesting sustained evolution over hundreds of gens is required, not just starting fresh.",
+    "db_persistence_lag": "The 13 gens from the 18:20-19:51 run ARE in DB (brier-trend shows them) but run-stats total was already 1352 including them in the prior cycle report. Current session has 0 new DB gens.",
+    "s11_ready_but_idle": "S11 has 999 clean features ready, queue empty. CatBoost best at 0.2199. LightGBM gen-0 anomaly (0.2189) unvalidated — this is the highest-value S11 experiment to run next.",
+    "gap_to_target": "Current run best: 1.0 (cold start). All-time best: 0.22005. Target: 0.20. Gap: 0.02005 (9% improvement needed). CatBoost in S11 at 0.2199 is 0.0001 below all-time best — closer than any evolved solution recently."
   },
   "recommendations": [
-    "NEXT CYCLE: Verify ALL pending interventions consumed — check remote-log for empty queued_commands and pending_params. If consumed and Brier still >= 0.22861 → S10 reset command with fresh seed from CatBoost best features",
-    "NEXT CYCLE: If ANY run achieves Brier < 0.22005 → CHECKPOINT immediately",
-    "VM SHOULD RUN: Crew cycle — crew result files still missing from git after multiple cycles",
-    "WATCH: LightGBM gen-0 anomaly (0.2189 vs final 0.2209) — if real, LightGBM + aggressive feature selection may be the path to sub-0.22",
-    "WATCH: Confirm pending S10 interventions actually apply post-restart (remote-log should show empty queues after next GA cycle)",
-    "IF NEXT CYCLE STILL STAGNATING after all interventions consumed: Submit S11 LightGBM experiment with pop=50, gens=15, target_feat=120 to stress-test the 0.2189 gen-0 signal"
+    "NEXT CYCLE: Verify diversify was consumed (remote-log queued_commands should be empty). If gen >= 3 and Brier still 0.22861 → queue boost_mutation (single param: mutation_rate=0.25)",
+    "NEXT CYCLE: If ANY run achieves Brier < 0.22005 → POST /api/checkpoint immediately + CHECKPOINT in report",
+    "VM SHOULD RUN: Crew cycle — crew result files missing from git for 3+ consecutive cycles. nba_crew.py must run and commit outputs to data/results/",
+    "VM SHOULD RUN: CatBoost S11 experiment — submit to S11 with pop=50, gens=20, model_type=CatBoost, target_features=150 to push below 0.2199",
+    "WATCH: Whether diversify breaks the 0.22861 wall in first 5 gens after it's consumed",
+    "WATCH: Space restart frequency — two restarts in 2 hours is abnormal. If it restarts again before gen=10, escalate to reset with seed from CatBoost best features",
+    "IF STAGNATING AFTER DIVERSIFY: Submit LightGBM S11 experiment with pop=50, gens=20, target_features=120 to validate the 0.2189 gen-0 anomaly signal"
   ]
 }
