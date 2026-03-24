@@ -1,94 +1,115 @@
 {
-  "timestamp": "2026-03-24T20:00:00Z",
+  "timestamp": "2026-03-24T21:00:00Z",
   "trigger": "nomos-brain-24-7",
   "s10": {
-    "status": "RESTARTED",
+    "status": "BUILDING_FEATURES",
     "cycle": 0,
     "generation": 0,
     "best_brier_current_run": 1.0,
     "best_brier_all_time": 0.22005,
     "stagnation_gens": 0,
-    "trend": "restarted",
-    "trend_detail": "S10 restarted AGAIN at 19:51 UTC (second restart today; previous was ~18:05-18:20 UTC). Currently in BUILDING FEATURES state (gen=0, cycle=0, best_brier=1.0). DB brier-trend shows gens 196-232 at 0.22005 (all-time best run) + gens 1-13 at 0.22861 (from 18:20-19:51 run, now persisted). CRITICAL: all previously queued interventions (5 config params + 2 commands + 7 features) were CLEARED on restart but NOT applied — GA started with defaults: Pop=500, target_features=80, mutation=0.12. Diversify command queued at 20:00 UTC while remote-log was clean.",
+    "trend": "restarted_optimal",
+    "trend_detail": "THIRD restart today at 20:55:24 UTC. MAJOR POSITIVE: S10 now running with OPTIMAL PARAMS BAKED IN as defaults (Pop=60, 5x12 islands, target_feat=63, mut=0.09->0.05 decay, cx=0.8). Remote-log is completely empty — no pending interventions needed. This is the best starting state since restarts began. Previous diversify command (queued at 20:00 UTC) was cleared by this restart without being consumed. Gen=0, still building features at query time (~21:00 UTC).",
+    "active_params": {
+      "pop_size": 60,
+      "n_islands": 5,
+      "island_size": 12,
+      "target_features": 63,
+      "mutation_rate": 0.09,
+      "mutation_decay": "0.998/gen",
+      "crossover": 0.8,
+      "migration_every": 8,
+      "migration_per_island": 3
+    },
     "feature_candidates": 0,
-    "pop_size": 500,
-    "mutation_rate_active": 0.12,
     "pending_interventions": {
-      "commands_queued": ["diversify"],
+      "commands_queued": [],
       "config_queued": {},
       "injected_features_count": 0,
-      "note": "diversify queued at 20:00 UTC by brain cycle. Remote-log was clean before injection. Should apply when GA loop first runs."
+      "note": "Remote-log completely empty. Optimal params are now baked into S10 defaults — no injection required."
     },
     "db_stats": {
       "total_generations": 1352,
       "total_cycles": 440,
       "best_brier_ever": 0.22005
     },
-    "started_at": "2026-03-24T19:51:10Z",
-    "last_update": "2026-03-24T19:51:13Z"
+    "started_at": "2026-03-24T20:55:24Z",
+    "last_update": "2026-03-24T20:55:27Z"
   },
   "s11": {
-    "status": "READY",
+    "status": "BUILDING_FEATURES",
     "mode": "EXPERIMENT_RUNNER",
     "games": 9551,
-    "feature_candidates": 999,
+    "feature_candidates": 0,
     "experiments_completed_today": 0,
-    "experiment_results": [
-      {"id": "submit-1774374118", "description": "CatBoost 180 features (yesterday best)", "best_brier": 0.2199, "elapsed_s": 194.1},
-      {"id": "submit-1774374117", "description": "LightGBM 250 features (gen-0 anomaly: 0.2189)", "best_brier": 0.2209, "elapsed_s": 135.6}
-    ],
     "s11_best_today": 0.2199,
     "s11_best_model": "CatBoost",
     "queue_depth": 0,
-    "last_update": "2026-03-24T19:58:22Z",
-    "note": "S11 also restarted at 19:50 UTC. Queue empty. Ready and polling for new experiments."
+    "last_update": "2026-03-24T20:55:27Z",
+    "note": "S11 also restarted at 20:55:24 UTC (same time as S10). Building features, queue empty, ready for experiments once initialized."
   },
   "engine_parity": {
     "match": true,
     "sha_features_engine": "cbe7a44edf283ec2961b7466b6017721a961e391",
     "sha_hf_space_engine": "cbe7a44edf283ec2961b7466b6017721a961e391",
-    "version": "v3.0-35cat"
+    "version": "v3.0-35cat",
+    "note": "Parity verified previous cycle. No code changes detected. data/results dir missing from git — cannot verify crew output."
   },
-  "crew_analysis": {
-    "last_cycle": null,
-    "files_in_git": false,
-    "note": "crew-research.json, crew-evolution.json, crew-features.json, crew-cycle-latest.json STILL missing from git. VM crew cycle has not run or not committed output files. Multiple consecutive cycles missing.",
-    "top_proposals": [],
-    "ga_diagnosis": "Two restarts today. Default params producing 0.22861 wall. Diversify queued to break convergence before population locks in."
-  },
+  "research_findings": [
+    {
+      "title": "Calibration-First Model Selection Yields +34.69% ROI vs -35.17% ROI (accuracy-based) on NBA Data",
+      "source": "Wang et al. arxiv 2303.06021 — cited in 2025 literature",
+      "key_insight": "Isotonic regression post-processing as model selection criterion dramatically outperforms accuracy-based selection for NBA betting ROI. Tree ensembles (Extra Trees) benefit most from post-hoc calibration. scikit-learn 1.8 adds temperature scaling (preferred when calibration samples < 2000). Current S10 optimizing Brier is calibration-aligned — good. S11 experiments should explicitly use CalibratedClassifierCV with isotonic method.",
+      "actionability": "high"
+    },
+    {
+      "title": "Adaptive Conformal Inference via Coin Betting — Parameter-Free, Distribution-Shift Robust Coverage",
+      "source": "arxiv 2412.19318v1 (2024/2025); arxiv 2405.16246 (ensemble conformal)",
+      "key_insight": "New adaptive conformal inference eliminates learning-rate hyperparameter — easy to implement, valid coverage under non-stationary conditions (roster changes mid-season). Ensemble score aggregation reduces prediction set conservatism. Neither requires retraining. High-value add for prediction interval generation on top of current Brier-optimized models.",
+      "actionability": "high"
+    },
+    {
+      "title": "GA Mutation ~0.20 Outperforms Lower Rates for Feature Selection; Pop 10-50 Sufficient",
+      "source": "journals.umcs.pl/ai/article/viewFile/3298/2492; arxiv 2409.14563",
+      "key_insight": "Empirical: mutation rate ~0.20 prevents premature convergence better than 0.05-0.10 in sports betting GA implementations. However, S10's proven optimal is 0.09 from 1244 experiments — trust system data over generic finding. Pop 10-50 sufficient for feature selection (S10 already at 60). Warning: always hold out test set to detect overfitting.",
+      "actionability": "medium"
+    }
+  ],
   "action_taken": {
-    "type": "command",
-    "details": "POST /api/command {\"command\": \"diversify\"} → {\"status\": \"command queued\", \"command\": \"diversify\"}",
-    "reason": "S10 restarted at 19:51 UTC with a clean remote-log (all previous interventions were cleared, NOT applied). Two consecutive runs both converged to Brier 0.22861 under default params. Queuing diversify NOW (gen=0, pre-evolution) is optimal timing — the command will apply when the GA loop initializes, forcing population diversity before it can lock into the same 0.22861 local minimum. No other interventions in queue ensure clean signal."
+    "type": "none",
+    "details": "No API call made this cycle.",
+    "reason": "S10 restarted at 20:55 UTC and is NOW RUNNING WITH OPTIMAL PARAMS BAKED IN (Pop=60, target=63, mut=0.09, cx=0.8). Remote-log is completely empty — perfect clean state. Injecting any command or config would be redundant or disruptive. The correct action is to let S10 evolve with these proven params and wait for first real Brier reading (expected gen 2-3, ~30-60 min). 1-fix-per-iteration rule → WAIT."
   },
   "delta_from_last_cycle": {
     "brier_change": 0.0,
-    "generations_evolved": 0,
-    "intervention_consumed": true,
+    "generations_evolved_this_run": 0,
+    "total_db_generations": 1352,
+    "intervention_consumed": false,
+    "note": "Diversify command queued at 20:00 UTC was cleared by the 20:55 restart WITHOUT being consumed (same pattern as all previous restarts).",
     "new_events": [
-      "S10 restarted AGAIN at 19:51 UTC (second restart today, previous was ~18:20 UTC)",
-      "All 5 config params + 2 commands + 7 features CLEARED from remote-log — NOT applied to GA (started with defaults: Pop=500, target=80, mutation=0.12)",
-      "Previous run (18:20-19:51 UTC) logged 13 gens to DB — all at 0.22861 — consistent with 0.22861 wall",
-      "S11 also restarted at 19:50 UTC — queue empty, 0 new experiments in new session",
-      "DB total_generations still 1352 (13 gens from previous run now included in previous cycle's count)",
-      "Brain queued diversify command at 20:00 UTC while remote-log was clean"
+      "S10 restarted THIRD TIME today at 20:55:24 UTC (previous: 18:05, 19:51 UTC)",
+      "CRITICAL POSITIVE: S10 now starts with OPTIMAL PARAMS AS DEFAULTS (Pop=60, target=63, mut=0.09, cx=0.8) — no injection needed",
+      "S11 also restarted at 20:55:24 UTC — simultaneous restart suggests VM keepalive script triggered both",
+      "Previous diversify command cleared by restart — NOT consumed",
+      "Remote-log completely empty — cleanest state this cycle",
+      "Crew result files still missing from git (data/results dir does not exist)",
+      "Research cycle run (21%3=0): 3 findings written above"
     ]
   },
   "key_insights": {
-    "intervention_queue_wipe_on_restart": "CRITICAL PATTERN: S10 restarts clear the remote-log queue WITHOUT applying the queued params. The entire stack of interventions (pop_size=250, target=60, mutation=0.2, crossover=0.95, tournament=7, diversify, boost_mutation, 7 features) from prior cycles was WASTED. GA always starts with hardcoded defaults. Future interventions must be re-queued AFTER each restart.",
-    "double_restart_today": "Two space restarts in ~2 hours (18:05 UTC and 19:51 UTC). Each run converged to 0.22861 within 2 gens. This rapid convergence suggests the default random population always finds the same local optimum — exactly what diversify is designed to break.",
-    "0.22861_wall": "Every new run under default params immediately settles at 0.22861 (gen 2 onward). The all-time best 0.22005 was from a much longer continuous run (gens 196-232 in DB) — suggesting sustained evolution over hundreds of gens is required, not just starting fresh.",
-    "db_persistence_lag": "The 13 gens from the 18:20-19:51 run ARE in DB (brier-trend shows them) but run-stats total was already 1352 including them in the prior cycle report. Current session has 0 new DB gens.",
-    "s11_ready_but_idle": "S11 has 999 clean features ready, queue empty. CatBoost best at 0.2199. LightGBM gen-0 anomaly (0.2189) unvalidated — this is the highest-value S11 experiment to run next.",
-    "gap_to_target": "Current run best: 1.0 (cold start). All-time best: 0.22005. Target: 0.20. Gap: 0.02005 (9% improvement needed). CatBoost in S11 at 0.2199 is 0.0001 below all-time best — closer than any evolved solution recently."
+    "optimal_params_now_default": "BREAKTHROUGH: The proven optimal params (Pop=60, target=63, mut=0.09, cx=0.8, migration=8/3) are now baked into S10's startup config. Previous restarts were catastrophic because they reset to bad defaults (Pop=500, mut=0.12, target=80). This new run should behave fundamentally differently — first Brier reading will be the key signal.",
+    "simultaneous_restart_pattern": "S10+S11 restarted at EXACTLY the same second (20:55:24). This is almost certainly the VM keepalive-spaces.sh script. Pattern: :30 keepalive triggers restart. Three restarts suggest HF Spaces is having stability issues OR keepalive is too aggressive.",
+    "wall_prediction": "Previous 0.22861 wall was driven by bad defaults (Pop=500 → high selection pressure → fast convergence to local min). With Pop=60 + target=63, we expect first stable Brier around gen 3-5. If it hits 0.22861 again, that indicates a deeper issue; if it beats it, we're on track.",
+    "calibration_research_signal": "Research finding #1 is highly actionable: explicit isotonic calibration in model selection boosted NBA ROI by 70 percentage points. Should integrate CalibratedClassifierCV into S11 experiment pipeline.",
+    "gap_to_target": "All-time best: 0.22005. Target: 0.20. Gap: 0.02005 (9% improvement). S11 CatBoost best: 0.2199. Next milestone: break 0.22005."
   },
   "recommendations": [
-    "NEXT CYCLE: Verify diversify was consumed (remote-log queued_commands should be empty). If gen >= 3 and Brier still 0.22861 → queue boost_mutation (single param: mutation_rate=0.25)",
-    "NEXT CYCLE: If ANY run achieves Brier < 0.22005 → POST /api/checkpoint immediately + CHECKPOINT in report",
-    "VM SHOULD RUN: Crew cycle — crew result files missing from git for 3+ consecutive cycles. nba_crew.py must run and commit outputs to data/results/",
-    "VM SHOULD RUN: CatBoost S11 experiment — submit to S11 with pop=50, gens=20, model_type=CatBoost, target_features=150 to push below 0.2199",
-    "WATCH: Whether diversify breaks the 0.22861 wall in first 5 gens after it's consumed",
-    "WATCH: Space restart frequency — two restarts in 2 hours is abnormal. If it restarts again before gen=10, escalate to reset with seed from CatBoost best features",
-    "IF STAGNATING AFTER DIVERSIFY: Submit LightGBM S11 experiment with pop=50, gens=20, target_features=120 to validate the 0.2189 gen-0 anomaly signal"
+    "WATCH: First Brier reading from current run (expected ~21:30-22:00 UTC, gen 2-3). If > 0.22861 → something wrong with optimal params. If < 0.22861 → optimal params working.",
+    "NEXT CYCLE: If gen >= 5 and best_brier still 0.22861 → POST /api/command {\"command\": \"diversify\"}. If gen >= 5 and best_brier < 0.22861 → let it run, no action.",
+    "NEXT CYCLE: If best_brier < 0.22005 → POST /api/checkpoint immediately + flag CHECKPOINT in report",
+    "VM SHOULD RUN: Submit CatBoost S11 experiment with isotonic calibration — use CalibratedClassifierCV(method='isotonic') wrapper, pop=50, gens=20, target_features=150. Research shows isotonic calibration significantly improves NBA betting ROI.",
+    "VM SHOULD RUN: Crew cycle — data/results directory is still missing from git. nba_crew.py must run and commit outputs. This is the 4th+ consecutive cycle with missing crew files.",
+    "WATCH: Space restart frequency — if S10 restarts before gen=10 again, this is a systemic HF Spaces stability issue. Consider reducing keepalive-spaces.sh aggressiveness or filing HF Space issue.",
+    "INVESTIGATE: Why are S10+S11 restarting simultaneously at :55 each hour? Keepalive script may be running at wrong offset vs. brain cycle."
   ]
 }
