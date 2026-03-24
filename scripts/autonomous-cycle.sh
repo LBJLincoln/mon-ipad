@@ -53,12 +53,7 @@ log "[HEALTH] S10=$S10_BRIER S11=? S12=$S12_BRIER S13=$S13_BRIER S14=$S14_BRIER 
 HOUR=$(date -u +%H)
 HOUR_MOD=$((10#$HOUR % 6))
 
-if [ "$HOUR_MOD" -eq 0 ]; then
-    log "[CREW] Attempting crew fallback (Google API, every 6h)..."
-    timeout 600 python3 agents/nba_crew.py --once >> "$LOG" 2>&1 || log "[CREW] FAILED (expected if Google quota hit)"
-else
-    log "[CREW] Skipped — brain handles research via Claude Code agents"
-fi
+log "[CREW] Research handled by Cloud Brain (Claude Code agents) — skipping local crew"
 
 # Commit crew results to git (so cloud brain can read them)
 cd "$AGENT_DIR"
