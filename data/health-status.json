@@ -1,28 +1,80 @@
 {
-  "timestamp": "2026-03-24T17:13:56.454692Z",
-  "spaces": [
-    {
-      "name": "S1",
-      "url": "https://lbjlincoln-nomos-rag-engine.hf.space",
-      "status": "DOWN"
+  "timestamp": "2026-03-24T18:00:00Z",
+  "trigger": "nomos-brain-24-7",
+  "s10": {
+    "status": "STAGNATING",
+    "cycle": 1,
+    "generation": 13,
+    "best_brier_current_run": 0.22861,
+    "best_brier_all_time": 0.22005,
+    "stagnation_gens": 12,
+    "trend": "regressing_then_flat",
+    "trend_detail": "New run regressed from all-time best 0.22005 to 0.22861; flat gens 2-13 (12 consecutive identical Brier)",
+    "feature_candidates": 3102,
+    "pop_size": 500,
+    "mutation_rate_active": 0.12,
+    "pending_interventions": {
+      "commands_queued": ["diversify", "boost_mutation"],
+      "config_queued": {"mutation_rate": 0.2, "crossover_rate": 0.95, "tournament_size": 7},
+      "injected_features": ["a_injury_impact", "line_movement", "h_usage_rate3", "h_pace3", "a_def_rating3", "pace_vs_defense", "rest_line_movement"],
+      "injected_count": 7,
+      "queued_by": "previous_brain_cycle_17:41_UTC"
     },
-    {
-      "name": "S3",
-      "url": "https://lbjlincoln-nomos-rag-engine-3.hf.space",
-      "status": "DOWN"
+    "db_stats": {
+      "total_generations": 1352,
+      "total_cycles": 440,
+      "best_brier_ever": 0.22005
     },
-    {
-      "name": "S5",
-      "url": "https://lbjlincoln-nomos-rag-engine-5.hf.space",
-      "status": "DOWN"
-    },
-    {
-      "name": "S9",
-      "url": "https://lbjlincoln-nomos-rag-engine-9.hf.space",
-      "status": "DOWN"
-    }
-  ],
-  "pipelines": {},
-  "error_count_24h": 0,
-  "new_errors": 0
+    "started_at": "2026-03-24T16:16:22Z",
+    "last_update": "2026-03-24T17:41:43Z"
+  },
+  "s11": {
+    "status": "READY",
+    "mode": "EXPERIMENT_RUNNER",
+    "games": 9551,
+    "feature_candidates": 999,
+    "experiments_completed_today": 4,
+    "experiment_results": [
+      {"id": "submit-1774374116", "description": "XGBoost 200 features, high mutation", "best_brier": 0.2211, "elapsed_s": 166.4},
+      {"id": "submit-1774374117", "description": "LightGBM 250 features, aggressive search", "best_brier": 0.2209, "elapsed_s": 135.6},
+      {"id": "submit-1774374118", "description": "CatBoost 180 features", "best_brier": 0.2199, "elapsed_s": 194.1},
+      {"id": "submit-1774374119", "description": "Voting ensemble 120 curated features", "best_brier": 0.2215, "elapsed_s": 148.6}
+    ],
+    "s11_best_today": 0.2199,
+    "s11_best_model": "CatBoost",
+    "queue_depth": 0,
+    "last_update": "2026-03-24T17:53:35Z"
+  },
+  "engine_parity": {
+    "match": true,
+    "sha_features_engine": "cbe7a44edf283ec2961b7466b6017721a961e391",
+    "sha_hf_space_engine": "cbe7a44edf283ec2961b7466b6017721a961e391",
+    "version": "v3.0-35cat"
+  },
+  "crew_analysis": {
+    "last_cycle": null,
+    "files_in_git": false,
+    "note": "crew-research.json, crew-evolution.json, crew-features.json, crew-cycle-latest.json all MISSING from git — VM has not committed crew results",
+    "top_proposals": [],
+    "ga_diagnosis": "stagnating — 12 consecutive gens at Brier 0.22861 in new run (regression from all-time best 0.22005)"
+  },
+  "action_taken": {
+    "type": "none",
+    "details": "No new action issued this cycle",
+    "reason": "Previous brain cycle (17:36-17:41 UTC) already queued: [diversify, boost_mutation] commands + config change (mutation_rate=0.2, crossover_rate=0.95, tournament_size=7). Per 1-fix-per-iteration rule, stacking additional interventions before these are consumed would be counterproductive. Pending interventions are appropriate for the observed stagnation pattern."
+  },
+  "key_insights": {
+    "s11_catboost_signal": "CatBoost 180-feature experiment achieved Brier 0.2199 — closest to record (0.22005) of all 4 experiments today. CatBoost consistently outperforms XGBoost and LightGBM in S11 mini-runs. S10 island specializations already include CatBoost but only on island 2.",
+    "s10_regression_root_cause": "New S10 restart began at gen 1 with Brier 0.44769 (cold start), settled at 0.22861 by gen 2 but cannot break past it. The all-time best of 0.22005 came from 440 cycles of accumulated evolution — new run needs time + the queued diversify/boost_mutation to escape.",
+    "trend_concern": "Brier-trend shows gens 196-232 of previous run all flat at 0.22005 — suggesting the previous run was also fully stagnated before the restart. Root cause of both stagnations may be premature convergence.",
+    "gap_to_target": "Current: 0.22861, Target: 0.20, Gap: 0.02861 (~12.5% improvement needed)"
+  },
+  "recommendations": [
+    "NEXT CYCLE: Verify queued interventions (diversify+boost_mutation+mut=0.2) were consumed by S10 and check if Brier improved below 0.22861",
+    "VM SHOULD RUN: Submit CatBoost-focused S11 experiment with larger pop (pop=50, gens=10, target_feat=100) to validate the 0.2199 signal at greater depth",
+    "VM SHOULD RUN: Crew cycle to generate fresh research and feature proposals — crew result files are missing from git",
+    "VM SHOULD CHECK: Why S10 status API reports best_brier=1.0 when Supabase shows 0.22861 — potential in-memory state sync bug",
+    "IF NEXT CYCLE STILL STAGNATING: Consider S10 reset command with fresh population seeded from CatBoost best features from S11",
+    "WATCH: If any run achieves Brier < 0.22005 → CHECKPOINT immediately"
+  ]
 }
