@@ -2,7 +2,7 @@
 # Nomos42 — VM Autonomous Cycle (runs every 4h via cron)
 # Handles execution that requires API keys (.env.local)
 # The cloud brain (remote trigger) handles analysis + decisions
-set -euo pipefail
+set -uo pipefail  # No -e: continue on individual failures
 
 LOG="/home/termius/mon-ipad/logs/autonomous-cycle.log"
 AGENT_DIR="/home/termius/nomos-nba-agent"
@@ -19,7 +19,7 @@ log "[CREW] Starting 4-agent research cycle..."
 cd "$AGENT_DIR"
 source .env.local 2>/dev/null
 
-timeout 600 python3 agents/nba_crew.py --once >> "$LOG" 2>&1 || log "[CREW] FAILED (timeout or error)"
+timeout 900 python3 agents/nba_crew.py --once >> "$LOG" 2>&1 || log "[CREW] FAILED (timeout or error)"
 
 # Commit crew results to git (so cloud brain can read them)
 cd "$AGENT_DIR"

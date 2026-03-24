@@ -1,68 +1,28 @@
 {
-  "timestamp": "2026-03-24T17:05:00Z",
-  "trigger": "nomos-brain-24-7",
-  "s10": {
-    "status": "EVOLVING",
-    "cycle": 1,
-    "generation": 1,
-    "best_brier_in_memory": 1.0,
-    "best_brier_ever_db": 0.22005,
-    "stagnation_in_memory": 0,
-    "stagnation_db_trend": 12,
-    "pop_size": 500,
-    "n_islands": 5,
-    "mutation_rate": 0.12,
-    "crossover_rate": 0.85,
-    "feature_candidates": 3102,
-    "total_db_generations": 1352,
-    "total_db_cycles": 440,
-    "trend": "STAGNATING — gens 2-13 all exactly 0.22861 in Supabase (12 identical values = premature convergence)",
-    "recent_trend_sample": [
-      [230, 0.22005], [231, 0.22005], [232, 0.22005],
-      [1, 0.44769], [2, 0.22861], [13, 0.22861]
-    ],
-    "session_started_at": "2026-03-24T16:16:22Z",
-    "last_update": "2026-03-24T17:00:17Z",
-    "checkpoint_saved": false
-  },
-  "s11": {
-    "status": "EXPERIMENT_READY_POLLING",
-    "games": 9551,
-    "feature_candidates": 999,
-    "note": "Waiting for experiments from Supabase nba_experiments table"
-  },
-  "engine_parity": {
-    "matched": true,
-    "sha": "cbe7a44edf283ec2961b7466b6017721a961e391",
-    "features_engine": "features/engine.py",
-    "hf_space_engine": "hf-space/features/engine.py",
-    "note": "CONFIRMED — both files identical"
-  },
-  "crew_analysis": {
-    "last_cycle": null,
-    "data_results_dir_exists": false,
-    "note": "data/results/ directory not found in repo — VM has not committed any crew output files yet",
-    "top_proposals": [],
-    "ga_diagnosis": "unknown — no crew-evolution.json available"
-  },
-  "action_taken": {
-    "type": "diversify",
-    "api_response": {"status": "command queued", "command": "diversify"},
-    "endpoint": "POST /api/command",
-    "reason": "Supabase brier-trend shows 12 consecutive IDENTICAL scores at 0.22861 (gens 2-13 of new cycle). This is classic premature convergence — the population collapsed to a single fitness value before the first cycle completed. Historical best was 0.22005 (gens 196-232 of previous session). Diversify injected to widen the genetic pool and escape the 0.22861 local minimum before full evaluation completes."
-  },
-  "recommendations": [
-    "PRIORITY 1: S10 must break below 0.22005 (current record). Current cycle's pop=500 island model is promising but converged early at 0.22861.",
-    "PRIORITY 2: VM should create data/results/ directory and commit crew output files (crew-research.json, crew-evolution.json, crew-features.json, crew-cycle-latest.json) so brain can read crew intelligence.",
-    "PRIORITY 3: No checkpoint has ever been saved to /api/checkpoint — once best_brier < 0.22005, immediately save checkpoint.",
-    "PRIORITY 4: S11 is idle (POLLING). VM should submit experiments to Supabase nba_experiments table to leverage S11 parallel capacity.",
-    "PRIORITY 5: If next brain cycle sees stagnation persist at 0.22861 after diversify, escalate to mutation_rate boost (0.15) via POST /api/config.",
-    "WATCH: The 5-island NSGA-II model with pop=500 is a major structural upgrade from prior runs. Give it 20+ generations to explore before aggressive intervention.",
-    "TARGET: Brier < 0.20 | Gap from record: 0.22005 - 0.20 = 0.0201"
+  "timestamp": "2026-03-24T17:13:56.454692Z",
+  "spaces": [
+    {
+      "name": "S1",
+      "url": "https://lbjlincoln-nomos-rag-engine.hf.space",
+      "status": "DOWN"
+    },
+    {
+      "name": "S3",
+      "url": "https://lbjlincoln-nomos-rag-engine-3.hf.space",
+      "status": "DOWN"
+    },
+    {
+      "name": "S5",
+      "url": "https://lbjlincoln-nomos-rag-engine-5.hf.space",
+      "status": "DOWN"
+    },
+    {
+      "name": "S9",
+      "url": "https://lbjlincoln-nomos-rag-engine-9.hf.space",
+      "status": "DOWN"
+    }
   ],
-  "meta": {
-    "brain_model": "claude-sonnet-4-6",
-    "feature_engine_version": "v3.0-35cat",
-    "note": "S10 freshly restarted at 16:16 UTC today. Gen 1 still computing in memory. The 12-gen DB stagnation at 0.22861 is from this session's early generations logged to Supabase. Diversify command pre-emptively queued."
-  }
+  "pipelines": {},
+  "error_count_24h": 0,
+  "new_errors": 0
 }
