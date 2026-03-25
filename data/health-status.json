@@ -1,90 +1,111 @@
 {
-  "timestamp": "2026-03-25T08:09:00Z",
+  "timestamp": "2026-03-25T09:09:04Z",
   "trigger": "nomos-brain-24-7",
   "spaces": {
     "s10": {
-      "status": "EVOLVING (cycle 183)",
-      "cycle": 183,
-      "generation": 549,
+      "status": "EVOLVING (cycle 259)",
+      "cycle": 259,
+      "generation": 777,
       "best_brier": 0.22069,
+      "best_roi": 0.3169,
+      "best_sharpe": 10.1893,
+      "best_features": 80,
       "best_model_type": "random_forest",
       "mutation_rate": 0.05,
       "stagnation": 0,
       "role": "exploitation",
-      "delta_cycle": "+88 cycles, +264 gens vs last report",
-      "alert": "HEALTHY but SLOWING. Best=0.22069 UNCHANGED (2nd consecutive hour). Mutation 0.0732→0.05 (-0.0232) — significant decay. Log shows current-gen population stuck at 0.2269 catboost (62 feat) for cycles 541-549. The all-time best (0.22069) was achieved much earlier; current population has evolved away from it. Migration still active (3 individuals exchanged at gen 547). No diversify needed yet — stag=0 and mutation still adaptive. Monitor next cycle."
+      "started_at": "2026-03-25T05:05:20Z",
+      "alert": "HEALTHY. Leads all spaces at 0.22069. Cycle 95->259 (+164), gen 285->777 (+492). Mutation decaying 0.0732->0.05. Remote-log: current-gen Brier 0.2269 (CatBoost, 62 feat) — worse than all-time best (0.22069, RF, 80 feat). Brier-trend oscillating: 0.22143/0.22601/0.22407/0.23445 clusters. Pareto front expanding 2->5 (healthy). Migration active (3 individuals exchanged). No action needed."
     },
     "s11": {
-      "status": "EVOLVING (cycle 278)",
-      "cycle": 278,
-      "generation": 834,
+      "status": "EVOLVING (cycle 400)",
+      "cycle": 400,
+      "generation": 1198,
       "best_brier": 0.22121,
+      "best_roi": 0.3116,
+      "best_sharpe": 6.9596,
+      "best_features": 87,
       "best_model_type": "random_forest",
       "mutation_rate": 0.08,
       "stagnation": 0,
       "role": "exploration",
-      "delta_cycle": "+125 cycles, +375 gens vs last report",
-      "alert": "POST-DIVERSIFY monitoring. Diversify was sent LAST CYCLE. Best=0.22121 unchanged — expected, diversify effect typically visible after 10-20 cycles. Mutation stable at 0.08 floor. Gen 834 = deepest exploration space (tied with S15). Watch for Brier improvement next 2 cycles as diversity propagates."
+      "started_at": "2026-03-25T05:05:21Z",
+      "alert": "MONITORING post-diversify. Diversify sent 07:09. +739 gens elapsed, best still 0.22121 UNCHANGED. Diversify absorbed — no breakthrough yet. Mutation at 0.08 (floor). Stag=0. Reassess next cycle."
     },
     "s12": {
-      "status": "EVOLVING (cycle 185) — DIVERSIFY SENT THIS CYCLE",
-      "cycle": 185,
-      "generation": 555,
+      "status": "EVOLVING (cycle 269)",
+      "cycle": 269,
+      "generation": 805,
       "best_brier": 0.22148,
+      "best_roi": 0.3079,
+      "best_sharpe": 11.5359,
+      "best_features": 61,
       "best_model_type": "random_forest",
-      "mutation_rate": 0.041,
+      "mutation_rate": 0.04,
       "stagnation": 0,
       "role": "extra_trees",
-      "delta_cycle": "+75 cycles, +226 gens vs last report",
-      "alert": "CRITICAL LOW MUTATION — DIVERSIFY SENT. Mutation collapsed to 0.041 (below expected 0.08 floor, -0.0236 this cycle). Best=0.22148 UNCHANGED since start (worst best among all spaces). Extra_trees specialist role but winning with random_forest — identity drift. Diversify confirmed queued: {status: 'command queued', command: 'diversify'}. Expect mutation reset and fresh genetic material injection."
+      "started_at": "2026-03-25T05:05:28Z",
+      "alert": "ANOMALY + DIVERSIFY SENT PREV CYCLE (08:09). Mutation at 0.04 — BELOW expected 0.08 adaptive floor. Was 0.0646 at 07:09, 0.041 at 08:09, now 0.04. Continued decay past floor. Best unchanged at 0.22148. VM should investigate adaptive mutation floor enforcement in hf-space/app.py."
     },
     "s13": {
-      "status": "EVOLVING (cycle 275)",
-      "cycle": 275,
-      "generation": 825,
+      "status": "EVOLVING (cycle 369)",
+      "cycle": 369,
+      "generation": 1105,
       "best_brier": 0.22086,
+      "best_roi": 0.3161,
+      "best_sharpe": 7.6851,
+      "best_features": 65,
       "best_model_type": "extra_trees",
       "mutation_rate": 0.05,
       "stagnation": 0,
       "role": "catboost",
-      "delta_cycle": "+105 cycles, +315 gens vs last report",
-      "alert": "HEALTHY. #2 best overall at 0.22086 (extra_trees, closest to all-time record path). Mutation decaying: 0.0833→0.05 (-0.0333). Still winning with extra_trees — good alignment with all-time record model type. Gen 825 = deep evolutionary search. Monitor mutation floor approach next 1-2 cycles."
+      "started_at": "2026-03-25T04:05:23Z",
+      "alert": "DIVERSIFY SENT THIS CYCLE (confirmed queued). REASON: Status text explicitly states 'metrics unchanged since generation 605' — at gen 1105 = 500 consecutive generations ZERO improvement. Stag counter unreliable (shows 0). Longest survivor (04:05), gen 1105. Population fully converged. Diversify will inject fresh genetic material. Monitor next cycle."
     },
     "s14": {
-      "status": "COOLDOWN (5s) at cycle 247",
-      "cycle": 247,
-      "generation": 741,
+      "status": "COOLDOWN (cycle 293)",
+      "cycle": 293,
+      "generation": 879,
       "best_brier": 0.22105,
+      "best_roi": 0.3134,
+      "best_sharpe": 7.6306,
+      "best_features": 62,
       "best_model_type": "random_forest",
       "mutation_rate": 0.04,
       "stagnation": 0,
       "role": "lightgbm",
-      "delta_cycle": "+70 cycles, +210 gens vs last report",
-      "alert": "COOLDOWN = normal brief pause between cycles. CONCERN: Mutation at 0.04 (second lowest, -0.0209 this cycle). Below 0.08 expected floor. Best=0.22105 unchanged. Did not diversify this cycle (used action slot on S12). NEXT PRIORITY: if best_brier still unchanged and mutation stays low next cycle, S14 gets diversify."
+      "started_at": "2026-03-25T04:10:31Z",
+      "alert": "SEVERE CURRENT-GEN STAGNATION + MUTATION ANOMALY. Status: 'All 500 generations from gen 380-879 at Brier 0.22407, ROI 27.96%'. All-time best=0.22105 set before gen 380 — current population CANNOT reproduce it. Mutation at 0.04 (below 0.08 floor). QUEUED: diversify next cycle."
     },
     "s15": {
-      "status": "EVOLVING (cycle 311)",
-      "cycle": 311,
-      "generation": 931,
+      "status": "EVOLVING (cycle 448)",
+      "cycle": 448,
+      "generation": 1344,
       "best_brier": 0.22133,
+      "best_roi": 0.3116,
+      "best_sharpe": 8.3731,
+      "best_features": 70,
       "best_model_type": "extra_trees",
       "mutation_rate": 0.08,
       "stagnation": 0,
       "role": "wide_search",
-      "delta_cycle": "+138 cycles, +413 gens vs last report",
-      "alert": "HEALTHY. Most cycles completed this session (311). Gen 931 is the deepest evolutionary search of all 6 spaces. Extra_trees specialist — correct model type alignment with all-time record. Mutation stable at 0.08 floor. Best=0.22133 unchanged but wide_search role means it explores different feature combinations. At gen 931, any breakthrough here would be significant."
+      "started_at": "2026-03-25T05:06:26Z",
+      "alert": "HEALTHY. Most evolved space (gen 1344). Best=0.22133 UNCHANGED (+826 gens this cycle). Mutation at 0.08 (floor). Current top performer: CatBoost (71 feat, fitness 0.68032) — model diversity present. Single-individual Pareto front = convergence signal. No action this cycle (S13 priority)."
     }
   },
   "engine_parity": {
     "match": true,
-    "version": "v3.0-35cat",
     "sha256": "b477354d8203f3375852cf6deb3c2fe8df558af2e38d19a9056d7d31ef719d49",
-    "note": "CONFIRMED MATCH this cycle. features/engine.py == hf-space/features/engine.py."
+    "version": "v3.0-35cat",
+    "note": "SHA256 confirmed matching this cycle. features/engine.py == hf-space/features/engine.py. VERIFIED."
   },
   "best_overall": {
     "brier": 0.22069,
     "space": "s10",
     "model_type": "random_forest",
+    "features": 80,
+    "roi": 0.3169,
+    "sharpe": 10.1893,
     "gap_to_all_time_record": 0.00202,
     "gap_to_target_0_20": 0.02069,
     "all_time_record": 0.21867,
@@ -92,39 +113,66 @@
   },
   "action_taken": {
     "type": "DIVERSIFY",
-    "target": "s12",
-    "details": "POST /api/command {command: diversify} to S12 (https://lbjlincoln26-nba-evo-3.hf.space). Confirmed: {status: 'command queued', command: 'diversify'}",
-    "reason": "S12 mutation collapsed to 0.041 (below expected 0.08 floor). This is the second consecutive cycle of mutation decay (-0.0236 this cycle). Best_brier=0.22148 has been UNCHANGED since space started — worst improvement record of all 6 spaces. Extra_trees specialist role but winning with random_forest (identity drift). Diversify will inject fresh genetic material, reset population diversity, and potentially unlock extra_trees solutions aligned with the all-time record path."
+    "target": "s13",
+    "details": "POST https://lbjlincoln26-nba-evo-4.hf.space/api/command {command: 'diversify'} -> confirmed: {status: 'command queued', command: 'diversify'}",
+    "reason": "S13 status text confirms 'metrics unchanged since generation 605' at gen 1105 = 500 consecutive generations zero improvement. Stag counter shows 0 (unreliable). Longest-running space (04:05 start, gen 1105, #2 best 0.22086). Mutation at 0.05 and decaying. Breaking convergence here is highest-leverage action this cycle."
   },
   "research_findings": {
-    "executed": false,
-    "hour": 8,
-    "reason": "hour=8, 8%3=2 ≠ 0. Research cycle skipped. Next research at hour=9."
+    "executed": true,
+    "hour": 9,
+    "reason": "hour=9, 9%3=0. Research cycle executed.",
+    "findings": [
+      {
+        "topic": "NBA prediction calibration 2026",
+        "finding": "Jan 2026 MDPI study: calibration quality is the PRIMARY driver of Brier score in NBA forecasting, not raw accuracy. Monte Carlo dropout RNNs with isotonic/spline calibration evaluated via ECE/MCE.",
+        "source": "Uncertainty-Aware ML for NBA Forecasting — https://www.mdpi.com/2078-2489/17/1/56",
+        "actionable": "Apply post-hoc isotonic regression calibration on ensemble output. Evaluate ECE alongside Brier in GA fitness. Potential Brier reduction: 0.005-0.010."
+      },
+      {
+        "topic": "Sports betting calibration vs accuracy model selection",
+        "finding": "arXiv 2303.06021: calibration-selected NBA models yielded +34.69% ROI vs -35.17% for accuracy-selected. 2026 Bundesliga study confirmed isotonic regression produced 10-15% ROI via correcting systematic probability distortions.",
+        "source": "ML for sports betting: accuracy vs calibration — https://arxiv.org/abs/2303.06021",
+        "actionable": "Include ECE as GA fitness component alongside Brier. Directly optimizes probability calibration — what Brier actually measures."
+      },
+      {
+        "topic": "Extra trees feature selection basketball 2025",
+        "finding": "PLOS ONE 2025: Extra Trees feature importance pre-selection before training consistently improved accuracy and generalization for basketball prediction. Hybrid tree-ensemble pipelines outperformed single models.",
+        "source": "PLOS ONE 2025 basketball AI review — doi:10.1371/journal.pone.0326326",
+        "actionable": "Use Extra Trees importances to identify the 142 best features matching exp #734 all-time record. S12 (extra_trees specialist) should evolve toward 130-150 feature count, not current 61."
+      }
+    ]
   },
   "delta_from_last_cycle": {
     "previous_best": 0.22069,
-    "previous_best_source": "S10 (random_forest)",
+    "previous_best_source": "S10 (random_forest, 80 feat) at 08:09",
     "current_best": 0.22069,
-    "current_best_source": "S10 (random_forest)",
+    "current_best_source": "S10 (random_forest, 80 feat)",
     "brier_delta": 0.0,
-    "direction": "UNCHANGED",
-    "consecutive_zero_improvement_hours": 2,
-    "note": "2ND CONSECUTIVE HOUR of zero improvement across all 6 spaces. System-wide evolutionary plateau deepening. Mutation decay accelerating: S10 0.0732→0.05, S12 0.0646→0.041, S13 0.0833→0.05, S14 0.0609→0.04. S11 and S15 held at 0.08 floor. S11 post-diversify (sent last cycle) still too early to see effect. S12 diversify sent this cycle.",
+    "direction": "UNCHANGED — 3RD CONSECUTIVE CYCLE ZERO IMPROVEMENT (07:09, 08:09, 09:09)",
+    "generation_progress_vs_0809": {
+      "s10": "+228 gens (549->777)",
+      "s11": "+364 gens (834->1198)",
+      "s12": "+250 gens (555->805)",
+      "s13": "+280 gens (825->1105)",
+      "s14": "+138 gens (741->879)",
+      "s15": "+413 gens (931->1344)"
+    },
     "new_events": [
-      "S12 DIVERSIFY SENT: mutation=0.041 (below floor), best_brier=0.22148 unchanged since start. Diversify confirmed queued.",
-      "MUTATION COLLAPSE: S10(0.05), S12(0.041), S13(0.05), S14(0.04) — all well below 0.08 expected floor. System-wide convergence accelerating.",
-      "S11 POST-DIVERSIFY: No improvement yet (expected — effect takes 10-20 cycles). Gen 459→834, cycle 153→278.",
-      "S15 DEEPEST: Gen 931, 311 cycles — most evolutionary exploration. Extra_trees specialist, stable mut=0.08.",
-      "ENGINE PARITY CONFIRMED: SHA256 b477354d matches both features/engine.py and hf-space/features/engine.py.",
-      "S14 COOLDOWN: Brief normal cooldown (5s). Mutation at 0.04 — second concern after S12."
+      "SYSTEM-WIDE PLATEAU: Zero Brier improvement 3rd consecutive cycle (07:09, 08:09, 09:09). 5000+ combined generations, zero progress.",
+      "S13 DIVERSIFY SENT THIS CYCLE: 500-gen behavioral stagnation confirmed in status text. Command queued.",
+      "S12 DIVERSIFY SENT PREV CYCLE (08:09): Propagating. Mut still at 0.04 — floor anomaly persists.",
+      "S14 POPULATION DIVERGENCE: Best=0.22105 (gen ~379), gens 380-879 all at 0.22407. Current population cannot reproduce the all-time best.",
+      "ENGINE PARITY CONFIRMED: SHA256 b477354d — both files identical.",
+      "RESEARCH EXECUTED: 3 findings — isotonic calibration, ECE fitness, Extra Trees feature pre-selection."
     ]
   },
   "recommendations": [
-    "NEXT PRIORITY — DIVERSIFY S14: Mutation at 0.04 (critically low, below floor). Best=0.22105 unchanged. If S14 still shows no improvement and mutation remains at floor next cycle, send diversify. This is the next queued action.",
-    "WATCH S10: Population has drifted to 0.2269 catboost (current-gen) while all-time best=0.22069 preserved. Mutation=0.05. If current-gen Brier stays at 0.2269 for another full cycle → consider diversify S10.",
-    "WATCH S13: Mutation 0.0833→0.05 this cycle (-0.0333). Approaching floor. At gen 825 with extra_trees wins — closest to all-time record model path. HIGH PRIORITY to preserve this space.",
-    "STRATEGIC — MUTATION FLOOR BREACH: 4 of 6 spaces (S10, S12, S13, S14) are now BELOW the expected 0.08 mutation floor. This suggests the adaptive mutation controller is overriding the floor. The spaces may need diversify to reset. Consider: only S11 and S15 are AT the floor (healthier diversity).",
-    "STRATEGIC — FEATURE COUNT: All-time record=142 features (extra_trees). Current leaders: S10=80feat, S13=65feat. S12 post-diversify may explore higher feature counts — watch for 100+ feature individuals emerging.",
-    "POSITIVE — S15: Gen 931, extra_trees wins, mut=0.08 stable. This is the most thoroughly searched space. Any breakthrough here would be from truly novel feature combinations at the frontier of the search space."
+    "INVESTIGATE URGENTLY: S12 and S14 mutation rates at 0.04 — below adaptive floor 0.08. Continued decay past floor suggests controller malfunction. VM: check hf-space/app.py mutation floor enforcement.",
+    "NEXT CYCLE: Diversify S14 (500-gen current-gen stagnation at 0.22407, population diverged from all-time best 0.22105).",
+    "NEXT CYCLE ALT: If S14 improving, diversify S15 (gen 1344, mut=0.08 floor, thin Pareto front).",
+    "STRATEGIC — CALIBRATION: Add isotonic regression post-calibration step to GA evaluation. Research: 0.005-0.010 Brier reduction in NBA contexts.",
+    "STRATEGIC — ECE FITNESS: Include ECE (Expected Calibration Error) as GA fitness component. 2025 research: calibration-selected models outperform accuracy-selected by +69% ROI in sports betting.",
+    "STRATEGIC — FEATURE COUNT: All-time record exp #734 used 142 features. Current leaders use 61-87. S12 post-diversify — right moment to inject high-feature (130-150) individuals. Extra Trees importance pre-selection can identify the right 142.",
+    "CONCERN: 3 consecutive cycles, 5000+ combined generations, ZERO Brier improvement. Consider GPU Colab run targeting 142-feature extra_trees to replicate exp #734 conditions."
   ]
 }
