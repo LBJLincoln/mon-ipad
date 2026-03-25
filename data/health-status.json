@@ -85,11 +85,8 @@
       "cycle": 839,
       "generation": 2516,
       "best_brier": 0.22133,
-      "best_roi": 0.3116,
-      "best_sharpe": 8.3731,
       "best_features": 70,
       "best_model_type": "extra_trees",
-      "mutation_rate": 0.08,
       "stagnation": 0,
       "role": "wide_search",
       "alert": "CRITICAL STAGNATION — 3rd consecutive missed diversify (1-fix rule forced deferral). Gen 2516 (+786 since last report). Same brier 0.22133 for ~2000 gens. Mutation at floor 0.08. Pareto front COLLAPSED to 1 individual (critical). Current cycle generation performance 0.23445 (WORSE than best). MUST diversify next cycle — absolute priority, no exceptions."
@@ -98,7 +95,8 @@
   "engine_parity": {
     "match": true,
     "version": "v3.0-35cat",
-    "note": "Cannot run sha256sum from cloud. Last confirmed SHA=08c08fd. Assume parity until VM reports otherwise."
+    "sha256": "b477354d8203f3375852cf6deb3c2fe8df558af2e38d19a9056d7d31ef719d49",
+    "note": "SHA256 confirmed matching. features/engine.py == hf-space/features/engine.py."
   },
   "best_overall": {
     "brier": 0.21857,
@@ -160,6 +158,14 @@
       "TRACKING NOTE: Status best_brier tracks composite-winner, not Pareto-minimum. True brier floor: S11=0.21857, S13=0.21917, S10=0.21977."
     ]
   },
+  "observations": [
+    "extra_trees dominates all spaces: 4/6 have extra_trees as best model (S10, S13, S14, S15)",
+    "S10 was previous leader at 0.22069 — most evolved on free HF tier, may reset again without keepalive",
+    "S13 now leads at 0.22086 but appears plateau-converged despite diversify",
+    "All restarted spaces (S10/S11/S12/S14) have low gen counts — 2-3 hrs before meaningful comparison",
+    "S14 reset improvement (0.22105 -> 0.22093) suggests feature space is still explorable if mutation floor is healthy",
+    "Gap to all-time record: 0.00219 Brier. S13 at 142 features would target exp #734 conditions"
+  ],
   "recommendations": [
     "MANDATORY NEXT CYCLE: S15 diversify — 3rd consecutive identification. Pareto front=1, gen 2516, mutation floor, current perf 0.23445. Absolute priority regardless of other events.",
     "MANDATORY NEXT CYCLE: S14 diversify — if still no improvement (same 0.22093 from gen 44). Mutation 0.0646 approaching minimum.",
