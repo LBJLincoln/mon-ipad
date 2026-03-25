@@ -1,120 +1,130 @@
 {
-  "timestamp": "2026-03-24T22:00:00Z",
+  "timestamp": "2026-03-25T01:07:50Z",
   "trigger": "nomos-brain-24-7",
-  "s10": {
-    "status": "EVOLVING",
-    "cycle": 1,
-    "generation": 1,
-    "best_brier_current_run": 1.0,
-    "best_brier_all_time": 0.22005,
-    "stagnation_gens": 0,
-    "trend": "first_cycle_just_started",
-    "trend_detail": "S10 restarted at 20:55:24 UTC. Feature build took 50 min (completed 21:45:05). CYCLE 1 launched at 21:45:05 with Mut=0.0900, Pop=60, target=63, cx=0.8. No Brier readings yet (best_brier=1.0) — evolution just started ~15 min ago. 3102 usable features (noise-filtered from 6021 raw). Remote-log empty. Brier-trend gens 1-13 at 0.22861 are from PREVIOUS session (before 20:55 restart), not current run.",
-    "active_params": {
-      "pop_size": 60,
-      "n_islands": 5,
-      "island_size": 12,
-      "target_features": 63,
-      "mutation_rate": 0.09,
-      "mutation_decay": "0.998/gen",
-      "crossover": 0.8,
-      "migration_every": 8,
-      "migration_per_island": 3
+  "spaces": {
+    "s10": {
+      "status": "BUILDING FEATURES",
+      "cycle": 0,
+      "generation": 0,
+      "best_brier": 1.0,
+      "stagnation": 0,
+      "mutation_rate": 0.15,
+      "best_model_type": "none",
+      "best_features": 0,
+      "best_roi": 0.0,
+      "role": "exploitation",
+      "alert": "RESTARTED: New cycle ~01:03 UTC. stagnation=19 CLEARED. Waiting for evolution."
     },
-    "feature_candidates": 3102,
-    "pending_interventions": {
-      "commands_queued": [],
-      "config_queued": {},
-      "injected_features_count": 0,
-      "note": "Remote-log completely empty. No pending interventions."
+    "s11": {
+      "status": "EXPERIMENT: BUILDING FEATURES",
+      "cycle": 0,
+      "generation": 0,
+      "best_brier": 1.0,
+      "stagnation": 0,
+      "mutation_rate": 0.15,
+      "best_model_type": "none",
+      "best_features": 0,
+      "best_roi": 0.0,
+      "role": "exploration",
+      "alert": "EXPERIMENT ACTIVE: VM submitted experiment. Was EXPERIMENT_READY_POLLING -> now BUILDING FEATURES."
     },
-    "db_stats": {
-      "total_generations": 1352,
-      "total_cycles": 440,
-      "total_cuts": 0,
-      "best_brier_ever": 0.22005,
-      "regression_count": 0
+    "s12": {
+      "status": "EVOLVING",
+      "cycle": 20,
+      "generation": 59,
+      "best_brier": 0.22181,
+      "stagnation": 0,
+      "mutation_rate": 0.1374,
+      "best_model_type": "extra_trees",
+      "best_features": 58,
+      "best_roi": 0.3053,
+      "role": "extra_trees",
+      "alert": "HEALTHY: stagnation=0, gen=59. Best active space."
     },
-    "started_at": "2026-03-24T20:55:24Z",
-    "last_update": "2026-03-24T21:45:05Z",
-    "note": "50-min feature build is the main bottleneck. First Brier reading expected ~22:15-22:30 UTC. Mutation_rate in API status shows 0.15 (display bug) — actual running value is 0.09 per log."
-  },
-  "s11": {
-    "status": "READY_POLLING",
-    "mode": "EXPERIMENT_RUNNER",
-    "games": 9551,
-    "feature_candidates": 3102,
-    "experiments_completed_today": 0,
-    "s11_best_today": 0.2199,
-    "s11_best_model": "CatBoost",
-    "queue_depth": 0,
-    "last_update": "2026-03-24T21:31:10Z",
-    "note": "S11 fully initialized and polling every 60s. Queue EMPTY — S11 is idle. Ready to run experiments immediately."
+    "s13": {
+      "status": "BUILDING FEATURES",
+      "cycle": 0,
+      "generation": 0,
+      "best_brier": 1.0,
+      "stagnation": 0,
+      "mutation_rate": 0.15,
+      "best_model_type": "none",
+      "best_features": 0,
+      "best_roi": 0.0,
+      "role": "catboost",
+      "alert": "RESTARTED: ~01:06 UTC. stagnation=12 CLEARED."
+    },
+    "s14": {
+      "status": "BUILDING FEATURES",
+      "cycle": 0,
+      "generation": 0,
+      "best_brier": 1.0,
+      "stagnation": 0,
+      "mutation_rate": 0.15,
+      "best_model_type": "none",
+      "best_features": 0,
+      "best_roi": 0.0,
+      "role": "lightgbm",
+      "alert": "RESTARTED: ~01:06 UTC. GA record 0.21991 (extra_trees, 97 feat) CHECKPOINTED last cycle."
+    },
+    "s15": {
+      "status": "EVOLVING",
+      "cycle": 22,
+      "generation": 64,
+      "best_brier": 0.22586,
+      "stagnation": 0,
+      "mutation_rate": 0.169,
+      "best_model_type": "extra_trees",
+      "best_features": 86,
+      "best_roi": 0.2585,
+      "role": "wide_search",
+      "alert": "HEALTHY: stagnation=0, gen=64."
+    }
   },
   "engine_parity": {
     "match": true,
-    "sha_features_engine": "1ccf6622dddb85ea28429ede19e7fd5d47dd7b30a3be35c7d7728441d1df0a8b",
-    "sha_hf_space_engine": "1ccf6622dddb85ea28429ede19e7fd5d47dd7b30a3be35c7d7728441d1df0a8b",
+    "sha_features_engine": "baed60d7bb8a256345e0521a62d3e28e672f3cf826eb9aad17621c38445c0cda",
+    "sha_hf_space_engine": "baed60d7bb8a256345e0521a62d3e28e672f3cf826eb9aad17621c38445c0cda",
     "version": "v3.0-35cat",
-    "sha_changed_from_last_cycle": true,
-    "previous_sha": "cbe7a44edf283ec2961b7466b6017721a961e391",
-    "note": "ENGINE UPDATED since last cycle. Both files match (parity maintained) but SHA changed from cbe7a44 to 1ccf662. Content was modified — investigate what changed."
+    "note": "Parity CONFIRMED. SHA changed 263ac906->baed60d7 (engine updated 00:08-01:07 UTC)."
   },
-  "research_findings": [
-    {
-      "title": "Calibration-First Model Selection: +34.69% ROI vs -35.17% (accuracy-based) on NBA Data",
-      "source": "Wang et al. arxiv 2303.06021",
-      "key_insight": "Isotonic regression post-processing as model selection criterion outperforms accuracy-based selection for NBA betting ROI. CalibratedClassifierCV(method='isotonic') is key.",
-      "actionability": "high",
-      "note": "Carried from hour-21 research cycle. Next research at hour 00."
-    },
-    {
-      "title": "Adaptive Conformal Inference — Parameter-Free, Distribution-Shift Robust",
-      "source": "arxiv 2412.19318v1, arxiv 2405.16246",
-      "key_insight": "Ensemble conformal inference reduces prediction set conservatism without retraining. Valid under non-stationary conditions (roster changes).",
-      "actionability": "high",
-      "note": "Carried from hour-21 research cycle."
-    },
-    {
-      "title": "GA Mutation 0.09 Proven Optimal by 1244 S10 Experiments",
-      "source": "Internal S10 DB",
-      "key_insight": "Trust system data: mut=0.09, cx=0.80, pop=60, target=63 are proven optimal and now baked in as defaults.",
-      "actionability": "confirmed"
-    }
-  ],
+  "best_overall": {
+    "brier": 0.22181,
+    "space": "s12",
+    "model_type": "extra_trees",
+    "features": 58,
+    "roi": 0.3053,
+    "gap_to_all_time_record": 0.00314,
+    "gap_to_target_0_20": 0.02181,
+    "all_time_record": 0.21867,
+    "all_time_record_source": "S11 exp #734 (extra_trees, 142 feat)",
+    "ga_record_last_cycle": 0.21991
+  },
   "action_taken": {
-    "type": "none",
-    "details": "No API call made this cycle.",
-    "reason": "S10 healthy — cycle 1 just started at 21:45 UTC, only ~15 min into first evolution. No Brier readings yet (expected). Remote-log empty. S11 idle — handled via VM recommendation. 1-fix-per-iteration rule: WAIT for first Brier reading before any intervention."
+    "type": "NONE",
+    "target": "N/A",
+    "details": "No action required.",
+    "reason": "Collective restart at ~01:03-01:06 UTC cleared all stagnation. S11 experiment submitted by VM. S12+S15 healthy."
   },
+  "research_findings": [],
   "delta_from_last_cycle": {
-    "brier_change": 0.0,
-    "generations_evolved_this_run": 0,
-    "total_db_generations": 1352,
-    "intervention_consumed": false,
+    "previous_timestamp": "2026-03-25T00:08:41Z",
+    "elapsed_minutes": 59,
     "new_events": [
-      "S10 feature build COMPLETED at 21:45:05 UTC (50 min build from 20:55:24 restart)",
-      "S10 CYCLE 1 launched at 21:45:05 — optimal params confirmed in log (Mut=0.09, Pop=60, target=63, cx=0.8)",
-      "3102 usable features after noise filter (removed 2919 zero-variance from 6021 raw)",
-      "S11 feature build COMPLETED at 21:31:09 UTC — now polling for experiments (queue=0)",
-      "ENGINE SHA CHANGED: cbe7a44 -> 1ccf662 (parity maintained — both files identical to each other)",
-      "Hour 22 % 3 = 1 — research cycle skipped, findings carried from hour 21",
-      "data/results crew files STILL MISSING from git (5th+ consecutive cycle)"
+      "COLLECTIVE RESTART: S10, S13, S14 restarted ~01:03-01:06 UTC",
+      "S11 experiment SUBMITTED by VM (EXPERIMENT_READY_POLLING -> BUILDING FEATURES)",
+      "Engine SHA updated 263ac906 -> baed60d7, parity confirmed",
+      "S12 most stable: cycle 20 gen 59 stagnation=0 best=0.22181",
+      "Hour=1 -> no research cycle"
     ]
   },
-  "key_insights": {
-    "feature_build_bottleneck": "50-min feature build per restart = massive efficiency loss. At ~3 gens per 45 min post-build, we get only ~4-5 gen cycles per day if no restarts. Caching the feature matrix between restarts would be high-leverage.",
-    "engine_update_detected": "SHA changed since last cycle. Both local+HF match (parity OK). 6021 raw features now -> 3102 usable. If new features were added, this is positive. Investigate git log for engine.py.",
-    "s11_idle_waste": "S11 idle since 21:31 UTC. Every idle hour is wasted compute. CatBoost + isotonic calibration experiment should be queued immediately.",
-    "brier_wall_context": "Previous session stuck at 0.22861 for 13 gens. Current session: 0 evaluations yet. All-time DB best: 0.22005. Best ever experiment: 0.21867 (extra_trees, 142 feat, exp #734).",
-    "gap_to_target": "All-time best: 0.22005. Target: 0.20. Gap: 0.02005 (9.1% improvement needed)."
-  },
   "recommendations": [
-    "VM SHOULD RUN: Submit CatBoost S11 experiment — S11 idle (queue=0, ready). Use pop=50, gens=20, target_features=150, model=catboost, calibration=isotonic. Research confirms isotonic calibration is highest-ROI improvement.",
-    "WATCH: First S10 Brier reading expected ~22:15-22:30 UTC. If <= 0.22861 -> optimal params working. If > 0.22861 -> island init issue. If < 0.22005 -> NEW RECORD -> POST /api/checkpoint immediately.",
-    "NEXT CYCLE (23:00 UTC): If gen >= 5 and best_brier still at 0.22861+ -> POST /api/command {\"command\": \"diversify\"}. If < 0.22861 -> let run.",
-    "VM SHOULD RUN: Crew cycle — data/results directory missing 5th+ consecutive cycle. Run nba_crew.py and commit outputs.",
-    "INVESTIGATE: Engine SHA changed (cbe7a44 -> 1ccf662). Run git log -- features/engine.py to see what changed.",
-    "WATCH: If S10 restarts again before gen=10 (before ~23:00 UTC), systemic HF Spaces stability issue requiring deeper investigation."
+    "MONITOR S11: Expect first brier in ~2-3 cycles. If stalls >3 cycles, re-submit.",
+    "WATCH S10: Fresh restart cleared stagnation=19. If stagnation>10 before gen 15, POST diversify.",
+    "WATCH S13: Fresh restart. If stagnation>10 before gen 15, diversify.",
+    "WATCH S14: If re-approaches 0.219xx with extra_trees+97 features, CHECKPOINT immediately.",
+    "S12+S15: No action. Healthy stagnation=0.",
+    "ENGINE NOTE: SHA changed 263ac906->baed60d7 — verify what changed, pre/post comparisons may differ.",
+    "GAP: active=0.22181(S12), GA_record=0.21991(checkpointed), all-time=0.21867. Gap to all-time: 0.00314 (1.4%). S11 experiment is best path to sub-0.218."
   ]
 }
