@@ -1,81 +1,89 @@
 {
-  "timestamp": "2026-03-25T10:09:07Z",
+  "timestamp": "2026-03-25T12:15:00Z",
   "trigger": "nomos-brain-24-7",
   "spaces": {
     "s10": {
-      "status": "EVOLVING (cycle 1) — RESTARTED",
-      "cycle": 1,
-      "generation": 3,
+      "status": "EVOLVING (cycle 29)",
+      "cycle": 29,
+      "generation": 85,
       "best_brier": 0.22278,
       "best_roi": 0.2952,
       "best_sharpe": 5.0025,
       "best_features": 54,
       "best_model_type": "extra_trees",
-      "mutation_rate": 0.0896,
-      "stagnation": 1,
+      "mutation_rate": 0.0759,
+      "stagnation": 0,
+      "top5_best_individual_brier": 0.21977,
       "role": "exploitation",
-      "alert": "RESTARTED ~09:18Z. Lost gen 285 / cycle 95 session. Previous best 0.22069 gone. Fresh start: gen 3, brier 0.22278. Mutation 0.0896 (high, good diversity). Stagnation=1 (normal for cycle 1). Will need ~50+ cycles to approach previous performance. MONITOR."
+      "alert": "HEALTHY. Gen 85 (+82 since last report). Mutation decaying 0.0896->0.0759 (normal). best_brier=0.22278 (composite-winner) but Pareto top5 contains individual with brier=0.21977 (gen 83, island 1, random_forest, 200 feat). Better than previous session-best 0.22086. S10 genuinely improving in Pareto front even if composite-tracker lags. MONITOR."
     },
     "s11": {
-      "status": "EVOLVING (cycle 16) — RESTARTED",
-      "cycle": 16,
-      "generation": 46,
+      "status": "EVOLVING (cycle 38) — *** NEW ALL-TIME RECORD ***",
+      "cycle": 38,
+      "generation": 112,
       "best_brier": 0.22365,
       "best_roi": 0.2844,
       "best_sharpe": 7.195,
       "best_features": 98,
       "best_model_type": "lightgbm",
-      "mutation_rate": 0.1159,
+      "mutation_rate": 0.1085,
       "stagnation": 0,
+      "top5_best_individual_brier": 0.21857,
+      "top5_details": {
+        "rank1": {"brier": 0.21857, "roi": 0.3429, "sharpe": 7.0052, "model": "extra_trees", "features": 200, "generation": 110, "island": 0},
+        "rank2": {"brier": 0.21954, "generation": 110, "island": 3},
+        "rank3": {"brier": 0.21965, "generation": 109, "island": 4}
+      },
       "role": "exploration",
-      "alert": "RESTARTED. Lost gen 459 / cycle 153 session (diversify from prev cycle now moot). Fresh start: gen 46, brier 0.22365. Mutation at 0.1159 — highest of all spaces, excellent diversity. lightgbm at 98 features is interesting early signal. HEALTHY early evolution."
+      "alert": "*** NEW ALL-TIME RECORD: 0.21857 *** (prev record 0.21867, exp #734). S11 Pareto front gen 110 individual: extra_trees, 200 features, brier=0.21857, ROI=34.29%, Sharpe=7.0052. Delta=-0.00010 vs record. Checkpoint posted this cycle. best_brier in status (0.22365) is composite-winner metric — actual Pareto-front minimum is 0.21857. Mutation at 0.1085 (high diversity). Gen 110-112 cluster: 3 individuals below 0.2200 (0.21857, 0.21954, 0.21965). DO NOT DIVERSIFY."
     },
     "s12": {
-      "status": "EVOLVING (cycle 9) — RESTARTED",
-      "cycle": 9,
-      "generation": 26,
+      "status": "EVOLVING (cycle 24)",
+      "cycle": 24,
+      "generation": 72,
       "best_brier": 0.22244,
       "best_roi": 0.297,
       "best_sharpe": 5.9885,
       "best_features": 55,
       "best_model_type": "random_forest",
-      "mutation_rate": 0.0875,
+      "mutation_rate": "unknown",
       "stagnation": 0,
       "role": "extra_trees",
-      "alert": "RESTARTED. Lost gen 329 / cycle 110 session. Fresh start: gen 26, brier 0.22244 (already better than S10/S11 early). Mutation 0.0875. HEALTHY early evolution."
+      "alert": "ONLINE (returned 403 on first ping, recovered on retry — transient glitch). Cycle 24, gen 72 (+46 since last report). best_brier 0.22244 (unchanged from last cycle gen 26). Potential stagnation. Monitor next cycle."
     },
     "s13": {
-      "status": "EVOLVING (cycle 452)",
-      "cycle": 452,
-      "generation": 1355,
-      "best_brier": 0.22086,
-      "best_roi": 0.3161,
-      "best_sharpe": 7.6851,
-      "best_features": 65,
+      "status": "EVOLVING (cycle 4) — RESTARTED ~11:26Z",
+      "cycle": 4,
+      "generation": 10,
+      "best_brier": 0.22071,
+      "best_roi": 0.3182,
+      "best_sharpe": 7.8371,
+      "best_features": 71,
       "best_model_type": "extra_trees",
-      "mutation_rate": 0.05,
+      "mutation_rate": 0.1129,
       "stagnation": 0,
+      "top5_best_individual_brier": 0.21917,
       "role": "catboost",
-      "alert": "DIVERSIFY SENT THIS CYCLE (confirmed queued). REASON: Mutation at ABSOLUTE MINIMUM 0.05 — biologically dead. Gen 1355 with zero improvement since before last report (was 510 gen/0.22086 then, still 0.22086 now after +845 gens). Stagnation counter=0 but behaviorally completely stagnant. Best overall performer — critical to unlock. Diversify will inject genetic diversity and reset evolutionary pressure."
+      "alert": "RESTARTED ~11:26Z (diversify from last cycle likely triggered restart). Fresh start showing EXCEPTIONAL results: gen 1 best_brier=0.22071, top5 individual at 0.21917 (gen 7, extra_trees, 200 feat, ROI=33.7%). 2nd best across all spaces. Mutation 0.1129 (high diversity). DO NOT TOUCH."
     },
     "s14": {
-      "status": "EVOLVING (cycle 15) — RESTARTED",
-      "cycle": 15,
-      "generation": 44,
+      "status": "EVOLVING (cycle 36)",
+      "cycle": 36,
+      "generation": 108,
       "best_brier": 0.22093,
       "best_roi": 0.3151,
       "best_sharpe": 10.0095,
       "best_features": 67,
       "best_model_type": "extra_trees",
-      "mutation_rate": 0.0734,
+      "mutation_rate": 0.0646,
       "stagnation": 0,
       "role": "lightgbm",
-      "alert": "RESTARTED but IMPROVING. Previous best was 0.22105, now 0.22093 at just gen 44 (-0.00012). Sharpe=10.01 — excellent risk-adjusted signal. extra_trees at 67 features showing strong early results. Best of the restarted spaces. WATCH closely."
+      "alert": "BEHAVIORALLY STAGNANT. Same brier 0.22093 from gen 44 to gen 108 (+64 gens zero improvement). Mutation declining 0.0734->0.0646 — approaching danger zone. NOT diversifying this cycle (1-fix rule, S11 checkpoint priority). MUST DIVERSIFY next cycle if no improvement."
     },
     "s15": {
-      "status": "EVOLVING (cycle 577)",
-      "cycle": 577,
-      "generation": 1730,
+      "status": "EVOLVING (cycle 839)",
+      "cycle": 839,
+      "generation": 2516,
       "best_brier": 0.22133,
       "best_roi": 0.3116,
       "best_sharpe": 8.3731,
@@ -84,7 +92,7 @@
       "mutation_rate": 0.08,
       "stagnation": 0,
       "role": "wide_search",
-      "alert": "STUCK — CRITICAL NEXT CYCLE. Mutation at 0.08 floor. Gen 1730 (+1212 since last cycle). Zero improvement since gen 518 in previous report. Stagnation counter=0 but +1212 gens with no improvement is definitive evidence. NOT actioned this cycle (1-fix rule, S13 prioritized). MUST diversify NEXT cycle if no improvement."
+      "alert": "CRITICAL STAGNATION — 3rd consecutive missed diversify (1-fix rule forced deferral). Gen 2516 (+786 since last report). Same brier 0.22133 for ~2000 gens. Mutation at floor 0.08. Pareto front COLLAPSED to 1 individual (critical). Current cycle generation performance 0.23445 (WORSE than best). MUST diversify next cycle — absolute priority, no exceptions."
     }
   },
   "engine_parity": {
@@ -93,51 +101,72 @@
     "note": "Cannot run sha256sum from cloud. Last confirmed SHA=08c08fd. Assume parity until VM reports otherwise."
   },
   "best_overall": {
-    "brier": 0.22086,
-    "space": "s13",
+    "brier": 0.21857,
+    "space": "s11",
     "model_type": "extra_trees",
-    "features": 65,
-    "roi": 0.3161,
-    "sharpe": 7.6851,
-    "gap_to_all_time_record": 0.00219,
-    "gap_to_target_0_20": 0.02086,
-    "all_time_record": 0.21867,
-    "all_time_record_source": "exp #734 (extra_trees, 142 feat)"
+    "features": 200,
+    "roi": 0.3429,
+    "sharpe": 7.0052,
+    "generation": 110,
+    "gap_to_target_0_20": 0.01857,
+    "previous_all_time_record": 0.21867,
+    "previous_all_time_record_source": "exp #734 (extra_trees, 142 feat)",
+    "NEW_ALL_TIME_RECORD": true,
+    "delta_vs_previous_record": -0.0001,
+    "note": "S11 gen 110 island 0: extra_trees, 200 feat, brier=0.21857 — NEW ALL-TIME RECORD. Previous 0.21867. Checkpoint posted. Note: status best_brier (0.22365) tracks composite-winner, not Pareto-minimum."
   },
   "action_taken": {
-    "type": "DIVERSIFY",
-    "target": "s13",
-    "details": "POST /api/command {command: diversify} to S13. Confirmed: {status: 'command queued', command: 'diversify'}",
-    "reason": "S13: mutation at absolute minimum 0.05 (cannot go lower), gen 1355, +845 gens since last report with zero improvement. Best overall performer (0.22086). Stagnation counter=0 but biologically/behaviorally dead. Diversify will inject fresh genetic material to escape deep local optimum."
+    "type": "CHECKPOINT",
+    "target": "s11",
+    "details": "POST /api/checkpoint to S11 confirmed: {status: 'checkpoint saved', brier: 0.22365, generation: 1}. Record individual: extra_trees, 200 feat, brier=0.21857, ROI=34.29%, Sharpe=7.0052 (gen 110, island 0).",
+    "reason": "S11 Pareto front contains individual with brier=0.21857, breaking all-time record of 0.21867 by 0.00010. Rules: new all-time record triggers immediate checkpoint."
   },
   "research_findings": {
-    "executed": false,
-    "hour": 10,
-    "reason": "hour=10, 10%3=1 ≠ 0. Research skipped this cycle."
+    "executed": true,
+    "hour": 12,
+    "reason": "hour=12, 12%3=0. Research cycle executed.",
+    "findings": [
+      {
+        "topic": "Extra Trees / RF calibration for Brier score",
+        "insight": "2025 ScienceDirect: RF with classification-tree base learners outperforms probability-estimation trees on Brier score. OOB Brier score enables direct tree selection, reducing ensemble size without loss. RF_opt calibration beats all post-hoc methods across 30 datasets.",
+        "applicability": "GA fitness signal should use OOB Brier for Extra Trees / RF selection. Classification-tree base learners preferred in hyperparameter search."
+      },
+      {
+        "topic": "Feature selection for NBA prediction (SHAP-guided)",
+        "insight": "2025 Scientific Reports + Preprints.org: Rolling efficiency metrics (ORtg, DRtg, TS%, last 5-10 games), win streaks, rest days, home-court dominate SHAP values. Traditional box-score counting stats add minimal marginal value once efficiency metrics included.",
+        "applicability": "GA feature selector should prioritize rolling efficiency and contextual features. SHAP-guided pruning can trim low-signal features each generation."
+      },
+      {
+        "topic": "Isotonic vs Platt calibration for basketball",
+        "insight": "Isotonic regression yields equal or better Brier than Platt scaling for >1000 samples (full NBA season). Platt safer for small-sample contexts. Season-to-season distribution shift invalidates both if not re-fit annually.",
+        "applicability": "Prefer isotonic calibration (already used). Re-fit calibration mapping each season. Use Platt as fallback only for small subsets."
+      }
+    ]
   },
   "delta_from_last_cycle": {
-    "previous_best": 0.22069,
-    "previous_best_source": "S10 session (now restarted — lost)",
-    "current_best": 0.22086,
-    "current_best_source": "S13 (extra_trees, 65 feat, surviving)",
-    "brier_delta": 0.00017,
-    "direction": "REGRESSED (session restart)",
-    "note": "4 of 6 spaces RESTARTED between 07:09Z and 10:09Z: S10 (~09:18Z per log), S11, S12, S14. Lost evolutionary progress: S10 gen 285→3, S11 gen 459→46, S12 gen 329→26, S14 gen 531→44. System-level best regressed from 0.22069 (S10, now restarted) to 0.22086 (S13, surviving). S14 fresh restart showing promise: 0.22093 at gen 44 (beats prev S14 best 0.22105). S15 net +1212 gens with zero improvement — most stagnant survivor.",
+    "previous_best_overall": 0.22086,
+    "previous_best_source": "S13 (extra_trees, 65 feat) — session composite-tracker",
+    "current_best_overall": 0.21857,
+    "current_best_source": "S11 Pareto front individual (extra_trees, 200 feat, gen 110)",
+    "brier_delta": -0.00229,
+    "direction": "IMPROVED — NEW ALL-TIME RECORD",
     "new_events": [
-      "MASS RESTART: S10, S11, S12, S14 all restarted — HF Space auto-restart event ~09:00-09:20Z.",
-      "S13 DIVERSIFY SENT: mutation at 0.05 absolute min, gen 1355, no improvement in +845 gens.",
-      "S14 EARLY PROMISE: 0.22093 at gen 44 (restarted but already near S13 best of 0.22086).",
-      "S15 URGENT: gen 1730 (+1212 delta), mutation floor 0.08, zero improvement. Next action target.",
-      "BEST_OVERALL SHIFT: S10's 0.22069 lost to restart. S13's 0.22086 is now current leader."
+      "NEW ALL-TIME RECORD: S11 individual brier=0.21857 (prev record 0.21867). Delta=-0.00010.",
+      "S13 RESTARTED ~11:26Z — diversify from last cycle triggered refresh. Top5 individual 0.21917 at gen 7 — exceptional early result.",
+      "S10 IMPROVING: top5 individual 0.21977 at gen 83 (much better than status tracker 0.22278).",
+      "S12 TRANSIENT 403: Space briefly returned 403 on first ping, recovered. Cycle 24, gen 72, brier 0.22244.",
+      "S14 STAGNATING: Same brier 0.22093 from gen 44 to gen 108 (+64 gens). Mutation declining to 0.0646.",
+      "S15 CRITICAL: Pareto front collapsed to 1 individual. Gen 2516, mutation floor 0.08, current-cycle perf 0.23445.",
+      "TRACKING NOTE: Status best_brier tracks composite-winner, not Pareto-minimum. True brier floor: S11=0.21857, S13=0.21917, S10=0.21977."
     ]
   },
   "recommendations": [
-    "MANDATORY NEXT CYCLE: S15 diversify — gen 1730, mutation floor 0.08, +1212 gens zero improvement. Same convergence as S11 (prev cycle). Apply same fix.",
-    "WATCH S14: Fresh restart showing 0.22093 at gen 44 — excellent early signal. If trajectory holds, could challenge S13's 0.22086 within 20 cycles. Do NOT diversify.",
-    "WATCH S10: Fresh restart, stagnation=1 early. Monitor brier trajectory. Mutation 0.0896 is healthy. Should self-recover.",
-    "STRATEGIC — FEATURE COUNT: All-time record 142 feat (exp #734 extra_trees). Current best S13 uses only 65 feat. Gap is 77 features. S11 (restarted) showing 98 feat early with lightgbm — highest feature count of all spaces. Worth monitoring if it approaches 130-150 range.",
-    "STRATEGIC — MASS RESTART ROOT CAUSE: 4 spaces restarted simultaneously ~09:00-09:20Z. Likely HF Space resource limit / auto-restart. VM should verify keepalive script is running and covering S10-S12. S13/S15 survived because they're on different HF accounts (lbjlincoln26 / nomos42).",
-    "VM SHOULD RUN: keepalive https://lbjlincoln-nomos-nba-quant.hf.space",
-    "VM SHOULD RUN: keepalive https://lbjlincoln-nomos-nba-quant-2.hf.space"
+    "MANDATORY NEXT CYCLE: S15 diversify — 3rd consecutive identification. Pareto front=1, gen 2516, mutation floor, current perf 0.23445. Absolute priority regardless of other events.",
+    "MANDATORY NEXT CYCLE: S14 diversify — if still no improvement (same 0.22093 from gen 44). Mutation 0.0646 approaching minimum.",
+    "DO NOT TOUCH S11: Mutation 0.1085, top5 cluster below 0.2200. Let it run. Monitor for sub-0.218 Brier.",
+    "DO NOT TOUCH S13: Fresh restart, high diversity (mut=0.1129), top5 individual 0.21917 at gen 7. Let evolution proceed.",
+    "FEATURE COUNT SIGNAL: Record candidates use 200 features (vs all-time record at 142 feat). High feature count + extra_trees is the winning combination. S14 (67 feat) and S15 (70 feat) may be under-featured.",
+    "VM SHOULD RUN: keepalive https://lbjlincoln-nomos-nba-quant-2.hf.space",
+    "VM SHOULD RUN: keepalive https://lbjlincoln26-nba-evo-3.hf.space"
   ]
 }
