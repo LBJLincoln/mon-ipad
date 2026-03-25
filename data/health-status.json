@@ -150,6 +150,31 @@
       "ALL-TIME BEST: Reverted to CLAUDE.md canonical 0.21976. Previous cycle's 0.21867 may have been premature promotion."
     ]
   },
+  "delta_from_last_cycle": {
+    "previous_best_overall": 0.22086,
+    "previous_best_source": "S13 (extra_trees, 65 feat) — session composite-tracker",
+    "current_best_overall": 0.21857,
+    "current_best_source": "S11 Pareto front individual (extra_trees, 200 feat, gen 110)",
+    "brier_delta": -0.00229,
+    "direction": "IMPROVED — NEW ALL-TIME RECORD",
+    "new_events": [
+      "NEW ALL-TIME RECORD: S11 individual brier=0.21857 (prev record 0.21867). Delta=-0.00010.",
+      "S13 RESTARTED ~11:26Z — diversify from last cycle triggered refresh. Top5 individual 0.21917 at gen 7 — exceptional early result.",
+      "S10 IMPROVING: top5 individual 0.21977 at gen 83 (much better than status tracker 0.22278).",
+      "S12 TRANSIENT 403: Space briefly returned 403 on first ping, recovered. Cycle 24, gen 72, brier 0.22244.",
+      "S14 STAGNATING: Same brier 0.22093 from gen 44 to gen 108 (+64 gens). Mutation declining to 0.0646.",
+      "S15 CRITICAL: Pareto front collapsed to 1 individual. Gen 2516, mutation floor 0.08, current-cycle perf 0.23445.",
+      "TRACKING NOTE: Status best_brier tracks composite-winner, not Pareto-minimum. True brier floor: S11=0.21857, S13=0.21917, S10=0.21977."
+    ]
+  },
+  "observations": [
+    "extra_trees dominates all spaces: 4/6 have extra_trees as best model (S10, S13, S14, S15)",
+    "S10 was previous leader at 0.22069 — most evolved on free HF tier, may reset again without keepalive",
+    "S13 now leads at 0.22086 but appears plateau-converged despite diversify",
+    "All restarted spaces (S10/S11/S12/S14) have low gen counts — 2-3 hrs before meaningful comparison",
+    "S14 reset improvement (0.22105 -> 0.22093) suggests feature space is still explorable if mutation floor is healthy",
+    "Gap to all-time record: 0.00219 Brier. S13 at 142 features would target exp #734 conditions"
+  ],
   "recommendations": [
     "CRITICAL S10: Diversify failed twice. Space biologically dead. Options: (A) POST /api/config with higher mut_floor param, (B) let natural HF Space restart occur, (C) no further action — wait for restart. Do NOT diversify again — it does not work at mutation floor.",
     "CRITICAL S12: Mutation at 0.0467 (below S10 floor). DIVERSIFY NEXT CYCLE if no tracked best improvement at 00:00Z check.",
