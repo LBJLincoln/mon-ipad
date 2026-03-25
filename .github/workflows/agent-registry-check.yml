@@ -1,0 +1,85 @@
+name: Agent Registry Check
+
+on:
+  push:
+    paths:
+      - '.claude/agents/*.md'
+      - 'data/agent-registry.json'
+  pull_request:
+    paths:
+      - '.claude/agents/*.md'
+      - 'data/agent-registry.json'
+
+jobs:
+  validate-registry:
+    name: Validate every agent definition has a registry entry
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check agent definitions match registry
+        run: |
+          set -euo pipefail
+
+          REGISTRY="data/agent-registry.json"
+          AGENTS_DIR=".claude/agents"
+          FAIL=0
+
+          if [ ! -f "$REGISTRY" ]; then
+            echo "ERROR: $REGISTRY not found"
+            exit 1
+          fi
+
+          for agent_file in "$AGENTS_DIR"/*.md; do
+            # Extract the 'name:' field from the frontmatter
+            agent_id=$(grep -m1 '^name:' "$agent_file" | sed 's/name: *//' | tr -d '[:space:]')
+
+            if [ -z "$agent_id" ]; then
+              echo "WARNING: Could not extract name from $agent_file — skipping"
+              continue
+            fi
+
+            # Check that the id exists in the registry
+            if python3 -c "
+import json, sys
+with open('$REGISTRY') as f:
+    reg = json.load(f)
+ids = [a['id'] for a in reg.get('agents', [])]
+if '$agent_id' not in ids:
+    print(f'MISSING: $agent_id not found in registry (registered: {ids})')
+    sys.exit(1)
+else:
+    print(f'OK: $agent_id')
+"; then
+              :
+            else
+              FAIL=1
+            fi
+          done
+
+          # Reverse check: every registry entry must have a definition file
+          python3 - <<'EOF'
+import json, os, sys
+with open("data/agent-registry.json") as f:
+    reg = json.load(f)
+fail = False
+for agent in reg.get("agents", []):
+    doc = agent.get("onboarding_doc", "")
+    if not os.path.exists(doc):
+        print(f"MISSING FILE: {doc} referenced in registry for agent '{agent['id']}'")
+        fail = True
+    else:
+        print(f"OK FILE: {doc}")
+if fail:
+    sys.exit(1)
+EOF
+
+          if [ "$FAIL" -ne 0 ]; then
+            echo ""
+            echo "Registry check FAILED. Add missing agents to data/agent-registry.json."
+            exit 1
+          fi
+
+          echo ""
+          echo "All agent definitions have matching registry entries."

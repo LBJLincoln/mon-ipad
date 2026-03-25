@@ -1,10 +1,10 @@
 # Nomos42 — NBA Quant AI
 
-> Architecture v14 — Brain + Muscle | Updated: 2026-03-24
+> Architecture v14 — Brain + Muscle | Updated: 2026-03-25
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.2200 | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Best:** Brier 0.22041 (S10 MOVDA-era, xgboost, gen 435) | All-time: 0.21976 | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 
 ## 24/7 Autonomous Architecture
 
@@ -23,13 +23,13 @@ VM MUSCLE (cron, every 4h at :30)
     └── Auto-restart data server
     Script: scripts/autonomous-cycle.sh
 
-HF SPACES (6 islands, always-on)
-    ├── S10 LBJLincoln/nomos-nba-quant: exploitation (mut=0.09)
-    ├── S11 LBJLincoln/nomos-nba-quant-2: exploration (mut=0.15)
-    ├── S12 LBJLincoln26/nba-evo-3: extra_trees specialist
-    ├── S13 LBJLincoln26/nba-evo-4: catboost specialist
-    ├── S14 Nomos42/nba-evo-5: lightgbm specialist
-    └── S15 Nomos42/nba-evo-6: wide search
+HF SPACES (6 islands, always-on, CPU tree-only, MAX_FEATURES=200)
+    ├── S10 LBJLincoln/nomos-nba-quant: exploitation (mut=0.09, cx=0.80, feat=63)
+    ├── S11 LBJLincoln/nomos-nba-quant-2: exploration (mut=0.15, feat=80)
+    ├── S12 LBJLincoln26/nba-evo-3: extra_trees specialist (mut=0.08, feat=60)
+    ├── S13 LBJLincoln26/nba-evo-4: catboost specialist (mut=0.10, feat=66)
+    ├── S14 Nomos42/nba-evo-5: lightgbm specialist (mut=0.08, feat=55)
+    └── S15 Nomos42/nba-evo-6: wide search (mut=0.18, feat=80, pop=50)
 
 GOOGLE COLAB (GPU, on-demand)
     └── colab/nba_evolution_gpu.ipynb: T4 GPU evolution
@@ -54,6 +54,11 @@ SYSTEM CRONS
 2. **Feature engine parity** — `features/engine.py` = `hf-space/features/engine.py` always
 3. **1 fix per iteration** — never multiple simultaneous changes
 4. **All experiments tagged** with `feature_engine_version` in Supabase
+5. **Feature engine** — v3.0 + Cat36 EWMA + Cat37 MOVDA = 37 categories, 6135 raw features
+6. **MAX_FEATURES=200** — hard cap enforced in init/mutate/crossover on all spaces
+7. **Mutation cap** — adaptive mutation capped at 0.15 (deployed S10/S11/S12/S15)
+8. **CPU-only islands** — no neural models on CPU (tree-based only), stacking removed
+9. **Supabase** — primary (ayqviq) paused (402), using pooler connection (xivvnr)
 
 ## MCP Servers
 

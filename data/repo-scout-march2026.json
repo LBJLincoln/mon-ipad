@@ -1,0 +1,510 @@
+{
+  "agent": "repo-scout",
+  "timestamp": "2026-03-25T00:00:00Z",
+  "scan_date_range": "2026-02-15 to 2026-03-25",
+  "scan_focus": "Official agent frameworks, GPU tools, ML frameworks, MCP ecosystem, hot trending repos",
+
+  "agent_frameworks": [
+    {
+      "url": "https://github.com/anthropics/claude-agent-sdk-python",
+      "name": "anthropics/claude-agent-sdk-python",
+      "description": "Official Anthropic Claude Agent SDK for Python. Powers orchestration of Claude Code subagents programmatically.",
+      "stars": null,
+      "latest_version": "0.1.50",
+      "latest_release_date": "2026-03-20",
+      "march_2026_highlights": [
+        "v0.1.49 (Mar 20): AgentDefinition gains 'skills', 'memory', 'mcpServers' fields — agents now declare their full capability set declaratively",
+        "v0.1.49: session tagging (tag_session()), renaming (rename_session()), typed RateLimitEvent",
+        "v0.1.49: per-turn usage preserved on AssistantMessage — enables token-cost accounting per agent turn",
+        "v0.1.50 (Mar 20): get_session_info() function + 'tag'/'created_at' on SDKSessionInfo",
+        "v0.1.50: bundled Claude CLI bumped to 2.1.81",
+        "Claude Code 2.1.76: MCP elicitation — MCP servers can now show interactive forms/dialogs mid-task",
+        "Claude Code 2.1.77: Opus 4.6 output token limit raised to 64k, context cap 128k, session resume 45% faster",
+        "Claude Code 2.1.78: StopFailure hook + persistent plugin data storage",
+        "Claude Code 2.1.79: Console auth flag, startup memory -18MB",
+        "Claude Code 2.1.80: rate limit visibility in statusline, parallel tool result handling fixed in session resumption",
+        "Claude Code 2.1.81: bare mode for scripted -p calls, channel-based permission relays, multi-session re-auth fixed",
+        "Hooks (12 events): agent_id + agent_type fields added for subagent tracking",
+        "Hooks: StopFailure event fires when agent hits a terminal error — use for auto-recovery"
+      ],
+      "nba_relevance": "HIGH — our 4h Brain trigger uses Claude Agent SDK to spawn research/feature/evolution subagents. AgentDefinition.skills + memory fields enable declaring skill sets declaratively. session tagging enables per-experiment tracking.",
+      "what_to_steal": "Use tag_session() to label each 4h Brain cycle with generation number + best Brier score. Use AgentDefinition with 'skills' field to declare our 4 specialized agent team capabilities. Use StopFailure hook to auto-restart failed evolution islands."
+    },
+    {
+      "url": "https://github.com/google/adk-python",
+      "name": "google/adk-python",
+      "description": "Google Agent Development Kit: open-source, code-first Python toolkit for building, evaluating, and deploying sophisticated AI agents. Model-agnostic, supports A2A protocol natively.",
+      "stars": 18600,
+      "latest_version": "v1.27.3",
+      "latest_release_date": "2026-03-23",
+      "march_2026_highlights": [
+        "v1.27.3 (Mar 23): protection for arbitrary module imports — security hardening",
+        "v2.0.0a1 pre-release (Mar 18): workflow runtime with graph-based execution engine — sequential, fan-out/fan-in, loops",
+        "Native A2A (Agent-to-Agent) protocol support — agents on Agent Engine can discover/talk to agents on other platforms",
+        "Agent Engine on Vertex AI now supports A2A Protocol — cross-org agent communication",
+        "Gemini 3 Pro/Flash (Mar 2026): reasoning control, stateful tool use via Thought Signatures, computer use",
+        "ADK release cadence: roughly bi-weekly (very active)"
+      ],
+      "nba_relevance": "MEDIUM — if we ever want to run Gemini 3 Flash as a research subagent (free API tier) alongside Claude. A2A protocol could allow our HF Spaces to register as agents and report status back to Brain.",
+      "what_to_steal": "Gemini 3 Flash has a free API tier with 1M context. Use as a secondary research agent in Karpathy loop for cost reduction. ADK's graph-based workflow runtime (v2.0.0a1) is a clean pattern for our 4-step Karpathy cycle."
+    },
+    {
+      "url": "https://github.com/openai/openai-agents-python",
+      "name": "openai/openai-agents-python",
+      "description": "Lightweight, powerful framework for multi-agent workflows. Production successor to Swarm. Provider-agnostic, supports 100+ LLMs via litellm.",
+      "stars": 20300,
+      "latest_version": "0.13.0",
+      "latest_release_date": "2026-03-23",
+      "march_2026_highlights": [
+        "v0.13.0 (Mar 23): tool search tool with namespace support, gpt-5.4 mini for computer use",
+        "Provider-agnostic: supports 100+ LLMs beyond OpenAI models",
+        "GPT-5.4 mini now available in Codex for lighter coding tasks — 2x faster than GPT-5 mini",
+        "Voice agents via gpt-realtime-1.5 model",
+        "Session management: automatic conversation history tracking across runs",
+        "Codex: app-server TUI updates, ChatGPT device-code sign-in, new user prompt hook"
+      ],
+      "nba_relevance": "LOW — we use Claude exclusively. But the provider-agnostic pattern + guardrails API are worth studying for our agent architecture.",
+      "what_to_steal": "Guardrails pattern: input/output validation on every agent turn. Apply to our feature_engineer agent so it validates feature category exists in engine.py before proposing. Also: handoff pattern for clean agent delegation."
+    },
+    {
+      "url": "https://github.com/microsoft/agent-framework",
+      "name": "microsoft/agent-framework",
+      "description": "Microsoft Agent Framework: unified convergence of AutoGen + Semantic Kernel. Graph-based workflows, multi-provider LLM support, A2A + MCP interoperability. RC5 as of Mar 20.",
+      "stars": 8200,
+      "latest_version": "python-1.0.0rc5",
+      "latest_release_date": "2026-03-20",
+      "march_2026_highlights": [
+        "RC5 (Mar 20): API surface now stable, GA expected end of March 2026",
+        "AutoGen entering maintenance mode — focus shifting entirely to Microsoft Agent Framework",
+        "Graph-based workflows: sequential, concurrent, handoff, group chat patterns with streaming + checkpointing",
+        "DevUI: interactive developer interface for testing/debugging agent workflows",
+        "OpenTelemetry integration built-in for distributed tracing",
+        "A2A + MCP interoperability standard — works with Google ADK, Anthropic Claude",
+        "AF Labs: experimental packages for benchmarking, RL, and research"
+      ],
+      "nba_relevance": "LOW — we use Claude Code subagents. But AF Labs benchmarking package and the RL (reinforcement learning) extension are worth watching for future meta-learning of evolution hyperparameters.",
+      "what_to_steal": "AF Labs RL extension pattern for hyperparameter optimization via reinforcement learning. Their group chat + checkpointing pattern is cleaner than our current sequential 4-agent Karpathy loop."
+    },
+    {
+      "url": "https://github.com/langchain-ai/langgraph",
+      "name": "langchain-ai/langgraph",
+      "description": "Graph-based agent orchestration framework. Most production-hardened option with checkpointing, time-travel debugging, durable execution. 34.5M monthly downloads.",
+      "stars": null,
+      "latest_version": "1.0+ (GA)",
+      "latest_release_date": "2026-03",
+      "march_2026_highlights": [
+        "LangGraph 1.0 now generally available",
+        "Type-safe streaming (version='v2'): unified StreamPart output with type, ns, data keys on every chunk",
+        "Type-safe invoke (version='v2'): GraphOutput object with .value and .interrupts attributes",
+        "Pydantic/dataclass coercion: invoke() output auto-coerced to declared types",
+        "Fixed time travel with interrupts and subgraphs",
+        "Deep Agents v0.5.0 (Mar 24): async subagents — non-blocking background tasks",
+        "Used in production by Klarna, Uber, LinkedIn"
+      ],
+      "nba_relevance": "MEDIUM — our Karpathy loop is effectively a LangGraph-style DAG running inside Claude Code. Deep Agents v0.5.0 async subagents pattern is relevant for parallelizing our 4 research subagents.",
+      "what_to_steal": "Deep Agents v0.5.0 async subagent pattern: spawn all 4 Karpathy subagents (repo-scout, market-analyst, feature-engineer, evolution-optimizer) in parallel rather than sequentially. Estimated time savings: 3x speedup per Brain cycle."
+    },
+    {
+      "url": "https://github.com/crewAIInc/crewAI",
+      "name": "crewAIInc/crewAI",
+      "description": "Framework for orchestrating role-playing, autonomous AI agents. Collaborative intelligence for complex tasks.",
+      "stars": null,
+      "latest_version": "1.11.1",
+      "latest_release_date": "2026-03-23",
+      "march_2026_highlights": [
+        "v1.11.1 (Mar 23), v1.11.0 (Mar 18), v1.11.0rc1 (Mar 16)",
+        "Better memory: vector database integration for cross-session agent memory",
+        "Improved parallel processing: independent tasks execute simultaneously by default",
+        "NOTE: our MEMORY.md says CrewAI is dead/replaced by Claude Code subagents — do NOT re-introduce"
+      ],
+      "nba_relevance": "IRRELEVANT — we migrated away from CrewAI. Noted for completeness only.",
+      "what_to_steal": "Nothing. We use Claude Code subagents exclusively per user decision 2026-03-24."
+    }
+  ],
+
+  "gpu_and_training_tools": [
+    {
+      "url": "https://github.com/vllm-project/vllm",
+      "name": "vllm-project/vllm",
+      "description": "High-throughput LLM serving. v0.7.3 optimized for NVIDIA Blackwell (B200). Best default for fast starts and model flexibility.",
+      "march_2026_highlights": [
+        "v0.7.3: NVIDIA Blackwell B200 optimizations",
+        "~12,500 tokens/sec on H100 80GB at FP8 for Llama 3.3 70B",
+        "SGLang and LMDeploy now faster at ~16,200 tokens/sec on same hardware"
+      ],
+      "nba_relevance": "LOW — we don't self-host LLMs. Training is tree-based (XGBoost/LGBM) not neural."
+    },
+    {
+      "url": "https://github.com/microsoft/BitNet",
+      "name": "microsoft/BitNet",
+      "description": "1-bit LLM inference framework. Dominated HN with 370 points in week of Mar 18. Enables running LLMs on CPU with massive memory reduction.",
+      "stars": 35474,
+      "march_2026_highlights": [
+        "35.4k stars as of March 18 week",
+        "370 HN points — strong developer interest in CPU-only inference",
+        "1-bit quantization allows running large models on CPU/laptop"
+      ],
+      "nba_relevance": "LOW for training. MEDIUM for VM — if we ever need a local LLM on our 969MB VM for feature proposal generation, BitNet-quantized models could fit. Currently we use Claude API so irrelevant.",
+      "what_to_steal": "Nothing immediately. File under: if we ever lose Claude API access, BitNet + Qwen3-1.7B could run feature proposals on VM."
+    },
+    {
+      "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
+      "name": "NVIDIA Nemotron-3-Nano-30B-A3B",
+      "description": "NVIDIA agentic model. Hybrid Mamba-Transformer MoE. 1M token context. Built for agentic, reasoning, tool-use, chat. 4x faster than Nemotron Nano 2.",
+      "march_2026_highlights": [
+        "Released March 2026 on HuggingFace",
+        "30B total params, 3B active (MoE) — efficient inference",
+        "52 layers: 23 MoE + 23 Mamba-2 + 6 GQA layers",
+        "1M token context window — ideal for long-horizon agentic workflows",
+        "3.3x higher throughput than Qwen3-30B on H200",
+        "Reasoning ON/OFF modes + configurable thinking budget",
+        "FP8 + NVFP4 quantized checkpoints available on HF (released 2026/03/11)",
+        "NVIDIA NeMo Agent Toolkit: framework-agnostic library to connect agent components"
+      ],
+      "nba_relevance": "MEDIUM — if run on Google Colab (T4 GPU), Nemotron-Nano-4B variant could serve as a local feature-engineering LLM. The 30B variant needs H200.",
+      "what_to_steal": "Nemotron-3-Nano-4B (not 30B) — check if it fits in Colab T4 (16GB) for use as a local feature-proposal LLM. The reasoning budget control is useful: low budget for fast feature screening, high budget for novel feature design."
+    },
+    {
+      "url": "https://lightpanda-io/browser",
+      "name": "lightpanda-io/browser",
+      "description": "Zig-based headless browser purpose-built for AI agents. 21.5k stars as of March 18 week. Zero overhead for agent browser automation.",
+      "stars": 21531,
+      "nba_relevance": "LOW for NBA prediction. Relevant if we build a web-scraping agent for injury news.",
+      "what_to_steal": "Nothing immediately. Watch for if we add web scraping to our data pipeline."
+    },
+    {
+      "url": "https://iotbyhvm.ooo/best-free-cloud-gpu-platforms-in-2026",
+      "name": "GPU Platform Status Summary (March 2026)",
+      "description": "Current free GPU options state as of March 2026",
+      "march_2026_highlights": [
+        "Google Colab: T4 GPU still free, recommended for our Colab evolution notebook",
+        "Kaggle: 30h/week P100 16GB — BROKEN for us (account issues per MEMORY)",
+        "Lightning AI: free GPU hours monthly with PyTorch Lightning — unexplored",
+        "Modal: Starter plan free credits, 2-4s cold start, excellent Python SDK — strong alternative to Colab",
+        "RunPod: $5-10 starting credits, spot instances $0.20/hr — good for burst GPU"
+      ],
+      "nba_relevance": "HIGH — we run evolution on HF Spaces CPU + Colab T4. Modal could be a better GPU option for training.",
+      "what_to_steal": "Explore Modal for evolution GPU bursts. Modal's Python SDK is cleaner than Colab notebooks for scheduled runs. Free credits cover ~25-50h of A100/H100 testing."
+    }
+  ],
+
+  "hot_trending_repos": [
+    {
+      "url": "https://github.com/obra/superpowers",
+      "name": "obra/superpowers",
+      "description": "Agentic skills framework and software development methodology for coding agents. Composable 'skills' + structured workflow: spec -> plan -> TDD implementation. Works with Claude Code, Cursor, Codex, Gemini CLI, and 5+ others.",
+      "stars": 95036,
+      "star_velocity": "+37,809 in March 2026",
+      "march_2026_highlights": [
+        "95k stars as of March 18 week, +37.8k stars in March alone — fastest growing agent framework",
+        "Works with Claude Code natively",
+        "Spec-first approach: forces the agent to produce a spec you approve before coding",
+        "TDD enforcement: red/green tests written first",
+        "Compatible with our .claude/agents/ skill structure"
+      ],
+      "nba_relevance": "MEDIUM — their skill composition pattern is directly relevant to our Claude Code skill system (/karpathy-loop, /tony-bloom, /progress-10pct). Could formalize our feature-engineer workflow.",
+      "what_to_steal": "The spec-first + implementation plan pattern for our feature-engineer agent. Before proposing a new feature category, the agent produces: (1) spec of what the feature measures, (2) implementation plan, (3) expected Brier delta. Prevents half-baked feature proposals."
+    },
+    {
+      "url": "https://github.com/vectorize-io/hindsight",
+      "name": "vectorize-io/hindsight",
+      "description": "Agent Memory That Learns. Treat memory as first-class substrate for reasoning. Core ops: retain, recall, reflect + mental models that auto-update. SOTA on LongMemEval benchmark. MCP server available.",
+      "stars": null,
+      "march_2026_highlights": [
+        "Trending on GitHub since March 15, 2026",
+        "MCP server mode: add persistent memory to any MCP-compatible agent in 2 lines",
+        "LLM Wrapper: add memory to existing agent with 2 lines of code",
+        "SOTA on LongMemEval benchmark",
+        "Three core ops: retain (store), recall (search), reflect (reason)",
+        "Mental models auto-update as memories accumulate",
+        "Built on vectorize.io vector DB"
+      ],
+      "nba_relevance": "MEDIUM — our Brain agent currently has no persistent memory between 4h cycles beyond git commits. Hindsight MCP server could give Brain agent persistent memory of experiment outcomes, allowing it to reason about 100+ generations of evolution history.",
+      "what_to_steal": "Add Hindsight MCP server to Brain's Claude Code config. Use 'retain' to store every experiment outcome (brier, model_type, feature_count, generation). Use 'reflect' to ask 'what feature categories improved Brier the most in last 50 generations?' before making config decisions."
+    },
+    {
+      "url": "https://github.com/666ghj/MiroFish",
+      "name": "666ghj/MiroFish",
+      "description": "Swarm intelligence simulation engine for prediction tasks. Uses knowledge graphs, multi-agent simulation, and agent memory under the hood. +18,725 stars in one week.",
+      "stars": 33778,
+      "star_velocity": "+18,725 in one week (fastest sustained growth as of March 18 week)",
+      "nba_relevance": "MEDIUM — swarm intelligence for prediction is directly in our domain. The multi-agent simulation pattern may encode complementary prediction approaches.",
+      "what_to_steal": "Read the MiroFish source for their swarm voting ensemble pattern. If they have open NBA prediction demos, extract the feature set they use. The knowledge graph component may encode game-theoretic features we're missing."
+    },
+    {
+      "url": "https://github.com/volcengine/OpenViking",
+      "name": "volcengine/OpenViking",
+      "description": "ByteDance Volcengine context database for AI agents. Unifies memory, resources, and skills in a filesystem paradigm with hierarchical context delivery and self-evolution support.",
+      "stars": 15600,
+      "nba_relevance": "LOW for NBA prediction directly. MEDIUM for agent architecture — their 'self-evolution support' concept maps to our GA evolution of model configs.",
+      "what_to_steal": "The hierarchical context delivery pattern: organize our 6000+ features hierarchically so agents can reason about feature categories without loading all 6000 feature names."
+    },
+    {
+      "url": "https://github.com/microsoft/playwright-mcp",
+      "name": "microsoft/playwright-mcp",
+      "description": "Playwright MCP server. Second most viewed MCP tool on FastMCP (~6,000 views). Deterministic browser interactions via accessibility snapshots for AI agents.",
+      "nba_relevance": "MEDIUM — could power an injury-news scraping agent. NBA injury reports are often only on team websites.",
+      "what_to_steal": "Add playwright-mcp to Claude Code config for our market-analyst agent. Use it to scrape NBA.com injury reports before each prediction cycle."
+    },
+    {
+      "url": "https://github.com/punkpeye/awesome-mcp-servers",
+      "name": "punkpeye/awesome-mcp-servers",
+      "description": "Curated collection of MCP servers. 1,864+ servers indexed on FastMCP. Top categories: browser automation, memory management, structured thinking, database integrations.",
+      "nba_relevance": "HIGH — reference list for extending our Claude Code + Supabase MCP setup.",
+      "what_to_steal": "Audit this list for: (1) any sports/odds data MCP servers, (2) any time-series database MCP servers (for feature store), (3) any backtesting MCP servers."
+    },
+    {
+      "url": "https://github.com/autogluon/tabarena",
+      "name": "autogluon/tabarena",
+      "description": "Living benchmark for ML on tabular data. 25M trained models cached. 16 models evaluated: GBDTs, neural nets, foundation models (TabPFNv2, TabICL, TabDPT).",
+      "stars": null,
+      "march_2026_highlights": [
+        "TabArena-v0.1 public with 16 models",
+        "Key finding: diverse ensemble (GBDT + DL) beats GBDT-only ensemble",
+        "TabPFNv2 significantly outperforms others on datasets <=10k samples, <=500 features",
+        "Neural networks strongest single models AFTER post-hoc ensembling",
+        "TabICL strong in-context learning for small-data regimes",
+        "TabPFN-2.5: scales to 50k samples (5x TabPFNv2), 2000 features (4x), matches AutoGluon 4h ensemble in single forward pass",
+        "TabICL v2 (2026): faster + better than v1"
+      ],
+      "nba_relevance": "HIGH — this validates our GBDT stack AND reveals we should add TabPFNv2 or TabICLv2 as a stacking meta-learner. Our 6135 features exceed TabPFN-2.5's 2000 feature limit — we'd need to pass evolved feature subsets (e.g., top 63 from S10).",
+      "what_to_steal": "Use TabPFN-2.5 or TabICLv2 on the evolved 63-feature subset from S10. Add as an additional base model in stacking ensemble. Expected: -0.003 to -0.005 Brier on small validation folds. Distillation engine: convert TabPFN-2.5 -> compact tree ensemble for HF Space deployment."
+    }
+  ],
+
+  "hf_models": [
+    {
+      "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
+      "name": "NVIDIA-Nemotron-3-Nano-30B-A3B",
+      "description": "Agentic MoE model. 30B total/3B active. 1M context. Tool-use, reasoning, multi-step agent tasks.",
+      "created": "2026-03",
+      "relevance": 2,
+      "quality": 5,
+      "novelty": 4,
+      "integration_effort_hours": 8,
+      "expected_brier_delta": 0,
+      "what_to_steal": "Nano-4B variant for local Colab feature proposal generation. Reasoning budget control for cost management."
+    },
+    {
+      "url": "https://huggingface.co/collections/RedHatAI/red-hat-ai-validated-models-march-2026",
+      "name": "RedHatAI Validated Models March 2026",
+      "description": "Collection of validated, production-ready models for enterprise deployment. Includes multiple model sizes.",
+      "created": "2026-03",
+      "relevance": 1,
+      "quality": 4,
+      "novelty": 2,
+      "integration_effort_hours": 0,
+      "expected_brier_delta": 0,
+      "what_to_steal": "Nothing for NBA prediction."
+    }
+  ],
+
+  "hf_datasets": [
+    {
+      "url": "https://huggingface.co/datasets/dcayton/nba_tracking_data_15_16",
+      "name": "dcayton/nba_tracking_data_15_16",
+      "description": "Raw SportVU tracking data from 2015-16 NBA season merged with play-by-play. Last season with publicly available tracking data.",
+      "relevance": 3,
+      "quality": 3,
+      "novelty": 2,
+      "integration_effort_hours": 12,
+      "expected_brier_delta": -0.003,
+      "what_to_steal": "Extract spatial tracking features: player movement patterns, shot location distributions, defensive positioning. Historical only (2015-16) so useful for cross-season calibration but not live features."
+    },
+    {
+      "url": "https://huggingface.co/datasets/suzyanil/nba-data",
+      "name": "suzyanil/nba-data",
+      "description": "General NBA game data on HuggingFace.",
+      "relevance": 2,
+      "quality": 2,
+      "novelty": 1,
+      "integration_effort_hours": 0,
+      "expected_brier_delta": 0,
+      "what_to_steal": "Already have better data via Supabase."
+    }
+  ],
+
+  "papers_and_benchmarks": [
+    {
+      "url": "https://arxiv.org/abs/2506.16791",
+      "name": "TabArena: A Living Benchmark for Machine Learning on Tabular Data",
+      "description": "Definitive 2026 tabular ML benchmark. 25M cached model evaluations. Key finding: GBDT+DL diverse ensemble beats GBDT-only. TabPFNv2 SOTA for <10k samples/500 features.",
+      "relevance": 5,
+      "quality": 5,
+      "novelty": 4,
+      "integration_effort_hours": 6,
+      "expected_brier_delta": -0.004,
+      "what_to_steal": "Add TabICLv2 as stacking base model using evolved 63-feature subset. Run on Colab T4. Feed predict_proba() output as meta-features to our final XGBoost blender. TabArena shows this adds 0.5-1.5% over GBDT-only ensemble."
+    },
+    {
+      "url": "https://priorlabs.ai/technical-reports/tabpfn-2-5-model-report",
+      "name": "TabPFN-2.5 Model Report",
+      "description": "Next-gen tabular foundation model. Scales to 50k samples, 2000 features. Matches AutoGluon 4h ensemble in single forward pass. Distillation engine available.",
+      "relevance": 4,
+      "quality": 5,
+      "novelty": 5,
+      "integration_effort_hours": 8,
+      "expected_brier_delta": -0.003,
+      "what_to_steal": "Use TabPFN-2.5 distillation: train TabPFN-2.5 on our dataset, distill to compact tree ensemble, deploy on HF Spaces CPU. This converts the foundation model's knowledge into a deployable artifact without GPU requirement."
+    },
+    {
+      "url": "https://mindfulmodeler.substack.com/p/the-state-of-tabular-foundation-models",
+      "name": "State of Tabular Foundation Models (2026)",
+      "description": "Survey of TabPFN-2.5, TabICLv2, TabDPT performance across regimes. Key: foundation models win on small data, GBDTs win on large data.",
+      "relevance": 5,
+      "quality": 4,
+      "novelty": 3,
+      "integration_effort_hours": 2,
+      "expected_brier_delta": -0.002,
+      "what_to_steal": "For our 3000-5000 game training window: we're in TabPFN territory (could gain from foundation models). For our 6000+ feature engine: must use feature selection first to get under 2000 features before TabPFN. Our GA already selects ~63 features — pipe that subset directly to TabPFN-2.5."
+    }
+  ],
+
+  "nba_specific_repos": [
+    {
+      "url": "https://github.com/NBA-Betting/NBA_AI",
+      "name": "NBA-Betting/NBA_AI",
+      "description": "AI system predicting NBA game outcomes using play-by-play data + deep learning + GenAI. Supports 2025-2026 season. Complete pipeline from PBP through predictions.",
+      "stars": null,
+      "relevance": 4,
+      "quality": 3,
+      "novelty": 3,
+      "integration_effort_hours": 6,
+      "expected_brier_delta": -0.002,
+      "what_to_steal": "Their 3-season dev DB (2023-2026, ~4100 games) is downloadable per our prior scan. The PBP-based feature engineering approach extracts momentum features we may be missing. Review their feature set for additions to Cat37+."
+    },
+    {
+      "url": "https://github.com/kyleskom/NBA-Machine-Learning-Sports-Betting",
+      "name": "kyleskom/NBA-Machine-Learning-Sports-Betting",
+      "description": "XGBoost + neural nets for NBA moneyline and totals. Features: matchup stats, Kelly Criterion sizing.",
+      "stars": null,
+      "relevance": 3,
+      "quality": 3,
+      "novelty": 2,
+      "integration_effort_hours": 3,
+      "expected_brier_delta": -0.001,
+      "what_to_steal": "Kelly Criterion sizing implementation for our Tony Bloom bankroll module. Their feature list may have 2-3 features we're missing."
+    },
+    {
+      "url": "https://github.com/cmunch1/nba-prediction",
+      "name": "cmunch1/nba-prediction",
+      "description": "End-to-end ML deployment: XGBoost + LightGBM gradient boosted trees, probability calibration against true distribution, online app.",
+      "stars": null,
+      "relevance": 3,
+      "quality": 3,
+      "novelty": 2,
+      "integration_effort_hours": 2,
+      "expected_brier_delta": 0,
+      "what_to_steal": "Their calibration approach: calibrate model probability against true probability distribution using historical game data. Compare to our 60% none / 20% sigmoid / 20% Venn-Abers approach."
+    }
+  ],
+
+  "mcp_ecosystem": [
+    {
+      "url": "https://github.com/Dicklesworthstone/ultimate_mcp_server",
+      "name": "ultimate_mcp_server",
+      "description": "Comprehensive MCP server: multi-provider LLM delegation, browser automation, document processing, vector ops, cognitive memory systems.",
+      "nba_relevance": "HIGH — one server covers LLM delegation + vector memory + browser automation. Could replace 3 separate MCP servers in our Claude Code config.",
+      "what_to_steal": "Evaluate as all-in-one replacement for our scattered MCP setup. Particularly the 'cognitive memory systems' for cross-session experiment recall."
+    },
+    {
+      "url": "https://github.com/BrowserMCP/mcp",
+      "name": "BrowserMCP/mcp",
+      "description": "MCP server giving AI applications control of your browser. Ranked top browser automation MCP.",
+      "nba_relevance": "MEDIUM — injury report scraping, odds website scraping.",
+      "what_to_steal": "Add to market-analyst agent for real-time injury + odds page scraping."
+    },
+    {
+      "url": "https://github.com/doobidoo/mcp-memory-service",
+      "name": "doobidoo/mcp-memory-service",
+      "description": "Open-source persistent memory for AI agent pipelines (LangGraph, CrewAI, AutoGen) and Claude. REST API + knowledge graph + autonomous consolidation.",
+      "nba_relevance": "MEDIUM — alternative to Hindsight for persistent Brain agent memory.",
+      "what_to_steal": "The autonomous consolidation feature: automatically summarizes old memories to keep context window lean. Better than naive append-only memory."
+    }
+  ],
+
+  "claude_code_ecosystem": [
+    {
+      "url": "https://github.com/wshobson/agents",
+      "name": "wshobson/agents",
+      "description": "Intelligent automation and multi-agent orchestration for Claude Code. Reference implementation of agent teams.",
+      "nba_relevance": "HIGH — directly applicable to our .claude/agents/ setup.",
+      "what_to_steal": "Review their agent definition patterns for improvements to our 4 agent files."
+    },
+    {
+      "url": "https://github.com/barkain/claude-code-workflow-orchestration",
+      "name": "barkain/claude-code-workflow-orchestration",
+      "description": "Claude Code plugin for multi-step workflow orchestration — automatic task decomposition, parallel agent execution, specialized agent delegation with native plan mode integration.",
+      "nba_relevance": "HIGH — parallel agent execution is what we need for Karpathy loop speedup.",
+      "what_to_steal": "The parallel agent execution pattern. Currently our 4 Karpathy subagents run sequentially. This plugin enables parallel dispatch — would cut Brain cycle from ~20min to ~7min."
+    }
+  ],
+
+  "top_5_actionable": [
+    {
+      "rank": 1,
+      "source": "https://arxiv.org/abs/2506.16791",
+      "name": "TabICLv2 as stacking meta-learner",
+      "action": "On Colab T4: pip install tabicl, run TabICLv2.fit(X_train_63feat, y_train), add predict_proba() output as 2 meta-features to XGBoost final blender. The 63-feature evolved subset from S10 is already within TabICLv2's regime. Run as post-hoc addition to existing best model.",
+      "priority": "HIGH",
+      "expected_brier_delta": -0.004,
+      "effort_hours": 6,
+      "nba_fit": "TabArena shows GBDT+foundation model ensemble outperforms GBDT-only. Our current Brier 0.21867 could drop to ~0.21467 with proper stacking.",
+      "constraint": "Run on Colab T4 only, not VM"
+    },
+    {
+      "rank": 2,
+      "source": "https://github.com/barkain/claude-code-workflow-orchestration",
+      "name": "Parallel Karpathy subagents",
+      "action": "Install claude-code-workflow-orchestration plugin. Modify .claude/skills/karpathy-loop to dispatch all 4 subagents (repo-scout, market-analyst, feature-engineer, evolution-optimizer) in parallel using task decomposition. Merge results before decision step.",
+      "priority": "HIGH",
+      "expected_brier_delta": 0,
+      "effort_hours": 3,
+      "nba_fit": "Not directly a Brier improvement but 3x Brain cycle speedup means more research iterations per day. Indirect improvement via faster research velocity.",
+      "constraint": "Test with --dry-run before deploying to 4h cron"
+    },
+    {
+      "rank": 3,
+      "source": "https://github.com/vectorize-io/hindsight",
+      "name": "Hindsight MCP persistent Brain memory",
+      "action": "Add Hindsight MCP server to Brain's Claude Code ~/.claude.json mcpServers config. After each 4h cycle: retain(experiment_id, brier, model_type, feature_count, top_features, generation). Before each decision: recall('feature categories that improved Brier') + reflect('what config changes correlate with Brier improvements'). Enables data-driven Brain decisions across hundreds of generations.",
+      "priority": "HIGH",
+      "expected_brier_delta": -0.003,
+      "effort_hours": 4,
+      "nba_fit": "Currently Brain makes config decisions without systematic memory of what worked. Hindsight gives it 200+ generation history to reason over.",
+      "constraint": "Hindsight uses vectorize.io vector DB — check if free tier sufficient for our volume"
+    },
+    {
+      "rank": 4,
+      "source": "https://github.com/anthropics/claude-agent-sdk-python",
+      "name": "Session tagging for experiment tracking",
+      "action": "In autonomous-cycle.sh: after each Brain run, call claude_sdk.tag_session(f'gen{generation}_brier{best_brier:.5f}'). Use get_session_info() to retrieve session metadata for correlation analysis. This creates a searchable audit trail linking Brain decisions to evolution outcomes.",
+      "priority": "MEDIUM",
+      "expected_brier_delta": 0,
+      "effort_hours": 2,
+      "nba_fit": "Operational improvement: enables debugging 'which Brain decisions preceded Brier improvements'.",
+      "constraint": "Requires claude-agent-sdk>=0.1.49"
+    },
+    {
+      "rank": 5,
+      "source": "https://priorlabs.ai/technical-reports/tabpfn-2-5-model-report",
+      "name": "TabPFN-2.5 distillation to tree ensemble",
+      "action": "On Colab T4: (1) pip install tabpfn==2.5, (2) fit TabPFN-2.5 on our dataset using top 63 evolved features, (3) use TabPFN-2.5's built-in distillation engine to export as compact tree ensemble, (4) deploy distilled model to HF Spaces (CPU-compatible). This gives us foundation model quality at tree-based inference speed.",
+      "priority": "MEDIUM",
+      "expected_brier_delta": -0.003,
+      "effort_hours": 8,
+      "nba_fit": "TabPFN-2.5 matches AutoGluon 4h ensembles in a single forward pass. Distilled version should preserve most of this gain while running on HF Spaces CPU.",
+      "constraint": "Must use top 63 features (not all 6135) due to TabPFN 2000-feature limit. Distilled model must be serialized and pushed to HF Space."
+    }
+  ],
+
+  "key_ecosystem_insights": {
+    "agent_framework_winner_2026": "Claude Code + subagents has become the dominant agentic coding paradigm (95k stars for obra/superpowers which is Claude Code-first). OpenAI Agents SDK (20.3k) and Google ADK (18.6k) are strong but Claude Code ecosystem is the most active.",
+    "mcp_maturity": "1,864+ MCP servers indexed. Top categories: browser automation (Playwright-MCP), memory (Hindsight, Context7), structured thinking. MCP is now the universal agent integration layer.",
+    "tabular_ml_2026_verdict": "GBDTs remain the best individual models for large tabular data. TabPFN-2.5 and TabICLv2 beat GBDTs on small data (<50k samples). Our GA should evolve blend weights across {XGBoost, LightGBM, CatBoost, extra_trees, TabICLv2} — not just select from 4 GBDT types.",
+    "parallel_agents": "Async/parallel subagent patterns now mature (Deep Agents v0.5.0, claude-code-workflow-orchestration). Sequential 4-agent loops are obsolete — all major frameworks now support parallel dispatch.",
+    "memory_systems": "Hindsight (vectorize-io) is SOTA on LongMemEval. Context7 dominates FastMCP memory category. doobidoo/mcp-memory-service has autonomous consolidation. All three are MCP-native.",
+    "gpu_options_2026": "Colab T4 still best free option. Modal has best developer experience for paid serverless GPU. RunPod spot instances cheapest for burst. Kaggle broken for us. Lightning AI unexplored.",
+    "inference_speed_2026": "SGLang + LMDeploy lead at 16.2k tokens/sec on H100. TensorRT-LLM best throughput with 28min compilation. vLLM best flexibility. All irrelevant for our tree-based models."
+  }
+}

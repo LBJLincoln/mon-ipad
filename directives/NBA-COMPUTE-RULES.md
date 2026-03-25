@@ -1,7 +1,7 @@
 # NBA QUANT AI — COMPUTE RULES
 
-> **Last updated:** 2026-03-16
-> **Applies to:** ALL repos (mon-ipad, nomos-nba-agent, rag-website, rag-dashboard)
+> **Last updated:** 2026-03-25
+> **Applies to:** ALL repos (mon-ipad, nomos-nba-agent)
 
 ## RULE #1: ZERO ML ON VM
 
@@ -13,64 +13,59 @@ The VM (`34.136.180.66`) has **1 vCPU / 969 MB RAM / 30 GB disk**.
 | Process | Script | RAM | Purpose |
 |---------|--------|-----|---------|
 | nba-data-server | `scripts/nba-data-server.py` | ~12 MB | Serve JSON to Vercel website |
-| nba-quant-daemon | `ops/nba-quant-daemon.py` | ~20 MB | Lightweight orchestration only |
 | Claude Code | Termius session | ~100 MB | Pilotage, git, deployment |
-| System monitoring | `ops/monitor.py` | ~15 MB | Health checks |
+| Crons | keepalive, odds, autonomous-cycle | ~15 MB | Scheduling |
 
 ### What RUNS on HF Spaces (ALL ML):
-| Process | Space | RAM Avail | Purpose |
-|---------|-------|-----------|---------|
-| Karpathy training loop | nomos-nba-quant (S10) | 16 GB | Full model training, Optuna, calibration |
-| Parallel training | nomos-nba-quant-2 (S11) | 16 GB | Second parallel training instance |
-| Backtest | S10 or S11 | 16 GB | Walk-forward backtesting |
-| OddsHarvester | TBD (needs Playwright) | 16 GB | Live odds scraping |
+| Space | Role | Config | Status |
+|-------|------|--------|--------|
+| S10 nomos-nba-quant | Exploitation | mut=0.09, cx=0.80, pop=60, feat=63 | EVOLVING |
+| S11 nomos-nba-quant-2 | Exploration | mut=0.15, pop=60, feat=80 | EVOLVING |
+| S12 nba-evo-3 | Extra-trees specialist | mut=0.08, pop=60, feat=60 | EVOLVING |
+| S13 nba-evo-4 | CatBoost specialist | mut=0.10, pop=60, feat=66 | EVOLVING |
+| S14 nba-evo-5 | LightGBM specialist | mut=0.08, pop=60, feat=55 | EVOLVING |
+| S15 nba-evo-6 | Wide search | mut=0.18, pop=50, feat=80 | EVOLVING |
 
-### What SHOULD run on Lightning AI / Google Colab (GPU):
+### What SHOULD run on GPU (Colab / Lightning.ai):
 | Process | Platform | Purpose |
 |---------|----------|---------|
-| LSTM/Neural models | Lightning AI | GPU-accelerated deep learning |
-| Large Optuna search | Google Colab | 100+ trial hyperparameter search |
-| MC Dropout ensemble | Colab Pro | Uncertainty-aware predictions |
+| TabICLv2 eval | Google Colab T4 | Transformer tabular model evaluation |
+| Neural evolution | Lightning.ai T4 | GPU-accelerated deep learning (after Apr 1) |
 
-## RULE #2: ALL SPACES = FULL CREDENTIALS
+## RULE #2: FEATURE ENGINE PARITY
 
-Every HF Space MUST have ALL 101 env vars from `.env.local` set as secrets.
+**Engine version:** v3.0 + Cat36 EWMA + Cat37 MOVDA = 37 categories, 6135 raw features
+- `features/engine.py` = `hf-space/features/engine.py` ALWAYS
+- `deploy_island.py` checks parity before deploying
 
-Script to sync:
-```python
-from huggingface_hub import HfApi
-import os
+## RULE #3: EVOLUTION CONSTRAINTS (2026-03-25)
 
-api = HfApi(token=os.environ['HF_TOKEN'])
+- **MAX_FEATURES=200** — hard cap enforced in init/mutate/crossover
+- **Mutation cap**: adaptive mutation capped at 0.15 (was 0.25)
+  - Deployed: S10, S11, S12, S15
+  - Still on old cap: S13, S14
+- **CPU-only models**: tree-based only (random_forest, extra_trees, xgboost, lightgbm, catboost)
+  - Neural models removed (brier=0.28 penalty on CPU)
+  - Stacking removed (200 gens, best=0.24738 — 10% worse)
+- **xgboost_brier**: objective signature fixed for XGBoost >=2.0: `(y_true, y_pred)`
 
-with open('.env.local') as f:
-    for line in f:
-        line = line.strip()
-        if not line or line.startswith('#'): continue
-        if line.startswith('export '): line = line[7:]
-        if '=' in line:
-            k, v = line.split('=', 1)
-            api.add_space_secret('LBJLincoln/SPACE_NAME', k.strip(), v.strip().strip("'\""))
-```
-
-## RULE #3: DEPLOY SCRIPT
+## RULE #4: DEPLOY SCRIPT
 
 To update a Space's code:
-```python
-from huggingface_hub import HfApi
-api = HfApi(token=os.environ['HF_TOKEN'])
-api.upload_file(path_or_fileobj='app.py', path_in_repo='app.py',
-                repo_id='LBJLincoln/nomos-nba-quant', repo_type='space')
+```bash
+python3 hf-space/deploy_island.py SPACE_NAME ROLE HF_TOKEN
 ```
 
-## NBA HF Spaces
-| Space | URL | Secrets | Status |
-|-------|-----|---------|--------|
-| nomos-nba-quant | lbjlincoln-nomos-nba-quant.hf.space | 101/101 | REBUILDING |
-| nomos-nba-quant-2 | lbjlincoln-nomos-nba-quant-2.hf.space | 101/101 | BUILDING |
+## RULE #5: SUPABASE STATUS
+
+- Primary (ayqviq...) — **PAUSED** (returns 402)
+- Secondary (xivvnr...) — DNS issues
+- **Active**: pooler connection for queries
+- All experiments tagged with `feature_engine_version`
 
 ## HF Accounts
-| Account | Token | Write Access |
-|---------|-------|-------------|
-| LBJLincoln | HF_TOKEN | Full (create spaces, upload, secrets) |
-| lbjlincoln26 | HF_TOKEN_2 | Read-only (needs write token upgrade) |
+| Account | Token | Spaces |
+|---------|-------|--------|
+| LBJLincoln | HF_TOKEN | S10, S11 |
+| LBJLincoln26 | HF_TOKEN_2 | S12, S13 |
+| Nomos42 | HF_TOKEN_3 | S14, S15 |
