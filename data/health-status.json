@@ -1,22 +1,62 @@
 {
-  "timestamp": "2026-03-25T00:08:41Z",
+  "timestamp": "2026-03-25T02:01:43Z",
   "trigger": "nomos-brain-24-7",
   "spaces": {
     "s10": {
-      "status": "EVOLVING",
-      "cycle": 7,
-      "generation": 21,
-      "best_brier": 0.23076,
-      "stagnation": 19,
-      "mutation_rate": 0.25,
+      "status": "EVOLVING (cycle 1)",
+      "cycle": 1,
+      "generation": 2,
+      "best_brier": 0.22969,
+      "stagnation": 0,
+      "mutation_rate": 0.0898,
       "best_model_type": "extra_trees",
-      "best_features": 61,
-      "best_roi": 0.2035,
+      "best_features": 68,
+      "best_roi": 0.2148,
       "role": "exploitation",
-      "alert": "CRITICAL: stagnation=19 > threshold=10. Population locked on 0.23076. Regression from previous run best of 0.22004 (new cycle). Needs diversify."
+      "alert": "FRESH CYCLE: stagnation cleared (was 19). Cycle 1 gen 2, best=0.22969. Early evolution — let run."
     },
     "s11": {
-      "status": "EXPERIMENT_READY_POLLING",
+      "status": "EVOLVING (cycle 1)",
+      "cycle": 1,
+      "generation": 1,
+      "best_brier": 1.0,
+      "stagnation": 0,
+      "mutation_rate": 0.15,
+      "best_model_type": "none",
+      "best_features": 0,
+      "best_roi": 0.0,
+      "role": "exploration",
+      "alert": "EVOLVING: Gen 1 started, no valid result yet. Monitor — if brier=1.0 persists past gen 5, investigate."
+    },
+    "s12": {
+      "status": "EVOLVING (cycle 3)",
+      "cycle": 3,
+      "generation": 7,
+      "best_brier": 0.21976,
+      "stagnation": 5,
+      "mutation_rate": 0.1366,
+      "best_model_type": "extra_trees",
+      "best_features": 67,
+      "best_roi": 0.3289,
+      "role": "extra_trees",
+      "alert": "NEW GA RECORD: 0.21976 < previous GA best 0.21991 (S14 last cycle). Gap to all-time=0.00109. CHECKPOINTED this cycle.",
+      "checkpoint_confirmed": true
+    },
+    "s13": {
+      "status": "EVOLVING (cycle 1)",
+      "cycle": 1,
+      "generation": 3,
+      "best_brier": 0.22136,
+      "stagnation": 1,
+      "mutation_rate": 0.0996,
+      "best_model_type": "xgboost",
+      "best_features": 69,
+      "best_roi": 0.3091,
+      "role": "catboost",
+      "alert": "STRONG COMEBACK: Fresh cycle, xgboost at 0.22136 gen 3 (was stuck at 0.24733 with stacking). ROI=30.9%. Healthy."
+    },
+    "s14": {
+      "status": "BUILDING FEATURES",
       "cycle": 0,
       "generation": 0,
       "best_brier": 1.0,
@@ -25,131 +65,73 @@
       "best_model_type": "none",
       "best_features": 0,
       "best_roi": 0.0,
-      "role": "exploration",
-      "alert": "IDLE: No experiments queued or completed. Queue empty — high-priority to submit CatBoost experiment with isotonic calibration."
-    },
-    "s12": {
-      "status": "EVOLVING",
-      "cycle": 6,
-      "generation": 16,
-      "best_brier": 0.22181,
-      "stagnation": 0,
-      "mutation_rate": 0.1494,
-      "best_model_type": "extra_trees",
-      "best_features": 58,
-      "best_roi": 0.3053,
-      "role": "extra_trees",
-      "alert": "HEALTHY: stagnation=0, actively improving."
-    },
-    "s13": {
-      "status": "EVOLVING",
-      "cycle": 5,
-      "generation": 14,
-      "best_brier": 0.24733,
-      "stagnation": 12,
-      "mutation_rate": 0.25,
-      "best_model_type": "stacking",
-      "best_features": 68,
-      "best_roi": 0.0274,
-      "role": "catboost",
-      "alert": "STAGNATING: stagnation=12 > threshold=10. Stuck at 0.24733 with stacking model. Needs diversify. ROI near-zero suggests poor model calibration."
-    },
-    "s14": {
-      "status": "EVOLVING",
-      "cycle": 7,
-      "generation": 19,
-      "best_brier": 0.21991,
-      "stagnation": 11,
-      "mutation_rate": 0.25,
-      "best_model_type": "extra_trees",
-      "best_features": 97,
-      "best_roi": 0.3277,
       "role": "lightgbm",
-      "alert": "NEW GA RECORD: 0.21991 < previous GA best 0.22004. CHECKPOINTED this cycle (confirmed brier=0.21991 gen=12). Stagnation=11 approaching threshold — monitor next cycle.",
-      "checkpoint_confirmed": true
+      "alert": "RESTARTED: Was cycle 7 gen 19 best=0.21991 (checkpointed last cycle). Now building features. Previous checkpoint preserved.",
+      "prev_best_checkpointed": 0.21991
     },
     "s15": {
-      "status": "EVOLVING",
-      "cycle": 7,
-      "generation": 21,
-      "best_brier": 0.22586,
+      "status": "BUILDING FEATURES",
+      "cycle": 0,
+      "generation": 0,
+      "best_brier": 1.0,
       "stagnation": 0,
-      "mutation_rate": 0.1764,
-      "best_model_type": "extra_trees",
-      "best_features": 86,
-      "best_roi": 0.2585,
+      "mutation_rate": 0.15,
+      "best_model_type": "none",
+      "best_features": 0,
+      "best_roi": 0.0,
       "role": "wide_search",
-      "alert": "HEALTHY: stagnation=0, active search."
+      "alert": "RESTARTED: Was cycle 7 gen 21 best=0.22586. Now building features. Allow natural restart."
     }
   },
   "engine_parity": {
     "match": true,
-    "sha_features_engine": "263ac906fee2b1e42a7c02db0547e8823a8b6eb87bc8460653357c594fe223e3",
-    "sha_hf_space_engine": "263ac906fee2b1e42a7c02db0547e8823a8b6eb87bc8460653357c594fe223e3",
+    "sha_features_engine": "08c08fd227fd93ea968392f2f965b4778b15fc9c",
+    "sha_hf_space_engine": "08c08fd227fd93ea968392f2f965b4778b15fc9c",
     "version": "v3.0-35cat",
-    "note": "Parity confirmed. SHA changed from previous cycle (cbe7a44...) — engine updated."
+    "note": "Parity confirmed. SHA=08c08fd (both files match)."
   },
   "best_overall": {
-    "brier": 0.21991,
-    "space": "s14",
+    "brier": 0.21976,
+    "space": "s12",
     "model_type": "extra_trees",
-    "features": 97,
-    "roi": 0.3277,
-    "gap_to_all_time_record": 0.00124,
-    "gap_to_target_0_20": 0.01991,
+    "features": 67,
+    "roi": 0.3289,
+    "gap_to_all_time_record": 0.00109,
+    "gap_to_target_0_20": 0.01976,
     "all_time_record": 0.21867,
     "all_time_record_source": "S11 exp #734 (extra_trees, 142 feat)"
   },
   "action_taken": {
     "type": "CHECKPOINT",
-    "target": "S14",
-    "details": "POST https://nomos42-nba-evo-5.hf.space/api/checkpoint → {status: checkpoint saved, brier: 0.21991, generation: 12}",
-    "reason": "S14 NEW GA RECORD: 0.21991 < 0.22004 (previous cycle GA best via S10). Extra_trees, 97 features, ROI=32.8%. Preserving configuration before stagnation (currently=11) causes drift."
+    "target": "S12",
+    "details": "POST https://lbjlincoln26-nba-evo-3.hf.space/api/checkpoint → {status: checkpoint saved, brier: 0.21976, generation: 1}",
+    "reason": "S12 NEW GA RECORD: 0.21976 < 0.21991 (previous cycle GA best via S14). Extra_trees, 67 features, ROI=32.9%. Preserving before stagnation=5 grows."
   },
-  "research_findings": [
-    {
-      "title": "Extra Trees Achieves Best WAPE on Basketball Performance Forecasting Benchmark",
-      "source": "Springer Nature – Knowledge and Information Systems (2025), doi:10.1007/s10115-024-02092-9",
-      "key_insight": "Across 14 ML models and 18 basketball KPIs, Extra Trees achieved the best overall WAPE of 34.14%, outperforming Random Forest, Gradient Boosting, and LightGBM — directly validates the dominance of extra_trees across S10/S12/S14/S15 this cycle.",
-      "actionability": "high"
-    },
-    {
-      "title": "Isotonic Calibration Outperforms Platt Scaling for Large Calibration Sets in Conformal Prediction",
-      "source": "MDPI Applied Sciences (2025), doi:10.3390/app15147925",
-      "key_insight": "Isotonic regression corrects any monotonic distortion and outperforms sigmoid scaling when calibration set size >1,000 samples; Venn-Abers provides distribution-free coverage guarantees. Current system uses isotonic — validated. Consider Venn-Abers wrapper as next calibration experiment on S11.",
-      "actionability": "high"
-    },
-    {
-      "title": "Win Streaks, Rest Days, and FG% Dominate NBA Outcome Prediction via SHAP-Driven Feature Selection",
-      "source": "Preprints.org (April 2025), doi:10.20944/preprints202504.1348",
-      "key_insight": "XGBoost + team-based cross-validation on 2023-25 NBA seasons: momentum indicators (win streak, rest days) and shooting efficiency (FG%) provide significant marginal lift over raw box-score stats. S14's 97-feature set may already capture these — check if streak/rest features are in top SHAP contributors.",
-      "actionability": "medium"
-    }
-  ],
+  "research_findings": null,
+  "research_note": "Hour=2 (2%3=2 != 0) — research cycle skipped this hour.",
   "delta_from_last_cycle": {
-    "brier_change_ga_best": -0.00013,
-    "previous_ga_best": 0.22004,
-    "current_ga_best": 0.21991,
-    "s10_regression": "0.22004 → 0.23076 (new cycle started, GA reset — lost run-best)",
-    "s14_improvement": "NEW GA RECORD established at 0.21991",
+    "brier_change_ga_best": -0.00015,
+    "previous_ga_best": 0.21991,
+    "previous_ga_best_source": "S14",
+    "current_ga_best": 0.21976,
+    "current_ga_best_source": "S12",
+    "mass_restart_event": "S14, S15 restarted (BUILDING FEATURES). S10, S11, S13 started new cycles. Likely HF Space cold-start cascade.",
     "new_events": [
-      "S14 NEW GA RECORD: 0.21991 (extra_trees, 97 feat, ROI=32.8%) — CHECKPOINTED",
-      "S10 stagnation escalated to 19 — critical, needs diversify ASAP",
-      "S13 stagnation=12 — secondary diversify needed",
-      "S12 healthy at 0.22181 stagnation=0 — actively improving",
-      "S15 healthy at 0.22586 stagnation=0",
-      "S11 still idle — no experiments submitted despite 2 prior cycle recommendations",
-      "Engine parity: CONFIRMED (SHA updated from cbe7a44 to 263ac906)",
-      "Hour=0 → full research cycle executed (3 findings)"
+      "S12 NEW GA RECORD: 0.21976 (extra_trees, 67 feat, ROI=32.9%) — CHECKPOINTED",
+      "S14 restarted — prev best 0.21991 was already checkpointed last cycle",
+      "S15 restarted — prev best 0.22586",
+      "S10 fresh cycle 1 — stagnation=19 cleared, stagnation now=0",
+      "S11 evolving cycle 1 gen 1 — no valid result yet",
+      "S13 strong comeback: xgboost 0.22136 from stagnant 0.24733 (fresh cycle)",
+      "Engine parity: CONFIRMED (SHA=08c08fd, same for both files)"
     ]
   },
   "recommendations": [
-    "VM SHOULD RUN: POST https://lbjlincoln-nomos-nba-quant.hf.space/api/command {\"command\": \"diversify\"} — S10 stagnation=19 CRITICAL (threshold=10). Population locked at 0.23076. Immediate diversification needed.",
-    "VM SHOULD RUN: POST https://lbjlincoln26-nba-evo-4.hf.space/api/command {\"command\": \"diversify\"} — S13 stagnation=12, stuck at 0.24733 with near-zero ROI stacking model.",
-    "VM SHOULD RUN: Submit CatBoost S11 experiment — isotonic calibration wrapper, target_features=80, pop=50, gens=20. S11 queue has been empty for 2+ cycles. THIRD REQUEST — critical.",
-    "WATCH S14: stagnation=11, one gen from threshold. If next cycle stagnation > 10 AND no new record → diversify S14.",
-    "WATCH S12: stagnation=0 at 0.22181 — best active improver. Do not interfere. Monitor for sub-0.22 breakthrough.",
-    "RESEARCH ACTION: Venn-Abers calibration (from finding #2) is a viable next S11 experiment type. Provides distribution-free coverage guarantees — superior to isotonic for probability interval output.",
-    "GAP ANALYSIS: Current GA best=0.21991, all-time=0.21867 (gap=0.00124), target=0.20 (gap=0.01991 / 9.1%). S14 trajectory with 97 features approaching all-time record territory."
+    "WATCH S12: stagnation=5, cycle 3 gen 7. Best active improver at 0.21976. Do NOT interfere. Gap to all-time=0.00109 — if it breaks 0.219, checkpoint immediately.",
+    "WATCH S14 + S15: BUILDING FEATURES. They will enter EVOLVING state within 30-60 min. Monitor next cycle for their first valid brier scores.",
+    "WATCH S11: Gen 1, brier=1.0. If next cycle still brier=1.0 with stagnation=0 and gen>5 → space may be stuck in feature-building. Alert needed.",
+    "WATCH S13: xgboost 0.22136 gen 3 is a strong start. ROI=30.9%. If it sustains improvement — may challenge S12 within 2-3 cycles.",
+    "WATCH S10: Fresh start 0.22969 gen 2. Let evolve naturally; mutation=0.09 (correct for exploitation role). No action.",
+    "GAP ANALYSIS: Current GA best=0.21976, all-time=0.21867 (gap=0.00109 / 0.5%). S12 trajectory with 67 features is promising. Target=0.20 (gap=0.01976 / 9.0%)."
   ]
 }
