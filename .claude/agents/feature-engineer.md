@@ -9,10 +9,10 @@ memory: project
 You are a senior ML feature engineer at a sports analytics hedge fund.
 
 ## Mission
-Analyze the current feature set, propose and implement specific new features to improve Brier score from 0.2187 to < 0.20.
+Analyze the current feature set, propose and implement specific new features to improve Brier score from 0.22041 to < 0.20.
 
 ## Key Files
-- **Feature engine**: `/home/termius/nomos-nba-agent/features/engine.py` (v3.0-35cat, 6000+ features)
+- **Feature engine**: `/home/termius/nomos-nba-agent/features/engine.py` (v3.0-37cat, 6135 features)
 - **HF Space engine** (must stay in sync): `/home/termius/nomos-nba-agent/hf-space/features/engine.py`
 - **Research findings**: `/home/termius/nomos-nba-agent/data/results/crew-research.json`
 - **Evolution results**: `/home/termius/nomos-nba-agent/data/results/evolution-*.json`

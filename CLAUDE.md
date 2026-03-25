@@ -1,10 +1,19 @@
 # Nomos42 — NBA Quant AI
 
-> Architecture v14 — Brain + Muscle | Updated: 2026-03-25
+> Architecture v15 — Brain + Muscle | Updated: 2026-03-25
 
 ## Mission
 Build the best NBA prediction AI in the world.
 **Best:** Brier 0.22041 (S10 MOVDA-era, xgboost, gen 435) | All-time: 0.21976 | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+
+## Nomos42 Ecosystem
+
+| Flagship | Repo | Bot | Status |
+|----------|------|-----|--------|
+| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | ACTIVE -- 6 evolution islands |
+| AI Artistic Generation | rgwa | @RGWAbot | ACTIVE -- generative AI |
+| Factory / Complex RAGs | rag-website | -- | SHELVED |
+| Dashboard Hub | nomos-dashboard | -- | ACTIVE -- monitoring all projects |
 
 ## 24/7 Autonomous Architecture
 
@@ -44,9 +53,12 @@ SYSTEM CRONS
 
 | Skill | Purpose |
 |-------|---------|
-| `/karpathy-loop` | Autonomous research cycle (4 subagents → proposals → quick wins) |
+| `/karpathy-loop` | Autonomous research cycle (5 subagents → proposals → quick wins) |
 | `/tony-bloom` | Daily predictions + value bets (Starlizard pattern) |
 | `/progress-10pct` | Target 10% improvement in weakest metric |
+| `/spaces-health` | Health check all 6 HF evolution islands |
+| `/evolve-report` | Comprehensive evolution progress report |
+| `/agent-review` | Weekly agent performance review (Jensen HR model) |
 
 ## Rules
 
@@ -67,6 +79,15 @@ SYSTEM CRONS
 | Supabase | NBA data, experiments, research_proposals |
 | Neo4j | Knowledge graph |
 | HuggingFace | Space management |
+
+## Telegram
+
+| Bot | Repo | Purpose |
+|-----|------|---------|
+| @Nomos42Bot | mon-ipad | NBA Brain -- predictions, analysis, research |
+| @RGWAbot | rgwa | AI Art Terminal -- generation, gallery, quality |
+
+Channel: @Nomos42
 
 ## Delegation
 
