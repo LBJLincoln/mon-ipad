@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-25T03:10:00Z",
+  "timestamp": "2026-03-25T05:06:00Z",
   "trigger": "nomos-brain-24-7",
   "spaces": {
     "s10": {
@@ -7,158 +7,124 @@
       "cycle": 0,
       "generation": 0,
       "best_brier": 1.0,
-      "stagnation": 0,
-      "mutation_rate": 0.15,
       "best_model_type": "none",
-      "best_features": 0,
-      "best_roi": 0.0,
+      "mutation_rate": 0.15,
+      "stagnation": 0,
       "role": "exploitation",
-      "started_at": "2026-03-25T02:38:20Z",
-      "alert": "RESTARTED: Was cycle 1 gen 2 at 0.22969. Now building features (~32 min at report time). Expected evolution start ~03:13. Normal build duration."
+      "started_at": "2026-03-25T05:05:20Z",
+      "alert": "RESTARTED 05:05 UTC — mass restart. Was cycle 75 gen 225 brier=0.22229 (random_forest). ETA EVOLVING: 05:30-06:00 UTC."
     },
     "s11": {
-      "status": "EVOLVING (cycle 4)",
-      "cycle": 4,
-      "generation": 12,
-      "best_brier": 0.22505,
-      "stagnation": 9,
-      "mutation_rate": 0.20,
-      "best_model_type": "lightgbm",
-      "best_features": 71,
-      "best_roi": 0.2654,
+      "status": "BUILDING FEATURES",
+      "cycle": 0,
+      "generation": 0,
+      "best_brier": 1.0,
+      "best_model_type": "none",
+      "mutation_rate": 0.15,
+      "stagnation": 0,
       "role": "exploration",
-      "alert": "CRITICAL WATCH: stagnation=9, mutation maxed at 0.20. Was brier=1.0 last cycle — great recovery. Brief catboost dip to 0.22468 at gen 11 reverted. 1 gen from diversify threshold. NEXT CYCLE: if stagnation>=10 POST diversify."
+      "alert": "RESTARTED ~05:05 UTC — mass restart. Was cycle 72 gen 214 brier=0.22505 (lightgbm). ETA EVOLVING: 05:30-06:00 UTC."
     },
     "s12": {
       "status": "BUILDING FEATURES",
       "cycle": 0,
       "generation": 0,
       "best_brier": 1.0,
-      "stagnation": 0,
-      "mutation_rate": 0.15,
       "best_model_type": "none",
-      "best_features": 0,
-      "best_roi": 0.0,
+      "mutation_rate": 0.15,
+      "stagnation": 0,
       "role": "extra_trees",
-      "started_at": "2026-03-25T02:23:50Z",
-      "alert": "RESTARTED: Was GA best 0.21976 (checkpointed last cycle). Now building features (~46 min at report time). Checkpoint preserved. Expected evolution imminent."
+      "alert": "RESTARTED ~05:05 UTC — mass restart. Was COOLDOWN cycle 121 gen 363 brier=0.22298 (catboost). Previous all-time run 0.21976 checkpointed. ETA EVOLVING: 05:30-06:00 UTC."
     },
     "s13": {
-      "status": "EVOLVING (cycle 17)",
-      "cycle": 17,
-      "generation": 49,
-      "best_brier": 0.22213,
-      "best_brier_note": "API reports 0.22306 (best by composite), history shows true min brier=0.22213 (xgboost, 75 feat, from gen 6)",
-      "stagnation": 0,
-      "stagnation_external": 43,
-      "mutation_rate": 0.1308,
-      "best_model_type": "xgboost",
-      "best_features": 75,
-      "best_roi": 0.3005,
+      "status": "EVOLVING (cycle 21)",
+      "cycle": 21,
+      "generation": 63,
+      "best_brier": 0.22086,
+      "best_roi": 0.3161,
+      "best_sharpe": 7.6851,
+      "best_features": 65,
+      "best_model_type": "extra_trees",
+      "mutation_rate": 0.25,
+      "stagnation": 11,
       "role": "catboost",
-      "alert": "EXTERNALLY STAGNANT: History brier=0.22213 from gen 6 to 49 (~43 gens). API stagnation=0 (resets per 3-gen cycle). Mutation decaying (0.1308). If next cycle history still 0.22213 -> consider diversify (after S11 action if needed)."
+      "started_at": "2026-03-25T04:05:23Z",
+      "alert": "BEST ACTIVE — 1h run, cycle 21 gen 63. Best=0.22086 (extra_trees, 65 feat, ROI=31.6%, Sharpe=7.69). Stagnation=11 (threshold crossed). Not actioned (S14 had higher stag=13). Watch next cycle."
     },
     "s14": {
-      "status": "EVOLVING (cycle 1)",
-      "cycle": 1,
-      "generation": 2,
-      "best_brier": 0.22162,
-      "stagnation": 0,
-      "mutation_rate": 0.0798,
-      "best_model_type": "extra_trees",
+      "status": "EVOLVING (cycle 14)",
+      "cycle": 14,
+      "generation": 40,
+      "best_brier": 0.22105,
+      "best_roi": 0.3134,
+      "best_sharpe": 7.6306,
       "best_features": 62,
-      "best_roi": 0.3081,
-      "best_sharpe": 6.7536,
+      "best_model_type": "random_forest",
+      "mutation_rate": 0.25,
+      "stagnation": 13,
       "role": "lightgbm",
-      "alert": "STAR OF CYCLE: 0.22162 extra_trees, 62 feat, ROI=30.81% at gen 1. NEW ACTIVE LEADER. Only gen 2 — massive upside. Let run. extra_trees pattern matches all-time record model."
+      "started_at": "2026-03-25T04:10:31Z",
+      "alert": "STAGNATION=13 — DIVERSIFY SENT. cycle 14 gen 40 brier=0.22105. Diversify queued successfully."
     },
     "s15": {
       "status": "BUILDING FEATURES",
       "cycle": 0,
       "generation": 0,
       "best_brier": 1.0,
-      "stagnation": 0,
-      "mutation_rate": 0.18,
       "best_model_type": "none",
-      "best_features": 0,
-      "best_roi": 0.0,
+      "mutation_rate": 0.15,
+      "stagnation": 0,
       "role": "wide_search",
-      "started_at": "2026-03-25T02:32:00Z",
-      "alert": "BUILDING FEATURES: Started 02:32 (~38 min at report time). Pop=50, target=80 feat, mut=0.18. Previous best 0.22586. Expected evolution start imminently."
+      "alert": "RESTARTED ~05:05 UTC — mass restart. Two consecutive cycles BUILDING (never evolved). Flag if still brier=1.0 at 06:05 UTC."
     }
   },
   "engine_parity": {
     "match": true,
-    "sha_features_engine": "baed60d7bb8a256345e0521a62d3e28e672f3cf826eb9aad17621c38445c0cda",
-    "sha_hf_space_engine": "baed60d7bb8a256345e0521a62d3e28e672f3cf826eb9aad17621c38445c0cda",
     "version": "v3.0-35cat",
-    "note": "Parity CONFIRMED. SHA=baed60d (both files identical)."
+    "sha256": "b477354d8203f3375852cf6deb3c2fe8df558af2e38d19a9056d7d31ef719d49",
+    "note": "CONFIRMED MATCH — both features/engine.py and hf-space/features/engine.py identical SHA."
   },
   "best_overall": {
-    "brier": 0.22162,
-    "space": "s14",
+    "brier": 0.22086,
+    "space": "s13",
     "model_type": "extra_trees",
-    "features": 62,
-    "roi": 0.3081,
-    "generation": 1,
-    "note": "Active best (gen 2 only, high upside). Previous GA best S12=0.21976 restarted but checkpointed.",
-    "gap_to_all_time_record": 0.00295,
-    "gap_to_target_0_20": 0.02162,
+    "features": 65,
+    "roi": 0.3161,
+    "sharpe": 7.6851,
+    "gap_to_all_time_record": 0.00219,
+    "gap_to_target_0_20": 0.02086,
     "all_time_record": 0.21867,
     "all_time_record_source": "exp #734 (extra_trees, 142 feat)"
   },
   "action_taken": {
-    "type": "NONE",
-    "target": null,
-    "details": "No action. S11 stagnation=9 (threshold >10). S14 leading at 0.22162 gen 2 — premature intervention would be counterproductive. 1-fix-per-iteration respected.",
-    "reason": "No space down. No stagnation threshold breached. No record. Healthy monitoring cycle."
+    "type": "DIVERSIFY",
+    "target": "S14",
+    "details": "POST https://nomos42-nba-evo-5.hf.space/api/command {command: diversify} -> {status: command queued, command: diversify}",
+    "reason": "S14 stagnation=13 (highest active, threshold=10). Mutation MAX (0.25). Diversify to break plateau."
   },
-  "research_findings": [
-    {
-      "title": "Calibration Over Accuracy: Isotonic Regression for Sports Betting Models (2024-2025)",
-      "key_insight": "NBA models selected by Brier Score / calibration yield +34.69% avg ROI vs -35.17% for accuracy-based. Isotonic regression outperforms Platt scaling given sufficient data.",
-      "relevance_to_nba_brier": "Validates Brier as primary target. Suggests adding 'isotonic' to GA calibration hyperparameter space — currently using sigmoid, venn_abers, none.",
-      "source": "ScienceDirect + OpticOdds 2024-2025"
-    },
-    {
-      "title": "Extra Trees and Tree Ensembles Dominate Basketball Forecasting (2024-2025)",
-      "key_insight": "Extra Trees, RF, DT outperform gradient boosting and deep learning on basketball KPIs. 2025 Scientific Reports stacked ensemble confirms tree-based base learners are state-of-art on 2021-2024 NBA data.",
-      "relevance_to_nba_brier": "Explains all-time record (0.21867) and current leader S14 (0.22162) both being extra_trees. Strong justification for keeping S12 specialized as extra_trees specialist.",
-      "source": "Springer Knowledge & Information Systems + Scientific Reports 2025"
-    },
-    {
-      "title": "Conformal Prediction as Distribution-Free Uncertainty Quantification (ACM Computing Surveys, 2025)",
-      "key_insight": "Conformal prediction wraps any sklearn classifier for coverage-guaranteed prediction intervals. No retraining needed, only a calibration split. Addresses overconfidence — key Brier Score driver.",
-      "relevance_to_nba_brier": "Complement to isotonic calibration. Could be layered on ExtraTrees post-training to push toward 0.20 target without GA changes.",
-      "source": "ACM Computing Surveys 2025"
-    }
-  ],
-  "research_note": "Hour=3 (3%3=0) — research EXECUTED. Top action item: add 'isotonic' calibration to GA hyperparameter search space. Conformal prediction as longer-term post-processing experiment.",
+  "research_findings": null,
+  "research_note": "Hour=5 (5%3=2 != 0) — research cycle skipped.",
   "delta_from_last_cycle": {
-    "previous_active_best": 0.21976,
-    "previous_active_best_source": "S12 (extra_trees, 67 feat) — now restarted",
-    "current_active_best": 0.22162,
-    "current_active_best_source": "S14 (extra_trees, 62 feat, gen 2)",
-    "brier_change_active_best": 0.00186,
-    "note": "Active best DEGRADED because S12 restarted. S14 emerging as new leader but early. S12 checkpoint at 0.21976 preserved — recovery expected when S12 re-enters evolution.",
+    "previous_best_cycle": 0.2201,
+    "previous_best_source": "S13 (cycle 41, gen 123 — restarted at 04:05)",
+    "current_best": 0.22086,
+    "current_best_source": "S13 (fresh run, cycle 21, gen 63)",
+    "brier_delta": 0.00076,
+    "direction": "WORSE (fresh run still converging)",
+    "note": "MASS RESTART at ~05:05 UTC. S10 (gen225), S11 (gen214), S12 (gen363), S15 all restarted — HuggingFace platform event. S13 fresh run converging well. S14 first active run, stagnating, diversified.",
     "new_events": [
-      "S14 EMERGED: 0.22162 extra_trees gen 1 — strongest opening this session, new active leader",
-      "S10 RESTARTED: was 0.22969 cycle 1 gen 2 -> now building features",
-      "S12 RESTARTED: was GA best 0.21976 (checkpointed) -> now building features, checkpoint preserved",
-      "S11 RECOVERED + STUCK: was brier=1.0 gen 1 -> now 0.22505 cycle 4 gen 12 stagnation=9 CRITICAL",
-      "S13 LONG-RUN: cycle 17 gen 49, true min brier 0.22213 from gen 6, externally stagnant ~43 gens",
-      "S15 still BUILDING FEATURES: ~38 min, expect evolution imminently",
-      "Engine parity CONFIRMED: SHA=baed60d",
-      "Research COMPLETED (hour=3): isotonic+extra_trees+conformal prediction validated"
+      "MASS RESTART: S10, S11, S12, S15 all restarted ~05:05 UTC.",
+      "S13: Fresh run (04:05) cycle 21 gen 63 best=0.22086 (extra_trees, 65 feat). Stag=11.",
+      "S14: First active run (04:10) cycle 14 gen 40 brier=0.22105. DIVERSIFIED (stag=13).",
+      "ENGINE PARITY: CONFIRMED SHA b477354d.",
+      "S15: Two consecutive BUILDING FEATURES cycles. Monitor at 06:05 UTC."
     ]
   },
   "recommendations": [
-    "PRIORITY 1 — NEXT CYCLE S11: If stagnation>=10 POST https://lbjlincoln-nomos-nba-quant-2.hf.space/api/command {\"command\": \"diversify\"}. Mutation maxed at 0.20, natural diversification failing. DO NOT wait past stagnation=10.",
-    "PRIORITY 2 — WATCH S14: 0.22162 extra_trees gen 2, ROI=30.81%. If it hits 0.219 territory -> CHECKPOINT immediately. Do not interfere for at least 5 gens.",
-    "PRIORITY 3 — WATCH S12: Will enter evolution from BUILDING FEATURES shortly. Extra_trees specialist with checkpointed 0.21976. Monitor first valid brier — if trending toward 0.219 -> checkpoint.",
-    "PRIORITY 4 — WATCH S13: True brier 0.22213 externally stagnant ~43 gens. If still unchanged next cycle AND S11 action is complete -> consider diversify S13 (second priority after S11).",
-    "FEATURE IDEA — RESEARCH: Add 'isotonic' to GA calibration hyperparameter space (ScienceDirect 2024-2025: isotonic > sigmoid for sports betting calibration). Easy win, no engine change.",
-    "WATCH S10+S15: Building features normally, evolution expected within 1 cycle. No action.",
-    "GAP ANALYSIS: Active best=0.22162 (gap to all-time=0.295%, gap to target=9.8%). Extra_trees pattern dominant — all top-3 models across history are extra_trees. S12 revival + S14 trajectory = best shot at sub-0.219."
+    "WATCH S13: Stag=11, threshold crossed. Best at 0.22086 (gap to all-time 0.22%). If stag >10 next cycle, diversify.",
+    "WATCH S14 POST-DIVERSIFY: Expect stag reset within 5-10 gens. Target: break below 0.22086.",
+    "WATCH S15: If still brier=1.0 at 06:05 UTC: VM SHOULD RUN: keepalive https://nomos42-nba-evo-6.hf.space",
+    "S10/S11/S12 BUILDING: Next cycle (06:05) should show first brier values after restart. S12 extra_trees specialist is key watch.",
+    "ALL-TIME: Current 0.22086 vs record 0.21867 (gap=0.00219, 1.0%). S12 revival + extra_trees dominance = best shot at new record."
   ]
 }
