@@ -13,3 +13,4 @@
 - [research_march2026_cycle4.md](research_march2026_cycle4.md) — March 26 2026 cycle 4: AF-NSGA-II sparse init, CRLS fine-tuning (arXiv:2603.08206), NGBoost CRPS, TabPFN Beta, LightGBM DART fix, calibration-first ROI, post-COVID home advantage decay
 - [research_browser_automation_march2026.md](research_browser_automation_march2026.md) — Headless browser on HF Spaces: Playwright Docker, BaaS free tiers, browser-use/Crawl4AI, MCP tools
 - [research_gemini_cli_march2026.md](research_gemini_cli_march2026.md) — Gemini CLI as autonomous agent: Docker, HF Spaces, free tier limits, vs Claude Code
+- [research_rgwa_hf_models_march2026.md](research_rgwa_hf_models_march2026.md) — RGWA HF Spaces survey March 2026: best models per modality, ZeroGPU status, upgrade priorities
