@@ -59,6 +59,7 @@ SYSTEM CRONS
 | `/spaces-health` | Health check all 6 HF evolution islands |
 | `/evolve-report` | Comprehensive evolution progress report |
 | `/agent-review` | Weekly agent performance review (Jensen HR model) |
+| `/cross-repo-audit` | Audit all 5 repos for consistency and improvements |
 
 ## Rules
 
