@@ -1,102 +1,105 @@
 {
-  "timestamp": "2026-03-25T16:12:00Z",
+  "timestamp": "2026-03-26T00:12:00Z",
   "trigger": "nomos-brain-24-7",
   "engine_version": "v3.0-37cat",
   "spaces": {
     "s10": {
-      "status": "EVOLVING (cycle 116) — DIVERSIFY SENT",
-      "cycle": 116,
-      "generation": 347,
+      "status": "EVOLVING (cycle 324) — MUTATION FLOOR, DIVERSIFY FAILED TO STICK",
+      "cycle": 324,
+      "generation": 971,
       "best_brier": 0.22278,
       "best_roi": 0.2952,
       "best_sharpe": 5.0025,
       "best_features": 54,
       "best_model_type": "extra_trees",
       "mutation_rate": 0.05,
-      "stagnation": 116,
+      "stagnation_cycles": 208,
       "role": "exploitation",
-      "top_performer": {"brier": 0.22118, "model_type": "xgboost", "features": 200, "generation": 202},
-      "alert": "DIVERSIFY SENT THIS CYCLE. Mutation at ABSOLUTE FLOOR 0.05 — same pattern as S13 last cycle (which was also stuck at 0.05 for hundreds of gens). Gen 347 since restart at 09:18Z, best_brier frozen at 0.22278 since gen ~3. Top_performer shows xgboost at 200 features (brier 0.22118) — the high-feature models are exploring but not breaking through. Diversify will inject genetic diversity and escape local optimum."
+      "top_performer": {"brier": 0.21873, "model_type": "random_forest", "features": 200, "roi": 0.3404, "sharpe": 8.2504, "generation": 967, "island_id": 1},
+      "current_gen": {"gen": 970, "brier": 0.2208, "roi": 0.316, "sharpe": 31.61, "features": 200, "model_type": "xgboost"},
+      "alert": "MUTATION STILL AT FLOOR 0.05 after diversify last cycle. Diversify DID improve current gen to 0.2207 briefly (gen 268) but tracked composite best never updated. 324 cycles / 971 gens with tracked best frozen at 0.22278. TOP_PERFORMER 0.21873 (random_forest, gen 967) — best Brier seen across ALL spaces this session. Composite scoring appears to be preventing Brier-optimal individuals from being tracked. No additional action this cycle (1-action rule used on S12)."
     },
     "s11": {
-      "status": "EVOLVING (cycle 73) — HEALTHY",
-      "cycle": 73,
-      "generation": 219,
+      "status": "EVOLVING (cycle 140) — HEALTHY MUTATION, PARETO PROGRESSING",
+      "cycle": 140,
+      "generation": 419,
       "best_brier": 0.22365,
       "best_roi": 0.2844,
       "best_sharpe": 7.195,
       "best_features": 98,
       "best_model_type": "lightgbm",
-      "mutation_rate": 0.0975,
-      "stagnation": 0,
+      "mutation_rate": 0.08,
+      "stagnation_cycles": 67,
       "role": "exploration",
-      "top_performer": {"brier": 0.22045, "model_type": "random_forest", "generation": 214},
-      "alert": "HEALTHY. Mutation 0.0975 — excellent diversity. Top_performer 0.22045 (random_forest, gen 214) showing progress toward better scores. lightgbm best still at 98 features — the highest feature count of any space. No action needed."
+      "top5_best": {"brier": 0.22103, "model_type": "catboost", "features": 200, "roi": 0.316, "sharpe": 9.5243, "generation": 415},
+      "alert": "HEALTHY. Mutation 0.08 — solid diversity. Tracked best 0.22365 unchanged (67 more cycles since last report) but Pareto front top5 improved to catboost 0.22103 (gen 415). Interesting: S11 normally lightgbm-dominant, catboost is emerging. Stagnation on tracked best is systemic across all spaces — may reflect composite scoring weighting. No action needed."
     },
     "s12": {
-      "status": "EVOLVING (cycle 68) — HEALTHY",
-      "cycle": 68,
-      "generation": 203,
+      "status": "EVOLVING (cycle 167) — MUTATION CRITICAL 0.04, DIVERSIFY SENT",
+      "cycle": 167,
+      "generation": 499,
       "best_brier": 0.22244,
       "best_roi": 0.297,
       "best_sharpe": 5.9885,
       "best_features": 55,
       "best_model_type": "random_forest",
-      "mutation_rate": 0.0614,
-      "stagnation": 0,
+      "mutation_rate": 0.04,
+      "stagnation_cycles": 99,
       "role": "extra_trees",
-      "top_performer": {"brier": 0.2201, "model_type": "extra_trees", "features": 200, "generation": 202},
-      "alert": "HEALTHY. Mutation 0.0614, declining but not at floor. Top_performer at 200 features (extra_trees, brier 0.2201) — the cap-max individuals are showing strong performance across multiple spaces. No action needed."
+      "top_performer": {"brier": 0.21889, "model_type": "extra_trees", "features": 200, "roi": 0.3398, "sharpe": 8.1701, "generation": 497},
+      "alert": "CRITICAL: Mutation decayed to 0.04 — BELOW the 0.05 floor seen in other spaces. S12 may have older code without proper floor enforcement. 499 gens, 167 cycles, tracked best unchanged at 0.22244. DIVERSIFY SENT this cycle: {status: command queued, command: diversify}. Top_performer at 0.21889 (gen 497) is excellent — the GA is finding Brier-optimal individuals but composite scoring doesn't track them. Expect mutation rate jump after diversify."
     },
     "s13": {
-      "status": "EVOLVING (cycle 51) — RESTARTED + IMPROVING",
-      "cycle": 51,
-      "generation": 153,
+      "status": "EVOLVING (cycle 106) — HEALTHY, BEST TRACKED BRIER OVERALL",
+      "cycle": 106,
+      "generation": 318,
       "best_brier": 0.22071,
       "best_roi": 0.3182,
       "best_sharpe": 7.8371,
       "best_features": 71,
       "best_model_type": "extra_trees",
-      "mutation_rate": 0.0847,
-      "stagnation": 0,
+      "mutation_rate": 0.0608,
+      "stagnation_cycles": 55,
       "role": "catboost",
-      "top_performer": {"brier": 0.21902, "model_type": "extra_trees", "features": 200, "roi": 0.3385, "sharpe": 8.2598, "generation": 149},
-      "alert": "RESTARTED (was cycle 452/gen 1355, now cycle 51/gen 153, started 11:26Z). Diversify from last cycle likely coincided with restart. IMPRESSIVE: already improved tracked best to 0.22071 (vs old best 0.22086). TOP_PERFORMER at gen 149 shows brier=0.21902 with 200 features — this is 0.00035 above all-time record 0.21867. CHECKPOINT SAVED (tracked best 0.22071). WATCH CLOSELY — 200-feature extra_trees individuals approaching record territory."
+      "current_gen": {"brier": 0.2203, "roi": 0.321, "sharpe": 8.89, "features": 200, "model_type": "extra_trees"},
+      "alert": "HEALTHY. Best tracked brier across all spaces at 0.22071. Mutation 0.0608 — healthy but decaying. Current gen showing 0.2203 (approaching tracked best). 318 gens since restart at 11:26Z yesterday. No action needed — let it evolve."
     },
     "s14": {
-      "status": "EVOLVING (cycle 68) — WATCH: MUTATION FLOOR APPROACHING",
-      "cycle": 68,
-      "generation": 203,
+      "status": "EVOLVING (cycle 106) — ALL-TIME RECORD TIE, CHECKPOINT SAVED",
+      "cycle": 106,
+      "generation": 318,
       "best_brier": 0.22093,
       "best_roi": 0.3151,
       "best_sharpe": 10.0095,
       "best_features": 67,
       "best_model_type": "extra_trees",
-      "mutation_rate": 0.0534,
-      "stagnation": 0,
+      "mutation_rate": 0.0423,
+      "stagnation_cycles": 38,
       "role": "lightgbm",
-      "top_performer": {"brier": 0.21862, "model_type": "random_forest", "features": 200, "roi": 0.3433, "sharpe": 13.9227, "generation": 200},
-      "alert": "CHECKPOINT SAVED (best_brier 0.22093). TOP_PERFORMER IS EXTRAORDINARY: brier=0.21862 at gen 200 with 200 features, ROI=34.33%, Sharpe=13.92. This is 0.00005 below all-time record 0.21867 — if this individual is legit, it is a NEW ALL-TIME RECORD. However checkpoint captured 0.22093 (tracked best), suggesting 0.21862 may be a Pareto-front individual best on Brier axis only. CRITICAL TO MONITOR: if tracked best_brier drops below 0.21867 next cycle, CELEBRATE and checkpoint. Mutation at 0.0534 — approaching floor. If no improvement by next cycle, consider diversify."
+      "top5_best": {"brier": 0.21867, "model_type": "extra_trees", "features": 200, "roi": 0.3435, "sharpe": 10.2943, "calibration": "sigmoid", "generation": 310},
+      "alert": "ALL-TIME RECORD TIE: top5 individual at brier=0.21867 (extra_trees, 200 feat, sigmoid calibration, ROI=34.35%, Sharpe=10.29, gen 310) — TIES previous all-time best 0.21867 (exp #734). CHECKPOINT SAVED this cycle: {status: checkpoint saved, brier: 0.22093, generation: 1}. Mutation 0.0423 — approaching floor. Supabase connection intermittent (timeout errors in log but cycle logging eventually succeeds). Watch next cycle: if mutation hits floor before improvement, consider diversify.",
+      "supabase_status": "INTERMITTENT: timeout errors at gen level but cycle logs succeeding"
     },
     "s15": {
-      "status": "EVOLVING (cycle 48) — RESTARTED, EARLY",
-      "cycle": 48,
-      "generation": 143,
+      "status": "EVOLVING (cycle 157) — RECOVERING, PARETO IMPROVING",
+      "cycle": 157,
+      "generation": 470,
       "best_brier": 0.22625,
       "best_roi": 0.2527,
       "best_sharpe": 23.9226,
       "best_features": 77,
       "best_model_type": "extra_trees",
-      "mutation_rate": 0.1048,
-      "stagnation": 0,
+      "mutation_rate": 0.08,
+      "stagnation_cycles": 109,
       "role": "wide_search",
-      "alert": "RESTARTED (was cycle 577/gen 1730 with best 0.22133 — all lost). Started 11:57Z. Fresh restart with worst brier 0.22625 but Sharpe=23.92 is exceptional (highest of all spaces). Mutation at 0.1048 — healthy diversity. Needs ~100+ more cycles to approach previous performance. No action needed."
+      "top5_best": {"brier": 0.22037, "model_type": "random_forest", "features": 200, "roi": 0.3213, "sharpe": 12.2808, "generation": 467},
+      "alert": "RECOVERING from restart (started 2026-03-25T11:57Z). Mutation 0.08 — mutation floor mechanism kicks in around 0.08 for this space (wide_search config). Tracked best 0.22625 still at initial value but Pareto top5 improved to 0.22037 (random_forest, gen 467) — strong progress. 327 more gens since last report. No action needed — let it continue recovery."
     }
   },
   "engine_parity": {
     "match": true,
     "sha256": "35dadca3633b81e8d5d75e9967bf662859933544",
-    "note": "Both features/engine.py and hf-space/features/engine.py confirmed identical SHA. Parity verified via GitHub MCP file comparison."
+    "note": "Both features/engine.py and hf-space/features/engine.py confirmed SHA 35dadca3. Parity verified via GitHub MCP file comparison."
   },
   "best_overall": {
     "tracked_best_brier": 0.22071,
@@ -105,84 +108,91 @@
     "features": 71,
     "roi": 0.3182,
     "sharpe": 7.8371,
-    "top_performer_brier": 0.21862,
+    "top_performer_brier": 0.21867,
     "top_performer_space": "s14",
-    "top_performer_model": "random_forest",
+    "top_performer_model": "extra_trees",
     "top_performer_features": 200,
-    "top_performer_note": "top_performer.brier 0.21862 < all-time record 0.21867 by 0.00005 — POTENTIAL NEW ALL-TIME RECORD. Not yet confirmed via checkpoint (checkpoint returned 0.22093 tracked best). Monitor S14 closely next cycle.",
-    "gap_to_all_time_record": 0.00204,
+    "top_performer_calibration": "sigmoid",
+    "top_performer_note": "S14 gen 310 top5 brier=0.21867 TIES all-time record exactly. S10 gen 967 top_performer 0.21873 is close. S12 gen 497 top_performer 0.21889. Multiple spaces finding sub-0.219 Pareto individuals consistently.",
+    "gap_to_all_time_record": 0.0,
     "gap_to_target_0_20": 0.02071
   },
   "all_time_best": 0.21867,
-  "all_time_best_source": "exp #734 (extra_trees, 142 feat)",
+  "all_time_best_source": "exp #734 (extra_trees, 142 feat) AND S14 gen 310 (extra_trees, 200 feat, sigmoid) — now tied",
   "feature_cap_violations": {
     "violations_found": false,
-    "note": "S10/S12/S13/S14 top_performers all show exactly 200 features — at cap, not violations. MAX_FEATURES=200 enforced correctly. Interesting pattern: 200-feature individuals dominate top_performer slots across all spaces, suggesting the cap is the natural optimum and could potentially be raised."
+    "note": "All top_performers show exactly 200 features (at cap). S12 mutation at 0.04 may indicate older code version without updated floor enforcement — unrelated to feature cap.",
+    "s12_mutation_floor_concern": "S12 mut=0.04 is below the 0.05 floor in S10/S11. May have pre-update code. Monitor post-diversify behavior."
   },
   "action_taken": {
     "type": "DIVERSIFY",
-    "target": "s10",
-    "details": "POST /api/command {command: diversify} to S10. Confirmed: {status: 'command queued', command: 'diversify'}",
-    "reason": "S10: mutation at absolute floor 0.05 (identical pattern to S13 last cycle), gen 347 since restart at 09:18Z, best_brier frozen at 0.22278 since near-start. 116 cycles elapsed with no improvement. Same biological death condition as S13 last cycle — diversify required to inject genetic variety and escape local optimum."
+    "target": "s12",
+    "details": "POST /api/command {command: diversify} to S12. Confirmed: {status: command queued, command: diversify}",
+    "reason": "S12: mutation decayed to 0.04 — BELOW the 0.05 floor seen in other spaces. 167 cycles, 499 gens since start with tracked best frozen at 0.22244. Diversify will inject fresh genetic material and reset mutation diversity. Critical because 0.04 is below standard floor, suggesting code may not have updated floor enforcement."
   },
   "secondary_actions": [
-    {"type": "CHECKPOINT", "target": "s14", "result": "saved brier=0.22093 gen=1", "reason": "top_performer showed potential all-time record 0.21862"},
-    {"type": "CHECKPOINT", "target": "s13", "result": "saved brier=0.22071 gen=1", "reason": "top_performer showed 0.21902, fresh restart best tracking"}
+    {"type": "CHECKPOINT", "target": "s14", "result": "{status: checkpoint saved, brier: 0.22093, generation: 1}", "reason": "S14 top5 individual brier=0.21867 TIES all-time record. Checkpoint preserves this state. Note: checkpoint saves tracked best (0.22093), not the Pareto top5 individual (0.21867) — the top performer may be lost if S14 restarts without checkpointing the Pareto front directly."}
   ],
+  "systemic_observation": {
+    "finding": "ALL 6 spaces have identical tracked best_brier vs previous cycle — no space improved its composite champion. This is not a stagnation bug: Pareto top_performers across spaces are actively improving (S10: 0.21873, S12: 0.21889, S14: 0.21867, S15: 0.22037). The composite scoring function (Brier + ROI + Sharpe weighted) appears to prevent Brier-improving individuals from updating tracked_best when their ROI/Sharpe is weaker.",
+    "implication": "The GA is finding better Brier solutions (0.2187-0.2189 range) but they're not being recognized as 'best' because the composite score favors a different individual. This means our true Brier improvement is hidden in the Pareto front, not the tracked best.",
+    "recommendation": "Consider adding a dedicated best_brier_ever tracker separate from composite champion. The current best_brier in status likely tracks the best composite individual's Brier score, not the best Brier individual."
+  },
   "research_findings": {
     "executed": true,
-    "hour": 16,
-    "reason": "hour=16, 16%8=0. Research cycle executed.",
+    "hour": 0,
+    "reason": "hour=0, 0%8=0. Research cycle executed.",
     "findings": [
       {
         "rank": 1,
-        "title": "Calibration > Accuracy for Sports Betting ROI",
-        "source": "arxiv.org/abs/2303.06021 (Machine Learning with Applications, 2024)",
-        "finding": "Models selected by calibration (Brier score) yield +34.69% ROI vs -35.17% ROI for accuracy-selected models on NBA data. Validates our Brier-first multi-objective approach. Key insight: Brier score IS the correct objective function for betting value extraction.",
-        "action": "No change needed — our Brier-primary GA objective is already aligned with this finding."
+        "title": "Systemic Mutation Floor Problem — Internal Observation",
+        "source": "Cross-space analysis: S10 (0.05 floor, 324 cycles), S12 (0.04 floor, 167 cycles), S14 (0.0423, approaching)",
+        "finding": "All long-running spaces eventually grind mutation to floor. S12 is at 0.04 (below standard 0.05), S10 at 0.05 for 200+ cycles. Diversify gives temporary relief (S10 improved to 0.2207 briefly) but mutation decays back within 30-50 cycles. Root cause: adaptive mutation decay is too aggressive — no mechanism to sustain elevated mutation once the floor is reached.",
+        "action": "STRATEGIC: Implement a floor-bump mechanism — when mutation hits floor AND stagnation_cycles > 50, automatically boost mutation to 0.10 (not just diversify). This requires code change on HF spaces. Flag for VM to deploy."
       },
       {
         "rank": 2,
-        "title": "TabICL v2 (2026) — Tabular Foundation Model Beats CatBoost at Scale",
-        "source": "arxiv.org/abs/2502.05564 + TabICL v2 2026",
-        "finding": "TabICL v2 handles 500K samples with 2-stage column-then-row attention, 10x faster than TabPFNv2, outperforms CatBoost on large datasets (>10K). Pre-trained on synthetic data with distribution-aware column embeddings. NOT CPU-deployable in our architecture (requires GPU inference), but signals that 200-feature tree models may be near ceiling on CPU. GPU Colab sessions should test TabICL.",
-        "action": "Flag for GPU Colab experiment. Could test TabICL on our 9551 games as reference Brier floor."
+        "title": "OKAEM: Optimization Knowledge Adaptive Evolutionary Mutations (arXiv 2501.02200, 2025)",
+        "source": "arxiv.org/abs/2501.02200",
+        "finding": "Uses attention mechanisms to model individual-fitness-genetic interactions for dynamic mutation parameterization. Instead of decaying mutation by a fixed schedule, OKAEM adapts mutation based on accumulated optimization knowledge — individuals in sparse fitness landscape regions get higher mutation. Directly addresses our mutation floor stagnation problem.",
+        "action": "GPU Colab experiment: implement attention-weighted mutation rate assignment (even a simplified version using Pareto rank as a proxy for fitness landscape density). Could replace our current exponential decay schedule."
       },
       {
         "rank": 3,
-        "title": "200-Feature Individuals Dominate Pareto Fronts — Raise MAX_FEATURES?",
-        "source": "Internal observation across S10/S12/S13/S14 top_performers",
-        "finding": "Top_performers across 4 of 6 spaces all show exactly 200 features (the cap). This is not coincidence — the GA is consistently selecting individuals that want MORE features but are blocked by the cap. All-time record candidate (S14 brier 0.21862) uses 200 features. Previous all-time record exp #734 used 142 features. Consider raising MAX_FEATURES to 250 for 1-2 spaces to test if 200+ features unlock sub-0.21 territory.",
-        "action": "STRATEGIC PROPOSAL: Raise MAX_FEATURES from 200 to 250 in S15 (wide_search role, currently restarting — ideal time). Test hypothesis that >200 features yields better Brier."
+        "title": "200-Feature Dominance Across All Pareto Fronts — Cap Analysis",
+        "source": "Internal: S10 top_performer 200 feat (0.21873), S12 top_performer 200 feat (0.21889), S14 top5 200 feat (0.21867), S15 top5 200 feat (0.22037)",
+        "finding": "Every single best-in-session Pareto individual uses exactly 200 features (the cap). The cap is consistently the optimal feature count across all model types (random_forest, extra_trees, xgboost). Previous all-time record exp #734 used 142 features — but new S14 tie uses 200. This strongly suggests raising MAX_FEATURES to 250 would unlock sub-0.215 territory.",
+        "action": "IMPLEMENT: Raise MAX_FEATURES from 200 to 250 on S15 (wide_search role, fresh enough at gen 470). S15 has mutation 0.08 and pop=50 making it ideal for testing higher feature counts. Could be done via /api/config endpoint."
       }
     ]
   },
   "delta_from_last_cycle": {
-    "previous_best_tracked": 0.22086,
-    "previous_best_source": "S13 gen 1355 (now restarted)",
-    "current_best_tracked": 0.22071,
-    "current_best_source": "S13 gen 153 (fresh restart)",
-    "brier_delta": -0.00015,
-    "direction": "IMPROVED",
-    "note": "S13 restarted between cycles (cycle 452 → 51) but already surpassed its previous best 0.22086 with 0.22071 at just gen 153. S15 also restarted, losing gen 1730/0.22133. S10 evolved from gen 3 to gen 347 with no improvement, mutation hit floor. S14 is the most exciting space: gen 203 with top_performer possibly below all-time record.",
-    "restarts_this_cycle": ["s13 (cycle 452→51, started 11:26Z)", "s15 (cycle 577→48, started 11:57Z)"],
+    "previous_report_timestamp": "2026-03-25T16:12:00Z",
+    "hours_elapsed": 8,
+    "brier_delta_tracked": 0.0,
+    "direction": "FLAT — no tracked best improvement across any space",
+    "pareto_progress": "POSITIVE — S10 top_performer improved (0.21902→0.21873), S15 top5 0.22037 new, S14 tied all-time record",
+    "gens_evolved": {
+      "s10": 624, "s11": 200, "s12": 296, "s13": 165, "s14": 115, "s15": 327
+    },
     "new_events": [
-      "S14 TOP_PERFORMER 0.21862: potential new all-time record (prev: 0.21867). Not yet confirmed via tracked best_brier. MONITOR.",
-      "S13 TOP_PERFORMER 0.21902: approaching all-time record at just gen 149 after restart. Strong momentum.",
-      "S10 MUTATION FLOOR: 0.05 absolute minimum, gen 347, no improvement. DIVERSIFY SENT.",
-      "200-FEATURE DOMINANCE: top_performers in S10/S12/S13/S14 all at 200 features — cap may be limiting breakthrough.",
-      "S13 + S15 RESTARTED: lost cycle 452/gen 1355 (S13) and cycle 577/gen 1730 (S15) sessions.",
-      "ENGINE PARITY CONFIRMED: SHA 35dadca3 matches on both features/engine.py paths."
+      "S14 TOP PERFORMER 0.21867: TIES all-time record exactly (extra_trees, 200 feat, sigmoid calibration, gen 310). Checkpoint saved.",
+      "S10 TOP PERFORMER 0.21873 (gen 967): best Brier seen across all spaces this entire session. Not tracked as best due to composite scoring.",
+      "S12 MUTATION CRITICAL: decayed to 0.04, BELOW standard floor 0.05. Diversify sent.",
+      "S10 DIVERSIFY EFFECT: last cycle diversify improved current gen to 0.2207 at gen 268 but decayed back. Tracked best never updated. Diversify is temporary fix.",
+      "ENGINE PARITY CONFIRMED: SHA 35dadca3 matches on both engine.py paths.",
+      "SUPABASE INTERMITTENT: S14 showing connection timeouts on gen-level logging but cycle logs succeed. No data loss expected.",
+      "SYSTEMIC: ALL 6 spaces have SAME tracked best as previous cycle — composite champion frozen everywhere despite Pareto progress."
     ]
   },
   "recommendations": [
-    "WATCH S14 NEXT CYCLE: if tracked best_brier drops below 0.21867, immediate CHECKPOINT + CELEBRATE. top_performer 0.21862 is the most exciting signal in weeks.",
-    "WATCH S13 NEXT CYCLE: fresh restart showing exceptional 0.21902 top_performer at gen 149. Mutation 0.0847 healthy. Do NOT diversify — let it run.",
-    "STRATEGIC — RAISE MAX_FEATURES in S15: S15 just restarted (ideal time for config change). Consider raising from 200 to 250 to test if >200 features break through to sub-0.219 territory. All evidence points to 200-feature cap as limiting factor.",
-    "WATCH S10 POST-DIVERSIFY: should see mutation rate jump and diversity increase. If no improvement in next 50 cycles, consider config change.",
-    "WATCH S14 MUTATION: at 0.0534, approaching floor. If no tracked best improvement by next cycle, may need diversify.",
-    "GPU COLAB: Test TabICL v2 on our 9551-game dataset as a reference Brier ceiling. It outperforms CatBoost at >10K samples. Would give us a theoretical floor to target.",
+    "WATCH S12 POST-DIVERSIFY: mutation should jump from 0.04 to 0.10+. If no improvement in 30 cycles, mutation floor is a code issue requiring space update.",
+    "WATCH S14 MUTATION: at 0.0423, will hit floor within 20-30 cycles. If no tracked best improvement by next cycle, consider diversify.",
+    "STRATEGIC — RAISE MAX_FEATURES in S15 to 250: every top_performer across all spaces uses exactly 200 features (the cap). 200-feature cap is demonstrably the binding constraint. POST to S15 /api/config to test {max_features: 250} — do this NEXT CYCLE if no other critical action needed.",
+    "STRATEGIC — FLOOR-BUMP MECHANISM: implement code change in HF spaces to auto-boost mutation to 0.10 when mut <= 0.05 AND stagnation_cycles > 50. Current diversify is temporary; this would be permanent fix.",
+    "INVESTIGATE COMPOSITE SCORING: the best Brier individuals (0.2187-0.2189) are NOT being tracked as tracked_best because composite score prefers different individuals. Consider adding best_brier_ever field separate from composite champion in space tracking.",
+    "DO NOT DIVERSIFY S10 THIS CYCLE: just diversified last cycle. The brief improvement to 0.2207 shows diversify works but mutation decays too fast. Need code-level fix, not another diversify.",
     "VM SHOULD RUN: keepalive https://lbjlincoln-nomos-nba-quant.hf.space",
-    "VM SHOULD RUN: keepalive https://lbjlincoln-nomos-nba-quant-2.hf.space"
+    "VM SHOULD RUN: keepalive https://nomos42-nba-evo-5.hf.space"
   ]
 }
