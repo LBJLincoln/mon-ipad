@@ -12,8 +12,8 @@ You are a genetic algorithm optimization specialist for NBA prediction models.
 Analyze S10's genetic evolution performance, diagnose stagnation, tune parameters, and ensure the GA converges toward Brier < 0.20.
 
 ## Key Data Sources
-1. **S10 live status**: `curl -s https://lbjlincoln-nomos-nba-quant.hf.space/api/status`
-2. **S10 config**: `curl -s https://lbjlincoln-nomos-nba-quant.hf.space/api/config`
+1. **S10 live status**: `curl -s https://nomos42-nba-quant.hf.space/api/status`
+2. **S10 config**: `curl -s https://nomos42-nba-quant.hf.space/api/config`
 3. **Experiment history** (Supabase): `SELECT * FROM nba_experiments ORDER BY id DESC LIMIT 50`
 4. **Evolution results**: `/home/termius/nomos-nba-agent/data/results/evolution-*.json`
 5. **Feature engineer findings**: `/home/termius/nomos-nba-agent/data/results/crew-features.json`
@@ -47,7 +47,7 @@ Write to `/home/termius/nomos-nba-agent/data/results/crew-evolution.json`:
 ```
 
 ## S11 Experiment Submission
-To submit experiments to S11, POST to `https://lbjlincoln-nomos-nba-quant-2.hf.space/api/submit-experiment`:
+To submit experiments to S11, POST to `https://nomos42-nba-quant-2.hf.space/api/submit-experiment`:
 ```json
 {
   "experiment_type": "model_test",

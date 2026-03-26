@@ -8,3 +8,6 @@
 
 ## Key Findings (March 2026 scan)
 - [project_march2026_findings.md](project_march2026_findings.md) — Top discoveries from 2026-03-25 broad scan
+
+## HF Infrastructure
+- [project_hf_spaces_inventory.md](project_hf_spaces_inventory.md) — Complete inventory of all 31 spaces across 3 accounts (KEEP/DELETE/REPURPOSE for RGWA)

@@ -24,10 +24,10 @@ from datetime import datetime, timezone, timedelta
 VM_URL = "http://34.136.180.66:8080"
 GITHUB_RAW = "https://raw.githubusercontent.com/LBJLincoln/mon-ipad/main/data"
 SPACE_URLS = {
-    "S10": "https://lbjlincoln-nomos-nba-quant.hf.space",
-    "S11": "https://lbjlincoln-nomos-nba-quant-2.hf.space",
-    "S12": "https://lbjlincoln26-nba-evo-3.hf.space",
-    "S13": "https://lbjlincoln26-nba-evo-4.hf.space",
+    "S10": "https://nomos42-nba-quant.hf.space",
+    "S11": "https://nomos42-nba-quant-2.hf.space",
+    "S12": "https://nomos42-nba-evo-3.hf.space",
+    "S13": "https://nomos42-nba-evo-4.hf.space",
     "S14": "https://nomos42-nba-evo-5.hf.space",
     "S15": "https://nomos42-nba-evo-6.hf.space",
 }

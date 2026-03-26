@@ -6,10 +6,10 @@ Arguments: $ARGUMENTS (optional: "brief" for one-line summary, or space name lik
 
 1. **Query all 6 spaces** in parallel using curl:
    ```
-   S10: https://lbjlincoln-nomos-nba-quant.hf.space/api/status
-   S11: https://lbjlincoln-nomos-nba-quant-2.hf.space/api/status
-   S12: https://lbjlincoln26-nba-evo-3.hf.space/api/status
-   S13: https://lbjlincoln26-nba-evo-4.hf.space/api/status
+   S10: https://nomos42-nba-quant.hf.space/api/status
+   S11: https://nomos42-nba-quant-2.hf.space/api/status
+   S12: https://nomos42-nba-evo-3.hf.space/api/status
+   S13: https://nomos42-nba-evo-4.hf.space/api/status
    S14: https://nomos42-nba-evo-5.hf.space/api/status
    S15: https://nomos42-nba-evo-6.hf.space/api/status
    ```
