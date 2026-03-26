@@ -17,3 +17,13 @@ type: project
 - Supabase inserts: proposed via research_proposals table
 
 **How to apply:** Run next scan in ~2 weeks to catch April 2026 releases. Prioritize checking: tabicl releases, TabPFN 2.6 docs, ogham-mcp adoption, LLMFE code quality after community feedback.
+
+## Scan 3: 2026-03-26 (Anthropic official ecosystem)
+- Scope: anthropics/* repos, Claude Code v2.1.84 hooks, Agent SDK, subagent patterns
+- New features found: CwdChanged/FileChanged/StopFailure/PostCompact/TaskCreated hooks, initialPrompt frontmatter, isolation: worktree, background: true, persistent memory
+- Key repos: claude-code, claude-agent-sdk-python (v0.1.50), claude-agent-sdk-demos, skills, claude-plugins-official, claude-code-action
+- File: /home/termius/nomos-nba-agent/data/results/claude-code-scout-2026-03-26.json
+- Supabase inserts: 5 proposals (hooks, SDK orchestration, initialPrompt, HTTP hooks, subagent memory)
+- Memory: project_claude_code_ecosystem.md
+
+**How to apply:** Implement FileChanged + StopFailure + PostCompact hooks first (2h). Then initialPrompt for nba-brain agent (3h). Then formalize .claude/agents/*.md for all 4 Karpathy subagents (4h).

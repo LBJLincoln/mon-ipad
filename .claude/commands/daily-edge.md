@@ -1,13 +1,13 @@
 ---
-name: tony-bloom
-description: Run one Tony Bloom cycle: ingest latest stats/odds → recalibrate models → scan for value bets �
+name: daily-edge
+description: Run one Daily Edge cycle: ingest latest stats/odds → recalibrate models → scan for value bets → Kelly sizing
 ---
 
-Run one Tony Bloom cycle: ingest latest stats/odds → recalibrate models → scan for value bets → select top picks via Kelly.
+Run one Daily Edge cycle: ingest latest stats/odds → recalibrate models → scan for value bets → select top picks via Kelly.
 
 Arguments: $ARGUMENTS (optional: "odds-only", "recalibrate-only", or "full")
 
-This is the Starlizard-inspired operational loop for daily NBA betting.
+This is the quantitative operational loop for daily NBA betting.
 
 ## Steps
 
@@ -36,7 +36,7 @@ This is the Starlizard-inspired operational loop for daily NBA betting.
 
 5. **Generate picks report**:
    ```
-   ## Tony Bloom Daily Picks — YYYY-MM-DD
+   ## Daily Edge Picks — YYYY-MM-DD
 
    **Bankroll**: $XXX | **Model**: v3.0-35cat evolved
    **Games today**: X

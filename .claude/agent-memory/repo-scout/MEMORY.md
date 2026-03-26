@@ -11,3 +11,6 @@
 
 ## HF Infrastructure
 - [project_hf_spaces_inventory.md](project_hf_spaces_inventory.md) — Complete inventory of all 31 spaces across 3 accounts (KEEP/DELETE/REPURPOSE for RGWA)
+
+## Anthropic Ecosystem (March 2026 deep-dive)
+- [project_claude_code_ecosystem.md](project_claude_code_ecosystem.md) — Claude Code v2.1.84 hooks, Agent SDK v0.1.50, subagent patterns (initialPrompt, memory, isolation, background)

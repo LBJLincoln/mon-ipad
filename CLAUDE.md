@@ -54,7 +54,7 @@ SYSTEM CRONS
 | Skill | Purpose |
 |-------|---------|
 | `/karpathy-loop` | Autonomous research cycle (5 subagents → proposals → quick wins) |
-| `/tony-bloom` | Daily predictions + value bets (Starlizard pattern) |
+| `/daily-edge` | Daily predictions + value bets + Kelly sizing |
 | `/progress-10pct` | Target 10% improvement in weakest metric |
 | `/spaces-health` | Health check all 6 HF evolution islands |
 | `/evolve-report` | Comprehensive evolution progress report |
