@@ -1,250 +1,261 @@
 {
-  "timestamp": "2026-03-26T12:12:00Z",
+  "timestamp": "2026-03-26T20:08:00Z",
   "trigger": "nomos-brain-24-7",
-  "engine_version": "v3.0-37cat",
+  "engine_version": "v3.0-38cat",
+  "engine_note": "Cat38 venue-conditional matchup features (14 new, 6149 raw total). Deployed to S14/S15 on restart. S10-S13 still on v3.0-37cat (no restart since 2026-03-25).",
   "spaces": {
     "s10": {
-      "status": "EVOLVING (cycle 564) — EXTREME STAGNATION, DIVERSIFY THIS CYCLE",
-      "cycle": 564,
-      "generation": 1692,
+      "status": "EVOLVING (cycle 733) — STAGNATING, DIVERSIFY NOT CONFIRMED",
+      "cycle": 733,
+      "generation": 2198,
       "best_brier": 0.22278,
       "best_roi": 0.2952,
       "best_sharpe": 5.0025,
       "best_features": 54,
       "best_model_type": "extra_trees",
-      "mutation_rate": 0.05,
-      "stagnation_cycles": 448,
-      "pareto_front_size": 11,
+      "mutation_rate": 0.0597,
+      "stagnation_cycles": 617,
+      "pareto_front_size": 13,
       "role": "exploitation",
-      "current_gen": {
-        "gen": 1692,
-        "brier": 0.2214,
-        "roi": 0.309,
-        "sharpe": 7.22,
-        "features": 200,
-        "model_type": "xgboost"
-      },
-      "pareto_brier_range": {
-        "best_in_pareto": 0.22035,
-        "note": "Gen 637-646 individuals still in Pareto with brier=0.22035. Multi-generational Pareto: gens 508, 637, 782, 904, 1687 all represented. Good genetic diversity despite tracked best freeze."
-      },
+      "current_top5_best_brier": 0.22085,
+      "current_top5_model": "catboost",
+      "current_top5_gen": 2195,
+      "started_at": "2026-03-25T09:18:41Z",
+      "last_update": "2026-03-26T20:02:53Z",
       "delta_from_last": {
-        "cycles": 147,
-        "gens": 443,
+        "cycles": 169,
+        "gens": 506,
         "tracked_best_change": 0.0,
-        "mutation_change": 0.0
+        "mutation_change": "+0.0097 (0.05 -> 0.0597) — DIVERSIFY NOT CONFIRMED (real diversify would jump to 0.10+)"
       },
-      "alert": "EXTREME STAGNATION: tracked best 0.22278 frozen for 448 cycles (was 301 last report +147 this interval). Mutation locked at 0.05 floor. Supabase logging OK (gen 1692 logged clean). VM MUST EXECUTE DIVERSIFY this cycle. Brier trend shows Pareto best=0.22035 (gen 637-646) — multi-obj scoring prevents tracked best update."
+      "alert": "STAGNATION DEEPENS: tracked best 0.22278 frozen for ~617 cycles total (448 + 169 this interval). Mutation moved only 0.05->0.0597 — VM did NOT execute last cycle's diversify recommendation. Pareto front grew 11->13 (positive). 3RD CONSECUTIVE CYCLE recommending diversify for S10. Must execute this cycle."
     },
     "s11": {
-      "status": "EVOLVING (cycle 263) — HEALTHY, PARETO GROWING",
-      "cycle": 263,
-      "generation": 788,
+      "status": "EVOLVING (cycle 330) — HEALTHY, EXCELLENT TOP INDIVIDUAL",
+      "cycle": 330,
+      "generation": 989,
       "best_brier": 0.22365,
       "best_roi": 0.2844,
       "best_sharpe": 7.195,
       "best_features": 98,
       "best_model_type": "lightgbm",
       "mutation_rate": 0.08,
-      "stagnation_cycles": 190,
-      "pareto_front_size": 17,
+      "stagnation_cycles": 257,
+      "pareto_front_size": 14,
       "role": "exploration",
-      "delta_from_last": {
-        "cycles": 81,
-        "gens": 242,
-        "tracked_best_change": 0.0,
-        "pareto_size_change": "+5 or more (was ~12, now 17)"
+      "top_performer": {
+        "gen": 986,
+        "brier": 0.21984,
+        "roi": 0.3258,
+        "sharpe": 8.3361,
+        "features": 200,
+        "model_type": "catboost"
       },
-      "alert": "HEALTHY. Mutation 0.08 — solid diversity. Pareto front growing to 17 (excellent). Tracked best frozen but Pareto improving quality. No action needed."
+      "started_at": "2026-03-25T08:04:54Z",
+      "last_update": "2026-03-26T20:01:45Z",
+      "delta_from_last": {
+        "cycles": 67,
+        "gens": 201,
+        "tracked_best_change": 0.0
+      },
+      "alert": "HEALTHY. Mutation 0.08 — solid diversity. Pareto 14 (slight decrease from 17). TOP INDIVIDUAL: catboost 0.21984 at gen 986 (2nd best ever observed). Mutation stable. No action needed."
     },
     "s12": {
-      "status": "EVOLVING (cycle 365) — MUTATION BUG PERSISTS: 0.04 FLOOR, PARETO SHRINKING",
-      "cycle": 365,
-      "generation": 1095,
+      "status": "EVOLVING (cycle 522) — MUTATION BUG PERSISTS (0.04), PARETO SURGE 5->17",
+      "cycle": 522,
+      "generation": 1564,
       "best_brier": 0.22244,
       "best_roi": 0.297,
       "best_sharpe": 5.9885,
       "best_features": 55,
       "best_model_type": "random_forest",
       "mutation_rate": 0.04,
-      "stagnation_cycles": 297,
-      "pareto_front_size": 5,
+      "stagnation_cycles": 454,
+      "pareto_front_size": 17,
       "role": "extra_trees",
+      "top2": [
+        {"gen": 1562, "brier": 0.2219, "roi": 0.3025, "sharpe": 5.6028, "features": 200, "model_type": "xgboost_brier"},
+        {"gen": 801, "brier": 0.22406, "roi": 0.2794, "sharpe": 5.675, "features": 200, "model_type": "lightgbm"}
+      ],
+      "started_at": "2026-03-25T08:07:47Z",
+      "last_update": "2026-03-26T20:02:17Z",
       "delta_from_last": {
-        "cycles": 138,
-        "gens": 414,
+        "cycles": 157,
+        "gens": 469,
         "tracked_best_change": 0.0,
-        "pareto_size_change": "-4 (was 9, now 5) — continuing Pareto erosion post-failed-diversify"
+        "pareto_change": "+12 (5->17) — MAJOR SURGE via 469 gens crossover diversity"
       },
-      "alert": "CRITICAL CODE BUG: Diversify posted last cycle DID NOT fix mutation floor — still 0.04 after 297+ cycles. Pareto SHRINKING: 9 -> 5. Last diversify disrupted Pareto without recovering mutation. DO NOT send another diversify — needs code fix to S12 adaptive mutation floor. LightGBM 200-feat individual appearing in current-gen evaluations. Pre-update code suspected (no 0.05 floor enforcement). Needs code deployment."
+      "alert": "MUTATION BUG PERSISTS: adaptive mutation stuck at 0.04 floor (code bug confirmed, 454+ cycles). BUT Pareto surged 5->17 over 469 new gens — crossover diversity compensating. Top individual xgboost_brier 0.2219 (gen 1562). Do NOT diversify (would erode Pareto again). Code fix needed on next deployment."
     },
     "s13": {
-      "status": "EVOLVING (cycle 216) — STABLE, ALL-TIME RECORD INDIVIDUAL MAY STILL BE IN PARETO",
-      "cycle": 216,
-      "generation": 646,
+      "status": "EVOLVING (cycle 273) — *** NEW ALL-TIME RECORD: 0.21837 gen 815 ***",
+      "cycle": 273,
+      "generation": 817,
       "best_brier": 0.22071,
       "best_roi": 0.3182,
       "best_sharpe": 7.8371,
       "best_features": 71,
       "best_model_type": "extra_trees",
       "mutation_rate": 0.05,
-      "stagnation_cycles": 165,
-      "pareto_front_size": 10,
+      "stagnation_cycles": 222,
+      "pareto_front_size": 13,
       "role": "catboost",
-      "all_time_record_status": {
-        "brier": 0.21863,
-        "gen_discovered": 413,
-        "gens_since_discovery": 233,
-        "checkpoint_status": "ASSUMED EXECUTED by VM (last cycle recommendation was actioned: S14 diversify confirmed executed). Pareto front still 10 — record may still be present."
+      "all_time_record": {
+        "brier": 0.21837,
+        "gen": 815,
+        "model_type": "extra_trees",
+        "features": 200,
+        "roi": 0.3451,
+        "sharpe": 7.1814,
+        "island_id": 3,
+        "previous_atr": 0.21863,
+        "improvement": 0.00026
       },
+      "pareto_top5": [
+        {"gen": 815, "brier": 0.21837, "roi": 0.3451, "sharpe": 7.1814, "features": 200, "model_type": "extra_trees"},
+        {"gen": 813, "brier": 0.21871, "roi": 0.3417, "sharpe": 8.028, "features": 200, "model_type": "extra_trees"},
+        {"gen": 813, "brier": 0.21871, "roi": 0.3417, "sharpe": 8.028, "features": 200, "model_type": "extra_trees"},
+        {"gen": 815, "brier": 0.21894, "roi": 0.3398, "sharpe": 13.0877, "features": 200, "model_type": "extra_trees"},
+        {"gen": 812, "brier": 0.22037, "roi": 0.3212, "sharpe": 6.8716, "features": 200, "model_type": "extra_trees"}
+      ],
+      "started_at": "2026-03-25T11:26:37Z",
+      "last_update": "2026-03-26T20:02:23Z",
       "delta_from_last": {
-        "cycles": 77,
-        "gens": 229,
-        "tracked_best_change": 0.0
+        "cycles": 57,
+        "gens": 171,
+        "tracked_best_change": 0.0,
+        "pareto_change": "+3 (10->13)"
       },
-      "alert": "STABLE. Mutation 0.05 approaching floor. Pareto front 10 healthy. S13 checkpoint of 0.21863 record (gen 413) assumed executed by VM last cycle (VM confirmed executing recommendations — S14 diversify worked). No new records. Monitor mutation — approaching 0.05 floor, may need diversify in 2-3 cycles."
+      "alert": "*** NEW ALL-TIME RECORD *** Brier 0.21837 at gen 815 (extra_trees, 200 feat, ROI=34.51%, Sharpe=7.18, island 3). Previous ATR was 0.21863 (gen 413). Improvement: 0.00026. Top 4 Pareto members all below 0.219. Mutation at 0.05 floor — CHECKPOINT REQUIRED NOW (VM must execute). Tracked best still shows 0.22071 — Pareto composite bias issue ongoing."
     },
     "s14": {
-      "status": "EVOLVING (cycle 171) — DIVERSIFY SUCCESS! Mutation 0.1195",
-      "cycle": 171,
-      "generation": 513,
-      "best_brier": 0.22093,
-      "best_roi": 0.3151,
-      "best_sharpe": 10.0095,
-      "best_features": 67,
-      "best_model_type": "extra_trees",
-      "mutation_rate": 0.1195,
-      "stagnation_cycles": 103,
-      "pareto_front_size": 11,
+      "status": "COLD START — BUILDING FEATURES (restarted 19:34 UTC with new code)",
+      "cycle": 0,
+      "generation": 0,
+      "best_brier": 1.0,
+      "best_roi": 0.0,
+      "best_sharpe": 0.0,
+      "best_features": 0,
+      "best_model_type": "none",
+      "mutation_rate": 0.15,
+      "stagnation_cycles": 0,
+      "pareto_front_size": 0,
       "role": "lightgbm",
-      "delta_from_last": {
-        "cycles": 42,
-        "gens": 126,
-        "tracked_best_change": 0.0,
-        "mutation_change": "+0.0795 (0.04 -> 0.1195) — DIVERSIFY CONFIRMED EXECUTED BY VM"
-      },
-      "alert": "SUCCESS: Last cycle diversify recommendation executed by VM — mutation jumped from 0.04 FLOOR to 0.1195 (healthy exploration range). Pareto front 11. Monitor for brier improvement next 2-3 cycles as diversity takes effect. No action needed."
+      "started_at": "2026-03-26T19:34:54Z",
+      "supabase_rows_at_start": 19609,
+      "alert": "RESTARTED at 19:34 UTC — picking up new code (Cat38, NSGA-II parsimony, LightGBM DART, Venn-Abers boost). Previous gen 513 progress lost (in-memory). Historical data in Supabase (19609 rows) preserved. Expect ~30-50 min build time before evolution starts. Previous best 0.22093 (extra_trees gen 513) will need to be re-established. MONITOR next cycle."
     },
     "s15": {
-      "status": "EVOLVING (cycle 304) — HEALTHY, TOP PERFORMER IMPROVING",
-      "cycle": 304,
-      "generation": 911,
-      "best_brier": 0.22625,
-      "best_roi": 0.2527,
-      "best_sharpe": 23.9226,
-      "best_features": 77,
-      "best_model_type": "extra_trees",
-      "mutation_rate": 0.08,
-      "stagnation_cycles": 256,
-      "pareto_front_size": 11,
+      "status": "COLD START — BUILDING FEATURES (restarted 19:34 UTC with new code)",
+      "cycle": 0,
+      "generation": 0,
+      "best_brier": 1.0,
+      "best_roi": 0.0,
+      "best_sharpe": 0.0,
+      "best_features": 0,
+      "best_model_type": "none",
+      "mutation_rate": 0.15,
+      "stagnation_cycles": 0,
+      "pareto_front_size": 0,
       "role": "wide_search",
-      "current_gen": {
-        "gen": 910,
-        "brier": 0.2221,
-        "roi": 0.303,
-        "sharpe": 6.72,
-        "features": 200,
-        "model_type": "xgboost"
-      },
-      "top_performer_this_cycle": {
-        "gen": 908,
-        "brier": 0.22119,
-        "roi": 0.3133,
-        "sharpe": 10.03,
-        "model_type": "catboost",
-        "features": 200
-      },
-      "delta_from_last": {
-        "cycles": 90,
-        "gens": 269,
-        "tracked_best_change": 0.0,
-        "top_performer_improved": "0.22055 -> 0.22119 (catboost, gen 908 vs gen 641)"
-      },
-      "alert": "HEALTHY. Mutation 0.08 — good diversity. Pop=50 wide search continuing. Top performer catboost 0.22119 (gen 908, 200 feat, Sharpe 10.03). Current gen xgboost 0.2221. No action needed. MAX_FEATURES raise to 250 deferred — defer again until S10 diversify confirmed."
+      "started_at": "2026-03-26T19:34:35Z",
+      "supabase_rows_at_start": 19608,
+      "alert": "RESTARTED at 19:34 UTC — picking up new code (Cat38, NSGA-II parsimony, LightGBM DART). Previous gen 911 progress lost. pop=50, feat=80, mut=0.15->0.08 decay. Monitor for first evolution cycle completion."
     }
   },
   "engine_parity": {
     "match": true,
-    "sha256": "35dadca3633b81e8d5d75e9967bf662859933544",
-    "note": "Both features/engine.py and hf-space/features/engine.py confirmed SHA 35dadca3 — unchanged from previous cycle. Parity verified."
+    "latest_commit": "42737586ad8b0b36f3e6eadb7a222eb7a84485c8",
+    "commit_date": "2026-03-26T19:24:36Z",
+    "commit_msg": "fix: LightGBM DART mode (boosting_type=dart, drop_rate=0.1)",
+    "note": "Both features/engine.py and hf-space/features/engine.py share same latest commit 42737586. Git parity CONFIRMED. Deployment parity: S14/S15 picking up new code on restart; S10-S13 still on prior code (started 2026-03-25). Engine upgraded to v3.0-38cat (+14 venue features).",
+    "engine_changes_since_last_cycle": [
+      "e6ab8d19 — Cat38 venue-conditional matchup features (14 new, 6149 raw total)",
+      "c35304d7 — NSGA-II parsimony pressure (feature count as 5th Pareto objective)",
+      "42737586 — LightGBM DART mode (prevents over-specialization)"
+    ]
   },
   "best_overall": {
     "tracked_best_brier": 0.22071,
     "tracked_best_space": "s13",
     "tracked_best_model": "extra_trees",
     "tracked_best_features": 71,
-    "all_time_record_brier": 0.21863,
+    "all_time_record_brier": 0.21837,
     "all_time_record_space": "s13",
-    "all_time_record_gen": 413,
+    "all_time_record_gen": 815,
     "all_time_record_model": "extra_trees",
     "all_time_record_features": 200,
-    "all_time_record_roi": 0.3436,
-    "all_time_record_sharpe": 10.6785,
-    "gap_to_target_0_20": 0.01863,
-    "note": "No new all-time records this cycle. S13 gen 413 (0.21863) remains all-time best. S14 top performer (0.21907, random_forest, gen 383) second best. S10 Pareto best 0.22035 (gen 637) third best across spaces. Gap to 0.20 target: 0.01863."
+    "all_time_record_roi": 0.3451,
+    "all_time_record_sharpe": 7.1814,
+    "all_time_record_discovered": "2026-03-26T20:02Z",
+    "previous_atr": 0.21863,
+    "atr_improvement": 0.00026,
+    "gap_to_target_0_20": 0.01837,
+    "note": "NEW ALL-TIME RECORD: S13 gen 815 (0.21837, extra_trees, 200 feat, ROI=34.51%, Sharpe=7.18). Beats previous ATR 0.21863 (S13 gen 413) by 0.00026. Second best: S11 gen 986 (0.21984, catboost). Gap to 0.20 target: 0.01837 (9.17% improvement needed)."
   },
-  "all_time_best": 0.21863,
-  "all_time_best_source": "S13 gen 413 (extra_trees, 200 feat, ROI=34.36%, Sharpe=10.68) — 2026-03-26T04:12Z",
+  "all_time_best": 0.21837,
+  "all_time_best_source": "S13 gen 815 (extra_trees, 200 feat, ROI=34.51%, Sharpe=7.18) — 2026-03-26T20:02Z",
   "feature_cap_violations": {
     "violations_found": false,
-    "note": "All spaces at or below 200 features. Current-gen evaluations: S10=200 feat xgboost, S12=200 feat lightgbm, S13/S14/S15=200 feat models. All within MAX_FEATURES=200 hard cap."
+    "note": "All active spaces (S10-S13) at or below 200 features. Top individuals all report 200 features (at cap). S14/S15 cold-starting. No violations detected."
   },
   "mutation_cap_check": {
     "violations_found": false,
-    "values": {"s10": 0.05, "s11": 0.08, "s12": 0.04, "s13": 0.05, "s14": 0.1195, "s15": 0.08},
+    "values": {"s10": 0.0597, "s11": 0.08, "s12": 0.04, "s13": 0.05, "s14": 0.15, "s15": 0.15},
     "cap": 0.15,
-    "note": "All within 0.15 cap. S14 jumped to 0.1195 after diversify (healthy). S12 stuck at 0.04 (code bug). S10/S13 at 0.05 floor."
+    "note": "All within 0.15 cap. S14/S15 at 0.15 initial (cold start). S12 still at 0.04 code bug. S10/S13 near 0.05 floor."
   },
   "action_taken": {
-    "type": "DIVERSIFY_REQUIRED_VIA_VM",
-    "target": "s10",
-    "details": "VM MUST EXECUTE: curl -s -X POST https://lbjlincoln-nomos-nba-quant.hf.space/api/command -H 'Content-Type: application/json' -d '{\"command\": \"diversify\"}'",
-    "reason": "S10 tracked best 0.22278 frozen for 448 cycles. Mutation at 0.05 floor. Last cycle deferred for S13 checkpoint (which VM executed per S14 diversify confirmation). This cycle: DIVERSIFY S10. Pareto still holds gen 637-646 individuals (brier=0.22035) — good foundation for post-diversify recovery."
+    "type": "CHECKPOINT_REQUIRED_VIA_VM",
+    "target": "s13",
+    "priority": "CRITICAL — NEW ALL-TIME RECORD",
+    "details": "VM MUST EXECUTE: curl -s -X POST https://lbjlincoln26-nba-evo-4.hf.space/api/command -H 'Content-Type: application/json' -d '{\"command\": \"checkpoint\"}'",
+    "reason": "S13 gen 815 achieved 0.21837 — NEW ALL-TIME RECORD (was 0.21863). Rule C: new all-time record → POST checkpoint immediately. S13 Pareto has 4 individuals below 0.219. Checkpoint saves the full Pareto state including the record individual."
   },
   "research_findings": {
     "executed": false,
-    "hour": 12,
-    "reason": "hour=12, 12%8=4 != 0. Research skipped this cycle."
+    "hour": 20,
+    "reason": "hour=20, 20%8=4 != 0. Research skipped this cycle."
   },
   "delta_from_last_cycle": {
-    "previous_report_timestamp": "2026-03-26T04:12:00Z",
-    "hours_elapsed": 8,
+    "previous_report_timestamp": "2026-03-26T12:12:00Z",
+    "hours_elapsed": 7.9,
     "gens_evolved": {
-      "s10": 443,
-      "s11": 242,
-      "s12": 414,
-      "s13": 229,
-      "s14": 126,
-      "s15": 269,
-      "total": 1723
+      "s10": 506,
+      "s11": 201,
+      "s12": 469,
+      "s13": 171,
+      "s14": "RESET (cold start)",
+      "s15": "RESET (cold start)",
+      "total_active": 1347
     },
     "new_events": [
-      "S14 DIVERSIFY CONFIRMED: mutation jumped 0.04 -> 0.1195. VM executed last cycle's #1 recommendation. Pareto front 11, healthy. Watch for brier improvement next 2-3 cycles.",
-      "S10 STAGNATION DEEPENS: 147 more cycles (cycle 417->564, gen 1249->1692) with tracked best frozen at 0.22278. Now 448 total stagnation cycles. DIVERSIFY S10 is this cycle's action.",
-      "S12 CODE BUG CONFIRMED: Mutation still 0.04 after diversify (138 cycles ago). Pareto SHRINKING 9->5. Diversify is being accepted but adaptive mutation decay floor not enforced (pre-update code). Second diversify would further erode Pareto. Needs code fix.",
-      "S13 STABLE: Pareto front 10. All-time record 0.21863 (gen 413) checkpoint assumed executed by VM. Now 233 gens past discovery — Pareto front holding.",
-      "S11 HEALTHY: Pareto front grown to 17 (excellent diversity). Mutation 0.08. No action needed.",
-      "S15 HEALTHY: Top performer improved to 0.22119 catboost (gen 908, 200 feat, Sharpe 10.03). Wide search continuing.",
-      "ENGINE PARITY CONFIRMED: SHA 35dadca3 unchanged on both engine.py paths (3rd consecutive cycle).",
-      "NOTE: 8 hours elapsed since last report (not 4h) — possible missed brain cycle at 08:00Z or delayed trigger."
+      "*** NEW ALL-TIME RECORD ***: S13 gen 815 brier=0.21837 (extra_trees, 200 feat, ROI=34.51%, Sharpe=7.18). Previous ATR was 0.21863. Improvement: 0.00026 Brier.",
+      "S13 PARETO SURGE: Top 4 members all below 0.219 (0.21837, 0.21871, 0.21871, 0.21894). All extra_trees. Island 3 on fire.",
+      "S11 TOP INDIVIDUAL: catboost 0.21984 gen 986 (2nd best ever). Very close to ATR territory.",
+      "S14 + S15 COLD START: Both restarted at 19:34 UTC. Picking up new code (Cat38 + NSGA-II parsimony + LightGBM DART). Previous progress lost in-memory (Supabase rows preserved: 19609/19608).",
+      "ENGINE UPGRADED: v3.0-38cat (Cat38 venue-conditional matchup +14 features, 6149 raw). Also: NSGA-II parsimony pressure added, Venn-Abers calibration weight boosted 20->50%, LightGBM DART mode.",
+      "S10 DIVERSIFY NOT CONFIRMED: Mutation moved only 0.05->0.0597 over 506 gens. Real diversify = jump to 0.10+. VM missed this recommendation for 3 consecutive cycles. URGENT.",
+      "S12 PARETO SURGE: 5->17 despite mutation bug. 469 gens of crossover finally rebuilt diversity."
     ]
   },
   "recommendations": [
-    "URGENT — VM DIVERSIFY S10: curl -s -X POST https://lbjlincoln-nomos-nba-quant.hf.space/api/command -H 'Content-Type: application/json' -d '{\"command\": \"diversify\"}' — 448 cycle stagnation. This is the primary action this cycle.",
-    "CONFIRM S13 CHECKPOINT: Verify checkpoint of 0.21863 record (gen 413) was saved. Check if /api/checkpoint was called and data preserved. If not, execute: curl -s -X POST https://lbjlincoln26-nba-evo-4.hf.space/api/command -H 'Content-Type: application/json' -d '{\"command\": \"checkpoint\"}'",
-    "INVESTIGATE S12 CODE: Adaptive mutation floor NOT working — mutation stays at 0.04 despite diversify commands. S12 has pre-update code. Deploy mutation floor fix (min 0.05) that S10/S11/S15 have. Do NOT send another diversify until code is fixed. Pareto shrinking 9->5 is critical.",
-    "MONITOR S14: Diversify worked (mut=0.1195). Watch for brier improvement over next 2-3 cycles. If no improvement by next brain cycle, consider diversify S13 (approaching 0.05 floor with 165+ cycle stagnation).",
-    "NEXT CYCLE — DIVERSIFY S13: Mutation at 0.05, stagnation 165 cycles. If S10 diversify confirmed this cycle, diversify S13 next cycle.",
-    "DEFERRED — RAISE MAX_FEATURES S15 to 250: All top performers hitting 200-feat cap. S15 wide_search is ideal test bed. Defer until S10 diversify confirmed and S12 code fix deployed.",
+    "CRITICAL — VM CHECKPOINT S13 NOW: curl -s -X POST https://lbjlincoln26-nba-evo-4.hf.space/api/command -H 'Content-Type: application/json' -d '{\"command\": \"checkpoint\"}' — NEW ATR 0.21837 at gen 815. Save the full Pareto state.",
+    "URGENT (3rd cycle) — VM DIVERSIFY S10: curl -s -X POST https://lbjlincoln-nomos-nba-quant.hf.space/api/command -H 'Content-Type: application/json' -d '{\"command\": \"diversify\"}' — 617 cycle stagnation, mutation barely at 0.0597. NOT EXECUTED last 2 cycles. Execute both checkpoint (S13) and diversify (S10) this cycle.",
+    "MONITOR S14/S15: Both cold-starting with new Cat38 + parsimony code. Expect 30-60 min build time. First evolution results will indicate if new features improve baseline. Check next cycle.",
+    "INVESTIGATE S10 DIVERSIFY FAILURE: VM is not executing diversify commands. Check autonomous-cycle.sh for health-status.json parsing logic — ensure it reads 'action_taken.details' field correctly.",
+    "S12 CODE FIX (deferred): Mutation at 0.04 floor. Now that Pareto recovered to 17, schedule code fix on next S12 restart/redeploy. Do NOT diversify S12 (already recovering).",
+    "CONSIDER S13 DIVERSIFY: Mutation at 0.05 floor, 222 cycle stagnation. After checkpoint confirmed, consider diversify S13 to maintain exploration. BUT: ATR just achieved — give it 1-2 more cycles before disrupting.",
     "VM SHOULD RUN: keepalive https://lbjlincoln-nomos-nba-quant.hf.space",
     "VM SHOULD RUN: keepalive https://lbjlincoln26-nba-evo-4.hf.space",
-    "VM SHOULD RUN: keepalive https://nomos42-nba-evo-5.hf.space"
+    "VM SHOULD RUN: keepalive https://nomos42-nba-evo-5.hf.space",
+    "VM SHOULD RUN: keepalive https://nomos42-nba-evo-6.hf.space"
   ],
   "systemic_observations": {
-    "vm_confirmation": "VM executing recommendations confirmed: S14 diversify (mut 0.04->0.1195) proves VM reads health-status.json and acts. S13 checkpoint also assumed executed. Brain->VM pipeline WORKING.",
-    "mutation_floor_status": "S10/S13 at 0.05 floor, S12 at 0.04 (code bug). S11/S14/S15 healthy (0.08-0.1195). 3 of 6 spaces in stagnation.",
-    "pareto_health": "S11 best (17), S13/S14/S15 healthy (10-11), S10 ok (11), S12 CRITICAL (5 and shrinking).",
-    "brier_trend_insight": "S10 Pareto retains gen 637-646 individuals (brier=0.22035) alongside gen 1687-1692 (brier=0.22143). Multi-generational Pareto with 5 distinct generation bands — indicates strong genetic memory but tracked best frozen by composite scoring bias toward high-Sharpe individuals.",
-    "gap_to_target": "0.01863 to Brier 0.20 target. Best individual 0.21863 (S13). Need 9.3% Brier improvement from current best."
+    "vm_execution_issue": "VM has NOT executed S10 diversify for 3 consecutive cycles (cycles: 12:12, current). Mutation proof: 0.05->0.0597 (manual drift) not 0.05->0.10+ (diversify injection). Check autonomous-cycle.sh health-status.json reading logic.",
+    "new_code_deployed": "Cat38 + NSGA-II parsimony + LightGBM DART deployed. S14/S15 restarting. Impact: parsimony pressure should reduce Feat=200 monoculture, DART should improve LightGBM Brier from anomalous 0.2394.",
+    "pareto_health": "S12 RECOVERED (5->17). S11/S13 healthy (13-14). S10 growing (11->13). S14/S15 cold.",
+    "extra_trees_dominance": "S13 top 5 all extra_trees. S11 catboost 0.21984. ATR holder: extra_trees. Consistent pattern — extra_trees outperforming xgboost/lightgbm for Brier optimization at 200-feat cap.",
+    "gap_to_target": "0.01837 to Brier 0.20. At current improvement rate (~0.0003/ATR cycle), ~60+ more ATR events needed. Cat38 + parsimony changes could accelerate. Monitor S14/S15 first cycles with new code."
   }
 }
