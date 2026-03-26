@@ -1,3 +1,8 @@
+---
+name: evolve-report
+description: Generate a comprehensive evolution progress report across all 6 islands.
+---
+
 Generate a comprehensive evolution progress report across all 6 islands.
 
 Arguments: $ARGUMENTS (optional: time period like "24h", "7d")

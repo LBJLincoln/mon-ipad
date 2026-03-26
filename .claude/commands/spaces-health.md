@@ -1,3 +1,8 @@
+---
+name: spaces-health
+description: Check health of all 6 HF evolution islands and report status.
+---
+
 Check health of all 6 HF evolution islands and report status.
 
 Arguments: $ARGUMENTS (optional: "brief" for one-line summary, or space name like "S10")

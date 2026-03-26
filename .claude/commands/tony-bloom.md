@@ -1,3 +1,8 @@
+---
+name: tony-bloom
+description: Run one Tony Bloom cycle: ingest latest stats/odds → recalibrate models → scan for value bets �
+---
+
 Run one Tony Bloom cycle: ingest latest stats/odds → recalibrate models → scan for value bets → select top picks via Kelly.
 
 Arguments: $ARGUMENTS (optional: "odds-only", "recalibrate-only", or "full")

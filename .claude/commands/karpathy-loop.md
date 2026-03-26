@@ -1,3 +1,8 @@
+---
+name: karpathy-loop
+description: Run one Karpathy auto-research cycle: Claude Code agents research → extract proposals → evaluate
+---
+
 Run one Karpathy auto-research cycle: Claude Code agents research → extract proposals → evaluate → report.
 
 Arguments: $ARGUMENTS (optional: "research-only", "eval-only", or target like "brier:0.20")

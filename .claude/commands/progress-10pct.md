@@ -1,3 +1,8 @@
+---
+name: progress-10pct
+description: Target a 10% improvement in the weakest metric this session. This skill implements a structured impr
+---
+
 Target a 10% improvement in the weakest metric this session. This skill implements a structured improvement cycle.
 
 Steps:
