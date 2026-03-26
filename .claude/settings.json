@@ -1,0 +1,92 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(ls:*)",
+      "Bash(pwd:*)",
+      "Bash(which:*)",
+      "Bash(cat:*)",
+      "Bash(wc:*)",
+      "Bash(curl -s:*)",
+      "Bash(python3 -c:*)",
+      "Bash(python3 <<:*)",
+      "Bash(sha256sum:*)",
+      "Bash(crontab -l:*)",
+      "Bash(date:*)",
+      "Bash(jq:*)",
+      "Bash(cd:*)",
+      "Bash(source:*)",
+      "Bash(export:*)",
+      "Bash(gh:*)",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "WebSearch",
+      "WebFetch",
+      "Agent",
+      "Skill",
+      "mcp__claude_ai_Supabase__execute_sql",
+      "mcp__claude_ai_Supabase__list_tables",
+      "mcp__neo4j__read-cypher",
+      "mcp__neo4j__get-schema",
+      "mcp__claude_ai_Hugging_Face__hf_hub_query",
+      "mcp__claude_ai_Hugging_Face__hub_repo_search",
+      "mcp__claude_ai_Hugging_Face__hub_repo_details",
+      "mcp__claude_ai_Hugging_Face__paper_search",
+      "mcp__claude_ai_Hugging_Face__space_search"
+    ],
+    "deny": [
+      "Bash(rm -rf /)*",
+      "Bash(rm -rf ~)*"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_FILE_PATH\" | grep -q 'features/engine.py'; then echo '⚠️  ENGINE EDIT — run parity check: sha256sum features/engine.py hf-space/features/engine.py'; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_BASH_COMMAND\" | grep -qiE '\\.(fit|train|predict)\\(' 2>/dev/null; then if ! echo \"$CLAUDE_BASH_COMMAND\" | grep -qE '(import|version|compile|--help)'; then echo 'BLOCKED: No ML training on VM (1 vCPU / 969MB RAM). Use HF Spaces or Colab.' >&2; exit 1; fi; fi; exit 0"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_FILE_PATH\" | grep -q 'features/engine.py'; then echo '⚠️  ENGINE WRITE — sync to ALL 6 HF Spaces required! Run: /spaces-health then deploy.'; fi"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ \"$CLAUDE_STOP_REASON\" = 'rate_limit' ] || [ \"$CLAUDE_STOP_REASON\" = 'billing_error' ]; then source /home/termius/mon-ipad/.env.local 2>/dev/null && NOMOS_TOKEN=\"$NOMOS42_TELEGRAM_BOT_TOKEN\" && ADMIN_ID=6582544948 && curl -s \"https://api.telegram.org/bot${NOMOS_TOKEN}/sendMessage\" -d \"chat_id=${ADMIN_ID}&text=⚠️ Claude Code stopped: ${CLAUDE_STOP_REASON}\" >/dev/null 2>&1; fi; exit 0"
+          }
+        ]
+      }
+    ]
+  },
+  "model": "claude-opus-4-6",
+  "statusLine": {
+    "type": "command",
+    "command": "/home/termius/mon-ipad/.claude/statusline.sh"
+  }
+}
