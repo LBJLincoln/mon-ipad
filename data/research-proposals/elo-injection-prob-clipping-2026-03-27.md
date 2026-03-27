@@ -1,120 +1,135 @@
 # Research Proposal: ELO Injection + Probability Clipping
+## Date: 2026-03-27 | Priority: HIGH | Target: Brier < 0.215
 
-**Date**: 2026-03-27  
-**Priority**: HIGH  
-**Based on**: 2025-2026 Academic Research (MDPI Information 2026, Nature Scientific Reports 2025)  
-**Target**: Brier score from 0.22126 → sub-0.21837 (checkpoint trigger)
+## Executive Summary
 
-## Background
+Based on March 2026 research (MDPI Information 2026, Nature Scientific Reports 2025), two
+techniques consistently improve NBA prediction calibration and should be implemented in the
+next engine version:
 
-Analysis of 2025-2026 NBA prediction literature reveals two high-impact, low-cost improvements:
+1. **Explicit team ELO ratings** as features (top-3 most predictive per SHAP analysis)
+2. **Probability clipping to [0.025, 0.975]** to protect Brier score from extreme mispredictions
 
-1. **Team ELO is the #1 predictive feature** — consistently ranked top-3 by SHAP across all models
-   (MDPI 2025: `home_next`, `team_elo_5_y`, `team_elo`). Current engine has EWMA momentum
-   features but no explicit Elo rating system.
+Expected improvement: Brier 0.22126 → 0.215 (3% improvement).
 
-2. **Probability clipping to [0.025, 0.975]** — technique from March Madness 2026 competition
-   that prevents extreme probability predictions from destroying Brier score on upsets.
-   Each wrong prediction at 0.99 probability costs 0.9801 Brier; clipping to 0.975 caps cost at 0.9506.
+## Finding 1: Team ELO is the #1 Feature (2025-2026 Research)
 
-## Evidence from Literature
+### Evidence
+- MDPI 2025 (CNN model, Brier 0.221): SHAP analysis shows `home_next`, `team_elo_5_y`, 
+  and `team_elo` are the **3 most predictive features** across ALL models tested.
+- MDPI Information 2026 (Logistic Regression, Brier **0.199**): Uses rolling-form indicators 
+  including Elo ratings as predictive backbone with strict chronological partitioning.
+- XGBoost model in same 2026 study achieved Brier **0.202** using team momentum + ELO.
 
-| Paper | Model | Brier Score | Key Feature |
-|-------|-------|-------------|-------------|
-| MDPI Information 2026 | Logistic Regression (no leakage) | **0.199** | ELO + home court |
-| MDPI Information 2026 | XGBoost | 0.202 | ELO + rolling form |
-| MDPI Computers 2025 | CNN | 0.221 | Home next + ELO |
-| MDPI Computers 2025 | LR/RR | 0.223 | Home next + ELO |
-| Current fleet best (S14) | RandomForest | 0.22126 | 34 features |
+### Current Status
+The Nomos42 engine (v3.0, Cat36-37) uses EWMA and MOVDA features but does NOT have 
+dedicated ELO columns. Team strength is captured implicitly through win-rate and point 
+differentials but not through a running ELO rating system.
 
-The 2026 paper achieving Brier 0.199 uses ELO + home court + rolling form, with strict chronological
-partitioning (train ≤2022, val 2023, test 2024) — directly comparable to our setup.
-
-## Proposed Changes
-
-### Change 1: Add Cat38_ELO to features/engine.py
-
-Add a new feature category with ~12 ELO-based features:
+### Proposed Implementation
 
 ```python
-# Cat38: ELO Ratings
-# Standard 538-style ELO with K=20
-def compute_elo_features(home_team, away_team, elo_ratings, date):
-    elo_home = elo_ratings.get(home_team, 1500)
-    elo_away = elo_ratings.get(away_team, 1500)
-    elo_diff = elo_home - elo_away
-    elo_win_prob = 1 / (1 + 10 ** ((elo_away - elo_home) / 400))
+# New feature category: Cat38 - TEAM ELO RATINGS
+# Add to features/engine.py after Cat37 MOVDA
+
+ELO_K = 20  # Standard K-factor for NBA (adjust for home/away)
+ELO_HOME_ADVANTAGE = 100  # ~3.5% probability advantage
+
+def compute_elo_ratings(game_history: list) -> dict:
+    """
+    Compute running ELO for all teams from game history.
+    Updates after each game using standard ELO formula.
+    Returns {team_id: current_elo}
+    """
+    elos = defaultdict(lambda: 1500.0)  # Starting ELO
     
-    features = [
-        elo_home,                          # elo_home
-        elo_away,                          # elo_away
-        elo_diff,                          # elo_diff
-        elo_win_prob,                      # elo_win_prob
-        elo_home - elo_ratings.get(f"{home_team}_5d", elo_home),  # elo_home_5d_change
-        elo_away - elo_ratings.get(f"{away_team}_5d", elo_away),  # elo_away_5d_change
-        elo_home - elo_ratings.get(f"{home_team}_10d", elo_home), # elo_home_10d_change
-        elo_away - elo_ratings.get(f"{away_team}_10d", elo_away), # elo_away_10d_change
-        elo_home / max(elo_away, 1),       # elo_ratio
-        abs(elo_diff),                     # elo_abs_diff (upset potential)
-        1 if elo_diff > 100 else 0,        # elo_strong_favorite
-        1 if abs(elo_diff) < 30 else 0,   # elo_toss_up
-    ]
-    return features
+    for game in sorted(game_history, key=lambda g: g['date']):
+        home = game['home_team_id']
+        away = game['away_team_id']
+        home_win = game['home_win']
+        
+        # Expected win probability
+        home_elo = elos[home] + ELO_HOME_ADVANTAGE
+        away_elo = elos[away]
+        exp_home = 1 / (1 + 10 ** ((away_elo - home_elo) / 400))
+        exp_away = 1 - exp_home
+        
+        # Update ELOs
+        elos[home] += ELO_K * (home_win - exp_home)
+        elos[away] += ELO_K * ((1 - home_win) - exp_away)
+    
+    return dict(elos)
+
+# Features to add per game:
+# - home_elo, away_elo
+# - elo_diff (home - away)
+# - home_elo_zscore (vs league mean)
+# - elo_win_prob (expected home win from ELO only)
+# - home_elo_5d_change, away_elo_5d_change (momentum)
+# - home_elo_30d_change, away_elo_30d_change
+# - elo_confidence (|elo_diff| > 100 = high confidence game)
+# Total: ~12 new ELO features
 ```
 
-**ELO Update Rule** (after each game):  
-`new_elo = old_elo + K * (actual_result - elo_win_probability)`  
-where K=20, resets to 1505 at season start with 2/3 carryover.
+### Expected Impact
+- ELO captures team strength dynamics better than raw win % (accounts for opponent quality)
+- The `elo_win_prob` feature is essentially a calibrated prior — adding it as a feature 
+  and letting the GA select on it should directly improve Brier score
+- Research shows logistic regression on top of ELO+features achieves Brier 0.199 
 
-**Data source**: FiveThirtyEight NBA ELO dataset covers 2018-2026.
-Alternative: compute from game results already in Supabase.
+## Finding 2: Probability Clipping [QUICK WIN]
 
-### Change 2: Probability Clipping in GA Fitness Evaluation
+### Evidence
+- March Madness 2026 ensemble achieves improved Brier by clipping to `[0.025, 0.975]`
+- Prevents single badly-calibrated prediction from disproportionately hurting Brier score
+- "No single wrong pick destroys the Brier score"
 
-In `hf-space/evolution/ga_engine.py`, after `model.predict_proba()`:
+### Implementation (1-line fix in GA fitness evaluation)
 
 ```python
-# Before (current):
-probs = model.predict_proba(X_val)[:, 1]
-brier = mean_squared_error(y_val, probs)
+# In hf-space/evolution/genetic_algorithm.py
+# In _evaluate_individual() or _compute_brier():
 
-# After (with clipping):
-probs = np.clip(model.predict_proba(X_val)[:, 1], 0.025, 0.975)
-brier = mean_squared_error(y_val, probs)
+# BEFORE (current):
+preds = model.predict_proba(X_test)[:, 1]
+brier = brier_score_loss(y_test, preds)
+
+# AFTER (add clipping):
+preds = model.predict_proba(X_test)[:, 1]
+preds_clipped = np.clip(preds, 0.025, 0.975)  # Protect from extreme predictions
+brier = brier_score_loss(y_test, preds_clipped)
 ```
 
-This is a 1-line change. Deploy to all 6 islands immediately.
-
-## Expected Impact
-
-| Improvement | Expected Brier Delta | Confidence | Implementation Effort |
-|-------------|---------------------|------------|---------------------|
-| Probability clipping | -0.002 to -0.005 | HIGH | 1 line, deploy now |
-| ELO features (Cat38) | -0.003 to -0.008 | HIGH | ~50 lines |
-| Combined | -0.005 to -0.013 | MEDIUM | 2 PRs |
-
-**Current fleet best**: 0.22126 (S14)  
-**Expected range after**: 0.208 – 0.216  
-**Target checkpoint**: < 0.21837  
+### Expected Impact
+- Marginal improvement (~0.001-0.003 Brier) but zero cost to implement
+- Particularly useful for games where model is overconfident (>97.5% or <2.5%)
+- Should be applied at prediction time AND fitness evaluation time
 
 ## Implementation Priority
 
-1. **IMMEDIATE**: Probability clipping (1 line, 0 risk) → all 6 islands  
-2. **SHORT-TERM**: Add Cat38_ELO to engine.py and push parity to HF spaces  
-3. **VALIDATION**: Monitor S10 for 2 cycles, then fleet-wide if Brier improves  
+| Task | Effort | Expected Gain | Priority |
+|------|--------|---------------|----------|
+| ELO feature category (Cat38) | Medium | 0.003-0.008 Brier | HIGH |
+| Probability clipping in GA fitness | Low | 0.001-0.003 Brier | HIGH (quick win) |
+| LR meta-learner on top of ELO | High | 0.005-0.015 Brier | MEDIUM |
 
-## Cross-Project Insight
+## Action Items
 
-NBA ELO features parallel the DPI (Donor Power Index) in Political Alpha — both are composite
-strength/influence ratings. If ELO improves NBA prediction, the Donor Power Index could similarly
-benefit from:
-- Momentum-adjusted DPI (DPI trend over 30/60/90 days)
-- Relative DPI (vs sector average)
-- Interaction: DPI × policy heat × sector ELO equivalent
+1. **Immediate (VM)**: Add probability clipping to `hf-space/evolution/genetic_algorithm.py` 
+   on S10 (exploitation island) — 1-line change, deploy today
+2. **This week**: Implement `compute_elo_ratings()` in `features/engine.py` as Cat38 
+   (~50 lines of code, 12 new features)
+3. **Next cycle**: Deploy Cat38 to S10, monitor for 24h, check if Brier improves
 
-## References
+## Cross-repo Applicability
 
-- [Uncertainty-Aware ML for NBA (MDPI Information 2026)](https://www.mdpi.com/2078-2489/17/1/56)
-- [ML for Basketball Outcomes (MDPI Computers 2025)](https://www.mdpi.com/2079-3197/13/10/230)
-- [Stacked Ensemble for NBA (Nature Scientific Reports 2025)](https://www.nature.com/articles/s41598-025-13657-1)
-- [March Madness 2026 Prob Clipping](https://jtmarcu.github.io/projects/march-madness.html)
+The ELO concept directly ports to Political Alpha:
+- Replace team ELO with **candidate DPI (Donor Power Index) running rating**
+- Update DPI after each favor delivery event (analogous to game outcome)
+- Current political_engine.py has static DPI — making it dynamic (ELO-style) 
+  should improve prediction of which donors receive favors next
+
+## Sources
+- [MDPI Information 2026 — Uncertainty-Aware NBA Forecasting](https://www.mdpi.com/2078-2489/17/1/56)
+- [Nature Scientific Reports 2025 — Stacked Ensemble NBA](https://www.nature.com/articles/s41598-025-13657-1)
+- [MDPI Computation 2025 — CNN/MLP Calibration](https://www.mdpi.com/2079-3197/13/10/230)

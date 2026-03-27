@@ -1,14 +1,15 @@
 {
   "timestamp": "2026-03-27T16:30:00Z",
-  "brain_version": "Nomos42 24/7 Brain — 4h Cycle",
+  "brain_version": "v15",
+  "cycle": "4h-autonomous",
   "fleet_best_brier": 0.22126,
   "fleet_best_island": "S14",
   "all_time_best_brier": 0.2189,
+  "all_time_island": "S13",
   "target_brier": 0.20,
-  "checkpoint_threshold": 0.21837,
   "checkpoint_triggered": false,
+  "checkpoint_threshold": 0.21837,
   "diversify_triggered": false,
-  "supabase_status": "connection_failures_all_islands",
   "islands": {
     "S10": {
       "url": "nomos42-nba-quant.hf.space",
@@ -21,9 +22,10 @@
       "best_features": 71,
       "best_model": "xgboost",
       "mutation_rate": 0.0694,
-      "stagnation_counter": 0,
+      "stagnation": 0,
       "status": "EVOLVING",
-      "health": "ok"
+      "health": "ok",
+      "note": "plateau dynamics gen3-130; stagnation counter=0 but fitness unchanged"
     },
     "S11": {
       "url": "nomos42-nba-quant-2.hf.space",
@@ -36,7 +38,7 @@
       "best_features": 59,
       "best_model": "random_forest",
       "mutation_rate": 0.1367,
-      "stagnation_counter": 0,
+      "stagnation": 0,
       "status": "EVOLVING",
       "health": "ok"
     },
@@ -51,9 +53,10 @@
       "best_features": 72,
       "best_model": "extra_trees",
       "mutation_rate": 0.053,
-      "stagnation_counter": 0,
+      "stagnation": 0,
       "status": "EVOLVING",
-      "health": "ok"
+      "health": "ok",
+      "note": "converged at gen1, exploring 50-feat configs since"
     },
     "S13": {
       "url": "nomos42-nba-evo-4.hf.space",
@@ -66,9 +69,10 @@
       "best_features": 67,
       "best_model": "lightgbm",
       "mutation_rate": 0.05,
-      "stagnation_counter": 0,
+      "stagnation": 0,
       "status": "EVOLVING",
-      "health": "ok"
+      "health": "ok",
+      "note": "all-time best island (0.2189, gen338) but current run showing lightgbm 0.22552"
     },
     "S14": {
       "url": "nomos42-nba-evo-5.hf.space",
@@ -81,10 +85,10 @@
       "best_features": 34,
       "best_model": "random_forest",
       "mutation_rate": 0.0751,
-      "stagnation_counter": 0,
+      "stagnation": 0,
       "status": "EVOLVING",
       "health": "ok",
-      "note": "FLEET BEST this cycle"
+      "note": "FLEET BEST this cycle: Brier 0.22126"
     },
     "S15": {
       "url": "nomos42-nba-evo-6.hf.space",
@@ -97,25 +101,19 @@
       "best_features": 66,
       "best_model": "extra_trees",
       "mutation_rate": 0.0833,
-      "stagnation_counter": 0,
+      "stagnation": 0,
       "status": "EVOLVING",
       "health": "ok"
     }
   },
-  "cycle_actions": {
-    "diversify_triggered": [],
-    "checkpoint_triggered": false,
-    "reason": "No island beat 0.21837 Brier this cycle (fleet best = 0.22126)"
-  },
-  "research_this_cycle": {
-    "topic": "ELO injection + probability clipping",
-    "proposal_file": "data/research-proposals/elo-injection-prob-clipping-2026-03-27.md",
-    "key_finding": "2026 MDPI paper shows team_elo is top-3 most predictive feature by SHAP. Prob clipping to [0.025,0.975] protects Brier on upsets.",
-    "expected_brier_improvement": "-0.005 to -0.013"
-  },
-  "alerts": [
-    "Supabase FATAL: Tenant or user not found on all islands — local JSON saves working",
-    "S13 (catboost_specialist role) using lightgbm in practice — role drift detected",
-    "Fleet is 0.01126 Brier above all-time best (0.2189, S13 gen 338)"
-  ]
+  "supabase_status": "connection_failures_all_islands",
+  "supabase_note": "FATAL: Tenant or user not found — local JSON saving working",
+  "actions_taken": [
+    "diversify: none needed (all stagnation=0)",
+    "checkpoint: not triggered (0.22126 > threshold 0.21837)",
+    "research: ELO injection + probability clipping proposal written"
+  ],
+  "research_this_cycle": "elo-injection-prob-clipping-2026-03-27",
+  "gap_to_target": 0.02126,
+  "gap_to_alltime": 0.00289
 }
