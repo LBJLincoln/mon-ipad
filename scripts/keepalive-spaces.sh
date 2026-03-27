@@ -14,5 +14,8 @@ curl -s -o /dev/null -w "S13 (catboost): %{http_code}\n" --max-time 10 https://n
 curl -s -o /dev/null -w "S14 (lightgbm): %{http_code}\n" --max-time 10 https://nomos42-nba-evo-5.hf.space/ 2>/dev/null
 curl -s -o /dev/null -w "S15 (wide): %{http_code}\n" --max-time 10 https://nomos42-nba-evo-6.hf.space/ 2>/dev/null
 
-# Political Alpha Evolution (1)
-curl -s -o /dev/null -w "POL (political): %{http_code}\n" --max-time 10 https://nomos42-political-alpha.hf.space/ 2>/dev/null
+# Political Alpha Evolution (4 islands)
+curl -s -o /dev/null -w "P1 (exploit): %{http_code}\n" --max-time 10 https://nomos42-political-alpha.hf.space/ 2>/dev/null
+curl -s -o /dev/null -w "P2 (explore): %{http_code}\n" --max-time 10 https://nomos42-political-alpha-2.hf.space/ 2>/dev/null
+curl -s -o /dev/null -w "P3 (catboost): %{http_code}\n" --max-time 10 https://nomos42-political-alpha-3.hf.space/ 2>/dev/null
+curl -s -o /dev/null -w "P4 (wide): %{http_code}\n" --max-time 10 https://nomos42-political-alpha-4.hf.space/ 2>/dev/null
