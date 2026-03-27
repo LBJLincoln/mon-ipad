@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-03-27T04:15:00Z",
+  "timestamp": "2026-03-27T04:20:00Z",
   "brain_cycle": "2026-03-27-0400",
-  "brain_model": "claude-sonnet-4-6",
+  "cycle_number": 1,
   "islands": {
     "S10": {
       "name": "nba-quant",
@@ -15,9 +15,8 @@
       "best_model": "xgboost_brier",
       "stagnation": 0,
       "mutation_rate": 0.0808,
-      "population": 60,
       "status": "EVOLVING",
-      "action": "none"
+      "alert": null
     },
     "S11": {
       "name": "nba-quant-2",
@@ -31,9 +30,8 @@
       "best_model": "random_forest",
       "stagnation": 0,
       "mutation_rate": 0.1485,
-      "population": 60,
       "status": "EVOLVING",
-      "action": "none"
+      "alert": null
     },
     "S12": {
       "name": "nba-evo-3",
@@ -47,9 +45,8 @@
       "best_model": "extra_trees",
       "stagnation": 0,
       "mutation_rate": 0.0687,
-      "population": 60,
       "status": "EVOLVING",
-      "action": "none"
+      "alert": null
     },
     "S13": {
       "name": "nba-evo-4",
@@ -63,9 +60,8 @@
       "best_model": "lightgbm",
       "stagnation": 0,
       "mutation_rate": 0.0703,
-      "population": 60,
       "status": "EVOLVING",
-      "action": "none"
+      "alert": null
     },
     "S14": {
       "name": "nba-evo-5",
@@ -79,10 +75,9 @@
       "best_model": "random_forest",
       "stagnation": 0,
       "mutation_rate": 0.1117,
-      "population": 60,
       "status": "EVOLVING",
-      "action": "none",
-      "note": "FLEET LEADER — lowest Brier this cycle"
+      "alert": null,
+      "is_fleet_best": true
     },
     "S15": {
       "name": "nba-evo-6",
@@ -96,32 +91,29 @@
       "best_model": "extra_trees",
       "stagnation": 0,
       "mutation_rate": 0.1031,
-      "population": 50,
       "status": "EVOLVING",
-      "action": "none",
-      "note": "Wide search — high Sharpe but highest Brier in fleet"
+      "alert": null
     }
   },
-  "fleet_summary": {
+  "fleet": {
     "best_brier": 0.22126,
     "best_island": "S14",
-    "worst_brier": 0.22952,
-    "worst_island": "S15",
-    "avg_brier": 0.22243,
-    "all_time_record": 0.21837,
-    "target": 0.21837,
+    "best_model": "random_forest",
+    "all_time_best": 0.21837,
+    "target_brier": 0.21837,
     "gap_to_record": 0.00289,
-    "gap_to_target": 0.00289
-  },
-  "brain_actions": {
+    "gap_to_target": 0.00289,
+    "avg_brier": 0.22410,
+    "checkpoint_needed": false,
+    "checkpoint_threshold": 0.21837,
     "diversify_sent": [],
     "stagnated_islands": [],
-    "checkpoint_taken": false,
-    "checkpoint_reason": "best_brier 0.22126 > threshold 0.21837",
-    "research_cycle": true,
-    "research_topic": "ensemble stacking + probability clipping (Scientific Reports Aug 2025, MDPI Jan 2026)"
+    "all_healthy": true
   },
-  "supabase_note": "Connection failures logged on multiple islands — local JSON fallback active",
+  "supabase": {
+    "status": "WARN",
+    "note": "All islands reporting Supabase connection failures. Evolution continues locally. Check pooler connection (xivvnr)."
+  },
   "political_alpha": {
     "url": "nomos42-political-alpha.hf.space",
     "status": "EVOLVING",
@@ -131,13 +123,21 @@
     "best_roi": 0.0054,
     "best_sharpe": 0.5424,
     "feature_candidates": 15,
-    "severity": "CRITICAL",
-    "diagnosis": "Only 15 features after noise filter. Real event data not loaded on HF Space persistent storage.",
-    "action_taken": "data_bootstrap.py committed to nomos-political-alpha — generates synthetic events as training fallback"
+    "diagnosis": "CRITICAL: Only 15 feature candidates. Real event data not loaded on HF Space /data persistent storage.",
+    "action_taken": "Pushed data_bootstrap.py to hf-space/ to generate synthetic events as training fallback."
   },
-  "cross_repo_health": {
-    "engine_parity": "not verified this cycle — all islands use same feature candidate pool (3230)",
-    "calibration_proposal": "written 2026-03-27 AM — isotonic wrapping + team_elo_5y",
-    "ensemble_proposal": "written 2026-03-27 04:15 — stacked meta-learner + prob clipping"
-  }
+  "actions_this_cycle": [
+    "Verified all 6 NBA islands: healthy, stagnation=0, no diversify needed",
+    "Best Brier 0.22126 > 0.21837 threshold: no checkpoint taken",
+    "Researched NBA prediction techniques (Jan 2026 MDPI uncertainty-aware paper, Aug 2025 stacked ensemble)",
+    "Wrote research proposal: stacked-ensemble-2026-03-27.md",
+    "Diagnosed Political Alpha: 15-feature starvation from empty /data pipeline",
+    "Wrote data_bootstrap.py for Political Alpha HF Space synthetic fallback"
+  ],
+  "next_cycle": "2026-03-27T08:00:00Z",
+  "next_actions": [
+    "Check if isotonic calibration from earlier proposal has been implemented",
+    "Monitor if data_bootstrap.py resolves political alpha feature starvation",
+    "If S14 Brier improves below 0.218: checkpoint to Supabase"
+  ]
 }

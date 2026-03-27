@@ -1,36 +1,24 @@
 {
-  "timestamp": "2026-03-27T04:15:00Z",
-  "ecosystem": {
-    "nba_quant": {
-      "status": "HEALTHY",
-      "best_brier": 0.22126,
-      "islands_evolving": 6,
-      "stagnated": 0,
-      "calibration_proposal_pending": true,
-      "ensemble_proposal_pending": true
-    },
-    "political_alpha": {
-      "status": "DEGRADED",
-      "best_brier": 0.2511,
-      "issue": "15 feature_candidates — HF Space /data not populated with real event data",
-      "fix_deployed": "data_bootstrap.py — synthetic event generator for training fallback"
-    }
+  "timestamp": "2026-03-27T04:20:00Z",
+  "brain_cycle": "2026-03-27-0400",
+  "nba_quant": {
+    "status": "HEALTHY",
+    "best_brier": 0.22126,
+    "islands_active": 6,
+    "stagnation_alerts": 0,
+    "supabase": "WARN - connection failures on all islands"
   },
-  "shared_techniques": {
-    "calibration": "CalibratedClassifierCV (isotonic) — proposal ready for NBA, already in political alpha app.py imports",
-    "prob_clipping": "[0.025, 0.975] — deploy on both NBA and Political Alpha",
-    "ga_config": "Island model, NSGA-II, mut_decay 0.15->0.05, migration every 8 gen — identical across both",
-    "max_features": 200
+  "political_alpha": {
+    "status": "DEGRADED",
+    "best_brier": 0.2511,
+    "feature_candidates": 15,
+    "diagnosis": "Data starvation: HF Space /data not populated with real events",
+    "fix_deployed": "data_bootstrap.py pushed to hf-space/"
   },
-  "ported_from_nba_to_political": [
-    "GA island model structure (identical)",
-    "CalibratedClassifierCV import",
-    "NSGA-II Pareto front",
-    "adaptive mutation decay"
-  ],
-  "next_port_candidates": [
-    "probability clipping [0.025, 0.975]",
-    "stacked meta-learner (LogisticRegression over Pareto front)",
-    "calibration ECE logging every 10 generations"
+  "ecosystem_health": "PARTIAL",
+  "cross_repo_syncs": [
+    "Political Alpha hf-space/app.py mirrors NBA GA infrastructure",
+    "Political Alpha hf-space already imports CalibratedClassifierCV",
+    "Probability clipping proposal applicable to both projects"
   ]
 }
