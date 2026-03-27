@@ -4,7 +4,8 @@
 # Usage: ./start_bots.sh [start|stop|status]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source ~/.env.local 2>/dev/null || true
+# Source mon-ipad env (has the current valid token)
+[ -f /home/termius/mon-ipad/.env.local ] && source /home/termius/mon-ipad/.env.local 2>/dev/null
 
 MODE="${1:-start}"
 

@@ -12,7 +12,8 @@ log() { echo "[$(date -u +%Y-%m-%d\ %H:%M:%S)] $1" >> "$LOG"; }
 log "=== CROSS-REPO OPTIMIZATION CYCLE START ==="
 
 # ── Source env ──
-source /home/termius/nomos-nba-agent/.env.local 2>/dev/null
+source /home/termius/mon-ipad/.env.local 2>/dev/null
+CYCLE_START=$(date +%s)
 
 # ── 1. NBA Quant: Check all 6 islands, log best scores ──
 log "[NBA] Checking evolution islands..."
@@ -43,7 +44,7 @@ fi
 
 # ── 3. NBA Bot: Check @Nomos42Bot is alive ──
 log "[NBA] Checking bot..."
-NBA_PID=$(pgrep -f "nomos42_bot.py" 2>/dev/null || echo "")
+NBA_PID=$(pgrep -f "nomos42_brain.py" 2>/dev/null || echo "")
 if [ -n "$NBA_PID" ]; then
   log "[NBA] @Nomos42Bot running (PID $NBA_PID)"
 else

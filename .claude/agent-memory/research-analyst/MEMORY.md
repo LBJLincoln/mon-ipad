@@ -14,3 +14,4 @@
 - [research_browser_automation_march2026.md](research_browser_automation_march2026.md) — Headless browser on HF Spaces: Playwright Docker, BaaS free tiers, browser-use/Crawl4AI, MCP tools
 - [research_gemini_cli_march2026.md](research_gemini_cli_march2026.md) — Gemini CLI as autonomous agent: Docker, HF Spaces, free tier limits, vs Claude Code
 - [research_rgwa_hf_models_march2026.md](research_rgwa_hf_models_march2026.md) — RGWA HF Spaces survey March 2026: best models per modality, ZeroGPU status, upgrade priorities
+- [research_political_alpha_march2026.md](research_political_alpha_march2026.md) — Political alpha deep sweep: Trump donor->favor->stock pipeline, 10 key papers, 7 documented cases, feature engineering, free data APIs

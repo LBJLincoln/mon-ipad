@@ -31,9 +31,18 @@ Deployed 2026-03-26. Project at /home/termius/nomos-political-alpha.
 - Needs app.py to be written before HF Space deployment
 
 ## Feature Engine Tests
-- PoliticalFeatureEngine loads: version=v1.0-political-8cat
-- 252 features generated from minimal dummy event (8 categories)
-- Real events with prices/macro data will expand feature count toward ~2000
+- PoliticalFeatureEngine v2.0-political-13cat (upgraded 2026-03-27)
+- v1.0 had 8 categories, v2.0 adds 5 new categories (9-13)
+- Both features/political_engine.py and hf-space/features/political_engine.py updated — SHA256 verified identical
+- New categories: Enforcement Dismissed (Cat 9), CEO Personal Donations (Cat 10),
+  Polymarket Delta 24h (Cat 11), Trade Policy Uncertainty (Cat 12), Gov Contract Awards (Cat 13)
+- Total feature estimate: ~2,400 (up from ~2,000)
+
+## Data Fetcher Updates (2026-03-27)
+- ENFORCEMENT_DISMISSED dict added to fetch_political_data.py (9 curated cases)
+- fetch_enforcement_status() — returns enforcement dismissal records
+- fetch_tpu_index() — fetches EPU index from FRED (series USEPUINDXM)
+- Both added to fetch_all() as fast fetches (before skip_slow block)
 
 ## Data Fetcher Tests
 - fetch_executive_orders(): 9 records returned, live Federal Register API works

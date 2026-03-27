@@ -38,7 +38,7 @@ BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 ADMIN_ID = int(os.environ.get("ADMIN_TELEGRAM_ID", "6582544948"))
 CHANNEL_ID = os.environ.get("TELEGRAM_CHANNEL_ID", "@Nomos42")
 WORKDIR = os.environ.get("CLAUDE_WORKDIR", os.path.expanduser("~/mon-ipad"))
-MAX_CLAUDE_TIMEOUT = 120  # seconds
+MAX_CLAUDE_TIMEOUT = 180  # seconds — give Claude enough time for real answers
 MAX_MSG_LEN = 4000  # Telegram limit ~4096, leave margin
 POLL_TIMEOUT = 30
 
@@ -98,12 +98,21 @@ def send_typing(chat_id):
 # Claude Code CLI
 # ---------------------------------------------------------------------------
 
+SYSTEM_CONTEXT = (
+    "You are Nomos42 Brain responding via Telegram. Be concise (under 15 lines). "
+    "You have full access to the codebase, tools, and files. "
+    "When asked about status/brier/spaces: READ data/health-status.json or curl the HF APIs directly. "
+    "When asked about picks: READ data/nba-agent/latest-picks.json. "
+    "Give REAL data, not vague summaries. Use actual numbers."
+)
+
+
 def run_claude(prompt: str) -> str:
     """Run claude CLI with prompt, return text output."""
+    full_prompt = f"{SYSTEM_CONTEXT}\n\nUser question: {prompt}"
     cmd = [
-        "claude", "-p", prompt,
+        "claude", "-p", full_prompt,
         "--output-format", "text",
-        "--max-turns", "3",
     ]
     try:
         result = subprocess.run(
