@@ -1,80 +1,80 @@
 {
-  "timestamp": "2026-03-27T04:20:00Z",
-  "brain_cycle": "2026-03-27-0400",
-  "cycle_number": 1,
+  "timestamp": "2026-03-27T12:00:00Z",
+  "brain_cycle": "2026-03-27-1200",
+  "cycle_number": 2,
   "islands": {
     "S10": {
       "name": "nba-quant",
       "url": "nomos42-nba-quant.hf.space",
-      "cycle": 18,
-      "generation": 54,
+      "cycle": 35,
+      "generation": 104,
       "best_brier": 0.2237,
       "best_roi": 0.2834,
       "best_sharpe": 6.2726,
       "best_features": 71,
       "best_model": "xgboost_brier",
       "stagnation": 0,
-      "mutation_rate": 0.0808,
+      "mutation_rate": 0.0731,
       "status": "EVOLVING",
       "alert": null
     },
     "S11": {
       "name": "nba-quant-2",
       "url": "nomos42-nba-quant-2.hf.space",
-      "cycle": 19,
-      "generation": 56,
+      "cycle": 36,
+      "generation": 107,
       "best_brier": 0.22212,
       "best_roi": 0.3008,
       "best_sharpe": 6.7525,
       "best_features": 59,
       "best_model": "random_forest",
       "stagnation": 0,
-      "mutation_rate": 0.1485,
+      "mutation_rate": 0.1411,
       "status": "EVOLVING",
-      "alert": null
+      "alert": "NOTE: brain prompt uses wrong URL nba-evo-2; correct URL is nba-quant-2"
     },
     "S12": {
       "name": "nba-evo-3",
       "url": "nomos42-nba-evo-3.hf.space",
-      "cycle": 26,
-      "generation": 76,
+      "cycle": 54,
+      "generation": 162,
       "best_brier": 0.22245,
       "best_roi": 0.296,
       "best_sharpe": 11.1804,
       "best_features": 72,
       "best_model": "extra_trees",
       "stagnation": 0,
-      "mutation_rate": 0.0687,
+      "mutation_rate": 0.0578,
       "status": "EVOLVING",
       "alert": null
     },
     "S13": {
       "name": "nba-evo-4",
       "url": "nomos42-nba-evo-4.hf.space",
-      "cycle": 59,
-      "generation": 176,
+      "cycle": 132,
+      "generation": 395,
       "best_brier": 0.22552,
       "best_roi": 0.2635,
       "best_sharpe": 9.6496,
       "best_features": 67,
       "best_model": "lightgbm",
       "stagnation": 0,
-      "mutation_rate": 0.0703,
+      "mutation_rate": 0.05,
       "status": "EVOLVING",
       "alert": null
     },
     "S14": {
       "name": "nba-evo-5",
       "url": "nomos42-nba-evo-5.hf.space",
-      "cycle": 34,
-      "generation": 101,
+      "cycle": 79,
+      "generation": 237,
       "best_brier": 0.22126,
       "best_roi": 0.3107,
       "best_sharpe": 7.9755,
       "best_features": 34,
       "best_model": "random_forest",
       "stagnation": 0,
-      "mutation_rate": 0.1117,
+      "mutation_rate": 0.0852,
       "status": "EVOLVING",
       "alert": null,
       "is_fleet_best": true
@@ -82,15 +82,15 @@
     "S15": {
       "name": "nba-evo-6",
       "url": "nomos42-nba-evo-6.hf.space",
-      "cycle": 57,
-      "generation": 169,
+      "cycle": 109,
+      "generation": 325,
       "best_brier": 0.22952,
       "best_roi": 0.2173,
       "best_sharpe": 19.8092,
       "best_features": 66,
       "best_model": "extra_trees",
       "stagnation": 0,
-      "mutation_rate": 0.1031,
+      "mutation_rate": 0.0882,
       "status": "EVOLVING",
       "alert": null
     }
@@ -103,41 +103,44 @@
     "target_brier": 0.21837,
     "gap_to_record": 0.00289,
     "gap_to_target": 0.00289,
-    "avg_brier": 0.22410,
+    "avg_brier": 0.22417,
     "checkpoint_needed": false,
     "checkpoint_threshold": 0.21837,
     "diversify_sent": [],
     "stagnated_islands": [],
-    "all_healthy": true
+    "all_healthy": true,
+    "url_bug": "S11 brain prompt uses nba-evo-2 (404) — correct URL is nba-quant-2"
   },
   "supabase": {
     "status": "WARN",
-    "note": "All islands reporting Supabase connection failures. Evolution continues locally. Check pooler connection (xivvnr)."
+    "note": "All islands reporting Supabase connection failures (pooler xivvnr). Evolution continues locally. Last cycle: no manual intervention needed."
   },
   "political_alpha": {
-    "url": "nomos42-political-alpha.hf.space",
-    "status": "EVOLVING",
-    "cycle": 922,
-    "generation": 2766,
-    "best_brier": 0.2511,
-    "best_roi": 0.0054,
-    "best_sharpe": 0.5424,
-    "feature_candidates": 15,
-    "diagnosis": "CRITICAL: Only 15 feature candidates. Real event data not loaded on HF Space /data persistent storage.",
-    "action_taken": "Pushed data_bootstrap.py to hf-space/ to generate synthetic events as training fallback."
+    "islands": [
+      {"name": "PA1-exploitation", "url": "nomos42-political-alpha.hf.space", "status": "EVOLVING", "cycle": 3052, "generation": 9155, "best_brier": 0.2511, "best_roi": 0.0054, "best_sharpe": 0.5424, "feature_candidates": 15},
+      {"name": "PA2-exploration", "url": "nomos42-political-alpha-2.hf.space", "status": "EVOLVING", "cycle": 1761, "generation": 5281, "best_brier": 0.25147, "best_roi": 0.0055, "best_sharpe": 0.5526, "feature_candidates": 15},
+      {"name": "PA3-catboost", "url": "nomos42-political-alpha-3.hf.space", "status": "EVOLVING", "cycle": 1456, "generation": 4368, "best_brier": 0.25036, "best_roi": 0.0081, "best_sharpe": 0.7071, "feature_candidates": 15},
+      {"name": "PA4-wide_search", "url": "nomos42-political-alpha-4.hf.space", "status": "EVOLVING", "cycle": 1036, "generation": 3108, "best_brier": 0.25008, "best_roi": 0.0078, "best_sharpe": 0.7071, "feature_candidates": 15}
+    ],
+    "fleet_best_brier": 0.25008,
+    "diagnosis": "CRITICAL RESOLVED: data_bootstrap.py now integrated in app.py load_all_events(). Space restart required for fix to take effect.",
+    "action_taken": "Patched hf-space/app.py: load_all_events() calls bootstrap_events() when events < 100; stale cache cleared; cache validity requires min 100 rows."
   },
   "actions_this_cycle": [
-    "Verified all 6 NBA islands: healthy, stagnation=0, no diversify needed",
-    "Best Brier 0.22126 > 0.21837 threshold: no checkpoint taken",
-    "Researched NBA prediction techniques (Jan 2026 MDPI uncertainty-aware paper, Aug 2025 stacked ensemble)",
-    "Wrote research proposal: stacked-ensemble-2026-03-27.md",
-    "Diagnosed Political Alpha: 15-feature starvation from empty /data pipeline",
-    "Wrote data_bootstrap.py for Political Alpha HF Space synthetic fallback"
+    "Verified all 6 NBA islands: all EVOLVING, stagnation=0, no diversify needed",
+    "Identified S11 URL bug: brain uses nba-evo-2 (404) but correct URL is nba-quant-2",
+    "Best NBA Brier 0.22126 > 0.21837 threshold: no Supabase checkpoint taken",
+    "Researched NBA prediction: Jan 2026 MDPI LR=0.199 Brier, Elo features dominant",
+    "Wrote research proposal: lr-meta-learner-2026-03-27.md (LR as 7th model type + prob clipping)",
+    "Political Alpha: diagnosed that data_bootstrap.py from cycle-1 was NOT integrated in app.py",
+    "Fixed political alpha: patched app.py load_all_events() to call bootstrap_events() when events < 100",
+    "Fixed political alpha: stale /tmp cache cleared on bootstrap trigger; min-row cache validation"
   ],
-  "next_cycle": "2026-03-27T08:00:00Z",
+  "next_cycle": "2026-03-27T16:00:00Z",
   "next_actions": [
-    "Check if isotonic calibration from earlier proposal has been implemented",
-    "Monitor if data_bootstrap.py resolves political alpha feature starvation",
-    "If S14 Brier improves below 0.218: checkpoint to Supabase"
+    "Verify political alpha feature_candidates increase from 15 to 500+ after space picks up patch",
+    "If PA Brier stays at 0.25+: consider restarting space via HF MCP to force bootstrap reload",
+    "Implement LR as 7th model type in NBA hf-space if isotonic calibration proposal from cycle-1 not yet implemented",
+    "Check if S14 34-feature random_forest continues improving below 0.220"
   ]
 }
