@@ -284,9 +284,9 @@ total_bets = ckpt['total_bets'] if ckpt else 0
 wins = ckpt['wins'] if ckpt else 0
 losses = ckpt['losses'] if ckpt else 0
 equity_curve = ckpt['equity_curve'] if ckpt else [{'date': SEASON_START, 'bankroll': INITIAL_BANKROLL, 'drawdown': 0}]
-all_trades = ckpt.get('trades', [])
-daily_log = ckpt.get('daily_log', [])
-daily_briers = ckpt.get('daily_briers', [])
+all_trades = ckpt.get('trades', []) if ckpt else []
+daily_log = ckpt.get('daily_log', []) if ckpt else []
+daily_briers = ckpt.get('daily_briers', []) if ckpt else []
 
 # Unique dates in season
 season_dates = sorted(set(game_dates[season_indices]))
