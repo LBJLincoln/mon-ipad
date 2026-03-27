@@ -1,132 +1,121 @@
 {
-  "timestamp": "2026-03-27T13:40:00Z",
-  "brain_cycle": "2026-03-27-1340",
-  "cycle_number": 3,
-  "nba_fleet": {
-    "islands": [
-      {
-        "name": "S10-exploitation",
-        "url": "nomos42-nba-quant.hf.space",
-        "status": "EVOLVING",
-        "cycle": 39,
-        "generation": 116,
-        "best_brier": 0.2237,
-        "best_roi": 0.2834,
-        "best_sharpe": 6.2726,
-        "best_model": "xgboost_brier",
-        "mutation_rate": 0.0715,
-        "stagnation": 0,
-        "feature_candidates": 3230
-      },
-      {
-        "name": "S11-exploration",
-        "url": "nomos42-nba-quant-2.hf.space",
-        "status": "EVOLVING",
-        "cycle": 40,
-        "generation": 118,
-        "best_brier": 0.22212,
-        "best_roi": 0.3008,
-        "best_sharpe": 6.7525,
-        "best_model": "random_forest",
-        "mutation_rate": 0.1397,
-        "stagnation": 0,
-        "feature_candidates": 3230,
-        "notable": "top performer extra_trees+sigmoid brier=0.21927 (new all-time best candidate)"
-      },
-      {
-        "name": "S12-extra_trees",
-        "url": "nomos42-nba-evo-3.hf.space",
-        "status": "EVOLVING",
-        "cycle": 59,
-        "generation": 177,
-        "best_brier": 0.22245,
-        "best_roi": 0.296,
-        "best_sharpe": 11.1804,
-        "best_model": "extra_trees",
-        "mutation_rate": 0.0562,
-        "stagnation": 0,
-        "feature_candidates": 3230
-      },
-      {
-        "name": "S13-catboost",
-        "url": "nomos42-nba-evo-4.hf.space",
-        "status": "EVOLVING",
-        "cycle": 143,
-        "generation": 429,
-        "best_brier": 0.22552,
-        "best_roi": 0.2635,
-        "best_sharpe": 9.6496,
-        "best_model": "lightgbm",
-        "mutation_rate": 0.05,
-        "stagnation": 0,
-        "feature_candidates": 3230,
-        "notable": "top5[1] catboost+sigmoid 200-feat brier=0.2189 gen338 — NEW ALL-TIME BEST"
-      },
-      {
-        "name": "S14-lightgbm",
-        "url": "nomos42-nba-evo-5.hf.space",
-        "status": "EVOLVING",
-        "cycle": 87,
-        "generation": 261,
-        "best_brier": 0.22126,
-        "best_roi": 0.3107,
-        "best_sharpe": 7.9755,
-        "best_model": "random_forest",
-        "mutation_rate": null,
-        "stagnation": 0,
-        "feature_candidates": 3230
-      },
-      {
-        "name": "S15-wide_search",
-        "url": "nomos42-nba-evo-6.hf.space",
-        "status": "EVOLVING",
-        "cycle": 114,
-        "generation": 340,
-        "best_brier": 0.22952,
-        "best_roi": 0.2173,
-        "best_sharpe": 19.8092,
-        "best_model": "extra_trees",
-        "mutation_rate": 0.0869,
-        "stagnation": 0,
-        "feature_candidates": 3230
-      }
-    ],
-    "fleet_summary": {
-      "all_running": true,
-      "stagnation_count": 0,
-      "diversify_triggered": false,
-      "fleet_best_brier": 0.22126,
-      "fleet_best_island": "S14",
-      "all_time_best_brier": 0.2189,
-      "all_time_best_island": "S13",
-      "all_time_best_model": "catboost+sigmoid",
-      "all_time_best_generation": 338,
-      "checkpoint_threshold": 0.21837,
-      "checkpoint_needed": false,
-      "note": "0.2189 > 0.21837 threshold, no Supabase checkpoint"
+  "timestamp": "2026-03-27T16:30:00Z",
+  "brain_version": "Nomos42 24/7 Brain — 4h Cycle",
+  "fleet_best_brier": 0.22126,
+  "fleet_best_island": "S14",
+  "all_time_best_brier": 0.2189,
+  "target_brier": 0.20,
+  "checkpoint_threshold": 0.21837,
+  "checkpoint_triggered": false,
+  "diversify_triggered": false,
+  "supabase_status": "connection_failures_all_islands",
+  "islands": {
+    "S10": {
+      "url": "nomos42-nba-quant.hf.space",
+      "role": "exploitation",
+      "generation": 130,
+      "cycle": 44,
+      "best_brier": 0.2237,
+      "best_roi": 0.2834,
+      "best_sharpe": 6.2726,
+      "best_features": 71,
+      "best_model": "xgboost",
+      "mutation_rate": 0.0694,
+      "stagnation_counter": 0,
+      "status": "EVOLVING",
+      "health": "ok"
+    },
+    "S11": {
+      "url": "nomos42-nba-quant-2.hf.space",
+      "role": "exploration",
+      "generation": 139,
+      "cycle": 47,
+      "best_brier": 0.22212,
+      "best_roi": 0.3008,
+      "best_sharpe": 6.7525,
+      "best_features": 59,
+      "best_model": "random_forest",
+      "mutation_rate": 0.1367,
+      "stagnation_counter": 0,
+      "status": "EVOLVING",
+      "health": "ok"
+    },
+    "S12": {
+      "url": "nomos42-nba-evo-3.hf.space",
+      "role": "extra_trees_specialist",
+      "generation": 206,
+      "cycle": 69,
+      "best_brier": 0.22245,
+      "best_roi": 0.296,
+      "best_sharpe": 11.1804,
+      "best_features": 72,
+      "best_model": "extra_trees",
+      "mutation_rate": 0.053,
+      "stagnation_counter": 0,
+      "status": "EVOLVING",
+      "health": "ok"
+    },
+    "S13": {
+      "url": "nomos42-nba-evo-4.hf.space",
+      "role": "catboost_specialist",
+      "generation": 485,
+      "cycle": 162,
+      "best_brier": 0.22552,
+      "best_roi": 0.2635,
+      "best_sharpe": 9.6496,
+      "best_features": 67,
+      "best_model": "lightgbm",
+      "mutation_rate": 0.05,
+      "stagnation_counter": 0,
+      "status": "EVOLVING",
+      "health": "ok"
+    },
+    "S14": {
+      "url": "nomos42-nba-evo-5.hf.space",
+      "role": "lightgbm_specialist",
+      "generation": 299,
+      "cycle": 100,
+      "best_brier": 0.22126,
+      "best_roi": 0.3107,
+      "best_sharpe": 7.9755,
+      "best_features": 34,
+      "best_model": "random_forest",
+      "mutation_rate": 0.0751,
+      "stagnation_counter": 0,
+      "status": "EVOLVING",
+      "health": "ok",
+      "note": "FLEET BEST this cycle"
+    },
+    "S15": {
+      "url": "nomos42-nba-evo-6.hf.space",
+      "role": "wide_search",
+      "generation": 382,
+      "cycle": 128,
+      "best_brier": 0.22952,
+      "best_roi": 0.2173,
+      "best_sharpe": 19.8092,
+      "best_features": 66,
+      "best_model": "extra_trees",
+      "mutation_rate": 0.0833,
+      "stagnation_counter": 0,
+      "status": "EVOLVING",
+      "health": "ok"
     }
   },
-  "actions_this_cycle": [
-    "[NBA] Fetched all 6 island APIs — all EVOLVING, stagnation=0",
-    "[NBA] Probability clipping np.clip(p, 0.025, 0.975) deployed to stacking + main eval + API endpoint — commit af64c9a6",
-    "[NBA] LogisticRegression added as 14th model type (Pipeline(StandardScaler, saga)) — commit af64c9a6",
-    "[NBA] Detected new all-time best: S13 catboost+sigmoid brier=0.2189 (gen 338), S11 extra_trees brier=0.21927 (gen 338)",
-    "[PA] Created hf-space/models/__init__.py + donor_power_index.py — root cause of 15-feature starvation FIXED — commit 699ecbc0",
-    "[PA] PA spaces still rebuilding (push was recent, rebuild pending — expect feature_candidates > 100 next cycle)"
-  ],
-  "incidents": [],
+  "cycle_actions": {
+    "diversify_triggered": [],
+    "checkpoint_triggered": false,
+    "reason": "No island beat 0.21837 Brier this cycle (fleet best = 0.22126)"
+  },
+  "research_this_cycle": {
+    "topic": "ELO injection + probability clipping",
+    "proposal_file": "data/research-proposals/elo-injection-prob-clipping-2026-03-27.md",
+    "key_finding": "2026 MDPI paper shows team_elo is top-3 most predictive feature by SHAP. Prob clipping to [0.025,0.975] protects Brier on upsets.",
+    "expected_brier_improvement": "-0.005 to -0.013"
+  },
   "alerts": [
-    {
-      "severity": "INFO",
-      "message": "NBA all-time best updated: S13 catboost+sigmoid brier=0.2189 (gen 338) is below previous best 0.21976. Checkpoint threshold is 0.21837 — not yet reached."
-    },
-    {
-      "severity": "INFO",
-      "message": "PA feature starvation root cause identified and fixed: hf-space/models/donor_power_index.py was missing. Now deployed. Spaces rebuilding."
-    },
-    {
-      "severity": "WARN",
-      "message": "PA feature_candidates still 15 — HF Space rebuild in progress. Verify next cycle."
-    }
+    "Supabase FATAL: Tenant or user not found on all islands — local JSON saves working",
+    "S13 (catboost_specialist role) using lightgbm in practice — role drift detected",
+    "Fleet is 0.01126 Brier above all-time best (0.2189, S13 gen 338)"
   ]
 }
