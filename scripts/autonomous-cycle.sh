@@ -124,6 +124,119 @@ git diff --cached --quiet || {
     git push origin main 2>/dev/null || log "[GIT] push failed (mon-ipad)"
 }
 
+# ── Phase 3b: Sync data files from backtest results ─────────
+# Keep quant-summary.json, latest-eval.json, bankroll-state.json fresh
+python3 - << 'PYEOF' >> "$LOG" 2>&1
+import json, os
+from pathlib import Path
+from datetime import datetime, timezone
+
+DATA_DIR = Path("/home/termius/mon-ipad/data/nba-agent")
+backtest_file = DATA_DIR / "backtest-results.json"
+summary_file  = DATA_DIR / "quant-summary.json"
+eval_file     = DATA_DIR / "latest-eval.json"
+bankroll_file = DATA_DIR / "bankroll-state.json"
+
+if not backtest_file.exists():
+    print("[SYNC] backtest-results.json not found — skipping sync")
+    exit(0)
+
+try:
+    bt = json.loads(backtest_file.read_text())
+except Exception as e:
+    print(f"[SYNC] Failed to read backtest-results.json: {e}")
+    exit(0)
+
+now = datetime.now(timezone.utc).isoformat()
+
+# ── Update bankroll-state.json ──
+evaluated = bt.get("trades", [])
+total_bets = bt.get("total_bets", 0)
+wins = bt.get("wins", 0)
+losses = bt.get("losses", 0)
+bankroll = bt.get("current_bankroll", 100.0)
+initial  = bt.get("initial_bankroll", 100.0)
+roi      = bt.get("total_roi_pct", 0.0)
+sharpe   = bt.get("sharpe_ratio", 0.0)
+max_dd   = bt.get("max_drawdown_pct", 0.0)
+peak     = bt.get("peak_bankroll", bankroll)
+win_rate = bt.get("win_rate", 0.0)
+avg_edge = bt.get("avg_edge_pct", 0.0)
+last_bet_ts = evaluated[-1]["date"] + "T00:00:00+00:00" if evaluated else ""
+import statistics as _stats
+total_wagered = sum(e.get("stake", 0) for e in evaluated)
+
+bankroll_state = {
+    "balance": round(bankroll, 2),
+    "initial_balance": initial,
+    "currency": "USD",
+    "total_bets": total_bets,
+    "wins": wins,
+    "losses": losses,
+    "pushes": 0,
+    "pending": 0,
+    "total_wagered": round(total_wagered, 2),
+    "total_profit": round(bankroll - initial, 2),
+    "peak_balance": round(peak, 2),
+    "trough_balance": initial,
+    "max_drawdown_pct": round(max_dd, 2),
+    "streak_current": 0,
+    "streak_best": 0,
+    "streak_worst": 0,
+    "daily_bets_today": 0,
+    "daily_profit_today": 0.0,
+    "last_bet_ts": last_bet_ts,
+    "last_updated": now,
+    "created": "2026-03-15T11:16:28.623775+00:00",
+    "roi_pct": round(roi, 2),
+    "win_rate_pct": round(win_rate, 2),
+    "sharpe_ratio": round(sharpe, 2),
+    "avg_edge_pct": round(avg_edge, 2),
+    "season_start": bt.get("season_start", ""),
+    "data_source": "backtest-results.json (synced by autonomous-cycle.sh)",
+}
+bankroll_file.write_text(json.dumps(bankroll_state, indent=2))
+print(f"[SYNC] bankroll-state.json updated: ${bankroll:.2f} ({roi:+.2f}% ROI, {total_bets} bets)")
+
+# ── Update latest-eval.json ──
+try:
+    existing_eval = json.loads(eval_file.read_text()) if eval_file.exists() else {}
+except Exception:
+    existing_eval = {}
+
+existing_eval["accuracy"] = round(win_rate, 2)
+existing_eval["total"] = bt.get("predictions_total", total_bets)
+existing_eval["evaluated"] = bt.get("predictions_evaluated", total_bets)
+existing_eval["passed"] = wins
+existing_eval["total_bets"] = total_bets
+existing_eval["wins"] = wins
+existing_eval["losses"] = losses
+existing_eval["roi_pct"] = round(roi, 2)
+existing_eval["sharpe_ratio"] = round(sharpe, 2)
+existing_eval["max_drawdown_pct"] = round(max_dd, 2)
+existing_eval["bankroll"] = round(bankroll, 2)
+existing_eval["brier_score"] = bt.get("brier_score", existing_eval.get("brier_score", 0.21570))
+existing_eval["timestamp"] = now
+eval_file.write_text(json.dumps(existing_eval, indent=2))
+print(f"[SYNC] latest-eval.json updated: brier={existing_eval['brier_score']}, acc={win_rate:.1f}%")
+
+# ── Update quant-summary.json ──
+try:
+    summary = json.loads(summary_file.read_text()) if summary_file.exists() else {}
+except Exception:
+    summary = {}
+
+summary["timestamp"] = now
+summary["bankroll"] = round(bankroll, 2)
+summary["growth_pct"] = round(roi, 2)
+summary["record"] = f"{wins}W-{losses}L-0P"
+summary["roi_pct"] = round(roi, 2)
+summary["daemon_status"] = "RUNNING"
+summary["data_source"] = "backtest-results.json (synced by autonomous-cycle.sh)"
+summary_file.write_text(json.dumps(summary, indent=2))
+print(f"[SYNC] quant-summary.json updated: bankroll=${bankroll:.2f}, record={wins}W-{losses}L")
+PYEOF
+
 # ── Phase 4: Infrastructure ─────────────────────────────────
 # Ensure data server is alive
 if ! pgrep -f "nba-data-server" > /dev/null; then

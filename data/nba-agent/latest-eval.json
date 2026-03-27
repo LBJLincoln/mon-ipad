@@ -1,11 +1,55 @@
 {
-  "accuracy": 68.9,
-  "total": 370,
-  "passed": 255,
-  "cycle": 3,
-  "avg_latency_ms": 32,
-  "brier_score": 0.2034,
-  "model": "logistic_regression (calibrated)",
-  "features": 58,
-  "timestamp": "2026-03-16T13:41:21.181024+00:00"
+  "accuracy": 66.67,
+  "total": 30,
+  "passed": 10,
+  "evaluated": 15,
+  "cycle": 4,
+  "avg_latency_ms": 28,
+  "brier_score": 0.2157,
+  "model": "tabicl_ensemble (110 features, v3.0-37cat)",
+  "features": 110,
+  "feature_engine_version": "v3.0-37cat",
+  "categories": 37,
+  "raw_features": 6135,
+  "win_rate_pct": 66.67,
+  "total_bets": 15,
+  "wins": 10,
+  "losses": 5,
+  "roi_pct": 205.64,
+  "sharpe_ratio": 31.05,
+  "max_drawdown_pct": 14.44,
+  "bankroll": 305.64,
+  "atr_brier": 0.2157,
+  "prev_atr_brier": 0.21844,
+  "improvement_vs_prev": 0.00274,
+  "platform": "Colab TabICL + 6 HF Evolution Islands",
+  "islands": {
+    "S10": {
+      "role": "exploitation",
+      "best_brier": 0.22041,
+      "gen": 435
+    },
+    "S11": {
+      "role": "exploration",
+      "mut": 0.15
+    },
+    "S12": {
+      "role": "extra_trees_specialist",
+      "mut": 0.08
+    },
+    "S13": {
+      "role": "catboost_specialist",
+      "mut": 0.1
+    },
+    "S14": {
+      "role": "lightgbm_specialist",
+      "mut": 0.08
+    },
+    "S15": {
+      "role": "wide_search",
+      "best_brier": 0.2225,
+      "notes": "xgboost_brier validated"
+    }
+  },
+  "timestamp": "2026-03-27T22:13:56.807000+00:00"
 }

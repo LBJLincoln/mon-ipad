@@ -1,47 +1,114 @@
 {
-  "timestamp": "2026-03-22T03:00:00.000000+00:00",
-  "bankroll": 100.0,
-  "growth_pct": 0.0,
-  "record": "0W-0L-0P",
-  "roi_pct": 0.0,
-  "best_brier": 0.2203,
-  "best_model": "catboost",
-  "features": 115,
-  "games_trained": 9333,
+  "timestamp": "2026-03-27T22:13:56.807000+00:00",
+  "bankroll": 305.64,
+  "growth_pct": 205.64,
+  "record": "10W-5L-0P",
+  "roi_pct": 205.64,
+  "best_brier": 0.2157,
+  "best_model": "tabicl_ensemble",
+  "features": 110,
+  "games_trained": 9551,
   "research_papers": 12,
   "latest_picks": 10,
   "latest_exposure": "18.6%",
   "latest_ev": 16.43,
   "models": {
-    "catboost": { "brier": 0.2203, "weight": 0.16, "status": "BEST" },
-    "xgboost": { "brier": 0.2204, "weight": 0.15, "status": "ACTIVE" },
-    "lightgbm": { "brier": 0.2208, "weight": 0.14, "status": "ACTIVE" },
-    "xgboost_cal": { "brier": 0.2210, "weight": 0.10, "status": "ACTIVE" },
-    "random_forest": { "brier": 0.2214, "weight": 0.12, "status": "ACTIVE" },
-    "logistic": { "brier": 0.2234, "weight": 0.08, "status": "ACTIVE" },
-    "stacking": { "brier": 0.2198, "weight": 0.15, "status": "FIXING" },
-    "meta_learner": { "brier": 0.2198, "weight": 0.10, "status": "FIXING" }
+    "tabicl": {
+      "brier": 0.2157,
+      "weight": 0.3,
+      "status": "ATR_BEST"
+    },
+    "catboost": {
+      "brier": 0.22041,
+      "weight": 0.2,
+      "status": "ACTIVE"
+    },
+    "xgboost": {
+      "brier": 0.2205,
+      "weight": 0.18,
+      "status": "ACTIVE"
+    },
+    "lightgbm": {
+      "brier": 0.2208,
+      "weight": 0.16,
+      "status": "ACTIVE"
+    },
+    "extra_trees": {
+      "brier": 0.2225,
+      "weight": 0.1,
+      "status": "ACTIVE"
+    },
+    "random_forest": {
+      "brier": 0.22447,
+      "weight": 0.06,
+      "status": "ACTIVE"
+    }
   },
   "evolution": {
-    "generations": 60,
-    "population": 80,
-    "optuna_trials": 100,
-    "raw_features": 248,
-    "selected_features": 115,
-    "total_runtime_s": 8755
+    "generations": 435,
+    "population": 60,
+    "islands": 6,
+    "raw_features": 6135,
+    "selected_features": 110,
+    "feature_engine_version": "v3.0-37cat",
+    "categories": 37,
+    "kaggle_iterations": 15,
+    "platform": "Colab TabICL + 6 HF Islands"
+  },
+  "feature_categories": {
+    "total": 37,
+    "raw_features": 6135,
+    "usable_features": 3216,
+    "max_selected": 200,
+    "notes": "v3.0 + Cat36 EWMA + Cat37 MOVDA"
   },
   "calibration": {
     "elo_k_factor": 22,
     "home_court_advantage": 2.8,
     "monte_carlo_stdev": 11.5,
     "avg_team_score": 114.2,
-    "kelly_fraction": 0.25,
-    "min_edge": 0.02,
+    "kelly_fraction": 0.35,
+    "min_edge": 0.03,
     "weight_power": 0.35,
     "weight_elo": 0.2,
     "weight_poisson": 0.15,
     "weight_mc": 0.3,
-    "reasoning": "v3 evolution: CatBoost now best single model (0.2203), LightGBM massive improvement (-185 brier pts). Stacking CUDA crash fixed (task_type=CPU). 4-model stacking (XGB+LGBM+CatBoost+ExtraTrees) with calibrated meta-learner."
+    "reasoning": "v3.0-37cat: TabICL ATR 0.21570 (Colab, 110f, iter 15). MOVDA deployed. xgboost_brier fixed for XGBoost >=2.0. 6 HF evolution islands active. CPU-only tree-based. Mutation capped at 0.15."
   },
-  "daemon_status": "RUNNING"
+  "atr_history": [
+    {
+      "date": "2026-03-16",
+      "brier": 0.22471,
+      "model": "logistic_regression",
+      "features": 24
+    },
+    {
+      "date": "2026-03-22",
+      "brier": 0.22041,
+      "model": "xgboost",
+      "features": 194,
+      "notes": "S10 MOVDA-era best"
+    },
+    {
+      "date": "2026-03-25",
+      "brier": 0.21844,
+      "model": "extra_trees",
+      "features": 94,
+      "notes": "Kaggle gen52"
+    },
+    {
+      "date": "2026-03-27",
+      "brier": 0.2157,
+      "model": "tabicl_ensemble",
+      "features": 110,
+      "notes": "Colab TabICL iter15 - NEW ATR"
+    }
+  ],
+  "targets": {
+    "brier": 0.2,
+    "roi_pct": 5.0,
+    "sharpe": 1.5
+  },
+  "daemon_status": "RUNNING",
+  "data_source": "backtest-results.json (synced by autonomous-cycle.sh)"
 }
