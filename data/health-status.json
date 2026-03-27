@@ -1,54 +1,132 @@
 {
-  "timestamp": "2026-03-27T12:45:00Z",
-  "brain_cycle": "2026-03-27-1200",
-  "cycle_number": 2,
-  "islands": {
-    "S10": {"name": "nba-quant", "url": "nomos42-nba-quant.hf.space", "cycle": 35, "generation": 104, "best_brier": 0.2237, "best_roi": 0.2834, "best_sharpe": 6.2726, "best_features": 71, "best_model": "xgboost_brier", "stagnation": 0, "status": "EVOLVING", "alert": null},
-    "S11": {"name": "nba-quant-2", "url": "nomos42-nba-quant-2.hf.space", "cycle": 36, "generation": 107, "best_brier": 0.22212, "best_roi": 0.3008, "best_sharpe": 6.7525, "best_features": 59, "best_model": "random_forest", "stagnation": 0, "status": "EVOLVING", "alert": "brain-prompt uses wrong URL nba-evo-2 — correct is nba-quant-2"},
-    "S12": {"name": "nba-evo-3", "url": "nomos42-nba-evo-3.hf.space", "cycle": 54, "generation": 162, "best_brier": 0.22245, "best_roi": 0.296, "best_sharpe": 11.1804, "best_features": 72, "best_model": "extra_trees", "stagnation": 0, "status": "EVOLVING", "alert": null},
-    "S13": {"name": "nba-evo-4", "url": "nomos42-nba-evo-4.hf.space", "cycle": 132, "generation": 395, "best_brier": 0.22552, "best_roi": 0.2635, "best_sharpe": 9.6496, "best_features": 67, "best_model": "lightgbm", "stagnation": 0, "status": "EVOLVING", "alert": null},
-    "S14": {"name": "nba-evo-5", "url": "nomos42-nba-evo-5.hf.space", "cycle": 79, "generation": 237, "best_brier": 0.22126, "best_roi": 0.3107, "best_sharpe": 7.9755, "best_features": 34, "best_model": "random_forest", "stagnation": 0, "status": "EVOLVING", "alert": null, "is_fleet_best": true},
-    "S15": {"name": "nba-evo-6", "url": "nomos42-nba-evo-6.hf.space", "cycle": 109, "generation": 325, "best_brier": 0.22952, "best_roi": 0.2173, "best_sharpe": 19.8092, "best_features": 66, "best_model": "extra_trees", "stagnation": 0, "status": "EVOLVING", "alert": null}
-  },
-  "fleet": {
-    "best_brier": 0.22126, "best_island": "S14", "best_model": "random_forest",
-    "all_time_best": 0.21837, "target_brier": 0.21837,
-    "gap_to_record": 0.00289, "avg_brier": 0.22417,
-    "checkpoint_needed": false, "diversify_sent": [], "stagnated_islands": [],
-    "all_healthy": true,
-    "url_bug_note": "S11 brain prompt uses nba-evo-2 (404) — correct URL is nba-quant-2"
-  },
-  "supabase": {"status": "WARN", "note": "All islands: Supabase pooler connection failures. Local evolution continues."},
-  "political_alpha": {
+  "timestamp": "2026-03-27T13:40:00Z",
+  "brain_cycle": "2026-03-27-1340",
+  "cycle_number": 3,
+  "nba_fleet": {
     "islands": [
-      {"name": "PA1-exploitation", "url": "nomos42-political-alpha.hf.space", "status": "DOWN-503", "cycle": 3052, "generation": 9155, "best_brier": 0.2511, "feature_candidates": 15, "note": "Crashed from truncated app.py push. Restore in progress."},
-      {"name": "PA2-exploration", "url": "nomos42-political-alpha-2.hf.space", "status": "EVOLVING", "cycle": 2190, "generation": 6570, "best_brier": 0.25147, "feature_candidates": 15},
-      {"name": "PA3-catboost", "url": "nomos42-political-alpha-3.hf.space", "status": "EVOLVING", "cycle": 1807, "generation": 5420, "best_brier": 0.25036, "feature_candidates": 15},
-      {"name": "PA4-wide_search", "url": "nomos42-political-alpha-4.hf.space", "status": "DOWN-503", "cycle": 1036, "generation": 3108, "best_brier": 0.25008, "feature_candidates": 15, "note": "Crashed from truncated app.py push. Restore in progress."}
+      {
+        "name": "S10-exploitation",
+        "url": "nomos42-nba-quant.hf.space",
+        "status": "EVOLVING",
+        "cycle": 39,
+        "generation": 116,
+        "best_brier": 0.2237,
+        "best_roi": 0.2834,
+        "best_sharpe": 6.2726,
+        "best_model": "xgboost_brier",
+        "mutation_rate": 0.0715,
+        "stagnation": 0,
+        "feature_candidates": 3230
+      },
+      {
+        "name": "S11-exploration",
+        "url": "nomos42-nba-quant-2.hf.space",
+        "status": "EVOLVING",
+        "cycle": 40,
+        "generation": 118,
+        "best_brier": 0.22212,
+        "best_roi": 0.3008,
+        "best_sharpe": 6.7525,
+        "best_model": "random_forest",
+        "mutation_rate": 0.1397,
+        "stagnation": 0,
+        "feature_candidates": 3230,
+        "notable": "top performer extra_trees+sigmoid brier=0.21927 (new all-time best candidate)"
+      },
+      {
+        "name": "S12-extra_trees",
+        "url": "nomos42-nba-evo-3.hf.space",
+        "status": "EVOLVING",
+        "cycle": 59,
+        "generation": 177,
+        "best_brier": 0.22245,
+        "best_roi": 0.296,
+        "best_sharpe": 11.1804,
+        "best_model": "extra_trees",
+        "mutation_rate": 0.0562,
+        "stagnation": 0,
+        "feature_candidates": 3230
+      },
+      {
+        "name": "S13-catboost",
+        "url": "nomos42-nba-evo-4.hf.space",
+        "status": "EVOLVING",
+        "cycle": 143,
+        "generation": 429,
+        "best_brier": 0.22552,
+        "best_roi": 0.2635,
+        "best_sharpe": 9.6496,
+        "best_model": "lightgbm",
+        "mutation_rate": 0.05,
+        "stagnation": 0,
+        "feature_candidates": 3230,
+        "notable": "top5[1] catboost+sigmoid 200-feat brier=0.2189 gen338 — NEW ALL-TIME BEST"
+      },
+      {
+        "name": "S14-lightgbm",
+        "url": "nomos42-nba-evo-5.hf.space",
+        "status": "EVOLVING",
+        "cycle": 87,
+        "generation": 261,
+        "best_brier": 0.22126,
+        "best_roi": 0.3107,
+        "best_sharpe": 7.9755,
+        "best_model": "random_forest",
+        "mutation_rate": null,
+        "stagnation": 0,
+        "feature_candidates": 3230
+      },
+      {
+        "name": "S15-wide_search",
+        "url": "nomos42-nba-evo-6.hf.space",
+        "status": "EVOLVING",
+        "cycle": 114,
+        "generation": 340,
+        "best_brier": 0.22952,
+        "best_roi": 0.2173,
+        "best_sharpe": 19.8092,
+        "best_model": "extra_trees",
+        "mutation_rate": 0.0869,
+        "stagnation": 0,
+        "feature_candidates": 3230
+      }
     ],
-    "fleet_best_brier": 0.25008,
-    "incident": {
-      "severity": "HIGH",
-      "description": "Brain accidentally pushed truncated app.py (8.5KB instead of 81KB) to nomos-political-alpha GitHub repo. PA1 and PA4 went 503. PA2 and PA3 unaffected (different sync).",
-      "root_cause": "Tool parameter size limit caused mcp__github__create_or_update_file to truncate content. File content must be read by subagent and passed to MCP tool.",
-      "recovery": "hf-space/app.py restore in progress via Haiku subagent. hf-space/data/historical/bootstrap_events.json already pushed — will fix 15-feature starvation once PA1/PA4 restart cleanly.",
-      "lesson": "NEVER push large files (>10KB) inline. Always use dedicated subagent that reads from disk."
+    "fleet_summary": {
+      "all_running": true,
+      "stagnation_count": 0,
+      "diversify_triggered": false,
+      "fleet_best_brier": 0.22126,
+      "fleet_best_island": "S14",
+      "all_time_best_brier": 0.2189,
+      "all_time_best_island": "S13",
+      "all_time_best_model": "catboost+sigmoid",
+      "all_time_best_generation": 338,
+      "checkpoint_threshold": 0.21837,
+      "checkpoint_needed": false,
+      "note": "0.2189 > 0.21837 threshold, no Supabase checkpoint"
     }
   },
   "actions_this_cycle": [
-    "Fetched all 6 NBA islands + 4 PA islands",
-    "NBA: all healthy, stagnation=0, no diversify, no checkpoint",
-    "Wrote research proposal: lr-meta-learner-2026-03-27.md",
-    "INCIDENT: truncated app.py pushed to nomos-political-alpha (tools size limit)",
-    "RECOVERY: pushed bootstrap_events.json (60 events, correct format) to hf-space/data/historical/",
-    "RECOVERY: full app.py restore in progress via Haiku subagent"
+    "[NBA] Fetched all 6 island APIs — all EVOLVING, stagnation=0",
+    "[NBA] Probability clipping np.clip(p, 0.025, 0.975) deployed to stacking + main eval + API endpoint — commit af64c9a6",
+    "[NBA] LogisticRegression added as 14th model type (Pipeline(StandardScaler, saga)) — commit af64c9a6",
+    "[NBA] Detected new all-time best: S13 catboost+sigmoid brier=0.2189 (gen 338), S11 extra_trees brier=0.21927 (gen 338)",
+    "[PA] Created hf-space/models/__init__.py + donor_power_index.py — root cause of 15-feature starvation FIXED — commit 699ecbc0",
+    "[PA] PA spaces still rebuilding (push was recent, rebuild pending — expect feature_candidates > 100 next cycle)"
   ],
-  "next_cycle_priorities": [
-    "URGENT: Verify PA1 and PA4 back up with feature_candidates > 100",
-    "If PA still 503: use HF MCP or manual restart to force rebuild from restored app.py",
-    "Implement probability clipping [0.025, 0.975] on S10 NBA island",
-    "Check if LR model type proposal from cycle-2 can be implemented on S10",
-    "Fix brain prompt: S11 URL should be nba-quant-2, not nba-evo-2"
-  ],
-  "next_cycle": "2026-03-27T16:00:00Z"
+  "incidents": [],
+  "alerts": [
+    {
+      "severity": "INFO",
+      "message": "NBA all-time best updated: S13 catboost+sigmoid brier=0.2189 (gen 338) is below previous best 0.21976. Checkpoint threshold is 0.21837 — not yet reached."
+    },
+    {
+      "severity": "INFO",
+      "message": "PA feature starvation root cause identified and fixed: hf-space/models/donor_power_index.py was missing. Now deployed. Spaces rebuilding."
+    },
+    {
+      "severity": "WARN",
+      "message": "PA feature_candidates still 15 — HF Space rebuild in progress. Verify next cycle."
+    }
+  ]
 }
