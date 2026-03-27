@@ -1,157 +1,143 @@
 {
-  "timestamp": "2026-03-27T04:30:00Z",
-  "trigger": "nomos-brain-24-7",
-  "cycle": 2,
-  "spaces": {
-    "s10": {
+  "timestamp": "2026-03-27T04:15:00Z",
+  "brain_cycle": "2026-03-27-0400",
+  "brain_model": "claude-sonnet-4-6",
+  "islands": {
+    "S10": {
+      "name": "nba-quant",
       "url": "nomos42-nba-quant.hf.space",
-      "role": "exploitation",
-      "status": "EVOLVING",
-      "cycle": 11,
-      "generation": 31,
+      "cycle": 18,
+      "generation": 54,
       "best_brier": 0.2237,
       "best_roi": 0.2834,
       "best_sharpe": 6.2726,
       "best_features": 71,
-      "best_model_type": "xgboost_brier",
+      "best_model": "xgboost_brier",
       "stagnation": 0,
-      "pareto_front_size": 24,
-      "alert": "HEALTHY"
-    },
-    "s11": {
-      "url": "nomos42-nba-quant-2.hf.space",
-      "role": "exploration",
+      "mutation_rate": 0.0808,
+      "population": 60,
       "status": "EVOLVING",
-      "cycle": 11,
-      "generation": 31,
+      "action": "none"
+    },
+    "S11": {
+      "name": "nba-quant-2",
+      "url": "nomos42-nba-quant-2.hf.space",
+      "cycle": 19,
+      "generation": 56,
       "best_brier": 0.22212,
       "best_roi": 0.3008,
       "best_sharpe": 6.7525,
       "best_features": 59,
-      "best_model_type": "random_forest",
-      "stagnation": 5,
-      "pareto_front_size": 17,
-      "alert": "HEALTHY. Stagnation=5, watch closely next cycle."
-    },
-    "s12": {
-      "url": "nomos42-nba-evo-3.hf.space",
-      "role": "extra_trees",
+      "best_model": "random_forest",
+      "stagnation": 0,
+      "mutation_rate": 0.1485,
+      "population": 60,
       "status": "EVOLVING",
-      "cycle": 14,
-      "generation": 41,
+      "action": "none"
+    },
+    "S12": {
+      "name": "nba-evo-3",
+      "url": "nomos42-nba-evo-3.hf.space",
+      "cycle": 26,
+      "generation": 76,
       "best_brier": 0.22245,
       "best_roi": 0.296,
       "best_sharpe": 11.1804,
       "best_features": 72,
-      "best_model_type": "extra_trees",
+      "best_model": "extra_trees",
       "stagnation": 0,
-      "pareto_front_size": 15,
-      "alert": "HEALTHY"
-    },
-    "s13": {
-      "url": "nomos42-nba-evo-4.hf.space",
-      "role": "catboost_lightgbm",
+      "mutation_rate": 0.0687,
+      "population": 60,
       "status": "EVOLVING",
-      "cycle": 28,
-      "generation": 83,
+      "action": "none"
+    },
+    "S13": {
+      "name": "nba-evo-4",
+      "url": "nomos42-nba-evo-4.hf.space",
+      "cycle": 59,
+      "generation": 176,
       "best_brier": 0.22552,
       "best_roi": 0.2635,
       "best_sharpe": 9.6496,
       "best_features": 67,
-      "best_model_type": "lightgbm",
+      "best_model": "lightgbm",
       "stagnation": 0,
-      "pareto_front_size": 12,
-      "alert": "HEALTHY. Weakest brier (0.22552). Monitor for stagnation."
-    },
-    "s14": {
-      "url": "nomos42-nba-evo-5.hf.space",
-      "role": "lightgbm_rf",
+      "mutation_rate": 0.0703,
+      "population": 60,
       "status": "EVOLVING",
-      "cycle": 13,
-      "generation": 37,
+      "action": "none"
+    },
+    "S14": {
+      "name": "nba-evo-5",
+      "url": "nomos42-nba-evo-5.hf.space",
+      "cycle": 34,
+      "generation": 101,
       "best_brier": 0.22126,
       "best_roi": 0.3107,
       "best_sharpe": 7.9755,
       "best_features": 34,
-      "best_model_type": "random_forest",
-      "stagnation": 3,
-      "pareto_front_size": 9,
-      "alert": "BEST BRIER this cycle: 0.22126. Stagnation=3 (low, healthy post-diversify recovery)."
-    },
-    "s15": {
-      "url": "nomos42-nba-evo-6.hf.space",
-      "role": "wide_search",
+      "best_model": "random_forest",
+      "stagnation": 0,
+      "mutation_rate": 0.1117,
+      "population": 60,
       "status": "EVOLVING",
-      "cycle": 36,
-      "generation": 106,
+      "action": "none",
+      "note": "FLEET LEADER — lowest Brier this cycle"
+    },
+    "S15": {
+      "name": "nba-evo-6",
+      "url": "nomos42-nba-evo-6.hf.space",
+      "cycle": 57,
+      "generation": 169,
       "best_brier": 0.22952,
       "best_roi": 0.2173,
-      "best_sharpe": 19.81,
+      "best_sharpe": 19.8092,
       "best_features": 66,
-      "best_model_type": "extra_trees",
+      "best_model": "extra_trees",
       "stagnation": 0,
-      "pareto_front_size": 16,
-      "alert": "HEALTHY. Most mature (gen 106). Highest Sharpe 19.81. Weakest brier — Pareto tradeoff."
+      "mutation_rate": 0.1031,
+      "population": 50,
+      "status": "EVOLVING",
+      "action": "none",
+      "note": "Wide search — high Sharpe but highest Brier in fleet"
     }
   },
-  "best_overall": {
-    "space": "s14",
+  "fleet_summary": {
     "best_brier": 0.22126,
-    "model": "random_forest",
-    "features": 34,
-    "roi": 0.3107,
-    "sharpe": 7.9755,
-    "note": "Best brier among nomos42 spaces. Previous diversify (last cycle) keeping stagnation low."
+    "best_island": "S14",
+    "worst_brier": 0.22952,
+    "worst_island": "S15",
+    "avg_brier": 0.22243,
+    "all_time_record": 0.21837,
+    "target": 0.21837,
+    "gap_to_record": 0.00289,
+    "gap_to_target": 0.00289
   },
-  "all_time_record": {
-    "brier": 0.21837,
-    "source": "lbjlincoln26-nba-evo-4 S13 gen 815 extra_trees 200 feat",
-    "gap_from_best_active": 0.00289,
-    "note": "S14=0.22126 is closest this cycle. Need 0.00289 more improvement to break ATR."
+  "brain_actions": {
+    "diversify_sent": [],
+    "stagnated_islands": [],
+    "checkpoint_taken": false,
+    "checkpoint_reason": "best_brier 0.22126 > threshold 0.21837",
+    "research_cycle": true,
+    "research_topic": "ensemble stacking + probability clipping (Scientific Reports Aug 2025, MDPI Jan 2026)"
   },
-  "stagnation_checks": {
-    "threshold": 15,
-    "s10": 0,
-    "s11": 5,
-    "s12": 0,
-    "s13": 0,
-    "s14": 3,
-    "s15": 0,
-    "diversify_sent": null,
-    "note": "No island exceeded threshold of 15. No diversify commanded this cycle."
-  },
-  "checkpoint_check": {
-    "triggered": false,
-    "best_brier_observed": 0.22126,
-    "threshold": 0.21837,
-    "gap": 0.00289,
-    "note": "No checkpoint — target not reached."
-  },
-  "engine_parity": {
-    "status": "ASSUMED_PARITY",
-    "note": "No code changes this cycle. Previous cycle confirmed parity."
-  },
-  "research": {
-    "executed": true,
-    "topic": "NBA prediction calibration + features 2025-2026 literature",
-    "key_finding": "Post-hoc isotonic calibration (CalibratedClassifierCV) can reduce Brier from 0.221 to ~0.20 per Jan 2026 MDPI paper. Long-horizon ELO (team_elo_5y) is most predictive single feature.",
-    "proposal_written": "data/research-proposals/calibration-improvement-2026-03-27.md"
-  },
+  "supabase_note": "Connection failures logged on multiple islands — local JSON fallback active",
   "political_alpha": {
-    "status": "BLOCKED — 0 events",
-    "fix_deployed": "bootstrap_events.json pushed to nomos-political-alpha/data/historical/",
-    "n_bootstrap_events": 76,
-    "expected_result": "Space exits retry loop and begins evolution next poll cycle."
+    "url": "nomos42-political-alpha.hf.space",
+    "status": "EVOLVING",
+    "cycle": 922,
+    "generation": 2766,
+    "best_brier": 0.2511,
+    "best_roi": 0.0054,
+    "best_sharpe": 0.5424,
+    "feature_candidates": 15,
+    "severity": "CRITICAL",
+    "diagnosis": "Only 15 features after noise filter. Real event data not loaded on HF Space persistent storage.",
+    "action_taken": "data_bootstrap.py committed to nomos-political-alpha — generates synthetic events as training fallback"
   },
-  "supabase_issue": {
-    "status": "PERSISTENT_ALL_SPACES",
-    "note": "FATAL: Tenant or user not found on pooler. Local logs intact. No action taken."
-  },
-  "recommendations": [
-    "S11 stagnation=5 — if reaches 15 at next cycle, send diversify.",
-    "S13 brier=0.22552 weakest — monitor stagnation.",
-    "Priority improvement: implement isotonic calibration wrapper in HF space evaluator (see research proposal).",
-    "Political Alpha: bootstrap data pushed. Monitor next cycle — expect evolution to begin.",
-    "Supabase pooler credential refresh needed for proper experiment logging."
-  ]
+  "cross_repo_health": {
+    "engine_parity": "not verified this cycle — all islands use same feature candidate pool (3230)",
+    "calibration_proposal": "written 2026-03-27 AM — isotonic wrapping + team_elo_5y",
+    "ensemble_proposal": "written 2026-03-27 04:15 — stacked meta-learner + prob clipping"
+  }
 }
