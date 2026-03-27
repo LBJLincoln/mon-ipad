@@ -1,10 +1,10 @@
 # Nomos42 — NBA Quant AI
 
-> Architecture v15 — Brain + Muscle | Updated: 2026-03-25
+> Architecture v15 — Brain + Muscle | Updated: 2026-03-27
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.22041 (S10 MOVDA-era, xgboost, gen 435) | All-time: 0.21976 | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Best (fleet):** Brier 0.22126 (S14, random_forest) | **All-time:** 0.2189 (S13, catboost+sigmoid, gen 338, 2026-03-27) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 
 ## Nomos42 Ecosystem
 
@@ -33,12 +33,14 @@ VM MUSCLE (cron, every 4h at :30)
     Script: scripts/autonomous-cycle.sh
 
 HF SPACES (6 islands, always-on, CPU tree-only, MAX_FEATURES=200)
-    ├── S10 Nomos42/nba-quant: exploitation (mut=0.09, cx=0.80, feat=63)
-    ├── S11 Nomos42/nba-quant-2: exploration (mut=0.15, feat=80)
-    ├── S12 Nomos42/nba-evo-3: extra_trees specialist (mut=0.08, feat=60)
-    ├── S13 Nomos42/nba-evo-4: catboost specialist (mut=0.10, feat=66)
-    ├── S14 Nomos42/nba-evo-5: lightgbm specialist (mut=0.08, feat=55)
-    └── S15 Nomos42/nba-evo-6: wide search (mut=0.18, feat=80, pop=50)
+    ├── S10 Nomos42/nba-quant:   exploitation (mut=0.09, cx=0.80, feat=63) → nomos42-nba-quant.hf.space
+    ├── S11 Nomos42/nba-quant-2: exploration  (mut=0.15, feat=80)          → nomos42-nba-quant-2.hf.space
+    ├── S12 Nomos42/nba-evo-3:   extra_trees specialist (mut=0.08, feat=60)
+    ├── S13 Nomos42/nba-evo-4:   catboost specialist    (mut=0.10, feat=66)
+    ├── S14 Nomos42/nba-evo-5:   lightgbm specialist    (mut=0.08, feat=55)
+    └── S15 Nomos42/nba-evo-6:   wide search            (mut=0.18, feat=80, pop=50)
+
+NOTE: S11 URL = nomos42-nba-quant-2.hf.space (NOT nba-evo-2)
 
 GOOGLE COLAB (GPU, on-demand)
     └── colab/nba_evolution_gpu.ipynb: T4 GPU evolution
@@ -52,7 +54,7 @@ SYSTEM CRONS
 ## Skills
 
 | Skill | Purpose |
-|-------|---------|
+|-------|--------|
 | `/karpathy-loop` | Autonomous research cycle (5 subagents → proposals → quick wins) |
 | `/daily-edge` | Daily predictions + value bets + Kelly sizing |
 | `/progress-10pct` | Target 10% improvement in weakest metric |
@@ -76,7 +78,7 @@ SYSTEM CRONS
 ## MCP Servers
 
 | Server | Purpose |
-|--------|---------|
+|--------|--------|
 | Supabase | NBA data, experiments, research_proposals |
 | Neo4j | Knowledge graph |
 | HuggingFace | Space management |
