@@ -1,19 +1,20 @@
 # Nomos42 — NBA Quant AI
 
-> Architecture v15 — Brain + Muscle | Updated: 2026-03-27
+> Architecture v16 — Brain + Muscle + Karpathy Loop | Updated: 2026-03-27
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best (fleet):** Brier 0.22126 (S14, random_forest) | **All-time:** 0.2189 (S13, catboost+sigmoid, gen 338, 2026-03-27) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Best:** Brier 0.21570 (Colab TabICL, 110f, iter 15) | Previous ATR: 0.21844 | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 
 ## Nomos42 Ecosystem
 
 | Flagship | Repo | Bot | Status |
 |----------|------|-----|--------|
-| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | ACTIVE -- 6 evolution islands |
+| NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | ACTIVE -- 6 islands + Kaggle Karpathy |
+| Political Alpha | nomos-political-alpha | -- | ACTIVE -- v2.0 engine, 13 categories |
 | AI Artistic Generation | rgwa | @RGWAbot | ACTIVE -- generative AI |
+| Dashboard Hub | nomos-dashboard | -- | ACTIVE -- /nba /political /rgwa /evolution |
 | Factory / Complex RAGs | rag-website | -- | SHELVED |
-| Dashboard Hub | nomos-dashboard | -- | ACTIVE -- monitoring all projects |
 
 ## 24/7 Autonomous Architecture
 
@@ -41,6 +42,12 @@ HF SPACES (6 islands, always-on, CPU tree-only, MAX_FEATURES=200)
     └── S15 Nomos42/nba-evo-6:   wide search            (mut=0.18, feat=80, pop=50)
 
 NOTE: S11 URL = nomos42-nba-quant-2.hf.space (NOT nba-evo-2)
+
+KAGGLE KARPATHY LOOP (GPU, 9h sessions, Karpathy autoresearch pattern)
+    ├── scripts/kaggle/nba_karpathy_loop.py: NBA evolution (seeds from 6 islands)
+    └── scripts/kaggle/political_karpathy_loop.py: Political alpha evolution
+    Pattern: modify config → run 5min → measure Brier → keep if better → loop
+    Rate: 12 iterations/hr, ~100/session
 
 GOOGLE COLAB (GPU, on-demand)
     └── colab/nba_evolution_gpu.ipynb: T4 GPU evolution
