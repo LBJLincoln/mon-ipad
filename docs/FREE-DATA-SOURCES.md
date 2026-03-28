@@ -424,28 +424,32 @@ def compute_market_features(odds_row):
 
 ---
 
-### 2.6 The-Odds-API — Current Season Live Odds (FREE tier: 500 req/month)
+### 2.6 ActionNetwork — Live Odds + Public Money (FREE, no key)
 
-**URL:** https://the-odds-api.com/
-**Free tier:** 500 requests/month (each request = multiple books/markets)
-**Historical odds:** Available from 2020 (moneyline, spread, totals) and May 2023 (player props)
-**Paid:** $25/month for 20,000 requests
+**URL:** https://api.actionnetwork.com/web/v1/scoreboard/nba
+**Free tier:** Unlimited (public API, no authentication)
+**Coverage:** Live moneyline, spread, totals + public bet % + public money %
+**Sharp/square:** Unique source for ticket % vs money % divergence (steam detection)
 
-**Key endpoints:**
+**Key endpoint:**
 ```
-GET /v4/sports/basketball_nba/odds?apiKey={KEY}&regions=us&markets=h2h,spreads,totals
-GET /v4/sports/basketball_nba/odds?apiKey={KEY}&regions=us&markets=player_points,player_rebounds,player_assists
-GET /v4/historical/sports/basketball_nba/odds?date=2024-12-01T00:00:00Z&...
+GET https://api.actionnetwork.com/web/v1/scoreboard/nba?periods=event&bookIds=15,30,68,69,123
 ```
 
-**Player props markets available:**
-- `player_points`, `player_points_alternate`
-- `player_rebounds`, `player_rebounds_alternate`
-- `player_assists`, `player_assists_alternate`
-- `player_threes`, `player_blocks`, `player_steals`
-- `player_double_double`, `player_triple_double`
+**Book IDs:**
+- 15 = DraftKings, 30 = FanDuel, 68 = BetMGM, 69 = Caesars, 123 = Pinnacle (sharp)
+- 19 = BetRivers, 76 = PointsBet, 283 = Bet365, 100 = Bovada
 
-**Expected Brier delta:** Player props as features -> -0.001 to -0.002 (market-implied player performance)
+**Public money fields per game:**
+- `ml_away_public` / `ml_home_public` — % of tickets bet on each side
+- `ml_away_money` / `ml_home_money` — % of total dollars on each side
+- Same pattern for spread and totals
+
+**Sharp/square signal:** When money% diverges from ticket% by 15%+, sharp bettors are fading the public.
+
+**Script:** `/home/termius/mon-ipad/scripts/fetch_free_odds.py`
+
+**Expected Brier delta:** Public money % as Cat 9 feature -> -0.002 to -0.003 (market microstructure with real sharp data)
 
 ---
 
