@@ -3,20 +3,33 @@
 > First external user testing Nomos42 AI agent capabilities
 > Created: 2026-03-28
 
+## SECURITY RULES
+
+1. **Pierre has access to `nomos-pierre` repo ONLY** — ZERO access to any other repo
+2. **Read-only on main Supabase tables** — writes only to `pierre_*` tables
+3. **Full monitoring** — all Claude Code CLI activity is logged and visible to Alexis
+4. **No SSH access to VM** — API access only via infra-brain
+5. **Credentials pre-loaded in `.env.local`** — Pierre never touches credentials
+6. **HF token sent via Telegram bot** — secure delivery
+
 ## Architecture
 
 ```
 Pierre (MacBook Air 2016)
     ├── Claude Code CLI (with Alexis's Max subscription)
-    ├── Repo: LBJLincoln/nomos-pierre (private)
+    ├── Repo: LBJLincoln/nomos-pierre (private, ONLY this repo)
     ├── CLAUDE.md with 22 agents + skills preconfigured
-    ├── HF Space: Nomos42/pierre-workspace (dedicated)
-    ├── Supabase: dedicated tables (pierre_*)
-    └── API access to Nomos42 data (read-only)
+    ├── .env.local with ALL credentials pre-loaded
+    ├── HF Space: dedicated (on new HF account)
+    ├── Supabase #2: dedicated project or tables (pierre_*)
+    ├── Neo4j: dedicated database or namespace
+    ├── Pinecone: dedicated index
+    └── API access to Nomos42 data (READ-ONLY via infra-brain)
 
 Alexis (iPad + VM)
-    ├── Full read access to nomos-pierre repo
-    ├── Can monitor Pierre's activity via dashboard
+    ├── Full read access to nomos-pierre repo (owner)
+    ├── git log monitoring (all Pierre's commits visible)
+    ├── Claude Code CLI activity logs
     ├── Can assign tasks via API
     └── Evaluates: can this become a SaaS/API product?
 ```
@@ -228,6 +241,89 @@ This setup is a prototype for the **Nomos Picks SaaS** ($19/$49/$149):
 - Would he pay $49/month for this?
 
 ---
+
+## Step 8: Pre-loaded Credentials (.env.local)
+
+Pierre's `.env.local` in his repo — Alexis creates this BEFORE Pierre clones:
+
+```bash
+# .env.local — Pierre's workspace (DO NOT MODIFY)
+# All credentials managed by Alexis
+
+# HuggingFace (Pierre's dedicated account)
+HF_TOKEN=hf_xxxxx  # Sent via Telegram
+
+# Supabase (dedicated project or tables)
+SUPABASE_URL=https://xxxxx.supabase.co
+SUPABASE_KEY=eyJxxxxx
+# Pierre writes to pierre_* tables ONLY
+
+# Neo4j (dedicated database)
+NEO4J_URI=neo4j+s://xxxxx.databases.neo4j.io
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=xxxxx
+
+# Pinecone (dedicated index)
+PINECONE_API_KEY=xxxxx
+PINECONE_INDEX=pierre-nba
+
+# Infra Brain API (read-only access to Nomos42 data)
+INFRA_BRAIN_URL=https://nomos42-nomos42-infra-brain.hf.space
+INFRA_AUTH_TOKEN=pierre_read_xxxxx
+
+# Kaggle (shared, Pierre's own account preferred)
+KAGGLE_USERNAME=pierre_xxxxx
+KAGGLE_KEY=xxxxx
+```
+
+**Alexis prepares this file, commits it to the repo, Pierre just clones.**
+Pierre never needs to create accounts or find API keys.
+
+## Step 9: Full Monitoring (Alexis side)
+
+### Git monitoring (all commits visible)
+```bash
+# On VM, add cron to monitor Pierre's activity
+*/30 * * * * cd ~/nomos-pierre && git pull && git log --oneline -5 >> /tmp/pierre-activity.log
+```
+
+### Claude Code CLI logs
+Claude Code stores conversation logs in `~/.claude/`. On Pierre's machine,
+these stay local. For monitoring, Pierre's CLAUDE.md includes a hook:
+
+```json
+// In .claude/settings.json on Pierre's repo
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd $CLAUDE_PROJECT_DIR && git add -A && git commit -m 'auto: session sync' && git push 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+This auto-pushes after every Claude Code session — Alexis sees all changes.
+
+### Dashboard monitoring
+Add Pierre's activity to the dashboard at nomosdashboard.vercel.app:
+```bash
+# API endpoint that checks Pierre's repo
+curl -s https://api.github.com/repos/LBJLincoln/nomos-pierre/commits?per_page=5
+```
+
+### ISOLATION — Pierre CANNOT access other repos
+
+Pierre's GitHub account gets `push` access to `nomos-pierre` ONLY.
+The CLAUDE.md in his repo does NOT reference any other repo paths.
+The `.claude/settings.json` has NO hooks that touch `~/mon-ipad/` or other dirs.
+The infra-brain API only exposes read-only endpoints.
 
 ## Quick Reference
 
