@@ -3,6 +3,7 @@
 Terminal API Server for Nomos42 Dashboard
 Listens on port 8081, accepts POST /api/exec with command + token.
 Rate-limited, blocklisted, CORS-enabled.
+Multi-user: reads scripts/terminal/users.json for per-user tokens + access control.
 """
 
 import json
@@ -20,10 +21,76 @@ TERMINAL_TOKEN = os.environ.get("TERMINAL_TOKEN", "")
 TIMEOUT = 30  # seconds
 MAX_OUTPUT = 50_000  # chars
 
-# Rate limiting: max 10 requests per 60 seconds
+USERS_FILE = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "terminal", "users.json",
+)
+
+# Rate limiting: max 10 requests per 60 seconds (global)
 RATE_WINDOW = 60
 RATE_LIMIT = 10
 request_times: deque = deque()
+
+# ── Multi-user helpers ───────────────────────────────────────────────────────
+
+def load_users() -> dict:
+    """Load users.json. Returns empty dict on failure."""
+    try:
+        with open(USERS_FILE) as f:
+            data = json.load(f)
+            return data.get("users", {})
+    except FileNotFoundError:
+        return {}
+    except Exception as e:
+        print(f"[WARNING] Could not load users file: {e}")
+        return {}
+
+
+def resolve_token(token: str) -> dict | None:
+    """
+    Look up a token. Checks TERMINAL_TOKEN (admin) first, then users.json.
+    Returns a user-info dict with at least: name, access_level.
+    Returns None if the token is invalid.
+    """
+    if not token:
+        return None
+    # Admin token (env var)
+    if TERMINAL_TOKEN and token == TERMINAL_TOKEN:
+        return {"name": "admin", "access_level": "admin", "username": "admin"}
+    # Per-user tokens from users.json
+    users = load_users()
+    for username, u in users.items():
+        if u.get("terminal_token") == token and u.get("status") == "active":
+            return {
+                "name": u.get("name", username),
+                "access_level": u.get("access_level", "operator"),
+                "username": username,
+                "role": u.get("role", ""),
+            }
+    return None
+
+
+# Commands that operator-level users cannot run
+OPERATOR_BLOCKLIST = [
+    "kill", "pkill", "killall",
+    "rm -rf", "rm -f",
+    "git push",
+    "git reset",
+    "shutdown", "reboot", "poweroff", "halt",
+    "sudo",
+    "chmod -r",
+    "passwd",
+    "> /dev",
+]
+
+
+def is_operator_blocked(command: str) -> bool:
+    """Return True if an operator-level user is not allowed to run this command."""
+    cmd_lower = command.strip().lower()
+    for pattern in OPERATOR_BLOCKLIST:
+        if pattern in cmd_lower:
+            return True
+    return False
 
 # Commands that are never allowed
 BLOCKLIST = [
@@ -145,16 +212,17 @@ class TerminalHandler(BaseHTTPRequestHandler):
         token = body.get("token", "")
         command = body.get("command", "").strip()
 
-        # Auth
-        if not TERMINAL_TOKEN:
+        # Auth — check admin token and per-user tokens
+        if not TERMINAL_TOKEN and not load_users():
             self.send_response(500)
             self.send_header("Content-Type", "application/json")
             self._cors_headers(origin)
             self.end_headers()
-            self.wfile.write(json.dumps({"error": "TERMINAL_TOKEN not configured"}).encode())
+            self.wfile.write(json.dumps({"error": "No tokens configured"}).encode())
             return
 
-        if token != TERMINAL_TOKEN:
+        user_info = resolve_token(token)
+        if user_info is None:
             self.send_response(403)
             self.send_header("Content-Type", "application/json")
             self._cors_headers(origin)
@@ -170,7 +238,24 @@ class TerminalHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"error": "Empty command"}).encode())
             return
 
-        # Blocklist check
+        # Per-user access control: operators get a restricted command set
+        if user_info.get("access_level") == "operator" and is_operator_blocked(command):
+            self.send_response(403)
+            self.send_header("Content-Type", "application/json")
+            self._cors_headers(origin)
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "error": f"Command blocked for operator access level",
+                "output": f"BLOCKED: '{command}' — operators cannot run kill/rm -rf/git push/reboot/sudo",
+                "exit_code": -1,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "user": user_info.get("name"),
+            }).encode())
+            print(f"[{datetime.now(timezone.utc).strftime('%H:%M:%S')}] OPERATOR BLOCKED "
+                  f"user={user_info.get('name')} cmd={command[:60]}")
+            return
+
+        # Global blocklist check
         if is_blocked(command):
             self.send_response(403)
             self.send_header("Content-Type", "application/json")
@@ -178,13 +263,17 @@ class TerminalHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps({
                 "error": "Command blocked for safety",
-                "output": f"BLOCKED: '{command}' matches blocklist",
+                "output": f"BLOCKED: '{command}' matches global blocklist",
                 "exit_code": -1,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
+                "user": user_info.get("name"),
             }).encode())
             return
 
         # Execute
+        ts = datetime.now(timezone.utc)
+        print(f"[{ts.strftime('%H:%M:%S')}] EXEC user={user_info.get('name')} "
+              f"access={user_info.get('access_level')} cmd={command[:80]}")
         try:
             result = subprocess.run(
                 command,
@@ -202,19 +291,22 @@ class TerminalHandler(BaseHTTPRequestHandler):
             response = {
                 "output": output,
                 "exit_code": result.returncode,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": ts.isoformat(),
+                "user": user_info.get("name"),
             }
         except subprocess.TimeoutExpired:
             response = {
                 "output": f"Command timed out after {TIMEOUT}s",
                 "exit_code": -1,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": ts.isoformat(),
+                "user": user_info.get("name"),
             }
         except Exception as e:
             response = {
                 "output": f"Execution error: {str(e)}",
                 "exit_code": -1,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": ts.isoformat(),
+                "user": user_info.get("name"),
             }
 
         self.send_response(200)
@@ -230,14 +322,20 @@ class TerminalHandler(BaseHTTPRequestHandler):
 
 
 def main():
-    if not TERMINAL_TOKEN:
-        print("WARNING: TERMINAL_TOKEN env var not set!")
-        print("Set it with: export TERMINAL_TOKEN='your-token-here'")
-        return
+    users = load_users()
+    active_users = [u for u, v in users.items() if v.get("status") == "active"]
+
+    if not TERMINAL_TOKEN and not users:
+        print("WARNING: No tokens configured!")
+        print("  Set TERMINAL_TOKEN env var, or add users to scripts/terminal/users.json")
+        print("  Continuing anyway — all requests will return 500 until tokens are set.")
 
     server = HTTPServer(("0.0.0.0", PORT), TerminalHandler)
     print(f"Terminal API listening on port {PORT}")
-    print(f"Token configured: {'yes' if TERMINAL_TOKEN else 'no'}")
+    print(f"Admin token (TERMINAL_TOKEN): {'configured' if TERMINAL_TOKEN else 'NOT SET'}")
+    print(f"Users file: {USERS_FILE}")
+    print(f"Active user accounts: {active_users}")
+    print(f"Pending accounts: {[u for u, v in users.items() if v.get('status') == 'pending-setup']}")
     print(f"Rate limit: {RATE_LIMIT} req/{RATE_WINDOW}s")
     print(f"Timeout: {TIMEOUT}s")
     print(f"Allowed origins: {', '.join(ALLOWED_ORIGINS)}")

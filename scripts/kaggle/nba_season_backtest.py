@@ -137,6 +137,11 @@ else:
 
     games.sort(key=lambda g: g.get('game_date', g.get('date', '')))
 
+    # DIAGNOSTIC: show actual field names in game records so we can verify team extraction
+    if games:
+        print(f"Game fields: {list(games[0].keys())}")
+        print(f"Sample game: {games[0]}")
+
     print("Building features (20-30 min)...")
     from features.engine import NBAFeatureEngine
     engine = NBAFeatureEngine()
@@ -264,6 +269,28 @@ def load_odds_from_csv():
         '/kaggle/working/nba_2008-2025.csv',
         'data/historical-odds/nba_2008-2025.csv',
     ]
+
+    # DEBUG: list /kaggle/input/ to see what datasets are mounted
+    if IS_KAGGLE:
+        import glob
+        inputs = glob.glob('/kaggle/input/*')
+        print(f"  Kaggle inputs mounted: {inputs}")
+        for inp in inputs:
+            files = glob.glob(f'{inp}/*')
+            print(f"    {inp}: {files[:5]}")
+
+    # Fallback: download odds CSV if not found locally
+    if IS_KAGGLE and not any(os.path.exists(p) for p in csv_paths):
+        print("  Attempting Kaggle API download of odds dataset...")
+        try:
+            subprocess.run(['kaggle', 'datasets', 'download', '-d',
+                            'alexismoret6/nba-2025-26-odds',
+                            '-p', '/kaggle/working/', '--unzip'],
+                           capture_output=True, timeout=60)
+            csv_paths.insert(0, '/kaggle/working/nba_2025-26_odds.csv')
+        except Exception as e:
+            print(f"  Kaggle download failed: {e}")
+
     for path in csv_paths:
         if os.path.exists(path):
             print(f"Loading odds from: {path}")
@@ -327,6 +354,15 @@ def load_odds_from_supabase():
 
 load_odds_from_csv()
 load_odds_from_supabase()
+print(f"\n=== ODDS LOADED: {len(ODDS_LOOKUP)} records ===")
+if ODDS_LOOKUP:
+    sample_keys = list(ODDS_LOOKUP.keys())[:5]
+    for k in sample_keys:
+        v = ODDS_LOOKUP[k]
+        print(f"  {k}: home={v.get('odds_home')}, away={v.get('odds_away')}, spread={v.get('spread')}")
+else:
+    print("  *** NO ODDS DATA — ALL BETS WILL BE SKIPPED ***")
+    print("  Fix: Add alexismoret6/nba-2025-26-odds as Kaggle input dataset")
 
 ###############################################################################
 # MULTI-MARKET BET GENERATION HELPERS
@@ -592,15 +628,22 @@ SIZING_STRATEGIES = {
     'Kelly_25pct':   kelly_stake(0.25),
     'Kelly_15pct':   kelly_stake(0.15),
     'Kelly_10pct':   kelly_stake(0.10),
+    'Kelly_50pct':   kelly_stake(0.50),       # Aggressive Kelly
+    'Kelly_Full':    kelly_stake(1.00),        # Full Kelly (dangerous but max compound)
     'Flat_10':       flat_stake(10.0),
     'Prop_1pct':     prop_stake(0.01),
+    'Prop_5pct':     prop_stake(0.05),         # 5% of bankroll per bet
+    'Prop_10pct':    prop_stake(0.10),         # 10% of bankroll — compound heavy
+    'AllIn_Daily':   prop_stake(1.00),         # All bankroll = max compound interest
 }
 
 INITIAL_BANKROLL = 100.0
-MAX_BET_PCT      = 0.025   # 2.5% per position
-MAX_DAILY_EXPO   = 0.25    # 25% portfolio daily
+MAX_BET_PCT      = 1.00    # No per-position cap — let Kelly manage risk
+MAX_DAILY_EXPO   = 1.00    # 100% portfolio daily — full compound interest
 MIN_BET_STAKE    = 0.25    # minimum bet size
-MIN_EDGE         = 0.03    # 3% minimum edge to bet
+MIN_EDGE         = 0.005   # 0.5% minimum edge — lower threshold to actually place bets
+                             # Tree ensemble at 0.228 Brier rarely exceeds 3% edge
+                             # Real edge filtering happens via Kelly sizing (small bets on small edges)
 
 # Filter sets: which bet types to include in each "strategy group"
 # Full = all types; ML_only = moneyline only; etc.
@@ -747,6 +790,8 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
 
     # ── Per-game betting ──
     week_pnl_per_strategy = defaultdict(float)
+    n_no_odds = 0
+    n_with_odds = 0
 
     for j in range(len(test_idx)):
         game_idx    = test_idx[j]
@@ -754,13 +799,53 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
         game_date   = test_game_dates[j]
 
         g = games[game_idx] if game_idx < len(games) else {}
-        game_home = g.get('home_team', g.get('home', ''))
-        game_away = g.get('away_team', g.get('away', ''))
+
+        # FIX: try all known field name patterns for home/away team
+        raw_home = (g.get('home_team') or g.get('home') or g.get('HOME_TEAM') or
+                    g.get('team_home') or g.get('home_team_abbreviation') or
+                    g.get('visitor_team', '') or '')
+        raw_away = (g.get('away_team') or g.get('away') or g.get('AWAY_TEAM') or
+                    g.get('team_away') or g.get('away_team_abbreviation') or
+                    g.get('visitor', '') or '')
+        game_home = norm_team(raw_home) if raw_home else ''
+        game_away = norm_team(raw_away) if raw_away else ''
 
         odds_key  = f"{game_date}_{game_home}_{game_away}"
         real_odds = ODDS_LOOKUP.get(odds_key, {})
         if not real_odds:
-            continue  # No real odds — skip (no circular edge)
+            # Try reverse key (away_home) — in case home/away are swapped
+            odds_key_rev = f"{game_date}_{game_away}_{game_home}"
+            real_odds = ODDS_LOOKUP.get(odds_key_rev, {})
+            if real_odds:
+                # Swap home/away odds to match our game orientation
+                real_odds = dict(real_odds)
+                real_odds['odds_home'], real_odds['odds_away'] = real_odds.get('odds_away'), real_odds.get('odds_home')
+
+        if not real_odds and game_home and game_away:
+            # SECONDARY: fuzzy date match — try +1 and -1 day (tip-off time zone edge)
+            try:
+                from datetime import datetime as _dt, timedelta as _td
+                base_dt = _dt.strptime(game_date, '%Y-%m-%d')
+                for delta in (-1, 1):
+                    alt_date = (base_dt + _td(days=delta)).strftime('%Y-%m-%d')
+                    for k_h, k_a in [(game_home, game_away), (game_away, game_home)]:
+                        alt_key = f"{alt_date}_{k_h}_{k_a}"
+                        if alt_key in ODDS_LOOKUP:
+                            real_odds = dict(ODDS_LOOKUP[alt_key])
+                            if k_h == game_away:  # reversed: swap odds
+                                real_odds['odds_home'], real_odds['odds_away'] = real_odds.get('odds_away'), real_odds.get('odds_home')
+                            break
+                    if real_odds:
+                        break
+            except Exception:
+                pass
+
+        if not real_odds:
+            if n_no_odds < 5:  # Print first 5 misses for diagnosis
+                print(f"  No odds for: {odds_key} (raw: home={raw_home!r}, away={raw_away!r})")
+            n_no_odds += 1
+            continue
+        n_with_odds += 1
 
         # Build actual outcome
         home_score = int(g.get('home_score', g.get('score_home', 0)) or 0)
@@ -842,6 +927,18 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
             'date': week_dates[-1],
             'bankroll': round(state[skey]['bankroll'], 2),
         })
+
+    # Odds matching diagnostic + per-week bet count
+    total_week_bets = sum(state[k]['bets'] - state[k].get('_prev_bets', 0) for k in state)
+    if n_with_odds == 0 and n_no_odds > 0:
+        print(f"  ODDS MISS: {n_no_odds} games had no odds, 0 matched => 0 bets possible")
+    elif n_with_odds > 0:
+        print(f"  Odds: {n_with_odds}/{n_with_odds + n_no_odds} matched | Bets this week: {total_week_bets}")
+    else:
+        print(f"  No odds data this week | Bets this week: {total_week_bets}")
+    # Update _prev_bets snapshot for next week's delta
+    for k in state:
+        state[k]['_prev_bets'] = state[k]['bets']
 
     # Summary print for best strategies
     top5 = sorted(STRATEGIES.keys(),

@@ -1,0 +1,390 @@
+{
+  "schema_version": "1.0",
+  "timestamp": "2026-03-28T20:54:23Z",
+  "run_mode": "live",
+  "global_health": {
+    "health_score": 0.6793,
+    "active_agents": 16,
+    "total_agents": 22,
+    "avg_paperclip_score": 0.5836,
+    "eliminated_agents": 0,
+    "fleet_best_brier": 0.22006,
+    "atr_brier": 0.2157,
+    "target_brier": 0.2,
+    "brier_progress_pct": 59.9,
+    "interpretation": "FAIR \u2014 several agents below target, remodeling needed"
+  },
+  "resource_allocation": {
+    "method": "paperclip_softmax",
+    "description": "Resources proportional to exp(paperclip_score * 3). Top agents get exponentially more compute.",
+    "total_budget": 100,
+    "allocations": [
+      {
+        "agent_id": 11,
+        "agent_name": "evolution-optimizer",
+        "department": "evolution",
+        "resources": 9,
+        "paperclip_score": 0.83
+      },
+      {
+        "agent_id": 22,
+        "agent_name": "orchestrator",
+        "department": "oversight",
+        "resources": 9,
+        "paperclip_score": 0.85
+      },
+      {
+        "agent_id": 20,
+        "agent_name": "infra-agent",
+        "department": "infrastructure",
+        "resources": 8,
+        "paperclip_score": 0.82
+      },
+      {
+        "agent_id": 5,
+        "agent_name": "feature-engineer",
+        "department": "engineering",
+        "resources": 7,
+        "paperclip_score": 0.77
+      },
+      {
+        "agent_id": 14,
+        "agent_name": "betting-strategist",
+        "department": "betting_strategy",
+        "resources": 7,
+        "paperclip_score": 0.78
+      },
+      {
+        "agent_id": 8,
+        "agent_name": "bug-fixer",
+        "department": "engineering",
+        "resources": 6,
+        "paperclip_score": 0.7
+      },
+      {
+        "agent_id": 10,
+        "agent_name": "evolution-monitor",
+        "department": "evolution",
+        "resources": 6,
+        "paperclip_score": 0.72
+      },
+      {
+        "agent_id": 12,
+        "agent_name": "karpathy-loop",
+        "department": "evolution",
+        "resources": 5,
+        "paperclip_score": 0.65
+      },
+      {
+        "agent_id": 13,
+        "agent_name": "odds-monitor",
+        "department": "betting_strategy",
+        "resources": 5,
+        "paperclip_score": 0.67
+      },
+      {
+        "agent_id": 15,
+        "agent_name": "strategy-tester",
+        "department": "betting_strategy",
+        "resources": 5,
+        "paperclip_score": 0.65
+      },
+      {
+        "agent_id": 1,
+        "agent_name": "paper-scout",
+        "department": "research",
+        "resources": 4,
+        "paperclip_score": 0.6
+      },
+      {
+        "agent_id": 2,
+        "agent_name": "repo-scout",
+        "department": "research",
+        "resources": 4,
+        "paperclip_score": 0.6
+      },
+      {
+        "agent_id": 3,
+        "agent_name": "strategy-researcher",
+        "department": "research",
+        "resources": 4,
+        "paperclip_score": 0.55
+      },
+      {
+        "agent_id": 21,
+        "agent_name": "dashboard-sync",
+        "department": "infrastructure",
+        "resources": 4,
+        "paperclip_score": 0.58
+      },
+      {
+        "agent_id": 4,
+        "agent_name": "data-scout",
+        "department": "research",
+        "resources": 3,
+        "paperclip_score": 0.4
+      },
+      {
+        "agent_id": 6,
+        "agent_name": "test-creator",
+        "department": "engineering",
+        "resources": 3,
+        "paperclip_score": 0.35
+      },
+      {
+        "agent_id": 7,
+        "agent_name": "test-runner",
+        "department": "engineering",
+        "resources": 3,
+        "paperclip_score": 0.45
+      },
+      {
+        "agent_id": 9,
+        "agent_name": "code-optimizer",
+        "department": "engineering",
+        "resources": 3,
+        "paperclip_score": 0.38
+      },
+      {
+        "agent_id": 16,
+        "agent_name": "strategy-corrector",
+        "department": "betting_strategy",
+        "resources": 3,
+        "paperclip_score": 0.4
+      },
+      {
+        "agent_id": 17,
+        "agent_name": "halftime-scorer",
+        "department": "betting_strategy",
+        "resources": 3,
+        "paperclip_score": 0.15
+      },
+      {
+        "agent_id": 18,
+        "agent_name": "results-evaluator",
+        "department": "evaluation",
+        "resources": 3,
+        "paperclip_score": 0.52
+      },
+      {
+        "agent_id": 19,
+        "agent_name": "performance-analyst",
+        "department": "evaluation",
+        "resources": 3,
+        "paperclip_score": 0.42
+      }
+    ]
+  },
+  "breakthrough_candidates": [
+    {
+      "agent_id": 22,
+      "name": "orchestrator",
+      "department": "oversight",
+      "paperclip_score": 0.85,
+      "metric_name": "system_health_score",
+      "metric_value": 0.81,
+      "metric_target": 0.95,
+      "next_action": "Full health check: 6/6 HF islands UP, 2 bots alive, Kaggle errors logged, 4 crons missing, 1 repo dirty. Paperclip decisions generated.",
+      "resources_to_allocate": 8
+    },
+    {
+      "agent_id": 11,
+      "name": "evolution-optimizer",
+      "department": "evolution",
+      "paperclip_score": 0.83,
+      "metric_name": "best_fleet_brier",
+      "metric_value": 0.22006,
+      "metric_target": 0.21,
+      "next_action": "Tuned S10 config: mut=0.09, cx=0.80, pop=60, feat=63. Applied mutation cap 0.15 to S10/S11/S12/S15. MOVDA deployed to all 6 islands.",
+      "resources_to_allocate": 30
+    },
+    {
+      "agent_id": 20,
+      "name": "infra-agent",
+      "department": "infrastructure",
+      "paperclip_score": 0.82,
+      "metric_name": "platform_uptime_pct",
+      "metric_value": 99.2,
+      "metric_target": 99.9,
+      "next_action": "Verified all 6 HF islands UP. Data server :8080 running. Kaggle CLI error (no binary) \u2014 workaround deployed. Telegram brain ALIVE.",
+      "resources_to_allocate": 10
+    },
+    {
+      "agent_id": 14,
+      "name": "betting-strategist",
+      "department": "betting_strategy",
+      "paperclip_score": 0.78,
+      "metric_name": "portfolio_roi_pct",
+      "metric_value": 3.92,
+      "metric_target": 5.0,
+      "next_action": "Portfolio Kelly optimizer run. CORRECTED results: $100->$103.92 (+3.92% ROI), 6W-7L, 13 bets, Sharpe 4.57, Brier 0.25313.",
+      "resources_to_allocate": 18
+    },
+    {
+      "agent_id": 5,
+      "name": "feature-engineer",
+      "department": "engineering",
+      "paperclip_score": 0.77,
+      "metric_name": "feature_categories_in_engine",
+      "metric_value": 43,
+      "metric_target": 56,
+      "next_action": "Implemented Cat39 (circadian fatigue), Cat41 (transition splits), Cat42 (shot quality zones), Cat43 (clutch perf), Cat44 (totals), Cat45 (player tracking). Deployed to all 6 HF islands.",
+      "resources_to_allocate": 27
+    }
+  ],
+  "elimination_risks": [
+    {
+      "agent_id": 17,
+      "name": "halftime-scorer",
+      "department": "betting_strategy",
+      "paperclip_score": 0.15,
+      "elimination_risk": "high",
+      "status": "remodeling",
+      "reason": "Currently remodeling. Score=0.15 below threshold 0.35."
+    }
+  ],
+  "remodel_proposals": [
+    {
+      "type": "remodel",
+      "agent_id": 17,
+      "agent_name": "halftime-scorer",
+      "department": "betting_strategy",
+      "current_score": 0.15,
+      "risk": "high",
+      "action": "integrate_live_odds_api",
+      "changes": [
+        "Connect DraftKings live API for 2H line feed",
+        "Set entry condition: score_diff < 10 at halftime",
+        "Add momentum features from 1H box score",
+        "Test on 50 historical halftimes before going live"
+      ],
+      "expected_improvement": "0 to 15+ live bets/week",
+      "priority": "HIGH"
+    }
+  ],
+  "decisions": [
+    {
+      "type": "resource_boost",
+      "agent_id": 22,
+      "agent_name": "orchestrator",
+      "current_resources": 9,
+      "target_resources": 8,
+      "reason": "Near breakthrough: paperclip_score=0.85",
+      "expected_impact": "Push system_health_score to target",
+      "priority": "HIGH"
+    },
+    {
+      "type": "resource_boost",
+      "agent_id": 11,
+      "agent_name": "evolution-optimizer",
+      "current_resources": 9,
+      "target_resources": 30,
+      "reason": "Near breakthrough: paperclip_score=0.83",
+      "expected_impact": "Push best_fleet_brier to target",
+      "priority": "HIGH"
+    },
+    {
+      "type": "resource_boost",
+      "agent_id": 20,
+      "agent_name": "infra-agent",
+      "current_resources": 8,
+      "target_resources": 10,
+      "reason": "Near breakthrough: paperclip_score=0.82",
+      "expected_impact": "Push platform_uptime_pct to target",
+      "priority": "HIGH"
+    },
+    {
+      "type": "remodel_or_eliminate",
+      "agent_id": 17,
+      "agent_name": "halftime-scorer",
+      "current_resources": 3,
+      "target_resources": 3,
+      "reason": "Currently remodeling. Score=0.15 below threshold 0.35.",
+      "remodel_proposal": {
+        "type": "remodel",
+        "agent_id": 17,
+        "agent_name": "halftime-scorer",
+        "department": "betting_strategy",
+        "current_score": 0.15,
+        "risk": "high",
+        "action": "integrate_live_odds_api",
+        "changes": [
+          "Connect DraftKings live API for 2H line feed",
+          "Set entry condition: score_diff < 10 at halftime",
+          "Add momentum features from 1H box score",
+          "Test on 50 historical halftimes before going live"
+        ],
+        "expected_improvement": "0 to 15+ live bets/week",
+        "priority": "HIGH"
+      },
+      "priority": "HIGH"
+    }
+  ],
+  "strategic_recommendations": [
+    {
+      "priority": 1,
+      "recommendation": "Push orchestrator to breakthrough",
+      "detail": "paperclip_score=0.85. Metric: system_health_score=0.81 \u2192 target 0.95.",
+      "action": "increase_resources",
+      "department": "oversight"
+    },
+    {
+      "priority": 2,
+      "recommendation": "Remodel halftime-scorer immediately",
+      "detail": "Currently remodeling. Score=0.15 below threshold 0.35.",
+      "action": "remodel",
+      "department": "betting_strategy"
+    },
+    {
+      "priority": 3,
+      "recommendation": "Activate GPU evolution session (Kaggle/Colab)",
+      "detail": "Brier gap to target = 0.0201. Need GPU TabICL evolution. Current best: 0.22006.",
+      "action": "launch_kaggle_session",
+      "department": "evolution"
+    },
+    {
+      "priority": 4,
+      "recommendation": "Apply mutation cap 0.15 to S13 (CatBoost) and S14 (LightGBM)",
+      "detail": "S13 has 14 stagnation cycles. S13/S14 still on old 0.25 cap. Mutation data: 0.10-0.15 = 80% improvement rate vs 18% at >=0.20.",
+      "action": "update_hf_space_config",
+      "department": "evolution"
+    },
+    {
+      "priority": 5,
+      "recommendation": "Add Player Props Unders strategy to arena (estimated 4-8% edge)",
+      "detail": "Multi-market research identified Props Unders as top undeployed edge. Build backtest for 2025-26 season before adding to arena.",
+      "action": "build_and_test_strategy",
+      "department": "betting_strategy"
+    }
+  ],
+  "arena_summary": {
+    "active_strategies": 13,
+    "eliminated_strategies": 2,
+    "best_strategy": {
+      "id": "S5",
+      "name": "HalfKelly-UNDER",
+      "reason": "Best Sharpe (1.89) among strategies above 5% ROI target. UNDER bets strongest edge.",
+      "roi": 7.91,
+      "sharpe": 1.89
+    },
+    "worst_strategy": {
+      "id": "S15",
+      "name": "Spread-Kelly-ATS",
+      "roi": -1.9,
+      "sharpe": -0.31,
+      "status": "at_risk",
+      "reason": "ATS spreads too efficient at Brier 0.2200. Negative ROI."
+    },
+    "total_bets": 1142,
+    "total_profit": 78.63
+  },
+  "next_run": "Cron: runs on-demand or via agent-cron.sh every 4h",
+  "meta": {
+    "agents_analyzed": 22,
+    "active_agents": 16,
+    "eliminated_agents": 0,
+    "breakthrough_threshold": 0.75,
+    "remodel_threshold": 0.35,
+    "elimination_risk_score": 0.25
+  }
+}
