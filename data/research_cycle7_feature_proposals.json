@@ -1,0 +1,344 @@
+{
+  "research_cycle": 7,
+  "date": "2026-03-28",
+  "title": "YouTube + Academic Research Feature Proposals (CAT 47-64)",
+  "current_status": {
+    "best_brier": 0.21570,
+    "engine_version": "v3.0-43cat",
+    "features_total": 6211,
+    "target": "< 0.20 Brier"
+  },
+  "sources": [
+    "Thinking Basketball (Ben Taylor)",
+    "Cleaning the Glass (Ben Falk)",
+    "Seth Partnow (The Athletic)",
+    "arXiv 2025-2026 research",
+    "MDPI clutch dynamics",
+    "PLOS One pace study",
+    "Belasen et al. 2025 (refs)",
+    "Polymarket API, SBR closing lines"
+  ],
+  "quick_wins": {
+    "effort_total_hours": 4,
+    "expected_brier_delta": -0.0020,
+    "expected_final_brier": 0.21370,
+    "implementation_order": [
+      {
+        "rank": 1,
+        "category": "CAT 49: Game Flow Dynamics",
+        "effort_hours": 2,
+        "features": 8,
+        "expected_delta": -0.0007,
+        "description": "Halftime margin, garbage time flag, game phase segments",
+        "data_source": "nba_api box scores + timestamps",
+        "implementation_notes": "Filter games by quarter/time; compute rolling stats per 8-min phase"
+      },
+      {
+        "rank": 2,
+        "category": "CAT 53: Rest Nonlinear Effects",
+        "effort_hours": 1,
+        "features": 10,
+        "expected_delta": -0.0008,
+        "description": "rest_squared, cumulative fatigue exponential decay",
+        "data_source": "existing rest data + exponential transform",
+        "implementation_notes": "Add nonlinear transforms: rest^2, sum(e^(-k*days_ago)) for last 10 games"
+      },
+      {
+        "rank": 3,
+        "category": "CAT 61: Vegas Consensus & Line Efficiency",
+        "effort_hours": 1,
+        "features": 6,
+        "expected_delta": -0.0005,
+        "description": "Implied prob consensus, line movement magnitude, sharp vs public",
+        "data_source": "BetMGM/DraftKings APIs (existing)",
+        "implementation_notes": "Pre-fetch opening + closing lines; compute deltas; implied prob from American odds"
+      }
+    ]
+  },
+  "high_priority_categories": [
+    {
+      "category": "CAT 47: Advanced Clutch Dynamics",
+      "effort": "2h",
+      "expected_brier_delta": "-0.0010",
+      "priority": "HIGH",
+      "features": 10,
+      "key_metrics": [
+        "clutch_ecc_home/away (Estimation of Clutch Competency)",
+        "clutch_3p_decline_pct (pressure effect on 3-point shooting)",
+        "clutch_ft_reliability (free throw % in last 5 min)",
+        "clutch_late_game_netrtg (net rating in close games, last 5 min)",
+        "clutch_margin_conversion_rate (win % when trailing by 5+ after Q3)",
+        "clutch_holding_pct (% of 10+ pt leads held to end)",
+        "fourth_quarter_pace (possession-weighted Q4 pace)"
+      ],
+      "source": "MDPI 2025, NBER Clutch Studies",
+      "relevance": "Clutch has demonstrated predictive power in recent research"
+    },
+    {
+      "category": "CAT 48: Referee Crew Bias & Foul Patterns",
+      "effort": "3h",
+      "expected_brier_delta": "-0.0008",
+      "priority": "HIGH",
+      "features": 12,
+      "key_metrics": [
+        "ref_crew_home_foul_delta (avg home fouls - away fouls)",
+        "ref_crew_ft_advantage_home (FTA differential for this crew)",
+        "ref_crew_total_fouls_avg (tight vs loose officiating)",
+        "ref_crew_home_win_pct (historical home team win % with crew)",
+        "ref_crew_playoff_bias (extra home favoritism in playoffs?)",
+        "ref_crew_3pt_call_rate (3-point fouls per 3p attempt)"
+      ],
+      "source": "Belasen et al. 2025, Sabag et al. 2026 (MIT Sloan), NBER",
+      "relevance": "2026 study confirms home favoritism persistent in modern NBA"
+    },
+    {
+      "category": "CAT 50: Market Microstructure & Sharp Money Signals",
+      "effort": "2h",
+      "expected_brier_delta": "-0.0012",
+      "priority": "HIGHEST",
+      "features": 14,
+      "key_metrics": [
+        "sharp_move_indicator (line moved >1.5 pts away from steam)",
+        "late_money_direction_flag (-1 away, 0 balanced, +1 home)",
+        "steam_move_velocity (speed of line movement, pts/hour)",
+        "reverse_line_movement (1 if line moved opposite to public bets)",
+        "public_money_pct_home vs bet % divergence (smart money signal)",
+        "polymarket_vs_books (market prob divergence)",
+        "prediction_market_vol_24h (Kalshi/Polymarket trading volume)"
+      ],
+      "source": "Sports AI 2026, Covers consensus, Polymarket API, SBR closing lines",
+      "relevance": "Market data is complementary signal; sharp money detectable pre-game"
+    },
+    {
+      "category": "CAT 54: Shot Quality & Location Splits",
+      "effort": "2h",
+      "expected_brier_delta": "-0.0008",
+      "priority": "HIGH",
+      "features": 8,
+      "key_metrics": [
+        "rim_freq_pct & rim_efg_rate (% and efficiency at rim)",
+        "mid_range_freq_pct & mid_range_efg_rate",
+        "three_point_freq_pct & three_point_efg_rate",
+        "expected_fg_pct (xEFG based on shot chart)",
+        "shot_quality_delta (actual eFG% - expected FG%)"
+      ],
+      "source": "Montrucchio 2026 (SOTA: Brier 0.199), Ben Taylor (Thinking Basketball)",
+      "relevance": "Shot location is strongly predictive; Montrucchio's top features include xEFG"
+    },
+    {
+      "category": "CAT 57: Player Health & Injury Impact (Weighted)",
+      "effort": "3h",
+      "expected_brier_delta": "-0.0010",
+      "priority": "HIGH",
+      "features": 10,
+      "key_metrics": [
+        "injured_war_home/away (Win Above Replacement lost, weighted)",
+        "injured_star_count (# of All-Star players out)",
+        "bench_depth_strength (how strong is backup unit)",
+        "days_since_return (rust factor for returning players)",
+        "preseason_lineup_available (% of projected starters available)"
+      ],
+      "source": "NBA injury reports, FiveThirtyEight RAPTOR methodology, Seth Partnow",
+      "relevance": "Injuries are massive predictive signal; modern method weights by position importance"
+    }
+  ],
+  "medium_priority_categories": [
+    {
+      "category": "CAT 49: Game Flow & Game Script",
+      "effort": "2h",
+      "expected_delta": "-0.0007",
+      "features": 8
+    },
+    {
+      "category": "CAT 51: Lineup Continuity & Rotation Depth",
+      "effort": "2h",
+      "expected_delta": "-0.0006",
+      "features": 10
+    },
+    {
+      "category": "CAT 52: Player Tracking & Hustle Metrics",
+      "effort": "3h",
+      "expected_delta": "-0.0005",
+      "features": 12
+    },
+    {
+      "category": "CAT 55: Head-to-Head Matchup Dynamics",
+      "effort": "1h",
+      "expected_delta": "-0.0004",
+      "features": 8
+    },
+    {
+      "category": "CAT 58: Pace Adjustment & Tempo",
+      "effort": "2h",
+      "expected_delta": "-0.0005",
+      "features": 8
+    }
+  ],
+  "implementation_checklist": {
+    "data_source_verification": [
+      {
+        "source": "nba_api",
+        "status": "verified working",
+        "coverage": "box scores, play-by-play, lineups, hustle stats"
+      },
+      {
+        "source": "NBA.com L2M reports",
+        "status": "requires web scrape",
+        "coverage": "referee crew, fouls, bias metrics"
+      },
+      {
+        "source": "pbpstats.com",
+        "status": "API available",
+        "coverage": "shot data, zones, expected FG%"
+      },
+      {
+        "source": "BetMGM/DraftKings",
+        "status": "configured",
+        "coverage": "opening/closing spreads, moneylines"
+      },
+      {
+        "source": "Polymarket",
+        "status": "API available",
+        "coverage": "prediction market prices, volumes"
+      },
+      {
+        "source": "Basketball-Reference",
+        "status": "CSV export available",
+        "coverage": "historical records, play-by-play"
+      }
+    ]
+  },
+  "expected_outcomes": {
+    "optimistic_gain": "-0.008 Brier (0.21570 → 0.20770)",
+    "realistic_gain": "-0.004 to -0.006 Brier (0.21570 → 0.21170 to 0.20970)",
+    "pessimistic_gain": "-0.001 Brier (0.21570 → 0.21470)",
+    "notes": "Realistic estimates account for redundancy, noisy features, overfitting. Combined implementation of top 5 categories (47, 48, 50, 54, 57) likely yields -0.005 to -0.008 gain."
+  },
+  "research_findings": {
+    "sota_benchmark": {
+      "author": "Montrucchio 2026",
+      "best_brier": 0.199,
+      "gap_to_sota": 0.0157,
+      "key_features": ["xEFG", "nonlinear rest", "game flow", "clutch adjustment"]
+    },
+    "calibration_insight": {
+      "finding": "Model calibration >> accuracy for betting profitability",
+      "source": "Walsh & Joshi 2024",
+      "implication": "69.86% higher returns from calibration optimization vs accuracy optimization"
+    },
+    "market_efficiency": {
+      "finding": "Vegas lines already incorporate ~90% of available public info",
+      "implication": "Market micro features likely < 0.001 Brier delta, but non-redundant with model"
+    },
+    "referee_bias": {
+      "finding": "Home favoritism persistent (recent 2025-2026 studies)",
+      "implication": "Foul calling patterns are real, measurable, exploitable"
+    }
+  },
+  "youtube_channels_to_monitor": [
+    {
+      "channel": "Thinking Basketball (Ben Taylor)",
+      "focus": "Shot quality, lineup analysis, advanced metrics",
+      "relevant_features": ["CAT 54 (shot zones)", "CAT 51 (lineups)", "calibration"],
+      "url": "https://www.youtube.com/@thinkingbasketball"
+    },
+    {
+      "channel": "Cleaning the Glass (Ben Falk)",
+      "focus": "Garbage time filters, situational defense, bench depth",
+      "relevant_features": ["CAT 49 (game flow)", "CAT 51 (lineups)", "CAT 60 (bench)"],
+      "url": "https://www.youtube.com/@cleaningtheglass"
+    },
+    {
+      "channel": "The Athletic / Seth Partnow",
+      "focus": "Player impact, injuries, Bayesian methods",
+      "relevant_features": ["CAT 57 (injuries)", "CAT 55 (H2H)", "calibration"],
+      "url": "https://www.youtube.com/@theathletic"
+    },
+    {
+      "channel": "BBall Index",
+      "focus": "Advanced metrics, game flow, clutch",
+      "relevant_features": ["CAT 47 (clutch)", "CAT 49 (game flow)"],
+      "url": "https://www.youtube.com/@bballindex"
+    },
+    {
+      "channel": "Half Court Hoops",
+      "focus": "Niche analytics, deep dives",
+      "relevant_features": ["CAT 48 (refs)", "CAT 50 (market micro)"],
+      "url": "https://www.youtube.com/@HalfCourtHoops"
+    }
+  ],
+  "next_steps": [
+    {
+      "step": 1,
+      "title": "Implement Quick Wins (4h)",
+      "tasks": [
+        "Add CAT 49 (game flow) to engine.py",
+        "Add CAT 53 (rest nonlinear) to engine.py",
+        "Add CAT 61 (Vegas consensus) if market data available"
+      ],
+      "expected_result": "-0.0020 Brier gain"
+    },
+    {
+      "step": 2,
+      "title": "Deploy to S10/S11 (test islands)",
+      "tasks": [
+        "Push updated engine.py to HF Space",
+        "Monitor Brier on validation set",
+        "Track feature usage in genetic algorithm"
+      ],
+      "expected_result": "Validation of quick-win gains"
+    },
+    {
+      "step": 3,
+      "title": "High-Priority Categories (2-3 days effort)",
+      "tasks": [
+        "Implement CAT 47 (clutch) — 2h",
+        "Scrape NBA L2M reports for CAT 48 (refs) — 3h",
+        "Integrate market data for CAT 50 (market micro) — 2h",
+        "Fetch shot data from pbpstats for CAT 54 (shot zones) — 2h"
+      ],
+      "expected_result": "-0.004 to -0.006 additional Brier gain"
+    },
+    {
+      "step": 4,
+      "title": "Full Deployment & Backtest",
+      "tasks": [
+        "Deploy all new categories to all 6 HF islands",
+        "Run walk-forward backtest on 2025-26 season",
+        "Compare vs baseline (current 0.21570 Brier)",
+        "Identify and cull low-performer categories"
+      ],
+      "expected_result": "New ATR Brier < 0.21"
+    }
+  ],
+  "tools_and_artifacts": {
+    "python_scripts": [
+      {
+        "file": "scripts/youtube_feature_extractor.py",
+        "purpose": "Extract feature-specific insights from YouTube transcripts",
+        "usage": "python3 scripts/youtube_feature_extractor.py --channels"
+      },
+      {
+        "file": "scripts/youtube_transcript_miner.py",
+        "purpose": "Mine YouTube transcripts (enhanced with Cycle 7 keywords)",
+        "usage": "python3 scripts/youtube_transcript_miner.py --search 'NBA analytics' --max 20"
+      }
+    ],
+    "documentation": [
+      {
+        "file": "research_cycle7_youtube_features.md",
+        "content": "Complete feature category specifications, data sources, implementation priority matrix"
+      },
+      {
+        "file": "data/research_cycle7_feature_proposals.json",
+        "content": "This structured proposal document (actionable, JSON-formatted)"
+      }
+    ]
+  },
+  "estimated_timeline": {
+    "quick_wins": "4 hours",
+    "high_priority_implementation": "10-12 hours",
+    "total_implementation": "2-3 days of focused work",
+    "expected_improvement_timeline": "Within 1 week of deployment, validate on holdout set"
+  }
+}
