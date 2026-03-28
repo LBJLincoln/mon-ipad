@@ -624,17 +624,59 @@ def prop_stake(pct):
         return bankroll * pct
     return _stake
 
+# ── Martingale: double after loss, reset after win ──
+def martingale_stake(base=5.0):
+    streak = [0]  # loss streak (mutable closure)
+    def _stake(edge, odds, prob, bankroll, max_bet_pct=0.20):
+        raw = base * (2 ** streak[0])
+        return min(raw, bankroll * max_bet_pct, bankroll)
+    def _update(won):
+        if won: streak[0] = 0
+        else:   streak[0] += 1
+    return _stake, _update
+
+# ── AntiMartingale: double after win, reset after loss ──
+def anti_martingale_stake(base=5.0, max_doubles=4):
+    streak = [0]  # win streak (mutable closure)
+    def _stake(edge, odds, prob, bankroll, max_bet_pct=0.20):
+        doubles = min(streak[0], max_doubles)
+        raw = base * (2 ** doubles)
+        return min(raw, bankroll * max_bet_pct, bankroll)
+    def _update(won):
+        if won: streak[0] += 1
+        else:   streak[0] = 0
+    return _stake, _update
+
 SIZING_STRATEGIES = {
-    'Kelly_25pct':   kelly_stake(0.25),
-    'Kelly_15pct':   kelly_stake(0.15),
-    'Kelly_10pct':   kelly_stake(0.10),
-    'Kelly_50pct':   kelly_stake(0.50),       # Aggressive Kelly
-    'Kelly_Full':    kelly_stake(1.00),        # Full Kelly (dangerous but max compound)
-    'Flat_10':       flat_stake(10.0),
-    'Prop_1pct':     prop_stake(0.01),
-    'Prop_5pct':     prop_stake(0.05),         # 5% of bankroll per bet
-    'Prop_10pct':    prop_stake(0.10),         # 10% of bankroll — compound heavy
-    'AllIn_Daily':   prop_stake(1.00),         # All bankroll = max compound interest
+    'Kelly_25pct':      kelly_stake(0.25),
+    'Kelly_15pct':      kelly_stake(0.15),
+    'Kelly_10pct':      kelly_stake(0.10),
+    'Kelly_50pct':      kelly_stake(0.50),       # Aggressive Kelly
+    'Kelly_Full':       kelly_stake(1.00),        # Full Kelly (dangerous but max compound)
+    'Flat_10':          flat_stake(10.0),
+    'Prop_1pct':        prop_stake(0.01),
+    'Prop_5pct':        prop_stake(0.05),         # 5% of bankroll per bet
+    'Prop_10pct':       prop_stake(0.10),         # 10% of bankroll — compound heavy
+    'AllIn_Daily':      prop_stake(1.00),         # All bankroll = max compound interest
+    # NOTE: Martingale / AntiMartingale are stateful — handled separately below
+}
+
+# Arena-category map: maps sizing key → arena system name (for cross-system alignment)
+ARENA_CATEGORY = {
+    'Kelly_Full':       'Kelly_Full',
+    'Kelly_50pct':      'Kelly_Half',
+    'Kelly_25pct':      'Kelly_Quarter',
+    'Flat_10':          'Flat_10',
+    'Prop_1pct':        'Prop_1pct',
+    'Prop_5pct':        'Prop_5pct',
+    'Prop_10pct':       'Prop_2pct',   # closest arena analog
+    'AllIn_Daily':      'AllIn_Daily',
+    'Kelly_15pct':      'Kelly_Quarter',
+    'Kelly_10pct':      'Kelly_Quarter',
+    'Martingale':       'Martingale',
+    'AntiMartingale':   'AntiMartingale',
+    'Conservative':     'Conservative',
+    'Aggressive':       'Aggressive',
 }
 
 INITIAL_BANKROLL = 100.0
@@ -661,6 +703,17 @@ BET_FILTER_SETS = {
     'TOP4': {  # Best bets from multi-market analysis: H1_ATS_AWAY, H1_UNDER, H2_UNDER, ML_AWAY
         'H1_ATS_AWAY', 'H1_UNDER', 'H2_UNDER', 'ML_AWAY'
     },
+    # Arena-aligned filter sets
+    'CONSERVATIVE_FILTER': {'ML_HOME', 'ML_AWAY', 'ATS_HOME', 'ATS_AWAY'},          # safe markets only
+    'AGGRESSIVE_FILTER':   set(BET_TYPES_ALL),                                        # all markets
+}
+
+# Extra per-combo edge overrides for conservative/aggressive combos (filter_name → min_edge)
+FILTER_MIN_EDGE_OVERRIDE = {
+    'CONSERVATIVE_FILTER': 0.05,   # 5% edge required
+    'AGGRESSIVE_FILTER':   0.005,  # 0.5% edge required
+    'TOP4_CONSERVATIVE':   0.05,
+    'TOP4_AGGRESSIVE':     0.005,
 }
 
 # Build all (bet_filter × sizing) strategy combos
@@ -668,10 +721,59 @@ STRATEGIES = {}
 for flt_name, flt_set in BET_FILTER_SETS.items():
     for siz_name, siz_fn in SIZING_STRATEGIES.items():
         key = f"{flt_name}__{siz_name}"
-        STRATEGIES[key] = {'filter': flt_set, 'sizing': siz_fn, 'label': key}
+        STRATEGIES[key] = {
+            'filter': flt_set,
+            'sizing': siz_fn,
+            'label': key,
+            'min_edge_override': FILTER_MIN_EDGE_OVERRIDE.get(flt_name),
+            'stateful': False,
+            'arena_category': ARENA_CATEGORY.get(siz_name, siz_name),
+        }
+
+# ── Special combos: TOP4_CONSERVATIVE / TOP4_AGGRESSIVE ──
+TOP4_FILTER = {'H1_ATS_AWAY', 'H1_UNDER', 'H2_UNDER', 'ML_AWAY'}
+STRATEGIES['TOP4_CONSERVATIVE__Kelly_25pct'] = {
+    'filter': TOP4_FILTER,
+    'sizing': kelly_stake(0.25),
+    'label':  'TOP4_CONSERVATIVE__Kelly_25pct',
+    'min_edge_override': 0.05,
+    'stateful': False,
+    'arena_category': 'Conservative',
+}
+STRATEGIES['TOP4_AGGRESSIVE__Kelly_50pct'] = {
+    'filter': set(BET_TYPES_ALL),
+    'sizing': kelly_stake(0.50),
+    'label':  'TOP4_AGGRESSIVE__Kelly_50pct',
+    'min_edge_override': 0.005,
+    'stateful': False,
+    'arena_category': 'Aggressive',
+}
+
+# ── Stateful strategies: Martingale / AntiMartingale ──
+# Built per-filter-set and stored with their state objects
+_MART_FILTERS = {
+    'ML_ONLY':    {'ML_HOME', 'ML_AWAY'},
+    'ALL':        set(BET_TYPES_ALL),
+    'TOP4':       TOP4_FILTER,
+}
+_STATEFUL_STRATEGIES = {}
+for flt_name, flt_set in _MART_FILTERS.items():
+    for siz_name, builder in [('Martingale', martingale_stake), ('AntiMartingale', anti_martingale_stake)]:
+        siz_fn, update_fn = builder(base=5.0)
+        key = f"{flt_name}__{siz_name}"
+        _STATEFUL_STRATEGIES[key] = {
+            'filter': flt_set,
+            'sizing': siz_fn,
+            'update': update_fn,
+            'label': key,
+            'min_edge_override': None,
+            'stateful': True,
+            'arena_category': siz_name,
+        }
+STRATEGIES.update(_STATEFUL_STRATEGIES)
 
 print(f"\n{len(STRATEGIES)} strategy combos to test across {len(BET_TYPES_ALL)} bet types")
-print(f"Sizing strategies: {list(SIZING_STRATEGIES.keys())}")
+print(f"Sizing strategies: {list(SIZING_STRATEGIES.keys()) + ['Martingale', 'AntiMartingale']}")
 print(f"Bet filter sets: {list(BET_FILTER_SETS.keys())}")
 
 ###############################################################################
@@ -709,6 +811,7 @@ for skey in STRATEGIES:
         'losses': 0,
         'pnl_history': [],  # per-week PnL for Sharpe
         'equity': [],
+        '_prev_bets': 0,
     }
 
 # Per-bet-type stats (aggregated across all strategies for diagnostic)
@@ -874,7 +977,7 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
             'away_score': away_score,
         }
 
-        # Generate all bets for this game
+        # Generate all bets for this game (use global MIN_EDGE as baseline floor)
         all_bets = generate_all_bets(p_home, real_odds, actual_outcome, MIN_EDGE)
 
         # Diagnostic: accumulate global stats
@@ -885,12 +988,16 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
 
         # Run each strategy
         for skey, strat in STRATEGIES.items():
-            flt   = strat['filter']
-            siz   = strat['sizing']
-            br    = state[skey]['bankroll']
-            day_expo = 0.0
+            flt          = strat['filter']
+            siz          = strat['sizing']
+            edge_floor   = strat.get('min_edge_override') or MIN_EDGE
+            is_stateful  = strat.get('stateful', False)
+            update_fn    = strat.get('update')
+            br           = state[skey]['bankroll']
+            day_expo     = 0.0
 
-            filtered_bets = [b for b in all_bets if b['type'] in flt]
+            filtered_bets = [b for b in all_bets
+                             if b['type'] in flt and b['edge'] >= edge_floor]
             for bet in filtered_bets:
                 stake = siz(bet['edge'], bet['odds'], bet['model_prob'], br, MAX_BET_PCT)
 
@@ -909,6 +1016,10 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
                 state[skey]['bets'] += 1
                 if bet['won']: state[skey]['wins'] += 1
                 else: state[skey]['losses'] += 1
+
+                # Update stateful streak (Martingale / AntiMartingale)
+                if is_stateful and update_fn:
+                    update_fn(bet['won'])
 
                 # Drawdown tracking
                 if br > state[skey]['peak']:
@@ -976,10 +1087,11 @@ for skey, strat in STRATEGIES.items():
     sizing     = parts[1] if len(parts) > 1 else ''
 
     confrontation.append({
-        'strategy':   skey,
-        'bet_filter': bet_filter,
-        'sizing':     sizing,
-        'roi_pct':    round(roi, 2),
+        'strategy':       skey,
+        'bet_filter':     bet_filter,
+        'sizing':         sizing,
+        'arena_category': STRATEGIES[skey].get('arena_category', sizing),
+        'roi_pct':        round(roi, 2),
         'final_bankroll': round(s['bankroll'], 2),
         'total_bets':     s['bets'],
         'wins':    s['wins'],
