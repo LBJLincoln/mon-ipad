@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-03-28T04:15:00Z",
-  "brain_version": "v16",
+  "timestamp": "2026-03-28T12:20:00Z",
+  "brain_version": "v17",
   "cycle": "4h-autonomous",
-  "cycle_id": "2026-03-28-0415",
-  "fleet_best_brier": 0.2237,
-  "fleet_best_island": "S10",
+  "cycle_id": "2026-03-28-1220",
+  "fleet_best_brier": null,
+  "fleet_best_island": "rebuilding",
   "all_time_best_brier": 0.21570,
   "all_time_source": "Colab TabICL 110f iter15",
   "target_brier": 0.20,
@@ -14,75 +14,85 @@
   "islands": {
     "S10": {
       "url": "nomos42-nba-quant.hf.space",
-      "role": "exploitation",
-      "generation": 242,
-      "cycle": 81,
-      "best_brier": 0.2237,
-      "best_roi": 0.2834,
-      "best_sharpe": 6.2726,
-      "best_features": 71,
-      "best_model": "xgboost_brier",
+      "role": "exploitation (mut=0.09 cx=0.80 feat=63)",
+      "generation": 0,
+      "cycle": 0,
+      "best_brier": null,
       "pop_size": 60,
-      "mutation_rate": 0.0556,
+      "mutation_rate": 0.15,
       "stagnation": 0,
       "games": 9551,
-      "feature_candidates": 3230,
-      "status": "EVOLVING",
-      "health": "ok",
-      "note": "Only island responding this cycle — others sleeping/cold"
+      "feature_candidates": 0,
+      "status": "BUILDING FEATURES",
+      "health": "restarting",
+      "started_at": "2026-03-28T11:53:13Z",
+      "note": "Just restarted — loading features, evolution not yet running"
     },
     "S11": {
       "url": "nomos42-nba-quant-2.hf.space",
-      "role": "exploration",
-      "status": "TIMEOUT",
-      "health": "cold",
-      "note": "Did not respond (60s timeout) — likely sleeping"
+      "role": "exploration (mut=0.15 feat=80)",
+      "generation": 0,
+      "cycle": 0,
+      "best_brier": null,
+      "pop_size": 60,
+      "mutation_rate": 0.15,
+      "stagnation": 0,
+      "games": 9551,
+      "status": "BUILDING FEATURES",
+      "health": "restarting",
+      "started_at": "2026-03-28T11:47:38Z",
+      "note": "Just restarted"
     },
     "S12": {
       "url": "nomos42-nba-evo-3.hf.space",
-      "role": "extra_trees_specialist",
-      "status": "TIMEOUT",
-      "health": "cold",
-      "note": "Did not respond (60s timeout) — likely sleeping"
+      "role": "extra_trees_specialist (mut=0.08 feat=60)",
+      "generation": 0,
+      "cycle": 0,
+      "best_brier": null,
+      "status": "BUILDING FEATURES",
+      "health": "restarting",
+      "started_at": "2026-03-28T11:48:26Z"
     },
     "S13": {
       "url": "nomos42-nba-evo-4.hf.space",
-      "role": "catboost_specialist",
-      "status": "TIMEOUT",
-      "health": "cold",
-      "note": "Did not respond (60s timeout) — likely sleeping"
+      "role": "catboost_specialist (mut=0.10 feat=66)",
+      "generation": 0,
+      "cycle": 0,
+      "best_brier": null,
+      "status": "BUILDING FEATURES",
+      "health": "restarting",
+      "started_at": "2026-03-28T11:50:02Z"
     },
     "S14": {
       "url": "nomos42-nba-evo-5.hf.space",
-      "role": "lightgbm_specialist",
+      "role": "lightgbm_specialist (mut=0.08 feat=55)",
       "status": "TIMEOUT",
       "health": "cold",
-      "note": "Did not respond (60s timeout) — likely sleeping"
+      "note": "60s timeout — HF space exists (Nomos42/nba-evo-5 verified). VM keepalive cron handles restart."
     },
     "S15": {
       "url": "nomos42-nba-evo-6.hf.space",
-      "role": "wide_search",
-      "status": "TIMEOUT",
-      "health": "cold",
-      "note": "Did not respond (60s timeout) — likely sleeping"
+      "role": "wide_search (mut=0.18 feat=80 pop=50)",
+      "generation": 0,
+      "cycle": 0,
+      "best_brier": null,
+      "status": "BUILDING FEATURES",
+      "health": "restarting",
+      "started_at": "2026-03-28T11:47:22Z"
     }
   },
   "actions_taken": [
-    "S10: checked stagnation=0, no diversify needed",
-    "checkpoint: NOT triggered (0.2237 > threshold 0.21837)",
-    "research: new LR-calibration proposal written (MDPI 2026 Brier 0.199)",
-    "S11-S15: timeout, no action — VM keepalive cron handles restarts"
+    "S10-S15: all islands restarted this cycle (gen=0 building features ~12:00 UTC)",
+    "S14: timeout — space confirmed to exist via HF API, VM keepalive handles restart",
+    "checkpoint: NOT triggered (fleet rebuilding, no brier available)",
+    "research: probability clipping proposal written to data/research-proposals/",
+    "cross-project: data_bootstrap.py pushed to nomos-political-alpha to fix PA1-PA3 feature starvation"
   ],
-  "research_this_cycle": "lr-calibration-shot-features-2026-03-28",
-  "gap_to_target": 0.0237,
-  "gap_to_checkpoint": 0.005,
-  "gap_to_alltime_colab": 0.0080,
-  "nba_fleet_note": "S10 actively evolving at gen242 Brier0.2237. 5 other islands cold/sleeping. Best known Brier=0.21570 from Colab TabICL. New research: calibrated LR achieved 0.199 in MDPI 2026 on comparable NBA data — adding logistic_regression to GA model pool is top priority.",
-  "political_alpha_summary": {
-    "PA1": {"status": "CRITICAL", "brier": 0.3, "feature_candidates": 2, "stagnation": 8, "actions": ["diversify queued", "boost_mutation queued"]},
-    "PA2": {"status": "CRITICAL", "brier": 0.3, "feature_candidates": 2, "stagnation": 10, "actions": ["diversify queued", "boost_mutation queued"]},
-    "PA3": {"status": "TIMEOUT"},
-    "PA4": {"status": "OK", "brier": 0.25008, "feature_candidates": 15, "stagnation": 0}
-  },
-  "political_alpha_root_cause": "feature_candidates=2 on PA1/PA2 — events in HIST_DIR are sparse stubs, zero-variance filter kills all but 2 features. Fix: enrich data_bootstrap.py with realistic event feature vectors OR run fetch_political_data.py to populate actual FEC/SEC/stock fields."
+  "research_this_cycle": "probability-clipping-brier-improvement-2026-03-28",
+  "gap_to_target": null,
+  "gap_to_checkpoint": null,
+  "gap_to_alltime_colab": null,
+  "nba_fleet_note": "All 6 islands restarted simultaneously around 11:47-11:53 UTC. Feature build takes ~15-30 min on CPU. Expect brier reports by next cycle. Previous best: 0.2237 on S10 (gen242). All-time best: 0.21570 Colab TabICL.",
+  "next_cycle_priority": "Check post-restart brier scores; apply probability clipping if any island reaches 0.225",
+  "supabase_note": "Primary (ayqviq) paused, using pooler (xivvnr). Islands log Supabase auth failures but operate normally via local cache."
 }
