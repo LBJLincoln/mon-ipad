@@ -69,6 +69,10 @@ Before production: Auth → List → Push → Status → Download → Parse → 
 
 ---
 
+## Cycle 6 — Unconventional Feature Research (2026-03-27)
+
+- [research_cycle6_feature_proposals.md](research_cycle6_feature_proposals.md) — 18 unconventional feature categories (Cat 39-56). Quick wins: Circadian (Cat39), Clutch (Cat43), Transition (Cat41), Load (Cat48), H2H (Cat55). All data sources mapped.
+
 ## Previous Research
 
 - [project_research_march2026.md](../../research-analyst/project_research_march2026.md) — Cycle 3 (calibration, config, proposals)

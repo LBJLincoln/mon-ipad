@@ -238,16 +238,142 @@ WALK_STEP_DAYS = 7
 MIN_TRAIN = 500
 N_FEATURES = 110
 INITIAL_BANKROLL = 100.0
-KELLY_FRACTION = 0.35
-MAX_BET_PCT = 0.05
+KELLY_FRACTION = 0.25  # quarter-Kelly (research-validated: arXiv:2107.08827)
+MAX_BET_PCT = 0.025    # 2.5% max per position (was 5%)
+MAX_DAILY_EXPOSURE = 0.25  # 25% max nightly exposure
 MIN_EDGE = 0.03
 
-# Resume from checkpoint
+# Flat-bet tracking (independent of Kelly for clean comparison)
+flat_bankroll = INITIAL_BANKROLL
+FLAT_BET_SIZE = 5.0  # $5 flat bets
+flat_wins = 0
+flat_losses = 0
+flat_pnl_total = 0.0
+
+# ── Load real market odds ──
+# Attempt to load from Kaggle dataset, Supabase, or OddsShark CSV
+ODDS_LOOKUP = {}  # key: "YYYY-MM-DD_HOME_AWAY" → {ml_home, ml_away, odds_home, odds_away, spread, total, ...}
+
+def american_to_decimal(ml):
+    if ml is None or ml == 0: return None
+    ml = float(ml)
+    return (1.0 + ml / 100.0) if ml > 0 else (1.0 + 100.0 / abs(ml))
+
+TEAM_NORM = {
+    "gs": "GSW", "ny": "NYK", "no": "NOP", "sa": "SAS", "por": "POR", "phi": "PHI",
+    "hou": "HOU", "lal": "LAL", "lac": "LAC", "bkn": "BKN", "bos": "BOS", "chi": "CHI",
+    "cle": "CLE", "dal": "DAL", "den": "DEN", "det": "DET", "gsw": "GSW", "ind": "IND",
+    "mem": "MEM", "mia": "MIA", "mil": "MIL", "min": "MIN", "nop": "NOP", "nyk": "NYK",
+    "okc": "OKC", "orl": "ORL", "phx": "PHX", "sac": "SAC", "sas": "SAS", "tor": "TOR",
+    "uta": "UTA", "was": "WAS", "atl": "ATL", "cha": "CHA", "utah": "UTA",
+    "phl": "PHI", "brk": "BKN", "pho": "PHX", "wsh": "WAS",
+    # Full team names (from odds CSV)
+    "atlanta hawks": "ATL", "boston celtics": "BOS", "brooklyn nets": "BKN",
+    "charlotte hornets": "CHA", "chicago bulls": "CHI", "cleveland cavaliers": "CLE",
+    "dallas mavericks": "DAL", "denver nuggets": "DEN", "detroit pistons": "DET",
+    "golden state warriors": "GSW", "houston rockets": "HOU", "indiana pacers": "IND",
+    "los angeles clippers": "LAC", "l.a. clippers": "LAC", "los angeles lakers": "LAL",
+    "memphis grizzlies": "MEM", "miami heat": "MIA", "milwaukee bucks": "MIL",
+    "minnesota timberwolves": "MIN", "new orleans pelicans": "NOP", "new york knicks": "NYK",
+    "oklahoma city thunder": "OKC", "orlando magic": "ORL", "philadelphia 76ers": "PHI",
+    "phoenix suns": "PHX", "portland trail blazers": "POR", "sacramento kings": "SAC",
+    "san antonio spurs": "SAS", "toronto raptors": "TOR", "utah jazz": "UTA",
+    "washington wizards": "WAS",
+}
+def norm_team(t): return TEAM_NORM.get(t.lower().strip(), t.upper().strip())
+
+def load_odds_from_csv():
+    """Load real market odds from available CSV files."""
+    global ODDS_LOOKUP
+    csv_paths = [
+        # 2025-26 real odds (1,128 games, BetMGM + SBR)
+        '/kaggle/input/nba-2025-26-odds/nba_2025-26_odds.csv',
+        'data/historical-odds/nba_2025-26_odds.csv',
+        '/home/termius/nomos-nba-agent/data/historical-odds/nba_2025-26_odds.csv',
+        # Historical (2007-2024)
+        '/kaggle/input/nba-betting-data-october-2007-to-june-2024/NBA Betting Data (2007-2024).csv',
+        '/kaggle/input/nba-odds/nba_2008-2025.csv',
+        '/kaggle/working/nba_2008-2025.csv',
+        'data/historical-odds/nba_2008-2025.csv',
+    ]
+    for path in csv_paths:
+        if os.path.exists(path):
+            print(f"Loading real odds from: {path}")
+            import csv as csv_mod
+            with open(path, 'r') as f:
+                reader = csv_mod.DictReader(f)
+                for row in reader:
+                    date = row.get('date', row.get('game_date', ''))
+                    home = norm_team(row.get('home', row.get('home_team', '')))
+                    away = norm_team(row.get('away', row.get('away_team', '')))
+                    ml_h = row.get('moneyline_home', row.get('ml_home', ''))
+                    ml_a = row.get('moneyline_away', row.get('ml_away', ''))
+                    spread = row.get('spread', '')
+                    total = row.get('total', '')
+                    h2_spread = row.get('h2_spread', '')
+                    h2_total = row.get('h2_total', '')
+                    favored = row.get('whos_favored', '')
+
+                    if ml_h and ml_a:
+                        try:
+                            key = f"{date}_{home}_{away}"
+                            ODDS_LOOKUP[key] = {
+                                'ml_home': float(ml_h),
+                                'ml_away': float(ml_a),
+                                'odds_home': american_to_decimal(float(ml_h)),
+                                'odds_away': american_to_decimal(float(ml_a)),
+                                'spread': float(spread) if spread else None,
+                                'total': float(total) if total else None,
+                                'h2_spread': float(h2_spread) if h2_spread else None,
+                                'h2_total': float(h2_total) if h2_total else None,
+                                'favored': favored,
+                            }
+                        except (ValueError, TypeError):
+                            pass
+            print(f"  Loaded {len(ODDS_LOOKUP)} games with real odds")
+            return True
+    print("WARNING: No odds CSV found — will use Supabase odds or implied probabilities")
+    return False
+
+def load_odds_from_supabase():
+    """Load real odds from Supabase predictions table."""
+    global ODDS_LOOKUP
+    if not DATABASE_URL:
+        return False
+    try:
+        import psycopg2
+        conn = psycopg2.connect(DATABASE_URL, connect_timeout=15)
+        cur = conn.cursor()
+        cur.execute("SELECT game_date, home_team, away_team, market_odds_home, market_odds_away FROM nba_predictions WHERE market_odds_home IS NOT NULL")
+        for row in cur.fetchall():
+            key = f"{row[0]}_{row[1]}_{row[2]}"
+            if key not in ODDS_LOOKUP:
+                ODDS_LOOKUP[key] = {
+                    'odds_home': float(row[3]) if row[3] else None,
+                    'odds_away': float(row[4]) if row[4] else None,
+                }
+        conn.close()
+        print(f"  Added {len(ODDS_LOOKUP)} games from Supabase odds")
+        return True
+    except Exception as e:
+        print(f"  Supabase odds load failed: {e}")
+        return False
+
+# Try to load odds
+load_odds_from_csv()
+load_odds_from_supabase()
+
+# Resume from checkpoint (only if --resume flag)
 CHECKPOINT = os.path.join(WORK_DIR, 'backtest_checkpoint.json')
-if os.path.exists(CHECKPOINT):
+RESUME = '--resume' in sys.argv
+if RESUME and os.path.exists(CHECKPOINT):
     ckpt = json.loads(open(CHECKPOINT).read())
     print(f"Resuming from {ckpt['last_date']}, bankroll=${ckpt['bankroll']:.2f}")
 else:
+    # Fresh run — delete stale checkpoint
+    if os.path.exists(CHECKPOINT):
+        os.remove(CHECKPOINT)
+        print("Deleted stale checkpoint — starting fresh")
     ckpt = None
 
 print(f"""
@@ -325,6 +451,13 @@ for week_i in range(week_start_idx, len(season_dates), WALK_STEP_DAYS):
     if len(test_idx) == 0:
         continue
 
+    # Filter indices to be within bounds of BOTH X_all and games
+    max_valid = min(len(X_all), len(y_all), len(games)) - 1
+    train_idx = train_idx[train_idx <= max_valid]
+    test_idx = test_idx[test_idx <= max_valid]
+    if len(test_idx) == 0:
+        continue
+
     X_train = X_all[train_idx][:, top_feature_idx]
     y_train = y_all[train_idx]
     X_test = X_all[test_idx][:, top_feature_idx]
@@ -370,96 +503,218 @@ for week_i in range(week_start_idx, len(season_dates), WALK_STEP_DAYS):
     week_wins = 0
     week_pnl = 0
 
+    day_exposure = 0
+
     for j in range(len(test_idx)):
         home_prob = float(probs[j])
         actual_home_win = bool(y_test[j])
         game_date = test_dates_week[j]
 
-        # Baseline: avg home win rate ~58%
-        baseline_prob = 0.58
+        # Look up real market odds for this game
+        game_idx = test_idx[j]
+        game_home = games[game_idx]['home_team'] if game_idx < len(games) else None
+        game_away = games[game_idx]['away_team'] if game_idx < len(games) else None
+        odds_key = f"{game_date}_{game_home}_{game_away}" if game_home else None
 
-        if home_prob > baseline_prob + MIN_EDGE:
-            # Bet HOME
-            odds = 1 / baseline_prob
-            model_edge = home_prob - baseline_prob
+        real_odds = ODDS_LOOKUP.get(odds_key, {}) if odds_key else {}
+        odds_home = real_odds.get('odds_home')
+        odds_away = real_odds.get('odds_away')
 
-            b = odds - 1
-            q = 1 - home_prob
-            kelly_full = max(0, (b * home_prob - q) / b)
-            kelly_bet = kelly_full * KELLY_FRACTION
-            stake = min(bankroll * kelly_bet, bankroll * MAX_BET_PCT)
-
-            if stake < 0.50:
-                continue
-
-            won = actual_home_win
-            pnl = stake * (odds - 1) if won else -stake
-
-            bankroll += pnl
-            week_pnl += pnl
-            week_bets += 1
-            total_bets += 1
-
-            if won:
-                wins += 1
-                week_wins += 1
+        # If no real odds found, derive from implied probability (less accurate)
+        if not odds_home and not odds_away:
+            # Use model-implied odds with 5% vig as conservative estimate
+            if home_prob > 0.5:
+                odds_home = 1.0 / (home_prob * 1.05)  # Home favorite
+                odds_away = 1.0 / ((1 - home_prob) * 1.05)
             else:
-                losses += 1
+                odds_home = 1.0 / (home_prob * 1.05)
+                odds_away = 1.0 / ((1 - home_prob) * 1.05)
 
-            all_trades.append({
-                'date': game_date,
-                'side': 'home',
-                'model_prob': round(home_prob, 4),
-                'baseline': round(baseline_prob, 4),
-                'odds': round(odds, 3),
-                'edge': round(model_edge, 4),
-                'stake': round(stake, 2),
-                'won': won,
-                'pnl': round(pnl, 2),
-                'bankroll': round(bankroll, 2),
-            })
+        # ── Moneyline bets ──
+        bet_odds = None
+        bet_on_home = None
 
-        elif home_prob < (1 - baseline_prob) - MIN_EDGE:
-            # Bet AWAY
-            away_prob = 1 - home_prob
-            odds = 1 / (1 - baseline_prob)
-            model_edge = away_prob - (1 - baseline_prob)
+        if home_prob > 0.5 and odds_home and 1.01 < odds_home <= 15.0:
+            bet_odds = odds_home
+            bet_on_home = True
+        elif home_prob < 0.5 and odds_away and 1.01 < odds_away <= 15.0:
+            bet_odds = odds_away
+            bet_on_home = False
 
-            b = odds - 1
-            q = 1 - away_prob
-            kelly_full = max(0, (b * away_prob - q) / b)
-            kelly_bet = kelly_full * KELLY_FRACTION
-            stake = min(bankroll * kelly_bet, bankroll * MAX_BET_PCT)
+        if bet_odds is not None:
+            bet_prob = home_prob if bet_on_home else (1 - home_prob)
+            real_edge = bet_prob * bet_odds - 1
 
-            if stake < 0.50:
-                continue
+            if real_edge > MIN_EDGE:
+                b = bet_odds - 1
+                q = 1 - bet_prob
+                kelly_full = max(0, (b * bet_prob - q) / b) if b > 0 else 0
+                kelly_bet = kelly_full * KELLY_FRACTION
+                stake = min(bankroll * kelly_bet, bankroll * MAX_BET_PCT)
 
-            won = not actual_home_win
-            pnl = stake * (odds - 1) if won else -stake
+                # Portfolio exposure cap
+                if day_exposure + stake > bankroll * MAX_DAILY_EXPOSURE:
+                    stake = max(0, bankroll * MAX_DAILY_EXPOSURE - day_exposure)
 
-            bankroll += pnl
-            week_pnl += pnl
-            week_bets += 1
-            total_bets += 1
+                if stake >= 0.50:
+                    won = actual_home_win if bet_on_home else (not actual_home_win)
+                    pnl = stake * (bet_odds - 1) if won else -stake
 
-            if won:
-                wins += 1
-                week_wins += 1
-            else:
-                losses += 1
+                    bankroll += pnl
+                    week_pnl += pnl
+                    week_bets += 1
+                    day_exposure += stake
+                    total_bets += 1
 
-            all_trades.append({
-                'date': game_date,
-                'side': 'away',
-                'model_prob': round(1 - home_prob, 4),
-                'baseline': round(1 - baseline_prob, 4),
-                'odds': round(odds, 3),
-                'edge': round(model_edge, 4),
-                'stake': round(stake, 2),
-                'won': won,
-                'pnl': round(pnl, 2),
-                'bankroll': round(bankroll, 2),
-            })
+                    # Flat-bet tracking (independent)
+                    flat_pnl_bet = FLAT_BET_SIZE * (bet_odds - 1) if won else -FLAT_BET_SIZE
+                    flat_bankroll += flat_pnl_bet
+                    flat_pnl_total += flat_pnl_bet
+                    if won: flat_wins += 1
+                    else: flat_losses += 1
+
+                    if won:
+                        wins += 1
+                        week_wins += 1
+                    else:
+                        losses += 1
+
+                    bet_side = 'home' if bet_on_home else 'away'
+                    all_trades.append({
+                        'date': game_date,
+                        'side': bet_side,
+                        'model_prob': round(bet_prob, 4),
+                        'market_odds': round(bet_odds, 3),
+                        'odds': round(bet_odds, 3),
+                        'edge': round(real_edge, 4),
+                        'stake': round(stake, 2),
+                        'won': won,
+                        'pnl': round(pnl, 2),
+                        'bankroll': round(bankroll, 2),
+                        'has_real_odds': bool(real_odds),
+                    })
+
+        # ── ATS Spread bets (if spread data available) ──
+        if real_odds.get('spread') is not None:
+            SPREAD_SCALE = 13.0
+            NBA_STD = 11.0
+            STANDARD_ODDS = 1.909  # -110 both sides
+
+            predicted_spread = -SPREAD_SCALE * math.log(home_prob / (1 - home_prob)) if 0.01 < home_prob < 0.99 else None
+            if predicted_spread is not None:
+                line_spread = float(real_odds['spread'])
+                if real_odds.get('favored') == 'away':
+                    line_spread = abs(line_spread)
+                else:
+                    line_spread = -abs(line_spread)
+
+                z = -(line_spread + predicted_spread) / NBA_STD
+                cover_prob = 1.0 / (1.0 + math.exp(-1.7 * z))
+
+                # Check both sides
+                for side_prob, side_name, side_won_fn in [
+                    (cover_prob, 'ATS_HOME', lambda m: m > -line_spread),
+                    (1-cover_prob, 'ATS_AWAY', lambda m: m < -line_spread),
+                ]:
+                    ats_edge = side_prob * STANDARD_ODDS - 1
+                    if ats_edge > MIN_EDGE:
+                        b = STANDARD_ODDS - 1
+                        q = 1 - side_prob
+                        kelly_full = max(0, (b * side_prob - q) / b) if b > 0 else 0
+                        stake = min(bankroll * kelly_full * KELLY_FRACTION, bankroll * MAX_BET_PCT)
+                        if day_exposure + stake > bankroll * MAX_DAILY_EXPOSURE:
+                            stake = max(0, bankroll * MAX_DAILY_EXPOSURE - day_exposure)
+                        if stake >= 0.50:
+                            margin = (games[game_idx]['home_score'] - games[game_idx]['away_score']) if game_idx < len(games) and 'home_score' in games[game_idx] else None
+                            if margin is None:
+                                # Derive from actual result + approximate margin
+                                margin = 5 if actual_home_win else -5  # Rough estimate
+                            ats_won = side_won_fn(margin)
+                            pnl = stake * (STANDARD_ODDS - 1) if ats_won else -stake
+                            bankroll += pnl
+                            week_pnl += pnl
+                            week_bets += 1
+                            day_exposure += stake
+                            total_bets += 1
+                            if ats_won: wins += 1; week_wins += 1
+                            else: losses += 1
+                            all_trades.append({
+                                'date': game_date, 'side': side_name,
+                                'model_prob': round(side_prob, 4),
+                                'market_odds': STANDARD_ODDS,
+                                'odds': STANDARD_ODDS,
+                                'edge': round(ats_edge, 4),
+                                'stake': round(stake, 2),
+                                'won': ats_won,
+                                'pnl': round(pnl, 2),
+                                'bankroll': round(bankroll, 2),
+                                'has_real_odds': True,
+                            })
+
+        # ── Over/Under Totals bets (if total data available) ──
+        if real_odds.get('total') is not None and game_idx < len(games):
+            game = games[game_idx] if game_idx < len(games) else {}
+            actual_total = None
+            if 'home_score' in game and 'away_score' in game:
+                actual_total = game['home_score'] + game['away_score']
+
+            if actual_total is not None:
+                market_total = float(real_odds['total'])
+                STANDARD_ODDS_TOTAL = 1.909  # -110
+
+                # Predict total from our model: use home_prob + pace proxies
+                # Strong home favorites → higher totals (more possessions), underdogs → lower
+                # Use logistic spread to estimate expected margin, then total
+                if 0.01 < home_prob < 0.99:
+                    expected_margin = -13.0 * math.log(home_prob / (1 - home_prob))
+                    # NBA average total ~225, correlated with favorite strength
+                    pred_total = 224.0 + abs(expected_margin) * 0.15
+                else:
+                    pred_total = 224.0
+
+                total_diff = pred_total - market_total  # positive = we think OVER
+                # Convert to probability
+                TOTAL_STD = 12.0  # NBA total standard deviation
+                z_over = total_diff / TOTAL_STD
+                over_prob = 1.0 / (1.0 + math.exp(-1.7 * z_over))
+
+                for side_prob, side_name, side_won in [
+                    (over_prob, 'OVER', actual_total > market_total),
+                    (1-over_prob, 'UNDER', actual_total < market_total),
+                ]:
+                    if actual_total == market_total:
+                        continue  # Push
+                    ou_edge = side_prob * STANDARD_ODDS_TOTAL - 1
+                    if ou_edge > MIN_EDGE:
+                        b = STANDARD_ODDS_TOTAL - 1
+                        q = 1 - side_prob
+                        kelly_full = max(0, (b * side_prob - q) / b) if b > 0 else 0
+                        ou_stake = min(bankroll * kelly_full * KELLY_FRACTION, bankroll * MAX_BET_PCT)
+                        if day_exposure + ou_stake > bankroll * MAX_DAILY_EXPOSURE:
+                            ou_stake = max(0, bankroll * MAX_DAILY_EXPOSURE - day_exposure)
+                        if ou_stake >= 0.50:
+                            pnl = ou_stake * (STANDARD_ODDS_TOTAL - 1) if side_won else -ou_stake
+                            bankroll += pnl
+                            week_pnl += pnl
+                            week_bets += 1
+                            day_exposure += ou_stake
+                            total_bets += 1
+                            if side_won: wins += 1; week_wins += 1
+                            else: losses += 1
+                            all_trades.append({
+                                'date': game_date, 'side': side_name,
+                                'model_prob': round(side_prob, 4),
+                                'market_odds': STANDARD_ODDS_TOTAL,
+                                'odds': STANDARD_ODDS_TOTAL,
+                                'edge': round(ou_edge, 4),
+                                'stake': round(ou_stake, 2),
+                                'won': side_won,
+                                'pnl': round(pnl, 2),
+                                'bankroll': round(bankroll, 2),
+                                'has_real_odds': True,
+                                'market_total': market_total,
+                                'actual_total': actual_total,
+                            })
 
     # Update tracking
     if bankroll > peak:
@@ -520,6 +775,31 @@ for week_i in range(week_start_idx, len(season_dates), WALK_STEP_DAYS):
 ###############################################################################
 import statistics
 
+def _compute_market_breakdown(trades):
+    """Compute P&L breakdown by bet type (ML, ATS, etc.)."""
+    markets = defaultdict(lambda: {'bets': 0, 'wins': 0, 'pnl': 0.0})
+    for t in trades:
+        side = t.get('side', 'home')
+        if 'ATS' in side:
+            mkt = 'ats'
+        elif side in ('home', 'away'):
+            mkt = 'moneyline'
+        else:
+            mkt = side
+        markets[mkt]['bets'] += 1
+        markets[mkt]['pnl'] += t.get('pnl', 0)
+        if t.get('won'):
+            markets[mkt]['wins'] += 1
+    result = {}
+    for mkt, stats in markets.items():
+        result[mkt] = {
+            'bets': stats['bets'],
+            'wins': stats['wins'],
+            'win_rate': round(stats['wins'] / stats['bets'] * 100, 1) if stats['bets'] else 0,
+            'pnl': round(stats['pnl'], 2),
+        }
+    return result
+
 roi = ((bankroll - INITIAL_BANKROLL) / INITIAL_BANKROLL) * 100
 win_rate = wins / total_bets * 100 if total_bets > 0 else 0
 
@@ -573,9 +853,10 @@ result = {
     'worst_month': min(monthly_pnl, key=lambda m: m['roi_pct']) if monthly_pnl else {'month': '', 'roi_pct': 0},
     'equity_curve': equity_curve,
     'monthly_pnl': monthly_pnl,
-    'by_market': {'moneyline': {'bets': total_bets, 'wins': wins, 'roi_pct': round(roi, 2)}},
+    'by_market': _compute_market_breakdown(all_trades),
     'by_model': {'tabicl_ensemble': {'bets': total_bets, 'wins': wins, 'roi_pct': round(roi, 2),
                  'avg_edge': round(statistics.mean([t['edge'] * 100 for t in all_trades]) if all_trades else 0, 2)}},
+    'real_odds_pct': round(sum(1 for t in all_trades if t.get('has_real_odds')) / max(len(all_trades), 1) * 100, 1),
     'daily_log': daily_log,
     'trades': all_trades[-100:],
     'brier_history': daily_briers,
@@ -586,6 +867,16 @@ result = {
     'brier_score': round(avg_brier, 5),
     'n_features': N_FEATURES,
     'models_used': list(WEIGHTS.keys()),
+    # Flat-bet baseline (Kelly-independent)
+    'flat_bet': {
+        'bet_size': FLAT_BET_SIZE,
+        'bankroll': round(flat_bankroll, 2),
+        'roi_pct': round((flat_bankroll - INITIAL_BANKROLL) / INITIAL_BANKROLL * 100, 2),
+        'wins': flat_wins,
+        'losses': flat_losses,
+        'win_rate': round(flat_wins / max(flat_wins + flat_losses, 1) * 100, 1),
+        'total_pnl': round(flat_pnl_total, 2),
+    },
 }
 
 # Save results
@@ -607,6 +898,10 @@ print(f"""
   Features:   {N_FEATURES}
   Models:     {', '.join(WEIGHTS.keys())}
 
+  FLAT BET ($5/bet):
+  Bankroll:   ${INITIAL_BANKROLL} -> ${flat_bankroll:.2f} ({(flat_bankroll - INITIAL_BANKROLL) / INITIAL_BANKROLL * 100:+.1f}%)
+  Record:     {flat_wins}W - {flat_losses}L ({flat_wins / max(flat_wins + flat_losses, 1) * 100:.1f}%)
+
   Monthly:
 """)
 for m in monthly_pnl:
@@ -618,6 +913,49 @@ print(f"""
   Saved to: {RESULTS_FILE}
 {'='*60}
 """)
+
+# ── MARKET BREAKDOWN ──
+by_mkt = _compute_market_breakdown(all_trades)
+if by_mkt:
+    print("  BY MARKET:")
+    for mkt, stats in sorted(by_mkt.items()):
+        print(f"    {mkt:>12}: {stats['bets']}B, {stats['wins']}W ({stats['win_rate']:.1f}%), PnL ${stats['pnl']:+.2f}")
+    print()
+
+# ── KELLY FRACTION SWEEP (retroactive on recorded trades) ──
+print("  KELLY OPTIMIZATION (retroactive on all trades):")
+print(f"  {'Fraction':<12} {'Final $':<12} {'ROI':<10} {'Max DD':<10} {'Sharpe':<10}")
+print(f"  {'-'*54}")
+for kf in [0.05, 0.10, 0.15, 0.20, 0.25, 0.33, 0.50, 0.75, 1.00]:
+    br = INITIAL_BANKROLL
+    pk = br
+    mdd = 0
+    rets = []
+    for t in all_trades:
+        # Re-derive kelly bet for this fraction
+        edge = t['edge']
+        odds = t['odds']
+        prob = t['model_prob']
+        b = odds - 1
+        q = 1 - prob
+        kfull = max(0, (b * prob - q) / b) if b > 0 else 0
+        st = min(br * kfull * kf, br * MAX_BET_PCT)
+        st = max(0, min(st, br * 0.5))  # never bet more than 50%
+        if st < 0.50: continue
+        pnl_k = st * (odds - 1) if t['won'] else -st
+        rets.append(pnl_k / br if br > 0 else 0)
+        br += pnl_k
+        br = max(br, 0.01)
+        if br > pk: pk = br
+        dd_k = (pk - br) / pk * 100 if pk > 0 else 0
+        if dd_k > mdd: mdd = dd_k
+    roi_k = (br - INITIAL_BANKROLL) / INITIAL_BANKROLL * 100
+    avg_r = statistics.mean(rets) if rets else 0
+    std_r = statistics.stdev(rets) if len(rets) > 1 else 0.01
+    sharpe_k = (avg_r / std_r) * (252**0.5) if std_r > 0 else 0
+    marker = " <-- CURRENT" if abs(kf - KELLY_FRACTION) < 0.001 else ""
+    print(f"  f={kf:<8.2f}   ${br:<10.2f}  {roi_k:>+8.1f}%   {mdd:>6.1f}%   {sharpe_k:>7.2f}{marker}")
+print()
 
 ###############################################################################
 # UPLOAD RESULTS

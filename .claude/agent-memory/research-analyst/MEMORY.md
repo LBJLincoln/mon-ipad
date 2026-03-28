@@ -15,3 +15,7 @@
 - [research_gemini_cli_march2026.md](research_gemini_cli_march2026.md) — Gemini CLI as autonomous agent: Docker, HF Spaces, free tier limits, vs Claude Code
 - [research_rgwa_hf_models_march2026.md](research_rgwa_hf_models_march2026.md) — RGWA HF Spaces survey March 2026: best models per modality, ZeroGPU status, upgrade priorities
 - [research_political_alpha_march2026.md](research_political_alpha_march2026.md) — Political alpha deep sweep: Trump donor->favor->stock pipeline, 10 key papers, 7 documented cases, feature engineering, free data APIs
+- [research_march2026_cycle5_portfolio.md](research_march2026_cycle5_portfolio.md) — March 27 2026 cycle 5: simultaneous Kelly, drawdown constraints, CVXPY optimizer, EV threshold, Ridge-Kelly, 8 key papers
+- [research_march2026_cycle6.md](research_march2026_cycle6.md) — March 28 2026 cycle 6: Montrucchio 2026 shot-chart NBA (Brier 0.199), Brier loss training, 5y-Elo, Venn-Abers, Kelly tournament, Brier-to-ROI framework
+- [research_march2026_multi_market.md](research_march2026_multi_market.md) — March 28 2026 cycle 7: 26 NBA bet types, efficiency rankings, halftime 2H (best opp), player props Unders bias, team totals, spread/total formulas, correlated SGP math
+- [research_march2026_cycle8_data_sources.md](research_march2026_cycle8_data_sources.md) — March 28 2026 cycle 8: Complete free data source catalog — nba_api endpoints (15 unused), shot charts, injury PDFs, SBR odds, RAPTOR, play types, PrizePicks API

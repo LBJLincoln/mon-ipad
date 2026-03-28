@@ -266,28 +266,41 @@ def build_full_backtest(cur):
         for pred in day_preds:
             pid, game_date, home, away, model_prob, odds_home, odds_away, edge, conf, actual_home_win = pred
 
-            if odds_home and float(model_prob) > 0 and edge is not None:
+            if float(model_prob) > 0:
                 model_p = float(model_prob)
                 home_won = bool(actual_home_win)
 
+                # Determine best bet side and correct odds
+                bet_odds = None
+                bet_on_home = None
+
                 if model_p > 0.5 and odds_home:
                     odds = float(odds_home)
-                    if odds <= 1.0 or odds > 20:
-                        continue
+                    if 1.01 < odds <= 15.0:
+                        bet_odds = odds
+                        bet_on_home = True
+                elif model_p < 0.5 and odds_away:
+                    odds = float(odds_away)
+                    if 1.01 < odds <= 15.0:
+                        bet_odds = odds
+                        bet_on_home = False
 
-                    real_edge = model_p * odds - 1
+                if bet_odds is not None:
+                    bet_prob = model_p if bet_on_home else (1 - model_p)
+                    real_edge = bet_prob * bet_odds - 1
+
                     if real_edge > 0.03:
-                        b = odds - 1
-                        q = 1 - model_p
-                        kelly_full = max(0, (b * model_p - q) / b)
-                        kelly_frac = kelly_full * 0.35
-                        stake = min(bankroll * kelly_frac, bankroll * 0.05)
+                        b = bet_odds - 1
+                        q = 1 - bet_prob
+                        kelly_full = max(0, (b * bet_prob - q) / b)
+                        kelly_frac = kelly_full * 0.25  # quarter-Kelly (research-validated)
+                        stake = min(bankroll * kelly_frac, bankroll * 0.025)  # 2.5% max
 
                         if stake < 0.50:
                             continue
 
-                        won = home_won
-                        pnl = stake * (odds - 1) if won else -stake
+                        won = home_won if bet_on_home else (not home_won)
+                        pnl = stake * (bet_odds - 1) if won else -stake
 
                         bankroll += pnl
                         day_pnl += pnl
@@ -306,11 +319,15 @@ def build_full_backtest(cur):
                         if dd > max_dd:
                             max_dd = dd
 
+                        bet_side_label = "home" if bet_on_home else "away"
+                        bet_team = home if bet_on_home else away
                         evaluated.append({
                             "date": date_str,
                             "game": f"{away} @ {home}",
-                            "model_prob": round(model_p, 4),
-                            "odds": odds,
+                            "bet_side": bet_side_label,
+                            "bet_team": bet_team,
+                            "model_prob": round(bet_prob, 4),
+                            "odds": bet_odds,
                             "edge": round(real_edge, 4),
                             "stake": round(stake, 2),
                             "won": won,
@@ -352,7 +369,7 @@ def build_full_backtest(cur):
     win_rate = (wins / total_bets * 100) if total_bets > 0 else 0
 
     result = {
-        "strategy": "Aggressive Kelly (f=0.35) + Compounding — REAL DATA",
+        "strategy": "Quarter-Kelly (f=0.25) + Compounding — CORRECTED ODDS",
         "data_source": "REAL predictions from nba_predictions table + ESPN actual results",
         "initial_bankroll": initial_bankroll,
         "current_bankroll": round(bankroll, 2),

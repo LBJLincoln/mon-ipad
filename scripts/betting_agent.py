@@ -33,16 +33,24 @@ from scipy.optimize import minimize
 STRATEGIES = ["fractional_kelly", "portfolio_kelly", "mean_variance", "drawdown_kelly", "risk_parity"]
 DEFAULT_STRATEGY = "portfolio_kelly"
 
-# Portfolio-level caps
-MAX_PORTFOLIO_EXPOSURE = 0.80   # use up to 80% of bankroll across all bets
-MAX_SINGLE_BET_FRACTION = 0.10  # 10% max per position
-MIN_EDGE_THRESHOLD = 0.03       # 3% minimum EV edge
-MIN_ODDS = 1.20
-MAX_ODDS = 10.0
+# Portfolio-level caps (validated by arXiv:2107.08827 — 16,000 NBA games)
+MAX_PORTFOLIO_EXPOSURE = 0.25   # 25% max nightly exposure (research-validated)
+MAX_SINGLE_BET_FRACTION = 0.025 # 2.5% max per position (quarter-Kelly cap)
+MIN_EV_THRESHOLD = 0.10         # 10% minimum EV — CRITICAL (MDPI Info 2026: #1 ROI filter)
+MIN_EDGE_THRESHOLD = 0.05       # 5% minimum edge
+MIN_ODDS = 1.30
+MAX_ODDS = 8.0                  # cap at 8.0 (reduce variance on longshots)
 MIN_STAKE_DOLLARS = 0.50
 
 # Drawdown constraint
-MAX_DRAWDOWN_TARGET = 0.25      # max 25% single-night worst-case loss
+MAX_DRAWDOWN_TARGET = 0.20      # max 20% single-night worst-case loss
+
+# Kelly fraction by model quality (arXiv:2107.08827)
+# Brier > 0.22: eighth-Kelly (0.125)
+# Brier 0.21-0.22: quarter-Kelly (0.25)
+# Brier < 0.21: third-Kelly (0.33)
+CURRENT_BRIER = 0.21570
+KELLY_FRACTION = 0.25 if CURRENT_BRIER < 0.22 else 0.125
 
 # Correlation assumptions
 SAME_GAME_MARKET_CORR = 0.30
@@ -190,7 +198,7 @@ def load_inputs(bankroll_override=None):
             else:
                 kelly = 0
 
-            is_eligible = edge >= MIN_EDGE_THRESHOLD and ev > 0 and kelly > 0
+            is_eligible = ev >= MIN_EV_THRESHOLD and edge >= MIN_EDGE_THRESHOLD and kelly > 0
 
             candidates.append({
                 "id": f"{home}_{away}_h2h_{side}",
@@ -243,7 +251,7 @@ def build_covariance_matrix(candidates, corr):
 # SECTION 4: STRATEGY IMPLEMENTATIONS
 # ═══════════════════════════════════════
 
-def strategy_fractional_kelly(candidates, bankroll, corr, kelly_frac=0.35):
+def strategy_fractional_kelly(candidates, bankroll, corr, kelly_frac=KELLY_FRACTION):
     """Baseline: independent fractional Kelly per bet."""
     stakes = {}
     for c in candidates:

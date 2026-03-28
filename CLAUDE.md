@@ -1,10 +1,11 @@
 # Nomos42 — NBA Quant AI
 
-> Architecture v16 — Brain + Muscle + Karpathy Loop | Updated: 2026-03-27
+> Architecture v17 — Brain + Muscle + Karpathy Loop | Updated: 2026-03-28
 
 ## Mission
 Build the best NBA prediction AI in the world.
 **Best:** Brier 0.21570 (Colab TabICL, 110f, iter 15) | Previous ATR: 0.21844 | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
 
 ## Nomos42 Ecosystem
 
@@ -76,7 +77,7 @@ SYSTEM CRONS
 2. **Feature engine parity** — `features/engine.py` = `hf-space/features/engine.py` always
 3. **1 fix per iteration** — never multiple simultaneous changes
 4. **All experiments tagged** with `feature_engine_version` in Supabase
-5. **Feature engine** — v3.0 + Cat36 EWMA + Cat37 MOVDA = 37 categories, 6135 raw features
+5. **Feature engine** — v3.0-43cat = 43 categories, 6211 raw features (Cat42 Shot Quality + Cat45 Player Tracking)
 6. **MAX_FEATURES=200** — hard cap enforced in init/mutate/crossover on all spaces
 7. **Mutation cap** — adaptive mutation capped at 0.15 (deployed S10/S11/S12/S15)
 8. **CPU-only islands** — no neural models on CPU (tree-based only), stacking removed

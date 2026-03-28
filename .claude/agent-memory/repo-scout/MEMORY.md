@@ -14,3 +14,6 @@
 
 ## Anthropic Ecosystem (March 2026 deep-dive)
 - [project_claude_code_ecosystem.md](project_claude_code_ecosystem.md) — Claude Code v2.1.84 hooks, Agent SDK v0.1.50, subagent patterns (initialPrompt, memory, isolation, background)
+
+## NBA Free Data Sources (2026-03-28 scan)
+- [project_nba_data_sources.md](project_nba_data_sources.md) — Complete map of free NBA data: GitHub repos, Kaggle datasets, APIs. Full doc at /home/termius/mon-ipad/docs/REPO-SCOUT-NBA-DATA.md
