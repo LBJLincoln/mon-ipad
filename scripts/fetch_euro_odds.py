@@ -366,9 +366,20 @@ def mode_snapshot(output_path=None):
 
 def mode_fetch(regions="fr,eu", save=True):
     """
-    Fetch fresh odds from The Odds API for NBA games.
-    Uses ~10-60 credits per call depending on game slate.
+    DEPRECATED: The Odds API (the-odds-api.com) quota is exhausted.
+    Use fetch_free_odds.py instead:
+      python3 scripts/fetch_free_odds.py --source all
+
+    For Euro/French book analysis, use --mode live or --mode snapshot
+    with the existing live-odds.json snapshots.
     """
+    print("ERROR: --mode fetch is DEPRECATED.")
+    print("The Odds API quota is exhausted and this is a paid service.")
+    print("Use instead:")
+    print("  python3 scripts/fetch_free_odds.py --source all  # ActionNetwork + Bovada + DraftKings")
+    print("  python3 scripts/fetch_euro_odds.py --mode live   # Analyse existing live-odds.json")
+    sys.exit(1)
+
     api_key = load_api_key()
     if not api_key:
         print("ERROR: No ODDS_API_KEY found in", ENV_FILE)

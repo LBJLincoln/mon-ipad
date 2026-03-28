@@ -1,0 +1,243 @@
+{
+  "name": "Nomos42",
+  "mission": "Build the best NBA prediction AI in the world. Target: Brier < 0.20, ROI > 5%, Sharpe > 1.5",
+  "departments": [
+    {
+      "name": "Research",
+      "head": "paper-scout",
+      "agents": [
+        {
+          "id": "paper-scout",
+          "title": "Lead Research Analyst",
+          "type": "research-analyst",
+          "heartbeat": "6h",
+          "skills": ["arxiv-search", "ssrn-search", "paper-analysis"],
+          "goal": "Find new prediction/betting papers from arXiv, SSRN, MDPI"
+        },
+        {
+          "id": "repo-scout",
+          "title": "Repository Scout",
+          "type": "repo-scout",
+          "heartbeat": "12h",
+          "skills": ["github-search", "hf-search", "kaggle-search"],
+          "goal": "Find GitHub repos, HF models, Kaggle notebooks, free data sources"
+        },
+        {
+          "id": "strategy-researcher",
+          "title": "Strategy Researcher",
+          "type": "karpathy-researcher",
+          "heartbeat": "on-demand",
+          "skills": ["deep-dive", "technique-analysis"],
+          "goal": "Deep-dive specific techniques (Ridge-Kelly, Venn-Abers, etc.)"
+        },
+        {
+          "id": "data-scout",
+          "title": "Data Scout",
+          "type": "research-analyst",
+          "heartbeat": "24h",
+          "skills": ["data-source-finder", "api-tester"],
+          "goal": "Find new FREE data sources (player stats, props, tracking, social)"
+        }
+      ]
+    },
+    {
+      "name": "Engineering",
+      "head": "feature-engineer",
+      "agents": [
+        {
+          "id": "feature-engineer",
+          "title": "Lead Feature Engineer",
+          "type": "feature-engineer",
+          "heartbeat": "on-demand",
+          "skills": ["engine-analysis", "feature-proposal", "feature-implementation"],
+          "goal": "Propose + implement new feature categories in engine.py"
+        },
+        {
+          "id": "test-creator",
+          "title": "Test Creator",
+          "type": "general-purpose",
+          "heartbeat": "on-demand",
+          "skills": ["test-writing"],
+          "goal": "Write unit/integration/data-leakage tests for new features"
+        },
+        {
+          "id": "test-runner",
+          "title": "QA Engineer",
+          "type": "general-purpose",
+          "heartbeat": "4h",
+          "skills": ["test-execution", "failure-reporting"],
+          "goal": "Run full test suite, report failures"
+        },
+        {
+          "id": "bug-fixer",
+          "title": "Bug Fixer",
+          "type": "general-purpose",
+          "heartbeat": "on-demand",
+          "skills": ["debugging", "hotfix"],
+          "goal": "Diagnose + fix test failures and production bugs"
+        },
+        {
+          "id": "code-optimizer",
+          "title": "Performance Engineer",
+          "type": "general-purpose",
+          "heartbeat": "weekly",
+          "skills": ["profiling", "optimization"],
+          "goal": "Profile bottlenecks, optimize feature engine, reduce compute"
+        }
+      ]
+    },
+    {
+      "name": "Evolution",
+      "head": "evolution-monitor",
+      "agents": [
+        {
+          "id": "evolution-monitor",
+          "title": "Evolution Director",
+          "type": "evolution-optimizer",
+          "heartbeat": "2h",
+          "skills": ["island-monitoring", "stagnation-detection"],
+          "goal": "Monitor all 6 HF islands + Kaggle, detect stagnation"
+        },
+        {
+          "id": "evolution-optimizer",
+          "title": "GA Tuner",
+          "type": "evolution-optimizer",
+          "heartbeat": "on-demand",
+          "skills": ["param-tuning", "diversity-injection"],
+          "goal": "Tune GA params, inject diversity, restart stuck islands"
+        },
+        {
+          "id": "karpathy-loop",
+          "title": "Karpathy Researcher",
+          "type": "general-purpose",
+          "heartbeat": "9h",
+          "skills": ["autonomous-research", "gpu-evolution"],
+          "goal": "Autonomous research iterations on GPU (Kaggle/Colab)"
+        }
+      ]
+    },
+    {
+      "name": "Betting & Strategy",
+      "head": "betting-strategist",
+      "agents": [
+        {
+          "id": "odds-monitor",
+          "title": "Odds Monitor",
+          "type": "market-analyst",
+          "heartbeat": "30min",
+          "skills": ["odds-fetching", "steam-detection", "clv-tracking"],
+          "goal": "Fetch live odds, detect steam moves, CLV, line shopping"
+        },
+        {
+          "id": "betting-strategist",
+          "title": "Chief Betting Strategist",
+          "type": "market-analyst",
+          "heartbeat": "daily-5pm-ET",
+          "skills": ["kelly-sizing", "multi-market", "portfolio-optimization"],
+          "goal": "Portfolio Kelly, multi-market bets (ML+ATS+O/U+2H+props)"
+        },
+        {
+          "id": "strategy-tester",
+          "title": "Strategy Tester",
+          "type": "general-purpose",
+          "heartbeat": "on-demand",
+          "skills": ["backtesting", "edge-validation"],
+          "goal": "Backtest strategies against historical data, validate edge"
+        },
+        {
+          "id": "strategy-corrector",
+          "title": "Strategy Corrector",
+          "type": "general-purpose",
+          "heartbeat": "on-demand",
+          "skills": ["loss-diagnosis", "recalibration"],
+          "goal": "Diagnose losing strategies, fix sizing/filters, recalibrate"
+        },
+        {
+          "id": "halftime-scorer",
+          "title": "Live 2H Scorer",
+          "type": "general-purpose",
+          "heartbeat": "2min",
+          "skills": ["live-scoring", "in-game-betting"],
+          "goal": "2H live re-scoring pipeline, in-game bet signals"
+        }
+      ]
+    },
+    {
+      "name": "Evaluation",
+      "head": "results-evaluator",
+      "agents": [
+        {
+          "id": "results-evaluator",
+          "title": "Results Evaluator",
+          "type": "general-purpose",
+          "heartbeat": "daily-10am-UTC",
+          "skills": ["scoring", "pnl-tracking"],
+          "goal": "Score predictions vs actuals, update P&L, Brier, Sharpe"
+        },
+        {
+          "id": "performance-analyst",
+          "title": "Performance Analyst",
+          "type": "general-purpose",
+          "heartbeat": "weekly",
+          "skills": ["calibration-analysis", "jensen-alpha"],
+          "goal": "Full review: calibration curves, bet type breakdown, Jensen alpha"
+        }
+      ]
+    },
+    {
+      "name": "Infrastructure",
+      "head": "infra-agent",
+      "agents": [
+        {
+          "id": "infra-agent",
+          "title": "Infrastructure Manager",
+          "type": "general-purpose",
+          "heartbeat": "30min",
+          "skills": ["gpu-monitoring", "platform-restart", "credit-tracking"],
+          "goal": "Monitor GPU credits (Kaggle/Colab/Modal), auto-restart platforms"
+        },
+        {
+          "id": "dashboard-sync",
+          "title": "Dashboard Sync",
+          "type": "general-purpose",
+          "heartbeat": "1h",
+          "skills": ["data-push", "json-update"],
+          "goal": "Push data to dashboard, update JSON endpoints, cross-repo health"
+        }
+      ]
+    },
+    {
+      "name": "Oversight",
+      "head": "orchestrator",
+      "agents": [
+        {
+          "id": "orchestrator",
+          "title": "CEO / Orchestrator",
+          "type": "nba-brain",
+          "heartbeat": "4h",
+          "skills": ["health-check", "decision-making", "agent-restart"],
+          "goal": "Health check ALL agents, restart failures, make strategic decisions",
+          "reportsTo": null
+        }
+      ]
+    }
+  ],
+  "platforms": {
+    "hf_spaces": ["nba-quant", "nba-quant-2", "nba-evo-3", "nba-evo-4", "nba-evo-5", "nba-evo-6"],
+    "kaggle": ["nba-karpathy-loop", "nba-strategy-confrontation-tree-only"],
+    "colab": ["nba_gpu_v2"],
+    "vm": "gcp-e2-micro-1vcpu-969mb",
+    "codespace": "LBJLincoln/mon-ipad"
+  },
+  "budget": {
+    "monthly_token_limit": null,
+    "per_agent_daily_limit": null,
+    "alert_threshold_pct": 80
+  },
+  "metrics": {
+    "primary": "brier_score",
+    "current_atr": 0.21570,
+    "target": 0.20,
+    "secondary": ["roi", "sharpe", "calibration"]
+  }
+}

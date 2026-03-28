@@ -592,15 +592,22 @@ SIZING_STRATEGIES = {
     'Kelly_25pct':   kelly_stake(0.25),
     'Kelly_15pct':   kelly_stake(0.15),
     'Kelly_10pct':   kelly_stake(0.10),
+    'Kelly_50pct':   kelly_stake(0.50),       # Aggressive Kelly
+    'Kelly_Full':    kelly_stake(1.00),        # Full Kelly (dangerous but max compound)
     'Flat_10':       flat_stake(10.0),
     'Prop_1pct':     prop_stake(0.01),
+    'Prop_5pct':     prop_stake(0.05),         # 5% of bankroll per bet
+    'Prop_10pct':    prop_stake(0.10),         # 10% of bankroll — compound heavy
+    'AllIn_Daily':   prop_stake(1.00),         # All bankroll = max compound interest
 }
 
 INITIAL_BANKROLL = 100.0
-MAX_BET_PCT      = 0.025   # 2.5% per position
-MAX_DAILY_EXPO   = 0.25    # 25% portfolio daily
+MAX_BET_PCT      = 1.00    # No per-position cap — let Kelly manage risk
+MAX_DAILY_EXPO   = 1.00    # 100% portfolio daily — full compound interest
 MIN_BET_STAKE    = 0.25    # minimum bet size
-MIN_EDGE         = 0.03    # 3% minimum edge to bet
+MIN_EDGE         = 0.005   # 0.5% minimum edge — lower threshold to actually place bets
+                             # Tree ensemble at 0.228 Brier rarely exceeds 3% edge
+                             # Real edge filtering happens via Kelly sizing (small bets on small edges)
 
 # Filter sets: which bet types to include in each "strategy group"
 # Full = all types; ML_only = moneyline only; etc.

@@ -1,68 +1,478 @@
 {
-  "timestamp": "2026-03-28T16:05:00Z",
-  "brain_cycle": "2026-03-28-1600",
-  "ecosystem_status": "DEGRADED — Political Alpha PA-1/2/3 data starvation",
-
-  "nba_quant_ai": {
-    "status": "OK",
-    "fleet_best_brier": 0.22006,
-    "fleet_best_island": "S14",
-    "all_time_best": 0.21570,
-    "checkpoint_threshold": 0.21837,
-    "gap_to_checkpoint": 0.00169,
-    "islands_healthy": 6,
-    "islands_total": 6,
-    "actions": ["No diversify needed (max stagnation=2)", "Research proposal: Cat46 schedule/fatigue features"],
-    "trend": "All 6 islands recovering post-restart. S14 leads at gen 21, S15 most mature at gen 130."
-  },
-
-  "political_alpha": {
-    "status": "CRITICAL",
-    "fleet_best_brier": 0.25008,
-    "fleet_best_island": "PA-4",
-    "islands_healthy": 1,
-    "islands_total": 4,
-    "critical_issue": "PA-1/2/3 feature_count=0-2, Brier stuck at 0.3 (uninformative). Data starvation persists despite last-cycle data_bootstrap.py fix.",
-    "actions": ["diversify queued PA-1 (stagnation=26)", "diversify queued PA-3 (stagnation=29)", "New data sources: OpenFEC API, ProPublica, OpenSecrets"],
-    "pa4_insight": "PA-4 only island with 15 features and Brier 0.25 — investigate its data config"
-  },
-
-  "cross_project_transfers": [
-    {
-      "from": "NBA (S14 Extra Trees 59f)",
-      "to": "Political Alpha",
-      "technique": "Feature count sweet spot — fewer well-selected features (15-59) beat large pools. PA-4 confirms this.",
-      "status": "VALIDATED"
+  "timestamp": "2026-03-28T18:00:13Z",
+  "repos": {
+    "mon-ipad": {
+      "type": "brain",
+      "path": "/home/termius/mon-ipad",
+      "exists": true,
+      "last_commit_date": "2026-03-28 17:39:40 +0000",
+      "last_commit_hash": "0328a9d0",
+      "last_commit_msg": "feat: La Forge Factory architecture \u2014 7 agents, 4 layers, 3 pricing tiers",
+      "uncommitted_changes": 14,
+      "uncommitted_files": [
+        "claude/agent-memory/market-analyst/reference_data_sources.md",
+        "data/infra-status.json",
+        "data/nba-agent/live-odds.json",
+        "data/nba-agent/market-data.json",
+        "data/nba-agent/odds-latest.json",
+        "docs/MULTI-MARKET-BETTING-RESEARCH.md",
+        "scripts/fetch_euro_odds.py",
+        "scripts/kaggle-backtest/nba_season_backtest.py",
+        ".claude/agent-memory/karpathy-researcher/research_cycle7_youtube_features.md",
+        ".claude/agent-memory/repo-scout/project_historical_odds_sources.md"
+      ],
+      "data_size_mb": 858.0,
+      "error": null
     },
-    {
-      "from": "NBA research",
-      "to": "Political Alpha",
-      "technique": "Temporal context features (schedule fatigue -> legislative calendar context). Port seasonality concept.",
-      "status": "PROPOSED"
+    "nomos-nba-agent": {
+      "type": "engine",
+      "path": "/home/termius/nomos-nba-agent",
+      "exists": true,
+      "last_commit_date": "2026-03-28 16:24:30 +0000",
+      "last_commit_hash": "269d048c",
+      "last_commit_msg": "data: engine v3.0-43cat + player tracking + predictions",
+      "uncommitted_changes": 2,
+      "uncommitted_files": [
+        "ps/fetch-odds.py",
+        "predict_today.py"
+      ],
+      "data_size_mb": 31.0,
+      "error": null
     },
-    {
-      "from": "Political Alpha (Venn-Abers on PA-3)",
-      "to": "NBA",
-      "technique": "Venn-Abers calibration. PA-3 uses it but with 0 features — cannot evaluate. Queue for NBA test when PA-3 recovers.",
-      "status": "PENDING"
+    "nomos-political-alpha": {
+      "type": "engine",
+      "path": "/home/termius/nomos-political-alpha",
+      "exists": true,
+      "last_commit_date": "2026-03-28 16:25:34 +0000",
+      "last_commit_hash": "f01dd29b",
+      "last_commit_msg": "data: political signals + insider trades update 2026-03-28",
+      "uncommitted_changes": 13,
+      "uncommitted_files": [
+        "ata/social/social_signals_latest.json",
+        "logs/agents/cron.log",
+        "logs/agents/orchestrator-2026-03-28.log",
+        "logs/agents/signals-2026-03-28.log",
+        "logs/agents/social-2026-03-28.log",
+        "data/polymarket/markets_20260328_1630.json",
+        "data/polymarket/markets_20260328_1635.json",
+        "data/polymarket/markets_20260328_1700.json",
+        "data/polymarket/markets_20260328_1705.json",
+        "data/polymarket/markets_20260328_1730.json"
+      ],
+      "data_size_mb": 4.0,
+      "error": null
     },
-    {
-      "from": "NBA (probability clipping 0.05-0.95)",
-      "to": "Political Alpha PA-4",
-      "technique": "PA-4 ROI=0.78% suggests poorly calibrated extremes. Apply prob clipping.",
-      "status": "RECOMMENDED"
+    "rgwa": {
+      "type": "creative",
+      "path": "/home/termius/rgwa",
+      "exists": true,
+      "last_commit_date": "2026-03-28 16:26:12 +0000",
+      "last_commit_hash": "be221ca7",
+      "last_commit_msg": "fix: rgwa bot update",
+      "uncommitted_changes": 0,
+      "uncommitted_files": [],
+      "data_size_mb": 7.0,
+      "error": null
+    },
+    "nomos-dashboard": {
+      "type": "dashboard",
+      "path": "/home/termius/nomos-dashboard",
+      "exists": true,
+      "last_commit_date": "2026-03-28 16:22:03 +0000",
+      "last_commit_hash": "9f6abcda",
+      "last_commit_msg": "feat: 22-agent 7-department pixel office + terminal overlay",
+      "uncommitted_changes": 0,
+      "uncommitted_files": [],
+      "data_size_mb": 0.0,
+      "error": null
     }
+  },
+  "hf_spaces": {
+    "spaces": {
+      "S10": {
+        "space_id": "S10",
+        "url": "https://nomos42-nba-quant.hf.space",
+        "status": "running",
+        "http_code": 200,
+        "generation": 46,
+        "best_brier": 0.22215,
+        "model_type": "extra_trees",
+        "stagnation_cycles": 0,
+        "cycle": 16,
+        "mutation_rate": 0.1162,
+        "pareto_front_size": 11,
+        "role": null,
+        "last_update": "2026-03-28T17:59:24.481439+00:00",
+        "error": null,
+        "raw_keys": [
+          "status",
+          "cycle",
+          "generation",
+          "best_brier",
+          "best_roi",
+          "best_sharpe",
+          "best_features",
+          "best_model_type",
+          "pop_size",
+          "mutation_rate",
+          "stagnation",
+          "games",
+          "feature_candidates",
+          "gpu",
+          "log",
+          "history",
+          "top5",
+          "started_at",
+          "last_update",
+          "n_islands"
+        ]
+      },
+      "S11": {
+        "space_id": "S11",
+        "url": "https://nomos42-nba-quant-2.hf.space",
+        "status": "running",
+        "http_code": 200,
+        "generation": 104,
+        "best_brier": 0.22321,
+        "model_type": "random_forest",
+        "stagnation_cycles": 0,
+        "cycle": 35,
+        "mutation_rate": 0.1091,
+        "pareto_front_size": 15,
+        "role": null,
+        "last_update": "2026-03-28T17:50:42.597222+00:00",
+        "error": null,
+        "raw_keys": [
+          "status",
+          "cycle",
+          "generation",
+          "best_brier",
+          "best_roi",
+          "best_sharpe",
+          "best_features",
+          "best_model_type",
+          "pop_size",
+          "mutation_rate",
+          "stagnation",
+          "games",
+          "feature_candidates",
+          "gpu",
+          "log",
+          "history",
+          "top5",
+          "started_at",
+          "last_update",
+          "n_islands"
+        ]
+      },
+      "S12": {
+        "space_id": "S12",
+        "url": "https://nomos42-nba-evo-3.hf.space",
+        "status": "running",
+        "http_code": 200,
+        "generation": 104,
+        "best_brier": 0.22889,
+        "model_type": "xgboost_brier",
+        "stagnation_cycles": 0,
+        "cycle": 35,
+        "mutation_rate": 0.1039,
+        "pareto_front_size": 10,
+        "role": null,
+        "last_update": "2026-03-28T18:00:01.105788+00:00",
+        "error": null,
+        "raw_keys": [
+          "status",
+          "cycle",
+          "generation",
+          "best_brier",
+          "best_roi",
+          "best_sharpe",
+          "best_features",
+          "best_model_type",
+          "pop_size",
+          "mutation_rate",
+          "stagnation",
+          "games",
+          "feature_candidates",
+          "gpu",
+          "log",
+          "history",
+          "top5",
+          "started_at",
+          "last_update",
+          "n_islands"
+        ]
+      },
+      "S13": {
+        "space_id": "S13",
+        "url": "https://nomos42-nba-evo-4.hf.space",
+        "status": "running",
+        "http_code": 200,
+        "generation": 46,
+        "best_brier": 0.22368,
+        "model_type": "lightgbm",
+        "stagnation_cycles": 17,
+        "cycle": 16,
+        "mutation_rate": 0.15,
+        "pareto_front_size": 17,
+        "role": null,
+        "last_update": "2026-03-28T17:58:47.386946+00:00",
+        "error": null,
+        "raw_keys": [
+          "status",
+          "cycle",
+          "generation",
+          "best_brier",
+          "best_roi",
+          "best_sharpe",
+          "best_features",
+          "best_model_type",
+          "pop_size",
+          "mutation_rate",
+          "stagnation",
+          "games",
+          "feature_candidates",
+          "gpu",
+          "log",
+          "history",
+          "top5",
+          "started_at",
+          "last_update",
+          "n_islands"
+        ]
+      },
+      "S14": {
+        "space_id": "S14",
+        "url": "https://nomos42-nba-evo-5.hf.space",
+        "status": "running",
+        "http_code": 200,
+        "generation": 54,
+        "best_brier": 0.22006,
+        "model_type": "extra_trees",
+        "stagnation_cycles": 0,
+        "cycle": 18,
+        "mutation_rate": 0.095,
+        "pareto_front_size": 17,
+        "role": null,
+        "last_update": "2026-03-28T17:50:38.107653+00:00",
+        "error": null,
+        "raw_keys": [
+          "status",
+          "cycle",
+          "generation",
+          "best_brier",
+          "best_roi",
+          "best_sharpe",
+          "best_features",
+          "best_model_type",
+          "pop_size",
+          "mutation_rate",
+          "stagnation",
+          "games",
+          "feature_candidates",
+          "gpu",
+          "log",
+          "history",
+          "top5",
+          "started_at",
+          "last_update",
+          "n_islands"
+        ]
+      },
+      "S15": {
+        "space_id": "S15",
+        "url": "https://nomos42-nba-evo-6.hf.space",
+        "status": "running",
+        "http_code": 200,
+        "generation": 216,
+        "best_brier": 0.22112,
+        "model_type": "extra_trees",
+        "stagnation_cycles": 0,
+        "cycle": 72,
+        "mutation_rate": 0.0986,
+        "pareto_front_size": 10,
+        "role": null,
+        "last_update": "2026-03-28T17:59:55.218561+00:00",
+        "error": null,
+        "raw_keys": [
+          "status",
+          "cycle",
+          "generation",
+          "best_brier",
+          "best_roi",
+          "best_sharpe",
+          "best_features",
+          "best_model_type",
+          "pop_size",
+          "mutation_rate",
+          "stagnation",
+          "games",
+          "feature_candidates",
+          "gpu",
+          "log",
+          "history",
+          "top5",
+          "started_at",
+          "last_update",
+          "n_islands"
+        ]
+      }
+    },
+    "fleet": {
+      "running_count": 6,
+      "sleeping_count": 0,
+      "offline_count": 0,
+      "fleet_best_brier": 0.22006,
+      "fleet_avg_brier": 0.22318,
+      "fleet_worst_brier": 0.22889,
+      "spaces_with_brier": 6
+    }
+  },
+  "gpu_platforms": {
+    "kaggle": {
+      "status": "error",
+      "kernel": "alexismoret6/nba-quant-gpu-evolution-v2",
+      "detail": ""
+    },
+    "colab": {
+      "status": "not_running",
+      "state": null,
+      "detail": "no Drive state file found locally (normal if Colab not mounted)"
+    }
+  },
+  "crons": {
+    "total": 11,
+    "jobs": [
+      {
+        "schedule": "*/5 * * * *",
+        "command": "*/5 * * * * /home/termius/mon-ipad/scripts/watchdog.sh >> /home/termius/mon-ipad/logs/watchdog-cron.log 2>&1",
+        "project": "brain",
+        "label": "unknown"
+      },
+      {
+        "schedule": "*/30 * * * *",
+        "command": "*/30 * * * * /home/termius/mon-ipad/scripts/agents/agent-cron.sh >> /home/termius/mon-ipad/logs/agents/cron.log 2>&1",
+        "project": "brain",
+        "label": "unknown"
+      },
+      {
+        "schedule": "0 */2 * * *",
+        "command": "0 */2 * * * python3 /home/termius/mon-ipad/scripts/cross-repo-monitor.py >> /home/termius/mon-ipad/logs/cross-repo-monitor.log 2>&1",
+        "project": "brain",
+        "label": "unknown"
+      },
+      {
+        "schedule": "0 3 * * *",
+        "command": "0 3 * * * /home/termius/mon-ipad/scripts/kaggle-gpu-evolution.sh --no-wait >> /home/termius/mon-ipad/logs/kaggle-gpu.log 2>&1",
+        "project": "brain",
+        "label": "unknown"
+      },
+      {
+        "schedule": "*/30 * * * *",
+        "command": "*/30 * * * * cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --fast >> /tmp/political-fast.log 2>&1",
+        "project": "political-alpha",
+        "label": "political-fast"
+      },
+      {
+        "schedule": "0 */6 * * *",
+        "command": "0 */6 * * * cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --all >> /tmp/political-full.log 2>&1",
+        "project": "political-alpha",
+        "label": "political-full"
+      },
+      {
+        "schedule": "0 22 * * 1-5",
+        "command": "0 22 * * 1-5 cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --insider >> /tmp/political-insider.log 2>&1",
+        "project": "political-alpha",
+        "label": "political-insider"
+      },
+      {
+        "schedule": "30 22 * * 1-5",
+        "command": "30 22 * * 1-5 cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --prices >> /tmp/political-prices.log 2>&1",
+        "project": "political-alpha",
+        "label": "political-prices"
+      },
+      {
+        "schedule": "15,45 * * * *",
+        "command": "15,45 * * * * /home/termius/mon-ipad/scripts/infra-agent.sh >> /home/termius/mon-ipad/logs/infra-agent-cron.log 2>&1",
+        "project": "brain",
+        "label": "unknown"
+      },
+      {
+        "schedule": "30 */2 * * *",
+        "command": "30 */2 * * * cd /home/termius/nomos-political-alpha && python3 ops/fetch_social_signals.py --all >> /tmp/social-signals.log 2>&1",
+        "project": "political-alpha",
+        "label": "unknown"
+      },
+      {
+        "schedule": "5,35 * * * *",
+        "command": "5,35 * * * * /home/termius/nomos-political-alpha/scripts/agents/agent-cron.sh >> /home/termius/nomos-political-alpha/logs/agents/cron.log 2>&1",
+        "project": "political-alpha",
+        "label": "unknown"
+      }
+    ],
+    "expected_present": [
+      "political-fast",
+      "political-full",
+      "political-insider",
+      "political-prices"
+    ],
+    "missing": [
+      "keepalive-spaces",
+      "nba-daily-odds",
+      "autonomous-cycle",
+      "cross-repo-optimize"
+    ],
+    "by_project": {
+      "brain": 5,
+      "political-alpha": 6
+    }
+  },
+  "bots": {
+    "nomos42_brain": {
+      "running": true,
+      "pids": [
+        "269800",
+        "1286233"
+      ],
+      "repo": "mon-ipad"
+    },
+    "rgwa_bot": {
+      "running": true,
+      "pids": [
+        "270201",
+        "1286235"
+      ],
+      "repo": "rgwa"
+    }
+  },
+  "processes": {
+    "nba_data_server": true,
+    "nba_daily_odds": true,
+    "autonomous_cycle": true,
+    "political_fetcher": true,
+    "keepalive": true
+  },
+  "alerts": [
+    "REPO DIRTY: mon-ipad has 14 uncommitted changes",
+    "REPO DIRTY: nomos-political-alpha has 13 uncommitted changes",
+    "CRON MISSING: keepalive-spaces",
+    "CRON MISSING: nba-daily-odds",
+    "CRON MISSING: autonomous-cycle",
+    "CRON MISSING: cross-repo-optimize"
   ],
-
-  "key_risks": [
-    "PA data starvation: 3 of 4 PA islands effectively non-functional. Root cause not yet resolved.",
-    "NBA checkpoint gap: 0.00169 from 0.21837. Close but S14 only gen 21 — needs more evolution.",
-    "Supabase pooler (xivvnr) auth failures on most islands — only S14 and S15 logging remotely."
-  ],
-
-  "next_cycle_plan": {
-    "nba": "Monitor S14 progress. If gen > 50 and brier < 0.219 — checkpoint to Supabase. Implement Cat46 schedule features.",
-    "political": "1) Check PA-4 HF space source data. 2) Replicate PA-4 data pipeline to PA-1/2/3. 3) Add OpenFEC API integration to fetch_political_data.py.",
-    "cross_project": "Apply prob clipping to PA-4 as concrete code improvement."
+  "summary": {
+    "total_repos": 5,
+    "active_repos": 5,
+    "running_spaces": 6,
+    "sleeping_spaces": 0,
+    "offline_spaces": 0,
+    "fleet_best_brier": 0.22006,
+    "fleet_avg_brier": 0.22318,
+    "total_crons": 11,
+    "missing_crons": 4,
+    "bots_running": 2,
+    "total_bots": 2,
+    "gpu_kaggle_status": "error",
+    "gpu_colab_status": "not_running"
   }
 }

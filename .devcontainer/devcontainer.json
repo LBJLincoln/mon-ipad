@@ -1,0 +1,35 @@
+{
+  "name": "Nomos42 NBA Quant",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" }
+  },
+  "postCreateCommand": "pip install scikit-learn xgboost lightgbm catboost pandas numpy httpx kaggle huggingface-hub && npm install -g @anthropic-ai/claude-code",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter"
+      ]
+    }
+  },
+  "secrets": {
+    "ANTHROPIC_API_KEY": { "description": "Claude API key for Claude Code CLI" },
+    "SUPABASE_URL": { "description": "Supabase project URL" },
+    "SUPABASE_KEY": { "description": "Supabase anon key" },
+    "HF_TOKEN": { "description": "HuggingFace token (LBJLincoln)" },
+    "HF_TOKEN_2": { "description": "HuggingFace token (LBJLincoln26)" },
+    "HF_TOKEN_3": { "description": "HuggingFace token (Nomos42)" },
+    "TELEGRAM_BOT_TOKEN": { "description": "Nomos42Bot token" },
+    "KAGGLE_USERNAME": { "description": "Kaggle username" },
+    "KAGGLE_KEY": { "description": "Kaggle API key" }
+  },
+  "forwardPorts": [8080, 8081],
+  "remoteEnv": {
+    "PYTHONPATH": "/workspaces/mon-ipad"
+  },
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb"
+  }
+}
