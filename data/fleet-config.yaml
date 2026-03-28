@@ -1,0 +1,175 @@
+# ══════════════════════════════════════════════════════════════
+# NOMOS42 FLEET CONFIGURATION
+# ══════════════════════════════════════════════════════════════
+# 4 machines: 1 cloud VM (primary) + 3 local machines (secondary)
+# Rule: ZERO ML training on any local machine. GPU = Kaggle/Modal/Colab/HF.
+# Updated: 2026-03-28
+
+fleet:
+  primary:
+    name: "Google Cloud VM"
+    id: "gcp-vm"
+    role: "Primary Orchestrator"
+    ip: "TBD"  # Fill in with actual external IP
+    specs:
+      cpu: "1 vCPU"
+      ram: "969 MB"
+      disk: "30 GB"
+      os: "Debian 12 (Linux 6.1)"
+      gpu: "none"
+    runs:
+      - "Cloud Brain (Sonnet 4.6, every 4h at :00)"
+      - "Data server (port 8080)"
+      - "Terminal API (port 8081)"
+      - "Telegram bots (@Nomos42Bot, @RGWAbot)"
+      - "12 system cron jobs"
+      - "keepalive-spaces.sh (6 islands, every 30min)"
+      - "infra-agent.sh (every 30min)"
+      - "watchdog.sh (every 5min)"
+      - "autonomous-cycle.sh (every 4h at :30)"
+    status_check: "curl -s http://localhost:8080/"
+    ssh_user: "termius"
+    monitor_locally: true
+
+  secondary_1:
+    name: "MacBook Air #1"
+    id: "mba-1"
+    role: "Research & Feature Engineering"
+    specs:
+      cpu: "Intel Core i5 (2 cores)"
+      ram: "8 GB"
+      disk: "128-256 GB SSD"
+      os: "macOS (latest supported)"
+      gpu: "Intel HD Graphics 6000 (no CUDA, no useful MPS)"
+    runs:
+      - "Claude Desktop / Claude Code CLI (research agents)"
+      - "Feature engineering proposals (cron every 6h)"
+      - "repo-scout agent (cron every 12h)"
+      - "Git sync (pull/push cycle every 30min)"
+      - "Lightweight data analysis (pandas, no ML training)"
+    crons:
+      - schedule: "0 */6 * * *"
+        script: "scripts/fleet/feature-proposals.sh"
+        description: "Generate feature engineering proposals via Claude"
+      - schedule: "0 */12 * * *"
+        script: "scripts/fleet/repo-scout.sh"
+        description: "Scan repos/papers for NBA prediction improvements"
+      - schedule: "*/30 * * * *"
+        script: "scripts/fleet/git-sync.sh"
+        description: "Pull latest, push local changes"
+    setup_required: true
+    ssh_user: "TBD"
+    ssh_port: 22
+
+  secondary_2:
+    name: "MacBook Air #2"
+    id: "mba-2"
+    role: "Strategy & Backtesting Analysis"
+    specs:
+      cpu: "Intel Core i5 (2 cores)"
+      ram: "8 GB"
+      disk: "128-256 GB SSD"
+      os: "macOS (latest supported)"
+      gpu: "Intel HD Graphics 6000 (no CUDA, no useful MPS)"
+    runs:
+      - "Claude Desktop / Claude Code CLI (strategy research)"
+      - "Backtest verification and analysis scripts"
+      - "Data analysis notebooks (Jupyter)"
+      - "Git sync (pull/push cycle every 30min)"
+      - "Dashboard development/testing (Next.js dev server)"
+    crons:
+      - schedule: "*/30 * * * *"
+        script: "scripts/fleet/git-sync.sh"
+        description: "Pull latest, push local changes"
+      - schedule: "0 8 * * *"
+        script: "scripts/fleet/daily-analysis.sh"
+        description: "Run daily data analysis and reports"
+    setup_required: true
+    ssh_user: "TBD"
+    ssh_port: 22
+
+  tertiary:
+    name: "Acer Aspire 3"
+    id: "acer-a3"
+    role: "Data Ingestion & Sync"
+    specs:
+      cpu: "Intel (dual/quad core)"
+      ram: "~8 GB"
+      disk: "~256 GB HDD/SSD"
+      os: "Windows 11 + WSL2 (Ubuntu) OR native Linux"
+      gpu: "Intel HD (no CUDA)"
+    runs:
+      - "Data pulling jobs (hourly): odds, injuries, tracking stats"
+      - "Telegram relay backup (if VM goes down)"
+      - "Log aggregation from all machines"
+      - "Git sync (pull/push cycle every 30min)"
+      - "nba_api data fetching (not blocked on non-cloud IPs)"
+    crons:
+      - schedule: "0 * * * *"
+        script: "scripts/fleet/data-pull.sh"
+        description: "Fetch latest odds, injuries, player tracking data"
+      - schedule: "*/30 * * * *"
+        script: "scripts/fleet/git-sync.sh"
+        description: "Pull latest, push local changes"
+      - schedule: "0 */4 * * *"
+        script: "scripts/fleet/log-aggregate.sh"
+        description: "Pull logs from VM, consolidate locally"
+    setup_required: true
+    ssh_user: "TBD"
+    ssh_port: 22
+
+# ── Shared Resources ──────────────────────────────────────────
+
+shared_resources:
+  credentials:
+    file: ".env.local"
+    location: "~/mon-ipad/.env.local on each machine"
+    management: "VM is source of truth. scp to distribute."
+    gitignored: true
+  state_db:
+    provider: "Supabase"
+    tables:
+      - "predictions"
+      - "experiments"
+      - "fleet_status"
+    note: "Primary (ayqviq) paused, using pooler (xivvnr)"
+  code_sync:
+    method: "GitHub private repos"
+    repos:
+      - "LBJLincoln/mon-ipad"
+      - "LBJLincoln/nomos-nba-agent"
+      - "LBJLincoln/nomos-dashboard"
+      - "LBJLincoln/nomos-political-alpha"
+      - "LBJLincoln/rgwa"
+  messaging:
+    bot: "@Nomos42Bot"
+    channel: "@Nomos42"
+    alert_target: "ADMIN_TELEGRAM_ID env var"
+
+# ── GPU Compute (NEVER local) ────────────────────────────────
+
+gpu_platforms:
+  kaggle:
+    budget: "30hr/week P100 or 2xT4"
+    use: "Karpathy loops (NBA + Political)"
+    status: "WORKING"
+  modal:
+    budget: "$30/mo free (Starter)"
+    use: "TabICL evolution, serverless GPU"
+    status: "ACTIVE"
+  colab:
+    budget: "Free T4 ~4-12h sessions"
+    use: "GPU evolution, TabICL experiments"
+    status: "ON-DEMAND"
+  hf_spaces:
+    budget: "Free CPU (6 NBA + 4 Political islands)"
+    use: "24/7 tree-based evolution"
+    status: "ALWAYS-ON"
+
+# ── Fleet Communication ──────────────────────────────────────
+
+communication:
+  vm_to_machines: "SSH (requires authorized_keys setup)"
+  machines_to_vm: "Git push + Supabase writes"
+  alerting: "Telegram via @Nomos42Bot"
+  status_file: "data/fleet-status.json (written by fleet-agent.sh)"

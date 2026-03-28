@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-03-28T14:03:07Z",
+  "fleet_size": 4,
+  "machines": {
+    "gcp-vm": {
+      "name": "Google Cloud VM",
+      "role": "Primary Orchestrator",
+      "status": "degraded",
+      "specs": "1 vCPU, 969MB RAM, 30GB disk",
+      "metrics": {
+        "cpu_pct": "100",
+        "mem_pct": "83",
+        "mem_used": "808M",
+        "mem_total": "969M",
+        "mem_avail": "165M",
+        "disk_pct": "91",
+        "load_1m": "5.40",
+        "load_5m": "4.74",
+        "load_15m": "4.80",
+        "uptime_days": "1",
+        "uptime_hours": "16",
+        "process_count": "110"
+      },
+      "services": {
+        "data_server": "running",
+        "telegram_brain": "running",
+        "telegram_rgwa": "running",
+        "cron_jobs": "11"
+      }
+    },
+    "mba-1": {"status":"not_configured","note":"SSH setup required"},
+    "mba-2": {"status":"not_configured","note":"SSH setup required"},
+    "acer-a3": {"status":"not_configured","note":"SSH setup required"}
+  },
+  "gpu_platforms": {
+    "note": "Tracked by infra-agent.sh, not fleet-agent.sh",
+    "status_file": "data/infra-status.json"
+  }
+}

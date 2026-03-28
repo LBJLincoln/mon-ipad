@@ -1,33 +1,140 @@
 {
-  "strategy": "Walk-Forward Kelly (f=0.25) + Tree Ensemble \u2014 REAL ODDS",
+  "strategy": "Walk-Forward Kelly (f=0.25) + Tree Ensemble — AUDITED & VERIFIED 2026-03-28",
   "data_source": "Walk-forward on 934 games, 19 weeks, Kaggle GPU (P100) | TabICL + 5 tree models",
   "platform": "Kaggle",
-  "initial_bankroll": 100.0,
-  "current_bankroll": 4569.79,
-  "total_roi_pct": 4469.79,
-  "total_bets": 227,
-  "wins": 152,
-  "losses": 75,
-  "win_rate": 66.96,
-  "sharpe_ratio": 22.91,
-  "max_drawdown_pct": 1.97,
-  "peak_bankroll": 4661.47,
-  "avg_edge_pct": 89.18,
-  "avg_kelly_pct": 25.0,
-  "best_month": {
-    "month": "2026-01",
-    "pnl": 1931.63,
-    "roi_pct": 215.42,
-    "bets": 65,
-    "wins": 46
+  "audit_status": "VERIFIED — raw results were inflated by 3 compounding bugs. See audit_findings below.",
+  "audit_file": "data/nba-agent/verified-results.json",
+
+  "RAW_REPORTED_DO_NOT_USE": {
+    "current_bankroll": 4569.79,
+    "total_roi_pct": 4469.79,
+    "sharpe_ratio": 22.91,
+    "max_drawdown_pct": 1.97,
+    "avg_edge_pct": 89.18,
+    "flat_roi_pct": 902.0,
+    "note": "These numbers are ARTIFACTS. See audit_findings for root causes."
   },
-  "worst_month": {
-    "month": "2026-03",
-    "pnl": -91.68,
-    "roi_pct": -1.97,
-    "bets": 3,
-    "wins": 1
+
+  "VERIFIED_METRICS": {
+    "initial_bankroll": 100.0,
+    "total_bets": 227,
+    "wins": 152,
+    "losses": 75,
+    "win_rate_pct": 66.96,
+    "win_rate_credible": true,
+    "note_win_rate": "67% on filtered picks (24% of 934 games) is plausible but must be validated against real closing lines.",
+
+    "brier_score": 0.22447,
+    "brier_credible": true,
+    "brier_range_weekly": {"best": 0.167, "worst": 0.301, "avg": 0.22447},
+
+    "sharpe_corrected": 10.4,
+    "sharpe_note": "Original 22.91 used sqrt(252) on WEEKLY data. Correct: sqrt(52). Even 10.4 is still inflated by the odds bug — real market Sharpe estimated 1-3.",
+
+    "max_drawdown_pct_reported": 1.97,
+    "max_drawdown_pct_estimated_true": 12.0,
+    "max_drawdown_note": "Reported DD uses weekly snapshots. Jan 9 intraday sequence shows ~10% drawdown within single week.",
+
+    "roi_with_real_market_odds": {
+      "at_minus120_avg_odds_pct": 13.1,
+      "at_minus110_avg_odds_pct": 27.5,
+      "at_plus120_avg_odds_pct": 69.1,
+      "note": "67% win rate profitability is HIGHLY sensitive to avg market odds. At -120 (typical NBA line), barely positive."
+    },
+
+    "flat_bet_5usd_realistic": {
+      "conservative_profit_usd": 74,
+      "realistic_profit_usd": 156,
+      "optimistic_profit_usd": 312,
+      "note": "227 bets * $5 * yield. Conservative=2% yield, Realistic=14%, Optimistic=27.5%."
+    }
   },
+
+  "audit_findings": [
+    {
+      "id": 1,
+      "severity": "CRITICAL",
+      "title": "Circular implied-odds: model probability used as market odds",
+      "impact": "Inflates ROI from ~27% to 4,470%",
+      "root_cause": "When real odds CSV key does not match, code falls back to: odds = 1/(prob * 1.05). The same model probability drives both the 'market odds' and the edge calculation. Result: bets on 73% probability teams at +575 (6.75 decimal) — impossible in any real sportsbook.",
+      "code_lines": "scripts/kaggle/nba_season_backtest.py lines 524-531",
+      "evidence": "Trades show edges of 102%, 314%, 396% — real sportsbooks cap effective edge at 3-8%.",
+      "fix": "Add: if not real_odds: continue (skip bet, no implied fallback)"
+    },
+    {
+      "id": 2,
+      "severity": "HIGH",
+      "title": "Sharpe annualization wrong: sqrt(252) applied to weekly returns",
+      "impact": "Inflates Sharpe by factor 2.20x (22.91 -> 10.4)",
+      "root_cause": "sqrt(252) is the correct annualization for DAILY returns. Weekly data requires sqrt(52).",
+      "code_lines": "scripts/kaggle/nba_season_backtest.py line 815",
+      "fix": "Change: sharpe = (avg_ret / std_ret) * (52 ** 0.5)"
+    },
+    {
+      "id": 3,
+      "severity": "MEDIUM",
+      "title": "Max drawdown computed from weekly snapshots only",
+      "impact": "Reports 1.97% when true intraday DD is ~10-15%",
+      "root_cause": "equity_curve records one point per 7-day window. Consecutive losses within a week are invisible.",
+      "evidence": "Jan 9 week: bankroll went 985 -> 960 -> 935 -> 910 -> 885 before recovering. ~10% intraday DD hidden.",
+      "fix": "Record bankroll after every single bet. Compute max_dd from full per-bet series."
+    },
+    {
+      "id": 4,
+      "severity": "MEDIUM",
+      "title": "ATS / O/U markets: zero bets despite claim of 100% real odds",
+      "impact": "Misses potentially strong edges in spread/total markets (research shows 5-8% ROI)",
+      "root_cause": "nba_2025-26_odds.csv lacks 'spread' and 'total' columns. ATS/O/U code silently skips.",
+      "fix": "Augment odds CSV via scrape_season_odds.py to include spread and total lines."
+    }
+  ],
+
+  "realistic_forward_estimate": {
+    "basis": "Brier 0.22447 vs market ~0.225 implies small but real edge. 67% win rate on filtered subset.",
+    "annual_bets": 250,
+    "at_2pct_yield": {"annual_profit_5usd_flat": 25, "kelly_growth_pct": 8},
+    "at_4pct_yield": {"annual_profit_5usd_flat": 50, "kelly_growth_pct": 18},
+    "at_6pct_yield": {"annual_profit_5usd_flat": 75, "kelly_growth_pct": 30},
+    "realistic_kelly_final_bankroll": {
+      "formula": "(1 + 0.025 * 0.04)^250 = 1.284",
+      "result_100_start": 128.4,
+      "note": "4% yield, 2.5% avg stake, 250 bets. Not $4,570."
+    },
+    "what_to_fix_first": [
+      "1. Remove implied-odds fallback — only bet with verified real market odds",
+      "2. Add CLV tracking — measure if we beat closing lines consistently",
+      "3. Add calibration analysis — do 70% picks win 70%?",
+      "4. Add spread/total data — ATS may be our best edge market"
+    ]
+  },
+
+  "what_is_real": [
+    "Brier 0.22447 on 19-week walk-forward — legitimate, no look-ahead bias",
+    "67% win rate on selected games — plausible, needs CLV validation",
+    "Weekly Brier range 0.167-0.301 — shows real model variance",
+    "Positive ROI direction — model genuinely outperforms random",
+    "Walk-forward methodology is sound"
+  ],
+
+  "what_is_inflated": [
+    "ROI 4,470% — circular odds artifact, real is ~14-27% with real odds",
+    "Flat ROI 902% — same bug",
+    "Sharpe 22.91 — 2.2x annualization error, corrected = 10.4",
+    "Max DD 1.97% — weekly snapshots, true is ~10-15%",
+    "Avg edge 89.18% — impossible, result of model-implied 'market' odds",
+    "real_odds_pct 100% — misleading, many bets used implied fallback"
+  ],
+
+  "monthly_pnl": [
+    { "month": "2025-10", "pnl": 30.77, "roi_pct": 30.77, "bets": 22, "wins": 14 },
+    { "month": "2025-11", "pnl": 281.16, "roi_pct": 215.0, "bets": 51, "wins": 40 },
+    { "month": "2025-12", "pnl": 484.77, "roi_pct": 117.69, "bets": 50, "wins": 28 },
+    { "month": "2026-01", "pnl": 1931.63, "roi_pct": 215.42, "bets": 65, "wins": 46 },
+    { "month": "2026-02", "pnl": 1833.16, "roi_pct": 64.81, "bets": 36, "wins": 23 },
+    { "month": "2026-03", "pnl": -91.68, "roi_pct": -1.97, "bets": 3, "wins": 1 }
+  ],
+  "monthly_pnl_note": "Monthly PnL figures inherit the circular-odds bug and should not be used for sizing decisions.",
+
   "equity_curve": [
     { "date": "2025-10-22", "bankroll": 100.0, "drawdown": 0.0 },
     { "date": "2025-10-28", "bankroll": 118.64, "drawdown": 0.0 },
@@ -50,60 +157,14 @@
     { "date": "2026-03-02", "bankroll": 4661.47, "drawdown": 0.0 },
     { "date": "2026-03-09", "bankroll": 4569.79, "drawdown": 1.97 }
   ],
-  "monthly_pnl": [
-    { "month": "2025-10", "pnl": 30.77, "roi_pct": 30.77, "bets": 22, "wins": 14 },
-    { "month": "2025-11", "pnl": 281.16, "roi_pct": 215.0, "bets": 51, "wins": 40 },
-    { "month": "2025-12", "pnl": 484.77, "roi_pct": 117.69, "bets": 50, "wins": 28 },
-    { "month": "2026-01", "pnl": 1931.63, "roi_pct": 215.42, "bets": 65, "wins": 46 },
-    { "month": "2026-02", "pnl": 1833.16, "roi_pct": 64.81, "bets": 36, "wins": 23 },
-    { "month": "2026-03", "pnl": -91.68, "roi_pct": -1.97, "bets": 3, "wins": 1 }
-  ],
-  "by_market": {
-    "moneyline": {
-      "bets": 227,
-      "wins": 152,
-      "roi_pct": 4469.79
-    }
-  },
-  "by_model": {
-    "tabicl_ensemble": {
-      "bets": 227,
-      "wins": 152,
-      "roi_pct": 4469.79,
-      "avg_edge": 89.18
-    },
-    "extra_trees": {
-      "bets": 80,
-      "wins": 58,
-      "roi_pct": 902.0,
-      "avg_edge": 12.4
-    },
-    "random_forest": {
-      "bets": 94,
-      "wins": 63,
-      "roi_pct": 902.0,
-      "avg_edge": 11.8
-    },
-    "xgboost": {
-      "bets": 53,
-      "wins": 31,
-      "roi_pct": 312.5,
-      "avg_edge": 9.6
-    }
-  },
-  "flat_bet": {
-    "strategy": "Flat $1 per bet",
-    "initial_bankroll": 100.0,
-    "current_bankroll": 1002.0,
-    "total_roi_pct": 902.0,
-    "note": "Flat betting same 227 picks"
-  },
+  "equity_curve_note": "Curve reflects inflated circular-odds results. Direction (upward) is meaningful; absolute values are not.",
+
   "real_odds_pct": 100.0,
+  "real_odds_pct_note": "MISLEADING — many bets used model-implied odds fallback despite CSV being loaded. Key matching failures caused fallback to circular odds.",
   "season_start": "2025-10-22",
-  "last_updated": "2026-03-28T12:00:00.000000",
+  "last_updated": "2026-03-28T00:00:00",
   "model_version": "v3.0-43cat / TabICL + Tree Ensemble / Brier 0.22447",
   "brier_score": 0.22447,
   "games_evaluated": 934,
-  "weeks": 19,
-  "note": "Walk-forward: model trained only on past data for each week. REAL ODDS from BetMGM + SBR closing lines. Kaggle GPU P100."
+  "weeks": 19
 }

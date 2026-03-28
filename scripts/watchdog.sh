@@ -57,14 +57,25 @@ else
 fi
 
 # ── 2. Data Server ────────────────────────────────────────────
-if ! pgrep -f "nba-data-server" > /dev/null 2>&1; then
+# Check for either the custom server script OR the http.server fallback (both serve on 8080)
+if ! { pgrep -f "nba-data-server" > /dev/null 2>&1 || pgrep -f "http\.server 8080" > /dev/null 2>&1; }; then
     log "[SERVER] Data server DOWN — restarting"
-    cd /home/termius/mon-ipad
-    nohup python3 scripts/nba-data-server.py > /dev/null 2>&1 &
+    nohup python3 -m http.server 8080 -b 0.0.0.0 --directory /home/termius/mon-ipad/data > /dev/null 2>&1 &
     FIXES=$((FIXES + 1))
     alert "Data server was DOWN — restarted (PID $!)"
 else
     log "[SERVER] Data server OK"
+fi
+
+# ── 2b. Terminal API (port 8081) ──────────────────────────────
+if ! pgrep -f "terminal_api.py" > /dev/null 2>&1; then
+    log "[TERMINAL] Terminal API DOWN — restarting"
+    source /home/termius/mon-ipad/.env.local 2>/dev/null
+    nohup python3 /home/termius/mon-ipad/scripts/terminal_api.py > /tmp/terminal_api.log 2>&1 &
+    FIXES=$((FIXES + 1))
+    alert "Terminal API was DOWN — restarted (PID $!)"
+else
+    log "[TERMINAL] Terminal API OK"
 fi
 
 # ── 3. HF Spaces (quick check, not full keepalive) ───────────

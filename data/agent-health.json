@@ -1,0 +1,94 @@
+{
+  "timestamp": "2026-03-28T14:00:34.690371Z",
+  "projects": {
+    "nba": {
+      "name": "NBA Quant AI",
+      "spaces": {
+        "S10": {
+          "status": "UP",
+          "brier": 0.22215,
+          "generation": 15,
+          "model": "extra_trees",
+          "last_improvement": null
+        },
+        "S11": {
+          "status": "UP",
+          "brier": 0.22321,
+          "generation": 28,
+          "model": "random_forest",
+          "last_improvement": null
+        },
+        "S12": {
+          "status": "UP",
+          "brier": 0.22889,
+          "generation": 27,
+          "model": "xgboost_brier",
+          "last_improvement": null
+        },
+        "S13": {
+          "status": "UP",
+          "brier": 0.22368,
+          "generation": 13,
+          "model": "lightgbm",
+          "last_improvement": null
+        },
+        "S14": {
+          "status": "UP",
+          "brier": 1.0,
+          "generation": 0,
+          "model": "none",
+          "last_improvement": null
+        },
+        "S15": {
+          "status": "UP",
+          "brier": 0.22112,
+          "generation": 58,
+          "model": "extra_trees",
+          "last_improvement": null
+        }
+      },
+      "kaggle": {
+        "nba-karpathy-loop": {
+          "status": "ERROR",
+          "error": "[Errno 2] No such file or directory: 'kaggle'"
+        },
+        "nba-season-backtest": {
+          "status": "ERROR",
+          "error": "[Errno 2] No such file or directory: 'kaggle'"
+        }
+      }
+    },
+    "political": {
+      "name": "Political Alpha",
+      "spaces": {},
+      "kaggle": {
+        "political-alpha-karpathy-loop": {
+          "status": "ERROR",
+          "error": "[Errno 2] No such file or directory: 'kaggle'"
+        }
+      }
+    }
+  },
+  "infra": {
+    "data_server": {
+      "backtest-results.json": "DOWN",
+      "bankroll-state.json": "DOWN",
+      "quant-summary.json": "DOWN"
+    },
+    "telegram": {
+      "brain": "ALIVE"
+    }
+  },
+  "actions_taken": [],
+  "issues": [
+    "Kaggle nba-karpathy-loop ERRORED",
+    "Kaggle nba-season-backtest ERRORED",
+    "Kaggle political-alpha-karpathy-loop ERRORED"
+  ],
+  "summary": {
+    "spaces": "6/6 UP",
+    "issues": 3,
+    "actions": 0,
+    "status": "CRITICAL"
+  }
+}

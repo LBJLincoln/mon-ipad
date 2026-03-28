@@ -1,72 +1,80 @@
 ---
-name: Evolution Fleet Stagnation — March 2026
-description: All 6 HF Space islands health snapshot. Feat=200 universal takeover confirmed (5/6 at 100%), S14 is fleet best at 0.22093, S13 only active improver, 3 experiments submitted to S11.
+name: Evolution Fleet Status — March 2026
+description: HF Space fleet health snapshots. Latest: 2026-03-28 post-redeploy. 5/6 islands RUNNING, S14 stuck BUILDING, watchdog data server bug fixed.
 type: project
 ---
 
-**Last verified: 2026-03-26 17:05 UTC**
+**Last verified: 2026-03-28 13:40 UTC**
 
-## Current Fleet State
+## Current Fleet State (post-redeploy 2026-03-28)
 
-| Space | Gen | Cycle | Brier (best) | Gen-Pop Brier | Mut | Model | Feat=200% | Supabase | Risk |
-|-------|-----|-------|--------------|----------------|-----|-------|-----------|----------|------|
-| S10 | 1970 | 657 | 0.22278 | 0.2214 (frozen) | 0.05→0.09* | extra_trees | 100% | OK | MEDIUM |
-| S11 | 898 | 299 | 0.22365 | 0.2245 (frozen) | 0.08 | lightgbm | 100% | DEAD | HIGH |
-| S12 | 56 | 19 | 0.22116 | 0.2206 | 0.0715 | extra_trees | 98% | DEAD | MEDIUM |
-| S13 | 61 | 21 | 0.22367 | 0.2221 (improving) | 0.1126 | lightgbm | 72% | UNKNOWN | LOW |
-| S14 | 589 | 197 | 0.22093 | 0.2252 (regressed) | 0.1024 | extra_trees | 100% | OK | HIGH |
-| S15 | 1017 | 339 | 0.22625 | 0.2221 (frozen) | 0.08 | extra_trees | 100% | OK | RESTART |
+All 6 islands were redeployed 2026-03-28. Generations are fresh/low.
 
-*Config push applied 2026-03-26
+| Space | Stage | Gen | Brier | Role |
+|-------|-------|-----|-------|------|
+| S10 nba-quant | RUNNING | 9 | 0.22215 | exploitation |
+| S11 nba-quant-2 | RUNNING | 11 | 0.22321 | exploration |
+| S12 nba-evo-3 | RUNNING | 15 | 0.23347 | extra_trees specialist |
+| S13 nba-evo-4 | RUNNING | 6 | 0.22492 | catboost specialist |
+| S14 nba-evo-5 | BUILDING | -- | -- | lightgbm specialist |
+| S15 nba-evo-6 | RUNNING | 30 | 0.22112 | wide search |
 
-## Fleet Best
-- **Current**: S14, Brier=0.22093, gen 589, extra_trees, 67 features
-- **All-time best**: 0.21976 (experiment #734, extra_trees, 142 features)
-- **Target**: 0.20 — gap = 0.02093
+**S14 issue**: stuck in BUILDING since 11:44 UTC (>2h). HTTP 000. No error in HF API. If still BUILDING at 15:00 UTC, trigger manual restart.
 
-## Actions Taken 2026-03-26
+**Fleet best post-redeploy**: S15, Brier=0.22112, gen 30
 
-### Config pushes
-- **S10**: POST /api/config → mutation_rate=0.09, target_features=63, crossover_rate=0.80 (was decayed to 0.05)
+## All-Time Bests
+- **ATR**: Brier 0.21570 (Colab TabICL, 110f, iter 15, 2026-03-27)
+- **CPU best**: 0.21976 (experiment #734, extra_trees, 142 features)
+- **Target**: < 0.20
 
-### Experiments submitted to S11 (/api/experiment/submit)
-- **#2533** evo-agent-et63-001 (priority 9): extra_trees + target_features=63 + mutation=0.09
-- **#2534** evo-agent-mut-rescue-002 (priority 8): mutation_rate=0.12 rescue config
-- **#2535** evo-agent-xgb-sigmoid-003 (priority 7): xgboost+sigmoid + target_features=63 (MOVDA-era best config)
+## Pre-Redeploy State (2026-03-26 snapshot)
 
-## Critical Issues (2026-03-26)
+| Space | Gen | Brier (best) | Gen-Pop Brier | Mut | Feat=200% | Supabase |
+|-------|-----|--------------|----------------|-----|-----------|----------|
+| S10 | 1970 | 0.22278 | 0.2214 (frozen) | 0.09 | 100% | OK |
+| S11 | 898 | 0.22365 | 0.2245 (frozen) | 0.08 | 100% | DEAD |
+| S12 | 56 | 0.22116 | 0.2206 | 0.0715 | 98% | DEAD |
+| S13 | 61 | 0.22367 | 0.2221 (improving) | 0.1126 | 72% | UNKNOWN |
+| S14 | 589 | 0.22093 | 0.2252 (regressed) | 0.1024 | 100% | OK |
+| S15 | 1017 | 0.22625 | 0.2221 (frozen) | 0.08 | 100% | OK |
 
-1. **Feat=200 universal takeover** — 5 of 6 islands at 100% Feat=200 in ALL logged gen lines. Best individuals are 54-98 features. The GA is not searching — it is iterating dead 200-feature genomes. Root cause: NSGA-II tournament selection rewards ROI/Sharpe overfitting of bloated genomes. REQUIRES CODE FIX to genetic_loop_v3.py selection penalty.
+Actions taken 2026-03-26:
+- S10: config push mutation_rate=0.09, target_features=63, crossover_rate=0.80
+- S11: experiments #2533 (et63), #2534 (mut rescue 0.12), #2535 (xgb+sigmoid+63f) submitted
 
-2. **S14 regression** — Fleet best (0.22093) but gen population at 0.2252 — gap of 0.0043. Feat=200 displacement likely eliminated the 67-feature champion from the population. Needs elite injection or checkpoint rollback.
+## Infrastructure Issues Found & Fixed (2026-03-28)
 
-3. **Supabase dead on S11/S12/S13** — Error: "FATAL: Tenant or user not found — aws-1-eu-west-1.pooler.supabase.com port 6543". Wrong DATABASE_URL pooler credentials on those 3 spaces. S10/S14/S15 use working credentials. Fix: update DATABASE_URL env var in HF Space settings.
+### Watchdog data server bug — FIXED
+- **Bug**: pgrep -f 'nba-data-server' did NOT match running process ('python3 -m http.server 8080')
+- **Effect**: 12 false restarts/hour, each failing with EADDRINUSE
+- **Fix**: `/home/termius/mon-ipad/scripts/watchdog.sh` — changed to: `if ! { pgrep -f "nba-data-server" || pgrep -f "http\.server 8080"; }; then`
+- **Verified**: fix confirmed working
 
-4. **S15 — restart recommended** — 1017 generations, worst fleet Brier (0.22625), Sharpe=23.93 anomalous (ROI metric being gamed). Restart with lightgbm specialist config seeded from S13's best individual.
+### Data server
+- Running as: `python3 -m http.server 8080 -b 0.0.0.0 --directory /home/termius/mon-ipad/data` (PID 507711, since Mar 27)
+- Port 8080, serving /home/termius/mon-ipad/data/
 
-5. **Migration spreading Feat=200** — Current automatic migration (3 individuals every ~30 gens) is net-negative: Feat=200 immigrants win tournament selection in receiving islands. Need feature-count filter on migration candidates (<= 120 features only).
+### Telegram bots
+- @Nomos42Bot: PID 269800, running since Mar 27 17:11
+- @RGWAbot: PID 270201, running since Mar 27 17:18
 
-## S13 — The Most Promising Island
-S13 (gen 61) is the ONLY island showing active Brier improvement in its log:
-- Gen log trend: 0.2233 → 0.2233 → 0.2221 → 0.2221 (actively dropping)
-- Feat=200 at 72% (not yet total takeover)
-- Mutation healthy at 0.1126
-- **Do not intervene until gen 150 or Feat=200 hits 95%+**
+### Crons
+- 11 active entries (watchdog, NBA agents, cross-repo, kaggle, political x4, infra, social, political agents)
 
-## Structural Fix Required
-The only path to breaking 0.22 on CPU islands is:
-1. Fix genetic_loop_v3.py: add Pareto crowding penalty for n_features > 150 (weight 0.15)
-2. Fix Supabase credentials on S11/S12/S13
-3. Restart S15 as lightgbm specialist seeded from S13
-4. Use Colab GPU notebook (TabICLv2 + TabPFN) for final push below 0.22
+## Structural Issues (persist across redeploys)
 
-**Why:** Feat=200 bloat consumes 100% of compute on genomes that score well in training but generalize poorly. The selection mechanism must be fixed at the code level. Config-only rescues (mutation boosts) provide temporary relief but Feat=200 re-establishes dominance within 20-30 gens.
+1. **Feat=200 universal takeover** — 5 of 6 islands at 100% Feat=200 in gen logs pre-redeploy. Root cause: NSGA-II tournament selection rewards ROI/Sharpe overfitting. REQUIRES CODE FIX to genetic_loop_v3.py — add Pareto crowding penalty for n_features > 150.
 
-**How to apply:** When reviewing island health, check Feat=200% first. If >80% on any island, push mutation_rate=0.12 AND target_features to island's intended sweet spot as an emergency measure. Code fix takes priority over config fixes.
+2. **Supabase dead on S11/S12/S13** — "FATAL: Tenant or user not found". Wrong DATABASE_URL pooler credentials. Fix: update env vars in HF Space settings to match S10's working credentials.
 
-## API Reference (correct endpoints)
+3. **Migration spreading Feat=200** — Need feature-count filter on migration candidates (<= 120 features only).
+
+## API Reference (verified correct endpoints)
 - Status: `GET /api/status`
-- Config push: `POST /api/config` (allowed: pop_size, mutation_rate, target_features, crossover_rate, cooldown, elite_size, tournament_size, n_islands, migration_interval, migrants_per_island)
+- Config push: `POST /api/config`
 - Experiment submit: `POST /api/experiment/submit` (NOT /api/submit-experiment)
 - Population reset: `POST /api/reset`
-- Command: `POST /api/command` (commands: diversify, boost_mutation, backfill_boxscores)
+- Command: `POST /api/command`
+
+**Why tracking this**: Feat=200 bloat is the primary obstacle to breaking Brier 0.22 on CPU islands. Config-only rescues give temporary relief but Feat=200 re-establishes within 20-30 gens. Only a code-level selection penalty fix will solve it permanently.

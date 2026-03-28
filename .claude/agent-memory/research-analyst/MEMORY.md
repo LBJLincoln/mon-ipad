@@ -19,3 +19,6 @@
 - [research_march2026_cycle6.md](research_march2026_cycle6.md) — March 28 2026 cycle 6: Montrucchio 2026 shot-chart NBA (Brier 0.199), Brier loss training, 5y-Elo, Venn-Abers, Kelly tournament, Brier-to-ROI framework
 - [research_march2026_multi_market.md](research_march2026_multi_market.md) — March 28 2026 cycle 7: 26 NBA bet types, efficiency rankings, halftime 2H (best opp), player props Unders bias, team totals, spread/total formulas, correlated SGP math
 - [research_march2026_cycle8_data_sources.md](research_march2026_cycle8_data_sources.md) — March 28 2026 cycle 8: Complete free data source catalog — nba_api endpoints (15 unused), shot charts, injury PDFs, SBR odds, RAPTOR, play types, PrizePicks API
+
+## Backtest Audit
+- [project_backtest_audit_march2026.md](project_backtest_audit_march2026.md) — CRITICAL: 3 bugs in nba_season_backtest.py inflated ROI 4470% (circular odds), Sharpe 2.2x (sqrt annualization), DD understated. All 3 fixed 2026-03-28.
