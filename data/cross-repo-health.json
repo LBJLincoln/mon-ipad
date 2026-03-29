@@ -1,68 +1,42 @@
 {
-  "generated_at": "2026-03-29T12:30:00Z",
-  "cycle_id": "2026-03-29T12",
-  "ecosystem_health": "DEGRADED",
-  "degradation_reason": "Political Alpha PA1/PA2/PA3 stuck at 2 feature candidates for 3+ cycles",
-
+  "_meta": {
+    "updated": "2026-03-29T20:30:00Z",
+    "brain_cycle": "2026-03-29T20"
+  },
+  "ecosystem_health": "PARTIAL_DEGRADED",
   "projects": {
     "nba_quant_ai": {
       "status": "HEALTHY",
       "best_brier": 0.22006,
-      "best_island": "S14",
       "target": 0.21837,
-      "gap_to_target": 0.00169,
-      "near_breakthrough": true,
-      "note": "S15 top_individual ~0.21883, only 0.00046 from ATR checkpoint",
+      "gap": 0.00169,
       "islands_online": 6,
-      "islands_healthy": 6,
-      "stagnation_alerts": 0,
-      "this_cycle_action": "ECE-CAL-01 proposal: add Expected Calibration Error as 4th Pareto fitness objective"
+      "islands_total": 6,
+      "trend": "STABLE_IMPROVING",
+      "note": "All 6 islands healthy, no stagnation. S14 leads at 0.22006 with extra_trees 59 features."
     },
     "political_alpha": {
-      "status": "CRITICAL",
+      "status": "CRITICAL_DEGRADED",
       "best_brier": 0.25008,
-      "best_island": "PA4",
-      "target": 0.22,
-      "gap_to_target": 0.03008,
-      "islands_online": 4,
       "islands_healthy": 1,
-      "critical_islands": 3,
-      "issue": "PA1/PA2/PA3 feature_candidates=2 (engine not loaded on HF Spaces)",
-      "fix_status": "GitHub has correct 54978-byte engine. HF Space repos need manual update.",
-      "this_cycle_action": "Documented root cause. Cross-ported ECE proposal to PA4."
+      "islands_total": 4,
+      "critical_issue": "PA1/PA2/PA3 feature_candidates=2 (Brier=0.3, worse than random 0.25)",
+      "fix_applied": "2026-03-29T20: 4-patch to hf-space/app.py pushed — spaces need restart to take effect",
+      "trend": "CRITICAL_FIX_DEPLOYED"
     }
   },
-
-  "cross_project_synergies": {
-    "techniques_ported_this_cycle": [
-      {
-        "technique": "Expected Calibration Error (ECE) fitness metric",
-        "from": "2026 NBA prediction literature (MDPI, Scientific Reports)",
-        "to_nba": "proposal ECE-CAL-01, target S15 first",
-        "to_political": "ECE-CAL-01 cross-port for PA4",
-        "impact": "Better calibrated models → improved live ROI via Kelly sizing"
-      }
-    ],
-    "techniques_pending_port": [
-      "Probability clipping [0.025, 0.975] — proposed for NBA, needs PA implementation",
-      "CalibratedClassifierCV with Brier selection — already proposed for NBA"
-    ]
-  },
-
-  "critical_manual_actions_required": [
-    {
-      "priority": 1,
-      "action": "Update political_engine.py in HF Space repos",
-      "repos": ["Nomos42/political-alpha", "Nomos42/political-alpha-2", "Nomos42/political-alpha-3"],
-      "file": "features/political_engine.py",
-      "source": "lbjlincoln/nomos-political-alpha blob caa04dc (54978 bytes)",
-      "how": "huggingface.co/spaces/Nomos42/political-alpha → Files tab → update features/political_engine.py"
+  "cross_project_techniques": {
+    "calibration": {
+      "nba_status": "PROPOSED — research proposal written",
+      "political_status": "BLOCKED — awaiting feature fix. Apply after restart confirmed.",
+      "expected_gain": "0.003-0.007 Brier on both projects"
+    },
+    "feature_diversity": {
+      "nba_pool": 3267,
+      "political_pool_expected": "40 (after fix)",
+      "political_pool_current": 2
     }
-  ],
-
-  "watchlist": [
-    "S15 top_individual approaching ATR 0.21837 — checkpoint imminent",
-    "PA4 Brier=0.25008 with 15 features — if feature_candidates increases, rapid improvement expected",
-    "S12 worst brier (0.22889) — gene injection from S14 recommended next cycle"
-  ]
+  },
+  "supabase_status": "DEGRADED — both projects experiencing Supabase connectivity failures (FATAL: Tenant or user not found). Local computation unaffected.",
+  "next_cycle_action": "Verify political alpha spaces restarted. If feature_candidates still=2, manually trigger HF Space restart via MCP. Deploy NBA calibration wrapper to S14."
 }

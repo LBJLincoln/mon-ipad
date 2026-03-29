@@ -1,0 +1,52 @@
+{
+  "_meta": {
+    "created": "2026-03-29T20:30:00Z",
+    "cycle": "2026-03-29T20",
+    "author": "brain-sonnet-4-6",
+    "type": "RESEARCH_PROPOSAL",
+    "priority": "HIGH",
+    "target": "NBA Brier improvement: 0.220 → 0.213",
+    "estimated_gain": "0.003-0.007 Brier points"
+  },
+  "title": "Isotonic Calibration Post-Processing for Tree Ensemble Islands",
+  "motivation": {
+    "observation": "S14 best_brier=0.22006, target=0.21837. Gap=0.00169. Fleet uses ExtraTrees/LightGBM which produce miscalibrated probabilities (overconfident near 0/1).",
+    "research_finding": "MDPI Information (Jan 2026): XGBoost Brier=0.202. Logistic regression with calibration achieves Brier=0.199. Calibration is the primary differentiator — not model complexity.",
+    "references": [
+      "https://www.mdpi.com/2078-2489/17/1/56 — Uncertainty-Aware ML for NBA (2026)",
+      "https://www.mdpi.com/2079-3197/13/10/230 — NBA/WNBA prediction with calibration (Oct 2025)",
+      "https://www.nature.com/articles/s41598-025-13657-1 — Stacked ensembles for NBA"
+    ],
+    "key_insight": "CalibratedClassifierCV with automatic method selection (sigmoid vs isotonic) consistently improves Brier by 2-5% on tree models. SHAP top 3 features confirmed: home_next, team_elo_5y, team_elo — verify all are in engine.py evolution pool."
+  },
+  "proposal": {
+    "phase_1_quick_win": {
+      "name": "Post-hoc isotonic calibration wrapper in eval_individual()",
+      "change": "After fitting base model, apply CalibratedClassifierCV(cv=3, method='isotonic') on holdout. Compare Brier with and without calibration; keep whichever is better.",
+      "implementation": {
+        "location": "NBA hf-space app.py — eval_individual() function",
+        "code_sketch": "from sklearn.calibration import CalibratedClassifierCV\n# After base fit on X_train:\ncal = CalibratedClassifierCV(base_model, cv=3, method='isotonic')\ncal.fit(X_train, y_train)\nprobs_cal = cal.predict_proba(X_test)[:, 1]\nbrier_cal = brier_score_loss(y_test, probs_cal)\n# Use min(brier_base, brier_cal)",
+        "expected_impact": "0.002-0.005 Brier improvement on best individuals",
+        "risk": "LOW — purely post-processing, no change to feature evolution",
+        "cpu_cost": "LOW — CV=3 with n<200 features, ~25% overhead per eval"
+      }
+    },
+    "phase_2_elo_audit": {
+      "name": "Audit ELO feature coverage in engine.py pool",
+      "finding": "SHAP analysis confirms: home_next, team_elo_5y, team_elo = top 3 NBA prediction features by SHAP importance across multiple 2025-2026 studies.",
+      "action": "Grep engine.py for elo, rolling_elo, home_elo_delta variants. If missing variants (elo_3game_avg, elo_vs_opp, elo_margin), add to Cat12 (Power Ratings).",
+      "expected_impact": "0.003-0.008 Brier if ELO variants not yet in pool"
+    },
+    "phase_3_shot_chart": {
+      "name": "Zone-level shot chart spatial embeddings",
+      "finding": "MDPI 2026 ablation: removing shot-chart embeddings causes consistent decrease in both discrimination (AUC) and calibration (Brier). Zone shot frequencies are complementary to box score stats.",
+      "action": "Verify Cat45 (Player Tracking) includes zone_shot_freq_{zone} features for 2025-26 season data. Add if missing.",
+      "expected_impact": "0.002-0.005 Brier improvement"
+    }
+  },
+  "action_required": {
+    "immediate": "Implement Phase 1 calibration wrapper in S14 eval code (best island, Brier=0.22006). Apply to NBA hf-space app.py. One change at a time per Rule 3.",
+    "apply_to": "S14 first, then all islands if improvement confirmed over 10 generations",
+    "cross_project_note": "Calibration pattern applicable to Political Alpha once feature count fixed (this cycle). Once PA features restored to 40+, apply CalibratedClassifierCV in PA eval_individual() as well."
+  }
+}

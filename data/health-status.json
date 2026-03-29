@@ -1,10 +1,10 @@
 {
   "_meta": {
-    "generated_at": "2026-03-29T16:30:00Z",
+    "generated_at": "2026-03-29T20:30:00Z",
     "brain_cycle": "4h-auto",
     "brain_model": "claude-sonnet-4-6",
-    "cycle_id": "2026-03-29T16",
-    "prev_cycle_id": "2026-03-29T12"
+    "cycle_id": "2026-03-29T20",
+    "prev_cycle_id": "2026-03-29T16"
   },
   "nba_fleet": {
     "best_brier_this_cycle": 0.22006,
@@ -19,27 +19,26 @@
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "cycle": 76,
-        "generation": 227,
+        "cycle": 89,
+        "generation": 265,
         "best_brier": 0.22215,
         "best_roi": 0.3025,
         "best_sharpe": 6.7902,
         "best_features": 61,
         "best_model": "extra_trees",
-        "mutation_rate": 0.0807,
+        "mutation_rate": 0.075,
         "stagnation": 0,
         "feature_candidates": 3267,
         "games_evaluated": 9551,
         "status": "EVOLVING",
         "health": "OK",
-        "delta_gen_vs_prev": "+40",
-        "delta_cycle_vs_prev": "+13"
+        "note": "Best solution (Brier=0.2221) emerged early gen41 — unbeaten since"
       },
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "cycle": 168,
-        "generation": 504,
+        "cycle": 189,
+        "generation": 565,
         "best_brier": 0.22321,
         "best_roi": 0.287,
         "best_sharpe": 8.2406,
@@ -51,74 +50,68 @@
         "games_evaluated": 9551,
         "status": "EVOLVING",
         "health": "OK",
-        "delta_gen_vs_prev": "+66",
-        "delta_cycle_vs_prev": "+22"
+        "note": "Returned 403 at first fetch — transient issue, back online"
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
-        "cycle": 168,
-        "generation": 502,
+        "cycle": 194,
+        "generation": 580,
         "best_brier": 0.22889,
         "best_roi": 0.226,
         "best_sharpe": 4.6871,
         "best_features": 54,
         "best_model": "xgboost_brier",
-        "mutation_rate": 0.0467,
+        "mutation_rate": 0.04,
         "stagnation": 0,
         "feature_candidates": 3267,
         "games_evaluated": 9551,
         "status": "EVOLVING",
-        "health": "OK",
-        "alert": "WORST_BRIER_IN_FLEET — 0.22889 vs fleet best 0.22006",
-        "delta_gen_vs_prev": "+60",
-        "delta_cycle_vs_prev": "+20"
+        "health": "WATCH",
+        "alert": "WEAKEST_BRIER — plateaued at 0.22889 since gen463 (117+ gens). Diversify may help."
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
-        "cycle": 81,
-        "generation": 242,
+        "cycle": 96,
+        "generation": 287,
         "best_brier": 0.22368,
         "best_roi": 0.284,
         "best_sharpe": 4.7821,
         "best_features": 68,
         "best_model": "lightgbm",
-        "mutation_rate": 0.1325,
+        "mutation_rate": 0.1208,
         "stagnation": 0,
         "feature_candidates": 3267,
         "games_evaluated": 9551,
         "status": "EVOLVING",
-        "health": "OK",
-        "delta_gen_vs_prev": "+36",
-        "delta_cycle_vs_prev": "+12"
+        "health": "OK"
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
-        "cycle": 158,
-        "generation": 472,
+        "cycle": 184,
+        "generation": 550,
         "best_brier": 0.22006,
         "best_roi": 0.3255,
         "best_sharpe": 8.4295,
         "best_features": 59,
         "best_model": "extra_trees",
-        "mutation_rate": 0.0412,
+        "mutation_rate": 0.04,
         "stagnation": 0,
         "feature_candidates": 3267,
         "games_evaluated": 9551,
-        "pareto_front_size": 9,
+        "pareto_front_size": 17,
         "status": "EVOLVING",
         "health": "OK",
         "badge": "FLEET_BEST_BRIER_0.22006",
-        "delta_gen_vs_prev": "+64",
-        "delta_cycle_vs_prev": "+22"
+        "note": "mutation_rate=0.04 at minimum — approaching optimization limits"
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "cycle": 303,
-        "generation": 907,
+        "cycle": 356,
+        "generation": 1068,
         "best_brier": 0.22112,
         "best_roi": 0.3136,
         "best_sharpe": 7.8512,
@@ -127,13 +120,11 @@
         "mutation_rate": 0.08,
         "stagnation": 0,
         "feature_candidates": 3267,
+        "pareto_front_size": 11,
         "games_evaluated": 9551,
-        "pareto_front_size": 16,
         "status": "EVOLVING",
         "health": "OK",
-        "note": "Most generations in fleet (907). 200-feature models on Pareto front reaching ~0.219 brier.",
-        "delta_gen_vs_prev": "+126",
-        "delta_cycle_vs_prev": "+42"
+        "note": "Most generations in fleet (1068). Best stabilized at ~0.2204 since gen949."
       }
     },
     "fleet_summary": {
@@ -142,60 +133,63 @@
       "stagnation_alerts": [],
       "diversify_sent": [],
       "extra_trees_dominates": true,
-      "feature_range": "54-99",
-      "brier_range": "0.22006-0.22889",
       "fleet_best_brier": 0.22006,
       "dist_to_checkpoint": 0.00169,
-      "dist_to_atr": 0.00162,
-      "research_this_cycle": "SHAP-seeded GA initialization — proposal written"
+      "brier_range": "0.22006-0.22889",
+      "research_this_cycle": "Isotonic calibration post-processing proposal — written to data/research-proposals/",
+      "supabase_issue": "Persistent Supabase connectivity failures on all islands (FATAL: Tenant or user not found) — local computation unaffected"
     }
   },
   "political_fleet": {
     "best_brier": 0.25008,
     "best_island": "PA4",
-    "critical_alert": "PA1/PA2/PA3 stuck at feature_candidates=2 (4th consecutive cycle). MANUAL HF Space repo push required.",
+    "critical_fix_applied_this_cycle": true,
+    "fix_description": "4-patch to hf-space/app.py: OHLCV price extraction, insider side/type field, polymarket field names, reject near-empty engine output. Pushed to GitHub main — spaces will reload.",
     "islands": {
       "PA1": {
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
-        "cycle": 21233,
-        "generation": 63699,
+        "cycle": 23079,
+        "generation": 69235,
         "best_brier": 0.3,
         "best_features": 2,
-        "stagnation": 8,
+        "stagnation": 24,
         "feature_candidates": 2,
         "status": "DEGRADED",
-        "health": "CRITICAL"
+        "health": "CRITICAL",
+        "fix_applied": "hf-space/app.py patched this cycle — awaiting space restart to take effect"
       },
       "PA2": {
         "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
-        "cycle": 20864,
-        "generation": 62592,
+        "cycle": 22684,
+        "generation": 68052,
         "best_brier": 0.3,
         "best_features": 2,
         "stagnation": 11,
         "feature_candidates": 2,
         "status": "DEGRADED",
-        "health": "CRITICAL"
+        "health": "CRITICAL",
+        "fix_applied": "same fix — space restart required"
       },
       "PA3": {
         "url": "nomos42-political-alpha-3.hf.space",
         "role": "catboost_specialist",
-        "cycle": 20743,
-        "generation": 62229,
+        "cycle": 22711,
+        "generation": 68132,
         "best_brier": 0.3,
         "best_features": 2,
-        "stagnation": 8,
+        "stagnation": 1,
         "feature_candidates": 2,
         "status": "DEGRADED",
-        "health": "CRITICAL"
+        "health": "CRITICAL",
+        "fix_applied": "same fix — space restart required"
       },
       "PA4": {
         "url": "nomos42-political-alpha-4.hf.space",
         "role": "wide_search",
-        "cycle": 22218,
-        "generation": 66654,
+        "cycle": 24141,
+        "generation": 72423,
         "best_brier": 0.25008,
         "best_roi": 0.0078,
         "best_sharpe": 0.7071,
@@ -206,14 +200,15 @@
         "stagnation": 0,
         "feature_candidates": 15,
         "status": "HEALTHY",
-        "badge": "FLEET_BEST_BRIER"
+        "badge": "FLEET_BEST_BRIER",
+        "note": "Still only 15 features but stagnation=0. Same fix applies."
       }
     }
   },
   "actions_this_cycle": [
     {
       "action": "stagnation_check",
-      "result": "All NBA islands stagnation=0. PA1=8, PA2=11, PA3=8, PA4=0. All below 15 threshold. No diversify sent."
+      "result": "NBA: all islands stagnation=0. PA: PA1=24, PA2=11, PA3=1, PA4=0. PA1 at 24 but no /api/command endpoint on political spaces."
     },
     {
       "action": "checkpoint_check",
@@ -222,19 +217,22 @@
       "result": "Above threshold by 0.00169. No checkpoint."
     },
     {
-      "action": "research",
-      "nba": "WebSearch NBA prediction 2025-2026: SHAP top features = home_next, team_elo_5y, team_elo. Proposal written: seed GA init with known-good SHAP-ranked features.",
-      "political": "WebSearch FEC OpenFEC API: free RESTful API, daily updates, 15-min electronic filings. Proposal written to integrate as new data source for PA feature engine."
+      "action": "CRITICAL_BUG_FIX",
+      "project": "Political Alpha",
+      "root_cause": "PoliticalFeatureEngine returns near-empty matrix with bootstrap synthetic data (near-zero variance). _build_fallback_features crashes on OHLCV dict prices + field name mismatches (side/type, price/probability).",
+      "fix": "4 targeted patches to hf-space/app.py — pushed to GitHub main",
+      "expected_result": "Spaces will produce 40+ fallback features (up from 2) after next restart"
     },
     {
-      "action": "research_proposal_written",
-      "file": "data/research-proposals/shap-seeded-ga-init-2026-03-29.json"
+      "action": "nba_research",
+      "finding": "MDPI Jan 2026: LR with calibration Brier=0.199, XGBoost Brier=0.202. Isotonic/Platt post-processing improves tree ensembles by 0.003-0.007 Brier.",
+      "proposal_written": "data/research-proposals/nba-calibration-isotonic-2026-03-29.json"
     }
   ],
   "next_cycle_priorities": [
-    "ESCALATE: Manual push of features/political_engine.py to HF Space repos (Nomos42/political-alpha, /political-alpha-2, /political-alpha-3) — 4th cycle unresolved",
-    "NBA S12 (0.22889) weakest — inject S14 elite genes via /api/command migrate at next opportunity",
-    "S15 Pareto front has 200-feature models at ~0.219 brier — investigate if top individual already sub-0.21837",
-    "Deploy FEC data source to enrich PA feature engine once HF Space PA1/2/3 repaired"
+    "Verify political alpha spaces restarted and now show feature_candidates>10",
+    "Implement isotonic calibration wrapper in S14 eval_individual() (Phase 1 of research proposal)",
+    "S12 weakest island (0.22889) — send diversify command if stagnation counter rises",
+    "If PA feature count restored: apply same calibration improvements to political alpha GA"
   ]
 }
