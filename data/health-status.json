@@ -1,38 +1,45 @@
 {
   "_meta": {
-    "generated_at": "2026-03-29T12:30:00Z",
+    "generated_at": "2026-03-29T16:30:00Z",
     "brain_cycle": "4h-auto",
     "brain_model": "claude-sonnet-4-6",
-    "cycle_id": "2026-03-29T12"
+    "cycle_id": "2026-03-29T16",
+    "prev_cycle_id": "2026-03-29T12"
   },
   "nba_fleet": {
     "best_brier_this_cycle": 0.22006,
     "best_island_this_cycle": "S14",
     "checkpoint_threshold": 0.21837,
     "checkpoint_needed": false,
-    "note": "S15 top_individual remains near 0.21883 — 0.00046 from checkpoint. ECE-guided selection proposed to surface sub-threshold solution.",
+    "all_time_record": {
+      "brier": 0.2157,
+      "source": "Colab TabICL 110f iter15 GPU"
+    },
     "islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "cycle": 63,
-        "generation": 187,
+        "cycle": 76,
+        "generation": 227,
         "best_brier": 0.22215,
         "best_roi": 0.3025,
         "best_sharpe": 6.7902,
         "best_features": 61,
         "best_model": "extra_trees",
-        "mutation_rate": 0.0875,
+        "mutation_rate": 0.0807,
         "stagnation": 0,
+        "feature_candidates": 3267,
+        "games_evaluated": 9551,
         "status": "EVOLVING",
         "health": "OK",
-        "delta_from_prev": {"cycle": "+11", "generation": "+33", "brier": "0.00"}
+        "delta_gen_vs_prev": "+40",
+        "delta_cycle_vs_prev": "+13"
       },
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "cycle": 146,
-        "generation": 438,
+        "cycle": 168,
+        "generation": 504,
         "best_brier": 0.22321,
         "best_roi": 0.287,
         "best_sharpe": 8.2406,
@@ -40,112 +47,134 @@
         "best_model": "random_forest",
         "mutation_rate": 0.08,
         "stagnation": 0,
+        "feature_candidates": 3267,
+        "games_evaluated": 9551,
         "status": "EVOLVING",
         "health": "OK",
-        "delta_from_prev": {"cycle": "+24", "generation": "+73", "brier": "0.00"}
+        "delta_gen_vs_prev": "+66",
+        "delta_cycle_vs_prev": "+22"
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
-        "cycle": 148,
-        "generation": 442,
+        "cycle": 168,
+        "generation": 502,
         "best_brier": 0.22889,
         "best_roi": 0.226,
         "best_sharpe": 4.6871,
         "best_features": 54,
         "best_model": "xgboost_brier",
-        "mutation_rate": 0.0527,
+        "mutation_rate": 0.0467,
         "stagnation": 0,
+        "feature_candidates": 3267,
+        "games_evaluated": 9551,
         "status": "EVOLVING",
         "health": "OK",
-        "note": "S12 worst brier in fleet — consider injecting S14 elite genes next cycle"
+        "alert": "WORST_BRIER_IN_FLEET — 0.22889 vs fleet best 0.22006",
+        "delta_gen_vs_prev": "+60",
+        "delta_cycle_vs_prev": "+20"
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
-        "cycle": 69,
-        "generation": 206,
+        "cycle": 81,
+        "generation": 242,
         "best_brier": 0.22368,
         "best_roi": 0.284,
         "best_sharpe": 4.7821,
         "best_features": 68,
         "best_model": "lightgbm",
-        "mutation_rate": 0.1424,
+        "mutation_rate": 0.1325,
         "stagnation": 0,
+        "feature_candidates": 3267,
+        "games_evaluated": 9551,
         "status": "EVOLVING",
         "health": "OK",
-        "note": "Stagnation cleared (was 17 last cycle, diversify worked)"
+        "delta_gen_vs_prev": "+36",
+        "delta_cycle_vs_prev": "+12"
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
-        "cycle": 136,
-        "generation": 408,
+        "cycle": 158,
+        "generation": 472,
         "best_brier": 0.22006,
         "best_roi": 0.3255,
         "best_sharpe": 8.4295,
         "best_features": 59,
         "best_model": "extra_trees",
-        "mutation_rate": 0.0468,
+        "mutation_rate": 0.0412,
         "stagnation": 0,
+        "feature_candidates": 3267,
+        "games_evaluated": 9551,
+        "pareto_front_size": 9,
         "status": "EVOLVING",
         "health": "OK",
-        "badge": "FLEET_BEST_BRIER_0.22006"
+        "badge": "FLEET_BEST_BRIER_0.22006",
+        "delta_gen_vs_prev": "+64",
+        "delta_cycle_vs_prev": "+22"
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "cycle": 261,
-        "generation": 781,
+        "cycle": 303,
+        "generation": 907,
         "best_brier": 0.22112,
         "best_roi": 0.3136,
         "best_sharpe": 7.8512,
         "best_features": 99,
         "best_model": "extra_trees",
-        "mutation_rate": 0.05,
+        "mutation_rate": 0.08,
         "stagnation": 0,
+        "feature_candidates": 3267,
+        "games_evaluated": 9551,
+        "pareto_front_size": 16,
         "status": "EVOLVING",
         "health": "OK",
-        "note": "Top individual ~0.21883. Most generations in fleet (781). Near ATR breakthrough."
+        "note": "Most generations in fleet (907). 200-feature models on Pareto front reaching ~0.219 brier.",
+        "delta_gen_vs_prev": "+126",
+        "delta_cycle_vs_prev": "+42"
       }
     },
     "fleet_summary": {
       "all_online": true,
+      "all_stagnation_zero": true,
       "stagnation_alerts": [],
       "diversify_sent": [],
       "extra_trees_dominates": true,
       "feature_range": "54-99",
       "brier_range": "0.22006-0.22889",
-      "near_breakthrough": true,
-      "research_this_cycle": "ECE calibration fitness — proposal ECE-CAL-01 written"
+      "fleet_best_brier": 0.22006,
+      "dist_to_checkpoint": 0.00169,
+      "dist_to_atr": 0.00162,
+      "research_this_cycle": "SHAP-seeded GA initialization — proposal written"
     }
   },
   "political_fleet": {
     "best_brier": 0.25008,
     "best_island": "PA4",
-    "critical_alert": "PA1/PA2/PA3 still at feature_candidates=2. Engine restored to GitHub last cycle but HF Space repos not updated. Direct HF repo push required.",
+    "critical_alert": "PA1/PA2/PA3 stuck at feature_candidates=2 (4th consecutive cycle). MANUAL HF Space repo push required.",
     "islands": {
       "PA1": {
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
-        "cycle": 19412,
-        "generation": 58236,
+        "cycle": 21233,
+        "generation": 63699,
         "best_brier": 0.3,
         "best_features": 2,
-        "stagnation": 5,
+        "stagnation": 8,
         "feature_candidates": 2,
         "status": "DEGRADED",
-        "health": "CRITICAL",
-        "note": "Stagnation dropped 20→5 (diversify from prev cycle worked). But still 2 features."
+        "health": "CRITICAL"
       },
       "PA2": {
         "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
-        "cycle": 19134,
-        "generation": 57402,
+        "cycle": 20864,
+        "generation": 62592,
         "best_brier": 0.3,
         "best_features": 2,
-        "stagnation": 0,
+        "stagnation": 11,
         "feature_candidates": 2,
         "status": "DEGRADED",
         "health": "CRITICAL"
@@ -153,11 +182,11 @@
       "PA3": {
         "url": "nomos42-political-alpha-3.hf.space",
         "role": "catboost_specialist",
-        "cycle": 18961,
-        "generation": 56883,
+        "cycle": 20743,
+        "generation": 62229,
         "best_brier": 0.3,
         "best_features": 2,
-        "stagnation": 2,
+        "stagnation": 8,
         "feature_candidates": 2,
         "status": "DEGRADED",
         "health": "CRITICAL"
@@ -165,48 +194,47 @@
       "PA4": {
         "url": "nomos42-political-alpha-4.hf.space",
         "role": "wide_search",
-        "cycle": 20412,
-        "generation": 61235,
+        "cycle": 22218,
+        "generation": 66654,
         "best_brier": 0.25008,
         "best_roi": 0.0078,
         "best_sharpe": 0.7071,
         "best_features": 15,
         "best_model": "xgboost_brier",
+        "calibration": "venn_abers",
         "mutation_rate": 0.05,
         "stagnation": 0,
         "feature_candidates": 15,
         "status": "HEALTHY",
         "badge": "FLEET_BEST_BRIER"
       }
-    },
-    "root_cause_analysis": {
-      "issue": "feature_candidates=2 on PA1/PA2/PA3",
-      "why_github_fix_insufficient": "HF Spaces run from Nomos42 HF org repos (Nomos42/political-alpha etc.), not from GitHub lbjlincoln/nomos-political-alpha. GitHub push does not update HF Space source.",
-      "fix_required": "Push corrected political_engine.py directly to HF Space repos via HF API or manual HF Space settings update",
-      "workaround": "PA4 (wide_search) appears to use a different data path and has 15 features — investigate PA4 config vs PA1/2/3"
     }
   },
   "actions_this_cycle": [
     {
-      "action": "research_proposal",
-      "file": "data/research-proposals/ece-calibration-fitness-2026-03-29.json",
-      "finding": "ECE as 4th Pareto objective; compute_ece() function ready to deploy on all 6 NBA islands + PA4"
-    },
-    {
       "action": "stagnation_check",
-      "result": "All NBA islands stagnation=0. No diversify needed. S13 recovered from 17→0 (prev cycle diversify successful)."
+      "result": "All NBA islands stagnation=0. PA1=8, PA2=11, PA3=8, PA4=0. All below 15 threshold. No diversify sent."
     },
     {
       "action": "checkpoint_check",
       "best_brier": 0.22006,
       "threshold": 0.21837,
-      "result": "Above threshold. No checkpoint."
+      "result": "Above threshold by 0.00169. No checkpoint."
+    },
+    {
+      "action": "research",
+      "nba": "WebSearch NBA prediction 2025-2026: SHAP top features = home_next, team_elo_5y, team_elo. Proposal written: seed GA init with known-good SHAP-ranked features.",
+      "political": "WebSearch FEC OpenFEC API: free RESTful API, daily updates, 15-min electronic filings. Proposal written to integrate as new data source for PA feature engine."
+    },
+    {
+      "action": "research_proposal_written",
+      "file": "data/research-proposals/shap-seeded-ga-init-2026-03-29.json"
     }
   ],
   "next_cycle_priorities": [
-    "MANUAL ACTION NEEDED: Push political_engine.py to HF Space repos (Nomos42/political-alpha etc.) to fix PA1/PA2/PA3 feature_candidates=2",
-    "S15 top_individual ~0.21883: implement ECE-CAL-01 on S15 to push over the threshold",
-    "S12 weakest brier (0.22889): consider gene injection from S14 elite population",
-    "Port ECE compute_ece() function to PA4 for calibration tracking on political alpha"
+    "ESCALATE: Manual push of features/political_engine.py to HF Space repos (Nomos42/political-alpha, /political-alpha-2, /political-alpha-3) — 4th cycle unresolved",
+    "NBA S12 (0.22889) weakest — inject S14 elite genes via /api/command migrate at next opportunity",
+    "S15 Pareto front has 200-feature models at ~0.219 brier — investigate if top individual already sub-0.21837",
+    "Deploy FEC data source to enrich PA feature engine once HF Space PA1/2/3 repaired"
   ]
 }
