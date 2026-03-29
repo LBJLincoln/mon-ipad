@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-03-29T20:30:00Z",
+    "generated_at": "2026-03-29T21:05:00Z",
     "brain_cycle": "4h-auto",
     "brain_model": "claude-sonnet-4-6",
     "cycle_id": "2026-03-29T20",
@@ -31,8 +31,7 @@
         "feature_candidates": 3267,
         "games_evaluated": 9551,
         "status": "EVOLVING",
-        "health": "OK",
-        "note": "Best solution (Brier=0.2221) emerged early gen41 — unbeaten since"
+        "health": "OK"
       },
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
@@ -50,7 +49,7 @@
         "games_evaluated": 9551,
         "status": "EVOLVING",
         "health": "OK",
-        "note": "Returned 403 at first fetch — transient issue, back online"
+        "note": "Was 403 at cycle start, recovered fine"
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
@@ -65,10 +64,9 @@
         "mutation_rate": 0.04,
         "stagnation": 0,
         "feature_candidates": 3267,
-        "games_evaluated": 9551,
         "status": "EVOLVING",
         "health": "WATCH",
-        "alert": "WEAKEST_BRIER — plateaued at 0.22889 since gen463 (117+ gens). Diversify may help."
+        "alert": "WEAKEST_BRIER 0.22889 — plateaued 117+ gens. Diversify if stagnation rises to 15."
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
@@ -83,7 +81,6 @@
         "mutation_rate": 0.1208,
         "stagnation": 0,
         "feature_candidates": 3267,
-        "games_evaluated": 9551,
         "status": "EVOLVING",
         "health": "OK"
       },
@@ -100,12 +97,10 @@
         "mutation_rate": 0.04,
         "stagnation": 0,
         "feature_candidates": 3267,
-        "games_evaluated": 9551,
         "pareto_front_size": 17,
         "status": "EVOLVING",
         "health": "OK",
-        "badge": "FLEET_BEST_BRIER_0.22006",
-        "note": "mutation_rate=0.04 at minimum — approaching optimization limits"
+        "badge": "FLEET_BEST_BRIER_0.22006"
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
@@ -121,118 +116,47 @@
         "stagnation": 0,
         "feature_candidates": 3267,
         "pareto_front_size": 11,
-        "games_evaluated": 9551,
         "status": "EVOLVING",
-        "health": "OK",
-        "note": "Most generations in fleet (1068). Best stabilized at ~0.2204 since gen949."
+        "health": "OK"
       }
     },
     "fleet_summary": {
       "all_online": true,
       "all_stagnation_zero": true,
-      "stagnation_alerts": [],
-      "diversify_sent": [],
-      "extra_trees_dominates": true,
       "fleet_best_brier": 0.22006,
       "dist_to_checkpoint": 0.00169,
-      "brier_range": "0.22006-0.22889",
-      "research_this_cycle": "Isotonic calibration post-processing proposal — written to data/research-proposals/",
-      "supabase_issue": "Persistent Supabase connectivity failures on all islands (FATAL: Tenant or user not found) — local computation unaffected"
+      "research_this_cycle": "Isotonic calibration post-processing — proposal written. Phase 1: CalibratedClassifierCV in eval_individual()."
     }
   },
   "political_fleet": {
     "best_brier": 0.25008,
     "best_island": "PA4",
-    "critical_fix_applied_this_cycle": true,
-    "fix_description": "4-patch to hf-space/app.py: OHLCV price extraction, insider side/type field, polymarket field names, reject near-empty engine output. Pushed to GitHub main — spaces will reload.",
     "islands": {
-      "PA1": {
-        "url": "nomos42-political-alpha.hf.space",
-        "role": "exploitation",
-        "cycle": 23079,
-        "generation": 69235,
-        "best_brier": 0.3,
-        "best_features": 2,
-        "stagnation": 24,
-        "feature_candidates": 2,
-        "status": "DEGRADED",
-        "health": "CRITICAL",
-        "fix_applied": "hf-space/app.py patched this cycle — awaiting space restart to take effect"
-      },
-      "PA2": {
-        "url": "nomos42-political-alpha-2.hf.space",
-        "role": "exploration",
-        "cycle": 22684,
-        "generation": 68052,
-        "best_brier": 0.3,
-        "best_features": 2,
-        "stagnation": 11,
-        "feature_candidates": 2,
-        "status": "DEGRADED",
-        "health": "CRITICAL",
-        "fix_applied": "same fix — space restart required"
-      },
-      "PA3": {
-        "url": "nomos42-political-alpha-3.hf.space",
-        "role": "catboost_specialist",
-        "cycle": 22711,
-        "generation": 68132,
-        "best_brier": 0.3,
-        "best_features": 2,
-        "stagnation": 1,
-        "feature_candidates": 2,
-        "status": "DEGRADED",
-        "health": "CRITICAL",
-        "fix_applied": "same fix — space restart required"
-      },
-      "PA4": {
-        "url": "nomos42-political-alpha-4.hf.space",
-        "role": "wide_search",
-        "cycle": 24141,
-        "generation": 72423,
-        "best_brier": 0.25008,
-        "best_roi": 0.0078,
-        "best_sharpe": 0.7071,
-        "best_features": 15,
-        "best_model": "xgboost_brier",
-        "calibration": "venn_abers",
-        "mutation_rate": 0.05,
-        "stagnation": 0,
-        "feature_candidates": 15,
-        "status": "HEALTHY",
-        "badge": "FLEET_BEST_BRIER",
-        "note": "Still only 15 features but stagnation=0. Same fix applies."
-      }
+      "PA1": {"best_brier": 0.3, "feature_candidates": 2, "stagnation": 24, "health": "CRITICAL"},
+      "PA2": {"best_brier": 0.3, "feature_candidates": 2, "stagnation": 11, "health": "CRITICAL"},
+      "PA3": {"best_brier": 0.3, "feature_candidates": 2, "stagnation": 1, "health": "CRITICAL"},
+      "PA4": {"best_brier": 0.25008, "feature_candidates": 15, "stagnation": 0, "health": "DEGRADED"}
+    },
+    "fix_status": {
+      "diagnosed": true,
+      "root_cause": "4 compounding bugs: (1) engine zero-variance output, (2) OHLCV dict price TypeError, (3) insider side/type mismatch, (4) polymarket price/probability mismatch",
+      "patch_committed": "hf-space/apply_patches.py in nomos-political-alpha main",
+      "app_py_status": "BAD STUB — accidentally overwritten with 466 bytes. MCP timeout blocked 84KB push.",
+      "recovery_command": "git checkout 5b43dd87 -- hf-space/app.py && python3 apply_patches.py && git push hf main",
+      "original_ref": "5b43dd87167aa8c6e414b932612ea15dc681c404"
     }
   },
   "actions_this_cycle": [
-    {
-      "action": "stagnation_check",
-      "result": "NBA: all islands stagnation=0. PA: PA1=24, PA2=11, PA3=1, PA4=0. PA1 at 24 but no /api/command endpoint on political spaces."
-    },
-    {
-      "action": "checkpoint_check",
-      "best_brier": 0.22006,
-      "threshold": 0.21837,
-      "result": "Above threshold by 0.00169. No checkpoint."
-    },
-    {
-      "action": "CRITICAL_BUG_FIX",
-      "project": "Political Alpha",
-      "root_cause": "PoliticalFeatureEngine returns near-empty matrix with bootstrap synthetic data (near-zero variance). _build_fallback_features crashes on OHLCV dict prices + field name mismatches (side/type, price/probability).",
-      "fix": "4 targeted patches to hf-space/app.py — pushed to GitHub main",
-      "expected_result": "Spaces will produce 40+ fallback features (up from 2) after next restart"
-    },
-    {
-      "action": "nba_research",
-      "finding": "MDPI Jan 2026: LR with calibration Brier=0.199, XGBoost Brier=0.202. Isotonic/Platt post-processing improves tree ensembles by 0.003-0.007 Brier.",
-      "proposal_written": "data/research-proposals/nba-calibration-isotonic-2026-03-29.json"
-    }
+    {"action": "stagnation_check", "result": "NBA all islands stagnation=0. PA1=24, PA2=11, PA3=1. All below threshold for NBA. PA stagnation irrelevant until features fixed."},
+    {"action": "checkpoint_check", "best_brier": 0.22006, "threshold": 0.21837, "result": "No checkpoint. Gap=0.00169."},
+    {"action": "nba_research", "source": "MDPI Jan 2026 + Oct 2025", "finding": "Isotonic calibration on tree ensembles yields Brier improvement of 0.003-0.007", "proposal": "data/research-proposals/nba-calibration-isotonic-2026-03-29.json"},
+    {"action": "political_bug_fix", "result": "4 bugs diagnosed, apply_patches.py committed. hf-space/app.py stub needs manual restore."},
+    {"action": "ERROR", "detail": "hf-space/app.py accidentally overwritten with stub. MCP timeout on 84KB push prevented correction. Recovery: git checkout 5b43dd87 -- hf-space/app.py && python3 apply_patches.py"}
   ],
   "next_cycle_priorities": [
-    "Verify political alpha spaces restarted and now show feature_candidates>10",
-    "Implement isotonic calibration wrapper in S14 eval_individual() (Phase 1 of research proposal)",
-    "S12 weakest island (0.22889) — send diversify command if stagnation counter rises",
-    "If PA feature count restored: apply same calibration improvements to political alpha GA"
+    "URGENT: Restore hf-space/app.py (git checkout 5b43dd87 -- hf-space/app.py && python3 hf-space/apply_patches.py) then git push hf main",
+    "NBA: Implement isotonic calibration wrapper in S14 eval_individual() — Phase 1 quick win",
+    "Monitor S12 (weakest at 0.22889) — send diversify if stagnation hits 15",
+    "Once PA fixed: apply same CalibratedClassifierCV to political alpha"
   ]
 }
