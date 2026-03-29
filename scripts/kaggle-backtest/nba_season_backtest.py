@@ -1064,9 +1064,11 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
             odds_a = real_odds.get('odds_away')
             edge_h = (p_home * odds_h - 1) if odds_h else None
             edge_a = ((1-p_home) * odds_a - 1) if odds_a else None
+            eh_str = f"{edge_h:.4f}" if edge_h is not None else "N/A"
+            ea_str = f"{edge_a:.4f}" if edge_a is not None else "N/A"
             print(f"  DIAG game {_diag_printed}: {game_home}v{game_away} | "
                   f"p_home={p_home:.4f} | odds_h={odds_h} odds_a={odds_a} | "
-                  f"edge_h={edge_h:.4f if edge_h else 'N/A'} edge_a={edge_a:.4f if edge_a else 'N/A'} | "
+                  f"edge_h={eh_str} edge_a={ea_str} | "
                   f"score={home_score}-{away_score} | bets_generated={len(all_bets)}")
             if all_bets:
                 for b in all_bets[:3]:
