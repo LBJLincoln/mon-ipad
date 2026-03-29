@@ -1,139 +1,62 @@
 {
-  "generated_at": "2026-03-29T04:18:00Z",
-  "cycle_type": "4h_brain",
-  "fleet": {
-    "S10": {
-      "name": "nba-quant",
-      "role": "exploitation",
-      "url": "nomos42-nba-quant.hf.space",
-      "generation": 120,
-      "cycle": 40,
-      "best_brier": 0.22215,
-      "best_roi": 0.3025,
-      "best_sharpe": 6.7902,
-      "best_features": 61,
-      "best_model": "extra_trees",
-      "mutation_rate": 0.10,
-      "pop_size": 60,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "action_taken": null
-    },
-    "S11": {
-      "name": "nba-quant-2",
-      "role": "exploration",
-      "url": "nomos42-nba-quant-2.hf.space",
-      "generation": 295,
-      "cycle": 99,
-      "best_brier": 0.22321,
-      "best_roi": 0.287,
-      "best_sharpe": 8.2406,
-      "best_features": 65,
-      "best_model": "random_forest",
-      "mutation_rate": 0.09,
-      "pop_size": 60,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "action_taken": null
-    },
-    "S12": {
-      "name": "nba-evo-3",
-      "role": "extra_trees_specialist",
-      "url": "nomos42-nba-evo-3.hf.space",
-      "generation": 300,
-      "cycle": 100,
-      "best_brier": 0.22889,
-      "best_roi": 0.226,
-      "best_sharpe": 4.6871,
-      "best_features": 54,
-      "best_model": "xgboost_brier",
-      "mutation_rate": 0.07,
-      "pop_size": 60,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "action_taken": null
-    },
-    "S13": {
-      "name": "nba-evo-4",
-      "role": "catboost_specialist",
-      "url": "nomos42-nba-evo-4.hf.space",
-      "generation": 138,
-      "cycle": 46,
-      "best_brier": 0.22368,
-      "best_roi": 0.284,
-      "best_sharpe": 4.7821,
-      "best_features": 68,
-      "best_model": "lightgbm",
-      "mutation_rate": 0.13,
-      "pop_size": 60,
-      "stagnation": 9,
-      "status": "EVOLVING",
-      "action_taken": null,
-      "alert": "WATCH — stagnation=9, approaching threshold of 15"
-    },
-    "S14": {
-      "name": "nba-evo-5",
-      "role": "lightgbm_specialist",
-      "url": "nomos42-nba-evo-5.hf.space",
-      "generation": 238,
-      "cycle": 80,
-      "best_brier": 0.22006,
-      "best_roi": 0.3136,
-      "best_sharpe": 7.85,
-      "best_features": 40,
-      "best_model": "extra_trees",
-      "mutation_rate": 0.08,
-      "pop_size": 60,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "action_taken": null,
-      "badge": "FLEET_BEST_BRIER",
-      "note": "top-5 models reaching 0.21901 — close to checkpoint threshold"
-    },
-    "S15": {
-      "name": "nba-evo-6",
-      "role": "wide_search",
-      "url": "nomos42-nba-evo-6.hf.space",
-      "generation": 573,
-      "cycle": 192,
-      "best_brier": 0.22104,
-      "best_roi": 0.3136,
-      "best_sharpe": 7.85,
-      "best_features": 99,
-      "best_model": "extra_trees",
-      "mutation_rate": 0.08,
-      "pop_size": 50,
-      "stagnation": 0,
-      "status": "EVOLVING",
-      "action_taken": null
-    }
+  "_meta": {
+    "generated_at": "2026-03-29T08:20:00Z",
+    "brain_cycle": "4h-auto",
+    "brain_model": "claude-sonnet-4-6",
+    "cycle_id": "2026-03-29T08"
   },
-  "summary": {
-    "fleet_best_brier": 0.22006,
-    "fleet_best_island": "S14",
-    "fleet_best_top5_approaching": 0.21901,
-    "all_time_best_brier": 0.2157,
-    "all_time_best_source": "Colab TabICL 110f iter15",
-    "target_brier": 0.2,
+  "nba_fleet": {
+    "best_brier_this_cycle": 0.22006,
+    "best_brier_top_individual": 0.21883,
+    "best_island_this_cycle": "S14",
     "checkpoint_threshold": 0.21837,
     "checkpoint_needed": false,
-    "islands_with_stagnation": [],
-    "diversify_sent": [],
-    "supabase_status": "ERROR_connection_failures_all_islands",
-    "total_games_evaluated": 9551,
-    "feature_engine_version": "v3.0-43cat"
+    "note": "S15 top individual 0.21883 — above threshold 0.21837 by 0.00046, very close to breakthrough",
+    "islands": {
+      "S10": {"url": "nomos42-nba-quant.hf.space", "role": "exploitation", "cycle": 52, "generation": 154, "best_brier": 0.22215, "best_roi": 0.3025, "best_sharpe": 6.7902, "best_features": 61, "best_model": "extra_trees", "mutation_rate": 0.0936, "stagnation": 0, "status": "EVOLVING", "health": "OK"},
+      "S11": {"url": "nomos42-nba-quant-2.hf.space", "role": "exploration", "cycle": 122, "generation": 365, "best_brier": 0.22321, "best_roi": 0.287, "best_sharpe": 8.2406, "best_features": 65, "best_model": "random_forest", "mutation_rate": 0.084, "stagnation": 0, "status": "EVOLVING", "health": "OK"},
+      "S12": {"url": "nomos42-nba-evo-3.hf.space", "role": "extra_trees_specialist", "cycle": 124, "generation": 372, "best_brier": 0.22889, "best_roi": 0.226, "best_sharpe": 4.6871, "best_features": 54, "best_model": "xgboost_brier", "mutation_rate": 0.0606, "stagnation": 0, "status": "COOLDOWN", "health": "OK"},
+      "S13": {"url": "nomos42-nba-evo-4.hf.space", "role": "catboost_specialist", "cycle": 58, "generation": 172, "best_brier": 0.22368, "best_roi": 0.284, "best_sharpe": 4.7821, "best_features": 68, "best_model": "lightgbm", "mutation_rate": 0.15, "stagnation": 17, "status": "EVOLVING", "action_taken": "diversify_sent", "health": "STAGNATION", "alert": "stagnation=17 > threshold=15"},
+      "S14": {"url": "nomos42-nba-evo-5.hf.space", "role": "lightgbm_specialist", "cycle": 107, "generation": 319, "best_brier": 0.22006, "best_roi": 0.3255, "best_sharpe": 8.4295, "best_features": 59, "best_model": "extra_trees", "mutation_rate": 0.056, "stagnation": 0, "status": "EVOLVING", "health": "OK", "badge": "FLEET_BEST_BRIER_0.22006"},
+      "S15": {"url": "nomos42-nba-evo-6.hf.space", "role": "wide_search", "cycle": 243, "generation": 727, "best_brier": 0.22112, "best_roi": 0.3136, "best_sharpe": 7.8512, "best_features": 99, "best_model": "extra_trees", "mutation_rate": 0.08, "stagnation": 0, "status": "EVOLVING", "health": "OK", "note": "Top individual 0.21883 — nearest to checkpoint ever"}
+    },
+    "fleet_summary": {
+      "all_online": true,
+      "stagnation_alerts": ["S13"],
+      "diversify_sent": ["S13"],
+      "extra_trees_dominates": true,
+      "feature_range": "54-99",
+      "brier_range": "0.22006-0.22889",
+      "near_breakthrough": true,
+      "research_note": "2025/2026 literature: uncertainty-aware calibration achieves Brier 0.199. Proposal written: calibration-uncertainty-aware-2026-03-29.json"
+    }
   },
-  "this_cycle_actions": [
-    "No stagnation >15 detected (S13 at 9, watch next cycle)",
-    "No checkpoint needed (best 0.22006 > threshold 0.21837; top-5 approaching 0.21901)",
-    "NBA research: found shot-chart spatial embeddings + LSTM Brier-loss calibration techniques (see research-proposals/2026-03-29-nba-spatial-calibration.json)",
-    "Cross-project: CalibratedClassifierCV proposal also applicable to political-alpha"
+  "political_fleet": {
+    "best_brier": 0.25008,
+    "best_island": "PA4",
+    "islands": {
+      "PA1": {"url": "nomos42-political-alpha.hf.space", "role": "exploitation", "cycle": 17517, "generation": 52551, "best_brier": 0.3, "best_features": 2, "stagnation": 20, "feature_candidates": 2, "status": "CRITICAL", "action_taken": "diversify_sent"},
+      "PA2": {"url": "nomos42-political-alpha-2.hf.space", "role": "exploration", "cycle": 17278, "generation": 51834, "best_brier": 0.3, "best_features": 2, "stagnation": 23, "feature_candidates": 2, "status": "CRITICAL", "action_taken": "diversify_sent"},
+      "PA3": {"url": "nomos42-political-alpha-3.hf.space", "role": "catboost_specialist", "cycle": 17065, "generation": 51195, "best_brier": 0.3, "best_features": 2, "stagnation": 14, "feature_candidates": 2, "status": "CRITICAL"},
+      "PA4": {"url": "nomos42-political-alpha-4.hf.space", "role": "wide_search", "cycle": 18494, "generation": 55482, "best_brier": 0.25008, "best_features": 15, "stagnation": 0, "feature_candidates": 15, "status": "HEALTHY", "badge": "FLEET_BEST"}
+    },
+    "critical_issue": {
+      "type": "political_engine.py truncated — HF spaces stuck at 2 features",
+      "fix_this_cycle": "political_engine.py restored from commit 98e7cc5 (54KB full engine v2.1). Pushed to GitHub. PA1/2/3 will recover on next HF space restart.",
+      "expected_improvement": "feature_candidates 2 → ~2640 after reload"
+    }
+  },
+  "actions_this_cycle": [
+    {"action": "diversify", "target": "S13", "reason": "stagnation=17 > 15", "result": "queued"},
+    {"action": "diversify", "target": "PA1", "reason": "stagnation=20 > 15", "result": "queued"},
+    {"action": "diversify", "target": "PA2", "reason": "stagnation=23 > 15", "result": "queued"},
+    {"action": "restore_file", "target": "nomos-political-alpha/features/political_engine.py", "from_commit": "98e7cc5", "size_bytes": 54978, "result": "pushed"},
+    {"action": "research_proposal", "file": "data/research-proposals/calibration-uncertainty-aware-2026-03-29.json", "finding": "CalibratedClassifierCV + next_game_home feature could push Brier to 0.199"}
   ],
-  "research_cycle": "NBA_techniques_search",
-  "research_proposal": "data/research-proposals/2026-03-29-nba-spatial-calibration.json",
-  "top_proposals": [
-    "P1: Add shot-chart zone features (Cat47) — expected Brier -0.005 to -0.008",
-    "P2: Add CalibratedClassifierCV post-processing — expected Brier -0.002 to -0.005",
-    "P3: Strict chronological walk-forward validation audit"
+  "next_cycle_priorities": [
+    "VERIFY PA1/2/3 picked up political_engine.py (check feature_candidates > 2)",
+    "Monitor S15 top individual — at 0.21883, 0.00046 short of checkpoint threshold 0.21837",
+    "Implement CAL-1 (CalibratedClassifierCV) if S15 checkpoints this cycle",
+    "Check S13 stagnation cleared"
   ]
 }
