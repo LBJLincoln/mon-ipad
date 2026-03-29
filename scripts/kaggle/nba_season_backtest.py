@@ -137,10 +137,27 @@ else:
 
     games.sort(key=lambda g: g.get('game_date', g.get('date', '')))
 
-    # DIAGNOSTIC: show actual field names in game records so we can verify team extraction
+    # DIAGNOSTIC: show actual field names in game records so we can verify team/score extraction
     if games:
         print(f"Game fields: {list(games[0].keys())}")
-        print(f"Sample game: {games[0]}")
+        # Print sample of score-related fields for first 3 games
+        for gi in range(min(3, len(games))):
+            gg = games[gi]
+            score_fields = {k: v for k, v in gg.items()
+                           if any(x in k.lower() for x in ['score', 'pts', 'q1', 'q2', 'q3', 'q4', 'ot'])}
+            team_fields = {k: v for k, v in gg.items()
+                          if any(x in k.lower() for x in ['home', 'away', 'team', 'visitor'])}
+            print(f"  Game[{gi}] teams: {team_fields}")
+            print(f"  Game[{gi}] scores: {score_fields}")
+        # Also check a season game (around index where 2025-26 starts)
+        for gi in range(len(games)-1, max(0, len(games)-4), -1):
+            gg = games[gi]
+            score_fields = {k: v for k, v in gg.items()
+                           if any(x in k.lower() for x in ['score', 'pts', 'q1', 'q2', 'q3', 'q4', 'ot'])}
+            team_fields = {k: v for k, v in gg.items()
+                          if any(x in k.lower() for x in ['home', 'away', 'team', 'visitor'])}
+            print(f"  Game[{gi}] (recent) date={gg.get('game_date',gg.get('date',''))} teams={team_fields}")
+            print(f"  Game[{gi}] (recent) scores={score_fields}")
 
     print("Building features (20-30 min)...")
     from features.engine import NBAFeatureEngine
@@ -302,23 +319,31 @@ def load_odds_from_csv():
                     away  = norm_team(row.get('away', row.get('away_team', '')))
                     ml_h  = row.get('moneyline_home', row.get('ml_home', ''))
                     ml_a  = row.get('moneyline_away', row.get('ml_away', ''))
-                    spread   = row.get('spread', '')
-                    total    = row.get('total', '')
-                    h2_spread = row.get('h2_spread', '')
+                    # FIX: CSV uses 'spread_home' not 'spread'
+                    spread   = row.get('spread', row.get('spread_home', ''))
+                    total    = row.get('total', row.get('total_points', ''))
+                    h2_spread = row.get('h2_spread', row.get('h2_spread_home', ''))
                     h2_total  = row.get('h2_total', '')
                     favored   = row.get('whos_favored', '')
                     if ml_h and ml_a:
                         try:
                             key = f"{date}_{home}_{away}"
+                            sp_val = float(spread) if spread else None
+                            tot_val = float(total) if total else None
+                            h2s_val = float(h2_spread) if h2_spread else None
+                            h2t_val = float(h2_total) if h2_total else None
+                            # Derive favored from spread_home sign if not explicit
+                            if not favored and sp_val is not None:
+                                favored = 'away' if sp_val > 0 else 'home'
                             ODDS_LOOKUP[key] = {
                                 'ml_home':   float(ml_h),
                                 'ml_away':   float(ml_a),
                                 'odds_home': american_to_decimal(float(ml_h)),
                                 'odds_away': american_to_decimal(float(ml_a)),
-                                'spread':    float(spread)    if spread    else None,
-                                'total':     float(total)     if total     else None,
-                                'h2_spread': float(h2_spread) if h2_spread else None,
-                                'h2_total':  float(h2_total)  if h2_total  else None,
+                                'spread':    abs(sp_val)  if sp_val is not None else None,
+                                'total':     tot_val,
+                                'h2_spread': abs(h2s_val) if h2s_val is not None else None,
+                                'h2_total':  h2t_val,
                                 'favored':   favored,
                             }
                         except (ValueError, TypeError):
@@ -359,7 +384,12 @@ if ODDS_LOOKUP:
     sample_keys = list(ODDS_LOOKUP.keys())[:5]
     for k in sample_keys:
         v = ODDS_LOOKUP[k]
-        print(f"  {k}: home={v.get('odds_home')}, away={v.get('odds_away')}, spread={v.get('spread')}")
+        print(f"  {k}: home={v.get('odds_home'):.3f}, away={v.get('odds_away'):.3f}, "
+              f"spread={v.get('spread')}, total={v.get('total')}, fav={v.get('favored')}")
+    # Count how many have spread/total data
+    n_with_spread = sum(1 for v in ODDS_LOOKUP.values() if v.get('spread') is not None)
+    n_with_total = sum(1 for v in ODDS_LOOKUP.values() if v.get('total') is not None)
+    print(f"  Spread data: {n_with_spread}/{len(ODDS_LOOKUP)} | Total data: {n_with_total}/{len(ODDS_LOOKUP)}")
 else:
     print("  *** NO ODDS DATA — ALL BETS WILL BE SKIPPED ***")
     print("  Fix: Add alexismoret6/nba-2025-26-odds as Kaggle input dataset")
@@ -624,26 +654,68 @@ def prop_stake(pct):
         return bankroll * pct
     return _stake
 
+# ── Martingale: double after loss, reset after win ──
+def martingale_stake(base=5.0):
+    streak = [0]  # loss streak (mutable closure)
+    def _stake(edge, odds, prob, bankroll, max_bet_pct=0.20):
+        raw = base * (2 ** streak[0])
+        return min(raw, bankroll * max_bet_pct, bankroll)
+    def _update(won):
+        if won: streak[0] = 0
+        else:   streak[0] += 1
+    return _stake, _update
+
+# ── AntiMartingale: double after win, reset after loss ──
+def anti_martingale_stake(base=5.0, max_doubles=4):
+    streak = [0]  # win streak (mutable closure)
+    def _stake(edge, odds, prob, bankroll, max_bet_pct=0.20):
+        doubles = min(streak[0], max_doubles)
+        raw = base * (2 ** doubles)
+        return min(raw, bankroll * max_bet_pct, bankroll)
+    def _update(won):
+        if won: streak[0] += 1
+        else:   streak[0] = 0
+    return _stake, _update
+
 SIZING_STRATEGIES = {
-    'Kelly_25pct':   kelly_stake(0.25),
-    'Kelly_15pct':   kelly_stake(0.15),
-    'Kelly_10pct':   kelly_stake(0.10),
-    'Kelly_50pct':   kelly_stake(0.50),       # Aggressive Kelly
-    'Kelly_Full':    kelly_stake(1.00),        # Full Kelly (dangerous but max compound)
-    'Flat_10':       flat_stake(10.0),
-    'Prop_1pct':     prop_stake(0.01),
-    'Prop_5pct':     prop_stake(0.05),         # 5% of bankroll per bet
-    'Prop_10pct':    prop_stake(0.10),         # 10% of bankroll — compound heavy
-    'AllIn_Daily':   prop_stake(1.00),         # All bankroll = max compound interest
+    'Kelly_25pct':      kelly_stake(0.25),
+    'Kelly_15pct':      kelly_stake(0.15),
+    'Kelly_10pct':      kelly_stake(0.10),
+    'Kelly_50pct':      kelly_stake(0.50),       # Aggressive Kelly
+    'Kelly_Full':       kelly_stake(1.00),        # Full Kelly (dangerous but max compound)
+    'Flat_10':          flat_stake(10.0),
+    'Prop_1pct':        prop_stake(0.01),
+    'Prop_5pct':        prop_stake(0.05),         # 5% of bankroll per bet
+    'Prop_10pct':       prop_stake(0.10),         # 10% of bankroll — compound heavy
+    'AllIn_Daily':      prop_stake(1.00),         # All bankroll = max compound interest
+    # NOTE: Martingale / AntiMartingale are stateful — handled separately below
+}
+
+# Arena-category map: maps sizing key → arena system name (for cross-system alignment)
+ARENA_CATEGORY = {
+    'Kelly_Full':       'Kelly_Full',
+    'Kelly_50pct':      'Kelly_Half',
+    'Kelly_25pct':      'Kelly_Quarter',
+    'Flat_10':          'Flat_10',
+    'Prop_1pct':        'Prop_1pct',
+    'Prop_5pct':        'Prop_5pct',
+    'Prop_10pct':       'Prop_2pct',   # closest arena analog
+    'AllIn_Daily':      'AllIn_Daily',
+    'Kelly_15pct':      'Kelly_Quarter',
+    'Kelly_10pct':      'Kelly_Quarter',
+    'Martingale':       'Martingale',
+    'AntiMartingale':   'AntiMartingale',
+    'Conservative':     'Conservative',
+    'Aggressive':       'Aggressive',
 }
 
 INITIAL_BANKROLL = 100.0
 MAX_BET_PCT      = 1.00    # No per-position cap — let Kelly manage risk
 MAX_DAILY_EXPO   = 1.00    # 100% portfolio daily — full compound interest
 MIN_BET_STAKE    = 0.25    # minimum bet size
-MIN_EDGE         = 0.005   # 0.5% minimum edge — lower threshold to actually place bets
-                             # Tree ensemble at 0.228 Brier rarely exceeds 3% edge
-                             # Real edge filtering happens via Kelly sizing (small bets on small edges)
+MIN_EDGE         = 0.003   # 0.3% minimum edge — lower to capture real edges after vig
+                             # Tree ensemble at 0.228 Brier has small but real edge
+                             # Kelly sizing handles position size (tiny bets on small edges)
 
 # Filter sets: which bet types to include in each "strategy group"
 # Full = all types; ML_only = moneyline only; etc.
@@ -661,6 +733,17 @@ BET_FILTER_SETS = {
     'TOP4': {  # Best bets from multi-market analysis: H1_ATS_AWAY, H1_UNDER, H2_UNDER, ML_AWAY
         'H1_ATS_AWAY', 'H1_UNDER', 'H2_UNDER', 'ML_AWAY'
     },
+    # Arena-aligned filter sets
+    'CONSERVATIVE_FILTER': {'ML_HOME', 'ML_AWAY', 'ATS_HOME', 'ATS_AWAY'},          # safe markets only
+    'AGGRESSIVE_FILTER':   set(BET_TYPES_ALL),                                        # all markets
+}
+
+# Extra per-combo edge overrides for conservative/aggressive combos (filter_name → min_edge)
+FILTER_MIN_EDGE_OVERRIDE = {
+    'CONSERVATIVE_FILTER': 0.05,   # 5% edge required
+    'AGGRESSIVE_FILTER':   0.005,  # 0.5% edge required
+    'TOP4_CONSERVATIVE':   0.05,
+    'TOP4_AGGRESSIVE':     0.005,
 }
 
 # Build all (bet_filter × sizing) strategy combos
@@ -668,10 +751,59 @@ STRATEGIES = {}
 for flt_name, flt_set in BET_FILTER_SETS.items():
     for siz_name, siz_fn in SIZING_STRATEGIES.items():
         key = f"{flt_name}__{siz_name}"
-        STRATEGIES[key] = {'filter': flt_set, 'sizing': siz_fn, 'label': key}
+        STRATEGIES[key] = {
+            'filter': flt_set,
+            'sizing': siz_fn,
+            'label': key,
+            'min_edge_override': FILTER_MIN_EDGE_OVERRIDE.get(flt_name),
+            'stateful': False,
+            'arena_category': ARENA_CATEGORY.get(siz_name, siz_name),
+        }
+
+# ── Special combos: TOP4_CONSERVATIVE / TOP4_AGGRESSIVE ──
+TOP4_FILTER = {'H1_ATS_AWAY', 'H1_UNDER', 'H2_UNDER', 'ML_AWAY'}
+STRATEGIES['TOP4_CONSERVATIVE__Kelly_25pct'] = {
+    'filter': TOP4_FILTER,
+    'sizing': kelly_stake(0.25),
+    'label':  'TOP4_CONSERVATIVE__Kelly_25pct',
+    'min_edge_override': 0.05,
+    'stateful': False,
+    'arena_category': 'Conservative',
+}
+STRATEGIES['TOP4_AGGRESSIVE__Kelly_50pct'] = {
+    'filter': set(BET_TYPES_ALL),
+    'sizing': kelly_stake(0.50),
+    'label':  'TOP4_AGGRESSIVE__Kelly_50pct',
+    'min_edge_override': 0.005,
+    'stateful': False,
+    'arena_category': 'Aggressive',
+}
+
+# ── Stateful strategies: Martingale / AntiMartingale ──
+# Built per-filter-set and stored with their state objects
+_MART_FILTERS = {
+    'ML_ONLY':    {'ML_HOME', 'ML_AWAY'},
+    'ALL':        set(BET_TYPES_ALL),
+    'TOP4':       TOP4_FILTER,
+}
+_STATEFUL_STRATEGIES = {}
+for flt_name, flt_set in _MART_FILTERS.items():
+    for siz_name, builder in [('Martingale', martingale_stake), ('AntiMartingale', anti_martingale_stake)]:
+        siz_fn, update_fn = builder(base=5.0)
+        key = f"{flt_name}__{siz_name}"
+        _STATEFUL_STRATEGIES[key] = {
+            'filter': flt_set,
+            'sizing': siz_fn,
+            'update': update_fn,
+            'label': key,
+            'min_edge_override': None,
+            'stateful': True,
+            'arena_category': siz_name,
+        }
+STRATEGIES.update(_STATEFUL_STRATEGIES)
 
 print(f"\n{len(STRATEGIES)} strategy combos to test across {len(BET_TYPES_ALL)} bet types")
-print(f"Sizing strategies: {list(SIZING_STRATEGIES.keys())}")
+print(f"Sizing strategies: {list(SIZING_STRATEGIES.keys()) + ['Martingale', 'AntiMartingale']}")
 print(f"Bet filter sets: {list(BET_FILTER_SETS.keys())}")
 
 ###############################################################################
@@ -709,6 +841,7 @@ for skey in STRATEGIES:
         'losses': 0,
         'pnl_history': [],  # per-week PnL for Sharpe
         'equity': [],
+        '_prev_bets': 0,
     }
 
 # Per-bet-type stats (aggregated across all strategies for diagnostic)
@@ -792,6 +925,9 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
     week_pnl_per_strategy = defaultdict(float)
     n_no_odds = 0
     n_with_odds = 0
+    n_score_zero = 0
+    n_bettable = 0
+    _diag_printed = 0  # diagnostic: first N games with full detail
 
     for j in range(len(test_idx)):
         game_idx    = test_idx[j]
@@ -847,10 +983,53 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
             continue
         n_with_odds += 1
 
-        # Build actual outcome
-        home_score = int(g.get('home_score', g.get('score_home', 0)) or 0)
-        away_score = int(g.get('away_score', g.get('score_away', 0)) or 0)
+        # Build actual outcome — exhaustive score field extraction
+        home_score = 0
+        away_score = 0
+        for hs_key in ['home_score', 'score_home', 'PTS_home', 'pts_home', 'HOME_PTS', 'home_pts']:
+            v = g.get(hs_key)
+            if v is not None and v != '' and v != 0:
+                home_score = int(v)
+                break
+        for as_key in ['away_score', 'score_away', 'PTS_away', 'pts_away', 'AWAY_PTS', 'away_pts']:
+            v = g.get(as_key)
+            if v is not None and v != '' and v != 0:
+                away_score = int(v)
+                break
+        # Fallback: try nested stats objects — check 'home'/'away' dicts (nba_api format)
+        # Recent games store scores at g['home']['pts'] and g['away']['pts']
+        if home_score == 0:
+            for stats_key in ['home_stats', 'home']:
+                hs = g.get(stats_key)
+                if isinstance(hs, dict):
+                    v = hs.get('PTS', hs.get('pts', hs.get('points', 0)))
+                    if v is not None and v != '' and v != 0:
+                        home_score = int(float(v))
+                        break
+        if away_score == 0:
+            for stats_key in ['away_stats', 'away']:
+                as_ = g.get(stats_key)
+                if isinstance(as_, dict):
+                    v = as_.get('PTS', as_.get('pts', as_.get('points', 0)))
+                    if v is not None and v != '' and v != 0:
+                        away_score = int(float(v))
+                        break
+        # Fallback: reconstruct from quarter data
+        if home_score == 0:
+            q_h = sum(int(g.get(f'q{i}_home', 0) or 0) for i in range(1, 5))
+            q_h += int(g.get('ot_home', 0) or 0)
+            if q_h > 0:
+                home_score = q_h
+        if away_score == 0:
+            q_a = sum(int(g.get(f'q{i}_away', 0) or 0) for i in range(1, 5))
+            q_a += int(g.get('ot_away', 0) or 0)
+            if q_a > 0:
+                away_score = q_a
+
         if home_score == 0 and away_score == 0:
+            n_score_zero += 1
+            if n_score_zero <= 3:
+                print(f"  SCORE=0 skip: {odds_key} | fields={list(g.keys())[:15]}")
             continue  # Game not played yet or missing score
 
         q_home = [int(g.get(f'q{i}_home', 0) or 0) for i in range(1, 5)]
@@ -874,8 +1053,25 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
             'away_score': away_score,
         }
 
-        # Generate all bets for this game
+        n_bettable += 1
+
+        # Generate all bets for this game (use global MIN_EDGE as baseline floor)
         all_bets = generate_all_bets(p_home, real_odds, actual_outcome, MIN_EDGE)
+
+        # DIAGNOSTIC: print detailed edge info for first 5 bettable games per week
+        if _diag_printed < 5:
+            odds_h = real_odds.get('odds_home')
+            odds_a = real_odds.get('odds_away')
+            edge_h = (p_home * odds_h - 1) if odds_h else None
+            edge_a = ((1-p_home) * odds_a - 1) if odds_a else None
+            print(f"  DIAG game {_diag_printed}: {game_home}v{game_away} | "
+                  f"p_home={p_home:.4f} | odds_h={odds_h} odds_a={odds_a} | "
+                  f"edge_h={edge_h:.4f if edge_h else 'N/A'} edge_a={edge_a:.4f if edge_a else 'N/A'} | "
+                  f"score={home_score}-{away_score} | bets_generated={len(all_bets)}")
+            if all_bets:
+                for b in all_bets[:3]:
+                    print(f"    -> {b['type']}: edge={b['edge']:.4f} odds={b['odds']:.3f} prob={b['model_prob']:.4f}")
+            _diag_printed += 1
 
         # Diagnostic: accumulate global stats
         for bet in all_bets:
@@ -885,12 +1081,16 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
 
         # Run each strategy
         for skey, strat in STRATEGIES.items():
-            flt   = strat['filter']
-            siz   = strat['sizing']
-            br    = state[skey]['bankroll']
-            day_expo = 0.0
+            flt          = strat['filter']
+            siz          = strat['sizing']
+            edge_floor   = strat.get('min_edge_override') or MIN_EDGE
+            is_stateful  = strat.get('stateful', False)
+            update_fn    = strat.get('update')
+            br           = state[skey]['bankroll']
+            day_expo     = 0.0
 
-            filtered_bets = [b for b in all_bets if b['type'] in flt]
+            filtered_bets = [b for b in all_bets
+                             if b['type'] in flt and b['edge'] >= edge_floor]
             for bet in filtered_bets:
                 stake = siz(bet['edge'], bet['odds'], bet['model_prob'], br, MAX_BET_PCT)
 
@@ -909,6 +1109,10 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
                 state[skey]['bets'] += 1
                 if bet['won']: state[skey]['wins'] += 1
                 else: state[skey]['losses'] += 1
+
+                # Update stateful streak (Martingale / AntiMartingale)
+                if is_stateful and update_fn:
+                    update_fn(bet['won'])
 
                 # Drawdown tracking
                 if br > state[skey]['peak']:
@@ -933,7 +1137,9 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
     if n_with_odds == 0 and n_no_odds > 0:
         print(f"  ODDS MISS: {n_no_odds} games had no odds, 0 matched => 0 bets possible")
     elif n_with_odds > 0:
-        print(f"  Odds: {n_with_odds}/{n_with_odds + n_no_odds} matched | Bets this week: {total_week_bets}")
+        print(f"  Odds: {n_with_odds}/{n_with_odds + n_no_odds} matched | "
+              f"Score OK: {n_bettable} | Score=0 skip: {n_score_zero} | "
+              f"Bets this week: {total_week_bets}")
     else:
         print(f"  No odds data this week | Bets this week: {total_week_bets}")
     # Update _prev_bets snapshot for next week's delta
@@ -949,6 +1155,24 @@ for week_i in range(0, len(season_dates), WALK_STEP_DAYS):
         print(f"  {skey[:35]:<35} ${s['bankroll']:.2f} ({roi:+.1f}%)")
 
     gc.collect()
+
+# ── GLOBAL DIAGNOSTIC SUMMARY ──
+print(f"\n{'='*60}")
+print("  BET GENERATION DIAGNOSTIC")
+print(f"{'='*60}")
+print(f"Global bet type stats (across all weeks):")
+if global_bet_type_stats:
+    for bt_name, bt_stats in sorted(global_bet_type_stats.items()):
+        wr = bt_stats['wins'] / bt_stats['bets'] * 100 if bt_stats['bets'] > 0 else 0
+        print(f"  {bt_name:<25} bets={bt_stats['bets']:>5} wins={bt_stats['wins']:>5} ({wr:.1f}%)")
+else:
+    print("  *** NO BETS GENERATED AT ALL ***")
+    print("  Likely causes:")
+    print("    1. All games skipped (score=0/0) — check 'Score=0 skip' counts above")
+    print("    2. All edges < MIN_EDGE (0.005) — model too close to market")
+    print("    3. Odds not matching — check 'Odds MISS' counts above")
+total_bets = sum(s['bets'] for s in state.values())
+print(f"\nTotal bets placed across all strategies: {total_bets}")
 
 ###############################################################################
 # COMPUTE FINAL CONFRONTATION TABLE
@@ -976,10 +1200,11 @@ for skey, strat in STRATEGIES.items():
     sizing     = parts[1] if len(parts) > 1 else ''
 
     confrontation.append({
-        'strategy':   skey,
-        'bet_filter': bet_filter,
-        'sizing':     sizing,
-        'roi_pct':    round(roi, 2),
+        'strategy':       skey,
+        'bet_filter':     bet_filter,
+        'sizing':         sizing,
+        'arena_category': STRATEGIES[skey].get('arena_category', sizing),
+        'roi_pct':        round(roi, 2),
         'final_bankroll': round(s['bankroll'], 2),
         'total_bets':     s['bets'],
         'wins':    s['wins'],

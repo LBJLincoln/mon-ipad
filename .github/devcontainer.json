@@ -1,0 +1,50 @@
+{
+  "name": "Nomos42 NBA Quant",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "postCreateCommand": "pip install xgboost lightgbm catboost scikit-learn psycopg2-binary nba-api kaggle huggingface-hub python-telegram-bot modal",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "forwardPorts": [8080, 8081, 8082],
+  "portsAttributes": {
+    "8080": {
+      "label": "NBA Data Server",
+      "onAutoForward": "notify"
+    },
+    "8081": {
+      "label": "Terminal API",
+      "onAutoForward": "notify"
+    },
+    "8082": {
+      "label": "MCP Compute Server",
+      "onAutoForward": "notify"
+    }
+  },
+  "secrets": {
+    "HF_TOKEN": {},
+    "DATABASE_URL": {},
+    "KAGGLE_USERNAME": {},
+    "KAGGLE_KEY": {},
+    "MODAL_TOKEN_ID": {},
+    "MODAL_TOKEN_SECRET": {},
+    "TELEGRAM_BOT_TOKEN": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "github.copilot",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "editor.formatOnSave": true,
+        "editor.rulers": [100]
+      }
+    }
+  },
+  "postStartCommand": "bash scripts/keepalive-spaces.sh && echo 'Nomos42 devcontainer ready — MCP server: python3 scripts/mcp-compute-server.py'"
+}

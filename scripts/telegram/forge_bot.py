@@ -39,7 +39,7 @@ log = logging.getLogger("forge")
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-BOT_TOKEN = os.environ.get("FORGE_BOT_TOKEN", "")
+BOT_TOKEN = os.environ.get("FORGE_BOT_TOKEN", "") or os.environ.get("FORGE42_BOT_TOKEN", "")
 TERMINAL_API_URL = os.environ.get("TERMINAL_API_URL", "http://localhost:8081")
 TERMINAL_TOKEN = os.environ.get("TERMINAL_TOKEN", "")
 WORKDIR = os.environ.get("CLAUDE_WORKDIR", os.path.expanduser("~/mon-ipad"))

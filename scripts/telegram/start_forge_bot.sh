@@ -18,8 +18,10 @@ start_forge() {
         return
     fi
 
+    # Accept either env var name
+    [ -z "$FORGE_BOT_TOKEN" ] && export FORGE_BOT_TOKEN="${FORGE42_BOT_TOKEN:-}"
     if [ -z "$FORGE_BOT_TOKEN" ]; then
-        echo "ERROR: FORGE_BOT_TOKEN not set."
+        echo "ERROR: FORGE_BOT_TOKEN / FORGE42_BOT_TOKEN not set."
         echo "  Add it to /home/termius/mon-ipad/.env.local or export it before running."
         exit 1
     fi
