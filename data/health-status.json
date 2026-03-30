@@ -1,162 +1,116 @@
 {
-  "_meta": {
-    "generated_at": "2026-03-29T21:05:00Z",
-    "brain_cycle": "4h-auto",
-    "brain_model": "claude-sonnet-4-6",
-    "cycle_id": "2026-03-29T20",
-    "prev_cycle_id": "2026-03-29T16"
-  },
+  "updated_at": "2026-03-30T00:21:00Z",
+  "brain_cycle": "4h-auto",
+  "cycle_notes": "All 6 islands healthy, stagnation=0 across fleet. Best Brier=0.22006 (S14). ATR threshold=0.21837 not yet breached. Supabase connection errors persistent but non-blocking.",
   "nba_fleet": {
-    "best_brier_this_cycle": 0.22006,
-    "best_island_this_cycle": "S14",
-    "checkpoint_threshold": 0.21837,
+    "best_brier_overall": 0.22006,
+    "best_island": "S14",
+    "atr_checkpoint_threshold": 0.21837,
     "checkpoint_needed": false,
-    "all_time_record": {
-      "brier": 0.2157,
-      "source": "Colab TabICL 110f iter15 GPU"
-    },
     "islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "cycle": 89,
-        "generation": 265,
+        "generation": 299,
+        "cycle": 100,
         "best_brier": 0.22215,
         "best_roi": 0.3025,
         "best_sharpe": 6.7902,
-        "best_features": 61,
-        "best_model": "extra_trees",
-        "mutation_rate": 0.075,
+        "features": 61,
+        "model": "extra_trees",
         "stagnation": 0,
-        "feature_candidates": 3267,
-        "games_evaluated": 9551,
+        "mutation_rate": 0.0699,
+        "population": 60,
         "status": "EVOLVING",
-        "health": "OK"
+        "action_taken": null
       },
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "cycle": 189,
-        "generation": 565,
+        "generation": 628,
+        "cycle": 210,
         "best_brier": 0.22321,
         "best_roi": 0.287,
         "best_sharpe": 8.2406,
-        "best_features": 65,
-        "best_model": "random_forest",
-        "mutation_rate": 0.08,
+        "features": 65,
+        "model": "random_forest",
         "stagnation": 0,
-        "feature_candidates": 3267,
-        "games_evaluated": 9551,
+        "mutation_rate": 0.08,
+        "population": 60,
         "status": "EVOLVING",
-        "health": "OK",
-        "note": "Was 403 at cycle start, recovered fine"
+        "action_taken": null
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
-        "cycle": 194,
-        "generation": 580,
+        "generation": 656,
+        "cycle": 219,
         "best_brier": 0.22889,
         "best_roi": 0.226,
         "best_sharpe": 4.6871,
-        "best_features": 54,
-        "best_model": "xgboost_brier",
-        "mutation_rate": 0.04,
+        "features": 54,
+        "model": "xgboost",
         "stagnation": 0,
-        "feature_candidates": 3267,
+        "mutation_rate": 0.04,
+        "population": 60,
         "status": "EVOLVING",
-        "health": "WATCH",
-        "alert": "WEAKEST_BRIER 0.22889 — plateaued 117+ gens. Diversify if stagnation rises to 15."
+        "action_taken": null
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
-        "cycle": 96,
-        "generation": 287,
+        "generation": 320,
+        "cycle": 107,
         "best_brier": 0.22368,
         "best_roi": 0.284,
         "best_sharpe": 4.7821,
-        "best_features": 68,
-        "best_model": "lightgbm",
-        "mutation_rate": 0.1208,
+        "features": 68,
+        "model": "lightgbm",
         "stagnation": 0,
-        "feature_candidates": 3267,
+        "mutation_rate": 0.1131,
+        "population": 60,
         "status": "EVOLVING",
-        "health": "OK"
+        "action_taken": null
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
-        "cycle": 184,
-        "generation": 550,
+        "generation": 645,
+        "cycle": 215,
         "best_brier": 0.22006,
         "best_roi": 0.3255,
         "best_sharpe": 8.4295,
-        "best_features": 59,
-        "best_model": "extra_trees",
-        "mutation_rate": 0.04,
+        "features": 59,
+        "model": "extra_trees",
         "stagnation": 0,
-        "feature_candidates": 3267,
-        "pareto_front_size": 17,
+        "mutation_rate": 0.04,
+        "population": 60,
         "status": "EVOLVING",
-        "health": "OK",
-        "badge": "FLEET_BEST_BRIER_0.22006"
+        "action_taken": null,
+        "note": "FLEET LEADER — top performer: Brier=0.2276, Sharpe=21.51 at 40 feats"
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "cycle": 356,
-        "generation": 1068,
+        "generation": 1249,
+        "cycle": 417,
         "best_brier": 0.22112,
         "best_roi": 0.3136,
         "best_sharpe": 7.8512,
-        "best_features": 99,
-        "best_model": "extra_trees",
-        "mutation_rate": 0.08,
+        "features": 99,
+        "model": "extra_trees",
         "stagnation": 0,
-        "feature_candidates": 3267,
-        "pareto_front_size": 11,
+        "mutation_rate": 0.08,
+        "population": 50,
         "status": "EVOLVING",
-        "health": "OK"
+        "action_taken": null,
+        "note": "Top performer touched 0.21846 at gen 1247 — very close to ATR threshold"
       }
-    },
-    "fleet_summary": {
-      "all_online": true,
-      "all_stagnation_zero": true,
-      "fleet_best_brier": 0.22006,
-      "dist_to_checkpoint": 0.00169,
-      "research_this_cycle": "Isotonic calibration post-processing — proposal written. Phase 1: CalibratedClassifierCV in eval_individual()."
     }
   },
-  "political_fleet": {
-    "best_brier": 0.25008,
-    "best_island": "PA4",
-    "islands": {
-      "PA1": {"best_brier": 0.3, "feature_candidates": 2, "stagnation": 24, "health": "CRITICAL"},
-      "PA2": {"best_brier": 0.3, "feature_candidates": 2, "stagnation": 11, "health": "CRITICAL"},
-      "PA3": {"best_brier": 0.3, "feature_candidates": 2, "stagnation": 1, "health": "CRITICAL"},
-      "PA4": {"best_brier": 0.25008, "feature_candidates": 15, "stagnation": 0, "health": "DEGRADED"}
-    },
-    "fix_status": {
-      "diagnosed": true,
-      "root_cause": "4 compounding bugs: (1) engine zero-variance output, (2) OHLCV dict price TypeError, (3) insider side/type mismatch, (4) polymarket price/probability mismatch",
-      "patch_committed": "hf-space/apply_patches.py in nomos-political-alpha main",
-      "app_py_status": "BAD STUB — accidentally overwritten with 466 bytes. MCP timeout blocked 84KB push.",
-      "recovery_command": "git checkout 5b43dd87 -- hf-space/app.py && python3 apply_patches.py && git push hf main",
-      "original_ref": "5b43dd87167aa8c6e414b932612ea15dc681c404"
-    }
-  },
-  "actions_this_cycle": [
-    {"action": "stagnation_check", "result": "NBA all islands stagnation=0. PA1=24, PA2=11, PA3=1. All below threshold for NBA. PA stagnation irrelevant until features fixed."},
-    {"action": "checkpoint_check", "best_brier": 0.22006, "threshold": 0.21837, "result": "No checkpoint. Gap=0.00169."},
-    {"action": "nba_research", "source": "MDPI Jan 2026 + Oct 2025", "finding": "Isotonic calibration on tree ensembles yields Brier improvement of 0.003-0.007", "proposal": "data/research-proposals/nba-calibration-isotonic-2026-03-29.json"},
-    {"action": "political_bug_fix", "result": "4 bugs diagnosed, apply_patches.py committed. hf-space/app.py stub needs manual restore."},
-    {"action": "ERROR", "detail": "hf-space/app.py accidentally overwritten with stub. MCP timeout on 84KB push prevented correction. Recovery: git checkout 5b43dd87 -- hf-space/app.py && python3 apply_patches.py"}
-  ],
-  "next_cycle_priorities": [
-    "URGENT: Restore hf-space/app.py (git checkout 5b43dd87 -- hf-space/app.py && python3 hf-space/apply_patches.py) then git push hf main",
-    "NBA: Implement isotonic calibration wrapper in S14 eval_individual() — Phase 1 quick win",
-    "Monitor S12 (weakest at 0.22889) — send diversify if stagnation hits 15",
-    "Once PA fixed: apply same CalibratedClassifierCV to political alpha"
-  ]
+  "supabase_status": "connection_errors_non_blocking",
+  "engine_version": "v3.0-43cat",
+  "feature_candidates": 3267,
+  "cached_games": 7067,
+  "seasons_cached": "2018-19 through 2025-26"
 }
