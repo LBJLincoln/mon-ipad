@@ -1,122 +1,159 @@
 {
-  "updated_at": "2026-03-30T08:00:00Z",
-  "brain_cycle": "4h-auto",
-  "cycle_notes": "All 6 islands healthy, stagnation=0 fleet-wide. Best Brier=0.22006 (S14). ATR threshold=0.21837 not yet breached. S15 touched 0.21846 at gen 1247 — keep monitoring. Supabase connection errors persistent but non-blocking. Political 5-patch fix pushed to nomos-political-alpha to resolve PA1-PA3 0-feature crisis.",
+  "updated_at": "2026-03-30T12:00:00Z",
+  "brain_cycle": 8,
+  "brain_model": "claude-sonnet-4-6",
+  "cycle_summary": "NBA fleet healthy (no stagnation, best Brier 0.22006 on S14). Political fleet CRITICAL: all 4 islands at Brier=0.3 (HF spaces redeployed Mar 27 without 5-patch fix). Diversify queued for PA1/PA2/PA3. FIX BLOCKER: deploy apply_patches.py to HF spaces via VM.",
   "nba_fleet": {
     "best_brier_overall": 0.22006,
     "best_island": "S14",
-    "atr_checkpoint_threshold": 0.21837,
-    "checkpoint_needed": false,
+    "all_time_record": 0.2157,
+    "all_time_record_method": "Colab TabICL 110f iter15",
+    "target": 0.20,
+    "checkpoint_threshold": 0.21837,
+    "checkpoint_triggered": false,
+    "supabase_issue": "FATAL: Tenant or user not found on primary (ayqviq). Using pooler (xivvnr) or local JSON.",
     "islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "generation": 335,
-        "cycle": 112,
+        "generation": 382,
+        "cycle": 128,
         "best_brier": 0.22215,
         "best_roi": 0.3025,
         "best_sharpe": 6.7902,
-        "features": 61,
+        "best_features": 61,
         "model": "extra_trees",
         "stagnation": 0,
-        "mutation_rate": 0.0652,
+        "mutation_rate": 0.0593,
         "population": 60,
         "status": "EVOLVING",
-        "action_taken": null
+        "games_evaluated": 9551,
+        "feature_candidates": 3267
       },
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "generation": 699,
-        "cycle": 233,
+        "generation": 771,
+        "cycle": 257,
         "best_brier": 0.22321,
         "best_roi": 0.287,
         "best_sharpe": 8.2406,
-        "features": 65,
+        "best_features": 65,
         "model": "random_forest",
         "stagnation": 0,
         "mutation_rate": 0.08,
         "population": 60,
         "status": "EVOLVING",
-        "action_taken": null
+        "games_evaluated": 9551,
+        "feature_candidates": 3267
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
-        "generation": 724,
-        "cycle": 242,
+        "generation": 783,
+        "cycle": 261,
         "best_brier": 0.22889,
         "best_roi": 0.226,
         "best_sharpe": 4.6871,
-        "features": 54,
+        "best_features": 54,
         "model": "xgboost",
         "stagnation": 0,
         "mutation_rate": 0.04,
         "population": 60,
         "status": "EVOLVING",
-        "action_taken": null
+        "games_evaluated": 9551,
+        "feature_candidates": 3267
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
-        "generation": 352,
-        "cycle": 118,
+        "generation": 388,
+        "cycle": 130,
         "best_brier": 0.22368,
         "best_roi": 0.284,
         "best_sharpe": 4.7821,
-        "features": 68,
+        "best_features": 68,
         "model": "lightgbm",
         "stagnation": 0,
-        "mutation_rate": 0.1061,
+        "mutation_rate": 0.0987,
         "population": 60,
         "status": "EVOLVING",
-        "action_taken": null
+        "games_evaluated": 9551,
+        "feature_candidates": 3267
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
-        "generation": 721,
-        "cycle": 241,
+        "generation": 788,
+        "cycle": 263,
         "best_brier": 0.22006,
         "best_roi": 0.3255,
         "best_sharpe": 8.4295,
-        "features": 59,
+        "best_features": 59,
         "model": "extra_trees",
         "stagnation": 0,
-        "mutation_rate": 0.04,
+        "mutation_rate": 0.08,
         "population": 60,
         "status": "EVOLVING",
-        "action_taken": null,
-        "note": "FLEET LEADER"
+        "games_evaluated": 9551,
+        "feature_candidates": 3267,
+        "note": "FLEET LEADER. Pareto front top: Brier=0.21902, ROI=33.88%, gen784."
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "generation": 1415,
-        "cycle": 472,
+        "generation": 1583,
+        "cycle": 528,
         "best_brier": 0.22112,
         "best_roi": 0.3136,
         "best_sharpe": 7.8512,
-        "features": 99,
+        "best_features": 99,
         "model": "extra_trees",
         "stagnation": 0,
         "mutation_rate": 0.08,
         "population": 50,
         "status": "EVOLVING",
-        "action_taken": null,
-        "note": "Touched 0.21846 at gen 1247 — very close to ATR threshold 0.21837"
+        "games_evaluated": 9551,
+        "feature_candidates": 3267
       }
     }
   },
-  "supabase_status": "connection_errors_non_blocking",
-  "engine_version": "v3.0-43cat",
-  "feature_candidates": 3267,
-  "cached_games": 7067,
-  "seasons_cached": "2018-19 through 2025-26",
-  "research_proposals_count": 16,
-  "latest_proposal": "player-level-bpm-pie-raptor-2026-03-30.json",
-  "cross_project_actions": {
-    "political_fix_pushed": "2026-03-30T08:00:00Z",
-    "fix_description": "5 patches to resolve PA1-PA3 0-feature crisis. FIX2 (OHLCV prices) + FIX3 (insider field) + FIX4 (polymarket field) + FIX5 (bootstrap call). VM must run scripts/deploy_political_fix.sh"
+  "actions_taken": [
+    {
+      "action": "diversify queued",
+      "targets": ["PA1", "PA2", "PA3"],
+      "reason": "stagnation >15 (PA1:26, PA2:21, PA3:26)",
+      "status": "queued via POST /api/command {command:diversify}"
+    },
+    {
+      "action": "NBA research proposal written",
+      "file": "data/research-proposals/nba-lr-shot-mandatory-2026-03-30.json",
+      "finding": "LR + mandatory shot-quality features achieves Brier 0.199 (MDPI 2026). Propose adding logistic_regression model type to S10 with Cat42 shot_quality minimum 10 features."
+    },
+    {
+      "action": "Political FEC/SEC data sources proposal written",
+      "file": "data/research-proposals/political-fec-sec-sources-2026-03-30.json",
+      "sources": ["api.open.fec.gov", "EDGAR Form 4", "federalregister.gov EOs"],
+      "expected_impact": "Unlock Cat1/Cat2/Cat6 features currently starved of data"
+    }
+  ],
+  "blocking_issues": [
+    {
+      "issue": "Political 5-patch fix not deployed to HF spaces",
+      "severity": "CRITICAL",
+      "fix_location": "nomos-political-alpha/hf-space/apply_patches.py",
+      "deploy_command": "cd nomos-political-alpha && python3 hf-space/apply_patches.py && git add hf-space/app.py && git commit -m 'fix: apply 5 fallback patches' && git push hf main",
+      "impact": "PA1-PA3 will remain at Brier=0.3 (0 useful features) until fix is deployed"
+    },
+    {
+      "issue": "Supabase FATAL: Tenant or user not found on primary connection",
+      "severity": "HIGH",
+      "fix": "Use pooler connection string (xivvnr). NBA islands saving to local JSON only."
+    }
+  ],
+  "next_cycle_rotation": {
+    "nba": "Inject LR model type into S10 exploitation island (nba-lr-shot-mandatory proposal)",
+    "political": "Rotation B: Review political_engine.py + add FEC/EDGAR features to fetch_political_data.py",
+    "priority_1": "Verify 5-patch fix deployed and PA1-PA3 feature_candidates > 10"
   }
 }

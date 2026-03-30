@@ -1,42 +1,51 @@
 {
-  "updated_at": "2026-03-30T00:21:45Z",
-  "brain_cycle": "4h-auto",
-  "ecosystem_health": "PARTIALLY_HEALTHY",
-  "nba_quant_ai": {
-    "status": "HEALTHY",
-    "best_brier": 0.22006,
-    "target_brier": 0.20,
-    "atr": 0.21844,
-    "gap_to_atr": 0.00162,
-    "gap_to_target": 0.02006,
-    "fleet_stagnation": "NONE",
-    "islands_active": 6,
-    "islands_evolving": 6,
-    "note": "S15 touched 0.21846 at gen 1247 — 1 step from ATR. Fleet healthy."
+  "updated_at": "2026-03-30T12:00:00Z",
+  "brain_cycle": 8,
+  "ecosystem_status": "DEGRADED — Political alpha critical (Brier=0.3), NBA healthy",
+  "projects": {
+    "nba_quant": {
+      "status": "HEALTHY",
+      "best_brier": 0.22006,
+      "all_time_record": 0.2157,
+      "islands_active": 6,
+      "islands_stagnated": 0,
+      "checkpoint_ready": false,
+      "last_improvement": "S14 Pareto front: 0.21902 in gen 784"
+    },
+    "political_alpha": {
+      "status": "CRITICAL",
+      "best_brier": 0.3,
+      "islands_active": 4,
+      "islands_stagnated": 3,
+      "blocker": "5-patch fix in apply_patches.py awaiting VM deployment",
+      "fix_pushed_to_github": true,
+      "diversify_queued": ["PA1", "PA2", "PA3"]
+    }
   },
-  "political_alpha": {
-    "status": "DEGRADED",
-    "best_brier": 0.25008,
-    "best_roi": 0.0078,
-    "islands_active": 4,
-    "islands_at_base_rate": 3,
-    "interventions_this_cycle": ["PA1 diversify", "PA2 boost_mutation", "PA3 boost_mutation"],
-    "concern": "3 of 4 islands stuck at Brier=0.3 with 0 features. Data pipeline investigation needed."
-  },
-  "cross_project_learnings": [
+  "cross_project_ports": [
     {
-      "source": "NBA WebSearch (MDPI Jan 2026)",
-      "finding": "ELO rolling features are top-3 most important. LR achieves Brier=0.199.",
-      "applied_to_nba": "Research proposal written: calibration-brier-loss-2026-03-30.json",
-      "applied_to_political": "ELO-style donor_momentum_score proposed for political_engine.py"
+      "from": "NBA",
+      "to": "Political",
+      "technique": "Venn-Abers calibration (already in PA4 via political GA config)",
+      "status": "deployed"
     },
     {
-      "source": "Political fleet observation",
-      "finding": "PA4 (wide search + XGBoost) is ONLY island finding features. PA1-3 stuck at 0 features.",
-      "implication": "XGBoost with wide search config may be more robust for political data than ExtraTrees/CatBoost",
-      "action": "Consider biasing S12 (catboost) toward XGBoost config in NBA fleet"
+      "from": "NBA",
+      "to": "Political",
+      "technique": "LR model type with mandatory feature categories",
+      "status": "proposed — 2026-03-30"
+    },
+    {
+      "from": "Political",
+      "to": "NBA",
+      "technique": "Variance filter: reject engine output if <20 non-constant features",
+      "status": "deployed in PA, proposed for NBA guard"
     }
   ],
-  "supabase_health": "connection_errors_non_blocking",
-  "next_brain_cycle": "2026-03-30T04:00:00Z"
+  "research_proposals_count": 17,
+  "latest_proposals": [
+    "nba-lr-shot-mandatory-2026-03-30.json",
+    "political-fec-sec-sources-2026-03-30.json",
+    "player-level-bpm-pie-raptor-2026-03-30.json"
+  ]
 }
