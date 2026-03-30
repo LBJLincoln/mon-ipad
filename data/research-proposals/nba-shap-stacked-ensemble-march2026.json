@@ -1,0 +1,68 @@
+{
+  "proposal_id": "nba-shap-stacked-ensemble-march2026",
+  "created_at": "2026-03-30T20:30:00Z",
+  "project": "NBA Quant AI",
+  "priority": "HIGH",
+  "title": "SHAP Feature Pruning + Stacked Ensemble Calibration for Sub-0.220 Brier",
+  "summary": "Two synergistic improvements from 2025-2026 research: (1) SHAP-guided feature pruning to eliminate noise features and improve generalization, (2) Heterogeneous stacked ensemble combining ExtraTrees + LightGBM + CatBoost as base learners. Both techniques are proven in recent literature and directly applicable to our current feature engine.",
+  "motivation": {
+    "current_best": 0.22006,
+    "target": 0.219,
+    "gap": 0.00106,
+    "bottleneck": "GA is exploring 3267 features but most contribute noise; best models use 55-99 features suggesting heavy redundancy in our 200-cap space"
+  },
+  "technique_1": {
+    "name": "SHAP Feature Importance Pruning",
+    "source": "2025 NBA prediction literature (ACM CIKM, PLOS One)",
+    "description": "Use SHAP (SHapley Additive exPlanations) to rank feature importance across the Pareto-front models. Prune the bottom 60% of features by mean absolute SHAP value. This removes correlated/redundant features that waste the 200-cap.",
+    "implementation": {
+      "step1": "On Kaggle/Colab GPU: run shap.TreeExplainer on top-5 Pareto-front models from S14",
+      "step2": "Compute mean |SHAP| per feature across all training samples",
+      "step3": "Keep top 800 features by SHAP importance (from 3267)",
+      "step4": "Push pruned feature list as shap_selected_features.json to hf-space",
+      "step5": "Override feature_candidates in engine.py to use shap_selected list"
+    },
+    "expected_impact": "Reduce noise, improve cross-val stability, enable denser feature selection within 200-cap",
+    "estimated_brier_gain": 0.001,
+    "effort": "2h on Kaggle GPU"
+  },
+  "technique_2": {
+    "name": "Heterogeneous Stacked Ensemble",
+    "source": "Scientific Reports 2025 — stacked ensemble NBA prediction",
+    "description": "Use ExtraTrees + LightGBM + CatBoost as diverse base learners, with LogisticRegression as meta-learner. Paper shows complementary strengths: RF captures historical player metrics, LR captures short-term dynamics. Best stacked models achieved top accuracy in all 2025 studies.",
+    "implementation": {
+      "step1": "Add 'stacked_ensemble' as new model_type in engine.py (CPU-safe: use sklearn StackingClassifier)",
+      "step2": "Base learners: ExtraTrees(n_est=100) + LightGBM + CatBoost with evolved feature subsets",
+      "step3": "Meta-learner: LogisticRegression(C=0.1) on CV predictions",
+      "step4": "Evaluate in GA fitness function same as other models (Brier + ROI + Sharpe)",
+      "step5": "Only enable on S15 (wide search) initially to test"
+    },
+    "cpu_feasibility": "StackingClassifier with 3 base learners fits in 969MB RAM at n_features=200, n_samples=7067",
+    "expected_impact": "Stacked ensemble should outperform single models by 0.002-0.005 Brier per literature",
+    "estimated_brier_gain": 0.002,
+    "effort": "3h implementation + 24h evaluation on S15"
+  },
+  "technique_3": {
+    "name": "Capitol Trades Politician Stock Signal",
+    "source": "capitoltrades.com — public STOCK Act disclosures",
+    "description": "NBA team ownership overlaps with political donors (Mavericks/Sands, Nets/Alibaba, etc.). Capitol Trades tracks Congress member stock trades. Cross-reference team ownership trades with NBA schedule for potential alpha.",
+    "implementation": {
+      "step1": "Fetch capitoltrades.com/politicians CSV for NBA team owner tickers",
+      "step2": "Add as Cat47: politician_ownership_trades (20 features)",
+      "step3": "Look for patterns: owner buys before strong team performance?"
+    },
+    "expected_impact": "Novel data source not in any existing NBA model",
+    "estimated_brier_gain": "unknown — exploratory",
+    "effort": "1h data fetch + 2h feature engineering"
+  },
+  "cross_project_port": {
+    "to_political_alpha": "SHAP pruning is directly applicable to political_engine.py once feature starvation is fixed. Use SHAP to identify which of the 2640 features are actually predictive vs noise.",
+    "from_political_alpha": "Venn-Abers calibration (already in PA3) should be ported back to NBA islands. PA3 uses it for CatBoost — add to NBA engine.py calibration options."
+  },
+  "implementation_priority": [
+    {"rank": 1, "item": "Fix PA feature starvation (bootstrap fix deploy)", "reason": "Critical — PA has been broken for 3+ days"},
+    {"rank": 2, "item": "SHAP pruning on Kaggle", "reason": "High ROI — 2h effort, measurable gain"},
+    {"rank": 3, "item": "Stacked ensemble on S15", "reason": "High potential, low risk (S15 is wide search anyway)"},
+    {"rank": 4, "item": "Capitol Trades signal", "reason": "Exploratory, novel alpha"}
+  ]
+}
