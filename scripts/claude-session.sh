@@ -391,6 +391,12 @@ else
   cd /home/termius/rgwa && bash scripts/telegram/start_bot.sh start 2>/dev/null
 fi
 
+if pgrep -f "forge_bot.py" > /dev/null 2>&1; then
+  ok "@Forge42Bot" "RUNNING"
+else
+  info "@Forge42Bot" "not started (fleet/SaaS users)"
+fi
+
 # ══════════════════════════════════════════════════════════════════
 # 7. CRONS
 # ══════════════════════════════════════════════════════════════════
@@ -412,17 +418,50 @@ for PAIR in "watchdog.sh:Watchdog" "infra-agent:Infra Agent" "keepalive:Keepaliv
 done
 
 # ══════════════════════════════════════════════════════════════════
-# 8. DASHBOARD + VERCEL
+# 8. VERCEL SITES (4)
 # ══════════════════════════════════════════════════════════════════
-header "Web / Vercel"
+header "Vercel Sites (5)"
 
+echo -e "  ${C}Live:${N}"
 DASH_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "https://nomosdashboard.vercel.app" 2>/dev/null)
 if [ "$DASH_CODE" = "200" ]; then
-  ok "nomosdashboard.vercel.app" "UP (/nba /political /rgwa /evolution)"
+  ok "nomosdashboard.vercel.app" "UP — Admin dashboard (/nba /political /rgwa /evolution)"
 else
   fail "nomosdashboard.vercel.app" "DOWN (HTTP $DASH_CODE)"
 fi
 
+echo -e "  ${C}SaaS (paid users):${N}"
+# NBA Picks — $19/$49/$149 per month
+PICKS_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "https://nomosquant42.vercel.app" 2>/dev/null)
+if [ "$PICKS_CODE" = "200" ]; then
+  ok "nomosquant42.vercel.app" "UP — NBA SaaS (Scout/Edge/Whale)"
+elif [ "$PICKS_CODE" = "404" ]; then
+  warn "nomosquant42.vercel.app" "NOT DEPLOYED — repo: nomosquant42 (to create)"
+else
+  info "nomosquant42.vercel.app" "HTTP $PICKS_CODE — TO CREATE"
+fi
+
+# Political Alpha — paid users
+POLSITE_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "https://stupidpolitical.vercel.app" 2>/dev/null)
+if [ "$POLSITE_CODE" = "200" ]; then
+  ok "stupidpolitical.vercel.app" "UP — Stupid Political (paid)"
+elif [ "$POLSITE_CODE" = "404" ]; then
+  warn "stupidpolitical.vercel.app" "NOT DEPLOYED — repo: stupid-political (to create)"
+else
+  info "stupidpolitical.vercel.app" "HTTP $POLSITE_CODE — TO CREATE"
+fi
+
+# RGWA Studio — AI art generation
+RGWA_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "https://rgwa-studio.vercel.app" 2>/dev/null)
+if [ "$RGWA_CODE" = "200" ]; then
+  ok "rgwa-studio.vercel.app" "UP — RGWA AI Art Studio"
+elif [ "$RGWA_CODE" = "404" ]; then
+  warn "rgwa-studio.vercel.app" "NOT DEPLOYED — repo: rgwa-studio (to create)"
+else
+  info "rgwa-studio.vercel.app" "HTTP $RGWA_CODE — TO CREATE"
+fi
+
+echo -e "  ${C}Other:${N}"
 FORGE_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "https://nomos42.vercel.app" 2>/dev/null)
 if [ "$FORGE_CODE" = "200" ]; then
   info "nomos42.vercel.app (Forge)" "UP — SHELVED"
@@ -433,7 +472,7 @@ fi
 # ══════════════════════════════════════════════════════════════════
 # 9. AGENT SWARM (22 agents, 7 departments)
 # ══════════════════════════════════════════════════════════════════
-header "Agent Swarm (22 agents, 7 departments)"
+header "Agent Swarm (25 agents, 8 departments)"
 
 # Count running agent processes
 AGENT_RUNNING=0
@@ -465,6 +504,7 @@ info "Betting (5)" "odds-monitor, strategist, tester, corrector, halftime"
 info "Evaluation (2)" "results-evaluator, performance-analyst"
 info "Infra (2)" "infra-agent, dashboard-sync"
 info "Oversight (1)" "orchestrator"
+info "Fleet Monitor (3)" "pierre-usage, pierre-practice, pierre-infra"
 info "Active processes" "${AGENT_RUNNING} agent processes running"
 
 # ══════════════════════════════════════════════════════════════════
@@ -497,7 +537,7 @@ echo -e "  ${C}HF Spaces:${N}  24+ total (4 credentials) — 10 evo + infra + RG
 echo -e "  ${C}Kaggle:${N}     7 kernels + 1 dataset (alexismoret6)"
 echo -e "  ${C}GPU:${N}        Modal + Colab + Lightning.ai + Kaggle"
 echo -e "  ${C}Databases:${N}  2x Supabase + 2x Neo4j + 2x Pinecone + Upstash Redis"
-echo -e "  ${C}Agents:${N}     22 (7 depts)  ${C}Repos:${N} 5  ${C}Bots:${N} 2  ${C}Crons:${N} ${CRON_TOTAL}  ${C}Vercel:${N} 2"
+echo -e "  ${C}Agents:${N}     25 (8 depts)  ${C}Repos:${N} 5  ${C}Bots:${N} 3  ${C}Crons:${N} ${CRON_TOTAL}  ${C}Vercel:${N} 5"
 echo -e "${W}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${N}"
 
 # ── Launch Claude Code ──

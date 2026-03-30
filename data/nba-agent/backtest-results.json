@@ -1,170 +1,487 @@
 {
-  "strategy": "Walk-Forward Kelly (f=0.25) + Tree Ensemble — AUDITED & VERIFIED 2026-03-28",
-  "data_source": "Walk-forward on 934 games, 19 weeks, Kaggle GPU (P100) | TabICL + 5 tree models",
-  "platform": "Kaggle",
-  "audit_status": "VERIFIED — raw results were inflated by 3 compounding bugs. See audit_findings below.",
-  "audit_file": "data/nba-agent/verified-results.json",
-
-  "RAW_REPORTED_DO_NOT_USE": {
-    "current_bankroll": 4569.79,
-    "total_roi_pct": 4469.79,
-    "sharpe_ratio": 22.91,
-    "max_drawdown_pct": 1.97,
-    "avg_edge_pct": 89.18,
-    "flat_roi_pct": 902.0,
-    "note": "These numbers are ARTIFACTS. See audit_findings for root causes."
+  "strategy": "Quarter-Kelly (f=0.25) + Compounding \u2014 CORRECTED ODDS",
+  "data_source": "REAL predictions from nba_predictions table + ESPN actual results",
+  "initial_bankroll": 100.0,
+  "current_bankroll": 102.28,
+  "total_roi_pct": 2.28,
+  "total_bets": 27,
+  "wins": 11,
+  "losses": 16,
+  "win_rate": 40.74,
+  "sharpe_ratio": 1.8,
+  "max_drawdown_pct": 10.81,
+  "peak_bankroll": 110.43,
+  "avg_edge_pct": 165.79,
+  "avg_kelly_pct": 0,
+  "best_month": {
+    "month": "",
+    "roi_pct": 0
   },
-
-  "VERIFIED_METRICS": {
-    "initial_bankroll": 100.0,
-    "total_bets": 227,
-    "wins": 152,
-    "losses": 75,
-    "win_rate_pct": 66.96,
-    "win_rate_credible": true,
-    "note_win_rate": "67% on filtered picks (24% of 934 games) is plausible but must be validated against real closing lines.",
-
-    "brier_score": 0.22447,
-    "brier_credible": true,
-    "brier_range_weekly": {"best": 0.167, "worst": 0.301, "avg": 0.22447},
-
-    "sharpe_corrected": 10.4,
-    "sharpe_note": "Original 22.91 used sqrt(252) on WEEKLY data. Correct: sqrt(52). Even 10.4 is still inflated by the odds bug — real market Sharpe estimated 1-3.",
-
-    "max_drawdown_pct_reported": 1.97,
-    "max_drawdown_pct_estimated_true": 12.0,
-    "max_drawdown_note": "Reported DD uses weekly snapshots. Jan 9 intraday sequence shows ~10% drawdown within single week.",
-
-    "roi_with_real_market_odds": {
-      "at_minus120_avg_odds_pct": 13.1,
-      "at_minus110_avg_odds_pct": 27.5,
-      "at_plus120_avg_odds_pct": 69.1,
-      "note": "67% win rate profitability is HIGHLY sensitive to avg market odds. At -120 (typical NBA line), barely positive."
-    },
-
-    "flat_bet_5usd_realistic": {
-      "conservative_profit_usd": 74,
-      "realistic_profit_usd": 156,
-      "optimistic_profit_usd": 312,
-      "note": "227 bets * $5 * yield. Conservative=2% yield, Realistic=14%, Optimistic=27.5%."
-    }
+  "worst_month": {
+    "month": "",
+    "roi_pct": 0
   },
-
-  "audit_findings": [
-    {
-      "id": 1,
-      "severity": "CRITICAL",
-      "title": "Circular implied-odds: model probability used as market odds",
-      "impact": "Inflates ROI from ~27% to 4,470%",
-      "root_cause": "When real odds CSV key does not match, code falls back to: odds = 1/(prob * 1.05). The same model probability drives both the 'market odds' and the edge calculation. Result: bets on 73% probability teams at +575 (6.75 decimal) — impossible in any real sportsbook.",
-      "code_lines": "scripts/kaggle/nba_season_backtest.py lines 524-531",
-      "evidence": "Trades show edges of 102%, 314%, 396% — real sportsbooks cap effective edge at 3-8%.",
-      "fix": "Add: if not real_odds: continue (skip bet, no implied fallback)"
-    },
-    {
-      "id": 2,
-      "severity": "HIGH",
-      "title": "Sharpe annualization wrong: sqrt(252) applied to weekly returns",
-      "impact": "Inflates Sharpe by factor 2.20x (22.91 -> 10.4)",
-      "root_cause": "sqrt(252) is the correct annualization for DAILY returns. Weekly data requires sqrt(52).",
-      "code_lines": "scripts/kaggle/nba_season_backtest.py line 815",
-      "fix": "Change: sharpe = (avg_ret / std_ret) * (52 ** 0.5)"
-    },
-    {
-      "id": 3,
-      "severity": "MEDIUM",
-      "title": "Max drawdown computed from weekly snapshots only",
-      "impact": "Reports 1.97% when true intraday DD is ~10-15%",
-      "root_cause": "equity_curve records one point per 7-day window. Consecutive losses within a week are invisible.",
-      "evidence": "Jan 9 week: bankroll went 985 -> 960 -> 935 -> 910 -> 885 before recovering. ~10% intraday DD hidden.",
-      "fix": "Record bankroll after every single bet. Compute max_dd from full per-bet series."
-    },
-    {
-      "id": 4,
-      "severity": "MEDIUM",
-      "title": "ATS / O/U markets: zero bets despite claim of 100% real odds",
-      "impact": "Misses potentially strong edges in spread/total markets (research shows 5-8% ROI)",
-      "root_cause": "nba_2025-26_odds.csv lacks 'spread' and 'total' columns. ATS/O/U code silently skips.",
-      "fix": "Augment odds CSV via scrape_season_odds.py to include spread and total lines."
-    }
-  ],
-
-  "realistic_forward_estimate": {
-    "basis": "Brier 0.22447 vs market ~0.225 implies small but real edge. 67% win rate on filtered subset.",
-    "annual_bets": 250,
-    "at_2pct_yield": {"annual_profit_5usd_flat": 25, "kelly_growth_pct": 8},
-    "at_4pct_yield": {"annual_profit_5usd_flat": 50, "kelly_growth_pct": 18},
-    "at_6pct_yield": {"annual_profit_5usd_flat": 75, "kelly_growth_pct": 30},
-    "realistic_kelly_final_bankroll": {
-      "formula": "(1 + 0.025 * 0.04)^250 = 1.284",
-      "result_100_start": 128.4,
-      "note": "4% yield, 2.5% avg stake, 250 bets. Not $4,570."
-    },
-    "what_to_fix_first": [
-      "1. Remove implied-odds fallback — only bet with verified real market odds",
-      "2. Add CLV tracking — measure if we beat closing lines consistently",
-      "3. Add calibration analysis — do 70% picks win 70%?",
-      "4. Add spread/total data — ATS may be our best edge market"
-    ]
-  },
-
-  "what_is_real": [
-    "Brier 0.22447 on 19-week walk-forward — legitimate, no look-ahead bias",
-    "67% win rate on selected games — plausible, needs CLV validation",
-    "Weekly Brier range 0.167-0.301 — shows real model variance",
-    "Positive ROI direction — model genuinely outperforms random",
-    "Walk-forward methodology is sound"
-  ],
-
-  "what_is_inflated": [
-    "ROI 4,470% — circular odds artifact, real is ~14-27% with real odds",
-    "Flat ROI 902% — same bug",
-    "Sharpe 22.91 — 2.2x annualization error, corrected = 10.4",
-    "Max DD 1.97% — weekly snapshots, true is ~10-15%",
-    "Avg edge 89.18% — impossible, result of model-implied 'market' odds",
-    "real_odds_pct 100% — misleading, many bets used implied fallback"
-  ],
-
-  "monthly_pnl": [
-    { "month": "2025-10", "pnl": 30.77, "roi_pct": 30.77, "bets": 22, "wins": 14 },
-    { "month": "2025-11", "pnl": 281.16, "roi_pct": 215.0, "bets": 51, "wins": 40 },
-    { "month": "2025-12", "pnl": 484.77, "roi_pct": 117.69, "bets": 50, "wins": 28 },
-    { "month": "2026-01", "pnl": 1931.63, "roi_pct": 215.42, "bets": 65, "wins": 46 },
-    { "month": "2026-02", "pnl": 1833.16, "roi_pct": 64.81, "bets": 36, "wins": 23 },
-    { "month": "2026-03", "pnl": -91.68, "roi_pct": -1.97, "bets": 3, "wins": 1 }
-  ],
-  "monthly_pnl_note": "Monthly PnL figures inherit the circular-odds bug and should not be used for sizing decisions.",
-
   "equity_curve": [
-    { "date": "2025-10-22", "bankroll": 100.0, "drawdown": 0.0 },
-    { "date": "2025-10-28", "bankroll": 118.64, "drawdown": 0.0 },
-    { "date": "2025-11-04", "bankroll": 130.77, "drawdown": 0.0 },
-    { "date": "2025-11-11", "bankroll": 194.38, "drawdown": 0.0 },
-    { "date": "2025-11-18", "bankroll": 264.09, "drawdown": 0.0 },
-    { "date": "2025-11-25", "bankroll": 280.16, "drawdown": 0.0 },
-    { "date": "2025-12-03", "bankroll": 411.92, "drawdown": 0.0 },
-    { "date": "2025-12-10", "bankroll": 510.45, "drawdown": 0.0 },
-    { "date": "2025-12-17", "bankroll": 603.21, "drawdown": 0.0 },
-    { "date": "2025-12-25", "bankroll": 736.17, "drawdown": 0.0 },
-    { "date": "2026-01-01", "bankroll": 896.69, "drawdown": 0.0 },
-    { "date": "2026-01-08", "bankroll": 949.59, "drawdown": 0.0 },
-    { "date": "2026-01-15", "bankroll": 1268.39, "drawdown": 0.0 },
-    { "date": "2026-01-22", "bankroll": 1385.25, "drawdown": 0.0 },
-    { "date": "2026-01-29", "bankroll": 1894.52, "drawdown": 0.0 },
-    { "date": "2026-02-05", "bankroll": 2828.32, "drawdown": 0.0 },
-    { "date": "2026-02-12", "bankroll": 3234.27, "drawdown": 0.0 },
-    { "date": "2026-02-23", "bankroll": 4488.42, "drawdown": 0.0 },
-    { "date": "2026-03-02", "bankroll": 4661.47, "drawdown": 0.0 },
-    { "date": "2026-03-09", "bankroll": 4569.79, "drawdown": 1.97 }
+    {
+      "date": "2026-03-19",
+      "bankroll": 100.0,
+      "drawdown": 0
+    },
+    {
+      "date": "2026-03-21",
+      "bankroll": 106.63,
+      "drawdown": -6.63
+    },
+    {
+      "date": "2026-03-24",
+      "bankroll": 103.97,
+      "drawdown": 2.49
+    },
+    {
+      "date": "2026-03-25",
+      "bankroll": 103.92,
+      "drawdown": 2.54
+    },
+    {
+      "date": "2026-03-27",
+      "bankroll": 107.24,
+      "drawdown": -0.57
+    },
+    {
+      "date": "2026-03-28",
+      "bankroll": 106.02,
+      "drawdown": 1.14
+    },
+    {
+      "date": "2026-03-29",
+      "bankroll": 102.28,
+      "drawdown": 4.63
+    }
   ],
-  "equity_curve_note": "Curve reflects inflated circular-odds results. Direction (upward) is meaningful; absolute values are not.",
-
-  "real_odds_pct": 100.0,
-  "real_odds_pct_note": "MISLEADING — many bets used model-implied odds fallback despite CSV being loaded. Key matching failures caused fallback to circular odds.",
-  "season_start": "2025-10-22",
-  "last_updated": "2026-03-28T00:00:00",
-  "model_version": "v3.0-43cat / TabICL + Tree Ensemble / Brier 0.22447",
-  "brier_score": 0.22447,
-  "games_evaluated": 934,
-  "weeks": 19
+  "monthly_pnl": [],
+  "by_market": {
+    "moneyline": {
+      "bets": 27,
+      "wins": 11,
+      "roi_pct": 2.28
+    }
+  },
+  "by_model": {
+    "evolved_ensemble": {
+      "bets": 27,
+      "wins": 11,
+      "roi_pct": 2.28,
+      "avg_edge": 165.79
+    }
+  },
+  "daily_log": [
+    {
+      "date": "2026-03-21",
+      "bets": 4,
+      "wins": 2,
+      "losses": 2,
+      "pnl": 6.63,
+      "bankroll": 106.63
+    },
+    {
+      "date": "2026-03-24",
+      "bets": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.67,
+      "bankroll": 103.97
+    },
+    {
+      "date": "2026-03-25",
+      "bets": 8,
+      "wins": 4,
+      "losses": 4,
+      "pnl": -0.05,
+      "bankroll": 103.92
+    },
+    {
+      "date": "2026-03-27",
+      "bets": 6,
+      "wins": 3,
+      "losses": 3,
+      "pnl": 3.32,
+      "bankroll": 107.24
+    },
+    {
+      "date": "2026-03-28",
+      "bets": 3,
+      "wins": 1,
+      "losses": 2,
+      "pnl": -1.22,
+      "bankroll": 106.02
+    },
+    {
+      "date": "2026-03-29",
+      "bets": 5,
+      "wins": 1,
+      "losses": 4,
+      "pnl": -3.74,
+      "bankroll": 102.28
+    }
+  ],
+  "trades": [
+    {
+      "date": "2026-03-21",
+      "game": "CLE @ NOP",
+      "bet_side": "away",
+      "bet_team": "CLE",
+      "model_prob": 0.7416,
+      "odds": 1.51282,
+      "edge": 0.1219,
+      "stake": 2.5,
+      "won": true,
+      "pnl": 1.28,
+      "bankroll": 101.28
+    },
+    {
+      "date": "2026-03-21",
+      "game": "IND @ SAS",
+      "bet_side": "away",
+      "bet_team": "IND",
+      "model_prob": 0.6833,
+      "odds": 11.0,
+      "edge": 6.5163,
+      "stake": 2.53,
+      "won": false,
+      "pnl": -2.53,
+      "bankroll": 98.75
+    },
+    {
+      "date": "2026-03-21",
+      "game": "LAC @ DAL",
+      "bet_side": "home",
+      "bet_team": "DAL",
+      "model_prob": 0.6621,
+      "odds": 3.15,
+      "edge": 1.0856,
+      "stake": 2.47,
+      "won": false,
+      "pnl": -2.47,
+      "bankroll": 96.28
+    },
+    {
+      "date": "2026-03-21",
+      "game": "MIL @ PHX",
+      "bet_side": "away",
+      "bet_team": "MIL",
+      "model_prob": 0.5026,
+      "odds": 5.3,
+      "edge": 1.6638,
+      "stake": 2.41,
+      "won": true,
+      "pnl": 10.35,
+      "bankroll": 106.63
+    },
+    {
+      "date": "2026-03-24",
+      "game": "DEN @ PHX",
+      "bet_side": "home",
+      "bet_team": "PHX",
+      "model_prob": 0.5119,
+      "odds": 3.0,
+      "edge": 0.5357,
+      "stake": 2.67,
+      "won": false,
+      "pnl": -2.67,
+      "bankroll": 103.97
+    },
+    {
+      "date": "2026-03-25",
+      "game": "ATL @ DET",
+      "bet_side": "away",
+      "bet_team": "ATL",
+      "model_prob": 0.5666,
+      "odds": 2.15,
+      "edge": 0.2182,
+      "stake": 2.6,
+      "won": true,
+      "pnl": 2.99,
+      "bankroll": 106.95
+    },
+    {
+      "date": "2026-03-25",
+      "game": "OKC @ BOS",
+      "bet_side": "home",
+      "bet_team": "BOS",
+      "model_prob": 0.5448,
+      "odds": 2.3,
+      "edge": 0.253,
+      "stake": 2.67,
+      "won": true,
+      "pnl": 3.48,
+      "bankroll": 110.43
+    },
+    {
+      "date": "2026-03-25",
+      "game": "MIA @ CLE",
+      "bet_side": "home",
+      "bet_team": "CLE",
+      "model_prob": 0.7666,
+      "odds": 1.6452,
+      "edge": 0.2612,
+      "stake": 2.76,
+      "won": false,
+      "pnl": -2.76,
+      "bankroll": 107.67
+    },
+    {
+      "date": "2026-03-25",
+      "game": "SAS @ MEM",
+      "bet_side": "home",
+      "bet_team": "MEM",
+      "model_prob": 0.679,
+      "odds": 9.75,
+      "edge": 5.6203,
+      "stake": 2.69,
+      "won": false,
+      "pnl": -2.69,
+      "bankroll": 104.98
+    },
+    {
+      "date": "2026-03-25",
+      "game": "WAS @ UTA",
+      "bet_side": "home",
+      "bet_team": "UTA",
+      "model_prob": 0.7433,
+      "odds": 1.57143,
+      "edge": 0.168,
+      "stake": 2.62,
+      "won": false,
+      "pnl": -2.62,
+      "bankroll": 102.35
+    },
+    {
+      "date": "2026-03-25",
+      "game": "HOU @ MIN",
+      "bet_side": "home",
+      "bet_team": "MIN",
+      "model_prob": 0.7962,
+      "odds": 2.05,
+      "edge": 0.6322,
+      "stake": 2.56,
+      "won": true,
+      "pnl": 2.69,
+      "bankroll": 105.04
+    },
+    {
+      "date": "2026-03-25",
+      "game": "MIL @ POR",
+      "bet_side": "away",
+      "bet_team": "MIL",
+      "model_prob": 0.8164,
+      "odds": 6.0,
+      "edge": 3.8984,
+      "stake": 2.63,
+      "won": false,
+      "pnl": -2.63,
+      "bankroll": 102.41
+    },
+    {
+      "date": "2026-03-25",
+      "game": "TOR @ LAC",
+      "bet_side": "home",
+      "bet_team": "LAC",
+      "model_prob": 0.8034,
+      "odds": 1.58824,
+      "edge": 0.276,
+      "stake": 2.56,
+      "won": true,
+      "pnl": 1.51,
+      "bankroll": 103.92
+    },
+    {
+      "date": "2026-03-27",
+      "game": "LAC @ IND",
+      "bet_side": "home",
+      "bet_team": "IND",
+      "model_prob": 0.6258,
+      "odds": 4.15,
+      "edge": 1.5971,
+      "stake": 2.6,
+      "won": false,
+      "pnl": -2.6,
+      "bankroll": 101.32
+    },
+    {
+      "date": "2026-03-27",
+      "game": "ATL @ BOS",
+      "bet_side": "home",
+      "bet_team": "BOS",
+      "model_prob": 0.86,
+      "odds": 1.44444,
+      "edge": 0.2422,
+      "stake": 2.53,
+      "won": true,
+      "pnl": 1.13,
+      "bankroll": 102.45
+    },
+    {
+      "date": "2026-03-27",
+      "game": "MIA @ CLE",
+      "bet_side": "home",
+      "bet_team": "CLE",
+      "model_prob": 0.7804,
+      "odds": 1.45455,
+      "edge": 0.1351,
+      "stake": 2.56,
+      "won": true,
+      "pnl": 1.16,
+      "bankroll": 103.61
+    },
+    {
+      "date": "2026-03-27",
+      "game": "HOU @ MEM",
+      "bet_side": "home",
+      "bet_team": "MEM",
+      "model_prob": 0.6068,
+      "odds": 7.25,
+      "edge": 3.3993,
+      "stake": 2.59,
+      "won": false,
+      "pnl": -2.59,
+      "bankroll": 101.02
+    },
+    {
+      "date": "2026-03-27",
+      "game": "NOP @ TOR",
+      "bet_side": "away",
+      "bet_team": "NOP",
+      "model_prob": 0.5433,
+      "odds": 3.75,
+      "edge": 1.0374,
+      "stake": 2.53,
+      "won": false,
+      "pnl": -2.53,
+      "bankroll": 98.5
+    },
+    {
+      "date": "2026-03-27",
+      "game": "DAL @ POR",
+      "bet_side": "away",
+      "bet_team": "DAL",
+      "model_prob": 0.8171,
+      "odds": 4.55,
+      "edge": 2.7178,
+      "stake": 2.46,
+      "won": true,
+      "pnl": 8.74,
+      "bankroll": 107.24
+    },
+    {
+      "date": "2026-03-28",
+      "game": "SAS @ MIL",
+      "bet_side": "home",
+      "bet_team": "MIL",
+      "model_prob": 0.6834,
+      "odds": 11.0,
+      "edge": 6.5174,
+      "stake": 2.68,
+      "won": false,
+      "pnl": -2.68,
+      "bankroll": 104.56
+    },
+    {
+      "date": "2026-03-28",
+      "game": "DET @ MIN",
+      "bet_side": "home",
+      "bet_team": "MIN",
+      "model_prob": 0.6967,
+      "odds": 2.0,
+      "edge": 0.3934,
+      "stake": 2.61,
+      "won": false,
+      "pnl": -2.61,
+      "bankroll": 101.94
+    },
+    {
+      "date": "2026-03-28",
+      "game": "CHI @ MEM",
+      "bet_side": "home",
+      "bet_team": "MEM",
+      "model_prob": 0.5976,
+      "odds": 2.6,
+      "edge": 0.5538,
+      "stake": 2.55,
+      "won": true,
+      "pnl": 4.08,
+      "bankroll": 106.02
+    },
+    {
+      "date": "2026-03-29",
+      "game": "LAC @ MIL",
+      "bet_side": "home",
+      "bet_team": "MIL",
+      "model_prob": 0.674,
+      "odds": 7.5,
+      "edge": 4.055,
+      "stake": 2.65,
+      "won": false,
+      "pnl": -2.65,
+      "bankroll": 103.37
+    },
+    {
+      "date": "2026-03-29",
+      "game": "MIA @ IND",
+      "bet_side": "home",
+      "bet_team": "IND",
+      "model_prob": 0.6348,
+      "odds": 3.7,
+      "edge": 1.3488,
+      "stake": 2.58,
+      "won": true,
+      "pnl": 6.98,
+      "bankroll": 110.35
+    },
+    {
+      "date": "2026-03-29",
+      "game": "SAC @ BKN",
+      "bet_side": "away",
+      "bet_team": "SAC",
+      "model_prob": 0.6217,
+      "odds": 2.05,
+      "edge": 0.2745,
+      "stake": 2.76,
+      "won": false,
+      "pnl": -2.76,
+      "bankroll": 107.59
+    },
+    {
+      "date": "2026-03-29",
+      "game": "ORL @ TOR",
+      "bet_side": "away",
+      "bet_team": "ORL",
+      "model_prob": 0.7125,
+      "odds": 2.0,
+      "edge": 0.425,
+      "stake": 2.69,
+      "won": false,
+      "pnl": -2.69,
+      "bankroll": 104.9
+    },
+    {
+      "date": "2026-03-29",
+      "game": "HOU @ NOP",
+      "bet_side": "home",
+      "bet_team": "NOP",
+      "model_prob": 0.6051,
+      "odds": 3.0,
+      "edge": 0.8153,
+      "stake": 2.62,
+      "won": false,
+      "pnl": -2.62,
+      "bankroll": 102.28
+    }
+  ],
+  "season_start": "2026-03-19",
+  "last_updated": "2026-03-30T10:00:55.514987",
+  "model_version": "v3.0-37cat / TabICL+Trees / Brier 0.21570",
+  "brier_score": 0.2157,
+  "predictions_evaluated": 27,
+  "predictions_total": 52,
+  "games_matched": 52
 }
