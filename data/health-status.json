@@ -1,9 +1,8 @@
 {
-  "updated_at": "2026-03-30T16:30:00Z",
-  "brain_cycle": 10,
-  "brain_model": "claude-sonnet-4-6",
-  "cycle_summary": "NBA fleet healthy (best Brier 0.22006 S14, all stagnation=0, LR already in CPU_MODEL_TYPES). Political CRITICAL: Brier=0.3 feature_candidates=2 — ROOT CAUSE FIXED: autonomous-cycle.sh now has Phase 5 (political deploy). VM next :30 run will auto-deploy 7 patches. S15 SSL cert error (likely cert timing). PA2 stagnation=17 noted. NBA research: ELO features are #1 SHAP feature per MDPI 2026 — verify in engine.py, add if missing.",
-
+  "updated_at": "2026-03-30T14:30:00Z",
+  "brain_cycle": 9,
+  "brain_model": "claude-opus-4-6",
+  "cycle_summary": "FULL OPTIMIZATION CYCLE. All 6 NBA islands EVOLVING, 0 stagnation. S14 leads at 0.22006 (gen 869). Supabase pooler DEAD on S10-S13 (only S14/S15 logging). S15 has 200-feat bloat. S12 lagging at 0.22889. extra_trees monoculture on 3/6 islands. Bankroll $102.28 (+2.28% ROI, 11W-16L). Political still CRITICAL (Brier=0.3).",
   "nba_fleet": {
     "best_brier_overall": 0.22006,
     "best_island": "S14",
@@ -12,30 +11,31 @@
     "target": 0.20,
     "checkpoint_threshold": 0.21837,
     "checkpoint_triggered": false,
-    "engine_parity": "OK — all islands feature_candidates=3267",
+    "supabase_issue": "FATAL: Tenant or user not found on primary (ayqviq). Using pooler (xivvnr) or local JSON.",
     "islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "generation": 478,
-        "cycle": 160,
+        "generation": 425,
+        "cycle": 142,
         "best_brier": 0.22215,
         "best_roi": 0.3025,
         "best_sharpe": 6.7902,
         "best_features": 61,
         "model": "extra_trees",
         "stagnation": 0,
-        "mutation_rate": 0.05,
+        "mutation_rate": 0.0543,
         "population": 60,
         "status": "EVOLVING",
         "games_evaluated": 9551,
-        "feature_candidates": 3267
+        "feature_candidates": 3267,
+        "supabase": "FAIL"
       },
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "generation": 892,
-        "cycle": 298,
+        "generation": 824,
+        "cycle": 275,
         "best_brier": 0.22321,
         "best_roi": 0.287,
         "best_sharpe": 8.2406,
@@ -46,13 +46,14 @@
         "population": 60,
         "status": "EVOLVING",
         "games_evaluated": 9551,
-        "feature_candidates": 3267
+        "feature_candidates": 3267,
+        "supabase": "FAIL"
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
-        "generation": 886,
-        "cycle": 296,
+        "generation": 825,
+        "cycle": 275,
         "best_brier": 0.22889,
         "best_roi": 0.226,
         "best_sharpe": 4.6871,
@@ -63,30 +64,33 @@
         "population": 60,
         "status": "EVOLVING",
         "games_evaluated": 9551,
-        "feature_candidates": 3267
+        "feature_candidates": 3267,
+        "supabase": "FAIL",
+        "note": "LAGGING. Worst Brier in fleet. Low mutation (0.04) may be stuck in local optimum."
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
-        "generation": 471,
-        "cycle": 157,
+        "generation": 426,
+        "cycle": 142,
         "best_brier": 0.22368,
         "best_roi": 0.284,
         "best_sharpe": 4.7821,
         "best_features": 68,
         "model": "lightgbm",
         "stagnation": 0,
-        "mutation_rate": 0.0838,
+        "mutation_rate": 0.0917,
         "population": 60,
         "status": "EVOLVING",
         "games_evaluated": 9551,
-        "feature_candidates": 3267
+        "feature_candidates": 3267,
+        "supabase": "FAIL"
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
-        "generation": 976,
-        "cycle": 326,
+        "generation": 869,
+        "cycle": 290,
         "best_brier": 0.22006,
         "best_roi": 0.3255,
         "best_sharpe": 8.4295,
@@ -98,102 +102,66 @@
         "status": "EVOLVING",
         "games_evaluated": 9551,
         "feature_candidates": 3267,
-        "note": "FLEET LEADER. Pareto: Brier=0.2201 ROI=32.55% Sharpe=8.43. Venn-Abers calibration active."
+        "supabase": "OK",
+        "note": "FLEET LEADER. Migration active (3 individuals/cycle). Pareto front healthy."
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "generation": null,
-        "cycle": null,
-        "best_brier": null,
-        "status": "SSL_CERT_ERROR",
-        "note": "certificate not yet valid — likely cert timing issue, self-resolves"
+        "generation": 1728,
+        "cycle": 576,
+        "best_brier": 0.22112,
+        "best_roi": 0.3136,
+        "best_sharpe": 7.8512,
+        "best_features": 99,
+        "model": "extra_trees",
+        "stagnation": 0,
+        "mutation_rate": 0.08,
+        "population": 50,
+        "status": "EVOLVING",
+        "games_evaluated": 9551,
+        "feature_candidates": 3267,
+        "supabase": "OK",
+        "note": "200-feat individuals in population (cap hit). High gen count but best only 0.22112."
       }
     }
   },
-
-  "political_fleet": {
-    "status": "CRITICAL",
-    "root_cause_identified": true,
-    "root_cause": "autonomous-cycle.sh had no political alpha section — patches never deployed. FIXED in brain cycle 10.",
-    "fix_deployed": "autonomous-cycle.sh Phase 5 added — VM will auto-deploy on next :30 run",
-    "expected_resolution": "Next VM cycle at :30 UTC will download full app.py from HF, apply 7 patches, push to all 4 HF spaces",
-    "islands": {
-      "PA1": {
-        "url": "nomos42-political-alpha.hf.space",
-        "role": "exploitation",
-        "generation": 96461,
-        "cycle": 32154,
-        "best_brier": 0.3,
-        "stagnation": 9,
-        "feature_candidates": 2,
-        "status": "EVOLVING"
-      },
-      "PA2": {
-        "url": "nomos42-political-alpha-2.hf.space",
-        "role": "exploration",
-        "generation": 95088,
-        "cycle": 31696,
-        "best_brier": 0.3,
-        "stagnation": 17,
-        "feature_candidates": 2,
-        "status": "SAVING",
-        "action": "diversify needed (stagnation=17 > 15 threshold) — autonomous-cycle.sh Phase 5 will send it"
-      },
-      "PA3": {
-        "url": "nomos42-political-alpha-3.hf.space",
-        "role": "catboost_specialist",
-        "generation": 94871,
-        "cycle": 31624,
-        "best_brier": 0.3,
-        "stagnation": 10,
-        "feature_candidates": 2,
-        "status": "EVOLVING"
-      },
-      "PA4": {
-        "url": "nomos42-political-alpha-4.hf.space",
-        "role": "wide_search",
-        "generation": 11081,
-        "cycle": 3694,
-        "best_brier": 0.3,
-        "stagnation": 10,
-        "feature_candidates": 2,
-        "status": "EVOLVING"
-      }
-    }
-  },
-
   "actions_taken": [
     {
-      "action": "autonomous-cycle.sh Phase 5 added",
-      "file": "mon-ipad/scripts/autonomous-cycle.sh",
-      "detail": "Adds political alpha deploy: (1) downloads full app.py from HF if stub detected, (2) runs apply_patches.py to apply 7 fixes, (3) pushes to HF remotes hf/hf2/hf3/hf4, (4) sends diversify to stagnant islands (>15)",
-      "impact": "Resolves 3-cycle blocking issue. Will deploy automatically on VM next :30 run."
+      "action": "diversify queued",
+      "targets": ["PA1", "PA2", "PA3"],
+      "reason": "stagnation >15 (PA1:26, PA2:21, PA3:26)",
+      "status": "queued via POST /api/command {command:diversify}"
     },
     {
-      "action": "NBA research: ELO features proposal written",
-      "file": "mon-ipad/data/research-proposals/nba-elo-features-cycle10-2026-03-30.json",
-      "detail": "MDPI 2026: team_elo, elo_5y, home_next are top-3 SHAP features. Adding ELO category to engine.py estimated 0.003-0.008 Brier improvement. LR already in CPU_MODEL_TYPES (good).",
-      "impact": "If ELO not in engine.py, adding it could push S14 from 0.22006 toward 0.21 target."
+      "action": "NBA research proposal written",
+      "file": "data/research-proposals/nba-lr-shot-mandatory-2026-03-30.json",
+      "finding": "LR + mandatory shot-quality features achieves Brier 0.199 (MDPI 2026). Propose adding logistic_regression model type to S10 with Cat42 shot_quality minimum 10 features."
+    },
+    {
+      "action": "Political FEC/SEC data sources proposal written",
+      "file": "data/research-proposals/political-fec-sec-sources-2026-03-30.json",
+      "sources": ["api.open.fec.gov", "EDGAR Form 4", "federalregister.gov EOs"],
+      "expected_impact": "Unlock Cat1/Cat2/Cat6 features currently starved of data"
     }
   ],
-
   "blocking_issues": [
     {
-      "issue": "S15 SSL certificate error",
-      "severity": "LOW",
-      "fix": "Self-resolves when cert becomes valid. Monitor next cycle."
+      "issue": "Political 5-patch fix not deployed to HF spaces",
+      "severity": "CRITICAL",
+      "fix_location": "nomos-political-alpha/hf-space/apply_patches.py",
+      "deploy_command": "cd nomos-political-alpha && python3 hf-space/apply_patches.py && git add hf-space/app.py && git commit -m 'fix: apply 5 fallback patches' && git push hf main",
+      "impact": "PA1-PA3 will remain at Brier=0.3 (0 useful features) until fix is deployed"
     },
     {
-      "issue": "Political 7-patch fix not yet confirmed deployed",
+      "issue": "Supabase FATAL: Tenant or user not found on primary connection",
       "severity": "HIGH",
-      "fix": "autonomous-cycle.sh Phase 5 will deploy on next VM run. Confirm by checking PA1 feature_candidates > 20 next cycle."
+      "fix": "Use pooler connection string (xivvnr). NBA islands saving to local JSON only."
     }
   ],
-
-  "next_cycle_actions": {
-    "nba": "Check S15 SSL cert resolved. Verify ELO features exist in engine.py (grep for 'elo'). If missing, write the ELO category addition proposal for Kaggle implementation.",
-    "political": "VERIFY PA1-PA4 feature_candidates > 20 (confirms 7-patch fix deployed). Check best_brier improving from 0.3. If still 0.3 after next cycle, escalate.",
-    "research_rotation": "Rotation D: Port NBA CalibratedClassifierCV (isotonic) to political_engine.py — improve calibration quality"
+  "next_cycle_rotation": {
+    "nba": "Inject LR model type into S10 exploitation island (nba-lr-shot-mandatory proposal)",
+    "political": "Rotation B: Review political_engine.py + add FEC/EDGAR features to fetch_political_data.py",
+    "priority_1": "Verify 5-patch fix deployed and PA1-PA3 feature_candidates > 10"
   }
 }
