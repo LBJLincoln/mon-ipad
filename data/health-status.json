@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-03-30T00:21:00Z",
+  "updated_at": "2026-03-30T08:00:00Z",
   "brain_cycle": "4h-auto",
-  "cycle_notes": "All 6 islands healthy, stagnation=0 across fleet. Best Brier=0.22006 (S14). ATR threshold=0.21837 not yet breached. Supabase connection errors persistent but non-blocking.",
+  "cycle_notes": "All 6 islands healthy, stagnation=0 fleet-wide. Best Brier=0.22006 (S14). ATR threshold=0.21837 not yet breached. S15 touched 0.21846 at gen 1247 — keep monitoring. Supabase connection errors persistent but non-blocking. Political 5-patch fix pushed to nomos-political-alpha to resolve PA1-PA3 0-feature crisis.",
   "nba_fleet": {
     "best_brier_overall": 0.22006,
     "best_island": "S14",
@@ -11,15 +11,15 @@
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "generation": 299,
-        "cycle": 100,
+        "generation": 335,
+        "cycle": 112,
         "best_brier": 0.22215,
         "best_roi": 0.3025,
         "best_sharpe": 6.7902,
         "features": 61,
         "model": "extra_trees",
         "stagnation": 0,
-        "mutation_rate": 0.0699,
+        "mutation_rate": 0.0652,
         "population": 60,
         "status": "EVOLVING",
         "action_taken": null
@@ -27,8 +27,8 @@
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "generation": 628,
-        "cycle": 210,
+        "generation": 699,
+        "cycle": 233,
         "best_brier": 0.22321,
         "best_roi": 0.287,
         "best_sharpe": 8.2406,
@@ -43,8 +43,8 @@
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
-        "generation": 656,
-        "cycle": 219,
+        "generation": 724,
+        "cycle": 242,
         "best_brier": 0.22889,
         "best_roi": 0.226,
         "best_sharpe": 4.6871,
@@ -59,15 +59,15 @@
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
-        "generation": 320,
-        "cycle": 107,
+        "generation": 352,
+        "cycle": 118,
         "best_brier": 0.22368,
         "best_roi": 0.284,
         "best_sharpe": 4.7821,
         "features": 68,
         "model": "lightgbm",
         "stagnation": 0,
-        "mutation_rate": 0.1131,
+        "mutation_rate": 0.1061,
         "population": 60,
         "status": "EVOLVING",
         "action_taken": null
@@ -75,8 +75,8 @@
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
-        "generation": 645,
-        "cycle": 215,
+        "generation": 721,
+        "cycle": 241,
         "best_brier": 0.22006,
         "best_roi": 0.3255,
         "best_sharpe": 8.4295,
@@ -87,13 +87,13 @@
         "population": 60,
         "status": "EVOLVING",
         "action_taken": null,
-        "note": "FLEET LEADER — top performer: Brier=0.2276, Sharpe=21.51 at 40 feats"
+        "note": "FLEET LEADER"
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "generation": 1249,
-        "cycle": 417,
+        "generation": 1415,
+        "cycle": 472,
         "best_brier": 0.22112,
         "best_roi": 0.3136,
         "best_sharpe": 7.8512,
@@ -104,7 +104,7 @@
         "population": 50,
         "status": "EVOLVING",
         "action_taken": null,
-        "note": "Top performer touched 0.21846 at gen 1247 — very close to ATR threshold"
+        "note": "Touched 0.21846 at gen 1247 — very close to ATR threshold 0.21837"
       }
     }
   },
@@ -112,5 +112,11 @@
   "engine_version": "v3.0-43cat",
   "feature_candidates": 3267,
   "cached_games": 7067,
-  "seasons_cached": "2018-19 through 2025-26"
+  "seasons_cached": "2018-19 through 2025-26",
+  "research_proposals_count": 16,
+  "latest_proposal": "player-level-bpm-pie-raptor-2026-03-30.json",
+  "cross_project_actions": {
+    "political_fix_pushed": "2026-03-30T08:00:00Z",
+    "fix_description": "5 patches to resolve PA1-PA3 0-feature crisis. FIX2 (OHLCV prices) + FIX3 (insider field) + FIX4 (polymarket field) + FIX5 (bootstrap call). VM must run scripts/deploy_political_fix.sh"
+  }
 }
