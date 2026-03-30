@@ -1,6 +1,6 @@
-# Message Telegram pour Pierre — Installation Acer Aspire 3
+# Message Telegram pour Pierre — Installation MacBook Air 2016
 
-> A copier-coller tel quel dans Telegram. En français. 3 actions max par étape.
+> A copier-coller tel quel dans Telegram. En francais. 3 actions max par etape.
 
 ---
 
@@ -8,79 +8,103 @@
 
 ---
 
-Salut Pierre ! Voici les 3 étapes pour connecter ton Acer au système. Ça prend environ 15 minutes. Suis les étapes dans l'ordre.
+Salut Pierre ! Voici les 3 etapes pour installer Claude Code Desktop sur ton MacBook Air. Ca prend environ 10 minutes. Suis les etapes dans l'ordre.
 
 ---
 
-**ETAPE 1 sur 3 — Installer WSL2 (Linux sur Windows)**
+**ETAPE 1 sur 3 — Installer les outils de base**
 
-Ouvre PowerShell EN TANT QU'ADMINISTRATEUR :
-- Clique sur le menu Démarrer
-- Tape "PowerShell"
-- Fais clic droit → "Exécuter en tant qu'administrateur"
-
-Puis copie-colle cette commande et appuie sur Entrée :
+Ouvre le Terminal (Applications > Utilitaires > Terminal) et copie-colle cette commande :
 
 ```
-wsl --install -d Ubuntu
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-➜ Ton PC va redémarrer automatiquement. C'est normal.
-➜ Après le redémarrage, Ubuntu s'ouvre et te demande un nom d'utilisateur + mot de passe. Mets ce que tu veux (note-les quelque part).
+Quand c'est fini, copie-colle :
+
+```
+brew install git python3 node && pip3 install nba_api pandas numpy requests && ssh-keygen -t ed25519 -f ~/.ssh/nomos_fleet -N "" && cat ~/.ssh/nomos_fleet.pub
+```
+
+Envoie-moi la ligne ssh-ed25519 AAAA... qui s'affiche a la fin — c'est ta cle SSH publique (pas un mot de passe).
 
 ---
 
-**ETAPE 2 sur 3 — Installer tous les outils (1 seule commande)**
+**ETAPE 2 sur 3 — Installer Claude Code Desktop + Chrome extension**
 
-Dans la fenêtre Ubuntu qui vient de s'ouvrir, copie-colle cette commande (c'est long, prends tout) :
+1. Telecharge Claude Code Desktop :
+   - Va sur https://claude.ai/download
+   - Telecharge la version macOS
+   - Ouvre le .dmg et deplace Claude dans Applications
 
-```
-sudo apt update && sudo apt upgrade -y && sudo apt install -y git python3-pip python3-venv curl wget build-essential && pip3 install nba_api pandas numpy requests && ssh-keygen -t ed25519 -f ~/.ssh/nomos_fleet -N "" && cat ~/.ssh/nomos_fleet.pub
-```
+2. Installe l'extension Chrome :
+   - Ouvre Chrome
+   - Va sur le Chrome Web Store
+   - Cherche "Claude in Chrome" par Anthropic
+   - Clique "Ajouter a Chrome"
 
-➜ Ça va prendre 3-5 minutes.
-➜ A la fin, tu vas voir une longue ligne commençant par "ssh-ed25519 AAAA...". Envoie-moi cette ligne par Telegram — c'est ta clé SSH, pas un mot de passe, c'est public.
+3. Ouvre Claude Desktop, connecte-toi avec le compte que je t'envoie par message prive.
 
 ---
 
-**ETAPE 3 sur 3 — Connecter au serveur + tester**
+**ETAPE 3 sur 3 — Cloner le workspace + tester**
 
-Attends que je t'ajoute (je reçois ta clé SSH et je l'installe en 2 minutes). Puis lance :
+Attends que je t'ajoute (je recois ta cle SSH et je l'installe en 2 minutes). Puis dans le Terminal :
+
+```
+git clone git@github.com:LBJLincoln/nomos-pierre.git
+cd nomos-pierre
+```
+
+Puis teste la connexion au serveur :
 
 ```
 ssh -i ~/.ssh/nomos_fleet termius@34.136.180.66 "echo 'Pierre connecte OK depuis '$(hostname)"
 ```
 
-➜ Si tu vois "Pierre connecte OK depuis..." — c'est bon, tout fonctionne !
-➜ Ensuite lance le script de vérification complet :
+Si tu vois "Pierre connecte OK depuis..." — tout fonctionne !
+
+Puis lance le check complet :
 
 ```
-bash <(curl -s https://raw.githubusercontent.com/LBJLincoln/mon-ipad/main/scripts/fleet/pierre-health-check.sh)
+bash scripts/pierre-health-check.sh
 ```
 
 ---
 
-**SI CA NE MARCHE PAS — Dépannage**
+**ETAPE BONUS — Activer le dispatch (pour que je puisse utiliser ton navigateur)**
 
-Problème : "wsl n'est pas reconnu"
-→ Solution : ton Windows est trop vieux. Fais Windows Update d'abord, puis réessaie l'étape 1.
+Dans Claude Desktop, va dans Settings > Extensions et verifie que "Claude in Chrome" est active.
 
-Problème : Ubuntu te demande un mot de passe UNIX
-→ Solution : invente-en un (il ne s'affiche pas quand tu tapes, c'est normal). Retiens-le.
+Ensuite dans le Terminal :
 
-Problème : "Permission denied" à l'étape 3
-→ Solution : envoie-moi ta clé SSH (la ligne ssh-ed25519) — je ne l'ai pas encore installée.
+```
+cd ~/nomos-pierre
+claude
+```
 
-Problème : La commande de l'étape 2 s'arrête avec une erreur rouge
-→ Solution : envoie-moi une capture d'écran de l'erreur.
-
-Problème : "ssh: connect to host 34.136.180.66 port 22: Connection refused"
-→ Solution : attends 5 minutes et réessaie. Le serveur est peut-être en train de redémarrer.
+Ca lance Claude Code en CLI. Tu peux le laisser tourner en fond — je pourrai t'envoyer des taches qui s'executent automatiquement sur ton Mac (scraping ESPN, DraftKings, etc. via ton Chrome).
 
 ---
 
-Une fois les 3 étapes faites, ton Acer tourne automatiquement comme noeud de collecte de données pour le système NBA. Tu n'as plus rien à faire.
+**SI CA NE MARCHE PAS — Depannage**
+
+Probleme : "brew: command not found"
+Solution : Ferme et rouvre le Terminal, puis refais la commande brew.
+
+Probleme : Le .dmg ne s'ouvre pas
+Solution : Va dans Preferences Systeme > Securite, et autorise l'app.
+
+Probleme : "Permission denied" au SSH
+Solution : Envoie-moi ta cle SSH (la ligne ssh-ed25519) — je ne l'ai pas encore installee.
+
+Probleme : Claude Desktop demande un code
+Solution : Contacte-moi, je t'envoie les identifiants.
 
 ---
 
-*Nomos42 Fleet — Data Node setup | 2026-03-28*
+Une fois les 3 etapes faites, ton MacBook fait partie du reseau Nomos42. Claude Desktop + Chrome = je peux dispatcher des taches de scraping sur ton navigateur, et tu peux lancer les agents de recherche toi-meme.
+
+---
+
+*Nomos42 Fleet — Browser Node setup | 2026-03-30*

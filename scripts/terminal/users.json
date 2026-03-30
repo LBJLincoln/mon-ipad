@@ -2,12 +2,28 @@
   "users": {
     "pierre": {
       "name": "Pierre",
-      "role": "data-ingestion",
-      "machine": "acer-aspire-3",
+      "role": "research-browser-dispatch",
+      "machine": "macbook-air-2016",
+      "machine_specs": "Intel i5, 8GB RAM, Intel HD 6000, macOS",
       "access_level": "operator",
       "terminal_token": "PIR@26forge",
       "created": "2026-03-28",
-      "status": "pending-setup"
+      "status": "pending-setup",
+      "capabilities": ["claude-desktop", "chrome-extension", "browser-dispatch", "cpu-tasks"],
+      "dispatch": true
+    },
+    "aurelien": {
+      "name": "Aurelien",
+      "role": "data-ingestion",
+      "relation": "brother",
+      "machine": "acer-aspire-3",
+      "machine_specs": "Intel dual/quad, 8GB RAM, Windows 11 + WSL2",
+      "access_level": "operator",
+      "terminal_token": "AUR@26forge",
+      "created": "2026-03-30",
+      "status": "pending-setup",
+      "capabilities": ["wsl2", "data-fetch", "nba-api", "git-sync"],
+      "dispatch": false
     },
     "alexis": {
       "name": "Alexis",
@@ -16,7 +32,9 @@
       "access_level": "admin",
       "terminal_token": "QLF@26abe",
       "created": "2026-03-25",
-      "status": "active"
+      "status": "active",
+      "capabilities": ["full"],
+      "dispatch": false
     }
   }
 }

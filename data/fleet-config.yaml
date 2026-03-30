@@ -31,80 +31,67 @@ fleet:
     ssh_user: "termius"
     monitor_locally: true
 
-  secondary_1:
-    name: "MacBook Air #1"
-    id: "mba-1"
-    role: "Research & Feature Engineering"
+  pierre:
+    name: "Pierre — MacBook Air 2016"
+    id: "mba-pierre"
+    user: "Pierre"
+    role: "Prototype User + Browser Dispatch"
     specs:
       cpu: "Intel Core i5 (2 cores)"
       ram: "8 GB"
       disk: "128-256 GB SSD"
-      os: "macOS (latest supported)"
-      gpu: "Intel HD Graphics 6000 (no CUDA, no useful MPS)"
+      os: "macOS"
+      gpu: "Intel HD Graphics 6000 (no CUDA)"
     runs:
-      - "Claude Desktop / Claude Code CLI (research agents)"
-      - "Feature engineering proposals (cron every 6h)"
-      - "repo-scout agent (cron every 12h)"
-      - "Git sync (pull/push cycle every 30min)"
-      - "Lightweight data analysis (pandas, no ML training)"
-    crons:
-      - schedule: "0 */6 * * *"
-        script: "scripts/fleet/feature-proposals.sh"
-        description: "Generate feature engineering proposals via Claude"
-      - schedule: "0 */12 * * *"
-        script: "scripts/fleet/repo-scout.sh"
-        description: "Scan repos/papers for NBA prediction improvements"
-      - schedule: "*/30 * * * *"
-        script: "scripts/fleet/git-sync.sh"
-        description: "Pull latest, push local changes"
+      - "Claude Code Desktop + Chrome extension (browser dispatch)"
+      - "22-agent swarm access via CLI"
+      - "Product testing (dashboard, @Forge42Bot, nomos-picks)"
+      - "Git sync (auto-push on session end)"
+      - "Background CPU tasks (data analysis, light inference)"
+    monitoring_agents:
+      - id: 23
+        name: "pierre-usage-monitor"
+        purpose: "Track CLI quota consumption (daily/weekly)"
+      - id: 24
+        name: "pierre-practice-monitor"
+        purpose: "Analyze usage patterns, suggest optimizations"
+      - id: 25
+        name: "pierre-infra-monitor"
+        purpose: "Track RAM/CPU, determine offloadable compute"
+    dispatch:
+      enabled: true
+      capabilities: ["browser-scraping", "espn", "draftkings", "odds-sites"]
+      via: "git task files + Claude Desktop auto-pickup"
+    business_model_test:
+      purpose: "Validate SaaS pricing ($19/$49/$149)"
+      metrics: ["time_to_productive", "agents_used", "daily_return_rate", "would_pay"]
+    setup: "docs/PIERRE-INSTALL-MESSAGE.md"
     setup_required: true
-    ssh_user: "TBD"
-    ssh_port: 22
+    ssh_user: "pierre"
 
-  secondary_2:
-    name: "MacBook Air #2"
-    id: "mba-2"
-    role: "Strategy & Backtesting Analysis"
-    specs:
-      cpu: "Intel Core i5 (2 cores)"
-      ram: "8 GB"
-      disk: "128-256 GB SSD"
-      os: "macOS (latest supported)"
-      gpu: "Intel HD Graphics 6000 (no CUDA, no useful MPS)"
-    runs:
-      - "Claude Desktop / Claude Code CLI (strategy research)"
-      - "Backtest verification and analysis scripts"
-      - "Data analysis notebooks (Jupyter)"
-      - "Git sync (pull/push cycle every 30min)"
-      - "Dashboard development/testing (Next.js dev server)"
-    crons:
-      - schedule: "*/30 * * * *"
-        script: "scripts/fleet/git-sync.sh"
-        description: "Pull latest, push local changes"
-      - schedule: "0 8 * * *"
-        script: "scripts/fleet/daily-analysis.sh"
-        description: "Run daily data analysis and reports"
-    setup_required: true
-    ssh_user: "TBD"
-    ssh_port: 22
-
-  tertiary:
-    name: "Acer Aspire 3"
-    id: "acer-a3"
-    role: "Data Ingestion & Sync"
+  aurelien:
+    name: "Aurelien — Acer Aspire 3"
+    id: "acer-aurelien"
+    user: "Aurelien (brother)"
+    role: "Pure Compute Node (CPU/GPU training)"
     specs:
       cpu: "Intel (dual/quad core)"
       ram: "~8 GB"
       disk: "~256 GB HDD/SSD"
-      os: "Windows 11 + WSL2 (Ubuntu) OR native Linux"
-      gpu: "Intel HD (no CUDA)"
+      os: "Windows 11 + WSL2 (Ubuntu)"
+      gpu: "Intel HD (CPU-only training)"
     runs:
-      - "Data pulling jobs (hourly): odds, injuries, tracking stats"
-      - "Telegram relay backup (if VM goes down)"
-      - "Log aggregation from all machines"
-      - "Git sync (pull/push cycle every 30min)"
-      - "nba_api data fetching (not blocked on non-cloud IPs)"
+      - "ML model training (scikit-learn, XGBoost, LightGBM, CatBoost)"
+      - "Data fetching (nba_api, odds, injuries)"
+      - "Karpathy loop iterations (CPU, overnight)"
+      - "Feature engineering compute"
+      - "Git sync (auto, every 30min)"
+    note: "Aurelien does NOT use Claude Code CLI. Machine runs headlessly via SSH from VM."
+    saves: "~$50/month in Kaggle/Colab GPU costs"
     crons:
+      - schedule: "0 22-6 * * *"
+        script: "scripts/fleet/train-models.sh"
+        description: "Overnight model training (extra_trees, XGBoost, LightGBM)"
       - schedule: "0 * * * *"
         script: "scripts/fleet/data-pull.sh"
         description: "Fetch latest odds, injuries, player tracking data"
@@ -112,11 +99,11 @@ fleet:
         script: "scripts/fleet/git-sync.sh"
         description: "Pull latest, push local changes"
       - schedule: "0 */4 * * *"
-        script: "scripts/fleet/log-aggregate.sh"
-        description: "Pull logs from VM, consolidate locally"
+        script: "scripts/fleet/karpathy-cpu.sh"
+        description: "CPU Karpathy iterations (tree-based models)"
+    setup: "docs/AURELIEN-INSTALL-MESSAGE.md"
     setup_required: true
-    ssh_user: "TBD"
-    ssh_port: 22
+    ssh_user: "aurelien"
 
 # ── Shared Resources ──────────────────────────────────────────
 

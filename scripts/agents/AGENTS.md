@@ -1,5 +1,5 @@
-# Nomos42 Agent Swarm Architecture v2.0
-# 22 specialized agents across 7 departments
+# Nomos42 Agent Swarm Architecture v3.0
+# 25 specialized agents across 8 departments
 # Shared by NBA Quant + Political Alpha (project-agnostic)
 # Updated: 2026-03-28
 
@@ -52,6 +52,17 @@
 | # | Agent | Type | Trigger | Purpose |
 |---|-------|------|---------|---------|
 | 22 | orchestrator | nba-brain | cron 4h | Health check ALL agents, restart failures, make decisions |
+
+## Department 8: FLEET MONITORING (3 agents — Pierre)
+| # | Agent | Type | Trigger | Purpose |
+|---|-------|------|---------|---------|
+| 23 | pierre-usage-monitor | general-purpose | cron */30 | Track Claude Code CLI quota (daily/weekly cost) |
+| 24 | pierre-practice-monitor | general-purpose | cron */30 | Analyze usage patterns, suggest optimizations |
+| 25 | pierre-infra-monitor | general-purpose | cron */30 | Track MacBook RAM/CPU, determine offloadable compute |
+
+Implementation: `scripts/agents/pierre-monitor.py` (all 3 in one file)
+Cron: `*/30 * * * * python3 ~/mon-ipad/scripts/agents/pierre-monitor.py`
+Output: `data/fleet/pierre-monitor.json`
 
 ## Cross-Project Config
 
@@ -172,3 +183,6 @@ Each agent reads project config to adapt behavior:
 | 20 infra-agent | scripts/infra-agent.sh | ACTIVE |
 | 21 dashboard-sync | scripts/autonomous-cycle.sh | ACTIVE |
 | 22 orchestrator | scripts/agents/orchestrator.py | ACTIVE |
+| 23 pierre-usage-monitor | scripts/agents/pierre-monitor.py | NEW |
+| 24 pierre-practice-monitor | scripts/agents/pierre-monitor.py | NEW |
+| 25 pierre-infra-monitor | scripts/agents/pierre-monitor.py | NEW |
