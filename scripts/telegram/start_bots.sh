@@ -1,50 +1,88 @@
 #!/bin/bash
-# Start Nomos42 Brain bot (NBA-focused)
-# RGWA bot has moved to ~/rgwa/scripts/telegram/
-# Usage: ./start_bots.sh [start|stop|status]
+# Start/stop/status all Nomos42 Telegram bots
+# Usage: ./start_bots.sh [start|stop|status|restart]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-# Source mon-ipad env (has the current valid token)
+set -a
 [ -f /home/termius/mon-ipad/.env.local ] && source /home/termius/mon-ipad/.env.local 2>/dev/null
+set +a
 
 MODE="${1:-start}"
 
-start_brain() {
-    if [ -f /tmp/nomos42-brain.pid ] && kill -0 "$(cat /tmp/nomos42-brain.pid)" 2>/dev/null; then
-        echo "Brain bot already running (PID $(cat /tmp/nomos42-brain.pid))"
+# Bot definitions: name, script, pidfile, token_var
+BOTS=(
+    "brain:nomos42_brain.py:nomos42-brain:TELEGRAM_BOT_TOKEN"
+    "forge:forge_bot.py:forge-bot:FORGE_BOT_TOKEN"
+    "nba:nomos_nba_bot.py:nba-bot:NOMOS_NBA_BOT_TOKEN"
+    "political:stupid_political_bot.py:political-bot:STUPID_POLITICAL_BOT_TOKEN"
+)
+
+start_bot() {
+    local name="$1" script="$2" pidname="$3" tokenvar="$4"
+    local pidfile="/tmp/${pidname}.pid"
+    local logfile="/tmp/${pidname}.log"
+
+    if [ -f "$pidfile" ] && kill -0 "$(cat "$pidfile")" 2>/dev/null; then
+        echo "  [$name] Already running (PID $(cat "$pidfile"))"
         return
     fi
-    echo "[$(date +%H:%M:%S)] Starting Nomos42 Brain bot..."
-    nohup python3 "$SCRIPT_DIR/nomos42_brain.py" >> /tmp/nomos42-brain.log 2>&1 &
-    echo $! > /tmp/nomos42-brain.pid
-    echo "  PID: $(cat /tmp/nomos42-brain.pid) | Log: /tmp/nomos42-brain.log"
+
+    if [ -z "${!tokenvar}" ]; then
+        echo "  [$name] SKIP — $tokenvar not set"
+        return
+    fi
+
+    echo "  [$name] Starting..."
+    nohup python3 "$SCRIPT_DIR/$script" >> "$logfile" 2>&1 &
+    echo $! > "$pidfile"
+    echo "  [$name] PID: $(cat "$pidfile") | Log: $logfile"
 }
 
-stop_brain() {
-    if [ -f /tmp/nomos42-brain.pid ]; then
-        pid=$(cat /tmp/nomos42-brain.pid)
+stop_bot() {
+    local name="$1" script="$2" pidname="$3" tokenvar="$4"
+    local pidfile="/tmp/${pidname}.pid"
+
+    if [ -f "$pidfile" ]; then
+        local pid=$(cat "$pidfile")
         if kill -0 "$pid" 2>/dev/null; then
             kill "$pid"
-            echo "Stopped Brain bot (PID $pid)"
+            echo "  [$name] Stopped (PID $pid)"
         fi
-        rm -f /tmp/nomos42-brain.pid
+        rm -f "$pidfile"
     else
-        echo "Brain bot not running"
+        echo "  [$name] Not running"
     fi
 }
 
-case "$MODE" in
-    start)  start_brain ;;
-    stop)   stop_brain ;;
-    status)
-        if [ -f /tmp/nomos42-brain.pid ] && kill -0 "$(cat /tmp/nomos42-brain.pid)" 2>/dev/null; then
-            echo "Brain bot running (PID $(cat /tmp/nomos42-brain.pid))"
+status_bot() {
+    local name="$1" script="$2" pidname="$3" tokenvar="$4"
+    local pidfile="/tmp/${pidname}.pid"
+
+    if [ -f "$pidfile" ] && kill -0 "$(cat "$pidfile")" 2>/dev/null; then
+        echo "  [$name] RUNNING (PID $(cat "$pidfile"))"
+    else
+        if [ -z "${!tokenvar}" ]; then
+            echo "  [$name] DISABLED ($tokenvar not set)"
         else
-            echo "Brain bot not running"
+            echo "  [$name] DOWN"
         fi
-        ;;
-    *)  echo "Usage: $0 [start|stop|status]" ;;
-esac
+    fi
+}
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Nomos42 Bot Fleet — $MODE"
+echo "================================================="
+
+for bot in "${BOTS[@]}"; do
+    IFS=':' read -r name script pidname tokenvar <<< "$bot"
+    case "$MODE" in
+        start)   start_bot "$name" "$script" "$pidname" "$tokenvar" ;;
+        stop)    stop_bot "$name" "$script" "$pidname" "$tokenvar" ;;
+        restart) stop_bot "$name" "$script" "$pidname" "$tokenvar"
+                 sleep 1
+                 start_bot "$name" "$script" "$pidname" "$tokenvar" ;;
+        status)  status_bot "$name" "$script" "$pidname" "$tokenvar" ;;
+    esac
+done
 
 echo ""
-echo "Note: RGWA bot moved to ~/rgwa/scripts/telegram/start_bot.sh"
+echo "RGWA bot: ~/rgwa/scripts/telegram/start_bot.sh $MODE"

@@ -12,9 +12,8 @@ iPad (Termius SSH) ──> GCP VM (Primary Brain)
                           ├── Modal GPU (serverless TabICL)
                           └── Colab GPU (on-demand)
 
-MacBook Air #1 ──> Research & Feature Engineering (Claude Code CLI)
-MacBook Air #2 ──> Strategy & Backtesting (Claude Code CLI)
-Acer Aspire 3  ──> Data Ingestion & Sync (WSL2 Ubuntu)
+MacBook Air #1 (Pierre) ──> Test user: 5 Vercel sites + HF Space + databases
+Acer Aspire 3  (Aurelien) ──> Compute node: Alexis SSHs in for ML training
 ```
 
 **RULE: ZERO ML TRAINING on VM or local machines. GPU = Kaggle/Modal/Colab/HF only.**

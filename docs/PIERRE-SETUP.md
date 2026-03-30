@@ -30,29 +30,23 @@ Pierre is the **prototype user** for the entire Nomos42 product line:
 ## Architecture
 
 ```
-Pierre (MacBook Air 2016, macOS)
-    ├── Claude Code Desktop (Alexis's Max subscription)
-    │   └── Chrome extension → browser dispatch (ESPN, DraftKings, odds)
-    ├── Repo: LBJLincoln/nomos-pierre (private, ONLY this repo)
-    ├── CLAUDE.md with 22 agents + skills preconfigured
-    ├── .env.local with ALL credentials pre-loaded
-    ├── HF Space: dedicated (NEW HF account for Pierre)
-    ├── Supabase: pierre_* tables (read main, write own)
-    ├── Neo4j: read-only access to knowledge graph
-    ├── Pinecone: dedicated index (pierre-nba)
-    ├── @Forge42Bot: Telegram bot for task dispatch + picks
-    └── Tests: dashboard, nomos-picks, all web products
+Pierre (MacBook Air 2016, macOS) — NO GITHUB, NO VM ACCESS
+    ├── Claude Desktop → 22 agents (Alexis's Max subscription)
+    ├── Claude Code CLI → advanced terminal commands
+    ├── Chrome browser → 5 Vercel sites + Claude extension
+    ├── Telegram → @Forge42Bot + @Nomos42Bot
+    ├── NO SSH to VM, NO repo cloning, NO server access
+    └── Everything runs locally — APIs only via public endpoints
 
-Aurelien (Acer Aspire 3, Windows 11 + WSL2)
-    ├── Claude Code Desktop (Windows)
-    │   └── Chrome extension → browser dispatch
-    ├── WSL2 Ubuntu → data ingestion crons
-    ├── Same repo: LBJLincoln/nomos-pierre (shared workspace)
-    └── Role: data collection + backup browser node
+Aurelien's Acer Aspire 3 (Windows 11 + WSL2)
+    ├── COMPUTE NODE ONLY — Alexis SSHs in for free GPU/ML
+    ├── WSL2 Ubuntu → ML training, quant models, evolution
+    ├── NO repo, NO user access, NO interaction
+    └── Role: free hardware for model training
 
 Alexis (iPad + VM)
     ├── Full read access to nomos-pierre repo (owner)
-    ├── Dispatch tasks to Pierre & Aurelien browsers
+    ├── SSHs into Aurelien's Acer for ML compute
     ├── git log monitoring (all commits visible)
     ├── Can assign tasks via @Forge42Bot
     └── Evaluates: can this become a SaaS/API product?
@@ -78,8 +72,7 @@ gh repo create LBJLincoln/nomos-pierre --private --source=. --push
 
 # Add Pierre as collaborator (replace with his GitHub username)
 gh api repos/LBJLincoln/nomos-pierre/collaborators/PIERRE_GITHUB_USERNAME -X PUT -f permission=push
-# Add Aurelien
-gh api repos/LBJLincoln/nomos-pierre/collaborators/AURELIEN_GITHUB_USERNAME -X PUT -f permission=push
+# Aurelien = compute node only, no repo access needed
 ```
 
 ## Step 2: CLAUDE.md for Pierre & Aurelien
@@ -154,15 +147,15 @@ Summary:
 2. Claude Code Desktop + Chrome extension
 3. Clone repo + SSH test
 
-## Step 4: Aurelien's Acer Setup
+## Step 4: Aurelien's Acer (Compute Node Only)
 
-See: `docs/AURELIEN-INSTALL-MESSAGE.md` (French, 4 steps)
+Aurelien's Acer Aspire 3 is used as a **free compute node** by Alexis.
+No user setup needed — Alexis SSHs in via WSL2 for ML training.
 
-Summary:
-1. WSL2 Ubuntu
-2. apt install tools
-3. Claude Code Desktop (Windows) + Chrome extension
-4. Clone repo + SSH test
+Setup (Alexis does this):
+1. WSL2 Ubuntu with ML deps (python3, pytorch, scikit-learn, xgboost, lightgbm, catboost)
+2. SSH key from VM → Acer
+3. Cron jobs run remotely from VM via SSH
 
 ## Step 5: Dedicated HF Space (NEW account)
 
@@ -208,16 +201,7 @@ CREATE TABLE pierre_predictions (
     user_id TEXT DEFAULT 'pierre'
 );
 
--- Aurelien's data logs
-CREATE TABLE aurelien_data_logs (
-    id SERIAL PRIMARY KEY,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    data_type TEXT,
-    source TEXT,
-    records_count INT,
-    status TEXT,
-    user_id TEXT DEFAULT 'aurelien'
-);
+-- Aurelien = compute node only, no dedicated tables needed
 ```
 
 ## Step 7: @Forge42Bot Setup
