@@ -1,42 +1,42 @@
 {
-  "_meta": {
-    "updated": "2026-03-29T20:30:00Z",
-    "brain_cycle": "2026-03-29T20"
+  "updated_at": "2026-03-30T00:21:45Z",
+  "brain_cycle": "4h-auto",
+  "ecosystem_health": "PARTIALLY_HEALTHY",
+  "nba_quant_ai": {
+    "status": "HEALTHY",
+    "best_brier": 0.22006,
+    "target_brier": 0.20,
+    "atr": 0.21844,
+    "gap_to_atr": 0.00162,
+    "gap_to_target": 0.02006,
+    "fleet_stagnation": "NONE",
+    "islands_active": 6,
+    "islands_evolving": 6,
+    "note": "S15 touched 0.21846 at gen 1247 — 1 step from ATR. Fleet healthy."
   },
-  "ecosystem_health": "PARTIAL_DEGRADED",
-  "projects": {
-    "nba_quant_ai": {
-      "status": "HEALTHY",
-      "best_brier": 0.22006,
-      "target": 0.21837,
-      "gap": 0.00169,
-      "islands_online": 6,
-      "islands_total": 6,
-      "trend": "STABLE_IMPROVING",
-      "note": "All 6 islands healthy, no stagnation. S14 leads at 0.22006 with extra_trees 59 features."
+  "political_alpha": {
+    "status": "DEGRADED",
+    "best_brier": 0.25008,
+    "best_roi": 0.0078,
+    "islands_active": 4,
+    "islands_at_base_rate": 3,
+    "interventions_this_cycle": ["PA1 diversify", "PA2 boost_mutation", "PA3 boost_mutation"],
+    "concern": "3 of 4 islands stuck at Brier=0.3 with 0 features. Data pipeline investigation needed."
+  },
+  "cross_project_learnings": [
+    {
+      "source": "NBA WebSearch (MDPI Jan 2026)",
+      "finding": "ELO rolling features are top-3 most important. LR achieves Brier=0.199.",
+      "applied_to_nba": "Research proposal written: calibration-brier-loss-2026-03-30.json",
+      "applied_to_political": "ELO-style donor_momentum_score proposed for political_engine.py"
     },
-    "political_alpha": {
-      "status": "CRITICAL_DEGRADED",
-      "best_brier": 0.25008,
-      "islands_healthy": 1,
-      "islands_total": 4,
-      "critical_issue": "PA1/PA2/PA3 feature_candidates=2 (Brier=0.3, worse than random 0.25)",
-      "fix_applied": "2026-03-29T20: 4-patch to hf-space/app.py pushed — spaces need restart to take effect",
-      "trend": "CRITICAL_FIX_DEPLOYED"
+    {
+      "source": "Political fleet observation",
+      "finding": "PA4 (wide search + XGBoost) is ONLY island finding features. PA1-3 stuck at 0 features.",
+      "implication": "XGBoost with wide search config may be more robust for political data than ExtraTrees/CatBoost",
+      "action": "Consider biasing S12 (catboost) toward XGBoost config in NBA fleet"
     }
-  },
-  "cross_project_techniques": {
-    "calibration": {
-      "nba_status": "PROPOSED — research proposal written",
-      "political_status": "BLOCKED — awaiting feature fix. Apply after restart confirmed.",
-      "expected_gain": "0.003-0.007 Brier on both projects"
-    },
-    "feature_diversity": {
-      "nba_pool": 3267,
-      "political_pool_expected": "40 (after fix)",
-      "political_pool_current": 2
-    }
-  },
-  "supabase_status": "DEGRADED — both projects experiencing Supabase connectivity failures (FATAL: Tenant or user not found). Local computation unaffected.",
-  "next_cycle_action": "Verify political alpha spaces restarted. If feature_candidates still=2, manually trigger HF Space restart via MCP. Deploy NBA calibration wrapper to S14."
+  ],
+  "supabase_health": "connection_errors_non_blocking",
+  "next_brain_cycle": "2026-03-30T04:00:00Z"
 }
