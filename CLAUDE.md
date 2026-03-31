@@ -77,7 +77,7 @@ SYSTEM CRONS
 2. **Feature engine parity** — `features/engine.py` = `hf-space/features/engine.py` always
 3. **1 fix per iteration** — never multiple simultaneous changes
 4. **All experiments tagged** with `feature_engine_version` in Supabase
-5. **Feature engine** — v3.0-43cat = 43 categories, 6211 raw features (Cat42 Shot Quality + Cat45 Player Tracking)
+5. **Feature engine** — v3.1-46cat = 46 categories, 6253 raw features (Cat47 Drive-Rim + Cat48 Passing + Cat49 Play-Type PPP)
 6. **MAX_FEATURES=200** — hard cap enforced in init/mutate/crossover on all spaces
 7. **Mutation cap** — adaptive mutation capped at 0.15 (deployed S10/S11/S12/S15)
 8. **CPU-only islands** — no neural models on CPU (tree-based only), stacking removed
