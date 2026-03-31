@@ -1,0 +1,714 @@
+"""
+Nomos42 Predictions Monitor (E3 Agent)
+Monitors the NBA prediction pipeline: today's games, pipeline status,
+recent results, and model info. Sends Telegram alerts on anomalies.
+"""
+
+import json
+import os
+import threading
+import time
+import traceback
+import urllib.request
+from datetime import datetime, timedelta, timezone
+
+import gradio as gr
+
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+BASE_URL = "http://nomos42.duckdns.org:7860/data/nba-agent"
+ENDPOINTS = {
+    "latest_eval": f"{BASE_URL}/latest-eval.json",
+    "quant_summary": f"{BASE_URL}/quant-summary.json",
+    "bankroll_state": f"{BASE_URL}/bankroll-state.json",
+    "backtest_results": f"{BASE_URL}/backtest-results.json",
+}
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = "6582544948"
+REFRESH_INTERVAL = 900  # 15 minutes
+UI_REFRESH = 120  # seconds
+
+# ---------------------------------------------------------------------------
+# State
+# ---------------------------------------------------------------------------
+_cache: dict = {}
+_last_fetch: float = 0.0
+_alert_sent_today: dict = {}  # key -> date string to avoid duplicate alerts
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _fetch_json(url: str, timeout: int = 30) -> dict | None:
+    """Fetch JSON from a URL using urllib only. Returns None on failure."""
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Nomos42-PredMonitor/1.0"})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return None
+
+
+def _send_telegram(message: str) -> bool:
+    """Send a Telegram message. Returns True on success."""
+    if not TELEGRAM_TOKEN:
+        return False
+    try:
+        payload = json.dumps({"chat_id": TELEGRAM_CHAT_ID, "text": message, "parse_mode": "HTML"}).encode()
+        req = urllib.request.Request(
+            f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return resp.status == 200
+    except Exception:
+        return False
+
+
+def _alert_once(key: str, message: str):
+    """Send alert at most once per calendar day per key."""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    cache_key = f"{key}_{today}"
+    if cache_key not in _alert_sent_today:
+        if _send_telegram(message):
+            _alert_sent_today[cache_key] = True
+
+
+def _safe_get(d: dict | None, *keys, default="--"):
+    """Safely traverse nested dicts."""
+    cur = d
+    for k in keys:
+        if not isinstance(cur, dict):
+            return default
+        cur = cur.get(k, None)
+    return cur if cur is not None else default
+
+
+def _fmt_pct(val, decimals=1):
+    """Format a number as percentage string."""
+    try:
+        return f"{float(val):.{decimals}f}%"
+    except (TypeError, ValueError):
+        return "--"
+
+
+def _fmt_ts(ts_str: str | None) -> str:
+    """Format an ISO timestamp to a readable string."""
+    if not ts_str or ts_str == "--":
+        return "--"
+    try:
+        dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+        return dt.strftime("%Y-%m-%d %H:%M UTC")
+    except Exception:
+        return str(ts_str)
+
+
+# ---------------------------------------------------------------------------
+# Data fetching
+# ---------------------------------------------------------------------------
+
+def fetch_all():
+    """Fetch all endpoints and cache results."""
+    global _cache, _last_fetch
+    for key, url in ENDPOINTS.items():
+        data = _fetch_json(url)
+        if data is not None:
+            _cache[key] = data
+    _last_fetch = time.time()
+    _run_alerts()
+
+
+def _run_alerts():
+    """Check alert conditions after data fetch."""
+    now_utc = datetime.now(timezone.utc)
+    today_str = now_utc.strftime("%Y-%m-%d")
+
+    # --- Alert: No predictions by 20:00 UTC on a game day ---
+    backtest = _cache.get("backtest_results")
+    if backtest and now_utc.hour >= 20:
+        trades = backtest.get("trades", [])
+        today_trades = [t for t in trades if t.get("date") == today_str]
+        daily_log = backtest.get("daily_log", [])
+        today_log = [d for d in daily_log if d.get("date") == today_str]
+        # If no trades today and it is past 20:00 UTC, alert (possible game day miss)
+        if not today_trades and not today_log:
+            _alert_once(
+                "no_predictions",
+                f"<b>Predictions Monitor Alert</b>\n"
+                f"No predictions generated by 20:00 UTC on {today_str}.\n"
+                f"Check the pipeline: autonomous-cycle.sh / predict_today.py",
+            )
+
+    # --- Alert: Pipeline error detected ---
+    eval_data = _cache.get("latest_eval")
+    if eval_data:
+        brier = eval_data.get("brier_score")
+        if brier is not None and (brier > 0.35 or brier < 0.05):
+            _alert_once(
+                "pipeline_error",
+                f"<b>Pipeline Error Detected</b>\n"
+                f"Brier score anomaly: {brier:.4f}\n"
+                f"Expected range: 0.15-0.30. Investigate immediately.",
+            )
+
+    # --- Alert: Perfect day (all predictions correct) ---
+    if backtest:
+        daily_log = backtest.get("daily_log", [])
+        for entry in daily_log:
+            if entry.get("date") == today_str:
+                bets = entry.get("bets", 0)
+                wins = entry.get("wins", 0)
+                losses = entry.get("losses", 0)
+                if bets > 0 and wins == bets and losses == 0:
+                    _alert_once(
+                        "perfect_day",
+                        f"<b>PERFECT DAY!</b>\n"
+                        f"{today_str}: {wins}/{bets} predictions correct.\n"
+                        f"PnL: +${entry.get('pnl', 0):.2f}",
+                    )
+
+
+# ---------------------------------------------------------------------------
+# Background refresh thread
+# ---------------------------------------------------------------------------
+
+def _background_loop():
+    """Continuously refresh data every REFRESH_INTERVAL seconds."""
+    while True:
+        try:
+            fetch_all()
+        except Exception:
+            traceback.print_exc()
+        time.sleep(REFRESH_INTERVAL)
+
+
+_bg_thread = threading.Thread(target=_background_loop, daemon=True)
+_bg_thread.start()
+
+# Initial fetch (blocking so first render has data)
+fetch_all()
+
+
+# ---------------------------------------------------------------------------
+# Tab 1: Today's Games
+# ---------------------------------------------------------------------------
+
+def build_todays_games() -> str:
+    """Build HTML table of today's games and predictions."""
+    backtest = _cache.get("backtest_results")
+    eval_data = _cache.get("latest_eval")
+    if not backtest:
+        return "<p style='color:#888'>No prediction data available. Waiting for data...</p>"
+
+    trades = backtest.get("trades", [])
+    if not trades:
+        return "<p style='color:#888'>No trades recorded yet.</p>"
+
+    # Find the most recent date with trades
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today_trades = [t for t in trades if t.get("date") == today_str]
+
+    # If no trades today, show the latest date's trades
+    if not today_trades:
+        all_dates = sorted(set(t.get("date", "") for t in trades))
+        if all_dates:
+            latest_date = all_dates[-1]
+            today_trades = [t for t in trades if t.get("date") == latest_date]
+            header_note = f"<p style='color:#aaa; font-size:0.9em'>No games today. Showing latest: <b>{latest_date}</b></p>"
+        else:
+            return "<p style='color:#888'>No trades found.</p>"
+    else:
+        header_note = f"<p style='color:#4CAF50; font-size:0.9em'>Predictions for <b>{today_str}</b></p>"
+
+    rows = []
+    for t in today_trades:
+        game = t.get("game", "--")
+        parts = game.split(" @ ")
+        away = parts[0] if len(parts) == 2 else "?"
+        home = parts[1] if len(parts) == 2 else "?"
+
+        bet_side = t.get("bet_side", "")
+        bet_team = t.get("bet_team", "")
+        model_prob = t.get("model_prob", 0)
+        odds = t.get("odds", 0)
+        edge = t.get("edge", 0)
+
+        if bet_side == "home":
+            home_pct = f"{model_prob * 100:.1f}%"
+            away_pct = f"{(1 - model_prob) * 100:.1f}%"
+        else:
+            away_pct = f"{model_prob * 100:.1f}%"
+            home_pct = f"{(1 - model_prob) * 100:.1f}%"
+
+        predicted_winner = bet_team
+        confidence = f"{model_prob * 100:.1f}%"
+        odds_str = f"{odds:.2f}"
+        is_value = "YES" if edge > 0.03 else "NO"
+        value_color = "#4CAF50" if edge > 0.03 else "#f44336"
+
+        won = t.get("won")
+        if won is True:
+            result_icon = "&#9989;"
+        elif won is False:
+            result_icon = "&#10060;"
+        else:
+            result_icon = "&#9203;"
+
+        rows.append(
+            f"<tr>"
+            f"<td>{game}</td>"
+            f"<td style='text-align:center'>{home_pct}</td>"
+            f"<td style='text-align:center'>{away_pct}</td>"
+            f"<td style='text-align:center'><b>{predicted_winner}</b></td>"
+            f"<td style='text-align:center'>{confidence}</td>"
+            f"<td style='text-align:center'>{odds_str}</td>"
+            f"<td style='text-align:center; color:{value_color}'><b>{is_value}</b></td>"
+            f"<td style='text-align:center'>{result_icon}</td>"
+            f"</tr>"
+        )
+
+    table = (
+        f"{header_note}"
+        f"<table style='width:100%; border-collapse:collapse; font-family:monospace'>"
+        f"<thead><tr style='background:#1a1a2e; color:#fff'>"
+        f"<th style='padding:8px; text-align:left'>Game</th>"
+        f"<th style='padding:8px'>Home Win%</th>"
+        f"<th style='padding:8px'>Away Win%</th>"
+        f"<th style='padding:8px'>Predicted</th>"
+        f"<th style='padding:8px'>Confidence</th>"
+        f"<th style='padding:8px'>Odds</th>"
+        f"<th style='padding:8px'>Value Bet?</th>"
+        f"<th style='padding:8px'>Result</th>"
+        f"</tr></thead>"
+        f"<tbody>{''.join(rows)}</tbody>"
+        f"</table>"
+    )
+    return table
+
+
+# ---------------------------------------------------------------------------
+# Tab 2: Pipeline Status
+# ---------------------------------------------------------------------------
+
+def build_pipeline_status() -> str:
+    """Build HTML for pipeline status overview."""
+    eval_data = _cache.get("latest_eval")
+    quant = _cache.get("quant_summary")
+    bankroll = _cache.get("bankroll_state")
+    backtest = _cache.get("backtest_results")
+
+    ts = _fmt_ts(_safe_get(eval_data, "timestamp"))
+    model = _safe_get(eval_data, "model")
+    fe_version = _safe_get(eval_data, "feature_engine_version")
+    features = _safe_get(eval_data, "features")
+    categories = _safe_get(eval_data, "categories")
+    brier = _safe_get(eval_data, "brier_score")
+    platform = _safe_get(eval_data, "platform")
+
+    # Count today's games
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    trades = (backtest or {}).get("trades", [])
+    today_count = len([t for t in trades if t.get("date") == today_str])
+    total_trades = len(trades)
+
+    # Odds status
+    has_odds = any(t.get("odds", 0) > 1.0 for t in trades[-10:]) if trades else False
+    odds_status = "YES (real odds)" if has_odds else "NO / Unknown"
+
+    # Bankroll
+    balance = _safe_get(bankroll, "balance")
+    roi = _safe_get(bankroll, "roi_pct")
+
+    # Daemon status
+    daemon = _safe_get(quant, "daemon_status")
+
+    # Evolution info
+    evo_gens = _safe_get(quant, "evolution", "generations")
+    evo_islands = _safe_get(quant, "evolution", "islands")
+    evo_pop = _safe_get(quant, "evolution", "population")
+
+    def _row(label, value, color="#e0e0e0"):
+        return (
+            f"<tr>"
+            f"<td style='padding:6px 12px; color:#aaa'>{label}</td>"
+            f"<td style='padding:6px 12px; color:{color}; font-weight:bold'>{value}</td>"
+            f"</tr>"
+        )
+
+    status_color = "#4CAF50" if daemon == "RUNNING" else "#f44336"
+
+    html = (
+        f"<div style='font-family:monospace'>"
+        f"<table style='border-collapse:collapse; width:100%'>"
+        f"<thead><tr style='background:#1a1a2e; color:#fff'>"
+        f"<th style='padding:8px; text-align:left' colspan='2'>Pipeline Status</th>"
+        f"</tr></thead><tbody>"
+        f"{_row('Last Prediction Run', ts)}"
+        f"{_row('Games Predicted Today', str(today_count))}"
+        f"{_row('Total Trades (Season)', str(total_trades))}"
+        f"{_row('Model', str(model))}"
+        f"{_row('Feature Engine', str(fe_version))}"
+        f"{_row('Selected Features', str(features))}"
+        f"{_row('Feature Categories', str(categories))}"
+        f"{_row('Odds Fetched', odds_status)}"
+        f"{_row('Brier Score (ATR)', f'{brier}' if brier != '--' else '--', '#4CAF50' if brier != '--' else '#888')}"
+        f"{_row('Platform', str(platform))}"
+        f"{_row('Daemon Status', str(daemon), status_color)}"
+        f"{_row('Bankroll', f'${balance}' if balance != '--' else '--')}"
+        f"{_row('ROI', _fmt_pct(roi) if roi != '--' else '--')}"
+        f"{_row('Evolution Generations', str(evo_gens))}"
+        f"{_row('Islands / Population', f'{evo_islands} islands x {evo_pop} pop')}"
+        f"</tbody></table>"
+        f"<p style='color:#666; font-size:0.8em; margin-top:8px'>"
+        f"Data refreshes every {REFRESH_INTERVAL // 60} min | Last fetch: {datetime.fromtimestamp(_last_fetch, tz=timezone.utc).strftime('%H:%M:%S UTC') if _last_fetch else 'never'}"
+        f"</p></div>"
+    )
+    return html
+
+
+# ---------------------------------------------------------------------------
+# Tab 3: Recent Results
+# ---------------------------------------------------------------------------
+
+def build_recent_results() -> str:
+    """Build HTML table of last 7 days of predictions with outcomes."""
+    backtest = _cache.get("backtest_results")
+    if not backtest:
+        return "<p style='color:#888'>No backtest data available.</p>"
+
+    trades = backtest.get("trades", [])
+    daily_log = backtest.get("daily_log", [])
+    if not trades:
+        return "<p style='color:#888'>No trades recorded.</p>"
+
+    # Get last 7 days
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%d")
+    recent_trades = [t for t in trades if t.get("date", "") >= cutoff]
+
+    if not recent_trades:
+        # Show all trades if none in last 7 days
+        recent_trades = trades[-20:]
+
+    rows = []
+    for t in recent_trades:
+        date = t.get("date", "--")
+        game = t.get("game", "--")
+        bet_team = t.get("bet_team", "--")
+        prob = t.get("model_prob", 0)
+        won = t.get("won")
+        pnl = t.get("pnl", 0)
+
+        if won is True:
+            actual = "WIN"
+            correct = "YES"
+            correct_color = "#4CAF50"
+        elif won is False:
+            actual = "LOSS"
+            correct = "NO"
+            correct_color = "#f44336"
+        else:
+            actual = "PENDING"
+            correct = "--"
+            correct_color = "#888"
+
+        # Compute per-trade Brier (prediction vs outcome)
+        outcome = 1.0 if won else 0.0
+        brier = (prob - outcome) ** 2 if won is not None else None
+        brier_str = f"{brier:.4f}" if brier is not None else "--"
+
+        pnl_color = "#4CAF50" if pnl > 0 else "#f44336" if pnl < 0 else "#888"
+
+        rows.append(
+            f"<tr>"
+            f"<td style='padding:4px 8px'>{date}</td>"
+            f"<td style='padding:4px 8px'>{game}</td>"
+            f"<td style='padding:4px 8px; text-align:center'><b>{bet_team}</b> ({prob*100:.0f}%)</td>"
+            f"<td style='padding:4px 8px; text-align:center'>{actual}</td>"
+            f"<td style='padding:4px 8px; text-align:center; color:{correct_color}'><b>{correct}</b></td>"
+            f"<td style='padding:4px 8px; text-align:center'>{brier_str}</td>"
+            f"<td style='padding:4px 8px; text-align:right; color:{pnl_color}'>{'+' if pnl > 0 else ''}{pnl:.2f}</td>"
+            f"</tr>"
+        )
+
+    # Daily summary
+    recent_daily = [d for d in daily_log if d.get("date", "") >= cutoff]
+    if not recent_daily:
+        recent_daily = daily_log[-7:]
+
+    summary_rows = []
+    for d in recent_daily:
+        date = d.get("date", "--")
+        bets = d.get("bets", 0)
+        wins = d.get("wins", 0)
+        losses = d.get("losses", 0)
+        pnl = d.get("pnl", 0)
+        bankroll = d.get("bankroll", 0)
+        pnl_color = "#4CAF50" if pnl > 0 else "#f44336" if pnl < 0 else "#888"
+        wr = f"{wins / bets * 100:.0f}%" if bets > 0 else "--"
+        summary_rows.append(
+            f"<tr>"
+            f"<td style='padding:4px 8px'>{date}</td>"
+            f"<td style='padding:4px 8px; text-align:center'>{bets}</td>"
+            f"<td style='padding:4px 8px; text-align:center'>{wins}W-{losses}L</td>"
+            f"<td style='padding:4px 8px; text-align:center'>{wr}</td>"
+            f"<td style='padding:4px 8px; text-align:right; color:{pnl_color}'>{'+' if pnl > 0 else ''}{pnl:.2f}</td>"
+            f"<td style='padding:4px 8px; text-align:right'>${bankroll:.2f}</td>"
+            f"</tr>"
+        )
+
+    html = (
+        f"<div style='font-family:monospace'>"
+        # Daily summary
+        f"<h3 style='color:#fff; margin-bottom:4px'>Daily Summary</h3>"
+        f"<table style='width:100%; border-collapse:collapse; margin-bottom:20px'>"
+        f"<thead><tr style='background:#1a1a2e; color:#fff'>"
+        f"<th style='padding:6px 8px; text-align:left'>Date</th>"
+        f"<th style='padding:6px 8px'>Bets</th>"
+        f"<th style='padding:6px 8px'>Record</th>"
+        f"<th style='padding:6px 8px'>Win Rate</th>"
+        f"<th style='padding:6px 8px; text-align:right'>PnL</th>"
+        f"<th style='padding:6px 8px; text-align:right'>Bankroll</th>"
+        f"</tr></thead>"
+        f"<tbody>{''.join(summary_rows)}</tbody>"
+        f"</table>"
+        # Individual trades
+        f"<h3 style='color:#fff; margin-bottom:4px'>Individual Trades (Last 7 Days)</h3>"
+        f"<table style='width:100%; border-collapse:collapse'>"
+        f"<thead><tr style='background:#1a1a2e; color:#fff'>"
+        f"<th style='padding:6px 8px; text-align:left'>Date</th>"
+        f"<th style='padding:6px 8px; text-align:left'>Game</th>"
+        f"<th style='padding:6px 8px'>Prediction</th>"
+        f"<th style='padding:6px 8px'>Actual</th>"
+        f"<th style='padding:6px 8px'>Correct?</th>"
+        f"<th style='padding:6px 8px'>Brier</th>"
+        f"<th style='padding:6px 8px; text-align:right'>PnL ($)</th>"
+        f"</tr></thead>"
+        f"<tbody>{''.join(rows)}</tbody>"
+        f"</table></div>"
+    )
+    return html
+
+
+# ---------------------------------------------------------------------------
+# Tab 4: Model Info
+# ---------------------------------------------------------------------------
+
+def build_model_info() -> str:
+    """Build HTML for current model configuration and info."""
+    quant = _cache.get("quant_summary")
+    eval_data = _cache.get("latest_eval")
+    if not quant and not eval_data:
+        return "<p style='color:#888'>No model data available.</p>"
+
+    # Models table
+    models = _safe_get(quant, "models", default={})
+    model_rows = []
+    if isinstance(models, dict):
+        for name, info in sorted(models.items(), key=lambda x: x[1].get("brier", 1) if isinstance(x[1], dict) else 1):
+            if not isinstance(info, dict):
+                continue
+            brier = info.get("brier", "--")
+            weight = info.get("weight", "--")
+            status = info.get("status", "--")
+            status_color = "#4CAF50" if status == "ATR_BEST" else "#2196F3" if status == "ACTIVE" else "#888"
+            model_rows.append(
+                f"<tr>"
+                f"<td style='padding:4px 8px'><b>{name}</b></td>"
+                f"<td style='padding:4px 8px; text-align:center'>{brier}</td>"
+                f"<td style='padding:4px 8px; text-align:center'>{weight}</td>"
+                f"<td style='padding:4px 8px; text-align:center; color:{status_color}'>{status}</td>"
+                f"</tr>"
+            )
+
+    # Calibration
+    cal = _safe_get(quant, "calibration", default={})
+    cal_rows = []
+    if isinstance(cal, dict):
+        for key, val in cal.items():
+            if key == "reasoning":
+                continue
+            cal_rows.append(
+                f"<tr>"
+                f"<td style='padding:3px 8px; color:#aaa'>{key}</td>"
+                f"<td style='padding:3px 8px'>{val}</td>"
+                f"</tr>"
+            )
+
+    # ATR History
+    atr_history = _safe_get(quant, "atr_history", default=[])
+    atr_rows = []
+    if isinstance(atr_history, list):
+        for entry in atr_history:
+            if not isinstance(entry, dict):
+                continue
+            atr_rows.append(
+                f"<tr>"
+                f"<td style='padding:3px 8px'>{entry.get('date', '--')}</td>"
+                f"<td style='padding:3px 8px; text-align:center'>{entry.get('brier', '--')}</td>"
+                f"<td style='padding:3px 8px'>{entry.get('model', '--')}</td>"
+                f"<td style='padding:3px 8px; text-align:center'>{entry.get('features', '--')}</td>"
+                f"<td style='padding:3px 8px; color:#888'>{entry.get('notes', '')}</td>"
+                f"</tr>"
+            )
+
+    # Feature categories
+    fc = _safe_get(quant, "feature_categories", default={})
+    fc_total = _safe_get(fc, "total", default="--") if isinstance(fc, dict) else "--"
+    fc_raw = _safe_get(fc, "raw_features", default="--") if isinstance(fc, dict) else "--"
+    fc_usable = _safe_get(fc, "usable_features", default="--") if isinstance(fc, dict) else "--"
+    fc_max = _safe_get(fc, "max_selected", default="--") if isinstance(fc, dict) else "--"
+
+    # Evolution islands
+    islands = _safe_get(eval_data, "islands", default={})
+    island_rows = []
+    if isinstance(islands, dict):
+        for sid, info in sorted(islands.items()):
+            if not isinstance(info, dict):
+                continue
+            role = info.get("role", "--")
+            best = info.get("best_brier", "--")
+            gen = info.get("gen", "--")
+            mut = info.get("mut", "--")
+            notes = info.get("notes", "")
+            island_rows.append(
+                f"<tr>"
+                f"<td style='padding:3px 8px'><b>{sid}</b></td>"
+                f"<td style='padding:3px 8px'>{role}</td>"
+                f"<td style='padding:3px 8px; text-align:center'>{best}</td>"
+                f"<td style='padding:3px 8px; text-align:center'>{gen}</td>"
+                f"<td style='padding:3px 8px; text-align:center'>{mut}</td>"
+                f"<td style='padding:3px 8px; color:#888'>{notes}</td>"
+                f"</tr>"
+            )
+
+    # Targets
+    targets = _safe_get(quant, "targets", default={})
+    target_brier = _safe_get(targets, "brier", default="--") if isinstance(targets, dict) else "--"
+    target_roi = _safe_get(targets, "roi_pct", default="--") if isinstance(targets, dict) else "--"
+    target_sharpe = _safe_get(targets, "sharpe", default="--") if isinstance(targets, dict) else "--"
+
+    # Calibration reasoning
+    reasoning = _safe_get(cal, "reasoning", default="") if isinstance(cal, dict) else ""
+
+    html = (
+        f"<div style='font-family:monospace'>"
+        # Ensemble models
+        f"<h3 style='color:#fff; margin-bottom:4px'>Ensemble Models</h3>"
+        f"<table style='width:100%; border-collapse:collapse; margin-bottom:16px'>"
+        f"<thead><tr style='background:#1a1a2e; color:#fff'>"
+        f"<th style='padding:6px 8px; text-align:left'>Model</th>"
+        f"<th style='padding:6px 8px'>Brier</th>"
+        f"<th style='padding:6px 8px'>Weight</th>"
+        f"<th style='padding:6px 8px'>Status</th>"
+        f"</tr></thead>"
+        f"<tbody>{''.join(model_rows)}</tbody>"
+        f"</table>"
+        # Feature summary
+        f"<h3 style='color:#fff; margin-bottom:4px'>Feature Engine</h3>"
+        f"<table style='border-collapse:collapse; margin-bottom:16px'>"
+        f"<tr><td style='padding:3px 8px; color:#aaa'>Categories</td><td style='padding:3px 8px'>{fc_total}</td></tr>"
+        f"<tr><td style='padding:3px 8px; color:#aaa'>Raw Features</td><td style='padding:3px 8px'>{fc_raw}</td></tr>"
+        f"<tr><td style='padding:3px 8px; color:#aaa'>Usable Features</td><td style='padding:3px 8px'>{fc_usable}</td></tr>"
+        f"<tr><td style='padding:3px 8px; color:#aaa'>Max Selected</td><td style='padding:3px 8px'>{fc_max}</td></tr>"
+        f"</table>"
+        # Evolution islands
+        f"<h3 style='color:#fff; margin-bottom:4px'>Evolution Islands</h3>"
+        f"<table style='width:100%; border-collapse:collapse; margin-bottom:16px'>"
+        f"<thead><tr style='background:#1a1a2e; color:#fff'>"
+        f"<th style='padding:6px 8px; text-align:left'>Island</th>"
+        f"<th style='padding:6px 8px; text-align:left'>Role</th>"
+        f"<th style='padding:6px 8px'>Best Brier</th>"
+        f"<th style='padding:6px 8px'>Gen</th>"
+        f"<th style='padding:6px 8px'>Mutation</th>"
+        f"<th style='padding:6px 8px; text-align:left'>Notes</th>"
+        f"</tr></thead>"
+        f"<tbody>{''.join(island_rows)}</tbody>"
+        f"</table>"
+        # ATR History
+        f"<h3 style='color:#fff; margin-bottom:4px'>ATR History (All-Time Records)</h3>"
+        f"<table style='width:100%; border-collapse:collapse; margin-bottom:16px'>"
+        f"<thead><tr style='background:#1a1a2e; color:#fff'>"
+        f"<th style='padding:6px 8px; text-align:left'>Date</th>"
+        f"<th style='padding:6px 8px'>Brier</th>"
+        f"<th style='padding:6px 8px; text-align:left'>Model</th>"
+        f"<th style='padding:6px 8px'>Features</th>"
+        f"<th style='padding:6px 8px; text-align:left'>Notes</th>"
+        f"</tr></thead>"
+        f"<tbody>{''.join(atr_rows)}</tbody>"
+        f"</table>"
+        # Calibration
+        f"<h3 style='color:#fff; margin-bottom:4px'>Calibration Parameters</h3>"
+        f"<table style='border-collapse:collapse; margin-bottom:16px'>"
+        f"{''.join(cal_rows)}"
+        f"</table>"
+        # Targets
+        f"<h3 style='color:#fff; margin-bottom:4px'>Targets</h3>"
+        f"<table style='border-collapse:collapse; margin-bottom:16px'>"
+        f"<tr><td style='padding:3px 8px; color:#aaa'>Brier Target</td><td style='padding:3px 8px; color:#4CAF50'>&lt; {target_brier}</td></tr>"
+        f"<tr><td style='padding:3px 8px; color:#aaa'>ROI Target</td><td style='padding:3px 8px; color:#4CAF50'>&gt; {target_roi}%</td></tr>"
+        f"<tr><td style='padding:3px 8px; color:#aaa'>Sharpe Target</td><td style='padding:3px 8px; color:#4CAF50'>&gt; {target_sharpe}</td></tr>"
+        f"</table>"
+        # Reasoning
+        f"<div style='background:#1a1a2e; padding:10px; border-radius:4px; margin-top:8px'>"
+        f"<p style='color:#aaa; margin:0 0 4px 0; font-size:0.8em'>Calibration Notes</p>"
+        f"<p style='color:#e0e0e0; margin:0; font-size:0.85em'>{reasoning}</p>"
+        f"</div>"
+        f"</div>"
+    )
+    return html
+
+
+# ---------------------------------------------------------------------------
+# Gradio App
+# ---------------------------------------------------------------------------
+
+def refresh_all():
+    """Called by UI timer to return all tab contents."""
+    return build_todays_games(), build_pipeline_status(), build_recent_results(), build_model_info()
+
+
+with gr.Blocks(
+    theme=gr.themes.Default(),
+    title="Nomos42 Predictions Monitor",
+    css="""
+    .gradio-container { max-width: 1200px !important; }
+    table { font-size: 0.9em; }
+    table td, table th { border-bottom: 1px solid #333; }
+    h3 { margin-top: 12px; }
+    """,
+) as demo:
+    gr.Markdown(
+        "# Nomos42 Predictions Monitor\n"
+        "NBA prediction pipeline monitoring -- E3 Agent | Auto-refreshes every 2 min"
+    )
+
+    with gr.Tab("Today's Games"):
+        games_html = gr.HTML(value=build_todays_games)
+
+    with gr.Tab("Pipeline Status"):
+        status_html = gr.HTML(value=build_pipeline_status)
+
+    with gr.Tab("Recent Results"):
+        results_html = gr.HTML(value=build_recent_results)
+
+    with gr.Tab("Model Info"):
+        model_html = gr.HTML(value=build_model_info)
+
+    # Auto-refresh timer
+    timer = gr.Timer(value=UI_REFRESH)
+    timer.tick(fn=refresh_all, outputs=[games_html, status_html, results_html, model_html])
+
+    gr.Markdown(
+        "<p style='text-align:center; color:#666; font-size:0.8em'>"
+        "Data source: nomos42.duckdns.org | Refresh: 15min (fetch) / 2min (UI) | "
+        "Alerts: Telegram @Nomos42Bot"
+        "</p>"
+    )
+
+
+if __name__ == "__main__":
+    demo.launch(server_name="0.0.0.0", server_port=7860)
