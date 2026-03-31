@@ -1,6 +1,6 @@
 # Nomos42 — NBA Quant AI
 
-> Architecture v17 — Brain + Muscle + Karpathy Loop | Updated: 2026-03-28
+> Architecture v18 — Department Forge + Trading Floor v4 | Updated: 2026-03-31
 
 ## Mission
 Build the best NBA prediction AI in the world.
@@ -83,6 +83,26 @@ SYSTEM CRONS
 8. **CPU-only islands** — no neural models on CPU (tree-based only), stacking removed
 9. **Supabase** — primary (ayqviq) paused (402), using pooler connection (xivvnr)
 
+## Agent Directives (OBLIGATOIRE Overrides)
+
+### Pre-Work
+1. **STEP 0 RULE**: Before ANY structural refactor on a file >300 LOC, first remove dead props, unused exports, unused imports, debug logs. Commit cleanup separately.
+2. **PHASED EXECUTION**: Never attempt multi-file refactors in single response. Max 5 files per phase. Complete phase → verify → approval → next phase.
+
+### Code Quality
+3. **SENIOR DEV OVERRIDE**: Override default "try simplest approach" for architecture work. Fix structural issues, not just symptoms. Ask: "What would a perfectionist senior dev reject in review?"
+4. **FORCED VERIFICATION**: After every file modification, run verification before reporting success. Never claim "done" without checking the code compiles/runs.
+
+### Context Management
+5. **SUB-AGENT SWARMING**: Tasks touching >5 independent files MUST use parallel sub-agents (5-8 files each). Sequential processing of large tasks guarantees context decay.
+6. **CONTEXT DECAY**: After 10+ messages, re-read any file before editing. Auto-compaction may have destroyed context.
+7. **FILE READ BUDGET**: Files >500 LOC must be read in chunks with offset/limit. Never assume single read captured full file.
+8. **TOOL RESULT BLINDNESS**: If search returns suspiciously few results, re-run with narrower scope. Assume truncation.
+
+### Edit Safety
+9. **EDIT INTEGRITY**: Re-read file before AND after every edit. Never batch >3 edits to same file without verification read.
+10. **NO SEMANTIC SEARCH**: On rename/signature change, search separately for: direct calls, type refs, string literals, dynamic imports, re-exports, barrel files, test mocks.
+
 ## MCP Servers
 
 | Server | Purpose |
@@ -99,6 +119,40 @@ SYSTEM CRONS
 | @RGWAbot | rgwa | AI Art Terminal -- generation, gallery, quality |
 
 Channel: @Nomos42
+
+## Department Forge Structure (v18)
+
+| Dept | Name | Karpathy Loop | Metric | Max Run |
+|------|------|---------------|--------|---------|
+| D1 | RESEARCH | paper→extract→propose→measure | papers/week, techniques tested | 5 min |
+| D2 | ENGINEERING | code→test→measure Brier→keep/revert | Brier delta, test pass rate | 5 min |
+| D3 | EVOLUTION | mutate→eval→measure fitness→select | gen/hr, best Brier, diversity | 5 min |
+| D4 | BETTING | strategy→backtest→measure ROI→keep/revert | ROI, Sharpe, Kelly edge | 5 min |
+| D5 | EVALUATION | audit→identify→fix→verify | false positive rate, calibration | 5 min |
+| D6 | INFRA | check→detect→fix→verify | uptime %, restart count | 5 min |
+| D7 | POLITICAL | signal→feature→measure alpha→keep/revert | political Brier, ETF ROI | 5 min |
+| D8 | CREATIVE (RGWA) | generate→quality→curate→publish | quality score, output/day | 5 min |
+
+Guardian Orchestrator: Analyzes ALL department loops, allocates resources, cross-pollinates wins.
+
+## Trading Floor v4 — Multi-AI Competition
+
+### NBA Traders (5 AI Agents)
+| # | Agent | Provider | Sees | Decides |
+|---|-------|----------|------|---------|
+| T1 | Gemini | Google | All predictions + all strategies + others' results | Betting strategy + Kelly sizing |
+| T2 | OpenRouter | Multi-model | Same | Same |
+| T3 | Claude | Anthropic CLI | Same | Same |
+| T4 | Codex | OpenAI | Same | Same |
+| T5 | Grok | xAI | Same | Same |
+
+### Political Traders (5 AI Agents — same providers)
+Trading: ETFs, index funds, real stocks based on political signals
+Starting capital: $100,000 virtual | Daily rebalancing
+
+### Command Center Offices (Backend Departments)
+Research HQ | Engineering Lab | Evolution Chamber | Betting Ops | Infra Bridge | Political Intel
+Each shows: dept status, active loops, metrics, agent activity
 
 ## Delegation
 
