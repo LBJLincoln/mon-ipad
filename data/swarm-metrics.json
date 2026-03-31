@@ -1,0 +1,195 @@
+{
+  "collected_at": "2026-03-31T13:18:26Z",
+  "version": "1.0",
+  "products": {
+    "nba": {
+      "name": "NBA Quant AI",
+      "layer1_strategy": {
+        "agent": "O1",
+        "name": "Brain / Strategy Definer",
+        "metric": "decisions_actioned_per_cycle",
+        "health_file_age_hours": 1.28,
+        "spaces_summary": "6/6 UP",
+        "open_issues": 2,
+        "system_status": "DEGRADED",
+        "status": "YELLOW"
+      },
+      "layer1_research": {
+        "agent": "R1",
+        "name": "Research Analyst",
+        "metric": "research_proposals_per_week",
+        "proposal_files_found": 6,
+        "proposals_file_age_hours": 4.65,
+        "status": "GREEN"
+      },
+      "layer1_features": {
+        "agent": "E1",
+        "name": "Feature Engineer",
+        "metric": "feature_categories_count",
+        "current_categories": 43,
+        "engine_version": "v3.0-43cat",
+        "engine_age_hours": 69.25,
+        "target_categories": 46,
+        "status": "YELLOW"
+      },
+      "layer1_evolution": {
+        "agent": "E2",
+        "name": "Evolution Optimizer",
+        "metric": "brier_vs_atr",
+        "current_brier": 0.2157,
+        "atr_brier": 0.2157,
+        "brier_gap": 0.0,
+        "status": "GREEN"
+      },
+      "layer1_predictions": {
+        "agent": "E3",
+        "name": "Predictions Agent",
+        "metric": "predictions_posted_count",
+        "predictions_today": 6,
+        "predictions_file_age_hours": 81.94,
+        "status": "GREEN"
+      },
+      "layer1_data": {
+        "agent": "E5",
+        "name": "Data Pipeline",
+        "metric": "odds_data_freshness_hours",
+        "current_age_hours": 0.77,
+        "target_max_hours": 2.0,
+        "status": "GREEN"
+      },
+      "layer1_islands": {
+        "agent": "V1",
+        "name": "Island Coordinator",
+        "metric": "islands_active_count",
+        "islands_up": 6,
+        "islands_total": 6,
+        "best_island_brier": 0.22115,
+        "island_detail": {
+          "S10": {
+            "status": "UP",
+            "brier": 0.22439,
+            "gen": 16,
+            "stagnation_cycles": 14
+          },
+          "S11": {
+            "status": "UP",
+            "brier": 0.22277,
+            "gen": 23,
+            "stagnation_cycles": 0
+          },
+          "S12": {
+            "status": "UP",
+            "brier": 0.22115,
+            "gen": 24,
+            "stagnation_cycles": 23
+          },
+          "S13": {
+            "status": "UP",
+            "brier": 0.22344,
+            "gen": 16,
+            "stagnation_cycles": 11
+          },
+          "S14": {
+            "status": "UP",
+            "brier": 0.2271,
+            "gen": 87,
+            "stagnation_cycles": 12
+          },
+          "S15": {
+            "status": "UP",
+            "brier": 0.22254,
+            "gen": 33,
+            "stagnation_cycles": 0
+          }
+        },
+        "status": "GREEN"
+      },
+      "layer1_betting": {
+        "agent": "B5",
+        "name": "Evaluator",
+        "metric": "season_roi_pct",
+        "roi_pct": -2.6,
+        "bankroll_usd": 97.4,
+        "sharpe_ratio": -1.22,
+        "win_rate_pct": 38.71,
+        "total_bets": 31,
+        "status": "RED"
+      },
+      "layer3_quality": {
+        "agent": "Q1",
+        "name": "Quality Tracker",
+        "metric": "brier_vs_atr_gap",
+        "current_brier": 0.2157,
+        "atr": 0.2157,
+        "gap": 0.0,
+        "eval_file_age_hours": 1.25,
+        "status": "GREEN"
+      },
+      "layer3_infra": {
+        "agent": "I1",
+        "name": "Fleet Manager",
+        "metric": "fleet_services_status",
+        "data_server_backtest": "UNKNOWN",
+        "telegram_brain": "ALIVE",
+        "infra_file_age_hours": 0.03,
+        "status": "GREEN"
+      }
+    },
+    "political": {
+      "name": "Political Alpha",
+      "layer1_engine": {
+        "agent": "V3",
+        "name": "Political Evolution",
+        "metric": "political_engine_categories_live",
+        "categories": 22,
+        "engine_version": "v3.1-political-22cat",
+        "engine_file_age_hours": 2.72,
+        "target_categories": 25,
+        "status": "GREEN"
+      },
+      "layer1_kaggle": {
+        "metric": "kaggle_session_status",
+        "status": "COMPLETE",
+        "health": "GREEN"
+      }
+    },
+    "rgwa": {
+      "name": "RGWA Artistic Generation",
+      "layer1_quality": {
+        "agent": "quality-critic",
+        "name": "Quality Critic",
+        "metric": "avg_generation_quality_score",
+        "current_avg": null,
+        "target": 7.5,
+        "quality_file_age_hours": 9999.0,
+        "status": "PLANNED"
+      }
+    },
+    "forge": {
+      "name": "Forge Factory",
+      "layer1_users": {
+        "metric": "forge_users_total",
+        "current": 2,
+        "target": 5,
+        "products_built": 0,
+        "status": "YELLOW"
+      }
+    }
+  },
+  "priority_alerts": [
+    "P2-STRATEGIC: ROI negative (-2.6%)",
+    "P3-GROWTH: Feature engine at 43 cats, target 46+",
+    "P2-STRATEGIC: Island S12 stagnant 23 cycles"
+  ],
+  "summary": {
+    "total_alerts": 3,
+    "critical_alerts": 0,
+    "islands_up": 6,
+    "best_brier": 0.22115,
+    "atr_brier": 0.2157,
+    "season_roi_pct": -2.6,
+    "feature_categories": 43,
+    "political_categories": 22,
+    "overall_health": "DEGRADED"
+  }
+}
