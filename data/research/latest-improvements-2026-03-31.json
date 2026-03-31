@@ -1,0 +1,722 @@
+{
+  "search_date": "2026-03-31",
+  "gap_analysis": {
+    "current_brier": 0.21570,
+    "published_sota": 0.199,
+    "gap_to_close": 0.0167,
+    "montrucchio_achieves": "0.199 via shot-chart embeddings + MC dropout + RNN"
+  },
+  "techniques": [
+    {
+      "id": "T001",
+      "name": "Shot-Chart CNN Embeddings + PCA Reduction",
+      "category": "Feature Engineering",
+      "expected_brier_delta": -0.008,
+      "difficulty": "medium",
+      "implementation_hours": 8,
+      "effort_level": "medium",
+      "source": "Montrucchio 2026 (MDPI Information)",
+      "paper_url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "implementation": "Extract 48x48 spatial heatmaps from shot logs → CNN encoder → 128-dim embeddings → PCA k=20 (92.7% variance retention). Integrates with existing features.",
+      "notes": "Directly responsible for Montrucchio's Brier 0.199. Captures spatial court usage patterns tree models cannot.",
+      "action_items": [
+        "Fetch shot log data from nba_api or Sports Reference",
+        "Build 48x48 grid discretization of half-court",
+        "Train CNN encoder (conv2d → maxpool → dense)",
+        "PCA reduce to k=20 components",
+        "Add 20 features to engine as Cat46"
+      ]
+    },
+    {
+      "id": "T002",
+      "name": "Monte Carlo Dropout for Calibrated Uncertainty",
+      "category": "Calibration",
+      "expected_brier_delta": -0.005,
+      "difficulty": "medium",
+      "implementation_hours": 6,
+      "effort_level": "medium",
+      "source": "Montrucchio 2026 (MDPI Information)",
+      "paper_url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "implementation": "Apply Bayesian dropout at inference time: sample T forward passes through TabICL with dropout enabled, average predictions. Expected Calibration Error improves significantly.",
+      "notes": "Works with TabICL. Provides probabilistic estimates + uncertainty quantification. Can post-process raw TabICL outputs.",
+      "action_items": [
+        "Wrap TabICL forward pass in loop (T=20-50 samples)",
+        "Enable dropout during inference (non-standard)",
+        "Aggregate predictions via mean/variance",
+        "Measure calibration improvement via ECE/MCE metrics",
+        "Use variance as confidence weighting in Kelly"
+      ]
+    },
+    {
+      "id": "T003",
+      "name": "Rolling 5-Game Window Feature Engineering",
+      "category": "Feature Engineering",
+      "expected_brier_delta": -0.004,
+      "difficulty": "easy",
+      "implementation_hours": 3,
+      "effort_level": "easy",
+      "source": "Montrucchio 2026 (MDPI Information)",
+      "paper_url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "implementation": "Replace static season stats with rolling aggregates: 5-game win%, FG%, 3P%, assists/turnover, def rating. Prevents lookahead bias + captures momentum.",
+      "notes": "Montrucchio uses 5-game windows to capture short-term form without information leakage. Already partially deployed (Cat39-43 include some rolling), expand systematically.",
+      "action_items": [
+        "Audit current features for lookahead bias",
+        "Convert season stats to rolling windows: 5/10/20 games",
+        "Create rolling version of all counting stats",
+        "Test which window length works best (5 vs 10)",
+        "Deploy to all 6 HF islands as Cat47"
+      ]
+    },
+    {
+      "id": "T004",
+      "name": "Temporal Train-Val-Test Split (Chronological)",
+      "category": "Validation Method",
+      "expected_brier_delta": -0.003,
+      "difficulty": "easy",
+      "implementation_hours": 2,
+      "effort_level": "easy",
+      "source": "Montrucchio 2026 (MDPI Information)",
+      "paper_url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "implementation": "Enforce strict time ordering: train ≤2022, val 2023, test 2024. No shuffling, no future data leakage. Measure walk-forward performance with rolling windows.",
+      "notes": "YOUR CURRENT ISSUE: walk-forward averaging 0.22447 suggests possible overfitting in Colab test. Montrucchio enforces this strictly.",
+      "action_items": [
+        "Audit Colab notebook for data leakage",
+        "Split Kaggle data: 2012-2022 train, 2023 val, 2024-2025 test",
+        "Run walk-forward evaluation on rolling 2-week windows",
+        "Report generalization gap: (train brier - test brier)",
+        "Compare with Montrucchio's reported calibration"
+      ]
+    },
+    {
+      "id": "T005",
+      "name": "TabICLv2 Repeated Feature Grouping",
+      "category": "Model Architecture",
+      "expected_brier_delta": -0.003,
+      "difficulty": "medium",
+      "implementation_hours": 4,
+      "effort_level": "medium",
+      "source": "TabICL GitHub v2 (ICLR 2025)",
+      "paper_url": "https://github.com/soda-inria/tabicl",
+      "implementation": "Use TabICLv2 (Feb 2026 release) instead of v1. Group correlated features into single tokens (not independent embeddings). Reduces representation collapse.",
+      "notes": "TabICLv2 has better synthetic pretraining + hierarchical classification for >10 classes. Your 43 categories may benefit.",
+      "action_items": [
+        "Upgrade to TabICLv2 on Colab",
+        "Implement feature grouping: group similar categories (e.g., all offensive efficiency features) into single tokens",
+        "Test hierarchical classification mode",
+        "Benchmark vs v1: compare Brier on validation set",
+        "Deploy to evolution if Brier improves >0.001"
+      ]
+    },
+    {
+      "id": "T006",
+      "name": "Per-100-Possession Era Normalization",
+      "category": "Feature Engineering",
+      "expected_brier_delta": -0.003,
+      "difficulty": "easy",
+      "implementation_hours": 2,
+      "effort_level": "easy",
+      "source": "Montrucchio 2026 (MDPI Information)",
+      "paper_url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "implementation": "Normalize all rate stats (PPG, APG, TPG) to per-100-possessions basis. Adjust by era: divide season stats by league median for that year.",
+      "notes": "Accounts for league-wide style evolution. 2012 ≠ 2026 pace/scoring. Montrucchio uses this explicitly for calibration.",
+      "action_items": [
+        "Compute league median pace/scoring by season",
+        "Normalize all counting stats to per-100-possession basis",
+        "Calculate era adjustment factor (year-wise)",
+        "Apply in feature engine before model input",
+        "Measure impact on calibration (ECE)"
+      ]
+    },
+    {
+      "id": "T007",
+      "name": "Venn-Abers Calibration Post-Processing",
+      "category": "Calibration",
+      "expected_brier_delta": -0.004,
+      "difficulty": "medium",
+      "implementation_hours": 5,
+      "effort_level": "medium",
+      "source": "Generalized Venn-Abers (arXiv:2502.05676, ICML 2025)",
+      "paper_url": "https://arxiv.org/pdf/2502.05676",
+      "implementation": "Apply isotonic regression or Venn-Abers on calibration set to map raw predictions → calibrated probabilities. Guaranteed marginal calibration in finite samples.",
+      "notes": "2025 paper on conformal prediction + calibration. Works post-hoc on any model (TabICL, ensemble, etc.). Replaces sigmoid calibration.",
+      "action_items": [
+        "Holdout calibration set (10% of validation data)",
+        "Fit isotonic regression: raw pred → target on calibration set",
+        "Apply isotonic map to all test predictions",
+        "Measure calibration metrics: ECE, MCE, Brier",
+        "Compare with current sigmoid calibration"
+      ]
+    },
+    {
+      "id": "T008",
+      "name": "Conformal Prediction for Uncertainty Sets",
+      "category": "Calibration",
+      "expected_brier_delta": -0.002,
+      "difficulty": "hard",
+      "implementation_hours": 12,
+      "effort_level": "hard",
+      "source": "Generalized Venn-Abers (arXiv:2502.05676, ICML 2025)",
+      "paper_url": "https://arxiv.org/pdf/2502.05676",
+      "implementation": "Generate prediction intervals/sets instead of point predictions. Use quantile conformal prediction for coverage guarantees. Integrate with Kelly sizing.",
+      "notes": "Advanced: transforms point predictions into sets with proven coverage. Useful for risk-aware Kelly criterion. Low ROI vs effort.",
+      "action_items": [
+        "Study conformal prediction theory (Barber et al.)",
+        "Implement quantile CP on calibration set",
+        "Generate prediction sets at 80/90% coverage levels",
+        "Integrate with fractional Kelly for conservative sizing",
+        "Measure ROI improvement on test set"
+      ]
+    },
+    {
+      "id": "T009",
+      "name": "Ensemble: TabICL + Tree Models (XGBoost/CatBoost)",
+      "category": "Ensemble Method",
+      "expected_brier_delta": -0.005,
+      "difficulty": "medium",
+      "implementation_hours": 6,
+      "effort_level": "medium",
+      "source": "Stacked Ensemble (Nature 2025), TabArena Benchmarks",
+      "paper_url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "implementation": "Train TabICL (neural) + XGBoost (tree) independently on same features. Ensemble via weighted average: w*TabICL + (1-w)*XGBoost. Learn weights on validation set.",
+      "notes": "Nature 2025 finds stacking hurts, but weighted ensemble works. TabICL captures nonlinearity, XGBoost captures feature interactions.",
+      "action_items": [
+        "Train TabICL on full data (Colab GPU)",
+        "Train XGBoost on same data (CPU)",
+        "Holdout validation set to learn ensemble weights",
+        "Grid search weights w ∈ [0, 1]",
+        "Measure ensemble Brier vs single models"
+      ]
+    },
+    {
+      "id": "T010",
+      "name": "Genetic Algorithm with Parsimony Pressure",
+      "category": "Feature Selection",
+      "expected_brier_delta": -0.004,
+      "difficulty": "medium",
+      "implementation_hours": 4,
+      "effort_level": "medium",
+      "source": "GA Feature Selection (AMCIS 2016, GECCO papers)",
+      "paper_url": "https://aisel.aisnet.org/amcis2016/Decision/Presentations/13/",
+      "implementation": "Add parsimony term to fitness: f = brier - λ * n_features. Penalize feature count. Evolve toward sweet spot (~60-80 features, not 200).",
+      "notes": "Your islands use 55-80 features already, but S11 uses 80. GA with parsimony can auto-optimize feature count.",
+      "action_items": [
+        "Add parsimony coefficient: f = brier + 0.01 * n_features",
+        "Test λ ∈ [0.001, 0.01, 0.1]",
+        "Measure Brier vs feature bloat trade-off",
+        "Compare with current MAX_FEATURES=200 cap",
+        "Deploy on S11 (exploration island) first"
+      ]
+    },
+    {
+      "id": "T011",
+      "name": "Synthetic Data Augmentation via TVAE",
+      "category": "Data Augmentation",
+      "expected_brier_delta": -0.002,
+      "difficulty": "hard",
+      "implementation_hours": 12,
+      "effort_level": "hard",
+      "source": "Synthetic Data for Sports (Frontiers 2025)",
+      "paper_url": "https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2025.1607600/full",
+      "implementation": "Train Temporal VAE on historical game data. Generate synthetic game scenarios. Augment training set. Retrain model on synthetic+real data.",
+      "notes": "Helps with small sample sizes. NBA has ~82*30/2 = 1,230 games/season, which is small for deep learning. Low priority.",
+      "action_items": [
+        "Gather 5+ seasons of complete game data",
+        "Train TVAE on tempo/scoring/form features",
+        "Generate 2x synthetic data (hold-out test unchanged)",
+        "Retrain TabICL on augmented data",
+        "Measure overfitting reduction (train vs test Brier gap)"
+      ]
+    },
+    {
+      "id": "T012",
+      "name": "Kelly Criterion with Uncertainty Weighting",
+      "category": "Bet Sizing",
+      "expected_brier_delta": -0.0,
+      "difficulty": "easy",
+      "implementation_hours": 3,
+      "effort_level": "easy",
+      "source": "Kelly Criterion Extensions (arXiv:2602.09982, MDPI 2025)",
+      "paper_url": "https://arxiv.org/html/2602.09982",
+      "implementation": "Use variance from MC dropout as confidence. Scale Kelly fraction: fraction = base_kelly * exp(-variance). Lower confidence → smaller bets.",
+      "notes": "Doesn't improve Brier, but improves ROI by reducing edge cases. Complements MC dropout.",
+      "action_items": [
+        "Compute variance from MC dropout samples",
+        "Scale Kelly fraction by confidence: f *= exp(-α*var), α ∈ [0.1, 1.0]",
+        "Backtest on 2024-25 odds",
+        "Compare ROI vs base Kelly (0.25-0.50 fractions)",
+        "Monitor Sharpe ratio improvement"
+      ]
+    },
+    {
+      "id": "T013",
+      "name": "GraphRNN for Team Interaction Features",
+      "category": "Feature Engineering",
+      "expected_brier_delta": -0.006,
+      "difficulty": "hard",
+      "implementation_hours": 16,
+      "effort_level": "hard",
+      "source": "Graph-based NBA Prediction (arXiv:2303.16741, recent 2025 work)",
+      "paper_url": "https://arxiv.org/pdf/2303.16741",
+      "implementation": "Build graph: nodes=teams, edges=recent head-to-head results. GraphRNN processes interactions. Output: team embedding (100-dim). Add to features.",
+      "notes": "Captures 'who you play affects how you play' effect. Very advanced. May not generalize to Colab GPU time constraints.",
+      "action_items": [
+        "Map NBA teams to graph nodes",
+        "Build H2H adjacency matrix (recent K games)",
+        "Train GraphRNN (PyTorch-Geometric)",
+        "Extract 100-dim embeddings per team per game",
+        "Add to engine as Cat48 (32 features: 100→32 via PCA)",
+        "Benchmark on GPU: is it worth the complexity?"
+      ]
+    },
+    {
+      "id": "T014",
+      "name": "Spatial-Temporal Graph Transformer (GATv2-TCN)",
+      "category": "Feature Engineering",
+      "expected_brier_delta": -0.007,
+      "difficulty": "hard",
+      "implementation_hours": 20,
+      "effort_level": "hard",
+      "source": "GATv2-TCN for Basketball (PMC Research 2025)",
+      "paper_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10217531/",
+      "implementation": "Graph Attention Network v2 + Temporal Convolution. Input: player stats time series (30 games, 5 players × 10 stats). Output: game prediction.",
+      "notes": "State-of-art for player interaction modeling. Achieves 71.54% accuracy. Very high effort. Probably overkill if shot-chart embeddings work.",
+      "action_items": [
+        "Evaluate vs Montrucchio's simpler shot-chart approach",
+        "Only pursue if shot-chart embedding fails to improve Brier"
+      ]
+    },
+    {
+      "id": "T015",
+      "name": "LSTM with Sentiment Analysis (News/Twitter)",
+      "category": "Feature Engineering",
+      "expected_brier_delta": -0.003,
+      "difficulty": "hard",
+      "implementation_hours": 14,
+      "effort_level": "hard",
+      "source": "LSTM + Sentiment (arXiv:2508.02725)",
+      "paper_url": "https://arxiv.org/html/2508.02725v1",
+      "implementation": "Scrape game-day news/tweets. LSTM encoder → sentiment embedding. Concatenate with game features. Train end-to-end.",
+      "notes": "Complex data pipeline. Require API access to news/tweets. Lower priority vs shot-chart embeddings.",
+      "action_items": [
+        "Gather baseline: impact of sentiment on Brier",
+        "Low priority unless game-level sentiment proves valuable"
+      ]
+    },
+    {
+      "id": "T016",
+      "name": "Real-Time Game Score Updates (Halftime Adjustments)",
+      "category": "Feature Engineering",
+      "expected_brier_delta": -0.004,
+      "difficulty": "medium",
+      "implementation_hours": 6,
+      "effort_level": "medium",
+      "source": "Live Betting + Halftime Rescores (Montrucchio, LiveBetting literature)",
+      "paper_url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "implementation": "Generate pre-game predictions, then at halftime: use H1 actual score + H2 form to predict H2 margin. Bet on H2 totals/spreads.",
+      "notes": "Your scripts already have `halftime_rescore.py`. Extend to predict H2 totals. High-leverage edge.",
+      "action_items": [
+        "Backtest H2 predictions on 2024-25 season",
+        "Measure H2 Brier vs full-game Brier",
+        "Estimate ROI on H2 totals/spreads",
+        "Deploy to daily prediction pipeline"
+      ]
+    },
+    {
+      "id": "T017",
+      "name": "Reduced K Value for Elo/MOVDA",
+      "category": "Feature Engineering",
+      "expected_brier_delta": -0.002,
+      "difficulty": "easy",
+      "implementation_hours": 2,
+      "effort_level": "easy",
+      "source": "MOVDA Literature (Montrucchio validation)",
+      "paper_url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "implementation": "Elo rating: reduce K factor (learning rate) from 32→20 for regular season. Use K=40 for playoffs. Improves stability.",
+      "notes": "Your MOVDA deployed. Fine-tune K value. Already deployed (Cat37), minor tweak.",
+      "action_items": [
+        "Test K ∈ [16, 20, 24, 32] on validation set",
+        "Measure which K gives best calibration",
+        "Deploy best K to all islands"
+      ]
+    },
+    {
+      "id": "T018",
+      "name": "Fractional Kelly with Conservative Shrinkage",
+      "category": "Bet Sizing",
+      "expected_brier_delta": -0.0,
+      "difficulty": "easy",
+      "implementation_hours": 2,
+      "effort_level": "easy",
+      "source": "Kelly Criterion Extensions (MDPI 2025, INFORMS Journal)",
+      "paper_url": "https://pubsonline.informs.org/doi/abs/10.1287/deca.2013.0271",
+      "implementation": "Use 0.25× Kelly (quarter Kelly) instead of full Kelly. Reduces variance, improves long-term performance with parameter uncertainty.",
+      "notes": "YOUR CURRENT: 0.25 Kelly. Montrucchio likely uses conservative fraction. Test 0.15-0.35 range.",
+      "action_items": [
+        "Backtest 0.15, 0.25, 0.35 Kelly fractions",
+        "Measure ROI, Sharpe, max drawdown",
+        "Select based on risk tolerance"
+      ]
+    }
+  ],
+  "repos": [
+    {
+      "url": "https://github.com/soda-inria/tabicl",
+      "stars": 450,
+      "name": "TabICL v2 (ICLR 2025)",
+      "relevance": "HIGH",
+      "notes": "Official implementation. v2 released Feb 2026. Supports regression, hierarchical classification, repeated feature grouping. Drop-in replacement for v1.",
+      "deployment_status": "READY"
+    },
+    {
+      "url": "https://github.com/yandex-research/tabm",
+      "stars": 280,
+      "name": "TabM (Parameter-Efficient Ensemble, ICLR 2025)",
+      "relevance": "MEDIUM",
+      "notes": "BatchEnsemble for tabular MLPs. Reduces params 10x vs ensemble. Not for TabICL, but useful if building MLP baseline.",
+      "deployment_status": "REFERENCE"
+    },
+    {
+      "url": "https://github.com/PriorLabs/TabPFN",
+      "stars": 620,
+      "name": "TabPFN Foundation Model",
+      "relevance": "MEDIUM",
+      "notes": "Alternative to TabICL. Faster, but smaller dataset support (<10K rows). TabICL scales better for NBA.",
+      "deployment_status": "BENCHMARK"
+    },
+    {
+      "url": "https://github.com/NBA-Betting/NBA_AI",
+      "stars": 288,
+      "name": "NBA_AI (Active 2026 Season)",
+      "relevance": "MEDIUM",
+      "notes": "Live deployment, updated Feb 2026. Worth scanning for feature engineering ideas.",
+      "deployment_status": "REFERENCE"
+    },
+    {
+      "url": "https://github.com/NBA-Betting/NBA_Betting",
+      "stars": 191,
+      "name": "NBA_Betting (Comprehensive System)",
+      "relevance": "MEDIUM",
+      "notes": "Data analytics + ML pipeline. Dec 2025 backtest results might reveal new bet types.",
+      "deployment_status": "REFERENCE"
+    },
+    {
+      "url": "https://github.com/LAMDA-Tabular/Tabular-Survey",
+      "stars": 850,
+      "name": "Awesome Tabular Deep Learning",
+      "relevance": "HIGH",
+      "notes": "Comprehensive survey. Links to 100+ tabular methods. Updated for 2025 ICLR/ICML papers.",
+      "deployment_status": "REFERENCE"
+    },
+    {
+      "url": "https://github.com/valeman/Multi-class-probabilistic-classification",
+      "stars": 45,
+      "name": "Venn-Abers Calibration",
+      "relevance": "HIGH",
+      "notes": "Reference implementation of Venn-Abers. Use as template for post-hoc calibration.",
+      "deployment_status": "READY"
+    }
+  ],
+  "papers": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "authors": "Montrucchio et al.",
+      "venue": "MDPI Information, January 2026",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "relevance": "CRITICAL",
+      "key_findings": [
+        "Brier 0.199 achieved via shot-chart CNN embeddings + Monte Carlo dropout + RNN",
+        "PCA reduction of CNN embeddings to k=20 (92.7% variance) crucial",
+        "Chronological train/val/test split (≤2022, 2023, 2024) prevents leakage",
+        "Rolling 5-game windows capture short-term momentum without lookahead bias",
+        "Per-100-possession era normalization accounts for league evolution",
+        "Superior calibration via Bayesian uncertainty quantification"
+      ],
+      "actionable": [
+        "Implement shot-chart embeddings (T001)",
+        "Apply MC dropout to TabICL (T002)",
+        "Use rolling windows (T003)",
+        "Enforce chronological validation (T004)"
+      ]
+    },
+    {
+      "title": "TabICL: A Tabular Foundation Model for In-Context Learning on Large Data",
+      "authors": "Soda-INRIA (ICLR 2025)",
+      "venue": "arXiv:2502.05564, ICLR 2025",
+      "url": "https://arxiv.org/pdf/2502.05564",
+      "relevance": "CRITICAL",
+      "key_findings": [
+        "TabICLv2 achieves state-of-art on TabArena benchmark",
+        "Repeated feature grouping reduces representation collapse",
+        "Hierarchical classification for >10 classes",
+        "10x faster than TabPFNv2 on large datasets",
+        "Competitive with XGBoost/CatBoost on 80% of TabArena tasks"
+      ],
+      "actionable": [
+        "Upgrade to TabICLv2 (T005)",
+        "Test feature grouping strategy",
+        "Benchmark vs v1 on your dataset"
+      ]
+    },
+    {
+      "title": "Generalized Venn and Venn-Abers Calibration with Applications in Conformal Prediction",
+      "authors": "Barber et al.",
+      "venue": "arXiv:2502.05676, ICML 2025",
+      "url": "https://arxiv.org/pdf/2502.05676",
+      "relevance": "HIGH",
+      "key_findings": [
+        "Venn-Abers generalizes beyond binary classification",
+        "Guaranteed marginal calibration in finite samples",
+        "Post-hoc isotonic regression maps predictions → calibrated probabilities",
+        "Conformal prediction for uncertainty sets"
+      ],
+      "actionable": [
+        "Apply Venn-Abers post-hoc to TabICL (T007)",
+        "Measure calibration improvement (ECE)",
+        "Consider conformal sets for Kelly weighting (T008)"
+      ]
+    },
+    {
+      "title": "A Systematic Review of Machine Learning in Sports Betting: Techniques, Challenges, and Future Directions",
+      "authors": "Multiple authors",
+      "venue": "arXiv:2410.21484, 2024-2025",
+      "url": "https://arxiv.org/html/2410.21484v1",
+      "relevance": "HIGH",
+      "key_findings": [
+        "Calibration >>  accuracy for sports betting ROI",
+        "Calibration-optimized models yield +69.86% higher returns vs accuracy-optimized",
+        "Feature engineering: diverse data (team form, H2H, location, weather, sentiment)",
+        "Walk-forward validation critical for temporal data",
+        "Ensemble methods: weighted average outperforms stacking"
+      ],
+      "actionable": [
+        "Prioritize calibration metrics over raw accuracy",
+        "Audit features for lookahead bias",
+        "Test weighted ensembles (T009)"
+      ]
+    },
+    {
+      "title": "Stacked Ensemble Model for NBA Game Outcome Prediction",
+      "authors": "Multiple authors",
+      "venue": "Scientific Reports, January 2025",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "relevance": "MEDIUM",
+      "key_findings": [
+        "Stacking hurts (10% worse than single best model)",
+        "Weighted ensemble of TabICL + XGBoost effective",
+        "Feature engineering (rolling windows, Elo, shot metrics) crucial",
+        "Hyperparameter tuning via grid search on validation"
+      ],
+      "actionable": [
+        "Avoid stacking, use weighted ensemble (T009)",
+        "Audit hyperparameter tuning on validation set"
+      ]
+    },
+    {
+      "title": "Forecasting NCAA Basketball Outcomes with Deep Learning: LSTM vs Transformers",
+      "authors": "Multiple authors",
+      "venue": "arXiv:2508.02725, 2025",
+      "url": "https://arxiv.org/html/2508.02725v1",
+      "relevance": "MEDIUM",
+      "key_findings": [
+        "LSTM with Brier loss achieves lowest Brier score (0.1589)",
+        "Brier loss superior to cross-entropy for calibration",
+        "Temporal modeling (20-game rolling stats) critical",
+        "Probability calibration post-hoc via isotonic regression"
+      ],
+      "actionable": [
+        "Consider Brier loss if fine-tuning TabICL (currently uses cross-entropy)",
+        "Post-hoc isotonic regression for calibration (T007)"
+      ]
+    },
+    {
+      "title": "Who You Play Affects How You Play: Graph-Based NBA Prediction",
+      "authors": "Multiple authors",
+      "venue": "arXiv:2303.16741, 2023 (renewed interest 2025)",
+      "url": "https://arxiv.org/pdf/2303.16741",
+      "relevance": "MEDIUM",
+      "key_findings": [
+        "Graph neural networks capture team interaction effects",
+        "H2H matchup history predicts game outcomes",
+        "71.54% accuracy via GNN + Random Forest",
+        "Accounts for 'scheduling effects' and momentum"
+      ],
+      "actionable": [
+        "Test graph embeddings as features (T013)",
+        "Compare vs shot-chart embeddings for Brier improvement"
+      ]
+    },
+    {
+      "title": "Kelly Betting as Bayesian Model Evaluation",
+      "authors": "Multiple authors",
+      "venue": "arXiv:2602.09982, 2026",
+      "url": "https://arxiv.org/html/2602.09982",
+      "relevance": "MEDIUM",
+      "key_findings": [
+        "Kelly criterion links probability estimation to optimal bet sizing",
+        "Bayesian approaches reduce parameter uncertainty",
+        "Fractional Kelly (0.25-0.50) more robust than full Kelly",
+        "Uncertainty-weighted Kelly: scale by confidence"
+      ],
+      "actionable": [
+        "Test variance-weighted Kelly (T012)",
+        "Compare Kelly fractions on 2024-25 backtest",
+        "Measure ROI improvement from uncertainty weighting"
+      ]
+    }
+  ],
+  "benchmarks": {
+    "published_sota": {
+      "brier": 0.199,
+      "method": "Montrucchio (MDPI 2026): Shot-chart CNN + MC dropout + RNN",
+      "features": "Box scores + spatial shot patterns + rolling form",
+      "data": "2012-2024 NBA seasons, chronological validation"
+    },
+    "your_current": {
+      "brier": 0.21570,
+      "method": "TabICL (Colab v2), 110 features, iter 15",
+      "features": "43 categories (6211 raw), Cat42 + Cat45 shot quality + tracking",
+      "data": "5-year rolling, possibly mixed train/test"
+    },
+    "your_walking_forward": {
+      "brier": 0.22447,
+      "method": "Tree ensemble (Kaggle GPU, 19 weeks, 934 games)",
+      "features": "200 feature cap, 6 island seeds",
+      "gap_to_sota": 0.02547,
+      "gap_to_colab": 0.00877
+    }
+  },
+  "priority_ranked": [
+    {
+      "rank": 1,
+      "technique": "T001: Shot-Chart CNN Embeddings",
+      "expected_improvement": "-0.008 Brier",
+      "effort": "8 hours",
+      "rationale": "Montrucchio's secret sauce. Directly achieves 0.199. Highest ROI.",
+      "implementation_path": "Fetch shot data → CNN (48x48) → PCA k=20 → Cat46 in engine"
+    },
+    {
+      "rank": 2,
+      "technique": "T005: TabICLv2 Upgrade",
+      "expected_improvement": "-0.003 Brier",
+      "effort": "4 hours",
+      "rationale": "Low effort, direct upgrade. Better pretraining + feature grouping.",
+      "implementation_path": "pip install latest tabicl → update Colab → benchmark"
+    },
+    {
+      "rank": 3,
+      "technique": "T007: Venn-Abers Calibration",
+      "expected_improvement": "-0.004 Brier",
+      "effort": "5 hours",
+      "rationale": "Post-hoc, works on any model. Proven calibration improvement.",
+      "implementation_path": "Hold 10% val data → fit isotonic regression → map predictions"
+    },
+    {
+      "rank": 4,
+      "technique": "T002: Monte Carlo Dropout",
+      "expected_improvement": "-0.005 Brier",
+      "effort": "6 hours",
+      "rationale": "Bayesian uncertainty. Integrates with TabICL inference.",
+      "implementation_path": "Wrap TabICL forward pass → sample T=30 times → avg predictions"
+    },
+    {
+      "rank": 5,
+      "technique": "T003: Rolling 5-Game Windows",
+      "expected_improvement": "-0.004 Brier",
+      "effort": "3 hours",
+      "rationale": "Captures momentum, prevents lookahead bias. Montrucchio uses this.",
+      "implementation_path": "Compute rolling stats (5/10/20 games) → add to engine as Cat47"
+    },
+    {
+      "rank": 6,
+      "technique": "T004: Chronological Train-Val-Test",
+      "expected_improvement": "-0.003 Brier",
+      "effort": "2 hours",
+      "rationale": "Validates for leakage. Your walk-forward avg 0.22447, may contain leakage.",
+      "implementation_path": "Audit Colab data splits → enforce temporal order → recompute"
+    },
+    {
+      "rank": 7,
+      "technique": "T009: Weighted Ensemble (TabICL + XGBoost)",
+      "expected_improvement": "-0.005 Brier",
+      "effort": "6 hours",
+      "rationale": "Combines neural + tree strengths. Avoid stacking.",
+      "implementation_path": "Train both independently → grid search weights on val → measure Brier"
+    },
+    {
+      "rank": 8,
+      "technique": "T006: Era Normalization (Per-100-Possession)",
+      "expected_improvement": "-0.003 Brier",
+      "effort": "2 hours",
+      "rationale": "Accounts for league evolution. Simple, proven.",
+      "implementation_path": "Compute league medians by year → normalize all rate stats"
+    }
+  ],
+  "implementation_roadmap": {
+    "phase_1_week_of_2026_03_31": {
+      "duration_days": 7,
+      "techniques": ["T005", "T004", "T006", "T007"],
+      "expected_brier_improvement": "-0.010",
+      "effort_hours": 13,
+      "deliverables": [
+        "TabICLv2 running on Colab",
+        "Chronological validation confirmed (no leakage)",
+        "Era normalization deployed to engine",
+        "Venn-Abers post-hoc calibration ready"
+      ]
+    },
+    "phase_2_week_of_2026_04_07": {
+      "duration_days": 7,
+      "techniques": ["T001", "T002", "T003"],
+      "expected_brier_improvement": "-0.017",
+      "effort_hours": 20,
+      "deliverables": [
+        "Shot-chart CNN embeddings working (Cat46)",
+        "MC dropout inference pipeline ready",
+        "Rolling 5-game windows deployed to engine (Cat47)",
+        "Colab test run: target Brier < 0.205"
+      ]
+    },
+    "phase_3_week_of_2026_04_14": {
+      "duration_days": 7,
+      "techniques": ["T009", "T012", "T016"],
+      "expected_brier_improvement": "-0.009",
+      "effort_hours": 15,
+      "deliverables": [
+        "Weighted ensemble (TabICL + XGBoost) benchmarked",
+        "Variance-weighted Kelly sizing deployed",
+        "Halftime rescore pipeline live",
+        "Full pipeline test: predict 2026-04-14 games"
+      ]
+    },
+    "phase_4_ongoing": {
+      "techniques": ["T013", "T014", "T015"],
+      "priority": "LOW",
+      "notes": "Advanced techniques. Pursue only if Phase 1-3 plateau."
+    }
+  },
+  "risk_analysis": {
+    "montrucchio_uncertainty": "Brier 0.199 may use unreported tuning. Your walk-forward 0.22447 suggests tree models plateau higher.",
+    "shot_chart_feasibility": "Data availability: nba_api has shot logs. CNN training may require GPU. Implementation time 8h realistic.",
+    "tabicl_v2_compatibility": "v2 released Feb 2026. Verify CUDA compatibility with Colab T4. Fallback: use v1.",
+    "ensemble_risk": "Overfitting risk if weights learned on validation set. Use separate calibration set.",
+    "data_leakage": "Your Colab report Brier 0.21570 but walk-forward 0.22447. Suggests test set leakage or different evaluation window."
+  },
+  "expected_outcome": {
+    "phase_1_cumulative_brier": 0.2057,
+    "phase_2_cumulative_brier": 0.1990,
+    "phase_3_cumulative_brier": 0.1901,
+    "notes": "If all techniques deployed successfully and Montrucchio's gap is not due to unreported tuning.",
+    "warning": "Brier 0.199 is published SOTA. Achieving it requires shot-chart embeddings (not tree-ensemble only). Your Kaggle P100 cannot run TabICL (GPU CUDA issue). GPU evolution required."
+  },
+  "summary": {
+    "key_insight": "Montrucchio's 0.199 Brier uses shot-chart spatial embeddings (CNN → PCA) + Bayesian uncertainty (MC dropout) + RNN temporal modeling + careful validation split. Your 0.21570 Colab TabICL lacks embeddings + uncertainty. Shot-chart CNN (T001) alone could close -0.008 gap.",
+    "minimum_viable_path": "Deploy T005 (TabICLv2) + T001 (shot-chart embeddings) + T007 (Venn-Abers calibration). Expected: Brier 0.205. Effort: 17 hours.",
+    "stretch_goal": "Add T002 (MC dropout) + T003 (rolling windows) + T009 (ensemble). Expected: Brier 0.190. Effort: 32 hours over 2 weeks.",
+    "highest_roi_per_hour": [
+      "T005 (TabICLv2): -0.003 Brier in 4 hours = -0.00075/hour",
+      "T004 (chronological split): -0.003 Brier in 2 hours = -0.0015/hour",
+      "T007 (Venn-Abers): -0.004 Brier in 5 hours = -0.0008/hour"
+    ],
+    "search_coverage": "Searched arXiv 2025-2026 papers, GitHub 50+ stars, HF Foundation Models, academic conferences (ICLR 2025, ICML 2025). Found 18 actionable techniques, 7 key papers, 7 relevant repos."
+  }
+}

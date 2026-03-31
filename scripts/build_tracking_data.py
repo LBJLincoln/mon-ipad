@@ -179,6 +179,97 @@ if len(metrics) > 0:
                     if len(vals) > 0:
                         tracking[team_abbr][key] = round(float(vals.mean()), 3)
 
+# 6. Defense stats (rim protection, blocks, steals)
+defense = load_csv("defense")
+if len(defense) > 0:
+    print(f"  Defense: {len(defense)} entries")
+    team_col = 'TEAM_ABBREVIATION' if 'TEAM_ABBREVIATION' in defense.columns else None
+    if team_col:
+        for _, row in defense.iterrows():
+            team = row[team_col]
+            if team not in tracking:
+                tracking[team] = {}
+            for col, key in [
+                ('DEF_RIM_FGM', 'def_rim_fgm'),
+                ('DEF_RIM_FGA', 'def_rim_fga'),
+                ('DEF_RIM_FG_PCT', 'def_rim_fg_pct'),
+                ('STL', 'stl_per_game'),
+                ('BLK', 'blk_per_game'),
+                ('DREB', 'dreb_per_game'),
+            ]:
+                if col in row.index and pd.notna(row[col]):
+                    tracking[team][key] = round(float(row[col]), 3)
+
+# 7. Passing stats (ball movement, potential assists, AST/pass ratio)
+passing = load_csv("passing")
+if len(passing) > 0:
+    print(f"  Passing: {len(passing)} entries")
+    team_col = 'TEAM_ABBREVIATION' if 'TEAM_ABBREVIATION' in passing.columns else None
+    if team_col:
+        for _, row in passing.iterrows():
+            team = row[team_col]
+            if team not in tracking:
+                tracking[team] = {}
+            for col, key in [
+                ('PASSES_MADE', 'passes_made'),
+                ('AST', 'team_ast'),
+                ('POTENTIAL_AST', 'potential_ast'),
+                ('AST_POINTS_CREATED', 'ast_points_created'),
+                ('AST_TO_PASS_PCT', 'ast_to_pass_pct'),
+                ('AST_TO_PASS_PCT_ADJ', 'ast_to_pass_pct_adj'),
+                ('SECONDARY_AST', 'secondary_ast'),
+                ('FT_AST', 'ft_ast'),
+            ]:
+                if col in row.index and pd.notna(row[col]):
+                    tracking[team][key] = round(float(row[col]), 3)
+
+# 8. Drive additional stats (tov%, pts%, passes%)
+if len(drives) > 0:
+    team_col = 'TEAM_ABBREVIATION' if 'TEAM_ABBREVIATION' in drives.columns else None
+    if team_col:
+        for _, row in drives.iterrows():
+            team = row[team_col]
+            if team not in tracking:
+                tracking[team] = {}
+            for col, key in [
+                ('DRIVE_TOV_PCT', 'drive_tov_pct'),
+                ('DRIVE_PTS_PCT', 'drive_pts_pct'),
+                ('DRIVE_PASSES_PCT', 'drive_passes_pct'),
+                ('DRIVE_AST_PCT', 'drive_ast_pct'),
+                ('DRIVE_PF_PCT', 'drive_pf_pct'),
+            ]:
+                if col in row.index and pd.notna(row[col]):
+                    tracking[team][key] = round(float(row[col]), 4)
+
+# 9. Play-Type PPP (team-level aggregation from player data)
+play_types_path = Path(__file__).resolve().parent.parent / "data" / "play-types" / "NBA_Play_Types_12_25.csv"
+if play_types_path.exists():
+    pt_df = pd.read_csv(play_types_path)
+    print(f"  Play Types: {len(pt_df)} entries")
+    # Aggregate by team and play type: possession-weighted PPP
+    key_types = {
+        'Isolation': 'iso_ppp',
+        'PnR Ball-Handler': 'pnr_ppp',
+        'Spotup': 'spot_ppp',
+        'Transition': 'trans_ppp',
+        'Postup': 'post_ppp',
+        'PnR Roll Man': 'roll_ppp',
+        'Handoff': 'handoff_ppp',
+        'Cut': 'cut_ppp',
+    }
+    for team_abbr in pt_df['TEAM_ABB'].unique() if 'TEAM_ABB' in pt_df.columns else []:
+        team_df = pt_df[pt_df['TEAM_ABB'] == team_abbr]
+        if team_abbr not in tracking:
+            tracking[team_abbr] = {}
+        for pt_name, key in key_types.items():
+            pt_rows = team_df[team_df['PLAY_TYPE'] == pt_name]
+            if len(pt_rows) > 0 and 'POSS' in pt_rows.columns and 'PPP' in pt_rows.columns:
+                # Possession-weighted average PPP
+                total_poss = pt_rows['POSS'].sum()
+                if total_poss > 0:
+                    weighted_ppp = (pt_rows['PPP'] * pt_rows['POSS']).sum() / total_poss
+                    tracking[team_abbr][key] = round(float(weighted_ppp), 4)
+
 # Compute xEFG for all teams
 for team, data in tracking.items():
     rim = data.get('rim_rate', 0.30)

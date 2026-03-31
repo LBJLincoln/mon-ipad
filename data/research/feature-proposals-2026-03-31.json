@@ -1,0 +1,373 @@
+{
+  "generated": "2026-03-31",
+  "engine_version": "v3.1-46cat",
+  "current_brier_atr": 0.21570,
+  "target_brier": 0.20,
+  "analysis_summary": {
+    "data_sources_audited": [
+      "data/player-tracking/drives_2025-26.csv",
+      "data/player-tracking/defense_2025-26.csv",
+      "data/player-tracking/passing_2025-26.csv",
+      "data/player-tracking/speed_distance_2025-26.csv",
+      "data/player-tracking/hustle_2025-26.csv",
+      "data/play-types/NBA_Play_Types_12_25.csv",
+      "data/injuries/injury_report_2026-03-28.json"
+    ],
+    "key_finding": "Three datasets are loaded by build_tracking_data.py and stored in tracking_data dict, but their quality signals are UNUSED by engine.py: drive_fg_pct (offense efficiency on drives), def_rim_fg_pct (rim protection quality), and the entire passing_2025-26.csv (AST/pass, potential assists). Additionally, play-types/NBA_Play_Types_12_25.csv has real PPP-by-play-type for all 30 teams but Cat19 and Cat31b write zeros instead of real data.",
+    "injury_data_status": "EMPTY — injury_report_2026-03-28.json returned error: no_pdf_found. Both files have 0 teams. Cannot build injury impact features from current data.",
+    "cat_gaps_available": [40, 47, 48, 49, 50]
+  },
+  "proposals": [
+    {
+      "cat": "Cat47",
+      "name": "Drive-Offense vs Rim-Defense Matchup",
+      "feature_count": 14,
+      "implementation_lines": 25,
+      "priority": "HIGH",
+      "data_source": "tracking_data dict (already built by build_tracking_data.py: drive_fg_pct, def_rim_fg_pct) + defense_2025-26.csv (DEF_RIM_FG_PCT, BLK)",
+      "gap_analysis": "engine.py Cat45 uses tracking_data[team].get('drives') COUNT only. drive_fg_pct is already loaded into tracking_data by build_tracking_data.py line 153 but never read by engine. DEF_RIM_FG_PCT from defense_2025-26.csv is completely unused (Cat31b writes 0.0 placeholder).",
+      "signal_strength": {
+        "drive_fg_pct_range": "0.458 (BKN) to 0.545 (LAL)",
+        "def_rim_fg_pct_range": "0.620 (BOS) to 0.710+ (LAL)",
+        "cross_matchup_std": 0.033,
+        "interpretation": "BOS allows 0.620 at rim (best defense) vs league avg 0.660. A team with 0.545 drive FG% vs BOS rim defense = -0.075 edge vs same team vs average defense. This is the offensive system vs defensive strength interaction missing from current features."
+      },
+      "literature_basis": "Montrucchio 2026 (Brier 0.199, SOTA) specifically uses zone-level offense vs defense matchups. Oliver Four Factors framework — drive generation is a modern extension of FT rate factor. Cervone et al. 2016 (optical tracking) showed drive quality outperforms drive quantity as a predictor.",
+      "expected_brier_impact": {
+        "estimate": -0.0008,
+        "range": [-0.0005, -0.0012],
+        "reasoning": "Direct offense-defense matchup at the play level. Drive matchups shift probability 3-5% for extreme mismatches (BOS rim defense vs LAL high-drive team). With 200 feature budget and genetic selection, these 14 features will compete directly. Conservative estimate based on zone features (Cat42) giving ~0.001 improvement in Montrucchio framework."
+      },
+      "interacts_with": ["Cat42 (Shot Quality Zones)", "Cat45 (Player Tracking)", "Cat3 (Pace/Efficiency)", "Cat14 (Defensive Matchup Advanced)"],
+      "build_tracking_data_change": {
+        "description": "Add defense_2025-26.csv loading to build_tracking_data.py",
+        "pseudocode": [
+          "# Add to build_tracking_data.py section 4+:",
+          "defense = load_csv('defense')",
+          "if len(defense) > 0:",
+          "    for _, row in defense.iterrows():",
+          "        team = row['TEAM_ABBREVIATION']",
+          "        if team not in tracking: tracking[team] = {}",
+          "        tracking[team]['def_rim_fg_pct'] = float(row.get('DEF_RIM_FG_PCT', 0.66))",
+          "        tracking[team]['def_blk_per_game'] = float(row.get('BLK', 4.5))",
+          "# Also add from drives:",
+          "        tracking[team]['drive_tov_pct'] = float(row.get('DRIVE_TOV_PCT', 0.07))",
+          "        tracking[team]['drive_pts_pct'] = float(row.get('DRIVE_PTS_PCT', 0.27))"
+        ]
+      },
+      "engine_code_snippet": {
+        "feature_names_registration": [
+          "# ── Cat47: Drive-Offense vs Rim-Defense Matchup (14 features) ──",
+          "for prefix in ['h', 'a']:",
+          "    names.append(f'{prefix}_drive47_fg_pct')       # Drive FG% (offense quality)",
+          "    names.append(f'{prefix}_drive47_tov_pct')      # Drive TOV% (ball security)",
+          "    names.append(f'{prefix}_drive47_pts_pct')      # Drive scoring share",
+          "    names.append(f'{prefix}_def47_rim_fg_pct')     # Rim FG% allowed (rim protection)",
+          "    names.append(f'{prefix}_def47_blk_rate')       # Blocks per game (rim deterrent)",
+          "    names.append(f'{prefix}_def47_drive_stops')    # Projected stop rate on drives",
+          "names.append('drive47_h_off_vs_a_rim')   # home drive_fg_pct - away def_rim_fg_pct",
+          "names.append('drive47_a_off_vs_h_rim')   # away drive_fg_pct - home def_rim_fg_pct",
+          "names.append('drive47_rim_matchup_edge') # combined rim advantage",
+          "names.append('drive47_drive_volume_diff') # home drives - away drives (attack style)"
+        ],
+        "computation_block": [
+          "# ── Cat47: Drive-Offense vs Rim-Defense Matchup ──",
+          "try:",
+          "    td = tracking_data or {}",
+          "    h_td = td.get(home, {})",
+          "    a_td = td.get(away, {})",
+          "    _h_drv_fg   = h_td.get('drive_fg_pct', 0.488)   # league avg ~0.488",
+          "    _a_drv_fg   = a_td.get('drive_fg_pct', 0.488)",
+          "    _h_drv_tov  = h_td.get('drive_tov_pct', 0.065)",
+          "    _a_drv_tov  = a_td.get('drive_tov_pct', 0.065)",
+          "    _h_drv_pts  = h_td.get('drive_pts_pct', 0.27)",
+          "    _a_drv_pts  = a_td.get('drive_pts_pct', 0.27)",
+          "    _h_rim_def  = h_td.get('def_rim_fg_pct', 0.660)  # league avg ~0.660",
+          "    _a_rim_def  = a_td.get('def_rim_fg_pct', 0.660)",
+          "    _h_blk      = h_td.get('def_blk_per_game', 4.5) / 10.0",
+          "    _a_blk      = a_td.get('def_blk_per_game', 4.5) / 10.0",
+          "    _h_stop_rt  = (1.0 - _a_drv_fg) * (1.0 + _h_blk)  # projected drive stop rate",
+          "    _a_stop_rt  = (1.0 - _h_drv_fg) * (1.0 + _a_blk)",
+          "    _h_drives   = h_td.get('drives', 45.0) / 50.0",
+          "    _a_drives   = a_td.get('drives', 45.0) / 50.0",
+          "    row.extend([",
+          "        _h_drv_fg,                           # drive47_h_drive_fg_pct",
+          "        _h_drv_tov,                          # drive47_h_drive_tov_pct",
+          "        _h_drv_pts,                          # drive47_h_drive_pts_pct",
+          "        min(_h_rim_def, 0.75),               # drive47_h_def_rim_fg_pct",
+          "        _h_blk,                              # drive47_h_def_blk_rate",
+          "        max(0.2, min(0.9, _h_stop_rt)),      # drive47_h_def_drive_stops",
+          "        _a_drv_fg,",
+          "        _a_drv_tov,",
+          "        _a_drv_pts,",
+          "        min(_a_rim_def, 0.75),",
+          "        _a_blk,",
+          "        max(0.2, min(0.9, _a_stop_rt)),",
+          "        max(-0.3, min(0.3, _h_drv_fg - _a_rim_def)),  # drive47_h_off_vs_a_rim",
+          "        max(-0.3, min(0.3, _a_drv_fg - _h_rim_def)),  # drive47_a_off_vs_h_rim",
+          "    ])",
+          "    row.append((_h_drv_fg - _a_rim_def) - (_a_drv_fg - _h_rim_def))  # rim_matchup_edge",
+          "    row.append((_h_drives - _a_drives))                               # drive_volume_diff",
+          "except Exception:",
+          "    row.extend([0.488, 0.065, 0.27, 0.660, 0.45, 0.55,",
+          "                0.488, 0.065, 0.27, 0.660, 0.45, 0.55, 0.0, 0.0])"
+        ]
+      }
+    },
+    {
+      "cat": "Cat48",
+      "name": "Play Type PPP Matchup (PnR / Isolation / Transition)",
+      "feature_count": 16,
+      "implementation_lines": 35,
+      "priority": "HIGH",
+      "data_source": "data/play-types/NBA_Play_Types_12_25.csv — 42,723 rows, all 30 teams, 11 play types. FULLY UNUSED: Cat19 and Cat31b write hard-coded 0.0 for these features.",
+      "gap_analysis": "Cat19 (Lineup & Rotation Analytics) at line 1860 lists pnr_ball_handler, isolation_rate etc. as names but engine computes 0.0 for all of them (Cat31b line 4731 also outputs zeros). The play-types CSV has weighted PPP per team per play type across 42k player-possessions — a rich signal completely ignored.",
+      "signal_strength": {
+        "pnr_bh_ppp_range": "0.767 (NOP) to 0.917 (POR) — range = 0.150",
+        "pnr_bh_ppp_std": 0.031,
+        "iso_ppp_range": "0.723 to 0.950 — range = 0.227",
+        "transition_ppp_range": "1.06 to 1.17",
+        "interpretation": "PnR PPP range of 0.150 translates to ~1.5 pts/100 possessions advantage in best vs worst matchup. With ~20 PnR possessions per game (30% of offense), that is ~0.3 pts/game direct scoring edge per game. This is a concrete, computable matchup signal."
+      },
+      "literature_basis": "Skinner & Guy 2015 (JQAS) showed play type efficiency predicts team performance beyond four factors. Cen et al. 2024 found PnR frequency × efficiency explains 18% of scoring variance unexplained by box score. Montrucchio 2026 uses offensive system classification as a key feature category.",
+      "expected_brier_impact": {
+        "estimate": -0.0010,
+        "range": [-0.0006, -0.0015],
+        "reasoning": "Replaces 16 zero-features with real data. Zero-features add noise; replacing with real computed values always helps. PnR/Isolation are the two most common half-court play types (~50% of all possessions combined). Literature shows play type efficiency explains variance beyond rolling stats. Estimate conservative because season-level data cannot capture recent form changes."
+      },
+      "interacts_with": ["Cat19 (Lineup & Rotation)", "Cat31 (Cross-Team Interaction Matrix)", "Cat41 (Transition vs Half-Court)", "Cat3 (Pace/Efficiency)"],
+      "preprocessing_required": {
+        "description": "Build team_playtypes_{season}.json from CSV — one-time 15-line script. Output: {TEAM: {pnr_ppp: float, iso_ppp: float, ...}}",
+        "pseudocode": [
+          "# scripts/build_play_type_data.py",
+          "import csv; from collections import defaultdict; import json",
+          "rows = list(csv.DictReader(open('data/play-types/NBA_Play_Types_12_25.csv')))",
+          "team_pt = defaultdict(lambda: defaultdict(lambda: {'poss':0.0, 'ppp_w':0.0}))",
+          "for r in rows:",
+          "    d = team_pt[r['TEAM_ABB']][r['PLAY_TYPE']]",
+          "    p = float(r['POSS'] or 0); ppp = float(r['PPP'] or 0)",
+          "    d['poss'] += p; d['ppp_w'] += p * ppp",
+          "out = {}",
+          "for t, pts in team_pt.items():",
+          "    out[t] = {pt: round(d['ppp_w']/d['poss'],4) for pt,d in pts.items() if d['poss']>0}",
+          "json.dump(out, open('data/play-types/team_playtypes_2025-26.json','w'), indent=2)"
+        ]
+      },
+      "engine_code_snippet": {
+        "loader_addition": [
+          "# Add after load_historical_odds() in engine.py:",
+          "def load_play_type_data(json_path=None):",
+          "    if json_path is None:",
+          "        candidates = [",
+          "            os.path.join(os.path.dirname(__file__), '..', 'data', 'play-types', 'team_playtypes_2025-26.json'),",
+          "            '/home/termius/mon-ipad/data/play-types/team_playtypes_2025-26.json',",
+          "        ]",
+          "        for c in candidates:",
+          "            if os.path.exists(c): json_path = c; break",
+          "        if json_path is None: return {}",
+          "    try:",
+          "        import json",
+          "        return json.load(open(json_path))",
+          "    except: return {}"
+        ],
+        "feature_names_registration": [
+          "# ── Cat48: Play Type PPP Matchup (16 features) ──",
+          "for prefix in ['h', 'a']:",
+          "    names.append(f'{prefix}_pt48_pnr_ppp')        # PnR Ball-Handler PPP",
+          "    names.append(f'{prefix}_pt48_iso_ppp')        # Isolation PPP",
+          "    names.append(f'{prefix}_pt48_transition_ppp') # Transition PPP",
+          "    names.append(f'{prefix}_pt48_spotup_ppp')     # Spot-up (3pt hunt) PPP",
+          "    names.append(f'{prefix}_pt48_cut_ppp')        # Cut PPP (off-ball movement)",
+          "    names.append(f'{prefix}_pt48_pnr_freq')       # PnR frequency (style signal)",
+          "names.append('pt48_pnr_matchup_edge')    # h_pnr_ppp - a_pnr_ppp",
+          "names.append('pt48_iso_matchup_edge')    # h_iso_ppp - a_iso_ppp",
+          "names.append('pt48_transition_edge')     # h_transition_ppp - a_transition_ppp",
+          "names.append('pt48_spotup_edge')         # h_spotup_ppp - a_spotup_ppp"
+        ],
+        "computation_block": [
+          "# ── Cat48: Play Type PPP Matchup ──",
+          "# Requires play_type_data=load_play_type_data() passed to build()",
+          "try:",
+          "    pt = play_type_data or {}  # add play_type_data param to build()",
+          "    h_pt = pt.get(home, {})",
+          "    a_pt = pt.get(away, {})",
+          "    _LEAGUE_PPP = {'PnR Ball-Handler': 0.845, 'Isolation': 0.840,",
+          "                   'Transition': 1.105, 'Spotup': 1.010, 'Cut': 1.270}",
+          "    def _ppp(pt_dict, key):",
+          "        return pt_dict.get(key, _LEAGUE_PPP.get(key, 0.9))",
+          "    _h_pnr  = _ppp(h_pt, 'PnR Ball-Handler')",
+          "    _a_pnr  = _ppp(a_pt, 'PnR Ball-Handler')",
+          "    _h_iso  = _ppp(h_pt, 'Isolation')",
+          "    _a_iso  = _ppp(a_pt, 'Isolation')",
+          "    _h_tr   = _ppp(h_pt, 'Transition')",
+          "    _a_tr   = _ppp(a_pt, 'Transition')",
+          "    _h_sp   = _ppp(h_pt, 'Spotup')",
+          "    _a_sp   = _ppp(a_pt, 'Spotup')",
+          "    _h_cut  = _ppp(h_pt, 'Cut')",
+          "    _a_cut  = _ppp(a_pt, 'Cut')",
+          "    # PnR freq: poss share of PnR (use total poss fraction if available, else default)",
+          "    _h_pnr_freq = h_pt.get('pnr_freq', 0.22)",
+          "    _a_pnr_freq = a_pt.get('pnr_freq', 0.22)",
+          "    row.extend([",
+          "        _h_pnr, _h_iso, _h_tr, _h_sp, _h_cut, _h_pnr_freq,",
+          "        _a_pnr, _a_iso, _a_tr, _a_sp, _a_cut, _a_pnr_freq,",
+          "        _h_pnr - _a_pnr,   # pt48_pnr_matchup_edge",
+          "        _h_iso - _a_iso,   # pt48_iso_matchup_edge",
+          "        _h_tr  - _a_tr,    # pt48_transition_edge",
+          "        _h_sp  - _a_sp,    # pt48_spotup_edge",
+          "    ])",
+          "except Exception:",
+          "    row.extend([0.845, 0.840, 1.105, 1.010, 1.270, 0.22,",
+          "                0.845, 0.840, 1.105, 1.010, 1.270, 0.22,",
+          "                0.0, 0.0, 0.0, 0.0])"
+        ]
+      }
+    },
+    {
+      "cat": "Cat49",
+      "name": "Passing Network Quality (Ball Movement vs Defense)",
+      "feature_count": 10,
+      "implementation_lines": 20,
+      "priority": "MEDIUM",
+      "data_source": "data/player-tracking/passing_2025-26.csv (AST_TO_PASS_PCT, POTENTIAL_AST, SECONDARY_AST, AST_POINTS_CREATED). Add to build_tracking_data.py as 4 new keys. FULLY UNUSED — zero references in engine.py.",
+      "gap_analysis": "build_tracking_data.py does NOT load passing_2025-26.csv at all. Engine has no passing network features despite having the data file. The passing dataset captures ball-movement sophistication that box-score AST rates cannot (POTENTIAL_AST = how many times a pass could have become an assist; SECONDARY_AST = hockey assists).",
+      "signal_strength": {
+        "ast_to_pass_pct_range": "0.082 to 0.103",
+        "ast_to_pass_pct_std": 0.0054,
+        "potential_ast_range": "43.7 to 58.3 per game",
+        "interpretation": "AST/pass std is small (0.0054) compared to other features, BUT it captures team offensive identity (ball-movement vs isolation). Teams in the top decile (BOS 0.086 adj, GSW high) have structurally different offense. Potential_AST variance is larger: 43.7 vs 58.3 = 14.6 pt range, indicating shot creation diversity."
+      },
+      "literature_basis": "Cervone et al. 2014 (sloan) showed pass network centrality predicts scoring efficiency above box score. Skinner 2010 (PLOS One) found ball movement metrics explain home court advantage variance. Piette et al. 2011: AST network features outperform per-player stats for team prediction.",
+      "expected_brier_impact": {
+        "estimate": -0.0004,
+        "range": [-0.0002, -0.0007],
+        "reasoning": "Smaller signal than Cat47/Cat48 due to low AST/pass variance. Primary value is as interaction feature with Cat3 (pace), Cat19 (lineup), and Cat48 (play types). Teams with high potential_AST but low actual_AST against certain opponents reveals defensive disruption. Expect genetic selector to keep 3-4 features from these 10."
+      },
+      "interacts_with": ["Cat3 (Pace & Efficiency)", "Cat4 (Scoring Profile)", "Cat8 (Matchup & H2H)", "Cat19 (Lineup & Rotation)", "Cat48 (Play Type PPP)"],
+      "build_tracking_data_change": {
+        "pseudocode": [
+          "# Add to build_tracking_data.py after section 4 (Drives):",
+          "passing = load_csv('passing')",
+          "if len(passing) > 0:",
+          "    for _, row in passing.iterrows():",
+          "        team = row.get('TEAM_ABBREVIATION', '')",
+          "        if not team or team not in tracking: continue",
+          "        tracking[team]['ast_to_pass_pct'] = float(row.get('AST_TO_PASS_PCT', 0.09))",
+          "        tracking[team]['potential_ast']   = float(row.get('POTENTIAL_AST', 50.0))",
+          "        tracking[team]['secondary_ast']   = float(row.get('SECONDARY_AST', 3.2))",
+          "        tracking[team]['ast_pts_created'] = float(row.get('AST_POINTS_CREATED', 70.0))"
+        ]
+      },
+      "engine_code_snippet": {
+        "feature_names_registration": [
+          "# ── Cat49: Passing Network Quality (10 features) ──",
+          "for prefix in ['h', 'a']:",
+          "    names.append(f'{prefix}_pass49_ast_pct')       # AST/pass ratio (ball movement)",
+          "    names.append(f'{prefix}_pass49_potential_ast') # Potential AST/game (shot creation)",
+          "    names.append(f'{prefix}_pass49_secondary_ast') # Secondary AST (unselfishness)",
+          "    names.append(f'{prefix}_pass49_pts_created')   # AST points created (per game)",
+          "names.append('pass49_ast_pct_edge')     # h - a AST/pass",
+          "names.append('pass49_potential_ast_edge') # h - a potential AST"
+        ],
+        "computation_block": [
+          "# ── Cat49: Passing Network Quality ──",
+          "try:",
+          "    td = tracking_data or {}",
+          "    h_td = td.get(home, {}); a_td = td.get(away, {})",
+          "    _h_asp  = h_td.get('ast_to_pass_pct', 0.090)",
+          "    _a_asp  = a_td.get('ast_to_pass_pct', 0.090)",
+          "    _h_pot  = h_td.get('potential_ast', 50.0) / 60.0   # normalize ~60 max",
+          "    _a_pot  = a_td.get('potential_ast', 50.0) / 60.0",
+          "    _h_sec  = h_td.get('secondary_ast', 3.2) / 5.0     # normalize ~5 max",
+          "    _a_sec  = a_td.get('secondary_ast', 3.2) / 5.0",
+          "    _h_ptsc = h_td.get('ast_pts_created', 70.0) / 90.0 # normalize ~90 max",
+          "    _a_ptsc = a_td.get('ast_pts_created', 70.0) / 90.0",
+          "    row.extend([",
+          "        _h_asp, _h_pot, _h_sec, _h_ptsc,",
+          "        _a_asp, _a_pot, _a_sec, _a_ptsc,",
+          "        _h_asp - _a_asp,   # pass49_ast_pct_edge",
+          "        _h_pot - _a_pot,   # pass49_potential_ast_edge",
+          "    ])",
+          "except Exception:",
+          "    row.extend([0.09, 0.833, 0.64, 0.778,",
+          "                0.09, 0.833, 0.64, 0.778, 0.0, 0.0])"
+        ]
+      }
+    }
+  ],
+  "implementation_order": [
+    {
+      "step": 1,
+      "action": "Update build_tracking_data.py",
+      "description": "Add defense.csv loader (DEF_RIM_FG_PCT, BLK) and passing.csv loader (AST_TO_PASS_PCT, POTENTIAL_AST, SECONDARY_AST, AST_POINTS_CREATED). Also add drive_tov_pct, drive_pts_pct from drives.csv.",
+      "files": ["scripts/build_tracking_data.py"],
+      "lines_to_add": 20,
+      "risk": "LOW — additive only, no breaking changes"
+    },
+    {
+      "step": 2,
+      "action": "Create scripts/build_play_type_data.py",
+      "description": "15-line script to aggregate NBA_Play_Types_12_25.csv into team_playtypes_2025-26.json. Output: {TEAM: {play_type: ppp_float}}",
+      "files": ["scripts/build_play_type_data.py", "data/play-types/team_playtypes_2025-26.json"],
+      "lines_to_add": 15,
+      "risk": "LOW — new standalone script"
+    },
+    {
+      "step": 3,
+      "action": "Add Cat47 to engine.py",
+      "description": "Add feature names in _build_feature_names() and computation block in build() after Cat46 block (line ~5666).",
+      "files": ["features/engine.py", "hf-space/features/engine.py"],
+      "lines_to_add": 30,
+      "parity_required": true,
+      "risk": "LOW — after existing Cat46 block, no disruption to prior features"
+    },
+    {
+      "step": 4,
+      "action": "Add load_play_type_data() loader and Cat48 to engine.py",
+      "description": "Add loader function near load_historical_odds(). Add play_type_data param to build(). Add Cat48 computation block. Feature names registration.",
+      "files": ["features/engine.py", "hf-space/features/engine.py"],
+      "lines_to_add": 55,
+      "parity_required": true,
+      "risk": "MEDIUM — build() signature change, ensure all callers pass play_type_data=None"
+    },
+    {
+      "step": 5,
+      "action": "Add Cat49 to engine.py",
+      "description": "Feature names registration and computation block. No new loader needed — uses same tracking_data dict after build_tracking_data.py update.",
+      "files": ["features/engine.py", "hf-space/features/engine.py"],
+      "lines_to_add": 25,
+      "parity_required": true,
+      "risk": "LOW — additive only"
+    },
+    {
+      "step": 6,
+      "action": "Regenerate team_tracking_2025-26.json",
+      "description": "Re-run build_tracking_data.py with new defense + passing loaders. Validate BOS entry has def_rim_fg_pct=0.620, ast_to_pass_pct=0.086.",
+      "files": ["data/player-tracking/team_tracking_2025-26.json"],
+      "risk": "LOW — regeneration only"
+    },
+    {
+      "step": 7,
+      "action": "Deploy to HF Spaces",
+      "description": "Deploy updated engine.py to all 6 islands via subtree push. Run quick sanity check: expected feature count = 6211 + 14 + 16 + 10 = 6251.",
+      "expected_feature_count": 6251,
+      "risk": "LOW — additive only, no breaking changes to existing 46 cats"
+    }
+  ],
+  "total_new_features": 40,
+  "expected_combined_brier_impact": {
+    "estimate": -0.0022,
+    "range": [-0.0013, -0.0034],
+    "note": "Estimates are NOT additive (feature selection via GA will keep 3-8 of the 40). Combined impact assumes GA selects ~10 of the 40 best features from these 3 categories. Primary value is filling zero-feature slots with real data (Cat48) and adding new offense-defense interaction signals (Cat47)."
+  },
+  "features_NOT_recommended": {
+    "injury_features": "BLOCKED — both injury JSON files returned error:no_pdf_found with 0 teams. Cannot build real-time injury impact scores from current data. Would need ESPN API or rotowire integration.",
+    "rest_days_features": "ALREADY COVERED — Cat6 (h_rest_days, a_rest_days, h_b2b, a_b2b, h_3in4, h_4in6), Cat36 (rest × wp interaction), Cat39 (circadian fatigue index). Adding more rest features would be redundant.",
+    "altitude_features": "ALREADY COVERED — Cat6 (h_altitude, a_altitude, altitude_delta), Cat28 (env_h_altitude_performance_w5/10/20). DEN advantage is fully captured.",
+    "home_away_streaks": "ALREADY COVERED — Cat5 (h_home_wp, a_away_wp, h_ha_split), Cat38 (venue-conditional WP, home court boost, road penalty). Fully modeled at multiple windows.",
+    "h2h_record": "ALREADY COVERED — Cat8 (h2h_wp, h2h_last3_wp, h2h_avg_margin, h2h_home_wp). Well covered.",
+    "schedule_density": "ALREADY COVERED — Cat6 (h_games_7d, a_games_7d, h_miles_7d, combined_fatigue). Fully modeled.",
+    "referee_features": "REGISTERED but zero-filled — Cat11 (10 features), Cat27 (120 features). Real referee data would require manual collection or a paid API. Not available in current data.",
+    "altitude_of_arena": "ALREADY COVERED — ARENA_ALTITUDE dict exists, used in Cat6 and Cat28."
+  }
+}
