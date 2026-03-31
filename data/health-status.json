@@ -1,46 +1,64 @@
 {
-  "updated_at": "2026-03-30T20:30:00Z",
-  "brain_cycle": "Sonnet 4.6 / 4h brain",
+  "updated_at": "2026-03-31T04:00:00Z",
+  "brain_cycle": "Sonnet 4.6 / 4h brain — cycle ~8",
   "nba_fleet": {
     "status": "HEALTHY",
     "best_brier": 0.22006,
-    "best_island": "S14 (nba-evo-5, extra_trees, gen=1056)",
+    "best_island": "S14 (nba-evo-5, extra_trees, gen=1145)",
     "target_brier": 0.21837,
     "gap_to_target": 0.00169,
     "checkpoint_triggered": false,
-    "note": "No stagnation on any island. Best brier 0.22006 above threshold 0.21837 — no Supabase checkpoint needed.",
+    "engine_parity": "OK — all 6 islands report feature_candidates=3267",
+    "plateau_alert": "Brier scores UNCHANGED from previous cycle — all islands on plateau at 0.220-0.229",
+    "plateau_action": "LR model type proposal written (see research-proposals/nba-lr-calibration-march2026.json)",
+    "note": "No stagnation (all counters=0). Best brier 0.22006 above threshold 0.21837 — no Supabase checkpoint.",
     "islands": {
-      "S10": {"url": "nomos42-nba-quant.hf.space", "role": "exploitation", "gen": 523, "cycle": 175, "brier": 0.22215, "roi": 0.3025, "sharpe": 6.7902, "features": 61, "stagnation": 0, "model": "extra_trees", "pop": 60, "mut": 0.05, "status": "OK"},
-      "S11": {"url": "nomos42-nba-quant-2.hf.space", "role": "exploration", "gen": 960, "cycle": 320, "brier": 0.22321, "roi": 0.287, "sharpe": 8.2406, "features": 65, "stagnation": 0, "model": "random_forest", "pop": 60, "mut": 0.08, "status": "OK"},
-      "S12": {"url": "nomos42-nba-evo-3.hf.space", "role": "extra_trees_specialist", "gen": 943, "cycle": 315, "brier": 0.22889, "roi": 0.226, "sharpe": 4.6871, "features": 54, "stagnation": 0, "model": "xgboost", "pop": 60, "mut": 0.04, "status": "OK"},
-      "S13": {"url": "nomos42-nba-evo-4.hf.space", "role": "catboost_specialist", "gen": 509, "cycle": 170, "brier": 0.22368, "roi": 0.284, "sharpe": 4.7821, "features": 68, "stagnation": 0, "model": "lightgbm", "pop": 60, "mut": 0.0775, "status": "OK"},
-      "S14": {"url": "nomos42-nba-evo-5.hf.space", "role": "lightgbm_specialist", "gen": 1056, "cycle": 352, "brier": 0.22006, "roi": 0.3255, "sharpe": 8.4295, "features": 59, "stagnation": 0, "model": "extra_trees", "pop": 60, "mut": 0.04, "status": "OK", "note": "FLEET BEST"},
-      "S15": {"url": "nomos42-nba-evo-6.hf.space", "role": "wide_search", "gen": 2100, "cycle": 700, "brier": 0.22112, "roi": 0.3136, "sharpe": 7.8512, "features": 99, "stagnation": 0, "model": "extra_trees", "pop": 50, "mut": 0.08, "status": "OK"}
+      "S10": {"url": "nomos42-nba-quant.hf.space", "role": "exploitation", "gen": 576, "cycle": 192, "brier": 0.22215, "roi": 0.3025, "sharpe": 6.7902, "features": 61, "stagnation": 0, "model": "extra_trees", "pop": 60, "mut": 0.05, "status": "OK"},
+      "S11": {"url": "nomos42-nba-quant-2.hf.space", "role": "exploration", "gen": 1023, "cycle": 341, "brier": 0.22321, "roi": 0.287, "sharpe": 8.2406, "features": 65, "stagnation": 0, "model": "random_forest", "pop": 60, "mut": 0.08, "status": "OK"},
+      "S12": {"url": "nomos42-nba-evo-3.hf.space", "role": "extra_trees_specialist", "gen": 1000, "cycle": 334, "brier": 0.22889, "roi": 0.226, "sharpe": 4.6871, "features": 54, "stagnation": 0, "model": "xgboost", "pop": 60, "mut": 0.04, "status": "OK"},
+      "S13": {"url": "nomos42-nba-evo-4.hf.space", "role": "catboost_specialist", "gen": 556, "cycle": 186, "brier": 0.22368, "roi": 0.284, "sharpe": 4.7821, "features": 68, "stagnation": 0, "model": "lightgbm", "pop": 60, "mut": 0.0707, "status": "OK"},
+      "S14": {"url": "nomos42-nba-evo-5.hf.space", "role": "lightgbm_specialist", "gen": 1145, "cycle": 382, "brier": 0.22006, "roi": 0.3255, "sharpe": 8.4295, "features": 59, "stagnation": 0, "model": "extra_trees", "pop": 60, "mut": 0.04, "status": "OK", "note": "FLEET BEST"},
+      "S15": {"url": "nomos42-nba-evo-6.hf.space", "role": "wide_search", "gen": 2270, "cycle": 757, "brier": 0.22112, "roi": 0.3136, "sharpe": 7.8512, "features": 99, "stagnation": 0, "model": "extra_trees", "pop": 50, "mut": 0.08, "status": "OK"}
     },
-    "supabase_note": "All islands reporting Supabase connection failures (tenant/user not found). Local caching active. Primary (ayqviq) paused (402), pooler (xivvnr) also failing from HF.",
-    "actions_taken": []
+    "supabase_note": "All islands reporting Supabase connection failures (FATAL: Tenant or user not found). Local caching active.",
+    "actions_taken": [
+      "Research: LR model type proposal written — nba-lr-calibration-march2026.json",
+      "Research: MDPI Jan 2026 confirms LR achieves Brier 0.199 on NBA tabular — below our 0.21837 target",
+      "No stagnation triggers fired (all counters=0)",
+      "No checkpoint (best_brier=0.22006 > threshold 0.21837)"
+    ]
   },
   "political_alpha_fleet": {
-    "status": "CRITICAL",
-    "alert": "FEATURE_STARVATION — all 4 islands stuck at Brier=0.3, feature_candidates=2",
-    "root_cause": "hf-space/data/historical/ is empty. load_all_events() returns 0 events. build_features([]) collapses to 2-feature fallback. data_bootstrap.py not called before feature building.",
-    "fix_location": "nomos-political-alpha/data/proposals/pa-bootstrap-fix-march2026.json",
-    "fix_snippet": "After 'events = load_all_events()' in app.py: if len(events) < 100: from data_bootstrap import bootstrap_events; events = bootstrap_events() + events",
-    "diversify_sent": ["PA1", "PA2", "PA3"],
+    "status": "CRITICAL — CYCLE 2",
+    "alert": "FEATURE_STARVATION PERSISTS — all 4 islands Brier=0.3, feature_candidates=2",
+    "root_cause": "hf-space/data/historical/ empty. app.py not calling bootstrap_startup.inject_bootstrap(). Fix exists in bootstrap_startup.py but not deployed.",
+    "fix_status": "PENDING_VM_DEPLOY — app.py patch not applied (apply_patches.py cannot find old strings in HF space app.py)",
+    "rotation_this_cycle": "A — WebSearch new FEC/OpenSecrets/CapitolTrades data sources",
+    "rotation_output": "nomos-political-alpha/data/research/pa-new-datasources-march2026.json",
+    "diversify_sent": "SKIPPED — /api/command endpoint returned 503 on all PA islands",
     "islands": {
-      "PA1": {"url": "nomos42-political-alpha.hf.space", "role": "exploitation", "gen": 101715, "brier": 0.3, "roi": 0.0, "sharpe": 0.0, "features": 2, "feature_candidates": 2, "stagnation": 13, "diversify_sent": true, "status": "CRITICAL"},
-      "PA2": {"url": "nomos42-political-alpha-2.hf.space", "role": "exploration", "gen": 100556, "brier": 0.3, "roi": 0.0, "sharpe": 0.0, "features": 2, "feature_candidates": 2, "stagnation": 24, "diversify_sent": true, "status": "CRITICAL"},
-      "PA3": {"url": "nomos42-political-alpha-3.hf.space", "role": "catboost", "gen": 100395, "brier": 0.3, "roi": 0.0, "sharpe": 0.0, "features": 2, "feature_candidates": 2, "stagnation": 14, "diversify_sent": true, "status": "CRITICAL"},
-      "PA4": {"url": "nomos42-political-alpha-4.hf.space", "role": "wide_search", "gen": 16171, "brier": 0.3, "roi": 0.0, "sharpe": 0.0, "features": 2, "feature_candidates": 2, "stagnation": 0, "diversify_sent": false, "status": "CRITICAL"}
-    }
+      "PA1": {"url": "nomos42-political-alpha.hf.space", "role": "exploitation", "gen": 107328, "cycle": 35776, "brier": 0.3, "roi": 0.0, "sharpe": 0.0, "features": 2, "feature_candidates": 2, "stagnation": 17, "status": "CRITICAL"},
+      "PA2": {"url": "nomos42-political-alpha-2.hf.space", "role": "exploration", "gen": 106368, "cycle": 35456, "brier": 0.3, "roi": 0.0, "sharpe": 0.0, "features": 2, "feature_candidates": 2, "stagnation": 16, "status": "CRITICAL"},
+      "PA3": {"url": "nomos42-political-alpha-3.hf.space", "role": "catboost", "gen": 106063, "cycle": 35355, "brier": 0.3, "roi": 0.0, "sharpe": 0.0, "features": 2, "feature_candidates": 2, "stagnation": 12, "status": "CRITICAL"},
+      "PA4": {"url": "nomos42-political-alpha-4.hf.space", "role": "wide_search", "gen": 21510, "cycle": 7170, "brier": 0.3, "roi": 0.0, "sharpe": 0.0, "features": 2, "feature_candidates": 2, "stagnation": 29, "status": "CRITICAL — HIGHEST STAGNATION"}
+    },
+    "next_action_required": "VM must run: cd nomos-political-alpha && python hf-space/apply_patches.py && git push hf main (for all 4 spaces)"
   },
   "cross_project": {
-    "nba_to_pa": "Port NBA Venn-Abers calibration to PA once features are fixed",
-    "pa_to_nba": "Capitol Trades API pattern (STOCK Act filings) suggests adding congressional trading signals to NBA (team city senators/representatives)",
-    "new_pa_data_sources": ["capitoltrades.com (politician STOCK Act filings)", "Truth Predict (Trump family prediction platform)", "Public Integrity Act 2026 monitoring"]
+    "nba_to_pa": "Port logistic_regression model type to PA (FIX6 in apply_patches.py already includes this)",
+    "pa_to_nba": "CapitolTrades STOCK Act pattern: add congressional trading lag signal to NBA features (team city reps)",
+    "key_finding": "MDPI Jan 2026 paper: LR Brier 0.199 < XGBoost Brier 0.202 on NBA tabular data — LR as model type is concrete path to target",
+    "new_pa_data_sources": [
+      "fec.gov/data API — inaugural committee + PAC contributions (76 entities gave $1M+)",
+      "opensecrets.org — lobbying, revolving door, contributions API",
+      "capitoltrades.com — STOCK Act congressional trading (240+ members filing)",
+      "campaignlegal.org tracker — 3+ dozen pay-to-play examples documented",
+      "usaspending.gov — government contract awards post-donation"
+    ]
   },
   "research": {
-    "nba_proposal": "data/research-proposals/nba-shap-stacked-ensemble-march2026.json",
-    "pa_fix": "nomos-political-alpha/data/proposals/pa-bootstrap-fix-march2026.json"
+    "nba_proposal": "data/research-proposals/nba-lr-calibration-march2026.json",
+    "pa_datasources": "nomos-political-alpha/data/research/pa-new-datasources-march2026.json",
+    "pa_fix": "nomos-political-alpha/hf-space/apply_patches.py (7 patches ready, needs VM deploy)"
   }
 }

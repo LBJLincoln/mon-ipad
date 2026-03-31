@@ -1,0 +1,63 @@
+{
+  "proposal_id": "nba-lr-calibration-march2026",
+  "created_at": "2026-03-31T04:00:00Z",
+  "source": "Brain 4h cycle — NBA research rotation",
+  "priority": "HIGH",
+  "title": "Add LogisticRegression Model Type — Path to Brier < 0.21837",
+  "motivation": {
+    "current_best_brier": 0.22006,
+    "target_brier": 0.21837,
+    "gap": 0.00169,
+    "plateau_observation": "All 6 islands show IDENTICAL Brier scores across consecutive brain cycles — tree-based plateau",
+    "key_research_finding": "MDPI Information 17(1):56 (Jan 2026): Logistic Regression achieves Brier=0.199 on NBA tabular data with chronological split train≤2022/val2023/test2024. This is better than XGBoost (Brier=0.202) and below our target of 0.21837."
+  },
+  "citations": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "journal": "MDPI Information",
+      "volume": "17(1):56",
+      "year": 2026,
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "key_result": "LR: Brier=0.199, log-loss=0.583. XGBoost: Brier=0.202, AUC=0.754. RNN+MC-Dropout: best uncertainty calibration (ECE/MCE)."
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "journal": "Scientific Reports (Nature)",
+      "year": 2025,
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "key_result": "Top-3 features via SHAP: home_next (scheduling), team_elo_5_y (5-year ELO), team_elo (current ELO). Stacked ensemble outperforms individual models."
+    }
+  ],
+  "proposed_changes": [
+    {
+      "file": "hf-space/app.py",
+      "change_type": "add_model_type",
+      "description": "Add logistic_regression to CPU_MODEL_TYPES and implement build_model() branch",
+      "old_code": "CPU_MODEL_TYPES = [\"xgboost\", \"xgboost_brier\", \"lightgbm\", \"catboost\", \"random_forest\", \"extra_trees\"]",
+      "new_code": "CPU_MODEL_TYPES = [\"xgboost\", \"xgboost_brier\", \"lightgbm\", \"catboost\", \"random_forest\", \"extra_trees\", \"logistic_regression\"]",
+      "model_builder": "elif mt == 'logistic_regression':\n    from sklearn.preprocessing import StandardScaler\n    from sklearn.pipeline import Pipeline\n    from sklearn.linear_model import LogisticRegression\n    return Pipeline([\n        ('scaler', StandardScaler()),\n        ('lr', LogisticRegression(\n            C=hp.get('lr_C', 1.0),\n            penalty=hp.get('lr_penalty', 'l2'),\n            solver='saga', max_iter=1000,\n            random_state=42, n_jobs=-1))\n    ])",
+      "target_islands": ["S10", "S11", "S12", "S13", "S14", "S15"]
+    },
+    {
+      "file": "features/engine.py",
+      "change_type": "add_feature",
+      "description": "Add home_next scheduling feature — 2nd most important per SHAP analysis",
+      "feature_name": "schedule_back_to_back",
+      "logic": "1 if team plays game i and game i+1 within 24h (back-to-back), else 0. Also add rest_days_diff = home_rest_days - away_rest_days.",
+      "expected_impact": "SHAP shows home_next as top-3 feature. Currently not explicit in our engine. Fatigue/scheduling effects not fully captured."
+    }
+  ],
+  "deploy_plan": {
+    "step1": "Update hf-space/app.py: add logistic_regression to CPU_MODEL_TYPES and build_model()",
+    "step2": "Deploy to S11 (exploration island) first for A/B test",
+    "step3": "If Brier improves in S11, roll out to all 6 islands",
+    "step4": "Add schedule_back_to_back feature to features/engine.py",
+    "timeline": "Deploy LR model type this cycle, add scheduling feature next cycle"
+  },
+  "expected_outcome": {
+    "brier_improvement": "0.22006 → ~0.210-0.215 (LR + better calibration)",
+    "reason": "LR provides linear decision boundary that may generalize better with 59-65 features. Tree models may be overfitting the feature set. LR with L2 penalty and StandardScaler matches MDPI experimental conditions."
+  },
+  "cross_project_note": "FIX6 in nomos-political-alpha/hf-space/apply_patches.py already adds logistic_regression to PA — port same logic to NBA",
+  "status": "PROPOSED — ready for VM deploy"
+}
