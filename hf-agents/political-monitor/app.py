@@ -486,10 +486,10 @@ with gr.Blocks(
     )
 
     # Auto-refresh every 120 seconds
-    app.load(
+    timer = gr.Timer(120)
+    timer.tick(
         fn=refresh_all,
         outputs=[island_table, engine_md, market_table, signals_md, status_label],
-        every=120,
     )
 
 app.launch()
