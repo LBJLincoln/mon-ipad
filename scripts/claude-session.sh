@@ -375,26 +375,38 @@ done
 # ══════════════════════════════════════════════════════════════════
 # 6. BOTS + PROCESSES
 # ══════════════════════════════════════════════════════════════════
-header "Telegram Bots"
+header "Telegram Bots (5)"
 
-if pgrep -f "nomos42_brain.py" > /dev/null 2>&1; then
-  ok "@Nomos42Bot" "RUNNING"
-else
-  fail "@Nomos42Bot" "DOWN — starting..."
+# mon-ipad bots (4)
+declare -A BOT_CHECKS=(
+  ["@Nomos42Bot"]="nomos42_brain.py:Brain (admin/research)"
+  ["@Forge42Bot"]="forge_bot.py:Forge Factory (fleet/SaaS)"
+  ["@NomosNBABot"]="nomos_nba_bot.py:NBA SaaS (scout/edge/whale)"
+  ["@StupidPoliticalBot"]="stupid_political_bot.py:Political SaaS (signals/trades)"
+)
+
+ANY_DOWN=false
+for BOT_NAME in "@Nomos42Bot" "@Forge42Bot" "@NomosNBABot" "@StupidPoliticalBot"; do
+  IFS=':' read -r PROC_MATCH BOT_DESC <<< "${BOT_CHECKS[$BOT_NAME]}"
+  if pgrep -f "$PROC_MATCH" > /dev/null 2>&1; then
+    ok "$BOT_NAME" "RUNNING — $BOT_DESC"
+  else
+    fail "$BOT_NAME" "DOWN — $BOT_DESC"
+    ANY_DOWN=true
+  fi
+done
+
+if [ "$ANY_DOWN" = true ]; then
+  info "" "Auto-starting mon-ipad bots..."
   cd /home/termius/mon-ipad && bash scripts/telegram/start_bots.sh start 2>/dev/null
 fi
 
+# rgwa bot (separate repo)
 if pgrep -f "rgwa_bot.py" > /dev/null 2>&1; then
-  ok "@RGWAbot" "RUNNING"
+  ok "@RGWAbot" "RUNNING — AI Art Terminal (~/rgwa)"
 else
-  fail "@RGWAbot" "DOWN — starting..."
+  fail "@RGWAbot" "DOWN — AI Art Terminal (~/rgwa)"
   cd /home/termius/rgwa && bash scripts/telegram/start_bot.sh start 2>/dev/null
-fi
-
-if pgrep -f "forge_bot.py" > /dev/null 2>&1; then
-  ok "@Forge42Bot" "RUNNING"
-else
-  info "@Forge42Bot" "not started (fleet/SaaS users)"
 fi
 
 # ══════════════════════════════════════════════════════════════════
@@ -418,7 +430,7 @@ for PAIR in "watchdog.sh:Watchdog" "infra-agent:Infra Agent" "keepalive:Keepaliv
 done
 
 # ══════════════════════════════════════════════════════════════════
-# 8. VERCEL SITES (4)
+# 8. VERCEL SITES (5)
 # ══════════════════════════════════════════════════════════════════
 header "Vercel Sites (5)"
 
@@ -537,7 +549,7 @@ echo -e "  ${C}HF Spaces:${N}  24+ total (4 credentials) — 10 evo + infra + RG
 echo -e "  ${C}Kaggle:${N}     7 kernels + 1 dataset (alexismoret6)"
 echo -e "  ${C}GPU:${N}        Modal + Colab + Lightning.ai + Kaggle"
 echo -e "  ${C}Databases:${N}  2x Supabase + 2x Neo4j + 2x Pinecone + Upstash Redis"
-echo -e "  ${C}Agents:${N}     25 (8 depts)  ${C}Repos:${N} 5  ${C}Bots:${N} 3  ${C}Crons:${N} ${CRON_TOTAL}  ${C}Vercel:${N} 5"
+echo -e "  ${C}Agents:${N}     25 (8 depts)  ${C}Repos:${N} 5  ${C}Bots:${N} 5  ${C}Crons:${N} ${CRON_TOTAL}  ${C}Vercel:${N} 5"
 echo -e "${W}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${N}"
 
 # ── Launch Claude Code ──

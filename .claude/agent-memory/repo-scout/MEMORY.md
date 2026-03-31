@@ -17,3 +17,6 @@
 
 ## NBA Free Data Sources (2026-03-28 scan)
 - [project_nba_data_sources.md](project_nba_data_sources.md) — Complete map of free NBA data: GitHub repos, Kaggle datasets, APIs. Full doc at /home/termius/mon-ipad/docs/REPO-SCOUT-NBA-DATA.md
+
+## Agent Superpowers Ecosystem (2026-03-30 scan)
+- [project_agent_superpowers_scan.md](project_agent_superpowers_scan.md) — gstack(57k★), Hermes(18k★), GEPA(ICLR2026), Browser Use(78k★), Mem0(51k★), ACI.dev, Letta, Zep/Graphiti, Playwright MCP, E2B. Ranked by relevance to NBA quant + political alpha.

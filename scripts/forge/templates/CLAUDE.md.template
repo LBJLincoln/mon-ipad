@@ -1,0 +1,54 @@
+# La Forge Factory — {USERNAME}
+
+> Your AI Company Factory powered by 7 autonomous agents
+> Plan: {TIER} | Created: {DATE}
+
+## Your Product
+- **Idea**: {PRODUCT_IDEA}
+- **Target user**: {TARGET_USER}
+- **Pain solved**: {PAIN_STATEMENT}
+- **Revenue model**: {REVENUE_MODEL}
+
+## Your 7 Agents
+
+{TIER_AGENTS_BLOCK}
+
+## Agent Swarm Coordination
+
+All Layer 1 agents share state via `data/agent-state/`:
+```
+data/agent-state/
+├── agent-0-state.json  # Strategy Definer status
+├── agent-1-state.json  # Product Builder status
+├── agent-2-state.json  # Business Strategist status
+├── agent-3-state.json  # Communication Manager status
+├── agent-4-state.json  # Infra Manager status (Factory only)
+├── agent-5-state.json  # Finance status (Factory only)
+└── agent-6-state.json  # Legal status (Factory only)
+```
+
+Each agent reads others' state before making decisions. When Business discovers a niche, Product pivots its MVP. When Product ships, Communication writes launch posts. When Communication finds viral traction, Business recalibrates TAM.
+
+## Skills Available
+
+{TIER_SKILLS_BLOCK}
+
+## Rules
+
+1. **Karpathy pattern**: modify → test 5 min → measure → keep if better → repeat
+2. **All iterations logged** in Supabase `forge_iterations`
+3. **Never ship without green metrics** — always test before deploy
+4. **Agent coordination** — check other agents' state before acting
+5. **User never touches backend** — agents handle everything
+6. **Tier limits enforced** — respect {TIER} plan quotas
+
+## MCP Servers
+- Supabase: forge_{USERNAME}_* tables
+- Neo4j: product/market knowledge graph
+- HuggingFace: Space management
+- WebSearch: market research, trends
+
+## Support
+- Telegram: @Forge42Bot
+- Dashboard: nomosdashboard.vercel.app/forge/{USERNAME}
+- Admin: @Nomos42 (Alexis)
