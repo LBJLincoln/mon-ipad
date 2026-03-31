@@ -1,64 +1,184 @@
 {
-  "updated_at": "2026-03-31T04:00:00Z",
-  "brain_cycle": "Sonnet 4.6 / 4h brain — cycle ~8",
+  "updated_at": "2026-03-31T08:00:00Z",
+  "brain_cycle": "Sonnet 4.6 / 4h brain — cycle ~9",
   "nba_fleet": {
-    "status": "HEALTHY",
-    "best_brier": 0.22006,
-    "best_island": "S14 (nba-evo-5, extra_trees, gen=1145)",
+    "status": "HEALTHY — S14/S15 RESTARTED (low gen)",
+    "best_brier": 0.22215,
+    "best_island": "S10 (nba-quant, extra_trees, gen=629)",
+    "previous_best": 0.22006,
+    "previous_best_island": "S14 (nba-evo-5, gen=1145 — now reset to 23)",
     "target_brier": 0.21837,
-    "gap_to_target": 0.00169,
+    "gap_to_target": 0.00378,
     "checkpoint_triggered": false,
+    "stagnation_triggers_fired": 0,
     "engine_parity": "OK — all 6 islands report feature_candidates=3267",
-    "plateau_alert": "Brier scores UNCHANGED from previous cycle — all islands on plateau at 0.220-0.229",
-    "plateau_action": "LR model type proposal written (see research-proposals/nba-lr-calibration-march2026.json)",
-    "note": "No stagnation (all counters=0). Best brier 0.22006 above threshold 0.21837 — no Supabase checkpoint.",
+    "alert": "S14 and S15 were reset this cycle (gen counts dropped from 1145/2270 to 23/42). Previous best 0.22006 lost. S10 is now fleet best.",
+    "research_this_cycle": "ELO feature anchoring proposal written — locks home_next/team_elo/team_elo_5y permanently in GA chromosomes",
     "islands": {
-      "S10": {"url": "nomos42-nba-quant.hf.space", "role": "exploitation", "gen": 576, "cycle": 192, "brier": 0.22215, "roi": 0.3025, "sharpe": 6.7902, "features": 61, "stagnation": 0, "model": "extra_trees", "pop": 60, "mut": 0.05, "status": "OK"},
-      "S11": {"url": "nomos42-nba-quant-2.hf.space", "role": "exploration", "gen": 1023, "cycle": 341, "brier": 0.22321, "roi": 0.287, "sharpe": 8.2406, "features": 65, "stagnation": 0, "model": "random_forest", "pop": 60, "mut": 0.08, "status": "OK"},
-      "S12": {"url": "nomos42-nba-evo-3.hf.space", "role": "extra_trees_specialist", "gen": 1000, "cycle": 334, "brier": 0.22889, "roi": 0.226, "sharpe": 4.6871, "features": 54, "stagnation": 0, "model": "xgboost", "pop": 60, "mut": 0.04, "status": "OK"},
-      "S13": {"url": "nomos42-nba-evo-4.hf.space", "role": "catboost_specialist", "gen": 556, "cycle": 186, "brier": 0.22368, "roi": 0.284, "sharpe": 4.7821, "features": 68, "stagnation": 0, "model": "lightgbm", "pop": 60, "mut": 0.0707, "status": "OK"},
-      "S14": {"url": "nomos42-nba-evo-5.hf.space", "role": "lightgbm_specialist", "gen": 1145, "cycle": 382, "brier": 0.22006, "roi": 0.3255, "sharpe": 8.4295, "features": 59, "stagnation": 0, "model": "extra_trees", "pop": 60, "mut": 0.04, "status": "OK", "note": "FLEET BEST"},
-      "S15": {"url": "nomos42-nba-evo-6.hf.space", "role": "wide_search", "gen": 2270, "cycle": 757, "brier": 0.22112, "roi": 0.3136, "sharpe": 7.8512, "features": 99, "stagnation": 0, "model": "extra_trees", "pop": 50, "mut": 0.08, "status": "OK"}
+      "S10": {
+        "url": "nomos42-nba-quant.hf.space",
+        "role": "exploitation",
+        "gen": 629,
+        "cycle": 210,
+        "brier": 0.22215,
+        "roi": 0.3025,
+        "sharpe": 6.7902,
+        "features": 61,
+        "feature_candidates": 3267,
+        "stagnation": 0,
+        "model": "extra_trees",
+        "pop": 60,
+        "mut": 0.05,
+        "status": "OK — FLEET BEST"
+      },
+      "S11": {
+        "url": "nomos42-nba-quant-2.hf.space",
+        "role": "exploration",
+        "gen": 1077,
+        "cycle": 359,
+        "brier": 0.22321,
+        "roi": 0.12,
+        "sharpe": 8.2406,
+        "features": 65,
+        "feature_candidates": 3267,
+        "stagnation": 0,
+        "model": "xgboost_brier",
+        "pop": 60,
+        "mut": 0.08,
+        "status": "OK"
+      },
+      "S12": {
+        "url": "nomos42-nba-evo-3.hf.space",
+        "role": "extra_trees_specialist",
+        "gen": 1045,
+        "cycle": 349,
+        "brier": 0.22889,
+        "roi": 0.226,
+        "sharpe": 4.6871,
+        "features": 54,
+        "feature_candidates": 3267,
+        "stagnation": 0,
+        "model": "xgboost_brier",
+        "pop": 60,
+        "mut": 0.04,
+        "status": "OK"
+      },
+      "S13": {
+        "url": "nomos42-nba-evo-4.hf.space",
+        "role": "catboost_specialist",
+        "gen": 603,
+        "cycle": 201,
+        "brier": 0.22368,
+        "roi": 0.284,
+        "sharpe": 4.7821,
+        "features": 68,
+        "feature_candidates": 3267,
+        "stagnation": 0,
+        "model": "lightgbm",
+        "pop": 60,
+        "mut": 0.0643,
+        "status": "OK"
+      },
+      "S14": {
+        "url": "nomos42-nba-evo-5.hf.space",
+        "role": "lightgbm_specialist",
+        "gen": 23,
+        "cycle": 8,
+        "brier": 0.22574,
+        "roi": 0.0,
+        "sharpe": 0.0,
+        "features": 35,
+        "feature_candidates": 3267,
+        "stagnation": 0,
+        "model": "lightgbm",
+        "pop": 60,
+        "mut": 0.15,
+        "status": "RESTARTED — was gen=1145 last cycle, now gen=23"
+      },
+      "S15": {
+        "url": "nomos42-nba-evo-6.hf.space",
+        "role": "wide_search",
+        "gen": 42,
+        "cycle": 14,
+        "brier": 0.23325,
+        "roi": 0.1772,
+        "sharpe": 4.3194,
+        "features": 69,
+        "feature_candidates": 3267,
+        "stagnation": 0,
+        "model": "xgboost",
+        "pop": 50,
+        "mut": 0.1156,
+        "status": "RESTARTED — was gen=2270 last cycle, now gen=42"
+      }
     },
-    "supabase_note": "All islands reporting Supabase connection failures (FATAL: Tenant or user not found). Local caching active.",
+    "supabase_note": "All islands reporting Supabase connection failures. Local caching active.",
     "actions_taken": [
-      "Research: LR model type proposal written — nba-lr-calibration-march2026.json",
-      "Research: MDPI Jan 2026 confirms LR achieves Brier 0.199 on NBA tabular — below our 0.21837 target",
+      "WebSearch: 2026 MDPI uncertainty-aware NBA paper confirms ELO + home_next = top features consistently",
+      "WebSearch: Isotonic calibration + LR achieves Brier 0.199 (below our 0.21837 target)",
+      "Proposal written: data/research-proposals/nba-elo-feature-lock-march2026.json",
       "No stagnation triggers fired (all counters=0)",
-      "No checkpoint (best_brier=0.22006 > threshold 0.21837)"
+      "No checkpoint (best_brier=0.22215 > threshold 0.21837)"
     ]
   },
   "political_alpha_fleet": {
-    "status": "CRITICAL — CYCLE 2",
-    "alert": "FEATURE_STARVATION PERSISTS — all 4 islands Brier=0.3, feature_candidates=2",
-    "root_cause": "hf-space/data/historical/ empty. app.py not calling bootstrap_startup.inject_bootstrap(). Fix exists in bootstrap_startup.py but not deployed.",
-    "fix_status": "PENDING_VM_DEPLOY — app.py patch not applied (apply_patches.py cannot find old strings in HF space app.py)",
-    "rotation_this_cycle": "A — WebSearch new FEC/OpenSecrets/CapitolTrades data sources",
-    "rotation_output": "nomos-political-alpha/data/research/pa-new-datasources-march2026.json",
-    "diversify_sent": "SKIPPED — /api/command endpoint returned 503 on all PA islands",
+    "status": "PARTIAL_RECOVERY — PA1+PA2 healthy, PA3+PA4 PAUSED",
+    "alert": "PA3 and PA4 are PAUSED on HuggingFace (not 503/sleeping — owner-paused). Restart requires Nomos42 HF token via Settings > Pause/Restart.",
+    "pa1_pa2_recovery": "CONFIRMED — feature starvation resolved. PA1 brier=0.24186 (53 features, 372 events). PA2 brier=0.2491 (69 features).",
+    "rotation_this_cycle": "B — Review features/political_engine.py, propose FEC donation-to-enforcement feature",
+    "rotation_output": "nomos-political-alpha/data/research/pa-fec-feature-integration-march2026.json",
     "islands": {
-      "PA1": {"url": "nomos42-political-alpha.hf.space", "role": "exploitation", "gen": 107328, "cycle": 35776, "brier": 0.3, "roi": 0.0, "sharpe": 0.0, "features": 2, "feature_candidates": 2, "stagnation": 17, "status": "CRITICAL"},
-      "PA2": {"url": "nomos42-political-alpha-2.hf.space", "role": "exploration", "gen": 106368, "cycle": 35456, "brier": 0.3, "roi": 0.0, "sharpe": 0.0, "features": 2, "feature_candidates": 2, "stagnation": 16, "status": "CRITICAL"},
-      "PA3": {"url": "nomos42-political-alpha-3.hf.space", "role": "catboost", "gen": 106063, "cycle": 35355, "brier": 0.3, "roi": 0.0, "sharpe": 0.0, "features": 2, "feature_candidates": 2, "stagnation": 12, "status": "CRITICAL"},
-      "PA4": {"url": "nomos42-political-alpha-4.hf.space", "role": "wide_search", "gen": 21510, "cycle": 7170, "brier": 0.3, "roi": 0.0, "sharpe": 0.0, "features": 2, "feature_candidates": 2, "stagnation": 29, "status": "CRITICAL — HIGHEST STAGNATION"}
+      "PA1": {
+        "url": "nomos42-political-alpha.hf.space",
+        "role": "exploitation",
+        "gen": 203,
+        "cycle": 68,
+        "brier": 0.24186,
+        "roi": 0.0841,
+        "sharpe": 2.5409,
+        "features": 53,
+        "feature_candidates": 309,
+        "total_events": 372,
+        "stagnation": 0,
+        "model": "xgboost_brier",
+        "status": "OK — RECOVERED from feature starvation"
+      },
+      "PA2": {
+        "url": "nomos42-political-alpha-2.hf.space",
+        "role": "exploration",
+        "gen": 450,
+        "cycle": 150,
+        "brier": 0.2491,
+        "roi": 0.0171,
+        "sharpe": 0.7071,
+        "features": 69,
+        "feature_candidates": 309,
+        "total_events": 372,
+        "stagnation": 0,
+        "model": "xgboost",
+        "status": "OK — RECOVERED from feature starvation"
+      },
+      "PA3": {
+        "url": "nomos42-political-alpha-3.hf.space",
+        "role": "catboost",
+        "status": "PAUSED — owner-paused on HuggingFace, requires manual restart via HF Settings"
+      },
+      "PA4": {
+        "url": "nomos42-political-alpha-4.hf.space",
+        "role": "wide_search",
+        "status": "PAUSED — owner-paused on HuggingFace, requires manual restart via HF Settings"
+      }
     },
-    "next_action_required": "VM must run: cd nomos-political-alpha && python hf-space/apply_patches.py && git push hf main (for all 4 spaces)"
+    "manual_action_required": "Restart PA3+PA4 at huggingface.co/spaces/Nomos42/political-alpha-3 and .../political-alpha-4 — click Restart in Settings"
   },
   "cross_project": {
-    "nba_to_pa": "Port logistic_regression model type to PA (FIX6 in apply_patches.py already includes this)",
-    "pa_to_nba": "CapitolTrades STOCK Act pattern: add congressional trading lag signal to NBA features (team city reps)",
-    "key_finding": "MDPI Jan 2026 paper: LR Brier 0.199 < XGBoost Brier 0.202 on NBA tabular data — LR as model type is concrete path to target",
-    "new_pa_data_sources": [
-      "fec.gov/data API — inaugural committee + PAC contributions (76 entities gave $1M+)",
-      "opensecrets.org — lobbying, revolving door, contributions API",
-      "capitoltrades.com — STOCK Act congressional trading (240+ members filing)",
-      "campaignlegal.org tracker — 3+ dozen pay-to-play examples documented",
-      "usaspending.gov — government contract awards post-donation"
-    ]
+    "nba_to_pa": "Port isotonic calibration wrapper to PA (CalibratedClassifierCV with isotonic, cv=3)",
+    "pa_to_nba": "FEC pay-to-play pattern: consider congressional-district-level economic signal for NBA team cities",
+    "key_finding_cycle9": "MDPI 2026 + PLOS One 2025: ELO rating (team_elo, team_elo_5y) + home_next are TOP features across ALL models. Locking these in GA = free improvement."
   },
   "research": {
-    "nba_proposal": "data/research-proposals/nba-lr-calibration-march2026.json",
-    "pa_datasources": "nomos-political-alpha/data/research/pa-new-datasources-march2026.json",
-    "pa_fix": "nomos-political-alpha/hf-space/apply_patches.py (7 patches ready, needs VM deploy)"
+    "nba_proposal": "data/research-proposals/nba-elo-feature-lock-march2026.json",
+    "pa_proposal": "nomos-political-alpha/data/research/pa-fec-feature-integration-march2026.json",
+    "previous_nba_proposal": "data/research-proposals/nba-lr-calibration-march2026.json"
   }
 }
