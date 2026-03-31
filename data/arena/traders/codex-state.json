@@ -1,73 +1,2660 @@
 {
   "trader_id": "codex",
-  "config": {
-    "name": "Codex",
-    "provider": "openai",
-    "personality": "aggressive",
-    "risk_tolerance": 0.7,
-    "color": "#10A37F",
-    "icon": "\u26a1"
-  },
-  "nba_bankroll": 100.0,
-  "political_bankroll": 100000.0,
-  "nba_record": {
-    "wins": 0,
-    "losses": 0,
-    "pushes": 0,
-    "total_bets": 0
-  },
-  "political_record": {
-    "profitable_days": 0,
-    "losing_days": 0
-  },
-  "history": [
+  "name": "Codex",
+  "provider": "openai",
+  "personality": "aggressive",
+  "risk_tolerance": 0.7,
+  "nba_bankroll": 64700.0218,
+  "nba_roi_pct": 64600.02,
+  "nba_sharpe": 11.01,
+  "nba_bets": 1298,
+  "nba_wins": 775,
+  "nba_losses": 523,
+  "nba_pushes": 0,
+  "nba_wagered": 111604.5757,
+  "nba_profit": 64600.0218,
+  "nba_peak": 65109.5661,
+  "nba_max_drawdown": 0.9255,
+  "nba_eliminated_day": null,
+  "nba_day_results": [
     {
-      "trader_id": "codex",
-      "date": "2026-03-31",
-      "nba": {
-        "strategy": "props_under",
-        "strategy_name": "Props Under"
-      },
-      "political": {
-        "strategy": "event_driven",
-        "strategy_name": "Event Driven",
-        "etf_positions": [
-          "XLK",
-          "GLD",
-          "DFEN"
-        ]
-      },
-      "competitors_seen": [
-        "gemini",
-        "openrouter",
-        "claude"
-      ],
-      "timestamp": "2026-03-31T23:16:57.158716+00:00"
+      "day": 1,
+      "date": "2025-10-21",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 3,
+      "profit": -37.6055,
+      "bankroll": 62.3945
+    },
+    {
+      "day": 2,
+      "date": "2025-10-22",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 29,
+      "profit": -5.4094,
+      "bankroll": 56.9851
+    },
+    {
+      "day": 3,
+      "date": "2025-10-23",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 7,
+      "profit": -19.8364,
+      "bankroll": 37.1487
+    },
+    {
+      "day": 4,
+      "date": "2025-10-24",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 28,
+      "profit": -20.0095,
+      "bankroll": 17.1392
+    },
+    {
+      "day": 5,
+      "date": "2025-10-25",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 16,
+      "profit": 18.6602,
+      "bankroll": 35.7994
+    },
+    {
+      "day": 6,
+      "date": "2025-10-26",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 22,
+      "profit": -17.501,
+      "bankroll": 18.2983
+    },
+    {
+      "day": 7,
+      "date": "2025-10-27",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 30,
+      "profit": 114.127,
+      "bankroll": 132.4253
+    },
+    {
+      "day": 8,
+      "date": "2025-10-28",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 13,
+      "profit": 24.1385,
+      "bankroll": 156.5639
+    },
+    {
+      "day": 9,
+      "date": "2025-10-29",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 25,
+      "profit": 18.995,
+      "bankroll": 175.5589
+    },
+    {
+      "day": 10,
+      "date": "2025-10-30",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 11,
+      "profit": 52.9501,
+      "bankroll": 228.509
+    },
+    {
+      "day": 11,
+      "date": "2025-10-31",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 12,
+      "profit": -51.1704,
+      "bankroll": 177.3385
+    },
+    {
+      "day": 12,
+      "date": "2025-11-01",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 19,
+      "profit": 178.4358,
+      "bankroll": 355.7743
+    },
+    {
+      "day": 13,
+      "date": "2025-11-02",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 17,
+      "profit": 1335.5518,
+      "bankroll": 1691.3261
+    },
+    {
+      "day": 14,
+      "date": "2025-11-03",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 23,
+      "profit": -119.0878,
+      "bankroll": 1572.2383
+    },
+    {
+      "day": 15,
+      "date": "2025-11-04",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 13,
+      "profit": 2323.8244,
+      "bankroll": 3896.0627
+    },
+    {
+      "day": 16,
+      "date": "2025-11-05",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 15,
+      "profit": 1981.082,
+      "bankroll": 5877.1447
+    },
+    {
+      "day": 17,
+      "date": "2025-11-06",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 0,
+      "profit": 0.0,
+      "bankroll": 5877.1447
+    },
+    {
+      "day": 18,
+      "date": "2025-11-07",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 20,
+      "profit": 4305.1023,
+      "bankroll": 10182.247
+    },
+    {
+      "day": 19,
+      "date": "2025-11-08",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 8,
+      "profit": 42.3931,
+      "bankroll": 10224.6401
+    },
+    {
+      "day": 20,
+      "date": "2025-11-09",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 6,
+      "profit": 394.05,
+      "bankroll": 10618.6901
+    },
+    {
+      "day": 21,
+      "date": "2025-11-10",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 13,
+      "profit": -46.4002,
+      "bankroll": 10572.2898
+    },
+    {
+      "day": 22,
+      "date": "2025-11-11",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 9,
+      "profit": 502.2774,
+      "bankroll": 11074.5673
+    },
+    {
+      "day": 23,
+      "date": "2025-11-12",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 11,
+      "profit": 1056.2275,
+      "bankroll": 12130.7948
+    },
+    {
+      "day": 24,
+      "date": "2025-11-13",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 3,
+      "profit": -32.5094,
+      "bankroll": 12098.2853
+    },
+    {
+      "day": 25,
+      "date": "2025-11-14",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 12,
+      "profit": 486.0568,
+      "bankroll": 12584.3422
+    },
+    {
+      "day": 26,
+      "date": "2025-11-15",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 6,
+      "profit": 58.751,
+      "bankroll": 12643.0932
+    },
+    {
+      "day": 27,
+      "date": "2025-11-16",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 8,
+      "profit": 52.6386,
+      "bankroll": 12695.7318
+    },
+    {
+      "day": 28,
+      "date": "2025-11-17",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 15,
+      "profit": 843.6385,
+      "bankroll": 13539.3704
+    },
+    {
+      "day": 29,
+      "date": "2025-11-18",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 7,
+      "profit": 886.289,
+      "bankroll": 14425.6594
+    },
+    {
+      "day": 30,
+      "date": "2025-11-19",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 10,
+      "profit": -47.3769,
+      "bankroll": 14378.2824
+    },
+    {
+      "day": 31,
+      "date": "2025-11-20",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 3,
+      "profit": 297.0514,
+      "bankroll": 14675.3338
+    },
+    {
+      "day": 32,
+      "date": "2025-11-21",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 10,
+      "profit": 99.1736,
+      "bankroll": 14774.5074
+    },
+    {
+      "day": 33,
+      "date": "2025-11-22",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 8,
+      "profit": 61.5126,
+      "bankroll": 14836.02
+    },
+    {
+      "day": 34,
+      "date": "2025-11-23",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 13,
+      "profit": 519.6161,
+      "bankroll": 15355.6361
+    },
+    {
+      "day": 35,
+      "date": "2025-11-24",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 17,
+      "profit": 1315.5239,
+      "bankroll": 16671.16
+    },
+    {
+      "day": 36,
+      "date": "2025-11-25",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 5,
+      "profit": 385.491,
+      "bankroll": 17056.6509
+    },
+    {
+      "day": 37,
+      "date": "2025-11-26",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 9,
+      "profit": -188.8516,
+      "bankroll": 16867.7994
+    },
+    {
+      "day": 38,
+      "date": "2025-11-28",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 16,
+      "profit": 494.9981,
+      "bankroll": 17362.7975
+    },
+    {
+      "day": 39,
+      "date": "2025-11-29",
+      "model": "lightgbm",
+      "strategy": "full_kelly",
+      "bets": 9,
+      "profit": -120.6884,
+      "bankroll": 17242.1091
+    },
+    {
+      "day": 40,
+      "date": "2025-11-30",
+      "model": "xgboost",
+      "strategy": "full_kelly",
+      "bets": 12,
+      "profit": 336.7108,
+      "bankroll": 17578.8198
+    },
+    {
+      "day": 41,
+      "date": "2025-12-01",
+      "model": "catboost",
+      "strategy": "full_kelly",
+      "bets": 18,
+      "profit": 281.2425,
+      "bankroll": 17860.0624
+    },
+    {
+      "day": 42,
+      "date": "2025-12-02",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 11,
+      "profit": 331.6757,
+      "bankroll": 18191.7381
+    },
+    {
+      "day": 43,
+      "date": "2025-12-03",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 13,
+      "profit": 503.3572,
+      "bankroll": 18695.0952
+    },
+    {
+      "day": 44,
+      "date": "2025-12-04",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 6,
+      "profit": 314.9277,
+      "bankroll": 19010.023
+    },
+    {
+      "day": 45,
+      "date": "2025-12-05",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 16,
+      "profit": 363.4002,
+      "bankroll": 19373.4232
+    },
+    {
+      "day": 46,
+      "date": "2025-12-06",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 14,
+      "profit": 215.9857,
+      "bankroll": 19589.4089
+    },
+    {
+      "day": 47,
+      "date": "2025-12-07",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 4,
+      "profit": 179.7104,
+      "bankroll": 19769.1193
+    },
+    {
+      "day": 48,
+      "date": "2025-12-08",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 4,
+      "profit": -247.9164,
+      "bankroll": 19521.2029
+    },
+    {
+      "day": 49,
+      "date": "2025-12-09",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 2,
+      "profit": 148.3978,
+      "bankroll": 19669.6007
+    },
+    {
+      "day": 50,
+      "date": "2025-12-10",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 4,
+      "profit": 24.8621,
+      "bankroll": 19694.4628
+    },
+    {
+      "day": 51,
+      "date": "2025-12-11",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": 290.8742,
+      "bankroll": 19985.337
+    },
+    {
+      "day": 52,
+      "date": "2025-12-12",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 12,
+      "profit": 516.1489,
+      "bankroll": 20501.4859
+    },
+    {
+      "day": 53,
+      "date": "2025-12-14",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": -231.5121,
+      "bankroll": 20269.9738
+    },
+    {
+      "day": 54,
+      "date": "2025-12-15",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 2,
+      "profit": -127.4997,
+      "bankroll": 20142.4741
+    },
+    {
+      "day": 55,
+      "date": "2025-12-17",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 3,
+      "profit": -13.2083,
+      "bankroll": 20129.2658
+    },
+    {
+      "day": 56,
+      "date": "2025-12-18",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 18,
+      "profit": 842.2389,
+      "bankroll": 20971.5048
+    },
+    {
+      "day": 57,
+      "date": "2025-12-19",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 4,
+      "profit": 26.5077,
+      "bankroll": 20998.0125
+    },
+    {
+      "day": 58,
+      "date": "2025-12-20",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": -237.1191,
+      "bankroll": 20760.8933
+    },
+    {
+      "day": 59,
+      "date": "2025-12-21",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 10,
+      "profit": 238.8627,
+      "bankroll": 20999.756
+    },
+    {
+      "day": 60,
+      "date": "2025-12-22",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 12,
+      "profit": 206.8897,
+      "bankroll": 21206.6457
+    },
+    {
+      "day": 61,
+      "date": "2025-12-23",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 14,
+      "profit": 509.0318,
+      "bankroll": 21715.6775
+    },
+    {
+      "day": 62,
+      "date": "2025-12-25",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 6,
+      "profit": -109.3176,
+      "bankroll": 21606.3599
+    },
+    {
+      "day": 63,
+      "date": "2025-12-26",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 11,
+      "profit": 128.5946,
+      "bankroll": 21734.9545
+    },
+    {
+      "day": 64,
+      "date": "2025-12-27",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": -245.441,
+      "bankroll": 21489.5135
+    },
+    {
+      "day": 65,
+      "date": "2025-12-28",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 7,
+      "profit": 354.6322,
+      "bankroll": 21844.1458
+    },
+    {
+      "day": 66,
+      "date": "2025-12-29",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 10,
+      "profit": 130.1379,
+      "bankroll": 21974.2837
+    },
+    {
+      "day": 67,
+      "date": "2025-12-30",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 4,
+      "profit": 335.3616,
+      "bankroll": 22309.6453
+    },
+    {
+      "day": 68,
+      "date": "2025-12-31",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 11,
+      "profit": 34.7664,
+      "bankroll": 22344.4116
+    },
+    {
+      "day": 69,
+      "date": "2026-01-01",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 7,
+      "profit": 749.2697,
+      "bankroll": 23093.6813
+    },
+    {
+      "day": 70,
+      "date": "2026-01-02",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 13,
+      "profit": 662.8484,
+      "bankroll": 23756.5297
+    },
+    {
+      "day": 71,
+      "date": "2026-01-03",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": -82.715,
+      "bankroll": 23673.8147
+    },
+    {
+      "day": 72,
+      "date": "2026-01-04",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 13,
+      "profit": 619.8871,
+      "bankroll": 24293.7018
+    },
+    {
+      "day": 73,
+      "date": "2026-01-05",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 10,
+      "profit": -91.7432,
+      "bankroll": 24201.9586
+    },
+    {
+      "day": 74,
+      "date": "2026-01-06",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 10,
+      "profit": -30.9239,
+      "bankroll": 24171.0347
+    },
+    {
+      "day": 75,
+      "date": "2026-01-07",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 19,
+      "profit": 613.0216,
+      "bankroll": 24784.0562
+    },
+    {
+      "day": 76,
+      "date": "2026-01-08",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 1,
+      "profit": 121.0082,
+      "bankroll": 24905.0644
+    },
+    {
+      "day": 77,
+      "date": "2026-01-09",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 6,
+      "profit": 70.3835,
+      "bankroll": 24975.4479
+    },
+    {
+      "day": 78,
+      "date": "2026-01-10",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 4,
+      "profit": 381.164,
+      "bankroll": 25356.6119
+    },
+    {
+      "day": 79,
+      "date": "2026-01-11",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 17,
+      "profit": 995.0352,
+      "bankroll": 26351.6472
+    },
+    {
+      "day": 80,
+      "date": "2026-01-12",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 11,
+      "profit": 540.8039,
+      "bankroll": 26892.4511
+    },
+    {
+      "day": 81,
+      "date": "2026-01-13",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 6,
+      "profit": 238.6832,
+      "bankroll": 27131.1343
+    },
+    {
+      "day": 82,
+      "date": "2026-01-14",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": 425.8329,
+      "bankroll": 27556.9672
+    },
+    {
+      "day": 83,
+      "date": "2026-01-15",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 6,
+      "profit": 244.5811,
+      "bankroll": 27801.5483
+    },
+    {
+      "day": 84,
+      "date": "2026-01-16",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 6,
+      "profit": 194.7813,
+      "bankroll": 27996.3297
+    },
+    {
+      "day": 85,
+      "date": "2026-01-17",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 15,
+      "profit": 888.7082,
+      "bankroll": 28885.0379
+    },
+    {
+      "day": 86,
+      "date": "2026-01-18",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 4,
+      "profit": 264.9872,
+      "bankroll": 29150.0251
+    },
+    {
+      "day": 87,
+      "date": "2026-01-19",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 14,
+      "profit": 387.8423,
+      "bankroll": 29537.8673
+    },
+    {
+      "day": 88,
+      "date": "2026-01-20",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 3,
+      "profit": 253.3849,
+      "bankroll": 29791.2522
+    },
+    {
+      "day": 89,
+      "date": "2026-01-21",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": 492.891,
+      "bankroll": 30284.1432
+    },
+    {
+      "day": 90,
+      "date": "2026-01-22",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": 847.4512,
+      "bankroll": 31131.5944
+    },
+    {
+      "day": 91,
+      "date": "2026-01-23",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 9,
+      "profit": -530.894,
+      "bankroll": 30600.7004
+    },
+    {
+      "day": 92,
+      "date": "2026-01-24",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 5,
+      "profit": -57.8352,
+      "bankroll": 30542.8652
+    },
+    {
+      "day": 93,
+      "date": "2026-01-25",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 9,
+      "profit": 463.0739,
+      "bankroll": 31005.9391
+    },
+    {
+      "day": 94,
+      "date": "2026-01-26",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": 323.9946,
+      "bankroll": 31329.9337
+    },
+    {
+      "day": 95,
+      "date": "2026-01-27",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 14,
+      "profit": 772.058,
+      "bankroll": 32101.9916
+    },
+    {
+      "day": 96,
+      "date": "2026-01-28",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 5,
+      "profit": 643.9229,
+      "bankroll": 32745.9145
+    },
+    {
+      "day": 97,
+      "date": "2026-01-29",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": 117.9663,
+      "bankroll": 32863.8808
+    },
+    {
+      "day": 98,
+      "date": "2026-01-30",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 6,
+      "profit": 755.1937,
+      "bankroll": 33619.0744
+    },
+    {
+      "day": 99,
+      "date": "2026-01-31",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 6,
+      "profit": 298.3852,
+      "bankroll": 33917.4596
+    },
+    {
+      "day": 100,
+      "date": "2026-02-01",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 2,
+      "profit": 257.8364,
+      "bankroll": 34175.2961
+    },
+    {
+      "day": 101,
+      "date": "2026-02-02",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": 14.5807,
+      "bankroll": 34189.8767
+    },
+    {
+      "day": 102,
+      "date": "2026-02-03",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 10,
+      "profit": 829.8729,
+      "bankroll": 35019.7496
+    },
+    {
+      "day": 103,
+      "date": "2026-02-04",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 7,
+      "profit": 199.5256,
+      "bankroll": 35219.2752
+    },
+    {
+      "day": 104,
+      "date": "2026-02-05",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 13,
+      "profit": 1836.6455,
+      "bankroll": 37055.9207
+    },
+    {
+      "day": 105,
+      "date": "2026-02-06",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": 93.7355,
+      "bankroll": 37149.6562
+    },
+    {
+      "day": 106,
+      "date": "2026-02-07",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 13,
+      "profit": 693.1369,
+      "bankroll": 37842.7931
+    },
+    {
+      "day": 107,
+      "date": "2026-02-08",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 6,
+      "profit": 335.8727,
+      "bankroll": 38178.6658
+    },
+    {
+      "day": 108,
+      "date": "2026-02-09",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 14,
+      "profit": 976.1193,
+      "bankroll": 39154.7851
+    },
+    {
+      "day": 109,
+      "date": "2026-02-10",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": 99.0447,
+      "bankroll": 39253.8298
+    },
+    {
+      "day": 110,
+      "date": "2026-02-11",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 20,
+      "profit": 800.9505,
+      "bankroll": 40054.7803
+    },
+    {
+      "day": 111,
+      "date": "2026-02-12",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 6,
+      "profit": 355.5051,
+      "bankroll": 40410.2854
+    },
+    {
+      "day": 112,
+      "date": "2026-02-19",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 7,
+      "profit": 1166.3434,
+      "bankroll": 41576.6288
+    },
+    {
+      "day": 113,
+      "date": "2026-02-20",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 4,
+      "profit": 129.8299,
+      "bankroll": 41706.4588
+    },
+    {
+      "day": 114,
+      "date": "2026-02-21",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 7,
+      "profit": 1043.5917,
+      "bankroll": 42750.0505
+    },
+    {
+      "day": 115,
+      "date": "2026-02-22",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 6,
+      "profit": 854.1552,
+      "bankroll": 43604.2057
+    },
+    {
+      "day": 116,
+      "date": "2026-02-23",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 1,
+      "profit": 206.0299,
+      "bankroll": 43810.2356
+    },
+    {
+      "day": 117,
+      "date": "2026-02-24",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 9,
+      "profit": 1357.1367,
+      "bankroll": 45167.3723
+    },
+    {
+      "day": 118,
+      "date": "2026-02-25",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 2,
+      "profit": 70.4664,
+      "bankroll": 45237.8386
+    },
+    {
+      "day": 119,
+      "date": "2026-02-26",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 7,
+      "profit": 1283.5806,
+      "bankroll": 46521.4192
+    },
+    {
+      "day": 120,
+      "date": "2026-02-27",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 4,
+      "profit": 145.2709,
+      "bankroll": 46666.6901
+    },
+    {
+      "day": 121,
+      "date": "2026-02-28",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 4,
+      "profit": 1471.6003,
+      "bankroll": 48138.2904
+    },
+    {
+      "day": 122,
+      "date": "2026-03-01",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 10,
+      "profit": 2873.5179,
+      "bankroll": 51011.8083
+    },
+    {
+      "day": 123,
+      "date": "2026-03-02",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 2,
+      "profit": -320.8682,
+      "bankroll": 50690.9401
+    },
+    {
+      "day": 124,
+      "date": "2026-03-03",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 8,
+      "profit": 1126.1743,
+      "bankroll": 51817.1144
+    },
+    {
+      "day": 125,
+      "date": "2026-03-04",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 5,
+      "profit": -408.0517,
+      "bankroll": 51409.0627
+    },
+    {
+      "day": 126,
+      "date": "2026-03-05",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 11,
+      "profit": 1755.7803,
+      "bankroll": 53164.843
+    },
+    {
+      "day": 127,
+      "date": "2026-03-06",
+      "model": "catboost",
+      "strategy": "half_kelly",
+      "bets": 6,
+      "profit": -169.4392,
+      "bankroll": 52995.4038
+    },
+    {
+      "day": 128,
+      "date": "2026-03-07",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 7,
+      "profit": 202.1806,
+      "bankroll": 53197.5845
+    },
+    {
+      "day": 129,
+      "date": "2026-03-08",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 7,
+      "profit": 1844.9976,
+      "bankroll": 55042.582
+    },
+    {
+      "day": 130,
+      "date": "2026-03-09",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 3,
+      "profit": 467.913,
+      "bankroll": 55510.495
+    },
+    {
+      "day": 131,
+      "date": "2026-03-10",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 9,
+      "profit": 2001.067,
+      "bankroll": 57511.562
+    },
+    {
+      "day": 132,
+      "date": "2026-03-11",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 4,
+      "profit": 1521.7833,
+      "bankroll": 59033.3453
+    },
+    {
+      "day": 133,
+      "date": "2026-03-12",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 9,
+      "profit": 1470.9169,
+      "bankroll": 60504.2623
+    },
+    {
+      "day": 134,
+      "date": "2026-03-13",
+      "model": "xgboost",
+      "strategy": "half_kelly",
+      "bets": 9,
+      "profit": 2259.8581,
+      "bankroll": 62764.1204
+    },
+    {
+      "day": 135,
+      "date": "2026-03-14",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 7,
+      "profit": 1585.336,
+      "bankroll": 64349.4563
+    },
+    {
+      "day": 136,
+      "date": "2026-03-15",
+      "model": "lightgbm",
+      "strategy": "half_kelly",
+      "bets": 7,
+      "profit": 350.5655,
+      "bankroll": 64700.0218
     }
   ],
-  "season_start": "2026-03-31",
-  "last_decision": {
-    "trader_id": "codex",
-    "date": "2026-03-31",
-    "nba": {
-      "strategy": "props_under",
-      "strategy_name": "Props Under"
+  "nba_bets_history": [
+    {
+      "date": "2026-02-09",
+      "cat": "alt_spread_away_big",
+      "bet": 119.8485,
+      "profit": 179.7728,
+      "bankroll_after": 38226.9231
     },
-    "political": {
-      "strategy": "event_driven",
-      "strategy_name": "Event Driven",
-      "etf_positions": [
-        "XLK",
-        "GLD",
-        "DFEN"
-      ]
+    {
+      "date": "2026-02-09",
+      "cat": "spread_home",
+      "bet": 120.4148,
+      "profit": -120.4148,
+      "bankroll_after": 38106.5082
     },
-    "competitors_seen": [
-      "gemini",
-      "openrouter",
-      "claude"
-    ],
-    "timestamp": "2026-03-31T23:16:57.158716+00:00"
-  },
-  "last_updated": "2026-03-31T23:16:57.158774+00:00"
+    {
+      "date": "2026-02-09",
+      "cat": "alt_spread_home_big",
+      "bet": 120.0355,
+      "profit": -120.0355,
+      "bankroll_after": 37986.4727
+    },
+    {
+      "date": "2026-02-09",
+      "cat": "spread_home",
+      "bet": 119.6574,
+      "profit": 108.7686,
+      "bankroll_after": 38095.2413
+    },
+    {
+      "date": "2026-02-09",
+      "cat": "alt_spread_home_big",
+      "bet": 120.0,
+      "profit": 180.0,
+      "bankroll_after": 38275.2413
+    },
+    {
+      "date": "2026-02-09",
+      "cat": "spread_home",
+      "bet": 120.567,
+      "profit": 109.5954,
+      "bankroll_after": 38384.8367
+    },
+    {
+      "date": "2026-02-09",
+      "cat": "alt_spread_home_big",
+      "bet": 120.9122,
+      "profit": 181.3684,
+      "bankroll_after": 38566.2051
+    },
+    {
+      "date": "2026-02-09",
+      "cat": "spread_home",
+      "bet": 121.4835,
+      "profit": 110.4285,
+      "bankroll_after": 38676.6336
+    },
+    {
+      "date": "2026-02-09",
+      "cat": "alt_spread_home_big",
+      "bet": 121.8314,
+      "profit": 182.7471,
+      "bankroll_after": 38859.3807
+    },
+    {
+      "date": "2026-02-09",
+      "cat": "spread_home",
+      "bet": 122.407,
+      "profit": 111.268,
+      "bankroll_after": 38970.6487
+    },
+    {
+      "date": "2026-02-09",
+      "cat": "alt_spread_home_big",
+      "bet": 122.7575,
+      "profit": 184.1363,
+      "bankroll_after": 39154.7851
+    },
+    {
+      "date": "2026-02-10",
+      "cat": "spread_home",
+      "bet": 123.3376,
+      "profit": -123.3376,
+      "bankroll_after": 39031.4475
+    },
+    {
+      "date": "2026-02-10",
+      "cat": "alt_spread_home_big",
+      "bet": 122.9491,
+      "profit": -122.9491,
+      "bankroll_after": 38908.4984
+    },
+    {
+      "date": "2026-02-10",
+      "cat": "spread_away",
+      "bet": 122.5618,
+      "profit": 111.4086,
+      "bankroll_after": 39019.9071
+    },
+    {
+      "date": "2026-02-10",
+      "cat": "alt_spread_away_big",
+      "bet": 122.9127,
+      "profit": 184.3691,
+      "bankroll_after": 39204.2761
+    },
+    {
+      "date": "2026-02-10",
+      "cat": "spread_home",
+      "bet": 123.4935,
+      "profit": -123.4935,
+      "bankroll_after": 39080.7827
+    },
+    {
+      "date": "2026-02-10",
+      "cat": "alt_spread_home_big",
+      "bet": 123.1045,
+      "profit": -123.1045,
+      "bankroll_after": 38957.6782
+    },
+    {
+      "date": "2026-02-10",
+      "cat": "spread_home",
+      "bet": 122.7167,
+      "profit": 111.5495,
+      "bankroll_after": 39069.2277
+    },
+    {
+      "date": "2026-02-10",
+      "cat": "alt_spread_home_big",
+      "bet": 123.0681,
+      "profit": 184.6021,
+      "bankroll_after": 39253.8298
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "spread_home",
+      "bet": 123.6496,
+      "profit": -123.6496,
+      "bankroll_after": 39130.1802
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "alt_spread_home_big",
+      "bet": 123.2601,
+      "profit": -123.2601,
+      "bankroll_after": 39006.9201
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "spread_home",
+      "bet": 122.8718,
+      "profit": 111.6905,
+      "bankroll_after": 39118.6106
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "alt_spread_home_big",
+      "bet": 123.2236,
+      "profit": 184.8354,
+      "bankroll_after": 39303.446
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "spread_home",
+      "bet": 123.8059,
+      "profit": 112.5395,
+      "bankroll_after": 39415.9856
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "alt_spread_home_big",
+      "bet": 124.1604,
+      "profit": 186.2405,
+      "bankroll_after": 39602.2261
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "spread_home",
+      "bet": 124.747,
+      "profit": -124.747,
+      "bankroll_after": 39477.4791
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "alt_spread_home_big",
+      "bet": 124.3541,
+      "profit": -124.3541,
+      "bankroll_after": 39353.125
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "spread_away",
+      "bet": 123.9623,
+      "profit": 112.6818,
+      "bankroll_after": 39465.8068
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "alt_spread_away_big",
+      "bet": 124.3173,
+      "profit": 186.4759,
+      "bankroll_after": 39652.2827
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "spread_home",
+      "bet": 124.9047,
+      "profit": -124.9047,
+      "bankroll_after": 39527.378
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "alt_spread_home_big",
+      "bet": 124.5112,
+      "profit": -124.5112,
+      "bankroll_after": 39402.8668
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "spread_home",
+      "bet": 124.119,
+      "profit": 112.8242,
+      "bankroll_after": 39515.691
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "alt_spread_home_big",
+      "bet": 124.4744,
+      "profit": 186.7116,
+      "bankroll_after": 39702.4026
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "spread_home",
+      "bet": 125.0626,
+      "profit": -125.0626,
+      "bankroll_after": 39577.3401
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "alt_spread_home_big",
+      "bet": 124.6686,
+      "profit": -124.6686,
+      "bankroll_after": 39452.6714
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "spread_away",
+      "bet": 124.2759,
+      "profit": 112.9668,
+      "bankroll_after": 39565.6382
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "alt_spread_away_big",
+      "bet": 124.6318,
+      "profit": 186.9476,
+      "bankroll_after": 39752.5859
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "spread_home",
+      "bet": 125.2206,
+      "profit": 113.8256,
+      "bankroll_after": 39866.4115
+    },
+    {
+      "date": "2026-02-11",
+      "cat": "alt_spread_home_big",
+      "bet": 125.5792,
+      "profit": 188.3688,
+      "bankroll_after": 40054.7803
+    },
+    {
+      "date": "2026-02-12",
+      "cat": "spread_home",
+      "bet": 126.1726,
+      "profit": 114.6909,
+      "bankroll_after": 40169.4711
+    },
+    {
+      "date": "2026-02-12",
+      "cat": "alt_spread_home_big",
+      "bet": 126.5338,
+      "profit": 189.8008,
+      "bankroll_after": 40359.2719
+    },
+    {
+      "date": "2026-02-12",
+      "cat": "spread_home",
+      "bet": 127.1317,
+      "profit": -127.1317,
+      "bankroll_after": 40232.1401
+    },
+    {
+      "date": "2026-02-12",
+      "cat": "alt_spread_home_big",
+      "bet": 126.7312,
+      "profit": -126.7312,
+      "bankroll_after": 40105.4089
+    },
+    {
+      "date": "2026-02-12",
+      "cat": "spread_away",
+      "bet": 126.332,
+      "profit": 114.8358,
+      "bankroll_after": 40220.2447
+    },
+    {
+      "date": "2026-02-12",
+      "cat": "alt_spread_away_big",
+      "bet": 126.6938,
+      "profit": 190.0407,
+      "bankroll_after": 40410.2854
+    },
+    {
+      "date": "2026-02-19",
+      "cat": "alt_spread_away_big",
+      "bet": 127.2924,
+      "profit": -127.2924,
+      "bankroll_after": 40282.993
+    },
+    {
+      "date": "2026-02-19",
+      "cat": "alt_spread_away_big",
+      "bet": 126.8914,
+      "profit": 190.3371,
+      "bankroll_after": 40473.3301
+    },
+    {
+      "date": "2026-02-19",
+      "cat": "alt_spread_home_big",
+      "bet": 127.491,
+      "profit": 191.2365,
+      "bankroll_after": 40664.5666
+    },
+    {
+      "date": "2026-02-19",
+      "cat": "alt_spread_away_big",
+      "bet": 128.0934,
+      "profit": 192.1401,
+      "bankroll_after": 40856.7067
+    },
+    {
+      "date": "2026-02-19",
+      "cat": "h1_ml_home",
+      "bet": 128.6986,
+      "profit": 329.7902,
+      "bankroll_after": 41186.4969
+    },
+    {
+      "date": "2026-02-19",
+      "cat": "alt_spread_away_big",
+      "bet": 129.7375,
+      "profit": 194.6062,
+      "bankroll_after": 41381.1031
+    },
+    {
+      "date": "2026-02-19",
+      "cat": "alt_spread_home_big",
+      "bet": 130.3505,
+      "profit": 195.5257,
+      "bankroll_after": 41576.6288
+    },
+    {
+      "date": "2026-02-20",
+      "cat": "alt_spread_away_big",
+      "bet": 130.9664,
+      "profit": -130.9664,
+      "bankroll_after": 41445.6625
+    },
+    {
+      "date": "2026-02-20",
+      "cat": "alt_spread_home_big",
+      "bet": 130.5538,
+      "profit": -130.5538,
+      "bankroll_after": 41315.1086
+    },
+    {
+      "date": "2026-02-20",
+      "cat": "alt_spread_home_big",
+      "bet": 130.1426,
+      "profit": 195.2139,
+      "bankroll_after": 41510.3225
+    },
+    {
+      "date": "2026-02-20",
+      "cat": "alt_spread_home_big",
+      "bet": 130.7575,
+      "profit": 196.1363,
+      "bankroll_after": 41706.4588
+    },
+    {
+      "date": "2026-02-21",
+      "cat": "h1_ml_home",
+      "bet": 131.3753,
+      "profit": 523.8592,
+      "bankroll_after": 42230.318
+    },
+    {
+      "date": "2026-02-21",
+      "cat": "alt_spread_away_big",
+      "bet": 133.0255,
+      "profit": 199.5383,
+      "bankroll_after": 42429.8562
+    },
+    {
+      "date": "2026-02-21",
+      "cat": "alt_spread_home_big",
+      "bet": 133.654,
+      "profit": 200.4811,
+      "bankroll_after": 42630.3373
+    },
+    {
+      "date": "2026-02-21",
+      "cat": "ml_home",
+      "bet": 134.2856,
+      "profit": 187.9998,
+      "bankroll_after": 42818.3371
+    },
+    {
+      "date": "2026-02-21",
+      "cat": "alt_spread_home_big",
+      "bet": 134.8778,
+      "profit": -134.8778,
+      "bankroll_after": 42683.4593
+    },
+    {
+      "date": "2026-02-21",
+      "cat": "alt_spread_home_big",
+      "bet": 134.4529,
+      "profit": -134.4529,
+      "bankroll_after": 42549.0064
+    },
+    {
+      "date": "2026-02-21",
+      "cat": "alt_spread_home_big",
+      "bet": 134.0294,
+      "profit": 201.0441,
+      "bankroll_after": 42750.0505
+    },
+    {
+      "date": "2026-02-22",
+      "cat": "alt_spread_home_big",
+      "bet": 134.6627,
+      "profit": 201.994,
+      "bankroll_after": 42952.0445
+    },
+    {
+      "date": "2026-02-22",
+      "cat": "alt_spread_away_big",
+      "bet": 135.2989,
+      "profit": -135.2989,
+      "bankroll_after": 42816.7455
+    },
+    {
+      "date": "2026-02-22",
+      "cat": "h1_ml_home",
+      "bet": 134.8727,
+      "profit": 243.1081,
+      "bankroll_after": 43059.8536
+    },
+    {
+      "date": "2026-02-22",
+      "cat": "alt_spread_home_big",
+      "bet": 135.6385,
+      "profit": -135.6385,
+      "bankroll_after": 42924.2151
+    },
+    {
+      "date": "2026-02-22",
+      "cat": "h1_ml_home",
+      "bet": 135.2113,
+      "profit": 474.9296,
+      "bankroll_after": 43399.1447
+    },
+    {
+      "date": "2026-02-22",
+      "cat": "alt_spread_away_big",
+      "bet": 136.7073,
+      "profit": 205.061,
+      "bankroll_after": 43604.2057
+    },
+    {
+      "date": "2026-02-23",
+      "cat": "alt_spread_home_big",
+      "bet": 137.3532,
+      "profit": 206.0299,
+      "bankroll_after": 43810.2356
+    },
+    {
+      "date": "2026-02-24",
+      "cat": "alt_spread_home_big",
+      "bet": 138.0022,
+      "profit": 207.0034,
+      "bankroll_after": 44017.2389
+    },
+    {
+      "date": "2026-02-24",
+      "cat": "h1_ml_home",
+      "bet": 138.6543,
+      "profit": 335.5434,
+      "bankroll_after": 44352.7823
+    },
+    {
+      "date": "2026-02-24",
+      "cat": "alt_spread_away_big",
+      "bet": 139.7113,
+      "profit": 209.5669,
+      "bankroll_after": 44562.3492
+    },
+    {
+      "date": "2026-02-24",
+      "cat": "alt_spread_home_big",
+      "bet": 140.3714,
+      "profit": 210.5571,
+      "bankroll_after": 44772.9063
+    },
+    {
+      "date": "2026-02-24",
+      "cat": "alt_spread_away_big",
+      "bet": 141.0347,
+      "profit": 211.552,
+      "bankroll_after": 44984.4583
+    },
+    {
+      "date": "2026-02-24",
+      "cat": "alt_spread_home_big",
+      "bet": 141.701,
+      "profit": -141.701,
+      "bankroll_after": 44842.7573
+    },
+    {
+      "date": "2026-02-24",
+      "cat": "ml_home",
+      "bet": 141.2547,
+      "profit": 254.2584,
+      "bankroll_after": 45097.0157
+    },
+    {
+      "date": "2026-02-24",
+      "cat": "alt_spread_away_big",
+      "bet": 142.0556,
+      "profit": 213.0834,
+      "bankroll_after": 45310.0991
+    },
+    {
+      "date": "2026-02-24",
+      "cat": "alt_spread_away_big",
+      "bet": 142.7268,
+      "profit": -142.7268,
+      "bankroll_after": 45167.3723
+    },
+    {
+      "date": "2026-02-25",
+      "cat": "alt_spread_home_big",
+      "bet": 142.2772,
+      "profit": -142.2772,
+      "bankroll_after": 45025.0951
+    },
+    {
+      "date": "2026-02-25",
+      "cat": "alt_spread_home_big",
+      "bet": 141.829,
+      "profit": 212.7436,
+      "bankroll_after": 45237.8386
+    },
+    {
+      "date": "2026-02-26",
+      "cat": "alt_spread_home_big",
+      "bet": 142.4992,
+      "profit": 213.7488,
+      "bankroll_after": 45451.5874
+    },
+    {
+      "date": "2026-02-26",
+      "cat": "alt_spread_away_big",
+      "bet": 143.1725,
+      "profit": 214.7588,
+      "bankroll_after": 45666.3462
+    },
+    {
+      "date": "2026-02-26",
+      "cat": "alt_spread_home_big",
+      "bet": 143.849,
+      "profit": -143.849,
+      "bankroll_after": 45522.4972
+    },
+    {
+      "date": "2026-02-26",
+      "cat": "h1_ml_home",
+      "bet": 143.3959,
+      "profit": 708.0171,
+      "bankroll_after": 46230.5143
+    },
+    {
+      "date": "2026-02-26",
+      "cat": "alt_spread_away_big",
+      "bet": 145.6261,
+      "profit": 218.4392,
+      "bankroll_after": 46448.9535
+    },
+    {
+      "date": "2026-02-26",
+      "cat": "alt_spread_away_big",
+      "bet": 146.3142,
+      "profit": -146.3142,
+      "bankroll_after": 46302.6393
+    },
+    {
+      "date": "2026-02-26",
+      "cat": "alt_spread_away_big",
+      "bet": 145.8533,
+      "profit": 218.78,
+      "bankroll_after": 46521.4192
+    },
+    {
+      "date": "2026-02-27",
+      "cat": "alt_spread_home_big",
+      "bet": 146.5425,
+      "profit": 219.8137,
+      "bankroll_after": 46741.2329
+    },
+    {
+      "date": "2026-02-27",
+      "cat": "alt_spread_home_big",
+      "bet": 147.2349,
+      "profit": -147.2349,
+      "bankroll_after": 46593.998
+    },
+    {
+      "date": "2026-02-27",
+      "cat": "alt_spread_away_big",
+      "bet": 146.7711,
+      "profit": 220.1566,
+      "bankroll_after": 46814.1547
+    },
+    {
+      "date": "2026-02-27",
+      "cat": "alt_spread_home_big",
+      "bet": 147.4646,
+      "profit": -147.4646,
+      "bankroll_after": 46666.6901
+    },
+    {
+      "date": "2026-02-28",
+      "cat": "alt_spread_home_big",
+      "bet": 147.0001,
+      "profit": 220.5001,
+      "bankroll_after": 46887.1902
+    },
+    {
+      "date": "2026-02-28",
+      "cat": "alt_spread_away_big",
+      "bet": 147.6946,
+      "profit": 221.542,
+      "bankroll_after": 47108.7322
+    },
+    {
+      "date": "2026-02-28",
+      "cat": "h1_ml_home",
+      "bet": 148.3925,
+      "profit": 803.1744,
+      "bankroll_after": 47911.9066
+    },
+    {
+      "date": "2026-02-28",
+      "cat": "alt_spread_away_big",
+      "bet": 150.9225,
+      "profit": 226.3838,
+      "bankroll_after": 48138.2904
+    },
+    {
+      "date": "2026-03-01",
+      "cat": "alt_spread_home_big",
+      "bet": 151.6356,
+      "profit": 227.4534,
+      "bankroll_after": 48365.7438
+    },
+    {
+      "date": "2026-03-01",
+      "cat": "alt_spread_away_big",
+      "bet": 152.3521,
+      "profit": -152.3521,
+      "bankroll_after": 48213.3917
+    },
+    {
+      "date": "2026-03-01",
+      "cat": "alt_spread_home_big",
+      "bet": 151.8722,
+      "profit": 227.8083,
+      "bankroll_after": 48441.2
+    },
+    {
+      "date": "2026-03-01",
+      "cat": "ml_home",
+      "bet": 152.5898,
+      "profit": -152.5898,
+      "bankroll_after": 48288.6102
+    },
+    {
+      "date": "2026-03-01",
+      "cat": "h1_ml_home",
+      "bet": 152.1091,
+      "profit": 1040.0461,
+      "bankroll_after": 49328.6563
+    },
+    {
+      "date": "2026-03-01",
+      "cat": "alt_spread_away_big",
+      "bet": 155.3853,
+      "profit": 233.0779,
+      "bankroll_after": 49561.7342
+    },
+    {
+      "date": "2026-03-01",
+      "cat": "alt_spread_home_big",
+      "bet": 156.1195,
+      "profit": 234.1792,
+      "bankroll_after": 49795.9134
+    },
+    {
+      "date": "2026-03-01",
+      "cat": "h1_ml_away",
+      "bet": 156.8571,
+      "profit": 737.2285,
+      "bankroll_after": 50533.1419
+    },
+    {
+      "date": "2026-03-01",
+      "cat": "alt_spread_home_big",
+      "bet": 159.1794,
+      "profit": 238.7691,
+      "bankroll_after": 50771.911
+    },
+    {
+      "date": "2026-03-01",
+      "cat": "alt_spread_away_big",
+      "bet": 159.9315,
+      "profit": 239.8973,
+      "bankroll_after": 51011.8083
+    },
+    {
+      "date": "2026-03-02",
+      "cat": "alt_spread_away_big",
+      "bet": 160.6872,
+      "profit": -160.6872,
+      "bankroll_after": 50851.1211
+    },
+    {
+      "date": "2026-03-02",
+      "cat": "alt_spread_away_big",
+      "bet": 160.181,
+      "profit": -160.181,
+      "bankroll_after": 50690.9401
+    },
+    {
+      "date": "2026-03-03",
+      "cat": "alt_spread_home_big",
+      "bet": 159.6765,
+      "profit": 239.5147,
+      "bankroll_after": 50930.4548
+    },
+    {
+      "date": "2026-03-03",
+      "cat": "alt_spread_away_big",
+      "bet": 160.4309,
+      "profit": -160.4309,
+      "bankroll_after": 50770.0238
+    },
+    {
+      "date": "2026-03-03",
+      "cat": "alt_spread_home_big",
+      "bet": 159.9256,
+      "profit": 239.8884,
+      "bankroll_after": 51009.9122
+    },
+    {
+      "date": "2026-03-03",
+      "cat": "alt_spread_home_big",
+      "bet": 160.6812,
+      "profit": 241.0218,
+      "bankroll_after": 51250.934
+    },
+    {
+      "date": "2026-03-03",
+      "cat": "alt_spread_home_big",
+      "bet": 161.4404,
+      "profit": -161.4404,
+      "bankroll_after": 51089.4936
+    },
+    {
+      "date": "2026-03-03",
+      "cat": "alt_spread_home_big",
+      "bet": 160.9319,
+      "profit": 241.3979,
+      "bankroll_after": 51330.8914
+    },
+    {
+      "date": "2026-03-03",
+      "cat": "alt_spread_away_big",
+      "bet": 161.6923,
+      "profit": 242.5385,
+      "bankroll_after": 51573.4299
+    },
+    {
+      "date": "2026-03-03",
+      "cat": "alt_spread_away_big",
+      "bet": 162.4563,
+      "profit": 243.6845,
+      "bankroll_after": 51817.1144
+    },
+    {
+      "date": "2026-03-04",
+      "cat": "alt_spread_home_big",
+      "bet": 163.2239,
+      "profit": -163.2239,
+      "bankroll_after": 51653.8904
+    },
+    {
+      "date": "2026-03-04",
+      "cat": "alt_spread_home_big",
+      "bet": 162.7098,
+      "profit": 244.0646,
+      "bankroll_after": 51897.9551
+    },
+    {
+      "date": "2026-03-04",
+      "cat": "alt_spread_away_big",
+      "bet": 163.4786,
+      "profit": -163.4786,
+      "bankroll_after": 51734.4765
+    },
+    {
+      "date": "2026-03-04",
+      "cat": "alt_spread_away_big",
+      "bet": 162.9636,
+      "profit": -162.9636,
+      "bankroll_after": 51571.5129
+    },
+    {
+      "date": "2026-03-04",
+      "cat": "alt_spread_home_big",
+      "bet": 162.4503,
+      "profit": -162.4503,
+      "bankroll_after": 51409.0627
+    },
+    {
+      "date": "2026-03-05",
+      "cat": "alt_spread_home_big",
+      "bet": 161.9385,
+      "profit": -161.9385,
+      "bankroll_after": 51247.1241
+    },
+    {
+      "date": "2026-03-05",
+      "cat": "alt_spread_home_big",
+      "bet": 161.4284,
+      "profit": -161.4284,
+      "bankroll_after": 51085.6957
+    },
+    {
+      "date": "2026-03-05",
+      "cat": "alt_spread_home_big",
+      "bet": 160.9199,
+      "profit": 241.3799,
+      "bankroll_after": 51327.0756
+    },
+    {
+      "date": "2026-03-05",
+      "cat": "alt_spread_home_big",
+      "bet": 161.6803,
+      "profit": -161.6803,
+      "bankroll_after": 51165.3953
+    },
+    {
+      "date": "2026-03-05",
+      "cat": "alt_spread_home_big",
+      "bet": 161.171,
+      "profit": -161.171,
+      "bankroll_after": 51004.2243
+    },
+    {
+      "date": "2026-03-05",
+      "cat": "ml_away",
+      "bet": 160.6633,
+      "profit": 763.1507,
+      "bankroll_after": 51767.375
+    },
+    {
+      "date": "2026-03-05",
+      "cat": "h1_ml_away",
+      "bet": 163.0672,
+      "profit": 727.6875,
+      "bankroll_after": 52495.0625
+    },
+    {
+      "date": "2026-03-05",
+      "cat": "alt_spread_home_big",
+      "bet": 165.3594,
+      "profit": -165.3594,
+      "bankroll_after": 52329.7031
+    },
+    {
+      "date": "2026-03-05",
+      "cat": "h1_ml_home",
+      "bet": 164.8386,
+      "profit": 336.2707,
+      "bankroll_after": 52665.9737
+    },
+    {
+      "date": "2026-03-05",
+      "cat": "alt_spread_away_big",
+      "bet": 165.8978,
+      "profit": 248.8467,
+      "bankroll_after": 52914.8205
+    },
+    {
+      "date": "2026-03-05",
+      "cat": "alt_spread_home_big",
+      "bet": 166.6817,
+      "profit": 250.0225,
+      "bankroll_after": 53164.843
+    },
+    {
+      "date": "2026-03-06",
+      "cat": "alt_spread_home_big",
+      "bet": 167.4693,
+      "profit": 251.2039,
+      "bankroll_after": 53416.0469
+    },
+    {
+      "date": "2026-03-06",
+      "cat": "alt_spread_home_big",
+      "bet": 168.2605,
+      "profit": -168.2605,
+      "bankroll_after": 53247.7863
+    },
+    {
+      "date": "2026-03-06",
+      "cat": "alt_spread_home_big",
+      "bet": 167.7305,
+      "profit": -167.7305,
+      "bankroll_after": 53080.0558
+    },
+    {
+      "date": "2026-03-06",
+      "cat": "alt_spread_home_big",
+      "bet": 167.2022,
+      "profit": 250.8033,
+      "bankroll_after": 53330.8591
+    },
+    {
+      "date": "2026-03-06",
+      "cat": "alt_spread_home_big",
+      "bet": 167.9922,
+      "profit": -167.9922,
+      "bankroll_after": 53162.8669
+    },
+    {
+      "date": "2026-03-06",
+      "cat": "alt_spread_home_big",
+      "bet": 167.463,
+      "profit": -167.463,
+      "bankroll_after": 52995.4038
+    },
+    {
+      "date": "2026-03-07",
+      "cat": "alt_spread_home_big",
+      "bet": 166.9355,
+      "profit": 250.4033,
+      "bankroll_after": 53245.8071
+    },
+    {
+      "date": "2026-03-07",
+      "cat": "alt_spread_home_big",
+      "bet": 167.7243,
+      "profit": -167.7243,
+      "bankroll_after": 53078.0828
+    },
+    {
+      "date": "2026-03-07",
+      "cat": "h1_ml_home",
+      "bet": 167.196,
+      "profit": 372.847,
+      "bankroll_after": 53450.9298
+    },
+    {
+      "date": "2026-03-07",
+      "cat": "alt_spread_away_big",
+      "bet": 168.3704,
+      "profit": -168.3704,
+      "bankroll_after": 53282.5594
+    },
+    {
+      "date": "2026-03-07",
+      "cat": "alt_spread_home_big",
+      "bet": 167.8401,
+      "profit": 251.7601,
+      "bankroll_after": 53534.3195
+    },
+    {
+      "date": "2026-03-07",
+      "cat": "alt_spread_home_big",
+      "bet": 168.6331,
+      "profit": -168.6331,
+      "bankroll_after": 53365.6864
+    },
+    {
+      "date": "2026-03-07",
+      "cat": "alt_spread_home_big",
+      "bet": 168.1019,
+      "profit": -168.1019,
+      "bankroll_after": 53197.5845
+    },
+    {
+      "date": "2026-03-08",
+      "cat": "ml_home",
+      "bet": 167.5724,
+      "profit": 276.4944,
+      "bankroll_after": 53474.0789
+    },
+    {
+      "date": "2026-03-08",
+      "cat": "alt_spread_away_big",
+      "bet": 168.4433,
+      "profit": 252.665,
+      "bankroll_after": 53726.7439
+    },
+    {
+      "date": "2026-03-08",
+      "cat": "alt_spread_home_big",
+      "bet": 169.2392,
+      "profit": 253.8589,
+      "bankroll_after": 53980.6028
+    },
+    {
+      "date": "2026-03-08",
+      "cat": "ml_home",
+      "bet": 170.0389,
+      "profit": 289.0661,
+      "bankroll_after": 54269.6689
+    },
+    {
+      "date": "2026-03-08",
+      "cat": "alt_spread_home_big",
+      "bet": 170.9495,
+      "profit": 256.4242,
+      "bankroll_after": 54526.0931
+    },
+    {
+      "date": "2026-03-08",
+      "cat": "alt_spread_home_big",
+      "bet": 171.7572,
+      "profit": 257.6358,
+      "bankroll_after": 54783.7289
+    },
+    {
+      "date": "2026-03-08",
+      "cat": "alt_spread_home_big",
+      "bet": 172.5687,
+      "profit": 258.8531,
+      "bankroll_after": 55042.582
+    },
+    {
+      "date": "2026-03-09",
+      "cat": "alt_spread_home_big",
+      "bet": 173.3841,
+      "profit": 260.0762,
+      "bankroll_after": 55302.6582
+    },
+    {
+      "date": "2026-03-09",
+      "cat": "ml_home",
+      "bet": 174.2034,
+      "profit": 383.2474,
+      "bankroll_after": 55685.9056
+    },
+    {
+      "date": "2026-03-09",
+      "cat": "alt_spread_away_big",
+      "bet": 175.4106,
+      "profit": -175.4106,
+      "bankroll_after": 55510.495
+    },
+    {
+      "date": "2026-03-10",
+      "cat": "alt_spread_home_big",
+      "bet": 174.8581,
+      "profit": 262.2871,
+      "bankroll_after": 55772.7821
+    },
+    {
+      "date": "2026-03-10",
+      "cat": "ml_home",
+      "bet": 175.6843,
+      "profit": -175.6843,
+      "bankroll_after": 55597.0979
+    },
+    {
+      "date": "2026-03-10",
+      "cat": "h1_ml_home",
+      "bet": 175.1309,
+      "profit": 1197.4572,
+      "bankroll_after": 56794.5551
+    },
+    {
+      "date": "2026-03-10",
+      "cat": "alt_spread_away_big",
+      "bet": 178.9028,
+      "profit": 268.3543,
+      "bankroll_after": 57062.9094
+    },
+    {
+      "date": "2026-03-10",
+      "cat": "alt_spread_home_big",
+      "bet": 179.7482,
+      "profit": -179.7482,
+      "bankroll_after": 56883.1612
+    },
+    {
+      "date": "2026-03-10",
+      "cat": "alt_spread_home_big",
+      "bet": 179.182,
+      "profit": 268.7729,
+      "bankroll_after": 57151.9342
+    },
+    {
+      "date": "2026-03-10",
+      "cat": "alt_spread_home_big",
+      "bet": 180.0286,
+      "profit": 270.0429,
+      "bankroll_after": 57421.977
+    },
+    {
+      "date": "2026-03-10",
+      "cat": "alt_spread_home_big",
+      "bet": 180.8792,
+      "profit": 271.3188,
+      "bankroll_after": 57693.2959
+    },
+    {
+      "date": "2026-03-10",
+      "cat": "alt_spread_home_big",
+      "bet": 181.7339,
+      "profit": -181.7339,
+      "bankroll_after": 57511.562
+    },
+    {
+      "date": "2026-03-11",
+      "cat": "alt_spread_home_big",
+      "bet": 181.1614,
+      "profit": 271.7421,
+      "bankroll_after": 57783.3041
+    },
+    {
+      "date": "2026-03-11",
+      "cat": "h1_ml_home",
+      "bet": 182.0174,
+      "profit": 1158.0858,
+      "bankroll_after": 58941.3899
+    },
+    {
+      "date": "2026-03-11",
+      "cat": "alt_spread_away_big",
+      "bet": 185.6654,
+      "profit": -185.6654,
+      "bankroll_after": 58755.7245
+    },
+    {
+      "date": "2026-03-11",
+      "cat": "alt_spread_away_big",
+      "bet": 185.0805,
+      "profit": 277.6208,
+      "bankroll_after": 59033.3453
+    },
+    {
+      "date": "2026-03-12",
+      "cat": "alt_spread_home_big",
+      "bet": 185.955,
+      "profit": 278.9326,
+      "bankroll_after": 59312.2779
+    },
+    {
+      "date": "2026-03-12",
+      "cat": "alt_spread_home_big",
+      "bet": 186.8337,
+      "profit": 280.2505,
+      "bankroll_after": 59592.5284
+    },
+    {
+      "date": "2026-03-12",
+      "cat": "alt_spread_away_big",
+      "bet": 187.7165,
+      "profit": 281.5747,
+      "bankroll_after": 59874.1031
+    },
+    {
+      "date": "2026-03-12",
+      "cat": "alt_spread_home_big",
+      "bet": 188.6034,
+      "profit": 282.9051,
+      "bankroll_after": 60157.0082
+    },
+    {
+      "date": "2026-03-12",
+      "cat": "alt_spread_away_big",
+      "bet": 189.4946,
+      "profit": -189.4946,
+      "bankroll_after": 59967.5136
+    },
+    {
+      "date": "2026-03-12",
+      "cat": "alt_spread_home_big",
+      "bet": 188.8977,
+      "profit": -188.8977,
+      "bankroll_after": 59778.616
+    },
+    {
+      "date": "2026-03-12",
+      "cat": "alt_spread_home_big",
+      "bet": 188.3026,
+      "profit": -188.3026,
+      "bankroll_after": 59590.3133
+    },
+    {
+      "date": "2026-03-12",
+      "cat": "h1_ml_away",
+      "bet": 187.7095,
+      "profit": 1105.1396,
+      "bankroll_after": 60695.4529
+    },
+    {
+      "date": "2026-03-12",
+      "cat": "alt_spread_home_big",
+      "bet": 191.1907,
+      "profit": -191.1907,
+      "bankroll_after": 60504.2623
+    },
+    {
+      "date": "2026-03-13",
+      "cat": "alt_spread_away_big",
+      "bet": 190.5884,
+      "profit": 285.8826,
+      "bankroll_after": 60790.1449
+    },
+    {
+      "date": "2026-03-13",
+      "cat": "alt_spread_home_big",
+      "bet": 191.489,
+      "profit": 287.2334,
+      "bankroll_after": 61077.3783
+    },
+    {
+      "date": "2026-03-13",
+      "cat": "alt_spread_away_big",
+      "bet": 192.3937,
+      "profit": 288.5906,
+      "bankroll_after": 61365.9689
+    },
+    {
+      "date": "2026-03-13",
+      "cat": "alt_spread_home_big",
+      "bet": 193.3028,
+      "profit": -193.3028,
+      "bankroll_after": 61172.6661
+    },
+    {
+      "date": "2026-03-13",
+      "cat": "h1_ml_home",
+      "bet": 192.6939,
+      "profit": 905.6613,
+      "bankroll_after": 62078.3275
+    },
+    {
+      "date": "2026-03-13",
+      "cat": "alt_spread_away_big",
+      "bet": 195.5467,
+      "profit": 293.3201,
+      "bankroll_after": 62371.6476
+    },
+    {
+      "date": "2026-03-13",
+      "cat": "alt_spread_home_big",
+      "bet": 196.4707,
+      "profit": 294.706,
+      "bankroll_after": 62666.3536
+    },
+    {
+      "date": "2026-03-13",
+      "cat": "alt_spread_home_big",
+      "bet": 197.399,
+      "profit": 296.0985,
+      "bankroll_after": 62962.4521
+    },
+    {
+      "date": "2026-03-13",
+      "cat": "alt_spread_home_big",
+      "bet": 198.3317,
+      "profit": -198.3317,
+      "bankroll_after": 62764.1204
+    },
+    {
+      "date": "2026-03-14",
+      "cat": "alt_spread_home_big",
+      "bet": 197.707,
+      "profit": 296.5605,
+      "bankroll_after": 63060.6809
+    },
+    {
+      "date": "2026-03-14",
+      "cat": "alt_spread_home_big",
+      "bet": 198.6411,
+      "profit": 297.9617,
+      "bankroll_after": 63358.6426
+    },
+    {
+      "date": "2026-03-14",
+      "cat": "ml_away",
+      "bet": 199.5797,
+      "profit": 1297.2682,
+      "bankroll_after": 64655.9108
+    },
+    {
+      "date": "2026-03-14",
+      "cat": "alt_spread_home_big",
+      "bet": 203.6661,
+      "profit": -203.6661,
+      "bankroll_after": 64452.2447
+    },
+    {
+      "date": "2026-03-14",
+      "cat": "alt_spread_home_big",
+      "bet": 203.0246,
+      "profit": -203.0246,
+      "bankroll_after": 64249.2201
+    },
+    {
+      "date": "2026-03-14",
+      "cat": "alt_spread_home_big",
+      "bet": 202.385,
+      "profit": -202.385,
+      "bankroll_after": 64046.8351
+    },
+    {
+      "date": "2026-03-14",
+      "cat": "alt_spread_home_big",
+      "bet": 201.7475,
+      "profit": 302.6213,
+      "bankroll_after": 64349.4563
+    },
+    {
+      "date": "2026-03-15",
+      "cat": "alt_spread_home_big",
+      "bet": 202.7008,
+      "profit": -202.7008,
+      "bankroll_after": 64146.7556
+    },
+    {
+      "date": "2026-03-15",
+      "cat": "alt_spread_home_big",
+      "bet": 202.0623,
+      "profit": 303.0934,
+      "bankroll_after": 64449.849
+    },
+    {
+      "date": "2026-03-15",
+      "cat": "alt_spread_home_big",
+      "bet": 203.017,
+      "profit": -203.017,
+      "bankroll_after": 64246.832
+    },
+    {
+      "date": "2026-03-15",
+      "cat": "alt_spread_home_big",
+      "bet": 202.3775,
+      "profit": 303.5663,
+      "bankroll_after": 64550.3982
+    },
+    {
+      "date": "2026-03-15",
+      "cat": "ml_home",
+      "bet": 203.3338,
+      "profit": 559.1678,
+      "bankroll_after": 65109.5661
+    },
+    {
+      "date": "2026-03-15",
+      "cat": "alt_spread_away_big",
+      "bet": 205.0951,
+      "profit": -205.0951,
+      "bankroll_after": 64904.4709
+    },
+    {
+      "date": "2026-03-15",
+      "cat": "alt_spread_home_big",
+      "bet": 204.4491,
+      "profit": -204.4491,
+      "bankroll_after": 64700.0218
+    }
+  ],
+  "political_bankroll": 100000.0,
+  "political_roi_pct": 0.0,
+  "political_positions": [],
+  "political_total_size": 0,
+  "political_simulated_pnl": 0.0,
+  "political_approach": "event_driven",
+  "saw_others": [
+    "gemini",
+    "openrouter",
+    "claude",
+    "grok"
+  ],
+  "run_timestamp": "2026-03-31T23:19:01.190569+00:00"
 }
