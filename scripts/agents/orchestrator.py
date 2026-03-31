@@ -63,6 +63,7 @@ def check_hf_space(space_name):
                 "generation": data.get("generation"),
                 "model": data.get("best_model_type"),
                 "last_improvement": data.get("last_improvement_gen"),
+                "stagnation_cycles": data.get("stagnation", 0),
             }
     except Exception as e:
         return {"status": "DOWN", "error": str(e)[:100]}
@@ -116,16 +117,20 @@ def check_telegram_bots():
 
 
 def detect_stagnation(space_data):
-    """Detect if a space has stagnated (no improvement in 200+ gens)."""
+    """Detect if a space has stagnated (no improvement in 50+ stagnation cycles)."""
     if space_data.get("status") != "UP":
         return None
+    stag_cycles = space_data.get("stagnation_cycles", 0)
     gen = space_data.get("generation", 0)
     last_imp = space_data.get("last_improvement", 0)
-    if gen and last_imp and (gen - last_imp) > 200:
+    # Use stagnation_cycles from API (counter), or fall back to gen-based calc
+    gens_stale = stag_cycles * 10 if stag_cycles else (gen - last_imp if gen and last_imp else 0)
+    if gens_stale > 200:
         return {
             "stagnant": True,
-            "gens_since_improvement": gen - last_imp,
-            "recommendation": "inject_diversity" if (gen - last_imp) < 500 else "reset_population",
+            "stagnation_cycles": stag_cycles,
+            "gens_since_improvement": gens_stale,
+            "recommendation": "inject_diversity" if gens_stale < 500 else "reset_population",
         }
     return {"stagnant": False}
 

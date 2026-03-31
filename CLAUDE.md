@@ -4,7 +4,7 @@
 
 ## Mission
 Build the best NBA prediction AI in the world.
-**Best:** Brier 0.21570 (Colab TabICL, 110f, iter 15) | Previous ATR: 0.21844 | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
+**Best:** Brier 0.21570 (Colab TabICL, 110f, iter 15) | Latest run: 0.21677 (Gen 38, 200f) | **Target:** < 0.20, ROI > 5%, Sharpe > 1.5
 **Walk-forward:** avg 0.22447 (Kaggle, 19 weeks, 934 games, tree ensemble — no TabICL on P100)
 
 ## Nomos42 Ecosystem

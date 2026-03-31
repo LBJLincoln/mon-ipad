@@ -5,6 +5,7 @@
 # ═══════════════════════════════════════════════════════════════
 
 set -euo pipefail
+export PATH="$PATH:/home/termius/.local/bin"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 MON_DIR="/home/termius/mon-ipad"
 NBA_DIR="/home/termius/nomos-nba-agent"
@@ -28,7 +29,7 @@ for space in nomos42-nba-quant nomos42-nba-quant-2 nomos42-nba-evo-3 nomos42-nba
 done
 
 # 2. Data server check
-if ! curl -sf http://localhost:8080/backtest-results.json > /dev/null 2>&1; then
+if ! curl -sf http://localhost:8080/nba-agent/backtest-results.json > /dev/null 2>&1; then
     log "[DATA SERVER] DOWN — restarting..."
     cd "$MON_DIR/data" && python3 -m http.server 8080 &
     sleep 2
@@ -53,7 +54,7 @@ if [ "$MINUTE" -ge 30 ] && [ $((HOUR % 4)) -eq 0 ]; then
     log "[PREDICTIONS] Checking for NBA games..."
     if [ -f "$NBA_DIR/predict_today.py" ]; then
         cd "$NBA_DIR"
-        python3 predict_today.py --date "$TODAY" >> "$LOG_DIR/predictions-$TODAY.log" 2>&1 || log "  No games or prediction failed"
+        python3 predict_today.py >> "$LOG_DIR/predictions-$TODAY.log" 2>&1 || log "  No games or prediction failed"
     fi
 fi
 

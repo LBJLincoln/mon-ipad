@@ -12,6 +12,7 @@
 # Or:  bash scripts/infra-agent.sh          (manual run)
 # ══════════════════════════════════════════════════════════════
 set -uo pipefail
+export PATH="$PATH:/home/termius/.local/bin"
 
 LOG="/home/termius/mon-ipad/logs/infra-agent.log"
 STATUS_FILE="/home/termius/mon-ipad/data/infra-status.json"
