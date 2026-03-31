@@ -1,0 +1,73 @@
+{
+  "timestamp": "2026-03-31T12:22:03.004810+00:00",
+  "global_best": {
+    "island": "S12",
+    "brier": 0.22115,
+    "model": "random_forest",
+    "generation": 26
+  },
+  "islands": {
+    "S10": {
+      "status": "UP",
+      "brier": 0.22439,
+      "model": "random_forest",
+      "generation": 18,
+      "stagnation": 16
+    },
+    "S11": {
+      "status": "UP",
+      "brier": 0.22277,
+      "model": "catboost",
+      "generation": 25,
+      "stagnation": 0
+    },
+    "S12": {
+      "status": "UP",
+      "brier": 0.22115,
+      "model": "random_forest",
+      "generation": 26,
+      "stagnation": 24
+    },
+    "S13": {
+      "status": "UP",
+      "brier": 0.22344,
+      "model": "extra_trees",
+      "generation": 18,
+      "stagnation": 13
+    },
+    "S14": {
+      "status": "UP",
+      "brier": 0.2271,
+      "model": "xgboost",
+      "generation": 99,
+      "stagnation": 24
+    },
+    "S15": {
+      "status": "UP",
+      "brier": 0.22254,
+      "model": "random_forest",
+      "generation": 38,
+      "stagnation": 0
+    }
+  },
+  "migrations": [
+    "S14"
+  ],
+  "stagnant": [
+    {
+      "island": "S12",
+      "stagnation": 24
+    },
+    {
+      "island": "S14",
+      "stagnation": 24
+    }
+  ],
+  "critical": [],
+  "resets": [],
+  "down": [],
+  "recommendations": [
+    "S12: Stagnation at 24 gens, consider manual intervention",
+    "S14: Stagnation at 24 gens, consider manual intervention"
+  ]
+}

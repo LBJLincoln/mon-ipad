@@ -69,6 +69,10 @@ Before production: Auth → List → Push → Status → Download → Parse → 
 
 ---
 
+## Cycle 7 — Self-Improvement Harness (2026-03-31)
+
+- [research_cycle7_self_improvement_harness.md](research_cycle7_self_improvement_harness.md) — SOTA gap analysis: 0.199 → 0.21570 (-0.0157 Brier). 9 frameworks (AutoHarness, SAGE, Karpathy loop, EvoAgentX, EnCompass, ERL, trajectory memory, MIT DigiRL, Claude autonomy). 4-phase roadmap: Brier gates (+Telegram) → SAGE 4-agent → AutoHarness+EnCompass → 24/7 Claude team. Expected cumulative -0.008 Brier.
+
 ## Cycle 6 — Unconventional Feature Research (2026-03-27)
 
 - [research_cycle6_feature_proposals.md](research_cycle6_feature_proposals.md) — 18 unconventional feature categories (Cat 39-56). Quick wins: Circadian (Cat39), Clutch (Cat43), Transition (Cat41), Load (Cat48), H2H (Cat55). All data sources mapped.

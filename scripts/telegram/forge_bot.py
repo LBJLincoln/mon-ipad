@@ -13,6 +13,7 @@ import json
 import logging
 import os
 import signal
+import subprocess
 import sys
 import time
 import urllib.request
@@ -30,11 +31,14 @@ logging.basicConfig(
 log = logging.getLogger("forge")
 
 TOKEN = os.environ.get("FORGE_BOT_TOKEN", "")
-DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+DATA_DIR = REPO_ROOT / "data"
 USERS_FILE = DATA_DIR / "forge-users" / "users.json"
 PICKS_FILE = DATA_DIR / "nba-agent" / "latest-picks.json"
 BANKROLL_FILE = DATA_DIR / "nba-agent" / "bankroll-state.json"
 SUMMARY_FILE = DATA_DIR / "nba-agent" / "quant-summary.json"
+FORGE_SCRIPTS = REPO_ROOT / "scripts" / "forge"
+FORGE_USERS = REPO_ROOT / "forge-users"
 
 API = f"https://api.telegram.org/bot{TOKEN}"
 POLL_TIMEOUT = 30
@@ -153,10 +157,13 @@ def format_pick(g: dict, tc: dict, num: int) -> str:
 
 def cmd_start(chat_id, mid):
     send(chat_id,
-        "Welcome to Forge42 - NBA Quant AI\n"
+        "Welcome to Forge42\n"
         "==================================\n\n"
-        "Login with your code:\n"
-        "/login YOUR_CODE\n\n"
+        "NBA Quant AI:\n"
+        "  /login YOUR_CODE\n\n"
+        "Forge Factory (idea -> product):\n"
+        "  /idea YOUR_BUSINESS_IDEA\n"
+        "  /build\n\n"
         "No code yet? Visit nomosdashboard.vercel.app",
         mid)
 
@@ -267,6 +274,12 @@ def cmd_help(chat_id, mid, user):
     tc = TIERS.get(user.get("tier", "free"), TIERS["free"]) if user else TIERS["free"]
     lines = [
         "Forge42 Commands", "=" * 30,
+        "",
+        "-- Forge Factory --",
+        "/idea TEXT - Analyze a business idea",
+        "/build - Create product from latest brief",
+        "",
+        "-- NBA Quant AI --",
         "/picks - Today's NBA picks",
         "/plan - Your subscription",
     ]
@@ -276,6 +289,221 @@ def cmd_help(chat_id, mid, user):
         lines.append("/models - AI model stats")
     lines += ["", "/login CODE - Activate account", "/help - This message", "", "Support: @Nomos42"]
     send(chat_id, "\n".join(lines), mid)
+
+# ── Forge Factory Commands ──────────────────────────────────
+
+def _get_forge_username(tid: str) -> str:
+    """Get forge username from telegram id. Falls back to tid-based name."""
+    uid, user = find_user_by_tid(tid)
+    if uid:
+        return uid
+    return f"tg-{tid}"
+
+def _find_latest_brief(user: str) -> Path | None:
+    """Find the most recent strategy brief for a user."""
+    briefs_dir = FORGE_USERS / user / "briefs"
+    if not briefs_dir.exists():
+        return None
+    briefs = sorted(briefs_dir.glob("strategy-*.json"), reverse=True)
+    return briefs[0] if briefs else None
+
+def cmd_idea(chat_id, mid, tid, username, args):
+    """Handle /idea command — runs F0 Strategy Definer."""
+    idea_text = " ".join(args).strip() if args else ""
+    if not idea_text:
+        send(chat_id,
+            "Usage: /idea YOUR_BUSINESS_IDEA\n\n"
+            "Examples:\n"
+            "  /idea AI tool for restaurant menu optimization\n"
+            "  /idea Fitness app for busy parents\n"
+            "  /idea Newsletter platform for indie hackers\n\n"
+            "I'll analyze your idea and create a strategy brief.",
+            mid)
+        return
+
+    forge_user = _get_forge_username(str(tid))
+    typing(chat_id)
+
+    send(chat_id,
+        f"Analyzing your idea...\n"
+        f"User: {forge_user}\n\n"
+        f"\"{idea_text}\"\n\n"
+        f"Running F0 Strategy Definer...",
+        mid)
+
+    # Run f0_strategy_definer.py
+    f0_script = FORGE_SCRIPTS / "f0_strategy_definer.py"
+    try:
+        result = subprocess.run(
+            [sys.executable, str(f0_script),
+             "--user", forge_user,
+             "--idea", idea_text,
+             "--json"],
+            capture_output=True, text=True, timeout=60,
+            cwd=str(REPO_ROOT),
+        )
+
+        if result.returncode != 0:
+            log.error(f"F0 error: {result.stderr}")
+            send(chat_id, f"Strategy analysis failed:\n{result.stderr[:500]}", mid)
+            return
+
+        output = json.loads(result.stdout)
+        brief = output.get("brief", {})
+
+        # Format response
+        lines = [
+            f"STRATEGY BRIEF",
+            f"{'=' * 30}",
+            f"Product: {brief.get('product_name', '?')}",
+            f"Type: {brief.get('product_type', '?')}",
+            f"Pitch: {brief.get('one_liner', '?')}",
+            f"",
+            f"Pain: {brief.get('pain_statement', '?')}",
+            f"Intensity: {brief.get('pain_intensity', '?')}/10",
+            f"",
+            f"Model: {brief.get('pricing_model', '?')}",
+        ]
+        pr = brief.get("pricing_range", {})
+        lines.append(f"Price: ${pr.get('low', '?')}-${pr.get('high', '?')}/{pr.get('period', 'mo')}")
+        lines.append(f"")
+        lines.append(f"UVP: {brief.get('unique_value_prop', '?')}")
+        lines.append(f"")
+        mvp = brief.get("mvp_scope", {})
+        lines.append(f"MVP: {mvp.get('core_feature', '?')}")
+        lines.append(f"Score: {brief.get('confidence_score', '?')}/100")
+        lines.append(f"")
+
+        comps = brief.get("competitive_landscape", [])
+        if comps:
+            lines.append(f"Competitors ({len(comps)}):")
+            for c in comps[:3]:
+                lines.append(f"  - {c.get('name', '?')}")
+
+        method = output.get("meta", {}).get("generation_method", "?")
+        lines.append(f"")
+        lines.append(f"[{method}]")
+        lines.append(f"")
+        lines.append(f"Next: /build to create implementation plan")
+
+        send(chat_id, "\n".join(lines), mid)
+        log.info(f"IDEA: {forge_user} -> {brief.get('product_name', '?')} (score={brief.get('confidence_score', '?')})")
+
+    except subprocess.TimeoutExpired:
+        send(chat_id, "Analysis timed out. Try again or simplify your idea.", mid)
+    except json.JSONDecodeError:
+        send(chat_id, "Analysis completed but output was malformed. Check logs.", mid)
+    except Exception as e:
+        log.error(f"Idea command error: {e}", exc_info=True)
+        send(chat_id, f"Error: {e}", mid)
+
+
+def cmd_build(chat_id, mid, tid, username, args):
+    """Handle /build command — runs F1 Product Builder."""
+    forge_user = _get_forge_username(str(tid))
+
+    # Find brief: use argument or latest
+    brief_path = None
+    if args:
+        # User specified a brief path
+        candidate = " ".join(args).strip()
+        bp = Path(candidate)
+        if not bp.is_absolute():
+            bp = FORGE_USERS / forge_user / candidate
+        if bp.exists():
+            brief_path = bp
+        else:
+            send(chat_id, f"Brief not found: {candidate}\nRun /idea first to create one.", mid)
+            return
+    else:
+        # Find latest brief
+        bp = _find_latest_brief(forge_user)
+        if bp:
+            brief_path = bp
+        else:
+            send(chat_id,
+                "No strategy brief found.\n\n"
+                "Run /idea first to create one:\n"
+                "  /idea AI tool for restaurant menu optimization\n\n"
+                "Or specify a brief path:\n"
+                "  /build briefs/strategy-2026-03-31.json",
+                mid)
+            return
+
+    typing(chat_id)
+    send(chat_id,
+        f"Building product from brief...\n"
+        f"User: {forge_user}\n"
+        f"Brief: {brief_path.name}\n\n"
+        f"Running F1 Product Builder...",
+        mid)
+
+    # Run f1_product_builder.py
+    f1_script = FORGE_SCRIPTS / "f1_product_builder.py"
+    try:
+        result = subprocess.run(
+            [sys.executable, str(f1_script),
+             "--user", forge_user,
+             "--brief", str(brief_path),
+             "--json"],
+            capture_output=True, text=True, timeout=60,
+            cwd=str(REPO_ROOT),
+        )
+
+        if result.returncode != 0:
+            log.error(f"F1 error: {result.stderr}")
+            send(chat_id, f"Build plan failed:\n{result.stderr[:500]}", mid)
+            return
+
+        output = json.loads(result.stdout)
+        plan = output.get("plan", {})
+        tech = plan.get("tech_stack", {})
+        features = plan.get("mvp_features", [])
+        iteration_plan = plan.get("iteration_plan", [])
+        deploy = plan.get("deployment_target", "?")
+        first_iter = plan.get("first_iteration", {})
+
+        lines = [
+            f"PRODUCT BUILD PLAN",
+            f"{'=' * 30}",
+            f"Deploy: {deploy}",
+            f"Frontend: {tech.get('frontend', '?')}",
+            f"Backend: {tech.get('backend', '?')}",
+            f"Database: {tech.get('database', '?')}",
+            f"",
+            f"Features ({len(features)}):",
+        ]
+        for f in features[:6]:
+            marker = "*" if f.get("priority") == "P0" else " "
+            lines.append(f"  [{f.get('priority', '?')}]{marker} {f['name']}")
+
+        lines.append(f"")
+        lines.append(f"Plan ({plan.get('estimated_total_iterations', '?')} iterations):")
+        for step in iteration_plan:
+            lines.append(f"  {step['step']}. {step['name']}: {step.get('goal', '')}")
+
+        lines.append(f"")
+        lines.append(f"FIRST ITERATION:")
+        lines.append(f"  {first_iter.get('what_to_build', '?')}")
+        lines.append(f"  Test: {first_iter.get('how_to_test', '?')}")
+
+        method = output.get("meta", {}).get("generation_method", "?")
+        lines.append(f"")
+        lines.append(f"[{method}]")
+        lines.append(f"Files: README.md, CLAUDE.md, BUILD-PLAN.md")
+        lines.append(f"Dir: forge-users/{forge_user}/products/")
+
+        send(chat_id, "\n".join(lines), mid)
+        log.info(f"BUILD: {forge_user} -> {deploy} ({len(features)} features)")
+
+    except subprocess.TimeoutExpired:
+        send(chat_id, "Build plan timed out. Try again.", mid)
+    except json.JSONDecodeError:
+        send(chat_id, "Build completed but output was malformed. Check logs.", mid)
+    except Exception as e:
+        log.error(f"Build command error: {e}", exc_info=True)
+        send(chat_id, f"Error: {e}", mid)
+
 
 # ── Router ───────────────────────────────────────────────────
 
@@ -292,6 +520,16 @@ def handle(chat_id, mid, tid, username, text):
     if text.startswith("/help"):
         _, user = find_user_by_tid(str(tid))
         cmd_help(chat_id, mid, user)
+        return
+
+    # Forge Factory commands (available before full auth for discovery)
+    if text.startswith("/idea"):
+        args = text.split()[1:]
+        cmd_idea(chat_id, mid, tid, username, args)
+        return
+    if text.startswith("/build"):
+        args = text.split()[1:]
+        cmd_build(chat_id, mid, tid, username, args)
         return
 
     # Auth required for everything else

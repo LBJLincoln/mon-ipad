@@ -160,6 +160,7 @@ STRATEGIES = {
     "underdog_specialist": {"family": "underdog", "min_odds": 2.2, "min_edge": 0.03, "max_pct": 0.08, "cats": ["ml_away"]},
     "totals_expert":     {"family": "kelly", "fraction": 0.5,  "min_edge": 0.02, "max_pct": 0.15, "cats": ["total_over", "total_under"]},
     "first_half_sniper": {"family": "kelly", "fraction": 0.5,  "min_edge": 0.02, "max_pct": 0.15, "cats": ["ml_home", "ml_away"]},
+    "full_blast":        {"family": "full_blast", "min_edge": 0.01, "max_pct": 1.00, "cats": "all"},
 }
 
 
@@ -187,6 +188,9 @@ def get_bet_size(strat_name, prob, odds, bankroll):
         bet = conf * max_bet
     elif cfg["family"] in ("value", "underdog"):
         bet = kelly_size(prob, odds, 0.5) * bankroll
+    elif cfg["family"] == "full_blast":
+        # 100% bankroll on best edge bet of the day
+        bet = bankroll
     else:
         bet = bankroll * 0.02
     return min(max(bet, 0), max_bet)
@@ -267,6 +271,10 @@ def run_full_season():
             day_pnl = 0.0
             start_bankroll = comp["bankroll"]
 
+            # For full_blast: collect all candidate bets first, pick only the best one
+            is_full_blast = (cfg["family"] == "full_blast")
+            candidate_bets = []  # (edge, bet_odds, bet_won, bet_type, game_key)
+
             for (key, result, odd) in day_games:
                 date_str, home, away = key
                 hs = result["home_score"]
@@ -309,6 +317,14 @@ def run_full_season():
                         continue
 
                     bp = bet_probs.get(bet_type, 0.5)
+
+                    if is_full_blast:
+                        # Collect candidate, pick best edge later
+                        edge = bp * (bet_odds - 1) - (1 - bp)
+                        if edge >= cfg["min_edge"]:
+                            candidate_bets.append((edge, bet_odds, bet_won, bet_type, f"{date_str}_{home}_{away}"))
+                        continue
+
                     bet_size = get_bet_size(s, bp, bet_odds, comp["bankroll"])
 
                     if bet_size < 0.01 or bet_size > comp["bankroll"]:
@@ -328,6 +344,25 @@ def run_full_season():
                         comp["total_profit"] -= bet_size
                         comp["losses"] += 1
                         day_pnl -= bet_size
+
+            # Full blast: bet 100% bankroll on highest-edge bet of the day
+            if is_full_blast and candidate_bets and comp["bankroll"] >= 0.01:
+                candidate_bets.sort(key=lambda x: x[0], reverse=True)
+                best_edge, best_odds, best_won, best_type, best_game = candidate_bets[0]
+                bet_size = comp["bankroll"]
+                comp["bets"] += 1
+                comp["total_wagered"] += bet_size
+                if best_won:
+                    profit = bet_size * (best_odds - 1)
+                    comp["bankroll"] += profit
+                    comp["total_profit"] += profit
+                    comp["wins"] += 1
+                    day_pnl += profit
+                else:
+                    comp["bankroll"] -= bet_size
+                    comp["total_profit"] -= bet_size
+                    comp["losses"] += 1
+                    day_pnl -= bet_size
 
             # Update peak/drawdown
             if comp["bankroll"] > comp["peak"]:
