@@ -1,0 +1,388 @@
+{
+  "arena_type": "nba",
+  "created_at": "2026-03-31T01:00:02.355354+00:00",
+  "updated_at": "2026-03-31T01:00:02.536690+00:00",
+  "initial_bankroll": 100.0,
+  "day": 2,
+  "strategies": {
+    "full_kelly": {
+      "bankroll": 10.01129150390625,
+      "total_bets": 8,
+      "wins": 0,
+      "losses": 8,
+      "total_wagered": 89.98870849609375,
+      "total_profit": -89.98870849609375,
+      "roi_pct": -89.989,
+      "max_drawdown": 0.8998870849609375,
+      "peak_bankroll": 100.0,
+      "current_streak": -8,
+      "strikes": 4,
+      "active": false,
+      "desc": "Full Kelly criterion \u2014 max growth, high variance",
+      "family": "kelly"
+    },
+    "half_kelly": {
+      "bankroll": 8.045460370444205,
+      "total_bets": 16,
+      "wins": 0,
+      "losses": 16,
+      "total_wagered": 91.95453962955582,
+      "total_profit": -91.95453962955582,
+      "roi_pct": -91.955,
+      "max_drawdown": 0.919545396295558,
+      "peak_bankroll": 100.0,
+      "current_streak": -16,
+      "strikes": 4,
+      "active": false,
+      "desc": "Half Kelly \u2014 balanced growth/risk",
+      "family": "kelly"
+    },
+    "quarter_kelly": {
+      "bankroll": 22.19862419301952,
+      "total_bets": 16,
+      "wins": 0,
+      "losses": 16,
+      "total_wagered": 77.8013758069805,
+      "total_profit": -77.8013758069805,
+      "roi_pct": -77.801,
+      "max_drawdown": 0.7780137580698048,
+      "peak_bankroll": 100.0,
+      "current_streak": -16,
+      "strikes": 2,
+      "active": true,
+      "desc": "Quarter Kelly \u2014 conservative growth",
+      "family": "kelly"
+    },
+    "flat_2pct": {
+      "bankroll": 72.37977205924959,
+      "total_bets": 16,
+      "wins": 0,
+      "losses": 16,
+      "total_wagered": 27.620227940750418,
+      "total_profit": -27.620227940750418,
+      "roi_pct": -27.62,
+      "max_drawdown": 0.2762022794075041,
+      "peak_bankroll": 100.0,
+      "current_streak": -16,
+      "strikes": 2,
+      "active": true,
+      "desc": "Flat 2% of bankroll per bet",
+      "family": "flat"
+    },
+    "flat_5pct": {
+      "bankroll": 44.01266686517657,
+      "total_bets": 16,
+      "wins": 0,
+      "losses": 16,
+      "total_wagered": 55.98733313482344,
+      "total_profit": -55.98733313482344,
+      "roi_pct": -55.987,
+      "max_drawdown": 0.5598733313482342,
+      "peak_bankroll": 100.0,
+      "current_streak": -16,
+      "strikes": 2,
+      "active": true,
+      "desc": "Flat 5% of bankroll per bet",
+      "family": "flat"
+    },
+    "confidence_linear": {
+      "bankroll": 78.51989098440428,
+      "total_bets": 16,
+      "wins": 0,
+      "losses": 16,
+      "total_wagered": 21.480109015595723,
+      "total_profit": -21.480109015595723,
+      "roi_pct": -21.48,
+      "max_drawdown": 0.21480109015595716,
+      "peak_bankroll": 100.0,
+      "current_streak": -16,
+      "strikes": 2,
+      "active": true,
+      "desc": "Bet size scales linearly with model confidence",
+      "family": "confidence"
+    },
+    "confidence_quadratic": {
+      "bankroll": 96.84755489807348,
+      "total_bets": 16,
+      "wins": 0,
+      "losses": 16,
+      "total_wagered": 3.1524451019265003,
+      "total_profit": -3.1524451019265003,
+      "roi_pct": -3.152,
+      "max_drawdown": 0.031524451019265154,
+      "peak_bankroll": 100.0,
+      "current_streak": -16,
+      "strikes": 0,
+      "active": true,
+      "desc": "Bet size scales quadratically \u2014 big on strong edges",
+      "family": "confidence"
+    },
+    "value_only": {
+      "bankroll": 18.53020188851841,
+      "total_bets": 16,
+      "wins": 0,
+      "losses": 16,
+      "total_wagered": 81.46979811148158,
+      "total_profit": -81.46979811148158,
+      "roi_pct": -81.47,
+      "max_drawdown": 0.814697981114816,
+      "peak_bankroll": 100.0,
+      "current_streak": -16,
+      "strikes": 4,
+      "active": false,
+      "desc": "Only bet when edge > 5% \u2014 fewer bets, higher quality",
+      "family": "value"
+    },
+    "underdog_hunter": {
+      "bankroll": 26.339361174458844,
+      "total_bets": 16,
+      "wins": 0,
+      "losses": 16,
+      "total_wagered": 73.66063882554114,
+      "total_profit": -73.66063882554114,
+      "roi_pct": -73.661,
+      "max_drawdown": 0.7366063882554116,
+      "peak_bankroll": 100.0,
+      "current_streak": -16,
+      "strikes": 2,
+      "active": true,
+      "desc": "Only bet underdogs at 2.5+ odds \u2014 high variance, high reward",
+      "family": "underdog"
+    },
+    "martingale_soft": {
+      "bankroll": 12.732014022752917,
+      "total_bets": 16,
+      "wins": 0,
+      "losses": 16,
+      "total_wagered": 87.26798597724708,
+      "total_profit": -87.26798597724708,
+      "roi_pct": -87.268,
+      "max_drawdown": 0.8726798597724709,
+      "peak_bankroll": 100.0,
+      "current_streak": -16,
+      "strikes": 4,
+      "active": false,
+      "desc": "Soft martingale \u2014 increase 1.5x after loss, reset after win",
+      "family": "martingale"
+    }
+  },
+  "history": [
+    {
+      "day": 1,
+      "date": "2026-03-31",
+      "bets_available": 16,
+      "strategy_results": {
+        "full_kelly": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -89.99,
+          "bankroll": 10.01,
+          "active": false,
+          "strikes": 4
+        },
+        "half_kelly": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -71.64,
+          "bankroll": 28.36,
+          "active": true,
+          "strikes": 1
+        },
+        "quarter_kelly": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -52.88,
+          "bankroll": 47.12,
+          "active": true,
+          "strikes": 1
+        },
+        "flat_2pct": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -14.92,
+          "bankroll": 85.08,
+          "active": true,
+          "strikes": 1
+        },
+        "flat_5pct": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -33.66,
+          "bankroll": 66.34,
+          "active": true,
+          "strikes": 1
+        },
+        "confidence_linear": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -11.39,
+          "bankroll": 88.61,
+          "active": true,
+          "strikes": 1
+        },
+        "confidence_quadratic": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -1.59,
+          "bankroll": 98.41,
+          "active": true,
+          "strikes": 0
+        },
+        "value_only": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -56.95,
+          "bankroll": 43.05,
+          "active": true,
+          "strikes": 1
+        },
+        "underdog_hunter": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -48.68,
+          "bankroll": 51.32,
+          "active": true,
+          "strikes": 1
+        },
+        "martingale_soft": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -53.28,
+          "bankroll": 46.72,
+          "active": true,
+          "strikes": 1
+        }
+      }
+    },
+    {
+      "day": 2,
+      "date": "2026-03-31",
+      "bets_available": 16,
+      "strategy_results": {
+        "half_kelly": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -20.32,
+          "bankroll": 8.05,
+          "active": false,
+          "strikes": 4
+        },
+        "quarter_kelly": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -24.92,
+          "bankroll": 22.2,
+          "active": true,
+          "strikes": 2
+        },
+        "flat_2pct": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -12.7,
+          "bankroll": 72.38,
+          "active": true,
+          "strikes": 2
+        },
+        "flat_5pct": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -22.33,
+          "bankroll": 44.01,
+          "active": true,
+          "strikes": 2
+        },
+        "confidence_linear": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -10.09,
+          "bankroll": 78.52,
+          "active": true,
+          "strikes": 2
+        },
+        "confidence_quadratic": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -1.56,
+          "bankroll": 96.85,
+          "active": true,
+          "strikes": 0
+        },
+        "value_only": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -24.52,
+          "bankroll": 18.53,
+          "active": false,
+          "strikes": 4
+        },
+        "underdog_hunter": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -24.98,
+          "bankroll": 26.34,
+          "active": true,
+          "strikes": 2
+        },
+        "martingale_soft": {
+          "bets": 8,
+          "wins": 0,
+          "pnl": -33.99,
+          "bankroll": 12.73,
+          "active": false,
+          "strikes": 4
+        }
+      }
+    }
+  ],
+  "eliminated": [
+    {
+      "name": "full_kelly",
+      "day": 1,
+      "final_bankroll": 10.01,
+      "reason": "bankroll < 20% threshold"
+    },
+    {
+      "name": "full_kelly",
+      "day": 1,
+      "final_bankroll": 10.01,
+      "reason": "3 strikes (3 days with >5% loss)"
+    },
+    {
+      "name": "half_kelly",
+      "day": 2,
+      "final_bankroll": 8.05,
+      "reason": "bankroll < 20% threshold"
+    },
+    {
+      "name": "half_kelly",
+      "day": 2,
+      "final_bankroll": 8.05,
+      "reason": "3 strikes (3 days with >5% loss)"
+    },
+    {
+      "name": "value_only",
+      "day": 2,
+      "final_bankroll": 18.53,
+      "reason": "bankroll < 20% threshold"
+    },
+    {
+      "name": "value_only",
+      "day": 2,
+      "final_bankroll": 18.53,
+      "reason": "3 strikes (3 days with >5% loss)"
+    },
+    {
+      "name": "martingale_soft",
+      "day": 2,
+      "final_bankroll": 12.73,
+      "reason": "bankroll < 20% threshold"
+    },
+    {
+      "name": "martingale_soft",
+      "day": 2,
+      "final_bankroll": 12.73,
+      "reason": "3 strikes (3 days with >5% loss)"
+    }
+  ],
+  "champion": "confidence_quadratic"
+}
