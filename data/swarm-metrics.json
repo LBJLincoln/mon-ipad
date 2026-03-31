@@ -1,5 +1,5 @@
 {
-  "collected_at": "2026-03-31T13:18:26Z",
+  "collected_at": "2026-03-31T20:00:03Z",
   "version": "1.0",
   "products": {
     "nba": {
@@ -8,18 +8,18 @@
         "agent": "O1",
         "name": "Brain / Strategy Definer",
         "metric": "decisions_actioned_per_cycle",
-        "health_file_age_hours": 1.28,
+        "health_file_age_hours": 2.0,
         "spaces_summary": "6/6 UP",
-        "open_issues": 2,
-        "system_status": "DEGRADED",
-        "status": "YELLOW"
+        "open_issues": 0,
+        "system_status": "HEALTHY",
+        "status": "GREEN"
       },
       "layer1_research": {
         "agent": "R1",
         "name": "Research Analyst",
         "metric": "research_proposals_per_week",
         "proposal_files_found": 6,
-        "proposals_file_age_hours": 4.65,
+        "proposals_file_age_hours": 11.35,
         "status": "GREEN"
       },
       "layer1_features": {
@@ -28,7 +28,7 @@
         "metric": "feature_categories_count",
         "current_categories": 43,
         "engine_version": "v3.0-43cat",
-        "engine_age_hours": 69.25,
+        "engine_age_hours": 75.94,
         "target_categories": 46,
         "status": "YELLOW"
       },
@@ -46,16 +46,16 @@
         "name": "Predictions Agent",
         "metric": "predictions_posted_count",
         "predictions_today": 6,
-        "predictions_file_age_hours": 81.94,
+        "predictions_file_age_hours": 88.64,
         "status": "GREEN"
       },
       "layer1_data": {
         "agent": "E5",
         "name": "Data Pipeline",
         "metric": "odds_data_freshness_hours",
-        "current_age_hours": 0.77,
+        "current_age_hours": 1.5,
         "target_max_hours": 2.0,
-        "status": "GREEN"
+        "status": "YELLOW"
       },
       "layer1_islands": {
         "agent": "V1",
@@ -63,42 +63,42 @@
         "metric": "islands_active_count",
         "islands_up": 6,
         "islands_total": 6,
-        "best_island_brier": 0.22115,
+        "best_island_brier": 0.22066,
         "island_detail": {
           "S10": {
             "status": "UP",
-            "brier": 0.22439,
-            "gen": 16,
-            "stagnation_cycles": 14
+            "brier": 0.22444,
+            "gen": 188,
+            "stagnation_cycles": 6
           },
           "S11": {
             "status": "UP",
             "brier": 0.22277,
-            "gen": 23,
+            "gen": 253,
             "stagnation_cycles": 0
           },
           "S12": {
             "status": "UP",
             "brier": 0.22115,
-            "gen": 24,
-            "stagnation_cycles": 23
+            "gen": 171,
+            "stagnation_cycles": 0
           },
           "S13": {
             "status": "UP",
-            "brier": 0.22344,
-            "gen": 16,
-            "stagnation_cycles": 11
+            "brier": 0.22066,
+            "gen": 164,
+            "stagnation_cycles": 16
           },
           "S14": {
             "status": "UP",
-            "brier": 0.2271,
-            "gen": 87,
-            "stagnation_cycles": 12
+            "brier": 0.22387,
+            "gen": 280,
+            "stagnation_cycles": 1
           },
           "S15": {
             "status": "UP",
             "brier": 0.22254,
-            "gen": 33,
+            "gen": 181,
             "stagnation_cycles": 0
           }
         },
@@ -122,7 +122,7 @@
         "current_brier": 0.2157,
         "atr": 0.2157,
         "gap": 0.0,
-        "eval_file_age_hours": 1.25,
+        "eval_file_age_hours": 1.99,
         "status": "GREEN"
       },
       "layer3_infra": {
@@ -131,7 +131,7 @@
         "metric": "fleet_services_status",
         "data_server_backtest": "UNKNOWN",
         "telegram_brain": "ALIVE",
-        "infra_file_age_hours": 0.03,
+        "infra_file_age_hours": 0.22,
         "status": "GREEN"
       }
     },
@@ -143,7 +143,7 @@
         "metric": "political_engine_categories_live",
         "categories": 22,
         "engine_version": "v3.1-political-22cat",
-        "engine_file_age_hours": 2.72,
+        "engine_file_age_hours": 9.41,
         "target_categories": 25,
         "status": "GREEN"
       },
@@ -178,18 +178,17 @@
   },
   "priority_alerts": [
     "P2-STRATEGIC: ROI negative (-2.6%)",
-    "P3-GROWTH: Feature engine at 43 cats, target 46+",
-    "P2-STRATEGIC: Island S12 stagnant 23 cycles"
+    "P3-GROWTH: Feature engine at 43 cats, target 46+"
   ],
   "summary": {
-    "total_alerts": 3,
+    "total_alerts": 2,
     "critical_alerts": 0,
     "islands_up": 6,
-    "best_brier": 0.22115,
+    "best_brier": 0.22066,
     "atr_brier": 0.2157,
     "season_roi_pct": -2.6,
     "feature_categories": 43,
     "political_categories": 22,
-    "overall_health": "DEGRADED"
+    "overall_health": "HEALTHY"
   }
 }

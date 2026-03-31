@@ -1,21 +1,21 @@
 {
-  "timestamp": "2026-03-31T14:32:06.524225Z",
+  "timestamp": "2026-03-31T22:00:03.382564Z",
   "projects": {
     "nba": {
       "name": "NBA Quant AI",
       "spaces": {
         "S10": {
           "status": "UP",
-          "brier": 0.22444,
-          "generation": 68,
-          "model": "lightgbm",
+          "brier": 0.22239,
+          "generation": 308,
+          "model": "random_forest",
           "last_improvement": null,
-          "stagnation_cycles": 6
+          "stagnation_cycles": 3
         },
         "S11": {
           "status": "UP",
           "brier": 0.22277,
-          "generation": 92,
+          "generation": 419,
           "model": "catboost",
           "last_improvement": null,
           "stagnation_cycles": 0
@@ -23,37 +23,31 @@
         "S12": {
           "status": "UP",
           "brier": 0.22115,
-          "generation": 77,
+          "generation": 258,
           "model": "random_forest",
           "last_improvement": null,
-          "stagnation_cycles": 25,
-          "stagnation": {
-            "stagnant": true,
-            "stagnation_cycles": 25,
-            "gens_since_improvement": 250,
-            "recommendation": "inject_diversity"
-          }
+          "stagnation_cycles": 0
         },
         "S13": {
           "status": "UP",
-          "brier": 0.22262,
-          "generation": 73,
-          "model": "random_forest",
+          "brier": 0.22066,
+          "generation": 254,
+          "model": "xgboost_brier",
           "last_improvement": null,
-          "stagnation_cycles": 16
+          "stagnation_cycles": 6
         },
         "S14": {
           "status": "UP",
-          "brier": 0.2271,
-          "generation": 165,
-          "model": "xgboost",
+          "brier": 0.22387,
+          "generation": 407,
+          "model": "random_forest",
           "last_improvement": null,
-          "stagnation_cycles": 15
+          "stagnation_cycles": 3
         },
         "S15": {
           "status": "UP",
           "brier": 0.22254,
-          "generation": 94,
+          "generation": 294,
           "model": "random_forest",
           "last_improvement": null,
           "stagnation_cycles": 0
@@ -61,12 +55,10 @@
       },
       "kaggle": {
         "nba-karpathy-loop": {
-          "status": "ERROR",
-          "error": "Command '['kaggle', 'kernels', 'status', 'alexismoret6/nba-karpathy-loop']' timed out after 15 secon"
+          "status": "COMPLETE"
         },
         "nba-season-backtest": {
-          "status": "ERROR",
-          "error": "Command '['kaggle', 'kernels', 'status', 'alexismoret6/nba-season-backtest']' timed out after 15 sec"
+          "status": "COMPLETE"
         }
       }
     },
@@ -75,8 +67,7 @@
       "spaces": {},
       "kaggle": {
         "political-alpha-karpathy-loop": {
-          "status": "ERROR",
-          "error": "Command '['kaggle', 'kernels', 'status', 'alexismoret6/political-alpha-karpathy-loop']' timed out af"
+          "status": "COMPLETE"
         }
       }
     }
@@ -92,16 +83,11 @@
     }
   },
   "actions_taken": [],
-  "issues": [
-    "S12 stagnant: 250 gens without improvement",
-    "Kaggle nba-karpathy-loop ERRORED",
-    "Kaggle nba-season-backtest ERRORED",
-    "Kaggle political-alpha-karpathy-loop ERRORED"
-  ],
+  "issues": [],
   "summary": {
     "spaces": "6/6 UP",
-    "issues": 4,
+    "issues": 0,
     "actions": 0,
-    "status": "CRITICAL"
+    "status": "HEALTHY"
   }
 }

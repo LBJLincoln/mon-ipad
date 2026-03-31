@@ -1,90 +1,86 @@
 ---
 name: karpathy-loop
-description: Run one Karpathy auto-research cycle: Claude Code agents research → extract proposals → evaluate
+description: Run REAL Karpathy iteration loop — mutate config → train → measure metric → keep if better
 ---
 
-Run one Karpathy auto-research cycle: Claude Code agents research → extract proposals → evaluate → report.
+Run a REAL Karpathy iteration loop. This is NOT internet research — it trains actual models and measures real metrics.
 
-Arguments: $ARGUMENTS (optional: "research-only", "eval-only", or target like "brier:0.20")
+Arguments: $ARGUMENTS (optional: "nba", "political", "all", or "nba --iterations 50")
 
-This is the autonomous improvement loop inspired by Karpathy's auto-research pattern.
-It runs 4 Claude Code subagents in parallel, parses outputs, extracts actionable proposals, and generates next steps.
+Pattern: mutate 1 config param → train model → measure Brier score → keep only if improved → repeat
 
 ## Steps
 
-1. **Run agent cycle** (skip if $ARGUMENTS = "eval-only"):
-   Launch 4 Claude Code subagents **in parallel** using the Agent tool:
-   - `research-analyst` (model: sonnet) — Search latest NBA quant papers, techniques
-   - `market-analyst` (model: sonnet) — Fetch live odds, detect steam moves, CLV
-   - `feature-engineer` (model: sonnet) — Analyze features, propose improvements
-   - `evolution-optimizer` (model: sonnet) — Check S10/S11, diagnose GA health
+1. **Determine domain** from $ARGUMENTS (default: "all" = NBA + Political):
+   - `nba` → run NBA iteration loop
+   - `political` → run Political iteration loop
+   - `all` → run both sequentially
 
-   Each agent reads context from `/home/termius/nomos-nba-agent/data/results/` and writes its output JSON there.
-   Agent definitions: `.claude/agents/*.md`
+2. **Check platform availability** (in order):
+   - Kaggle: `python3 scripts/kaggle-live-status.py 2>/dev/null` → check if kernel is idle
+   - Modal: `modal app list 2>/dev/null` → check if Modal is configured
+   - CPU (VM fallback): always available — uses subsampled data (4000 games, ~50MB RAM)
 
-   **DO NOT** use `python3 agents/nba_crew.py` — that uses dead external LLMs.
-   Use Claude Code's Agent tool with `model: "sonnet"` for all 4 agents.
+3. **Run the REAL iteration loop**:
+   ```bash
+   # NBA (CPU fallback — always works on VM)
+   cd /home/termius/mon-ipad
+   bash scripts/karpathy/run_karpathy.sh nba --iterations 30
 
-2. **Read crew outputs** — parse all 4 JSON files:
-   - `/home/termius/nomos-nba-agent/data/results/crew-research.json` — papers, techniques, feature ideas
-   - `/home/termius/nomos-nba-agent/data/results/crew-market.json` — live odds, steam moves, CLV
-   - `/home/termius/nomos-nba-agent/data/results/crew-features.json` — feature proposals
-   - `/home/termius/nomos-nba-agent/data/results/crew-evolution.json` — GA diagnostics, parameter tuning
-   - `/home/termius/nomos-nba-agent/data/results/crew-cycle-latest.json` — cycle status
-
-3. **Extract proposals** — from all crew outputs, build a ranked list:
-   - Each proposal: { technique, expected_brier_delta, effort_hours, category: feature|parameter|architecture }
-   - Sort by expected_brier_delta / effort_hours (bang for buck)
-   - Flag "quick wins" = effort < 2h AND expected delta > 0.005
-
-4. **Check current state**:
-   - Read latest evolution results: `ls -t /home/termius/nomos-nba-agent/data/results/evolution-*.json | head -1`
-   - Current best Brier from Supabase: `SELECT MIN(brier_score) FROM nba_experiments WHERE brier_score IS NOT NULL`
-   - Current feature engine version: `python3 -c "from features.engine import ENGINE_VERSION; print(ENGINE_VERSION)"` (run from nomos-nba-agent/)
-
-5. **Log proposals to Supabase** (if table exists):
-   For each top-5 proposal, INSERT into `research_proposals` table with status='proposed'.
-
-6. **Generate report** — output a structured summary:
-   ```
-   ## Karpathy Loop — Cycle Report
-
-   **Current Best**: Brier X.XXXX | ROI X.X% | Features: XX selected
-   **Target**: Brier < 0.20 | ROI > 5% | Sharpe > 1.5
-   **Gap**: X.XXXX Brier points to target
-
-   ### Top Proposals (ranked by impact/effort)
-   1. [QUICK WIN] technique — expected Δ Brier: -0.0XX, effort: Xh
-   2. technique — expected Δ Brier: -0.0XX, effort: Xh
-   3. technique — expected Δ Brier: -0.0XX, effort: Xh
-
-   ### Market Intelligence
-   - Steam moves detected: X
-   - CLV opportunities: X
-   - Sharp/square divergence: ...
-
-   ### GA Health
-   - Population diversity: ...
-   - Stagnation risk: ...
-   - Recommended parameter changes: ...
-
-   ### Next Actions
-   1. [AUTO] Quick win #1 can be implemented now
-   2. [MANUAL] Submit GPU experiment for technique X on S10
-   3. [RESEARCH] Need more data on technique Y
+   # Political
+   bash scripts/karpathy/run_karpathy.sh political --iterations 30
    ```
 
-7. **Auto-implement quick wins** (if $ARGUMENTS != "research-only"):
-   - If a proposal is purely a feature addition (new column in engine.py) AND effort < 1h:
-     - Implement it in both `features/engine.py` AND `hf-space/features/engine.py`
-     - Run engine parity check: `sha256sum features/engine.py hf-space/features/engine.py`
-     - Commit with message: `feat: add [feature] from karpathy loop cycle`
-   - NEVER auto-implement architecture changes or parameter sweeps
-   - NEVER run ML on VM — if testing needed, note it for S10/Colab
+   If Kaggle is available, prefer launching the GPU kernel instead:
+   ```bash
+   bash scripts/kaggle-gpu-evolution.sh
+   ```
+
+4. **Read results**:
+   ```bash
+   # Check if Brier improved
+   cat data/karpathy/nba-best-config.json | python3 -c "import json,sys; d=json.load(sys.stdin); print(f'Best Brier: {d.get(\"best_score\",\"?\")}')"
+   cat data/karpathy/nba-history.json | python3 -c "import json,sys; h=json.load(sys.stdin); print(f'Iterations: {len(h)}, improvements: {sum(1 for x in h if x.get(\"improved\"))}')"
+   ```
+
+5. **Report results** — output structured summary:
+   ```
+   ## Karpathy Loop — Real Iteration Results
+
+   **Domain**: NBA / Political / Both
+   **Platform**: CPU (VM) / Kaggle GPU / Modal GPU
+   **Iterations**: N completed
+   **Best Brier**: X.XXXXX (previous: X.XXXXX, delta: -0.XXXXX)
+   **Improvements**: N/M iterations improved
+   **Config changes**: [list of mutations that helped]
+
+   ### What worked:
+   - mutation_type → Brier delta
+
+   ### What didn't:
+   - mutation_type → reverted
+   ```
+
+## What this loop does (per iteration):
+1. Load best config from `data/karpathy/{domain}-best-config.json`
+2. Mutate exactly ONE parameter (model type, n_estimators, max_depth, feature selection, etc.)
+3. Train a real sklearn model on real NBA/political data
+4. Measure Brier score on holdout set
+5. If Brier improved → save new config, log improvement
+6. If not → discard mutation, log failure
+7. Send Telegram alert on new all-time best
 
 ## Constraints
-- ZERO ML on VM (1 vCPU / 969 MB RAM)
-- Feature engine changes must maintain parity (root = hf-space)
-- All experiments must include feature_engine_version
-- Use Claude Code (Sonnet subagents) for all research — NOT external LLMs
-- 1 change per iteration — never batch multiple proposals
+- REAL training happens — this uses CPU/RAM
+- CPU mode: 4000-game subsample + 200-game holdout = ~50MB RAM (fits on VM)
+- Each iteration: ~30-60 seconds on CPU
+- 30 iterations ≈ 15-30 minutes
+- For GPU mode, use Kaggle or Modal (not VM)
+
+## Key files:
+- `scripts/karpathy/karpathy_utils.py` — mutation, evaluation, logging
+- `scripts/karpathy/nba_iterate.py` — NBA iteration loop
+- `scripts/karpathy/political_iterate.py` — Political iteration loop
+- `scripts/karpathy/run_karpathy.sh` — runner script
+- `data/karpathy/nba-best-config.json` — current best NBA config
+- `data/karpathy/nba-history.json` — iteration history
