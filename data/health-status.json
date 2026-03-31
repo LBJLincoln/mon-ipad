@@ -1,42 +1,39 @@
 {
-  "updated_at": "2026-03-31T20:00:00Z",
-  "brain_cycle": "Sonnet 4.6 / 4h brain — cycle ~12",
+  "updated_at": "2026-03-31T20:25:00Z",
+  "brain_cycle": "Sonnet 4.6 / 4h brain — cycle ~13",
   "nba_fleet": {
-    "status": "HEALTHY — 1 island stagnant (S14=18), diversify queued",
+    "status": "ACTIVE — 3 islands diversified (S10/S13/S14 stagnation >15)",
     "best_brier": 0.22066,
-    "best_island": "S13 (nba-evo-4, xgboost_brier, gen=134, feat=40)",
+    "best_island": "S13 (nba-evo-4, xgboost_brier, gen=219, feat=40)",
     "target_brier": 0.21837,
     "gap_to_target": 0.00229,
     "checkpoint_triggered": false,
-    "stagnation_triggers_fired": 1,
-    "diversify_sent_to": ["S14"],
-    "engine_version_hfspace": "v3.0-43cat",
-    "engine_version_claude_md": "v3.1-46cat",
-    "engine_parity_note": "DISCREPANCY DETECTED — hf-space/features/engine.py reports v3.0-43cat but CLAUDE.md states v3.1-46cat. Verify muscle sync.",
+    "api_format_note": "FIXED — correct format is {\"command\":\"X\"} NOT {\"action\":\"X\"}",
+    "diversify_sent_to": ["S10 (stag=18)", "S13 (stag=21)", "S14 (stag=24)"],
+    "research_this_cycle": "Cat50 clutch-time features — last 5min score-within-5 window. 10 features, -0.002 to -0.005 Brier expected. Paper: Walsh & Joshi 2023 confirms calibration > accuracy (+34.69% ROI)",
     "feature_candidates": 3265,
-    "research_this_cycle": "Cat50 venue-specific streaks — away streak as #1 SHAP per 2026 literature. 14 features, -0.003 to -0.008 Brier expected. Proposal in research-proposals/venue-specific-streaks-cat50-2026-03-31.json",
     "islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "gen": 125,
-        "cycle": 42,
-        "brier": 0.22444,
-        "roi": 0.2746,
-        "sharpe": 4.7981,
-        "features": 74,
+        "gen": 263,
+        "cycle": 88,
+        "brier": 0.22239,
+        "roi": 0.2974,
+        "sharpe": 8.9008,
+        "features": 40,
         "feature_candidates": 3265,
-        "stagnation": 3,
-        "model": "lightgbm",
+        "stagnation": 18,
+        "model": "random_forest",
         "pop": 60,
-        "mut": 0.12,
-        "status": "OK"
+        "mut": 0.15,
+        "status": "STAGNANT (18) — diversify QUEUED"
       },
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "gen": 180,
-        "cycle": 60,
+        "gen": 348,
+        "cycle": 116,
         "brier": 0.22277,
         "roi": 0.2913,
         "sharpe": 9.8973,
@@ -45,14 +42,14 @@
         "stagnation": 0,
         "model": "catboost",
         "pop": 60,
-        "mut": 0.101,
-        "status": "OK"
+        "mut": 0.0854,
+        "status": "OK — actively improving"
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
-        "gen": 112,
-        "cycle": 38,
+        "gen": 226,
+        "cycle": 76,
         "brier": 0.22115,
         "roi": 0.3119,
         "sharpe": 6.8366,
@@ -61,46 +58,46 @@
         "stagnation": 0,
         "model": "random_forest",
         "pop": 60,
-        "mut": 0.1162,
-        "status": "OK"
+        "mut": 0.0925,
+        "status": "OK — 2nd best Brier"
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
-        "gen": 134,
-        "cycle": 45,
+        "gen": 219,
+        "cycle": 73,
         "brier": 0.22066,
         "roi": 0.3184,
         "sharpe": 6.4833,
         "features": 40,
         "feature_candidates": 3265,
-        "stagnation": 11,
+        "stagnation": 21,
         "model": "xgboost_brier",
         "pop": 60,
         "mut": 0.15,
-        "status": "OK — watch stagnation (11/15)"
+        "status": "STAGNANT (21) — diversify QUEUED — BEST Brier"
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
-        "gen": 222,
-        "cycle": 74,
+        "gen": 353,
+        "cycle": 118,
         "brier": 0.22387,
         "roi": 0.2776,
         "sharpe": 3.9302,
         "features": 31,
         "feature_candidates": 3265,
-        "stagnation": 18,
+        "stagnation": 24,
         "model": "random_forest",
         "pop": 60,
         "mut": 0.15,
-        "status": "STAGNANT (18 gens) — diversify command queued"
+        "status": "STAGNANT (24) — diversify QUEUED — highest stagnation"
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "gen": 134,
-        "cycle": 45,
+        "gen": 224,
+        "cycle": 75,
         "brier": 0.22254,
         "roi": 0.2961,
         "sharpe": 6.6741,
@@ -109,23 +106,23 @@
         "stagnation": 0,
         "model": "random_forest",
         "pop": 50,
-        "mut": 0.1059,
-        "status": "OK"
+        "mut": 0.0968,
+        "status": "OK — actively improving"
       }
     },
-    "supabase_status": "FAILING — tenant connection errors on all islands (known, local persistence active)"
+    "supabase_status": "FAILING — tenant connection errors on S1-S4 (known issue, local persistence active)"
   },
   "political_fleet": {
-    "status": "DEGRADED — PA3/PA4 sleeping (503)",
+    "status": "DEGRADED — PA3/PA4 paused (HF idle shutdown), PA2 boost_mutation queued",
     "pa1_best_brier": 0.24186,
     "pa2_best_brier": 0.2491,
-    "action_needed": "Add PA3/PA4 to keepalive-spaces.sh — political spaces likely not included in */30 cron",
+    "action_needed": "PA3/PA4 require maintainer restart via HF Hub dashboard — cannot wake via HTTP. Add to keepalive-spaces.sh.",
     "islands": {
       "PA1": {
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
-        "gen": 1484,
-        "cycle": 495,
+        "gen": 1863,
+        "cycle": 621,
         "brier": 0.24186,
         "roi": 0.0841,
         "sharpe": 2.5409,
@@ -133,14 +130,15 @@
         "feature_candidates": 309,
         "stagnation": 0,
         "model": "xgboost_brier",
+        "pop": 60,
         "mut": 0.05,
         "status": "OK"
       },
       "PA2": {
         "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
-        "gen": 3380,
-        "cycle": 1127,
+        "gen": 4464,
+        "cycle": 1488,
         "brier": 0.2491,
         "roi": 0.0171,
         "sharpe": 0.7071,
@@ -148,31 +146,39 @@
         "feature_candidates": 309,
         "stagnation": 0,
         "model": "xgboost_brier",
+        "pop": 60,
         "mut": 0.05,
-        "status": "OK"
+        "status": "OK — boost_mutation QUEUED (mut=0.05 too low for exploration)",
+        "synthetic_data_warning": "Only 60 real events — 312 synthetic bootstrapped"
       },
       "PA3": {
         "url": "nomos42-political-alpha-3.hf.space",
         "role": "catboost_specialist",
-        "status": "503 — SLEEPING (HF idle shutdown)"
+        "status": "503 — PAUSED (HF idle shutdown)",
+        "fix": "Restart via HF Hub dashboard or add to VM keepalive-spaces.sh"
       },
       "PA4": {
         "url": "nomos42-political-alpha-4.hf.space",
         "role": "wide_search",
-        "status": "503 — SLEEPING (HF idle shutdown)"
+        "status": "503 — PAUSED (HF idle shutdown)",
+        "fix": "Restart via HF Hub dashboard or add to VM keepalive-spaces.sh"
       }
     }
   },
   "cross_project": {
-    "nba_to_political_previous": "Cat23 calibration module ported in cycle ~11",
-    "nba_proposal_this_cycle": "Cat50 venue-specific streaks (14 features) — see research-proposals/",
-    "political_proposal_this_cycle": "Cat24 geographic alpha features (analog venue streaks for political candidates)",
+    "nba_to_political_previous": "Cat23 calibration module ported ~cycle 11",
+    "nba_proposal_this_cycle": "Cat50 clutch-time performance features (10 features, last 5min score-within-5)",
+    "political_proposal_this_cycle": "Boost PA2 exploration mutation from 0.05 → applied via boost_mutation command",
     "next_cycle_rotation": "B — political_engine.py review + FEC/SEC data sources"
   },
   "actions_taken": {
+    "S10_diversify": "SUCCESS — {status: command queued, command: diversify}",
+    "S13_diversify": "SUCCESS — {status: command queued, command: diversify}",
     "S14_diversify": "SUCCESS — {status: command queued, command: diversify}",
-    "PA3_PA4_restart": "FAILED — HF_TOKEN not in VM env. Spaces return 503. Will auto-recover on next GET. Recommend adding to keepalive-spaces.sh.",
-    "research_proposal": "WRITTEN — venue-specific-streaks-cat50-2026-03-31.json",
-    "supabase_checkpoint": "NOT triggered — best_brier 0.22066 > 0.21837 threshold"
+    "PA2_boost_mutation": "SUCCESS — {status: command queued, command: boost_mutation}",
+    "PA3_PA4_restart": "FAILED — HF paused spaces require maintainer action. Cannot restart via HTTP.",
+    "api_bug_fix": "FIXED — correct JSON key is 'command' not 'action'. Previous cycles may have silently failed.",
+    "supabase_checkpoint": "NOT triggered — best_brier 0.22066 > 0.21837 threshold",
+    "research_proposal": "WRITTEN — data/research-proposals/cat50-clutch-time-features-2026-03-31.json"
   }
 }
