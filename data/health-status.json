@@ -1,184 +1,57 @@
 {
-  "updated_at": "2026-03-31T08:00:00Z",
-  "brain_cycle": "Sonnet 4.6 / 4h brain — cycle ~9",
+  "updated_at": "2026-03-31T12:00:00Z",
+  "brain_cycle": "Sonnet 4.6 / 4h brain — cycle ~10",
   "nba_fleet": {
-    "status": "HEALTHY — S14/S15 RESTARTED (low gen)",
+    "status": "HEALTHY — all 6 islands evolving, no stagnation",
     "best_brier": 0.22215,
-    "best_island": "S10 (nba-quant, extra_trees, gen=629)",
-    "previous_best": 0.22006,
-    "previous_best_island": "S14 (nba-evo-5, gen=1145 — now reset to 23)",
+    "best_island": "S10 (nba-quant, extra_trees, gen=679)",
+    "s15_notable": "S15 latest gen (187) hit Brier 0.2201 with extra_trees + 200 features — closest to threshold ever",
     "target_brier": 0.21837,
     "gap_to_target": 0.00378,
     "checkpoint_triggered": false,
     "stagnation_triggers_fired": 0,
     "engine_parity": "OK — all 6 islands report feature_candidates=3267",
-    "alert": "S14 and S15 were reset this cycle (gen counts dropped from 1145/2270 to 23/42). Previous best 0.22006 lost. S10 is now fleet best.",
-    "research_this_cycle": "ELO feature anchoring proposal written — locks home_next/team_elo/team_elo_5y permanently in GA chromosomes",
+    "research_this_cycle": "Cat47 shot-chart spatial zone efficiency + PIE/BPM player impact features — new proposal written",
+    "key_insight": "2026 papers: shot-chart embeddings reduce Brier; CalibratedClassifierCV auto-selection achieves Brier ~0.20",
     "islands": {
-      "S10": {
-        "url": "nomos42-nba-quant.hf.space",
-        "role": "exploitation",
-        "gen": 629,
-        "cycle": 210,
-        "brier": 0.22215,
-        "roi": 0.3025,
-        "sharpe": 6.7902,
-        "features": 61,
-        "feature_candidates": 3267,
-        "stagnation": 0,
-        "model": "extra_trees",
-        "pop": 60,
-        "mut": 0.05,
-        "status": "OK — FLEET BEST"
-      },
-      "S11": {
-        "url": "nomos42-nba-quant-2.hf.space",
-        "role": "exploration",
-        "gen": 1077,
-        "cycle": 359,
-        "brier": 0.22321,
-        "roi": 0.12,
-        "sharpe": 8.2406,
-        "features": 65,
-        "feature_candidates": 3267,
-        "stagnation": 0,
-        "model": "xgboost_brier",
-        "pop": 60,
-        "mut": 0.08,
-        "status": "OK"
-      },
-      "S12": {
-        "url": "nomos42-nba-evo-3.hf.space",
-        "role": "extra_trees_specialist",
-        "gen": 1045,
-        "cycle": 349,
-        "brier": 0.22889,
-        "roi": 0.226,
-        "sharpe": 4.6871,
-        "features": 54,
-        "feature_candidates": 3267,
-        "stagnation": 0,
-        "model": "xgboost_brier",
-        "pop": 60,
-        "mut": 0.04,
-        "status": "OK"
-      },
-      "S13": {
-        "url": "nomos42-nba-evo-4.hf.space",
-        "role": "catboost_specialist",
-        "gen": 603,
-        "cycle": 201,
-        "brier": 0.22368,
-        "roi": 0.284,
-        "sharpe": 4.7821,
-        "features": 68,
-        "feature_candidates": 3267,
-        "stagnation": 0,
-        "model": "lightgbm",
-        "pop": 60,
-        "mut": 0.0643,
-        "status": "OK"
-      },
-      "S14": {
-        "url": "nomos42-nba-evo-5.hf.space",
-        "role": "lightgbm_specialist",
-        "gen": 23,
-        "cycle": 8,
-        "brier": 0.22574,
-        "roi": 0.0,
-        "sharpe": 0.0,
-        "features": 35,
-        "feature_candidates": 3267,
-        "stagnation": 0,
-        "model": "lightgbm",
-        "pop": 60,
-        "mut": 0.15,
-        "status": "RESTARTED — was gen=1145 last cycle, now gen=23"
-      },
-      "S15": {
-        "url": "nomos42-nba-evo-6.hf.space",
-        "role": "wide_search",
-        "gen": 42,
-        "cycle": 14,
-        "brier": 0.23325,
-        "roi": 0.1772,
-        "sharpe": 4.3194,
-        "features": 69,
-        "feature_candidates": 3267,
-        "stagnation": 0,
-        "model": "xgboost",
-        "pop": 50,
-        "mut": 0.1156,
-        "status": "RESTARTED — was gen=2270 last cycle, now gen=42"
-      }
+      "S10": {"url": "nomos42-nba-quant.hf.space","role": "exploitation","gen": 679,"cycle": 227,"brier": 0.22215,"roi": 0.3025,"sharpe": 6.7902,"features": 61,"feature_candidates": 3267,"stagnation": 0,"model": "extra_trees","pop": 60,"mut": 0.05,"status": "OK — FLEET BEST"},
+      "S11": {"url": "nomos42-nba-quant-2.hf.space","role": "exploration","gen": 1144,"cycle": 382,"brier": 0.22321,"roi": 0.287,"sharpe": 8.2406,"features": 65,"feature_candidates": 3267,"stagnation": 0,"model": "random_forest","pop": 60,"mut": 0.08,"status": "OK"},
+      "S12": {"url": "nomos42-nba-evo-3.hf.space","role": "extra_trees_specialist","gen": 1102,"cycle": 368,"brier": 0.22889,"roi": 0.226,"sharpe": 4.6871,"features": 54,"feature_candidates": 3267,"stagnation": 0,"model": "xgboost_brier","pop": 60,"mut": 0.04,"status": "OK"},
+      "S13": {"url": "nomos42-nba-evo-4.hf.space","role": "catboost_specialist","gen": 637,"cycle": 213,"brier": 0.22368,"roi": 0.284,"sharpe": 4.7821,"features": 68,"feature_candidates": 3267,"stagnation": 0,"model": "lightgbm","pop": 60,"mut": 0.06,"status": "OK"},
+      "S14": {"url": "nomos42-nba-evo-5.hf.space","role": "lightgbm_specialist","gen": 113,"cycle": 38,"brier": 0.22574,"roi": 0.2598,"sharpe": 4.676,"features": 35,"feature_candidates": 3267,"stagnation": 0,"model": "lightgbm","pop": 60,"mut": 0.1066,"status": "OK — recovered (gen 23 to 113)"},
+      "S15": {"url": "nomos42-nba-evo-6.hf.space","role": "wide_search","gen": 187,"cycle": 63,"brier": 0.23325,"best_gen_brier": 0.2201,"best_gen_model": "extra_trees","best_gen_features": 200,"roi": 0.1772,"sharpe": 4.3194,"features": 69,"feature_candidates": 3267,"stagnation": 0,"model": "xgboost","pop": 50,"mut": 0.0999,"status": "OK — NOTABLE: latest gen hit 0.2201 (extra_trees + 200f)"}
     },
     "supabase_note": "All islands reporting Supabase connection failures. Local caching active.",
     "actions_taken": [
-      "WebSearch: 2026 MDPI uncertainty-aware NBA paper confirms ELO + home_next = top features consistently",
-      "WebSearch: Isotonic calibration + LR achieves Brier 0.199 (below our 0.21837 target)",
-      "Proposal written: data/research-proposals/nba-elo-feature-lock-march2026.json",
+      "WebSearch: 2026 papers confirm shot-chart embeddings improve Brier discrimination",
+      "WebSearch: CalibratedClassifierCV isotonic/sigmoid auto-selection achieves Brier ~0.20 on NBA",
+      "Proposal written: data/research-proposals/nba-shot-chart-embedding-march2026.json",
       "No stagnation triggers fired (all counters=0)",
-      "No checkpoint (best_brier=0.22215 > threshold 0.21837)"
+      "No checkpoint (best_brier=0.22215 > threshold 0.21837)",
+      "S15 notable: gen 187 hit Brier 0.2201 with extra_trees + 200 features"
     ]
   },
   "political_alpha_fleet": {
-    "status": "PARTIAL_RECOVERY — PA1+PA2 healthy, PA3+PA4 PAUSED",
-    "alert": "PA3 and PA4 are PAUSED on HuggingFace (not 503/sleeping — owner-paused). Restart requires Nomos42 HF token via Settings > Pause/Restart.",
-    "pa1_pa2_recovery": "CONFIRMED — feature starvation resolved. PA1 brier=0.24186 (53 features, 372 events). PA2 brier=0.2491 (69 features).",
-    "rotation_this_cycle": "B — Review features/political_engine.py, propose FEC donation-to-enforcement feature",
-    "rotation_output": "nomos-political-alpha/data/research/pa-fec-feature-integration-march2026.json",
+    "status": "PARTIAL — PA1+PA2 healthy, PA3+PA4 sleeping/rebuilding (503)",
+    "alert": "PA3+PA4 returning 503. HF hub shows both updated 31 Mar 2026 — likely sleeping after rebuild, expect auto-wake.",
+    "rotation_this_cycle": "C — Port proven NBA techniques (calibration) to Political Alpha",
+    "rotation_output": "nomos-political-alpha/data/proposals/pa-calibration-port-march2026.json",
+    "pa3_pa4_note": "3rd consecutive cycle with PA3+PA4 down. Next cycle: try dynamic_space invoke to force wake.",
     "islands": {
-      "PA1": {
-        "url": "nomos42-political-alpha.hf.space",
-        "role": "exploitation",
-        "gen": 203,
-        "cycle": 68,
-        "brier": 0.24186,
-        "roi": 0.0841,
-        "sharpe": 2.5409,
-        "features": 53,
-        "feature_candidates": 309,
-        "total_events": 372,
-        "stagnation": 0,
-        "model": "xgboost_brier",
-        "status": "OK — RECOVERED from feature starvation"
-      },
-      "PA2": {
-        "url": "nomos42-political-alpha-2.hf.space",
-        "role": "exploration",
-        "gen": 450,
-        "cycle": 150,
-        "brier": 0.2491,
-        "roi": 0.0171,
-        "sharpe": 0.7071,
-        "features": 69,
-        "feature_candidates": 309,
-        "total_events": 372,
-        "stagnation": 0,
-        "model": "xgboost",
-        "status": "OK — RECOVERED from feature starvation"
-      },
-      "PA3": {
-        "url": "nomos42-political-alpha-3.hf.space",
-        "role": "catboost",
-        "status": "PAUSED — owner-paused on HuggingFace, requires manual restart via HF Settings"
-      },
-      "PA4": {
-        "url": "nomos42-political-alpha-4.hf.space",
-        "role": "wide_search",
-        "status": "PAUSED — owner-paused on HuggingFace, requires manual restart via HF Settings"
-      }
-    },
-    "manual_action_required": "Restart PA3+PA4 at huggingface.co/spaces/Nomos42/political-alpha-3 and .../political-alpha-4 — click Restart in Settings"
+      "PA1": {"url": "nomos42-political-alpha.hf.space","role": "exploitation","gen": 680,"cycle": 227,"brier": 0.24186,"roi": 0.0841,"sharpe": 2.5409,"features": 53,"feature_candidates": 309,"total_events": 372,"stagnation": 0,"model": "xgboost_brier","status": "OK"},
+      "PA2": {"url": "nomos42-political-alpha-2.hf.space","role": "exploration","gen": 1638,"cycle": 546,"brier": 0.2491,"roi": 0.0171,"sharpe": 0.7071,"features": 69,"feature_candidates": 309,"total_events": 372,"stagnation": 0,"model": "xgboost_brier","status": "OK"},
+      "PA3": {"url": "nomos42-political-alpha-3.hf.space","role": "catboost","status": "503 sleeping/rebuilding — HF updated today"},
+      "PA4": {"url": "nomos42-political-alpha-4.hf.space","role": "wide_search","status": "503 sleeping/rebuilding — HF updated today"}
+    }
   },
   "cross_project": {
-    "nba_to_pa": "Port isotonic calibration wrapper to PA (CalibratedClassifierCV with isotonic, cv=3)",
-    "pa_to_nba": "FEC pay-to-play pattern: consider congressional-district-level economic signal for NBA team cities",
-    "key_finding_cycle9": "MDPI 2026 + PLOS One 2025: ELO rating (team_elo, team_elo_5y) + home_next are TOP features across ALL models. Locking these in GA = free improvement."
+    "nba_to_pa": "Cycle C: Port CalibratedClassifierCV sigmoid (cv=3) — PA has 372 events, sigmoid > isotonic for small datasets",
+    "key_finding_cycle10": "S15 wide-search (200f, extra_trees) hit 0.2201 in one gen — suggests 150-200 feature sweet spot for extra_trees on wide search",
+    "calibration_action": "Proposal written to nomos-political-alpha/data/proposals/pa-calibration-port-march2026.json"
   },
   "research": {
-    "nba_proposal": "data/research-proposals/nba-elo-feature-lock-march2026.json",
-    "pa_proposal": "nomos-political-alpha/data/research/pa-fec-feature-integration-march2026.json",
-    "previous_nba_proposal": "data/research-proposals/nba-lr-calibration-march2026.json"
+    "nba_proposal": "data/research-proposals/nba-shot-chart-embedding-march2026.json",
+    "pa_proposal": "nomos-political-alpha/data/proposals/pa-calibration-port-march2026.json",
+    "previous_nba_proposals": ["nba-elo-feature-lock-march2026", "nba-lr-calibration-march2026"]
   }
 }

@@ -1,68 +1,46 @@
 {
-  "updated_at": "2026-03-31T04:00:00Z",
-  "brain_cycle": "Sonnet 4.6 / 4h brain — cycle ~8",
-  "ecosystem_health": "MIXED — NBA healthy, PA critical",
-  "nba_quant_ai": {
-    "status": "HEALTHY",
-    "islands_online": 6,
-    "best_brier": 0.22006,
+  "updated_at": "2026-03-31T12:00:00Z",
+  "cycle": 10,
+  "ecosystem_health": "PARTIAL — NBA 6/6 healthy, PA 2/4 healthy (PA3+PA4 sleeping)",
+  "nba_summary": {
+    "fleet_best_brier": 0.22215,
+    "fleet_best_island": "S10",
     "target_brier": 0.21837,
-    "gap": 0.00169,
-    "engine_version": "v3.1-46cat",
-    "engine_parity": "OK — all 6 islands at feature_candidates=3267",
-    "plateau_alert": "Brier UNCHANGED across 2+ consecutive brain cycles (4h+). All 6 islands using extra_trees/rf. LR in engine but never selected by GA.",
-    "model_types_in_use": ["extra_trees", "random_forest", "xgboost", "lightgbm"],
-    "model_types_available": ["xgboost", "xgboost_brier", "lightgbm", "catboost", "random_forest", "extra_trees", "logistic_regression"],
-    "next_action": "Force LR individuals into S11 population via /api/command or init_population tweak",
-    "supabase": "FAILING (tenant not found) — local caching active on all islands",
-    "kaggle_karpathy": "UNKNOWN — not checked this cycle"
+    "gap": 0.00378,
+    "notable": "S15 gen 187 hit 0.2201 (extra_trees + 200f) — single-gen result below threshold",
+    "all_running": true,
+    "stagnation_any": false
   },
-  "political_alpha": {
-    "status": "CRITICAL",
-    "islands_online": 4,
-    "islands_functioning": 0,
-    "best_brier": 0.3,
-    "feature_candidates": 2,
-    "root_cause": "Feature starvation: empty historical data dir, bootstrap not called in app.py",
-    "fix_exists": true,
-    "fix_file": "hf-space/apply_patches.py (7 patches)",
-    "fix_deployed": false,
-    "cycles_critical": 2,
-    "stagnation_max": 29,
-    "data_pipeline": "Not running from VM. cron jobs may not be set up (see deploy.py cron output).",
-    "next_action": "VM: python3 hf-space/apply_patches.py for each of 4 spaces"
+  "pa_summary": {
+    "pa1_brier": 0.24186,
+    "pa2_brier": 0.2491,
+    "pa3_status": "503-sleeping",
+    "pa4_status": "503-sleeping",
+    "total_events": 372,
+    "feature_candidates": 309
   },
-  "cross_project_improvements": {
-    "nba_to_pa_this_cycle": [
-      "LR model type already in apply_patches.py FIX6 — will be applied when bootstrap fix deployed",
-      "Calibration pattern (CalibratedClassifierCV) — proposed for both"
-    ],
-    "pa_to_nba_this_cycle": [
-      "FEC/OpenSecrets data source pattern — could add congressional district features to NBA (city-level political climate)",
-      "Pay-to-play correlation framework — could be applied to team ownership/market dynamics"
-    ],
-    "pending_sync": [
-      "features/engine.py home_next lookahead feature (NBA → needs implementation)",
-      "PA features/political_engine.py Category 17 congressional trading (pending QuiverQuant API access)"
+  "cross_pollination": {
+    "cycle_10_nba_to_pa": {
+      "technique": "CalibratedClassifierCV sigmoid wrapper (cv=3) for small datasets <500 events",
+      "file": "nomos-political-alpha/data/proposals/pa-calibration-port-march2026.json",
+      "expected_pa_improvement": "-0.005 to -0.010 Brier"
+    },
+    "cycle_10_research_nba": {
+      "technique": "Cat47 shot-chart spatial zone efficiency + Cat48 PIE/BPM player impact",
+      "file": "mon-ipad/data/research-proposals/nba-shot-chart-embedding-march2026.json",
+      "expected_nba_improvement": "-0.002 to -0.005 Brier"
+    },
+    "cumulative_proposals": [
+      "nba-lr-calibration-march2026",
+      "nba-elo-feature-lock-march2026",
+      "nba-shot-chart-embedding-march2026",
+      "pa-fec-feature-integration-march2026",
+      "pa-calibration-port-march2026"
     ]
   },
-  "research_outputs_this_cycle": {
-    "nba": "data/research-proposals/nba-lr-calibration-march2026.json",
-    "pa": "nomos-political-alpha/data/research/pa-new-datasources-march2026.json"
-  },
-  "infrastructure": {
-    "supabase_primary": "PAUSED (402 — ayqviq)",
-    "supabase_pooler": "FAILING (xivvnr — tenant not found)",
-    "hf_spaces_nba": "6/6 ONLINE",
-    "hf_spaces_pa": "4/4 ONLINE but 0/4 functioning (feature starvation)",
-    "vm_cron": "UNKNOWN this cycle",
-    "github": "OK — mon-ipad, nomos-nba-agent, nomos-political-alpha all accessible"
-  },
-  "doc_discrepancies_found": [
-    {
-      "file": "mon-ipad/CLAUDE.md",
-      "issue": "Documents 'Feature engine — v3.0-43cat' but actual engine is v3.1-46cat (46 categories, 3267 features)",
-      "severity": "LOW — informational only, does not affect operation"
-    }
+  "supabase_alert": "All NBA islands reporting Supabase connection failures. Local caching active. Logging offline.",
+  "action_needed": [
+    "PA3+PA4: HF updated today — expect auto-wake. If still 503 in cycle 11, use dynamic_space invoke to force wake.",
+    "Supabase pooler (xivvnr) failing on all islands — needs investigation."
   ]
 }
