@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Guardian Orchestrator v2 — Cross-Department Intelligence System
+Guardian Orchestrator v3 — Cross-Department Intelligence System
 
-Runs all 8 department Karpathy loops then performs:
+Runs all 11 department Karpathy loops then performs:
   1. Cross-department intelligence (reads all karpathy-output.json)
   2. Priority-ordered action queue
   3. Elimination tracking (strategies, agents, features)
@@ -23,6 +23,9 @@ DEPARTMENTS = {
     'infra': {'script': 'infra-loop.sh', 'metric': 'uptime_pct', 'max_time': 300},
     'political': {'script': 'political-loop.sh', 'metric': 'political_brier', 'max_time': 300},
     'creative': {'script': 'creative-loop.sh', 'metric': 'quality_score', 'max_time': 300},
+    'communication': {'script': 'comm-loop.sh', 'metric': 'engagement_rate', 'max_time': 300},
+    'business': {'script': 'business-loop.sh', 'metric': 'mrr', 'max_time': 300},
+    'finance': {'script': 'finance-loop.sh', 'metric': 'financial_accuracy', 'max_time': 300},
 }
 
 ROOT = Path('/home/termius/mon-ipad')
