@@ -1,0 +1,39 @@
+{
+  "date": "2026-04-01",
+  "cycle": "brain-16h00",
+  "source": "MDPI Information 2026 — Uncertainty-Aware Machine Learning for NBA Forecasting",
+  "doi": "10.3390/info17010056",
+  "status": "IMPLEMENTED",
+  "title": "Add Logistic Regression as GA model type — best tabular Brier per MDPI 2026",
+  "summary": "MDPI January 2026 paper benchmarks tabular models on NBA prediction. Key finding: Logistic Regression achieves best Brier score (0.199) among all tabular baselines, outperforming XGBoost (0.202) and Random Forest. Reason: LR with well-engineered features is inherently better calibrated than tree ensembles. Our current fleet best is 0.22066 (XGBoost). Adding LR allows the GA to discover calibrated linear combinations of our 3,265 feature candidates.",
+  "technique": "logistic_regression",
+  "research_finding": {
+    "model": "Logistic Regression",
+    "brier_score": 0.199,
+    "vs_xgboost_brier": 0.202,
+    "vs_random_forest_brier": "~0.205",
+    "auc": 0.748,
+    "notes": "Lower Brier but lower AUC than XGBoost — better calibrated, slightly less discriminative"
+  },
+  "implementation": {
+    "file": "nomos-nba-agent/hf-space/app.py",
+    "changes": [
+      "Added 'logistic_regression' to CPU_MODEL_TYPES and FAST_MODEL_TYPES",
+      "Added elif mt == 'logistic_regression' branch in _build() function",
+      "Uses Pipeline([StandardScaler, LogisticRegression(lbfgs, C from reg_lambda)])",
+      "C = min(100, max(0.01, 1/reg_lambda)) — maps existing GA hyperparam to LR regularization"
+    ],
+    "mutation_weight": "Will inherit from CPU_MODEL_TYPES uniform choice (1/7 probability per init, 1/7 per mutation)"
+  },
+  "expected_impact": {
+    "brier_gain": "0.002 to 0.010 if LR can leverage high-quality feature combinations",
+    "target_brier": "0.215 to 0.218",
+    "caveat": "LR needs meaningful feature selection — if GA selects too many correlated features, LR may underperform. StandardScaler preprocessing mitigates this."
+  },
+  "secondary_finding": {
+    "technique": "ECE/MCE calibration metrics",
+    "current_use": "We already track calibration fitness in GA (minimize calibration error)",
+    "note": "MDPI paper validates our approach — Brier + ECE is the right dual metric"
+  },
+  "cross_project_applicability": "YES — political_engine hf-space/app.py should also add logistic_regression to CPU_MODEL_TYPES (same architecture)"
+}
