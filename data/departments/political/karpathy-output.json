@@ -1,7 +1,7 @@
 {
   "department": "political",
-  "timestamp": "2026-04-01T01:28:18.206885+00:00",
-  "iteration": 4,
+  "timestamp": "2026-04-01T18:18:12.309595+00:00",
+  "iteration": 6,
   "signal_strength": {
     "summary": "22-category engine active. Social signals zeroed-out (Reddit/Twitter API rate-limited). Structural signals (enforcement drops, exec orders, fed rules, insider Form4) are live.",
     "by_category": {
@@ -507,7 +507,7 @@
       "expected_brier_delta": -0.015,
       "action": "In ops/fetch_political_data.py: parse Form4 XML transactionCode. P=buy, S=sell. Add buy_cluster_14d feature.",
       "file": "/home/termius/nomos-political-alpha/ops/fetch_political_data.py",
-      "created_at": "2026-04-01T01:28:17.204455Z"
+      "created_at": "2026-04-01T18:18:12.207854Z"
     },
     {
       "id": "D7-P2",
@@ -518,7 +518,7 @@
       "expected_brier_delta": -0.012,
       "action": "Update polymarket fetch to clob.polymarket.com. Track: tariff_reciprocal, china_trade_deal, trump_approval.",
       "file": "/home/termius/nomos-political-alpha/ops/fetch_political_data.py",
-      "created_at": "2026-04-01T01:28:17.204490Z"
+      "created_at": "2026-04-01T18:18:12.207886Z"
     },
     {
       "id": "D7-P3",
@@ -529,7 +529,7 @@
       "expected_brier_delta": -0.008,
       "action": "Add tariff_anniversary_flag, days_to_tariff_anniversary, import_intensity_sector. Short XLK/QQQ into April 2.",
       "file": "/home/termius/nomos-political-alpha/features/political_engine.py",
-      "created_at": "2026-04-01T01:28:17.204493Z"
+      "created_at": "2026-04-01T18:18:12.207888Z"
     },
     {
       "id": "D7-P4",
@@ -540,7 +540,7 @@
       "expected_brier_delta": -0.006,
       "action": "Debug ops/fetch_political_data.py fetch_usaspending(). gov_contracts returning {}. Check POST payload to /api/v2/search/spending_by_award/",
       "file": "/home/termius/nomos-political-alpha/ops/fetch_political_data.py",
-      "created_at": "2026-04-01T01:28:17.204494Z"
+      "created_at": "2026-04-01T18:18:12.207890Z"
     },
     {
       "id": "D7-P5",
@@ -551,7 +551,7 @@
       "expected_brier_delta": -0.02,
       "action": "Current signal_strength values (0.5, 0.7) are uncalibrated \u2014 naive Brier 0.28 > baseline 0.25. Apply isotonic calibration from calibration/isotonic_calibrator.py to output calibrated probs.",
       "file": "/home/termius/nomos-political-alpha/calibration/isotonic_calibrator.py",
-      "created_at": "2026-04-01T01:28:17.204496Z"
+      "created_at": "2026-04-01T18:18:12.207892Z"
     },
     {
       "id": "D7-P6",
@@ -561,7 +561,7 @@
       "effort_hours": 0.25,
       "expected_brier_delta": 0.0,
       "action": "HF Space has been DOWN all day (cron logs confirm). Go to https://huggingface.co/spaces/LBJLincoln26/nomos-political-alpha and restart.",
-      "created_at": "2026-04-01T01:28:17.204498Z"
+      "created_at": "2026-04-01T18:18:12.207894Z"
     }
   ],
   "tariff_trade_war_analysis": {
@@ -690,23 +690,23 @@
   "political_brier_baseline": 0.25,
   "brier_gap_vs_baseline": 0.03359,
   "n_events_measured": 1120,
-  "signal_count_today": 541,
+  "signal_count_today": 288,
   "etf_live_signals": {
     "QQQ": {
-      "strength": 0.56,
+      "strength": 0.62,
       "drivers": [
         "enforcement_drop:COIN",
         "enforcement_drop:HOOD",
         "enforcement_drop:META",
         "exec_order:TSLA",
-        "fed_rules_mention:COIN(x2)",
-        "fed_rules_mention:MSTR(x2)",
+        "fed_rules_mention:COIN(x3)",
+        "fed_rules_mention:MSTR(x3)",
         "fed_rules_mention:META(x1)",
         "fed_rules_mention:AMZN(x1)",
         "fed_rules_mention:AAPL(x1)",
         "fed_rules_mention:MSFT(x1)",
         "fed_rules_mention:NVDA(x1)",
-        "fed_rules_mention:TSLA(x1)",
+        "fed_rules_mention:TSLA(x2)",
         "tariff_anniversary_risk(T-1d)"
       ],
       "direction": "long",
@@ -723,13 +723,13 @@
       "direction": "long"
     },
     "XLE": {
-      "strength": 0.9,
+      "strength": 1.0,
       "drivers": [
         "enforcement_drop:CVX",
         "enforcement_drop:XOM",
-        "fed_rules_mention:CVX(x9)",
-        "fed_rules_mention:XOM(x9)",
-        "fed_rules_mention:OXY(x9)"
+        "fed_rules_mention:CVX(x11)",
+        "fed_rules_mention:XOM(x11)",
+        "fed_rules_mention:OXY(x11)"
       ],
       "direction": "long"
     },
@@ -743,29 +743,29 @@
       "direction": "long"
     },
     "XLI": {
-      "strength": 0.94,
+      "strength": 1.0,
       "drivers": [
         "enforcement_drop:BA",
         "exec_order:BA",
-        "fed_rules_mention:BA(x13)",
-        "fed_rules_mention:FDX(x19)"
+        "fed_rules_mention:BA(x16)",
+        "fed_rules_mention:FDX(x21)"
       ],
       "direction": "long"
     },
     "XLK": {
       "strength": 0,
       "drivers": [
-        "fed_rules_mention:OKLO(x8)",
+        "fed_rules_mention:OKLO(x9)",
         "tariff_anniversary_risk(T-1d)"
       ],
       "direction": "long",
       "tariff_anniversary_discount": 0.3
     },
     "SPY": {
-      "strength": 0.28,
+      "strength": 0.32,
       "drivers": [
         "fed_rules_mention:LVS(x2)",
-        "fed_rules_mention:PPC(x12)"
+        "fed_rules_mention:PPC(x14)"
       ],
       "direction": "long"
     },

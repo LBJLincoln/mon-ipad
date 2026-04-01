@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-04-01T01:28:42.827437+00:00",
-  "total_recorded": 16,
+  "last_updated": "2026-04-01T18:18:03.951020+00:00",
+  "total_recorded": 19,
   "interventions": [
     {
       "timestamp": "2026-04-01T01:03:58.168434+00:00",
@@ -476,6 +476,102 @@
       "model_drift": {
         "expected": "lightgbm",
         "actual": "random_forest"
+      },
+      "actions": {
+        "diversify": {
+          "success": true,
+          "result": {
+            "status": "command queued",
+            "command": "diversify"
+          }
+        },
+        "specialist_config": {
+          "success": true,
+          "result": {
+            "status": "queued",
+            "params": {
+              "mutation_rate": 0.08,
+              "target_features": 55
+            }
+          }
+        }
+      },
+      "success": true
+    },
+    {
+      "timestamp": "2026-04-01T18:18:03.029939+00:00",
+      "trigger": "auto_diversity",
+      "island": "S12",
+      "space_url": "nomos42-nba-evo-3",
+      "diversity_score": 0.369,
+      "threshold": 0.4,
+      "model_drift": {
+        "expected": "extra_trees",
+        "actual": "random_forest"
+      },
+      "actions": {
+        "diversify": {
+          "success": true,
+          "result": {
+            "status": "command queued",
+            "command": "diversify"
+          }
+        },
+        "specialist_config": {
+          "success": true,
+          "result": {
+            "status": "queued",
+            "params": {
+              "mutation_rate": 0.08,
+              "target_features": 60
+            }
+          }
+        }
+      },
+      "success": true
+    },
+    {
+      "timestamp": "2026-04-01T18:18:03.479640+00:00",
+      "trigger": "auto_diversity",
+      "island": "S13",
+      "space_url": "nomos42-nba-evo-4",
+      "diversity_score": 0.369,
+      "threshold": 0.4,
+      "model_drift": {
+        "expected": "catboost",
+        "actual": "xgboost_brier"
+      },
+      "actions": {
+        "diversify": {
+          "success": true,
+          "result": {
+            "status": "command queued",
+            "command": "diversify"
+          }
+        },
+        "specialist_config": {
+          "success": true,
+          "result": {
+            "status": "queued",
+            "params": {
+              "mutation_rate": 0.1,
+              "target_features": 66
+            }
+          }
+        }
+      },
+      "success": true
+    },
+    {
+      "timestamp": "2026-04-01T18:18:03.942064+00:00",
+      "trigger": "auto_diversity",
+      "island": "S14",
+      "space_url": "nomos42-nba-evo-5",
+      "diversity_score": 0.369,
+      "threshold": 0.4,
+      "model_drift": {
+        "expected": "lightgbm",
+        "actual": "catboost"
       },
       "actions": {
         "diversify": {
