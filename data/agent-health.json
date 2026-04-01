@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-01T18:00:04.141472Z",
+  "timestamp": "2026-04-01T20:22:56.088132Z",
   "projects": {
     "nba": {
       "name": "NBA Quant AI",
@@ -7,7 +7,7 @@
         "S10": {
           "status": "UP",
           "brier": 0.22239,
-          "generation": 1255,
+          "generation": 1337,
           "model": "random_forest",
           "last_improvement": null,
           "stagnation_cycles": 0
@@ -15,7 +15,7 @@
         "S11": {
           "status": "UP",
           "brier": 0.22277,
-          "generation": 1344,
+          "generation": 1488,
           "model": "catboost",
           "last_improvement": null,
           "stagnation_cycles": 0
@@ -23,7 +23,7 @@
         "S12": {
           "status": "UP",
           "brier": 0.22115,
-          "generation": 842,
+          "generation": 901,
           "model": "random_forest",
           "last_improvement": null,
           "stagnation_cycles": 0
@@ -31,7 +31,7 @@
         "S13": {
           "status": "UP",
           "brier": 0.22066,
-          "generation": 920,
+          "generation": 985,
           "model": "xgboost_brier",
           "last_improvement": null,
           "stagnation_cycles": 0
@@ -39,7 +39,7 @@
         "S14": {
           "status": "UP",
           "brier": 0.22188,
-          "generation": 1209,
+          "generation": 1336,
           "model": "catboost",
           "last_improvement": null,
           "stagnation_cycles": 0
@@ -47,7 +47,7 @@
         "S15": {
           "status": "UP",
           "brier": 0.22254,
-          "generation": 1061,
+          "generation": 1159,
           "model": "random_forest",
           "last_improvement": null,
           "stagnation_cycles": 0
@@ -55,10 +55,12 @@
       },
       "kaggle": {
         "nba-karpathy-loop": {
-          "status": "COMPLETE"
+          "status": "ERROR",
+          "error": "Command '['kaggle', 'kernels', 'status', 'alexismoret6/nba-karpathy-loop']' timed out after 15 secon"
         },
         "nba-season-backtest": {
-          "status": "COMPLETE"
+          "status": "ERROR",
+          "error": "Command '['kaggle', 'kernels', 'status', 'alexismoret6/nba-season-backtest']' timed out after 15 sec"
         }
       }
     },
@@ -83,11 +85,14 @@
     }
   },
   "actions_taken": [],
-  "issues": [],
+  "issues": [
+    "Kaggle nba-karpathy-loop ERRORED",
+    "Kaggle nba-season-backtest ERRORED"
+  ],
   "summary": {
     "spaces": "6/6 UP",
-    "issues": 0,
+    "issues": 2,
     "actions": 0,
-    "status": "HEALTHY"
+    "status": "DEGRADED"
   }
 }
