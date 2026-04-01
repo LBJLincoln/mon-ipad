@@ -1,555 +1,263 @@
 {
-  "timestamp": "2026-04-01T08:00:09Z",
+  "timestamp": "2026-04-01T13:09:55.300538+00:00",
+  "health_score": 45,
+  "health_grade": "D",
   "repos": {
     "mon-ipad": {
+      "name": "mon-ipad",
       "type": "brain",
       "path": "/home/termius/mon-ipad",
+      "status": "active",
       "exists": true,
-      "last_commit_date": "2026-04-01 06:00:48 +0000",
-      "last_commit_hash": "8b9b04a6",
-      "last_commit_msg": "data: picks 2026-04-01",
-      "uncommitted_changes": 21,
-      "uncommitted_files": [
-        "ata/agent-activity.json",
-        "data/agent-health.json",
-        "data/cross-repo-health.json",
-        "data/infra-status.json",
-        "data/karpathy/nba-best-config.json",
-        "data/karpathy/nba-history.json",
-        "data/karpathy/political-best-config.json",
-        "data/karpathy/political-history.json",
-        "data/nba-agent/bankroll-state.json",
-        "data/nba-agent/latest-eval.json"
-      ],
-      "data_size_mb": 24.0,
+      "last_commit_date": "2026-04-01 13:05:45 +0000",
+      "last_commit_hash": "908bcaf0",
+      "last_commit_msg": "feat: Full infrastructure \u2014 9 dept programs, 4 GPU burst scripts, sync engine, HF audit",
+      "uncommitted_changes": 29,
       "error": null
     },
     "nomos-nba-agent": {
+      "name": "nomos-nba-agent",
       "type": "engine",
       "path": "/home/termius/nomos-nba-agent",
+      "status": "active",
       "exists": true,
-      "last_commit_date": "2026-03-31 22:45:34 +0000",
-      "last_commit_hash": "20a1650f",
-      "last_commit_msg": "data: predictions + player props 2026-03-31",
-      "uncommitted_changes": 4,
-      "uncommitted_files": [
-        "ata/nba-agent/predictions-today.json",
-        "data/nba-agent/value-bets.json",
-        "predict_today.py",
-        "data/player-props/props-2026-04-01.json"
-      ],
-      "data_size_mb": 31.0,
+      "last_commit_date": "2026-04-01 11:10:45 +0000",
+      "last_commit_hash": "b2c24ac4",
+      "last_commit_msg": "feat: Add prediction Karpathy loop \u2014 Forge department structure",
+      "uncommitted_changes": 6,
       "error": null
     },
     "nomos-political-alpha": {
+      "name": "nomos-political-alpha",
       "type": "engine",
       "path": "/home/termius/nomos-political-alpha",
+      "status": "active",
       "exists": true,
-      "last_commit_date": "2026-03-31 23:20:31 +0000",
-      "last_commit_hash": "17bd992f",
-      "last_commit_msg": "data: political signals + engine sync 2026-03-28 to 2026-03-31",
-      "uncommitted_changes": 74,
-      "uncommitted_files": [
-        "ata/insider/form4_20260331.json",
-        "data/social/social_signals_latest.json",
-        "features/__pycache__/__init__.cpython-311.pyc",
-        "features/__pycache__/political_engine.cpython-311.pyc",
-        "hf-space/ops/fetch_political_data.py",
-        "logs/agents/cron.log",
-        "logs/agents/orchestrator-2026-03-31.log",
-        "logs/agents/signals-2026-03-31.log",
-        "logs/agents/social-2026-03-31.log",
-        "ops/__pycache__/fetch_political_data.cpython-311.pyc"
-      ],
-      "data_size_mb": 13.0,
+      "last_commit_date": "2026-04-01 11:12:26 +0000",
+      "last_commit_hash": "85b1682f",
+      "last_commit_msg": "feat: Add signals Karpathy loop \u2014 Forge department structure",
+      "uncommitted_changes": 99,
       "error": null
     },
     "rgwa": {
+      "name": "rgwa",
       "type": "creative",
       "path": "/home/termius/rgwa",
+      "status": "active",
       "exists": true,
-      "last_commit_date": "2026-03-28 16:26:12 +0000",
-      "last_commit_hash": "be221ca7",
-      "last_commit_msg": "fix: rgwa bot update",
+      "last_commit_date": "2026-04-01 11:13:59 +0000",
+      "last_commit_hash": "fe1f3afe",
+      "last_commit_msg": "feat: Add creative Karpathy loop \u2014 Forge department structure",
       "uncommitted_changes": 0,
-      "uncommitted_files": [],
-      "data_size_mb": 7.0,
       "error": null
     },
     "nomos-dashboard": {
+      "name": "nomos-dashboard",
       "type": "dashboard",
       "path": "/home/termius/nomos-dashboard",
+      "status": "active",
       "exists": true,
-      "last_commit_date": "2026-03-31 21:07:54 +0000",
-      "last_commit_hash": "a49a0911",
-      "last_commit_msg": "feat: add Pixel Trading Floor to Arena \u2014 146 AI traders, day-by-day simulation",
-      "uncommitted_changes": 2,
-      "uncommitted_files": [
-        "rc/components/arena/TradingFloor.tsx",
-        "src/components/arena/types.ts"
-      ],
-      "data_size_mb": 0.0,
+      "last_commit_date": "2026-04-01 11:54:50 +0000",
+      "last_commit_hash": "1eba5cb8",
+      "last_commit_msg": "feat: Trading Floor Wall Street visual upgrade \u2014 info boards, $1M tracker, HF fleet, CLI sprite",
+      "uncommitted_changes": 0,
       "error": null
     }
   },
-  "hf_spaces": {
-    "spaces": {
-      "S10": {
-        "space_id": "S10",
-        "url": "https://nomos42-nba-quant.hf.space",
-        "status": "running",
-        "http_code": 200,
-        "generation": 730,
-        "best_brier": 0.22239,
-        "model_type": "random_forest",
-        "stagnation_cycles": 0,
-        "cycle": 244,
-        "mutation_rate": 0.068,
-        "pareto_front_size": 11,
-        "role": null,
-        "last_update": "2026-04-01T07:59:14.947777+00:00",
-        "error": null,
-        "raw_keys": [
-          "status",
-          "cycle",
-          "generation",
-          "best_brier",
-          "best_roi",
-          "best_sharpe",
-          "best_features",
-          "best_model_type",
-          "pop_size",
-          "mutation_rate",
-          "stagnation",
-          "games",
-          "feature_candidates",
-          "gpu",
-          "log",
-          "history",
-          "top5",
-          "started_at",
-          "last_update",
-          "n_islands"
-        ]
-      },
-      "S11": {
-        "space_id": "S11",
-        "url": "https://nomos42-nba-quant-2.hf.space",
-        "status": "running",
-        "http_code": 200,
-        "generation": 864,
-        "best_brier": 0.22277,
-        "model_type": "catboost",
-        "stagnation_cycles": 0,
-        "cycle": 288,
-        "mutation_rate": 0.08,
-        "pareto_front_size": 13,
-        "role": null,
-        "last_update": "2026-04-01T07:59:50.858027+00:00",
-        "error": null,
-        "raw_keys": [
-          "status",
-          "cycle",
-          "generation",
-          "best_brier",
-          "best_roi",
-          "best_sharpe",
-          "best_features",
-          "best_model_type",
-          "pop_size",
-          "mutation_rate",
-          "stagnation",
-          "games",
-          "feature_candidates",
-          "gpu",
-          "log",
-          "history",
-          "top5",
-          "started_at",
-          "last_update",
-          "n_islands"
-        ]
-      },
-      "S12": {
-        "space_id": "S12",
-        "url": "https://nomos42-nba-evo-3.hf.space",
-        "status": "running",
-        "http_code": 200,
-        "generation": 527,
-        "best_brier": 0.22115,
-        "model_type": "random_forest",
-        "stagnation_cycles": 0,
-        "cycle": 176,
-        "mutation_rate": 0.056,
-        "pareto_front_size": 15,
-        "role": null,
-        "last_update": "2026-04-01T07:59:19.440051+00:00",
-        "error": null,
-        "raw_keys": [
-          "status",
-          "cycle",
-          "generation",
-          "best_brier",
-          "best_roi",
-          "best_sharpe",
-          "best_features",
-          "best_model_type",
-          "pop_size",
-          "mutation_rate",
-          "stagnation",
-          "games",
-          "feature_candidates",
-          "gpu",
-          "log",
-          "history",
-          "top5",
-          "started_at",
-          "last_update",
-          "n_islands"
-        ]
-      },
-      "S13": {
-        "space_id": "S13",
-        "url": "https://nomos42-nba-evo-4.hf.space",
-        "status": "running",
-        "http_code": 200,
-        "generation": 578,
-        "best_brier": 0.22066,
-        "model_type": "xgboost_brier",
-        "stagnation_cycles": 0,
-        "cycle": 193,
-        "mutation_rate": 0.0655,
-        "pareto_front_size": 19,
-        "role": null,
-        "last_update": "2026-04-01T07:59:54.621583+00:00",
-        "error": null,
-        "raw_keys": [
-          "status",
-          "cycle",
-          "generation",
-          "best_brier",
-          "best_roi",
-          "best_sharpe",
-          "best_features",
-          "best_model_type",
-          "pop_size",
-          "mutation_rate",
-          "stagnation",
-          "games",
-          "feature_candidates",
-          "gpu",
-          "log",
-          "history",
-          "top5",
-          "started_at",
-          "last_update",
-          "n_islands"
-        ]
-      },
-      "S14": {
-        "space_id": "S14",
-        "url": "https://nomos42-nba-evo-5.hf.space",
-        "status": "running",
-        "http_code": 200,
-        "generation": 758,
-        "best_brier": 0.22188,
-        "model_type": "catboost",
-        "stagnation_cycles": 0,
-        "cycle": 253,
-        "mutation_rate": 0.0861,
-        "pareto_front_size": 7,
-        "role": null,
-        "last_update": "2026-04-01T08:00:20.733929+00:00",
-        "error": null,
-        "raw_keys": [
-          "status",
-          "cycle",
-          "generation",
-          "best_brier",
-          "best_roi",
-          "best_sharpe",
-          "best_features",
-          "best_model_type",
-          "pop_size",
-          "mutation_rate",
-          "stagnation",
-          "games",
-          "feature_candidates",
-          "gpu",
-          "log",
-          "history",
-          "top5",
-          "started_at",
-          "last_update",
-          "n_islands"
-        ]
-      },
-      "S15": {
-        "space_id": "S15",
-        "url": "https://nomos42-nba-evo-6.hf.space",
-        "status": "running",
-        "http_code": 200,
-        "generation": 663,
-        "best_brier": 0.22254,
-        "model_type": "random_forest",
-        "stagnation_cycles": 0,
-        "cycle": 221,
-        "mutation_rate": 0.08,
-        "pareto_front_size": 11,
-        "role": null,
-        "last_update": "2026-04-01T08:00:29.814808+00:00",
-        "error": null,
-        "raw_keys": [
-          "status",
-          "cycle",
-          "generation",
-          "best_brier",
-          "best_roi",
-          "best_sharpe",
-          "best_features",
-          "best_model_type",
-          "pop_size",
-          "mutation_rate",
-          "stagnation",
-          "games",
-          "feature_candidates",
-          "gpu",
-          "log",
-          "history",
-          "top5",
-          "started_at",
-          "last_update",
-          "n_islands"
-        ]
-      }
+  "departments": {
+    "mon-ipad/research": {
+      "repo": "mon-ipad",
+      "department": "research",
+      "timestamp": "2026-04-01T09:48:03+00:00",
+      "iteration": 7,
+      "status": "completed",
+      "improved": false,
+      "best_brier": null,
+      "fleet_avg_brier": null,
+      "best_island": null,
+      "recommendations_count": 0
     },
-    "fleet": {
-      "running_count": 6,
-      "sleeping_count": 0,
-      "offline_count": 0,
-      "fleet_best_brier": 0.22066,
+    "mon-ipad/engineering": {
+      "repo": "mon-ipad",
+      "department": "engineering",
+      "timestamp": "2026-04-01T09:48:04.000000+00:00",
+      "iteration": 5,
+      "status": "unknown",
+      "improved": false,
+      "best_brier": null,
+      "fleet_avg_brier": null,
+      "best_island": null,
+      "recommendations_count": 0
+    },
+    "mon-ipad/evolution": {
+      "repo": "mon-ipad",
+      "department": "evolution",
+      "timestamp": "2026-04-01T09:48:14Z",
+      "iteration": 1,
+      "status": "completed",
+      "improved": false,
+      "best_brier": 0.22066,
       "fleet_avg_brier": 0.2219,
-      "fleet_worst_brier": 0.22277,
-      "spaces_with_brier": 6
-    }
-  },
-  "gpu_platforms": {
-    "kaggle": {
-      "status": "error",
-      "kernel": "alexismoret6/nba-quant-gpu-evolution-v2",
-      "detail": ""
+      "best_island": "S13",
+      "recommendations_count": 3
     },
-    "colab": {
-      "status": "not_running",
-      "state": null,
-      "detail": "no Drive state file found locally (normal if Colab not mounted)"
+    "mon-ipad/betting": {
+      "repo": "mon-ipad",
+      "department": "betting",
+      "timestamp": "2026-04-01T09:48:25Z",
+      "iteration": 1,
+      "status": "completed",
+      "improved": false,
+      "best_brier": null,
+      "fleet_avg_brier": null,
+      "best_island": null,
+      "recommendations_count": 0
+    },
+    "mon-ipad/evaluation": {
+      "repo": "mon-ipad",
+      "department": "evaluation",
+      "timestamp": "2026-04-01T00:29:32.377580+00:00",
+      "iteration": 2,
+      "status": "completed",
+      "improved": false,
+      "best_brier": null,
+      "fleet_avg_brier": null,
+      "best_island": null,
+      "recommendations_count": 0
+    },
+    "mon-ipad/infra": {
+      "repo": "mon-ipad",
+      "department": "infra",
+      "timestamp": "2026-04-01T09:48:28Z",
+      "iteration": 1,
+      "status": "completed",
+      "improved": false,
+      "best_brier": null,
+      "fleet_avg_brier": null,
+      "best_island": null,
+      "recommendations_count": 0
+    },
+    "mon-ipad/political": {
+      "repo": "mon-ipad",
+      "department": "political",
+      "timestamp": "2026-04-01T09:49:29.862412+00:00",
+      "iteration": 5,
+      "status": "completed",
+      "improved": false,
+      "best_brier": null,
+      "fleet_avg_brier": null,
+      "best_island": null,
+      "recommendations_count": 0
+    },
+    "mon-ipad/creative": {
+      "repo": "mon-ipad",
+      "department": "creative",
+      "timestamp": "2026-04-01T09:50:19Z",
+      "iteration": 2,
+      "status": "idle",
+      "improved": false,
+      "best_brier": null,
+      "fleet_avg_brier": null,
+      "best_island": null,
+      "recommendations_count": 3
+    },
+    "mon-ipad/trading_floor": {
+      "repo": "mon-ipad",
+      "department": "trading_floor",
+      "timestamp": "2026-04-01T12:00:59.181464+00:00",
+      "iteration": 7,
+      "status": "completed",
+      "improved": false,
+      "best_brier": null,
+      "fleet_avg_brier": null,
+      "best_island": null,
+      "recommendations_count": 2
+    },
+    "nomos-nba-agent/prediction": {
+      "repo": "nomos-nba-agent",
+      "department": "prediction",
+      "timestamp": "2026-04-01T11:09:27Z",
+      "iteration": 1,
+      "status": "active",
+      "improved": false,
+      "best_brier": null,
+      "fleet_avg_brier": null,
+      "best_island": null,
+      "recommendations_count": 0
+    },
+    "nomos-political-alpha/signals": {
+      "repo": "nomos-political-alpha",
+      "department": "signals",
+      "timestamp": "2026-04-01T11:09:45Z",
+      "iteration": 1,
+      "status": "active",
+      "improved": false,
+      "best_brier": null,
+      "fleet_avg_brier": null,
+      "best_island": null,
+      "recommendations_count": 0
+    },
+    "rgwa/creative": {
+      "repo": "rgwa",
+      "department": "creative",
+      "timestamp": "2026-04-01T11:09:59Z",
+      "iteration": 1,
+      "status": "warning",
+      "improved": false,
+      "best_brier": null,
+      "fleet_avg_brier": null,
+      "best_island": null,
+      "recommendations_count": 0
     }
   },
-  "crons": {
-    "total": 23,
-    "jobs": [
-      {
-        "schedule": "*/5 * * * *",
-        "command": "*/5 * * * * /home/termius/mon-ipad/scripts/watchdog.sh >> /home/termius/mon-ipad/logs/watchdog-cron.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "*/30 * * * *",
-        "command": "*/30 * * * * /home/termius/mon-ipad/scripts/agents/agent-cron.sh >> /home/termius/mon-ipad/logs/agents/cron.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "0 */2 * * *",
-        "command": "0 */2 * * * python3 /home/termius/mon-ipad/scripts/cross-repo-monitor.py >> /home/termius/mon-ipad/logs/cross-repo-monitor.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "0 3 * * *",
-        "command": "0 3 * * * /home/termius/mon-ipad/scripts/kaggle-gpu-evolution.sh --no-wait >> /home/termius/mon-ipad/logs/kaggle-gpu.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "*/30 * * * *",
-        "command": "*/30 * * * * cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --fast >> /tmp/political-fast.log 2>&1",
-        "project": "political-alpha",
-        "label": "political-fast"
-      },
-      {
-        "schedule": "0 */6 * * *",
-        "command": "0 */6 * * * cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --all >> /tmp/political-full.log 2>&1",
-        "project": "political-alpha",
-        "label": "political-full"
-      },
-      {
-        "schedule": "0 22 * * 1-5",
-        "command": "0 22 * * 1-5 cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --insider >> /tmp/political-insider.log 2>&1",
-        "project": "political-alpha",
-        "label": "political-insider"
-      },
-      {
-        "schedule": "30 22 * * 1-5",
-        "command": "30 22 * * 1-5 cd /home/termius/nomos-political-alpha && python3 ops/fetch_political_data.py --prices >> /tmp/political-prices.log 2>&1",
-        "project": "political-alpha",
-        "label": "political-prices"
-      },
-      {
-        "schedule": "15,45 * * * *",
-        "command": "15,45 * * * * /home/termius/mon-ipad/scripts/infra-agent.sh >> /home/termius/mon-ipad/logs/infra-agent-cron.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "30 */2 * * *",
-        "command": "30 */2 * * * cd /home/termius/nomos-political-alpha && python3 ops/fetch_social_signals.py --all >> /tmp/social-signals.log 2>&1",
-        "project": "political-alpha",
-        "label": "unknown"
-      },
-      {
-        "schedule": "5,35 * * * *",
-        "command": "5,35 * * * * /home/termius/nomos-political-alpha/scripts/agents/agent-cron.sh >> /home/termius/nomos-political-alpha/logs/agents/cron.log 2>&1",
-        "project": "political-alpha",
-        "label": "unknown"
-      },
-      {
-        "schedule": "0 22 * * *",
-        "command": "0 22 * * * set -a && source /home/termius/mon-ipad/.env.local && set +a && python3 scripts/betting_agent.py >> /home/termius/mon-ipad/logs/betting-agent.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "0 10 * * *",
-        "command": "0 10 * * * set -a && source /home/termius/mon-ipad/.env.local && set +a && cd /home/termius/mon-ipad && python3 scripts/evaluate_predictions.py >> /home/termius/mon-ipad/logs/evaluator.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "*/30 18-23,0-6 * * *",
-        "command": "*/30 18-23,0-6 * * * set -a && source /home/termius/mon-ipad/.env.local && set +a && cd /home/termius/mon-ipad && python3 scripts/fetch_free_odds.py >> /home/termius/mon-ipad/logs/odds-monitor.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "0 3 * * *",
-        "command": "0 3 * * * /home/termius/mon-ipad/scripts/backup-to-drive.sh >> /tmp/backup.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "0 11 * * *",
-        "command": "0 11 * * * python3 scripts/arena/arena-engine.py all >> /home/termius/mon-ipad/logs/arena.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "17 */4 * * *",
-        "command": "17 */4 * * * /home/termius/mon-ipad/scripts/agents/multi-brain.sh >> /home/termius/mon-ipad/logs/agents/multi-brain.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "0 6,18 * * *",
-        "command": "0 6,18 * * * /home/termius/mon-ipad/scripts/agents/research-cron.sh >> /home/termius/mon-ipad/logs/research-cron.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "30 */6 * * *",
-        "command": "30 */6 * * * /home/termius/mon-ipad/scripts/agents/auto-deploy-engine.sh >> /home/termius/mon-ipad/logs/auto-deploy-engine.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "0 4 * * 0",
-        "command": "0 4 * * 0 python3 /home/termius/mon-ipad/scripts/agents/cross-pollinate.py >> /home/termius/mon-ipad/logs/cross-pollinate.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "0 0,4,8,12,16,20 * * *",
-        "command": "0 0,4,8,12,16,20 * * * /home/termius/mon-ipad/scripts/agents/swarm-metrics-collector.sh --quiet >> /home/termius/mon-ipad/logs/swarm-metrics.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "0 4,16 * * *",
-        "command": "0 4,16 * * * /home/termius/mon-ipad/scripts/karpathy/karpathy-scheduler.sh >> /home/termius/mon-ipad/logs/karpathy/scheduler.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "30 23 * * *",
-        "command": "30 23 * * * set -a && source /home/termius/mon-ipad/.env.local && set +a && python3 /home/termius/mon-ipad/scripts/daily-summary.py >> /home/termius/mon-ipad/logs/daily-summary.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
+  "hf_spaces": {
+    "nba": {
+      "spaces": {},
+      "fleet": {
+        "total": 6,
+        "running_count": 0,
+        "best_brier": null
       }
-    ],
-    "expected_present": [
-      "political-fast",
-      "political-full",
-      "political-insider",
-      "political-prices"
-    ],
-    "missing": [
-      "keepalive-spaces",
-      "nba-daily-odds",
-      "autonomous-cycle",
-      "cross-repo-optimize"
-    ],
-    "by_project": {
-      "brain": 17,
-      "political-alpha": 6
-    }
-  },
-  "bots": {
-    "nomos42_brain": {
-      "running": true,
-      "pids": [
-        "1868680",
-        "2986215"
-      ],
-      "repo": "mon-ipad"
     },
-    "rgwa_bot": {
-      "running": true,
-      "pids": [
-        "270201",
-        "2986221"
-      ],
-      "repo": "rgwa"
+    "political": {
+      "spaces": {},
+      "fleet": {
+        "total": 4,
+        "running_count": 0,
+        "best_brier": null
+      }
     }
   },
-  "processes": {
-    "nba_data_server": true,
-    "nba_daily_odds": true,
-    "autonomous_cycle": true,
-    "political_fetcher": true,
-    "keepalive": true
+  "data_server": {
+    "status": "offline",
+    "url": "http://localhost:5555/api/status",
+    "error": "<urlopen error [Errno 111] Connection refused>"
   },
-  "alerts": [
-    "REPO DIRTY: mon-ipad has 21 uncommitted changes",
-    "REPO DIRTY: nomos-political-alpha has 74 uncommitted changes",
-    "CRON MISSING: keepalive-spaces",
-    "CRON MISSING: nba-daily-odds",
-    "CRON MISSING: autonomous-cycle",
-    "CRON MISSING: cross-repo-optimize"
+  "blockers": [
+    {
+      "severity": "HIGH",
+      "source": "repo/nomos-political-alpha",
+      "issue": "Repo nomos-political-alpha has 99 uncommitted changes",
+      "recommendation": "Commit or stash changes in nomos-political-alpha"
+    }
   ],
+  "blocker_counts": {
+    "critical": 0,
+    "high": 1,
+    "medium": 0,
+    "low": 0
+  },
   "summary": {
     "total_repos": 5,
     "active_repos": 5,
-    "running_spaces": 6,
-    "sleeping_spaces": 0,
-    "offline_spaces": 0,
-    "fleet_best_brier": 0.22066,
-    "fleet_avg_brier": 0.2219,
-    "total_crons": 23,
-    "missing_crons": 4,
-    "bots_running": 2,
-    "total_bots": 2,
-    "gpu_kaggle_status": "error",
-    "gpu_colab_status": "not_running"
+    "departments_reporting": 12,
+    "departments_total": 12,
+    "nba_spaces_running": 0,
+    "nba_fleet_best_brier": null,
+    "nba_fleet_avg_brier": null,
+    "political_spaces_running": 0,
+    "political_fleet_best_brier": null,
+    "data_server_status": "offline",
+    "total_blockers": 1
   }
 }

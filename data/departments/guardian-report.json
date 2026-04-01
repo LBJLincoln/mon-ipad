@@ -1,769 +1,88 @@
 {
-  "timestamp": "2026-04-01T01:30:31.024460+00:00",
-  "iteration": 1,
-  "health_score": 4,
-  "run_summary": {
-    "note": "report generated without running dept loops"
-  },
+  "timestamp": "2026-04-01T13:10:05.620473+00:00",
+  "status": "completed",
+  "departments_loaded": 12,
+  "departments_total": 12,
   "dept_summaries": {
-    "evaluation": "Brier=0.2157 | ECE=0.2758 | FP=0.4 | ROI=-2.6% | phantom=1",
-    "evolution": "Best=0.22066 (S13) | Avg=0.22223 | Gen=2317 | Stagnant=1",
-    "betting": "$97.4 | ROI=-2.6% | Sharpe=-1.22 | WR=38.71% | UNDERPERFORMING",
-    "research": "14 papers | 18 techniques | gap=0.0157 (Montrucchio 2026 (MDPI Information 17/1/56): 0.199)",
-    "infra": "Spaces None/6 UP | restarts=0",
-    "political": "Brier=0.28359 | ETF ROI=None | accuracy=None",
-    "creative": "quality=None | pieces=0",
-    "engineering": "Brier delta=0 | features added=0 | pass rate=None"
+    "research": "14 papers | 18 techniques | status=completed",
+    "engineering": "status=unknown",
+    "evolution": "Brier=0.22066 | status=completed",
+    "betting": "status=completed",
+    "evaluation": "status=completed",
+    "infra": "status=completed",
+    "political": "status=completed",
+    "creative": "status=idle",
+    "trading_floor": "status=completed",
+    "nba_prediction": "status=active",
+    "political_signals": "status=active",
+    "rgwa_creative": "status=warning"
   },
-  "critical_alerts": [
+  "wins": [],
+  "wins_count": 0,
+  "actions": [
     {
-      "severity": "CRITICAL",
-      "source_dept": "evaluation",
-      "target_dept": "engineering",
-      "issue_type": "PHANTOM_GAME",
-      "description": "1 phantom game(s) detected (home==away) in today predictions",
-      "recommended_action": "Add assert game[\"home\"] != game[\"away\"] in predict_today.py",
-      "auto_flag": true,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
+      "from_department": "evolution",
+      "to_department": "evolution",
+      "route": "island_cross_pollination",
+      "action": "Seed S11 with S13 config (Brier gain: 0.00211)",
+      "priority": "MEDIUM",
+      "source_island": "S13",
+      "target_island": "S11",
+      "timestamp": "2026-04-01T13:10:05.623754+00:00"
     },
     {
-      "severity": "CRITICAL",
-      "source_dept": "evaluation",
-      "target_dept": "engineering",
-      "issue_type": "CALIBRATION_CRISIS",
-      "description": "ECE=0.2758 \u2014 target <0.05, currently 5.5x over. Worst bucket: 60-70%",
-      "recommended_action": "Deploy Platt scaling / isotonic regression post-hoc calibration on HF Space",
-      "auto_flag": true,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
+      "from_department": "evolution",
+      "to_department": "evolution",
+      "route": "island_cross_pollination",
+      "action": "Seed S10 with S13 config (Brier gain: 0.00173)",
+      "priority": "MEDIUM",
+      "source_island": "S13",
+      "target_island": "S10",
+      "timestamp": "2026-04-01T13:10:05.623776+00:00"
     },
     {
-      "severity": "CRITICAL",
-      "source_dept": "evaluation",
-      "target_dept": "engineering",
-      "issue_type": "BIAS_PHANTOM_GAME",
-      "description": "PHANTOM_GAME bias detected in model outputs",
-      "recommended_action": "Assert home != away; validate market_implied in [0.10, 0.90] before outputting any pick",
-      "auto_flag": false,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
-    },
-    {
-      "severity": "CRITICAL",
-      "source_dept": "evolution",
-      "target_dept": "infra",
-      "issue_type": "SPACE_STAGNATION",
-      "description": "S14 stagnant for 20 cycles (Brier=0.22387)",
-      "recommended_action": "POST /api/config {\"command\":\"diversify\"} \u2192 S14",
-      "auto_flag": true,
-      "island": "S14",
-      "cycles": 20,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
+      "from_department": "evolution",
+      "to_department": "evolution",
+      "route": "island_cross_pollination",
+      "action": "Seed S11 with S12 config (Brier gain: 0.00162)",
+      "priority": "MEDIUM",
+      "source_island": "S12",
+      "target_island": "S11",
+      "timestamp": "2026-04-01T13:10:05.623781+00:00"
     }
   ],
-  "all_issues": [
-    {
-      "severity": "CRITICAL",
-      "source_dept": "evaluation",
-      "target_dept": "engineering",
-      "issue_type": "PHANTOM_GAME",
-      "description": "1 phantom game(s) detected (home==away) in today predictions",
-      "recommended_action": "Add assert game[\"home\"] != game[\"away\"] in predict_today.py",
-      "auto_flag": true,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
-    },
-    {
-      "severity": "CRITICAL",
-      "source_dept": "evaluation",
-      "target_dept": "engineering",
-      "issue_type": "CALIBRATION_CRISIS",
-      "description": "ECE=0.2758 \u2014 target <0.05, currently 5.5x over. Worst bucket: 60-70%",
-      "recommended_action": "Deploy Platt scaling / isotonic regression post-hoc calibration on HF Space",
-      "auto_flag": true,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
-    },
-    {
-      "severity": "CRITICAL",
-      "source_dept": "evaluation",
-      "target_dept": "engineering",
-      "issue_type": "BIAS_PHANTOM_GAME",
-      "description": "PHANTOM_GAME bias detected in model outputs",
-      "recommended_action": "Assert home != away; validate market_implied in [0.10, 0.90] before outputting any pick",
-      "auto_flag": false,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
-    },
-    {
-      "severity": "HIGH",
-      "source_dept": "evaluation",
-      "target_dept": "engineering",
-      "issue_type": "BIAS_OVERCONFIDENCE_SYSTEMATIC",
-      "description": "OVERCONFIDENCE_SYSTEMATIC bias detected in model outputs",
-      "recommended_action": "Apply Platt scaling or isotonic regression post-hoc calibration",
-      "auto_flag": false,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
-    },
-    {
-      "severity": "HIGH",
-      "source_dept": "evaluation",
-      "target_dept": "engineering",
-      "issue_type": "BIAS_CORRUPTED_ODDS",
-      "description": "Model >60% win prob but market implies <15% \u2014 likely team normalization mismatch (SAS/SA bug)",
-      "recommended_action": "Validate TEAM_MAP completeness; add odds sanity gate: skip bet if |model_prob - market_implied| > 0.50",
-      "auto_flag": false,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
-    },
-    {
-      "severity": "CRITICAL",
-      "source_dept": "evolution",
-      "target_dept": "infra",
-      "issue_type": "SPACE_STAGNATION",
-      "description": "S14 stagnant for 20 cycles (Brier=0.22387)",
-      "recommended_action": "POST /api/config {\"command\":\"diversify\"} \u2192 S14",
-      "auto_flag": true,
-      "island": "S14",
-      "cycles": 20,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
-    },
-    {
-      "severity": "MEDIUM",
-      "source_dept": "evolution",
-      "target_dept": "evolution",
-      "issue_type": "MODEL_DRIFT",
-      "description": "S12 specialist drift: expected extra_trees, got random_forest",
-      "recommended_action": "Restore S12 specialist config to enforce extra_trees",
-      "auto_flag": false,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
-    },
-    {
-      "severity": "MEDIUM",
-      "source_dept": "evolution",
-      "target_dept": "evolution",
-      "issue_type": "MODEL_DRIFT",
-      "description": "S14 specialist drift: expected lightgbm, got random_forest",
-      "recommended_action": "Restore S14 specialist config to enforce lightgbm",
-      "auto_flag": false,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
-    },
-    {
-      "severity": "MEDIUM",
-      "source_dept": "evolution",
-      "target_dept": "evolution",
-      "issue_type": "LOW_DIVERSITY",
-      "description": "Fleet diversity=0.395 < 0.50 \u2014 RF monoculture risk",
-      "recommended_action": "Force S12\u2192extra_trees, S14\u2192lightgbm specialist configs",
-      "auto_flag": false,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
-    },
-    {
-      "severity": "HIGH",
-      "source_dept": "betting",
-      "target_dept": "evaluation",
-      "issue_type": "NEGATIVE_ROI",
-      "description": "ROI=-2.6% (target >5%) \u2014 calibration issues likely driver",
-      "recommended_action": "Prioritize ECE fix; pause full_kelly until ECE < 0.10",
-      "auto_flag": false,
-      "detected_at": "2026-04-01T01:30:31.023307+00:00"
-    }
-  ],
+  "actions_count": 3,
+  "actions_by_priority": {
+    "HIGH": 0,
+    "MEDIUM": 3,
+    "LOW": 0
+  },
+  "cross_pollination": {
+    "routes_active": 1,
+    "departments_sending": 1,
+    "departments_receiving": 1
+  },
   "priority_queue": [
     {
-      "priority": "CRITICAL",
-      "action": "Add assert game[\"home\"] != game[\"away\"] in predict_today.py",
-      "dept": "engineering",
-      "source": "evaluation",
-      "issue_type": "PHANTOM_GAME",
-      "description": "1 phantom game(s) detected (home==away) in today predictions"
-    },
-    {
-      "priority": "CRITICAL",
-      "action": "Deploy Platt scaling / isotonic regression post-hoc calibration on HF Space",
-      "dept": "engineering",
-      "source": "evaluation",
-      "issue_type": "CALIBRATION_CRISIS",
-      "description": "ECE=0.2758 \u2014 target <0.05, currently 5.5x over. Worst bucket: 60-70%"
-    },
-    {
-      "priority": "CRITICAL",
-      "action": "Assert home != away; validate market_implied in [0.10, 0.90] before outputting any pick",
-      "dept": "engineering",
-      "source": "evaluation",
-      "issue_type": "BIAS_PHANTOM_GAME",
-      "description": "PHANTOM_GAME bias detected in model outputs"
-    },
-    {
-      "priority": "CRITICAL",
-      "action": "POST /api/config {\"command\":\"diversify\"} \u2192 S14",
-      "dept": "infra",
-      "source": "evolution",
-      "issue_type": "SPACE_STAGNATION",
-      "description": "S14 stagnant for 20 cycles (Brier=0.22387)"
-    },
-    {
-      "priority": "CRITICAL",
-      "action": "Add to predict_today.py: assert game['home'] != game['away'] before appending",
-      "dept": "engineering",
-      "source": "evaluation",
-      "issue_type": "BUG_FIX",
-      "description": "Phantom game guard (home != away assertion)"
-    },
-    {
-      "priority": "CRITICAL",
-      "action": "POST /api/config {\"command\": \"diversify\"} \u2192 S14",
-      "dept": "evolution",
-      "source": "evolution",
-      "issue_type": "stagnation_critical",
-      "description": "S14 stagnant for 20 cycles \u2014 CRITICAL. Send diversify command immediately."
-    },
-    {
-      "priority": "HIGH",
-      "action": "Apply Platt scaling or isotonic regression post-hoc calibration",
-      "dept": "engineering",
-      "source": "evaluation",
-      "issue_type": "BIAS_OVERCONFIDENCE_SYSTEMATIC",
-      "description": "OVERCONFIDENCE_SYSTEMATIC bias detected in model outputs"
-    },
-    {
-      "priority": "HIGH",
-      "action": "Validate TEAM_MAP completeness; add odds sanity gate: skip bet if |model_prob - market_implied| > 0.50",
-      "dept": "engineering",
-      "source": "evaluation",
-      "issue_type": "BIAS_CORRUPTED_ODDS",
-      "description": "Model >60% win prob but market implies <15% \u2014 likely team normalization mismatch (SAS/SA bug)"
-    },
-    {
-      "priority": "HIGH",
-      "action": "Prioritize ECE fix; pause full_kelly until ECE < 0.10",
-      "dept": "evaluation",
-      "source": "betting",
-      "issue_type": "NEGATIVE_ROI",
-      "description": "ROI=-2.6% (target >5%) \u2014 calibration issues likely driver"
-    },
-    {
-      "priority": "HIGH",
-      "action": "Train LogisticRegression(C=1) on held-out predictions. Deploy in HF Space inference path.",
-      "dept": "engineering",
-      "source": "evaluation",
-      "issue_type": "CALIBRATION",
-      "description": "Platt scaling post-hoc calibration layer"
-    },
-    {
-      "priority": "HIGH",
-      "action": "In evaluate_predictions.py and predict_today.py: skip bet if market_implied < 0.10 or > 0.90, or if abs(model_p - market_implied) > 0.50",
-      "dept": "engineering",
-      "source": "evaluation",
-      "issue_type": "BUG_FIX",
-      "description": "Odds sanity gate \u2014 reject bets with |model_prob - market_implied| > 0.50"
-    },
-    {
-      "priority": "HIGH",
-      "action": "inject_model_diversity",
-      "dept": "evolution",
-      "source": "evolution",
-      "issue_type": "low_diversity",
-      "description": "Fleet diversity score 0.40 is LOW. Check for RF monoculture \u2014 force specialist models back to their designated architectures."
-    },
-    {
-      "priority": "HIGH",
-      "action": "inject_specialist_config",
-      "dept": "evolution",
-      "source": "evolution",
-      "issue_type": "model_drift",
-      "description": "S12 specialist role drift: expected extra_trees, got random_forest. Restore specialist to improve fleet diversity."
+      "priority": "MEDIUM",
+      "from": "evolution",
+      "to": "evolution",
+      "action": "Seed S11 with S13 config (Brier gain: 0.00211)",
+      "route": "island_cross_pollination"
     },
     {
       "priority": "MEDIUM",
-      "action": "Restore S12 specialist config to enforce extra_trees",
-      "dept": "evolution",
-      "source": "evolution",
-      "issue_type": "MODEL_DRIFT",
-      "description": "S12 specialist drift: expected extra_trees, got random_forest"
+      "from": "evolution",
+      "to": "evolution",
+      "action": "Seed S10 with S13 config (Brier gain: 0.00173)",
+      "route": "island_cross_pollination"
     },
     {
       "priority": "MEDIUM",
-      "action": "Restore S14 specialist config to enforce lightgbm",
-      "dept": "evolution",
-      "source": "evolution",
-      "issue_type": "MODEL_DRIFT",
-      "description": "S14 specialist drift: expected lightgbm, got random_forest"
-    },
-    {
-      "priority": "MEDIUM",
-      "action": "Force S12\u2192extra_trees, S14\u2192lightgbm specialist configs",
-      "dept": "evolution",
-      "source": "evolution",
-      "issue_type": "LOW_DIVERSITY",
-      "description": "Fleet diversity=0.395 < 0.50 \u2014 RF monoculture risk"
-    },
-    {
-      "priority": "MEDIUM",
-      "action": "Update home_court_advantage in quant-summary.json calibration config; remeasure on backtest",
-      "dept": "evaluation",
-      "source": "evaluation",
-      "issue_type": "FEATURE",
-      "description": "Home court advantage weight reduction (2.8 \u2192 2.2 pts)"
-    },
-    {
-      "priority": "MEDIUM",
-      "action": "Add ECE check to autonomous-cycle.sh; if ECE > 0.15, send Telegram alert and pause high-edge bets",
-      "dept": "evaluation",
-      "source": "evaluation",
-      "issue_type": "MONITORING",
-      "description": "Automated calibration alert when ECE > 0.15"
+      "from": "evolution",
+      "to": "evolution",
+      "action": "Seed S11 with S12 config (Brier gain: 0.00162)",
+      "route": "island_cross_pollination"
     }
-  ],
-  "cross_pollination": {
-    "wins_detected": [
-      "research",
-      "evaluation"
-    ],
-    "total_wins": 2,
-    "cross_pollination_recommendations": [
-      {
-        "from": "evolution/S13",
-        "to": "evolution/S11",
-        "action": "Seed S11 with S13 config (potential Brier gain: 0.00211)"
-      },
-      {
-        "from": "evolution/S13",
-        "to": "evolution/S10",
-        "action": "Seed S10 with S13 config (potential Brier gain: 0.00173)"
-      },
-      {
-        "from": "evolution/S12",
-        "to": "evolution/S11",
-        "action": "Seed S11 with S12 config (potential Brier gain: 0.00162)"
-      },
-      {
-        "from": "research",
-        "to": "engineering",
-        "action": "Apply 18 extracted techniques from 14 papers"
-      }
-    ]
-  },
-  "eliminations": {
-    "strategies": {
-      "diversified_flat": {
-        "eliminated_at_iteration": 1,
-        "reason": "verdict=WEAK",
-        "avg_roi_pct": 6942.11,
-        "eliminated_at": "2026-04-01T01:30:31.023665+00:00"
-      },
-      "flat_1pct": {
-        "eliminated_at_iteration": 1,
-        "reason": "verdict=WEAK",
-        "avg_roi_pct": 6724.33,
-        "eliminated_at": "2026-04-01T01:30:31.023690+00:00"
-      }
-    },
-    "total_eliminated": 2,
-    "coffins": [
-      {
-        "type": "strategy",
-        "name": "diversified_flat",
-        "iteration": 1,
-        "cause_of_death": "WEAK",
-        "timestamp": "2026-04-01T01:30:31.023680+00:00"
-      },
-      {
-        "type": "strategy",
-        "name": "flat_1pct",
-        "iteration": 1,
-        "cause_of_death": "WEAK",
-        "timestamp": "2026-04-01T01:30:31.023697+00:00"
-      }
-    ]
-  },
-  "fleet_interventions": [],
-  "raw_metrics": {
-    "evaluation": {
-      "brier": 0.2157,
-      "ece": 0.2758,
-      "fp_rate": 0.4,
-      "phantom_games": 1,
-      "bias_detected": [
-        {
-          "type": "PHANTOM_GAME",
-          "severity": "CRITICAL",
-          "count": 1,
-          "examples": [
-            {
-              "home": "BKN",
-              "away": "BKN",
-              "home_win_prob": 0.6128,
-              "market_implied": 0.0952,
-              "issue": "home == away (same team on both sides)"
-            }
-          ],
-          "fix": "Assert home != away; validate market_implied in [0.10, 0.90] before outputting any pick"
-        },
-        {
-          "type": "OVERCONFIDENCE_SYSTEMATIC",
-          "severity": "HIGH",
-          "ece": 0.2758,
-          "worst_bucket": "60-70%",
-          "fix": "Apply Platt scaling or isotonic regression post-hoc calibration"
-        },
-        {
-          "type": "HOME_BIAS",
-          "severity": "LOW",
-          "home_bets": 21,
-          "home_win_rate": 0.381,
-          "away_bets": 10,
-          "away_win_rate": 0.4,
-          "gap": 0.019,
-          "fix": "Recalibrate home_court_advantage weight (currently 2.8 pts)"
-        },
-        {
-          "type": "CORRUPTED_ODDS",
-          "severity": "HIGH",
-          "count": 5,
-          "description": "Model >60% win prob but market implies <15% \u2014 likely team normalization mismatch (SAS/SA bug)",
-          "examples": [
-            {
-              "date": "2026-03-21",
-              "game": "IND @ SAS",
-              "model_prob": 0.6833,
-              "odds": 11.0,
-              "market_implied": 0.0909,
-              "edge": 6.5163,
-              "won": false
-            },
-            {
-              "date": "2026-03-25",
-              "game": "SAS @ MEM",
-              "model_prob": 0.679,
-              "odds": 9.75,
-              "market_implied": 0.1026,
-              "edge": 5.6203,
-              "won": false
-            },
-            {
-              "date": "2026-03-27",
-              "game": "HOU @ MEM",
-              "model_prob": 0.6068,
-              "odds": 7.25,
-              "market_implied": 0.1379,
-              "edge": 3.3993,
-              "won": false
-            }
-          ],
-          "fix": "Validate TEAM_MAP completeness; add odds sanity gate: skip bet if |model_prob - market_implied| > 0.50"
-        }
-      ],
-      "critical_alerts": [
-        "PHANTOM: 1 phantom game(s) detected in today picks",
-        "ECE=0.2758 \u2014 calibration target <0.05, currently 5.5x over",
-        "CORRUPTED ODDS: 5 bets with model/market divergence >50pp",
-        "60-70% bucket calibration error=0.481 \u2014 catastrophic overconfidence"
-      ],
-      "improvements_proposed": [
-        {
-          "priority": 1,
-          "type": "BUG_FIX",
-          "title": "Phantom game guard (home != away assertion)",
-          "effort": "trivial",
-          "expected_brier_delta": 0.0,
-          "expected_roi_delta": "+removes corrupted bets",
-          "department": "ENGINEERING",
-          "action": "Add to predict_today.py: assert game['home'] != game['away'] before appending"
-        },
-        {
-          "priority": 2,
-          "type": "CALIBRATION",
-          "title": "Platt scaling post-hoc calibration layer",
-          "effort": "medium",
-          "expected_brier_delta": -0.008,
-          "expected_ece_delta": -0.17,
-          "department": "ENGINEERING",
-          "action": "Train LogisticRegression(C=1) on held-out predictions. Deploy in HF Space inference path."
-        },
-        {
-          "priority": 3,
-          "type": "BUG_FIX",
-          "title": "Odds sanity gate \u2014 reject bets with |model_prob - market_implied| > 0.50",
-          "effort": "small",
-          "expected_roi_delta": "+eliminates 8 corrupted-odds bets from backtest",
-          "department": "ENGINEERING",
-          "action": "In evaluate_predictions.py and predict_today.py: skip bet if market_implied < 0.10 or > 0.90, or if abs(model_p - market_implied) > 0.50"
-        },
-        {
-          "priority": 4,
-          "type": "FEATURE",
-          "title": "Home court advantage weight reduction (2.8 \u2192 2.2 pts)",
-          "effort": "small",
-          "expected_brier_delta": -0.002,
-          "department": "D5/EVALUATION",
-          "action": "Update home_court_advantage in quant-summary.json calibration config; remeasure on backtest"
-        },
-        {
-          "priority": 5,
-          "type": "MONITORING",
-          "title": "Automated calibration alert when ECE > 0.15",
-          "effort": "small",
-          "department": "D5/EVALUATION",
-          "action": "Add ECE check to autonomous-cycle.sh; if ECE > 0.15, send Telegram alert and pause high-edge bets"
-        }
-      ],
-      "status": "NEEDS_CALIBRATION",
-      "roi_pct": -2.6,
-      "sharpe": -1.22
-    },
-    "evolution": {
-      "best_brier": 0.22066,
-      "fleet_avg": 0.22223,
-      "best_island": "S13",
-      "total_generations": 2317,
-      "stagnation_detected": [
-        {
-          "island": "S14",
-          "stagnation_cycles": 20,
-          "brier": 0.22387,
-          "severity": "HIGH",
-          "recommended_action": "diversify"
-        }
-      ],
-      "stagnant_count": 1,
-      "diversity_score": 0.395,
-      "cross_pollination_candidates": [
-        {
-          "source": "S13",
-          "source_brier": 0.22066,
-          "target": "S11",
-          "target_brier": 0.22277,
-          "potential_gain": 0.00211
-        },
-        {
-          "source": "S13",
-          "source_brier": 0.22066,
-          "target": "S10",
-          "target_brier": 0.22239,
-          "potential_gain": 0.00173
-        },
-        {
-          "source": "S12",
-          "source_brier": 0.22115,
-          "target": "S11",
-          "target_brier": 0.22277,
-          "potential_gain": 0.00162
-        }
-      ],
-      "recommendations": [
-        {
-          "type": "stagnation_critical",
-          "island": "S14",
-          "action": "diversify",
-          "command": "POST /api/config {\"command\": \"diversify\"} \u2192 S14",
-          "reason": "S14 stagnant for 20 cycles \u2014 CRITICAL. Send diversify command immediately.",
-          "priority": 1
-        },
-        {
-          "type": "low_diversity",
-          "action": "inject_model_diversity",
-          "reason": "Fleet diversity score 0.40 is LOW. Check for RF monoculture \u2014 force specialist models back to their designated architectures.",
-          "priority": 2
-        },
-        {
-          "type": "model_drift",
-          "island": "S12",
-          "expected_model": "extra_trees",
-          "actual_model": "random_forest",
-          "action": "inject_specialist_config",
-          "reason": "S12 specialist role drift: expected extra_trees, got random_forest. Restore specialist to improve fleet diversity.",
-          "priority": 2
-        },
-        {
-          "type": "model_drift",
-          "island": "S14",
-          "expected_model": "lightgbm",
-          "actual_model": "random_forest",
-          "action": "inject_specialist_config",
-          "reason": "S14 specialist role drift: expected lightgbm, got random_forest. Restore specialist to improve fleet diversity.",
-          "priority": 2
-        }
-      ],
-      "model_drift": [
-        {
-          "type": "model_drift",
-          "island": "S12",
-          "expected_model": "extra_trees",
-          "actual_model": "random_forest",
-          "action": "inject_specialist_config",
-          "reason": "S12 specialist role drift: expected extra_trees, got random_forest. Restore specialist to improve fleet diversity.",
-          "priority": 2
-        },
-        {
-          "type": "model_drift",
-          "island": "S14",
-          "expected_model": "lightgbm",
-          "actual_model": "random_forest",
-          "action": "inject_specialist_config",
-          "reason": "S14 specialist role drift: expected lightgbm, got random_forest. Restore specialist to improve fleet diversity.",
-          "priority": 2
-        }
-      ]
-    },
-    "betting": {
-      "bankroll": 97.4,
-      "roi_pct": -2.6,
-      "sharpe": -1.22,
-      "win_rate_pct": 38.71,
-      "health": "UNDERPERFORMING",
-      "eliminated_strategies": [],
-      "strategy_rankings": [
-        {
-          "rank": 1,
-          "strategy": "full_kelly",
-          "avg_roi_pct": 135550.14,
-          "verdict": "ELITE"
-        },
-        {
-          "rank": 2,
-          "strategy": "anti_martingale",
-          "avg_roi_pct": 125583.03,
-          "verdict": "ELITE"
-        },
-        {
-          "rank": 3,
-          "strategy": "proportional_edge",
-          "avg_roi_pct": 73111.58,
-          "verdict": "STRONG"
-        },
-        {
-          "rank": 4,
-          "strategy": "ev_threshold_110",
-          "avg_roi_pct": 52320.41,
-          "verdict": "STRONG"
-        },
-        {
-          "rank": 5,
-          "strategy": "half_kelly",
-          "avg_roi_pct": 34738.73,
-          "verdict": "STRONG"
-        },
-        {
-          "rank": 6,
-          "strategy": "streak_momentum",
-          "avg_roi_pct": 34247.11,
-          "verdict": "STRONG"
-        },
-        {
-          "rank": 7,
-          "strategy": "value_hunter",
-          "avg_roi_pct": 26764.2,
-          "verdict": "SOLID"
-        },
-        {
-          "rank": 8,
-          "strategy": "underdog_specialist",
-          "avg_roi_pct": 25908.44,
-          "verdict": "SOLID"
-        },
-        {
-          "rank": 9,
-          "strategy": "drawdown_adjusted",
-          "avg_roi_pct": 25612.66,
-          "verdict": "SOLID"
-        },
-        {
-          "rank": 10,
-          "strategy": "first_half_sniper",
-          "avg_roi_pct": 20268.73,
-          "verdict": "SOLID"
-        },
-        {
-          "rank": 11,
-          "strategy": "dog_value_plus",
-          "avg_roi_pct": 17943.2,
-          "verdict": "SOLID"
-        },
-        {
-          "rank": 12,
-          "strategy": "confidence_scaled",
-          "avg_roi_pct": 17765.6,
-          "verdict": "SOLID"
-        },
-        {
-          "rank": 13,
-          "strategy": "flat_5pct",
-          "avg_roi_pct": 17370.85,
-          "verdict": "SOLID"
-        },
-        {
-          "rank": 14,
-          "strategy": "home_specialist",
-          "avg_roi_pct": 16525.92,
-          "verdict": "SOLID"
-        },
-        {
-          "rank": 15,
-          "strategy": "quarter_kelly",
-          "avg_roi_pct": 14168.14,
-          "verdict": "SOLID"
-        },
-        {
-          "rank": 16,
-          "strategy": "flat_2pct",
-          "avg_roi_pct": 10858.96,
-          "verdict": "SOLID"
-        },
-        {
-          "rank": 17,
-          "strategy": "eighth_kelly",
-          "avg_roi_pct": 10716.48,
-          "verdict": "SOLID"
-        },
-        {
-          "rank": 18,
-          "strategy": "diversified_flat",
-          "avg_roi_pct": 6942.11,
-          "verdict": "WEAK"
-        },
-        {
-          "rank": 19,
-          "strategy": "flat_1pct",
-          "avg_roi_pct": 6724.33,
-          "verdict": "WEAK"
-        },
-        {
-          "rank": 20,
-          "strategy": "totals_expert",
-          "avg_roi_pct": -71.75,
-          "verdict": "LOSING"
-        },
-        {
-          "rank": 21,
-          "strategy": "spread_only",
-          "avg_roi_pct": -96.77,
-          "verdict": "LOSING"
-        },
-        {
-          "rank": 22,
-          "strategy": "full_blast",
-          "avg_roi_pct": -100.0,
-          "verdict": "LOSING"
-        }
-      ]
-    },
-    "research": {
-      "papers_scanned": 14,
-      "techniques_extracted": 18,
-      "proposals_generated": 0,
-      "sota_reference": "Montrucchio 2026 (MDPI Information 17/1/56): 0.199",
-      "gap_to_close": 0.0157
-    },
-    "infra": {
-      "spaces_up": null,
-      "spaces_total": 6,
-      "restart_count": 0,
-      "uptime_pct": 88.0,
-      "spaces_down": []
-    },
-    "political": {
-      "brier": 0.28359,
-      "etf_roi": null,
-      "signal_accuracy": null
-    },
-    "creative": {
-      "quality_score": null,
-      "pieces_today": 0
-    }
-  }
+  ]
 }
