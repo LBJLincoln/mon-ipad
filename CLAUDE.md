@@ -132,8 +132,11 @@ Channel: @Nomos42
 | D6 | INFRA | check→detect→fix→verify | uptime %, restart count | 5 min |
 | D7 | POLITICAL | signal→feature→measure alpha→keep/revert | political Brier, ETF ROI | 5 min |
 | D8 | CREATIVE (RGWA) | generate→quality→curate→publish | quality score, output/day | 5 min |
+| D9 | COMMUNICATION | content→post→measure engagement→optimize | engagement rate, channels active | 5 min |
+| D10 | BUSINESS | pricing→onboard→measure conversion→optimize | MRR, conversion rate, ARPU | 5 min |
+| D11 | FINANCE | track→report→reconcile→forecast | financial accuracy, burn rate | 5 min |
 
-Guardian Orchestrator: Analyzes ALL department loops, allocates resources, cross-pollinates wins.
+Guardian Orchestrator v3: Analyzes ALL 11 department loops, allocates resources, cross-pollinates wins.
 
 ## Trading Floor v4 — Multi-AI Competition
 

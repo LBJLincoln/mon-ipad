@@ -1,8 +1,8 @@
 {
   "department": "trading_floor",
-  "timestamp": "2026-04-01T16:12:29.358583+00:00",
-  "iteration": 9,
-  "generation": 1224,
+  "timestamp": "2026-04-01T17:29:33.511006+00:00",
+  "iteration": 15,
+  "generation": 2040,
   "status": "completed",
   "best_strategy": {
     "name": "full_kelly",
@@ -175,8 +175,8 @@
       "wins": 179,
       "losses": 137,
       "traders_using": [
-        "codex",
-        "openrouter"
+        "openrouter",
+        "codex"
       ],
       "avg_daily_pnl": 144.4242,
       "win_rate_pct": 56.6
@@ -200,8 +200,8 @@
       "wins": 236,
       "losses": 90,
       "traders_using": [
-        "claude",
-        "gemini"
+        "gemini",
+        "claude"
       ],
       "avg_daily_pnl": 46.9432,
       "win_rate_pct": 72.4
@@ -213,8 +213,8 @@
       "wins": 327,
       "losses": 175,
       "traders_using": [
-        "claude",
         "gemini",
+        "claude",
         "openrouter"
       ],
       "avg_daily_pnl": 43.7449,
@@ -393,7 +393,24 @@
       }
     }
   },
-  "mutations": {},
+  "mutations": {
+    "claude": {
+      "type": "adopt_winner_strategy",
+      "from_trader": "codex",
+      "adopted_strategy": "streak_momentum",
+      "old_preferences": [
+        "half_kelly",
+        "flat_1pct",
+        "drawdown_adjusted"
+      ],
+      "new_preferences": [
+        "streak_momentum",
+        "half_kelly",
+        "flat_1pct"
+      ],
+      "reason": "claude (rank 5, ROI +4436.1%) adopts 'streak_momentum' from codex (rank 1, ROI +302054.7%)"
+    }
+  },
   "optimization": {
     "target": 1000000,
     "current_best": 302154.67,
@@ -434,10 +451,10 @@
       "nba_bets": 3334,
       "nba_wins": 2192,
       "nba_losses": 1142,
-      "political_bankroll": 100000.67,
-      "political_roi_pct": 0.0007,
+      "political_bankroll": 100000.19,
+      "political_roi_pct": 0.0002,
       "political_approach": "momentum",
-      "combined_score": 128187.8001,
+      "combined_score": 128187.8,
       "eliminated": false
     },
     {
@@ -452,8 +469,8 @@
       "nba_bets": 1030,
       "nba_wins": 610,
       "nba_losses": 420,
-      "political_bankroll": 100004.39,
-      "political_roi_pct": 0.0044,
+      "political_bankroll": 100004.06,
+      "political_roi_pct": 0.0041,
       "political_approach": "pairs_trading",
       "combined_score": 23301.3804,
       "eliminated": false
@@ -470,10 +487,10 @@
       "nba_bets": 1837,
       "nba_wins": 1144,
       "nba_losses": 693,
-      "political_bankroll": 100013.9,
-      "political_roi_pct": 0.0139,
+      "political_bankroll": 100012.6,
+      "political_roi_pct": 0.0126,
       "political_approach": "sector_rotation",
-      "combined_score": 21887.3214,
+      "combined_score": 21887.3213,
       "eliminated": false
     },
     {
