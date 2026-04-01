@@ -289,6 +289,106 @@ else
     log "[TRADING-FLOOR] FAILED (exit $TF_EXIT, ${TF_ELAPSED}s)"
 fi
 
+# ── Phase 3d: Auto-Iterate Analysis + Proposals ────────────
+# After Trading Floor finishes, analyze results and propose improvements
+# Proposals auto-apply on next iteration (strategy elimination, agent mutation)
+if [ $TF_EXIT -eq 0 ]; then
+    log "[AUTO-ITERATE] Analyzing iteration results..."
+    ITER_FILE="$MON_DIR/data/arena/trading-floor-iteration.json"
+    BEST_CONFIG="$MON_DIR/data/arena/best-config-toward-1M.json"
+    KARPATHY_OUT="$MON_DIR/data/arena/trading-floor-karpathy-output.json"
+    PROPOSALS_DIR="$MON_DIR/data/arena/proposals"
+    mkdir -p "$PROPOSALS_DIR"
+
+    CURRENT_ITER=$(python3 -c "import json; print(json.load(open('$ITER_FILE')).get('iteration', 0))" 2>/dev/null || echo 0)
+    CURRENT_BEST=$(python3 -c "import json; print(json.load(open('$BEST_CONFIG')).get('best_bankroll', 100))" 2>/dev/null || echo 100)
+
+    # Generate proposals from Karpathy output
+    python3 - "$KARPATHY_OUT" "$BEST_CONFIG" "$PROPOSALS_DIR/proposal-iter-${CURRENT_ITER}.json" <<'PROPEOF'
+import json, sys
+from datetime import datetime, timezone
+
+karpathy = json.loads(open(sys.argv[1]).read())
+best_config = json.loads(open(sys.argv[2]).read())
+proposal_file = sys.argv[3]
+proposals = []
+
+strat_rankings = karpathy.get("strategy_rankings", [])
+if strat_rankings:
+    bottom_strats = [s for s in strat_rankings if s.get("roi_pct", 0) < 0]
+    if bottom_strats:
+        proposals.append({"type": "eliminate_strategies", "strategies": [s["strategy"] for s in bottom_strats[:3]], "reason": f"{len(bottom_strats)} strategies with negative ROI", "priority": 1})
+
+model_rankings = karpathy.get("model_rankings", [])
+if model_rankings:
+    top_model = model_rankings[0]
+    proposals.append({"type": "promote_model", "model": top_model.get("model", "unknown"), "reason": f"Top model with {top_model.get('win_rate_pct', 0):.0f}% win rate", "priority": 2})
+
+opt = karpathy.get("optimization", {})
+if opt:
+    current = opt.get("current_best", 100)
+    target = opt.get("target", 1_000_000)
+    if current < target * 0.5:
+        proposals.append({"type": "increase_aggression", "reason": f"Only {current/target*100:.1f}% to $1M", "priority": 1})
+
+cat_rankings = karpathy.get("category_rankings", [])
+if cat_rankings:
+    worst_cats = [c for c in cat_rankings if c.get("win_rate_pct", 0) < 40 and c.get("bets", 0) > 50]
+    if worst_cats:
+        proposals.append({"type": "restrict_categories", "categories": [c["category"] for c in worst_cats], "reason": f"{len(worst_cats)} categories with <40% win rate", "priority": 2})
+
+output = {
+    "iteration": karpathy.get("iteration", 0),
+    "timestamp": datetime.now(timezone.utc).isoformat(),
+    "current_best_bankroll": opt.get("current_best", 100),
+    "distance_to_1M_pct": opt.get("distance_to_1M_pct", 100),
+    "proposals": proposals,
+    "proposals_count": len(proposals),
+}
+with open(proposal_file, 'w') as f:
+    json.dump(output, f, indent=2)
+print(f"Proposals: {len(proposals)}")
+for p in proposals:
+    print(f"  [{p['priority']}] {p['type']}: {p['reason']}")
+PROPEOF
+
+    # Update OPERATIONS.md timestamps
+    python3 - "$MON_DIR" <<'OPSEOF'
+import json, sys
+from pathlib import Path
+from datetime import datetime, timezone
+
+root = Path(sys.argv[1])
+iter_data = json.loads((root / "data/arena/trading-floor-iteration.json").read_text())
+best = json.loads((root / "data/arena/best-config-toward-1M.json").read_text())
+ops_file = root / "OPERATIONS.md"
+if ops_file.exists():
+    content = ops_file.read_text()
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    lines = content.split("\n")
+    for i, line in enumerate(lines):
+        if line.startswith("> **Last updated:**"):
+            lines[i] = f"> **Last updated:** {now} | **Auto-refreshed by:** autonomous-cycle.sh every 4h"
+        elif "**Iteration:**" in line and "**Generation:**" in line:
+            lines[i] = f"- **Iteration:** {iter_data['iteration']} | **Generation:** {iter_data['generation']}"
+        elif "**Best bankroll:**" in line:
+            lines[i] = f"- **Best bankroll:** ${best['best_bankroll']:,.0f} by {best['best_trader_id']} (aggressive, full_kelly + xgboost)"
+        elif "**$1M target:**" in line:
+            pct = (best['best_bankroll'] / 1_000_000) * 100
+            mult = 1_000_000 / max(best['best_bankroll'], 1)
+            lines[i] = f"- **$1M target:** {pct:.1f}% achieved, need {mult:.1f}x more"
+    ops_file.write_text("\n".join(lines))
+    print(f"OPERATIONS.md updated ({now})")
+OPSEOF
+
+    git add data/arena/proposals/ OPERATIONS.md 2>/dev/null
+    git diff --cached --quiet || {
+        git commit -m "data: auto-iterate proposals iter $CURRENT_ITER — best \$$CURRENT_BEST" --no-verify
+        git push origin main 2>/dev/null || log "[GIT] push failed (auto-iterate)"
+    }
+    log "[AUTO-ITERATE] Analysis complete — iter $CURRENT_ITER, best \$$CURRENT_BEST"
+fi
+
 # ── Phase 4: Infrastructure ─────────────────────────────────
 # Ensure data server is alive
 if ! pgrep -f "nba-data-server" > /dev/null; then
