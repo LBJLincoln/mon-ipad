@@ -1,303 +1,43 @@
 {
-  "timestamp": "2026-04-01T18:01:23.392032+00:00",
-  "current_metrics": {
+  "wins": {
     "research": {
-      "department": "research",
-      "timestamp": "2026-04-01T09:48:03+00:00",
-      "iteration": 7,
-      "status": "completed",
-      "improved": false,
-      "papers_scanned": 14,
-      "techniques_extracted": 18,
-      "sota_reference": "Montrucchio 2026 (MDPI Information 17/1/56): 0.199",
-      "gap_to_close": 0.0157
-    },
-    "engineering": {
-      "department": "engineering",
-      "timestamp": "2026-04-01T09:48:04.000000+00:00",
-      "iteration": 5,
-      "status": "unknown",
-      "improved": false
-    },
-    "evolution": {
-      "department": "evolution",
-      "timestamp": "2026-04-01T09:48:14Z",
-      "iteration": 1,
-      "status": "completed",
-      "improved": false,
-      "best_brier": 0.22066,
-      "fleet_avg_brier": 0.2219,
-      "best_island": "S13",
-      "total_generations": 4200,
-      "stagnation_detected": [],
-      "cross_pollination_candidates": [
-        {
-          "source": "S13",
-          "source_brier": 0.22066,
-          "target": "S11",
-          "target_brier": 0.22277,
-          "potential_gain": 0.00211
-        },
-        {
-          "source": "S13",
-          "source_brier": 0.22066,
-          "target": "S10",
-          "target_brier": 0.22239,
-          "potential_gain": 0.00173
-        },
-        {
-          "source": "S12",
-          "source_brier": 0.22115,
-          "target": "S11",
-          "target_brier": 0.22277,
-          "potential_gain": 0.00162
-        }
-      ],
-      "diversity_score": 0.369
-    },
-    "betting": {
-      "department": "betting",
-      "timestamp": "2026-04-01T09:48:25Z",
-      "iteration": 1,
-      "status": "completed",
-      "improved": false,
-      "bankroll": null,
-      "roi_pct": null,
-      "sharpe": null,
-      "win_rate_pct": null,
-      "strategy_rankings": [
-        {
-          "rank": 1,
-          "strategy": "full_kelly",
-          "avg_roi_pct": 135550.14,
-          "verdict": "ELITE"
-        },
-        {
-          "rank": 2,
-          "strategy": "anti_martingale",
-          "avg_roi_pct": 125583.03,
-          "verdict": "ELITE"
-        },
-        {
-          "rank": 3,
-          "strategy": "proportional_edge",
-          "avg_roi_pct": 73111.58,
-          "verdict": "STRONG"
-        },
-        {
-          "rank": 4,
-          "strategy": "ev_threshold_110",
-          "avg_roi_pct": 52320.41,
-          "verdict": "STRONG"
-        },
-        {
-          "rank": 5,
-          "strategy": "half_kelly",
-          "avg_roi_pct": 34738.73,
-          "verdict": "STRONG"
-        }
-      ]
-    },
-    "evaluation": {
-      "department": "evaluation",
-      "timestamp": "2026-04-01T00:29:32.377580+00:00",
-      "iteration": 2,
-      "status": "completed",
-      "improved": false,
-      "brier": null,
-      "ece": null,
-      "fp_rate": null,
-      "roi_pct": null,
-      "bias_detected": [
-        {
-          "type": "PHANTOM_GAME",
-          "severity": "CRITICAL",
-          "count": 1,
-          "examples": [
-            {
-              "home": "BKN",
-              "away": "BKN",
-              "home_win_prob": 0.6128,
-              "market_implied": 0.0952,
-              "issue": "home == away (same team on both sides)"
-            }
-          ],
-          "fix": "Assert home != away; validate market_implied in [0.10, 0.90] before outputting any pick"
-        },
-        {
-          "type": "OVERCONFIDENCE_SYSTEMATIC",
-          "severity": "HIGH",
-          "ece": 0.2758,
-          "worst_bucket": "60-70%",
-          "fix": "Apply Platt scaling or isotonic regression post-hoc calibration"
-        },
-        {
-          "type": "HOME_BIAS",
-          "severity": "LOW",
-          "home_bets": 21,
-          "home_win_rate": 0.381,
-          "away_bets": 10,
-          "away_win_rate": 0.4,
-          "gap": 0.019,
-          "fix": "Recalibrate home_court_advantage weight (currently 2.8 pts)"
-        },
-        {
-          "type": "CORRUPTED_ODDS",
-          "severity": "HIGH",
-          "count": 5,
-          "description": "Model >60% win prob but market implies <15% \u2014 likely team normalization mismatch (SAS/SA bug)",
-          "examples": [
-            {
-              "date": "2026-03-21",
-              "game": "IND @ SAS",
-              "model_prob": 0.6833,
-              "odds": 11.0,
-              "market_implied": 0.0909,
-              "edge": 6.5163,
-              "won": false
-            },
-            {
-              "date": "2026-03-25",
-              "game": "SAS @ MEM",
-              "model_prob": 0.679,
-              "odds": 9.75,
-              "market_implied": 0.1026,
-              "edge": 5.6203,
-              "won": false
-            },
-            {
-              "date": "2026-03-27",
-              "game": "HOU @ MEM",
-              "model_prob": 0.6068,
-              "odds": 7.25,
-              "market_implied": 0.1379,
-              "edge": 3.3993,
-              "won": false
-            }
-          ],
-          "fix": "Validate TEAM_MAP completeness; add odds sanity gate: skip bet if |model_prob - market_implied| > 0.50"
-        }
-      ],
-      "improvements_proposed": [
-        {
-          "priority": 1,
-          "type": "BUG_FIX",
-          "title": "Phantom game guard (home != away assertion)",
-          "effort": "trivial",
-          "expected_brier_delta": 0.0,
-          "expected_roi_delta": "+removes corrupted bets",
-          "department": "ENGINEERING",
-          "action": "Add to predict_today.py: assert game['home'] != game['away'] before appending"
-        },
-        {
-          "priority": 2,
-          "type": "CALIBRATION",
-          "title": "Platt scaling post-hoc calibration layer",
-          "effort": "medium",
-          "expected_brier_delta": -0.008,
-          "expected_ece_delta": -0.17,
-          "department": "ENGINEERING",
-          "action": "Train LogisticRegression(C=1) on held-out predictions. Deploy in HF Space inference path."
-        },
-        {
-          "priority": 3,
-          "type": "BUG_FIX",
-          "title": "Odds sanity gate \u2014 reject bets with |model_prob - market_implied| > 0.50",
-          "effort": "small",
-          "expected_roi_delta": "+eliminates 8 corrupted-odds bets from backtest",
-          "department": "ENGINEERING",
-          "action": "In evaluate_predictions.py and predict_today.py: skip bet if market_implied < 0.10 or > 0.90, or if abs(model_p - market_implied) > 0.50"
-        },
-        {
-          "priority": 4,
-          "type": "FEATURE",
-          "title": "Home court advantage weight reduction (2.8 \u2192 2.2 pts)",
-          "effort": "small",
-          "expected_brier_delta": -0.002,
-          "department": "D5/EVALUATION",
-          "action": "Update home_court_advantage in quant-summary.json calibration config; remeasure on backtest"
-        },
-        {
-          "priority": 5,
-          "type": "MONITORING",
-          "title": "Automated calibration alert when ECE > 0.15",
-          "effort": "small",
-          "department": "D5/EVALUATION",
-          "action": "Add ECE check to autonomous-cycle.sh; if ECE > 0.15, send Telegram alert and pause high-edge bets"
-        }
-      ]
-    },
-    "infra": {
-      "department": "infra",
-      "timestamp": "2026-04-01T09:48:28Z",
-      "iteration": 1,
-      "status": "completed",
-      "improved": false,
-      "spaces_up": null,
-      "spaces_total": null,
-      "uptime_pct": 88.0,
-      "restart_count": null
-    },
-    "political": {
-      "department": "political",
-      "timestamp": "2026-04-01T09:49:29.862412+00:00",
-      "iteration": 5,
-      "status": "completed",
-      "improved": false,
-      "brier": null,
-      "etf_roi": null,
-      "signal_accuracy": null
-    },
-    "creative": {
-      "department": "creative",
-      "timestamp": "2026-04-01T09:50:19Z",
-      "iteration": 2,
-      "status": "idle",
-      "improved": false,
-      "quality_score": null,
-      "pieces_today": 0
+      "techniques": 18,
+      "papers": 14
     },
     "trading_floor": {
-      "department": "trading_floor",
-      "timestamp": "2026-04-01T18:01:23.274691+00:00",
-      "iteration": 19,
-      "status": "completed",
-      "improved": false,
-      "traders": {},
-      "best_trader": null,
-      "total_pnl": null
+      "best_strategy": "full_kelly",
+      "roi_pct": 72615.53
     },
-    "nba_prediction": {
-      "department": "nba_prediction",
-      "timestamp": "2026-04-01T11:09:27Z",
-      "iteration": 1,
-      "status": "active",
-      "improved": false,
-      "predictions_made": null,
-      "accuracy": {
-        "games_evaluated": 0,
-        "correct": 0,
-        "accuracy": null
-      }
-    },
-    "political_signals": {
-      "department": "political_signals",
-      "timestamp": "2026-04-01T11:09:45Z",
-      "iteration": 1,
-      "status": "active",
-      "improved": false,
-      "signals_detected": null,
-      "categories": null
-    },
-    "rgwa_creative": {
-      "department": "rgwa_creative",
-      "timestamp": "2026-04-01T11:09:59Z",
-      "iteration": 1,
-      "status": "warning",
-      "improved": false,
-      "quality_score": null,
-      "pieces_today": null
+    "evaluation": {
+      "brier": 0.2157
     }
   },
-  "wins_this_cycle": []
+  "recommendations": [
+    {
+      "from": "evolution/S13",
+      "to": "evolution/S11",
+      "action": "Seed S11 with S13 config (potential Brier gain: 0.00211)"
+    },
+    {
+      "from": "evolution/S13",
+      "to": "evolution/S10",
+      "action": "Seed S10 with S13 config (potential Brier gain: 0.00173)"
+    },
+    {
+      "from": "evolution/S12",
+      "to": "evolution/S11",
+      "action": "Seed S11 with S12 config (potential Brier gain: 0.00162)"
+    },
+    {
+      "from": "research",
+      "to": "engineering",
+      "action": "Apply 18 extracted techniques from 14 papers"
+    },
+    {
+      "from": "trading_floor",
+      "to": "betting",
+      "action": "Promote strategy 'full_kelly' to live (+72615.5% ROI from full-season backtest)"
+    }
+  ],
+  "ts": "2026-04-01T18:23:43.227204+00:00"
 }
