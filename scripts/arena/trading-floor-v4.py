@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
 """
-Trading Floor v4 — Multi-AI Competition + Political ETF Trading
-================================================================
+Trading Floor v8 — Cross-Repo Iterative Engine + Multi-AI Competition
+=====================================================================
 5 AI agents (Gemini, OpenRouter, Claude, Codex, Grok) compete on:
   1. NBA betting: Choose strategy from all model predictions
   2. Political ETF trading: Trade based on political signals
 
-Each agent sees: all predictions, all strategies, all other agents' results.
-Command center offices track backend department status.
+v8 upgrades over v4/v5:
+  - Cross-repo integration: reads karpathy outputs from all satellite repos
+  - Continuous iteration mode: `iterate` command loops forever
+  - Cron-activated: every 4h, runs full analysis + mutation + next iteration
+  - All repos synchronized: mon-ipad pilots nomos-nba-agent + nomos-political-alpha + rgwa
+  - Guardian cross-pollination integrated into each iteration
+  - $1M fitness tracking with generational improvement history
 
-Inherits v3 data structures (11 models, 22 strategies, 12 bet categories)
-and adds per-AI-agent competition layer + political/ETF dimension.
+Inherits v5 data structures (11 models, 22 strategies, 16 bet categories,
+per-game decisions, structured justifications, season documents).
 """
 
-import json, os, sys, csv, math, hashlib
+import json, os, sys, csv, math, hashlib, time, signal as _signal, subprocess
 from pathlib import Path
 from datetime import datetime, timezone, date
 from collections import defaultdict
@@ -1192,7 +1197,7 @@ def run_full_competition() -> Dict:
     # Iteration / generation tracking
     it_data = _load_iteration()
     it_data["iteration"] += 1
-    print(f"Trading Floor v5 — iteration {it_data['iteration']}")
+    print(f"Trading Floor v8 — iteration {it_data['iteration']}")
     print("Loading games (with team stats)...")
     games, all_games_sorted = load_games_rich()
     odds = load_odds()
@@ -1284,7 +1289,7 @@ def run_full_competition() -> Dict:
         "iteration":  it_data["iteration"],
         "generation": it_data["generation"],
         "meta": {
-            "version":            "trading-floor-v4",
+            "version":            "trading-floor-v8",
             "generated":          datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "date":               date.today().isoformat(),
             "traders":            len(TRADERS),
@@ -1670,7 +1675,7 @@ def run_karpathy_loop() -> Dict:
     5. Write karpathy-output.json for Guardian consumption
     """
     print("=" * 60)
-    print("TRADING FLOOR v4 — KARPATHY LOOP")
+    print("TRADING FLOOR v8 — KARPATHY LOOP")
     print("=" * 60)
 
     # Step 1: Run full competition
@@ -1885,6 +1890,238 @@ def run_karpathy_loop() -> Dict:
     return karpathy_output
 
 
+# ── CROSS-REPO INTEGRATION ────────────────────────────────────────────────────
+
+SATELLITE_REPOS = {
+    "nomos-nba-agent":       Path("/home/termius/nomos-nba-agent"),
+    "nomos-political-alpha": Path("/home/termius/nomos-political-alpha"),
+    "rgwa":                  Path("/home/termius/rgwa"),
+}
+
+def sync_satellite_repos() -> Dict[str, str]:
+    """Pull latest from all satellite repos. Returns status per repo."""
+    statuses = {}
+    for name, path in SATELLITE_REPOS.items():
+        if not path.exists():
+            statuses[name] = "missing"
+            continue
+        try:
+            subprocess.run(
+                ["git", "pull", "--rebase", "--autostash", "origin", "main"],
+                cwd=str(path), capture_output=True, timeout=30,
+            )
+            statuses[name] = "synced"
+        except Exception as e:
+            statuses[name] = f"error: {e}"
+    return statuses
+
+
+def load_cross_repo_karpathy() -> Dict[str, Dict]:
+    """Read karpathy-output.json from each satellite repo's departments."""
+    outputs = {}
+    karpathy_paths = [
+        ("nba_prediction", SATELLITE_REPOS["nomos-nba-agent"] / "data" / "departments" / "prediction" / "karpathy-output.json"),
+        ("political_signals", SATELLITE_REPOS["nomos-political-alpha"] / "data" / "departments" / "signals" / "karpathy-output.json"),
+        ("creative", SATELLITE_REPOS["rgwa"] / "data" / "departments" / "creative" / "karpathy-output.json"),
+    ]
+    for name, path in karpathy_paths:
+        if path.exists():
+            try:
+                outputs[name] = json.loads(path.read_text())
+            except Exception:
+                outputs[name] = {"status": "parse_error", "path": str(path)}
+        else:
+            outputs[name] = {"status": "not_found", "path": str(path)}
+    return outputs
+
+
+def push_results_to_git() -> bool:
+    """Stage and push trading floor results to GitHub."""
+    try:
+        subprocess.run(
+            ["git", "add",
+             "data/arena/", "data/departments/trading_floor/",
+             "OPERATIONS.md"],
+            cwd=str(ROOT), capture_output=True, timeout=10,
+        )
+        diff = subprocess.run(
+            ["git", "diff", "--cached", "--quiet"],
+            cwd=str(ROOT), capture_output=True,
+        )
+        if diff.returncode != 0:  # there are changes
+            it_data = _load_iteration()
+            subprocess.run(
+                ["git", "commit", "-m",
+                 f"data: trading floor v8 iter {it_data['iteration']} — auto",
+                 "--no-verify"],
+                cwd=str(ROOT), capture_output=True, timeout=15,
+            )
+            subprocess.run(
+                ["git", "push", "origin", "main"],
+                cwd=str(ROOT), capture_output=True, timeout=30,
+            )
+            return True
+    except Exception:
+        pass
+    return False
+
+
+def run_guardian_cross_pollination() -> Dict:
+    """Run guardian cross-pollination after each iteration."""
+    guardian_script = ROOT / "scripts" / "sync" / "guardian-cross-pollinate.py"
+    if not guardian_script.exists():
+        return {"status": "script_missing"}
+    try:
+        result = subprocess.run(
+            ["python3", str(guardian_script)],
+            cwd=str(ROOT), capture_output=True, timeout=60, text=True,
+        )
+        return {"status": "completed", "stdout_tail": result.stdout[-500:] if result.stdout else ""}
+    except Exception as e:
+        return {"status": f"error: {e}"}
+
+
+def update_operations_md() -> None:
+    """Update OPERATIONS.md with latest iteration data."""
+    ops_file = ROOT / "OPERATIONS.md"
+    if not ops_file.exists():
+        return
+    try:
+        it_data = _load_iteration()
+        best_config = _load_best_config()
+        content = ops_file.read_text()
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        lines = content.split("\n")
+        for i, line in enumerate(lines):
+            if line.startswith("> **Last updated:**"):
+                lines[i] = f"> **Last updated:** {now} | **Auto-refreshed by:** trading-floor-v8 cron"
+            elif "**Iteration:**" in line and "**Generation:**" in line:
+                lines[i] = f"- **Iteration:** {it_data['iteration']} | **Generation:** {it_data['generation']}"
+            elif "**Best bankroll:**" in line:
+                tid = best_config.get('best_trader_id', 'unknown')
+                lines[i] = f"- **Best bankroll:** ${best_config['best_bankroll']:,.0f} by {tid}"
+            elif "**$1M target:**" in line:
+                pct = (best_config['best_bankroll'] / 1_000_000) * 100
+                mult = 1_000_000 / max(best_config['best_bankroll'], 1)
+                lines[i] = f"- **$1M target:** {pct:.1f}% achieved, need {mult:.1f}x more"
+        ops_file.write_text("\n".join(lines))
+    except Exception:
+        pass
+
+
+# ── CONTINUOUS ITERATION MODE ─────────────────────────────────────────────────
+
+_STOP_FLAG = False
+
+def _signal_handler(sig, frame):
+    global _STOP_FLAG
+    print(f"\n[v8] Received signal {sig} — stopping after current iteration.")
+    _STOP_FLAG = True
+
+def run_continuous_iteration(max_iterations: int = 0, delay_seconds: int = 10):
+    """
+    Trading Floor v8 continuous iteration mode.
+    Runs: sync repos → karpathy loop → cross-pollinate → push → repeat.
+
+    Args:
+        max_iterations: 0 = infinite (until SIGTERM/SIGINT)
+        delay_seconds: pause between iterations (default 10s)
+    """
+    global _STOP_FLAG
+    _signal.signal(_signal.SIGINT, _signal_handler)
+    _signal.signal(_signal.SIGTERM, _signal_handler)
+
+    iteration_count = 0
+    print("=" * 70)
+    print("TRADING FLOOR v8 — CONTINUOUS ITERATION MODE")
+    print(f"Max iterations: {'infinite' if max_iterations == 0 else max_iterations}")
+    print(f"Delay between iterations: {delay_seconds}s")
+    print("Send SIGINT/SIGTERM to stop gracefully.")
+    print("=" * 70)
+
+    while not _STOP_FLAG:
+        iteration_count += 1
+        if max_iterations > 0 and iteration_count > max_iterations:
+            print(f"\n[v8] Reached max iterations ({max_iterations}). Stopping.")
+            break
+
+        cycle_start = time.time()
+        it_data = _load_iteration()
+        print(f"\n{'='*60}")
+        print(f"[v8] CYCLE {iteration_count} — iteration {it_data['iteration'] + 1}")
+        print(f"{'='*60}")
+
+        # Phase 1: Sync satellite repos
+        print("\n[v8] Phase 1: Syncing satellite repos...")
+        sync_status = sync_satellite_repos()
+        for repo, status in sync_status.items():
+            print(f"  {repo}: {status}")
+
+        # Phase 2: Load cross-repo data
+        print("\n[v8] Phase 2: Loading cross-repo karpathy data...")
+        cross_data = load_cross_repo_karpathy()
+        for name, data in cross_data.items():
+            status = data.get("status", "loaded")
+            if status in ("not_found", "parse_error"):
+                print(f"  {name}: {status}")
+            else:
+                dept = data.get("department", name)
+                metric = data.get("primary_metric", {})
+                print(f"  {name}: {dept} — {metric.get('name', '?')}={metric.get('value', '?')}")
+
+        # Phase 3: Run Karpathy loop (the main work)
+        print("\n[v8] Phase 3: Running Karpathy loop...")
+        karpathy_result = run_karpathy_loop()
+
+        # Inject cross-repo data into output
+        karpathy_result["cross_repo"] = {
+            "sync_status": sync_status,
+            "satellite_data": {k: {"status": v.get("status", "loaded")} for k, v in cross_data.items()},
+        }
+
+        # Phase 4: Guardian cross-pollination
+        print("\n[v8] Phase 4: Guardian cross-pollination...")
+        guardian_result = run_guardian_cross_pollination()
+        print(f"  Guardian: {guardian_result.get('status')}")
+
+        # Phase 5: Update OPERATIONS.md
+        print("\n[v8] Phase 5: Updating OPERATIONS.md...")
+        update_operations_md()
+
+        # Phase 6: Push to Git
+        print("\n[v8] Phase 6: Pushing to Git...")
+        pushed = push_results_to_git()
+        print(f"  Pushed: {'yes' if pushed else 'no changes'}")
+
+        cycle_elapsed = time.time() - cycle_start
+        print(f"\n[v8] Cycle {iteration_count} complete in {cycle_elapsed:.1f}s")
+        print(f"  Iteration: {karpathy_result.get('iteration')}")
+        print(f"  Best: ${karpathy_result.get('optimization', {}).get('current_best', 0):,.0f}")
+        print(f"  Improved: {karpathy_result.get('optimization', {}).get('improved_this_iteration', False)}")
+
+        # Log cycle summary
+        log_file = ROOT / "logs" / "trading-floor-v8.log"
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(log_file, "a") as f:
+            f.write(f"[{datetime.now(timezone.utc).isoformat()}] cycle={iteration_count} "
+                    f"iter={karpathy_result.get('iteration')} "
+                    f"best=${karpathy_result.get('optimization', {}).get('current_best', 0):,.0f} "
+                    f"elapsed={cycle_elapsed:.1f}s\n")
+
+        if _STOP_FLAG:
+            break
+
+        if max_iterations == 0 or iteration_count < max_iterations:
+            print(f"\n[v8] Waiting {delay_seconds}s before next iteration...")
+            for _ in range(delay_seconds):
+                if _STOP_FLAG:
+                    break
+                time.sleep(1)
+
+    print(f"\n[v8] Stopped after {iteration_count} iterations.")
+    return {"iterations_completed": iteration_count}
+
+
 # ── ENTRY POINT ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
@@ -1896,9 +2133,8 @@ if __name__ == "__main__":
         print(json.dumps(result["leaderboard"], indent=2))
 
     elif cmd == "karpathy":
-        # Karpathy loop: backtest → analyze → eliminate → mutate → repeat
+        # Single Karpathy iteration: backtest → analyze → eliminate → mutate
         karpathy_result = run_karpathy_loop()
-        # Print JSON summary for Guardian stdout consumption
         print(json.dumps({
             "status": "completed",
             "department": "trading_floor",
@@ -1910,6 +2146,12 @@ if __name__ == "__main__":
             "mutations": len(karpathy_result.get("mutations", {})),
             "recommendations": len(karpathy_result.get("recommendations", [])),
         }))
+
+    elif cmd == "iterate":
+        # v8 continuous iteration: sync → karpathy → cross-pollinate → push → repeat
+        max_iter = int(sys.argv[2]) if len(sys.argv) > 2 else 0
+        delay = int(sys.argv[3]) if len(sys.argv) > 3 else 10
+        run_continuous_iteration(max_iterations=max_iter, delay_seconds=delay)
 
     elif cmd == "leaderboard":
         states = {}
@@ -1938,5 +2180,5 @@ if __name__ == "__main__":
                 print(f"{tid:12s}: no state yet")
 
     else:
-        print(f"Usage: {sys.argv[0]} [run|karpathy|leaderboard|status]")
+        print(f"Usage: {sys.argv[0]} [run|karpathy|iterate [max_iter] [delay]|leaderboard|status]")
         sys.exit(1)
