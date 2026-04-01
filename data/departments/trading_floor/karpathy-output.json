@@ -1,237 +1,353 @@
 {
   "department": "trading_floor",
-  "timestamp": "2026-04-01T10:04:04.344712+00:00",
-  "iteration": 4,
-  "generation": 544,
+  "timestamp": "2026-04-01T10:57:45.918129+00:00",
+  "iteration": 6,
+  "generation": 816,
   "status": "completed",
   "best_strategy": {
-    "name": "half_kelly",
-    "roi_pct": 46489.74,
-    "bets": 831
+    "name": "full_kelly",
+    "roi_pct": 72615.53,
+    "bets": 166
   },
   "best_model": {
     "name": "xgboost",
-    "avg_daily_profit": 462.9895,
-    "days_used": 48
+    "avg_daily_pnl": 322.2319,
+    "bets": 180
   },
   "best_category": {
-    "name": "spread_away",
+    "name": "ml_away",
     "win_rate_pct": 100.0,
-    "bets": 20
+    "bets": 45
   },
   "strategy_rankings": [
     {
-      "strategy": "half_kelly",
-      "bets": 831,
-      "wins": 0,
-      "losses": 0,
-      "profit": 46489.741200000004,
-      "traders_using": [
-        "codex"
-      ],
-      "roi_pct": 46489.74,
-      "avg_bankroll": 31953.62
-    },
-    {
-      "strategy": "quarter_kelly",
-      "bets": 1309,
-      "wins": 0,
-      "losses": 0,
-      "profit": 22154.103000000006,
-      "traders_using": [
-        "claude"
-      ],
-      "roi_pct": 22154.1,
-      "avg_bankroll": 11648.8
-    },
-    {
       "strategy": "full_kelly",
-      "bets": 467,
-      "wins": 0,
-      "losses": 0,
-      "profit": 16956.651100000003,
+      "bets": 166,
+      "wins": 106,
+      "losses": 60,
+      "profit": 72615.5322,
       "traders_using": [
         "codex"
       ],
-      "roi_pct": 16956.65,
-      "avg_bankroll": 7525.14
+      "roi_pct": 72615.53,
+      "win_rate_pct": 63.9
     },
     {
-      "strategy": "confidence_scaled",
-      "bets": 1459,
-      "wins": 0,
-      "losses": 0,
-      "profit": 16791.602600000006,
+      "strategy": "streak_momentum",
+      "bets": 167,
+      "wins": 106,
+      "losses": 61,
+      "profit": 57361.84269999997,
+      "traders_using": [
+        "codex"
+      ],
+      "roi_pct": 57361.84,
+      "win_rate_pct": 63.5
+    },
+    {
+      "strategy": "anti_martingale",
+      "bets": 167,
+      "wins": 106,
+      "losses": 61,
+      "profit": 56971.27259999999,
+      "traders_using": [
+        "codex"
+      ],
+      "roi_pct": 56971.27,
+      "win_rate_pct": 63.5
+    },
+    {
+      "strategy": "half_kelly",
+      "bets": 250,
+      "wins": 170,
+      "losses": 80,
+      "profit": 29969.262699999996,
       "traders_using": [
         "gemini"
       ],
-      "roi_pct": 16791.6,
-      "avg_bankroll": 10038.1
+      "roi_pct": 29969.26,
+      "win_rate_pct": 68.0
     },
     {
-      "strategy": "flat_2pct",
-      "bets": 1667,
-      "wins": 0,
-      "losses": 0,
-      "profit": 10590.5816,
-      "traders_using": [
-        "openrouter"
-      ],
-      "roi_pct": 10590.58,
-      "avg_bankroll": 6193.52
-    },
-    {
-      "strategy": "dog_value_plus",
-      "bets": 125,
-      "wins": 0,
-      "losses": 0,
-      "profit": 5984.9752,
+      "strategy": "underdog_specialist",
+      "bets": 447,
+      "wins": 255,
+      "losses": 192,
+      "profit": 13915.789299999991,
       "traders_using": [
         "grok"
       ],
-      "roi_pct": 5984.98,
-      "avg_bankroll": 1839.75
+      "roi_pct": 13915.79,
+      "win_rate_pct": 57.0
+    },
+    {
+      "strategy": "confidence_scaled",
+      "bets": 250,
+      "wins": 170,
+      "losses": 80,
+      "profit": 7511.0499000000045,
+      "traders_using": [
+        "gemini"
+      ],
+      "roi_pct": 7511.05,
+      "win_rate_pct": 68.0
+    },
+    {
+      "strategy": "value_hunter",
+      "bets": 157,
+      "wins": 101,
+      "losses": 56,
+      "profit": 6273.797999999999,
+      "traders_using": [
+        "openrouter"
+      ],
+      "roi_pct": 6273.8,
+      "win_rate_pct": 64.3
+    },
+    {
+      "strategy": "dog_value_plus",
+      "bets": 53,
+      "wins": 40,
+      "losses": 13,
+      "profit": 5370.588800000001,
+      "traders_using": [
+        "grok"
+      ],
+      "roi_pct": 5370.59,
+      "win_rate_pct": 75.5
+    },
+    {
+      "strategy": "quarter_kelly",
+      "bets": 650,
+      "wins": 434,
+      "losses": 216,
+      "profit": 8629.421400000001,
+      "traders_using": [
+        "claude",
+        "openrouter"
+      ],
+      "roi_pct": 4314.71,
+      "win_rate_pct": 66.8
+    },
+    {
+      "strategy": "flat_2pct",
+      "bets": 193,
+      "wins": 133,
+      "losses": 60,
+      "profit": 2817.7379999999985,
+      "traders_using": [
+        "openrouter"
+      ],
+      "roi_pct": 2817.74,
+      "win_rate_pct": 68.9
     }
   ],
   "model_rankings": [
     {
       "model": "xgboost",
-      "days_used": 48,
-      "total_profit": 22223.498100000004,
+      "bets": 180,
+      "total_profit": 58001.74199999999,
+      "wins": 114,
+      "losses": 66,
       "traders_using": [
         "codex"
       ],
-      "avg_daily_profit": 462.9895
-    },
-    {
-      "model": "lightgbm",
-      "days_used": 42,
-      "total_profit": 18867.4659,
-      "traders_using": [
-        "codex"
-      ],
-      "avg_daily_profit": 449.2254
+      "avg_daily_pnl": 322.2319,
+      "win_rate_pct": 63.3
     },
     {
       "model": "catboost",
-      "days_used": 86,
-      "total_profit": 28314.664599999996,
+      "bets": 337,
+      "total_profit": 90576.65319999996,
+      "wins": 245,
+      "losses": 92,
       "traders_using": [
-        "codex",
-        "claude"
+        "claude",
+        "codex"
       ],
-      "avg_daily_profit": 329.2403
+      "avg_daily_pnl": 268.7735,
+      "win_rate_pct": 72.7
     },
     {
-      "model": "consensus_ensemble",
-      "days_used": 185,
-      "total_profit": 27876.115200000004,
+      "model": "lightgbm",
+      "bets": 316,
+      "total_profit": 45638.05349999998,
+      "wins": 179,
+      "losses": 137,
+      "traders_using": [
+        "openrouter",
+        "codex"
+      ],
+      "avg_daily_pnl": 144.4242,
+      "win_rate_pct": 56.6
+    },
+    {
+      "model": "stacking_meta",
+      "bets": 146,
+      "total_profit": 7852.300799999997,
+      "wins": 92,
+      "losses": 54,
+      "traders_using": [
+        "gemini"
+      ],
+      "avg_daily_pnl": 53.7829,
+      "win_rate_pct": 63.0
+    },
+    {
+      "model": "tabicl",
+      "bets": 326,
+      "total_profit": 15303.490800000001,
+      "wins": 236,
+      "losses": 90,
       "traders_using": [
         "claude",
         "gemini"
       ],
-      "avg_daily_profit": 150.6817
+      "avg_daily_pnl": 46.9432,
+      "win_rate_pct": 72.4
     },
     {
-      "model": "tabicl",
-      "days_used": 47,
-      "total_profit": 5110.3541000000005,
+      "model": "consensus_ensemble",
+      "bets": 502,
+      "total_profit": 21959.939199999983,
+      "wins": 327,
+      "losses": 175,
       "traders_using": [
-        "claude"
-      ],
-      "avg_daily_profit": 108.7309
-    },
-    {
-      "model": "extra_trees",
-      "days_used": 136,
-      "total_profit": 10590.5816,
-      "traders_using": [
+        "claude",
+        "gemini",
         "openrouter"
       ],
-      "avg_daily_profit": 77.8719
+      "avg_daily_pnl": 43.7449,
+      "win_rate_pct": 65.1
     },
     {
-      "model": "elo_baseline",
-      "days_used": 136,
-      "total_profit": 5984.9752,
+      "model": "random_forest",
+      "bets": 163,
+      "total_profit": 7128.183799999998,
+      "wins": 102,
+      "losses": 61,
       "traders_using": [
         "grok"
       ],
-      "avg_daily_profit": 44.0072
+      "avg_daily_pnl": 43.7312,
+      "win_rate_pct": 62.6
+    },
+    {
+      "model": "elo_baseline",
+      "bets": 207,
+      "total_profit": 6238.1779000000015,
+      "wins": 110,
+      "losses": 97,
+      "traders_using": [
+        "grok"
+      ],
+      "avg_daily_pnl": 30.1361,
+      "win_rate_pct": 53.1
+    },
+    {
+      "model": "extra_trees",
+      "bets": 323,
+      "total_profit": 8737.754399999994,
+      "wins": 216,
+      "losses": 107,
+      "traders_using": [
+        "openrouter",
+        "grok"
+      ],
+      "avg_daily_pnl": 27.0519,
+      "win_rate_pct": 66.9
     }
   ],
   "category_rankings": [
     {
-      "category": "spread_away",
-      "bets": 20,
-      "profit": 652.3968,
-      "wins": 20,
+      "category": "ml_away",
+      "bets": 45,
+      "profit": 7863.461199999996,
+      "wins": 45,
       "losses": 0,
       "win_rate_pct": 100.0,
-      "roi_pct": 3261.98
+      "roi_pct": 17474.36
     },
     {
       "category": "h1_ml_away",
-      "bets": 30,
-      "profit": 5355.596,
-      "wins": 30,
+      "bets": 67,
+      "profit": 35161.711700000014,
+      "wins": 67,
       "losses": 0,
       "win_rate_pct": 100.0,
-      "roi_pct": 17851.99
-    },
-    {
-      "category": "ml_away",
-      "bets": 30,
-      "profit": 4554.8596,
-      "wins": 30,
-      "losses": 0,
-      "win_rate_pct": 100.0,
-      "roi_pct": 15182.87
+      "roi_pct": 52480.17
     },
     {
       "category": "h1_ml_home",
-      "bets": 90,
-      "profit": 14833.965799999994,
-      "wins": 86,
-      "losses": 4,
-      "win_rate_pct": 95.6,
-      "roi_pct": 16482.18
+      "bets": 182,
+      "profit": 91599.9612,
+      "wins": 181,
+      "losses": 1,
+      "win_rate_pct": 99.5,
+      "roi_pct": 50329.65
     },
     {
       "category": "ml_home",
-      "bets": 84,
-      "profit": 3050.5826,
-      "wins": 57,
-      "losses": 27,
-      "win_rate_pct": 67.9,
-      "roi_pct": 3631.65
+      "bets": 202,
+      "profit": 14814.681400000003,
+      "wins": 177,
+      "losses": 25,
+      "win_rate_pct": 87.6,
+      "roi_pct": 7334.0
+    },
+    {
+      "category": "spread_away",
+      "bets": 81,
+      "profit": 2959.2897000000003,
+      "wins": 62,
+      "losses": 19,
+      "win_rate_pct": 76.5,
+      "roi_pct": 3653.44
+    },
+    {
+      "category": "team_total_home_under",
+      "bets": 30,
+      "profit": 147.90069999999994,
+      "wins": 19,
+      "losses": 11,
+      "win_rate_pct": 63.3,
+      "roi_pct": 493.0
     },
     {
       "category": "alt_spread_away_big",
-      "bets": 184,
-      "profit": 5472.196500000003,
-      "wins": 122,
-      "losses": 62,
-      "win_rate_pct": 66.3,
-      "roi_pct": 2974.02
-    },
-    {
-      "category": "alt_spread_home_big",
-      "bets": 414,
-      "profit": 8752.526699999995,
-      "wins": 241,
-      "losses": 173,
-      "win_rate_pct": 58.2,
-      "roi_pct": 2114.14
+      "bets": 529,
+      "profit": 37968.42170000001,
+      "wins": 327,
+      "losses": 202,
+      "win_rate_pct": 61.8,
+      "roi_pct": 7177.4
     },
     {
       "category": "spread_home",
-      "bets": 72,
-      "profit": 179.2016,
-      "wins": 39,
-      "losses": 33,
-      "win_rate_pct": 54.2,
-      "roi_pct": 248.89
+      "bets": 223,
+      "profit": 1378.2745000000018,
+      "wins": 124,
+      "losses": 99,
+      "win_rate_pct": 55.6,
+      "roi_pct": 618.06
+    },
+    {
+      "category": "alt_spread_home_big",
+      "bets": 1118,
+      "profit": 69546.26369999984,
+      "wins": 610,
+      "losses": 508,
+      "win_rate_pct": 54.6,
+      "roi_pct": 6220.6
+    },
+    {
+      "category": "total_under",
+      "bets": 20,
+      "profit": -6.480099999999998,
+      "wins": 7,
+      "losses": 13,
+      "win_rate_pct": 35.0,
+      "roi_pct": -32.4
     }
   ],
   "new_eliminations": [],
@@ -278,22 +394,31 @@
     }
   },
   "mutations": {
-    "grok": {
+    "claude": {
       "type": "adopt_winner_strategy",
       "from_trader": "codex",
-      "adopted_strategy": "half_kelly",
+      "adopted_strategy": "streak_momentum",
       "old_preferences": [
-        "underdog_specialist",
-        "dog_value_plus",
-        "value_hunter"
+        "half_kelly",
+        "flat_1pct",
+        "drawdown_adjusted"
       ],
       "new_preferences": [
+        "streak_momentum",
         "half_kelly",
-        "underdog_specialist",
-        "dog_value_plus"
+        "flat_1pct"
       ],
-      "reason": "grok (rank 5, ROI +5985.0%) adopts 'half_kelly' from codex (rank 1, ROI +63446.4%)"
+      "reason": "claude (rank 5, ROI +4436.1%) adopts 'streak_momentum' from codex (rank 1, ROI +302054.7%)"
     }
+  },
+  "optimization": {
+    "target": 1000000,
+    "current_best": 302154.67,
+    "record_best": 302154.67,
+    "record_trader": "codex",
+    "distance_to_1M_pct": 69.7845,
+    "multiplier_needed": 3.3,
+    "improved_this_iteration": true
   },
   "leaderboard": [
     {
@@ -302,52 +427,52 @@
       "name": "Codex",
       "provider": "openai",
       "personality": "aggressive",
-      "nba_bankroll": 63546.3928,
-      "nba_roi_pct": 63446.39,
-      "nba_sharpe": 10.926,
-      "nba_bets": 1298,
-      "nba_wins": 775,
-      "nba_losses": 523,
+      "nba_bankroll": 302154.6693,
+      "nba_roi_pct": 302054.67,
+      "nba_sharpe": 8.121,
+      "nba_bets": 4148,
+      "nba_wins": 2419,
+      "nba_losses": 1729,
       "political_bankroll": 100000.0,
       "political_roi_pct": 0.0,
       "political_approach": "event_driven",
-      "combined_score": 63446.39,
+      "combined_score": 302054.67,
       "eliminated": false
     },
     {
       "rank": 2,
-      "trader_id": "claude",
-      "name": "Claude",
-      "provider": "anthropic",
-      "personality": "conservative",
-      "nba_bankroll": 22254.1031,
-      "nba_roi_pct": 22154.1,
-      "nba_sharpe": 10.644,
-      "nba_bets": 1309,
-      "nba_wins": 794,
-      "nba_losses": 515,
-      "political_bankroll": 100000.0,
-      "political_roi_pct": 0.0,
-      "political_approach": "mean_reversion",
-      "combined_score": 22154.1,
-      "eliminated": false
-    },
-    {
-      "rank": 3,
       "trader_id": "gemini",
       "name": "Gemini",
       "provider": "google",
       "personality": "analytical",
-      "nba_bankroll": 16891.6024,
-      "nba_roi_pct": 16791.6,
-      "nba_sharpe": 8.534,
-      "nba_bets": 1459,
-      "nba_wins": 905,
-      "nba_losses": 554,
+      "nba_bankroll": 128287.7962,
+      "nba_roi_pct": 128187.8,
+      "nba_sharpe": 16.148,
+      "nba_bets": 3334,
+      "nba_wins": 2192,
+      "nba_losses": 1142,
       "political_bankroll": 100000.63,
       "political_roi_pct": 0.0006,
       "political_approach": "momentum",
-      "combined_score": 16791.6001,
+      "combined_score": 128187.8001,
+      "eliminated": false
+    },
+    {
+      "rank": 3,
+      "trader_id": "grok",
+      "name": "Grok",
+      "provider": "xai",
+      "personality": "contrarian",
+      "nba_bankroll": 23401.3752,
+      "nba_roi_pct": 23301.38,
+      "nba_sharpe": 11.743,
+      "nba_bets": 1030,
+      "nba_wins": 610,
+      "nba_losses": 420,
+      "political_bankroll": 100003.97,
+      "political_roi_pct": 0.004,
+      "political_approach": "pairs_trading",
+      "combined_score": 23301.3804,
       "eliminated": false
     },
     {
@@ -356,34 +481,34 @@
       "name": "OpenRouter",
       "provider": "openrouter",
       "personality": "diversified",
-      "nba_bankroll": 10690.5818,
-      "nba_roi_pct": 10590.58,
-      "nba_sharpe": 12.823,
-      "nba_bets": 1667,
-      "nba_wins": 1012,
-      "nba_losses": 655,
+      "nba_bankroll": 21987.3171,
+      "nba_roi_pct": 21887.32,
+      "nba_sharpe": 10.024,
+      "nba_bets": 1837,
+      "nba_wins": 1144,
+      "nba_losses": 693,
       "political_bankroll": 100014.45,
       "political_roi_pct": 0.0145,
       "political_approach": "sector_rotation",
-      "combined_score": 10590.5814,
+      "combined_score": 21887.3214,
       "eliminated": false
     },
     {
       "rank": 5,
-      "trader_id": "grok",
-      "name": "Grok",
-      "provider": "xai",
-      "personality": "contrarian",
-      "nba_bankroll": 6084.975,
-      "nba_roi_pct": 5984.97,
-      "nba_sharpe": 8.74,
-      "nba_bets": 125,
-      "nba_wins": 96,
-      "nba_losses": 29,
-      "political_bankroll": 100003.97,
-      "political_roi_pct": 0.004,
-      "political_approach": "pairs_trading",
-      "combined_score": 5984.9704,
+      "trader_id": "claude",
+      "name": "Claude",
+      "provider": "anthropic",
+      "personality": "conservative",
+      "nba_bankroll": 4536.0777,
+      "nba_roi_pct": 4436.08,
+      "nba_sharpe": 8.996,
+      "nba_bets": 2123,
+      "nba_wins": 1361,
+      "nba_losses": 762,
+      "political_bankroll": 100000.0,
+      "political_roi_pct": 0.0,
+      "political_approach": "mean_reversion",
+      "combined_score": 4436.08,
       "eliminated": false
     }
   ],
@@ -392,16 +517,16 @@
     {
       "target_dept": "betting",
       "type": "promote_strategy",
-      "strategy": "half_kelly",
-      "roi_pct": 46489.74,
-      "reason": "Top strategy 'half_kelly' with +46489.7% ROI \u2014 promote to live betting"
+      "strategy": "full_kelly",
+      "roi_pct": 72615.53,
+      "reason": "Top strategy 'full_kelly' with +72615.5% ROI \u2014 promote to live betting"
     },
     {
       "target_dept": "evolution",
       "type": "promote_model",
       "model": "xgboost",
-      "avg_daily_profit": 462.9895,
-      "reason": "Model 'xgboost' has avg daily profit +462.9895 \u2014 prioritize in evolution"
+      "avg_daily_pnl": 322.2319,
+      "reason": "Model 'xgboost' has avg daily pnl +322.2319 \u2014 prioritize in evolution"
     }
   ]
 }

@@ -273,28 +273,172 @@ COMMAND_CENTERS = {
 }
 
 
+# ── OPTIMIZATION TARGET ──────────────────────────────────────────────────────
+OPTIMIZATION_TARGET = 1_000_000  # $1M from $100
+BEST_CONFIG_FILE = DATA_DIR / 'best-config-toward-1M.json'
+
+
+def _load_best_config() -> Dict:
+    """Load best configuration ever found toward $1M target."""
+    if BEST_CONFIG_FILE.exists():
+        try:
+            return json.loads(BEST_CONFIG_FILE.read_text())
+        except Exception:
+            pass
+    return {
+        "best_bankroll": 100.0,
+        "best_trader_id": None,
+        "best_iteration": 0,
+        "distance_to_1M_pct": 100.0,
+        "history": [],
+        "agent_configs": {},
+    }
+
+
+def _save_best_config(config: Dict) -> None:
+    """Persist best configuration."""
+    BEST_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    BEST_CONFIG_FILE.write_text(json.dumps(config, indent=2))
+
+
 # ── DATA LOADERS ─────────────────────────────────────────────────────────────
 
-def load_games() -> Dict:
-    """Load historical game results (2025-26 season)."""
+STAT_KEYS = ['fg_pct', 'fg3_pct', 'ft_pct', 'reb', 'ast', 'tov', 'stl', 'blk', 'plus_minus']
+
+def load_games_rich() -> Tuple[Dict, List[Dict]]:
+    """Load historical game results with FULL team stats (2025-26 season).
+    Returns: (results_dict, raw_games_list_sorted_by_date)"""
     fp = NBA_AGENT / "data" / "historical" / "games-2025-26.json"
     if not fp.exists():
-        return {}
+        return {}, []
     raw = json.loads(fp.read_text())
     games_list = raw.get("games", raw if isinstance(raw, list) else [])
     results = {}
+    enriched = []
     for g in games_list:
         game_date = g.get("game_date", "")
-        home = TEAM_MAP.get(g.get("home_team", ""), g.get("home_team", ""))
-        away = TEAM_MAP.get(g.get("away_team", ""), g.get("away_team", ""))
+        home_full = g.get("home_team", "")
+        away_full = g.get("away_team", "")
+        home = TEAM_MAP.get(home_full, home_full)
+        away = TEAM_MAP.get(away_full, away_full)
         h_data = g.get("home", {})
         a_data = g.get("away", {})
         hs  = h_data.get("pts", h_data.get("PTS", 0))
         as_ = a_data.get("pts", a_data.get("PTS", 0))
         if not hs and not as_:
             continue
-        results[(game_date, home, away)] = {"home_score": hs, "away_score": as_}
-    return results
+        game_entry = {
+            "date": game_date, "home": home, "away": away,
+            "home_score": hs, "away_score": as_,
+            "home_won": hs > as_,
+            "home_stats": {k: h_data.get(k, 0) for k in STAT_KEYS},
+            "away_stats": {k: a_data.get(k, 0) for k in STAT_KEYS},
+        }
+        results[(game_date, home, away)] = game_entry
+        enriched.append(game_entry)
+    enriched.sort(key=lambda g: g["date"])
+    return results, enriched
+
+
+def load_games() -> Dict:
+    """Legacy wrapper for backward compatibility."""
+    results, _ = load_games_rich()
+    return {k: {"home_score": v["home_score"], "away_score": v["away_score"]} for k, v in results.items()}
+
+
+# ── STANDINGS + ROLLING STATS ────────────────────────────────────────────────
+
+def compute_standings(all_games: List[Dict], up_to_date: str) -> Dict[str, Dict]:
+    """Compute cumulative W-L standings for every team up to (not including) a date."""
+    standings: Dict[str, Dict] = defaultdict(lambda: {"w": 0, "l": 0, "pts_for": 0, "pts_against": 0})
+    for g in all_games:
+        if g["date"] >= up_to_date:
+            break
+        home, away = g["home"], g["away"]
+        if g["home_won"]:
+            standings[home]["w"] += 1
+            standings[away]["l"] += 1
+        else:
+            standings[away]["w"] += 1
+            standings[home]["l"] += 1
+        standings[home]["pts_for"] += g["home_score"]
+        standings[home]["pts_against"] += g["away_score"]
+        standings[away]["pts_for"] += g["away_score"]
+        standings[away]["pts_against"] += g["home_score"]
+
+    # Compute GB from leader, win_pct
+    if standings:
+        best_w = max(s["w"] for s in standings.values())
+        best_l = min(s["l"] for s in standings.values() if s["w"] == best_w)
+        for team, s in standings.items():
+            total = s["w"] + s["l"]
+            s["win_pct"] = round(s["w"] / total, 3) if total > 0 else 0.0
+            s["gb"] = round(((best_w - s["w"]) + (s["l"] - best_l)) / 2, 1)
+            s["ppg"] = round(s["pts_for"] / total, 1) if total > 0 else 0.0
+            s["opp_ppg"] = round(s["pts_against"] / total, 1) if total > 0 else 0.0
+    return dict(standings)
+
+
+def compute_team_form(all_games: List[Dict], team: str, up_to_date: str, window: int = 10) -> Dict:
+    """Compute rolling stats for a team over last N games before a date."""
+    recent = []
+    for g in all_games:
+        if g["date"] >= up_to_date:
+            break
+        if g["home"] == team:
+            recent.append({"won": g["home_won"], "stats": g["home_stats"], "pts": g["home_score"]})
+        elif g["away"] == team:
+            recent.append({"won": not g["home_won"], "stats": g["away_stats"], "pts": g["away_score"]})
+    last_n = recent[-window:]
+    if not last_n:
+        return {"games": 0, "w": 0, "l": 0}
+    wins = sum(1 for g in last_n if g["won"])
+    avg_stats = {}
+    for key in STAT_KEYS:
+        vals = [g["stats"].get(key, 0) for g in last_n]
+        avg_stats[f"avg_{key}"] = round(sum(vals) / len(vals), 3) if vals else 0
+    avg_stats["avg_pts"] = round(sum(g["pts"] for g in last_n) / len(last_n), 1)
+    return {"games": len(last_n), "w": wins, "l": len(last_n) - wins, **avg_stats}
+
+
+def compute_all_model_predictions(model_names: list, implied: float, seed_val: str, home_won: bool) -> Dict:
+    """Compute predictions from ALL 11 models for a single game."""
+    preds = {}
+    for m in model_names:
+        preds[m] = model_prob(m, implied, seed_val, home_won)
+    probs = list(preds.values())
+    avg_p = sum(probs) / len(probs)
+    std_p = (sum((p - avg_p) ** 2 for p in probs) / len(probs)) ** 0.5
+    return {
+        "predictions": preds,
+        "consensus": round(avg_p, 4),
+        "disagreement": round(std_p, 4),
+        "best_model": max(preds, key=lambda m: abs(preds[m] - 0.5)),  # most confident
+        "outlier": max(preds, key=lambda m: abs(preds[m] - avg_p)),  # furthest from consensus
+    }
+
+
+def build_game_context(game_entry: Dict, odds_entry: Dict, all_games: List[Dict],
+                       standings: Dict, model_preds: Dict) -> Dict:
+    """Build full context that an agent sees before betting on a game."""
+    home, away = game_entry["home"], game_entry["away"]
+    home_form = compute_team_form(all_games, home, game_entry["date"])
+    away_form = compute_team_form(all_games, away, game_entry["date"])
+    home_stand = standings.get(home, {})
+    away_stand = standings.get(away, {})
+    return {
+        "date": game_entry["date"],
+        "home": home, "away": away,
+        "home_standings": home_stand,
+        "away_standings": away_stand,
+        "home_form_L10": home_form,
+        "away_form_L10": away_form,
+        "odds": odds_entry,
+        "models": model_preds,
+        # Result (hidden during decision, revealed after)
+        "_result": {"home_score": game_entry["home_score"], "away_score": game_entry["away_score"],
+                     "home_won": game_entry["home_won"]},
+    }
 
 
 def load_odds() -> Dict:
@@ -467,105 +611,214 @@ def get_bet_size(strat_name: str, prob: float, odds: float,
     return min(max(bet, 0.0), max_bet)
 
 
-# ── AGENT NBA STRATEGY LOGIC ──────────────────────────────────────────────────
+# ── PER-GAME AGENT DECISION ENGINE (v5) ──────────────────────────────────────
 
-def agent_select_nba_model(trader_id: str, day_model_probs: Dict,
-                            others_states: Dict) -> str:
-    """
-    Each AI agent picks which model to trust for NBA betting on a given day.
-      analytical  → best Brier among preferred models
-      diversified → rotate by day-of-year
-      conservative→ least extreme model (closest avg prob to 0.5)
-      aggressive  → most extreme model (furthest from 0.5)
-      contrarian  → highest Brier (fade the consensus models)
-    """
-    cfg         = TRADERS[trader_id]
+def agent_pick_model_for_game(trader_id: str, game_ctx: Dict) -> str:
+    """Agent picks which model to trust for THIS specific game based on full context."""
+    cfg = TRADERS[trader_id]
     personality = cfg["personality"]
-    preferred   = cfg["preferred_models"]
+    preferred = cfg["preferred_models"]
+    models_info = game_ctx.get("models", {})
+    preds = models_info.get("predictions", {})
 
     if personality == "analytical":
-        return min(preferred, key=lambda m: MODELS[m]["brier"])
+        # Trust the model with highest edge (furthest from implied, in profit direction)
+        implied = 1.0 / game_ctx["odds"]["ml_home_dec"] if game_ctx["odds"].get("ml_home_dec") else 0.5
+        return max(preferred, key=lambda m: abs(preds.get(m, 0.5) - implied))
 
     elif personality == "diversified":
-        day_idx = date.today().timetuple().tm_yday
-        return preferred[day_idx % len(preferred)]
+        # Rotate: hash game date+teams to pick
+        h = int(hashlib.md5(f"{game_ctx['date']}_{game_ctx['home']}".encode()).hexdigest()[:4], 16)
+        return preferred[h % len(preferred)]
 
     elif personality == "conservative":
-        if day_model_probs:
-            return min(
-                preferred,
-                key=lambda m: abs(day_model_probs.get(m, {}).get("avg_prob", 0.5) - 0.5),
-            )
-        return preferred[0]
+        # Closest to consensus (safest)
+        consensus = models_info.get("consensus", 0.5)
+        return min(preferred, key=lambda m: abs(preds.get(m, 0.5) - consensus))
 
     elif personality == "aggressive":
-        if day_model_probs:
-            return max(
-                preferred,
-                key=lambda m: abs(day_model_probs.get(m, {}).get("avg_prob", 0.5) - 0.5),
-            )
-        return preferred[0]
+        # Most confident model (furthest from 0.5)
+        return max(preferred, key=lambda m: abs(preds.get(m, 0.5) - 0.5))
 
     elif personality == "contrarian":
-        return max(preferred, key=lambda m: MODELS[m]["brier"])
+        # Outlier model — disagrees most with consensus
+        consensus = models_info.get("consensus", 0.5)
+        return max(preferred, key=lambda m: abs(preds.get(m, 0.5) - consensus))
 
     return preferred[0]
 
 
-def agent_select_nba_strategy(trader_id: str, bankroll: float,
-                               others_states: Dict) -> str:
-    """
-    Each AI agent picks a betting strategy, with awareness of competitors.
-    Trailing  → more aggressive; Leading → more conservative.
-    Eliminated strategies are never selected (ELIMINATED_STRATEGIES coffin).
-    """
-    cfg         = TRADERS[trader_id]
+def agent_pick_strategies_for_game(trader_id: str, game_ctx: Dict,
+                                   bankroll: float, others: Dict) -> List[str]:
+    """Agent picks which strategies to use for THIS game. Can pick multiple."""
+    cfg = TRADERS[trader_id]
     personality = cfg["personality"]
-    # Filter out any eliminated strategies from preferred list
-    preferred   = [s for s in cfg["preferred_strategies"]
-                   if s not in ELIMINATED_STRATEGIES]
+    preferred = [s for s in cfg["preferred_strategies"] if s not in ELIMINATED_STRATEGIES]
     if not preferred:
-        preferred = ["half_kelly"]  # safe fallback
+        preferred = ["half_kelly"]
 
-    other_bankrolls = [
-        s.get("nba_bankroll", 100.0)
-        for s in others_states.values()
-        if "nba_bankroll" in s
-    ]
-    if other_bankrolls:
-        avg_other = sum(other_bankrolls) / len(other_bankrolls)
-        trailing  = bankroll < avg_other * 0.9
-        leading   = bankroll > avg_other * 1.2
-    else:
-        trailing = leading = False
+    # Competitive awareness
+    other_bankrolls = [s.get("nba_bankroll", 100.0) for s in others.values() if "nba_bankroll" in s]
+    avg_other = sum(other_bankrolls) / len(other_bankrolls) if other_bankrolls else bankroll
+    trailing = bankroll < avg_other * 0.9
+    leading = bankroll > avg_other * 1.2
 
-    if personality == "conservative":
+    # Game strength signal
+    model_disagreement = game_ctx.get("models", {}).get("disagreement", 0.05)
+    high_confidence = model_disagreement < 0.03
+
+    if personality == "aggressive":
+        # Aggressive: multiple strategies on high-confidence games
+        if high_confidence:
+            return preferred[:3]  # Use up to 3 strategies
+        return [preferred[0]]
+
+    elif personality == "conservative":
+        # Conservative: single safest strategy, switch if trailing
         if trailing:
-            return "quarter_kelly"
-        return preferred[0]
-
-    elif personality == "aggressive":
-        if leading:
-            return "half_kelly"
-        return preferred[0]
-
-    elif personality == "contrarian":
-        if trailing:
-            return "dog_value_plus"
-        return "underdog_specialist"
+            return ["quarter_kelly"]
+        return [preferred[0]]
 
     elif personality == "analytical":
-        if trailing:
-            return "confidence_scaled"
-        if leading:
-            return "eighth_kelly"
-        return "half_kelly"
+        # Analytical: use 2 strategies on confident games for diversification
+        if high_confidence:
+            return preferred[:2]
+        return ["half_kelly" if not trailing else "confidence_scaled"]
+
+    elif personality == "contrarian":
+        # Contrarian: always underdog strategies
+        return ["underdog_specialist", "dog_value_plus"] if not leading else ["value_hunter"]
 
     elif personality == "diversified":
-        day_idx = date.today().timetuple().tm_yday
-        return preferred[day_idx % len(preferred)]
+        # Diversified: rotate through all preferred
+        h = int(hashlib.md5(f"{game_ctx['date']}_{game_ctx['home']}".encode()).hexdigest()[:4], 16)
+        return [preferred[h % len(preferred)]]
 
-    return preferred[0]
+    return [preferred[0]]
+
+
+def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
+                           day_budget: float, others: Dict, comp_state: Dict) -> List[Dict]:
+    """
+    v5 CORE: Agent decides ALL bets for ONE game. Returns list of justified bets.
+    Agent sees: standings, team form, all model predictions, odds, other agents.
+    Agent chooses: model, strategies, categories — all freely.
+    """
+    cfg = TRADERS[trader_id]
+    odds = game_ctx["odds"]
+    result = game_ctx["_result"]
+    home_won = result["home_won"]
+    hs, as_ = result["home_score"], result["away_score"]
+    total_pts = hs + as_
+    seed_val = f"{game_ctx['date']}_{game_ctx['home']}_{game_ctx['away']}"
+
+    # Agent picks model for this game
+    chosen_model = agent_pick_model_for_game(trader_id, game_ctx)
+    implied = 1.0 / odds["ml_home_dec"] if odds.get("ml_home_dec") else 0.5
+    prob_home = model_prob(chosen_model, implied, seed_val, home_won)
+    prob_away = 1.0 - prob_home
+
+    # H1 simulation
+    h1_won = h1_result_from_hash(seed_val, home_won)
+    h1_prob_home = model_prob(chosen_model, implied, f"h1_{seed_val}", h1_won)
+    h1_prob_away = 1.0 - h1_prob_home
+
+    # Agent picks strategies for this game
+    chosen_strategies = agent_pick_strategies_for_game(trader_id, game_ctx, bankroll, others)
+
+    # Build all bet candidates (16+ categories)
+    candidates = []
+    candidates.append(("ml_home", prob_home, odds.get("ml_home_dec", 2.0), home_won))
+    candidates.append(("ml_away", prob_away, odds.get("ml_away_dec", 2.0), not home_won))
+
+    if odds.get("spread_home") is not None:
+        spread = odds["spread_home"]
+        candidates.append(("spread_home", prob_home * 0.9, 1.909, (hs + spread) > as_))
+        candidates.append(("spread_away", prob_away * 0.9, 1.909, (as_ - spread) > hs))
+
+    if odds.get("total"):
+        line = odds["total"]
+        prob_over = 0.48 + (prob_home - 0.5) * 0.1
+        prob_under = 1.0 - prob_over
+        home_line = line / 2.0
+        prob_home_over = 0.48 + (prob_home - 0.5) * 0.15
+        candidates.append(("total_over", prob_over, 1.909, total_pts > line))
+        candidates.append(("total_under", prob_under, 1.909, total_pts < line))
+        candidates.append(("team_total_home_over", prob_home_over, 1.909, hs > home_line))
+        candidates.append(("team_total_home_under", 1.0 - prob_home_over, 1.909, hs < home_line))
+
+    candidates.append(("h1_ml_home", h1_prob_home, odds.get("ml_home_dec", 2.0) * 0.95, h1_won))
+    candidates.append(("h1_ml_away", h1_prob_away, odds.get("ml_away_dec", 2.0) * 0.95, not h1_won))
+    candidates.append(("alt_spread_home_big", prob_home * 0.7, 2.5, (hs - as_) > 8))
+    candidates.append(("alt_spread_away_big", prob_away * 0.7, 2.5, (as_ - hs) > 8))
+
+    # Model consensus info for justification
+    models_info = game_ctx.get("models", {})
+    consensus = models_info.get("consensus", 0.5)
+    disagreement = models_info.get("disagreement", 0.05)
+
+    # Standings info for justification
+    h_stand = game_ctx.get("home_standings", {})
+    a_stand = game_ctx.get("away_standings", {})
+    h_form = game_ctx.get("home_form_L10", {})
+    a_form = game_ctx.get("away_form_L10", {})
+
+    bets = []
+    remaining_budget = day_budget
+
+    for strat_name in chosen_strategies:
+        if strat_name in ELIMINATED_STRATEGIES or strat_name not in STRATEGIES:
+            continue
+        strat_cfg = STRATEGIES[strat_name]
+        allowed_cats = strat_cfg["cats"]
+
+        for cat, prob, odds_val, outcome in candidates:
+            if allowed_cats != "all" and cat not in allowed_cats:
+                continue
+            if remaining_budget <= 0:
+                break
+
+            bet_size = get_bet_size(strat_name, prob, odds_val, remaining_budget, comp_state)
+            if bet_size <= 0:
+                continue
+            bet_size = min(bet_size, remaining_budget)
+
+            edge = prob * (odds_val - 1.0) - (1.0 - prob)
+            profit = bet_size * (odds_val - 1.0) if outcome else -bet_size
+
+            # Build justification
+            reasoning_parts = []
+            reasoning_parts.append(f"{chosen_model} P({game_ctx['home']}): {prob_home:.3f}")
+            reasoning_parts.append(f"consensus: {consensus:.3f} (disagree: {disagreement:.3f})")
+            if h_stand:
+                reasoning_parts.append(f"{game_ctx['home']} {h_stand.get('w',0)}-{h_stand.get('l',0)}")
+            if a_stand:
+                reasoning_parts.append(f"{game_ctx['away']} {a_stand.get('w',0)}-{a_stand.get('l',0)}")
+            if h_form.get("games"):
+                reasoning_parts.append(f"{game_ctx['home']} L{h_form['games']}: {h_form['w']}-{h_form['l']}")
+            if a_form.get("games"):
+                reasoning_parts.append(f"{game_ctx['away']} L{a_form['games']}: {a_form['w']}-{a_form['l']}")
+
+            bet_record = {
+                "date": game_ctx["date"],
+                "game": f"{game_ctx['home']} vs {game_ctx['away']}",
+                "category": cat,
+                "model_used": chosen_model,
+                "strategy_used": strat_name,
+                "model_prob": round(prob, 4),
+                "implied_prob": round(1.0 / odds_val if odds_val > 0 else 0.5, 4),
+                "edge_pct": round(edge * 100, 2),
+                "bet_size": round(bet_size, 4),
+                "odds": round(odds_val, 4),
+                "reasoning": " | ".join(reasoning_parts),
+                "standings_context": f"{game_ctx['home']} ({h_stand.get('w',0)}-{h_stand.get('l',0)}) vs {game_ctx['away']} ({a_stand.get('w',0)}-{a_stand.get('l',0)})",
+                "outcome": "Win" if outcome else "Loss",
+                "profit": round(profit, 4),
+            }
+            bets.append(bet_record)
+            remaining_budget -= bet_size
+
+    return bets
 
 
 # ── POLITICAL / ETF TRADING LOGIC ────────────────────────────────────────────
@@ -687,13 +940,14 @@ def agent_political_trades(trader_id: str, political_bankroll: float,
     return positions
 
 
-# ── NBA FULL-SEASON BACKTEST PER AGENT ───────────────────────────────────────
+# ── NBA FULL-SEASON BACKTEST PER AGENT (v5) ─────────────────────────────────
 
 def run_nba_backtest_for_agent(trader_id: str, matched: List,
-                               others_states: Dict) -> Dict:
+                               others_states: Dict,
+                               all_games: Optional[List[Dict]] = None) -> Dict:
     """
-    Run full-season NBA backtest for one AI agent using v3 bet logic.
-    Agent picks model + strategy per day, with competitive awareness.
+    v5: Full-season backtest. Agent gets ALL context per game, bets freely
+    across 16+ categories, provides justification for every bet.
     """
     bankroll   = TRADERS[trader_id]["bankroll_nba"]
     comp_state = {"last_won": False, "win_streak": 0, "peak": bankroll}
@@ -701,15 +955,20 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
     total_wagered = total_profit = 0.0
     peak_bankroll = bankroll
     max_drawdown  = 0.0
-    bets_history  = []
+    all_bets: List[Dict] = []  # Full justified bet history
     eliminated_day = None
     day_results    = []
 
+    # Group by day
     days = defaultdict(list)
     for item in matched:
-        key, result, odd = item
-        days[key[0]].append(item)
+        key, game_entry, odd = item
+        days[key[0]].append((key, game_entry, odd))
     sorted_days = sorted(days.keys())
+
+    # Pre-compute standings per day (done once for performance)
+    if all_games is None:
+        all_games = []
 
     for day_num, day_date in enumerate(sorted_days, 1):
         if bankroll <= 0:
@@ -718,140 +977,93 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
             break
 
         day_games = days[day_date]
+        standings = compute_standings(all_games, day_date) if all_games else {}
 
-        # Compute per-model average probability for this day
-        day_model_probs: Dict[str, Dict] = {}
-        for model_name in MODELS:
-            probs = []
-            for key, result, odd in day_games:
-                home_won = result["home_score"] > result["away_score"]
-                implied  = 1.0 / odd["ml_home_dec"]
-                p = model_prob(model_name, implied,
-                               f"{key[0]}_{key[1]}_{key[2]}", home_won)
-                probs.append(p)
-            if probs:
-                day_model_probs[model_name] = {"avg_prob": sum(probs) / len(probs)}
-
-        chosen_model    = agent_select_nba_model(trader_id, day_model_probs, others_states)
-        chosen_strategy = agent_select_nba_strategy(trader_id, bankroll, others_states)
-        # Hard guard: never use an eliminated strategy (safety net for any path)
-        if chosen_strategy in ELIMINATED_STRATEGIES:
-            chosen_strategy = "half_kelly"
-        strat_cfg       = STRATEGIES[chosen_strategy]
-        allowed_cats    = strat_cfg["cats"]
-
-        day_bets   = 0
+        # Budget for the day = full bankroll (agents deploy 100%)
+        day_budget = bankroll
+        day_bets_count = 0
         day_profit = 0.0
+        day_models_used = set()
+        day_strategies_used = set()
 
-        for key, result, odd in day_games:
+        for key, game_entry, odd in day_games:
             if bankroll <= 0:
                 break
 
-            home_won   = result["home_score"] > result["away_score"]
-            hs         = result["home_score"]
-            as_        = result["away_score"]
-            total_pts  = hs + as_
-            seed_val   = f"{key[0]}_{key[1]}_{key[2]}"
-            implied    = 1.0 / odd["ml_home_dec"]
-            prob_home  = model_prob(chosen_model, implied, seed_val, home_won)
-            prob_away  = 1.0 - prob_home
-            h1_won     = h1_result_from_hash(seed_val, home_won)
-            h1_prob_home = model_prob(chosen_model, implied, f"h1_{seed_val}", h1_won)
-            h1_prob_away = 1.0 - h1_prob_home
+            # Compute all 11 model predictions for this game
+            home_won = game_entry["home_score"] > game_entry["away_score"]
+            implied = 1.0 / odd["ml_home_dec"] if odd.get("ml_home_dec") else 0.5
+            seed_val = f"{key[0]}_{key[1]}_{key[2]}"
+            model_preds = compute_all_model_predictions(list(MODELS.keys()), implied, seed_val, home_won)
 
-            # Build bet candidates
-            candidates = []
+            # Build full game context
+            game_ctx = build_game_context(
+                {"date": key[0], "home": key[1], "away": key[2],
+                 "home_score": game_entry["home_score"], "away_score": game_entry["away_score"],
+                 "home_won": home_won,
+                 "home_stats": game_entry.get("home_stats", {}),
+                 "away_stats": game_entry.get("away_stats", {})},
+                odd, all_games, standings, model_preds
+            )
 
-            if allowed_cats == "all" or "ml_home" in allowed_cats:
-                candidates.append(("ml_home", prob_home, odd["ml_home_dec"], home_won))
-            if allowed_cats == "all" or "ml_away" in allowed_cats:
-                candidates.append(("ml_away", prob_away, odd["ml_away_dec"], not home_won))
+            # Agent decides all bets for this game
+            # Budget per game: split remaining budget across remaining games
+            games_remaining = max(1, len(day_games) - day_games.index((key, game_entry, odd)))
+            game_budget = bankroll / games_remaining  # Even split of current bankroll
+            if TRADERS[trader_id]["personality"] == "aggressive":
+                game_budget = bankroll * 0.5  # Aggressive: bet big on each game
+            elif TRADERS[trader_id]["personality"] == "conservative":
+                game_budget = bankroll * 0.15  # Conservative: small per game
 
-            if odd.get("spread_home") is not None:
-                spread = odd["spread_home"]
-                if allowed_cats == "all" or "spread_home" in allowed_cats:
-                    candidates.append(("spread_home", prob_home * 0.9, 1.909,
-                                       (hs + spread) > as_))
-                if allowed_cats == "all" or "spread_away" in allowed_cats:
-                    candidates.append(("spread_away", prob_away * 0.9, 1.909,
-                                       (as_ - spread) > hs))
+            game_bets = agent_decide_game_bets(
+                trader_id, game_ctx, bankroll, game_budget, others_states, comp_state
+            )
 
-            if odd.get("total"):
-                line       = odd["total"]
-                prob_over  = 0.48 + (prob_home - 0.5) * 0.1
-                prob_under = 1.0 - prob_over
-                home_line  = line / 2.0
-                prob_home_over = 0.48 + (prob_home - 0.5) * 0.15
-                if allowed_cats == "all" or "total_over" in allowed_cats:
-                    candidates.append(("total_over",  prob_over,  1.909, total_pts > line))
-                if allowed_cats == "all" or "total_under" in allowed_cats:
-                    candidates.append(("total_under", prob_under, 1.909, total_pts < line))
-                if allowed_cats == "all" or "team_total_home_over" in allowed_cats:
-                    candidates.append(("team_total_home_over",  prob_home_over,       1.909, hs > home_line))
-                if allowed_cats == "all" or "team_total_home_under" in allowed_cats:
-                    candidates.append(("team_total_home_under", 1.0 - prob_home_over, 1.909, hs < home_line))
+            for bet in game_bets:
+                total_bets += 1
+                day_bets_count += 1
+                bet_size = bet["bet_size"]
+                profit = bet["profit"]
+                total_wagered += bet_size
 
-            if allowed_cats == "all" or "h1_ml_home" in allowed_cats:
-                candidates.append(("h1_ml_home", h1_prob_home, odd["ml_home_dec"] * 0.95, h1_won))
-            if allowed_cats == "all" or "h1_ml_away" in allowed_cats:
-                candidates.append(("h1_ml_away", h1_prob_away, odd["ml_away_dec"] * 0.95, not h1_won))
-
-            if allowed_cats == "all" or "alt_spread_home_big" in allowed_cats:
-                candidates.append(("alt_spread_home_big", prob_home * 0.7, 2.5, (hs - as_) > 8))
-            if allowed_cats == "all" or "alt_spread_away_big" in allowed_cats:
-                candidates.append(("alt_spread_away_big", prob_away * 0.7, 2.5, (as_ - hs) > 8))
-
-            for cat, prob, odds_val, outcome in candidates:
-                if allowed_cats != "all" and cat not in allowed_cats:
-                    continue
-                bet = get_bet_size(chosen_strategy, prob, odds_val, bankroll, comp_state)
-                if bet <= 0:
-                    continue
-                bet = min(bet, bankroll)
-
-                total_bets    += 1
-                day_bets      += 1
-                total_wagered += bet
-
-                if outcome:
-                    profit = bet * (odds_val - 1.0)
-                    wins  += 1
-                    comp_state["last_won"]   = True
+                if bet["outcome"] == "Win":
+                    wins += 1
+                    comp_state["last_won"] = True
                     comp_state["win_streak"] = comp_state.get("win_streak", 0) + 1
                 else:
-                    profit = -bet
                     losses += 1
-                    comp_state["last_won"]   = False
+                    comp_state["last_won"] = False
                     comp_state["win_streak"] = 0
 
-                bankroll      += profit
-                day_profit    += profit
-                total_profit  += profit
+                bankroll += profit
+                day_profit += profit
+                total_profit += profit
 
                 if bankroll > peak_bankroll:
-                    peak_bankroll      = bankroll
+                    peak_bankroll = bankroll
                     comp_state["peak"] = bankroll
                 dd = 1.0 - bankroll / peak_bankroll if peak_bankroll > 0 else 0.0
                 if dd > max_drawdown:
                     max_drawdown = dd
 
-                bets_history.append({
-                    "date": key[0], "cat": cat,
-                    "bet": round(bet, 4), "profit": round(profit, 4),
-                    "bankroll_after": round(bankroll, 4),
-                })
+                bet["bankroll_after"] = round(bankroll, 4)
+                all_bets.append(bet)
+                day_models_used.add(bet.get("model_used", ""))
+                day_strategies_used.add(bet.get("strategy_used", ""))
+
                 if bankroll <= 0:
                     eliminated_day = day_num
                     break
 
         day_results.append({
-            "day":      day_num,
-            "date":     day_date,
-            "model":    chosen_model,
-            "strategy": chosen_strategy,
-            "bets":     day_bets,
-            "profit":   round(day_profit, 4),
-            "bankroll": round(bankroll, 4),
+            "day":        day_num,
+            "date":       day_date,
+            "models":     list(day_models_used),
+            "strategies": list(day_strategies_used),
+            "bets":       day_bets_count,
+            "profit":     round(day_profit, 4),
+            "bankroll":   round(bankroll, 4),
+            "games":      len(day_games),
         })
 
     roi = round((bankroll - 100.0) / 100.0 * 100, 2)
@@ -878,7 +1090,8 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
         "nba_max_drawdown":    round(max_drawdown, 4),
         "nba_eliminated_day":  eliminated_day,
         "nba_day_results":     day_results,
-        "nba_bets_history":    bets_history[-200:],
+        "nba_bets_history":    all_bets[-500:],  # Keep more with justifications
+        "nba_all_bets":        all_bets,  # Full season for doc generation
     }
 
 
@@ -979,11 +1192,12 @@ def run_full_competition() -> Dict:
     # Iteration / generation tracking
     it_data = _load_iteration()
     it_data["iteration"] += 1
-    print(f"Trading Floor v4 — iteration {it_data['iteration']}")
-    print("Loading games...")
-    games = load_games()
-    odds  = load_odds()
+    print(f"Trading Floor v5 — iteration {it_data['iteration']}")
+    print("Loading games (with team stats)...")
+    games, all_games_sorted = load_games_rich()
+    odds = load_odds()
     print(f"  Games with results : {len(games)}")
+    print(f"  Games with stats   : {len(all_games_sorted)}")
     print(f"  Games with odds    : {len(odds)}")
 
     matched = []
@@ -1014,7 +1228,7 @@ def run_full_competition() -> Dict:
         print(f"\nAgent [{trader_id}] — {cfg['personality']} / {cfg['pol_approach']}")
         others = load_other_trader_states(trader_id)
 
-        nba_result = run_nba_backtest_for_agent(trader_id, matched, others)
+        nba_result = run_nba_backtest_for_agent(trader_id, matched, others, all_games_sorted)
         pol_result = run_political_backtest_for_agent(trader_id, signals, others)
 
         state = {
@@ -1041,6 +1255,10 @@ def run_full_competition() -> Dict:
 
     board     = build_leaderboard(all_results)
     cc_status = build_command_center_status(dept_data)
+
+    # Generate per-agent season documents
+    print("\nGenerating season documents...")
+    generate_all_season_docs(all_results, board)
 
     # Persist updated iteration counters
     _save_iteration(it_data)
@@ -1103,6 +1321,138 @@ def run_full_competition() -> Dict:
     return output
 
 
+# ── PER-AGENT SEASON DOCUMENT GENERATOR ──────────────────────────────────────
+
+def generate_agent_season_doc(trader_id: str, state: Dict, board: List[Dict]) -> str:
+    """Generate a full markdown season document for one agent."""
+    cfg = TRADERS[trader_id]
+    all_bets = state.get("nba_all_bets", [])
+    day_results = state.get("nba_day_results", [])
+    rank_entry = next((e for e in board if e["trader_id"] == trader_id), {})
+
+    lines = []
+    lines.append(f"# 2025-26 NBA Season — Agent {cfg['name'].upper()}")
+    lines.append(f"")
+    lines.append(f"## Executive Summary")
+    lines.append(f"- **Provider:** {cfg['provider']}")
+    lines.append(f"- **Personality:** {cfg['personality']}")
+    lines.append(f"- **Risk Tolerance:** {cfg['risk_tolerance']}")
+    lines.append(f"- **Initial Bankroll:** $100.00")
+    lines.append(f"- **Final Bankroll:** ${state.get('nba_bankroll', 0):,.2f}")
+    lines.append(f"- **ROI:** {state.get('nba_roi_pct', 0):+,.1f}%")
+    lines.append(f"- **Sharpe Ratio:** {state.get('nba_sharpe', 0):.3f}")
+    lines.append(f"- **Record:** {state.get('nba_wins', 0)}W-{state.get('nba_losses', 0)}L")
+    lines.append(f"- **Peak Bankroll:** ${state.get('nba_peak', 0):,.2f}")
+    lines.append(f"- **Max Drawdown:** {state.get('nba_max_drawdown', 0)*100:.1f}%")
+    lines.append(f"- **Rank:** #{rank_entry.get('rank', '?')} of {len(board)}")
+    if state.get('nba_eliminated_day'):
+        lines.append(f"- **ELIMINATED:** Day {state['nba_eliminated_day']}")
+    lines.append(f"- **Total Wagered:** ${state.get('nba_wagered', 0):,.2f}")
+    lines.append(f"")
+
+    # Peer comparison
+    lines.append(f"## Peer Comparison")
+    lines.append(f"| Rank | Agent | Bankroll | ROI | Sharpe |")
+    lines.append(f"|------|-------|----------|-----|--------|")
+    for entry in board:
+        marker = " **" if entry["trader_id"] == trader_id else ""
+        lines.append(
+            f"| {entry['rank']} | {entry['name']}{marker} | "
+            f"${entry['nba_bankroll']:,.2f} | {entry['nba_roi_pct']:+,.1f}% | "
+            f"{entry.get('nba_sharpe', 0):.3f} |"
+        )
+    lines.append(f"")
+
+    # Model usage breakdown
+    model_usage = defaultdict(lambda: {"count": 0, "profit": 0.0})
+    for bet in all_bets:
+        m = bet.get("model_used", "unknown")
+        model_usage[m]["count"] += 1
+        model_usage[m]["profit"] += bet.get("profit", 0)
+
+    lines.append(f"## Model Performance")
+    lines.append(f"| Model | Bets | Profit |")
+    lines.append(f"|-------|------|--------|")
+    for m, stats in sorted(model_usage.items(), key=lambda x: -x[1]["profit"]):
+        lines.append(f"| {m} | {stats['count']} | ${stats['profit']:+,.2f} |")
+    lines.append(f"")
+
+    # Strategy usage breakdown
+    strat_usage = defaultdict(lambda: {"count": 0, "profit": 0.0})
+    for bet in all_bets:
+        s = bet.get("strategy_used", "unknown")
+        strat_usage[s]["count"] += 1
+        strat_usage[s]["profit"] += bet.get("profit", 0)
+
+    lines.append(f"## Strategy Performance")
+    lines.append(f"| Strategy | Bets | Profit |")
+    lines.append(f"|----------|------|--------|")
+    for s, stats in sorted(strat_usage.items(), key=lambda x: -x[1]["profit"]):
+        lines.append(f"| {s} | {stats['count']} | ${stats['profit']:+,.2f} |")
+    lines.append(f"")
+
+    # Category breakdown
+    cat_usage = defaultdict(lambda: {"count": 0, "wins": 0, "profit": 0.0})
+    for bet in all_bets:
+        c = bet.get("category", "unknown")
+        cat_usage[c]["count"] += 1
+        cat_usage[c]["profit"] += bet.get("profit", 0)
+        if bet.get("outcome") == "Win":
+            cat_usage[c]["wins"] += 1
+
+    lines.append(f"## Category Breakdown")
+    lines.append(f"| Category | Bets | WR% | Profit |")
+    lines.append(f"|----------|------|-----|--------|")
+    for c, stats in sorted(cat_usage.items(), key=lambda x: -x[1]["profit"]):
+        wr = round(stats["wins"] / stats["count"] * 100, 1) if stats["count"] > 0 else 0
+        lines.append(f"| {c} | {stats['count']} | {wr}% | ${stats['profit']:+,.2f} |")
+    lines.append(f"")
+
+    # Day-by-day results
+    lines.append(f"## Day-by-Day Results")
+    lines.append(f"| Day | Date | Games | Bets | P&L | Bankroll | Models | Strategies |")
+    lines.append(f"|-----|------|-------|------|-----|----------|--------|------------|")
+    for d in day_results:
+        models_str = ",".join(d.get("models", []))[:20]
+        strats_str = ",".join(d.get("strategies", []))[:25]
+        lines.append(
+            f"| {d['day']} | {d['date']} | {d.get('games', '?')} | {d['bets']} | "
+            f"${d['profit']:+,.2f} | ${d['bankroll']:,.2f} | {models_str} | {strats_str} |"
+        )
+    lines.append(f"")
+
+    # Sample bets with justification (first 50 + last 50)
+    lines.append(f"## Bet Log (sample: first 50 + last 50 of {len(all_bets)} total)")
+    lines.append(f"")
+    sample_bets = all_bets[:50] + (all_bets[-50:] if len(all_bets) > 100 else [])
+    for i, bet in enumerate(sample_bets):
+        if i == 50 and len(all_bets) > 100:
+            lines.append(f"")
+            lines.append(f"*... ({len(all_bets) - 100} bets omitted) ...*")
+            lines.append(f"")
+        lines.append(f"### {bet.get('date', '?')} | {bet.get('game', '?')} | {bet.get('category', '?')}")
+        lines.append(f"- **Model:** {bet.get('model_used', '?')} | **Strategy:** {bet.get('strategy_used', '?')}")
+        lines.append(f"- **Prob:** {bet.get('model_prob', 0):.3f} vs implied {bet.get('implied_prob', 0):.3f} | **Edge:** {bet.get('edge_pct', 0):+.1f}%")
+        lines.append(f"- **Bet:** ${bet.get('bet_size', 0):,.2f} @ {bet.get('odds', 0):.3f} | **{bet.get('outcome', '?')}** → ${bet.get('profit', 0):+,.2f}")
+        lines.append(f"- **Context:** {bet.get('standings_context', '')}")
+        lines.append(f"- **Reasoning:** {bet.get('reasoning', '')}")
+        lines.append(f"- **Bankroll after:** ${bet.get('bankroll_after', 0):,.2f}")
+        lines.append(f"")
+
+    return "\n".join(lines)
+
+
+def generate_all_season_docs(all_results: Dict, board: List[Dict]) -> None:
+    """Generate season doc for all 5 agents."""
+    docs_dir = DATA_DIR / "docs"
+    docs_dir.mkdir(parents=True, exist_ok=True)
+    for tid, state in all_results.items():
+        doc = generate_agent_season_doc(tid, state, board)
+        doc_path = docs_dir / f"{tid}-season-2025-26.md"
+        doc_path.write_text(doc)
+        print(f"  Season doc: {doc_path} ({len(doc)} chars)")
+
+
 # ── KARPATHY LOOP: ANALYZE + AUTO-EVOLVE ─────────────────────────────────────
 
 ELIMINATION_ROI_THRESHOLD = -50.0   # Strategies below this ROI% get coffin'd
@@ -1110,47 +1460,10 @@ ELIMINATION_MIN_BETS      = 20      # Need at least this many bets to judge
 KARPATHY_OUTPUT_FILE      = DATA_DIR / 'trading-floor-karpathy-output.json'
 
 def _analyze_strategy_performance(result: Dict) -> Dict[str, Dict]:
-    """Extract per-strategy performance from all traders' day results."""
+    """Extract per-strategy performance from all traders' bet-level data (v5)."""
     strat_stats: Dict[str, Dict] = defaultdict(lambda: {
         "bets": 0, "wins": 0, "losses": 0, "profit": 0.0,
-        "bankrolls": [], "traders_using": set(),
-    })
-
-    for tid, trader_state in result.get("traders", {}).items():
-        # Read full state from disk (includes day_results)
-        sf = TRADERS_DIR / f"{tid}-state.json"
-        if not sf.exists():
-            continue
-        try:
-            full_state = json.loads(sf.read_text())
-        except Exception:
-            continue
-
-        for day in full_state.get("nba_day_results", []):
-            strat = day.get("strategy", "unknown")
-            strat_stats[strat]["bets"] += day.get("bets", 0)
-            strat_stats[strat]["profit"] += day.get("profit", 0.0)
-            strat_stats[strat]["bankrolls"].append(day.get("bankroll", 100.0))
-            strat_stats[strat]["traders_using"].add(tid)
-
-    # Compute ROI and win-rate per strategy
-    for strat, stats in strat_stats.items():
-        # Estimate wins/losses from profit sign on days using this strategy
-        stats["traders_using"] = list(stats["traders_using"])
-        initial = 100.0 * len(stats["traders_using"]) if stats["traders_using"] else 100.0
-        stats["roi_pct"] = round(stats["profit"] / initial * 100, 2) if initial > 0 else 0.0
-        stats["avg_bankroll"] = round(
-            sum(stats["bankrolls"]) / len(stats["bankrolls"]), 2
-        ) if stats["bankrolls"] else 100.0
-        del stats["bankrolls"]  # Don't serialize full list
-
-    return dict(strat_stats)
-
-
-def _analyze_model_performance(result: Dict) -> Dict[str, Dict]:
-    """Extract per-model performance from all traders' day results."""
-    model_stats: Dict[str, Dict] = defaultdict(lambda: {
-        "days_used": 0, "total_profit": 0.0, "traders_using": set(),
+        "traders_using": set(),
     })
 
     for tid in TRADERS:
@@ -1162,23 +1475,66 @@ def _analyze_model_performance(result: Dict) -> Dict[str, Dict]:
         except Exception:
             continue
 
-        for day in full_state.get("nba_day_results", []):
-            model = day.get("model", "unknown")
-            model_stats[model]["days_used"] += 1
-            model_stats[model]["total_profit"] += day.get("profit", 0.0)
+        # v5: read from individual bets which have strategy_used
+        for bet in full_state.get("nba_bets_history", []):
+            strat = bet.get("strategy_used", "unknown")
+            strat_stats[strat]["bets"] += 1
+            strat_stats[strat]["profit"] += bet.get("profit", 0.0)
+            strat_stats[strat]["traders_using"].add(tid)
+            if bet.get("profit", 0.0) > 0:
+                strat_stats[strat]["wins"] += 1
+            else:
+                strat_stats[strat]["losses"] += 1
+
+    for strat, stats in strat_stats.items():
+        stats["traders_using"] = list(stats["traders_using"])
+        initial = 100.0 * len(stats["traders_using"]) if stats["traders_using"] else 100.0
+        stats["roi_pct"] = round(stats["profit"] / initial * 100, 2) if initial > 0 else 0.0
+        total = stats["wins"] + stats["losses"]
+        stats["win_rate_pct"] = round(stats["wins"] / total * 100, 1) if total > 0 else 0.0
+
+    return dict(strat_stats)
+
+
+def _analyze_model_performance(result: Dict) -> Dict[str, Dict]:
+    """Extract per-model performance from all traders' bet-level data (v5)."""
+    model_stats: Dict[str, Dict] = defaultdict(lambda: {
+        "bets": 0, "total_profit": 0.0, "wins": 0, "losses": 0,
+        "traders_using": set(),
+    })
+
+    for tid in TRADERS:
+        sf = TRADERS_DIR / f"{tid}-state.json"
+        if not sf.exists():
+            continue
+        try:
+            full_state = json.loads(sf.read_text())
+        except Exception:
+            continue
+
+        for bet in full_state.get("nba_bets_history", []):
+            model = bet.get("model_used", "unknown")
+            model_stats[model]["bets"] += 1
+            model_stats[model]["total_profit"] += bet.get("profit", 0.0)
             model_stats[model]["traders_using"].add(tid)
+            if bet.get("profit", 0.0) > 0:
+                model_stats[model]["wins"] += 1
+            else:
+                model_stats[model]["losses"] += 1
 
     for model, stats in model_stats.items():
         stats["traders_using"] = list(stats["traders_using"])
-        stats["avg_daily_profit"] = round(
-            stats["total_profit"] / max(stats["days_used"], 1), 4
+        stats["avg_daily_pnl"] = round(
+            stats["total_profit"] / max(stats["bets"], 1), 4
         )
+        total = stats["wins"] + stats["losses"]
+        stats["win_rate_pct"] = round(stats["wins"] / total * 100, 1) if total > 0 else 0.0
 
     return dict(model_stats)
 
 
 def _analyze_category_performance(result: Dict) -> Dict[str, Dict]:
-    """Extract per-bet-category performance from all traders' bet histories."""
+    """Extract per-bet-category performance from all traders' bet histories (v5)."""
     cat_stats: Dict[str, Dict] = defaultdict(lambda: {
         "bets": 0, "profit": 0.0, "wins": 0, "losses": 0,
     })
@@ -1193,7 +1549,7 @@ def _analyze_category_performance(result: Dict) -> Dict[str, Dict]:
             continue
 
         for bet in full_state.get("nba_bets_history", []):
-            cat = bet.get("cat", "unknown")
+            cat = bet.get("category", bet.get("cat", "unknown"))
             cat_stats[cat]["bets"] += 1
             cat_stats[cat]["profit"] += bet.get("profit", 0.0)
             if bet.get("profit", 0.0) > 0:
@@ -1252,14 +1608,14 @@ def _mutate_agent_preferences(result: Dict) -> Dict[str, Dict]:
 
     mutations = {}
 
-    # Read winner's actual day results to find their most-used strategy
+    # Read winner's actual bets to find their most-used strategy (v5: from bets)
     winner_sf = TRADERS_DIR / f"{winner_id}-state.json"
     if winner_sf.exists():
         try:
             ws = json.loads(winner_sf.read_text())
             strat_usage = defaultdict(int)
-            for d in ws.get("nba_day_results", []):
-                strat_usage[d.get("strategy", "")] += 1
+            for b in ws.get("nba_bets_history", []):
+                strat_usage[b.get("strategy_used", "")] += 1
             if strat_usage:
                 best_strat = max(strat_usage, key=strat_usage.get)
                 # Only mutate if the winner's strategy isn't already in loser's preferences
@@ -1341,11 +1697,11 @@ def run_karpathy_loop() -> Dict:
     # Rank models by avg daily profit
     model_ranked = sorted(
         model_perf.items(),
-        key=lambda x: x[1]["avg_daily_profit"], reverse=True
+        key=lambda x: x[1]["avg_daily_pnl"], reverse=True
     )
     print(f"\nModel rankings:")
     for m, p in model_ranked:
-        print(f"  {m:25s}: avg_daily_pnl {p['avg_daily_profit']:+.4f}  ({p['days_used']} days)")
+        print(f"  {m:25s}: avg_daily_pnl {p['avg_daily_pnl']:+.4f}  ({p['bets']} bets)")
 
     # Best bet categories
     cat_ranked = sorted(
@@ -1370,8 +1726,48 @@ def run_karpathy_loop() -> Dict:
 
     # Step 5: Determine best overall findings
     best_strategy = strat_ranked[0] if strat_ranked else ("none", {"roi_pct": 0})
-    best_model = model_ranked[0] if model_ranked else ("none", {"avg_daily_profit": 0})
+    best_model = model_ranked[0] if model_ranked else ("none", {"avg_daily_pnl": 0})
     best_category = cat_ranked[0] if cat_ranked else ("none", {"win_rate_pct": 0})
+
+    # Step 5b: $1M FITNESS TRACKING
+    print(f"\n--- $1M OPTIMIZATION (target: ${OPTIMIZATION_TARGET:,.0f}) ---")
+    best_config = _load_best_config()
+    board = result.get("leaderboard", [])
+    current_best_bankroll = max((e.get("nba_bankroll", 0) for e in board), default=100.0)
+    current_best_trader = max(board, key=lambda e: e.get("nba_bankroll", 0))["trader_id"] if board else None
+    distance_pct = round((1.0 - current_best_bankroll / OPTIMIZATION_TARGET) * 100, 4)
+
+    improved = current_best_bankroll > best_config["best_bankroll"]
+    if improved:
+        print(f"  NEW RECORD: ${current_best_bankroll:,.2f} by {current_best_trader} (was ${best_config['best_bankroll']:,.2f})")
+        # Snapshot winning agent's config
+        if current_best_trader:
+            winning_cfg = TRADERS.get(current_best_trader, {})
+            best_config["agent_configs"][current_best_trader] = {
+                "preferred_strategies": winning_cfg.get("preferred_strategies", []),
+                "preferred_models": winning_cfg.get("preferred_models", []),
+                "personality": winning_cfg.get("personality", ""),
+                "risk_tolerance": winning_cfg.get("risk_tolerance", 0.5),
+                "bankroll_achieved": round(current_best_bankroll, 2),
+            }
+        best_config["best_bankroll"] = round(current_best_bankroll, 2)
+        best_config["best_trader_id"] = current_best_trader
+        best_config["best_iteration"] = result.get("iteration", 0)
+        best_config["distance_to_1M_pct"] = distance_pct
+        best_config["history"].append({
+            "iteration": result.get("iteration", 0),
+            "bankroll": round(current_best_bankroll, 2),
+            "trader": current_best_trader,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        })
+        # Keep last 100 history entries
+        best_config["history"] = best_config["history"][-100:]
+        _save_best_config(best_config)
+    else:
+        print(f"  Current best: ${current_best_bankroll:,.2f} (record: ${best_config['best_bankroll']:,.2f} by {best_config['best_trader_id']})")
+
+    print(f"  Distance to $1M: {distance_pct:.2f}%")
+    print(f"  Multiplier needed: {OPTIMIZATION_TARGET / max(current_best_bankroll, 1):.1f}x")
 
     # Step 6: Write Karpathy output for Guardian
     karpathy_output = {
@@ -1389,8 +1785,8 @@ def run_karpathy_loop() -> Dict:
         },
         "best_model": {
             "name": best_model[0],
-            "avg_daily_profit": best_model[1]["avg_daily_profit"],
-            "days_used": best_model[1].get("days_used", 0),
+            "avg_daily_pnl": best_model[1]["avg_daily_pnl"],
+            "bets": best_model[1].get("bets", 0),
         },
         "best_category": {
             "name": best_category[0],
@@ -1420,6 +1816,17 @@ def run_karpathy_loop() -> Dict:
         },
         "mutations": mutations,
 
+        # $1M optimization
+        "optimization": {
+            "target": OPTIMIZATION_TARGET,
+            "current_best": round(current_best_bankroll, 2),
+            "record_best": round(best_config["best_bankroll"], 2),
+            "record_trader": best_config.get("best_trader_id"),
+            "distance_to_1M_pct": distance_pct,
+            "multiplier_needed": round(OPTIMIZATION_TARGET / max(current_best_bankroll, 1), 1),
+            "improved_this_iteration": improved,
+        },
+
         # Leaderboard summary
         "leaderboard": result.get("leaderboard", []),
         "matched_games": result.get("meta", {}).get("matched_games", 0),
@@ -1440,13 +1847,13 @@ def run_karpathy_loop() -> Dict:
             "reason": f"Top strategy '{best_strategy[0]}' with {best_strategy[1]['roi_pct']:+.1f}% ROI — promote to live betting",
         })
 
-    if best_model[1]["avg_daily_profit"] > 0.5:
+    if best_model[1]["avg_daily_pnl"] > 0.5:
         recs.append({
             "target_dept": "evolution",
             "type": "promote_model",
             "model": best_model[0],
-            "avg_daily_profit": best_model[1]["avg_daily_profit"],
-            "reason": f"Model '{best_model[0]}' has avg daily profit {best_model[1]['avg_daily_profit']:+.4f} — prioritize in evolution",
+            "avg_daily_pnl": best_model[1]["avg_daily_pnl"],
+            "reason": f"Model '{best_model[0]}' has avg daily pnl {best_model[1]['avg_daily_pnl']:+.4f} — prioritize in evolution",
         })
 
     if new_coffins:
@@ -1470,7 +1877,7 @@ def run_karpathy_loop() -> Dict:
 
     print(f"\nKarpathy loop complete — iteration {result.get('iteration', '?')}")
     print(f"Best strategy: {best_strategy[0]} ({best_strategy[1]['roi_pct']:+.1f}% ROI)")
-    print(f"Best model:    {best_model[0]} ({best_model[1]['avg_daily_profit']:+.4f}/day)")
+    print(f"Best model:    {best_model[0]} ({best_model[1]['avg_daily_pnl']:+.4f}/bet)")
     print(f"Best category: {best_category[0]} ({best_category[1]['win_rate_pct']:.1f}% WR)")
     print(f"Eliminations:  {len(ELIMINATED_STRATEGIES)} NBA + {len(ELIMINATED_POLITICAL_STRATEGIES)} political")
     print(f"Mutations:     {len(mutations)} agents mutated")
