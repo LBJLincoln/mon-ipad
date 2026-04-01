@@ -3,6 +3,7 @@
 Simple HTTP server to serve NBA agent data files to Vercel.
 Runs on port 8080, serves files from /home/termius/mon-ipad/data/nba-agent/
 Also serves latest odds snapshots from nomos-nba-agent/data/
+Also serves arena/trading-floor data from /home/termius/mon-ipad/data/arena/
 
 CORS enabled for nomos42.vercel.app
 """
@@ -15,6 +16,7 @@ from datetime import datetime, timezone
 
 NBA_AGENT_DIR = Path("/home/termius/mon-ipad/data/nba-agent")
 ODDS_DIR = Path("/home/termius/nomos-nba-agent/data")
+ARENA_DIR = Path("/home/termius/mon-ipad/data/arena")
 PORT = 8080
 
 ALLOWED_ORIGINS = [
@@ -50,6 +52,16 @@ class NBADataHandler(http.server.BaseHTTPRequestHandler):
             if odds_files:
                 self._serve_json(odds_files[0], cors_origin)
                 return
+
+        # Route: /arena/<file> — serve arena/trading-floor data files
+        if path.startswith("/arena/"):
+            filename = path.replace("/arena/", "")
+            # Prevent directory traversal
+            if ".." not in filename and "/" not in filename:
+                filepath = ARENA_DIR / filename
+                if filepath.exists() and filepath.is_file():
+                    self._serve_json(filepath, cors_origin)
+                    return
 
         # Route: /health
         if path == "/health":
