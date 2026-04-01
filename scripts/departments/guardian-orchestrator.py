@@ -309,9 +309,10 @@ def cross_pollinate(cycle):
 # ── Cross-department intelligence ─────────────────────────────────────────────
 
 def load_karpathy_outputs() -> dict:
-    """Load all department karpathy-output.json files."""
+    """Load all department karpathy-output.json files (including trading_floor)."""
     outputs = {}
-    for dept in DEPARTMENTS:
+    all_depts = list(DEPARTMENTS.keys()) + ['trading_floor']
+    for dept in all_depts:
         path = DATA_DIR / dept / 'karpathy-output.json'
         if path.exists():
             try:
@@ -387,6 +388,16 @@ def extract_key_metrics(outputs: dict) -> dict:
         'creative': {
             'quality_score': outputs.get('creative', {}).get('quality_score'),
             'pieces_today': outputs.get('creative', {}).get('pieces_today', 0),
+        },
+        'trading_floor': {
+            'best_strategy': outputs.get('trading_floor', {}).get('best_strategy', {}),
+            'best_model': outputs.get('trading_floor', {}).get('best_model', {}),
+            'best_category': outputs.get('trading_floor', {}).get('best_category', {}),
+            'iteration': outputs.get('trading_floor', {}).get('iteration'),
+            'new_eliminations': outputs.get('trading_floor', {}).get('new_eliminations', []),
+            'mutations': outputs.get('trading_floor', {}).get('mutations', {}),
+            'leaderboard': outputs.get('trading_floor', {}).get('leaderboard', []),
+            'recommendations': outputs.get('trading_floor', {}).get('recommendations', []),
         },
     }
 
@@ -501,6 +512,35 @@ def detect_cross_department_issues(metrics: dict) -> list:
             'description': f'ROI={roi:.1f}% (target >5%) — calibration issues likely driver',
             'recommended_action': 'Prioritize ECE fix; pause full_kelly until ECE < 0.10',
             'auto_flag': False,
+            'detected_at': ts,
+        })
+
+    # Trading Floor → Betting + Evolution: best strategy/model discoveries
+    tf = metrics.get('trading_floor', {})
+    tf_recs = tf.get('recommendations', [])
+    for rec in tf_recs:
+        target = rec.get('target_dept', 'betting')
+        issues.append({
+            'severity': 'MEDIUM',
+            'source_dept': 'trading_floor',
+            'target_dept': target,
+            'issue_type': rec.get('type', 'TRADING_FLOOR_REC'),
+            'description': rec.get('reason', ''),
+            'recommended_action': rec.get('reason', ''),
+            'auto_flag': False,
+            'detected_at': ts,
+        })
+
+    # Trading Floor → Betting: new eliminations
+    for elim in tf.get('new_eliminations', []):
+        issues.append({
+            'severity': 'HIGH',
+            'source_dept': 'trading_floor',
+            'target_dept': 'betting',
+            'issue_type': 'STRATEGY_AUTO_ELIMINATED',
+            'description': f"Strategy '{elim.get('strategy', '?')}' auto-eliminated: {elim.get('reason', '')}",
+            'recommended_action': f"Remove '{elim.get('strategy', '?')}' from live betting agent preferred strategies",
+            'auto_flag': True,
             'detected_at': ts,
         })
 
@@ -656,6 +696,29 @@ def cross_pollinate_enhanced(outputs: dict, metrics: dict) -> dict:
                       f"from {res.get('papers_scanned', 0)} papers",
         })
 
+    # Trading Floor → Betting + Evolution
+    tf = metrics.get('trading_floor', {})
+    tf_best_strat = tf.get('best_strategy', {})
+    tf_best_model = tf.get('best_model', {})
+    if tf_best_strat.get('roi_pct', 0) > 5:
+        wins['trading_floor'] = {
+            'best_strategy': tf_best_strat.get('name'),
+            'roi_pct': tf_best_strat.get('roi_pct'),
+        }
+        recs.append({
+            'from': 'trading_floor',
+            'to': 'betting',
+            'action': f"Promote strategy '{tf_best_strat.get('name')}' to live "
+                      f"({tf_best_strat.get('roi_pct', 0):+.1f}% ROI from full-season backtest)",
+        })
+    if tf_best_model.get('avg_daily_profit', 0) > 0.3:
+        recs.append({
+            'from': 'trading_floor',
+            'to': 'evolution',
+            'action': f"Prioritize model '{tf_best_model.get('name')}' in evolution "
+                      f"(avg daily profit {tf_best_model.get('avg_daily_profit', 0):+.4f})",
+        })
+
     # Evaluation → Betting: calibration status
     ev = metrics.get('evaluation', {})
     if ev.get('brier') and ev['brier'] < 0.222:
@@ -765,6 +828,17 @@ def build_dept_summaries(metrics: dict, dept_results: dict) -> dict:
                 f"pass rate={m.get('test_pass_rate')}"
             )
         )(dept_results.get('engineering', {}).get('metrics', {})),
+
+        'trading_floor': (
+            lambda tf: (
+                f"iter={tf.get('iteration','?')} | "
+                f"best_strat={tf.get('best_strategy',{}).get('name','?')} "
+                f"({tf.get('best_strategy',{}).get('roi_pct',0):+.1f}%) | "
+                f"best_model={tf.get('best_model',{}).get('name','?')} | "
+                f"elim={len(tf.get('new_eliminations',[]))} | "
+                f"mutations={len(tf.get('mutations',{}))}"
+            )
+        )(metrics.get('trading_floor', {})),
     }
 
 

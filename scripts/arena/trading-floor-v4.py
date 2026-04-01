@@ -1103,6 +1103,381 @@ def run_full_competition() -> Dict:
     return output
 
 
+# ── KARPATHY LOOP: ANALYZE + AUTO-EVOLVE ─────────────────────────────────────
+
+ELIMINATION_ROI_THRESHOLD = -50.0   # Strategies below this ROI% get coffin'd
+ELIMINATION_MIN_BETS      = 20      # Need at least this many bets to judge
+KARPATHY_OUTPUT_FILE      = DATA_DIR / 'trading-floor-karpathy-output.json'
+
+def _analyze_strategy_performance(result: Dict) -> Dict[str, Dict]:
+    """Extract per-strategy performance from all traders' day results."""
+    strat_stats: Dict[str, Dict] = defaultdict(lambda: {
+        "bets": 0, "wins": 0, "losses": 0, "profit": 0.0,
+        "bankrolls": [], "traders_using": set(),
+    })
+
+    for tid, trader_state in result.get("traders", {}).items():
+        # Read full state from disk (includes day_results)
+        sf = TRADERS_DIR / f"{tid}-state.json"
+        if not sf.exists():
+            continue
+        try:
+            full_state = json.loads(sf.read_text())
+        except Exception:
+            continue
+
+        for day in full_state.get("nba_day_results", []):
+            strat = day.get("strategy", "unknown")
+            strat_stats[strat]["bets"] += day.get("bets", 0)
+            strat_stats[strat]["profit"] += day.get("profit", 0.0)
+            strat_stats[strat]["bankrolls"].append(day.get("bankroll", 100.0))
+            strat_stats[strat]["traders_using"].add(tid)
+
+    # Compute ROI and win-rate per strategy
+    for strat, stats in strat_stats.items():
+        # Estimate wins/losses from profit sign on days using this strategy
+        stats["traders_using"] = list(stats["traders_using"])
+        initial = 100.0 * len(stats["traders_using"]) if stats["traders_using"] else 100.0
+        stats["roi_pct"] = round(stats["profit"] / initial * 100, 2) if initial > 0 else 0.0
+        stats["avg_bankroll"] = round(
+            sum(stats["bankrolls"]) / len(stats["bankrolls"]), 2
+        ) if stats["bankrolls"] else 100.0
+        del stats["bankrolls"]  # Don't serialize full list
+
+    return dict(strat_stats)
+
+
+def _analyze_model_performance(result: Dict) -> Dict[str, Dict]:
+    """Extract per-model performance from all traders' day results."""
+    model_stats: Dict[str, Dict] = defaultdict(lambda: {
+        "days_used": 0, "total_profit": 0.0, "traders_using": set(),
+    })
+
+    for tid in TRADERS:
+        sf = TRADERS_DIR / f"{tid}-state.json"
+        if not sf.exists():
+            continue
+        try:
+            full_state = json.loads(sf.read_text())
+        except Exception:
+            continue
+
+        for day in full_state.get("nba_day_results", []):
+            model = day.get("model", "unknown")
+            model_stats[model]["days_used"] += 1
+            model_stats[model]["total_profit"] += day.get("profit", 0.0)
+            model_stats[model]["traders_using"].add(tid)
+
+    for model, stats in model_stats.items():
+        stats["traders_using"] = list(stats["traders_using"])
+        stats["avg_daily_profit"] = round(
+            stats["total_profit"] / max(stats["days_used"], 1), 4
+        )
+
+    return dict(model_stats)
+
+
+def _analyze_category_performance(result: Dict) -> Dict[str, Dict]:
+    """Extract per-bet-category performance from all traders' bet histories."""
+    cat_stats: Dict[str, Dict] = defaultdict(lambda: {
+        "bets": 0, "profit": 0.0, "wins": 0, "losses": 0,
+    })
+
+    for tid in TRADERS:
+        sf = TRADERS_DIR / f"{tid}-state.json"
+        if not sf.exists():
+            continue
+        try:
+            full_state = json.loads(sf.read_text())
+        except Exception:
+            continue
+
+        for bet in full_state.get("nba_bets_history", []):
+            cat = bet.get("cat", "unknown")
+            cat_stats[cat]["bets"] += 1
+            cat_stats[cat]["profit"] += bet.get("profit", 0.0)
+            if bet.get("profit", 0.0) > 0:
+                cat_stats[cat]["wins"] += 1
+            else:
+                cat_stats[cat]["losses"] += 1
+
+    for cat, stats in cat_stats.items():
+        total = stats["wins"] + stats["losses"]
+        stats["win_rate_pct"] = round(stats["wins"] / total * 100, 1) if total > 0 else 0.0
+        stats["roi_pct"] = round(stats["profit"] / max(stats["bets"], 1) * 100, 2)
+
+    return dict(cat_stats)
+
+
+def _auto_eliminate_strategies(strat_perf: Dict[str, Dict]) -> List[Dict]:
+    """Auto-eliminate strategies with ROI below threshold. Returns new coffins."""
+    new_coffins = []
+    for strat, stats in strat_perf.items():
+        if strat in ELIMINATED_STRATEGIES:
+            continue  # Already dead
+        if strat not in STRATEGIES:
+            continue  # Unknown strategy
+        if stats["bets"] < ELIMINATION_MIN_BETS:
+            continue  # Not enough data to judge
+        if stats["roi_pct"] < ELIMINATION_ROI_THRESHOLD:
+            coffin = {
+                "strategy": strat,
+                "eliminated_at": date.today().isoformat(),
+                "reason": f"Auto-eliminated: {stats['roi_pct']:.0f}% ROI ({stats['bets']} bets)",
+                "final_roi": round(stats["roi_pct"] / 100, 2),
+                "bets": stats["bets"],
+                "department": "D4_BETTING",
+            }
+            new_coffins.append(coffin)
+            # Add to live eliminated dict so next iteration skips them
+            ELIMINATED_STRATEGIES[strat] = coffin
+            print(f"  [COFFIN] Strategy '{strat}' eliminated: {stats['roi_pct']:.1f}% ROI")
+    return new_coffins
+
+
+def _mutate_agent_preferences(result: Dict) -> Dict[str, Dict]:
+    """
+    Karpathy-style mutation: losing agents adopt winning agents' strategies.
+    Returns mutation log per trader.
+    """
+    board = result.get("leaderboard", [])
+    if len(board) < 2:
+        return {}
+
+    # Find winner and loser
+    winner = board[0]
+    loser  = board[-1]
+    winner_id = winner["trader_id"]
+    loser_id  = loser["trader_id"]
+
+    mutations = {}
+
+    # Read winner's actual day results to find their most-used strategy
+    winner_sf = TRADERS_DIR / f"{winner_id}-state.json"
+    if winner_sf.exists():
+        try:
+            ws = json.loads(winner_sf.read_text())
+            strat_usage = defaultdict(int)
+            for d in ws.get("nba_day_results", []):
+                strat_usage[d.get("strategy", "")] += 1
+            if strat_usage:
+                best_strat = max(strat_usage, key=strat_usage.get)
+                # Only mutate if the winner's strategy isn't already in loser's preferences
+                loser_cfg = TRADERS[loser_id]
+                if best_strat not in loser_cfg["preferred_strategies"] and best_strat in STRATEGIES:
+                    # Add winner's best strategy to loser's preferences (at position 0)
+                    old_prefs = list(loser_cfg["preferred_strategies"])
+                    loser_cfg["preferred_strategies"] = [best_strat] + old_prefs[:2]
+                    mutations[loser_id] = {
+                        "type": "adopt_winner_strategy",
+                        "from_trader": winner_id,
+                        "adopted_strategy": best_strat,
+                        "old_preferences": old_prefs,
+                        "new_preferences": loser_cfg["preferred_strategies"],
+                        "reason": f"{loser_id} (rank {loser['rank']}, ROI {loser['nba_roi_pct']:+.1f}%) "
+                                  f"adopts '{best_strat}' from {winner_id} (rank 1, ROI {winner['nba_roi_pct']:+.1f}%)",
+                    }
+                    print(f"  [MUTATE] {loser_id} adopts '{best_strat}' from {winner_id}")
+        except Exception:
+            pass
+
+    # Also: if middle agents are stagnant (ROI near 0), try shifting their model preference
+    for entry in board[1:-1]:
+        tid = entry["trader_id"]
+        if abs(entry["nba_roi_pct"]) < 2.0:  # Near-zero ROI = stagnant
+            winner_models = TRADERS[winner_id]["preferred_models"]
+            current_models = TRADERS[tid]["preferred_models"]
+            # Add winner's top model if not already present
+            if winner_models and winner_models[0] not in current_models:
+                old_models = list(current_models)
+                TRADERS[tid]["preferred_models"] = [winner_models[0]] + current_models[:2]
+                mutations[tid] = {
+                    "type": "adopt_winner_model",
+                    "from_trader": winner_id,
+                    "adopted_model": winner_models[0],
+                    "old_models": old_models,
+                    "new_models": TRADERS[tid]["preferred_models"],
+                    "reason": f"{tid} stagnant (ROI {entry['nba_roi_pct']:+.1f}%) — adopts model '{winner_models[0]}' from {winner_id}",
+                }
+                print(f"  [MUTATE] {tid} adopts model '{winner_models[0]}' from {winner_id}")
+
+    return mutations
+
+
+def run_karpathy_loop() -> Dict:
+    """
+    Karpathy-style continuous loop:
+    1. Run full-season backtest
+    2. Analyze strategy/model/category performance
+    3. Auto-eliminate losing strategies (coffin them)
+    4. Mutate agent preferences (losers adopt winners' approaches)
+    5. Write karpathy-output.json for Guardian consumption
+    """
+    print("=" * 60)
+    print("TRADING FLOOR v4 — KARPATHY LOOP")
+    print("=" * 60)
+
+    # Step 1: Run full competition
+    result = run_full_competition()
+
+    # Step 2: Analyze
+    print("\n--- KARPATHY ANALYSIS ---")
+    strat_perf = _analyze_strategy_performance(result)
+    model_perf = _analyze_model_performance(result)
+    cat_perf   = _analyze_category_performance(result)
+
+    # Rank strategies by ROI
+    strat_ranked = sorted(
+        [(s, p) for s, p in strat_perf.items() if p["bets"] >= 5],
+        key=lambda x: x[1]["roi_pct"], reverse=True
+    )
+    print(f"\nTop strategies:")
+    for s, p in strat_ranked[:5]:
+        print(f"  {s:25s}: ROI {p['roi_pct']:+8.1f}%  ({p['bets']} bets)")
+    print(f"Bottom strategies:")
+    for s, p in strat_ranked[-3:]:
+        print(f"  {s:25s}: ROI {p['roi_pct']:+8.1f}%  ({p['bets']} bets)")
+
+    # Rank models by avg daily profit
+    model_ranked = sorted(
+        model_perf.items(),
+        key=lambda x: x[1]["avg_daily_profit"], reverse=True
+    )
+    print(f"\nModel rankings:")
+    for m, p in model_ranked:
+        print(f"  {m:25s}: avg_daily_pnl {p['avg_daily_profit']:+.4f}  ({p['days_used']} days)")
+
+    # Best bet categories
+    cat_ranked = sorted(
+        [(c, p) for c, p in cat_perf.items() if p["bets"] >= 10],
+        key=lambda x: x[1]["win_rate_pct"], reverse=True
+    )
+    print(f"\nBest bet categories:")
+    for c, p in cat_ranked[:5]:
+        print(f"  {c:25s}: WR {p['win_rate_pct']:.1f}%  ROI {p['roi_pct']:+.1f}%  ({p['bets']} bets)")
+
+    # Step 3: Auto-eliminate
+    print("\n--- AUTO-ELIMINATION ---")
+    new_coffins = _auto_eliminate_strategies(strat_perf)
+    if not new_coffins:
+        print("  No new eliminations this iteration.")
+
+    # Step 4: Mutate agent preferences
+    print("\n--- AGENT MUTATIONS ---")
+    mutations = _mutate_agent_preferences(result)
+    if not mutations:
+        print("  No mutations this iteration.")
+
+    # Step 5: Determine best overall findings
+    best_strategy = strat_ranked[0] if strat_ranked else ("none", {"roi_pct": 0})
+    best_model = model_ranked[0] if model_ranked else ("none", {"avg_daily_profit": 0})
+    best_category = cat_ranked[0] if cat_ranked else ("none", {"win_rate_pct": 0})
+
+    # Step 6: Write Karpathy output for Guardian
+    karpathy_output = {
+        "department": "trading_floor",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "iteration": result.get("iteration", 0),
+        "generation": result.get("generation", 0),
+        "status": "completed",
+
+        # Key findings (Guardian reads these)
+        "best_strategy": {
+            "name": best_strategy[0],
+            "roi_pct": best_strategy[1]["roi_pct"],
+            "bets": best_strategy[1].get("bets", 0),
+        },
+        "best_model": {
+            "name": best_model[0],
+            "avg_daily_profit": best_model[1]["avg_daily_profit"],
+            "days_used": best_model[1].get("days_used", 0),
+        },
+        "best_category": {
+            "name": best_category[0],
+            "win_rate_pct": best_category[1]["win_rate_pct"],
+            "bets": best_category[1].get("bets", 0),
+        },
+
+        # Full rankings
+        "strategy_rankings": [
+            {"strategy": s, **{k: v for k, v in p.items()}}
+            for s, p in strat_ranked
+        ],
+        "model_rankings": [
+            {"model": m, **{k: v for k, v in p.items()}}
+            for m, p in model_ranked
+        ],
+        "category_rankings": [
+            {"category": c, **{k: v for k, v in p.items()}}
+            for c, p in cat_ranked
+        ],
+
+        # Evolution actions taken
+        "new_eliminations": new_coffins,
+        "all_eliminations": {
+            "nba": ELIMINATED_STRATEGIES,
+            "political": ELIMINATED_POLITICAL_STRATEGIES,
+        },
+        "mutations": mutations,
+
+        # Leaderboard summary
+        "leaderboard": result.get("leaderboard", []),
+        "matched_games": result.get("meta", {}).get("matched_games", 0),
+
+        # Recommendations for other departments
+        "recommendations": [],
+    }
+
+    # Generate cross-department recommendations
+    recs = karpathy_output["recommendations"]
+
+    if best_strategy[1]["roi_pct"] > 10:
+        recs.append({
+            "target_dept": "betting",
+            "type": "promote_strategy",
+            "strategy": best_strategy[0],
+            "roi_pct": best_strategy[1]["roi_pct"],
+            "reason": f"Top strategy '{best_strategy[0]}' with {best_strategy[1]['roi_pct']:+.1f}% ROI — promote to live betting",
+        })
+
+    if best_model[1]["avg_daily_profit"] > 0.5:
+        recs.append({
+            "target_dept": "evolution",
+            "type": "promote_model",
+            "model": best_model[0],
+            "avg_daily_profit": best_model[1]["avg_daily_profit"],
+            "reason": f"Model '{best_model[0]}' has avg daily profit {best_model[1]['avg_daily_profit']:+.4f} — prioritize in evolution",
+        })
+
+    if new_coffins:
+        recs.append({
+            "target_dept": "betting",
+            "type": "strategy_eliminated",
+            "strategies": [c["strategy"] for c in new_coffins],
+            "reason": f"{len(new_coffins)} strategies auto-eliminated — update live betting agent",
+        })
+
+    # Write output
+    KARPATHY_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    KARPATHY_OUTPUT_FILE.write_text(json.dumps(karpathy_output, indent=2))
+    print(f"\nKarpathy output: {KARPATHY_OUTPUT_FILE}")
+
+    # Also write to department directory for Guardian
+    dept_output = DATA_DIR.parent / 'departments' / 'trading_floor'
+    dept_output.mkdir(parents=True, exist_ok=True)
+    (dept_output / 'karpathy-output.json').write_text(json.dumps(karpathy_output, indent=2))
+    print(f"Guardian feed:   {dept_output / 'karpathy-output.json'}")
+
+    print(f"\nKarpathy loop complete — iteration {result.get('iteration', '?')}")
+    print(f"Best strategy: {best_strategy[0]} ({best_strategy[1]['roi_pct']:+.1f}% ROI)")
+    print(f"Best model:    {best_model[0]} ({best_model[1]['avg_daily_profit']:+.4f}/day)")
+    print(f"Best category: {best_category[0]} ({best_category[1]['win_rate_pct']:.1f}% WR)")
+    print(f"Eliminations:  {len(ELIMINATED_STRATEGIES)} NBA + {len(ELIMINATED_POLITICAL_STRATEGIES)} political")
+    print(f"Mutations:     {len(mutations)} agents mutated")
+
+    return karpathy_output
+
+
 # ── ENTRY POINT ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
@@ -1112,6 +1487,22 @@ if __name__ == "__main__":
         result = run_full_competition()
         print("\n--- LEADERBOARD ---")
         print(json.dumps(result["leaderboard"], indent=2))
+
+    elif cmd == "karpathy":
+        # Karpathy loop: backtest → analyze → eliminate → mutate → repeat
+        karpathy_result = run_karpathy_loop()
+        # Print JSON summary for Guardian stdout consumption
+        print(json.dumps({
+            "status": "completed",
+            "department": "trading_floor",
+            "iteration": karpathy_result.get("iteration"),
+            "best_strategy": karpathy_result.get("best_strategy", {}).get("name"),
+            "best_model": karpathy_result.get("best_model", {}).get("name"),
+            "best_category": karpathy_result.get("best_category", {}).get("name"),
+            "eliminations": len(karpathy_result.get("new_eliminations", [])),
+            "mutations": len(karpathy_result.get("mutations", {})),
+            "recommendations": len(karpathy_result.get("recommendations", [])),
+        }))
 
     elif cmd == "leaderboard":
         states = {}
@@ -1140,5 +1531,5 @@ if __name__ == "__main__":
                 print(f"{tid:12s}: no state yet")
 
     else:
-        print(f"Usage: {sys.argv[0]} [run|leaderboard|status]")
+        print(f"Usage: {sys.argv[0]} [run|karpathy|leaderboard|status]")
         sys.exit(1)

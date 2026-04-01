@@ -253,6 +253,42 @@ summary_file.write_text(json.dumps(summary, indent=2))
 print(f"[SYNC] quant-summary.json updated: bankroll=${bankroll:.2f}, record={wins}W-{losses}L")
 PYEOF
 
+# ── Phase 3c: Trading Floor Karpathy Loop ──────────────────
+# Continuous backtest: 5 AI agents compete on full season → analyze → evolve
+# Each cycle: run backtest → rank strategies/models/categories → eliminate losers → mutate agents
+log "[TRADING-FLOOR] Running Karpathy loop..."
+cd "$MON_DIR"
+TF_START=$(date +%s)
+timeout 180 python3 scripts/arena/trading-floor-v4.py karpathy >> "$LOG" 2>&1
+TF_EXIT=$?
+TF_ELAPSED=$(( $(date +%s) - TF_START ))
+
+if [ $TF_EXIT -eq 0 ]; then
+    log "[TRADING-FLOOR] Karpathy loop completed (${TF_ELAPSED}s)"
+    # Read key result for log
+    TF_BEST=$(python3 -c "
+import json
+d = json.load(open('data/arena/trading-floor-karpathy-output.json'))
+bs = d.get('best_strategy', {})
+bm = d.get('best_model', {})
+it = d.get('iteration', '?')
+print(f'iter={it} best_strat={bs.get(\"name\",\"?\")}({bs.get(\"roi_pct\",0):+.1f}%) best_model={bm.get(\"name\",\"?\")}')
+" 2>/dev/null || echo "?")
+    log "[TRADING-FLOOR] $TF_BEST"
+    # Stage arena results for git push
+    git add data/arena/trading-floor-v4-latest.json data/arena/trading-floor-karpathy-output.json \
+            data/departments/trading_floor/karpathy-output.json \
+            data/arena/traders/*.json data/arena/trading-floor-iteration.json 2>/dev/null
+    git diff --cached --quiet || {
+        git commit -m "data: trading floor karpathy iter $(date -u +%Y-%m-%d-%H%M)" --no-verify
+        git push origin main 2>/dev/null || log "[GIT] push failed (trading-floor)"
+    }
+elif [ $TF_EXIT -eq 124 ]; then
+    log "[TRADING-FLOOR] TIMEOUT after ${TF_ELAPSED}s"
+else
+    log "[TRADING-FLOOR] FAILED (exit $TF_EXIT, ${TF_ELAPSED}s)"
+fi
+
 # ── Phase 4: Infrastructure ─────────────────────────────────
 # Ensure data server is alive
 if ! pgrep -f "nba-data-server" > /dev/null; then

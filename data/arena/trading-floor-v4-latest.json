@@ -1,14 +1,113 @@
 {
+  "iteration": 2,
+  "generation": 272,
   "meta": {
     "version": "trading-floor-v4",
-    "generated": "2026-03-31T23:19:02Z",
-    "date": "2026-03-31",
+    "generated": "2026-04-01T09:26:06Z",
+    "date": "2026-04-01",
     "traders": 5,
     "nba_models": 11,
-    "nba_strategies": 22,
+    "nba_strategies": 20,
+    "nba_strategies_eliminated": 3,
     "matched_games": 994,
     "political_tickers": 26,
     "etf_universe": 13
+  },
+  "eliminations": {
+    "strategies": {
+      "totals_expert": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-72% ROI",
+        "final_roi": -0.72,
+        "department": "D4_BETTING"
+      },
+      "spread_only": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-97% ROI",
+        "final_roi": -0.97,
+        "department": "D4_BETTING"
+      },
+      "full_blast": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-100% ROI",
+        "final_roi": -1.0,
+        "department": "D4_BETTING"
+      }
+    },
+    "political": {
+      "SECTOR_ROTATE": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-75% ROI",
+        "final_roi": -0.75,
+        "department": "D7_POLITICAL"
+      },
+      "DEFENSE_LONG_individual": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-65% ROI on individual defense stock picks",
+        "final_roi": -0.65,
+        "department": "D7_POLITICAL"
+      },
+      "BILL_PASSES": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-64% ROI",
+        "final_roi": -0.64,
+        "department": "D7_POLITICAL"
+      }
+    },
+    "coffins": [
+      {
+        "name": "totals_expert",
+        "eliminated_at": "2026-03-31",
+        "reason": "-72% ROI",
+        "final_roi": -0.72,
+        "department": "D4_BETTING",
+        "type": "nba_strategy"
+      },
+      {
+        "name": "spread_only",
+        "eliminated_at": "2026-03-31",
+        "reason": "-97% ROI",
+        "final_roi": -0.97,
+        "department": "D4_BETTING",
+        "type": "nba_strategy"
+      },
+      {
+        "name": "full_blast",
+        "eliminated_at": "2026-03-31",
+        "reason": "-100% ROI",
+        "final_roi": -1.0,
+        "department": "D4_BETTING",
+        "type": "nba_strategy"
+      },
+      {
+        "name": "SECTOR_ROTATE",
+        "eliminated_at": "2026-03-31",
+        "reason": "-75% ROI",
+        "final_roi": -0.75,
+        "department": "D7_POLITICAL",
+        "type": "political_strategy"
+      },
+      {
+        "name": "DEFENSE_LONG_individual",
+        "eliminated_at": "2026-03-31",
+        "reason": "-65% ROI on individual defense stock picks",
+        "final_roi": -0.65,
+        "department": "D7_POLITICAL",
+        "type": "political_strategy"
+      },
+      {
+        "name": "BILL_PASSES",
+        "eliminated_at": "2026-03-31",
+        "reason": "-64% ROI",
+        "final_roi": -0.64,
+        "department": "D7_POLITICAL",
+        "type": "political_strategy"
+      }
+    ],
+    "active_nba_count": 20,
+    "eliminated_nba_count": 3,
+    "active_political_count": 5,
+    "eliminated_political_count": 3
   },
   "leaderboard": [
     {
@@ -17,70 +116,70 @@
       "name": "Codex",
       "provider": "openai",
       "personality": "aggressive",
-      "nba_bankroll": 64700.0218,
-      "nba_roi_pct": 64600.02,
-      "nba_sharpe": 11.01,
+      "nba_bankroll": 63546.3928,
+      "nba_roi_pct": 63446.39,
+      "nba_sharpe": 10.926,
       "nba_bets": 1298,
       "nba_wins": 775,
       "nba_losses": 523,
       "political_bankroll": 100000.0,
       "political_roi_pct": 0.0,
       "political_approach": "event_driven",
-      "combined_score": 64600.02,
+      "combined_score": 63446.39,
       "eliminated": false
     },
     {
       "rank": 2,
-      "trader_id": "openrouter",
-      "name": "OpenRouter",
-      "provider": "openrouter",
-      "personality": "diversified",
-      "nba_bankroll": 26300.4517,
-      "nba_roi_pct": 26200.45,
-      "nba_sharpe": 12.09,
-      "nba_bets": 1349,
-      "nba_wins": 830,
-      "nba_losses": 519,
-      "political_bankroll": 100000.0,
-      "political_roi_pct": 0.0,
-      "political_approach": "sector_rotation",
-      "combined_score": 26200.45,
-      "eliminated": false
-    },
-    {
-      "rank": 3,
       "trader_id": "claude",
       "name": "Claude",
       "provider": "anthropic",
       "personality": "conservative",
-      "nba_bankroll": 16610.0672,
-      "nba_roi_pct": 16510.07,
-      "nba_sharpe": 8.329,
+      "nba_bankroll": 22254.1031,
+      "nba_roi_pct": 22154.1,
+      "nba_sharpe": 10.644,
       "nba_bets": 1309,
       "nba_wins": 794,
       "nba_losses": 515,
       "political_bankroll": 100000.0,
       "political_roi_pct": 0.0,
       "political_approach": "mean_reversion",
-      "combined_score": 16510.07,
+      "combined_score": 22154.1,
       "eliminated": false
     },
     {
-      "rank": 4,
+      "rank": 3,
       "trader_id": "gemini",
       "name": "Gemini",
       "provider": "google",
       "personality": "analytical",
-      "nba_bankroll": 16454.049,
-      "nba_roi_pct": 16354.05,
-      "nba_sharpe": 13.208,
-      "nba_bets": 1426,
-      "nba_wins": 885,
-      "nba_losses": 541,
+      "nba_bankroll": 16891.6024,
+      "nba_roi_pct": 16791.6,
+      "nba_sharpe": 8.534,
+      "nba_bets": 1459,
+      "nba_wins": 905,
+      "nba_losses": 554,
       "political_bankroll": 100000.0,
       "political_roi_pct": 0.0,
       "political_approach": "momentum",
-      "combined_score": 16354.05,
+      "combined_score": 16791.6,
+      "eliminated": false
+    },
+    {
+      "rank": 4,
+      "trader_id": "openrouter",
+      "name": "OpenRouter",
+      "provider": "openrouter",
+      "personality": "diversified",
+      "nba_bankroll": 10690.5818,
+      "nba_roi_pct": 10590.58,
+      "nba_sharpe": 12.823,
+      "nba_bets": 1667,
+      "nba_wins": 1012,
+      "nba_losses": 655,
+      "political_bankroll": 100000.0,
+      "political_roi_pct": 0.0,
+      "political_approach": "sector_rotation",
+      "combined_score": 10590.58,
       "eliminated": false
     },
     {
@@ -109,17 +208,17 @@
       "provider": "google",
       "personality": "analytical",
       "risk_tolerance": 0.6,
-      "nba_bankroll": 16454.049,
-      "nba_roi_pct": 16354.05,
-      "nba_sharpe": 13.208,
-      "nba_bets": 1426,
-      "nba_wins": 885,
-      "nba_losses": 541,
+      "nba_bankroll": 16891.6024,
+      "nba_roi_pct": 16791.6,
+      "nba_sharpe": 8.534,
+      "nba_bets": 1459,
+      "nba_wins": 905,
+      "nba_losses": 554,
       "nba_pushes": 0,
-      "nba_wagered": 28494.8952,
-      "nba_profit": 16354.049,
-      "nba_peak": 16471.3439,
-      "nba_max_drawdown": 0.5928,
+      "nba_wagered": 12149.2447,
+      "nba_profit": 16791.6024,
+      "nba_peak": 16891.6656,
+      "nba_max_drawdown": 0.1154,
       "nba_eliminated_day": null,
       "political_bankroll": 100000.0,
       "political_roi_pct": 0.0,
@@ -133,7 +232,7 @@
         "codex",
         "grok"
       ],
-      "run_timestamp": "2026-03-31T23:18:57.933293+00:00"
+      "run_timestamp": "2026-04-01T09:26:05.796929+00:00"
     },
     "openrouter": {
       "trader_id": "openrouter",
@@ -141,17 +240,17 @@
       "provider": "openrouter",
       "personality": "diversified",
       "risk_tolerance": 0.5,
-      "nba_bankroll": 26300.4517,
-      "nba_roi_pct": 26200.45,
-      "nba_sharpe": 12.09,
-      "nba_bets": 1349,
-      "nba_wins": 830,
-      "nba_losses": 519,
+      "nba_bankroll": 10690.5818,
+      "nba_roi_pct": 10590.58,
+      "nba_sharpe": 12.823,
+      "nba_bets": 1667,
+      "nba_wins": 1012,
+      "nba_losses": 655,
       "nba_pushes": 0,
-      "nba_wagered": 38471.7833,
-      "nba_profit": 26200.4517,
-      "nba_peak": 26344.7108,
-      "nba_max_drawdown": 0.4387,
+      "nba_wagered": 21520.643,
+      "nba_profit": 10590.5818,
+      "nba_peak": 10695.0737,
+      "nba_max_drawdown": 0.1628,
       "nba_eliminated_day": null,
       "political_bankroll": 100000.0,
       "political_roi_pct": 0.0,
@@ -165,7 +264,7 @@
         "codex",
         "grok"
       ],
-      "run_timestamp": "2026-03-31T23:18:59.182013+00:00"
+      "run_timestamp": "2026-04-01T09:26:05.865469+00:00"
     },
     "claude": {
       "trader_id": "claude",
@@ -173,16 +272,16 @@
       "provider": "anthropic",
       "personality": "conservative",
       "risk_tolerance": 0.4,
-      "nba_bankroll": 16610.0672,
-      "nba_roi_pct": 16510.07,
-      "nba_sharpe": 8.329,
+      "nba_bankroll": 22254.1031,
+      "nba_roi_pct": 22154.1,
+      "nba_sharpe": 10.644,
       "nba_bets": 1309,
       "nba_wins": 794,
       "nba_losses": 515,
       "nba_pushes": 0,
-      "nba_wagered": 25706.2582,
-      "nba_profit": 16510.0672,
-      "nba_peak": 16627.5261,
+      "nba_wagered": 34450.9308,
+      "nba_profit": 22154.1031,
+      "nba_peak": 22291.5529,
       "nba_max_drawdown": 0.5283,
       "nba_eliminated_day": null,
       "political_bankroll": 100000.0,
@@ -197,7 +296,7 @@
         "codex",
         "grok"
       ],
-      "run_timestamp": "2026-03-31T23:19:00.184870+00:00"
+      "run_timestamp": "2026-04-01T09:26:05.935456+00:00"
     },
     "codex": {
       "trader_id": "codex",
@@ -205,16 +304,16 @@
       "provider": "openai",
       "personality": "aggressive",
       "risk_tolerance": 0.7,
-      "nba_bankroll": 64700.0218,
-      "nba_roi_pct": 64600.02,
-      "nba_sharpe": 11.01,
+      "nba_bankroll": 63546.3928,
+      "nba_roi_pct": 63446.39,
+      "nba_sharpe": 10.926,
       "nba_bets": 1298,
       "nba_wins": 775,
       "nba_losses": 523,
       "nba_pushes": 0,
-      "nba_wagered": 111604.5757,
-      "nba_profit": 64600.0218,
-      "nba_peak": 65109.5661,
+      "nba_wagered": 107884.081,
+      "nba_profit": 63446.3928,
+      "nba_peak": 63948.6347,
       "nba_max_drawdown": 0.9255,
       "nba_eliminated_day": null,
       "political_bankroll": 100000.0,
@@ -229,7 +328,7 @@
         "claude",
         "grok"
       ],
-      "run_timestamp": "2026-03-31T23:19:01.190569+00:00"
+      "run_timestamp": "2026-04-01T09:26:06.010750+00:00"
     },
     "grok": {
       "trader_id": "grok",
@@ -261,7 +360,7 @@
         "claude",
         "codex"
       ],
-      "run_timestamp": "2026-03-31T23:19:02.195637+00:00"
+      "run_timestamp": "2026-04-01T09:26:06.099516+00:00"
     }
   },
   "command_centers": {
@@ -406,19 +505,15 @@
       "family": "underdog",
       "max_pct": 0.06
     },
-    "totals_expert": {
-      "family": "kelly",
-      "max_pct": 0.15
-    },
     "first_half_sniper": {
       "family": "kelly",
       "max_pct": 0.15
     },
-    "home_specialist": {
+    "first_half_away": {
       "family": "kelly",
       "max_pct": 0.12
     },
-    "spread_only": {
+    "home_specialist": {
       "family": "kelly",
       "max_pct": 0.12
     },
@@ -433,10 +528,6 @@
     "streak_momentum": {
       "family": "streak",
       "max_pct": 0.2
-    },
-    "full_blast": {
-      "family": "full_blast",
-      "max_pct": 1.0
     }
   },
   "etf_universe": {
