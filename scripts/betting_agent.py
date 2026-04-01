@@ -88,16 +88,52 @@ TEAM_MAP = {
     "Houston Rockets": "HOU", "Memphis Grizzlies": "MEM",
 }
 
+# Reverse map: nickname / city / partial → abbreviation.
+# Replaces the broken name.upper()[:3] fallback (e.g. "San Antonio"→"SAN", "LA Clippers"→"LA ").
+REVERSE_TEAM_MAP = {abbr: abbr for abbr in TEAM_MAP.values()}
+REVERSE_TEAM_MAP.update({
+    # Team nicknames
+    "Hawks": "ATL", "Celtics": "BOS", "Nets": "BKN", "Hornets": "CHA",
+    "Bulls": "CHI", "Cavaliers": "CLE", "Mavericks": "DAL", "Nuggets": "DEN",
+    "Pistons": "DET", "Warriors": "GSW", "Rockets": "HOU", "Pacers": "IND",
+    "Clippers": "LAC", "Lakers": "LAL", "Grizzlies": "MEM", "Heat": "MIA",
+    "Bucks": "MIL", "Timberwolves": "MIN", "Pelicans": "NOP", "Knicks": "NYK",
+    "Thunder": "OKC", "Magic": "ORL", "76ers": "PHI", "Sixers": "PHI",
+    "Suns": "PHX", "Blazers": "POR", "Kings": "SAC", "Spurs": "SAS",
+    "Raptors": "TOR", "Jazz": "UTA", "Wizards": "WAS",
+    # City-only variants
+    "Atlanta": "ATL", "Boston": "BOS", "Brooklyn": "BKN", "Charlotte": "CHA",
+    "Chicago": "CHI", "Cleveland": "CLE", "Dallas": "DAL", "Denver": "DEN",
+    "Detroit": "DET", "Houston": "HOU", "Indiana": "IND", "Memphis": "MEM",
+    "Miami": "MIA", "Milwaukee": "MIL", "Minnesota": "MIN", "Orlando": "ORL",
+    "Philadelphia": "PHI", "Phoenix": "PHX", "Portland": "POR",
+    "Sacramento": "SAC", "Toronto": "TOR", "Washington": "WAS",
+    # Multi-word city / name variants that [:3] truncation gets wrong
+    "Golden State": "GSW", "LA Clippers": "LAC", "LA Lakers": "LAL",
+    "New Orleans": "NOP", "New York": "NYK", "Oklahoma City": "OKC",
+    "San Antonio": "SAS", "Utah": "UTA",
+})
+
 def normalize_team(name):
     if not name:
         return ""
     name = name.strip()
+    # Direct match (full name or short alias in TEAM_MAP)
     if name in TEAM_MAP:
         return TEAM_MAP[name]
+    # Already a valid abbreviation
     for full, abbr in TEAM_MAP.items():
         if abbr == name or name.upper() == abbr:
             return abbr
-    return name.upper()[:3]
+    # Nickname / city / partial — case-insensitive REVERSE_TEAM_MAP lookup
+    if name in REVERSE_TEAM_MAP:
+        return REVERSE_TEAM_MAP[name]
+    name_upper = name.upper()
+    for key, abbr in REVERSE_TEAM_MAP.items():
+        if key.upper() == name_upper:
+            return abbr
+    # Last resort: return uppercased as-is (do NOT truncate to [:3])
+    return name_upper
 
 
 def load_inputs(bankroll_override=None):
@@ -176,6 +212,23 @@ def load_inputs(bankroll_override=None):
         if not home or not away or model_prob <= 0:
             continue
 
+        # Apply post-hoc calibration before Kelly sizing (D5: raw ECE=0.2758)
+        # Only calibrate if not already calibrated upstream by predict_today.py
+        if not pred.get("calibrated"):
+            try:
+                import sys as _sys
+                _sys.path.insert(0, '/home/termius/mon-ipad/scripts')
+                from calibration import IsotonicCalibration as _IsoCal
+                _cal = _IsoCal()
+                model_prob = _cal.calibrate(model_prob)
+            except Exception:
+                pass  # Use raw prob if calibration unavailable
+
+        # Guard: skip phantom games where both teams resolve to the same abbreviation
+        if home == away:
+            print(f"[PHANTOM] Skipping phantom game: {away} @ {home} (same team)")
+            continue
+
         # Get odds
         key = f"{home}_{away}"
         odds_info = odds_by_game.get(key, {})
@@ -191,6 +244,14 @@ def load_inputs(bankroll_override=None):
             edge = prob - implied
             ev = prob * odds - 1.0
             b = odds - 1.0
+
+            # Sanity gate: skip if model and market diverge by >50pp (team mismatch or
+            # corrupted odds) or if market implied probability is out of [10%, 90%].
+            if not (0.10 <= implied <= 0.90) or abs(prob - implied) > 0.50:
+                print(f"[SANITY] {away} @ {home} ({side}): skipping — "
+                      f"model={prob:.2%} market={implied:.2%} "
+                      f"(gap={abs(prob-implied):.2%}, implied={'OUT-OF-RANGE' if not (0.10 <= implied <= 0.90) else 'ok'})")
+                continue
 
             # Full Kelly
             if b > 0:

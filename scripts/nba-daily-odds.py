@@ -97,16 +97,18 @@ def get_todays_games():
             home_name = home.get("teamName", "")
             away_name = away.get("teamName", "")
 
-            # Resolve full names
-            home_full = None
-            away_full = None
-            for full in TEAM_MAP:
-                if home_name and home_name in full:
-                    home_full = full
-                if away_name and away_name in full:
-                    away_full = full
+            # Resolve full names — use next() to take the FIRST match only,
+            # preventing the same full name from matching both home and away.
+            home_full = next((full for full in TEAM_MAP if home_name and home_name in full), None)
+            away_full = next((full for full in TEAM_MAP if away_name and away_name in full), None)
 
             if not home_full or not away_full:
+                continue
+
+            # Guard: skip phantom games where both teams resolve to the same name
+            if home_full == away_full:
+                print(f"[PHANTOM] Skipping phantom game: {away_name!r} @ {home_name!r} "
+                      f"(both resolved to {home_full!r})")
                 continue
 
             game_time = g.get("gameTimeUTC", "")
@@ -154,6 +156,12 @@ def get_todays_games():
                         away_name, home_name = teams[0], teams[1]
                         away_full = next((f for f in TEAM_MAP if away_name in f), away_name)
                         home_full = next((f for f in TEAM_MAP if home_name in f), home_name)
+                        # Guard: skip phantom games
+                        if home_full == away_full:
+                            print(f"[PHANTOM] Skipping phantom game (v2): "
+                                  f"{away_name!r} @ {home_name!r} "
+                                  f"(both resolved to {home_full!r})")
+                            continue
                         final.append({
                             "home_team": home_full,
                             "away_team": away_full,

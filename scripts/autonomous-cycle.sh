@@ -107,6 +107,22 @@ python3 ops/fetch-odds.py --once >> "$LOG" 2>&1 || log "[ODDS] fetch failed"
 # Run predictions
 timeout 300 python3 predict_today.py >> "$LOG" 2>&1 || log "[PREDICT] FAILED"
 
+# Apply calibration to predictions file if not already done in-process (D5: ECE=0.2758)
+python3 - << 'CAL_EOF' >> "$LOG" 2>/dev/null || true
+import json
+from pathlib import Path
+p = Path("/home/termius/nomos-nba-agent/data/nba-agent/predictions-today.json")
+if p.exists():
+    d = json.loads(p.read_text())
+    if not d.get("metadata", {}).get("calibration_applied"):
+        import sys
+        sys.path.insert(0, '/home/termius/mon-ipad/scripts')
+        from calibration import IsotonicCalibration, apply_to_predictions_file
+        apply_to_predictions_file(p, IsotonicCalibration())
+    else:
+        print("[calibration] Already applied in-process — skipping")
+CAL_EOF
+
 # Copy to data server
 TODAY=$(date +%Y-%m-%d)
 if [ -f "data/predictions/predictions-${TODAY}.json" ]; then
