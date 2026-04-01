@@ -33,7 +33,11 @@
 - [ ] **Review investor deck** — Draft deck is in `docs/deck/` — review narrative and approve
 
 ### MINOR (nice to have)
-- [ ] **Delete unused HF Spaces** — See "HF Space Audit" below for which to delete
+- [ ] **Delete 13 unused HF Spaces** — See audit below. Delete from HF dashboard:
+  - Nomos42: nomos42-infra-brain, nomos42-paperclip, nomos42-brain, karpathy-arena, political-alpha-3, political-alpha-4
+  - LBJLincoln: betting-monitor, fleet-monitor, island-coordinator
+  - LBJLincoln26: research-radar, quality-tracker, predictions-monitor, political-monitor
+- [ ] **Recreate P3/P4 on LBJLincoln** — After deleting from Nomos42, redeploy on LBJLincoln account
 - [ ] **Telegram channel posts** — @Nomos42 channel could use weekly update posts
 
 ---
@@ -95,30 +99,47 @@ Iteration N finishes
 
 ## HF SPACE AUDIT (4 accounts, 8 max per account)
 
-### Account: Nomos42 (HF_TOKEN_3) — MAIN PRODUCTION
-| Space | Role | Status | Keep? |
-|-------|------|--------|-------|
-| Nomos42/nba-quant (S10) | NBA exploitation | ACTIVE | YES |
-| Nomos42/nba-quant-2 (S11) | NBA exploration | ACTIVE | YES |
-| Nomos42/nba-evo-3 (S12) | Extra-trees specialist | ACTIVE | YES |
-| Nomos42/nba-evo-4 (S13) | CatBoost specialist | ACTIVE | YES |
-| Nomos42/nba-evo-5 (S14) | LightGBM specialist | ACTIVE | YES |
-| Nomos42/nba-evo-6 (S15) | Wide search | ACTIVE | YES |
-| Nomos42/political-alpha (P1) | Political exploitation | ACTIVE | YES |
-| Nomos42/political-alpha-2 (P2) | Political exploration | ACTIVE | YES |
-**8/8 used — at capacity. Need to check if P3/P4 exist here or on another account.**
+### Account: Nomos42 (HF_TOKEN_3) — MAIN PRODUCTION (14 spaces → 8 after cleanup)
+| Space | Role | Status | Action |
+|-------|------|--------|--------|
+| Nomos42/nba-quant (S10) | NBA exploitation | ACTIVE | KEEP |
+| Nomos42/nba-quant-2 (S11) | NBA exploration | ACTIVE | KEEP |
+| Nomos42/nba-evo-3 (S12) | Extra-trees specialist | ACTIVE | KEEP |
+| Nomos42/nba-evo-4 (S13) | CatBoost specialist | ACTIVE | KEEP |
+| Nomos42/nba-evo-5 (S14) | LightGBM specialist | ACTIVE | KEEP |
+| Nomos42/nba-evo-6 (S15) | Wide search | ACTIVE | KEEP |
+| Nomos42/political-alpha (P1) | Political exploitation | ACTIVE | KEEP |
+| Nomos42/political-alpha-2 (P2) | Political exploration | ACTIVE | KEEP |
+| Nomos42/political-alpha-3 (P3) | Political CatBoost | ACTIVE | **DELETE** → move to LBJLincoln |
+| Nomos42/political-alpha-4 (P4) | Political wide | ACTIVE | **DELETE** → move to LBJLincoln |
+| Nomos42/nomos42-infra-brain | Dead infra brain | DEAD | **DELETE** |
+| Nomos42/nomos42-paperclip | Dead paperclip | DEAD | **DELETE** |
+| Nomos42/nomos42-brain | Dead brain | DEAD | **DELETE** |
+| Nomos42/karpathy-arena | Dead arena | DEAD | **DELETE** |
 
-### Account: LBJLincoln (HF_TOKEN) — PERSONAL
-**Action needed:** List spaces, delete any unused ones. Should host RGWA spaces.
+### Account: LBJLincoln (HF_TOKEN) — PERSONAL (3 spaces → 0, then +4 planned)
+| Space | Role | Status | Action |
+|-------|------|--------|--------|
+| LBJLincoln/betting-monitor | Old monitor | DEAD | **DELETE** |
+| LBJLincoln/fleet-monitor | Old monitor | DEAD | **DELETE** |
+| LBJLincoln/island-coordinator | Old coordinator | DEAD | **DELETE** |
+**Planned:** P3 (political CatBoost), P4 (political wide), RGWA gen-1, RGWA gen-2 → 4/8
 
-### Account: LBJLincoln26 (HF_TOKEN_2) — SECONDARY
-**Action needed:** List spaces, consolidate. Could host P3/P4 political spaces + RGWA.
+### Account: LBJLincoln26 (HF_TOKEN_2) — SECONDARY (4 spaces → 0, then +2 planned)
+| Space | Role | Status | Action |
+|-------|------|--------|--------|
+| LBJLincoln26/research-radar | Old monitor | DEAD | **DELETE** |
+| LBJLincoln26/quality-tracker | Old monitor | DEAD | **DELETE** |
+| LBJLincoln26/predictions-monitor | Old monitor | DEAD | **DELETE** |
+| LBJLincoln26/political-monitor | Old monitor | DEAD | **DELETE** |
+**Planned:** experimental overflow → 2/8
 
-### Allocation Plan
-- **Nomos42**: 6 NBA (S10-S15) + 2 Political (P1-P2) = 8/8
-- **LBJLincoln**: 2 Political (P3-P4) + 2 RGWA + 4 available = 4-8
-- **LBJLincoln26**: Overflow / experimental = 0-8
-- **Total active:** 10 NBA+Political + 2 RGWA = 12 spaces across 3 accounts
+### Allocation Plan (after cleanup)
+- **Nomos42**: 6 NBA (S10-S15) + 2 Political (P1-P2) = **8/8** ✅
+- **LBJLincoln**: 2 Political (P3-P4) + 2 RGWA = **4/8**
+- **LBJLincoln26**: 2 experimental = **2/8**
+- **Total:** 13 deletions needed, 14 spaces target across 3 accounts
+- **Capacity remaining:** 10 free slots
 
 ---
 

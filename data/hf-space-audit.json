@@ -1,0 +1,87 @@
+{
+  "audit_date": "2026-04-01",
+  "accounts": {
+    "Nomos42": {
+      "token_env": "HF_TOKEN_3",
+      "max_spaces": 8,
+      "current_spaces": 14,
+      "over_limit_by": 6,
+      "spaces": [
+        {"name": "nba-quant", "id": "S10", "role": "NBA exploitation", "sdk": "gradio", "created": "2026-03-26", "action": "KEEP"},
+        {"name": "nba-quant-2", "id": "S11", "role": "NBA exploration", "sdk": "gradio", "created": "2026-03-26", "action": "KEEP"},
+        {"name": "nba-evo-3", "id": "S12", "role": "Extra-trees specialist", "sdk": "gradio", "created": "2026-03-26", "action": "KEEP"},
+        {"name": "nba-evo-4", "id": "S13", "role": "CatBoost specialist", "sdk": "gradio", "created": "2026-03-26", "action": "KEEP"},
+        {"name": "nba-evo-5", "id": "S14", "role": "LightGBM specialist", "sdk": "gradio", "created": "2026-03-24", "action": "KEEP"},
+        {"name": "nba-evo-6", "id": "S15", "role": "Wide search", "sdk": "gradio", "created": "2026-03-24", "action": "KEEP"},
+        {"name": "political-alpha", "id": "P1", "role": "Political exploitation", "sdk": "gradio", "created": "2026-03-27", "action": "KEEP"},
+        {"name": "political-alpha-2", "id": "P2", "role": "Political exploration", "sdk": "gradio", "created": "2026-03-27", "action": "KEEP"},
+        {"name": "political-alpha-3", "id": "P3", "role": "Political CatBoost", "sdk": "gradio", "created": "2026-03-27", "action": "DELETE — move to LBJLincoln"},
+        {"name": "political-alpha-4", "id": "P4", "role": "Political wide", "sdk": "gradio", "created": "2026-03-27", "action": "DELETE — move to LBJLincoln"},
+        {"name": "nomos42-infra-brain", "id": null, "role": "Dead infra brain", "sdk": "docker", "created": "2026-03-28", "action": "DELETE"},
+        {"name": "nomos42-paperclip", "id": null, "role": "Dead paperclip", "sdk": "docker", "created": "2026-03-28", "action": "DELETE"},
+        {"name": "nomos42-brain", "id": null, "role": "Dead brain", "sdk": "gradio", "created": "2026-03-31", "action": "DELETE"},
+        {"name": "karpathy-arena", "id": null, "role": "Dead arena", "sdk": "gradio", "created": "2026-03-31", "action": "DELETE"}
+      ],
+      "after_cleanup": 8,
+      "keep": ["nba-quant", "nba-quant-2", "nba-evo-3", "nba-evo-4", "nba-evo-5", "nba-evo-6", "political-alpha", "political-alpha-2"],
+      "delete": ["political-alpha-3", "political-alpha-4", "nomos42-infra-brain", "nomos42-paperclip", "nomos42-brain", "karpathy-arena"]
+    },
+    "LBJLincoln": {
+      "token_env": "HF_TOKEN",
+      "max_spaces": 8,
+      "current_spaces": 3,
+      "spaces": [
+        {"name": "betting-monitor", "role": "Old monitor", "sdk": "gradio", "created": "2026-03-31", "action": "DELETE"},
+        {"name": "fleet-monitor", "role": "Old monitor", "sdk": "gradio", "created": "2026-03-31", "action": "DELETE"},
+        {"name": "island-coordinator", "role": "Old coordinator", "sdk": "gradio", "created": "2026-03-31", "action": "DELETE"}
+      ],
+      "after_cleanup": 0,
+      "planned_new": [
+        {"name": "political-alpha-3", "id": "P3", "role": "Political CatBoost (moved from Nomos42)"},
+        {"name": "political-alpha-4", "id": "P4", "role": "Political wide (moved from Nomos42)"},
+        {"name": "rgwa-gen-1", "role": "RGWA generation island 1"},
+        {"name": "rgwa-gen-2", "role": "RGWA generation island 2"}
+      ],
+      "after_planned": 4,
+      "delete": ["betting-monitor", "fleet-monitor", "island-coordinator"]
+    },
+    "LBJLincoln26": {
+      "token_env": "HF_TOKEN_2",
+      "max_spaces": 8,
+      "current_spaces": 4,
+      "spaces": [
+        {"name": "research-radar", "role": "Old research monitor", "sdk": "gradio", "created": "2026-03-31", "action": "DELETE"},
+        {"name": "quality-tracker", "role": "Old quality monitor", "sdk": "gradio", "created": "2026-03-31", "action": "DELETE"},
+        {"name": "predictions-monitor", "role": "Old predictions monitor", "sdk": "gradio", "created": "2026-03-31", "action": "DELETE"},
+        {"name": "political-monitor", "role": "Old political monitor", "sdk": "gradio", "created": "2026-03-31", "action": "DELETE"}
+      ],
+      "after_cleanup": 0,
+      "planned_new": [
+        {"name": "nba-experimental-1", "role": "Overflow NBA evolution island"},
+        {"name": "political-experimental-1", "role": "Overflow political evolution island"}
+      ],
+      "after_planned": 2,
+      "delete": ["research-radar", "quality-tracker", "predictions-monitor", "political-monitor"]
+    }
+  },
+  "summary": {
+    "total_spaces_now": 21,
+    "total_to_delete": 13,
+    "total_after_cleanup": 8,
+    "total_planned_new": 6,
+    "total_after_planned": 14,
+    "capacity_remaining": 10,
+    "target_allocation": {
+      "Nomos42": "6 NBA (S10-S15) + 2 Political (P1-P2) = 8/8",
+      "LBJLincoln": "2 Political (P3-P4) + 2 RGWA = 4/8",
+      "LBJLincoln26": "2 experimental overflow = 2/8"
+    }
+  },
+  "manual_action_required": [
+    "Delete 6 spaces from Nomos42 account (infra-brain, paperclip, brain, karpathy-arena, P3, P4)",
+    "Delete 3 spaces from LBJLincoln account (betting-monitor, fleet-monitor, island-coordinator)",
+    "Delete 4 spaces from LBJLincoln26 account (research-radar, quality-tracker, predictions-monitor, political-monitor)",
+    "Recreate P3/P4 on LBJLincoln account with nomos-political-alpha HF subtree push",
+    "Create RGWA spaces on LBJLincoln account when RGWA pipeline is ready"
+  ]
+}
