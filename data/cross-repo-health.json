@@ -1,51 +1,56 @@
 {
-  "updated_at": "2026-04-01T00:00:00Z",
+  "updated_at": "2026-04-01T08:00:00Z",
   "cycle": "4h-brain",
+  "cycle_id": "2026-04-01T08",
   "ecosystem_summary": {
     "total_islands": 10,
-    "online": 7,
-    "offline": 3,
+    "online": 8,
+    "offline": 2,
     "nba_best_brier": 0.22066,
     "political_best_brier": 0.24186,
     "nba_stagnation_alerts": 0,
-    "political_stagnation_alerts": 0
+    "political_stagnation_alerts": 0,
+    "cross_pollination_this_cycle": "NBA LR calibration research → political queue (cycle C)"
   },
   "nba_project": {
     "repo": "lbjlincoln/nomos-nba-agent",
     "engine_version": "v3.1-46cat",
     "engine_file": "features/engine.py",
     "feature_count": 6245,
-    "islands_online": 5,
-    "islands_offline": 1,
+    "islands_online": 6,
+    "islands_offline": 0,
     "best_brier": 0.22066,
     "checkpoint_threshold": 0.21837,
-    "improvement_pending": "shot-chart-spatial-embeddings + isotonic calibration"
+    "gap_to_checkpoint": 0.00229,
+    "improvement_this_cycle": "Research proposal: LR meta-calibration targeting 0.199 Brier",
+    "improvement_file": "data/research-proposals/2026-04-01-lr-meta-calibration-0199-brier.json",
+    "improvement_pending": "Implement LR calibration wrapper in hf-space/app.py"
   },
   "political_project": {
     "repo": "lbjlincoln/nomos-political-alpha",
+    "engine_version": "v3.2-political-23cat",
     "islands_online": 2,
     "islands_offline": 2,
     "best_brier": 0.24186,
-    "data_issue": "only 60 real events, 312 synthetic",
-    "improvement_pending": "port NBA isotonic calibration, add FEC/SEC data sources"
+    "improvement_this_cycle": "Cat23 FEC Donation Velocity (20 features) added to political_engine.py",
+    "improvement_file": "features/political_engine.py",
+    "data_issue": "60 real events / 372 total — Cat23 fec_is_real_data enables tracking",
+    "improvement_pending": "Cycle C: port NBA LR calibration; update ops/fetch_political_data.py for fec_data"
   },
-  "cross_project_transfers": [
+  "cross_pollination_log": [
     {
-      "from": "NBA research (2026)",
-      "to": "both projects",
-      "technique": "CalibratedClassifierCV isotonic regression post-processing",
-      "expected_brier_improvement": 0.003
+      "from": "NBA (Jan 2026 MDPI research)",
+      "to": "Political Alpha",
+      "technique": "LR meta-calibration layer — literature: 0.199 Brier vs 0.22066 current",
+      "cycle": "2026-04-01T08 (NBA research) → 2026-04-01T12 (Political implementation)",
+      "status": "PROPOSED — NBA research proposal written, political port queued for cycle C"
     },
     {
-      "from": "NBA research (2026)",
-      "to": "both projects", 
-      "technique": "ECE/MCE in GA fitness function",
-      "expected_brier_improvement": 0.002
+      "from": "Political Alpha (FEC proposal POL-DATA-FEC-01)",
+      "to": "Political Engine",
+      "technique": "Cat23 FEC Donation Velocity — velocity_ratio, 48h notices, PAC cash, bipartisan",
+      "cycle": "2026-04-01T08",
+      "status": "IMPLEMENTED — pushed to nomos-political-alpha main"
     }
-  ],
-  "alerts": [
-    "NBA island-2 (nomos42-nba-evo-2) returning 404 - needs attention",
-    "Political islands 3&4 returning 503 - building/restarting",
-    "Political island-2 has near-zero ROI (0.88%)"
   ]
 }
