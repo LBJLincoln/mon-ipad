@@ -1,0 +1,56 @@
+{
+  "timestamp": "2026-03-31T00:00:00Z",
+  "department": "D6+D7",
+  "fixes": [
+    {
+      "id": "fix-1-keepalive-restart-503",
+      "problem": "PA3 + PA4 Political HF Spaces returning 503, keepalive had no restart logic",
+      "root_cause": "keepalive-spaces.sh only pinged spaces with curl but never triggered restart on failure",
+      "fix": "Added ping_or_restart() bash function that calls POST https://huggingface.co/api/spaces/{space_id}/restart with HF_TOKEN_3 (Nomos42 account) when curl returns 503",
+      "file": "/home/termius/mon-ipad/scripts/keepalive-spaces.sh",
+      "confirmed_503": ["nomos42-political-alpha-3.hf.space", "nomos42-political-alpha-4.hf.space"],
+      "status": "FIXED — restart-on-503 active for all 10 spaces (6 NBA + 4 Political)"
+    },
+    {
+      "id": "fix-2-insider-trade-transaction-type",
+      "problem": "All 961 insider trade records had transaction_type='unknown'",
+      "root_cause": "fetch_insider_trades() used SEC EDGAR full-text search index endpoint (efts.sec.gov) which does NOT include transactionCode in search results. The code never fetched the actual Form 4 XML file.",
+      "fix": "Added _parse_transaction_code_from_xml() which regexes <transactionCode>[A-Z]</transactionCode> from Form 4 XML. Added _fetch_form4_xml() that fetches the actual .xml filing from SEC /Archives/edgar/data/{cik}/{accession}/. Added _TRANSACTION_CODE_MAP: P=purchase, S=sale, F=forfeit, A=grant, D=sale, M/O/X/C=option_exercise, etc.",
+      "files": [
+        "/home/termius/nomos-political-alpha/ops/fetch_political_data.py",
+        "/home/termius/nomos-political-alpha/hf-space/ops/fetch_political_data.py"
+      ],
+      "status": "FIXED — transaction_type now populated via Form 4 XML parsing"
+    },
+    {
+      "id": "fix-3-social-signals-stocktwits-fallback",
+      "problem": "Reddit and Twitter/Nitter APIs returning empty (social signals zeroed)",
+      "root_cause": "Nitter instances are intermittently down; Reddit JSON API blocked on server IPs without OAuth; no fallback source",
+      "fix": "Added fetch_stocktwits_ticker() and fetch_stocktwits_signals() functions using free StockTwits public API: api.stocktwits.com/api/2/streams/symbol/{ticker}.json. No API key required. Returns explicit bullish/bearish sentiment per message. Wired as fallback in fetch_twitter_signals(): if Nitter returns 0 results, automatically falls back to StockTwits.",
+      "file": "/home/termius/nomos-political-alpha/ops/fetch_social_signals.py",
+      "stocktwits_endpoint": "https://api.stocktwits.com/api/2/streams/symbol/{ticker}.json",
+      "status": "FIXED — StockTwits fallback active when Nitter returns empty"
+    },
+    {
+      "id": "fix-4-usaspending-award-type-codes",
+      "problem": "USAspending.gov /api/v2/search/spending_by_award/ returning {} (empty)",
+      "root_cause": "POST payload missing required field 'filters.award_type_codes'. API returns HTTP 400: \"Missing value: 'filters|award_type_codes' is a required field\". Confirmed by direct API test.",
+      "fix": "Added \"award_type_codes\": [\"A\", \"B\", \"C\", \"D\"] to filters payload. Codes: A=BPA Call, B=Purchase Order, C=Delivery Order, D=Definitive Contract.",
+      "files": [
+        "/home/termius/nomos-political-alpha/ops/fetch_political_data.py",
+        "/home/termius/nomos-political-alpha/hf-space/ops/fetch_political_data.py"
+      ],
+      "status": "FIXED — confirmed award_type_codes resolves the 400 error"
+    }
+  ],
+  "summary": {
+    "fixes_applied": 4,
+    "files_modified": 4,
+    "files_modified_list": [
+      "/home/termius/mon-ipad/scripts/keepalive-spaces.sh",
+      "/home/termius/nomos-political-alpha/ops/fetch_political_data.py",
+      "/home/termius/nomos-political-alpha/hf-space/ops/fetch_political_data.py",
+      "/home/termius/nomos-political-alpha/ops/fetch_social_signals.py"
+    ]
+  }
+}

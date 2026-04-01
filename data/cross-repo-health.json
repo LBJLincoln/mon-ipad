@@ -1,25 +1,19 @@
 {
-  "timestamp": "2026-03-31T22:00:01Z",
+  "timestamp": "2026-04-01T00:00:13Z",
   "repos": {
     "mon-ipad": {
       "type": "brain",
       "path": "/home/termius/mon-ipad",
       "exists": true,
-      "last_commit_date": "2026-03-31 20:25:35 +0000",
-      "last_commit_hash": "dfb7b941",
-      "last_commit_msg": "feat: Arena Trading Floor v3 \u2014 146 traders \u00d7 12 categories \u00d7 real data",
-      "uncommitted_changes": 16,
+      "last_commit_date": "2026-03-31 23:22:48 +0000",
+      "last_commit_hash": "efa7db89",
+      "last_commit_msg": "feat: Trading Floor v4 full engine + department loops with live data",
+      "uncommitted_changes": 4,
       "uncommitted_files": [
-        "ata/agent-health.json",
-        "data/cross-repo-health.json",
-        "data/fleet/pierre-monitor.json",
-        "data/infra-status.json",
-        "data/nba-agent/bankroll-state.json",
-        "data/nba-agent/latest-eval.json",
-        "data/nba-agent/live-odds.json",
-        "data/nba-agent/odds-latest.json",
-        "data/nba-agent/quant-summary.json",
-        "data/research/github-betting-scan-2026-03-31.json"
+        "ata/infra-status.json",
+        "scripts/departments/infra/infra-loop.sh",
+        "data/departments/infra/",
+        "forge-users/test-user/"
       ],
       "data_size_mb": 24.0,
       "error": null
@@ -28,18 +22,11 @@
       "type": "engine",
       "path": "/home/termius/nomos-nba-agent",
       "exists": true,
-      "last_commit_date": "2026-03-31 08:39:02 +0000",
-      "last_commit_hash": "1d886fa9",
-      "last_commit_msg": "feat: add Cat47-49 (drive matchup, passing network, play-type PPP) \u2014 34 new features",
-      "uncommitted_changes": 6,
-      "uncommitted_files": [
-        "ata/nba-agent/predictions-today.json",
-        "data/nba-agent/value-bets.json",
-        "data/player-props/props-2026-03-28.json",
-        "data/player-props/props-2026-03-29.json",
-        "data/player-props/props-2026-03-30.json",
-        "data/player-props/props-2026-03-31.json"
-      ],
+      "last_commit_date": "2026-03-31 22:45:34 +0000",
+      "last_commit_hash": "20a1650f",
+      "last_commit_msg": "data: predictions + player props 2026-03-31",
+      "uncommitted_changes": 0,
+      "uncommitted_files": [],
       "data_size_mb": 31.0,
       "error": null
     },
@@ -47,21 +34,21 @@
       "type": "engine",
       "path": "/home/termius/nomos-political-alpha",
       "exists": true,
-      "last_commit_date": "2026-03-31 10:36:20 +0000",
-      "last_commit_hash": "5fd69d5a",
-      "last_commit_msg": "feat: political engine v3.1 \u2014 Cat21 Trump Family + Cat22 Foreign Sovereign",
-      "uncommitted_changes": 434,
+      "last_commit_date": "2026-03-31 23:20:31 +0000",
+      "last_commit_hash": "17bd992f",
+      "last_commit_msg": "data: political signals + engine sync 2026-03-28 to 2026-03-31",
+      "uncommitted_changes": 19,
       "uncommitted_files": [
-        "ata/historical/crypto_20260328.json",
-        "data/insider/form4_20260328.json",
+        "ata/insider/form4_20260331.json",
         "data/social/social_signals_latest.json",
         "features/__pycache__/__init__.cpython-311.pyc",
         "features/__pycache__/political_engine.cpython-311.pyc",
-        "hf-space/features/political_engine.py",
         "logs/agents/cron.log",
-        "logs/agents/full-fetch-2026-03-28.log",
-        "logs/agents/orchestrator-2026-03-28.log",
-        "logs/agents/signals-2026-03-28.log"
+        "logs/agents/orchestrator-2026-03-31.log",
+        "logs/agents/signals-2026-03-31.log",
+        "logs/agents/social-2026-03-31.log",
+        "ops/__pycache__/fetch_political_data.cpython-311.pyc",
+        ".gitignore"
       ],
       "data_size_mb": 9.0,
       "error": null
@@ -85,8 +72,11 @@
       "last_commit_date": "2026-03-31 21:07:54 +0000",
       "last_commit_hash": "a49a0911",
       "last_commit_msg": "feat: add Pixel Trading Floor to Arena \u2014 146 AI traders, day-by-day simulation",
-      "uncommitted_changes": 0,
-      "uncommitted_files": [],
+      "uncommitted_changes": 2,
+      "uncommitted_files": [
+        "rc/components/arena/TradingFloor.tsx",
+        "src/components/arena/types.ts"
+      ],
       "data_size_mb": 0.0,
       "error": null
     }
@@ -98,15 +88,15 @@
         "url": "https://nomos42-nba-quant.hf.space",
         "status": "running",
         "http_code": 200,
-        "generation": 308,
+        "generation": 371,
         "best_brier": 0.22239,
         "model_type": "random_forest",
-        "stagnation_cycles": 3,
-        "cycle": 103,
-        "mutation_rate": 0.12,
-        "pareto_front_size": 20,
+        "stagnation_cycles": 0,
+        "cycle": 124,
+        "mutation_rate": 0.1396,
+        "pareto_front_size": 14,
         "role": null,
-        "last_update": "2026-03-31T21:59:47.476427+00:00",
+        "last_update": "2026-03-31T23:59:50.009237+00:00",
         "error": null,
         "raw_keys": [
           "status",
@@ -136,15 +126,15 @@
         "url": "https://nomos42-nba-quant-2.hf.space",
         "status": "running",
         "http_code": 200,
-        "generation": 419,
+        "generation": 485,
         "best_brier": 0.22277,
         "model_type": "catboost",
         "stagnation_cycles": 0,
-        "cycle": 140,
+        "cycle": 162,
         "mutation_rate": 0.08,
-        "pareto_front_size": 14,
+        "pareto_front_size": 10,
         "role": null,
-        "last_update": "2026-03-31T21:57:24.356807+00:00",
+        "last_update": "2026-03-31T23:59:50.556626+00:00",
         "error": null,
         "raw_keys": [
           "status",
@@ -174,15 +164,15 @@
         "url": "https://nomos42-nba-evo-3.hf.space",
         "status": "running",
         "http_code": 200,
-        "generation": 258,
+        "generation": 303,
         "best_brier": 0.22115,
         "model_type": "random_forest",
         "stagnation_cycles": 0,
-        "cycle": 86,
-        "mutation_rate": 0.0868,
-        "pareto_front_size": 16,
+        "cycle": 101,
+        "mutation_rate": 0.0793,
+        "pareto_front_size": 11,
         "role": null,
-        "last_update": "2026-03-31T21:58:24.548773+00:00",
+        "last_update": "2026-03-31T23:59:56.048418+00:00",
         "error": null,
         "raw_keys": [
           "status",
@@ -212,15 +202,15 @@
         "url": "https://nomos42-nba-evo-4.hf.space",
         "status": "running",
         "http_code": 200,
-        "generation": 254,
+        "generation": 312,
         "best_brier": 0.22066,
         "model_type": "xgboost_brier",
-        "stagnation_cycles": 6,
-        "cycle": 85,
-        "mutation_rate": 0.12,
-        "pareto_front_size": 17,
+        "stagnation_cycles": 0,
+        "cycle": 104,
+        "mutation_rate": 0.1459,
+        "pareto_front_size": 14,
         "role": null,
-        "last_update": "2026-03-31T21:58:58.512990+00:00",
+        "last_update": "2026-03-31T23:59:57.171528+00:00",
         "error": null,
         "raw_keys": [
           "status",
@@ -250,15 +240,15 @@
         "url": "https://nomos42-nba-evo-5.hf.space",
         "status": "running",
         "http_code": 200,
-        "generation": 407,
+        "generation": 474,
         "best_brier": 0.22387,
         "model_type": "random_forest",
-        "stagnation_cycles": 3,
-        "cycle": 136,
-        "mutation_rate": 0.12,
-        "pareto_front_size": 23,
+        "stagnation_cycles": 20,
+        "cycle": 158,
+        "mutation_rate": 0.15,
+        "pareto_front_size": 15,
         "role": null,
-        "last_update": "2026-03-31T21:58:30.990946+00:00",
+        "last_update": "2026-03-31T23:59:46.631644+00:00",
         "error": null,
         "raw_keys": [
           "status",
@@ -288,15 +278,15 @@
         "url": "https://nomos42-nba-evo-6.hf.space",
         "status": "running",
         "http_code": 200,
-        "generation": 294,
+        "generation": 372,
         "best_brier": 0.22254,
         "model_type": "random_forest",
         "stagnation_cycles": 0,
-        "cycle": 98,
-        "mutation_rate": 0.0902,
-        "pareto_front_size": 15,
+        "cycle": 124,
+        "mutation_rate": 0.0835,
+        "pareto_front_size": 14,
         "role": null,
-        "last_update": "2026-03-31T21:58:45.955223+00:00",
+        "last_update": "2026-04-01T00:00:48.230443+00:00",
         "error": null,
         "raw_keys": [
           "status",
@@ -414,12 +404,6 @@
         "label": "unknown"
       },
       {
-        "schedule": "*/30 * * * *",
-        "command": "*/30 * * * * python3 /home/termius/mon-ipad/scripts/agents/pierre-monitor.py >> /home/termius/mon-ipad/logs/pierre-monitor.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
         "schedule": "0 22 * * *",
         "command": "0 22 * * * set -a && source /home/termius/mon-ipad/.env.local && set +a && python3 scripts/betting_agent.py >> /home/termius/mon-ipad/logs/betting-agent.log 2>&1",
         "project": "brain",
@@ -434,12 +418,6 @@
       {
         "schedule": "*/30 18-23,0-6 * * *",
         "command": "*/30 18-23,0-6 * * * set -a && source /home/termius/mon-ipad/.env.local && set +a && cd /home/termius/mon-ipad && python3 scripts/fetch_free_odds.py >> /home/termius/mon-ipad/logs/odds-monitor.log 2>&1",
-        "project": "brain",
-        "label": "unknown"
-      },
-      {
-        "schedule": "*/5 * * * *",
-        "command": "*/5 * * * * set -a && source /home/termius/mon-ipad/.env.local && set +a && bash /home/termius/mon-ipad/scripts/telegram/start_bots.sh start >> /tmp/bot-fleet.log 2>&1",
         "project": "brain",
         "label": "unknown"
       },
@@ -484,6 +462,18 @@
         "command": "0 0,4,8,12,16,20 * * * /home/termius/mon-ipad/scripts/agents/swarm-metrics-collector.sh --quiet >> /home/termius/mon-ipad/logs/swarm-metrics.log 2>&1",
         "project": "brain",
         "label": "unknown"
+      },
+      {
+        "schedule": "0 4,16 * * *",
+        "command": "0 4,16 * * * /home/termius/mon-ipad/scripts/karpathy/karpathy-scheduler.sh >> /home/termius/mon-ipad/logs/karpathy/scheduler.log 2>&1",
+        "project": "brain",
+        "label": "unknown"
+      },
+      {
+        "schedule": "30 23 * * *",
+        "command": "30 23 * * * set -a && source /home/termius/mon-ipad/.env.local && set +a && python3 /home/termius/mon-ipad/scripts/daily-summary.py >> /home/termius/mon-ipad/logs/daily-summary.log 2>&1",
+        "project": "brain",
+        "label": "unknown"
       }
     ],
     "expected_present": [
@@ -508,7 +498,7 @@
       "running": true,
       "pids": [
         "1868680",
-        "2686129"
+        "2800300"
       ],
       "repo": "mon-ipad"
     },
@@ -516,7 +506,7 @@
       "running": true,
       "pids": [
         "270201",
-        "2686149"
+        "2800340"
       ],
       "repo": "rgwa"
     }
@@ -529,8 +519,7 @@
     "keepalive": true
   },
   "alerts": [
-    "REPO DIRTY: mon-ipad has 16 uncommitted changes",
-    "REPO DIRTY: nomos-political-alpha has 434 uncommitted changes",
+    "REPO DIRTY: nomos-political-alpha has 19 uncommitted changes",
     "CRON MISSING: keepalive-spaces",
     "CRON MISSING: nba-daily-odds",
     "CRON MISSING: autonomous-cycle",

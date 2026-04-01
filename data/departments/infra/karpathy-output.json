@@ -1,0 +1,117 @@
+{
+  "department": "infra",
+  "timestamp": "2026-04-01T01:28:57Z",
+  "iteration": 1,
+  "vm_health": {
+    "cpu_load": 1.4,
+    "cpu_load_5m": 3.47,
+    "cpu_load_15m": 5.38,
+    "cpu_count": 1,
+    "cpu_overloaded": true,
+    "memory_mb": {
+      "total": 969,
+      "used": 895,
+      "free": 74,
+      "available": 241,
+      "used_pct": 92.4
+    },
+    "swap_mb": {
+      "used": 645,
+      "active": true
+    },
+    "disk_pct": 82,
+    "disk_avail_gb": 6,
+    "data_dir_mb": 24
+  },
+  "crons_active": 23,
+  "processes_running": {
+    "brain": "ALIVE",
+    "nba_bot": "ALIVE",
+    "forge_bot": "ALIVE",
+    "political_bot": "ALIVE",
+    "rgwa_bot": "ALIVE",
+    "terminal_api": "ALIVE",
+    "data_server": "ALIVE"
+  },
+  "data_server_http": "200",
+  "spaces_health": {
+    "S10": {
+      "status": "running",
+      "brier": null,
+      "generation": "439"
+    },
+    "S11": {
+      "status": "running",
+      "brier": null,
+      "generation": "560"
+    },
+    "S12": {
+      "status": "running",
+      "brier": null,
+      "generation": "347"
+    },
+    "S13": {
+      "status": "running",
+      "brier": null,
+      "generation": "365"
+    },
+    "S14": {
+      "status": "running",
+      "brier": null,
+      "generation": "522"
+    },
+    "S15": {
+      "status": "running",
+      "brier": null,
+      "generation": "419"
+    },
+    "PA1": {
+      "status": "running",
+      "brier": null,
+      "generation": "2366"
+    },
+    "PA2": {
+      "status": "running",
+      "brier": null,
+      "generation": "5898"
+    },
+    "PA3": {
+      "status": "down_503",
+      "brier": null,
+      "generation": null
+    },
+    "PA4": {
+      "status": "down_503",
+      "brier": null,
+      "generation": null
+    }
+  },
+  "spaces_summary": {
+    "nba_up": 6,
+    "nba_total": 6,
+    "political_up": 2,
+    "political_total": 4,
+    "fleet_up": 8,
+    "fleet_total": 10
+  },
+  "issues_detected": [
+    {
+      "severity": "HIGH",
+      "component": "disk",
+      "description": "Disk 82% used \u2014 WARNING"
+    },
+    {
+      "severity": "MEDIUM",
+      "component": "swap",
+      "description": "Swap active: 645MB used"
+    },
+    {
+      "severity": "MEDIUM",
+      "component": "political_spaces",
+      "description": "Political spaces DOWN: 2/4 running. PA3/PA4 need HF dashboard restart."
+    }
+  ],
+  "issues_count": 3,
+  "uptime_pct": 88.0,
+  "status": "completed"
+}

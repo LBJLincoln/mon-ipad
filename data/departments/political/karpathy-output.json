@@ -1,0 +1,782 @@
+{
+  "department": "political",
+  "timestamp": "2026-04-01T01:28:18.206885+00:00",
+  "iteration": 4,
+  "signal_strength": {
+    "summary": "22-category engine active. Social signals zeroed-out (Reddit/Twitter API rate-limited). Structural signals (enforcement drops, exec orders, fed rules, insider Form4) are live.",
+    "by_category": {
+      "cat01_donor_profile": {
+        "status": "sparse",
+        "note": "FEC donors file empty for today. OpenFEC API endpoint needs key for higher rate limit.",
+        "alpha": "medium",
+        "data_quality": "low"
+      },
+      "cat02_policy_signal_exec_orders": {
+        "status": "live",
+        "records_today": 9,
+        "top_signals": [
+          {
+            "title": "Addressing DEI Discrimination by Federal Contractors",
+            "date": "2026-03-31",
+            "tickers": [],
+            "etf_impact": "neutral"
+          },
+          {
+            "title": "Removing Regulatory Barriers to Affordable Home Construction",
+            "date": "2026-03-18",
+            "tickers": [],
+            "etf_impact": "bullish_XHB"
+          },
+          {
+            "title": "Promoting Access to Mortgage Credit",
+            "date": "2026-03-18",
+            "tickers": [],
+            "etf_impact": "bullish_XLF"
+          },
+          {
+            "title": "Adjusting Defense Production Act Delegations",
+            "date": "2026-03-18",
+            "tickers": [
+              "LMT",
+              "RTX",
+              "BA",
+              "GD"
+            ],
+            "etf_impact": "bullish_XLI"
+          }
+        ],
+        "alpha": "medium",
+        "data_quality": "high"
+      },
+      "cat03_market_features": {
+        "status": "live",
+        "macro_vix": 18.0,
+        "sp500_return_5d": 0.0,
+        "note": "VIX at 18 = normal regime, no fear premium",
+        "alpha": "baseline"
+      },
+      "cat04_trump_proximity": {
+        "status": "live",
+        "top_tickers": [
+          "TSLA",
+          "GEO",
+          "CXW",
+          "OKLO",
+          "MSTR"
+        ],
+        "note": "FEMA continuance EO mentions TSLA. Nuclear rules mention OKLO. Private prisons GEO/CXW persistent.",
+        "alpha": "high",
+        "evidence": "+7% CAR per 1SD Trump proximity score (Ferriani et al., Bank of Italy 2025)"
+      },
+      "cat05_polymarket_signals": {
+        "status": "stale",
+        "note": "Markets fetching 2020 election questions (stale endpoint). Real-time tariff/policy odds markets not connected.",
+        "alpha": "high_potential",
+        "action_needed": "Connect to CLOB API for current policy markets (tariff escalation, exemption, approval odds)"
+      },
+      "cat06_insider_trading": {
+        "status": "live",
+        "records_today": "961 cumulative in dataset",
+        "top_performers": [
+          {
+            "ticker": "UBER",
+            "win_rate": 0.69,
+            "avg_excess_return": 0.009,
+            "n": 29
+          },
+          {
+            "ticker": "MSFT",
+            "win_rate": 0.676,
+            "avg_excess_return": 0.0103,
+            "n": 34
+          },
+          {
+            "ticker": "GEO",
+            "win_rate": 0.64,
+            "avg_excess_return": 0.0027,
+            "n": 86
+          },
+          {
+            "ticker": "AMZN",
+            "win_rate": 0.625,
+            "avg_excess_return": 0.0053,
+            "n": 8
+          },
+          {
+            "ticker": "QCOM",
+            "win_rate": 0.571,
+            "avg_excess_return": -0.0004,
+            "n": 35
+          }
+        ],
+        "note": "transaction_type field is 'unknown' for all entries \u2014 no buy/sell disambiguation yet. Critical fix needed.",
+        "alpha": "high",
+        "data_quality": "medium"
+      },
+      "cat07_macro": {
+        "status": "live",
+        "vix": 18.0,
+        "tpu_regime": "elevated",
+        "note": "Liberation Day anniversary approaching (April 2, 2025 was -20% S&P shock). TPU elevated in 2026.",
+        "alpha": "medium"
+      },
+      "cat09_enforcement_dismissed": {
+        "status": "live",
+        "records": 9,
+        "dismissed_today": [
+          {
+            "ticker": "COIN",
+            "agency": "SEC",
+            "impact": "lawsuit_dismissed"
+          },
+          {
+            "ticker": "HOOD",
+            "agency": "SEC",
+            "impact": "investigation_closed"
+          },
+          {
+            "ticker": "META",
+            "agency": "FTC",
+            "impact": "softened"
+          },
+          {
+            "ticker": "MO",
+            "agency": "FDA",
+            "impact": "ban_rescinded"
+          },
+          {
+            "ticker": "PFE",
+            "agency": "DOJ",
+            "impact": "3_cases_dropped"
+          },
+          {
+            "ticker": "CVX",
+            "agency": "EPA",
+            "impact": "fine_waived"
+          },
+          {
+            "ticker": "XOM",
+            "agency": "EPA",
+            "impact": "enforcement_paused"
+          },
+          {
+            "ticker": "GEO",
+            "agency": "DOJ",
+            "impact": "investigation_closed"
+          },
+          {
+            "ticker": "BA",
+            "agency": "DOJ",
+            "impact": "deferred_prosecution_ended"
+          }
+        ],
+        "alpha": "very_high",
+        "evidence": "17 inauguration donors had cases dropped (Public Citizen 2025). This is the core pay-to-play signal."
+      },
+      "cat13_gov_contracts": {
+        "status": "empty",
+        "note": "USAspending.gov endpoint returning {}. Fetch script not writing data.",
+        "action_needed": "Fix fetch_political_data.py gov contract fetch. BA/GEO/LMT contract awards are critical alpha.",
+        "alpha": "high_potential"
+      },
+      "cat14_reddit_sentiment": {
+        "status": "zeroed",
+        "all_mentions": 0,
+        "note": "Reddit API returning empty. Either rate-limited or subreddit filtering too narrow.",
+        "alpha": "medium"
+      },
+      "cat15_twitter_sentiment": {
+        "status": "zeroed",
+        "all_mentions": 0,
+        "note": "Twitter/X API empty. Free tier restrictions. Consider alternative (StockTwits, Bluesky).",
+        "alpha": "medium"
+      },
+      "cat21_trump_family": {
+        "status": "live_synthetic",
+        "tracked_assets": [
+          "DJT",
+          "WLFI",
+          "TRUMP_MEME",
+          "Affinity_Partners"
+        ],
+        "note": "Synthetic data. Real WLFI holdings not yet fetched.",
+        "alpha": "high"
+      },
+      "cat22_foreign_sovereign": {
+        "status": "tracked",
+        "entities": [
+          "Saudi_PIF",
+          "UAE_ADIA",
+          "Qatar_QIA",
+          "SoftBank"
+        ],
+        "note": "Arms deal signals (XLI/LMT/RTX). Defense Production Act EO today = bullish defense.",
+        "alpha": "high"
+      }
+    },
+    "active_categories": 14,
+    "zeroed_categories": [
+      "social_reddit",
+      "social_twitter",
+      "social_youtube",
+      "gov_contracts",
+      "fec_donors"
+    ],
+    "critical_bugs": [
+      "insider_trade transaction_type='unknown' for all 961 records \u2014 cannot distinguish buys from sells",
+      "gov_contracts returning {} \u2014 USAspending fetch broken",
+      "polymarket endpoint returning stale 2020 election data",
+      "social signals all zero \u2014 rate limiting or API scope issue"
+    ]
+  },
+  "etf_analysis": {
+    "universe": [
+      "SPY",
+      "QQQ",
+      "IWM",
+      "XLF",
+      "XLE",
+      "XLK",
+      "XLV",
+      "XLI",
+      "GLD",
+      "TLT",
+      "LMT",
+      "RTX"
+    ],
+    "sector_map": {
+      "QQQ": {
+        "sector": "tech_growth",
+        "exposure": "high_import_intensity",
+        "tariff_risk": "high"
+      },
+      "XLE": {
+        "sector": "energy",
+        "exposure": "domestic_revenue_heavy",
+        "tariff_risk": "low"
+      },
+      "XLI": {
+        "sector": "industrials",
+        "exposure": "defense_dominant",
+        "tariff_risk": "medium"
+      },
+      "XLV": {
+        "sector": "healthcare",
+        "exposure": "domestic_revenue_heavy",
+        "tariff_risk": "low"
+      },
+      "XLF": {
+        "sector": "financials",
+        "exposure": "deregulation_beneficiary",
+        "tariff_risk": "low"
+      },
+      "XLK": {
+        "sector": "tech_hardware",
+        "exposure": "high_import_intensity",
+        "tariff_risk": "very_high"
+      },
+      "IWM": {
+        "sector": "small_cap",
+        "exposure": "domestic_revenue_heavy",
+        "tariff_risk": "low"
+      },
+      "GLD": {
+        "sector": "gold",
+        "exposure": "inflation_hedge",
+        "tariff_risk": "neutral"
+      },
+      "TLT": {
+        "sector": "long_bond",
+        "exposure": "rates_sensitive",
+        "tariff_risk": "neutral"
+      },
+      "LMT": {
+        "sector": "defense",
+        "exposure": "gov_contract_dependent",
+        "tariff_risk": "very_low"
+      },
+      "RTX": {
+        "sector": "defense",
+        "exposure": "gov_contract_dependent",
+        "tariff_risk": "very_low"
+      }
+    },
+    "signals_today": {
+      "QQQ": {
+        "direction": "long",
+        "strength": 0.72,
+        "reason": "3 enforcement dismissals (COIN/HOOD/META) \u2014 crypto + big tech relief"
+      },
+      "XLE": {
+        "direction": "long",
+        "strength": 0.68,
+        "reason": "EPA enforcement paused CVX+XOM, fed rules deregulation tilt"
+      },
+      "XLV": {
+        "direction": "long",
+        "strength": 0.55,
+        "reason": "FDA ban rescinded (MO), DOJ pharma cases dropped (PFE)"
+      },
+      "XLI": {
+        "direction": "long",
+        "strength": 0.62,
+        "reason": "Defense Production Act EO + BA deferred prosecution ended"
+      },
+      "LMT": {
+        "direction": "long",
+        "strength": 0.58,
+        "reason": "Defense Production Act delegation EO, foreign sovereign arms signals"
+      },
+      "RTX": {
+        "direction": "long",
+        "strength": 0.55,
+        "reason": "Same DPA EO, defense budget expansion cycle"
+      },
+      "IWM": {
+        "direction": "long",
+        "strength": 0.42,
+        "reason": "GEO/CXW DOJ case closed, private prisons ICE contract cycle"
+      },
+      "XLF": {
+        "direction": "long",
+        "strength": 0.45,
+        "reason": "Mortgage credit EO, deregulation theme continuing"
+      },
+      "XLK": {
+        "direction": "neutral",
+        "strength": 0.2,
+        "reason": "Tariff exposure offset by tech enforcement relief"
+      },
+      "GLD": {
+        "direction": "long",
+        "strength": 0.38,
+        "reason": "TPU elevated, Liberation Day anniversary risk (April 2)"
+      },
+      "TLT": {
+        "direction": "neutral",
+        "strength": 0.15,
+        "reason": "VIX=18 normal, no flight-to-quality catalyst today"
+      },
+      "SPY": {
+        "direction": "long",
+        "strength": 0.4,
+        "reason": "Broad deregulation tailwind but tariff uncertainty cap"
+      }
+    },
+    "top_opportunity": "QQQ long \u2014 SEC/FTC enforcement rollback for COIN/HOOD/META is high-conviction. Crypto sector relief + big tech deregulation. Strength 0.72.",
+    "risk_flags": [
+      "Liberation Day anniversary April 2: tariff shock replay risk \u2014 consider reducing QQQ/XLK into April 2",
+      "SECTOR_ROTATE strategy family had worst performance (-75% avg) \u2014 avoid full rotation sizing",
+      "DEFENSE_LONG strategies showing -65% avg ROI in arena \u2014 single-name defense overfit, use XLI ETF instead",
+      "All social signals zeroed \u2014 blind to narrative momentum signals"
+    ],
+    "best_strategy_from_arena": {
+      "name": "Conservative",
+      "family": "kelly",
+      "roi_pct": 79.06,
+      "sharpe": 5.327,
+      "win_rate": 0.571,
+      "markets": [
+        "DEFENSE_LONG",
+        "ENERGY_LONG",
+        "SECTOR_LONG",
+        "STOCK_LONG"
+      ],
+      "note": "Conservative Kelly sizing outperformed all aggressive strategies. Best Sharpe by far. Markets: sector-level ETF longs on political tailwind."
+    },
+    "worst_approaches": [
+      "SECTOR_ROTATE (avg -75.2% ROI) \u2014 single-bet sector rotation too volatile",
+      "Full Kelly sizing (avg -90%+ ROI) \u2014 catastrophic overkill",
+      "BILL_PASSES market betting (avg -64.5%) \u2014 legislative passage too uncertain"
+    ]
+  },
+  "feature_importance": [
+    {
+      "rank": 1,
+      "category": "cat09_enforcement_dismissed",
+      "feature": "enforcement_dismissed_90d",
+      "importance": 0.89,
+      "evidence": "17 inauguration donors, 9 recent dismissals. Strongest predictive signal."
+    },
+    {
+      "rank": 2,
+      "category": "cat06_insider_trading",
+      "feature": "insider_buy_cluster_14d",
+      "importance": 0.82,
+      "evidence": "UBER WR=69%, MSFT WR=68%, GEO WR=64%. Cluster = multiple insiders same stock."
+    },
+    {
+      "rank": 3,
+      "category": "cat04_trump_proximity",
+      "feature": "agenda47_term_frequency",
+      "importance": 0.78,
+      "evidence": "+7% CAR per 1SD (Ferriani, Bank of Italy 2025). Energy/FinTech/Industrials high."
+    },
+    {
+      "rank": 4,
+      "category": "cat02_policy_signal",
+      "feature": "exec_order_sector_match",
+      "importance": 0.74,
+      "evidence": "Defense Production Act EO + XLI/LMT/RTX alignment. Direct sector signal."
+    },
+    {
+      "rank": 5,
+      "category": "cat01_donor_profile",
+      "feature": "ceo_republican_donation_share",
+      "importance": 0.71,
+      "evidence": "+3.5pp CAR Republican-aligned CEO firms post-election (Koch & Schiereck 2025)."
+    },
+    {
+      "rank": 6,
+      "category": "cat22_foreign_sovereign",
+      "feature": "saudi_pif_deal_proximity",
+      "importance": 0.68,
+      "evidence": "Saudi PIF + defense sector arms deals = LMT/RTX premium."
+    },
+    {
+      "rank": 7,
+      "category": "cat12_tpu",
+      "feature": "tpu_regime_flag",
+      "importance": 0.65,
+      "evidence": "Liberation Day -7% CAR for high-import firms. TPU index free at policyuncertainty.com."
+    },
+    {
+      "rank": 8,
+      "category": "cat13_gov_contracts",
+      "feature": "contract_award_90d_donor",
+      "importance": 0.63,
+      "evidence": "GEO ICE contracts, BA defense contracts. Currently broken \u2014 high fix priority."
+    },
+    {
+      "rank": 9,
+      "category": "cat05_polymarket",
+      "feature": "trump_approval_24h_delta",
+      "importance": 0.61,
+      "evidence": "Corporate value changes within HOURS of Polymarket moves (Aktug & Torul 2025)."
+    },
+    {
+      "rank": 10,
+      "category": "cat17_senator_family",
+      "feature": "senator_spouse_buy_30d",
+      "importance": 0.58,
+      "evidence": "TGN model F1=0.440 vs XGBoost F1=0.291 at 24-month horizon (arXiv:2602.05514, ICLR 2026)."
+    },
+    {
+      "rank": 11,
+      "category": "cat21_trump_family",
+      "feature": "djt_price_5d_change",
+      "importance": 0.55,
+      "evidence": "DJT stock as Trump confidence proxy. Crypto $TRUMP volume as retail sentiment."
+    },
+    {
+      "rank": 12,
+      "category": "cat10_ceo_personal",
+      "feature": "ceo_donation_log_amount",
+      "importance": 0.52,
+      "evidence": "Personal donation > corporate PAC \u2014 personal alignment drives market reaction."
+    },
+    {
+      "rank": 13,
+      "category": "cat03_market",
+      "feature": "sp500_return_5d_regime",
+      "importance": 0.48,
+      "evidence": "Momentum regime filter \u2014 political signals stronger in low-VIX trending markets."
+    },
+    {
+      "rank": 14,
+      "category": "cat07_macro",
+      "feature": "vix_level",
+      "importance": 0.45,
+      "evidence": "VIX>30 = fear regime, political alpha suppressed by macro volatility."
+    },
+    {
+      "rank": 15,
+      "category": "cat08_interactions",
+      "feature": "donor_x_enforcement_drop",
+      "importance": 0.72,
+      "evidence": "Interaction: donated AND had case dropped = compound signal, highest win rate."
+    }
+  ],
+  "new_signals_proposed": [
+    {
+      "id": "D7-P1",
+      "priority": 1,
+      "title": "Fix insider transaction_type disambiguation",
+      "type": "data_fix",
+      "effort_hours": 4,
+      "expected_brier_delta": -0.015,
+      "action": "In ops/fetch_political_data.py: parse Form4 XML transactionCode. P=buy, S=sell. Add buy_cluster_14d feature.",
+      "file": "/home/termius/nomos-political-alpha/ops/fetch_political_data.py",
+      "created_at": "2026-04-01T01:28:17.204455Z"
+    },
+    {
+      "id": "D7-P2",
+      "priority": 2,
+      "title": "Fix Polymarket CLOB to active policy markets",
+      "type": "data_fix",
+      "effort_hours": 3,
+      "expected_brier_delta": -0.012,
+      "action": "Update polymarket fetch to clob.polymarket.com. Track: tariff_reciprocal, china_trade_deal, trump_approval.",
+      "file": "/home/termius/nomos-political-alpha/ops/fetch_political_data.py",
+      "created_at": "2026-04-01T01:28:17.204490Z"
+    },
+    {
+      "id": "D7-P3",
+      "priority": 3,
+      "title": "Liberation Day anniversary tariff risk feature",
+      "type": "feature_engineering",
+      "effort_hours": 6,
+      "expected_brier_delta": -0.008,
+      "action": "Add tariff_anniversary_flag, days_to_tariff_anniversary, import_intensity_sector. Short XLK/QQQ into April 2.",
+      "file": "/home/termius/nomos-political-alpha/features/political_engine.py",
+      "created_at": "2026-04-01T01:28:17.204493Z"
+    },
+    {
+      "id": "D7-P4",
+      "priority": 4,
+      "title": "Fix USAspending.gov contract fetch",
+      "type": "data_fix",
+      "effort_hours": 2,
+      "expected_brier_delta": -0.006,
+      "action": "Debug ops/fetch_political_data.py fetch_usaspending(). gov_contracts returning {}. Check POST payload to /api/v2/search/spending_by_award/",
+      "file": "/home/termius/nomos-political-alpha/ops/fetch_political_data.py",
+      "created_at": "2026-04-01T01:28:17.204494Z"
+    },
+    {
+      "id": "D7-P5",
+      "priority": 5,
+      "title": "Calibrate signal_strength to true probabilities",
+      "type": "calibration",
+      "effort_hours": 5,
+      "expected_brier_delta": -0.02,
+      "action": "Current signal_strength values (0.5, 0.7) are uncalibrated \u2014 naive Brier 0.28 > baseline 0.25. Apply isotonic calibration from calibration/isotonic_calibrator.py to output calibrated probs.",
+      "file": "/home/termius/nomos-political-alpha/calibration/isotonic_calibrator.py",
+      "created_at": "2026-04-01T01:28:17.204496Z"
+    },
+    {
+      "id": "D7-P6",
+      "priority": 6,
+      "title": "Restart LBJLincoln26/nomos-political-alpha HF Space",
+      "type": "infra_fix",
+      "effort_hours": 0.25,
+      "expected_brier_delta": 0.0,
+      "action": "HF Space has been DOWN all day (cron logs confirm). Go to https://huggingface.co/spaces/LBJLincoln26/nomos-political-alpha and restart.",
+      "created_at": "2026-04-01T01:28:17.204498Z"
+    }
+  ],
+  "tariff_trade_war_analysis": {
+    "current_regime": "elevated_tpu",
+    "liberation_day_anniversary": "2026-04-02 (in 2 days)",
+    "warning": "1-year anniversary of Liberation Day tariff shock. Markets may replay volatility. -20% S&P in 7 weeks following April 2, 2025 announcement.",
+    "sector_vulnerability": {
+      "very_high": [
+        "XLK",
+        "QQQ"
+      ],
+      "high": [
+        "XLB",
+        "XLY_import_heavy"
+      ],
+      "medium": [
+        "XLI",
+        "XLF"
+      ],
+      "low_defensive": [
+        "XLE",
+        "XLV",
+        "IWM",
+        "LMT",
+        "RTX"
+      ],
+      "hedge": [
+        "GLD",
+        "TLT",
+        "SHY"
+      ]
+    },
+    "tariff_surprise_framework": {
+      "positive_surprise": "actual > expected \u2192 short XLK/QQQ high-import",
+      "negative_surprise": "exemption granted \u2192 long specific ticker (donor firm likely)",
+      "polymarket_signal": "tariff market probability shift = leading indicator by 2-4 hours"
+    },
+    "etf_positions_for_tariff_risk": [
+      {
+        "etf": "XLK",
+        "direction": "short_hedge",
+        "reason": "High import intensity, semiconductor supply chain China exposure"
+      },
+      {
+        "etf": "GLD",
+        "direction": "long",
+        "reason": "Inflation hedge, stagflation scenario if tariffs pass through"
+      },
+      {
+        "etf": "XLE",
+        "direction": "long",
+        "reason": "Domestic energy, tariff exemptions for energy sector historically"
+      },
+      {
+        "etf": "LMT",
+        "direction": "long",
+        "reason": "Defense spending up regardless of trade war, contract-driven"
+      }
+    ]
+  },
+  "arena_performance": {
+    "best_strategy": "Conservative Kelly (ROI=79.1%, Sharpe=5.33)",
+    "model_brier": 0.22,
+    "signals_simulated": 103,
+    "markets_count": 24,
+    "key_findings": [
+      "Conservative Kelly (DEFENSE_LONG + ENERGY_LONG + SECTOR_LONG) = only strategy with positive Sharpe AND positive ROI",
+      "SECTOR_ROTATE is catastrophic (avg -75% ROI) \u2014 rotating between sector bets is too noisy",
+      "Flat sizing with mutation beats Kelly sizing: Flat_2_mut0 ROI=253% vs any Kelly variant",
+      "BILL_PASSES market (-64% avg) \u2014 legislative passage unpredictable, avoid",
+      "ENFORCEMENT_DROP market (-61% avg) \u2014 signal is real but timing uncertain in current data",
+      "CEO_PERSONAL market (-64%) \u2014 aggregate signal is noisy, needs better filtering by donor tier"
+    ]
+  },
+  "political_brier": 0.28359,
+  "political_brier_note": "Computed from naive signal_strength as probability on 1120 events. Constant-0.5 baseline is 0.25000. Gap = 0.03359 above baseline. Engine needs calibration \u2014 current signal_strength values (0.5/0.7) are not well-calibrated probabilities.",
+  "sector_alpha_ranking": [
+    {
+      "sector": "private_prisons",
+      "alpha": "strong",
+      "win_rate": 0.621,
+      "avg_excess_ret": 0.00301,
+      "n": 95,
+      "etf": "IWM"
+    },
+    {
+      "sector": "finance",
+      "alpha": "neutral",
+      "win_rate": 0.467,
+      "avg_excess_ret": 0.0016,
+      "n": 15,
+      "etf": "XLF"
+    },
+    {
+      "sector": "other",
+      "alpha": "neutral",
+      "win_rate": 0.499,
+      "avg_excess_ret": 0.00035,
+      "n": 774,
+      "etf": "SPY"
+    },
+    {
+      "sector": "healthcare",
+      "alpha": "negative",
+      "win_rate": 0.49,
+      "avg_excess_ret": -0.00237,
+      "n": 49,
+      "etf": "XLV"
+    },
+    {
+      "sector": "energy",
+      "alpha": "negative",
+      "win_rate": 0.393,
+      "avg_excess_ret": -0.00445,
+      "n": 28,
+      "etf": "XLE"
+    }
+  ],
+  "hf_space_status": {
+    "space": "LBJLincoln26/nomos-political-alpha",
+    "status": "DOWN",
+    "note": "HF space has been DOWN for all cron checks today. Agent swarm logs confirm recurring DOWN status. Space needs restart or rebuild.",
+    "action": "Visit https://huggingface.co/spaces/LBJLincoln26/nomos-political-alpha and restart"
+  },
+  "status": "completed",
+  "political_brier_baseline": 0.25,
+  "brier_gap_vs_baseline": 0.03359,
+  "n_events_measured": 1120,
+  "signal_count_today": 541,
+  "etf_live_signals": {
+    "QQQ": {
+      "strength": 0.56,
+      "drivers": [
+        "enforcement_drop:COIN",
+        "enforcement_drop:HOOD",
+        "enforcement_drop:META",
+        "exec_order:TSLA",
+        "fed_rules_mention:COIN(x2)",
+        "fed_rules_mention:MSTR(x2)",
+        "fed_rules_mention:META(x1)",
+        "fed_rules_mention:AMZN(x1)",
+        "fed_rules_mention:AAPL(x1)",
+        "fed_rules_mention:MSFT(x1)",
+        "fed_rules_mention:NVDA(x1)",
+        "fed_rules_mention:TSLA(x1)",
+        "tariff_anniversary_risk(T-1d)"
+      ],
+      "direction": "long",
+      "tariff_anniversary_discount": 0.3
+    },
+    "XLV": {
+      "strength": 0.44,
+      "drivers": [
+        "enforcement_drop:MO",
+        "enforcement_drop:PFE",
+        "fed_rules_mention:MO(x2)",
+        "fed_rules_mention:UNH(x2)"
+      ],
+      "direction": "long"
+    },
+    "XLE": {
+      "strength": 0.9,
+      "drivers": [
+        "enforcement_drop:CVX",
+        "enforcement_drop:XOM",
+        "fed_rules_mention:CVX(x9)",
+        "fed_rules_mention:XOM(x9)",
+        "fed_rules_mention:OXY(x9)"
+      ],
+      "direction": "long"
+    },
+    "IWM": {
+      "strength": 0.34,
+      "drivers": [
+        "enforcement_drop:GEO",
+        "fed_rules_mention:GEO(x4)",
+        "fed_rules_mention:CXW(x4)"
+      ],
+      "direction": "long"
+    },
+    "XLI": {
+      "strength": 0.94,
+      "drivers": [
+        "enforcement_drop:BA",
+        "exec_order:BA",
+        "fed_rules_mention:BA(x13)",
+        "fed_rules_mention:FDX(x19)"
+      ],
+      "direction": "long"
+    },
+    "XLK": {
+      "strength": 0,
+      "drivers": [
+        "fed_rules_mention:OKLO(x8)",
+        "tariff_anniversary_risk(T-1d)"
+      ],
+      "direction": "long",
+      "tariff_anniversary_discount": 0.3
+    },
+    "SPY": {
+      "strength": 0.28,
+      "drivers": [
+        "fed_rules_mention:LVS(x2)",
+        "fed_rules_mention:PPC(x12)"
+      ],
+      "direction": "long"
+    },
+    "GLD": {
+      "strength": 0.4,
+      "direction": "long",
+      "drivers": [
+        "liberation_day_anniversary_hedge"
+      ],
+      "reason": "inflation/tariff hedge"
+    }
+  },
+  "loop_status": "running"
+}

@@ -20,6 +20,69 @@ from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 
 ROOT        = Path('/home/termius/mon-ipad')
+
+# ── ITERATION / GENERATION TRACKING ──────────────────────────────────────────
+# Incremented each run; generation tracks game-day count
+_ITERATION_FILE = Path('/home/termius/mon-ipad/data/arena/trading-floor-iteration.json')
+
+def _load_iteration() -> Dict:
+    if _ITERATION_FILE.exists():
+        try:
+            return json.loads(_ITERATION_FILE.read_text())
+        except Exception:
+            pass
+    return {"iteration": 0, "generation": 0}
+
+def _save_iteration(it: Dict) -> None:
+    _ITERATION_FILE.parent.mkdir(parents=True, exist_ok=True)
+    _ITERATION_FILE.write_text(json.dumps(it, indent=2))
+
+# ── ELIMINATED NBA STRATEGIES ─────────────────────────────────────────────────
+# These strategies have been permanently eliminated due to sustained negative ROI.
+# They are never selected by agents; kept here as a historical coffin record.
+ELIMINATED_STRATEGIES: Dict[str, Dict] = {
+    "totals_expert": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-72% ROI",
+        "final_roi": -0.72,
+        "department": "D4_BETTING",
+    },
+    "spread_only": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-97% ROI",
+        "final_roi": -0.97,
+        "department": "D4_BETTING",
+    },
+    "full_blast": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-100% ROI",
+        "final_roi": -1.00,
+        "department": "D4_BETTING",
+    },
+}
+
+# ── ELIMINATED POLITICAL STRATEGIES ──────────────────────────────────────────
+ELIMINATED_POLITICAL_STRATEGIES: Dict[str, Dict] = {
+    "SECTOR_ROTATE": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-75% ROI",
+        "final_roi": -0.75,
+        "department": "D7_POLITICAL",
+    },
+    "DEFENSE_LONG_individual": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-65% ROI on individual defense stock picks",
+        "final_roi": -0.65,
+        "department": "D7_POLITICAL",
+    },
+    "BILL_PASSES": {
+        "eliminated_at": "2026-03-31",
+        "reason": "-64% ROI",
+        "final_roi": -0.64,
+        "department": "D7_POLITICAL",
+    },
+}
+
 NBA_AGENT   = Path('/home/termius/nomos-nba-agent')
 POLITICAL   = Path('/home/termius/nomos-political-alpha')
 DATA_DIR    = ROOT / 'data' / 'arena'
@@ -75,18 +138,19 @@ STRATEGIES = {
     "value_hunter":        {"family": "value",        "min_edge": 0.05,  "max_pct": 0.12,  "cats": "all"},
     "underdog_specialist": {"family": "underdog",     "min_odds": 2.2,   "min_edge": 0.03, "max_pct": 0.08, "cats": "all"},
     "dog_value_plus":      {"family": "underdog",     "min_odds": 3.0,   "min_edge": 0.02, "max_pct": 0.06, "cats": "all"},
-    "totals_expert":       {"family": "kelly",        "fraction": 0.5,   "min_edge": 0.02, "max_pct": 0.15,
-                            "cats": ["total_over", "total_under", "team_total_home_over", "team_total_home_under"]},
+    # totals_expert  — ELIMINATED 2026-03-31 (-72% ROI)
+    # spread_only    — ELIMINATED 2026-03-31 (-97% ROI)
+    # full_blast     — ELIMINATED 2026-03-31 (-100% ROI)
     "first_half_sniper":   {"family": "kelly",        "fraction": 0.5,   "min_edge": 0.02, "max_pct": 0.15,
                             "cats": ["h1_ml_home", "h1_ml_away"]},
+    "first_half_away":     {"family": "kelly",        "fraction": 0.5,   "min_edge": 0.02, "max_pct": 0.12,
+                            "cats": ["h1_ml_away"],
+                            "note": "h1_ml_away 53.2% win-rate specialist (D4 rec 2026-03-31)"},
     "home_specialist":     {"family": "kelly",        "fraction": 0.5,   "min_edge": 0.02, "max_pct": 0.12,
                             "cats": ["ml_home", "spread_home", "h1_ml_home"]},
-    "spread_only":         {"family": "kelly",        "fraction": 0.5,   "min_edge": 0.02, "max_pct": 0.12,
-                            "cats": ["spread_home", "spread_away", "alt_spread_home_big", "alt_spread_away_big"]},
     "anti_martingale":     {"family": "anti_mart",    "min_edge": 0.02,  "max_pct": 0.20,  "cats": "all", "base_pct": 0.02},
     "drawdown_adjusted":   {"family": "drawdown_adj", "min_edge": 0.02,  "max_pct": 0.15,  "cats": "all", "dd_threshold": 0.15},
     "streak_momentum":     {"family": "streak",       "min_edge": 0.02,  "max_pct": 0.20,  "cats": "all", "streak_boost": 3},
-    "full_blast":          {"family": "full_blast",   "min_edge": 0.01,  "max_pct": 1.00,  "cats": "all"},
 }
 
 BANKROLL_THRESHOLDS = {
@@ -123,7 +187,8 @@ TRADERS = {
         "bankroll_nba":       100.0,
         "bankroll_political": 100_000.0,
         "preferred_models":   ["consensus_ensemble", "extra_trees", "lightgbm"],
-        "preferred_strategies": ["quarter_kelly", "flat_2pct", "totals_expert"],
+        "preferred_strategies": ["quarter_kelly", "flat_2pct", "value_hunter"],
+        # totals_expert replaced by value_hunter (eliminated 2026-03-31, -72% ROI)
         "pol_approach":       "sector_rotation",
         "etf_sectors":        ["SPY", "IWM", "XLF", "XLE"],
     },
@@ -135,7 +200,8 @@ TRADERS = {
         "bankroll_nba":       100.0,
         "bankroll_political": 100_000.0,
         "preferred_models":   ["tabicl", "consensus_ensemble", "catboost"],
-        "preferred_strategies": ["eighth_kelly", "flat_1pct", "drawdown_adjusted"],
+        "preferred_strategies": ["half_kelly", "flat_1pct", "drawdown_adjusted"],
+        # D4 rec 2026-03-31: switched live strategy from quarter_kelly → half_kelly
         "pol_approach":       "mean_reversion",
         "etf_sectors":        ["TLT", "GLD", "XLV"],
     },
@@ -147,7 +213,8 @@ TRADERS = {
         "bankroll_nba":       100.0,
         "bankroll_political": 100_000.0,
         "preferred_models":   ["xgboost", "lightgbm", "catboost"],
-        "preferred_strategies": ["full_kelly", "streak_momentum", "anti_martingale"],
+        "preferred_strategies": ["full_kelly", "streak_momentum", "anti_martingale", "proportional_edge"],
+        # full_blast replaced by proportional_edge (eliminated 2026-03-31, -100% ROI)
         "pol_approach":       "event_driven",
         "etf_sectors":        ["QQQ", "XLK", "XLI"],
     },
@@ -450,10 +517,15 @@ def agent_select_nba_strategy(trader_id: str, bankroll: float,
     """
     Each AI agent picks a betting strategy, with awareness of competitors.
     Trailing  → more aggressive; Leading → more conservative.
+    Eliminated strategies are never selected (ELIMINATED_STRATEGIES coffin).
     """
     cfg         = TRADERS[trader_id]
     personality = cfg["personality"]
-    preferred   = cfg["preferred_strategies"]
+    # Filter out any eliminated strategies from preferred list
+    preferred   = [s for s in cfg["preferred_strategies"]
+                   if s not in ELIMINATED_STRATEGIES]
+    if not preferred:
+        preferred = ["half_kelly"]  # safe fallback
 
     other_bankrolls = [
         s.get("nba_bankroll", 100.0)
@@ -662,6 +734,9 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
 
         chosen_model    = agent_select_nba_model(trader_id, day_model_probs, others_states)
         chosen_strategy = agent_select_nba_strategy(trader_id, bankroll, others_states)
+        # Hard guard: never use an eliminated strategy (safety net for any path)
+        if chosen_strategy in ELIMINATED_STRATEGIES:
+            chosen_strategy = "half_kelly"
         strat_cfg       = STRATEGIES[chosen_strategy]
         allowed_cats    = strat_cfg["cats"]
 
@@ -901,6 +976,10 @@ def build_leaderboard(all_results: Dict) -> List[Dict]:
 
 def run_full_competition() -> Dict:
     """Run full-season competition for all 5 AI agents (NBA + political)."""
+    # Iteration / generation tracking
+    it_data = _load_iteration()
+    it_data["iteration"] += 1
+    print(f"Trading Floor v4 — iteration {it_data['iteration']}")
     print("Loading games...")
     games = load_games()
     odds  = load_odds()
@@ -914,6 +993,9 @@ def run_full_competition() -> Dict:
     print(f"  Matched            : {len(matched)}")
     if not matched:
         print("  WARNING: No matched games — NBA backtest will be empty.")
+    # Generation = unique game-days seen so far (cumulative across runs)
+    unique_days = len({item[0][0] for item in matched})
+    it_data["generation"] = it_data.get("generation", 0) + unique_days
 
     print("Loading political signals...")
     signals   = load_political_signals()
@@ -960,7 +1042,29 @@ def run_full_competition() -> Dict:
     board     = build_leaderboard(all_results)
     cc_status = build_command_center_status(dept_data)
 
+    # Persist updated iteration counters
+    _save_iteration(it_data)
+
+    # Build eliminations summary
+    eliminations = {
+        "strategies":       ELIMINATED_STRATEGIES,
+        "political":        ELIMINATED_POLITICAL_STRATEGIES,
+        "coffins": [
+            {"name": k, **v, "type": "nba_strategy"}
+            for k, v in ELIMINATED_STRATEGIES.items()
+        ] + [
+            {"name": k, **v, "type": "political_strategy"}
+            for k, v in ELIMINATED_POLITICAL_STRATEGIES.items()
+        ],
+        "active_nba_count":           len(STRATEGIES),
+        "eliminated_nba_count":       len(ELIMINATED_STRATEGIES),
+        "active_political_count":     len(set(t["pol_approach"] for t in TRADERS.values())),
+        "eliminated_political_count": len(ELIMINATED_POLITICAL_STRATEGIES),
+    }
+
     output = {
+        "iteration":  it_data["iteration"],
+        "generation": it_data["generation"],
         "meta": {
             "version":            "trading-floor-v4",
             "generated":          datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -968,10 +1072,12 @@ def run_full_competition() -> Dict:
             "traders":            len(TRADERS),
             "nba_models":         len(MODELS),
             "nba_strategies":     len(STRATEGIES),
+            "nba_strategies_eliminated": len(ELIMINATED_STRATEGIES),
             "matched_games":      len(matched),
             "political_tickers":  len(signals),
             "etf_universe":       len(ETF_UNIVERSE),
         },
+        "eliminations": eliminations,
         "leaderboard": board,
         "traders": {
             tid: {k: v for k, v in s.items()
@@ -991,6 +1097,8 @@ def run_full_competition() -> Dict:
     dated.write_text(json.dumps(output, indent=2))
     print(f"\nSaved: {latest}")
     print(f"Saved: {dated}")
+    print(f"Iteration: {it_data['iteration']}  Generation: {it_data['generation']}")
+    print(f"Active NBA strategies: {len(STRATEGIES)}  Eliminated: {len(ELIMINATED_STRATEGIES)}")
 
     return output
 

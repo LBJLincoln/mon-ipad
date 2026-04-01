@@ -1,131 +1,117 @@
 {
-  "cycle_start": "2026-03-31T23:10:37.708556+00:00",
+  "cycle_start": "2026-04-01T01:07:30.439829+00:00",
   "departments": {
     "research": {
       "department": "research",
-      "started_at": "2026-03-31T23:10:37.708633+00:00",
+      "started_at": "2026-04-01T01:07:51.934902+00:00",
       "status": "completed",
       "returncode": 0,
-      "duration_s": 1.0,
+      "duration_s": 25.3,
       "metrics": {
-        "status": "placeholder",
+        "status": "completed",
         "department": "research",
+        "iteration": 4,
+        "timestamp": "2026-04-01T01:08:13+00:00",
+        "elapsed_s": 21,
         "metric": "proposals_generated",
-        "proposals_generated": 18,
-        "papers_scanned": 0,
-        "techniques_extracted": 0,
-        "improved": false
-      }
+        "papers_scanned": 14,
+        "techniques_extracted": 39,
+        "proposals_generated": 5,
+        "proposals_implemented": 0,
+        "proposals_pending": 5,
+        "current_brier": 0.2157,
+        "target_brier": 0.2,
+        "gap_remaining": 0.0157,
+        "portfolio_cumulative_impact": 0.0165,
+        "gap_pct_covered_by_portfolio": 100.0,
+        "improved": false,
+        "next_action": "Deploy P001 TabICLv2 upgrade to Colab GPU notebook"
+      },
+      "stderr_tail": "d, 5 pending\n[D1-RESEARCH] STEP 4: Computing gap closure metrics...\n[D1-RESEARCH] Gap to close: 0.0157 | Portfolio covers: 100.0% via estimated impact\n[D1-RESEARCH] STEP 5: Writing output...\n[D1-RESEARCH] Updated /home/termius/mon-ipad/data/departments/research/karpathy-output.json with iteration 4\n"
     },
     "engineering": {
       "department": "engineering",
-      "started_at": "2026-03-31T23:10:38.681051+00:00",
-      "status": "completed",
-      "returncode": 0,
-      "duration_s": 0.5,
-      "metrics": {
-        "status": "placeholder",
-        "department": "engineering",
-        "metric": "brier_delta",
-        "brier_delta": 0,
-        "best_brier": null,
-        "test_pass_rate": null,
-        "features_added": 0,
-        "improved": false
-      }
+      "started_at": "2026-04-01T01:08:17.195562+00:00",
+      "status": "failed",
+      "returncode": 1,
+      "duration_s": 22.5,
+      "output_tail": "=== ENGINEERING LOOP iter=1 ===\n  Health:       warning\n  Parity:       local_missing (engine v3.0-43cat, 6270 lines)\n  Feature ~cnt: 679 appends across 55 categories\n  Phantom games: 0\n  Odds sanity:   0 violations\n  Tests:        11/14 passed (rate=0.7857)\n  Best Brier:   null\n  Output:       /home/termius/mon-ipad/data/departments/engineering/engineering-loop-output.json\n"
     },
     "evolution": {
       "department": "evolution",
-      "started_at": "2026-03-31T23:10:39.197731+00:00",
+      "started_at": "2026-04-01T01:08:39.696944+00:00",
       "status": "completed",
       "returncode": 0,
-      "duration_s": 1.2,
+      "duration_s": 27.2,
       "metrics": {
-        "status": "placeholder",
+        "status": "completed",
         "department": "evolution",
         "metric": "best_brier",
-        "best_brier": null,
-        "generations": 0,
-        "generations_per_hour": null,
-        "population_diversity": null,
-        "improved": false
-      }
+        "best_brier": 0.22066,
+        "fleet_avg_brier": 0.22223,
+        "best_island": "S13",
+        "total_generations": 2317,
+        "stagnant_count": 1,
+        "diversity_score": 0.395,
+        "improved": false,
+        "recommendations_count": 4
+      },
+      "stderr_tail": "[D3-EVOLUTION] Starting Karpathy loop at 2026-04-01T01:08:40Z\n[D3-EVOLUTION] Analysis complete \u2014 writing output\n"
     },
     "betting": {
       "department": "betting",
-      "started_at": "2026-03-31T23:10:40.446473+00:00",
+      "started_at": "2026-04-01T01:09:06.936955+00:00",
       "status": "completed",
       "returncode": 0,
-      "duration_s": 3.5,
+      "duration_s": 7.7,
       "metrics": {
-        "status": "placeholder",
+        "status": "completed",
         "department": "betting",
-        "metric": "roi_delta",
-        "roi_delta": 0,
-        "current_roi": -2.6,
-        "sharpe_ratio": null,
-        "win_rate": 0.3871,
-        "kelly_edge": null,
+        "timestamp": "2026-04-01T01:09:12Z",
+        "iteration": 1,
+        "live_roi_pct": -2.6,
+        "live_sharpe": -1.22,
+        "live_win_rate": 38.71,
+        "live_bankroll": 97.4,
+        "top_strategy": "full_kelly",
+        "top_agent": "Gemini",
+        "top_category": "h1_ml_away",
+        "strategy_change_warranted": true,
+        "recommended_strategy": "half_kelly",
+        "estimated_roi_delta": 4.0,
+        "improvements_count": 8,
         "improved": false
       }
     },
     "evaluation": {
       "department": "evaluation",
-      "started_at": "2026-03-31T23:10:43.939429+00:00",
-      "status": "completed",
-      "returncode": 0,
-      "duration_s": 2.0,
-      "metrics": {
-        "status": "placeholder",
-        "department": "evaluation",
-        "metric": "calibration_error",
-        "calibration_error": null,
-        "brier": 0.2157,
-        "false_positive_rate": null,
-        "brier_improvement": 0,
-        "improved": false
-      }
+      "started_at": "2026-04-01T01:09:14.679951+00:00",
+      "status": "failed",
+      "returncode": 1,
+      "duration_s": 5.5,
+      "output_tail": "[D5 EVALUATION] Iteration 3 \u2014 Wed Apr  1 01:09:17 UTC 2026\n",
+      "stderr_tail": "self.parent.mkdir(parents=True, exist_ok=True)\n  File \"/usr/lib/python3.11/pathlib.py\", line 1121, in mkdir\n    self.parent.mkdir(parents=True, exist_ok=True)\n  File \"/usr/lib/python3.11/pathlib.py\", line 1117, in mkdir\n    os.mkdir(self, mode)\nPermissionError: [Errno 13] Permission denied: '/data'\n"
     },
     "infra": {
       "department": "infra",
-      "started_at": "2026-03-31T23:10:45.940299+00:00",
+      "started_at": "2026-04-01T01:09:20.182775+00:00",
       "status": "completed",
       "returncode": 0,
-      "duration_s": 10.0,
-      "metrics": {
-        "status": "placeholder",
-        "department": "infra",
-        "metric": "uptime_pct",
-        "uptime_pct": null,
-        "restart_count": 0,
-        "spaces_up": 1,
-        "spaces_total": 6,
-        "improved": false
-      }
+      "duration_s": 127.0,
+      "output_tail": "m resources...\n  CPU load: 6.34 / 5.68 / 5.68\n  RAM: 896MB used / 969MB total\n  Disk: 82% (6GB free)\n[2/8] Cron jobs...\n  Active cron lines: 23\n[3/8] Processes...\n  brain=ALIVE nba_bot=ALIVE forge=ALIVE data_server=ALIVE\n[4/8] Data server HTTP...\n  HTTP: 200\n[5/8] HF Spaces health...\n  NBA: 6/6 | Political: 2/4 | Total: 8/10\n[6/8] Issue detection...\n  Issues found: 4\n[7/8] Uptime calculation...\n  Uptime score: 88.0%\n[8/8] Writing output JSON...\nOK\n=== INFRA LOOP DONE \u2014 issues=4 uptime=88.0% ===\n"
     },
     "political": {
       "department": "political",
-      "started_at": "2026-03-31T23:10:55.934810+00:00",
-      "status": "completed",
-      "returncode": 0,
-      "duration_s": 0.2,
-      "metrics": {
-        "status": "placeholder",
-        "department": "political",
-        "metric": "political_brier",
-        "political_brier": null,
-        "etf_roi": null,
-        "signal_accuracy": null,
-        "political_repo_exists": true,
-        "improved": false
-      }
+      "started_at": "2026-04-01T01:11:27.690632+00:00",
+      "status": "timeout",
+      "duration_s": 300
     },
     "creative": {
       "department": "creative",
-      "started_at": "2026-03-31T23:10:56.180449+00:00",
+      "started_at": "2026-04-01T01:16:32.435678+00:00",
       "status": "completed",
       "returncode": 0,
-      "duration_s": 0.3,
+      "duration_s": 3.2,
       "metrics": {
         "status": "placeholder",
         "department": "creative",
@@ -138,17 +124,146 @@
       }
     }
   },
+  "fleet_interventions": [
+    {
+      "timestamp": "2026-04-01T01:07:34.920269+00:00",
+      "trigger": "auto_stagnation",
+      "island": "S14",
+      "space_url": "nomos42-nba-evo-5",
+      "stagnation_cycles": 20,
+      "threshold": 15,
+      "actions": {
+        "diversify": {
+          "success": true,
+          "result": {
+            "status": "command queued",
+            "command": "diversify"
+          }
+        },
+        "mutation_boost": {
+          "success": true,
+          "result": {
+            "status": "queued",
+            "params": {
+              "mutation_rate": 0.12,
+              "target_features": 55
+            }
+          }
+        }
+      },
+      "success": true
+    },
+    {
+      "timestamp": "2026-04-01T01:07:39.668996+00:00",
+      "trigger": "auto_diversity",
+      "island": "S12",
+      "space_url": "nomos42-nba-evo-3",
+      "diversity_score": 0.395,
+      "threshold": 0.4,
+      "model_drift": {
+        "expected": "extra_trees",
+        "actual": "random_forest"
+      },
+      "actions": {
+        "diversify": {
+          "success": true,
+          "result": {
+            "status": "command queued",
+            "command": "diversify"
+          }
+        },
+        "specialist_config": {
+          "success": true,
+          "result": {
+            "status": "queued",
+            "params": {
+              "mutation_rate": 0.08,
+              "target_features": 60
+            }
+          }
+        }
+      },
+      "success": true
+    },
+    {
+      "timestamp": "2026-04-01T01:07:44.919670+00:00",
+      "trigger": "auto_diversity",
+      "island": "S13",
+      "space_url": "nomos42-nba-evo-4",
+      "diversity_score": 0.395,
+      "threshold": 0.4,
+      "model_drift": {
+        "expected": "catboost",
+        "actual": "xgboost_brier"
+      },
+      "actions": {
+        "diversify": {
+          "success": true,
+          "result": {
+            "status": "command queued",
+            "command": "diversify"
+          }
+        },
+        "specialist_config": {
+          "success": true,
+          "result": {
+            "status": "queued",
+            "params": {
+              "mutation_rate": 0.1,
+              "target_features": 66
+            }
+          }
+        }
+      },
+      "success": true
+    },
+    {
+      "timestamp": "2026-04-01T01:07:51.930440+00:00",
+      "trigger": "auto_diversity",
+      "island": "S14",
+      "space_url": "nomos42-nba-evo-5",
+      "diversity_score": 0.395,
+      "threshold": 0.4,
+      "model_drift": {
+        "expected": "lightgbm",
+        "actual": "random_forest"
+      },
+      "actions": {
+        "diversify": {
+          "success": true,
+          "result": {
+            "status": "command queued",
+            "command": "diversify"
+          }
+        },
+        "specialist_config": {
+          "success": true,
+          "result": {
+            "status": "queued",
+            "params": {
+              "mutation_rate": 0.08,
+              "target_features": 55
+            }
+          }
+        }
+      },
+      "success": true
+    }
+  ],
   "summary": {
     "total": 8,
-    "completed": 8,
-    "failed": 0,
-    "timeout": 0,
+    "completed": 5,
+    "failed": 2,
+    "timeout": 1,
     "skipped": 0,
-    "total_duration_s": 18.7
+    "total_duration_s": 518.4000000000001,
+    "fleet_interventions": 4,
+    "fleet_diversity_score": 0.395
   },
+  "fleet_diversity_score": 0.395,
   "cross_pollination": {
     "wins_detected": [],
     "total_wins": 0
   },
-  "cycle_end": "2026-03-31T23:10:56.440497+00:00"
+  "cycle_end": "2026-04-01T01:16:35.939907+00:00"
 }
