@@ -1,78 +1,147 @@
 {
-  "updated_at": "2026-04-01T08:00:00Z",
-  "cycle": "4h-brain",
-  "cycle_id": "2026-04-01T08",
+  "last_brain_cycle": "2026-04-01T12:30:00Z",
+  "cycle_number": "estimated_~50",
   "nba_fleet": {
-    "note": "S11 URL corrected this cycle: nomos42-nba-quant-2.hf.space (NOT nomos42-nba-evo-2)",
-    "islands": [
-      {"id":"S10","url":"nomos42-nba-quant.hf.space","role":"exploitation","status":"online","generation":733,"cycle":245,"best_brier":0.22239,"best_roi":0.2974,"best_sharpe":8.9008,"stagnation":0,"model":"random_forest","features":40,"alert":null},
-      {"id":"S11","url":"nomos42-nba-quant-2.hf.space","role":"exploration","status":"online","generation":869,"cycle":290,"best_brier":0.22277,"best_roi":0.2913,"best_sharpe":9.8973,"stagnation":0,"model":"catboost","features":61,"alert":null},
-      {"id":"S12","url":"nomos42-nba-evo-3.hf.space","role":"extra_trees","status":"online","generation":530,"cycle":177,"best_brier":0.22115,"best_roi":0.3119,"best_sharpe":6.84,"stagnation":0,"model":"random_forest","features":54,"alert":null},
-      {"id":"S13","url":"nomos42-nba-evo-4.hf.space","role":"catboost_specialist","status":"online","generation":580,"cycle":194,"best_brier":0.22066,"best_roi":0.3184,"best_sharpe":6.4833,"stagnation":0,"model":"xgboost","features":40,"alert":"FLEET_BEST"},
-      {"id":"S14","url":"nomos42-nba-evo-5.hf.space","role":"lightgbm","status":"online","generation":762,"cycle":254,"best_brier":0.22188,"best_roi":0.3035,"best_sharpe":6.8861,"stagnation":0,"model":"catboost","features":49,"alert":null},
-      {"id":"S15","url":"nomos42-nba-evo-6.hf.space","role":"wide_search","status":"online","generation":667,"cycle":223,"best_brier":0.22254,"best_roi":0.2961,"best_sharpe":6.6741,"stagnation":0,"model":"random_forest","features":63,"alert":null}
-    ],
-    "fleet_summary": {
-      "islands_online": 6,
-      "islands_offline": 0,
-      "stagnation_alerts": 0,
-      "diversify_commands_sent": 0,
-      "fleet_best_brier": 0.22066,
-      "fleet_best_island": "S13",
-      "fleet_best_model": "xgboost",
-      "checkpoint_threshold": 0.21837,
-      "checkpoint_triggered": false,
-      "gap_to_checkpoint": 0.00229,
-      "all_time_best_brier": 0.21570,
-      "all_time_best_source": "Colab TabICL 110f iter15",
-      "target_brier": 0.20,
-      "engine_version": "v3.1-46cat",
-      "total_games_cached": 9551,
-      "supabase_status": "connectivity_errors_pooler_xivvnr"
-    }
+    "islands_online": 4,
+    "islands_total": 6,
+    "islands": {
+      "S10_nomos42-nba-quant": {
+        "status": "UP",
+        "cycle": 322,
+        "generation": 965,
+        "best_brier": 0.22239,
+        "best_roi": 0.2974,
+        "best_sharpe": 8.9008,
+        "best_model": "random_forest",
+        "best_features": 40,
+        "stagnation": 0,
+        "games": 9551
+      },
+      "S11_nomos42-nba-evo-2": {
+        "status": "DOWN_404",
+        "note": "Returning 404 — space may be deleted or renamed"
+      },
+      "S12_nomos42-nba-evo-3": {
+        "status": "UP",
+        "cycle": 218,
+        "generation": 652,
+        "best_brier": 0.22115,
+        "best_roi": 0.3119,
+        "best_sharpe": 6.8366,
+        "best_model": "random_forest",
+        "best_features": 54,
+        "stagnation": 0,
+        "games": 9551
+      },
+      "S13_nomos42-nba-evo-4": {
+        "status": "UP",
+        "cycle": 242,
+        "generation": 724,
+        "best_brier": 0.22066,
+        "best_roi": 0.3184,
+        "best_sharpe": 6.4833,
+        "best_model": "xgboost_brier",
+        "best_features": 40,
+        "stagnation": 0,
+        "games": 9551
+      },
+      "S14_nomos42-nba-evo-5": {
+        "status": "UP",
+        "cycle": 322,
+        "generation": 964,
+        "best_brier": 0.22188,
+        "best_roi": 0.3035,
+        "best_sharpe": 6.8861,
+        "best_model": "catboost",
+        "best_features": 49,
+        "stagnation": 0,
+        "games": 9551
+      },
+      "S15_nomos42-nba-evo-6": {
+        "status": "DOWN_CERT_ERROR",
+        "note": "SSL certificate not yet valid — space may be starting up or SSL issue"
+      }
+    },
+    "fleet_best_brier": 0.22066,
+    "fleet_best_island": "S13_nomos42-nba-evo-4",
+    "fleet_best_model": "xgboost_brier",
+    "all_time_best_brier": 0.2157,
+    "all_time_best_source": "Colab_TabICL",
+    "gap_to_checkpoint_threshold": 0.00229,
+    "checkpoint_threshold": 0.21837,
+    "checkpoint_needed": false,
+    "stagnation_alert": false,
+    "supabase_status": "FAILING_ALL_ISLANDS",
+    "supabase_note": "Persistent pooler auth failures — local JSON fallback active on all islands"
   },
   "political_fleet": {
-    "islands": [
-      {"id":"P1","role":"exploitation","url":"nomos42-political-alpha.hf.space","status":"online","generation":3028,"cycle":1010,"best_brier":0.24186,"best_roi":0.0841,"best_sharpe":2.5409,"stagnation":0,"model":"xgboost","features":53,"alert":null},
-      {"id":"P2","role":"exploration","url":"nomos42-political-alpha-2.hf.space","status":"online","generation":522,"cycle":175,"best_brier":0.26055,"best_roi":0.0088,"stagnation":0,"model":"random_forest","features":51,"alert":"LOW_ROI"},
-      {"id":"P3","role":"catboost","url":"nomos42-political-alpha-3.hf.space","status":"down_503","generation":null,"alert":"DOWN_503_CYCLE2"},
-      {"id":"P4","role":"wide_search","url":"nomos42-political-alpha-4.hf.space","status":"down_503","generation":null,"alert":"DOWN_503_CYCLE2"}
-    ],
-    "fleet_summary": {
-      "islands_online": 2,
-      "islands_offline": 2,
-      "fleet_best_brier": 0.24186,
-      "total_events": 372,
-      "real_events": 60,
-      "synthetic_events": 312,
-      "engine_version": "v3.2-political-23cat"
+    "islands_online": 1,
+    "islands_total": 4,
+    "islands": {
+      "P1_exploitation": {
+        "status": "UP",
+        "cycle": 1134,
+        "generation": 3400,
+        "best_brier": 0.24186,
+        "best_roi": 0.0841,
+        "best_sharpe": 2.5409,
+        "best_model": "xgboost_brier",
+        "best_features": 53,
+        "role": "political_exploitation",
+        "real_events": 60,
+        "synthetic_events": 312,
+        "total_events": 372
+      },
+      "P2_exploration": {
+        "status": "DOWN_CERT_ERROR",
+        "note": "SSL certificate not yet valid"
+      },
+      "P3_catboost": {
+        "status": "DOWN_CERT_ERROR",
+        "note": "SSL certificate not yet valid — 3rd consecutive cycle down"
+      },
+      "P4_wide_search": {
+        "status": "DOWN_503",
+        "note": "503 Service Unavailable — building or crashed"
+      }
+    },
+    "fleet_best_brier": 0.24186,
+    "fleet_best_island": "P1_exploitation",
+    "data_quality_pct_real": 16.1,
+    "p3_p4_down_cycles": 3
+  },
+  "cycle_improvements": {
+    "nba": {
+      "action": "IMPLEMENTED",
+      "description": "Added lr_platt post-hoc Platt scaling calibration option to hf-space/app.py",
+      "technique": "LogisticRegression fitted on held-out probability slice — avoids CalibratedClassifierCV cv=3 instability with time series",
+      "expected_brier_gain": "0.001 to 0.003",
+      "file_changed": "nomos-nba-agent/hf-space/app.py"
+    },
+    "political": {
+      "action": "IMPLEMENTED",
+      "description": "Rotation C — ported probability clipping np.clip(p, 0.025, 0.975) and lr_platt calibration to political_engine.py",
+      "technique": "Cross-project technique port from NBA engine",
+      "file_changed": "nomos-political-alpha/features/political_engine.py"
     }
   },
-  "actions_this_cycle": [
-    "All 6 NBA islands confirmed online — S11 URL corrected to nomos42-nba-quant-2.hf.space",
-    "No stagnation on any NBA island — no diversify commands needed",
-    "NBA fleet_best_brier=0.22066 (S13/XGBoost) — gap to checkpoint 0.00229 — no checkpoint",
-    "Political engine v3.1→v3.2: added Cat23 FEC Donation Velocity (20 features)",
-    "NBA research proposal: LR meta-calibration targeting 0.199 Brier (MDPI Jan 2026)",
-    "Political P3/P4 down_503 for 2 consecutive cycles — manual HF restart recommended"
-  ],
-  "cycle_improvement_NBA": {
-    "type": "research_proposal",
-    "file": "data/research-proposals/2026-04-01-lr-meta-calibration-0199-brier.json",
-    "source": "MDPI Jan 2026 — LR achieves 0.199 Brier, best tabular model",
-    "action_needed": "Implement in hf-space/app.py next engineering cycle"
+  "research_findings": {
+    "technique_researched": "Uncertainty-Aware NBA Forecasting (2026)",
+    "key_finding": "Market fusion (combining implied betting odds with model predictions) achieves best overall performance — fused models get Brier ~0.20 vs 0.202 for standalone XGBoost",
+    "proposed_next_cycle": "Market fusion feature: add implied_prob_market = 1/(1+decimal_odds) as a raw feature, then blend model output with market probability using alpha=0.3 weighting",
+    "source": "MDPI Information 2026, Uncertainty-Aware ML for NBA Forecasting in Digital Betting Markets"
   },
-  "cycle_improvement_POLITICAL": {
-    "type": "code_change",
-    "file": "nomos-political-alpha/features/political_engine.py",
-    "change": "Cat23 FEC Donation Velocity — 20 features: velocity_ratio, 48h_notices, pac_cash, bipartisan_ratio, dark_money",
-    "version_bump": "v3.1-political-22cat → v3.2-political-23cat"
+  "cross_project_health": {
+    "supabase": "FAILING_BOTH_PROJECTS",
+    "local_cache_nba": "OPERATIONAL_7067_games",
+    "local_cache_political": "OPERATIONAL_372_events",
+    "island_cert_errors": "Multiple spaces have SSL cert issues — likely HuggingFace space sleeping/cold-start"
   },
   "next_cycle_directives": [
-    "Implement LR calibration wrapper in nomos-nba-agent/hf-space/app.py (highest impact)",
-    "Check P3/P4 status — if still 503, restart via HF Space dashboard",
-    "Port LR calibration to nomos-political-alpha/hf-space/app.py",
-    "Update ops/fetch_political_data.py to populate event.fec_data dict (unblocks Cat23)"
-  ],
-  "next_cycle": "2026-04-01T12:00:00Z"
+    "NBA: Implement market fusion feature — blend model probability with market-implied probability",
+    "Political: Restart P3/P4 via HuggingFace dashboard — 3+ cycles down",
+    "Political: Populate real FEC events for Cat23 features (currently 16.1% real data)",
+    "NBA: Monitor lr_platt calibration performance — if Brier improves, add to GA search space",
+    "Infra: Investigate Supabase pooler auth failure — may need credential rotation"
+  ]
 }
