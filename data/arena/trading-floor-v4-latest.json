@@ -1,9 +1,9 @@
 {
-  "iteration": 2,
-  "generation": 272,
+  "iteration": 3,
+  "generation": 408,
   "meta": {
     "version": "trading-floor-v4",
-    "generated": "2026-04-01T09:26:06Z",
+    "generated": "2026-04-01T09:46:55Z",
     "date": "2026-04-01",
     "traders": 5,
     "nba_models": 11,
@@ -158,10 +158,10 @@
       "nba_bets": 1459,
       "nba_wins": 905,
       "nba_losses": 554,
-      "political_bankroll": 100000.0,
-      "political_roi_pct": 0.0,
+      "political_bankroll": 100000.63,
+      "political_roi_pct": 0.0006,
       "political_approach": "momentum",
-      "combined_score": 16791.6,
+      "combined_score": 16791.6001,
       "eliminated": false
     },
     {
@@ -176,10 +176,10 @@
       "nba_bets": 1667,
       "nba_wins": 1012,
       "nba_losses": 655,
-      "political_bankroll": 100000.0,
-      "political_roi_pct": 0.0,
+      "political_bankroll": 100014.45,
+      "political_roi_pct": 0.0145,
       "political_approach": "sector_rotation",
-      "combined_score": 10590.58,
+      "combined_score": 10590.5814,
       "eliminated": false
     },
     {
@@ -194,10 +194,10 @@
       "nba_bets": 125,
       "nba_wins": 96,
       "nba_losses": 29,
-      "political_bankroll": 100000.0,
-      "political_roi_pct": 0.0,
+      "political_bankroll": 100003.97,
+      "political_roi_pct": 0.004,
       "political_approach": "pairs_trading",
-      "combined_score": 5984.97,
+      "combined_score": 5984.9704,
       "eliminated": false
     }
   ],
@@ -220,11 +220,36 @@
       "nba_peak": 16891.6656,
       "nba_max_drawdown": 0.1154,
       "nba_eliminated_day": null,
-      "political_bankroll": 100000.0,
-      "political_roi_pct": 0.0,
-      "political_positions": [],
-      "political_total_size": 0,
-      "political_simulated_pnl": 0.0,
+      "political_bankroll": 100000.63,
+      "political_roi_pct": 0.0006,
+      "political_positions": [
+        {
+          "ticker": "XLK",
+          "direction": "long",
+          "size_usd": 368.57,
+          "signal_strength": 0.0614,
+          "reason": "sector_aggregate",
+          "approach": "momentum"
+        },
+        {
+          "ticker": "QQQ",
+          "direction": "long",
+          "size_usd": 368.57,
+          "signal_strength": 0.0614,
+          "reason": "sector_aggregate",
+          "approach": "momentum"
+        },
+        {
+          "ticker": "SPY",
+          "direction": "long",
+          "size_usd": 660.0,
+          "signal_strength": 0.11,
+          "reason": "sector_aggregate",
+          "approach": "momentum"
+        }
+      ],
+      "political_total_size": 1397.14,
+      "political_simulated_pnl": 0.63,
       "political_approach": "momentum",
       "saw_others": [
         "openrouter",
@@ -232,7 +257,7 @@
         "codex",
         "grok"
       ],
-      "run_timestamp": "2026-04-01T09:26:05.796929+00:00"
+      "run_timestamp": "2026-04-01T09:46:48.104032+00:00"
     },
     "openrouter": {
       "trader_id": "openrouter",
@@ -252,11 +277,28 @@
       "nba_peak": 10695.0737,
       "nba_max_drawdown": 0.1628,
       "nba_eliminated_day": null,
-      "political_bankroll": 100000.0,
-      "political_roi_pct": 0.0,
-      "political_positions": [],
-      "political_total_size": 0,
-      "political_simulated_pnl": 0.0,
+      "political_bankroll": 100014.45,
+      "political_roi_pct": 0.0145,
+      "political_positions": [
+        {
+          "ticker": "SPY",
+          "direction": "long",
+          "size_usd": 13480.39,
+          "signal_strength": 0.11,
+          "reason": "sector_aggregate",
+          "approach": "sector_rotation"
+        },
+        {
+          "ticker": "XLE",
+          "direction": "long",
+          "size_usd": 11519.61,
+          "signal_strength": 0.094,
+          "reason": "sector_aggregate",
+          "approach": "sector_rotation"
+        }
+      ],
+      "political_total_size": 25000.0,
+      "political_simulated_pnl": 14.45,
       "political_approach": "sector_rotation",
       "saw_others": [
         "gemini",
@@ -264,7 +306,7 @@
         "codex",
         "grok"
       ],
-      "run_timestamp": "2026-04-01T09:26:05.865469+00:00"
+      "run_timestamp": "2026-04-01T09:46:49.838240+00:00"
     },
     "claude": {
       "trader_id": "claude",
@@ -296,7 +338,7 @@
         "codex",
         "grok"
       ],
-      "run_timestamp": "2026-04-01T09:26:05.935456+00:00"
+      "run_timestamp": "2026-04-01T09:46:52.096121+00:00"
     },
     "codex": {
       "trader_id": "codex",
@@ -328,7 +370,7 @@
         "claude",
         "grok"
       ],
-      "run_timestamp": "2026-04-01T09:26:06.010750+00:00"
+      "run_timestamp": "2026-04-01T09:46:54.352987+00:00"
     },
     "grok": {
       "trader_id": "grok",
@@ -348,11 +390,20 @@
       "nba_peak": 6084.975,
       "nba_max_drawdown": 0.0315,
       "nba_eliminated_day": null,
-      "political_bankroll": 100000.0,
-      "political_roi_pct": 0.0,
-      "political_positions": [],
-      "political_total_size": 0,
-      "political_simulated_pnl": 0.0,
+      "political_bankroll": 100003.97,
+      "political_roi_pct": 0.004,
+      "political_positions": [
+        {
+          "ticker": "XLE",
+          "direction": "long",
+          "size_usd": 6500.0,
+          "signal_strength": 0.094,
+          "reason": "pairs_long",
+          "approach": "pairs_trading"
+        }
+      ],
+      "political_total_size": 6500.0,
+      "political_simulated_pnl": 3.97,
       "political_approach": "pairs_trading",
       "saw_others": [
         "gemini",
@@ -360,7 +411,7 @@
         "claude",
         "codex"
       ],
-      "run_timestamp": "2026-04-01T09:26:06.099516+00:00"
+      "run_timestamp": "2026-04-01T09:46:55.357897+00:00"
     }
   },
   "command_centers": {

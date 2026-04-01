@@ -197,7 +197,7 @@ ISSUES_LIST="${ISSUES_LIST%,}"
 CRITICAL_ISSUES="[${ISSUES_LIST}]"
 
 # ── Output JSON ───────────────────────────────────────────────────────
-cat > "$DATA_OUT/engineering-loop-output.json" << JSONEOF
+cat > "$DATA_OUT/karpathy-output.json" << JSONEOF
 {
   "department": "engineering",
   "timestamp": "$TIMESTAMP",
@@ -246,7 +246,7 @@ echo "  Phantom games: $PHANTOM_COUNT"
 echo "  Odds sanity:   $SANITY_VIOLATIONS violations"
 echo "  Tests:        $TEST_PASSED/$TEST_TOTAL passed (rate=$TEST_PASS_RATE)"
 echo "  Best Brier:   $BEST_BRIER"
-echo "  Output:       $DATA_OUT/engineering-loop-output.json"
+echo "  Output:       $DATA_OUT/karpathy-output.json"
 
 # Exit non-zero if critical
 if [ "$HEALTH" = "critical" ]; then

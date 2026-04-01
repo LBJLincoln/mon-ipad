@@ -250,14 +250,14 @@ ETF_UNIVERSE = {
 }
 
 POLITICAL_SECTOR_MAP = {
-    "defense":     ["XLD", "LMT", "RTX"],
-    "technology":  ["XLK", "QQQ"],
-    "energy":      ["XLE"],
-    "healthcare":  ["XLV"],
-    "financials":  ["XLF"],
-    "broad":       ["SPY", "IWM"],
+    "defense":     ["XLD", "LMT", "RTX", "BA", "GD", "NOC"],
+    "technology":  ["XLK", "QQQ", "AAPL", "MSFT", "GOOGL", "META", "NVDA", "AMZN", "TSLA"],
+    "energy":      ["XLE", "XOM", "CVX", "COP", "OXY", "HAL"],
+    "healthcare":  ["XLV", "PFE", "JNJ", "UNH"],
+    "financials":  ["XLF", "JPM", "GS", "MS", "BLK", "AXP"],
+    "broad":       ["SPY", "IWM", "WMT"],
     "small_cap":   ["IWM"],
-    "industrials": ["XLI"],
+    "industrials": ["XLI", "WMT"],
     "commodity":   ["GLD"],
     "bonds":       ["TLT"],
 }

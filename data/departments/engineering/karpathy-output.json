@@ -1,197 +1,37 @@
 {
   "department": "engineering",
-  "timestamp": "2026-03-31T22:30:00.000000+00:00",
-  "iteration": 1,
-  "audit_summary": {
-    "files_audited": [
-      "hf-space/features/engine.py",
-      "scripts/nba-daily-odds.py",
-      "scripts/betting_agent.py",
-      "scripts/evaluate_predictions.py",
-      "scripts/autonomous-cycle.sh",
-      "scripts/agents/test_data_leakage.py",
-      "data/nba-agent/latest-picks.json"
-    ],
-    "critical_bugs_confirmed": 3,
-    "warnings": 4,
-    "improvements_proposed": 6
-  },
-  "critical_bugs": [
-    {
-      "id": "BUG-001",
-      "severity": "CRITICAL",
-      "title": "PHANTOM GAME: BKN @ BKN in latest-picks.json",
-      "file": "data/nba-agent/latest-picks.json",
-      "line": "99 (home=BKN, away=BKN)",
-      "description": "Game entry has home='BKN' and away='BKN' — same team on both sides. market_implied=0.0952 (odds +950) while model gives 61.3% probability. Edge=0.5176 causing it to rank #1 in value_bets as a $5 moneyline bet. This phantom propagates to Telegram bot picks and bankroll simulation.",
-      "root_cause": "nba-daily-odds.py get_todays_games() uses substring matching on teamName for both home and away using the same TEAM_MAP loop. If teamName='Nets' it can match against 'Brooklyn Nets' for BOTH home and away simultaneously. The V3/V2 fallback also uses next((f for f in TEAM_MAP if name in f), name) which is non-deterministic for partial matches.",
-      "reproduction": "normalize_team('San Antonio') -> 'SAN' (falls through to name.upper()[:3]). 'LA Clippers' -> 'LA ' (3-char truncation with trailing space).",
-      "fix_required": "Add assert game['home'] != game['away'] guard after game construction in nba-daily-odds.py and in the predict pipeline. Filter in betting_agent.load_inputs().",
-      "fix_code": "# In betting_agent.py load_inputs(), after building candidates:\n# candidates = [c for c in candidates if c['home'] != c['away']]\n# In nba-daily-odds.py generate_odds_api_format():\n# if home == away: continue  # skip phantom games",
-      "impact": "Current: BKN @ BKN bet of $5 at +950 in active bet slip. Bankroll at risk: $5. Telegram alert sent to @Nomos42 channel with phantom bet.",
-      "status": "UNFIXED — requires code change"
-    },
-    {
-      "id": "BUG-002",
-      "severity": "CRITICAL",
-      "title": "ODDS SANITY: |model_prob - market_implied| > 0.50 not filtered",
-      "file": "scripts/betting_agent.py",
-      "line": "186-217 (candidate generation loop)",
-      "description": "No filter exists for extreme model/market divergence. BKN @ BKN game: model=0.6128, market_implied=0.0952, gap=0.5176. This is not alpha — it is a data error. The MIN_EV_THRESHOLD=0.10 and MIN_EDGE_THRESHOLD=0.05 filters do NOT catch this because they allow large edges.",
-      "root_cause": "betting_agent.py build_candidates() has no max-divergence cap. The only guards are MIN_ODDS=1.30, MAX_ODDS=8.0, MIN_EV=0.10. A gap >0.50 signals either a phantom game or corrupted odds data, not a genuine edge.",
-      "team_normalization_bug": {
-        "sa_maps_correctly": "SA -> SAS (correct)",
-        "san_antonio_broken": "San Antonio -> SAN (broken — 3-char truncation, falls through all map lookups)",
-        "la_clippers_broken": "LA Clippers -> 'LA ' (trailing space from [:3] truncation)",
-        "golden_state_broken": "Golden State -> GOL ([:3] truncation)",
-        "spurs_broken": "Spurs -> SPU ([:3] truncation)",
-        "impact": "If odds API returns 'San Antonio' instead of 'SAS', both teams can silently map to 'SAN' causing a phantom game with mismatched probabilities"
-      },
-      "fix_required": "Add |model_prob - market_implied| > 0.50 filter in load_inputs(). Also fix normalize_team() fallback to use a reverse-lookup dictionary instead of name.upper()[:3].",
-      "fix_code": "# In load_inputs() candidate loop:\n# if abs(model_prob - implied) > 0.50:\n#     print(f'[SANITY] Extreme divergence {away}@{home}: model={model_prob:.3f} market={implied:.3f} — skipping')\n#     continue",
-      "status": "UNFIXED — requires code change"
-    },
-    {
-      "id": "BUG-003",
-      "severity": "HIGH",
-      "title": "CALIBRATION CATASTROPHE: ECE=0.2758, 60-70% bucket actual=16.7%",
-      "file": "nomos-political-alpha/calibration/isotonic_calibrator.py (exists but not wired into NBA pipeline)",
-      "description": "An IsotonicPostCalibrator class exists in nomos-political-alpha/calibration/ but is NOT used in the NBA prediction pipeline. The hf-space/features/engine.py (v3.0-43cat) has no Platt scaling or isotonic calibration. The 60-70% model confidence bucket yielding only 16.7% actual wins means the model is severely overconfident — systematic upward bias.",
-      "root_cause": "1) ENGINE_VERSION='v3.0-43cat' in hf-space/features/engine.py but CLAUDE.md declares v3.1-46cat — version mismatch suggests calibration upgrade was planned but not deployed. 2) Calibration breakpoints JSON does not exist at data/calibration/isotonic_breakpoints.json. 3) isotonic_calibrator.py only has IsotonicPostCalibrator.calibrate() — no fit_and_export() integration in training loop.",
-      "ece_analysis": {
-        "ece": 0.2758,
-        "worst_bucket": "60-70% predicted, 16.7% actual",
-        "diagnosis": "Model sees strong features (home court, rest, ratings) but lacks historical win-rate calibration. Tree ensembles trained on imbalanced or small samples notoriously overpredict in 60-70% range.",
-        "fix_approach": "Platt scaling (sigmoid fit on holdout) is faster to implement than isotonic for small calibration sets. Isotonic is better for large sets (>100 games per bucket)."
-      },
-      "fix_required": "1) Wire isotonic_calibrator.py into HF Space training loop after GA selection. 2) Export breakpoints to data/calibration/isotonic_breakpoints.json. 3) Apply calibration in predict_today.py before writing latest-picks.json.",
-      "priority": "P1 — affects every bet sizing decision (Kelly uses model_prob directly)",
-      "status": "UNFIXED — calibration infrastructure exists in political alpha but not wired into NBA"
-    }
-  ],
-  "warnings": [
-    {
-      "id": "WARN-001",
-      "title": "ENGINE VERSION MISMATCH: v3.0-43cat deployed vs v3.1-46cat in CLAUDE.md",
-      "file": "hf-space/features/engine.py line 70",
-      "detail": "ENGINE_VERSION = 'v3.0-43cat' (43 categories) but CLAUDE.md Rule 5 declares v3.1-46cat with Cat47/48/49. Either engine.py was not updated after Cat47-49 work, or CLAUDE.md is ahead of actual deployment. This breaks Rule 2: 'Feature engine parity'."
-    },
-    {
-      "id": "WARN-002",
-      "title": "LOCAL features/engine.py MISSING — parity check impossible",
-      "file": "features/engine.py (does not exist)",
-      "detail": "CLAUDE.md Rule 2 requires features/engine.py = hf-space/features/engine.py at all times. There is only one engine at hf-space/features/engine.py (336033 bytes, 6270 lines). There is no local copy to diff. Either the local copy was deleted or was never maintained. Hash: 76bbd869a1916839f78c6bbbb3336728."
-    },
-    {
-      "id": "WARN-003",
-      "title": "test_data_leakage.py hardcodes /home/termius/nomos-nba-agent/ paths (sibling repo)",
-      "file": "scripts/agents/test_data_leakage.py lines 39, 78",
-      "detail": "Tests 1 and 2 reference nomos-nba-agent repo predict_today.py which does not exist on this machine at that path. Tests run but skip with FAIL 'file not found'. Test coverage is effectively 0 for the most critical path."
-    },
-    {
-      "id": "WARN-004",
-      "title": "LAC appears in BOTH game 6 and game 7 in latest-picks.json",
-      "file": "data/nba-agent/latest-picks.json",
-      "detail": "LAC is listed as home team for both 'CLE @ LAC' and 'POR @ LAC'. This could be legitimate (back-to-back home games) but the value_bets include 'CLE @ LAC: LAC -1.5' and 'POR @ LAC: POR +5.5' simultaneously, creating correlated exposure. Portfolio Kelly should apply SAME_GAME_MARKET_CORR=0.30 but cross-game correlation is only 0.05 — LAC double exposure is not accounted for."
-    }
-  ],
+  "timestamp": "2026-04-01T09:48:04.000000+00:00",
+  "iteration": 5,
+  "health": "warning",
+  "critical_issues": ["BUG-002: 3 odds sanity violation(s) (|model-market|>0.50)"],
   "parity_check": {
-    "status": "MISMATCH",
-    "local_engine_exists": false,
+    "status": "match",
     "local_path": "features/engine.py",
     "hf_path": "hf-space/features/engine.py",
-    "local_size_bytes": null,
-    "hf_size_bytes": 336033,
-    "hf_lines": 6270,
+    "local_md5": "76bbd869a1916839f78c6bbbb3336728",
     "hf_md5": "76bbd869a1916839f78c6bbbb3336728",
-    "hf_engine_version": "v3.0-43cat",
-    "declared_version_in_claude_md": "v3.1-46cat",
-    "parity_verdict": "BROKEN — local engine missing, version mismatch. Rule 2 violated."
+    "hf_lines": 6270,
+    "hf_bytes": 336033,
+    "engine_version": "v3.0-43cat"
   },
-  "improvements_proposed": [
-    {
-      "id": "IMP-001",
-      "title": "Add phantom game guard in nba-daily-odds.py and betting_agent.py",
-      "effort": "15 min",
-      "impact": "Eliminates BUG-001 and BUG-002 class of errors",
-      "implementation": "Two-line fix: (1) add 'if home == away: continue' in generate_odds_api_format(). (2) add 'assert home != away, f\"Phantom game: {away} @ {home}\"' or filter in load_inputs().",
-      "brier_delta": 0,
-      "roi_delta": "Eliminates $5 phantom bet — prevents capital loss on impossible game"
-    },
-    {
-      "id": "IMP-002",
-      "title": "Fix normalize_team() fallback — replace name.upper()[:3] with reverse-abbr lookup",
-      "effort": "20 min",
-      "impact": "Fixes SAS/SA team normalization bug that causes phantom game potential",
-      "implementation": "Build a REVERSE_MAP = {abbr: abbr for all canonical abbrs} + city/nickname lookup dict. Replace 'return name.upper()[:3]' with 'return KNOWN_ABBRS.get(name.upper(), None)' and log a warning when None.",
-      "brier_delta": 0,
-      "roi_delta": "Prevents mismatched odds-to-prediction mapping"
-    },
-    {
-      "id": "IMP-003",
-      "title": "Wire IsotonicPostCalibrator into NBA prediction pipeline",
-      "effort": "2 hours (HF Space training loop + inference wrapper)",
-      "impact": "Fixes BUG-003 calibration catastrophe — expected ECE improvement from 0.2758 to ~0.05-0.10",
-      "implementation": "1) In HF Space training: after GA selection, fit isotonic on 20% holdout, export breakpoints.json. 2) Commit breakpoints.json to mon-ipad repo. 3) In predict_today.py: load breakpoints, apply calibrator.calibrate(home_win_prob) before writing picks.",
-      "brier_delta": -0.005,
-      "roi_delta": "Better calibrated probabilities improve Kelly sizing accuracy — estimated +1-2% ROI"
-    },
-    {
-      "id": "IMP-004",
-      "title": "Update ENGINE_VERSION to v3.1-46cat and add Cat47/Cat48/Cat49 to hf-space/features/engine.py",
-      "effort": "4 hours",
-      "impact": "Aligns deployed engine with declared version, adds 3 new feature categories",
-      "implementation": "Based on CLAUDE.md: Cat47=Drive-Rim, Cat48=Passing, Cat49=Play-Type PPP. Each ~10 features. Update ENGINE_VERSION string. Verify feature count reaches 6253.",
-      "brier_delta": -0.002,
-      "roi_delta": "New tracking-based features may improve prediction on drive-heavy/pass-first teams"
-    },
-    {
-      "id": "IMP-005",
-      "title": "Create features/engine.py as a symlink or copy of hf-space/features/engine.py",
-      "effort": "5 min",
-      "impact": "Restores Rule 2 compliance — parity check becomes possible",
-      "implementation": "ln -sf /home/termius/mon-ipad/hf-space/features/engine.py /home/termius/mon-ipad/features/engine.py OR add a parity check script that compares md5 hashes.",
-      "brier_delta": 0,
-      "roi_delta": "No direct impact — enables future parity enforcement"
-    },
-    {
-      "id": "IMP-006",
-      "title": "Add |model_prob - market_implied| > 0.50 sanity filter in betting_agent.py",
-      "effort": "5 min",
-      "impact": "Filters BUG-002 class: prevents betting on impossible/corrupted games",
-      "implementation": "In load_inputs() candidate loop, add: 'if abs(model_prob - (1/home_odds if home_odds > 0 else 0)) > 0.50: continue'",
-      "brier_delta": 0,
-      "roi_delta": "Eliminates catastrophic bets — expected positive Kelly improvement"
-    }
-  ],
-  "test_coverage": {
-    "test_files_found": ["scripts/agents/test_data_leakage.py"],
-    "tests_functional": 2,
-    "tests_broken": 3,
-    "broken_reason": "test_data_leakage.py references /home/termius/nomos-nba-agent/ which does not exist locally — Test 1 (engine temporal integrity) and Test 2 (prediction pipeline) both SKIP with FAIL",
-    "missing_tests": [
-      "No test for phantom game detection (home == away)",
-      "No test for odds sanity (|model - market| > 0.50)",
-      "No test for calibration ECE",
-      "No test for normalize_team() edge cases"
-    ],
-    "recommendation": "Add pytest suite at scripts/tests/ with at least 4 new test cases covering the 3 critical bugs"
+  "feature_count": {
+    "category_count": 55,
+    "feature_append_calls": 679,
+    "declared_version": "v3.0-43cat"
   },
-  "karpathy_loop_assessment": {
-    "pattern": "modify → measure → keep/revert",
-    "iteration_time": "5 min max per change",
-    "quick_wins_identified": [
-      "IMP-001 (phantom guard): 15 min, zero Brier risk, fixes active bet slip bug",
-      "IMP-006 (sanity filter): 5 min, zero Brier risk, prevents capital loss",
-      "IMP-002 (normalize_team fix): 20 min, zero Brier risk, prevents future phantoms"
-    ],
-    "recommended_order": ["IMP-006", "IMP-001", "IMP-002", "IMP-005", "IMP-003", "IMP-004"]
+  "phantom_games": {
+    "count": 0,
+    "games": []
   },
-  "status": "completed",
-  "next_iteration": {
-    "focus": "IMP-006 + IMP-001 — implement phantom game and sanity filters",
-    "target_files": ["scripts/betting_agent.py", "scripts/nba-daily-odds.py"],
-    "estimated_brier_delta": 0,
-    "estimated_roi_improvement": "Eliminates $5 phantom bet, prevents future capital loss on corrupted games"
-  }
+  "odds_sanity": {
+    "violations": 3,
+    "threshold": 0.50,
+    "details": [{"game": "SAC @ TOR", "model_prob": 0.3488, "market_implied": 0.9, "gap": 0.5512}, {"game": "MIL @ HOU", "model_prob": 0.3493, "market_implied": 0.95, "gap": 0.6007}, {"game": "SAS @ GSW", "model_prob": 0.7467, "market_implied": 0.1429, "gap": 0.6038}]
+  },
+  "test_suite": {
+    "total": 14,
+    "passed": 11,
+    "pass_rate": 0.7857
+  },
+  "best_brier": null
 }
