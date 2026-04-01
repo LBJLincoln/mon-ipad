@@ -1,76 +1,92 @@
 {
-  "last_brain_cycle": "2026-04-01T16:15:00Z",
-  "cycle_number": "~51",
+  "last_brain_cycle": "2026-04-01T20:15:00Z",
+  "cycle_number": "~52",
   "cycle_improvements": {
-    "nba": {
-      "action": "IMPLEMENTED",
-      "file": "nomos-nba-agent/hf-space/app.py",
-      "description": "Added logistic_regression to CPU_MODEL_TYPES and FAST_MODEL_TYPES",
-      "technique": "Pipeline(StandardScaler + LogisticRegression lbfgs). C mapped from reg_lambda GA hyperparam.",
-      "research_basis": "MDPI 2026 (doi:10.3390/info17010056): LR achieves best tabular Brier 0.199 vs XGBoost 0.202",
-      "expected_brier_gain": "0.002 to 0.010"
-    },
     "political": {
       "action": "IMPLEMENTED",
-      "file": "nomos-political-alpha/ops/fetch_political_data.py",
-      "description": "Rotation D fix: FEC schedule_a returned empty [] — added two_year_transaction_period param",
-      "root_cause": "FEC API requires election cycle for schedule_a. Trump Inaugural uses 2016/2018 cycles.",
-      "expected_impact": "FEC donor files will populate with actual data (was 2 bytes [] for all dates)"
+      "file": "nomos-political-alpha/hf-space/app.py",
+      "description": "Ported lr_meta and lr_platt calibration methods from NBA hf-space to Political hf-space",
+      "technique": "LR meta-calibration: fit base model on training data, then fit 1-feature LR on held-out raw probs (100-event cal slice). Platt scaling variant using temporal hold-out. Both avoid CalibratedClassifierCV(cv=3) instability on small political datasets.",
+      "research_basis": "NBA hf-space already validated these methods. Particularly critical for political data with only 60-372 real events.",
+      "expected_brier_gain": "0.001 to 0.004",
+      "calibration_options_before": ["none", "sigmoid", "venn_abers", "beta"],
+      "calibration_options_after": ["none", "sigmoid", "venn_abers", "beta", "lr_meta", "lr_platt"]
+    },
+    "nba": {
+      "action": "RESEARCH_PROPOSAL_WRITTEN",
+      "file": "mon-ipad/data/research-proposals/nba-shot-chart-spatial-embeddings-2026-04-01.json",
+      "description": "Proposed Cat38_SpatialShooting: 18 shot-chart zone features (paint/midrange/corner3 frequencies, expected values, shot selection pressure, opponent defensive profile)",
+      "research_basis": "MDPI 2026 uncertainty-aware NBA paper: ablation confirms shot-chart spatial embeddings provide complementary signal beyond team stats, improving both discrimination and calibration",
+      "expected_brier_gain": "0.002 to 0.006",
+      "next_step": "VM Muscle implements Cat38 in engine.py and deploys to S15 (wide search)"
     }
   },
   "nba_fleet": {
     "islands_online": 6,
     "islands_total": 6,
     "islands": {
-      "S10_nomos42-nba-quant":   {"status":"UP","cycle":387,"generation":1160,"best_brier":0.22239,"best_model":"random_forest","best_features":40,"stagnation":0,"role":"exploitation"},
-      "S11_nomos42-nba-quant-2": {"status":"UP","cycle":420,"generation":1257,"best_brier":0.22277,"best_model":"catboost","best_features":61,"stagnation":0,"role":"exploration","note":"Was incorrectly marked DELETED — alive at nba-quant-2 URL"},
-      "S12_nomos42-nba-evo-3":   {"status":"UP","cycle":258,"generation":772,"best_brier":0.22115,"best_model":"random_forest","best_features":54,"stagnation":0,"role":"extra_trees_specialist"},
-      "S13_nomos42-nba-evo-4":   {"status":"UP","cycle":288,"generation":862,"best_brier":0.22066,"best_model":"xgboost_brier","best_features":40,"stagnation":0,"role":"catboost_specialist","note":"FLEET BEST BRIER"},
-      "S14_nomos42-nba-evo-5":   {"status":"UP","cycle":373,"generation":1118,"best_brier":0.22188,"best_model":"catboost","best_features":49,"stagnation":0,"role":"lightgbm_specialist"},
-      "S15_nomos42-nba-evo-6":   {"status":"UP","cycle":328,"generation":981,"best_brier":0.22254,"best_model":"random_forest","best_features":63,"stagnation":0,"role":"wide_search"}
+      "S10_nomos42-nba-quant":   {"status":"UP","cycle":442,"generation":1325,"best_brier":0.22239,"best_model":"random_forest","best_features":40,"stagnation":0,"role":"exploitation","pop_size":60,"pareto_front":18},
+      "S11_nomos42-nba-quant-2": {"status":"UP","cycle":492,"generation":1476,"best_brier":0.22277,"best_model":"catboost","best_features":61,"stagnation":0,"role":"exploration","pop_size":60,"pareto_front":11},
+      "S12_nomos42-nba-evo-3":   {"status":"UP","cycle":299,"generation":895,"best_brier":0.22115,"best_model":"random_forest","best_features":54,"stagnation":0,"role":"extra_trees_specialist","pop_size":60},
+      "S13_nomos42-nba-evo-4":   {"status":"UP","cycle":327,"generation":979,"best_brier":0.22066,"best_model":"xgboost_brier","best_features":40,"stagnation":0,"role":"catboost_specialist","pop_size":60,"note":"FLEET BEST BRIER","pareto_front":16},
+      "S14_nomos42-nba-evo-5":   {"status":"UP","cycle":441,"generation":1322,"best_brier":0.22188,"best_model":"catboost","best_features":49,"stagnation":0,"role":"lightgbm_specialist","pop_size":60,"pareto_front":14},
+      "S15_nomos42-nba-evo-6":   {"status":"UP","cycle":382,"generation":1146,"best_brier":0.22254,"best_model":"random_forest","best_features":63,"stagnation":0,"role":"wide_search","pop_size":50,"pareto_front":15}
     },
     "fleet_best_brier": 0.22066,
     "fleet_best_island": "S13_nomos42-nba-evo-4",
     "fleet_best_model": "xgboost_brier",
-    "fleet_avg_brier": 0.22190,
-    "all_time_best_brier": 0.2157,
-    "all_time_best_source": "Colab_TabICL",
+    "fleet_avg_brier": 0.22191,
+    "all_time_best_brier": 0.21570,
+    "all_time_best_source": "Colab_TabICL_110f_iter15",
+    "latest_colab_run": 0.21677,
     "checkpoint_threshold": 0.21837,
     "checkpoint_needed": false,
     "gap_to_checkpoint": 0.00229,
+    "gap_to_all_time_best": 0.00496,
     "stagnation_alert": false,
-    "diversify_triggered": false
+    "diversify_triggered": false,
+    "games": 9551,
+    "feature_candidates": 3265,
+    "engine_version": "v3.1-46cat",
+    "raw_features": 6253
   },
   "political_fleet": {
     "islands_online": 2,
     "islands_total": 4,
     "islands": {
-      "P1_exploitation": {"status":"UP","cycle":1245,"generation":3733,"best_brier":0.24186,"best_model":"xgboost_brier","best_features":53,"stagnation":0,"real_events":60,"synthetic_events":312},
-      "P2_exploration":  {"status":"UP","cycle":436,"generation":1306,"best_brier":0.24999,"best_model":"catboost","best_features":93,"stagnation":0,"real_events":60,"synthetic_events":312},
-      "P3_catboost":     {"status":"DOWN_404","down_cycles":4,"note":"404 for 4 cycles — likely deleted"},
-      "P4_wide_search":  {"status":"DOWN_404","down_cycles":4,"note":"404 for 4 cycles — likely deleted"}
+      "P1_exploitation": {"status":"UP","cycle":1335,"generation":4003,"best_brier":0.24186,"best_model":"xgboost_brier","best_features":53,"stagnation":0,"real_events":60,"synthetic_events":312,"space_role":"political_exploitation"},
+      "P2_exploration":  {"status":"UP","cycle":591,"generation":1773,"best_brier":0.24999,"best_model":"catboost","best_features":93,"stagnation":0,"real_events":372,"synthetic_events":0,"space_role":"political_exploration"},
+      "P3_catboost":     {"status":"DOWN_404","down_cycles":5,"note":"5+ cycles down — accepted as deleted, space quota exhausted"},
+      "P4_wide_search":  {"status":"DOWN_404","down_cycles":5,"note":"5+ cycles down — accepted as deleted, space quota exhausted"}
     },
     "fleet_best_brier": 0.24186,
     "fleet_best_island": "P1_exploitation",
+    "fleet_target_brier": 0.22,
     "data_quality_pct_real": 16.1
   },
   "data_pipeline": {
-    "fec_donors": {"status":"FIXED_THIS_CYCLE","previous":"2 bytes [] for all dates","fix":"Added two_year_transaction_period per committee"},
-    "polymarket":  {"status":"HEALTHY","last_file_size_bytes":3342,"update_freq":"5min"},
-    "gov_contracts":{"status":"HEALTHY","last_file_size_bytes":117175}
+    "fec_donors": {"status":"MONITORING","note":"Fixed cycle 51 (two_year_transaction_period). Verify file sizes > 2 bytes on next VM run."},
+    "polymarket":  {"status":"HEALTHY","update_freq":"5min"},
+    "gov_contracts": {"status":"HEALTHY"},
+    "insider_trades": {"status":"UNVERIFIED","note":"insider_tracker.py output not yet confirmed"}
   },
-  "research": {
-    "technique": "Logistic Regression as NBA base model",
-    "source": "MDPI 2026 doi:10.3390/info17010056",
-    "finding": "LR Brier 0.199 — best tabular, beats XGBoost 0.202 due to calibration",
-    "proposal_file": "data/research-proposals/nba-logistic-regression-model-2026-04-01.json",
-    "status": "IMPLEMENTED"
+  "cross_project": {
+    "nba_to_political_this_cycle": "lr_meta + lr_platt calibration methods",
+    "political_to_nba_this_cycle": "none",
+    "pending_nba": "Cat38_SpatialShooting (18 shot-chart zone features) — VM implements in engine.py",
+    "pending_political": "Rotation A next: fresh FEC/SEC/EO data source research"
   },
-  "next_cycle_directives": [
-    "NBA: Verify LR being explored in fleet — check model_type distribution in /api/status",
-    "NBA: Port logistic_regression to political hf-space/app.py",
-    "Political: Verify FEC fix — check fec_donors file size (should be >2 bytes)",
-    "Political: P3/P4 DOWN 4+ cycles — accept as deleted or recreate",
-    "Research: Add ECE/MCE as explicit fitness metric alongside Brier (MDPI 2026 recommendation)"
+  "research_rotation": {
+    "current": "E_COMPLETE",
+    "next": "A (fresh WebSearch: FEC Q1 2026 filings, SEC Form 4 insider trades, new executive orders)",
+    "history": ["A_data_sources", "B_features", "C_nba_port", "D_pipeline_health", "E_port_and_research"]
+  },
+  "next_directives": [
+    "NBA: VM Muscle implements Cat38_SpatialShooting from proposal — deploy to S15",
+    "NBA: Monitor S13 (best Brier 0.22066) for checkpoint opportunity below 0.21837",
+    "Political: Verify FEC donor fix worked — check file sizes > 2 bytes",
+    "Political: Check insider_tracker.py — confirm Form 4 trades are being logged",
+    "Political: Monitor P1 lr_meta/lr_platt uptake in new individuals (gen 4004+)",
+    "Next rotation A: WebSearch FEC Q1 2026, SEC Form 4 q1 2026, executive orders April 2026"
   ]
 }

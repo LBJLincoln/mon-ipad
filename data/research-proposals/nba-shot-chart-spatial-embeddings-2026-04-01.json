@@ -1,0 +1,54 @@
+{
+  "proposal_id": "nba-shot-chart-spatial-embeddings-2026-04-01",
+  "date": "2026-04-01",
+  "brain_cycle": 52,
+  "status": "proposed",
+  "title": "Shot-Chart Spatial Embeddings for NBA Feature Engine",
+  "source": "MDPI 2078-2489/17/1/56 (2026) — Uncertainty-Aware NBA Forecasting",
+  "priority": "HIGH",
+  "expected_brier_gain": "0.002 to 0.006",
+
+  "summary": "Add shot-chart spatial embeddings as a new feature category (Cat38) to the NBA engine. Research shows spatial shooting patterns provide complementary information beyond team-level statistics. Ablation study: removing shot-chart embeddings decreases both discrimination and calibration significantly.",
+
+  "research_basis": {
+    "paper": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+    "url": "https://www.mdpi.com/2078-2489/17/1/56",
+    "finding": "LSTM + Monte Carlo dropout with shot-chart spatial embeddings outperforms all tabular baselines on Brier score. Ablation confirms shot-chart is the key differentiator vs team-level stats alone.",
+    "model_type": "LSTM+MC_dropout (not feasible on CPU islands) but spatial features ARE tabular-extractable",
+    "cpu_adaptation": "Extract spatial summary stats per team-game from play-by-play: zone frequencies, expected value by zone, shot selection pressure index"
+  },
+
+  "implementation_plan": {
+    "step_1": "Add Cat38 to features/engine.py: shot_zone_freq_paint, shot_zone_freq_midrange, shot_zone_freq_corner3, shot_zone_freq_above_break3",
+    "step_2": "For each team-game: compute % of shots from each zone (using play-by-play / shot_chart data from balldontlie.io or nba_api)",
+    "step_3": "Add spatial_ev_paint, spatial_ev_midrange, spatial_ev_corner3 (expected value per zone = FG% * pts)",
+    "step_4": "Add shot_selection_pressure: how much team deviates from league avg in each zone (z-score per zone)",
+    "step_5": "Add opponent_shot_quality_allowed: same metrics for shots ALLOWED (defensive spatial profile)",
+    "step_6": "Add rolling_shot_quality_diff_5g: 5-game trend in shot quality differential",
+    "data_source": "nba_api.stats.endpoints.shotchartdetail or balldontlie.io play-by-play",
+    "target_features": 18,
+    "category": "Cat38_SpatialShooting",
+    "engine_version_next": "v3.0-38cat"
+  },
+
+  "cpu_feasibility": "HIGH — all features are simple zone-level aggregations, no CV/embedding models needed on CPU islands",
+  "data_availability": "MEDIUM — requires play-by-play shot location data. nba_api.stats has this but rate-limited. Can batch-compute offline and store.",
+  "cross_project_relevance": "LOW — basketball-specific, no direct political alpha port",
+
+  "comparison_to_existing": {
+    "current_cat37_movda": "Moving average distance advantage (temporal momentum)",
+    "new_cat38_spatial": "Spatial shooting zones (cross-sectional quality)",
+    "synergy": "Cat37+Cat38 together captures BOTH momentum AND shot quality — complementary dimensions",
+    "risk": "Requires new data pipeline for shot chart data. If data unavailable, compute from box score proxies (3PA/FGA ratio as corner3 proxy, FTA/FGA as paint proxy)"
+  },
+
+  "fallback_features_from_boxscore": {
+    "paint_proxy": "FTA_rate = FTA / FGA (high FTA = getting to paint)",
+    "midrange_proxy": "1 - 3PA_rate - FTA_rate (residual = mid-range)",
+    "3pt_selection": "3PA / FGA (3-point attempt rate)",
+    "corner3_proxy": "Not directly available from box score — skip or estimate",
+    "shot_quality_index": "TS% / league_avg_TS% (efficiency above average)"
+  },
+
+  "next_step": "VM Muscle to compute Cat38 features from existing data, add to engine.py, deploy via deploy_island.py to S15 (wide search, best for new feature exploration)"
+}
