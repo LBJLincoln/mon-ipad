@@ -94,5 +94,16 @@
   "n_features": 85,
   "best_brier": 0.23179306611410688,
   "iteration": 28,
-  "timestamp": "2026-04-01T04:09:41.221876+00:00"
+  "timestamp": "2026-04-01T04:09:41.221876+00:00",
+  "next_iteration_notes": {
+    "recommendation": "Seed iter 31 from S13 CatBoost champion (fleet best 0.22066). See data/arena/proposals/karpathy-iter-30-proposal-2026-04-01.json for full plan.",
+    "stall_status": "12/30 improved, 18/30 no improvement — local minimum suspected at 0.2318",
+    "top_actions": [
+      "Fetch S13 feature_indices from nomos42-nba-evo-3.hf.space/api/status",
+      "Delete features_cache_v38.npz to force Cat47-50 rebuild",
+      "Increase model diversity: add CatBoost (30%), LightGBM (30%) to mutation pool",
+      "Implement adaptive perturbation: if no_improve_streak>=5, double swap_size"
+    ],
+    "generated_at": "2026-04-01T22:00:00Z"
+  }
 }

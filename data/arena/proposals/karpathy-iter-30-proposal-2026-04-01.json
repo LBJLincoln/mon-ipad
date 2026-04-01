@@ -1,0 +1,190 @@
+{
+  "proposal_id": "karpathy-iter-30-2026-04-01",
+  "generated_at": "2026-04-01T22:00:00Z",
+  "generated_by": "claude-sonnet-4-6 (VM brain, GPU-offload mode)",
+  "karpathy_iteration": 30,
+  "type": "nba_autoresearch_proposal",
+
+  "current_state": {
+    "karpathy_best_brier": 0.231793,
+    "karpathy_iteration": 28,
+    "karpathy_improvements": [
+      {"iter": 8, "brier": 0.236503, "mutation": "add 5 features (total 85)"},
+      {"iter": 18, "brier": 0.236316, "mutation": "max_features_ratio 0.3 -> 0.35"},
+      {"iter": 27, "brier": 0.233457, "mutation": "swap 10 features (total 85)"},
+      {"iter": 28, "brier": 0.231793, "mutation": "min_samples_leaf 5 -> 7"}
+    ],
+    "karpathy_best_config": {
+      "model_type": "extra_trees",
+      "n_estimators": 175,
+      "max_depth": 11,
+      "min_samples_leaf": 7,
+      "max_features_ratio": 0.35,
+      "n_features": 85
+    },
+    "atr_best_brier": 0.21570,
+    "fleet_best_brier": 0.22066,
+    "fleet_best_island": "S13_CatBoost",
+    "fleet_avg_brier": 0.22188,
+    "target_brier": 0.20,
+    "gap_to_atr": 0.01609,
+    "gap_to_target": 0.01570,
+    "engine_version": "v3.1-46cat",
+    "total_features_available": 6253,
+    "max_features_budget": 200
+  },
+
+  "analysis": {
+    "karpathy_loop_status": "Completed 30 iterations on 2026-04-01. Best: 0.231793 (iter 28). Loop is stalling — 12/13 last iterations did NOT improve.",
+    "stall_diagnosis": [
+      "Extra-trees only searched: n_estimators fixed at 175 (not mutated), depth range 8-12 (narrow)",
+      "Feature swap range: 5-10 features at a time — too conservative at iteration 30",
+      "Model diversity: only 1 LightGBM/CatBoost trial (iter 14, random forest, 98.8s elapsed). Need more diverse model mutations.",
+      "Feature set: 85 features, but pool is limited to ~200 indices — unclear if ELO/shot-chart/clutch features are in the index space",
+      "max_features_ratio 0.35 is optimal — confirmed by iters 6, 17, 18, 23"
+    ],
+    "gap_analysis": "Karpathy best (0.2318) is 1.48 Brier points above ATR (0.2157). Gap likely due to: (1) CPU tree-only vs GPU TabICL; (2) feature engine on Kaggle uses v3.0 cache (FEATURE_CACHE v38) — may predate Cat47-50 additions; (3) no calibration post-processing applied"
+  },
+
+  "proposals": [
+    {
+      "rank": 1,
+      "id": "P30-A",
+      "title": "Invalidate feature cache v38 — rebuild with Cat47-50",
+      "type": "feature_injection",
+      "target_iter": "31-35",
+      "platform": "Kaggle (GPU)",
+      "expected_brier_delta": -0.004,
+      "expected_brier_after": 0.2278,
+      "effort": "1 kaggle session",
+      "rationale": "Current Kaggle cache is features_cache_v38.npz, built before Cat47 (Drive-Rim Matchup), Cat48 (Passing), Cat49 (Play-Type PPP), Cat50 (Market Microstructure) were added to engine.py. Forcing a cache rebuild gives Karpathy access to 6253 features instead of ~5800. The GA on HF islands already benefits from these categories (S12/S13 at 0.220xx).",
+      "implementation": {
+        "change": "Delete FEATURE_CACHE from Kaggle working dir or rename it to force rebuild on next session",
+        "file": "scripts/kaggle/nba_karpathy_loop.py",
+        "line_hint": "FEATURE_CACHE = CACHE / 'features_cache_v38.npz'",
+        "action": "Rename to features_cache_v39.npz to trigger rebuild on next Kaggle session"
+      },
+      "risk": "LOW — rebuild takes ~30 min, but gives access to fresher features"
+    },
+    {
+      "rank": 2,
+      "id": "P30-B",
+      "title": "Add CatBoost and LightGBM as primary mutation targets",
+      "type": "model_diversification",
+      "target_iter": "31-40",
+      "platform": "Kaggle (GPU)",
+      "expected_brier_delta": -0.003,
+      "expected_brier_after": 0.2288,
+      "effort": "1 kaggle session",
+      "rationale": "S13 CatBoost is fleet best at 0.22066. Karpathy has tried extra_trees 27/30 iters, random_forest 1/30, gradient_boosting 1/30. CatBoost is never tried. Per fleet data, CatBoost extracts different feature interactions than ExtraTrees — especially with categorical-like integer features (game codes, team IDs). LightGBM DART (nba-lightgbm-dart-odds proposal) also unexplored.",
+      "implementation": {
+        "change": "In nba_karpathy_loop.py mutation function, increase CatBoost/LightGBM sampling probability from current ~5% to 30% each. Add CatBoost-specific hyperparams to mutation: depth 6-10, l2_leaf_reg 1-10, border_count 32-128.",
+        "file": "scripts/kaggle/nba_karpathy_loop.py",
+        "key_params": {
+          "catboost_depth_range": [6, 10],
+          "catboost_l2_reg_range": [1, 10],
+          "lightgbm_num_leaves_range": [31, 127],
+          "lightgbm_dart_drop_rate": [0.05, 0.2]
+        }
+      },
+      "risk": "LOW — fleet already validated CatBoost performance"
+    },
+    {
+      "rank": 3,
+      "id": "P30-C",
+      "title": "Add Venn-Abers calibration post-processing step",
+      "type": "calibration",
+      "target_iter": "36-40",
+      "platform": "Kaggle (GPU) + Colab",
+      "expected_brier_delta": -0.004,
+      "expected_brier_after": 0.2278,
+      "effort": "2h implementation",
+      "rationale": "arXiv:2502.05676 (ICML 2025) Venn-Abers calibration guarantees marginal calibration in finite samples. Current Brier on walk-forward 0.22447 vs Colab 0.21570 suggests calibration gap. Isotonic regression post-processing on a 10% holdout calibration set costs nothing and is proven to reduce ECE. Montrucchio 0.199 paper uses explicit calibration layer.",
+      "implementation": {
+        "change": "After model.predict_proba(), fit IsotonicRegression on 10% calibration holdout, apply to test predictions. Measure brier before and after.",
+        "code_snippet": "from sklearn.isotonic import IsotonicRegression\ncal_idx = int(0.9 * len(X_train))\nX_cal, y_cal = X_train[cal_idx:], y_train[cal_idx:]\nX_train_fit = X_train[:cal_idx]\nmodel.fit(X_train_fit, y_train[:cal_idx])\nraw_cal = model.predict_proba(X_cal)[:, 1]\nir = IsotonicRegression(out_of_bounds='clip').fit(raw_cal, y_cal)\ntest_probs = ir.transform(model.predict_proba(X_test)[:, 1])\nbrier = brier_score_loss(y_test, test_probs)"
+      },
+      "risk": "LOW — isotonic calibration is reversible and standard"
+    },
+    {
+      "rank": 4,
+      "id": "P30-D",
+      "title": "Expand feature swap radius to 20-30 features at iteration plateau",
+      "type": "search_strategy",
+      "target_iter": "31+",
+      "platform": "Kaggle (GPU)",
+      "expected_brier_delta": -0.002,
+      "expected_brier_after": 0.2298,
+      "effort": "30 min code change",
+      "rationale": "Karpathy is stuck: 12/13 recent iterations show no improvement with 5-10 feature swaps. This is a local minimum symptom. Standard autoresearch response: increase perturbation radius when stuck. Use adaptive perturbation: if last 5 iterations all failed, double the swap count (5→10→20). This is explicitly in Karpathy pattern — 'perturbation annealing'.",
+      "implementation": {
+        "change": "Track `no_improve_streak` counter. If streak >= 5: swap_size = min(30, current_size * 2). Reset on improvement.",
+        "file": "scripts/kaggle/nba_karpathy_loop.py",
+        "pseudocode": [
+          "if no_improve_streak >= 5:",
+          "    swap_size = min(30, swap_size * 2)",
+          "elif no_improve_streak == 0:",
+          "    swap_size = 10  # reset after improvement"
+        ]
+      },
+      "risk": "LOW — pure search strategy change, no data or model change"
+    },
+    {
+      "rank": 5,
+      "id": "P30-E",
+      "title": "Seed Karpathy from S13 CatBoost champion config",
+      "type": "cross_pollination",
+      "target_iter": "31",
+      "platform": "Kaggle (GPU)",
+      "expected_brier_delta": -0.006,
+      "expected_brier_after": 0.2258,
+      "effort": "10 min config transfer",
+      "rationale": "S13 CatBoost fleet best is 0.22066 (gen 1002). Karpathy's best is 0.23179 — S13 is already 1.1 Brier points better. Karpathy is initialized from its own state (karpathy_state.json). If instead it seeds from the S13 feature_indices and CatBoost config, iteration 31 starts from a much stronger position. CLAUDE.md says: 'Seeds from live HF Space evolution islands' — this isn't happening currently.",
+      "implementation": {
+        "change": "Before Karpathy loop starts, fetch S13's best chromosome via HF Space API (/api/status → best_config). Use those feature_indices as initial state for Karpathy.",
+        "api_endpoint": "https://nomos42-nba-evo-3.hf.space/api/status",
+        "fields_to_extract": ["best_features", "best_config", "best_brier"],
+        "fallback": "Use nba-best-config.json from git if API unavailable"
+      },
+      "risk": "LOW — seeding is non-destructive, Karpathy can still mutate away"
+    }
+  ],
+
+  "quick_wins_priority_order": [
+    "P30-E: Seed from S13 (immediate, no code change, just config transfer)",
+    "P30-A: Cache invalidation (ensures Cat47-50 features available)",
+    "P30-D: Adaptive perturbation radius (30 min code, breaks local minima)",
+    "P30-B: CatBoost/LightGBM model diversification (code change to mutation weights)",
+    "P30-C: Venn-Abers calibration (implement on Colab first, then Kaggle)"
+  ],
+
+  "expected_cumulative_impact": {
+    "current_karpathy_brier": 0.231793,
+    "after_P30E_seed": 0.225,
+    "after_P30A_cache": 0.221,
+    "after_P30B_catboost": 0.218,
+    "after_P30C_calibration": 0.214,
+    "note": "Estimates assume 1 full Kaggle session (9h, ~100 iters) per proposal. Stacking proposals gives compounding gains."
+  },
+
+  "fleet_context": {
+    "all_islands_running": true,
+    "best_island": "S13_CatBoost at 0.22066 (gen 1002)",
+    "kaggle_status": "COMPLETE — relaunching (2026-04-01T21:17Z)",
+    "modal_status": "idle_peak",
+    "schedule_log": "SKIPPED at 16:00Z — low memory (60MB free)",
+    "recommendation": "Next Kaggle session should implement P30-E seed injection before loop starts"
+  },
+
+  "18_technique_roadmap_status": {
+    "T001_shot_chart_cnn": "PROPOSED — 2026-04-01 shot-chart-embeddings calibration in research-proposals",
+    "T002_mc_dropout": "PENDING — GPU required (Colab)",
+    "T003_rolling_5game": "PARTIAL — Cat39-43 have some rolling stats",
+    "T004_temporal_split": "AUDIT NEEDED — walk-forward gap 0.22447 vs Colab 0.21570 suggests leakage",
+    "T005_tabicl_v2": "PENDING — check if Colab uses v1 or v2",
+    "T006_per100_normalization": "PENDING",
+    "T007_venn_abers": "THIS PROPOSAL — P30-C",
+    "T009_ensemble_tabicl_tree": "PARTIAL — fleet trees + Colab TabICL, not formally ensembled",
+    "T010_parsimony_ga": "PARTIAL — S10-S14 use 55-80 features, not formal parsimony penalty"
+  }
+}
