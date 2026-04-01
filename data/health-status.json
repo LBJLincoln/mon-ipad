@@ -1,8 +1,8 @@
 {
-  "last_brain_cycle": "2026-04-01T12:30:00Z",
+  "last_brain_cycle": "2026-04-01T13:15:00Z",
   "cycle_number": "estimated_~50",
   "nba_fleet": {
-    "islands_online": 4,
+    "islands_online": 5,
     "islands_total": 6,
     "islands": {
       "S10_nomos42-nba-quant": {
@@ -18,8 +18,8 @@
         "games": 9551
       },
       "S11_nomos42-nba-evo-2": {
-        "status": "DOWN_404",
-        "note": "Returning 404 — space may be deleted or renamed"
+        "status": "DELETED",
+        "note": "Confirmed deleted — not found in HuggingFace API. Space does not exist."
       },
       "S12_nomos42-nba-evo-3": {
         "status": "UP",
@@ -58,8 +58,13 @@
         "games": 9551
       },
       "S15_nomos42-nba-evo-6": {
-        "status": "DOWN_CERT_ERROR",
-        "note": "SSL certificate not yet valid — space may be starting up or SSL issue"
+        "status": "UP_FRESH_RESTART",
+        "cycle": 283,
+        "generation": 848,
+        "best_brier": 0.22254,
+        "best_model": "random_forest",
+        "stagnation": 0,
+        "note": "Woke from sleep this cycle — evolution restarted fresh"
       }
     },
     "fleet_best_brier": 0.22066,
@@ -71,11 +76,11 @@
     "checkpoint_threshold": 0.21837,
     "checkpoint_needed": false,
     "stagnation_alert": false,
-    "supabase_status": "FAILING_ALL_ISLANDS",
-    "supabase_note": "Persistent pooler auth failures — local JSON fallback active on all islands"
+    "supabase_status": "ACTIVE_HEALTHY",
+    "supabase_note": "Restored this cycle — was INACTIVE. Schema created: 7 tables (nba_evolution_gens/runs/evals/cuts/experiments, political_evolution_gens/runs). Islands will resume DB logging next cycle."
   },
   "political_fleet": {
-    "islands_online": 1,
+    "islands_online": 2,
     "islands_total": 4,
     "islands": {
       "P1_exploitation": {
@@ -93,55 +98,75 @@
         "total_events": 372
       },
       "P2_exploration": {
-        "status": "DOWN_CERT_ERROR",
-        "note": "SSL certificate not yet valid"
+        "status": "UP_FRESH_RESTART",
+        "note": "Woke from sleep this cycle — SSL cert still propagating, will be fully accessible next cycle"
       },
       "P3_catboost": {
-        "status": "DOWN_CERT_ERROR",
-        "note": "SSL certificate not yet valid — 3rd consecutive cycle down"
+        "status": "BUILDING_503",
+        "note": "503 — space is rebuilding. Auto-recovery in progress."
       },
       "P4_wide_search": {
-        "status": "DOWN_503",
-        "note": "503 Service Unavailable — building or crashed"
+        "status": "BUILDING_503",
+        "note": "503 — space is rebuilding. Auto-recovery in progress."
       }
     },
     "fleet_best_brier": 0.24186,
     "fleet_best_island": "P1_exploitation",
     "data_quality_pct_real": 16.1,
-    "p3_p4_down_cycles": 3
+    "p3_p4_building": true
+  },
+  "infrastructure": {
+    "supabase": {
+      "status": "ACTIVE_HEALTHY",
+      "project_id": "xivvnrkbtuhfsphtmmtv",
+      "region": "eu-west-1",
+      "was_inactive": true,
+      "restored_this_cycle": true,
+      "schema_created": true,
+      "tables": [
+        "nba_evolution_gens",
+        "nba_evolution_runs",
+        "nba_evolution_evals",
+        "nba_evolution_cuts",
+        "nba_experiments",
+        "political_evolution_gens",
+        "political_evolution_runs"
+      ]
+    },
+    "s11_nba_evo_2": {
+      "status": "CONFIRMED_DELETED",
+      "note": "Space does not exist in HF API — likely manually deleted"
+    }
   },
   "cycle_improvements": {
     "nba": {
       "action": "IMPLEMENTED",
       "description": "Added lr_platt post-hoc Platt scaling calibration option to hf-space/app.py",
-      "technique": "LogisticRegression fitted on held-out probability slice — avoids CalibratedClassifierCV cv=3 instability with time series",
-      "expected_brier_gain": "0.001 to 0.003",
-      "file_changed": "nomos-nba-agent/hf-space/app.py"
+      "technique": "LogisticRegression on held-out probability slice — avoids CalibratedClassifierCV cv=3 instability",
+      "expected_brier_gain": "0.001 to 0.003"
     },
     "political": {
       "action": "IMPLEMENTED",
-      "description": "Rotation C — ported probability clipping np.clip(p, 0.025, 0.975) and lr_platt calibration to political_engine.py",
-      "technique": "Cross-project technique port from NBA engine",
-      "file_changed": "nomos-political-alpha/features/political_engine.py"
+      "description": "Rotation C — probability clipping + lr_platt added to calibration/isotonic_calibrator.py",
+      "technique": "Cross-project port from NBA engine"
+    },
+    "infra": {
+      "action": "IMPLEMENTED",
+      "description": "Restored Supabase project (was INACTIVE), created full schema (7 tables), woke S15 + P2 from sleep",
+      "impact": "ALL islands will now resume Supabase logging — previously failing for unknown cycles"
     }
   },
   "research_findings": {
-    "technique_researched": "Uncertainty-Aware NBA Forecasting (2026)",
-    "key_finding": "Market fusion (combining implied betting odds with model predictions) achieves best overall performance — fused models get Brier ~0.20 vs 0.202 for standalone XGBoost",
-    "proposed_next_cycle": "Market fusion feature: add implied_prob_market = 1/(1+decimal_odds) as a raw feature, then blend model output with market probability using alpha=0.3 weighting",
-    "source": "MDPI Information 2026, Uncertainty-Aware ML for NBA Forecasting in Digital Betting Markets"
-  },
-  "cross_project_health": {
-    "supabase": "FAILING_BOTH_PROJECTS",
-    "local_cache_nba": "OPERATIONAL_7067_games",
-    "local_cache_political": "OPERATIONAL_372_events",
-    "island_cert_errors": "Multiple spaces have SSL cert issues — likely HuggingFace space sleeping/cold-start"
+    "technique_proposed": "Market fusion — blend model probability with market-implied probability",
+    "target_brier": 0.215,
+    "proposal_file": "data/research-proposals/market-fusion-2026-04-01.md"
   },
   "next_cycle_directives": [
-    "NBA: Implement market fusion feature — blend model probability with market-implied probability",
-    "Political: Restart P3/P4 via HuggingFace dashboard — 3+ cycles down",
-    "Political: Populate real FEC events for Cat23 features (currently 16.1% real data)",
-    "NBA: Monitor lr_platt calibration performance — if Brier improves, add to GA search space",
-    "Infra: Investigate Supabase pooler auth failure — may need credential rotation"
+    "NBA: Implement market fusion — use existing CLV features as market-implied probability proxy",
+    "NBA: Verify lr_platt is entering GA search space — check if calibration HP mutation includes it",
+    "Political: Monitor P3/P4 recovery from 503 building state",
+    "Political: Populate real FEC events for Cat23 features (16.1% real data only)",
+    "Infra: Verify Supabase writes are succeeding on next cycle — check nba_evolution_gens row count",
+    "Note: S11 (nba-evo-2) confirmed DELETED — consider creating replacement space or operating with 5 NBA islands"
   ]
 }
