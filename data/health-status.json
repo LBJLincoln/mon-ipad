@@ -1,48 +1,78 @@
 {
-  "updated_at": "2026-04-01T00:00:00Z",
+  "updated_at": "2026-04-01T08:00:00Z",
   "cycle": "4h-brain",
+  "cycle_id": "2026-04-01T08",
   "nba_fleet": {
+    "note": "S11 URL corrected this cycle: nomos42-nba-quant-2.hf.space (NOT nomos42-nba-evo-2)",
     "islands": [
-      {"id": "island-1", "url": "nomos42-nba-quant.hf.space", "status": "online", "generation": 566, "cycle": 189, "best_brier": 0.22239, "best_roi": 0.2974, "stagnation": 0, "model": "random_forest", "alert": null},
-      {"id": "island-2", "url": "nomos42-nba-evo-2.hf.space", "status": "down_404", "generation": null, "cycle": null, "best_brier": null, "stagnation": null, "model": null, "alert": "OFFLINE - 404"},
-      {"id": "island-3", "url": "nomos42-nba-evo-3.hf.space", "status": "online", "generation": 429, "cycle": 143, "best_brier": 0.22115, "best_roi": 0.3119, "stagnation": 0, "model": "random_forest", "alert": null},
-      {"id": "island-4", "url": "nomos42-nba-evo-4.hf.space", "status": "online", "generation": 457, "cycle": 153, "best_brier": 0.22066, "best_roi": 0.3184, "stagnation": 0, "model": "xgboost", "alert": null},
-      {"id": "island-5", "url": "nomos42-nba-evo-5.hf.space", "status": "online", "generation": 610, "cycle": 204, "best_brier": 0.22188, "best_roi": 0.3035, "stagnation": 0, "model": "catboost", "alert": null},
-      {"id": "island-6", "url": "nomos42-nba-evo-6.hf.space", "status": "online", "generation": 512, "cycle": 171, "best_brier": 0.22254, "best_roi": 0.2961, "stagnation": 0, "model": "random_forest", "alert": null}
+      {"id":"S10","url":"nomos42-nba-quant.hf.space","role":"exploitation","status":"online","generation":733,"cycle":245,"best_brier":0.22239,"best_roi":0.2974,"best_sharpe":8.9008,"stagnation":0,"model":"random_forest","features":40,"alert":null},
+      {"id":"S11","url":"nomos42-nba-quant-2.hf.space","role":"exploration","status":"online","generation":869,"cycle":290,"best_brier":0.22277,"best_roi":0.2913,"best_sharpe":9.8973,"stagnation":0,"model":"catboost","features":61,"alert":null},
+      {"id":"S12","url":"nomos42-nba-evo-3.hf.space","role":"extra_trees","status":"online","generation":530,"cycle":177,"best_brier":0.22115,"best_roi":0.3119,"best_sharpe":6.84,"stagnation":0,"model":"random_forest","features":54,"alert":null},
+      {"id":"S13","url":"nomos42-nba-evo-4.hf.space","role":"catboost_specialist","status":"online","generation":580,"cycle":194,"best_brier":0.22066,"best_roi":0.3184,"best_sharpe":6.4833,"stagnation":0,"model":"xgboost","features":40,"alert":"FLEET_BEST"},
+      {"id":"S14","url":"nomos42-nba-evo-5.hf.space","role":"lightgbm","status":"online","generation":762,"cycle":254,"best_brier":0.22188,"best_roi":0.3035,"best_sharpe":6.8861,"stagnation":0,"model":"catboost","features":49,"alert":null},
+      {"id":"S15","url":"nomos42-nba-evo-6.hf.space","role":"wide_search","status":"online","generation":667,"cycle":223,"best_brier":0.22254,"best_roi":0.2961,"best_sharpe":6.6741,"stagnation":0,"model":"random_forest","features":63,"alert":null}
     ],
-    "fleet_best_brier": 0.22066,
-    "fleet_best_island": "island-4",
-    "checkpoint_threshold": 0.21837,
-    "checkpoint_triggered": false,
-    "islands_online": 5,
-    "islands_offline": 1,
-    "stagnation_alerts": 0,
-    "supabase_status": "connectivity_errors",
-    "total_games": 9551,
-    "feature_candidates": 3265
+    "fleet_summary": {
+      "islands_online": 6,
+      "islands_offline": 0,
+      "stagnation_alerts": 0,
+      "diversify_commands_sent": 0,
+      "fleet_best_brier": 0.22066,
+      "fleet_best_island": "S13",
+      "fleet_best_model": "xgboost",
+      "checkpoint_threshold": 0.21837,
+      "checkpoint_triggered": false,
+      "gap_to_checkpoint": 0.00229,
+      "all_time_best_brier": 0.21570,
+      "all_time_best_source": "Colab TabICL 110f iter15",
+      "target_brier": 0.20,
+      "engine_version": "v3.1-46cat",
+      "total_games_cached": 9551,
+      "supabase_status": "connectivity_errors_pooler_xivvnr"
+    }
   },
   "political_fleet": {
     "islands": [
-      {"id": "political-1", "url": "nomos42-political-alpha.hf.space", "role": "exploitation", "status": "online", "generation": 2655, "cycle": 885, "best_brier": 0.24186, "best_roi": 0.0841, "stagnation": 0, "model": "xgboost", "alert": null},
-      {"id": "political-2", "url": "nomos42-political-alpha-2.hf.space", "role": "exploration", "status": "online", "generation": 136, "cycle": 46, "best_brier": 0.26055, "best_roi": 0.0088, "stagnation": 0, "model": "random_forest", "alert": "LOW_ROI"},
-      {"id": "political-3", "url": "nomos42-political-alpha-3.hf.space", "role": "catboost", "status": "building_503", "generation": null, "cycle": null, "best_brier": null, "stagnation": null, "model": null, "alert": "BUILDING/DOWN - 503"},
-      {"id": "political-4", "url": "nomos42-political-alpha-4.hf.space", "role": "wide_search", "status": "building_503", "generation": null, "cycle": null, "best_brier": null, "stagnation": null, "model": null, "alert": "BUILDING/DOWN - 503"}
+      {"id":"P1","role":"exploitation","url":"nomos42-political-alpha.hf.space","status":"online","generation":3028,"cycle":1010,"best_brier":0.24186,"best_roi":0.0841,"best_sharpe":2.5409,"stagnation":0,"model":"xgboost","features":53,"alert":null},
+      {"id":"P2","role":"exploration","url":"nomos42-political-alpha-2.hf.space","status":"online","generation":522,"cycle":175,"best_brier":0.26055,"best_roi":0.0088,"stagnation":0,"model":"random_forest","features":51,"alert":"LOW_ROI"},
+      {"id":"P3","role":"catboost","url":"nomos42-political-alpha-3.hf.space","status":"down_503","generation":null,"alert":"DOWN_503_CYCLE2"},
+      {"id":"P4","role":"wide_search","url":"nomos42-political-alpha-4.hf.space","status":"down_503","generation":null,"alert":"DOWN_503_CYCLE2"}
     ],
-    "fleet_best_brier": 0.24186,
-    "fleet_best_island": "political-1",
-    "islands_online": 2,
-    "islands_offline": 2,
-    "stagnation_alerts": 0,
-    "total_events": 372,
-    "synthetic_events": 312,
-    "real_events": 60
+    "fleet_summary": {
+      "islands_online": 2,
+      "islands_offline": 2,
+      "fleet_best_brier": 0.24186,
+      "total_events": 372,
+      "real_events": 60,
+      "synthetic_events": 312,
+      "engine_version": "v3.2-political-23cat"
+    }
   },
-  "actions_taken": [
-    "No diversify commands needed (all stagnation=0)",
-    "Island 2 (NBA) is offline - monitoring",
-    "Political islands 3&4 returning 503 - likely building/restarting",
-    "Research proposal written: shot-chart-spatial-embeddings-calibration",
-    "No NBA checkpoint triggered (best=0.22066, threshold=0.21837)"
+  "actions_this_cycle": [
+    "All 6 NBA islands confirmed online — S11 URL corrected to nomos42-nba-quant-2.hf.space",
+    "No stagnation on any NBA island — no diversify commands needed",
+    "NBA fleet_best_brier=0.22066 (S13/XGBoost) — gap to checkpoint 0.00229 — no checkpoint",
+    "Political engine v3.1→v3.2: added Cat23 FEC Donation Velocity (20 features)",
+    "NBA research proposal: LR meta-calibration targeting 0.199 Brier (MDPI Jan 2026)",
+    "Political P3/P4 down_503 for 2 consecutive cycles — manual HF restart recommended"
   ],
-  "next_cycle": "2026-04-01T04:00:00Z"
+  "cycle_improvement_NBA": {
+    "type": "research_proposal",
+    "file": "data/research-proposals/2026-04-01-lr-meta-calibration-0199-brier.json",
+    "source": "MDPI Jan 2026 — LR achieves 0.199 Brier, best tabular model",
+    "action_needed": "Implement in hf-space/app.py next engineering cycle"
+  },
+  "cycle_improvement_POLITICAL": {
+    "type": "code_change",
+    "file": "nomos-political-alpha/features/political_engine.py",
+    "change": "Cat23 FEC Donation Velocity — 20 features: velocity_ratio, 48h_notices, pac_cash, bipartisan_ratio, dark_money",
+    "version_bump": "v3.1-political-22cat → v3.2-political-23cat"
+  },
+  "next_cycle_directives": [
+    "Implement LR calibration wrapper in nomos-nba-agent/hf-space/app.py (highest impact)",
+    "Check P3/P4 status — if still 503, restart via HF Space dashboard",
+    "Port LR calibration to nomos-political-alpha/hf-space/app.py",
+    "Update ops/fetch_political_data.py to populate event.fec_data dict (unblocks Cat23)"
+  ],
+  "next_cycle": "2026-04-01T12:00:00Z"
 }

@@ -1,0 +1,71 @@
+{
+  "proposal_id": "NBA-CAL-LR-2026-0401",
+  "title": "LR Meta-Calibration Layer for Sub-0.21 Brier — Two-Stage Prediction Pipeline",
+  "created_at": "2026-04-01T08:00:00Z",
+  "cycle": "4h-brain-2026-04-01T08",
+  "priority": "HIGH",
+  "status": "PROPOSED",
+  "source_research": [
+    {
+      "title": "Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "journal": "MDPI Information, Vol 17 No 1",
+      "year": 2026,
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "key_finding": "Logistic Regression attains best Brier score (0.199) and log-loss among tabular baselines. XGBoost achieves 0.202 Brier but higher AUC."
+    },
+    {
+      "title": "Stacked ensemble model for NBA game outcome prediction analysis",
+      "journal": "Scientific Reports (Nature)",
+      "year": 2025,
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "key_finding": "Stacked ensembles with LR meta-learner outperform individual boosting models by 1.5-2% Brier score"
+    }
+  ],
+  "current_state": {
+    "fleet_best_brier": 0.22066,
+    "island": "S13 (nomos42-nba-evo-4, XGBoost, 40 features)",
+    "checkpoint_threshold": 0.21837,
+    "gap_to_threshold": 0.00229,
+    "target_brier": 0.20,
+    "literature_best_tabular": 0.199
+  },
+  "hypothesis": "Adding a logistic regression calibration layer on top of existing GA-selected XGBoost/RF/CatBoost models could push Brier from 0.22066 toward 0.199. LR excels at calibration because it optimizes log-loss (equivalent to calibration), while tree models optimize rank-based metrics and produce poorly calibrated probabilities.",
+  "implementation": {
+    "approach": "Two-stage prediction",
+    "stage_1": {
+      "model": "GA-selected XGBoost (current best, 40 features)",
+      "output": "raw probability p_xgb"
+    },
+    "stage_2": {
+      "model": "Logistic regression with 3-5 inputs",
+      "inputs": [
+        "p_xgb (stage-1 probability)",
+        "market_implied_prob (from Cat9/Cat23 odds features)",
+        "home_advantage_adj (net home court ELO adjustment)",
+        "recent_form_delta (last-5 Pythagorean win% delta)",
+        "rest_days_diff (home_rest - away_rest)"
+      ],
+      "output": "final calibrated probability",
+      "training": "Isotonic or sigmoid via CalibratedClassifierCV, selected by held-out Brier loss",
+      "clipping": "[0.025, 0.975] — prevents catastrophic Brier from extreme predictions"
+    },
+    "files_to_modify": [
+      "hf-space/app.py — wrap predict() with LR calibration layer",
+      "features/engine.py — no changes needed (Cat34 already has ensemble meta-features)"
+    ],
+    "expected_improvement": "0.22066 → ~0.215 (conservative) to ~0.205 (optimistic based on literature)",
+    "cpu_cost": "LR is O(n) inference — zero performance impact on HF Spaces"
+  },
+  "implementation_code_sketch": {
+    "note": "Add to hf-space/app.py predict() function after base model prediction",
+    "snippet": "from sklearn.linear_model import LogisticRegression\nfrom sklearn.calibration import CalibratedClassifierCV\n# Stage 2: LR calibration\ncal_features = np.column_stack([p_base, market_prob, home_elo_adj, form_delta, rest_diff])\ncal_model = CalibratedClassifierCV(LogisticRegression(C=1.0), cv=5, method='isotonic')\ncal_model.fit(cal_features, y_train)  # fit on recent 3-season sliding window\np_final = np.clip(cal_model.predict_proba(cal_features_test)[:, 1], 0.025, 0.975)"
+  },
+  "validation": {
+    "metric": "Walk-forward Brier score (19 weeks, 934 games — identical to Kaggle setup)",
+    "baseline": 0.22447,
+    "target": 0.215,
+    "test_window": "2025-26 season (current)"
+  },
+  "risk": "LOW — LR layer can only improve or maintain calibration, cannot degrade base model accuracy. Reverting is instant.",
+  "cross_repo_port": "Same technique applies to nomos-political-alpha (Cat3 market features → LR meta-calibration). Political brier currently 0.24186 — could target 0.22."
+}
