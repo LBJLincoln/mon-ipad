@@ -135,15 +135,19 @@
         "last_update": "2026-04-02T08:22:00Z"
       },
       "P3_catboost": {
-        "status": "DOWN_404",
+        "status": "DOES_NOT_EXIST",
         "url": "nomos42-political-alpha-3.hf.space",
-        "action_needed": "restart via HuggingFace MCP (not available — manual restart needed)",
+        "hf_id": "Nomos42/political-alpha-3",
+        "action_needed": "CREATE new HF space at huggingface.co/new-space, then run: bash scripts/deploy_political_fix.sh",
+        "confirmed_by": "HF MCP hub_repo_details returned 404 — space never created or was deleted",
         "last_known_brier": 0.24186
       },
       "P4_wide_search": {
-        "status": "DOWN_404",
+        "status": "DOES_NOT_EXIST",
         "url": "nomos42-political-alpha-4.hf.space",
-        "action_needed": "restart via HuggingFace MCP (not available — manual restart needed)",
+        "hf_id": "Nomos42/political-alpha-4",
+        "action_needed": "CREATE new HF space at huggingface.co/new-space, then run: bash scripts/deploy_political_fix.sh",
+        "confirmed_by": "HF MCP hub_repo_details returned 404 — space never created or was deleted",
         "last_known_brier": 0.24999
       }
     },
@@ -151,8 +155,8 @@
     "fleet_best_island": "P1_exploitation",
     "fleet_target_brier": 0.22,
     "data_quality_real_events": 372,
-    "hf_mcp_available": false,
-    "hf_mcp_note": "P3/P4 down — 2 of 4 islands offline. Manual restart at huggingface.co required."
+    "hf_mcp_available": true,
+    "hf_mcp_note": "HF MCP available but read-only (search/inspect only, no space creation). P3/P4 confirmed non-existent via hub_repo_details. Must create at huggingface.co UI under Nomos42 org, then deploy via scripts/deploy_political_fix.sh"
   },
   "data_pipeline": {
     "congressional_trades_cat24": {
@@ -185,7 +189,7 @@
     ]
   },
   "next_directives": [
-    "CRITICAL: Manually restart P3 (nomos42-political-alpha-3) and P4 (nomos42-political-alpha-4) at huggingface.co",
+    "CRITICAL: CREATE P3 (Nomos42/political-alpha-3) and P4 (Nomos42/political-alpha-4) at huggingface.co/new-space under Nomos42 org — spaces do NOT exist (confirmed 404 via HF MCP). Then: bash scripts/deploy_political_fix.sh",
     "NBA: Implement GETS temperature scaling in hf-space/app.py (see proposal gets-temperature-scaling-calibration-2026-04-02.json)",
     "NBA: Monitor S13 stagnation — POST /api/command {'action':'diversify'} if stagnation hits 16",
     "Political: Run fetch_congressional_trades() to get real STOCK Act data into pipeline",
