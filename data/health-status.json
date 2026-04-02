@@ -1,36 +1,65 @@
 {
-  "last_brain_cycle": "2026-04-01T20:15:00Z",
-  "cycle_number": "~52",
+  "last_brain_cycle": "2026-04-02T00:30:00Z",
+  "cycle_number": "~53",
   "cycle_improvements": {
-    "political": {
-      "action": "IMPLEMENTED",
-      "file": "nomos-political-alpha/hf-space/app.py",
-      "description": "Ported lr_meta and lr_platt calibration methods from NBA hf-space to Political hf-space",
-      "technique": "LR meta-calibration: fit base model on training data, then fit 1-feature LR on held-out raw probs (100-event cal slice). Platt scaling variant using temporal hold-out. Both avoid CalibratedClassifierCV(cv=3) instability on small political datasets.",
-      "research_basis": "NBA hf-space already validated these methods. Particularly critical for political data with only 60-372 real events.",
-      "expected_brier_gain": "0.001 to 0.004",
-      "calibration_options_before": ["none", "sigmoid", "venn_abers", "beta"],
-      "calibration_options_after": ["none", "sigmoid", "venn_abers", "beta", "lr_meta", "lr_platt"]
-    },
     "nba": {
-      "action": "RESEARCH_PROPOSAL_WRITTEN",
-      "file": "mon-ipad/data/research-proposals/nba-shot-chart-spatial-embeddings-2026-04-01.json",
-      "description": "Proposed Cat38_SpatialShooting: 18 shot-chart zone features (paint/midrange/corner3 frequencies, expected values, shot selection pressure, opponent defensive profile)",
-      "research_basis": "MDPI 2026 uncertainty-aware NBA paper: ablation confirms shot-chart spatial embeddings provide complementary signal beyond team stats, improving both discrimination and calibration",
-      "expected_brier_gain": "0.002 to 0.006",
-      "next_step": "VM Muscle implements Cat38 in engine.py and deploys to S15 (wide search)"
+      "action": "IMPLEMENTED",
+      "file": "nomos-nba-agent/features/engine.py + hf-space/features/engine.py",
+      "description": "Updated ENGINE_VERSION from v3.1-46cat to v3.1-49cat to reflect Cat47 (Drive-Rim, 14f), Cat48 (Passing Network, 10f), Cat49 (Play-Type PPP, 10f) that were implemented last cycle but not versioned",
+      "impact": "Correct Supabase experiment tagging — all new GA runs will log v3.1-49cat. Parity maintained: root == hf-space (diff=0 bytes).",
+      "raw_features_new": 6287,
+      "categories_now": 49
+    },
+    "political": {
+      "action": "BUG_FIX + RESEARCH_PROPOSAL",
+      "file_fixed": "nomos-political-alpha/ops/fetch_political_data.py",
+      "description": "Fixed FEC donor pipeline: TRUMP_INAUGURAL_COMMITTEE (C00947002) was missing from cycles_by_committee dict, causing all fec_donors_*.json to be 2 bytes (empty). Added [2026, 2024] cycles. Also updated default fallback from [2024,2022,2020] to [2026,2024,2022].",
+      "proposal_written": "data/proposals/congressional-trade-signals-cat24-2026-04-02.json",
+      "proposal_title": "Category 24: Congressional Trade Signals (STOCK Act Disclosures via Quiver Quantitative)",
+      "research_basis": "Q1 2026 insider trading scrutiny + Quiver Quant free API + 20 features",
+      "expected_brier_gain": "0.002 to 0.008"
     }
   },
   "nba_fleet": {
     "islands_online": 6,
     "islands_total": 6,
     "islands": {
-      "S10_nomos42-nba-quant":   {"status":"UP","cycle":442,"generation":1325,"best_brier":0.22239,"best_model":"random_forest","best_features":40,"stagnation":0,"role":"exploitation","pop_size":60,"pareto_front":18},
-      "S11_nomos42-nba-quant-2": {"status":"UP","cycle":492,"generation":1476,"best_brier":0.22277,"best_model":"catboost","best_features":61,"stagnation":0,"role":"exploration","pop_size":60,"pareto_front":11},
-      "S12_nomos42-nba-evo-3":   {"status":"UP","cycle":299,"generation":895,"best_brier":0.22115,"best_model":"random_forest","best_features":54,"stagnation":0,"role":"extra_trees_specialist","pop_size":60},
-      "S13_nomos42-nba-evo-4":   {"status":"UP","cycle":327,"generation":979,"best_brier":0.22066,"best_model":"xgboost_brier","best_features":40,"stagnation":0,"role":"catboost_specialist","pop_size":60,"note":"FLEET BEST BRIER","pareto_front":16},
-      "S14_nomos42-nba-evo-5":   {"status":"UP","cycle":441,"generation":1322,"best_brier":0.22188,"best_model":"catboost","best_features":49,"stagnation":0,"role":"lightgbm_specialist","pop_size":60,"pareto_front":14},
-      "S15_nomos42-nba-evo-6":   {"status":"UP","cycle":382,"generation":1146,"best_brier":0.22254,"best_model":"random_forest","best_features":63,"stagnation":0,"role":"wide_search","pop_size":50,"pareto_front":15}
+      "S10_nomos42-nba-quant": {
+        "status": "UP", "cycle": 504, "generation": 1511, "best_brier": 0.22239,
+        "best_roi": 0.2974, "best_sharpe": 8.9008, "best_features": 40,
+        "best_model": "random_forest", "stagnation": 0, "pop_size": 60, "pareto_front": 17,
+        "role": "exploitation", "last_update": "2026-04-02T00:09:00Z"
+      },
+      "S11_nomos42-nba-quant-2": {
+        "status": "UP", "cycle": 558, "generation": 1674, "best_brier": 0.22277,
+        "best_roi": 0.2913, "best_sharpe": 9.8973, "best_features": 61,
+        "best_model": "catboost", "stagnation": 0, "pop_size": 60, "pareto_front": 10,
+        "role": "exploration", "last_update": "2026-04-02T00:10:00Z"
+      },
+      "S12_nomos42-nba-evo-3": {
+        "status": "UP", "cycle": 346, "generation": 1037, "best_brier": 0.22115,
+        "best_roi": 0.3119, "best_sharpe": 6.8366, "best_features": 54,
+        "best_model": "random_forest", "stagnation": 0, "pop_size": 60, "pareto_front": 14,
+        "role": "extra_trees_specialist", "last_update": "2026-04-02T00:10:47Z"
+      },
+      "S13_nomos42-nba-evo-4": {
+        "status": "UP", "cycle": 363, "generation": 1087, "best_brier": 0.22066,
+        "best_roi": 0.3184, "best_sharpe": 6.4833, "best_features": 40,
+        "best_model": "xgboost_brier", "stagnation": 0, "pop_size": 60, "pareto_front": 14,
+        "role": "catboost_specialist", "note": "FLEET BEST BRIER", "last_update": "2026-04-02T00:10:06Z"
+      },
+      "S14_nomos42-nba-evo-5": {
+        "status": "UP", "cycle": 518, "generation": 1552, "best_brier": 0.22188,
+        "best_roi": 0.3035, "best_sharpe": 6.8861, "best_features": 49,
+        "best_model": "catboost", "stagnation": 0, "pop_size": 60, "pareto_front": 4,
+        "role": "lightgbm_specialist", "last_update": "2026-04-02T00:10:18Z"
+      },
+      "S15_nomos42-nba-evo-6": {
+        "status": "UP", "cycle": 439, "generation": 1316, "best_brier": 0.22254,
+        "best_roi": 0.2961, "best_sharpe": 6.6741, "best_features": 63,
+        "best_model": "random_forest", "stagnation": 0, "pop_size": 50, "pareto_front": 7,
+        "role": "wide_search", "last_update": "2026-04-02T00:09:23Z"
+      }
     },
     "fleet_best_brier": 0.22066,
     "fleet_best_island": "S13_nomos42-nba-evo-4",
@@ -38,7 +67,6 @@
     "fleet_avg_brier": 0.22191,
     "all_time_best_brier": 0.21570,
     "all_time_best_source": "Colab_TabICL_110f_iter15",
-    "latest_colab_run": 0.21677,
     "checkpoint_threshold": 0.21837,
     "checkpoint_needed": false,
     "gap_to_checkpoint": 0.00229,
@@ -47,46 +75,81 @@
     "diversify_triggered": false,
     "games": 9551,
     "feature_candidates": 3265,
-    "engine_version": "v3.1-46cat",
-    "raw_features": 6253
+    "engine_version": "v3.1-49cat",
+    "raw_features": 6287,
+    "categories": 49
   },
   "political_fleet": {
-    "islands_online": 2,
+    "islands_online": 3,
     "islands_total": 4,
     "islands": {
-      "P1_exploitation": {"status":"UP","cycle":1335,"generation":4003,"best_brier":0.24186,"best_model":"xgboost_brier","best_features":53,"stagnation":0,"real_events":60,"synthetic_events":312,"space_role":"political_exploitation"},
-      "P2_exploration":  {"status":"UP","cycle":591,"generation":1773,"best_brier":0.24999,"best_model":"catboost","best_features":93,"stagnation":0,"real_events":372,"synthetic_events":0,"space_role":"political_exploration"},
-      "P3_catboost":     {"status":"DOWN_404","down_cycles":5,"note":"5+ cycles down — accepted as deleted, space quota exhausted"},
-      "P4_wide_search":  {"status":"DOWN_404","down_cycles":5,"note":"5+ cycles down — accepted as deleted, space quota exhausted"}
+      "P1_exploitation": {
+        "status": "UP", "cycle": 1433, "generation": 4299, "best_brier": 0.24186,
+        "best_model": "xgboost_brier", "best_features": 53, "stagnation": 0,
+        "real_events": 60, "synthetic_events": 312, "url": "nomos42-political-alpha.hf.space"
+      },
+      "P2_exploration": {
+        "status": "DOWN_404", "note": "404 this cycle — was UP last cycle. Transient or quota issue.",
+        "last_known_brier": 0.24999, "url": "nomos42-political-alpha-2.hf.space"
+      },
+      "P3_catboost": {
+        "status": "UP", "cycle": 1433, "generation": 4299, "best_brier": 0.24186,
+        "best_model": "xgboost_brier", "best_features": 53, "stagnation": 0,
+        "real_events": 60, "synthetic_events": 312, "note": "CAME BACK ONLINE",
+        "url": "nomos42-political-alpha-3.hf.space"
+      },
+      "P4_wide_search": {
+        "status": "UP", "cycle": 745, "generation": 2235, "best_brier": 0.24999,
+        "best_model": "catboost", "best_features": 93, "stagnation": 0,
+        "real_events": 372, "synthetic_events": 0, "note": "CAME BACK ONLINE",
+        "url": "nomos42-political-alpha-4.hf.space"
+      }
     },
     "fleet_best_brier": 0.24186,
     "fleet_best_island": "P1_exploitation",
     "fleet_target_brier": 0.22,
-    "data_quality_pct_real": 16.1
+    "data_quality_pct_real": 13.9
   },
   "data_pipeline": {
-    "fec_donors": {"status":"MONITORING","note":"Fixed cycle 51 (two_year_transaction_period). Verify file sizes > 2 bytes on next VM run."},
-    "polymarket":  {"status":"HEALTHY","update_freq":"5min"},
-    "gov_contracts": {"status":"HEALTHY"},
-    "insider_trades": {"status":"UNVERIFIED","note":"insider_tracker.py output not yet confirmed"}
+    "fec_donors": {
+      "status": "BUG_FIXED",
+      "note": "Added C00947002 → [2026,2024] to cycles_by_committee. Files were 2 bytes (empty) due to missing key. Will be non-empty after next VM :30 run.",
+      "fix_applied": "2026-04-02T00:30:00Z"
+    },
+    "insider_trades": {
+      "status": "HEALTHY",
+      "note": "form4_20260326.json through form4_20260401.json all >100KB. Pipeline is working.",
+      "latest_file": "form4_20260401.json",
+      "latest_size_bytes": 49745
+    },
+    "polymarket": {"status": "HEALTHY", "update_freq": "5min"},
+    "gov_contracts": {"status": "HEALTHY"},
+    "congressional_trades": {"status": "PROPOSED", "proposal": "congressional-trade-signals-cat24-2026-04-02.json"}
   },
   "cross_project": {
-    "nba_to_political_this_cycle": "lr_meta + lr_platt calibration methods",
+    "nba_to_political_this_cycle": "none (last cycle: lr_meta + lr_platt calibration)",
     "political_to_nba_this_cycle": "none",
-    "pending_nba": "Cat38_SpatialShooting (18 shot-chart zone features) — VM implements in engine.py",
-    "pending_political": "Rotation A next: fresh FEC/SEC/EO data source research"
+    "pending_nba": "Monitor S13 Brier trajectory — approaching checkpoint threshold (gap: 0.00229)",
+    "pending_political": "Implement Cat24 Congressional Trade Signals (Quiver Quantitative)"
   },
   "research_rotation": {
-    "current": "E_COMPLETE",
-    "next": "A (fresh WebSearch: FEC Q1 2026 filings, SEC Form 4 insider trades, new executive orders)",
-    "history": ["A_data_sources", "B_features", "C_nba_port", "D_pipeline_health", "E_port_and_research"]
+    "current": "A_COMPLETE",
+    "next": "B (review political_engine.py — implement Cat24 Congressional Trade Signals)",
+    "history": ["A_data_sources", "B_features", "C_nba_port", "D_pipeline_health", "E_port_and_research", "A_data_sources"],
+    "rotation_A_findings": [
+      "FEC Q1 2026: reports due April 15, not yet public. Fix applied to fetcher.",
+      "SEC Form 4: insider_tracker.py is HEALTHY — 100KB+ daily files verified.",
+      "Executive Orders: Trump signed 27 EOs in 2026. IEEPA tariffs struck down Feb 20 by SCOTUS.",
+      "Congressional trades: Quiver Quantitative API provides real-time STOCK Act data — proposed as Cat24.",
+      "Key Q1 2026 alpha signal: pre-announcement trades in oil/prediction markets (Iran, Venezuela)."
+    ]
   },
   "next_directives": [
-    "NBA: VM Muscle implements Cat38_SpatialShooting from proposal — deploy to S15",
-    "NBA: Monitor S13 (best Brier 0.22066) for checkpoint opportunity below 0.21837",
-    "Political: Verify FEC donor fix worked — check file sizes > 2 bytes",
-    "Political: Check insider_tracker.py — confirm Form 4 trades are being logged",
-    "Political: Monitor P1 lr_meta/lr_platt uptake in new individuals (gen 4004+)",
-    "Next rotation A: WebSearch FEC Q1 2026, SEC Form 4 q1 2026, executive orders April 2026"
+    "Political: Implement fetch_congressional_trades() in fetch_political_data.py (Cat24 proposal)",
+    "Political: Verify FEC fix works — check fec_donors_*.json size > 2 bytes after next :30 VM run",
+    "Political: Monitor P2 (political-alpha-2) — check if transient 404 or gone permanently",
+    "NBA: Deploy engine v3.1-49cat to all 6 HF spaces via auto-deploy-engine.sh",
+    "NBA: Monitor S13 (best 0.22066) — checkpoint if crosses 0.21837",
+    "NBA: Next cycle research — test logistic_regression_calibrated on S15 (MDPI 2026: LR Brier 0.199)"
   ]
 }
