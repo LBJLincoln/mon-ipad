@@ -1,0 +1,73 @@
+{
+  "id": "GETS-CALIBRATION-01",
+  "title": "GETS: Generalized Ensemble Temperature Scaling for NBA Probability Calibration",
+  "date": "2026-04-02",
+  "source": "ICLR 2025 — 'Ensemble Temperature Scaling' (openreview.net/pdf?id=qgsXsqahMq)",
+  "status": "proposed",
+  "priority": "HIGH",
+  "expected_brier_delta": "-0.002 to -0.006",
+  "gap_to_checkpoint": 0.00345,
+  "gap_to_target": 0.02182,
+
+  "hypothesis": "GETS replaces scalar temperature T with an ensemble of K temperatures {T1,...,TK}, each learned on a different validation fold. Final calibrated probability is a weighted average over ensemble members. This is empirically superior to: (a) single temperature scaling, (b) isotonic regression (which overfits on small sports datasets), and (c) Platt/sigmoid calibration. ICLR 2025 reports ECE reduction of ~0.008-0.015 on tabular classification vs isotonic baseline.",
+
+  "current_calibration_in_app": {
+    "none": "weight=20",
+    "sigmoid": "weight=15 (Platt via CalibratedClassifierCV)",
+    "venn_abers": "weight=25 (MAPIE LAC)",
+    "beta": "weight=25 (BetaCalibration — best current)",
+    "lr_meta": "weight=10 (post-hoc LR on probs)",
+    "lr_platt": "weight=10 (temporal hold-out Platt)",
+    "isotonic": "DISABLED — empirically hurts Brier +0.003 to +0.007"
+  },
+
+  "implementation_plan": {
+    "phase_1": {
+      "description": "Add GETS as new calibration method 'gets' in hf-space/app.py",
+      "file": "nomos-nba-agent/hf-space/app.py",
+      "lines_to_change": "~1255-1330 (calibration section) and ~639 (hyperparams choices)",
+      "code_sketch": "if cal_method == 'gets':\n    m.fit(X_sub[ti_safe], y_eval[ti_safe])\n    _model_fitted = True\n    K = 5  # ensemble size\n    fold_size = max(50, len(ti_safe) // K)\n    temps = []\n    from scipy.optimize import minimize_scalar\n    for k in range(K):\n        cal_slice = ti_safe[-(k+1)*fold_size : -k*fold_size if k > 0 else len(ti_safe)]\n        if len(cal_slice) < 20: continue\n        raw_p = np.clip(m.predict_proba(X_sub[cal_slice])[:, 1], 1e-6, 1-1e-6)\n        logits = np.log(raw_p / (1 - raw_p))\n        def brier_loss(t):\n            p_cal = 1 / (1 + np.exp(-logits / t))\n            return np.mean((p_cal - y_eval[cal_slice])**2)\n        res = minimize_scalar(brier_loss, bounds=(0.1, 5.0), method='bounded')\n        temps.append(res.x)\n    _gets_temps = temps if temps else None\n    cal_method = 'none'",
+      "predict_step": "if _gets_temps:\n    logits = np.log(np.clip(p, 1e-6, 1-1e-6) / np.clip(1-p, 1e-6, 1-1e-6))\n    p = np.mean([1/(1+np.exp(-logits/t)) for t in _gets_temps], axis=0)"
+    },
+    "phase_2": {
+      "description": "Update hyperparams calibration choices to include 'gets' with weight 20",
+      "old": "random.choices(['none','sigmoid','venn_abers','beta','lr_meta','lr_platt'], weights=[20,15,25,25,10,10])",
+      "new": "random.choices(['none','sigmoid','venn_abers','beta','lr_meta','lr_platt','gets'], weights=[15,10,20,20,10,10,15])"
+    }
+  },
+
+  "advantages_over_current": {
+    "vs_beta": "GETS adapts temperature per fold (temporal robustness), BetaCalibration fits on single held-out slice",
+    "vs_isotonic": "GETS never overfits — temperature is a single scalar per fold (1 param vs N for isotonic)",
+    "vs_lr_meta": "GETS uses logit-space temperature (theoretically grounded) vs linear prob-space LR",
+    "vs_venn_abers": "GETS has no external MAPIE dependency, simpler, faster"
+  },
+
+  "no_external_deps": true,
+  "deps_needed": "scipy.optimize.minimize_scalar (already in scipy, installed on HF spaces)",
+
+  "alternative_technique": {
+    "name": "ATS-CP: Adaptive Temperature Scaling + Conformal Prediction",
+    "source": "arXiv 2505.15437 (May 2025)",
+    "description": "Combines temperature scaling with conformal coverage guarantees. For each test game, outputs a prediction interval [p_low, p_high] with 90% coverage. Use as risk management overlay on Kelly sizing.",
+    "implementation_complexity": "MEDIUM — requires calibration holdout + conformal quantile computation",
+    "priority": "LOW (next cycle)"
+  },
+
+  "related_finding": {
+    "title": "Load Management 8-Feature Block (CMU, Spring 2025)",
+    "description": "CMU capstone found 8 features predict load management decisions with AUC 0.81: player_age, season_minutes_rate, games_played_7d, rest_days_before_game, back_to_back_flag, road_games_streak, fatigue_index (custom), team_playoff_odds. These can be added as Cat50 expansion features to engine.py.",
+    "brier_gain_estimate": "-0.001 to -0.003",
+    "priority": "MEDIUM — Cat50 proposal pending"
+  },
+
+  "nba_research_cycle_findings_summary": {
+    "top1": "GETS temperature scaling (ICLR 2025) — best new calibration method, no isotonic overfitting",
+    "top2": "Stacked ensemble (XGBoost+LightGBM+LR) with MLP meta-learner — Scientific Reports 2025 achieves 67.4% accuracy vs 61-63% for single models",
+    "top3": "Dual Elo decay (regular/playoff tracks) + RAPM/EPM as team-level features — consistently +1-2pp accuracy",
+    "top4": "Load management 8-feature block — CMU 2025 shows load management decisions are predictable and affect game outcomes",
+    "top5": "Beta calibration already optimal for small datasets (already in app.py) — confirms current direction correct"
+  },
+
+  "next_action": "Implement phase_1 GETS in hf-space/app.py on next cycle. Required: read lines 1250-1340, add gets block, test syntax, push."
+}
