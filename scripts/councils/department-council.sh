@@ -156,7 +156,7 @@ print(f'Infra: {ok}/{total} healthy')
         log "START: Finance Council — P&L, burn rate, revenue tracking"
         cd "$REPO_ROOT"
         # Compute costs
-        log "Monthly costs: ~$6 (VM) + $0 (HF free) + Modal usage"
+        log "Monthly costs: ~\$6 (VM) + \$0 (HF free) + Modal usage"
         if [ -f data/nba-agent/bankroll-state.json ]; then
             bankroll=$(python3 -c "import json; print(json.load(open('data/nba-agent/bankroll-state.json')).get('bankroll',0))" 2>/dev/null)
             log "Bankroll: \$$bankroll"
