@@ -1,5 +1,5 @@
 {
-  "collected_at": "2026-04-01T20:00:03Z",
+  "collected_at": "2026-04-02T08:00:01Z",
   "version": "1.0",
   "products": {
     "nba": {
@@ -8,7 +8,7 @@
         "agent": "O1",
         "name": "Brain / Strategy Definer",
         "metric": "decisions_actioned_per_cycle",
-        "health_file_age_hours": 2.01,
+        "health_file_age_hours": 2.0,
         "spaces_summary": "6/6 UP",
         "open_issues": 0,
         "system_status": "HEALTHY",
@@ -18,8 +18,8 @@
         "agent": "R1",
         "name": "Research Analyst",
         "metric": "research_proposals_per_week",
-        "proposal_files_found": 9,
-        "proposals_file_age_hours": 35.35,
+        "proposal_files_found": 12,
+        "proposals_file_age_hours": 47.34,
         "status": "GREEN"
       },
       "layer1_features": {
@@ -28,7 +28,7 @@
         "metric": "feature_categories_count",
         "current_categories": 46,
         "engine_version": "v3.1-46cat",
-        "engine_age_hours": 2.86,
+        "engine_age_hours": 10.95,
         "target_categories": 46,
         "status": "GREEN"
       },
@@ -46,16 +46,16 @@
         "name": "Predictions Agent",
         "metric": "predictions_posted_count",
         "predictions_today": 6,
-        "predictions_file_age_hours": 112.64,
+        "predictions_file_age_hours": 124.63,
         "status": "GREEN"
       },
       "layer1_data": {
         "agent": "E5",
         "name": "Data Pipeline",
         "metric": "odds_data_freshness_hours",
-        "current_age_hours": 1.49,
+        "current_age_hours": 10.95,
         "target_max_hours": 2.0,
-        "status": "YELLOW"
+        "status": "RED"
       },
       "layer1_islands": {
         "agent": "V1",
@@ -68,37 +68,37 @@
           "S10": {
             "status": "UP",
             "brier": 0.22239,
-            "gen": 1255,
+            "gen": 1791,
             "stagnation_cycles": 0
           },
           "S11": {
             "status": "UP",
             "brier": 0.22277,
-            "gen": 1344,
+            "gen": 1993,
             "stagnation_cycles": 0
           },
           "S12": {
             "status": "UP",
             "brier": 0.22115,
-            "gen": 842,
+            "gen": 1261,
             "stagnation_cycles": 0
           },
           "S13": {
             "status": "UP",
             "brier": 0.22066,
-            "gen": 920,
+            "gen": 1236,
             "stagnation_cycles": 0
           },
           "S14": {
             "status": "UP",
             "brier": 0.22188,
-            "gen": 1209,
+            "gen": 1834,
             "stagnation_cycles": 0
           },
           "S15": {
             "status": "UP",
             "brier": 0.22254,
-            "gen": 1061,
+            "gen": 1582,
             "stagnation_cycles": 0
           }
         },
@@ -122,7 +122,7 @@
         "current_brier": 0.2157,
         "atr": 0.2157,
         "gap": 0.0,
-        "eval_file_age_hours": 2.03,
+        "eval_file_age_hours": 1.99,
         "status": "GREEN"
       },
       "layer3_infra": {
@@ -131,7 +131,7 @@
         "metric": "fleet_services_status",
         "data_server_backtest": "UNKNOWN",
         "telegram_brain": "ALIVE",
-        "infra_file_age_hours": 1.23,
+        "infra_file_age_hours": 0.25,
         "status": "GREEN"
       }
     },
@@ -143,14 +143,14 @@
         "metric": "political_engine_categories_live",
         "categories": 23,
         "engine_version": "v3.2-political-23cat",
-        "engine_file_age_hours": 8.82,
+        "engine_file_age_hours": 20.78,
         "target_categories": 25,
         "status": "GREEN"
       },
       "layer1_kaggle": {
         "metric": "kaggle_session_status",
-        "status": "ERROR",
-        "health": "RED"
+        "status": "COMPLETE",
+        "health": "GREEN"
       }
     },
     "rgwa": {
@@ -177,17 +177,18 @@
     }
   },
   "priority_alerts": [
+    "P1-CRITICAL: Odds data stale 10.95h",
     "P2-STRATEGIC: ROI negative (-2.96%)"
   ],
   "summary": {
-    "total_alerts": 1,
-    "critical_alerts": 0,
+    "total_alerts": 2,
+    "critical_alerts": 1,
     "islands_up": 6,
     "best_brier": 0.22066,
     "atr_brier": 0.2157,
     "season_roi_pct": -2.96,
     "feature_categories": 46,
     "political_categories": 23,
-    "overall_health": "HEALTHY"
+    "overall_health": "CRITICAL"
   }
 }
