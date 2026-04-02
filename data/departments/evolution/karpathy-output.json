@@ -1,22 +1,22 @@
 {
   "department": "evolution",
-  "timestamp": "2026-04-01T18:18:05Z",
+  "timestamp": "2026-04-02T10:29:54Z",
   "iteration": 1,
-  "islands": {"S10": {"brier": 0.22239, "generation": 1255, "model": "random_forest", "stagnation_cycles": 0, "status": "UP"}, "S11": {"brier": 0.22277, "generation": 1344, "model": "catboost", "stagnation_cycles": 0, "status": "UP"}, "S12": {"brier": 0.22115, "generation": 842, "model": "random_forest", "stagnation_cycles": 0, "status": "UP"}, "S13": {"brier": 0.22066, "generation": 920, "model": "xgboost_brier", "stagnation_cycles": 0, "status": "UP"}, "S14": {"brier": 0.22188, "generation": 1209, "model": "catboost", "stagnation_cycles": 0, "status": "UP"}, "S15": {"brier": 0.22254, "generation": 1061, "model": "random_forest", "stagnation_cycles": 0, "status": "UP"}},
-  "fleet_metrics": {"best_brier": 0.22066, "fleet_avg": 0.2219, "best_island": "S13", "total_generations": 6631, "island_count": 6},
+  "islands": {"S10": {"brier": 0.22727, "generation": 73, "model": "extra_trees", "stagnation_cycles": 2, "status": "UP"}, "S11": {"brier": 0.22615, "generation": 108, "model": "xgboost_brier", "stagnation_cycles": 0, "status": "UP"}, "S12": {"brier": 0.22262, "generation": 131, "model": "xgboost_brier", "stagnation_cycles": 0, "status": "UP"}, "S13": {"brier": 0.22446, "generation": 97, "model": "random_forest", "stagnation_cycles": 0, "status": "UP"}, "S14": {"brier": 0.22182, "generation": 135, "model": "catboost", "stagnation_cycles": 0, "status": "UP"}, "S15": {"brier": 0.22471, "generation": 108, "model": "xgboost_brier", "stagnation_cycles": 0, "status": "UP"}},
+  "fleet_metrics": {"best_brier": 0.22182, "fleet_avg": 0.2245, "best_island": "S14", "total_generations": 652, "island_count": 6},
   "stagnation_detected": [],
   "stagnant_count": 0,
-  "diversity_score": 0.369,
-  "cross_pollination_candidates": [{"source": "S13", "source_brier": 0.22066, "target": "S11", "target_brier": 0.22277, "potential_gain": 0.00211}, {"source": "S13", "source_brier": 0.22066, "target": "S10", "target_brier": 0.22239, "potential_gain": 0.00173}, {"source": "S12", "source_brier": 0.22115, "target": "S11", "target_brier": 0.22277, "potential_gain": 0.00162}],
+  "diversity_score": 0.567,
+  "cross_pollination_candidates": [{"source": "S14", "source_brier": 0.22182, "target": "S10", "target_brier": 0.22727, "potential_gain": 0.00545}, {"source": "S12", "source_brier": 0.22262, "target": "S10", "target_brier": 0.22727, "potential_gain": 0.00465}, {"source": "S14", "source_brier": 0.22182, "target": "S11", "target_brier": 0.22615, "potential_gain": 0.00433}],
   "karpathy_local": {
-    "best_brier": 0.23179306611410688,
-    "model_type": "extra_trees"
+    "best_brier": 0.21789688750919076,
+    "model_type": "gradient_boosting"
   },
-  "recommendations": [{"type": "low_diversity", "action": "inject_model_diversity", "reason": "Fleet diversity score 0.37 is LOW. Check for RF monoculture \u2014 force specialist models back to their designated architectures.", "priority": 2}, {"type": "model_drift", "island": "S12", "expected_model": "extra_trees", "actual_model": "random_forest", "action": "inject_specialist_config", "reason": "S12 specialist role drift: expected extra_trees, got random_forest. Restore specialist to improve fleet diversity.", "priority": 2}, {"type": "model_drift", "island": "S14", "expected_model": "lightgbm", "actual_model": "catboost", "action": "inject_specialist_config", "reason": "S14 specialist role drift: expected lightgbm, got catboost. Restore specialist to improve fleet diversity.", "priority": 2}],
+  "recommendations": [{"type": "model_drift", "island": "S13", "expected_model": "catboost", "actual_model": "random_forest", "action": "inject_specialist_config", "reason": "S13 specialist role drift: expected catboost, got random_forest. Restore specialist to improve fleet diversity.", "priority": 2}, {"type": "model_drift", "island": "S14", "expected_model": "lightgbm", "actual_model": "catboost", "action": "inject_specialist_config", "reason": "S14 specialist role drift: expected lightgbm, got catboost. Restore specialist to improve fleet diversity.", "priority": 2}],
   "improved": false,
-  "best_brier": 0.22066,
-  "fleet_avg_brier": 0.2219,
-  "best_island": "S13",
-  "total_generations": 6631,
+  "best_brier": 0.22182,
+  "fleet_avg_brier": 0.2245,
+  "best_island": "S14",
+  "total_generations": 652,
   "status": "completed"
 }
