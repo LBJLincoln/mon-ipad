@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-02T16:20:00Z",
+  "timestamp": "2026-04-02T17:10:00Z",
   "cycle": "brain-4h-auto",
   "nba_fleet": {
     "total_islands": 6,
@@ -13,6 +13,7 @@
     "gap_to_target": 0.00345,
     "checkpoint_triggered": false,
     "stagnation_count": 0,
+    "published_ceiling": 0.199,
     "islands": {
       "nba-quant":  {"status":"ONLINE","cycle":93, "generation":277,"brier":0.22472,"model":"xgboost_brier","features":57,"stagnation":0},
       "nba-evo-2":  {"status":"OFFLINE","error":"HTTP 404"},
@@ -37,12 +38,24 @@
     }
   },
   "improvements_this_cycle": {
-    "nba": "Research proposal written: GETS temperature scaling (expected Brier -0.002 to -0.005). See nomos-nba-agent/data/research-proposals/gets-temperature-scaling-2026-04.md",
-    "political": "Added 10 committee×trades cross-category features to political_engine.py CAT24 (congress_x_committee_conviction, congress_x_chair_cluster_buy, etc.) — expected Brier -0.003 to -0.008"
+    "nba_1": "Research proposal: Shot-chart spatial embeddings (MDPI 2026) — expected Brier -0.010 to -0.020. See nomos-nba-agent/data/research-proposals/shot-chart-spatial-embeddings-2026-04.md",
+    "nba_2": "Research proposal: Isotonic regression calibration (corrected from temperature scaling — isotonic preferred for N>1000). Expected Brier -0.005 to -0.015. See nomos-nba-agent/data/research-proposals/gets-temperature-scaling-2026-04.md",
+    "political": "Added 10 committee×trades cross-category features to political_engine.py CAT24 — expected Brier -0.003 to -0.008"
+  },
+  "research_findings_2025_2026": {
+    "published_ceiling": "Brier 0.199 (MDPI Jan 2026, shot-chart embeddings + XGBoost)",
+    "gap_to_ceiling": 0.02282,
+    "top_techniques": [
+      {"name": "Shot-chart spatial embeddings", "brier_delta": "-0.010 to -0.020", "status": "PROPOSED"},
+      {"name": "Isotonic regression calibration", "brier_delta": "-0.005 to -0.015", "status": "PROPOSED"},
+      {"name": "Stacked ensemble (XGB+LGB+CatBoost+LogReg meta)", "brier_delta": "-0.005 to -0.010", "status": "ALREADY PARTIAL"},
+      {"name": "Dual ELO + rolling features", "brier_delta": "-0.020 to -0.030", "status": "LIKELY IMPLEMENTED"}
+    ]
   },
   "next_cycle_directives": [
-    "Implement GETS temperature scaling in nomos-nba-agent hf-space app.py",
-    "Create P3 catboost + P4 wide-search HuggingFace spaces",
+    "IMPLEMENT: Add isotonic calibration to hf-space/app.py (30 lines, immediate Brier gain)",
+    "IMPLEMENT: Add shot-chart zone fetcher to ops/ and Category 50 to features/engine.py",
+    "Create P3 catboost + P4 wide-search HuggingFace spaces for political",
     "Verify political FEC data populated after 2026-04-01 committee ID fix",
     "Wake S2 (nba-evo-2) — HTTP 404 since last cycle",
     "If best_brier < 0.21837, checkpoint to Supabase"
