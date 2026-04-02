@@ -1,8 +1,8 @@
 {
   "department": "trading_floor",
-  "timestamp": "2026-04-01T22:48:25.628571+00:00",
-  "iteration": 28,
-  "generation": 3808,
+  "timestamp": "2026-04-02T00:08:10.477378+00:00",
+  "iteration": 29,
+  "generation": 3944,
   "status": "completed",
   "best_strategy": {
     "name": "full_kelly",
@@ -123,8 +123,8 @@
       "losses": 216,
       "profit": 8629.421400000001,
       "traders_using": [
-        "openrouter",
-        "claude"
+        "claude",
+        "openrouter"
       ],
       "roi_pct": 4314.71,
       "win_rate_pct": 66.8
@@ -162,8 +162,8 @@
       "wins": 245,
       "losses": 92,
       "traders_using": [
-        "codex",
-        "claude"
+        "claude",
+        "codex"
       ],
       "avg_daily_pnl": 268.7735,
       "win_rate_pct": 72.7
@@ -200,8 +200,8 @@
       "wins": 236,
       "losses": 90,
       "traders_using": [
-        "gemini",
-        "claude"
+        "claude",
+        "gemini"
       ],
       "avg_daily_pnl": 46.9432,
       "win_rate_pct": 72.4
@@ -213,9 +213,9 @@
       "wins": 327,
       "losses": 175,
       "traders_using": [
-        "gemini",
         "claude",
-        "openrouter"
+        "openrouter",
+        "gemini"
       ],
       "avg_daily_pnl": 43.7449,
       "win_rate_pct": 65.1
@@ -393,7 +393,24 @@
       }
     }
   },
-  "mutations": {},
+  "mutations": {
+    "claude": {
+      "type": "adopt_winner_strategy",
+      "from_trader": "codex",
+      "adopted_strategy": "streak_momentum",
+      "old_preferences": [
+        "half_kelly",
+        "flat_1pct",
+        "drawdown_adjusted"
+      ],
+      "new_preferences": [
+        "streak_momentum",
+        "half_kelly",
+        "flat_1pct"
+      ],
+      "reason": "claude (rank 5, ROI +4436.1%) adopts 'streak_momentum' from codex (rank 1, ROI +302054.7%)"
+    }
+  },
   "optimization": {
     "target": 1000000,
     "current_best": 302154.67,
