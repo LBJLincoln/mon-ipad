@@ -1,194 +1,54 @@
 {
-  "last_brain_cycle": "2026-04-02T12:30:00Z",
-  "cycle_number": "~56",
-  "cycle_improvements": {
-    "nba": {
-      "action": "RESEARCH_PROPOSAL",
-      "detail": "Wrote stacked-ensemble + MC-dropout proposal (2026 frontier). Scientific Reports 2025: stacked ensemble is NBA state-of-the-art. MDPI 2026: MC Dropout RNN gives uncertainty-aware calibration. Expected -0.003 to -0.006 Brier from stacking top-5 Pareto models with LR meta-learner.",
-      "file": "data/research-proposals/stacked-ensemble-mc-dropout-2026-04-02.json",
-      "note_s13_fix_confirmed": "S13 stagnation cleared (15→0) — config injected prev cycle (tournament_size=2, migration_interval=5) worked.",
-      "note_s10_improved": "S10 improved 0.23261→0.22472 (-0.00789 Brier) since last cycle."
-    },
-    "political": {
-      "action": "IMPLEMENTED — FEC committee ID corrected in ops/fetch_political_data.py",
-      "files": ["nomos-political-alpha/ops/fetch_political_data.py"],
-      "description": "TRUMP_INAUGURAL_COMMITTEE was C00947002 (wrong ID, 0 FEC results since inception). Correct: C00894162 ('TRUMP VANCE INAUGURAL COMMITTEE, INC.', $741M raised, registered 2024-11-15). Unlocks Cat1 Donor Profile (200 features) and Cat6 cross-signals.",
-      "root_cause": "Rotation D audit discovered all fec_donors_*.json files were 2 bytes (empty []) — traced to wrong committee ID.",
-      "version_before": "fec_donors = [] (all files empty since inception)",
-      "version_after": "Will populate with real data on next cron run"
+  "timestamp": "2026-04-02T16:20:00Z",
+  "cycle": "brain-4h-auto",
+  "nba_fleet": {
+    "total_islands": 6,
+    "online": 5,
+    "offline": ["nba-evo-2"],
+    "best_brier": 0.22182,
+    "best_island": "nba-evo-5",
+    "best_model": "catboost",
+    "fleet_average_brier": 0.22367,
+    "brier_target": 0.21837,
+    "gap_to_target": 0.00345,
+    "checkpoint_triggered": false,
+    "stagnation_count": 0,
+    "islands": {
+      "nba-quant":  {"status":"ONLINE","cycle":93, "generation":277,"brier":0.22472,"model":"xgboost_brier","features":57,"stagnation":0},
+      "nba-evo-2":  {"status":"OFFLINE","error":"HTTP 404"},
+      "nba-evo-3":  {"status":"ONLINE","cycle":141,"generation":421,"brier":0.22262,"model":"xgboost_brier","features":57,"stagnation":0},
+      "nba-evo-4":  {"status":"ONLINE","cycle":121,"generation":362,"brier":0.22446,"model":"random_forest","features":45,"stagnation":0},
+      "nba-evo-5":  {"status":"ONLINE","cycle":124,"generation":370,"brier":0.22182,"model":"catboost","features":62,"stagnation":0},
+      "nba-evo-6":  {"status":"ONLINE","cycle":116,"generation":348,"brier":0.22471,"model":"xgboost_brier","features":66,"stagnation":0}
     }
   },
-  "nba_fleet": {
-    "islands_online": 5,
-    "islands_total": 6,
-    "note_island_2": "nomos42-nba-quant-2.hf.space (S11) — URL corrected this cycle (was querying wrong URL nba-evo-2)",
-    "islands": {
-      "S10_nomos42-nba-quant": {
-        "status": "UP",
-        "cycle": 47, "generation": 141,
-        "best_brier": 0.22472, "best_roi": 0.2707, "best_sharpe": 5.1337,
-        "best_features": 57, "best_model": "xgboost_brier",
-        "stagnation": 0, "pop_size": 60,
-        "role": "exploitation",
-        "improvement": "0.23261→0.22472 (-0.00789 vs prev cycle)",
-        "last_update": "2026-04-02T12:27:00Z"
-      },
-      "S11_nomos42-nba-quant-2": {
-        "status": "UP",
-        "cycle": 65, "generation": 195,
-        "best_brier": 0.22615, "best_roi": 0.2555, "best_sharpe": 5.7119,
-        "best_features": 63, "best_model": "xgboost_brier",
-        "stagnation": 0, "pop_size": 60,
-        "role": "exploration",
-        "last_update": "2026-04-02T12:29:00Z"
-      },
-      "S12_nomos42-nba-evo-3": {
-        "status": "UP",
-        "cycle": 84, "generation": 251,
-        "best_brier": 0.22262, "best_roi": 0.2958, "best_sharpe": 6.5879,
-        "best_features": 57, "best_model": "xgboost_brier",
-        "stagnation": 0, "pop_size": 60,
-        "role": "extra_trees_specialist",
-        "fleet_best": true,
-        "last_update": "2026-04-02T12:26:00Z"
-      },
-      "S13_nomos42-nba-evo-4": {
-        "status": "UP",
-        "cycle": 69, "generation": 206,
-        "best_brier": 0.22446, "best_roi": 0.2746, "best_sharpe": 15.6318,
-        "best_features": 45, "best_model": "random_forest",
-        "stagnation": 0, "pop_size": 60,
-        "role": "catboost_specialist",
-        "stagnation_cleared": true,
-        "note": "Stagnation cleared 15→0. Config injected prev cycle worked.",
-        "last_update": "2026-04-02T12:26:00Z"
-      },
-      "S14_nomos42-nba-evo-5": {
-        "status": "DOWN_403",
-        "role": "lightgbm_specialist",
-        "last_known_brier": 0.22182,
-        "action_needed": "HF space sleeping/403. Wake at huggingface.co/Nomos42/nba-evo-5",
-        "last_known_update": "2026-04-02T08:19:00Z"
-      },
-      "S15_nomos42-nba-evo-6": {
-        "status": "UP",
-        "cycle": 68, "generation": 202,
-        "best_brier": 0.22471, "best_roi": 0.2702, "best_sharpe": 11.3275,
-        "best_features": 66, "best_model": "xgboost_brier",
-        "stagnation": 0, "pop_size": 50,
-        "role": "wide_search",
-        "last_update": "2026-04-02T12:29:00Z"
-      }
-    },
-    "fleet_best_brier": 0.22262,
-    "fleet_best_island": "S12_nomos42-nba-evo-3",
-    "fleet_best_model": "xgboost_brier",
-    "fleet_avg_brier": 0.22459,
-    "all_time_best_brier": 0.21570,
-    "all_time_best_source": "Colab_TabICL_110f_iter15",
-    "checkpoint_threshold": 0.21837,
-    "checkpoint_needed": false,
-    "gap_to_checkpoint": 0.00425,
-    "gap_to_all_time_best": 0.00692,
-    "stagnation_alert": false,
-    "diversify_needed": false,
-    "games": 9551,
-    "feature_candidates": 3265,
-    "engine_version": "v3.1-49cat",
-    "raw_features": 6287,
-    "categories": 49,
-    "note": "S14 DOWN 403. S13 stagnation cleared. S10 improved significantly."
-  },
   "political_fleet": {
-    "islands_online": 2,
-    "islands_total": 4,
+    "total_islands": 4,
+    "online": 2,
+    "offline": ["political-alpha-3","political-alpha-4"],
+    "best_brier": 0.24186,
+    "best_island": "political-alpha",
+    "best_top5_brier": 0.2346,
     "islands": {
-      "P1_exploitation": {
-        "status": "UP",
-        "cycle": 1841, "generation": 5521,
-        "best_brier": 0.24186, "best_roi": 0.0841, "best_sharpe": 2.5409,
-        "best_features": 53, "best_model": "xgboost_brier",
-        "top_performer": {"model": "random_forest", "n_features": 143, "brier": 0.23711, "roi": 0.1331, "sharpe": 6.8723},
-        "stagnation": 0, "total_events": 372,
-        "role": "political_exploitation",
-        "improvement_vs_last": "+156 cycles / +468 gens since cycle 55",
-        "url": "nomos42-political-alpha.hf.space",
-        "last_update": "2026-04-02T12:27:00Z"
-      },
-      "P2_exploration": {
-        "status": "UP",
-        "cycle": 1204, "generation": 3612,
-        "best_brier": 0.24823, "best_roi": 0.0332, "best_sharpe": 1.2319,
-        "best_features": 86, "best_model": "xgboost",
-        "top_performer": {"model": "logistic_regression", "n_features": 93, "brier": 0.23812},
-        "stagnation": 0, "total_events": 372,
-        "role": "political_exploration",
-        "improvement_vs_last": "+128 cycles / +387 gens since cycle 55",
-        "url": "nomos42-political-alpha-2.hf.space",
-        "last_update": "2026-04-02T12:27:00Z"
-      },
-      "P3_catboost": {
-        "status": "DOES_NOT_EXIST",
-        "url": "nomos42-political-alpha-3.hf.space",
-        "hf_id": "Nomos42/political-alpha-3",
-        "action_needed": "CREATE new HF space at huggingface.co/new-space, then run: bash scripts/deploy_political_fix.sh",
-        "confirmed_by": "HF MCP hub_repo_details returned 404 — space never created or was deleted",
-        "last_known_brier": 0.24186
-      },
-      "P4_wide_search": {
-        "status": "DOES_NOT_EXIST",
-        "url": "nomos42-political-alpha-4.hf.space",
-        "hf_id": "Nomos42/political-alpha-4",
-        "action_needed": "CREATE new HF space at huggingface.co/new-space, then run: bash scripts/deploy_political_fix.sh",
-        "confirmed_by": "HF MCP hub_repo_details returned 404 — space never created or was deleted",
-        "last_known_brier": 0.24999
-      }
-    },
-    "fleet_best_brier": 0.23711,
-    "fleet_best_island": "P1_top_performer_random_forest_143f",
-    "fleet_target_brier": 0.22,
-    "data_quality_real_events": 372,
-    "note_p3_p4": "Both spaces DO NOT EXIST. Must CREATE at huggingface.co/new-space under Nomos42 org, then deploy: bash scripts/deploy_political_fix.sh"
+      "political-alpha":   {"status":"ONLINE","role":"exploitation","cycle":1960,"generation":5878,"brier":0.24186,"model":"xgboost_brier","features":53},
+      "political-alpha-2": {"status":"ONLINE","role":"exploration","cycle":1360,"generation":4079,"brier":0.25081,"model":"extra_trees","features":61},
+      "political-alpha-3": {"status":"OFFLINE","error":"HTTP 404 — space not created"},
+      "political-alpha-4": {"status":"OFFLINE","error":"HTTP 404 — space not created"}
+    }
   },
-  "data_pipeline": {
-    "fec_donors": {
-      "status": "FIXED_THIS_CYCLE",
-      "root_cause": "C00947002 was wrong committee ID (0 results). Correct: C00894162.",
-      "fix": "ops/fetch_political_data.py updated — populates on next cron run"
-    },
-    "congressional_trades_cat24": {
-      "status": "ENGINE_INTEGRATED_NO_DATA",
-      "note": "Run: python3 ops/fetch_political_data.py --congressional to populate data/congressional/"
-    },
-    "insider_trades": {"status": "HEALTHY", "note": "form4_*.json 100-120KB each, current"},
-    "polymarket": {"status": "HEALTHY"},
-    "enforcement_signals": {"status": "HEALTHY"}
+  "improvements_this_cycle": {
+    "nba": "Research proposal written: GETS temperature scaling (expected Brier -0.002 to -0.005). See nomos-nba-agent/data/research-proposals/gets-temperature-scaling-2026-04.md",
+    "political": "Added 10 committee×trades cross-category features to political_engine.py CAT24 (congress_x_committee_conviction, congress_x_chair_cluster_buy, etc.) — expected Brier -0.003 to -0.008"
   },
-  "cross_project": {
-    "nba_to_political_this_cycle": "FEC fix pattern (Rotation D audit) — same systematic audit applicable to NBA data pipeline",
-    "political_to_nba_this_cycle": "None",
-    "pending_nba": "Implement stacked ensemble meta-learner (proposal: stacked-ensemble-mc-dropout-2026-04-02.json). Also GETS temperature scaling (gets-temperature-scaling-calibration-2026-04-02.json).",
-    "pending_political": "FEC fix deployed — next cron will populate donor data. python3 ops/fetch_political_data.py --congressional to activate Cat24. CREATE P3/P4 spaces."
-  },
-  "research_rotation": {
-    "current": "D_COMPLETE",
-    "next": "A (WebSearch new data sources — FEC filings, SEC insider trades, executive orders 2026)",
-    "history": ["A_data_sources", "B_features", "C_nba_port", "D_pipeline_health", "A_data_sources", "B_features_cat24", "C_gets_research", "D_fec_fix"],
-    "cycle_D_deliverables": [
-      "Found FEC donor files all empty ([] 2 bytes) since inception",
-      "Root cause: TRUMP_INAUGURAL_COMMITTEE was C00947002 (wrong ID). Correct: C00894162",
-      "Fixed ops/fetch_political_data.py — next cron will populate real FEC data",
-      "Insider trades HEALTHY (100-120KB form4 files). Polymarket HEALTHY. Enforcement HEALTHY.",
-      "Congressional trades: engine integrated (Cat24) but data/congressional/ not yet populated"
-    ]
-  },
-  "next_directives": [
-    "CRITICAL: CREATE P3 (Nomos42/political-alpha-3) and P4 (Nomos42/political-alpha-4) at huggingface.co/new-space under Nomos42 org. Then: bash scripts/deploy_political_fix.sh",
-    "NBA S14 DOWN 403: manually wake at huggingface.co/Nomos42/nba-evo-5",
-    "NBA: Implement stacked ensemble meta-learner (proposal stacked-ensemble-mc-dropout-2026-04-02.json). Expected -0.003 to -0.006 Brier.",
-    "NBA: Implement GETS temperature scaling in hf-space/app.py (gets-temperature-scaling-calibration-2026-04-02.json)",
-    "Political: Verify next cron populates fec_donors with real C00894162 data (was all empty)",
-    "Political: python3 ops/fetch_political_data.py --congressional to activate Cat24 with real STOCK Act data",
-    "Rotation A: WebSearch new political data sources (tariff databases, DOGE contract cuts, 2026 midterm signals)"
-  ]
+  "next_cycle_directives": [
+    "Implement GETS temperature scaling in nomos-nba-agent hf-space app.py",
+    "Create P3 catboost + P4 wide-search HuggingFace spaces",
+    "Verify political FEC data populated after 2026-04-01 committee ID fix",
+    "Wake S2 (nba-evo-2) — HTTP 404 since last cycle",
+    "If best_brier < 0.21837, checkpoint to Supabase"
+  ],
+  "engine_versions": {
+    "nba": "v3.1-49cat (6245+ features, 3265 deployed)",
+    "political": "v3.2-political-24cat (~3200 features, +10 cross-cat this cycle)"
+  }
 }
