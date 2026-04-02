@@ -32,9 +32,10 @@ case "$DEPT" in
         log "START: Research Council — scan papers, extract techniques, propose features"
         cd "$REPO_ROOT"
         # Run research scanner
-        python3 scripts/agents/research-scanner.py --quick 2>&1 | tail -5 | while read line; do log "$line"; done
+        python3 scripts/agents/research-scanner.py --quick 2>&1 | tail -5 | while read line; do log "$line"; done || true
         # Check for new proposals
-        proposals=$(find data/departments/research/ -name '*.json' -newer "$LOG_DIR/research.lastrun" 2>/dev/null | wc -l)
+        mkdir -p data/departments/research
+        proposals=$(find data/departments/research/ -name '*.json' -newer "$LOG_DIR/research.lastrun" 2>/dev/null | wc -l || echo "0")
         log "DONE: $proposals new proposals found"
         touch "$LOG_DIR/research.lastrun"
         ;;
@@ -389,11 +390,20 @@ elif dept == "evaluation":
 # ── INFRA metrics ────────────────────────────────────────────────────────
 elif dept == "infra":
     infra = load_json(f"{repo_root}/data/infra-status.json")
+    summary = infra.get("summary", {})
+    total_checks = summary.get("total", infra.get("total_checks", 0))
+    healthy = summary.get("healthy", infra.get("healthy", 0))
+    hf_spaces = infra.get("hf_spaces", {})
+    spaces_up = sum(1 for s in hf_spaces.values() if isinstance(s, dict) and s.get("status") == "running")
+    spaces_total = len(hf_spaces)
     metrics = {
-        "total_checks": infra.get("total_checks", 0),
-        "healthy": infra.get("healthy", 0),
-        "uptime_pct": round(infra.get("healthy", 0) / max(1, infra.get("total_checks", 1)) * 100, 1),
-        "services": infra.get("services", {}),
+        "total_checks": total_checks,
+        "healthy": healthy,
+        "uptime_pct": round(healthy / max(1, total_checks) * 100, 1),
+        "hf_spaces_up": spaces_up,
+        "hf_spaces_total": spaces_total,
+        "kaggle": infra.get("kaggle", {}),
+        "modal": infra.get("modal", {}),
     }
 
     kpis = {
