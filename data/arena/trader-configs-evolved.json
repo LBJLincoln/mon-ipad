@@ -1,0 +1,72 @@
+{
+  "gemini": {
+    "preferred_strategies": [
+      "half_kelly",
+      "confidence_scaled",
+      "proportional_edge"
+    ],
+    "preferred_models": [
+      "consensus_ensemble",
+      "tabicl",
+      "stacking_meta"
+    ],
+    "risk_tolerance": 0.6,
+    "last_updated": "2026-04-02T17:27:43.183354+00:00"
+  },
+  "openrouter": {
+    "preferred_strategies": [
+      "quarter_kelly",
+      "flat_2pct",
+      "value_hunter"
+    ],
+    "preferred_models": [
+      "consensus_ensemble",
+      "extra_trees",
+      "lightgbm"
+    ],
+    "risk_tolerance": 0.5,
+    "last_updated": "2026-04-02T17:27:43.183379+00:00"
+  },
+  "claude": {
+    "preferred_strategies": [
+      "half_kelly",
+      "flat_1pct",
+      "drawdown_adjusted"
+    ],
+    "preferred_models": [
+      "tabicl",
+      "consensus_ensemble",
+      "catboost"
+    ],
+    "risk_tolerance": 0.4,
+    "last_updated": "2026-04-02T17:27:43.183383+00:00"
+  },
+  "codex": {
+    "preferred_strategies": [
+      "value_hunter",
+      "full_kelly",
+      "streak_momentum"
+    ],
+    "preferred_models": [
+      "xgboost",
+      "lightgbm",
+      "catboost"
+    ],
+    "risk_tolerance": 0.7,
+    "last_updated": "2026-04-02T17:27:43.183387+00:00"
+  },
+  "grok": {
+    "preferred_strategies": [
+      "underdog_specialist",
+      "dog_value_plus",
+      "value_hunter"
+    ],
+    "preferred_models": [
+      "elo_baseline",
+      "random_forest",
+      "extra_trees"
+    ],
+    "risk_tolerance": 0.65,
+    "last_updated": "2026-04-02T17:27:43.183390+00:00"
+  }
+}
