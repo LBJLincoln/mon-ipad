@@ -1,0 +1,62 @@
+{
+  "proposal_id": "stacked-ensemble-mc-dropout-2026-04-02",
+  "created": "2026-04-02T12:30:00Z",
+  "brain_cycle": 56,
+  "project": "nomos-nba-agent",
+  "priority": "HIGH",
+  "status": "PROPOSED",
+  "research_sources": [
+    "https://www.nature.com/articles/s41598-025-13657-1 — Scientific Reports 2025: Stacked Ensemble NBA",
+    "https://www.mdpi.com/2078-2489/17/1/56 — MDPI Jan 2026: Uncertainty-Aware NBA with MC Dropout",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC12200876/ — PLOS ONE 2026: Systematic Review AI NBA"
+  ],
+
+  "proposal_1_stacked_ensemble": {
+    "name": "Stacked Ensemble Meta-Learner on Pareto Front",
+    "type": "model_architecture",
+    "expected_brier_delta": "-0.003 to -0.006",
+    "complexity": "MEDIUM",
+    "source": "Scientific Reports 2025 — state-of-the-art NBA tabular prediction",
+    "description": "Use GA-evolved top-5 Pareto-front models as base learners. Train a logistic regression meta-learner on out-of-fold predictions. Meta-learner learns optimal weights per model type and feature regime.",
+    "implementation": {
+      "location": "hf-space/app.py — add stacking layer after GA converges each cycle",
+      "base_learners": "Top-5 Pareto-front models from current generation (diverse model types: xgboost + RF + ET + LGB + catboost)",
+      "meta_learner": "LogisticRegression(C=0.1) on 5-fold OOF predictions",
+      "no_new_deps": true,
+      "cpu_compatible": true,
+      "code_sketch": [
+        "top5 = pareto_front[:5]  # take diverse model types",
+        "oof = np.zeros((len(X_tr), 5))",
+        "for fold_idx, (tr, va) in enumerate(kf.split(X_tr)):",
+        "    for i, m in enumerate(top5):",
+        "        m.fit(X_tr[tr]); oof[va, i] = m.predict_proba(X_tr[va])[:,1]",
+        "meta = LogisticRegression(C=0.1).fit(oof, y_tr)",
+        "stacked_preds = meta.predict_proba(np.column_stack([m.predict_proba(X_te)[:,1] for m in top5]))[:,1]"
+      ],
+      "api_change": "Report stacked_brier in /api/status alongside best_brier"
+    },
+    "why_now": "Fleet best 0.22262. Checkpoint threshold 0.21837. Gap=0.00425. Stacking -0.003 to -0.006 could cross threshold and trigger Supabase checkpoint."
+  },
+
+  "proposal_2_mc_dropout": {
+    "name": "Monte Carlo Dropout RNN (Uncertainty-Aware Sequential Calibration)",
+    "type": "model_architecture",
+    "expected_brier_delta": "-0.002 to -0.004 on calibration",
+    "complexity": "HIGH",
+    "source": "MDPI Jan 2026 — Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+    "description": "GRU/LSTM with MC Dropout for sequential probability calibration. Run N=100 inference passes with dropout active. Mean=probability, variance=uncertainty. Better ECE than single-pass XGBoost.",
+    "constraints": "GPU required — Kaggle Karpathy loop only. NOT for HF Space (CPU).",
+    "implementation": {
+      "location": "scripts/kaggle/nba_karpathy_loop.py — add GRU+MCDropout variant",
+      "architecture": "GRU(128) → Dropout(0.3) → GRU(64) → Dropout(0.3) → Dense(1, sigmoid)",
+      "mc_passes": 100,
+      "input_features": "Rolling 10-game sequence of Cat1-Cat15 engineered features",
+      "kaggle_only": true,
+      "seed_to_hf": "Use best Kaggle feature sets to seed S10/S15 GA init populations"
+    }
+  },
+
+  "immediate_recommendation": "START WITH PROPOSAL 1 (Stacked Ensemble) — no GPU needed, directly implementable in hf-space/app.py, expected to close gap to checkpoint.",
+
+  "cross_project": "Same stacking pattern applicable to nomos-political-alpha/hf-space/app.py once proven in NBA."
+}

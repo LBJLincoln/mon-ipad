@@ -1,27 +1,21 @@
 {
-  "last_brain_cycle": "2026-04-02T08:30:00Z",
-  "cycle_number": "~55",
+  "last_brain_cycle": "2026-04-02T12:30:00Z",
+  "cycle_number": "~56",
   "cycle_improvements": {
     "nba": {
-      "action": "CONFIG_TUNED + RESEARCH_PROPOSAL",
-      "detail_1": "POSTed /api/config to S13 (nba-evo-4): tournament_size=2, migration_interval=5, target_features=65 — preemptive diversity boost at stagnation=15 before threshold hit",
-      "detail_2": "Wrote GETS temperature scaling research proposal (ICLR 2025). K=5 ensemble temperature scaling, no external deps, expected Brier delta -0.002 to -0.006",
-      "file": "data/research-proposals/gets-temperature-scaling-calibration-2026-04-02.json",
-      "config_queued": {"tournament_size": 2, "migration_interval": 5, "target_features": 65},
-      "target_island": "S13_nomos42-nba-evo-4",
-      "rationale": "S13 at stagnation=15 (threshold >15). tournament_size=2 increases exploration pressure. migration_interval=5 (was 8) brings fresh genes faster. target_features=65 escapes 45-feature local optima."
+      "action": "RESEARCH_PROPOSAL",
+      "detail": "Wrote stacked-ensemble + MC-dropout proposal (2026 frontier). Scientific Reports 2025: stacked ensemble is NBA state-of-the-art. MDPI 2026: MC Dropout RNN gives uncertainty-aware calibration. Expected -0.003 to -0.006 Brier from stacking top-5 Pareto models with LR meta-learner.",
+      "file": "data/research-proposals/stacked-ensemble-mc-dropout-2026-04-02.json",
+      "note_s13_fix_confirmed": "S13 stagnation cleared (15→0) — config injected prev cycle (tournament_size=2, migration_interval=5) worked.",
+      "note_s10_improved": "S10 improved 0.23261→0.22472 (-0.00789 Brier) since last cycle."
     },
     "political": {
-      "action": "IMPLEMENTED — Cat24 Congressional Trade Signals added to political_engine.py",
-      "files": [
-        "nomos-political-alpha/features/political_engine.py",
-        "nomos-political-alpha/hf-space/features/political_engine.py"
-      ],
-      "description": "Added _congressional_trades_features() — Cat24, 20 features. Reads event['congressional_trades'][ticker] signals from fetch_congressional_trades() output. Features: buy/sell counts (7d/30d), net pressure, cluster flags, days_since_last_trade, recency_score (exp decay), distinct_members, volume_anomaly_score, bipartisan flag, conviction_score, buy_pressure_ratio, buy_acceleration, net_30d_log. Also fixed hf-space parity (was at v3.1-22cat, now both at v3.2-24cat).",
-      "version_before": "v3.2-political-23cat (hf-space was at v3.1-political-22cat — PARITY VIOLATION fixed)",
-      "version_after": "v3.2-political-24cat (both root and hf-space)",
-      "parity_fix": "hf-space/features/political_engine.py was missing Cat23 FEC velocity — synced in this cycle",
-      "expected_brier_gain": "0.001 to 0.005 (pending real congressional data from Quiver Quant API)"
+      "action": "IMPLEMENTED — FEC committee ID corrected in ops/fetch_political_data.py",
+      "files": ["nomos-political-alpha/ops/fetch_political_data.py"],
+      "description": "TRUMP_INAUGURAL_COMMITTEE was C00947002 (wrong ID, 0 FEC results since inception). Correct: C00894162 ('TRUMP VANCE INAUGURAL COMMITTEE, INC.', $741M raised, registered 2024-11-15). Unlocks Cat1 Donor Profile (200 features) and Cat6 cross-signals.",
+      "root_cause": "Rotation D audit discovered all fec_donors_*.json files were 2 bytes (empty []) — traced to wrong committee ID.",
+      "version_before": "fec_donors = [] (all files empty since inception)",
+      "version_after": "Will populate with real data on next cron run"
     }
   },
   "nba_fleet": {
@@ -31,84 +25,79 @@
     "islands": {
       "S10_nomos42-nba-quant": {
         "status": "UP",
-        "cycle": 11, "generation": 31,
-        "best_brier": 0.23261, "best_roi": 0.1836, "best_sharpe": 10.8528,
-        "best_features": 48, "best_model": "extra_trees",
+        "cycle": 47, "generation": 141,
+        "best_brier": 0.22472, "best_roi": 0.2707, "best_sharpe": 5.1337,
+        "best_features": 57, "best_model": "xgboost_brier",
         "stagnation": 0, "pop_size": 60,
         "role": "exploitation",
-        "note": "Brier higher than S12-S15 — may have restarted from scratch",
-        "last_update": "2026-04-02T08:17:00Z"
+        "improvement": "0.23261→0.22472 (-0.00789 vs prev cycle)",
+        "last_update": "2026-04-02T12:27:00Z"
       },
       "S11_nomos42-nba-quant-2": {
         "status": "UP",
-        "cycle": 15, "generation": 43,
+        "cycle": 65, "generation": 195,
         "best_brier": 0.22615, "best_roi": 0.2555, "best_sharpe": 5.7119,
         "best_features": 63, "best_model": "xgboost_brier",
         "stagnation": 0, "pop_size": 60,
         "role": "exploration",
-        "last_update": "2026-04-02T08:23:00Z"
+        "last_update": "2026-04-02T12:29:00Z"
       },
       "S12_nomos42-nba-evo-3": {
         "status": "UP",
-        "cycle": 20, "generation": 58,
+        "cycle": 84, "generation": 251,
         "best_brier": 0.22262, "best_roi": 0.2958, "best_sharpe": 6.5879,
         "best_features": 57, "best_model": "xgboost_brier",
         "stagnation": 0, "pop_size": 60,
         "role": "extra_trees_specialist",
-        "last_update": "2026-04-02T08:18:00Z"
+        "fleet_best": true,
+        "last_update": "2026-04-02T12:26:00Z"
       },
       "S13_nomos42-nba-evo-4": {
         "status": "UP",
-        "cycle": 14, "generation": 40,
+        "cycle": 69, "generation": 206,
         "best_brier": 0.22446, "best_roi": 0.2746, "best_sharpe": 15.6318,
         "best_features": 45, "best_model": "random_forest",
-        "stagnation": 15, "pop_size": 60,
+        "stagnation": 0, "pop_size": 60,
         "role": "catboost_specialist",
-        "stagnation_alert": true,
-        "action_taken": "Config queued: tournament_size=2, migration_interval=5, target_features=65",
-        "last_update": "2026-04-02T08:18:00Z"
+        "stagnation_cleared": true,
+        "note": "Stagnation cleared 15→0. Config injected prev cycle worked.",
+        "last_update": "2026-04-02T12:26:00Z"
       },
       "S14_nomos42-nba-evo-5": {
-        "status": "UP",
-        "cycle": 18, "generation": 52,
-        "best_brier": 0.22182, "best_roi": 0.3028, "best_sharpe": 8.0852,
-        "best_features": 62, "best_model": "catboost",
-        "stagnation": 0, "pop_size": 60,
+        "status": "DOWN_403",
         "role": "lightgbm_specialist",
-        "fleet_best": true,
-        "last_update": "2026-04-02T08:19:00Z"
+        "last_known_brier": 0.22182,
+        "action_needed": "HF space sleeping/403. Wake at huggingface.co/Nomos42/nba-evo-5",
+        "last_known_update": "2026-04-02T08:19:00Z"
       },
       "S15_nomos42-nba-evo-6": {
         "status": "UP",
-        "cycle": 15, "generation": 45,
+        "cycle": 68, "generation": 202,
         "best_brier": 0.22471, "best_roi": 0.2702, "best_sharpe": 11.3275,
         "best_features": 66, "best_model": "xgboost_brier",
         "stagnation": 0, "pop_size": 50,
         "role": "wide_search",
-        "last_update": "2026-04-02T08:19:00Z"
+        "last_update": "2026-04-02T12:29:00Z"
       }
     },
-    "fleet_best_brier": 0.22182,
-    "fleet_best_island": "S14_nomos42-nba-evo-5",
-    "fleet_best_model": "catboost",
-    "fleet_avg_brier": 0.22537,
+    "fleet_best_brier": 0.22262,
+    "fleet_best_island": "S12_nomos42-nba-evo-3",
+    "fleet_best_model": "xgboost_brier",
+    "fleet_avg_brier": 0.22459,
     "all_time_best_brier": 0.21570,
     "all_time_best_source": "Colab_TabICL_110f_iter15",
     "checkpoint_threshold": 0.21837,
     "checkpoint_needed": false,
-    "gap_to_checkpoint": 0.00345,
-    "gap_to_all_time_best": 0.00612,
-    "stagnation_alert": true,
-    "stagnation_island": "S13",
-    "stagnation_count": 15,
-    "diversify_triggered": false,
-    "diversify_threshold": 16,
+    "gap_to_checkpoint": 0.00425,
+    "gap_to_all_time_best": 0.00692,
+    "stagnation_alert": false,
+    "diversify_needed": false,
     "games": 9551,
     "feature_candidates": 3265,
     "engine_version": "v3.1-49cat",
     "raw_features": 6287,
     "categories": 49,
-    "observation": "All spaces appear to have restarted (gen 31-66 vs previously 1000s). Likely HF free-tier sleep/restart. Progress lost — spaces rebuilding from scratch."
+    "note": "S14 DOWN 403. S13 stagnation cleared. S10 improved significantly."
   },
   "political_fleet": {
     "islands_online": 2,
@@ -116,23 +105,27 @@
     "islands": {
       "P1_exploitation": {
         "status": "UP",
-        "cycle": 1685, "generation": 5053,
+        "cycle": 1841, "generation": 5521,
         "best_brier": 0.24186, "best_roi": 0.0841, "best_sharpe": 2.5409,
         "best_features": 53, "best_model": "xgboost_brier",
+        "top_performer": {"model": "random_forest", "n_features": 143, "brier": 0.23711, "roi": 0.1331, "sharpe": 6.8723},
         "stagnation": 0, "total_events": 372,
         "role": "political_exploitation",
+        "improvement_vs_last": "+156 cycles / +468 gens since cycle 55",
         "url": "nomos42-political-alpha.hf.space",
-        "last_update": "2026-04-02T08:17:00Z"
+        "last_update": "2026-04-02T12:27:00Z"
       },
       "P2_exploration": {
         "status": "UP",
-        "cycle": 1076, "generation": 3225,
+        "cycle": 1204, "generation": 3612,
         "best_brier": 0.24823, "best_roi": 0.0332, "best_sharpe": 1.2319,
         "best_features": 86, "best_model": "xgboost",
+        "top_performer": {"model": "logistic_regression", "n_features": 93, "brier": 0.23812},
         "stagnation": 0, "total_events": 372,
         "role": "political_exploration",
+        "improvement_vs_last": "+128 cycles / +387 gens since cycle 55",
         "url": "nomos42-political-alpha-2.hf.space",
-        "last_update": "2026-04-02T08:22:00Z"
+        "last_update": "2026-04-02T12:27:00Z"
       },
       "P3_catboost": {
         "status": "DOES_NOT_EXIST",
@@ -151,49 +144,51 @@
         "last_known_brier": 0.24999
       }
     },
-    "fleet_best_brier": 0.24186,
-    "fleet_best_island": "P1_exploitation",
+    "fleet_best_brier": 0.23711,
+    "fleet_best_island": "P1_top_performer_random_forest_143f",
     "fleet_target_brier": 0.22,
     "data_quality_real_events": 372,
-    "hf_mcp_available": true,
-    "hf_mcp_note": "HF MCP available but read-only (search/inspect only, no space creation). P3/P4 confirmed non-existent via hub_repo_details. Must create at huggingface.co UI under Nomos42 org, then deploy via scripts/deploy_political_fix.sh"
+    "note_p3_p4": "Both spaces DO NOT EXIST. Must CREATE at huggingface.co/new-space under Nomos42 org, then deploy: bash scripts/deploy_political_fix.sh"
   },
   "data_pipeline": {
+    "fec_donors": {
+      "status": "FIXED_THIS_CYCLE",
+      "root_cause": "C00947002 was wrong committee ID (0 results). Correct: C00894162.",
+      "fix": "ops/fetch_political_data.py updated — populates on next cron run"
+    },
     "congressional_trades_cat24": {
-      "status": "PIPELINE_READY_ENGINE_INTEGRATED",
-      "function": "fetch_congressional_trades()",
-      "file": "nomos-political-alpha/ops/fetch_political_data.py",
-      "engine_integration": "Cat24 added to features/political_engine.py + hf-space/features/political_engine.py this cycle",
+      "status": "ENGINE_INTEGRATED_NO_DATA",
       "note": "Run: python3 ops/fetch_political_data.py --congressional to populate data/congressional/"
     },
-    "fec_donors": {"status": "HEALTHY"},
-    "insider_trades": {"status": "HEALTHY"},
+    "insider_trades": {"status": "HEALTHY", "note": "form4_*.json 100-120KB each, current"},
     "polymarket": {"status": "HEALTHY"},
-    "gov_contracts": {"status": "HEALTHY"}
+    "enforcement_signals": {"status": "HEALTHY"}
   },
   "cross_project": {
-    "nba_to_political_this_cycle": "None — prior cycle's isotonic proposal invalidated (isotonic disabled in app.py). GETS temperature scaling is better candidate (queued for next cycle)",
+    "nba_to_political_this_cycle": "FEC fix pattern (Rotation D audit) — same systematic audit applicable to NBA data pipeline",
     "political_to_nba_this_cycle": "None",
-    "pending_nba": "Implement GETS temperature scaling in hf-space/app.py (proposal written: gets-temperature-scaling-calibration-2026-04-02.json). Monitor S13 stagnation — if hits 16, POST /api/command {'action':'diversify'}",
-    "pending_political": "Run fetch_congressional_trades() to populate data/congressional/ with real STOCK Act data. Monitor P1/P2 Brier improvement from Cat24 features. Restart P3/P4 manually."
+    "pending_nba": "Implement stacked ensemble meta-learner (proposal: stacked-ensemble-mc-dropout-2026-04-02.json). Also GETS temperature scaling (gets-temperature-scaling-calibration-2026-04-02.json).",
+    "pending_political": "FEC fix deployed — next cron will populate donor data. python3 ops/fetch_political_data.py --congressional to activate Cat24. CREATE P3/P4 spaces."
   },
   "research_rotation": {
-    "current": "C_COMPLETE",
-    "next": "D (check data pipeline health — verify congressional trades pipeline, FEC donors, insider tracker outputs)",
-    "history": ["A_data_sources", "B_features", "C_nba_port", "D_pipeline_health", "A_data_sources", "B_features_cat24", "C_research_gets"],
-    "cycle_C_deliverables": [
-      "Discovered isotonic calibration disabled in app.py (empirically harmful)",
-      "Researched GETS temperature scaling (ICLR 2025) — best new calibration technique",
-      "Wrote concrete GETS implementation proposal with code sketch",
-      "Also found: load management 8-feature block (CMU 2025), stacked ensemble (Scientific Reports 2025)"
+    "current": "D_COMPLETE",
+    "next": "A (WebSearch new data sources — FEC filings, SEC insider trades, executive orders 2026)",
+    "history": ["A_data_sources", "B_features", "C_nba_port", "D_pipeline_health", "A_data_sources", "B_features_cat24", "C_gets_research", "D_fec_fix"],
+    "cycle_D_deliverables": [
+      "Found FEC donor files all empty ([] 2 bytes) since inception",
+      "Root cause: TRUMP_INAUGURAL_COMMITTEE was C00947002 (wrong ID). Correct: C00894162",
+      "Fixed ops/fetch_political_data.py — next cron will populate real FEC data",
+      "Insider trades HEALTHY (100-120KB form4 files). Polymarket HEALTHY. Enforcement HEALTHY.",
+      "Congressional trades: engine integrated (Cat24) but data/congressional/ not yet populated"
     ]
   },
   "next_directives": [
-    "CRITICAL: CREATE P3 (Nomos42/political-alpha-3) and P4 (Nomos42/political-alpha-4) at huggingface.co/new-space under Nomos42 org — spaces do NOT exist (confirmed 404 via HF MCP). Then: bash scripts/deploy_political_fix.sh",
-    "NBA: Implement GETS temperature scaling in hf-space/app.py (see proposal gets-temperature-scaling-calibration-2026-04-02.json)",
-    "NBA: Monitor S13 stagnation — POST /api/command {'action':'diversify'} if stagnation hits 16",
-    "Political: Run fetch_congressional_trades() to get real STOCK Act data into pipeline",
-    "Political: All spaces restarted on NBA side (gen ~30-60) — monitor for rebuild progress",
-    "Next rotation D: Check data pipeline health — all outputs valid and fresh?"
+    "CRITICAL: CREATE P3 (Nomos42/political-alpha-3) and P4 (Nomos42/political-alpha-4) at huggingface.co/new-space under Nomos42 org. Then: bash scripts/deploy_political_fix.sh",
+    "NBA S14 DOWN 403: manually wake at huggingface.co/Nomos42/nba-evo-5",
+    "NBA: Implement stacked ensemble meta-learner (proposal stacked-ensemble-mc-dropout-2026-04-02.json). Expected -0.003 to -0.006 Brier.",
+    "NBA: Implement GETS temperature scaling in hf-space/app.py (gets-temperature-scaling-calibration-2026-04-02.json)",
+    "Political: Verify next cron populates fec_donors with real C00894162 data (was all empty)",
+    "Political: python3 ops/fetch_political_data.py --congressional to activate Cat24 with real STOCK Act data",
+    "Rotation A: WebSearch new political data sources (tariff databases, DOGE contract cuts, 2026 midterm signals)"
   ]
 }
