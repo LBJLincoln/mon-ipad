@@ -1,26 +1,29 @@
 {
-  "timestamp": "2026-04-02T17:10:00Z",
+  "timestamp": "2026-04-02T20:30:00Z",
   "cycle": "brain-4h-auto",
+  "cycle_notes": "All 6 NBA islands online. S10 diversify triggered (plateau gen 89-388). S11 URL corrected to nomos42-nba-quant-2.hf.space. PA-3/PA-4 still offline.",
   "nba_fleet": {
     "total_islands": 6,
-    "online": 5,
-    "offline": ["nba-evo-2"],
+    "online": 6,
+    "offline": [],
     "best_brier": 0.22182,
     "best_island": "nba-evo-5",
     "best_model": "catboost",
-    "fleet_average_brier": 0.22367,
+    "fleet_average_brier": 0.22408,
     "brier_target": 0.21837,
     "gap_to_target": 0.00345,
     "checkpoint_triggered": false,
-    "stagnation_count": 0,
+    "diversify_triggered": ["nba-quant (S10) — plateau gen 89-388, ~300 gen stagnation"],
     "published_ceiling": 0.199,
+    "engine_version": "v3.1-49cat",
+    "feature_candidates": 3265,
     "islands": {
-      "nba-quant":  {"status":"ONLINE","cycle":93, "generation":277,"brier":0.22472,"model":"xgboost_brier","features":57,"stagnation":0},
-      "nba-evo-2":  {"status":"OFFLINE","error":"HTTP 404"},
-      "nba-evo-3":  {"status":"ONLINE","cycle":141,"generation":421,"brier":0.22262,"model":"xgboost_brier","features":57,"stagnation":0},
-      "nba-evo-4":  {"status":"ONLINE","cycle":121,"generation":362,"brier":0.22446,"model":"random_forest","features":45,"stagnation":0},
-      "nba-evo-5":  {"status":"ONLINE","cycle":124,"generation":370,"brier":0.22182,"model":"catboost","features":62,"stagnation":0},
-      "nba-evo-6":  {"status":"ONLINE","cycle":116,"generation":348,"brier":0.22471,"model":"xgboost_brier","features":66,"stagnation":0}
+      "nba-quant-S10":  {"status":"ONLINE","url":"nomos42-nba-quant.hf.space","role":"exploitation","cycle":130,"generation":388,"brier":0.22472,"model":"xgboost_brier","features":57,"stagnation":"plateau_gen89-388","action":"diversify_queued"},
+      "nba-quant2-S11": {"status":"ONLINE","url":"nomos42-nba-quant-2.hf.space","role":"exploration","cycle":168,"generation":502,"brier":0.22615,"model":"xgboost_brier","features":63,"stagnation":0},
+      "nba-evo3-S12":   {"status":"ONLINE","url":"nomos42-nba-evo-3.hf.space","role":"extra_trees_specialist","cycle":200,"generation":600,"brier":0.22262,"model":"xgboost_brier","features":57,"stagnation":0},
+      "nba-evo4-S13":   {"status":"ONLINE","url":"nomos42-nba-evo-4.hf.space","role":"catboost_specialist","cycle":179,"generation":537,"brier":0.22446,"model":"random_forest","features":45,"stagnation":0},
+      "nba-evo5-S14":   {"status":"ONLINE","url":"nomos42-nba-evo-5.hf.space","role":"lightgbm_specialist","cycle":178,"generation":532,"brier":0.22182,"model":"catboost","features":62,"stagnation":0},
+      "nba-evo6-S15":   {"status":"ONLINE","url":"nomos42-nba-evo-6.hf.space","role":"wide_search","cycle":162,"generation":485,"brier":0.22471,"model":"xgboost_brier","features":66,"stagnation":0}
     }
   },
   "political_fleet": {
@@ -29,39 +32,41 @@
     "offline": ["political-alpha-3","political-alpha-4"],
     "best_brier": 0.24186,
     "best_island": "political-alpha",
-    "best_top5_brier": 0.2346,
+    "best_top5_brier": 0.23748,
     "islands": {
-      "political-alpha":   {"status":"ONLINE","role":"exploitation","cycle":1960,"generation":5878,"brier":0.24186,"model":"xgboost_brier","features":53},
-      "political-alpha-2": {"status":"ONLINE","role":"exploration","cycle":1360,"generation":4079,"brier":0.25081,"model":"extra_trees","features":61},
-      "political-alpha-3": {"status":"OFFLINE","error":"HTTP 404 — space not created"},
-      "political-alpha-4": {"status":"OFFLINE","error":"HTTP 404 — space not created"}
+      "political-alpha":   {"status":"ONLINE","role":"exploitation","cycle":2085,"generation":6253,"brier":0.24186,"model":"xgboost_brier","features":53,"stagnation":0,"top5_brier":0.23748},
+      "political-alpha-2": {"status":"ONLINE","role":"exploration","cycle":1513,"generation":4539,"brier":0.25081,"model":"extra_trees","features":61,"stagnation":0},
+      "political-alpha-3": {"status":"OFFLINE","error":"HTTP 404 — space unavailable"},
+      "political-alpha-4": {"status":"OFFLINE","error":"HTTP 404 — space unavailable"}
     }
   },
   "improvements_this_cycle": {
-    "nba_1": "Research proposal: Shot-chart spatial embeddings (MDPI 2026) — expected Brier -0.010 to -0.020. See nomos-nba-agent/data/research-proposals/shot-chart-spatial-embeddings-2026-04.md",
-    "nba_2": "Research proposal: Isotonic regression calibration (corrected from temperature scaling — isotonic preferred for N>1000). Expected Brier -0.005 to -0.015. See nomos-nba-agent/data/research-proposals/gets-temperature-scaling-2026-04.md",
-    "political": "Added 10 committee×trades cross-category features to political_engine.py CAT24 — expected Brier -0.003 to -0.008"
+    "nba_1": "ACTED: Sent diversify command to S10 (nba-quant) — plateau since gen 89, ~300 gen stagnation. Command queued successfully.",
+    "nba_2": "PROPOSED: Temporal Sequence Encoding (Cat50) — encode last-10-game sequences as ordered features (not just rolling averages). Expected Brier delta -0.003 to -0.008. See nomos-nba-agent/data/research-proposals/temporal-sequence-encoding-cat50-2026-04-02.json",
+    "nba_3": "FIXED: S11 URL corrected — was using nba-evo-2.hf.space (404), correct is nomos42-nba-quant-2.hf.space. All 6 islands now monitored correctly.",
+    "political_1": "STATUS: PA-1 and PA-2 healthy at cycles 2085/1513. PA-3 and PA-4 remain offline — requires HuggingFace MCP to restart (not available this cycle)."
   },
   "research_findings_2025_2026": {
-    "published_ceiling": "Brier 0.199 (MDPI Jan 2026, shot-chart embeddings + XGBoost)",
+    "published_ceiling": "Brier 0.199 (MDPI Jan 2026, RNN+Monte Carlo dropout+shot-chart embeddings+XGBoost)",
     "gap_to_ceiling": 0.02282,
     "top_techniques": [
-      {"name": "Shot-chart spatial embeddings", "brier_delta": "-0.010 to -0.020", "status": "PROPOSED"},
-      {"name": "Isotonic regression calibration", "brier_delta": "-0.005 to -0.015", "status": "PROPOSED"},
-      {"name": "Stacked ensemble (XGB+LGB+CatBoost+LogReg meta)", "brier_delta": "-0.005 to -0.010", "status": "ALREADY PARTIAL"},
-      {"name": "Dual ELO + rolling features", "brier_delta": "-0.020 to -0.030", "status": "LIKELY IMPLEMENTED"}
+      {"name": "Shot-chart spatial embeddings", "brier_delta": "-0.010 to -0.020", "status": "PROPOSED (2026-04-02)", "source": "MDPI 2026"},
+      {"name": "Isotonic regression calibration", "brier_delta": "-0.005 to -0.015", "status": "PROPOSED (2026-04-02)", "source": "sklearn CalibratedClassifierCV"},
+      {"name": "Temporal sequence encoding (Cat50)", "brier_delta": "-0.003 to -0.008", "status": "PROPOSED THIS CYCLE", "source": "arxiv LSTM/Transformer 2025"},
+      {"name": "LightGBM DART mode", "brier_delta": "-0.003 to -0.006", "status": "PROPOSED (2026-03-30)"},
+      {"name": "Stacked ensemble (XGB+LGB+CatBoost+LR meta)", "brier_delta": "-0.005 to -0.010", "status": "PARTIAL"},
+      {"name": "Monte Carlo dropout (ensemble variance proxy)", "brier_delta": "-0.002 to -0.005", "status": "FUTURE — needs top-K model saving"}
     ]
   },
   "next_cycle_directives": [
-    "IMPLEMENT: Add isotonic calibration to hf-space/app.py (30 lines, immediate Brier gain)",
-    "IMPLEMENT: Add shot-chart zone fetcher to ops/ and Category 50 to features/engine.py",
-    "Create P3 catboost + P4 wide-search HuggingFace spaces for political",
-    "Verify political FEC data populated after 2026-04-01 committee ID fix",
-    "Wake S2 (nba-evo-2) — HTTP 404 since last cycle",
-    "If best_brier < 0.21837, checkpoint to Supabase"
+    "IMPLEMENT: Add Cat50 temporal sequence features to features/engine.py (last-10-game ordered encoding, ~80 features)",
+    "IMPLEMENT: Apply isotonic calibration in hf-space/app.py (30 lines, immediate Brier gain)",
+    "FIX: Restart PA-3 (catboost) and PA-4 (wide search) via HuggingFace dashboard — manual restart needed",
+    "MONITOR: S10 post-diversify — verify brier improvement next cycle",
+    "CHECK: S14 (nba-evo-5) maintains fleet-best 0.22182 — if improvement, checkpoint to Supabase"
   ],
   "engine_versions": {
-    "nba": "v3.1-49cat (6245+ features, 3265 deployed)",
-    "political": "v3.2-political-24cat (~3200 features, +10 cross-cat this cycle)"
+    "nba": "v3.1-49cat (6245+ features, 3265 deployed candidates)",
+    "political": "v3.2-political-24cat (~3200 features, committee×trades cross-cat features active)"
   }
 }
