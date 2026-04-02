@@ -188,7 +188,24 @@ cat > "$STATUS_FILE" << STATUSEOF
 STATUSEOF
 
 # ══════════════════════════════════════════════════════════════
-# 5. Summary
+# 5. TRADING FLOOR COUNCIL LOOP — Auto-relaunch if dead
+# ══════════════════════════════════════════════════════════════
+
+TF_RUNNING=$(pgrep -f "trading-floor-council-loop" 2>/dev/null | wc -l)
+if [ "$TF_RUNNING" -eq 0 ]; then
+  log "Trading Floor council loop NOT running — relaunching..."
+  mkdir -p /home/termius/mon-ipad/logs/arena
+  nohup bash /home/termius/mon-ipad/scripts/arena/trading-floor-council-loop.sh 1000 300 \
+    >> /home/termius/mon-ipad/logs/arena/council-loop.log 2>&1 &
+  log "Trading Floor relaunched (PID=$!)"
+  RESTARTED=$((RESTARTED + 1))
+else
+  log "Trading Floor council loop running ($TF_RUNNING processes)"
+fi
+TOTAL=$((TOTAL + 1))
+
+# ══════════════════════════════════════════════════════════════
+# 6. Summary
 # ══════════════════════════════════════════════════════════════
 
 log "═══ INFRA AGENT SUMMARY: $HEALTHY/$TOTAL healthy, $RESTARTED restarted, $FAILED failed ═══"
