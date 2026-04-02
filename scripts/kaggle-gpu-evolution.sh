@@ -52,13 +52,19 @@ log() {
     echo "[$ts] [$level] $msg" | tee -a "${LOG_FILE}"
 }
 
-# Check Kaggle CLI
-if ! command -v kaggle &>/dev/null; then
-    log WARN "kaggle CLI not found. Installing..."
-    pip install kaggle || {
+# Check Kaggle CLI — prefer venv, fallback to system
+KAGGLE_CMD="kaggle"
+VENV_KAGGLE="${REPO_ROOT}/.venv/bin/kaggle"
+if [ -x "$VENV_KAGGLE" ]; then
+    KAGGLE_CMD="$VENV_KAGGLE"
+elif ! command -v kaggle &>/dev/null; then
+    log WARN "kaggle CLI not found. Installing in venv..."
+    python3 -m venv "${REPO_ROOT}/.venv" 2>/dev/null || true
+    "${REPO_ROOT}/.venv/bin/pip" install kaggle --quiet 2>/dev/null || {
         log ERROR "Failed to install kaggle"
         exit 1
     }
+    KAGGLE_CMD="${REPO_ROOT}/.venv/bin/kaggle"
 fi
 
 # Read username from kaggle.json
@@ -93,7 +99,7 @@ fi
 log INFO "Notebook: $NOTEBOOK"
 
 # Check if already running
-STATUS_OUTPUT=$(kaggle kernels status "$KAGGLE_USERNAME/$KAGGLE_KERNEL_SLUG" 2>&1) || true
+STATUS_OUTPUT=$($KAGGLE_CMD kernels status "$KAGGLE_USERNAME/$KAGGLE_KERNEL_SLUG" 2>&1) || true
 if echo "$STATUS_OUTPUT" | grep -qi "running"; then
     log WARN "Kernel already running, skipping push"
     ALREADY_RUNNING=true
