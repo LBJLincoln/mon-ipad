@@ -171,17 +171,268 @@ print(f'Infra: {ok}/{total} healthy')
         ;;
 esac
 
-# ── Write council result to JSON ──
-python3 -c "
-import json, time
+# ── Write enriched council result to JSON ──
+python3 - "$DEPT" "$REPO_ROOT" "$(ts)" <<'COUNCIL_ENRICHMENT'
+import json, sys, os, glob
+from pathlib import Path
+from datetime import datetime, timezone
+
+dept = sys.argv[1]
+repo_root = sys.argv[2]
+timestamp = sys.argv[3]
+
+# ── Collect department-specific metrics ──────────────────────────────────
+metrics = {}
+recommendations = []
+kpis = {}
+health = "GREEN"
+
+# Helper: safe JSON load
+def load_json(path):
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+# ── BETTING metrics ──────────────────────────────────────────────────────
+if dept == "betting":
+    bankroll = load_json(f"{repo_root}/data/nba-agent/bankroll-state.json")
+    tf_latest = load_json(f"{repo_root}/data/arena/trading-floor-v4-latest.json")
+    council_latest = load_json(f"{repo_root}/data/arena/council/council-latest.json")
+
+    metrics = {
+        "bankroll": bankroll.get("bankroll", 0),
+        "roi_pct": bankroll.get("roi_pct", 0),
+        "total_bets": bankroll.get("total_bets", 0),
+        "win_rate": bankroll.get("win_rate", 0),
+        "sharpe": bankroll.get("sharpe", 0),
+        "max_drawdown": bankroll.get("max_drawdown", 0),
+    }
+
+    # Trading floor leaderboard
+    if council_latest:
+        lb = council_latest.get("analysis", {}).get("leaderboard_summary", [])
+        metrics["tf_leader"] = lb[0].get("trader_id", "unknown") if lb else "unknown"
+        metrics["tf_best_bankroll"] = lb[0].get("nba_bankroll", 0) if lb else 0
+        metrics["tf_worst_bankroll"] = lb[-1].get("nba_bankroll", 0) if lb else 0
+
+        top_strats = council_latest.get("analysis", {}).get("top_strategies", [])
+        metrics["top_strategies"] = [s.get("strategy") for s in top_strats[:3]]
+        bottom_strats = council_latest.get("analysis", {}).get("bottom_strategies", [])
+        metrics["bottom_strategies"] = [s.get("strategy") for s in bottom_strats[:3]]
+
+    kpis = {
+        "target_roi_pct": 5.0,
+        "target_sharpe": 1.5,
+        "roi_gap": round(5.0 - metrics.get("roi_pct", 0), 2),
+        "sharpe_gap": round(1.5 - metrics.get("sharpe", 0), 2),
+    }
+
+    if metrics.get("roi_pct", 0) < 0:
+        health = "RED"
+        recommendations.append("ROI negative — reduce Kelly fraction, tighten min_edge")
+    elif metrics.get("roi_pct", 0) < 5:
+        health = "YELLOW"
+        recommendations.append("ROI below target — review strategy mix")
+    if metrics.get("max_drawdown", 0) > 0.20:
+        health = "RED"
+        recommendations.append(f"Drawdown {metrics['max_drawdown']:.0%} exceeds 20% limit — activate circuit breaker")
+    if metrics.get("win_rate", 0) > 0 and metrics.get("win_rate", 0) < 0.45:
+        recommendations.append("Win rate < 45% — switch to half_kelly conservative mode")
+
+# ── EVOLUTION metrics ────────────────────────────────────────────────────
+elif dept == "evolution":
+    agent_health = load_json(f"{repo_root}/data/agent-health.json")
+    # Islands can be at top-level or under projects.nba.spaces
+    islands = agent_health.get("islands", agent_health.get("spaces", {}))
+    if not islands:
+        islands = agent_health.get("projects", {}).get("nba", {}).get("spaces", {})
+
+    briers = []
+    generations = []
+    island_data = {}
+    for key, val in islands.items() if isinstance(islands, dict) else []:
+        b = val.get("best_brier", val.get("brier", None))
+        g = val.get("generation", val.get("gen", 0))
+        if b is not None:
+            briers.append(b)
+            generations.append(g)
+            island_data[key] = {"brier": b, "gen": g, "status": val.get("status", "unknown")}
+
+    metrics = {
+        "island_count": len(island_data),
+        "best_brier": min(briers) if briers else None,
+        "avg_brier": round(sum(briers) / len(briers), 5) if briers else None,
+        "total_generations": sum(generations),
+        "islands": island_data,
+    }
+
+    # Stagnation detection
+    if briers:
+        cv = (max(briers) - min(briers)) / (sum(briers) / len(briers)) if sum(briers) > 0 else 0
+        metrics["diversity_cv"] = round(cv, 4)
+        if cv < 0.01:
+            health = "YELLOW"
+            recommendations.append("Low diversity (CV < 1%) — inject mutation boost on weakest island")
+
+    kpis = {
+        "target_brier": 0.20,
+        "brier_gap": round((min(briers) if briers else 0.25) - 0.20, 5),
+        "gen_per_hour_target": 50,
+    }
+
+    if metrics.get("best_brier") and metrics["best_brier"] > 0.23:
+        health = "YELLOW"
+        recommendations.append("Best Brier > 0.23 — consider feature injection or model diversification")
+
+# ── ENGINEERING metrics ──────────────────────────────────────────────────
+elif dept == "engineering":
+    # Feature engine parity
+    import hashlib
+    local_eng = Path(f"{repo_root}/features/engine.py")
+    hf_eng = Path(f"{repo_root}/hf-space/features/engine.py")
+    parity = "UNKNOWN"
+    if local_eng.exists() and hf_eng.exists():
+        lh = hashlib.md5(local_eng.read_bytes()).hexdigest()[:8]
+        hh = hashlib.md5(hf_eng.read_bytes()).hexdigest()[:8]
+        parity = "OK" if lh == hh else f"DRIFT:{lh}≠{hh}"
+    elif not local_eng.exists():
+        parity = "MISSING_LOCAL"
+    elif not hf_eng.exists():
+        parity = "MISSING_HF"
+
+    # Test results
+    test_pass = True
+    test_file = Path(f"{repo_root}/../nomos-nba-agent/test_data_leakage.py")
+
+    # Phantom game detection
+    picks = load_json(f"{repo_root}/../nomos-nba-agent/data/nba-agent/latest-picks.json")
+    phantoms = 0
+    if isinstance(picks, list):
+        for p in picks:
+            if p.get("home_team") == p.get("away_team"):
+                phantoms += 1
+
+    metrics = {
+        "engine_parity": parity,
+        "phantom_games": phantoms,
+        "feature_engine_version": "v3.1-46cat",
+        "max_features": 200,
+    }
+
+    kpis = {
+        "parity_target": "OK",
+        "phantom_target": 0,
+        "test_pass_rate_target": 1.0,
+    }
+
+    if parity != "OK":
+        health = "RED"
+        recommendations.append(f"Engine parity BROKEN ({parity}) — sync immediately")
+    if phantoms > 0:
+        health = "RED"
+        recommendations.append(f"{phantoms} phantom games detected — fix team normalization")
+
+# ── FINANCE metrics ──────────────────────────────────────────────────────
+elif dept == "finance":
+    bankroll = load_json(f"{repo_root}/data/nba-agent/bankroll-state.json")
+    monthly_costs = {
+        "vm_gcp": 6.0,
+        "hf_spaces_free": 0.0,
+        "domain": 0.0,
+        "modal_usage": 0.0,
+        "total": 6.0,
+    }
+    metrics = {
+        "bankroll": bankroll.get("bankroll", 0),
+        "monthly_costs": monthly_costs,
+        "mrr": 0,
+        "stripe_status": "connected_not_active",
+        "burn_rate_monthly": monthly_costs["total"],
+        "runway_months": "infinite" if monthly_costs["total"] == 0 else round(bankroll.get("bankroll", 0) / monthly_costs["total"], 1),
+    }
+
+    kpis = {
+        "target_mrr": 100,
+        "mrr_gap": 100,
+        "break_even_users": 1,  # At $19/mo tier
+    }
+
+    if metrics["mrr"] == 0:
+        health = "YELLOW"
+        recommendations.append("Zero MRR — activate Stripe pricing tiers ($19/$49/$149)")
+
+# ── EVALUATION metrics ───────────────────────────────────────────────────
+elif dept == "evaluation":
+    eval_data = load_json(f"{repo_root}/data/nba-agent/latest-eval.json")
+    metrics = {
+        "brier": eval_data.get("brier", None),
+        "total_games": eval_data.get("total_games", 0),
+        "accuracy": eval_data.get("accuracy", None),
+        "ece": eval_data.get("ece", None),
+        "calibration_bins": eval_data.get("calibration_bins", {}),
+    }
+
+    kpis = {
+        "target_brier": 0.20,
+        "target_ece": 0.05,
+        "target_accuracy": 0.68,
+    }
+
+    if metrics.get("ece") and metrics["ece"] > 0.15:
+        health = "RED"
+        recommendations.append(f"ECE={metrics['ece']:.4f} — calibration crisis, apply Platt scaling")
+    elif metrics.get("ece") and metrics["ece"] > 0.05:
+        health = "YELLOW"
+
+# ── INFRA metrics ────────────────────────────────────────────────────────
+elif dept == "infra":
+    infra = load_json(f"{repo_root}/data/infra-status.json")
+    metrics = {
+        "total_checks": infra.get("total_checks", 0),
+        "healthy": infra.get("healthy", 0),
+        "uptime_pct": round(infra.get("healthy", 0) / max(1, infra.get("total_checks", 1)) * 100, 1),
+        "services": infra.get("services", {}),
+    }
+
+    kpis = {
+        "target_uptime_pct": 99.0,
+        "uptime_gap": round(99.0 - metrics["uptime_pct"], 1),
+    }
+
+    if metrics["uptime_pct"] < 90:
+        health = "RED"
+        recommendations.append(f"Uptime {metrics['uptime_pct']}% below 90% — check failing services")
+    elif metrics["uptime_pct"] < 99:
+        health = "YELLOW"
+
+# ── DEFAULT for other departments ────────────────────────────────────────
+else:
+    metrics = {"note": f"Department {dept} — basic check only"}
+    kpis = {}
+
+# ── Build enriched council output ────────────────────────────────────────
 result = {
-    'department': '$DEPT',
-    'timestamp': '$(ts)',
-    'status': 'completed',
-    'type': 'council'
+    "department": dept,
+    "timestamp": timestamp,
+    "status": "completed",
+    "type": "council",
+    "health": health,
+    "metrics": metrics,
+    "kpis": kpis,
+    "recommendations": recommendations,
+    "recommendation_count": len(recommendations),
 }
-with open('$REPO_ROOT/data/departments/council-$DEPT.json', 'w') as f:
+
+output_path = f"{repo_root}/data/departments/council-{dept}.json"
+os.makedirs(os.path.dirname(output_path), exist_ok=True)
+with open(output_path, "w") as f:
     json.dump(result, f, indent=2)
-" 2>/dev/null || true
+
+# Print summary
+rec_str = f" | {len(recommendations)} recs" if recommendations else ""
+print(f"[{dept}] health={health}{rec_str} | metrics={len(metrics)} keys")
+COUNCIL_ENRICHMENT
 
 log "Council result written to data/departments/council-$DEPT.json"

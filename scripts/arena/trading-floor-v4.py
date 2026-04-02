@@ -306,6 +306,45 @@ def _save_best_config(config: Dict) -> None:
     BEST_CONFIG_FILE.write_text(json.dumps(config, indent=2))
 
 
+# ── TRADER CONFIG PERSISTENCE ────────────────────────────────────────────────
+# Council mutations modify TRADERS in-memory. This persists them across restarts.
+TRADER_CONFIG_FILE = DATA_DIR / 'trader-configs-evolved.json'
+
+def _load_evolved_trader_configs() -> None:
+    """Load evolved trader configs from disk, overriding hardcoded defaults."""
+    if not TRADER_CONFIG_FILE.exists():
+        return
+    try:
+        saved = json.loads(TRADER_CONFIG_FILE.read_text())
+        for tid, cfg in saved.items():
+            if tid in TRADERS:
+                # Only override mutable fields (strategies, models, risk)
+                if "preferred_strategies" in cfg:
+                    TRADERS[tid]["preferred_strategies"] = cfg["preferred_strategies"]
+                if "preferred_models" in cfg:
+                    TRADERS[tid]["preferred_models"] = cfg["preferred_models"]
+                if "risk_tolerance" in cfg:
+                    TRADERS[tid]["risk_tolerance"] = cfg["risk_tolerance"]
+    except Exception:
+        pass
+
+def _save_evolved_trader_configs() -> None:
+    """Persist current trader configs (strategies + models + risk) to disk."""
+    configs = {}
+    for tid, t in TRADERS.items():
+        configs[tid] = {
+            "preferred_strategies": t.get("preferred_strategies", []),
+            "preferred_models": t.get("preferred_models", []),
+            "risk_tolerance": t.get("risk_tolerance", 0.5),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
+        }
+    TRADER_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    TRADER_CONFIG_FILE.write_text(json.dumps(configs, indent=2))
+
+# Load evolved configs on import (override hardcoded defaults)
+_load_evolved_trader_configs()
+
+
 # ── DATA LOADERS ─────────────────────────────────────────────────────────────
 
 STAT_KEYS = ['fg_pct', 'fg3_pct', 'ft_pct', 'reb', 'ast', 'tov', 'stl', 'blk', 'plus_minus']
@@ -531,14 +570,69 @@ def load_other_trader_states(exclude: str) -> Dict:
 # ── NBA SIMULATION HELPERS ────────────────────────────────────────────────────
 
 def model_prob(model_name: str, implied_prob: float, seed_val: str, home_won: bool) -> float:
-    """Brier-calibrated prediction (identical to v3 — no random noise)."""
+    """
+    Simulate model prediction WITHOUT leaking the outcome.
+
+    The prediction is based on implied_prob (market line) plus model-specific
+    noise calibrated to the model's Brier score. The `home_won` param is NOT
+    used in prediction — it exists only for API compat with bet resolution.
+
+    Fix (2026-04-02): previous version used `truth` in the prediction formula,
+    making the sim unrealistically accurate and creating the 100% win-rate
+    artifact on ml_away categories.
+    """
     brier    = MODELS[model_name]["brier"]
+    # Model skill: how much the model can deviate from market (higher = better)
     skill    = max(0.0, 1.0 - brier / 0.25)
+    # Deterministic per-model-per-game noise (replaces outcome-leaked signal)
     h        = int(hashlib.md5(f"{model_name}_{seed_val}".encode()).hexdigest()[:8], 16)
-    variation = ((h % 1000) / 1000.0 - 0.5) * 0.06
-    truth     = 1.0 if home_won else 0.0
-    pred      = implied_prob + skill * (truth - implied_prob) * 0.5 + variation
+    # Noise proportional to skill — better models have tighter spreads
+    noise    = ((h % 1000) / 1000.0 - 0.5) * 0.12 * (1.0 - skill * 0.5)
+    # Home court bias: better models pick up ~2% home court advantage
+    h2       = int(hashlib.md5(f"hca_{model_name}_{seed_val}".encode()).hexdigest()[:4], 16)
+    home_bias = skill * 0.02 * (1.0 if (h2 % 2 == 0) else -1.0)
+    pred     = implied_prob + noise + home_bias
+    # Apply calibration if available
+    pred     = _calibrate_prob(pred)
     return max(0.05, min(0.95, pred))
+
+
+def _calibrate_prob(raw_prob: float) -> float:
+    """Apply isotonic calibration from calibration-map if available."""
+    global _CALIBRATION_MAP
+    if _CALIBRATION_MAP is None:
+        _CALIBRATION_MAP = _load_calibration_map()
+    if not _CALIBRATION_MAP:
+        return raw_prob
+    # Piecewise linear interpolation
+    keys = sorted(_CALIBRATION_MAP.keys())
+    if raw_prob <= keys[0]:
+        return _CALIBRATION_MAP[keys[0]]
+    if raw_prob >= keys[-1]:
+        return _CALIBRATION_MAP[keys[-1]]
+    for i in range(len(keys) - 1):
+        if keys[i] <= raw_prob <= keys[i + 1]:
+            t = (raw_prob - keys[i]) / (keys[i + 1] - keys[i])
+            return _CALIBRATION_MAP[keys[i]] * (1 - t) + _CALIBRATION_MAP[keys[i + 1]] * t
+    return raw_prob
+
+
+_CALIBRATION_MAP: Optional[Dict[float, float]] = None
+
+def _load_calibration_map() -> Dict[float, float]:
+    """Load calibration map from nomos-nba-agent or local copy."""
+    paths = [
+        NBA_AGENT / 'hf-space' / 'data' / 'calibration-map.json',
+        ROOT / 'data' / 'calibration' / 'calibration-map.json',
+    ]
+    for p in paths:
+        if p.exists():
+            try:
+                raw = json.loads(p.read_text())
+                return {float(k): float(v) for k, v in raw.items()}
+            except Exception:
+                continue
+    return {}
 
 
 def h1_result_from_hash(seed: str, home_won: bool) -> bool:
@@ -1661,6 +1755,11 @@ def _mutate_agent_preferences(result: Dict) -> Dict[str, Dict]:
                     "reason": f"{tid} stagnant (ROI {entry['nba_roi_pct']:+.1f}%) — adopts model '{winner_models[0]}' from {winner_id}",
                 }
                 print(f"  [MUTATE] {tid} adopts model '{winner_models[0]}' from {winner_id}")
+
+    # Persist mutations to disk so they survive process restarts
+    if mutations:
+        _save_evolved_trader_configs()
+        print(f"  [PERSIST] Saved {len(mutations)} mutations to {TRADER_CONFIG_FILE}")
 
     return mutations
 
