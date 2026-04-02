@@ -1,23 +1,21 @@
 {
-  "last_brain_cycle": "2026-04-02T00:30:00Z",
-  "cycle_number": "~53",
+  "last_brain_cycle": "2026-04-02T04:30:00Z",
+  "cycle_number": "~54",
   "cycle_improvements": {
-    "nba": {
-      "action": "IMPLEMENTED",
-      "file": "nomos-nba-agent/features/engine.py + hf-space/features/engine.py",
-      "description": "Updated ENGINE_VERSION from v3.1-46cat to v3.1-49cat to reflect Cat47 (Drive-Rim, 14f), Cat48 (Passing Network, 10f), Cat49 (Play-Type PPP, 10f) that were implemented last cycle but not versioned",
-      "impact": "Correct Supabase experiment tagging — all new GA runs will log v3.1-49cat. Parity maintained: root == hf-space (diff=0 bytes).",
-      "raw_features_new": 6287,
-      "categories_now": 49
-    },
     "political": {
-      "action": "BUG_FIX + RESEARCH_PROPOSAL",
-      "file_fixed": "nomos-political-alpha/ops/fetch_political_data.py",
-      "description": "Fixed FEC donor pipeline: TRUMP_INAUGURAL_COMMITTEE (C00947002) was missing from cycles_by_committee dict, causing all fec_donors_*.json to be 2 bytes (empty). Added [2026, 2024] cycles. Also updated default fallback from [2024,2022,2020] to [2026,2024,2022].",
-      "proposal_written": "data/proposals/congressional-trade-signals-cat24-2026-04-02.json",
-      "proposal_title": "Category 24: Congressional Trade Signals (STOCK Act Disclosures via Quiver Quantitative)",
-      "research_basis": "Q1 2026 insider trading scrutiny + Quiver Quant free API + 20 features",
-      "expected_brier_gain": "0.002 to 0.008"
+      "action": "IMPLEMENTED — Cat24 Congressional Trade Signals",
+      "file": "nomos-political-alpha/ops/fetch_political_data.py",
+      "description": "Implemented fetch_congressional_trades() — Cat24 proposal from previous cycle. Quiver Quantitative API primary (STOCK Act disclosures) + SEC EDGAR Form 4 fallback. Computes 20 signals per ticker: buy_count_7d/30d, sell_count_7d/30d, cluster_buy_flag, cluster_sell_flag, days_since_last_trade, repeat_trader_count, volume_anomaly_score, bipartisan_flag, committee_chair_flag. Integrated into fetch_all() and fetch_political_data.py --congressional CLI flag. Data saved to data/congressional/congress_trades_YYYYMMDD.json.",
+      "proposal_status_updated": "data/proposals/congressional-trade-signals-cat24-2026-04-02.json → implemented",
+      "expected_brier_gain": "0.002 to 0.008 (pending real data and Cat24 integration in political_engine.py)",
+      "next_step": "Add Cat24 block to features/political_engine.py consuming congress_trades data"
+    },
+    "nba": {
+      "action": "RESEARCH_PROPOSAL — Calibrated LR Meta-Learner",
+      "file": "data/research-proposals/lr-calibrated-metalearner-brier199-2026-04-02.json",
+      "description": "Wrote concrete 3-phase proposal based on MDPI Jan 2026 paper (LR achieves Brier 0.199 on NBA data, best among all tabular baselines). Phase 1: Isotonic calibration post-processing on S13. Phase 2: LR meta-learner over 6-island ensemble. Phase 3: Dual Elo (playoff + regular season track) as Cat50 features. Immediate action: POST /api/config to S13 to enable isotonic calibration.",
+      "expected_brier_delta": "-0.001 to -0.008 depending on phase",
+      "gap_to_checkpoint": 0.00229
     }
   },
   "nba_fleet": {
@@ -25,40 +23,41 @@
     "islands_total": 6,
     "islands": {
       "S10_nomos42-nba-quant": {
-        "status": "UP", "cycle": 504, "generation": 1511, "best_brier": 0.22239,
+        "status": "UP", "cycle": 560, "generation": 1678, "best_brier": 0.22239,
         "best_roi": 0.2974, "best_sharpe": 8.9008, "best_features": 40,
-        "best_model": "random_forest", "stagnation": 0, "pop_size": 60, "pareto_front": 17,
-        "role": "exploitation", "last_update": "2026-04-02T00:09:00Z"
+        "best_model": "random_forest", "stagnation": 0, "pop_size": 60, "pareto_front": 14,
+        "role": "exploitation", "last_update": "2026-04-02T04:16:00Z"
       },
       "S11_nomos42-nba-quant-2": {
-        "status": "UP", "cycle": 558, "generation": 1674, "best_brier": 0.22277,
+        "status": "UP", "cycle": 632, "generation": 1896, "best_brier": 0.22277,
         "best_roi": 0.2913, "best_sharpe": 9.8973, "best_features": 61,
-        "best_model": "catboost", "stagnation": 0, "pop_size": 60, "pareto_front": 10,
-        "role": "exploration", "last_update": "2026-04-02T00:10:00Z"
+        "best_model": "catboost", "stagnation": 0, "pop_size": 60, "pareto_front": 16,
+        "role": "exploration", "last_update": "2026-04-02T04:16:00Z"
       },
       "S12_nomos42-nba-evo-3": {
-        "status": "UP", "cycle": 346, "generation": 1037, "best_brier": 0.22115,
+        "status": "UP", "cycle": 394, "generation": 1180, "best_brier": 0.22115,
         "best_roi": 0.3119, "best_sharpe": 6.8366, "best_features": 54,
-        "best_model": "random_forest", "stagnation": 0, "pop_size": 60, "pareto_front": 14,
-        "role": "extra_trees_specialist", "last_update": "2026-04-02T00:10:47Z"
+        "best_model": "random_forest", "stagnation": 0, "pop_size": 60, "pareto_front": 13,
+        "role": "extra_trees_specialist", "last_update": "2026-04-02T04:17:00Z"
       },
       "S13_nomos42-nba-evo-4": {
-        "status": "UP", "cycle": 363, "generation": 1087, "best_brier": 0.22066,
+        "status": "UP", "cycle": 400, "generation": 1197, "best_brier": 0.22066,
         "best_roi": 0.3184, "best_sharpe": 6.4833, "best_features": 40,
-        "best_model": "xgboost_brier", "stagnation": 0, "pop_size": 60, "pareto_front": 14,
-        "role": "catboost_specialist", "note": "FLEET BEST BRIER", "last_update": "2026-04-02T00:10:06Z"
+        "best_model": "xgboost_brier", "stagnation": 0, "pop_size": 60, "pareto_front": 12,
+        "role": "catboost_specialist", "note": "FLEET BEST BRIER — target for isotonic calibration",
+        "last_update": "2026-04-02T04:17:00Z"
       },
       "S14_nomos42-nba-evo-5": {
-        "status": "UP", "cycle": 518, "generation": 1552, "best_brier": 0.22188,
+        "status": "UP", "cycle": 582, "generation": 1746, "best_brier": 0.22188,
         "best_roi": 0.3035, "best_sharpe": 6.8861, "best_features": 49,
-        "best_model": "catboost", "stagnation": 0, "pop_size": 60, "pareto_front": 4,
-        "role": "lightgbm_specialist", "last_update": "2026-04-02T00:10:18Z"
+        "best_model": "catboost", "stagnation": 0, "pop_size": 60, "pareto_front": 15,
+        "role": "lightgbm_specialist", "last_update": "2026-04-02T04:17:00Z"
       },
       "S15_nomos42-nba-evo-6": {
-        "status": "UP", "cycle": 439, "generation": 1316, "best_brier": 0.22254,
+        "status": "UP", "cycle": 503, "generation": 1507, "best_brier": 0.22254,
         "best_roi": 0.2961, "best_sharpe": 6.6741, "best_features": 63,
-        "best_model": "random_forest", "stagnation": 0, "pop_size": 50, "pareto_front": 7,
-        "role": "wide_search", "last_update": "2026-04-02T00:09:23Z"
+        "best_model": "random_forest", "stagnation": 0, "pop_size": 50, "pareto_front": 11,
+        "role": "wide_search", "last_update": "2026-04-02T04:16:00Z"
       }
     },
     "fleet_best_brier": 0.22066,
@@ -80,76 +79,84 @@
     "categories": 49
   },
   "political_fleet": {
-    "islands_online": 3,
+    "islands_online": 2,
     "islands_total": 4,
     "islands": {
       "P1_exploitation": {
-        "status": "UP", "cycle": 1433, "generation": 4299, "best_brier": 0.24186,
+        "status": "UP", "cycle": 1547, "generation": 4639, "best_brier": 0.24186,
         "best_model": "xgboost_brier", "best_features": 53, "stagnation": 0,
-        "real_events": 60, "synthetic_events": 312, "url": "nomos42-political-alpha.hf.space"
+        "total_events": 372, "real_fraction": "~16%",
+        "url": "nomos42-political-alpha.hf.space",
+        "last_update": "2026-04-02T04:17:00Z"
       },
       "P2_exploration": {
-        "status": "DOWN_404", "note": "404 this cycle — was UP last cycle. Transient or quota issue.",
-        "last_known_brier": 0.24999, "url": "nomos42-political-alpha-2.hf.space"
+        "status": "UP", "cycle": 888, "generation": 2662, "best_brier": 0.2504,
+        "best_model": "xgboost", "best_features": null, "stagnation": 0,
+        "total_events": 60, "synthetic_bootstrap": true,
+        "url": "nomos42-political-alpha-2.hf.space",
+        "last_update": "2026-04-02T04:17:00Z"
       },
       "P3_catboost": {
-        "status": "UP", "cycle": 1433, "generation": 4299, "best_brier": 0.24186,
-        "best_model": "xgboost_brier", "best_features": 53, "stagnation": 0,
-        "real_events": 60, "synthetic_events": 312, "note": "CAME BACK ONLINE",
-        "url": "nomos42-political-alpha-3.hf.space"
+        "status": "DOWN_404", "url": "nomos42-political-alpha-3.hf.space",
+        "action_needed": "restart via HuggingFace MCP (not available this session)",
+        "last_known_brier": 0.24186
       },
       "P4_wide_search": {
-        "status": "UP", "cycle": 745, "generation": 2235, "best_brier": 0.24999,
-        "best_model": "catboost", "best_features": 93, "stagnation": 0,
-        "real_events": 372, "synthetic_events": 0, "note": "CAME BACK ONLINE",
-        "url": "nomos42-political-alpha-4.hf.space"
+        "status": "DOWN_404", "url": "nomos42-political-alpha-4.hf.space",
+        "action_needed": "restart via HuggingFace MCP (not available this session)",
+        "last_known_brier": 0.24999
       }
     },
     "fleet_best_brier": 0.24186,
     "fleet_best_island": "P1_exploitation",
     "fleet_target_brier": 0.22,
-    "data_quality_pct_real": 13.9
+    "data_quality_real_events": 60,
+    "hf_mcp_available": false,
+    "hf_mcp_note": "P3/P4 down — HF MCP tools not available in this session to restart. Manual restart needed."
   },
   "data_pipeline": {
+    "congressional_trades_cat24": {
+      "status": "IMPLEMENTED",
+      "function": "fetch_congressional_trades()",
+      "file": "nomos-political-alpha/ops/fetch_political_data.py",
+      "note": "Quiver Quant primary + SEC EDGAR fallback. Run: python3 ops/fetch_political_data.py --congressional",
+      "implemented": "2026-04-02T04:30:00Z"
+    },
     "fec_donors": {
-      "status": "BUG_FIXED",
-      "note": "Added C00947002 → [2026,2024] to cycles_by_committee. Files were 2 bytes (empty) due to missing key. Will be non-empty after next VM :30 run.",
+      "status": "BUG_FIXED_PREV_CYCLE",
+      "note": "C00947002 fix applied. Verify fec_donors_*.json size after :30 VM run.",
       "fix_applied": "2026-04-02T00:30:00Z"
     },
     "insider_trades": {
       "status": "HEALTHY",
-      "note": "form4_20260326.json through form4_20260401.json all >100KB. Pipeline is working.",
-      "latest_file": "form4_20260401.json",
-      "latest_size_bytes": 49745
+      "note": "form4 files healthy, daily pipeline running"
     },
-    "polymarket": {"status": "HEALTHY", "update_freq": "5min"},
-    "gov_contracts": {"status": "HEALTHY"},
-    "congressional_trades": {"status": "PROPOSED", "proposal": "congressional-trade-signals-cat24-2026-04-02.json"}
+    "polymarket": {"status": "HEALTHY"},
+    "gov_contracts": {"status": "HEALTHY"}
   },
   "cross_project": {
-    "nba_to_political_this_cycle": "none (last cycle: lr_meta + lr_platt calibration)",
+    "nba_to_political_this_cycle": "LR calibration proposal — port isotonic post-processing to P1 next cycle",
     "political_to_nba_this_cycle": "none",
-    "pending_nba": "Monitor S13 Brier trajectory — approaching checkpoint threshold (gap: 0.00229)",
-    "pending_political": "Implement Cat24 Congressional Trade Signals (Quiver Quantitative)"
+    "pending_nba": "Enable isotonic calibration on S13 via /api/config or direct hf-space/app.py edit. Expected: push Brier below checkpoint 0.21837",
+    "pending_political": "Add Cat24 block to features/political_engine.py consuming congress_trades data"
   },
   "research_rotation": {
-    "current": "A_COMPLETE",
-    "next": "B (review political_engine.py — implement Cat24 Congressional Trade Signals)",
-    "history": ["A_data_sources", "B_features", "C_nba_port", "D_pipeline_health", "E_port_and_research", "A_data_sources"],
-    "rotation_A_findings": [
-      "FEC Q1 2026: reports due April 15, not yet public. Fix applied to fetcher.",
-      "SEC Form 4: insider_tracker.py is HEALTHY — 100KB+ daily files verified.",
-      "Executive Orders: Trump signed 27 EOs in 2026. IEEPA tariffs struck down Feb 20 by SCOTUS.",
-      "Congressional trades: Quiver Quantitative API provides real-time STOCK Act data — proposed as Cat24.",
-      "Key Q1 2026 alpha signal: pre-announcement trades in oil/prediction markets (Iran, Venezuela)."
+    "current": "B_COMPLETE",
+    "next": "C (port NBA calibration techniques to political_engine.py — isotonic post-processing on P1)",
+    "history": ["A_data_sources", "B_features", "C_nba_port", "D_pipeline_health", "E_port_and_research", "A_data_sources", "B_features_cat24"],
+    "cycle_B_deliverables": [
+      "fetch_congressional_trades() implemented in fetch_political_data.py",
+      "Cat24 proposal status updated to implemented",
+      "20 congressional trade signals computed per ticker",
+      "Quiver Quant + SEC EDGAR dual-source pipeline with JSON output"
     ]
   },
   "next_directives": [
-    "Political: Implement fetch_congressional_trades() in fetch_political_data.py (Cat24 proposal)",
-    "Political: Verify FEC fix works — check fec_donors_*.json size > 2 bytes after next :30 VM run",
-    "Political: Monitor P2 (political-alpha-2) — check if transient 404 or gone permanently",
-    "NBA: Deploy engine v3.1-49cat to all 6 HF spaces via auto-deploy-engine.sh",
-    "NBA: Monitor S13 (best 0.22066) — checkpoint if crosses 0.21837",
-    "NBA: Next cycle research — test logistic_regression_calibrated on S15 (MDPI 2026: LR Brier 0.199)"
+    "CRITICAL: Restart P3 (nomos42-political-alpha-3) and P4 (nomos42-political-alpha-4) via HF MCP or HF web UI",
+    "NBA S13: Enable isotonic calibration — POST /api/config {\"enable_isotonic_calibration\": true} or edit hf-space/app.py",
+    "Political: Add Cat24 consumption block to features/political_engine.py (read congress_trades_*.json, compute 20 features)",
+    "Political: Verify FEC fix — check if fec_donors_*.json size > 2 bytes after :30 VM run",
+    "NBA: Monitor S13 Brier — checkpoint if crosses 0.21837 (gap: 0.00229)",
+    "Next rotation C: Port isotonic calibration to P1 political island"
   ]
 }

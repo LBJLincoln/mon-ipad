@@ -1,0 +1,76 @@
+{
+  "proposal_id": "NBA-2026-04-02-LR-CALIBRATED",
+  "title": "Calibrated Logistic Regression Post-Processing: Target Brier 0.199 (MDPI Jan 2026)",
+  "status": "proposed",
+  "created": "2026-04-02T04:30:00Z",
+  "rotation": "B_research",
+  "priority": "HIGH",
+
+  "research_basis": [
+    {
+      "source": "MDPI Information 2026 (Jan) — Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets",
+      "url": "https://www.mdpi.com/2078-2489/17/1/56",
+      "finding": "Logistic regression attained Brier 0.199 and log-loss 0.583 — BEST among all tabular baselines tested. XGBoost was Brier 0.202. The key: LR was trained with proper calibration (no overconfidence) while tree models needed post-hoc calibration."
+    },
+    {
+      "source": "arXiv 2025 — Forecasting NCAA Basketball with LSTM vs Transformer",
+      "url": "https://arxiv.org/html/2508.02725v1",
+      "finding": "LSTM trained with Brier loss > LSTM trained with BCE for probability calibration. Transformer + BCE best for AUC. Ensemble of both (Brier-loss + BCE) gives complementary gains."
+    },
+    {
+      "source": "Scientific Reports 2025 — Stacked Ensemble NBA",
+      "url": "https://www.nature.com/articles/s41598-025-13657-1",
+      "finding": "Stacked ensemble (XGBoost + MLP + KNN + LR) reduces variance, improves calibration vs any single model."
+    },
+    {
+      "source": "FiveThirtyEight CARM-Elo methodology",
+      "finding": "Dual Elo (regular season + playoff track) consistently among top-3 features. S13 already converging on xgboost_brier — adding LR calibration post-processing could push below checkpoint."
+    }
+  ],
+
+  "problem": "Current GA evolves tree models (XGBoost, CatBoost, RF, LightGBM) that produce uncalibrated probabilities. The MDPI 2026 paper shows LR achieves Brier 0.199 vs XGBoost 0.202 on NBA data — the gap comes from LR's natural calibration (linear decision boundary = no overconfidence). Our best current island Brier = 0.22066 (S13). The checkpoint threshold is 0.21837. Adding isotonic or Platt calibration post-processing could push S13 below threshold.",
+
+  "proposed_implementation": {
+    "phase_1": {
+      "name": "Isotonic Calibration Post-Processing on S13",
+      "file": "hf-space/app.py (evolution loop)",
+      "action": "After model.predict_proba(), wrap with sklearn.calibration.CalibratedClassifierCV(method='isotonic'). Use 20% holdout for calibration fitting. This is already stubbed in calibration/isotonic_calibrator.py.",
+      "expected_brier_delta": "-0.001 to -0.003",
+      "risk": "LOW — post-processing only, doesn't change model architecture"
+    },
+    "phase_2": {
+      "name": "LR Meta-Learner over S10-S15 ensemble predictions",
+      "file": "predict_today.py",
+      "action": "Collect daily predict_proba() from all 6 islands. Train a logistic regression meta-learner on island predictions + 5 key features (elo_diff, rest_advantage, home_flag, spread, form_diff). LR naturally calibrates the ensemble output.",
+      "expected_brier_delta": "-0.003 to -0.008",
+      "risk": "MEDIUM — requires 50+ games of calibration data to be robust"
+    },
+    "phase_3": {
+      "name": "Add h_elo_playoff + a_elo_playoff as Cat50 features",
+      "file": "features/engine.py",
+      "action": "Add 10 new features to Cat24: playoff_elo_h, playoff_elo_a, playoff_elo_diff, playoff_season_elo_ratio_h, playoff_season_elo_ratio_a, clutch_elo_h (close-game adjusted), momentum_elo_5_h, momentum_elo_5_a, elo_convergence_speed_h, elo_convergence_speed_a. Dual Elo is consistently top-3 feature per MDPI 2026 study.",
+      "expected_brier_delta": "-0.001 to -0.004",
+      "risk": "LOW — additive features, GA selects naturally"
+    }
+  },
+
+  "immediate_action": {
+    "recommended": "Phase 1 (isotonic calibration) on S13 — lowest risk, highest probability of pushing below checkpoint threshold 0.21837",
+    "command": "POST https://nomos42-nba-evo-4.hf.space/api/config {\"enable_isotonic_calibration\": true, \"calibration_holdout_pct\": 0.2}",
+    "note": "If /api/config supports calibration toggle. Else: update hf-space/app.py directly."
+  },
+
+  "cross_project_port": {
+    "political_alpha": "Same isotonic calibration applies to PA-1 (Brier 0.24186). Port Phase 1 to political_engine.py calibration block. Expected: -0.003 to -0.006 on political Brier.",
+    "priority": "next_cycle"
+  },
+
+  "target_metrics": {
+    "current_fleet_best_brier": 0.22066,
+    "checkpoint_threshold": 0.21837,
+    "gap_to_checkpoint": 0.00229,
+    "expected_brier_after_phase1": 0.218,
+    "all_time_best_brier": 0.21570,
+    "target_brier": 0.20
+  }
+}
