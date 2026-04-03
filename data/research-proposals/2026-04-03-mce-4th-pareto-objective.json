@@ -1,0 +1,43 @@
+{
+  "proposal_id": "mce-4th-pareto-objective-2026-04-03",
+  "title": "MCE as 4th Pareto Objective in NSGA-II GA",
+  "status": "proposed",
+  "cycle": 58,
+  "date": "2026-04-03",
+  "source": "brain-cycle-58 + Khairy et al. 2026 MDPI Information doi:10.3390/info17010056",
+  "priority": "HIGH",
+
+  "motivation": "The 2026 uncertainty-aware NBA paper shows Maximum Calibration Error (MCE) directly predicts betting profitability: poorly calibrated tails (MCE > 0.08) cause Kelly over-staking on the least reliable predictions. Current GA optimizes Brier + ROI + Sharpe (3 objectives). Adding MCE as a 4th Pareto dimension forces evolution to select models calibrated even in extreme probability regions (>0.75 or <0.25). This is where systematic edge is lost vs. bookmakers who clip lines at high odds.",
+
+  "technique": {
+    "name": "MCE (Maximum Calibration Error) Pareto Objective",
+    "type": "GA fitness modification",
+    "current_objectives": ["brier", "roi", "sharpe"],
+    "proposed_objectives": ["brier", "roi", "sharpe", "mce"],
+    "mce_definition": "max over 10 bins of |mean(predicted_prob in bin) - mean(actual_outcome in bin)|",
+    "target_mce": "<0.06",
+    "implementation_file": "hf-space/app.py (evaluate_individual function)",
+    "cpu_compatible": true,
+    "expected_brier_delta": "-0.001 to -0.003 indirect via tail calibration pressure",
+    "expected_roi_delta": "+1% to +2% fewer blown Kelly decisions on miscalibrated tails"
+  },
+
+  "implementation_steps": [
+    "1. In hf-space/app.py evaluate_individual(): add mce_score = compute_mce(y_pred_proba, y_test, n_bins=10)",
+    "2. In nsga2_rank(): expand fitness tuple from (brier, -roi, -sharpe) to (brier, -roi, -sharpe, mce)",
+    "3. In Individual.to_dict(): add mce field",
+    "4. In /api/status response: include fleet_best_mce",
+    "5. Pareto front selection: minimize all 4 objectives simultaneously"
+  ],
+
+  "mce_compute_snippet": "def compute_mce(probs, outcomes, n_bins=10):\n    bins = np.linspace(0, 1, n_bins + 1)\n    mce = 0.0\n    for i in range(n_bins):\n        mask = (probs >= bins[i]) & (probs < bins[i+1])\n        if mask.sum() < 3: continue\n        mce = max(mce, abs(outcomes[mask].mean() - probs[mask].mean()))\n    return float(mce)",
+
+  "cross_project_applicability": "DIRECT — political GA can adopt same pattern; political_calibration.py Cat23 already tracks ECE/MCE as features (added cycle 58)",
+
+  "related_proposals": [
+    "ece-calibration-fitness-2026-03-29.json",
+    "gets-temperature-scaling-calibration-2026-04-02.json"
+  ],
+
+  "paper_citation": "Khairy et al. (2026). Uncertainty-Aware Machine Learning for NBA Forecasting in Digital Betting Markets. MDPI Information 17(1):56."
+}
