@@ -1,31 +1,192 @@
 {
-  "cycle_timestamp": "2026-04-03T08:15:00Z",
+  "cycle_timestamp": "2026-04-03T12:00:00Z",
   "cycle_type": "4h_brain",
+  "cycle_number": 57,
+  "generated_by": "claude-sonnet-4-6 nomos42-brain",
+
   "nba_fleet": {
-    "best_brier": 0.22132,
-    "best_island": "S12",
+    "fleet_best_brier": 0.22182,
+    "fleet_best_island": "S14",
+    "fleet_avg_brier": 0.22404,
     "checkpoint_threshold": 0.21837,
     "checkpoint_triggered": false,
+    "checkpoint_gap": 0.00345,
+    "all_running": true,
+    "stagnation_alerts": [],
     "islands": {
-      "S10": {"url": "nomos42-nba-quant.hf.space", "gen": 42, "brier": 0.22499, "stagnation": 10, "model": "lightgbm", "status": "active"},
-      "S11": {"url": "nomos42-nba-quant-2.hf.space", "gen": 42, "brier": 0.22513, "stagnation": 18, "model": "catboost", "status": "diversify_triggered"},
-      "S12": {"url": "nomos42-nba-evo-3.hf.space", "gen": 49, "brier": 0.22132, "stagnation": 0, "model": "extra_trees", "status": "best_active"},
-      "S13": {"url": "nomos42-nba-evo-4.hf.space", "gen": 41, "brier": 0.22813, "stagnation": 14, "model": "lightgbm", "status": "watch"},
-      "S14": {"url": "nomos42-nba-evo-5.hf.space", "gen": 39, "brier": 0.22473, "stagnation": 2, "model": "lightgbm", "status": "active"},
-      "S15": {"url": "nomos42-nba-evo-6.hf.space", "gen": 42, "brier": 0.22327, "stagnation": 0, "model": "random_forest", "status": "active"}
+      "S10": {
+        "url": "nomos42-nba-quant.hf.space",
+        "role": "exploitation",
+        "gen": 509,
+        "cycle": 170,
+        "brier": 0.22472,
+        "roi": null,
+        "sharpe": null,
+        "stagnation": 0,
+        "model": "xgboost_brier",
+        "mutation_rate": 0.0518,
+        "pareto_front_size": 12,
+        "status": "active",
+        "http_status": 200
+      },
+      "S11": {
+        "url": "nomos42-nba-quant-2.hf.space",
+        "role": "exploration",
+        "gen": 637,
+        "cycle": 213,
+        "brier": 0.22615,
+        "roi": null,
+        "sharpe": null,
+        "stagnation": 0,
+        "model": "xgboost_brier",
+        "mutation_rate": 0.08,
+        "pareto_front_size": 20,
+        "status": "active",
+        "http_status": 200,
+        "note": "Was stagnation=18 prev cycle; diversify triggered; now healthy"
+      },
+      "S12": {
+        "url": "nomos42-nba-evo-3.hf.space",
+        "role": "extra_trees_specialist",
+        "gen": 781,
+        "cycle": 261,
+        "brier": 0.22262,
+        "roi": null,
+        "sharpe": null,
+        "stagnation": 0,
+        "model": "xgboost_brier",
+        "mutation_rate": 0.04,
+        "pareto_front_size": 17,
+        "status": "active",
+        "http_status": 200
+      },
+      "S13": {
+        "url": "nomos42-nba-evo-4.hf.space",
+        "role": "catboost_specialist",
+        "gen": 669,
+        "cycle": 223,
+        "brier": 0.22446,
+        "roi": null,
+        "sharpe": null,
+        "stagnation": 0,
+        "model": "random_forest",
+        "mutation_rate": 0.05,
+        "pareto_front_size": 14,
+        "status": "active",
+        "http_status": 200
+      },
+      "S14": {
+        "url": "nomos42-nba-evo-5.hf.space",
+        "role": "lightgbm_specialist",
+        "gen": 703,
+        "cycle": 235,
+        "brier": 0.22182,
+        "roi": null,
+        "sharpe": null,
+        "stagnation": 0,
+        "model": "catboost",
+        "mutation_rate": 0.04,
+        "pareto_front_size": 17,
+        "status": "best_active",
+        "http_status": 200,
+        "note": "Fleet leader — Brier 0.22182, gap to checkpoint = 0.00345"
+      },
+      "S15": {
+        "url": "nomos42-nba-evo-6.hf.space",
+        "role": "wide_search",
+        "gen": 632,
+        "cycle": 211,
+        "brier": 0.22471,
+        "roi": null,
+        "sharpe": null,
+        "stagnation": 0,
+        "model": "xgboost_brier",
+        "mutation_rate": 0.08,
+        "pareto_front_size": 17,
+        "status": "active",
+        "http_status": 200
+      }
     }
   },
+
   "engine_parity": {
     "mon_ipad_version": "v3.1-46cat",
     "nba_agent_version": "v3.1-51cat",
     "in_sync": false,
-    "action": "mon-ipad engine.py needs sync to v3.1-51cat from nomos-nba-agent"
+    "delta_cats": 5,
+    "action": "engine parity gap remains — Cat47-51 in nomos-nba-agent not yet in mon-ipad"
   },
+
+  "political_alpha_fleet": {
+    "fleet_best_brier": 0.23134,
+    "fleet_best_island": "PA-2",
+    "islands_running": 2,
+    "islands_down": 2,
+    "islands": {
+      "PA-1": {
+        "url": "nomos42-political-alpha.hf.space",
+        "role": "exploitation",
+        "gen": 7795,
+        "cycle": 2599,
+        "brier": 0.24186,
+        "stagnation": 0,
+        "model": "xgboost_brier",
+        "status": "active",
+        "http_status": 200
+      },
+      "PA-2": {
+        "url": "nomos42-political-alpha-2.hf.space",
+        "role": "exploration",
+        "gen": 1731,
+        "cycle": 578,
+        "brier": 0.23134,
+        "stagnation": 0,
+        "model": "political_exploration",
+        "status": "best_active",
+        "http_status": 200
+      },
+      "PA-3": {
+        "url": "nomos42-political-alpha-3.hf.space",
+        "role": "catboost",
+        "status": "DOWN_404",
+        "http_status": 404,
+        "action": "needs_manual_hf_restart"
+      },
+      "PA-4": {
+        "url": "nomos42-political-alpha-4.hf.space",
+        "role": "wide_search",
+        "status": "DOWN_404",
+        "http_status": 404,
+        "action": "needs_manual_hf_restart"
+      }
+    }
+  },
+
+  "gpu_platforms": {
+    "kaggle": {"status": "error", "note": "kernel error from previous cycle"},
+    "colab": {"status": "not_running"}
+  },
+
   "actions_this_cycle": [
-    "S11 diversify triggered (stagnation=18 > threshold=15)",
-    "PA-3 and PA-4 are DOWN (404) — needs manual HF Space restart",
-    "Research proposal written: 3 NBA improvement techniques",
-    "Engine parity mismatch flagged: mon-ipad v3.1-46cat vs HF-space v3.1-51cat"
+    "S11 recovered from stagnation=18 (diversify from prev cycle) — now stagnation=0",
+    "No stagnation issues across any NBA island — no diversify needed",
+    "Fleet best Brier 0.22182 (S14) — above 0.21837 threshold, no checkpoint",
+    "PA-3 and PA-4 remain DOWN — no HF MCP available for auto-restart",
+    "Research: WebSearch retrieved Jan 2026 uncertainty-aware NBA paper (MC Dropout + shot embeddings)",
+    "NBA proposal written: temperature_scaling_calibration-2026-04-03.json",
+    "Political improvement: Cat26 TARIFF_REGIME_SIGNALS added to political_engine.py",
+    "Context: IEEPA tariffs struck down Feb 2026, new Section 122 10% baseline — major new signal"
   ],
-  "research_cycle": "odd_cycle_research_done"
+
+  "research_cycle": "even_cycle_implement",
+  "next_research_cycle": "odd_cycle_research",
+
+  "alerts": [
+    "POLITICAL: PA-3 (catboost) DOWN since prev cycle — manual HF restart needed",
+    "POLITICAL: PA-4 (wide_search) DOWN since prev cycle — manual HF restart needed",
+    "NBA ENGINE PARITY: 5-category gap (v3.1-46cat vs v3.1-51cat)"
+  ],
+
+  "ecosystem_health": "MOSTLY_HEALTHY",
+  "overall_score": 7.5
 }
