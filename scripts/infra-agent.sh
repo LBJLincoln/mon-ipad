@@ -3,7 +3,7 @@
 # NOMOS42 INFRA AGENT — Autonomous GPU Infrastructure Manager
 # ══════════════════════════════════════════════════════════════
 # Monitors, launches, restarts ALL evolution platforms:
-#   - HF Spaces (10 NBA + 4 Political)
+#   - HF Spaces (6 NBA + 2 Political)
 #   - Kaggle GPU kernels (NBA + Political)
 #   - Modal serverless GPU (NBA)
 #   - Keepalive pings
@@ -40,11 +40,9 @@ declare -A SPACES=(
   ["S13_nba"]="https://nomos42-nba-evo-4.hf.space"
   ["S14_nba"]="https://nomos42-nba-evo-5.hf.space"
   ["S15_nba"]="https://nomos42-nba-evo-6.hf.space"
-  # Political islands
+  # Political islands (P3/P4 removed 2026-04-03 — never existed on HF)
   ["P1_pol"]="https://nomos42-political-alpha.hf.space"
   ["P2_pol"]="https://nomos42-political-alpha-2.hf.space"
-  ["P3_pol"]="https://nomos42-political-alpha-3.hf.space"
-  ["P4_pol"]="https://nomos42-political-alpha-4.hf.space"
 )
 
 HF_STATUS_JSON="{"

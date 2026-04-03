@@ -117,15 +117,13 @@ done < <({
     check_space "S15" "https://nomos42-nba-evo-6.hf.space"
 } | grep -E '^S[0-9]+:')
 
-# Also check political spaces
+# Also check political spaces (P1-P2 only; P3/P4 removed 2026-04-03 — never existed on HF)
 POL_RESULTS=()
 while IFS= read -r line; do
     POL_RESULTS+=("$line")
 done < <({
     check_space "PA1" "https://nomos42-political-alpha.hf.space"
     check_space "PA2" "https://nomos42-political-alpha-2.hf.space"
-    check_space "PA3" "https://nomos42-political-alpha-3.hf.space"
-    check_space "PA4" "https://nomos42-political-alpha-4.hf.space"
 } | grep -E '^PA[0-9]+:')
 
 # Count up/down
@@ -138,8 +136,8 @@ for r in "${POL_RESULTS[@]}"; do
     [[ "$r" == *":running:"* ]] && POL_UP=$((POL_UP + 1))
 done
 FLEET_UP=$((NBA_UP + POL_UP))
-FLEET_TOTAL=10
-echo "  NBA: $NBA_UP/6 | Political: $POL_UP/4 | Total: $FLEET_UP/$FLEET_TOTAL"
+FLEET_TOTAL=8
+echo "  NBA: $NBA_UP/6 | Political: $POL_UP/2 | Total: $FLEET_UP/$FLEET_TOTAL"
 
 # ─── 6. ISSUES DETECTION ─────────────────────────────────────────────────────
 echo "[6/8] Issue detection..."
@@ -169,7 +167,7 @@ MEM_PCT=$(python3 -c "print(round($MEM_USED_MB / $MEM_TOTAL_MB * 100, 1))")
 [[ "$PROC_FORGE" == "DOWN" ]] && ISSUES+=('{"severity":"MEDIUM","component":"telegram","description":"forge_bot.py DOWN"}')
 
 # Political spaces
-[[ "$POL_UP" -lt 4 ]] && ISSUES+=('{"severity":"MEDIUM","component":"political_spaces","description":"Political spaces DOWN: '"$POL_UP"'/4 running. PA3/PA4 need HF dashboard restart."}')
+[[ "$POL_UP" -lt 2 ]] && ISSUES+=('{"severity":"MEDIUM","component":"political_spaces","description":"Political spaces DOWN: '"$POL_UP"'/2 running."}')
 
 # NBA spaces
 [[ "$NBA_UP" -lt 6 ]] && ISSUES+=('{"severity":"HIGH","component":"nba_spaces","description":"NBA spaces DOWN: '"$NBA_UP"'/6 running"}')
@@ -265,7 +263,7 @@ output = {
         'nba_up': $NBA_UP,
         'nba_total': 6,
         'political_up': $POL_UP,
-        'political_total': 4,
+        'political_total': 2,
         'fleet_up': $FLEET_UP,
         'fleet_total': $FLEET_TOTAL
     },

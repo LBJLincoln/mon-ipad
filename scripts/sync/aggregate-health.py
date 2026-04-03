@@ -72,8 +72,7 @@ HF_NBA_SPACES = {
 HF_POLITICAL_SPACES = {
     "P1": "https://nomos42-political-alpha.hf.space",
     "P2": "https://nomos42-political-alpha-2.hf.space",
-    "P3": "https://nomos42-political-alpha-3.hf.space",
-    "P4": "https://nomos42-political-alpha-4.hf.space",
+    # P3/P4 removed 2026-04-03 — spaces never existed on HF, caused phantom 404s
 }
 
 DATA_SERVER_URL = "http://localhost:5555/api/status"
@@ -422,7 +421,7 @@ def main():
     nba_spaces = {}
     political_spaces = {}
     nba_fleet_summary = {"total": 6, "running_count": 0, "best_brier": None}
-    political_fleet_summary = {"total": 4, "running_count": 0, "best_brier": None}
+    political_fleet_summary = {"total": 2, "running_count": 0, "best_brier": None}
 
     if not args.skip_hf:
         print("[aggregate-health] Querying HF Spaces (NBA)...")
@@ -548,7 +547,7 @@ def main():
         print(f"  Repos:       {report['summary']['active_repos']}/{report['summary']['total_repos']} active")
         print(f"  Departments: {report['summary']['departments_reporting']}/{report['summary']['departments_total']} reporting")
         print(f"  NBA Fleet:   {nba_fleet_summary['running_count']}/6 running | Best Brier: {nba_fleet_summary.get('best_brier', 'N/A')}")
-        print(f"  Political:   {political_fleet_summary['running_count']}/4 running | Best Brier: {political_fleet_summary.get('best_brier', 'N/A')}")
+        print(f"  Political:   {political_fleet_summary['running_count']}/2 running | Best Brier: {political_fleet_summary.get('best_brier', 'N/A')}")
         print(f"  Data Server: {data_server['status']}")
         print(f"  Blockers:    {len(blockers)} total ({report['blocker_counts']['critical']} critical)")
         print("=" * 60)

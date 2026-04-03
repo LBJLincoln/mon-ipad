@@ -1,7 +1,7 @@
 #!/bin/bash
 # Keepalive for HF Spaces — prevents auto-sleep on free tier
 # Called by cron: */30 * * * *
-# 7 active evolution islands — all on Nomos42 account
+# 8 active evolution islands — all on Nomos42 account (6 NBA + 2 Political)
 
 TS=$(date -u +"%Y-%m-%d %H:%M UTC")
 echo "=== Keepalive $TS ==="
@@ -52,8 +52,7 @@ ping_or_restart "S13 (catboost)"    https://nomos42-nba-evo-4.hf.space/    "Nomo
 ping_or_restart "S14 (lightgbm)"    https://nomos42-nba-evo-5.hf.space/    "Nomos42/nba-evo-5"
 ping_or_restart "S15 (wide)"        https://nomos42-nba-evo-6.hf.space/    "Nomos42/nba-evo-6"
 
-# Political Alpha Evolution (4 islands) — hosted under Nomos42 account
+# Political Alpha Evolution (2 islands) — hosted under Nomos42 account
+# NOTE: P3/P4 removed 2026-04-03 — spaces never existed on HF, caused phantom 404s in monitoring
 ping_or_restart "P1 (exploit)"  https://nomos42-political-alpha.hf.space/   "Nomos42/political-alpha"
 ping_or_restart "P2 (explore)"  https://nomos42-political-alpha-2.hf.space/ "Nomos42/political-alpha-2"
-ping_or_restart "P3 (catboost)" https://nomos42-political-alpha-3.hf.space/ "Nomos42/political-alpha-3"
-ping_or_restart "P4 (wide)"     https://nomos42-political-alpha-4.hf.space/ "Nomos42/political-alpha-4"

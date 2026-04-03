@@ -102,13 +102,11 @@ else
     log "[SPACES] All 6 islands OK"
 fi
 
-# ── 4. Political Alpha Spaces ────────────────────────────────
+# ── 4. Political Alpha Spaces (P1-P2 only; P3/P4 removed 2026-04-03) ──
 PA_DOWN=""
 for ISLAND in \
     "P1:https://nomos42-political-alpha.hf.space" \
-    "P2:https://nomos42-political-alpha-2.hf.space" \
-    "P3:https://nomos42-political-alpha-3.hf.space" \
-    "P4:https://nomos42-political-alpha-4.hf.space"; do
+    "P2:https://nomos42-political-alpha-2.hf.space"; do
     NAME="${ISLAND%%:*}"
     URL="${ISLAND#*:}"
     HTTP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 8 "$URL/" 2>/dev/null || echo "000")
@@ -121,7 +119,7 @@ if [ -n "$PA_DOWN" ]; then
     log "[PA-SPACES] DOWN:${PA_DOWN}"
     alert "Political Alpha DOWN:${PA_DOWN}"
 else
-    log "[PA-SPACES] All 4 islands OK"
+    log "[PA-SPACES] All 2 islands OK"
 fi
 
 # ── 5. Disk space check ──────────────────────────────────────
