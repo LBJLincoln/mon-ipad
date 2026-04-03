@@ -1,167 +1,31 @@
 {
-  "timestamp": "2026-04-03T04:00:00Z",
-  "cycle": "brain-4h-auto",
-  "cycle_notes": "S11 top-performer at Brier 0.21896 (Gen656, ExtraTrees) — very close to checkpoint target 0.21837. NBA Cat50 added (temporal sequence encoding). Political Cat25 added (EO timeline). PA-3/PA-4 remain offline — HuggingFace MCP required for restart.",
+  "cycle_timestamp": "2026-04-03T08:15:00Z",
+  "cycle_type": "4h_brain",
   "nba_fleet": {
-    "total_islands": 6,
-    "online": 6,
-    "offline": [],
-    "best_brier": 0.22182,
-    "best_island": "nba-evo5-S14",
-    "best_model": "catboost",
-    "fleet_average_brier": 0.22408,
-    "brier_target": 0.21837,
-    "gap_to_target": 0.00345,
+    "best_brier": 0.22132,
+    "best_island": "S12",
+    "checkpoint_threshold": 0.21837,
     "checkpoint_triggered": false,
-    "checkpoint_note": "S14 best_brier=0.22182 > target 0.21837 — no checkpoint. S11 top-5 achieved 0.21896 (Gen656) — CLOSE to target, monitor next cycle.",
-    "diversify_triggered": [],
-    "stagnation_all_zero": true,
-    "published_ceiling": 0.199,
-    "engine_version": "v3.1-50cat",
-    "engine_version_prev": "v3.1-49cat",
-    "engine_change_this_cycle": "Added Cat50 Temporal Win Sequence (12 features: ordered outcome encoding, momentum slope, streak normalization). Both root + hf-space updated with 0 diff.",
-    "feature_candidates": 6257,
     "islands": {
-      "nba-quant-S10": {
-        "status": "ONLINE",
-        "url": "nomos42-nba-quant.hf.space",
-        "role": "exploitation",
-        "cycle": 175,
-        "generation": 523,
-        "brier": 0.22472,
-        "model": "xgboost_brier",
-        "features": 57,
-        "stagnation": 0
-      },
-      "nba-quant2-S11": {
-        "status": "ONLINE",
-        "url": "nomos42-nba-quant-2.hf.space",
-        "role": "exploration",
-        "cycle": 220,
-        "generation": 660,
-        "brier": 0.22615,
-        "model": "xgboost_brier",
-        "features": 63,
-        "stagnation": 0,
-        "top_performer_alert": "Gen 656: Extra Trees model achieved Brier 0.21896, Sharpe 11.4 — CLOSEST TO TARGET in fleet history this session"
-      },
-      "nba-evo3-S12": {
-        "status": "ONLINE",
-        "url": "nomos42-nba-evo-3.hf.space",
-        "role": "extra_trees_specialist",
-        "cycle": 268,
-        "generation": 802,
-        "brier": 0.22262,
-        "model": "xgboost_brier",
-        "features": 57,
-        "stagnation": 0
-      },
-      "nba-evo4-S13": {
-        "status": "ONLINE",
-        "url": "nomos42-nba-evo-4.hf.space",
-        "role": "catboost_specialist",
-        "cycle": 229,
-        "generation": 687,
-        "brier": 0.22446,
-        "model": "random_forest",
-        "features": 45,
-        "stagnation": 0
-      },
-      "nba-evo5-S14": {
-        "status": "ONLINE",
-        "url": "nomos42-nba-evo-5.hf.space",
-        "role": "lightgbm_specialist",
-        "cycle": 241,
-        "generation": 721,
-        "brier": 0.22182,
-        "model": "catboost",
-        "features": 62,
-        "stagnation": 0,
-        "fleet_best": true
-      },
-      "nba-evo6-S15": {
-        "status": "ONLINE",
-        "url": "nomos42-nba-evo-6.hf.space",
-        "role": "wide_search",
-        "cycle": 218,
-        "generation": 651,
-        "brier": 0.22471,
-        "model": "xgboost_brier",
-        "features": 66,
-        "stagnation": 0
-      }
+      "S10": {"url": "nomos42-nba-quant.hf.space", "gen": 42, "brier": 0.22499, "stagnation": 10, "model": "lightgbm", "status": "active"},
+      "S11": {"url": "nomos42-nba-quant-2.hf.space", "gen": 42, "brier": 0.22513, "stagnation": 18, "model": "catboost", "status": "diversify_triggered"},
+      "S12": {"url": "nomos42-nba-evo-3.hf.space", "gen": 49, "brier": 0.22132, "stagnation": 0, "model": "extra_trees", "status": "best_active"},
+      "S13": {"url": "nomos42-nba-evo-4.hf.space", "gen": 41, "brier": 0.22813, "stagnation": 14, "model": "lightgbm", "status": "watch"},
+      "S14": {"url": "nomos42-nba-evo-5.hf.space", "gen": 39, "brier": 0.22473, "stagnation": 2, "model": "lightgbm", "status": "active"},
+      "S15": {"url": "nomos42-nba-evo-6.hf.space", "gen": 42, "brier": 0.22327, "stagnation": 0, "model": "random_forest", "status": "active"}
     }
   },
-  "political_fleet": {
-    "total_islands": 4,
-    "online": 2,
-    "offline": 2,
-    "best_brier": 0.24186,
-    "best_island": "political-alpha-1",
-    "fleet_average_brier": 0.24213,
-    "engine_version": "v3.2-political-25cat",
-    "engine_version_prev": "v3.2-political-24cat",
-    "engine_change_this_cycle": "Added Cat25 Executive Order Timeline (12 features: EO timing, velocity spike, reversal signal, sector recency, deadline proximity). ROTATION-B completed.",
-    "islands": {
-      "political-alpha-1": {
-        "status": "ONLINE",
-        "url": "nomos42-political-alpha.hf.space",
-        "role": "exploitation",
-        "cycle": 2224,
-        "generation": 6670,
-        "brier": 0.24186,
-        "model": "xgboost_brier",
-        "features": 53,
-        "stagnation": 0,
-        "note": "Also has LightGBM top-5 at Brier 0.23784, Sharpe 1.18"
-      },
-      "political-alpha-2": {
-        "status": "ONLINE",
-        "url": "nomos42-political-alpha-2.hf.space",
-        "role": "exploration",
-        "cycle": 1661,
-        "generation": 4982,
-        "brier": 0.2424,
-        "model": "logistic_regression",
-        "features": 88,
-        "stagnation": 0
-      },
-    }
+  "engine_parity": {
+    "mon_ipad_version": "v3.1-46cat",
+    "nba_agent_version": "v3.1-51cat",
+    "in_sync": false,
+    "action": "mon-ipad engine.py needs sync to v3.1-51cat from nomos-nba-agent"
   },
-  "improvements_this_cycle": {
-    "nba_1": "IMPLEMENTED: Cat50 Temporal Win Sequence Encoding added to features/engine.py (v3.1-49cat → v3.1-50cat). 12 new features encoding ordered game outcomes, momentum slope, and streak direction. Research basis: MDPI 2026 temporal sequence models. Both root + hf-space files updated (0 diff). Expects Brier delta -0.001 to -0.005 as GA discovers sequence patterns.",
-    "political_1": "IMPLEMENTED: Cat25 Executive Order Timeline added to features/political_engine.py (v3.2-political-24cat → v3.2-political-25cat). 12 new features encoding EO timing, velocity spike detection, regulatory reversal signal, sector recency, and deadline proximity. Research basis: Koch & Schiereck 2025 (+5-15% CAR on enforcement reversals), CEPR 2025 (TPU 3.6-6.2% alpha). ROTATION-B complete.",
-    "monitoring_1": "ALERT: S11 (exploration) produced top-performer at Brier 0.21896 in Gen 656 (Extra Trees, 11 features, Sharpe 11.4). This is 0.00059 above checkpoint target 0.21837. Next cycle: if any island achieves < 0.21837, checkpoint to Supabase immediately.",
-    "monitoring_2": "PA-3 and PA-4 offline for 2nd consecutive cycle (404). Cannot restart without HuggingFace MCP. Will need manual restart via HF dashboard."
-  },
-  "research_findings_2025_2026": {
-    "published_ceiling": "Brier 0.199 (MDPI Jan 2026, RNN+MC dropout+shot-chart embeddings+XGBoost)",
-    "gap_to_ceiling": 0.02282,
-    "top_techniques_remaining": [
-      {"name": "Shot-chart spatial embeddings (CNN 128-dim, PCA 20 components)", "brier_delta": "-0.010 to -0.020", "status": "PROPOSED — requires GPU + Second Spectrum data", "source": "MDPI 2026 (Information 17:56)"},
-      {"name": "LR meta-calibration (already in GA pool)", "brier_delta": "-0.003 to -0.008", "status": "LIVE in GA calibration options", "source": "App.py lr_meta"},
-      {"name": "Stacked ensemble (XGB+LGB+CatBoost+LR meta)", "brier_delta": "-0.005 to -0.010", "status": "REMOVED (CPU too slow, 10% worse than trees) — revisit on Colab GPU", "source": "App.py comment line 661"},
-      {"name": "Monte Carlo dropout ensemble variance proxy", "brier_delta": "-0.002 to -0.005", "status": "FUTURE — needs top-K model saving + GPU", "source": "MDPI 2026"},
-      {"name": "Season z-normalization (era normalization within season)", "brier_delta": "-0.002 to -0.004", "status": "CANDIDATE — add to Cat18 season trajectory", "source": "MDPI 2026 era normalization"},
-      {"name": "Cat50 Temporal Win Sequence (THIS CYCLE)", "brier_delta": "-0.001 to -0.005", "status": "IMPLEMENTED v3.1-50cat", "source": "MDPI/arxiv sequence modeling 2025-2026"}
-    ]
-  },
-  "next_cycle_directives": [
-    "URGENT: Check S11 top-5 — if any individual achieved Brier < 0.21837, checkpoint to Supabase immediately",
-    "MONITOR: Cat50 features — check if seq50_slope_diff / seq50_streak_diff appear in any island's top features after 50+ generations",
-    "RESTART: PA-3 (catboost) and PA-4 (wide search) — 2 consecutive offline cycles, manual HF dashboard restart required",
-    "ROTATION-A for Political next cycle: WebSearch FEC filings, SEC insider trades, executive orders — find new data sources",
-    "NBA: Consider adding era normalization (season z-score within season) to Cat18 — MDPI 2026 reports +2-4bp improvement",
-    "CHECK: S14 (nba-evo-5) maintains fleet-best 0.22182 with CatBoost — if stagnation rises >15, send diversify command"
+  "actions_this_cycle": [
+    "S11 diversify triggered (stagnation=18 > threshold=15)",
+    "PA-3 and PA-4 are DOWN (404) — needs manual HF Space restart",
+    "Research proposal written: 3 NBA improvement techniques",
+    "Engine parity mismatch flagged: mon-ipad v3.1-46cat vs HF-space v3.1-51cat"
   ],
-  "engine_versions": {
-    "nba": "v3.1-50cat (6257+ features, 12 new Cat50 temporal sequence features added 2026-04-03)",
-    "political": "v3.2-political-25cat (3200+ features, 12 new Cat25 EO timeline features added 2026-04-03)"
-  },
-  "cross_repo_health": {
-    "nba_engine_parity": "PASS — root/hf-space diff = 0 lines",
-    "political_engine_version": "v3.2-political-25cat",
-    "cross_pollination_this_cycle": "Cat50 temporal sequence concept (ordered encoding > rolling average) applicable to Political — add political event sequence encoding in future cycle",
-    "both_projects_improved": true
-  }
+  "research_cycle": "odd_cycle_research_done"
 }
