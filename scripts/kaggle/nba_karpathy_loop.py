@@ -8,7 +8,7 @@ Pattern: github.com/karpathy/autoresearch
 - Checkpoints to Kaggle output for resume across sessions
 - Seeds from live HF Space evolution islands
 
-Target: Beat ATR 0.21837 (S13 CatBoost gen815)
+Target: Beat ATR 0.21570 (Colab TabICL, 110f, iter 15)
 """
 
 import os, sys, json, time, gc, math, random, traceback
@@ -377,7 +377,7 @@ def run_karpathy_loop():
     print(f"\n{'='*70}")
     print(f"  NBA QUANT AI — KARPATHY AUTORESEARCH LOOP")
     print(f"  Pop={CONFIG['population_size']} | Budget={CONFIG['iteration_budget_sec']}s/iter")
-    print(f"  ATR to beat: 0.21837 | Current best: {best_ever:.5f}")
+    print(f"  ATR to beat: 0.21570 | Current best: {best_ever:.5f}")
     print(f"  Session limit: {SESSION_LIMIT/3600:.0f}h")
     print(f"{'='*70}\n")
 
