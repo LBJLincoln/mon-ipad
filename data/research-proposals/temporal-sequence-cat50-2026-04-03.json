@@ -1,0 +1,36 @@
+{
+  "proposal_id": "cat50-temporal-sequence-2026-04-03",
+  "date": "2026-04-03",
+  "status": "IMPLEMENTED",
+  "title": "Cat50: Temporal Win-Sequence Encoding",
+  "summary": "Encode the ORDER of last-10-game outcomes as features — not just rolling averages. A team that lost early then won recently (improving trajectory) is fundamentally different from a team winning early and now declining, even at identical aggregate win%. Rolling averages lose this directional information.",
+  "research_basis": [
+    {"source": "MDPI Information 2026 (10.3390/info17010056)", "finding": "Temporal sequence models outperform tabular rolling averages for NBA prediction; MC-dropout LSTM achieves Brier 0.199 vs XGBoost 0.202 with equal features"},
+    {"source": "arxiv 2508.02725 (NCAA 2026)", "finding": "LSTM sequence encoding of game outcomes captures non-stationary momentum patterns undetectable by window averages"},
+    {"source": "Starlizard architecture reference", "finding": "500+ features include sequence pattern indicators, not just window statistics"}
+  ],
+  "features_added": 12,
+  "feature_names": [
+    "seq50_h_early_wp", "seq50_h_late_wp", "seq50_h_slope",
+    "seq50_h_margin_slope_norm", "seq50_h_streak_norm",
+    "seq50_a_early_wp", "seq50_a_late_wp", "seq50_a_slope",
+    "seq50_a_margin_slope_norm", "seq50_a_streak_norm",
+    "seq50_slope_diff", "seq50_streak_diff"
+  ],
+  "expected_brier_delta": "-0.001 to -0.005",
+  "expected_mechanism": "GA will discover that seq50_slope_diff (momentum trajectory difference) is a superior predictor vs raw h_wp10 / a_wp10 for teams in transitional states (post-injury return, coaching change, hot/cold streaks)",
+  "implementation": {
+    "files_modified": ["features/engine.py", "hf-space/features/engine.py"],
+    "engine_version_before": "v3.1-49cat",
+    "engine_version_after": "v3.1-50cat",
+    "features_before": 6245,
+    "features_after": 6257,
+    "parity_verified": true,
+    "diff_lines": 0
+  },
+  "validation_plan": "Monitor next 5 cycles — check if seq50_* features appear in any island's selected feature set. If seq50_slope_diff appears in top-50 features of any island, proposal is confirmed useful.",
+  "cross_project_applicability": {
+    "political": "Political event sequences (EO → vote → enforcement) could benefit from same ordered encoding. Proposed as Cat26 for future cycle.",
+    "technique_name": "Political Event Timeline Sequence (Cat26-candidate)"
+  }
+}
