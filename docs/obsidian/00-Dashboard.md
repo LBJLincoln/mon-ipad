@@ -6,16 +6,19 @@ aliases: [Dashboard, Live Status, Control Room]
 
 # 00 — Live Dashboard
 
-> Last data pull: 2026-04-03T23:47Z | Auto-updated by autonomous-cycle.sh
+> Last data pull: 2026-04-04T07:55Z | Auto-updated by autonomous-cycle.sh
 
 ## System Health
 
 ```
 SPACES    6/6 UP   ████████████ 100%
-KAGGLE    ERROR    ░░░░░░░░░░░░   0%  (3 kernels timeout)
+KAGGLE    2/3 OK   ████████░░░░  67%  (political v24 restarted)
 BOTS      2/2 UP   ████████████ 100%
-CRONS     31/35    ███████████░  88%  (4 missing)
+CRONS     36/36    ████████████ 100%  (D9 cross-repo added)
 REPOS     5/5 UP   ████████████ 100%
+COUNCILS  9/9 LIVE ████████████ 100%  (all 9 depts active)
+SUPABASE  249K evals █████████████ ACTIVE
+NEO4J     45 nodes  ████████████ CONNECTED
 ```
 
 ---
@@ -39,14 +42,14 @@ REPOS     5/5 UP   ████████████ 100%
 
 | Island | Status | Brier | Gen | Model | Mut Rate |
 |--------|--------|-------|-----|-------|----------|
-| S10 | RUNNING | 0.22454 | 207 | xgboost_brier | 0.119 |
-| S11 | RUNNING | 0.22273 | 284 | xgboost | 0.107 |
-| S12 | RUNNING | 0.22506 | 576 | catboost | 0.058 |
-| S13 | RUNNING | 0.22455 | 374 | extra_trees | 0.067 |
-| S14 | RUNNING | 0.22666 | 443 | xgboost_brier | 0.108 |
-| **S15** | **RUNNING** | **0.22159** | 464 | random_forest | 0.130 |
+| S10 | RUNNING | 0.22454 | 373 | tree_ensemble | 0.09 |
+| S11 | RUNNING | 0.22273 | 599 | tree_ensemble | 0.15 |
+| S12 | RUNNING | 0.22506 | 861 | extra_trees | 0.08 |
+| S13 | RUNNING | 0.22455 | 586 | catboost | 0.10 |
+| S14 | RUNNING | 0.22666 | 638 | lightgbm | 0.08 |
+| **S15** | **RUNNING** | **0.22159** | 924 | tree_ensemble | 0.18 |
 
-Fleet avg: **0.22419** | Fleet best: **0.22159** (S15)
+Fleet avg: **0.22402** | Fleet best: **0.22159** (S15)
 
 Cross-pollination pending: S14 → S10 (gain +0.00545), S12 → S10 (gain +0.00465)
 

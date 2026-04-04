@@ -1,6 +1,6 @@
 # NOMOS42 — Daily Operations Dashboard
 
-> **Last updated:** 2026-04-04 06:01 UTC | **Auto-refreshed by:** autonomous-cycle.sh every 4h
+> **Last updated:** 2026-04-04 07:45 UTC | **Auto-refreshed by:** autonomous-cycle.sh every 4h
 > **Read this on your iPad to know exactly where we are and what YOU need to do.**
 
 ---
@@ -9,9 +9,10 @@
 
 | Repo | Purpose | Status | HF Spaces | Key Metric | Next Action |
 |------|---------|--------|-----------|------------|-------------|
-| **mon-ipad** | Pilot / Orchestrator | ACTIVE | — | Iteration 7, Gen 952 | Auto-iterating |
-| **nomos-nba-agent** | NBA Predictions | ACTIVE | S10-S15 (6 islands) | Brier 0.21570 ATR | Engine parity check |
-| **nomos-political-alpha** | Political Alpha | ACTIVE | P1-P4 (4 islands) | Brier 0.24186 (P1) | P3/P4 need deploy |
+| **mon-ipad** | Pilot / Orchestrator | ACTIVE | — | Forge v19, 9 depts, 9 councils | All councils live |
+| **nomos-nba-agent** | NBA Predictions | ACTIVE | S10-S15 (6 islands) | Brier 0.21570 ATR, fleet 0.22159 | Cross-pollination |
+| **nomos-political-alpha** | Political Alpha | ACTIVE | P1-P4 (4 islands) | Kaggle v24 pushed | Deploy events to HF |
+| **nomos-dashboard** | Frontend / Arena | ACTIVE | — (Vercel) | Dashboard V2 live | Visual iteration |
 | **rgwa** | AI Art Generation | IDLE | — (needs setup) | 0 pieces generated | First generation run |
 | **nomos-dashboard** | Frontend / Arena | ACTIVE | — (Vercel) | Trading Floor v5 live | Visual iteration |
 
