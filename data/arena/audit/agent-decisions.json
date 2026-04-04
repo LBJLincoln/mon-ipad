@@ -1,20 +1,20 @@
 {
   "metadata": {
-    "generated_at": "2026-04-04T17:58:13.235751+00:00",
+    "generated_at": "2026-04-04T18:19:23.964147+00:00",
     "total_agents": 6,
-    "total_decisions": 2091
+    "total_decisions": 2096
   },
   "agents": {
     "openrouter": {
       "trader_id": "openrouter",
-      "total_decisions": 352,
+      "total_decisions": 353,
       "action_type_counts": {
-        "mutation": 346,
+        "mutation": 347,
         "bankroll_milestone": 4,
         "rank_change": 2
       },
       "first_decision_iteration": 1,
-      "last_decision_iteration": 358,
+      "last_decision_iteration": 359,
       "performance_trajectory": [
         {
           "iteration": 1,
@@ -11112,19 +11112,50 @@
             "roi_pct": 289.62,
             "sharpe": 2.014
           }
+        },
+        {
+          "iteration": 359,
+          "timestamp": "2026-04-04T18:19:16.979915+00:00",
+          "source_iteration": 94,
+          "source_generation": 12784,
+          "trader_id": "openrouter",
+          "action_type": "mutation",
+          "action_subtype": "adopt_winner_strategies",
+          "old_value": {
+            "rank": 4,
+            "bankroll": 389.6234
+          },
+          "new_value": {
+            "adopt_strategies": [
+              "underdog_specialist",
+              "value_hunter"
+            ],
+            "adopt_models": [
+              "elo_baseline",
+              "consensus_ensemble"
+            ],
+            "from_agent": "codex"
+          },
+          "reason": "openrouter (rank 4) should learn from codex (rank 1)",
+          "performance_at_time": {
+            "rank": 4,
+            "bankroll": 389.6234,
+            "roi_pct": 289.62,
+            "sharpe": 2.014
+          }
         }
       ]
     },
     "claude": {
       "trader_id": "claude",
-      "total_decisions": 51,
+      "total_decisions": 52,
       "action_type_counts": {
-        "mutation": 46,
+        "mutation": 47,
         "rank_change": 3,
         "bankroll_milestone": 2
       },
       "first_decision_iteration": 1,
-      "last_decision_iteration": 358,
+      "last_decision_iteration": 359,
       "performance_trajectory": [
         {
           "iteration": 1,
@@ -12916,19 +12947,50 @@
             "roi_pct": 136.09,
             "sharpe": 3.946
           }
+        },
+        {
+          "iteration": 359,
+          "timestamp": "2026-04-04T18:19:16.979915+00:00",
+          "source_iteration": 94,
+          "source_generation": 12784,
+          "trader_id": "claude",
+          "action_type": "mutation",
+          "action_subtype": "adopt_winner_strategies",
+          "old_value": {
+            "rank": 5,
+            "bankroll": 236.0926
+          },
+          "new_value": {
+            "adopt_strategies": [
+              "underdog_specialist",
+              "value_hunter"
+            ],
+            "adopt_models": [
+              "elo_baseline",
+              "consensus_ensemble"
+            ],
+            "from_agent": "codex"
+          },
+          "reason": "claude (rank 5) should learn from codex (rank 1)",
+          "performance_at_time": {
+            "rank": 5,
+            "bankroll": 236.0926,
+            "roi_pct": 136.09,
+            "sharpe": 3.946
+          }
         }
       ]
     },
     "_council": {
       "trader_id": "_council",
-      "total_decisions": 1341,
+      "total_decisions": 1344,
       "action_type_counts": {
-        "experiment": 1038,
+        "experiment": 1041,
         "elimination": 298,
         "strategy_shift": 5
       },
       "first_decision_iteration": 1,
-      "last_decision_iteration": 358,
+      "last_decision_iteration": 359,
       "performance_trajectory": [],
       "decisions": [
         {
@@ -45250,6 +45312,80 @@
             "model": "elo_baseline",
             "avg_daily_pnl": 6.4299,
             "win_rate_pct": 47.4,
+            "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+            "priority": 1
+          },
+          "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+          "performance_at_time": {
+            "best_bankroll": 3740.5,
+            "best_trader": "codex",
+            "distance_to_1m": 99.6259
+          }
+        },
+        {
+          "iteration": 359,
+          "timestamp": "2026-04-04T18:19:16.979915+00:00",
+          "source_iteration": 94,
+          "source_generation": 12784,
+          "trader_id": "_council",
+          "action_type": "experiment",
+          "action_subtype": "cross_pollination",
+          "old_value": null,
+          "new_value": {
+            "strategy": "underdog_specialist",
+            "test_with_models": [
+              "consensus_ensemble",
+              "xgboost",
+              "random_forest"
+            ],
+            "hypothesis": "Top strategy 'underdog_specialist' may perform even better with mid-tier models",
+            "priority": 1
+          },
+          "reason": "Top strategy 'underdog_specialist' may perform even better with mid-tier models",
+          "performance_at_time": {
+            "best_bankroll": 3740.5,
+            "best_trader": "codex",
+            "distance_to_1m": 99.6259
+          }
+        },
+        {
+          "iteration": 359,
+          "timestamp": "2026-04-04T18:19:16.979915+00:00",
+          "source_iteration": 94,
+          "source_generation": 12784,
+          "trader_id": "_council",
+          "action_type": "experiment",
+          "action_subtype": "category_focus",
+          "old_value": null,
+          "new_value": {
+            "categories": [
+              "spread_away",
+              "team_total_home_under"
+            ],
+            "expected_win_rate": 68.8,
+            "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+            "priority": 2
+          },
+          "reason": "Focus bets on top-2 winning categories for higher concentration",
+          "performance_at_time": {
+            "best_bankroll": 3740.5,
+            "best_trader": "codex",
+            "distance_to_1m": 99.6259
+          }
+        },
+        {
+          "iteration": 359,
+          "timestamp": "2026-04-04T18:19:16.979915+00:00",
+          "source_iteration": 94,
+          "source_generation": 12784,
+          "trader_id": "_council",
+          "action_type": "experiment",
+          "action_subtype": "model_promotion",
+          "old_value": null,
+          "new_value": {
+            "model": "elo_baseline",
+            "avg_daily_pnl": 6.2673,
+            "win_rate_pct": 47.0,
             "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
             "priority": 1
           },

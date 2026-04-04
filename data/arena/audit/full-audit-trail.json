@@ -1,19 +1,19 @@
 {
   "metadata": {
-    "generated_at": "2026-04-04T17:58:08.467309+00:00",
-    "total_entries": 2091,
-    "council_iterations_processed": 346,
+    "generated_at": "2026-04-04T18:19:18.949197+00:00",
+    "total_entries": 2096,
+    "council_iterations_processed": 347,
     "iteration_range": {
       "first": 1,
-      "last": 358
+      "last": 359
     },
     "generation_range": {
       "first": 6120,
-      "last": 12104
+      "last": 12784
     },
     "action_type_summary": {
-      "mutation": 692,
-      "experiment": 1038,
+      "mutation": 694,
+      "experiment": 1041,
       "elimination": 298,
       "rank_change": 20,
       "strategy_shift": 5,
@@ -65,14 +65,14 @@
       "provider": "google",
       "personality": "analytical",
       "risk_tolerance": 0.6,
-      "nba_bankroll": 699.0117,
-      "nba_roi_pct": 599.01,
-      "nba_sharpe": 2.075,
-      "nba_bets": 1287,
-      "nba_wins": 611,
-      "nba_losses": 676,
-      "nba_peak": 821.8769,
-      "nba_max_drawdown": 0.5325
+      "nba_bankroll": 2566.1908,
+      "nba_roi_pct": 2466.19,
+      "nba_sharpe": 2.808,
+      "nba_bets": 2594,
+      "nba_wins": 1236,
+      "nba_losses": 1358,
+      "nba_peak": 2596.0972,
+      "nba_max_drawdown": 0.4818
     },
     "grok": {
       "trader_id": "grok",
@@ -80,13 +80,13 @@
       "provider": "xai",
       "personality": "contrarian",
       "risk_tolerance": 0.65,
-      "nba_bankroll": 1647.4819,
-      "nba_roi_pct": 1547.48,
-      "nba_sharpe": 5.436,
-      "nba_bets": 1222,
-      "nba_wins": 497,
-      "nba_losses": 725,
-      "nba_peak": 1681.3331,
+      "nba_bankroll": 1618.105,
+      "nba_roi_pct": 1518.1,
+      "nba_sharpe": 5.345,
+      "nba_bets": 1230,
+      "nba_wins": 498,
+      "nba_losses": 732,
+      "nba_peak": 1654.3602,
       "nba_max_drawdown": 0.2786
     },
     "openrouter": {
@@ -55159,6 +55159,142 @@
         "model": "elo_baseline",
         "avg_daily_pnl": 6.4299,
         "win_rate_pct": 47.4,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3740.5,
+        "best_trader": "codex",
+        "distance_to_1m": 99.6259
+      }
+    },
+    {
+      "iteration": 359,
+      "timestamp": "2026-04-04T18:19:16.979915+00:00",
+      "source_iteration": 94,
+      "source_generation": 12784,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 389.6234
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "underdog_specialist",
+          "value_hunter"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "consensus_ensemble"
+        ],
+        "from_agent": "codex"
+      },
+      "reason": "openrouter (rank 4) should learn from codex (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 389.6234,
+        "roi_pct": 289.62,
+        "sharpe": 2.014
+      }
+    },
+    {
+      "iteration": 359,
+      "timestamp": "2026-04-04T18:19:16.979915+00:00",
+      "source_iteration": 94,
+      "source_generation": 12784,
+      "trader_id": "claude",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 236.0926
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "underdog_specialist",
+          "value_hunter"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "consensus_ensemble"
+        ],
+        "from_agent": "codex"
+      },
+      "reason": "claude (rank 5) should learn from codex (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 236.0926,
+        "roi_pct": 136.09,
+        "sharpe": 3.946
+      }
+    },
+    {
+      "iteration": 359,
+      "timestamp": "2026-04-04T18:19:16.979915+00:00",
+      "source_iteration": 94,
+      "source_generation": 12784,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "underdog_specialist",
+        "test_with_models": [
+          "consensus_ensemble",
+          "xgboost",
+          "random_forest"
+        ],
+        "hypothesis": "Top strategy 'underdog_specialist' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'underdog_specialist' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3740.5,
+        "best_trader": "codex",
+        "distance_to_1m": 99.6259
+      }
+    },
+    {
+      "iteration": 359,
+      "timestamp": "2026-04-04T18:19:16.979915+00:00",
+      "source_iteration": 94,
+      "source_generation": 12784,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "spread_away",
+          "team_total_home_under"
+        ],
+        "expected_win_rate": 68.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3740.5,
+        "best_trader": "codex",
+        "distance_to_1m": 99.6259
+      }
+    },
+    {
+      "iteration": 359,
+      "timestamp": "2026-04-04T18:19:16.979915+00:00",
+      "source_iteration": 94,
+      "source_generation": 12784,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 6.2673,
+        "win_rate_pct": 47.0,
         "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
         "priority": 1
       },
