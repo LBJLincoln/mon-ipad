@@ -203,9 +203,10 @@ def build_predictions_panel() -> Panel:
         away = g.get("away", "?")
         prob = g.get("home_win_prob", 0)
         conf = g.get("confidence", "?")
-        edge = g.get("edge", 0)
-        kelly = g.get("kelly_stake", 0)
+        edge = g.get("edge") or 0
+        kelly = g.get("kelly_stake") or 0
         side = g.get("bet_side", "?")
+        prob = prob or 0.5
 
         prob_style = "green" if prob > 0.6 else ("red" if prob < 0.4 else "yellow")
         edge_style = "green" if edge > 0.05 else "dim"
