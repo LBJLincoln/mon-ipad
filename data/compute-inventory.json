@@ -1,0 +1,509 @@
+{
+  "meta": {
+    "name": "Nomos42 Compute Inventory",
+    "version": "1.0",
+    "updated": "2026-04-04",
+    "description": "Complete map of all compute accounts, GPU platforms, API keys, and network nodes"
+  },
+
+  "huggingface": {
+    "description": "HuggingFace Spaces (CPU-only evolution islands)",
+    "free_tier_per_account": {
+      "spaces": 8,
+      "zerogpu_free_minutes_per_day": 5,
+      "zerogpu_pro_minutes_per_day": 25
+    },
+    "accounts": [
+      {
+        "name": "Nomos42",
+        "env_var": "HF_TOKEN_3",
+        "role": "Main production account",
+        "slots_used": 8,
+        "slots_total": 8,
+        "spaces": [
+          {
+            "id": "S10",
+            "name": "nba-quant",
+            "url": "nomos42-nba-quant.hf.space",
+            "role": "exploitation",
+            "strategy": "mut=0.09, cx=0.80, feat=63",
+            "brier_latest": 0.22454
+          },
+          {
+            "id": "S11",
+            "name": "nba-quant-2",
+            "url": "nomos42-nba-quant-2.hf.space",
+            "role": "exploration",
+            "strategy": "mut=0.15, feat=80",
+            "brier_latest": 0.22273,
+            "note": "URL is nba-quant-2 NOT nba-evo-2"
+          },
+          {
+            "id": "S12",
+            "name": "nba-evo-3",
+            "role": "extra_trees specialist",
+            "strategy": "mut=0.08, feat=60",
+            "brier_latest": 0.22506
+          },
+          {
+            "id": "S13",
+            "name": "nba-evo-4",
+            "role": "catboost specialist",
+            "strategy": "mut=0.10, feat=66",
+            "brier_latest": 0.22455
+          },
+          {
+            "id": "S14",
+            "name": "nba-evo-5",
+            "role": "lightgbm specialist",
+            "strategy": "mut=0.08, feat=55",
+            "brier_latest": 0.22666,
+            "note": "Previously best at 0.22182 (catboost)"
+          },
+          {
+            "id": "S15",
+            "name": "nba-evo-6",
+            "role": "wide search",
+            "strategy": "mut=0.18, feat=80, pop=50",
+            "brier_latest": 0.22159,
+            "note": "Fleet best"
+          },
+          {
+            "id": "P1_pol",
+            "name": "Political Island 1",
+            "role": "political alpha evolution",
+            "brier_latest": 0.24997
+          },
+          {
+            "id": "P2_pol",
+            "name": "Political Island 2",
+            "role": "political alpha evolution",
+            "brier_latest": 0.23134
+          }
+        ],
+        "zerogpu_free_min_per_day": 5,
+        "zerogpu_script": "scripts/gpu-burst/zerogpu-burst.py"
+      },
+      {
+        "name": "LBJLincoln",
+        "env_var": "HF_TOKEN",
+        "role": "Personal / secondary",
+        "slots_used": 3,
+        "slots_total": 8,
+        "spaces": [
+          {
+            "note": "3 existing spaces (some may be dead/cleanup needed)"
+          }
+        ],
+        "zerogpu_free_min_per_day": 5,
+        "planned": ["P3_pol CatBoost", "P4_pol Wide"]
+      },
+      {
+        "name": "LBJLincoln26",
+        "env_var": "HF_TOKEN_2",
+        "role": "Secondary / overflow",
+        "slots_used": 4,
+        "slots_total": 8,
+        "spaces": [
+          {
+            "note": "4 existing spaces (some may be dead/cleanup needed)"
+          }
+        ],
+        "zerogpu_free_min_per_day": 5,
+        "planned": ["RGWA gen-1 creative space"]
+      },
+      {
+        "name": "Forge Account",
+        "env_var": "HF_TOKEN_FORGE",
+        "role": "Forge automation token (confirmed Apr 4)",
+        "note": "HF_TOKEN_FORGE present in .env.local — likely 4th production account",
+        "zerogpu_free_min_per_day": 5
+      }
+    ],
+    "total_zerogpu_free_min_per_day": 20,
+    "total_hf_users_token": {
+      "env_var": "HF_TOKEN_USERS",
+      "note": "Composite token or multi-user access — present in .env.local"
+    },
+    "max_features_hard_cap": 200,
+    "mutation_cap": 0.15,
+    "keepalive_cron": "*/30 * * * *",
+    "keepalive_script": "scripts/keepalive-spaces.sh"
+  },
+
+  "kaggle": {
+    "description": "Kaggle GPU sessions (P100, 9h/week per account)",
+    "accounts": [
+      {
+        "username": "alexismoret6",
+        "env_var_username": "KAGGLE_USERNAME",
+        "env_var_key": "KAGGLE_KEY",
+        "credentials_file": "~/.kaggle/kaggle.json",
+        "gpu": "P100 16GB VRAM",
+        "quota_hours_per_week": 9,
+        "quota_hours_per_month": 30,
+        "scripts": [
+          "scripts/kaggle/nba_karpathy_loop.py",
+          "scripts/kaggle/political_karpathy_loop.py"
+        ],
+        "iteration_rate": "12 iter/hr, ~100/session",
+        "best_brier": 0.21844,
+        "walk_forward_avg": 0.22447,
+        "cron_trigger": "0 3 * * *",
+        "trigger_script": "scripts/kaggle-gpu-evolution.sh",
+        "status": "RUNNING"
+      },
+      {
+        "username": "aurelien_moret (TO CREATE)",
+        "account_email": "aurelien.moret123@outlook.fr",
+        "gpu": "P100 16GB VRAM",
+        "quota_hours_per_week": 30,
+        "status": "PENDING CREATION",
+        "note": "Brother's/Aurélien's secondary account — not yet created as of Apr 3"
+      }
+    ]
+  },
+
+  "google_colab": {
+    "description": "Google Colab T4 GPU (free/pro burst sessions)",
+    "gpu": "T4 16GB VRAM",
+    "session_limit_free": "30 min burst / ~1-2h sessions",
+    "cost_pro": "$10/month (Colab Pro)",
+    "best_result": {
+      "brier": 0.21570,
+      "method": "TabICL ensemble",
+      "iterations": 318,
+      "duration": "2h50",
+      "notebook": "colab/nba_evolution_gpu.ipynb"
+    },
+    "accounts": [
+      {
+        "id": "user_account_1",
+        "owner": "Aurélien (user)",
+        "status": "ACTIVE",
+        "gpu_access": "T4 free tier",
+        "notebooks": ["colab/nba_evolution_gpu.ipynb"]
+      },
+      {
+        "id": "user_account_2",
+        "owner": "Aurélien (secondary Google account)",
+        "status": "ACTIVE",
+        "gpu_access": "T4 free tier",
+        "notes": "Double burst capacity"
+      },
+      {
+        "id": "brother_account",
+        "owner": "Brother",
+        "email": "unknown",
+        "status": "PENDING CREATION",
+        "gpu_access": "T4 free tier (to create)",
+        "note": "Mentioned Apr 4 — adds 3rd T4 session"
+      }
+    ],
+    "total_free_gpu_hours_per_day": "~2-3h combined (user accounts)"
+  },
+
+  "modal": {
+    "description": "Modal.com serverless GPU (A10G/A100, pay-as-you-go)",
+    "cost_per_hour": "$0.16 (A10G)",
+    "gpu_options": ["A10G", "A100"],
+    "billing_model": "pay-as-you-go",
+    "accounts": [
+      {
+        "owner": "Aurélien (user)",
+        "workspace": "aurelienm03master",
+        "env_var_token_id": "MODAL_TOKEN_ID",
+        "env_var_token_secret": "MODAL_TOKEN_SECRET",
+        "token_id": "ak-t0TDdvpDfU53x7sTCfswN6",
+        "profile_path": "/home/nomos/.modal.toml",
+        "scripts": [
+          "scripts/gpu-burst/modal-burst.py",
+          "scripts/gpu-burst/modal-deploy.py"
+        ],
+        "status": "LAUNCHED"
+      },
+      {
+        "owner": "Brother",
+        "workspace": "unknown",
+        "status": "MENTIONED (needs confirmation)",
+        "note": "Brother's Modal account mentioned Apr 4 — credentials unknown"
+      }
+    ]
+  },
+
+  "lightning_ai": {
+    "description": "Lightning AI Studios (T4/A10G, free tier credits)",
+    "gpu_options": ["T4", "A10G"],
+    "free_tier_hours_total": 22,
+    "accounts": [
+      {
+        "username": "moretalexis24",
+        "email": "moretalexis24@gmail.com",
+        "user_id": "8c36cf20-9101-4f04-98c7-eb1f35ec3eb4",
+        "teamspace": "inference-optimization-project",
+        "studio": "nba-tabicl-eval",
+        "env_var_user_id": "LIGHTNING_USER_ID",
+        "env_var_api_key": "LIGHTNING_API_KEY",
+        "ssh_command": "ssh s_01kn9h95d6sf07tb7csvfcjz7p@ssh.lightning.ai",
+        "ssh_key_location": "C:\\Users\\aurel\\.ssh\\lightning_rsa",
+        "free_hours": 22,
+        "status": "AVAILABLE (free credits arrived April 1)",
+        "purpose": "TabICL evaluation, extended runs",
+        "scripts": [
+          "scripts/gpu-burst/lightning-burst.py",
+          "scripts/gpu-burst/lightning-deploy.sh"
+        ]
+      },
+      {
+        "owner": "Brother",
+        "status": "MENTIONED (needs confirmation)",
+        "note": "Brother's Lightning account mentioned Apr 4 — credentials unknown"
+      }
+    ],
+    "total_free_hours": 22
+  },
+
+  "vms_physical": {
+    "description": "Physical machines and VMs in the Nomos42 mesh",
+    "nodes": [
+      {
+        "id": "vm_gcloud",
+        "name": "Google Cloud VM (Control Tower)",
+        "provider": "Google Cloud (free tier E2-micro)",
+        "role": "Brain, crons, Telegram bots, Trading Floor, Git push, data server",
+        "cpu": "1 vCPU",
+        "ram_mb": 969,
+        "ram_free_mb": "~170-211",
+        "disk_gb": 10,
+        "disk_used_pct": 73.4,
+        "os": "Ubuntu 22.04 LTS",
+        "tailscale_ip": "100.70.229.122",
+        "hostname": "termius",
+        "ssh_user": "termius",
+        "cron_count": 36,
+        "ml_allowed": false,
+        "note": "CRITICAL: ZERO ML. Kill idle procs to preserve RAM.",
+        "env_file": "/home/termius/mon-ipad/.env.local"
+      },
+      {
+        "id": "laptop_acer",
+        "name": "Laptop (Acer Aspire A315-54K)",
+        "owner": "Aurélien",
+        "role": "Local AI inference, Ollama models, evolution worker, backup storage",
+        "cpu": "Intel Core i3-6006U @ 2.4GHz (2c/4t)",
+        "ram_gb": 8,
+        "ram_wsl_gb": 3.8,
+        "os": "Windows 10 Home + WSL2 Ubuntu",
+        "tailscale_ip": "100.67.205.125",
+        "hostname": "LAPTOP-5GFR08RQ",
+        "ssh_user_windows": "aurel",
+        "ssh_user_wsl": "nomos",
+        "ssh_password_wsl": "nomos42",
+        "ssh_key_on_vm": "~/.ssh/config Host laptop -> 100.67.205.125",
+        "software": {
+          "git": "2.52.0",
+          "nodejs": "25.3.0",
+          "python": "3.12.3 (WSL)",
+          "ollama": true,
+          "claude_code_desktop": true
+        },
+        "ollama_models": ["Gemma 4 2B", "Qwen3 3.6B (4-bit)"],
+        "ml_compute": "CPU only (no GPU)",
+        "repo_backups": [
+          "C:\\Users\\aurel\\nomos42-backup\\mon-ipad",
+          "C:\\Users\\aurel\\nomos42-backup\\nomos-nba-agent",
+          "C:\\Users\\aurel\\nomos42-backup\\nomos-dashboard"
+        ],
+        "evolution_scripts": [
+          "/home/nomos/nomos42-evo/laptop_evolution_worker.py",
+          "scripts/laptop/agent-monitor.py",
+          "scripts/laptop/check_laptop.sh"
+        ],
+        "known_issues": [
+          "WSL systemd broken — use wsl -d Ubuntu -e",
+          "SSH quoting fragile through Windows cmd.exe",
+          "Laptop sleeps — must disable in Windows power settings",
+          "High latency 1.5-3.7s RTT via Tailscale relay 'par'"
+        ],
+        "status": "CONNECTED via Tailscale",
+        "blockers": ["ML packages not installed in WSL", "Sleep/WiFi drop during long ops"]
+      },
+      {
+        "id": "ipad",
+        "name": "iPad Gen 8 (Pilot Interface)",
+        "role": "Command and control, running Claude Code sessions via Termius",
+        "app": "Termius SSH client",
+        "tailscale_ip": "100.97.35.14",
+        "connection": "Tailscale -> VM",
+        "ml_allowed": false,
+        "status": "ACTIVE — primary user interface"
+      },
+      {
+        "id": "brother_pc",
+        "name": "Brother's PC (3rd Compute Node)",
+        "role": "Extra ML compute, Ollama models, 2nd Kaggle/Colab account",
+        "os": "Windows",
+        "software": ["Termius"],
+        "tailscale_ip": "PENDING",
+        "status": "PENDING SSH key setup",
+        "tailscale_status": "Key sent via Telegram — awaiting setup",
+        "potential": ["Extra ML compute", "Ollama models", "2nd Kaggle quota", "2nd Colab session"]
+      }
+    ]
+  },
+
+  "free_llm_apis": {
+    "description": "LLM API keys available for Trading Floor and councils",
+    "apis": [
+      {
+        "name": "Groq",
+        "env_vars": ["GROQ_API_KEY", "GROQ_API_KEY_2", "GROQ_API_KEY_3", "GROQ_API_KEY_4", "GROQ_API_KEY_5"],
+        "key_count": 5,
+        "models": ["llama-3.1-70b", "mixtral-8x7b", "gemma-7b"],
+        "free_tier": "Free tier with rate limits",
+        "note": "5 keys = rate limit pooling across Trading Floor agents",
+        "status": "ACTIVE"
+      },
+      {
+        "name": "OpenRouter",
+        "env_vars": [
+          "OPENROUTER_API_KEY",
+          "OPENROUTER_KEY_GRAPH",
+          "OPENROUTER_KEY_ORCHESTRATOR",
+          "OPENROUTER_KEY_PME",
+          "OPENROUTER_KEY_QUANTITATIVE",
+          "OPENROUTER_KEY_SPARE",
+          "OPENROUTER_KEY_STANDARD"
+        ],
+        "key_count": 7,
+        "note": "7 purpose-specific keys: orchestrator, graph, PME, quantitative, spare, standard",
+        "models": "All models via routing",
+        "status": "ACTIVE"
+      },
+      {
+        "name": "Google Gemini",
+        "env_var": "GOOGLE_API_KEY",
+        "models": ["gemini-1.5-pro", "gemini-1.5-flash"],
+        "free_tier": "Free tier (1M tokens/day gemini-flash)",
+        "status": "ACTIVE"
+      },
+      {
+        "name": "Anthropic Claude",
+        "env_var": "ANTHROPIC_MODEL",
+        "note": "Model specified, Claude API key via Claude Code CLI context",
+        "status": "ACTIVE"
+      },
+      {
+        "name": "OpenAI",
+        "env_var": "OPENAI_API_KEY",
+        "models": ["gpt-4o-mini", "gpt-4o"],
+        "status": "ACTIVE"
+      },
+      {
+        "name": "xAI Grok",
+        "env_var": "XAI_API_KEY",
+        "models": ["grok-beta", "grok-2"],
+        "status": "ACTIVE"
+      },
+      {
+        "name": "Brave Search",
+        "env_var": "BRAVE_API_KEY",
+        "purpose": "Web search for research agents",
+        "status": "ACTIVE"
+      }
+    ],
+    "external_services": [
+      {
+        "name": "Supabase",
+        "project_ids": ["ayqviq (primary, paused 402)", "xivvnr (pooler, active)"],
+        "purpose": "NBA data, experiments, research_proposals",
+        "status": "ACTIVE (pooler)"
+      },
+      {
+        "name": "Neo4j",
+        "purpose": "Knowledge graph (45 nodes)",
+        "status": "ACTIVE"
+      },
+      {
+        "name": "GitHub",
+        "username": "LBJLincoln",
+        "repos": ["mon-ipad", "nomos-nba-agent", "nomos-political-alpha", "nomos-dashboard", "rgwa"],
+        "status": "ACTIVE"
+      },
+      {
+        "name": "Vercel",
+        "project": "nomos-dashboard",
+        "auto_deploy": true,
+        "status": "ACTIVE"
+      }
+    ]
+  },
+
+  "tailscale_mesh": {
+    "description": "WireGuard mesh VPN connecting all nodes",
+    "env_vars": ["TAILSCALE_API_KEY", "TAILSCALE_AUTH_KEY"],
+    "nodes": [
+      {
+        "name": "VM (Google Cloud)",
+        "tailscale_ip": "100.70.229.122",
+        "role": "Control tower",
+        "status": "CONNECTED"
+      },
+      {
+        "name": "Laptop (Acer Aspire 3)",
+        "tailscale_ip": "100.67.205.125",
+        "role": "Local AI compute",
+        "status": "CONNECTED"
+      },
+      {
+        "name": "iPad Gen 8",
+        "tailscale_ip": "100.97.35.14",
+        "role": "Pilot interface",
+        "status": "CONNECTED"
+      },
+      {
+        "name": "Brother's PC",
+        "tailscale_ip": "PENDING",
+        "role": "3rd compute node",
+        "status": "PENDING — auth key sent via Telegram"
+      }
+    ],
+    "ssh_config": {
+      "laptop_alias": "ssh laptop (Host in ~/.ssh/config -> 100.67.205.125)",
+      "laptop_user": "aurel",
+      "auth_method": "ed25519 key-based"
+    },
+    "relay": "par (Paris) — 1.5-3.7s RTT for laptop"
+  },
+
+  "compute_budget_summary": {
+    "free_gpu_per_day": {
+      "zerogpu_h200_minutes": 20,
+      "colab_t4_hours": 2,
+      "kaggle_p100_hours_daily_avg": 1.3,
+      "lightning_ai_total_hours": 22,
+      "modal_cost_per_hour": "$0.16 (A10G)"
+    },
+    "free_cpu": {
+      "vm_vcpus": 1,
+      "vm_ram_mb": 969,
+      "hf_spaces_active": 8,
+      "laptop_cores": 4,
+      "laptop_ram_gb": 8
+    },
+    "best_result": {
+      "brier": 0.21570,
+      "platform": "Colab T4",
+      "method": "TabICL ensemble",
+      "target_brier": 0.20
+    },
+    "active_crons": 36,
+    "active_hf_spaces": 8,
+    "pending_activations": [
+      "Brother's PC SSH setup",
+      "LBJLincoln HF dead spaces cleanup",
+      "Kaggle account for Aurélien (secondary)",
+      "Brother's Colab/HF accounts"
+    ]
+  }
+}

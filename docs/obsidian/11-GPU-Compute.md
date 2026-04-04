@@ -148,4 +148,4 @@ graph TD
 
 ## Links
 
-[[00-Dashboard]] | [[02-Evolution]] | [[05-Infrastructure]] | [[16-Karpathy-Pattern]] | [[06-Research]]
+[[00-Dashboard]] | [[02-Evolution]] | [[05-Infrastructure]] | [[16-Karpathy-Pattern]] | [[06-Research]] | [[21-Free-Models]] | [[22-Compute-Mesh]]

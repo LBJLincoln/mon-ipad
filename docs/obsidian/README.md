@@ -8,7 +8,7 @@ cssclasses: [wide-page]
 # Nomos42 -- Knowledge Vault
 
 > The single source of truth for the Nomos42 NBA Quant AI ecosystem.
-> 21 interconnected notes | Forge v19 | Updated: 2026-04-04
+> 24 interconnected notes | Forge v19 | Updated: 2026-04-04
 
 ---
 
@@ -88,7 +88,7 @@ graph TD
 
 ---
 
-## All Notes (21)
+## All Notes (24)
 
 ### Core
 
@@ -135,6 +135,7 @@ graph TD
 |------|---------|--------|
 | [[17-Political-Alpha]] | Political alpha, 22 categories, 743 features, ETF trading | RUNNING |
 | [[18-Creative-RGWA]] | AI art generation, @RGWAbot, quality scoring | IDLE |
+| [[21-Free-Models]] | Free inference stack: Qwen/Groq/Cerebras/Ollama | ACTIVE |
 
 ### Meta
 
@@ -145,6 +146,13 @@ graph TD
 | [[10-Repos]] | All 5 repos + subtree with descriptions and health | STABLE |
 | [[14-Communication]] | Social media, Telegram bots, investor deck, content | PRE-LAUNCH |
 | [[20-Session-Log]] | Key decisions and milestones, dated | ONGOING |
+
+### Infrastructure (New)
+
+| Note | Purpose | Status |
+|------|---------|--------|
+| [[22-Compute-Mesh]] | Full compute topology: VM + Laptop + iPad + all cloud | STABLE |
+| [[23-Councils-v2]] | Smart councils with real execution (v1 vs v2 architecture) | IN PROGRESS |
 
 ---
 
@@ -166,16 +174,19 @@ graph TD
 
 ## Navigation Paths
 
+> Start from [[00-Index]] for the full Map of Content, or use the paths below.
+
 | Path | Route |
 |------|-------|
+| **Full vault map** | [[00-Index]] -- all 24 notes with links |
 | **Status check** | [[00-Dashboard]] -> alert details |
 | **Dive into ML** | [[02-Evolution]] -> [[06-Research]] -> [[16-Karpathy-Pattern]] |
 | **Follow the money** | [[07-Betting]] -> [[03-Trading-Floor]] -> [[15-Business-Plan]] |
-| **System health** | [[05-Infrastructure]] -> [[11-GPU-Compute]] -> [[13-Tools]] |
-| **Organization** | [[01-Architecture]] -> [[04-Departments]] -> [[12-Agent-Registry]] |
+| **System health** | [[05-Infrastructure]] -> [[22-Compute-Mesh]] -> [[13-Tools]] |
+| **Organization** | [[01-Architecture]] -> [[04-Departments]] -> [[23-Councils-v2]] |
 | **Big picture** | [[08-API-Vision]] -> [[15-Business-Plan]] -> [[09-Legal-Finance]] |
 | **All repos** | [[10-Repos]] -> [[19-Cross-Repo]] |
-| **Projects** | [[17-Political-Alpha]] -- [[18-Creative-RGWA]] |
+| **Projects** | [[17-Political-Alpha]] -- [[18-Creative-RGWA]] -- [[21-Free-Models]] |
 | **History** | [[20-Session-Log]] |
 
 ---

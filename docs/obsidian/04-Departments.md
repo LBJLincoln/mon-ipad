@@ -219,4 +219,4 @@ graph TD
 
 ## Links
 
-[[00-Dashboard]] | [[01-Architecture]] | [[02-Evolution]] | [[05-Infrastructure]] | [[06-Research]] | [[07-Betting]] | [[12-Agent-Registry]] | [[16-Karpathy-Pattern]]
+[[00-Dashboard]] | [[01-Architecture]] | [[02-Evolution]] | [[05-Infrastructure]] | [[06-Research]] | [[07-Betting]] | [[12-Agent-Registry]] | [[16-Karpathy-Pattern]] | [[23-Councils-v2]]

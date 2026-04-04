@@ -165,4 +165,4 @@ Report: `data/departments/guardian-report.json`
 
 ## Links
 
-[[00-Dashboard]] | [[01-Architecture]] | [[04-Departments]] | [[12-Agent-Registry]] | [[02-Evolution]] | [[11-GPU-Compute]]
+[[00-Dashboard]] | [[01-Architecture]] | [[04-Departments]] | [[12-Agent-Registry]] | [[02-Evolution]] | [[11-GPU-Compute]] | [[23-Councils-v2]]

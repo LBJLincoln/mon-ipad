@@ -180,4 +180,4 @@ Channel: **@Nomos42** -- public predictions + daily summary
 
 ## Links
 
-[[00-Dashboard]] | [[01-Architecture]] | [[02-Evolution]] | [[04-Departments]] | [[10-Repos]] | [[11-GPU-Compute]] | [[13-Tools]]
+[[00-Dashboard]] | [[01-Architecture]] | [[02-Evolution]] | [[04-Departments]] | [[10-Repos]] | [[11-GPU-Compute]] | [[13-Tools]] | [[22-Compute-Mesh]]

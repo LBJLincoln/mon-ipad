@@ -149,11 +149,12 @@ Full details: [[04-Departments]] | Guardian report: [[01-Architecture]]
 
 | Area | Notes |
 |------|-------|
-| **Architecture** | [[01-Architecture]] -- [[04-Departments]] -- [[12-Agent-Registry]] |
+| **Vault Map** | [[00-Index]] -- [[README]] |
+| **Architecture** | [[01-Architecture]] -- [[04-Departments]] -- [[12-Agent-Registry]] -- [[23-Councils-v2]] |
 | **ML/Evolution** | [[02-Evolution]] -- [[06-Research]] -- [[16-Karpathy-Pattern]] |
 | **Money** | [[03-Trading-Floor]] -- [[07-Betting]] -- [[15-Business-Plan]] |
-| **Infra** | [[05-Infrastructure]] -- [[11-GPU-Compute]] -- [[13-Tools]] |
-| **Projects** | [[17-Political-Alpha]] -- [[18-Creative-RGWA]] -- [[19-Cross-Repo]] |
-| **Meta** | [[08-API-Vision]] -- [[09-Legal-Finance]] -- [[10-Repos]] |
+| **Infra** | [[05-Infrastructure]] -- [[22-Compute-Mesh]] -- [[11-GPU-Compute]] -- [[13-Tools]] |
+| **Projects** | [[17-Political-Alpha]] -- [[18-Creative-RGWA]] -- [[21-Free-Models]] |
+| **Cross-Repo** | [[19-Cross-Repo]] -- [[10-Repos]] |
+| **Meta** | [[08-API-Vision]] -- [[09-Legal-Finance]] |
 | **Comms** | [[14-Communication]] -- [[20-Session-Log]] |
-| **Vault** | [[README]] |

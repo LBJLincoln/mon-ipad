@@ -10,7 +10,20 @@ aliases: [Session Log, Milestones, Decision Log, History]
 
 ---
 
-## 2026-04-04 -- Obsidian Vault Upgrade
+## 2026-04-04 -- Obsidian Vault v2 (Real Knowledge Graph)
+
+- Upgraded vault to a proper Obsidian knowledge graph (21 -> 24 notes)
+- Added Obsidian config: `.obsidian/app.json`, `appearance.json` (dark theme), `graph.json` (colorful groups), `workspace.json` (default opens Dashboard + Index)
+- Added 3 new critical notes:
+  - [[21-Free-Models]] -- Cerebras/Groq/OpenRouter/HF Inference/Ollama stack
+  - [[22-Compute-Mesh]] -- Full topology: VM + Laptop + iPad + 6 HF + Kaggle + Colab
+  - [[23-Councils-v2]] -- v1 vs v2 council architecture, real execution roadmap
+- Created [[00-Index]] as the true Map of Content (MOC) linking all 24 notes
+- All notes now have proper YAML frontmatter with tags and aliases
+- Graph view configured with 8 color groups (by domain: ML/Money/Infra/etc)
+- All inter-document [[wikilinks]] verified across all 24 notes
+
+## 2026-04-04 -- Obsidian Vault v1 Upgrade
 
 - Upgraded vault from 12 to 21 interconnected notes
 - Added: [[11-GPU-Compute]], [[12-Agent-Registry]], [[13-Tools]], [[14-Communication]], [[15-Business-Plan]], [[16-Karpathy-Pattern]], [[17-Political-Alpha]], [[18-Creative-RGWA]], [[19-Cross-Repo]], [[20-Session-Log]]

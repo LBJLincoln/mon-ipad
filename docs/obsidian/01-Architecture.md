@@ -188,4 +188,4 @@ Full repo details: [[10-Repos]]
 
 ## Links
 
-[[00-Dashboard]] | [[02-Evolution]] | [[04-Departments]] | [[05-Infrastructure]] | [[10-Repos]] | [[12-Agent-Registry]] | [[16-Karpathy-Pattern]]
+[[00-Dashboard]] | [[02-Evolution]] | [[04-Departments]] | [[05-Infrastructure]] | [[10-Repos]] | [[12-Agent-Registry]] | [[16-Karpathy-Pattern]] | [[21-Free-Models]] | [[22-Compute-Mesh]] | [[23-Councils-v2]]

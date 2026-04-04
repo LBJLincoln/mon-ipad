@@ -151,4 +151,4 @@ Agents communicate through:
 
 ## Links
 
-[[00-Dashboard]] | [[01-Architecture]] | [[04-Departments]] | [[03-Trading-Floor]] | [[16-Karpathy-Pattern]] | [[19-Cross-Repo]]
+[[00-Dashboard]] | [[01-Architecture]] | [[04-Departments]] | [[03-Trading-Floor]] | [[16-Karpathy-Pattern]] | [[19-Cross-Repo]] | [[21-Free-Models]] | [[23-Councils-v2]]

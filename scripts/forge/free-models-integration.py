@@ -1,20 +1,36 @@
 #!/usr/bin/env python3
 """
-Free Models Integration — HF Inference API council advisors
-============================================================
+Free Models Integration — multi-provider council advisors
+==========================================================
 Provides `query_free_llm(prompt, model="qwen") -> str` for department councils.
 
 Design constraints:
-  - stdlib + huggingface_hub ONLY (no openai, anthropic, langchain, requests, etc.)
-  - 1 vCPU / 969 MB RAM VM — no heavy deps, no local model loading
-  - HF Inference API: ~100K credits/month free per account
-  - Rate limits: 10-30 req/min depending on model
+  - stdlib ONLY (no openai, anthropic, langchain) — compatible with 1 vCPU / 969 MB RAM VM
+  - Multi-provider fallback: Cerebras → Groq → OpenRouter → HF Inference API
+  - All providers are OpenAI-compatible (POST /v1/chat/completions)
 
-Available models (from scripts/forge/free_models_config.json):
-  - qwen:    Qwen/Qwen3.6-Plus         — 1M ctx, best reasoning/code (use for complex decisions)
-  - gemma:   google/gemma-4-27b-it     — 256K ctx, strong reasoning (use for structured analysis)
-  - mistral: mistralai/Mistral-Small-3.1-24B-Instruct-2503 — 128K ctx, fast tool use
-  - phi:     microsoft/phi-4           — 16K ctx, lightweight fallback
+Provider summary (as of Apr 4 2026):
+  CEREBRAS (primary):
+    - qwen3_235b: qwen-3-235b-a22b-instruct-2507 — 235B MoE, 1400 tps, 64K ctx, 1M tokens/day FREE
+    - qwen3_32b:  qwen-3-32b                     — 32B, 2600 tps, 131K ctx, 1M tokens/day FREE
+    - llama33:    llama3.3-70b                   — 70B, fast, 131K ctx, FREE
+  GROQ (fast fallback):
+    - llama4:     meta-llama/llama-4-scout-17b-16e-instruct — 750 tps, 131K ctx, 1K RPD FREE
+    - llama8b:    llama-3.1-8b-instant           — 14400 RPD, 20K TPM, best for bulk queries
+    - qwen32b:    qwen-qwq-32b                   — 32B reasoning, 60 RPM FREE
+  OPENROUTER (long-context):
+    - qwen36:     qwen/qwen3.6-plus:free         — 1M ctx, 600 RPM, $0 FREE
+    - gemma3_27b: google/gemma-3-27b-it:free     — 131K ctx, FREE
+    - mistral_or: mistralai/mistral-small-3.1-24b-instruct:free — FREE
+  HF INFERENCE (fallback only — $0.10/month free credit limit):
+    - mistral_hf: mistralai/Mistral-Small-3.1-24B-Instruct-2503
+    - phi:        microsoft/phi-4
+
+CORRECTION from previous version:
+  - google/gemma-4-27b-it DOES NOT EXIST. Correct IDs: E2B, E4B, 26B-A4B, 31B.
+    Gemma 4 is NOT available on HF Inference Providers yet (weights only as of Apr 4 2026).
+  - Qwen/Qwen3.6-Plus DOES NOT EXIST as open weights. Cloud-only (Alibaba).
+    Free access only via OpenRouter: qwen/qwen3.6-plus:free
 
 Usage in a department council:
     from scripts.forge.free_models_integration import query_free_llm, CouncilAdvisor
@@ -62,23 +78,41 @@ def _load_config() -> dict:
 
 _CFG = _load_config()
 
-# Model registry: short alias → HF model ID
-MODELS: Dict[str, str] = {
-    "qwen":    "Qwen/Qwen3.6-Plus",
-    "gemma":   "google/gemma-4-27b-it",
-    "mistral": "mistralai/Mistral-Small-3.1-24B-Instruct-2503",
-    "phi":     "microsoft/phi-4",
+# ══════════════════════════════════════════════════════════
+# PROVIDER CONFIG
+# ══════════════════════════════════════════════════════════
+
+# Provider base URLs (all OpenAI-compatible /v1/chat/completions)
+PROVIDER_URLS = {
+    "cerebras":    "https://api.cerebras.ai/v1/chat/completions",
+    "groq":        "https://api.groq.com/openai/v1/chat/completions",
+    "openrouter":  "https://openrouter.ai/api/v1/chat/completions",
+    "hf":          "https://api-inference.huggingface.co/v1/chat/completions",
 }
 
-# Override from config file if present
-if _CFG.get("hf_inference_api", {}).get("models"):
-    _cfg_models = _CFG["hf_inference_api"]["models"]
-    if "qwen_3_6_plus"     in _cfg_models: MODELS["qwen"]    = _cfg_models["qwen_3_6_plus"]["model_id"]
-    if "gemma_4_27b"       in _cfg_models: MODELS["gemma"]   = _cfg_models["gemma_4_27b"]["model_id"]
-    if "mistral_small_3_1" in _cfg_models: MODELS["mistral"] = _cfg_models["mistral_small_3_1"]["model_id"]
-    if "phi_4"             in _cfg_models: MODELS["phi"]     = _cfg_models["phi_4"]["model_id"]
+# Model registry: short alias → (provider, model_id)
+# Primary: Cerebras Qwen3-235B — best free quality, 1M tokens/day
+# Fallbacks ordered by quality/availability
+MODELS: Dict[str, tuple] = {
+    # Primary council models
+    "qwen":        ("cerebras",   "qwen-3-235b-a22b-instruct-2507"),   # 235B MoE, 1400 tps
+    "qwen_fast":   ("cerebras",   "qwen-3-32b"),                        # 32B, 2600 tps
+    "llama4":      ("groq",       "meta-llama/llama-4-scout-17b-16e-instruct"),  # 750 tps, 1K RPD
+    "llama8b":     ("groq",       "llama-3.1-8b-instant"),             # 14400 RPD bulk
+    "llama70b":    ("groq",       "llama-3.3-70b-versatile"),          # 70B, 1K RPD
+    "qwen36":      ("openrouter", "qwen/qwen3.6-plus:free"),           # 1M ctx, 600 RPM
+    "gemma3":      ("openrouter", "google/gemma-3-27b-it:free"),       # Gemma 3, 131K ctx
+    "mistral":     ("openrouter", "mistralai/mistral-small-3.1-24b-instruct:free"),  # fast
+    "deepseek":    ("openrouter", "deepseek/deepseek-r1:free"),        # reasoning
+    # HF fallback (limited credits — use sparingly)
+    "phi":         ("hf",         "microsoft/phi-4"),                   # 16K ctx
+    "mistral_hf":  ("hf",         "mistralai/Mistral-Small-3.1-24B-Instruct-2503"),
+}
 
-# HF Inference API base URL — Serverless (ZeroGPU-backed)
+# Legacy alias compatibility (old code using "gemma" will now get gemma3 from OpenRouter)
+MODELS["gemma"] = MODELS["gemma3"]
+
+# HF Inference API base URL (legacy text-generation endpoint for non-chat models)
 HF_API_BASE = "https://api-inference.huggingface.co/models"
 
 # Account token env vars (try in order until one works)
@@ -98,16 +132,29 @@ _MIN_INTERVAL_SEC = 2.0  # Min seconds between calls with same token
 # TOKEN MANAGEMENT
 # ══════════════════════════════════════════════════════════
 
-def get_token(prefer_env: Optional[str] = None) -> str:
-    """Return the first available HF token from env vars.
-    Optionally prefer a specific env var (e.g. "HF_TOKEN_2").
+def get_token(provider: str = "hf", prefer_env: Optional[str] = None) -> str:
+    """Return the API token for a given provider.
+
+    Provider token env vars:
+      cerebras  → CEREBRAS_API_KEY
+      groq      → GROQ_API_KEY
+      openrouter→ OPENROUTER_API_KEY
+      hf        → HF_TOKEN / HF_TOKEN_2 / HF_TOKEN_3
     """
     if prefer_env:
         tok = os.environ.get(prefer_env, "").strip()
         if tok:
             return tok
 
-    for env_var in TOKEN_ENV_VARS:
+    provider_env_map = {
+        "cerebras":   ["CEREBRAS_API_KEY"],
+        "groq":       ["GROQ_API_KEY"],
+        "openrouter": ["OPENROUTER_API_KEY"],
+        "hf":         TOKEN_ENV_VARS,
+    }
+
+    env_vars = provider_env_map.get(provider, TOKEN_ENV_VARS)
+    for env_var in env_vars:
         tok = os.environ.get(env_var, "").strip()
         if tok:
             return tok
@@ -136,7 +183,8 @@ def _ssl_ctx():
     return ctx
 
 
-def _call_inference_api(
+def _call_chat_completions(
+    provider: str,
     model_id: str,
     prompt: str,
     token: str,
@@ -144,25 +192,28 @@ def _call_inference_api(
     temperature: float = DEFAULT_TEMPERATURE,
     timeout: int = DEFAULT_TIMEOUT_SEC,
 ) -> str:
-    """Call the HF Inference API for text generation.
+    """Call any OpenAI-compatible /v1/chat/completions endpoint.
 
-    Uses the chat completions endpoint if available, otherwise falls back
-    to the legacy text generation endpoint. Both are free on HF free tier.
-
+    Supports: cerebras, groq, openrouter, hf (all use same wire format).
     Returns the generated text string, or "" on failure.
     """
     _rate_limit(token)
+
+    url = PROVIDER_URLS.get(provider)
+    if not url:
+        return ""
 
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
         "User-Agent": "Nomos42-CouncilAdvisor/1.0",
     }
+    # OpenRouter requires HTTP-Referer header
+    if provider == "openrouter":
+        headers["HTTP-Referer"] = "https://nomos42.com"
+        headers["X-Title"] = "Nomos42 NBA Council"
 
-    # Try OpenAI-compatible chat completions endpoint first (newer models)
-    # URL format: https://api-inference.huggingface.co/models/<model>/v1/chat/completions
-    chat_url = f"{HF_API_BASE}/{model_id}/v1/chat/completions"
-    chat_payload = {
+    payload = {
         "model": model_id,
         "messages": [{"role": "user", "content": prompt}],
         "max_tokens": max_tokens,
@@ -171,60 +222,58 @@ def _call_inference_api(
     }
 
     try:
-        data = json.dumps(chat_payload).encode("utf-8")
-        req = urllib.request.Request(chat_url, data=data, method="POST", headers=headers)
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(url, data=data, method="POST", headers=headers)
         with urllib.request.urlopen(req, timeout=timeout, context=_ssl_ctx()) as resp:
             result = json.loads(resp.read())
-            # OpenAI-compatible response format
             choices = result.get("choices", [])
             if choices:
                 content = choices[0].get("message", {}).get("content", "")
                 if content:
                     return content.strip()
     except urllib.error.HTTPError as e:
-        if e.code == 404:
-            pass  # Chat endpoint not available, try legacy
-        elif e.code == 503:
-            # Model loading — wait and retry once
-            time.sleep(20)
-            try:
-                req = urllib.request.Request(chat_url, data=data, method="POST", headers=headers)
-                with urllib.request.urlopen(req, timeout=timeout + 30, context=_ssl_ctx()) as resp:
-                    result = json.loads(resp.read())
-                    choices = result.get("choices", [])
-                    if choices:
-                        return choices[0].get("message", {}).get("content", "").strip()
-            except Exception:
-                pass
+        if e.code == 503:
+            # HF model loading — wait and retry once
+            if provider == "hf":
+                time.sleep(20)
+                try:
+                    req = urllib.request.Request(url, data=data, method="POST", headers=headers)
+                    with urllib.request.urlopen(req, timeout=timeout + 30, context=_ssl_ctx()) as resp:
+                        result = json.loads(resp.read())
+                        choices = result.get("choices", [])
+                        if choices:
+                            return choices[0].get("message", {}).get("content", "").strip()
+                except Exception:
+                    pass
     except Exception:
         pass
 
-    # Fallback: legacy text generation endpoint
-    legacy_url = f"{HF_API_BASE}/{model_id}"
-    legacy_payload = {
-        "inputs": prompt,
-        "parameters": {
-            "max_new_tokens": max_tokens,
-            "temperature": temperature,
-            "return_full_text": False,
-        },
-    }
-
-    try:
-        data = json.dumps(legacy_payload).encode("utf-8")
-        req = urllib.request.Request(legacy_url, data=data, method="POST", headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout, context=_ssl_ctx()) as resp:
-            result = json.loads(resp.read())
-            if isinstance(result, list) and result:
-                text = result[0].get("generated_text", "")
-                if text:
-                    return text.strip()
-            elif isinstance(result, dict):
-                text = result.get("generated_text", "")
-                if text:
-                    return text.strip()
-    except Exception:
-        pass
+    # HF fallback: legacy text generation endpoint (for older models)
+    if provider == "hf":
+        legacy_url = f"{HF_API_BASE}/{model_id}"
+        legacy_payload = {
+            "inputs": prompt,
+            "parameters": {
+                "max_new_tokens": max_tokens,
+                "temperature": temperature,
+                "return_full_text": False,
+            },
+        }
+        try:
+            data = json.dumps(legacy_payload).encode("utf-8")
+            req = urllib.request.Request(legacy_url, data=data, method="POST", headers=headers)
+            with urllib.request.urlopen(req, timeout=timeout, context=_ssl_ctx()) as resp:
+                result = json.loads(resp.read())
+                if isinstance(result, list) and result:
+                    text = result[0].get("generated_text", "")
+                    if text:
+                        return text.strip()
+                elif isinstance(result, dict):
+                    text = result.get("generated_text", "")
+                    if text:
+                        return text.strip()
+        except Exception:
+            pass
 
     return ""
 
@@ -241,59 +290,87 @@ def query_free_llm(
     token_env: Optional[str] = None,
     fallback_models: Optional[List[str]] = None,
 ) -> str:
-    """Query a free HF LLM for a text response.
+    """Query a free LLM for a text response using the best available provider.
+
+    Provider priority: Cerebras → Groq → OpenRouter → HF Inference API.
 
     Args:
-        prompt:          The prompt to send (keep under 2000 chars for speed).
-        model:           Alias: "qwen", "gemma", "mistral", "phi" — or a full HF model ID.
+        prompt:          The prompt to send.
+        model:           Alias from MODELS dict, e.g. "qwen", "llama4", "gemma3", "phi".
+                         Or a tuple (provider, model_id) for direct addressing.
         max_tokens:      Max tokens to generate (default 512).
         temperature:     Sampling temperature (default 0.3 for deterministic council decisions).
-        token_env:       Specific env var to use for the HF token (default: first available).
-        fallback_models: List of model aliases to try if the primary fails.
+        token_env:       Force a specific env var for the token (overrides provider default).
+        fallback_models: List of model aliases to try if the primary model fails.
 
     Returns:
         Generated text string, or "" if all models fail.
 
     Examples:
-        # Simple question
+        # Cerebras Qwen3-235B (primary)
         answer = query_free_llm("What is the Kelly Criterion?", model="qwen")
 
-        # Council decision prompt
-        decision = query_free_llm(
-            "S12 (extra_trees) has brier=0.221, S10 (xgboost) has brier=0.225. "
-            "S12 is stagnant for 10 generations. Should we cross-pollinate S12→S10? "
-            "Reply with YES or NO and one sentence of reasoning.",
-            model="qwen",
-            max_tokens=100,
-        )
+        # Groq Llama4 Scout (fast, 750 tps)
+        fast = query_free_llm("YES/NO: cross-pollinate?", model="llama4", max_tokens=50)
+
+        # OpenRouter Qwen3.6-Plus (1M context)
+        long = query_free_llm(very_long_prompt, model="qwen36")
     """
-    # Resolve model ID
-    model_id = MODELS.get(model, model)
-    token = get_token(token_env)
+    # Resolve (provider, model_id) tuple
+    if isinstance(model, tuple):
+        provider, model_id = model
+    elif model in MODELS:
+        provider, model_id = MODELS[model]
+    else:
+        # Assume raw HF model ID passed directly
+        provider, model_id = "hf", model
+
+    token = get_token(provider=provider, prefer_env=token_env)
 
     if not token:
-        return "[ERROR: No HF token available. Set HF_TOKEN in environment.]"
+        # Try fallback providers automatically
+        for alt_provider in ["cerebras", "groq", "openrouter", "hf"]:
+            if alt_provider != provider:
+                alt_token = get_token(provider=alt_provider)
+                if alt_token:
+                    provider = alt_provider
+                    token = alt_token
+                    break
+
+    if not token:
+        return "[ERROR: No API token found. Set CEREBRAS_API_KEY, GROQ_API_KEY, OPENROUTER_API_KEY, or HF_TOKEN.]"
 
     # Primary attempt
-    result = _call_inference_api(model_id, prompt, token, max_tokens, temperature)
+    result = _call_chat_completions(provider, model_id, prompt, token, max_tokens, temperature)
     if result:
         return result
 
-    # Try fallback models
+    # Try explicit fallback models
     if fallback_models:
         for fallback in fallback_models:
-            fallback_id = MODELS.get(fallback, fallback)
-            result = _call_inference_api(fallback_id, prompt, token, max_tokens, temperature)
+            if fallback in MODELS:
+                fb_provider, fb_model_id = MODELS[fallback]
+                fb_token = get_token(provider=fb_provider)
+                if fb_token:
+                    result = _call_chat_completions(fb_provider, fb_model_id, prompt, fb_token, max_tokens, temperature)
+                    if result:
+                        return result
+
+    # Auto-fallback chain: try all providers in priority order with their best model
+    auto_fallback = [
+        ("cerebras",   "qwen-3-235b-a22b-instruct-2507"),
+        ("groq",       "llama-3.1-8b-instant"),
+        ("openrouter", "qwen/qwen3.6-plus:free"),
+        ("hf",         "microsoft/phi-4"),
+    ]
+    for fb_provider, fb_model_id in auto_fallback:
+        if fb_provider == provider and fb_model_id == model_id:
+            continue  # Already tried
+        fb_token = get_token(provider=fb_provider)
+        if fb_token:
+            result = _call_chat_completions(fb_provider, fb_model_id, prompt, fb_token, max_tokens, temperature)
             if result:
                 return result
-
-    # Auto-fallback chain: qwen → gemma → mistral → phi
-    fallback_chain = [k for k in MODELS if k != model and MODELS[k] != model_id]
-    for fallback_alias in fallback_chain:
-        fallback_id = MODELS[fallback_alias]
-        result = _call_inference_api(fallback_id, prompt, token, max_tokens, temperature)
-        if result:
-            return result
 
     return ""
 
@@ -356,7 +433,7 @@ class CouncilAdvisor:
     def __init__(
         self,
         dept: str = "default",
-        model: str = "qwen",
+        model: str = "qwen",       # Default: Cerebras Qwen3-235B (best free quality)
         max_tokens: int = 256,
         temperature: float = 0.3,
     ):
@@ -547,7 +624,7 @@ def main():
     parser = argparse.ArgumentParser(description="Free Models Integration — Council Advisor")
     parser.add_argument("--query", type=str, help="Simple query to test LLM connectivity")
     parser.add_argument("--model", default="qwen", choices=list(MODELS.keys()),
-                        help="Model to use (default: qwen)")
+                        help="Model alias (default: qwen = Cerebras Qwen3-235B)")
     parser.add_argument("--dept", default="evolution", help="Department context for advisor")
     parser.add_argument("--demo-vote", action="store_true",
                         help="Run a demo council vote with fake evolution data")
@@ -556,18 +633,24 @@ def main():
     args = parser.parse_args()
 
     if args.list_models:
-        print("Available free models (HF Inference API):")
-        for alias, model_id in MODELS.items():
-            print(f"  {alias:10s} → {model_id}")
+        print("Available free models (multi-provider):")
+        print(f"  {'alias':15s}  {'provider':12s}  model_id")
+        print(f"  {'-'*15}  {'-'*12}  {'-'*45}")
+        for alias, (provider, model_id) in MODELS.items():
+            print(f"  {alias:15s}  {provider:12s}  {model_id}")
         return
 
-    token = get_token()
+    provider, model_id = MODELS.get(args.model, ("hf", args.model))
+    token = get_token(provider=provider)
     if not token:
-        print("ERROR: No HF token found. Set HF_TOKEN, HF_TOKEN_2, or HF_TOKEN_3 in environment.")
+        print(f"WARNING: No token for provider '{provider}'. Will try auto-fallback.")
+        token = get_token()
+    if not token:
+        print("ERROR: No API tokens found. Set CEREBRAS_API_KEY, GROQ_API_KEY, OPENROUTER_API_KEY, or HF_TOKEN.")
         return
 
-    print(f"Using token: {'*' * 8}{token[-4:]}")
-    print(f"Model: {args.model} ({MODELS[args.model]})")
+    print(f"Provider: {provider} | Token: {'*' * 8}{token[-4:]}")
+    print(f"Model: {args.model} → {model_id}")
 
     if args.query:
         print(f"\nQuery: {args.query}")
@@ -585,10 +668,11 @@ def main():
             "fleet_size": 6,
         }
         advisor = CouncilAdvisor(dept=args.dept, model=args.model)
+        # Use fast models: Groq llama8b (14400 RPD) + Cerebras qwen for vote
         vote = advisor.vote(
             demo_scan,
             "Should we trigger a cross-pollination event to reduce stagnation?",
-            models=["qwen", "mistral"],  # Use 2 models to reduce API calls in demo
+            models=["qwen", "llama8b"],
         )
         print(json.dumps(vote, indent=2))
 

@@ -146,4 +146,4 @@ Details: [[11-GPU-Compute]]
 
 ## Links
 
-[[00-Dashboard]] | [[05-Infrastructure]] | [[11-GPU-Compute]] | [[04-Departments]] | [[16-Karpathy-Pattern]]
+[[00-Dashboard]] | [[05-Infrastructure]] | [[11-GPU-Compute]] | [[04-Departments]] | [[16-Karpathy-Pattern]] | [[21-Free-Models]] | [[22-Compute-Mesh]]
