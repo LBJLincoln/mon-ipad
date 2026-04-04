@@ -20,3 +20,6 @@
 
 ## Agent Superpowers Ecosystem (2026-03-30 scan)
 - [project_agent_superpowers_scan.md](project_agent_superpowers_scan.md) — gstack(57k★), Hermes(18k★), GEPA(ICLR2026), Browser Use(78k★), Mem0(51k★), ACI.dev, Letta, Zep/Graphiti, Playwright MCP, E2B. Ranked by relevance to NBA quant + political alpha.
+
+## Pixel Dashboard Deep Dive (2026-04-04 scan)
+- [project_pixel_dashboard_apr2026.md](project_pixel_dashboard_apr2026.md) — 12 pixel-art game dashboard refs. Winner: pixel-agents(6.1k★) as base clone. Stack: Next.js 15 + Canvas 2D + Pixelact UI. Full report: /home/termius/nomos-nba-agent/data/results/pixel-dashboard-scout.json
