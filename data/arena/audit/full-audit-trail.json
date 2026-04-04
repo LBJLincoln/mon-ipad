@@ -1,19 +1,19 @@
 {
   "metadata": {
-    "generated_at": "2026-04-04T19:20:09.697119+00:00",
-    "total_entries": 2101,
-    "council_iterations_processed": 348,
+    "generated_at": "2026-04-04T19:45:43.115001+00:00",
+    "total_entries": 2106,
+    "council_iterations_processed": 349,
     "iteration_range": {
       "first": 1,
-      "last": 360
+      "last": 361
     },
     "generation_range": {
       "first": 6120,
-      "last": 12920
+      "last": 13056
     },
     "action_type_summary": {
-      "mutation": 696,
-      "experiment": 1044,
+      "mutation": 698,
+      "experiment": 1047,
       "elimination": 298,
       "rank_change": 20,
       "strategy_shift": 5,
@@ -50,14 +50,14 @@
       "provider": "openai",
       "personality": "aggressive",
       "risk_tolerance": 0.7,
-      "nba_bankroll": 3730.1422,
-      "nba_roi_pct": 3630.14,
+      "nba_bankroll": 3729.9751,
+      "nba_roi_pct": 3629.98,
       "nba_sharpe": 2.109,
       "nba_bets": 2842,
       "nba_wins": 1428,
       "nba_losses": 1414,
-      "nba_peak": 3836.8212,
-      "nba_max_drawdown": 0.9425
+      "nba_peak": 3836.6493,
+      "nba_max_drawdown": 0.9426
     },
     "gemini": {
       "trader_id": "gemini",
@@ -65,14 +65,14 @@
       "provider": "google",
       "personality": "analytical",
       "risk_tolerance": 0.6,
-      "nba_bankroll": 2722.3195,
-      "nba_roi_pct": 2622.32,
-      "nba_sharpe": 2.892,
+      "nba_bankroll": 2725.2489,
+      "nba_roi_pct": 2625.25,
+      "nba_sharpe": 2.896,
       "nba_bets": 2590,
       "nba_wins": 1234,
       "nba_losses": 1356,
-      "nba_peak": 2752.7679,
-      "nba_max_drawdown": 0.4752
+      "nba_peak": 2754.4935,
+      "nba_max_drawdown": 0.4754
     },
     "grok": {
       "trader_id": "grok",
@@ -80,14 +80,14 @@
       "provider": "xai",
       "personality": "contrarian",
       "risk_tolerance": 0.65,
-      "nba_bankroll": 1665.8865,
-      "nba_roi_pct": 1565.89,
-      "nba_sharpe": 5.343,
+      "nba_bankroll": 1664.1568,
+      "nba_roi_pct": 1564.16,
+      "nba_sharpe": 5.341,
       "nba_bets": 1230,
       "nba_wins": 498,
       "nba_losses": 732,
-      "nba_peak": 1703.0203,
-      "nba_max_drawdown": 0.2785
+      "nba_peak": 1701.0612,
+      "nba_max_drawdown": 0.2784
     },
     "openrouter": {
       "trader_id": "openrouter",
@@ -95,14 +95,14 @@
       "provider": "openrouter",
       "personality": "diversified",
       "risk_tolerance": 0.5,
-      "nba_bankroll": 391.5202,
-      "nba_roi_pct": 291.52,
-      "nba_sharpe": 2.019,
+      "nba_bankroll": 393.4038,
+      "nba_roi_pct": 293.4,
+      "nba_sharpe": 2.024,
       "nba_bets": 1664,
       "nba_wins": 827,
       "nba_losses": 837,
-      "nba_peak": 406.8855,
-      "nba_max_drawdown": 0.7695
+      "nba_peak": 409.1012,
+      "nba_max_drawdown": 0.7684
     }
   },
   "entries": [
@@ -55437,6 +55437,142 @@
       "reason": "Prioritize stacking_meta in evolution -- top daily PnL",
       "performance_at_time": {
         "best_bankroll": 3730.14,
+        "best_trader": "codex",
+        "distance_to_1m": 99.627
+      }
+    },
+    {
+      "iteration": 361,
+      "timestamp": "2026-04-04T19:45:42.349109+00:00",
+      "source_iteration": 96,
+      "source_generation": 13056,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 391.5202
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "underdog_specialist",
+          "value_hunter"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "consensus_ensemble"
+        ],
+        "from_agent": "codex"
+      },
+      "reason": "openrouter (rank 4) should learn from codex (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 393.4038,
+        "roi_pct": 293.4,
+        "sharpe": 2.024
+      }
+    },
+    {
+      "iteration": 361,
+      "timestamp": "2026-04-04T19:45:42.349109+00:00",
+      "source_iteration": 96,
+      "source_generation": 13056,
+      "trader_id": "claude",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 236.0926
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "underdog_specialist",
+          "value_hunter"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "consensus_ensemble"
+        ],
+        "from_agent": "codex"
+      },
+      "reason": "claude (rank 5) should learn from codex (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 236.0926,
+        "roi_pct": 136.09,
+        "sharpe": 3.946
+      }
+    },
+    {
+      "iteration": 361,
+      "timestamp": "2026-04-04T19:45:42.349109+00:00",
+      "source_iteration": 96,
+      "source_generation": 13056,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "underdog_specialist",
+        "test_with_models": [
+          "consensus_ensemble",
+          "xgboost",
+          "random_forest"
+        ],
+        "hypothesis": "Top strategy 'underdog_specialist' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'underdog_specialist' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3729.98,
+        "best_trader": "codex",
+        "distance_to_1m": 99.627
+      }
+    },
+    {
+      "iteration": 361,
+      "timestamp": "2026-04-04T19:45:42.349109+00:00",
+      "source_iteration": 96,
+      "source_generation": 13056,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "spread_away",
+          "team_total_home_under"
+        ],
+        "expected_win_rate": 68.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3729.98,
+        "best_trader": "codex",
+        "distance_to_1m": 99.627
+      }
+    },
+    {
+      "iteration": 361,
+      "timestamp": "2026-04-04T19:45:42.349109+00:00",
+      "source_iteration": 96,
+      "source_generation": 13056,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "stacking_meta",
+        "avg_daily_pnl": 6.415,
+        "win_rate_pct": 52.3,
+        "hypothesis": "Prioritize stacking_meta in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize stacking_meta in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3729.98,
         "best_trader": "codex",
         "distance_to_1m": 99.627
       }
