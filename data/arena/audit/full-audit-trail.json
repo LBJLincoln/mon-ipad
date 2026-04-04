@@ -1,23 +1,23 @@
 {
   "metadata": {
-    "generated_at": "2026-04-04T09:49:53.112156+00:00",
-    "total_entries": 1800,
-    "council_iterations_processed": 300,
+    "generated_at": "2026-04-04T09:59:32.249731+00:00",
+    "total_entries": 1810,
+    "council_iterations_processed": 301,
     "iteration_range": {
       "first": 1,
-      "last": 312
+      "last": 313
     },
     "generation_range": {
       "first": 6120,
-      "last": 54808
+      "last": 136
     },
     "action_type_summary": {
-      "mutation": 600,
-      "experiment": 900,
-      "elimination": 288,
+      "mutation": 602,
+      "experiment": 903,
+      "elimination": 289,
       "rank_change": 3,
-      "strategy_shift": 1,
-      "bankroll_milestone": 8
+      "strategy_shift": 2,
+      "bankroll_milestone": 11
     },
     "trader_ids": [
       "_council",
@@ -35,14 +35,14 @@
       "provider": "anthropic",
       "personality": "conservative",
       "risk_tolerance": 0.4,
-      "nba_bankroll": 322.8581,
-      "nba_roi_pct": 222.86,
-      "nba_sharpe": 4.423,
-      "nba_bets": 1936,
-      "nba_wins": 961,
-      "nba_losses": 975,
-      "nba_peak": 329.8681,
-      "nba_max_drawdown": 0.3841
+      "nba_bankroll": 319.692,
+      "nba_roi_pct": 219.69,
+      "nba_sharpe": 4.605,
+      "nba_bets": 1958,
+      "nba_wins": 969,
+      "nba_losses": 989,
+      "nba_peak": 329.1561,
+      "nba_max_drawdown": 0.1914
     },
     "codex": {
       "trader_id": "codex",
@@ -50,14 +50,14 @@
       "provider": "openai",
       "personality": "aggressive",
       "risk_tolerance": 0.7,
-      "nba_bankroll": 0.6342,
-      "nba_roi_pct": -99.37,
-      "nba_sharpe": -0.268,
+      "nba_bankroll": 10.6552,
+      "nba_roi_pct": -89.34,
+      "nba_sharpe": -0.162,
       "nba_bets": 4232,
       "nba_wins": 2177,
       "nba_losses": 2055,
-      "nba_peak": 665.2797,
-      "nba_max_drawdown": 1.0
+      "nba_peak": 813.0395,
+      "nba_max_drawdown": 0.9998
     },
     "gemini": {
       "trader_id": "gemini",
@@ -65,14 +65,14 @@
       "provider": "google",
       "personality": "analytical",
       "risk_tolerance": 0.6,
-      "nba_bankroll": 1731.076,
-      "nba_roi_pct": 1631.08,
-      "nba_sharpe": 2.66,
-      "nba_bets": 3554,
-      "nba_wins": 1753,
-      "nba_losses": 1801,
-      "nba_peak": 1884.992,
-      "nba_max_drawdown": 0.7697
+      "nba_bankroll": 375.6209,
+      "nba_roi_pct": 275.62,
+      "nba_sharpe": 1.183,
+      "nba_bets": 3569,
+      "nba_wins": 1759,
+      "nba_losses": 1810,
+      "nba_peak": 413.9871,
+      "nba_max_drawdown": 0.858
     },
     "grok": {
       "trader_id": "grok",
@@ -80,14 +80,14 @@
       "provider": "xai",
       "personality": "contrarian",
       "risk_tolerance": 0.65,
-      "nba_bankroll": 3687.5058,
-      "nba_roi_pct": 3587.51,
-      "nba_sharpe": 4.672,
-      "nba_bets": 1228,
-      "nba_wins": 523,
-      "nba_losses": 705,
-      "nba_peak": 3816.2126,
-      "nba_max_drawdown": 0.5355
+      "nba_bankroll": 2282.2574,
+      "nba_roi_pct": 2182.26,
+      "nba_sharpe": 3.881,
+      "nba_bets": 1420,
+      "nba_wins": 649,
+      "nba_losses": 771,
+      "nba_peak": 2332.706,
+      "nba_max_drawdown": 0.4309
     },
     "openrouter": {
       "trader_id": "openrouter",
@@ -95,14 +95,14 @@
       "provider": "openrouter",
       "personality": "diversified",
       "risk_tolerance": 0.5,
-      "nba_bankroll": 164.633,
-      "nba_roi_pct": 64.63,
-      "nba_sharpe": 0.56,
+      "nba_bankroll": 150.3485,
+      "nba_roi_pct": 50.35,
+      "nba_sharpe": 0.755,
       "nba_bets": 2125,
       "nba_wins": 1036,
       "nba_losses": 1089,
-      "nba_peak": 231.445,
-      "nba_max_drawdown": 0.9353
+      "nba_peak": 161.8374,
+      "nba_max_drawdown": 0.6942
     }
   },
   "entries": [
@@ -47519,6 +47519,261 @@
       "performance_at_time": {
         "best_bankroll": 3687.51,
         "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 313,
+      "timestamp": "2026-04-04T09:59:29.749462+00:00",
+      "source_iteration": 1,
+      "source_generation": 136,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 150.3485,
+        "roi_pct": 50.35,
+        "sharpe": 0.755
+      }
+    },
+    {
+      "iteration": 313,
+      "timestamp": "2026-04-04T09:59:29.749462+00:00",
+      "source_iteration": 1,
+      "source_generation": 136,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 10.6552,
+        "roi_pct": -89.34,
+        "sharpe": -0.162
+      }
+    },
+    {
+      "iteration": 313,
+      "timestamp": "2026-04-04T09:59:29.749462+00:00",
+      "source_iteration": 1,
+      "source_generation": 136,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "value_hunter",
+        "test_with_models": [
+          "extra_trees",
+          "stacking_meta",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'value_hunter' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'value_hunter' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 2282.26,
+        "best_trader": "grok",
+        "distance_to_1m": 99.7718
+      }
+    },
+    {
+      "iteration": 313,
+      "timestamp": "2026-04-04T09:59:29.749462+00:00",
+      "source_iteration": 1,
+      "source_generation": 136,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "spread_away",
+          "alt_spread_away_big"
+        ],
+        "expected_win_rate": 63.2,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 2282.26,
+        "best_trader": "grok",
+        "distance_to_1m": 99.7718
+      }
+    },
+    {
+      "iteration": 313,
+      "timestamp": "2026-04-04T09:59:29.749462+00:00",
+      "source_iteration": 1,
+      "source_generation": 136,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 4.6875,
+        "win_rate_pct": 51.0,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 2282.26,
+        "best_trader": "grok",
+        "distance_to_1m": 99.7718
+      }
+    },
+    {
+      "iteration": 313,
+      "timestamp": "2026-04-04T09:59:29.749462+00:00",
+      "source_iteration": 1,
+      "source_generation": 136,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "confidence_scaled",
+        "roi_pct": -30.85,
+        "bets": 164
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-30.9%) over 164 bets",
+      "performance_at_time": {
+        "best_bankroll": 2282.26,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 313,
+      "timestamp": "2026-04-04T09:59:29.749462+00:00",
+      "source_iteration": 1,
+      "source_generation": 136,
+      "trader_id": "_council",
+      "action_type": "strategy_shift",
+      "action_subtype": "top_strategies_changed",
+      "old_value": {
+        "top_strategies": [
+          "half_kelly",
+          "underdog_specialist",
+          "value_hunter"
+        ]
+      },
+      "new_value": {
+        "top_strategies": [
+          "half_kelly",
+          "quarter_kelly",
+          "value_hunter"
+        ],
+        "newly_promoted": [
+          "quarter_kelly"
+        ],
+        "dropped": [
+          "underdog_specialist"
+        ]
+      },
+      "reason": "Top strategies shifted: +['quarter_kelly'] / -['underdog_specialist']",
+      "performance_at_time": {
+        "best_bankroll": 2282.26
+      }
+    },
+    {
+      "iteration": 313,
+      "timestamp": "2026-04-04T09:59:29.749462+00:00",
+      "source_iteration": 1,
+      "source_generation": 136,
+      "trader_id": "grok",
+      "action_type": "bankroll_milestone",
+      "action_subtype": "decline",
+      "old_value": {
+        "bankroll": 3687.51
+      },
+      "new_value": {
+        "bankroll": 2282.26
+      },
+      "reason": "Bankroll decline: -38.1% ($3687.51 -> $2282.26)",
+      "performance_at_time": {
+        "rank": 1,
+        "bankroll": 2282.2574,
+        "roi_pct": 2182.26,
+        "sharpe": 3.881
+      }
+    },
+    {
+      "iteration": 313,
+      "timestamp": "2026-04-04T09:59:29.749462+00:00",
+      "source_iteration": 1,
+      "source_generation": 136,
+      "trader_id": "gemini",
+      "action_type": "bankroll_milestone",
+      "action_subtype": "decline",
+      "old_value": {
+        "bankroll": 1731.08
+      },
+      "new_value": {
+        "bankroll": 375.62
+      },
+      "reason": "Bankroll decline: -78.3% ($1731.08 -> $375.62)",
+      "performance_at_time": {
+        "rank": 2,
+        "bankroll": 375.6209,
+        "roi_pct": 275.62,
+        "sharpe": 1.183
+      }
+    },
+    {
+      "iteration": 313,
+      "timestamp": "2026-04-04T09:59:29.749462+00:00",
+      "source_iteration": 1,
+      "source_generation": 136,
+      "trader_id": "codex",
+      "action_type": "bankroll_milestone",
+      "action_subtype": "surge",
+      "old_value": {
+        "bankroll": 0.63
+      },
+      "new_value": {
+        "bankroll": 10.66
+      },
+      "reason": "Bankroll surge: +1580.1% ($0.63 -> $10.66)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 10.6552,
+        "roi_pct": -89.34,
+        "sharpe": -0.162
       }
     }
   ]
