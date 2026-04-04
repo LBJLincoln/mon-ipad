@@ -1,6 +1,6 @@
 # Nomos42 — NBA Quant AI
 
-> Architecture v18 — Department Forge + Trading Floor v4 | Updated: 2026-03-31
+> Architecture v19 — Department Forge (9 depts) + Trading Floor v4 + Bloomberg | Updated: 2026-04-04
 
 ## Mission
 Build the best NBA prediction AI in the world.
@@ -82,6 +82,18 @@ SYSTEM CRONS
 7. **Mutation cap** — adaptive mutation capped at 0.15 (deployed S10/S11/S12/S15)
 8. **CPU-only islands** — no neural models on CPU (tree-based only), stacking removed
 9. **Supabase** — primary (ayqviq) paused (402), using pooler connection (xivvnr)
+
+## New Tools (Apr 4)
+
+| Tool | Script | Purpose |
+|------|--------|---------|
+| Bloomberg Terminal | `scripts/bloomberg/nomos42-terminal.py` | Rich TUI: odds, predictions, fleet, bankroll |
+| Bloomberg API | `scripts/bloomberg/bloomberg-api.py` | HTTP API on port 8042 (auto-restart cron) |
+| Free Models | `scripts/forge/free-models-integration.py` | Qwen/Gemma/Mistral council advisors via HF API |
+| ZeroGPU Burst | `scripts/gpu-burst/zerogpu-burst.py` | H200 GPU burst (15 min/day free, 3 accounts) |
+| OpenCode Agents | `scripts/opencode/*.sh` | D1/D5/D7 automated agents (cron every 4-6h) |
+| Laptop Monitor | `scripts/laptop/agent-monitor.py` | Cross-repo health via local Ollama |
+| Cross-Repo Council | `scripts/councils/cross-repo-councils.sh` | Run dept councils across all 8 repos |
 
 ## Agent Directives (OBLIGATOIRE Overrides)
 
@@ -167,11 +179,11 @@ Each shows: dept status, active loops, metrics, agent activity
 | Codebase exploration | Haiku 4.5 | Agent(model: "haiku") |
 
 
-## Forge v19 — 3 Layers × 8 Departments (2026-04-03T20:02:58Z)
+## Forge v19 — 3 Layers × 9 Departments (2026-04-04T08:00:00Z)
 
 ```
 L1 STRATEGIC:  Claude Code CLI + User (vision, milestones, decisions)
-L2 APPLICATION: D1 Research | D2 Engineering | D3 Evolution | D4 Product | D5 Business | D6 Evaluation
+L2 APPLICATION: D1 Research | D2 Engineering | D3 Evolution | D4 Product | D5 Business | D6 Evaluation | D9 Cross-Repo
 L3 LOGISTICS:   D7 Infra | D8 Finance
 ```
 
