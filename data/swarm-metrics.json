@@ -1,5 +1,5 @@
 {
-  "collected_at": "2026-04-04T16:00:03Z",
+  "collected_at": "2026-04-04T20:00:04Z",
   "version": "1.0",
   "products": {
     "nba": {
@@ -8,7 +8,7 @@
         "agent": "O1",
         "name": "Brain / Strategy Definer",
         "metric": "decisions_actioned_per_cycle",
-        "health_file_age_hours": 1.96,
+        "health_file_age_hours": 0.11,
         "spaces_summary": "6/6 UP",
         "open_issues": 0,
         "system_status": "HEALTHY",
@@ -19,7 +19,7 @@
         "name": "Research Analyst",
         "metric": "research_proposals_per_week",
         "proposal_files_found": 18,
-        "proposals_file_age_hours": 103.35,
+        "proposals_file_age_hours": 107.35,
         "status": "GREEN"
       },
       "layer1_features": {
@@ -28,7 +28,7 @@
         "metric": "feature_categories_count",
         "current_categories": 46,
         "engine_version": "v3.1-46cat",
-        "engine_age_hours": 66.96,
+        "engine_age_hours": 70.96,
         "target_categories": 46,
         "status": "GREEN"
       },
@@ -46,16 +46,16 @@
         "name": "Predictions Agent",
         "metric": "predictions_posted_count",
         "predictions_today": 6,
-        "predictions_file_age_hours": 180.64,
+        "predictions_file_age_hours": 184.64,
         "status": "GREEN"
       },
       "layer1_data": {
         "agent": "E5",
         "name": "Data Pipeline",
         "metric": "odds_data_freshness_hours",
-        "current_age_hours": 3.46,
+        "current_age_hours": 0.11,
         "target_max_hours": 2.0,
-        "status": "RED"
+        "status": "GREEN"
       },
       "layer1_islands": {
         "agent": "V1",
@@ -68,37 +68,37 @@
           "S10": {
             "status": "UP",
             "brier": 0.22454,
-            "gen": 529,
+            "gen": 618,
             "stagnation_cycles": 0
           },
           "S11": {
             "status": "UP",
             "brier": 0.22273,
-            "gen": 972,
+            "gen": 1161,
             "stagnation_cycles": 0
           },
           "S12": {
             "status": "UP",
             "brier": 0.22506,
-            "gen": 1091,
+            "gen": 1243,
             "stagnation_cycles": 0
           },
           "S13": {
             "status": "UP",
             "brier": 0.22455,
-            "gen": 807,
+            "gen": 918,
             "stagnation_cycles": 0
           },
           "S14": {
             "status": "UP",
             "brier": 0.22666,
-            "gen": 845,
+            "gen": 944,
             "stagnation_cycles": 0
           },
           "S15": {
             "status": "UP",
             "brier": 0.22159,
-            "gen": 1342,
+            "gen": 1573,
             "stagnation_cycles": 0
           }
         },
@@ -122,7 +122,7 @@
         "current_brier": 0.2157,
         "atr": 0.2157,
         "gap": 0.0,
-        "eval_file_age_hours": 1.9,
+        "eval_file_age_hours": 0.13,
         "status": "GREEN"
       },
       "layer3_infra": {
@@ -131,7 +131,7 @@
         "metric": "fleet_services_status",
         "data_server_backtest": "UNKNOWN",
         "telegram_brain": "ALIVE",
-        "infra_file_age_hours": 0.21,
+        "infra_file_age_hours": 0.13,
         "status": "GREEN"
       }
     },
@@ -143,7 +143,7 @@
         "metric": "political_engine_categories_live",
         "categories": 27,
         "engine_version": "v3.2-political-27cat",
-        "engine_file_age_hours": 14.02,
+        "engine_file_age_hours": 18.02,
         "target_categories": 25,
         "status": "GREEN"
       },
@@ -177,18 +177,17 @@
     }
   },
   "priority_alerts": [
-    "P1-CRITICAL: Odds data stale 3.46h",
     "P2-STRATEGIC: ROI negative (-8.71%)"
   ],
   "summary": {
-    "total_alerts": 2,
-    "critical_alerts": 1,
+    "total_alerts": 1,
+    "critical_alerts": 0,
     "islands_up": 6,
     "best_brier": 0.22159,
     "atr_brier": 0.2157,
     "season_roi_pct": -8.71,
     "feature_categories": 46,
     "political_categories": 27,
-    "overall_health": "CRITICAL"
+    "overall_health": "HEALTHY"
   }
 }
