@@ -1,8 +1,8 @@
 {
   "department": "trading_floor",
-  "timestamp": "2026-04-04T10:54:26.413202+00:00",
-  "iteration": 7,
-  "generation": 952,
+  "timestamp": "2026-04-04T10:59:13.162520+00:00",
+  "iteration": 8,
+  "generation": 1088,
   "status": "completed",
   "best_strategy": {
     "name": "half_kelly",
@@ -52,9 +52,9 @@
       "losses": 231,
       "profit": 1023.9750999999997,
       "traders_using": [
+        "codex",
         "grok",
-        "openrouter",
-        "codex"
+        "openrouter"
       ],
       "roi_pct": 341.33,
       "win_rate_pct": 54.3
@@ -165,8 +165,8 @@
       "wins": 159,
       "losses": 193,
       "traders_using": [
-        "openrouter",
-        "grok"
+        "grok",
+        "openrouter"
       ],
       "avg_daily_pnl": 0.7338,
       "win_rate_pct": 45.2
@@ -191,9 +191,9 @@
       "wins": 375,
       "losses": 323,
       "traders_using": [
+        "codex",
         "claude",
         "openrouter",
-        "codex",
         "gemini"
       ],
       "avg_daily_pnl": 0.4914,
@@ -206,8 +206,8 @@
       "wins": 170,
       "losses": 135,
       "traders_using": [
-        "openrouter",
-        "codex"
+        "codex",
+        "openrouter"
       ],
       "avg_daily_pnl": 0.2382,
       "win_rate_pct": 55.7
@@ -389,33 +389,51 @@
       }
     }
   },
-  "mutations": {},
+  "mutations": {
+    "openrouter": {
+      "type": "strategy_theft",
+      "from_trader": "gemini",
+      "stolen_strategy": "half_kelly",
+      "old_preferences": [
+        "quarter_kelly",
+        "flat_2pct",
+        "value_hunter"
+      ],
+      "new_preferences": [
+        "half_kelly",
+        "quarter_kelly",
+        "flat_2pct"
+      ],
+      "steal_probability": 0.2,
+      "reason": "openrouter (ROI +47.4%) steals 'half_kelly' from gemini (ROI +1553.0%)"
+    }
+  },
   "learning": {
     "season_memory_bets": 10000,
     "bayesian_posteriors": {
-      "full_kelly": 0.042355,
-      "half_kelly": 0.053642,
-      "quarter_kelly": 0.052734,
-      "eighth_kelly": 0.039801,
-      "flat_1pct": 0.039801,
-      "flat_2pct": 0.059557,
-      "flat_5pct": 0.039801,
-      "diversified_flat": 0.039801,
-      "confidence_scaled": 0.036025,
-      "proportional_edge": 0.039801,
-      "ev_threshold_110": 0.039801,
-      "value_hunter": 0.070052,
-      "underdog_specialist": 0.092734,
-      "dog_value_plus": 0.115289,
-      "first_half_sniper": 0.039801,
-      "first_half_away": 0.039801,
-      "home_specialist": 0.039801,
-      "anti_martingale": 0.039801,
-      "drawdown_adjusted": 0.039801,
-      "streak_momentum": 0.039801
+      "full_kelly": 0.042356,
+      "half_kelly": 0.053644,
+      "quarter_kelly": 0.052736,
+      "eighth_kelly": 0.039802,
+      "flat_1pct": 0.039802,
+      "flat_2pct": 0.059559,
+      "flat_5pct": 0.039802,
+      "diversified_flat": 0.039802,
+      "confidence_scaled": 0.036027,
+      "proportional_edge": 0.039802,
+      "ev_threshold_110": 0.039802,
+      "value_hunter": 0.070056,
+      "underdog_specialist": 0.09271,
+      "dog_value_plus": 0.115283,
+      "first_half_sniper": 0.039802,
+      "first_half_away": 0.039802,
+      "home_specialist": 0.039802,
+      "anti_martingale": 0.039802,
+      "drawdown_adjusted": 0.039802,
+      "streak_momentum": 0.039802
     },
     "feature_correlations_count": 105,
-    "cross_trader_steals": 2,
+    "cross_trader_steals": 3,
     "trader_rolling_stats": {
       "gemini": {
         "accuracy": 0.65,
