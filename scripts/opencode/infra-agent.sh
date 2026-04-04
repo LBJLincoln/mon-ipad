@@ -195,6 +195,8 @@ if opencode_available; then
     RAW_OUTPUT=$(run_opencode "$PROMPT" "text" 2>&1) || true
 
     if [ -n "$RAW_OUTPUT" ] && [ "$RAW_OUTPUT" != "" ]; then
+        # Try to extract valid JSON from OpenCode output
+        JSON_OUTPUT=""
         JSON_OUTPUT=$(echo "$RAW_OUTPUT" | python3 -c "
 import sys, json, re
 text = sys.stdin.read()
@@ -207,11 +209,34 @@ for m in matches:
             sys.exit(0)
     except:
         continue
-print(json.dumps({'raw_output': text[:2000], 'parse_note': 'Could not extract structured JSON'}))
-" 2>/dev/null)
+# No valid JSON found — print nothing
+" 2>/dev/null) || true
 
-        write_output "$DEPT" "$JSON_OUTPUT" "$OUTPUT_FILE" "opencode"
-        log "$DEPT" "Output written to $OUTPUT_FILE (via OpenCode)"
+        if [ -n "$JSON_OUTPUT" ]; then
+            export _WRITE_CONTENT="$JSON_OUTPUT"
+            python3 -c "
+import json, os
+from datetime import datetime, timezone
+content = os.environ['_WRITE_CONTENT']
+try:
+    parsed = json.loads(content)
+except:
+    parsed = {'raw_output': content[:2000]}
+result = {
+    'department': 'infra',
+    'timestamp': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+    'method': 'opencode',
+    'version': '1.0',
+    'data': parsed
+}
+print(json.dumps(result, indent=2))
+" > "$OUTPUT_FILE"
+            log "$DEPT" "Output written to $OUTPUT_FILE (via OpenCode)"
+        else
+            log "$DEPT" "OpenCode returned non-JSON output, falling back to API"
+            run_fallback "$PROMPT" "$OUTPUT_FILE"
+            log "$DEPT" "Output written to $OUTPUT_FILE (via API fallback)"
+        fi
     else
         log "$DEPT" "OpenCode returned empty, falling back to API"
         run_fallback "$PROMPT" "$OUTPUT_FILE"

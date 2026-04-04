@@ -131,6 +131,9 @@ run_fallback() {
         return 1
     fi
 
+    # Export prompt via env var to avoid shell quoting issues with triple-quotes
+    export _FALLBACK_PROMPT="$prompt"
+
     for provider in "${providers[@]}"; do
         local response=""
         local success=false
@@ -138,38 +141,39 @@ run_fallback() {
         case "$provider" in
             openrouter)
                 log "fallback" "Trying OpenRouter..."
-                response=$(curl -sSL "https://openrouter.ai/api/v1/chat/completions" \
+                response=$(python3 -c "
+import json, os, sys
+prompt = os.environ['_FALLBACK_PROMPT']
+print(json.dumps({'model': 'anthropic/claude-sonnet-4', 'max_tokens': 2000, 'messages': [{'role': 'user', 'content': prompt}]}))
+" | curl -sSL "https://openrouter.ai/api/v1/chat/completions" \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENROUTER_API_KEY" \
-                    -d "$(python3 -c "
-import json
-prompt = '''$prompt'''
-print(json.dumps({'model': 'anthropic/claude-sonnet-4', 'max_tokens': 2000, 'messages': [{'role': 'user', 'content': prompt}]}))
-")" \
+                    -d @- \
                     --max-time 120 2>/dev/null) && success=true
                 ;;
             openai)
                 log "fallback" "Trying OpenAI..."
-                response=$(curl -sSL "https://api.openai.com/v1/chat/completions" \
+                response=$(python3 -c "
+import json, os
+prompt = os.environ['_FALLBACK_PROMPT']
+print(json.dumps({'model': 'gpt-4o-mini', 'max_tokens': 2000, 'messages': [{'role': 'user', 'content': prompt}]}))
+" | curl -sSL "https://api.openai.com/v1/chat/completions" \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
-                    -d "$(python3 -c "
-import json
-prompt = '''$prompt'''
-print(json.dumps({'model': 'gpt-4o-mini', 'max_tokens': 2000, 'messages': [{'role': 'user', 'content': prompt}]}))
-")" \
+                    -d @- \
                     --max-time 120 2>/dev/null) && success=true
                 ;;
             gemini)
                 log "fallback" "Trying Gemini..."
                 local gkey="${GEMINI_API_KEY:-${GOOGLE_API_KEY:-}}"
+                export _FALLBACK_GKEY="$gkey"
                 response=$(python3 -c "
 import json, urllib.request, os
 
-prompt = '''$prompt'''
-gkey = '$gkey'
+prompt = os.environ['_FALLBACK_PROMPT']
+gkey = os.environ['_FALLBACK_GKEY']
 url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gkey}'
-payload = json.dumps({'contents': [{'parts': [{'text': prompt}]}], 'generationConfig': {'maxOutputTokens': 2000}}).encode()
+payload = json.dumps({'contents': [{'parts': [{'text': prompt}]}], 'generationConfig': {'maxOutputTokens': 8000}}).encode()
 req = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'}, method='POST')
 try:
     with urllib.request.urlopen(req, timeout=120) as resp:
@@ -217,20 +221,27 @@ write_output() {
     local output_file="$3"
     local method="${4:-opencode}"
 
+    export _WRITE_DEPT="$dept"
+    export _WRITE_CONTENT="$content"
+    export _WRITE_METHOD="$method"
+
     python3 -c "
-import json, sys
+import json, os
 from datetime import datetime, timezone
 
-content = '''$content'''
+content = os.environ.get('_WRITE_CONTENT', '{}')
+dept = os.environ.get('_WRITE_DEPT', 'unknown')
+method = os.environ.get('_WRITE_METHOD', 'unknown')
+
 try:
     parsed = json.loads(content)
 except:
-    parsed = {'raw_output': content}
+    parsed = {'raw_output': content[:5000]}
 
 result = {
-    'department': '$dept',
+    'department': dept,
     'timestamp': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
-    'method': '$method',
+    'method': method,
     'version': '1.0',
     'data': parsed
 }

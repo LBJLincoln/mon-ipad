@@ -1,1 +1,78 @@
-{"error": "All API providers failed", "timestamp": "2026-04-04T08:37:31Z"}
+{
+  "check_date": "2026-04-04",
+  "overall_health": "red",
+  "vm_status": {
+    "health": "red",
+    "disk_warning": true,
+    "memory_pressure": true,
+    "issues": [
+      "Severe CPU load average (1m: 2.69, 5m: 3.79, 15m: 4.29) on a 1 vCPU VM, indicating significant resource contention.",
+      "Critically low free memory (68MB) and high memory usage (75% used), risking OOM errors and performance degradation.",
+      "High disk utilization (77% used, 6.5GB available) approaching critical levels."
+    ]
+  },
+  "spaces_status": {
+    "healthy_count": 6,
+    "total_count": 6,
+    "down_spaces": [],
+    "issues": []
+  },
+  "data_freshness": {
+    "health": "green",
+    "stale_files": [],
+    "issues": []
+  },
+  "cron_health": {
+    "health": "yellow",
+    "issues": [
+      "While data freshness indicates cron jobs are completing, their reliable and timely execution is likely compromised due to the VM's severe resource contention (CPU and memory pressure). This could lead to future delays or failures."
+    ]
+  },
+  "critical_alerts": [
+    {
+      "severity": "critical",
+      "component": "VM CPU",
+      "message": "The VM's single vCPU is severely overloaded with a sustained load average (2.69-4.29). This will drastically impact system responsiveness, command execution, and overall stability.",
+      "action": "Immediately investigate CPU-consuming processes. Upgrade VM vCPU count to at least 2 or offload CPU-intensive tasks."
+    },
+    {
+      "severity": "critical",
+      "component": "VM Memory",
+      "message": "VM memory is at critical levels (75% used, only 68MB free). This poses a high risk of Out-Of-Memory (OOM) errors, leading to application crashes or system instability.",
+      "action": "Immediately investigate memory-consuming processes. Upgrade VM RAM to at least 2GB or optimize memory usage."
+    },
+    {
+      "severity": "warning",
+      "component": "VM Disk",
+      "message": "VM disk utilization is high at 77%, with only 6.5GB available. The system is approaching critical disk capacity.",
+      "action": "Review disk usage, identify large files (e.g., logs, temporary data, old backups), and perform cleanup. Implement better disk management policies."
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": 1,
+      "action": "Immediately upgrade the VM's hardware resources to at least 2 vCPUs and 2-4GB RAM.",
+      "reason": "The current 1 vCPU / 969MB RAM VM is a severe bottleneck. The high CPU load and critical memory usage are unsustainable and will lead to system failures, impacting all services running on the VM, including the data server and cron jobs."
+    },
+    {
+      "priority": 1,
+      "action": "Conduct an urgent analysis of running processes on the VM to identify specific applications or services causing the high CPU and memory utilization.",
+      "reason": "Understanding the root cause is critical for effective troubleshooting. This might reveal inefficient scripts, unexpected services, or even violations of the 'ZERO ML allowed on VM' policy."
+    },
+    {
+      "priority": 2,
+      "action": "Implement robust monitoring for cron job execution, including success/failure status, start/end times, and resource consumption.",
+      "reason": "Although data freshness is currently acceptable, the VM's resource stress makes cron job reliability questionable. Explicit monitoring will provide early warnings of delays or failures in critical tasks like 'predictions at game time' and 'autonomous cycle'."
+    },
+    {
+      "priority": 2,
+      "action": "Establish and enforce strict disk usage policies, including automated log rotation, temporary file cleanup, and data archiving/deletion strategies.",
+      "reason": "Preventing disk exhaustion is crucial for system stability. High disk usage can lead to performance degradation and prevent critical operations."
+    },
+    {
+      "priority": 3,
+      "action": "Review the current architecture and VM processes to ensure strict adherence to the 'ZERO ML allowed on VM' policy.",
+      "reason": "Given the severe resource constraints on the VM and the explicit architectural rule, it's imperative to confirm that no ML-related tasks, including data preprocessing or model loading, are inadvertently contributing to the VM's overload."
+    }
+  ]
+}
