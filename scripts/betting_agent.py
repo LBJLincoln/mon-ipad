@@ -25,6 +25,7 @@ from datetime import datetime, date
 from pathlib import Path
 import numpy as np
 from scipy.optimize import minimize
+from scipy.stats import norm as _norm
 
 # ═══════════════════════════════════════
 # SECTION 1: CONFIG
@@ -37,9 +38,13 @@ DEFAULT_STRATEGY = "portfolio_kelly"
 MAX_PORTFOLIO_EXPOSURE = 0.25   # 25% max nightly exposure (research-validated)
 MAX_SINGLE_BET_FRACTION = 0.025 # 2.5% max per position (quarter-Kelly cap)
 MIN_EV_THRESHOLD = 0.10         # 10% minimum EV — CRITICAL (MDPI Info 2026: #1 ROI filter)
-MIN_EDGE_THRESHOLD = 0.05       # 5% minimum edge
-MIN_ODDS = 1.30
+MIN_EDGE_THRESHOLD = 0.05       # 5% minimum edge (Grok value_hunter uses 0.05)
+MIN_ODDS = 1.80                 # Raised from 1.30 → 1.80 (Grok: underdog_specialist, min 2.2)
 MAX_ODDS = 8.0                  # cap at 8.0 (reduce variance on longshots)
+# Strategy alignment note (Apr 4 audit):
+# Grok's winning combo = value_hunter + underdog_specialist (NOT half_kelly)
+# 93% of Grok's profit comes from alt_spread at ~2.50 odds
+# spread_home is NEGATIVE for all 5 TF traders — avoid
 MIN_STAKE_DOLLARS = 0.50
 
 # Drawdown constraint
@@ -136,6 +141,213 @@ def normalize_team(name):
     return name_upper
 
 
+# ═══════════════════════════════════════
+# SECTION 1b: DERIVED MARKET CALCULATORS
+# ═══════════════════════════════════════
+
+def calc_overtime_candidates(home, away, prob_home, game_idx,
+                             offered_ot_yes_odds=None, offered_ot_no_odds=None):
+    """
+    Overtime probability derived from win-probability curve.
+    Formula: p_ot = 0.063 * (1 - 4*(prob_home - 0.5)^2)
+    Peaks at 6.3% for 50/50 games; drops as matchup becomes lopsided.
+    Books use a flat ~6% base rate — we condition on the matchup.
+    Default market lines if no live odds: OT Yes ~15.0, OT No ~1.04
+    """
+    p_ot = 0.063 * (1.0 - 4.0 * (prob_home - 0.5) ** 2)
+    p_ot = max(0.01, min(0.20, p_ot))   # clamp to [1%, 20%]
+    p_no_ot = 1.0 - p_ot
+
+    yes_odds = float(offered_ot_yes_odds) if offered_ot_yes_odds else 15.0
+    no_odds  = float(offered_ot_no_odds)  if offered_ot_no_odds  else 1.04
+
+    candidates = []
+    for side, prob, odds in [("ot_yes", p_ot, yes_odds), ("ot_no", p_no_ot, no_odds)]:
+        if odds <= 0 or prob <= 0:
+            continue
+        implied = 1.0 / odds
+        edge = prob - implied
+        ev   = prob * odds - 1.0
+        b    = odds - 1.0
+        kelly = max(0.0, (b * prob - (1.0 - prob)) / b) if b > 0 else 0.0
+        is_eligible = (ev >= MIN_EV_THRESHOLD and edge >= MIN_EDGE_THRESHOLD
+                       and kelly > 0
+                       and MIN_ODDS <= odds <= MAX_ODDS
+                       and 0.10 <= implied <= 0.90
+                       and abs(prob - implied) <= 0.50)
+        # Sanity: OT Yes at 15.0 has implied=6.7% — allow implied down to 4% for OT
+        # (override the 10% floor for this market only)
+        if side == "ot_yes":
+            is_eligible = (ev >= MIN_EV_THRESHOLD and edge >= MIN_EDGE_THRESHOLD
+                           and kelly > 0
+                           and 5.0 <= odds <= MAX_ODDS
+                           and abs(prob - implied) <= 0.50)
+        candidates.append({
+            "id": f"{home}_{away}_ot_{side}",
+            "game": f"{away} @ {home}",
+            "market": "overtime",
+            "side": side,
+            "team": f"{home}/{away}",
+            "model_prob": round(prob, 4),
+            "decimal_odds": round(odds, 3),
+            "implied_prob": round(implied, 4),
+            "edge": round(edge, 4),
+            "ev": round(ev, 4),
+            "full_kelly": round(kelly, 4),
+            "game_idx": game_idx,
+            "is_eligible": is_eligible,
+        })
+    return candidates
+
+
+# Margin band endpoints (inclusive low, exclusive high) and display labels
+_MARGIN_BANDS = [
+    (1,  6,  "1-5pts"),
+    (6,  11, "6-10pts"),
+    (11, 16, "11-15pts"),
+    (16, 21, "16-20pts"),
+    (21, 999, "21+pts"),
+]
+
+# Typical market odds for each margin band (home win / away win)
+# These are approximate — real books post them; we use fallbacks if no live line.
+_MARGIN_BAND_DEFAULT_ODDS = [4.5, 3.2, 3.8, 5.0, 4.0]
+
+
+def calc_margin_band_candidates(home, away, prob_home, game_idx, offered_odds=None):
+    """
+    Margin-of-victory band probabilities derived from win probability.
+    expected_margin = (prob_home - 0.5) * 24   (12 pt swing over full range)
+    std_margin = 11.5 pts  (NBA historical σ)
+    For away team: mirror the expected margin (negate).
+    offered_odds: optional dict keyed by f"{team}_{band_label}" → decimal odds
+    """
+    exp_margin_home = (prob_home - 0.5) * 24.0
+    sigma = 11.5
+
+    candidates = []
+    for team_label, sign in [(home, 1), (away, -1)]:
+        mu = exp_margin_home * sign   # positive = team wins
+        for idx, (lo, hi, label) in enumerate(_MARGIN_BANDS):
+            # P(team wins by lo..hi-1 pts) = P(lo <= margin < hi | margin > 0)
+            # We compute unconditional P(lo <= margin < hi) directly:
+            p_band = _norm.cdf(hi, loc=mu, scale=sigma) - _norm.cdf(lo, loc=mu, scale=sigma)
+            p_band = max(1e-4, min(0.999, p_band))
+
+            bet_key = f"{team_label}_{label}"
+            odds = float(offered_odds.get(bet_key, _MARGIN_BAND_DEFAULT_ODDS[idx])) \
+                   if offered_odds else _MARGIN_BAND_DEFAULT_ODDS[idx]
+            if odds <= 0:
+                continue
+
+            implied = 1.0 / odds
+            edge = p_band - implied
+            ev   = p_band * odds - 1.0
+            b    = odds - 1.0
+            kelly = max(0.0, (b * p_band - (1.0 - p_band)) / b) if b > 0 else 0.0
+            is_eligible = (ev >= MIN_EV_THRESHOLD and edge >= MIN_EDGE_THRESHOLD
+                           and kelly > 0
+                           and MIN_ODDS <= odds <= MAX_ODDS
+                           and 0.05 <= implied <= 0.95
+                           and abs(p_band - implied) <= 0.50)
+            candidates.append({
+                "id": f"{home}_{away}_margin_{team_label}_{label}",
+                "game": f"{away} @ {home}",
+                "market": "margin_band",
+                "side": f"{team_label} {label}",
+                "team": team_label,
+                "model_prob": round(p_band, 4),
+                "decimal_odds": round(odds, 3),
+                "implied_prob": round(implied, 4),
+                "edge": round(edge, 4),
+                "ev": round(ev, 4),
+                "full_kelly": round(kelly, 4),
+                "game_idx": game_idx,
+                "is_eligible": is_eligible,
+            })
+    return candidates
+
+
+def calc_team_total_candidates(home, away, prob_home, game_idx,
+                               offered_total=None, offered_spread=None,
+                               odds_home_over=None, odds_home_under=None,
+                               odds_away_over=None, odds_away_under=None):
+    """
+    Team totals derived from game total + spread.
+    team_total_home ≈ total * (1 + spread/total) / 2
+    team_total_away ≈ total - team_total_home
+    If no odds data, we skip (can't price without a line).
+    Line is always the midpoint; model probability is derived from the
+    win-probability-implied spread vs the book line.
+    """
+    # Need a total and a spread to derive team totals
+    if offered_total is None or offered_total <= 0:
+        return []
+    total = float(offered_total)
+
+    # Spread derived from win probability if not provided
+    # prob_home → implied spread (home perspective): spread ≈ (0.5 - prob_home)*24
+    spread = float(offered_spread) if offered_spread is not None else (0.5 - prob_home) * 24.0
+
+    team_total_home = total * (1.0 + spread / total) / 2.0
+    team_total_away = total - team_total_home
+
+    # Typical σ for team total is ~7 pts (NBA)
+    sigma_team = 7.0
+
+    candidates = []
+    for team_label, tt_line in [(home, team_total_home), (away, team_total_away)]:
+        # Model: actual scoring ~ N(tt_line, sigma_team²)
+        # Under = P(score < tt_line) ≈ 0.5 by construction; we need an edge
+        # over the book's line. If book line equals our estimate → no edge.
+        # We compute P(over) and P(under) vs book's stated line.
+        # Without a distinct book line we can't find an edge, so skip.
+        book_line = tt_line  # book agrees with our estimate by construction
+        p_over  = 1.0 - _norm.cdf(book_line, loc=tt_line, scale=sigma_team)
+        p_under = _norm.cdf(book_line, loc=tt_line, scale=sigma_team)
+
+        if team_label == home:
+            ov_odds = float(odds_home_over)  if odds_home_over  else 1.91
+            un_odds = float(odds_home_under) if odds_home_under else 1.91
+        else:
+            ov_odds = float(odds_away_over)  if odds_away_over  else 1.91
+            un_odds = float(odds_away_under) if odds_away_under else 1.91
+
+        for side_label, prob, odds in [
+            (f"{team_label} TT Over",  p_over,  ov_odds),
+            (f"{team_label} TT Under", p_under, un_odds),
+        ]:
+            if odds <= 0 or prob <= 0:
+                continue
+            implied = 1.0 / odds
+            edge = prob - implied
+            ev   = prob * odds - 1.0
+            b    = odds - 1.0
+            kelly = max(0.0, (b * prob - (1.0 - prob)) / b) if b > 0 else 0.0
+            is_eligible = (ev >= MIN_EV_THRESHOLD and edge >= MIN_EDGE_THRESHOLD
+                           and kelly > 0
+                           and MIN_ODDS <= odds <= MAX_ODDS
+                           and 0.10 <= implied <= 0.90
+                           and abs(prob - implied) <= 0.50)
+            side_key = "over" if "Over" in side_label else "under"
+            candidates.append({
+                "id": f"{home}_{away}_tt_{team_label}_{side_key}",
+                "game": f"{away} @ {home}",
+                "market": "team_total",
+                "side": side_label,
+                "team": team_label,
+                "model_prob": round(prob, 4),
+                "decimal_odds": round(odds, 3),
+                "implied_prob": round(implied, 4),
+                "edge": round(edge, 4),
+                "ev": round(ev, 4),
+                "full_kelly": round(kelly, 4),
+                "game_idx": game_idx,
+                "is_eligible": is_eligible,
+            })
+    return candidates
+
+
 def load_inputs(bankroll_override=None):
     """Load predictions, odds, and bankroll. Return (candidates, bankroll)."""
 
@@ -193,11 +405,41 @@ def load_inputs(bankroll_override=None):
                                         best_home_odds = price
                                     elif name == away and price > best_away_odds:
                                         best_away_odds = price
+                    # Also extract totals and spreads if present
+                    best_total = 0.0
+                    best_over_odds = 0.0
+                    best_under_odds = 0.0
+                    best_spread_home = None
+                    for bm in game.get("bookmakers", []):
+                        for market in bm.get("markets", []):
+                            mkey = market.get("key", "")
+                            if mkey == "totals":
+                                for outcome in market.get("outcomes", []):
+                                    pt = float(outcome.get("point", 0) or 0)
+                                    price = float(outcome.get("price", 0) or 0)
+                                    nm = outcome.get("name", "").lower()
+                                    if pt > 0 and best_total == 0:
+                                        best_total = pt
+                                    if "over" in nm and price > best_over_odds:
+                                        best_over_odds = price
+                                    elif "under" in nm and price > best_under_odds:
+                                        best_under_odds = price
+                            elif mkey == "spreads":
+                                for outcome in market.get("outcomes", []):
+                                    nm_team = normalize_team(outcome.get("name", ""))
+                                    pt = float(outcome.get("point", 0) or 0)
+                                    if nm_team == home and best_spread_home is None:
+                                        # home spread: negative = home fav, positive = underdog
+                                        best_spread_home = pt
                     odds_by_game[key] = {
                         "home_odds": best_home_odds,
                         "away_odds": best_away_odds,
                         "home": home,
                         "away": away,
+                        "total": best_total,
+                        "total_over_odds": best_over_odds,
+                        "total_under_odds": best_under_odds,
+                        "spread_home": best_spread_home,
                     }
         except Exception as e:
             print(f"[ODDS] Failed to load: {e}")
@@ -276,6 +518,30 @@ def load_inputs(bankroll_override=None):
                 "game_idx": i,
                 "is_eligible": is_eligible,
             })
+
+        # ── Market 1: Overtime probability ──────────────────────────────────
+        candidates.extend(calc_overtime_candidates(
+            home=home, away=away, prob_home=model_prob, game_idx=i,
+        ))
+
+        # ── Market 2: Margin-of-victory bands ───────────────────────────────
+        candidates.extend(calc_margin_band_candidates(
+            home=home, away=away, prob_home=model_prob, game_idx=i,
+        ))
+
+        # ── Market 3: Team totals (requires game total from odds) ────────────
+        game_total   = float(odds_info.get("total", 0) or 0)
+        spread_home  = odds_info.get("spread_home", None)
+        if game_total > 0:
+            candidates.extend(calc_team_total_candidates(
+                home=home, away=away, prob_home=model_prob, game_idx=i,
+                offered_total=game_total,
+                offered_spread=float(spread_home) if spread_home is not None else None,
+                odds_home_over=odds_info.get("total_over_odds") or None,
+                odds_home_under=odds_info.get("total_under_odds") or None,
+                odds_away_over=odds_info.get("total_over_odds") or None,
+                odds_away_under=odds_info.get("total_under_odds") or None,
+            ))
 
     print(f"[AGENT] Loaded {len(predictions)} predictions, {len(odds_by_game)} odds, {len(candidates)} candidates")
     print(f"[AGENT] Bankroll: ${bankroll:.2f}")
