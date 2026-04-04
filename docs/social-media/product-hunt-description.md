@@ -38,8 +38,8 @@ XGBoost, CatBoost, LightGBM, Extra-Trees, TabICL, and ensemble variants. Each mo
 **5-AI Trading Floor**
 Five AI agents powered by Gemini (Google), Claude (Anthropic), Codex (OpenAI), Grok (xAI), and OpenRouter compete head-to-head. Each agent independently selects models, strategies, and Kelly-criterion bet sizing per game.
 
-**11 Autonomous Departments**
-Research, Engineering, Evolution, Betting, Evaluation, Infrastructure, Political Alpha, Creative, Communication, Business, and Finance -- each running a Karpathy loop (5-minute autonomous cycles of mutate, measure, keep-or-revert). A Guardian Orchestrator cross-pollinates wins every 4 hours.
+**9 Autonomous Departments**
+Research, Engineering, Evolution, Product, Business, Evaluation, Infra, Finance, and Cross-Repo -- each running a Karpathy loop (5-minute autonomous cycles of mutate, measure, keep-or-revert). A Guardian Orchestrator cross-pollinates wins every 4 hours.
 
 ### Key Results
 
@@ -106,7 +106,7 @@ The most surprising finding: infrastructure cost does not correlate with model q
 
 The most interesting technical decision: instead of building one optimized model, we built a Trading Floor where 5 AI agents from different providers (Gemini, Claude, Codex, Grok, OpenRouter) compete against each other. Each agent sees the same predictions but makes independent strategy decisions. The emergent behavior is more informative than any single agent.
 
-What I am most excited about: the 11-department Karpathy loop architecture. Each department -- from Research to Finance -- runs its own 5-minute autonomous improvement cycle. A Guardian Orchestrator cross-pollinates wins between departments. This is the closest thing I have built to an organization that improves itself.
+What I am most excited about: the 9-department Karpathy loop architecture. Each department -- from Research to Cross-Repo -- runs its own 5-minute autonomous improvement cycle. A Guardian Orchestrator cross-pollinates wins between departments. This is the closest thing I have built to an organization that improves itself.
 
 Would love your feedback. Try the daily predictions via @Nomos42Bot on Telegram, or explore the dashboard at nomos-dashboard.vercel.app.
 

@@ -1,5 +1,5 @@
 # NOMOS42 — Agent Ecosystem v4.0
-> 8 Departments | 30 Agents | 31 Skills | 19 Crons | 20 HF Spaces | 5 Bots
+> 9 Departments | 30 Agents | 31 Skills | 19 Crons | 20 HF Spaces | 5 Bots
 > Last updated: 2026-03-31
 
 ## Page 1: All Agents, Skills & Interactions

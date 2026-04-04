@@ -1,6 +1,6 @@
 # NOMOS42 — Daily Operations Dashboard
 
-> **Last updated:** 2026-04-04 18:05 UTC | **Auto-refreshed by:** trading-floor-v9 cron
+> **Last updated:** 2026-04-04 18:05 UTC | **Auto-refreshed by:** trading-floor-v4 cron
 > **Read this on your iPad to know exactly where we are and what YOU need to do.**
 
 ---
@@ -12,9 +12,8 @@
 | **mon-ipad** | Pilot / Orchestrator | ACTIVE | — | Forge v19, 9 depts, 9 councils | All councils live |
 | **nomos-nba-agent** | NBA Predictions | ACTIVE | S10-S15 (6 islands) | Brier 0.21570 ATR, fleet 0.22159 | Cross-pollination |
 | **nomos-political-alpha** | Political Alpha | ACTIVE | P1-P4 (4 islands) | Kaggle v24 pushed | Deploy events to HF |
-| **nomos-dashboard** | Frontend / Arena | ACTIVE | — (Vercel) | Dashboard V2 live | Visual iteration |
+| **nomos-dashboard** | Frontend / Arena | ACTIVE | — (Vercel) | Trading Floor v4 live | Visual iteration |
 | **rgwa** | AI Art Generation | IDLE | — (needs setup) | 0 pieces generated | First generation run |
-| **nomos-dashboard** | Frontend / Arena | ACTIVE | — (Vercel) | Trading Floor v5 live | Visual iteration |
 
 ---
 
@@ -173,7 +172,7 @@ Iteration N finishes
 │                    mon-ipad (PILOT)                       │
 │  ┌─────────────┐ ┌─────────────┐ ┌──────────────────┐   │
 │  │ Guardian     │ │ Trading     │ │ Autonomous       │   │
-│  │ Orchestrator │ │ Floor v5    │ │ Cycle (cron 4h)  │   │
+│  │ Orchestrator │ │ Floor v4    │ │ Cycle (cron 4h)  │   │
 │  └──────┬──────┘ └──────┬──────┘ └────────┬─────────┘   │
 │         │               │                  │              │
 │         ▼               ▼                  ▼              │

@@ -83,7 +83,7 @@ nomos-dashboard.vercel.app
 ---
 
 **Tweet 7 (Behind the Scenes -- Casual)**
-My NBA prediction AI has 11 departments. Research scans papers. Engineering runs experiments. Evolution mutates configs. Betting backtests strategies.
+My NBA prediction AI has 9 departments. Research scans papers. Engineering runs experiments. Evolution mutates configs. Evaluation audits calibration.
 
 A Guardian Orchestrator cross-pollinates wins every 4 hours.
 
@@ -203,7 +203,7 @@ We're running this experiment live. Follow along: @Nomos42Bot
 **1/5**
 Andrej Karpathy's autoresearch pattern: modify config, run 5 minutes, measure metric, keep if better, loop.
 
-We adapted it for NBA prediction. 11 departments, each running its own loop. Here's how it works:
+We adapted it for NBA prediction. 9 departments, each running its own loop. Here's how it works:
 
 **2/5**
 Department 3 (Evolution) runs the core loop:
@@ -236,7 +236,7 @@ Department 4 (Betting) runs its own loop:
 Best strategy: full_kelly (rated ELITE).
 
 **5/5**
-The Guardian Orchestrator ties it together: every 4 hours it analyzes all 11 departments, allocates resources, and cross-pollinates wins.
+The Guardian Orchestrator ties it together: every 4 hours it analyzes all 9 departments, allocates resources, and cross-pollinates wins.
 
 Win in Evolution? Feed it to Engineering. Win in Research? Test it in Evolution.
 

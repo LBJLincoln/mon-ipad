@@ -53,7 +53,7 @@ The house always wins because it has better math. Retail bettors don't lose beca
 ┌──────────────────────────────────────────────────────────┐
 │                     THE FACTORY                           │
 │                                                           │
-│   22+ AI agents organized into 8 departments              │
+│   22+ AI agents organized into 9 departments              │
 │   6 evolution islands running genetic algorithms          │
 │   5 AI traders competing on strategy                      │
 │   Karpathy autoresearch: modify → test → measure → keep   │

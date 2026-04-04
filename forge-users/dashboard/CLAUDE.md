@@ -38,7 +38,7 @@
 | /political | 13-category signals, ETF positions, alpha radar | political data |
 | /rgwa | Gallery, quality scores, generation stats | rgwa art data |
 | /evolution | Trading Floor v4, 5 AI traders, iteration charts | arena/*.json |
-| /forge | 11 departments, guardian report, D1-D11 loops | departments/*.json |
+| /forge | 9 departments, guardian report, D1-D9 loops | departments/*.json |
 
 ### Pixel Agents (Dashboard-side)
 - **Pixel Agent Alpha**: NBA predictions widget, live odds integration

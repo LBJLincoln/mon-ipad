@@ -8,11 +8,11 @@
 
 ## Post 1: The Architecture Behind Autonomous AI Systems
 
-**Title: What Happens When You Let 11 AI Departments Run Themselves**
+**Title: What Happens When You Let 9 AI Departments Run Themselves**
 
 Most AI projects have a human in the loop for every decision. We removed the loop.
 
-Nomos42 runs 11 autonomous departments -- each executing its own Karpathy autoresearch loop: mutate, measure, keep or revert, repeat. No human approval needed. The system runs 24/7 and makes its own research decisions.
+Nomos42 runs 9 autonomous departments -- each executing its own Karpathy autoresearch loop: mutate, measure, keep or revert, repeat. No human approval needed. The system runs 24/7 and makes its own research decisions.
 
 Here's the architecture:
 - 6 HuggingFace evolution islands running genetic algorithms on ML configs
@@ -155,7 +155,7 @@ Why this works:
 Sports bettors have been burned by black-box "guaranteed picks" services. When your entire codebase and prediction history are public, you can't fake results. Trust becomes the differentiator.
 
 **2. The moat isn't the code -- it's the system.**
-Anyone can read our feature engineering. But replicating 3,693 generations of genetic algorithm evolution, 11 autonomous departments, and 5 competing AI traders requires months of accumulated optimization. The code is commodity. The evolved state is the moat.
+Anyone can read our feature engineering. But replicating 3,693 generations of genetic algorithm evolution, 9 autonomous departments, and 5 competing AI traders requires months of accumulated optimization. The code is commodity. The evolved state is the moat.
 
 **3. Community compounds the advantage.**
 Open source attracts contributors, researchers, and domain experts who improve the system faster than a closed team. A paper scanner that finds a new technique benefits everyone.

@@ -410,7 +410,7 @@ df_speed = speed.get_data_frames()[0]
 
 ## 8. What We Already Have vs. What's New
 
-### Already in Our Feature Engine (v3.0, 37 categories)
+### Already in Our Feature Engine (v3.1, 46 categories)
 - Basic team stats, rolling averages
 - Elo-like ratings (MOVDA)
 - Rest days

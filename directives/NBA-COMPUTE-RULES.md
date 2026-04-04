@@ -34,7 +34,7 @@ The VM (`34.136.180.66`) has **1 vCPU / 969 MB RAM / 30 GB disk**.
 
 ## RULE #2: FEATURE ENGINE PARITY
 
-**Engine version:** v3.0 + Cat36 EWMA + Cat37 MOVDA = 37 categories, 6135 raw features
+**Engine version:** v3.1-46cat = 46 categories, 6253 raw features
 - `features/engine.py` = `hf-space/features/engine.py` ALWAYS
 - `deploy_island.py` checks parity before deploying
 
@@ -66,6 +66,6 @@ python3 hf-space/deploy_island.py SPACE_NAME ROLE HF_TOKEN
 ## HF Accounts
 | Account | Token | Spaces |
 |---------|-------|--------|
-| LBJLincoln | HF_TOKEN | S10, S11 |
-| LBJLincoln26 | HF_TOKEN_2 | S12, S13 |
-| Nomos42 | HF_TOKEN_3 | S14, S15 |
+| Nomos42 | HF_TOKEN_3 | S10, S11, S12, S13, S14, S15 (all 6 NBA islands) |
+| LBJLincoln | HF_TOKEN | LBJLincoln spaces (auxiliary) |
+| LBJLincoln26 | HF_TOKEN_2 | LBJLincoln26 spaces (secondary) |

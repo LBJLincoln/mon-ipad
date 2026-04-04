@@ -38,7 +38,7 @@
 | S14 | Nomos42/nba-evo-5 | LightGBM specialist | < 0.225 |
 | S15 | Nomos42/nba-evo-6 | Wide search (pop=50) | < 0.221 |
 
-## Departments (8 — Forge v19)
+## Departments (9 — Forge v19)
 
 | Layer | Dept | Karpathy Loop | Key Metric |
 |-------|------|---------------|-----------|
@@ -51,6 +51,7 @@
 | | D6 Evaluation | audit→identify→fix→verify | calibration |
 | **L3 Logistics** | D7 Infra | check→detect→fix→verify | uptime % |
 | | D8 Finance | track→report→reconcile→forecast | burn rate |
+| **L2 Application** | D9 Cross-Repo | sync→audit→fix→verify | parity score |
 
 ## Trading Floor (5 AI Traders)
 
@@ -117,7 +118,7 @@
 | Trading Floor #1 | Grok $3,687 | — | DOMINATING |
 | Spaces UP | 6/6 | 6/6 | OK |
 | Kaggle status | ERROR | RUNNING | NEEDS FIX |
-| Dept councils | 8/8 active | 8/8 | OK |
+| Dept councils | 9/9 active | 9/9 | OK |
 | Bets/week | ~2 | 20-30 | LOW |
 
 ## How to Pilot

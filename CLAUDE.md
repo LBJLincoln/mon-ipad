@@ -12,7 +12,7 @@ Build the best NBA prediction AI in the world.
 | Flagship | Repo | Bot | Status |
 |----------|------|-----|--------|
 | NBA Quant AI | mon-ipad + nomos-nba-agent | @Nomos42Bot | ACTIVE -- 6 islands + Kaggle Karpathy |
-| Political Alpha | nomos-political-alpha | -- | ACTIVE -- v2.0 engine, 13 categories |
+| Political Alpha | nomos-political-alpha | -- | ACTIVE -- v3.1 engine, 22 categories |
 | AI Artistic Generation | rgwa | @RGWAbot | ACTIVE -- generative AI |
 | Dashboard Hub | nomos-dashboard | -- | ACTIVE -- /nba /political /rgwa /evolution |
 | Factory / Complex RAGs | rag-website | -- | SHELVED |
@@ -132,23 +132,21 @@ SYSTEM CRONS
 
 Channel: @Nomos42
 
-## Department Forge Structure (v18)
+## Department Forge Structure (v19)
 
 | Dept | Name | Karpathy Loop | Metric | Max Run |
 |------|------|---------------|--------|---------|
 | D1 | RESEARCH | paper→extract→propose→measure | papers/week, techniques tested | 5 min |
 | D2 | ENGINEERING | code→test→measure Brier→keep/revert | Brier delta, test pass rate | 5 min |
 | D3 | EVOLUTION | mutate→eval→measure fitness→select | gen/hr, best Brier, diversity | 5 min |
-| D4 | BETTING | strategy→backtest→measure ROI→keep/revert | ROI, Sharpe, Kelly edge | 5 min |
-| D5 | EVALUATION | audit→identify→fix→verify | false positive rate, calibration | 5 min |
-| D6 | INFRA | check→detect→fix→verify | uptime %, restart count | 5 min |
-| D7 | POLITICAL | signal→feature→measure alpha→keep/revert | political Brier, ETF ROI | 5 min |
-| D8 | CREATIVE (RGWA) | generate→quality→curate→publish | quality score, output/day | 5 min |
-| D9 | COMMUNICATION | content→post→measure engagement→optimize | engagement rate, channels active | 5 min |
-| D10 | BUSINESS | pricing→onboard→measure conversion→optimize | MRR, conversion rate, ARPU | 5 min |
-| D11 | FINANCE | track→report→reconcile→forecast | financial accuracy, burn rate | 5 min |
+| D4 | PRODUCT | build→test→ship→measure | features shipped, Brier delta | 5 min |
+| D5 | BUSINESS | price→onboard→convert→optimize | MRR, conversion rate, ARPU | 5 min |
+| D6 | EVALUATION | audit→identify→fix→verify | false positive rate, calibration | 5 min |
+| D7 | INFRA | check→detect→fix→verify | uptime %, restart count | 5 min |
+| D8 | FINANCE | track→report→reconcile→forecast | financial accuracy, burn rate | 5 min |
+| D9 | CROSS-REPO | sync→audit→fix→verify | parity score, cross-repo health | 5 min |
 
-Guardian Orchestrator v3: Analyzes ALL 11 department loops, allocates resources, cross-pollinates wins.
+Guardian Orchestrator v3: Analyzes ALL 9 department loops, allocates resources, cross-pollinates wins.
 
 ## Trading Floor v4 — Multi-AI Competition
 

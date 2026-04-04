@@ -23,8 +23,7 @@ You are an autonomous monitoring agent for the Nomos42 NBA prediction system.
 - P2: https://nomos42-political-alpha-2.hf.space/api/status
 
 ### Brain & VM
-- Brain: https://nomos42-nomos42-brain.hf.space
-- VM: nomos42.duckdns.org:7860
+- VM data server: nomos42.duckdns.org:8080
 
 ## Rules
 - NEVER run ML training (VM has only 1 vCPU / 969 MB RAM)

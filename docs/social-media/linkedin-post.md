@@ -19,7 +19,7 @@ After 18 months of autonomous experimentation, here is what we built with Nomos4
 - Best Sharpe ratio: 16.148 (Gemini agent, analytical strategy)
 
 **The Architecture**
-Nomos42 runs an 11-department autonomous system inspired by Andrej Karpathy's autoresearch pattern:
+Nomos42 runs a 9-department autonomous system inspired by Andrej Karpathy's autoresearch pattern:
 
 - 46 feature categories with 6,253 raw features per game (engine v3.1)
 - 11 competing prediction models: XGBoost, CatBoost, LightGBM, Extra-Trees, TabICL
@@ -28,20 +28,18 @@ Nomos42 runs an 11-department autonomous system inspired by Andrej Karpathy's au
 - Guardian Orchestrator v3 cross-pollinates wins across all departments every 4 hours
 - Karpathy loop cadence: 12 experiments per hour, 100+ per Kaggle session
 
-**The 11 Departments**
+**The 9 Departments**
 Each department runs its own Karpathy loop -- a 5-minute autonomous cycle of mutate, measure, keep-or-revert:
 
 1. Research -- paper scanning, technique extraction
 2. Engineering -- code experiments, Brier measurement
 3. Evolution -- genetic algorithm optimization across 6 islands
-4. Betting -- strategy backtesting, Kelly sizing
-5. Evaluation -- calibration auditing, false positive detection
-6. Infrastructure -- uptime monitoring, space health
-7. Political Alpha -- 22 signal categories, 743 features for ETF trading
-8. Creative (RGWA) -- AI artistic generation
-9. Communication -- content optimization
-10. Business -- pricing, conversion
-11. Finance -- burn rate tracking, forecasting
+4. Product -- feature development, Brier improvement
+5. Business -- pricing, conversion optimization
+6. Evaluation -- calibration auditing, false positive detection
+7. Infra -- uptime monitoring, space health
+8. Finance -- burn rate tracking, forecasting
+9. Cross-Repo -- parity sync, cross-repo health
 
 **The Trading Floor**
 Five AI agents from different providers compete in a simulated trading floor. Each agent independently selects which prediction model to use, which betting strategy to apply, and how much to wager -- per game, per bet category. After 44 iterations and 5,984 generations:

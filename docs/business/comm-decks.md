@@ -32,19 +32,19 @@
 **Headline:** "I run 262 AI agents on $30/month. Here's the architecture."
 
 **Sub-points:**
-- Forge v19: 3-layer, 8-department autonomous enterprise
+- Forge v19: 3-layer, 9-department autonomous enterprise
 - 6 HF evolution islands running genetic algorithm, 24/7 (652+ generations)
 - Karpathy autoresearch loop: 12 iterations/hour on Kaggle P100
 - Best Brier: 0.21570 (Colab T4, TabICL, 110 features, iteration 15)
 - Walk-forward validated: 0.22447 avg, 19 weeks, 934 games, no look-ahead
 
-**Speaker Notes:** Open with the number that gets attention: $30/month total infra for a system running 262 agents across 8 departments. This is not a toy — it's been running continuously since March 2026. The point is architectural efficiency enabled by free-tier compute, not cost-cutting. Every metric on this slide is in a public GitHub repo.
+**Speaker Notes:** Open with the number that gets attention: $30/month total infra for a system running 262 agents across 9 departments. This is not a toy — it's been running continuously since March 2026. The point is architectural efficiency enabled by free-tier compute, not cost-cutting. Every metric on this slide is in a public GitHub repo.
 
 ---
 
 ### SLIDE 2 — The Karpathy Autoresearch Loop
 
-**Headline:** "The core pattern: modify → measure → keep/revert. Applied to 8 departments simultaneously."
+**Headline:** "The core pattern: modify → measure → keep/revert. Applied to 9 departments simultaneously."
 
 **Loop diagram:**
 ```
@@ -150,7 +150,7 @@ REPEAT (no pause, always iterating)
 
 ---
 
-### SLIDE 6 — Forge v19: 3-Layer, 8-Department Architecture
+### SLIDE 6 — Forge v19: 3-Layer, 9-Department Architecture
 
 **Headline:** "262 agents organized like a company, not a script."
 
@@ -168,13 +168,13 @@ L3 LOGISTICS:   D7 Infra | D8 Finance
 - Runner: `scripts/councils/department-council.sh <dept>`
 - Loop: SCAN → PROPOSE → EXECUTE (5 min) → EVALUATE → KEEP/REVERT
 
-**Guardian Orchestrator v3:** Reads all 8 department states every 4 hours, allocates Sonnet token budget across departments, cross-pollinates wins across departments (e.g., a calibration fix found by D6 Evaluation gets auto-proposed to D2 Engineering).
+**Guardian Orchestrator v3:** Reads all 9 department states every 4 hours, allocates Sonnet token budget across departments, cross-pollinates wins across departments (e.g., a calibration fix found by D6 Evaluation gets auto-proposed to D2 Engineering).
 
 **Agent count breakdown:**
 - 6 HF island evolution controllers
 - 5 NBA traders (Gemini, OpenRouter, Claude, Codex, Grok) on Trading Floor
 - 5 Political traders (same providers, separate loop)
-- 8 department council heads
+- 9 department council heads
 - 4 research subagents (parallel arXiv/GitHub scan)
 - 1 Guardian Orchestrator
 - 1 Cloud Brain (Sonnet 4.6, every 4h via remote trigger)
@@ -350,7 +350,7 @@ That's the gap. 6,253 variables processed per game, compared to the sportsbook's
 
 **The setup:**
 - 262 AI agents running 24/7
-- Organized into 8 departments: Research, Engineering, Evolution, Betting, Evaluation, Infrastructure, Political, Creative
+- Organized into 9 departments: Research, Engineering, Evolution, Product, Business, Evaluation, Infra, Finance, Cross-Repo
 - Each department runs its own improvement loop automatically
 - The system evolves while I sleep — I haven't manually touched the evolution process in weeks
 
@@ -412,7 +412,7 @@ My own AI (Claude) is in 3rd place on the Trading Floor. Grok (competitor) is wi
 
 **What's working:**
 - Prediction quality: Brier 0.21570 — top 1% globally for NBA prediction calibration
-- System runs itself: 6 islands evolving, 8 departments running, daily predictions published automatically
+- System runs itself: 6 islands evolving, 9 departments running, daily predictions published automatically
 - Virtual trading: Grok +3,587%, Gemini +1,100%
 - Cost: $30/month total infrastructure
 
@@ -629,7 +629,7 @@ Every morning before NBA games:
 
 **What's running for $30:**
 - 6 cloud servers evolving AI models 24/7 (652+ generations of optimization)
-- 262 AI agents across 8 departments
+- 262 AI agents across 9 departments
 - Automatic daily predictions (every day NBA plays, zero manual work)
 - Trading floor simulation with 5 AI competitors
 - Live dashboard accessible worldwide
@@ -806,7 +806,7 @@ Every morning before NBA games:
 
 **Proof points on the cover:**
 - Brier score 0.21570 — top 1% globally, walk-forward validated on 934 games
-- 262 autonomous agents across 8 departments (Forge v19)
+- 262 autonomous agents across 9 departments (Forge v19)
 - $30/month infrastructure — HuggingFace Spaces, free GPU, minimal API cost
 - 6 evolution islands, 652+ generations, running continuously since March 2026
 
@@ -891,7 +891,7 @@ TAM: $200B+ global sports betting (growing 10%+ annually)
 **System traction:**
 - 262 autonomous agents, Forge v19 architecture, running continuously
 - 6 HF evolution islands, 88-95% uptime, 652+ generations
-- 8 departments each running Karpathy autoresearch loops
+- 9 departments each running Karpathy autoresearch loops
 - 5 AI traders competing on Trading Floor
 
 **Trading Floor (virtual, from $100 initial):**

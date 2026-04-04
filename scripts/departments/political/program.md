@@ -53,7 +53,7 @@ Build and evolve a political signal pipeline that generates alpha for ETF/stock 
 ## Tools & Paths
 - **Loop script:** scripts/departments/political/political-loop.sh
 - **Output:** data/departments/political/karpathy-output.json
-- **Political engine:** nomos-political-alpha repo (v2.0 engine, 13 categories base)
+- **Political engine:** nomos-political-alpha repo (v3.1 engine, 22 categories, 743 features)
 - **Feature engine:** political feature engine (22 categories, 743 features)
 - **Kaggle Karpathy:** scripts/kaggle/political_karpathy_loop.py
 - **Signal categories:** Cat1-Cat22 (includes Cat17-22: insider, Trump, foreign sovereign)
