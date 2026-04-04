@@ -1,178 +1,165 @@
 ---
 tags: [repos, ecosystem, codebase, git, nomos42]
-date: 2026-04-03
+date: 2026-04-04
 aliases: [Repos, Repositories, Codebase, Ecosystem]
 ---
 
-# 10 — All Repos
+# 10 -- All Repos
 
-> 5 active repos | 8 ecosystem components | Updated: 2026-04-03T20:00Z
+> 5 active repos + 1 subtree | Cross-repo health from cross-repo-health.json | Updated: 2026-04-04T08:52Z
+
+---
 
 ## Ecosystem Map
 
-```
-mon-ipad          ──────── Brain / Control Tower
-nomos-nba-agent   ──────── NBA Engine (features, models, evolution)
-nomos-political-alpha ──── Political Intelligence Engine
-rgwa              ──────── AI Art Generation
-nomos-dashboard   ──────── Public Dashboard (Vercel)
-hf-brain          ──────── HF Space subtree (in mon-ipad)
+```mermaid
+graph TD
+    MI["mon-ipad<br/>BRAIN / Control Tower<br/>80 MB | 11 uncommitted"]
+    NNA["nomos-nba-agent<br/>NBA Engine<br/>32 MB | 18 uncommitted"]
+    NPA["nomos-political-alpha<br/>Political Intel<br/>42 MB | 364 uncommitted"]
+    RGWA["rgwa<br/>AI Art Generation<br/>7 MB | 13 uncommitted"]
+    ND["nomos-dashboard<br/>Vercel Frontend<br/>Auto-deploy"]
+    HF["hf-brain<br/>HF Space Subtree"]
+    
+    MI -->|"orchestrates"| NNA
+    MI -->|"orchestrates"| NPA
+    MI -->|"orchestrates"| RGWA
+    MI -->|"data source"| ND
+    MI -->|"contains"| HF
+    NNA -->|"features/engine.py parity"| HF
 ```
 
 ---
 
 ## Repo Details
 
-### 1. mon-ipad (Brain)
-- **Type:** brain / control tower
-- **Path:** `/home/termius/mon-ipad`
-- **GitHub:** github.com/LBJLincoln/mon-ipad
-- **Status:** ACTIVE | 18 uncommitted changes
-- **Last commit:** `data: Trading Floor council iter 203 (tf-iter 281, gen 38216)`
-- **Last commit hash:** `ddab08d2`
-- **Data size:** 70 MB
+### 1. mon-ipad (Brain) -- ACTIVE
 
-**Purpose:** Central intelligence. Houses the cloud brain trigger (Sonnet 4.6 every 4h), all crons, Telegram bots, department councils, Guardian Orchestrator, agent health monitoring, Trading Floor, and all data files.
+| Property | Value |
+|----------|-------|
+| Path | `/home/termius/mon-ipad` |
+| GitHub | github.com/LBJLincoln/mon-ipad |
+| Last commit | `7b4384b6` -- cross-pollination S15->S14/S10 + TF docs |
+| Uncommitted | 11 files |
+| Size | 80 MB |
+
+**Purpose:** Central intelligence. Cloud brain trigger, all crons, Telegram bots, department councils, Guardian Orchestrator, Trading Floor, all data files, THIS VAULT.
 
 **Key directories:**
-- `scripts/` — all automation scripts (kaggle, councils, agents, infra)
-- `data/` — all JSON state files (agent-health, bankroll, departments, arena)
-- `features/` — feature engine (must stay in parity with hf-brain)
-- `docs/obsidian/` — THIS VAULT
-- `logs/` — all operational logs
+- `scripts/` -- all automation (kaggle, councils, agents, infra, arena, bloomberg)
+- `data/` -- all JSON state files (agent-health, bankroll, departments, arena)
+- `features/` -- feature engine (parity with hf-brain)
+- `docs/obsidian/` -- this knowledge vault
+- `logs/` -- operational logs
 
 **Key scripts:**
-- `scripts/autonomous-cycle.sh` — main 4h cycle
-- `scripts/councils/department-council.sh` — department Karpathy runner
-- `scripts/arena/arena-engine.py` — Trading Floor engine
-- `scripts/agents/multi-brain.sh` — cloud brain trigger
-- `scripts/watchdog.sh` — keepalive watchdog
+- `scripts/autonomous-cycle.sh` -- main 4h cycle
+- `scripts/councils/department-council.sh` -- dept Karpathy runner
+- `scripts/arena/arena-engine.py` -- Trading Floor engine
+- `scripts/agents/multi-brain.sh` -- cloud brain trigger
+- `scripts/bloomberg/nomos42-terminal.py` -- Bloomberg TUI
+- `scripts/bloomberg/bloomberg-api.py` -- HTTP API port 8042
 
 ---
 
-### 2. nomos-nba-agent (NBA Engine)
-- **Type:** engine
-- **Path:** `/home/termius/nomos-nba-agent`
-- **Status:** ACTIVE | 4 uncommitted changes (predictions, value-bets)
-- **Last commit:** `evolution: 4 critical fixes — elitism + CatBoost cap + feature penalty + n_splits=3`
-- **Last commit hash:** `ae166414`
-- **Data size:** 32 MB
+### 2. nomos-nba-agent (NBA Engine) -- ACTIVE
 
-**Purpose:** NBA prediction engine. All ML training logic, feature engine, evolution (GA), HF space code, predict_today, backtest, evaluate_predictions.
+| Property | Value |
+|----------|-------|
+| Path | `/home/termius/nomos-nba-agent` |
+| Last commit | `ae166414` -- evolution: 4 critical fixes |
+| Uncommitted | 18 files |
+| Size | 32 MB |
+
+**Purpose:** NBA prediction engine. ML training, feature engine, GA evolution, HF space code, predict_today, backtest.
 
 **Key components:**
-- `features/engine.py` — feature engine v3.1-46cat (must match hf-brain)
-- `hf-space/` — HF Space source (deployed to all 6 islands)
-- `scripts/predict_today.py` — daily prediction runner
-- `scripts/evaluate_predictions.py` — post-game evaluator
-- `data/nba-agent/predictions-today.json` — latest predictions
-- `data/nba-agent/value-bets.json` — Kelly-sized value bets
+- `features/engine.py` -- v3.1-46cat (MUST match hf-brain)
+- `hf-space/` -- deployed to all 6 islands
+- `scripts/predict_today.py` -- daily predictions
+- `scripts/evaluate_predictions.py` -- post-game evaluator
 
 ---
 
-### 3. nomos-political-alpha (Political Intelligence)
-- **Type:** engine
-- **Path:** `/home/termius/nomos-political-alpha`
-- **Status:** ACTIVE | 277 uncommitted changes (lots of data files)
-- **Last commit:** `chore: add features/__pycache__ to .gitignore`
-- **Last commit hash:** `e293de68`
-- **Data size:** 36 MB
+### 3. nomos-political-alpha (Political Intel) -- ACTIVE
 
-**Purpose:** Political alpha signal generation. Tracks congressional trades, FEC donor flows, social signals, crypto as sentiment proxy. Feeds political trading agents.
+| Property | Value |
+|----------|-------|
+| Path | `/home/termius/nomos-political-alpha` |
+| Last commit | `a860cf3d` -- deploy consolidated_events to HF |
+| Uncommitted | 364 files |
+| Size | 42 MB |
+
+> [!warning] 364 uncommitted changes
+> Mostly data files. Needs cleanup commit.
+
+**Purpose:** Political alpha signal generation. Congressional trades, FEC donors, social signals, crypto sentiment.
 
 **Key components:**
-- `ops/fetch_political_data.py` — data fetcher (fast/full/insider/prices modes)
-- `ops/fetch_social_signals.py` — social sentiment
-- `features/` — political feature engine v3.1 (22 categories, 743 features)
-- `data/congressional/` — insider trading signals
-- `data/donors/` — FEC donor data
-- `data/historical/` — price + crypto history
+- `ops/fetch_political_data.py` -- data fetcher (fast/full/insider/prices)
+- `features/` -- v3.1 (22 categories, 743 features)
+- `data/congressional/` -- insider trading signals
+- HF Spaces: P1_pol + P2_pol
 
-**HF Spaces:** P1_pol (Brier 0.24186, gen 8871) + P2_pol (Brier 0.23134, gen 4104)
+Details: [[17-Political-Alpha]]
 
 ---
 
-### 4. rgwa (AI Art Generation)
-- **Type:** creative
-- **Path:** `/home/termius/rgwa`
-- **GitHub:** github.com/LBJLincoln/rgwa
-- **Status:** ACTIVE | 0 uncommitted changes | Clean
-- **Last commit:** `feat: Add creative Karpathy loop — Forge department structure`
-- **Last commit hash:** `fe1f3afe`
-- **Data size:** 7 MB
+### 4. rgwa (AI Art Generation) -- ACTIVE (idle)
 
-**Purpose:** AI artistic generation. @RGWAbot manages generation, gallery, quality scoring. Forge creative department (D8) runs here.
+| Property | Value |
+|----------|-------|
+| Path | `/home/termius/rgwa` |
+| GitHub | github.com/LBJLincoln/rgwa |
+| Last commit | `fe1f3afe` -- Add creative Karpathy loop |
+| Uncommitted | 13 files |
+| Size | 7 MB |
 
-**Bots:** @RGWAbot (Telegram) — generation, gallery, quality
-**Karpathy loop:** generate → quality → curate → publish
+**Purpose:** AI artistic generation. @RGWAbot. Forge D8 (Creative) runs here.
 
----
-
-### 5. nomos-dashboard (Public Dashboard)
-- **Type:** dashboard / web
-- **Path:** `/home/termius/nomos-dashboard`
-- **Deployment:** Vercel (auto-deploy on push)
-- **Status:** ACTIVE | 0 uncommitted changes | Clean
-- **Last commit:** `feat: add 5 live charts to arena — bankroll, strategies, heatmap, evolution, P&L`
-- **Last commit hash:** `75ca5e51`
-- **Data size:** 0 MB (Next.js app, no data in repo)
-
-**Purpose:** Public-facing dashboard. Shows NBA predictions, arena, political, infra, forge status.
-
-**Pages:**
-- `/` — hub homepage
-- `/nba` — predictions + evolution
-- `/arena` — Trading Floor + 5 live charts
-- `/political` — political alpha
-- `/infra` — infrastructure health
-- `/forge` — department councils
-
-**Tech stack:** Next.js + Vercel + Tailwind CSS
-**Data source:** Reads from mon-ipad git (public data files)
-
-**Note:** NEVER run `next build` / `tsc` on VM — push to Vercel instead
+Details: [[18-Creative-RGWA]]
 
 ---
 
-### 6. hf-brain (HF Space Subtree)
-- **Type:** HF subtree (inside mon-ipad)
-- **Path:** `/home/termius/mon-ipad/hf-brain`
-- **Status:** submodule / subtree of mon-ipad
-- **Deploy:** `git subtree push` to HF Space repos
+### 5. nomos-dashboard (Frontend) -- ACTIVE
 
-**Purpose:** HF Space source code for evolution islands. Deployed via subtree push to all 6 NBA islands + 2 political islands.
+| Property | Value |
+|----------|-------|
+| Path | `/home/termius/nomos-dashboard` |
+| Deployment | Vercel auto-deploy |
+| Last commit | `75ca5e51` -- add 5 live charts to arena |
+| Size | ~0 MB (Next.js app) |
 
-**Parity rule:** `hf-brain/features/engine.py` must ALWAYS equal `nomos-nba-agent/features/engine.py`
+**Purpose:** Public dashboard. Shows NBA, arena, political, infra, forge.
 
----
+**Pages:** `/` hub | `/nba` predictions | `/arena` Trading Floor | `/political` | `/infra` | `/forge`
 
-## Ecosystem Health Summary (2026-04-03)
-
-| Repo | Commits | Dirty | Last Activity |
-|------|---------|-------|---------------|
-| mon-ipad | clean | 18 files | 2026-04-03 |
-| nomos-nba-agent | clean | 4 files | 2026-04-03 |
-| nomos-political-alpha | clean | 277 files | 2026-04-03 |
-| rgwa | CLEAN | 0 | 2026-04-01 |
-| nomos-dashboard | CLEAN | 0 | 2026-04-03 |
+> [!warning] NEVER build on VM
+> No `next build` / `tsc` on VM. Push to Vercel instead.
 
 ---
 
-## Git Workflow
+### 6. hf-brain (Subtree) -- ACTIVE
 
-```bash
-# Standard push (all repos)
-git add -p && git commit -m "data: description" && git push
+| Property | Value |
+|----------|-------|
+| Path | `/home/termius/mon-ipad/hf-brain` |
+| Type | Subtree inside mon-ipad |
+| Deploy | `git subtree push` to HF repos |
 
-# Deploy to HF Space (S10 example)
-git subtree push --prefix=hf-brain hf-s10 main
+**Parity rule:** `hf-brain/features/engine.py` MUST ALWAYS equal `nomos-nba-agent/features/engine.py`
 
-# Check cross-repo health
-python3 scripts/cross-repo-monitor.py
+---
 
-# Sync all data
-scripts/autonomous-cycle.sh
-```
+## Cross-Repo Health Summary
+
+| Repo | Uncommitted | Last Activity | Status |
+|------|-------------|---------------|--------|
+| mon-ipad | 11 files | 2026-04-04 | ACTIVE |
+| nomos-nba-agent | 18 files | 2026-04-03 | ACTIVE |
+| nomos-political-alpha | 364 files | 2026-04-04 | DIRTY |
+| rgwa | 13 files | 2026-04-01 | IDLE |
+| nomos-dashboard | 0 files | 2026-04-04 | CLEAN |
 
 ---
 
@@ -186,6 +173,24 @@ scripts/autonomous-cycle.sh
 
 ---
 
+## Git Workflow
+
+```bash
+# Standard push
+git add -p && git commit -m "data: description" && git push
+
+# Deploy to HF Space (S10)
+git subtree push --prefix=hf-brain hf-s10 main
+
+# Cross-repo health check
+python3 scripts/cross-repo-monitor.py
+
+# Full autonomous sync
+scripts/autonomous-cycle.sh
+```
+
+---
+
 ## Links
 
-[[README]] | [[00-Dashboard]] | [[01-Architecture]] | [[05-Infrastructure]] | [[08-API-Vision]]
+[[00-Dashboard]] | [[01-Architecture]] | [[05-Infrastructure]] | [[08-API-Vision]] | [[19-Cross-Repo]]

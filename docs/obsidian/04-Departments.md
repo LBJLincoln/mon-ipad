@@ -1,185 +1,222 @@
 ---
 tags: [departments, karpathy-loop, councils, forge-v19, nomos42]
-date: 2026-04-03
+date: 2026-04-04
 aliases: [Departments, Councils, Forge Departments, Karpathy Loops]
 ---
 
-# 04 — Departments (8 Karpathy Loops)
+# 04 -- Departments (9 Karpathy Loops + Trading Floor)
 
-> Forge v19 | Guardian Orchestrator v3 | All depts: SCAN → PROPOSE → EXECUTE → EVALUATE → KEEP/REVERT
+> Forge v19 | Guardian Orchestrator v3 | All depts: SCAN -> PROPOSE -> EXECUTE (5 min) -> EVALUATE -> KEEP/REVERT
+> Pattern: [[16-Karpathy-Pattern]] | Agent registry: [[12-Agent-Registry]]
 
-## Department Status Overview
+---
 
-| Dept | Name | Status | Iter | Last Run | Cron |
-|------|------|--------|------|----------|------|
-| D1 | Research | completed | 9 | 2026-04-02 | `2 * * * *` |
-| D2 | Engineering | unknown | 7 | 2026-04-02 | `12 * * * *` |
-| D3 | Evolution | completed | 1 | 2026-04-02 | `22 * * * *` |
-| D4 | Evaluation | completed | 2 | 2026-04-01 | `20 */2 * * *` |
-| D5 | Betting | completed | 1 | 2026-04-02 | `10 */2 * * *` |
-| D6 | Infra | completed | 1 | 2026-04-02 | `40 */2 * * *` |
-| D7 | Political | completed | 7 | 2026-04-02 | `0 8,20 * * *` |
-| D8 | Creative | idle | 4 | 2026-04-02 | `0 9,21 * * *` |
-| D9 | Comms | — | — | — | `0 7 * * *` |
-| D10 | Business | — | — | — | `0 8 * * *` |
-| D11 | Finance | — | — | — | `0 23 * * *` |
-| TF | Trading Floor | completed | 287 | 2026-04-03 | `0 11 * * *` |
+## Department Status Overview (Live from council JSONs)
+
+| Dept | Name | Layer | Status | Iter | Last Run | Cron | Key Metric |
+|------|------|-------|--------|------|----------|------|------------|
+| D1 | Research | L2 | ACTIVE | 6 | 2026-04-04T09:02 | `2 * * * *` | 18 scans |
+| D2 | Engineering | L2 | ACTIVE | 6 | 2026-04-04T09:12 | `12 * * * *` | Brier 0.2157 |
+| D3 | Evolution | L2 | ACTIVE | 8 | 2026-04-04T09:22 | `22 * * * *` | 4,222 gens |
+| D4 | Evaluation | L2 | ACTIVE | 5 | 2026-04-04T08:20 | `20 */2 * * *` | ROI -8.11% |
+| D5 | Betting | L2 | completed | 1 | 2026-04-02 | `10 */2 * * *` | full_kelly ELITE |
+| D6 | Infra | L3 | ACTIVE | 5 | 2026-04-04T08:40 | `40 */2 * * *` | 73.4% disk |
+| D7 | Political | L2 | completed | 7 | 2026-04-02 | `0 8,20 * * *` | Kaggle RUNNING |
+| D8 | Creative | L2 | IDLE | 4 | 2026-04-02 | `0 9,21 * * *` | 0 pieces |
+| D9 | Cross-Repo | L2 | ACTIVE | -- | -- | custom | Parity sync |
+| TF | Trading Floor | -- | ACTIVE | 402 | 2026-04-04 | `0 11 * * *` | Gen 54,672 |
 
 Council state files: `data/departments/council-<dept>.json`
 Runner: `scripts/councils/department-council.sh <dept>`
 
 ---
 
-## D1 — Research
+## D1 -- Research
 
-**Karpathy loop:** paper → extract → propose → measure
+**Loop:** paper -> extract -> propose -> measure
 **Metric:** papers/week, techniques tested
-**Current state:** 9 iterations, 14 papers scanned, 18 techniques extracted
+**State:** 6 iterations, 18 scans completed, 0 new papers found recently
 
-Key metrics:
-- Papers scanned: 14
-- Techniques extracted: 18
-- SOTA reference: Montrucchio 2026 (MDPI Information 17/1/56) — Brier 0.199
-- Gap to close: 0.0157
+| Property | Value |
+|----------|-------|
+| Papers scanned | 14 total |
+| Techniques extracted | 18 |
+| SOTA reference | Montrucchio 2026 (Brier 0.199) |
+| Gap to close | 0.0167 |
 
-Latest proposals (from scan): Platt scaling, isotonic regression, ensemble stacking, drive-rim features, play-type PPP
+Latest proposals: Platt scaling, isotonic regression, ensemble stacking, drive-rim features, play-type PPP
 
-→ Full roadmap: [[06-Research]]
+Full roadmap: [[06-Research]]
 
 ---
 
-## D2 — Engineering
+## D2 -- Engineering
 
-**Karpathy loop:** code → test → measure Brier → keep/revert
+**Loop:** code -> test -> measure Brier -> keep/revert
 **Metric:** Brier delta, test pass rate
-**Current state:** 7 iterations | Status: UNKNOWN (needs investigation)
+**State:** 6 iterations | Current Brier: 0.2157 (stable, monitoring for drift)
 
-Pending engineering tasks (from Evaluation dept):
-1. **Phantom game guard** (home != away assertion) — trivial effort
-2. **Platt scaling calibration** — expected Brier delta: -0.008, ECE delta: -0.17
-3. **Odds sanity gate** (reject |model_prob - market_implied| > 0.50) — small effort
-4. **Home court advantage reduction** 2.8 → 2.2 pts — expected Brier delta: -0.002
+> [!info] Brier healthy at 0.2157 -- no drift detected across 3 consecutive iterations
+
+Pending tasks (from D4 Evaluation):
+1. **Phantom game guard** (home != away assertion) -- trivial effort
+2. **Platt scaling calibration** -- expected Brier delta: -0.008, ECE delta: -0.17
+3. **Odds sanity gate** (reject |model_prob - market_implied| > 0.50) -- small effort
+4. **Home court advantage** 2.8 -> 2.2 pts -- expected Brier delta: -0.002
 
 ---
 
-## D3 — Evolution
+## D3 -- Evolution
 
-**Karpathy loop:** mutate → eval → measure fitness → select
+**Loop:** mutate -> eval -> measure fitness -> select
 **Metric:** gen/hr, best Brier, diversity
-**Current state:** 2 iterations | fleet diversity: 0.567
+**State:** 8 iterations | 4,222 total generations | 0 stagnant islands
 
-Best Brier: 0.22159 (S15) | Fleet avg: 0.22419 | Total gens: 652+
-Cross-pollination pending: 3 actions (see [[02-Evolution]])
+| Property | Value |
+|----------|-------|
+| Fleet best | 0.22159 (S15 random_forest) |
+| Fleet avg | 0.22419 |
+| Diversity score | 0.567 |
+| Cross-pollination pending | 3 actions |
+
+Full details: [[02-Evolution]]
 
 ---
 
-## D4 — Evaluation (Critical Active Dept)
+## D4 -- Evaluation (Critical)
 
-**Karpathy loop:** audit → identify → fix → verify
+**Loop:** audit -> identify -> fix -> verify
 **Metric:** false positive rate, calibration
-**Current state:** 2 iterations
+**State:** 5 iterations | Flagging ROI -8.11% and Sharpe -2.99
 
 ### Biases Detected
 
-| Type | Severity | Detail | Fix |
-|------|----------|--------|-----|
-| PHANTOM_GAME | CRITICAL | BKN vs BKN (home==away), prob 0.6128 | Assert home != away |
-| OVERCONFIDENCE | HIGH | ECE 0.2758, worst bucket 60-70% | Platt scaling |
-| CORRUPTED_ODDS | HIGH | 5 bets, model >60% but market <15% (SAS bug) | Odds sanity gate |
-| HOME_BIAS | LOW | 21 home bets, 38.1% WR vs 40% away | Reduce home_court_advantage |
+| Type | Severity | Detail | Fix | Status |
+|------|----------|--------|-----|--------|
+| PHANTOM_GAME | CRITICAL | BKN vs BKN (home==away), prob 0.6128 | Assert home != away | PROPOSED |
+| OVERCONFIDENCE | HIGH | ECE 0.2758, worst bucket 60-70% | Platt scaling | PROPOSED |
+| CORRUPTED_ODDS | HIGH | 5 bets, model >60% but market <15% (SAS bug) | Odds sanity gate | PROPOSED |
+| HOME_BIAS | LOW | 21 home bets WR 38.1% vs 40% away | Reduce home_court 2.8->2.2 | PROPOSED |
 
 ### Corruption Examples (SAS normalization bug)
-- 2026-03-21: IND @ SAS — model 68.3%, market 9.1%, edge 6.5x — LOST
-- 2026-03-25: SAS @ MEM — model 67.9%, market 10.3%, edge 5.6x — LOST
-- 2026-03-27: HOU @ MEM — model 60.7%, market 13.8%, edge 3.4x — LOST
 
-### Improvements Proposed
-1. Phantom game guard (priority 1, trivial, 0 Brier delta)
-2. Platt scaling (priority 2, medium, -0.008 Brier, -0.17 ECE)
-3. Odds sanity gate (priority 3, small, +eliminates 8 bad bets)
-4. Home court 2.8→2.2pts (priority 4, small, -0.002 Brier)
-5. Automated ECE alert >0.15 (priority 5, small, monitoring)
+| Date | Game | Model Prob | Market Implied | Edge | Won |
+|------|------|-----------|----------------|------|-----|
+| 2026-03-21 | IND @ SAS | 68.3% | 9.1% | 6.5x | LOST |
+| 2026-03-25 | SAS @ MEM | 67.9% | 10.3% | 5.6x | LOST |
+| 2026-03-27 | HOU @ MEM | 60.7% | 13.8% | 3.4x | LOST |
+
+### Improvements Priority Queue
+
+| # | Type | Title | Effort | Expected Delta |
+|---|------|-------|--------|----------------|
+| 1 | BUG_FIX | Phantom game guard | trivial | eliminates phantom bets |
+| 2 | CALIBRATION | Platt scaling | medium | Brier -0.008, ECE -0.17 |
+| 3 | BUG_FIX | Odds sanity gate | small | eliminates 8 bad bets |
+| 4 | FEATURE | Home court 2.8->2.2 pts | small | Brier -0.002 |
+| 5 | MONITORING | Automated ECE alert >0.15 | small | early warning |
 
 ---
 
-## D5 — Betting
+## D5 -- Betting
 
-**Karpathy loop:** strategy → backtest → measure ROI → keep/revert
+**Loop:** strategy -> backtest -> measure ROI -> keep/revert
 **Metric:** ROI, Sharpe, Kelly edge
 
-Strategy rankings (backtest):
-1. full_kelly: +135,550% avg ROI (ELITE)
-2. anti_martingale: +125,583% (ELITE)
-3. proportional_edge: +73,112% (STRONG)
-4. half_kelly: +34,739% (STRONG)
-
-Calibration config:
-- Kelly fraction: 0.35
-- Min edge: 0.03 (3%)
-- ELO K-factor: 22
-- Home court advantage: 2.8 pts (target: reduce to 2.2)
-
-→ Full betting details: [[07-Betting]]
+Strategy rankings: see [[07-Betting]]
+Calibration: Kelly 0.35, min edge 3%, ELO K=22, home court 2.8 pts
 
 ---
 
-## D6 — Infra
+## D6 -- Infra
 
-**Karpathy loop:** check → detect → fix → verify
-**Metric:** uptime %, restart count
-**Current state:** uptime 88% | 35 crons total | 4 missing
+**Loop:** check -> detect -> fix -> verify
+**Metric:** uptime %, disk usage, RAM
+**State:** 5 iterations | Disk 73.4% | RAM ~211 MB free | Spaces 6/6 UP
 
-Missing crons (critical):
-- keepalive-spaces
-- nba-daily-odds
-- autonomous-cycle
-- cross-repo-optimize
+> [!warning] RAM pressure
+> Only 170-270 MB free on 969 MB VM. Infra dept monitoring for idle processes to kill.
 
-→ Full infra details: [[05-Infrastructure]]
+Full details: [[05-Infrastructure]]
 
 ---
 
-## D7 — Political
+## D7 -- Political
 
-**Karpathy loop:** signal → feature → measure alpha → keep/revert
+**Loop:** signal -> feature -> measure alpha -> keep/revert
 **Metric:** political Brier, ETF ROI
 
-Political Alpha v3.1:
-- Categories: 22
-- Features: 743
-- Spaces: P1_pol (Brier 0.24186, gen 8871) + P2_pol (Brier 0.23134, gen 4104)
+| Property | Value |
+|----------|-------|
+| Version | v3.1 |
+| Categories | 22 |
+| Features | 743 |
+| Kaggle | RUNNING |
+| P1_pol Brier | 0.24997 (gen 326) |
+| P2_pol Brier | 0.23134 (gen 6,030) |
 
-Signal sources:
-- Congressional trades (insider signals)
-- FEC donor data
-- Social signals
-- Crypto prices as sentiment proxy
-- Fetch cadence: fast (*/30), full (*/6h), insider (22:00 weekdays), prices (22:30 weekdays)
+Full details: [[17-Political-Alpha]]
 
 ---
 
-## D8 — Creative (RGWA)
+## D8 -- Creative (RGWA)
 
-**Karpathy loop:** generate → quality → curate → publish
+**Loop:** generate -> quality -> curate -> publish
 **Metric:** quality score, output/day
-**Current state:** idle (4 iterations) | rgwa_creative status: WARNING
+**State:** IDLE | 4 iterations | 0 pieces generated
 
-Bot: @RGWAbot | Repo: rgwa | Last commit: 2026-04-01
+> [!info] RGWA is idle -- needs first generation run to activate the Karpathy loop
+
+Bot: @RGWAbot | Repo: rgwa | Details: [[18-Creative-RGWA]]
+
+---
+
+## D9 -- Cross-Repo
+
+**Loop:** sync -> audit -> fix -> verify
+**Metric:** parity score, uncommitted changes across repos
+
+Current cross-repo health:
+- mon-ipad: 11 uncommitted
+- nomos-nba-agent: 18 uncommitted
+- nomos-political-alpha: 364 uncommitted
+- rgwa: 13 uncommitted
+
+Full details: [[19-Cross-Repo]]
 
 ---
 
 ## Guardian Orchestrator v3
 
-Guardian analyzes ALL depts, surfaces wins, allocates resources.
+```mermaid
+graph TD
+    G["Guardian Orchestrator v3"]
+    G --> D1["D1 Research"]
+    G --> D2["D2 Engineering"]
+    G --> D3["D3 Evolution"]
+    G --> D4["D4 Evaluation"]
+    G --> D5["D5 Betting"]
+    G --> D6["D6 Infra"]
+    G --> D7["D7 Political"]
+    G --> D8["D8 Creative"]
+    G --> D9["D9 Cross-Repo"]
+    G --> TF["Trading Floor"]
+    
+    D3 -->|"cross-pollinate"| D3
+    D4 -->|"fixes -> "| D2
+    D1 -->|"techniques -> "| D2
+```
 
-Last run: 2026-04-03T21:28:07Z
-Departments loaded: 12/12
-Active routes: 1 (evolution → evolution cross-pollination)
-Wins this cycle: 0
-Pending actions: 3 (MEDIUM priority)
+| Property | Value |
+|----------|-------|
+| Last run | 2026-04-04T06:01:06Z |
+| Departments loaded | 12/12 |
+| Active cross-pollination routes | 1 |
+| Wins this cycle | 0 |
+| Pending actions | 3 MEDIUM |
 
 ---
 
 ## Links
 
-[[README]] | [[00-Dashboard]] | [[01-Architecture]] | [[02-Evolution]] | [[05-Infrastructure]] | [[06-Research]] | [[07-Betting]]
+[[00-Dashboard]] | [[01-Architecture]] | [[02-Evolution]] | [[05-Infrastructure]] | [[06-Research]] | [[07-Betting]] | [[12-Agent-Registry]] | [[16-Karpathy-Pattern]]

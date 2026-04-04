@@ -22,6 +22,7 @@ import sys
 import os
 import time
 import hashlib
+import subprocess as _sp
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -29,6 +30,53 @@ from pathlib import Path
 
 FORGE_ROOT = Path(__file__).resolve().parent
 CONFIG_PATH = FORGE_ROOT / "department-config.json"
+
+# ── HF Space URLs (for direct API commands) ──────────────────────────────
+SPACE_URLS = {
+    "S10": "nomos42-nba-quant",
+    "S11": "nomos42-nba-quant-2",
+    "S12": "nomos42-nba-evo-3",
+    "S13": "nomos42-nba-evo-4",
+    "S14": "nomos42-nba-evo-5",
+    "S15": "nomos42-nba-evo-6",
+}
+
+
+# ── Council Advisor (LLM gate for critical actions) ─────────────────────
+
+class CouncilAdvisor:
+    """Lightweight advisor that gates critical autonomous actions.
+
+    Tries to import the full free_models_integration module.  If unavailable
+    (e.g. missing deps), falls back to a simple rule-based approval that
+    blocks only the most dangerous commands (rm -rf /, DROP, force-push).
+    """
+
+    def __init__(self):
+        self._backend = None
+        try:
+            from scripts.forge.free_models_integration import CouncilAdvisor as _CA
+            self._backend = _CA()
+        except Exception:
+            pass  # fallback to rule-based
+
+    def advise(self, dept: str, action: str, cmd: str, priority: str) -> dict:
+        """Return {"approved": bool, "reason": str}."""
+        if self._backend:
+            try:
+                return self._backend.advise(dept=dept, action=action, cmd=cmd, priority=priority)
+            except Exception:
+                pass  # fallback
+
+        # Rule-based fallback: approve high/critical, block obviously dangerous
+        dangerous = ["rm -rf /", "DROP TABLE", "git push --force", "shutdown", "reboot"]
+        for d in dangerous:
+            if d in cmd:
+                return {"approved": False, "reason": f"Blocked dangerous pattern: {d}"}
+        return {"approved": True, "reason": "rule-based auto-approve (no LLM advisor available)"}
+
+
+_advisor = CouncilAdvisor()
 
 def load_config():
     with open(CONFIG_PATH) as f:
@@ -466,7 +514,12 @@ def _propose_research(repo_path, scan):
     if papers == 0:
         return {"summary": "Run ArXiv + GitHub scan for latest NBA/ML papers",
                 "action": "run_scan", "priority": "high",
-                "cmd": "python3 scripts/agents/research-cron.sh"}
+                "cmd": "bash scripts/agents/research-cron.sh"}
+    scan_count = scan.get("scan_count", 0)
+    if papers < 3 and scan_count > 0:
+        return {"summary": f"Only {papers} papers found — run deeper scan with research-scanner.py",
+                "action": "deep_scan", "priority": "high",
+                "cmd": "python3 scripts/agents/research-scanner.py --deep"}
     return {"summary": f"Research scan found {papers} papers — check for actionable techniques",
             "action": "review_proposals", "priority": "medium"}
 
@@ -474,13 +527,22 @@ def _propose_research(repo_path, scan):
 def _propose_engineering(repo_path, scan):
     brier = _safe_float(scan.get("brier"), 0.23)
     atr = _safe_float(scan.get("atr_brier"), 0.21570)
+    wf = _safe_float(scan.get("walk_forward_brier"), 0.0)
     gap = brier - atr
     if gap > 0.01:
+        # SAFETY: never auto-change code — log detailed diagnostic instead
+        diag = (f"BRIER REGRESSION ALERT: latest={brier:.5f} atr={atr:.5f} gap={gap:.5f}"
+                f" walk_forward={wf:.5f} model={scan.get('model_version','?')}"
+                f" games={scan.get('games_evaluated',0)}")
         return {"summary": f"Latest Brier {brier:.4f} is {gap:.4f} above ATR {atr:.5f} — investigate regression",
-                "action": "investigate_brier_gap", "priority": "critical"}
+                "action": "investigate_brier_gap", "priority": "critical",
+                "diagnostic": diag,
+                "note": "SAFETY: no auto-code-change — logged for human review"}
     if brier > 0.22:
         return {"summary": f"Brier {brier:.4f} above 0.22 — check calibration and feature selection",
-                "action": "calibration_check", "priority": "high"}
+                "action": "calibration_check", "priority": "high",
+                "diagnostic": f"brier={brier:.5f} atr={atr:.5f} wf={wf:.5f}",
+                "note": "SAFETY: no auto-code-change — logged for human review"}
     return {"summary": f"Brier {brier:.4f} healthy — monitor for drift",
             "action": "monitor", "priority": "low"}
 
@@ -488,13 +550,55 @@ def _propose_engineering(repo_path, scan):
 def _propose_evolution(repo_path, scan):
     stagnant = scan.get("stagnant_islands", 0)
     best = scan.get("best_fleet_brier", 0.23)
-    if not scan.get("all_up", True):
-        return {"summary": "One or more islands DOWN — restart needed",
-                "action": "restart_islands", "priority": "critical"}
+    islands = scan.get("islands", {})
+
+    # Identify DOWN and stagnant islands for targeted commands
+    down_islands = [sid for sid, info in islands.items() if info.get("status") != "UP"]
+    stagnant_ids = [sid for sid, info in islands.items() if info.get("stagnation", 0) > 5]
+
+    if down_islands:
+        # Build keepalive curl for each DOWN island
+        keepalive_cmds = []
+        for sid in down_islands:
+            url = SPACE_URLS.get(sid, "")
+            if url:
+                keepalive_cmds.append(
+                    f'curl -sf --max-time 15 https://{url}.hf.space/api/status || true')
+        cmd = " && ".join(keepalive_cmds) if keepalive_cmds else "bash scripts/keepalive-spaces.sh"
+        return {"summary": f"{len(down_islands)} islands DOWN ({', '.join(down_islands)}) — sending keepalive",
+                "action": "restart_islands", "priority": "critical",
+                "cmd": cmd}
+
     if stagnant >= 3:
-        return {"summary": f"{stagnant} islands stagnant — inject diversity via cross-pollination",
+        # Diversify the most stagnant islands + cross-pollinate
+        diversify_cmds = []
+        for sid in sorted(stagnant_ids, key=lambda s: islands.get(s, {}).get("stagnation", 0), reverse=True)[:3]:
+            url = SPACE_URLS.get(sid, "")
+            if url:
+                diversify_cmds.append(
+                    f'curl -sf -X POST https://{url}.hf.space/api/command '
+                    f'-H "Content-Type: application/json" '
+                    f'-d \'{{"command":"diversify"}}\' || true')
+        diversify_cmds.append("python3 scripts/agents/cross-pollinate.py")
+        return {"summary": f"{stagnant} islands stagnant ({', '.join(stagnant_ids)}) — diversify + cross-pollinate",
                 "action": "cross_pollinate", "priority": "high",
-                "cmd": "python3 scripts/agents/cross-pollinate.py"}
+                "cmd": " && ".join(diversify_cmds)}
+
+    if stagnant_ids:
+        # 1-2 stagnant: targeted diversify only
+        diversify_cmds = []
+        for sid in stagnant_ids:
+            url = SPACE_URLS.get(sid, "")
+            if url:
+                diversify_cmds.append(
+                    f'curl -sf -X POST https://{url}.hf.space/api/command '
+                    f'-H "Content-Type: application/json" '
+                    f'-d \'{{"command":"diversify"}}\' || true')
+        if diversify_cmds:
+            return {"summary": f"{len(stagnant_ids)} stagnant islands ({', '.join(stagnant_ids)}) — sending diversify",
+                    "action": "diversify_targeted", "priority": "high",
+                    "cmd": " && ".join(diversify_cmds)}
+
     if best > 0.222:
         return {"summary": f"Best fleet Brier {best:.5f} > 0.222 — consider mutation rate bump",
                 "action": "tune_mutation", "priority": "medium"}
@@ -506,8 +610,9 @@ def _propose_product(repo_path, scan):
     picks = scan.get("picks_count", 0)
     bots_up = sum(1 for k, v in scan.items() if k.startswith("bot_") and v)
     if picks == 0:
-        return {"summary": "No picks today — check prediction pipeline",
-                "action": "check_pipeline", "priority": "critical"}
+        return {"summary": "No picks today — running prediction pipeline",
+                "action": "check_pipeline", "priority": "critical",
+                "cmd": "cd /home/termius/nomos-nba-agent && timeout 300 python3 predict_today.py 2>&1 | tail -20"}
     if bots_up < 2:
         return {"summary": f"Only {bots_up} bots running — restart bot fleet",
                 "action": "restart_bots", "priority": "high",
@@ -533,14 +638,31 @@ def _propose_evaluation(repo_path, scan):
     real_roi = _safe_float(scan.get("real_roi"), 0)
     real_sharpe = _safe_float(scan.get("real_sharpe"), 0)
     issues = []
+    cmds = []
+
     if ece > 0.10:
         issues.append(f"ECE {ece:.3f} > 0.10 — calibration needs fixing")
-    if real_roi < -5:
+        # Calibration: log for human review, don't auto-fix model
+    if real_roi < -10:
+        issues.append(f"Real ROI {real_roi:.1f}% — CRITICAL: reduce bet sizes")
+        # Reduce max bet to 50% of current by updating bankroll config
+        cmds.append(
+            "python3 -c \""
+            "import json; p='data/nba-agent/bankroll-state.json'; "
+            "d=json.load(open(p)); "
+            "d['max_bet_pct']=d.get('max_bet_pct',5.0)*0.5; "
+            "d['auto_reduced']=True; d['reduction_reason']='ROI < -10pct'; "
+            "json.dump(d,open(p,'w'),indent=2); "
+            "print(f'Reduced max_bet_pct to {d[\\\"max_bet_pct\\\"]}')\"")
+    elif real_roi < -5:
         issues.append(f"Real ROI {real_roi:.1f}% — strategy losing money")
     if real_sharpe < 0:
         issues.append(f"Sharpe {real_sharpe:.2f} negative — risk-adjusted returns bad")
+
     if issues:
-        return {"summary": " | ".join(issues), "action": "fix_calibration", "priority": "critical"}
+        priority = "critical" if real_roi < -10 else "high"
+        return {"summary": " | ".join(issues), "action": "fix_calibration", "priority": priority,
+                "cmd": " && ".join(cmds) if cmds else None}
     return {"summary": f"Evaluation metrics OK: ECE={ece:.3f}, ROI={real_roi:.1f}%, Sharpe={real_sharpe:.2f}",
             "action": "monitor", "priority": "low"}
 
@@ -552,16 +674,30 @@ def _propose_infra(repo_path, scan):
     spaces_total = scan.get("spaces_total", 6)
     issues = scan.get("issues", [])
     proposals = []
+    cmds = []
+
     if disk > 85:
         proposals.append(f"Disk at {disk}% — cleanup needed")
+        # Safe cleanup: logs older than 7d, Python cache, tmp files, journal vacuum
+        cmds.extend([
+            'find /home/termius -name "*.log" -mtime +7 -delete 2>/dev/null || true',
+            'find /home/termius -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true',
+            'find /tmp -name "*.tmp" -mtime +3 -delete 2>/dev/null || true',
+            'journalctl --vacuum-size=50M 2>/dev/null || true',
+        ])
     if mem < 200:
         proposals.append(f"Only {mem}MB RAM free — kill idle processes")
+        cmds.append('pkill -f "python3.*idle" 2>/dev/null || true')
     if spaces_up < spaces_total:
         proposals.append(f"Only {spaces_up}/{spaces_total} spaces UP")
+        cmds.append("bash scripts/keepalive-spaces.sh")
     if issues:
         proposals.append(f"{len(issues)} issues: {', '.join(issues[:3])}")
+
     if proposals:
-        return {"summary": " | ".join(proposals), "action": "fix_infra", "priority": "high"}
+        priority = "critical" if disk > 90 or mem < 100 or spaces_up < spaces_total - 2 else "high"
+        return {"summary": " | ".join(proposals), "action": "fix_infra", "priority": priority,
+                "cmd": " && ".join(cmds) if cmds else None}
     return {"summary": f"Infra healthy: disk {disk}%, {mem}MB free, {spaces_up}/{spaces_total} spaces",
             "action": "monitor", "priority": "low"}
 
@@ -570,11 +706,32 @@ def _propose_finance(repo_path, scan):
     bankroll = _safe_float(scan.get("bankroll"), 100)
     roi = _safe_float(scan.get("roi_pct"), 0)
     if bankroll < 80:
-        return {"summary": f"Bankroll ${bankroll:.2f} below $80 — pause betting, analyze losses",
-                "action": "pause_betting", "priority": "critical"}
+        # Actually pause the betting cron + mark bankroll as paused
+        pause_cmd = (
+            "python3 -c \""
+            "import json; p='data/nba-agent/bankroll-state.json'; "
+            "d=json.load(open(p)); d['betting_paused']=True; "
+            "d['pause_reason']='Bankroll below $80 threshold'; "
+            "json.dump(d,open(p,'w'),indent=2); "
+            "print('Betting PAUSED — bankroll below threshold')\" && "
+            "crontab -l 2>/dev/null | grep -v 'betting_agent\\|daily-edge' | crontab - 2>/dev/null || true"
+        )
+        return {"summary": f"Bankroll ${bankroll:.2f} below $80 — PAUSING betting cron + marking state",
+                "action": "pause_betting", "priority": "critical",
+                "cmd": pause_cmd}
     if roi < -10:
-        return {"summary": f"ROI {roi:.1f}% — strategy review needed",
-                "action": "strategy_review", "priority": "high"}
+        # Reduce bet sizing, don't fully pause
+        return {"summary": f"ROI {roi:.1f}% — reduce bet sizes and review strategy",
+                "action": "strategy_review", "priority": "high",
+                "cmd": (
+                    "python3 -c \""
+                    "import json; p='data/nba-agent/bankroll-state.json'; "
+                    "d=json.load(open(p)); "
+                    "d['max_bet_pct']=max(1.0, d.get('max_bet_pct',5.0)*0.5); "
+                    "d['strategy_review_needed']=True; "
+                    "json.dump(d,open(p,'w'),indent=2); "
+                    "print(f'Reduced max_bet_pct to {d[\\\"max_bet_pct\\\"]}')\"")
+                }
     return {"summary": f"Bankroll ${bankroll:.2f}, ROI {roi:.1f}%, burn ${scan.get('burn_rate', 20)}/mo",
             "action": "monitor", "priority": "low"}
 
@@ -586,16 +743,24 @@ def _propose_cross_repo(repo_path, scan):
     heavy_uncommitted = [r for r, n in uncommitted.items() if n > 50]
 
     issues = []
+    cmds = ["python3 scripts/cross-repo-monitor.py"]
+
     if drift > 5:
         issues.append(f"{drift} stale councils across repos")
     if heavy_uncommitted:
         issues.append(f"{len(heavy_uncommitted)} repos with 50+ uncommitted files: {', '.join(heavy_uncommitted)}")
+        # Auto-commit data files for each heavy repo
+        for r in heavy_uncommitted:
+            rpath = f"/home/termius/{r}"
+            cmds.append(
+                f'cd {rpath} && git add data/ *.json 2>/dev/null; '
+                f'git commit -m "data: auto-commit council iteration (>50 uncommitted)" --no-verify 2>/dev/null || true')
     if repos < 8:
         issues.append(f"Only {repos}/8 repos accessible")
 
     if issues:
         return {"summary": " | ".join(issues), "action": "sync_repos", "priority": "high",
-                "cmd": "python3 scripts/cross-repo-monitor.py"}
+                "cmd": " && ".join(cmds)}
     return {"summary": f"All {repos} repos synced, {drift} minor drifts",
             "action": "monitor", "priority": "low"}
 
@@ -603,33 +768,65 @@ def _propose_cross_repo(repo_path, scan):
 # ── EXECUTE: Real actions ──────────────────────────────────────────────
 
 def phase_execute(repo_path, dept, config, proposal):
-    """Execute the proposal. Runs real commands for high-priority items."""
-    import subprocess
+    """Execute the proposal. Runs real commands for high/critical priority items.
+
+    Safety layers:
+    1. Only high/critical proposals with explicit `cmd` are executed
+    2. CouncilAdvisor (LLM or rule-based) gates critical actions
+    3. Engineering proposals with `diagnostic` field are logged, never executed
+    4. 5-minute timeout hard cap on all commands
+    """
     action = proposal.get("action", "monitor")
     priority = proposal.get("priority", "low")
+    repo_name = Path(repo_path).name
 
     result = {"executed": False, "action": action, "proposal": proposal.get("summary", "")}
 
-    # Only execute commands for high/critical priority with explicit cmd
+    # ── Safety: engineering diagnostics are logged, never auto-executed ──
+    diagnostic = proposal.get("diagnostic")
+    if diagnostic:
+        log(repo_name, dept, f"DIAGNOSTIC: {diagnostic}", "WARN")
+        result["diagnostic"] = diagnostic
+        result["note"] = proposal.get("note", "Diagnostic logged — no auto-execution")
+        if not proposal.get("cmd"):
+            return result
+
+    # ── Only execute commands for high/critical priority with explicit cmd ──
     cmd = proposal.get("cmd")
     if cmd and priority in ("high", "critical"):
-        log(Path(repo_path).name, dept, f"Executing: {cmd}")
+        # ── Gate critical actions through CouncilAdvisor ──
+        if priority == "critical":
+            advice = _advisor.advise(dept=dept, action=action, cmd=cmd, priority=priority)
+            log(repo_name, dept, f"Advisor: approved={advice['approved']} reason={advice['reason']}")
+            if not advice["approved"]:
+                result["note"] = f"BLOCKED by advisor: {advice['reason']}"
+                result["advisor"] = advice
+                return result
+            result["advisor"] = advice
+
+        log(repo_name, dept, f"Executing: {cmd}")
         try:
-            proc = subprocess.run(cmd, shell=True, capture_output=True, text=True,
-                                  timeout=300, cwd=str(MON_IPAD))
+            proc = _sp.run(cmd, shell=True, capture_output=True, text=True,
+                           timeout=300, cwd=str(MON_IPAD))
             result["executed"] = True
             result["exit_code"] = proc.returncode
             result["stdout_tail"] = proc.stdout[-500:] if proc.stdout else ""
             result["stderr_tail"] = proc.stderr[-200:] if proc.stderr else ""
-        except subprocess.TimeoutExpired:
+            if proc.returncode != 0:
+                log(repo_name, dept, f"Command exited {proc.returncode}: {proc.stderr[-150:]}", "WARN")
+            else:
+                log(repo_name, dept, f"Command succeeded (exit 0)")
+        except _sp.TimeoutExpired:
             result["error"] = "Timeout after 5 minutes"
+            log(repo_name, dept, "Command TIMEOUT after 5 minutes", "ERROR")
         except Exception as e:
             result["error"] = str(e)
+            log(repo_name, dept, f"Command FAILED: {e}", "ERROR")
     elif action == "monitor":
         result["executed"] = True
         result["note"] = "Monitoring — no action needed"
     else:
-        result["note"] = f"Action '{action}' logged but not auto-executed (priority={priority})"
+        result["note"] = f"Action '{action}' logged but not auto-executed (priority={priority}, cmd={'present' if cmd else 'missing'})"
 
     return result
 

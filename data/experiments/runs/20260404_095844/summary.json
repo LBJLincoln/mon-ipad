@@ -1,0 +1,115 @@
+{
+  "run_id": "20260404_095844",
+  "timestamp": "2026-04-04T09:58:44.479738+00:00",
+  "config": {
+    "feature_engine_version": "v3.0-37cat",
+    "model": "tabicl_ensemble (110 features, v3.0-37cat)",
+    "features": 110,
+    "categories": 37,
+    "platform": "Colab TabICL + 6 HF Evolution Islands",
+    "evolution_generations": 435,
+    "evolution_islands": 6
+  },
+  "metrics": {
+    "brier_score": 0.2157,
+    "accuracy": 39.02,
+    "roi_pct": -8.11,
+    "sharpe_ratio": -2.99,
+    "max_drawdown_pct": 16.79,
+    "win_rate_pct": 66.67,
+    "bankroll": 91.89
+  },
+  "models": {
+    "tabicl": {
+      "brier": 0.2157,
+      "weight": 0.3,
+      "status": "ATR_BEST"
+    },
+    "catboost": {
+      "brier": 0.22041,
+      "weight": 0.2,
+      "status": "ACTIVE"
+    },
+    "xgboost": {
+      "brier": 0.2205,
+      "weight": 0.18,
+      "status": "ACTIVE"
+    },
+    "lightgbm": {
+      "brier": 0.2208,
+      "weight": 0.16,
+      "status": "ACTIVE"
+    },
+    "extra_trees": {
+      "brier": 0.2225,
+      "weight": 0.1,
+      "status": "ACTIVE"
+    },
+    "random_forest": {
+      "brier": 0.22447,
+      "weight": 0.06,
+      "status": "ACTIVE"
+    }
+  },
+  "atr_history": [
+    {
+      "date": "2026-03-16",
+      "brier": 0.22471,
+      "model": "logistic_regression",
+      "features": 24
+    },
+    {
+      "date": "2026-03-22",
+      "brier": 0.22041,
+      "model": "xgboost",
+      "features": 194,
+      "notes": "S10 MOVDA-era best"
+    },
+    {
+      "date": "2026-03-25",
+      "brier": 0.21844,
+      "model": "extra_trees",
+      "features": 94,
+      "notes": "Kaggle gen52"
+    },
+    {
+      "date": "2026-03-27",
+      "brier": 0.2157,
+      "model": "tabicl_ensemble",
+      "features": 110,
+      "notes": "Colab TabICL iter15 - NEW ATR"
+    }
+  ],
+  "traders": {
+    "political-openrouter": {
+      "balance": null
+    },
+    "political-grok": {
+      "balance": null
+    },
+    "political-claude": {
+      "balance": null
+    },
+    "openrouter": {
+      "balance": null
+    },
+    "claude": {
+      "balance": null
+    },
+    "political-codex": {
+      "balance": null
+    },
+    "grok": {
+      "balance": null
+    },
+    "gemini": {
+      "balance": null
+    },
+    "codex": {
+      "balance": null
+    },
+    "political-gemini": {
+      "balance": null
+    }
+  }
+}

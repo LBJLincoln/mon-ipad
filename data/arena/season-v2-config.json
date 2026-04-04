@@ -1,0 +1,26 @@
+{
+  "version": "v2-learning",
+  "created": "2026-04-04T09:50:00Z",
+  "features": {
+    "per_game_reflection": true,
+    "rolling_accuracy": true,
+    "bayesian_updates": true,
+    "cross_trader_learning": true,
+    "season_memory": true,
+    "bet_categories": 64,
+    "lessons_file": "data/arena/lessons-learned.json",
+    "category_blacklist": ["ml_home", "spread_home", "total_under"],
+    "category_boost": ["alt_spread_home_big", "alt_spread_away_big", "team_total_home_under", "team_total_home_over"]
+  },
+  "target": 1000000,
+  "max_iterations": 10,
+  "days_per_season": 146,
+  "learning_rate": 0.1,
+  "rules": {
+    "max_drawdown_kill": 0.85,
+    "min_bets_before_strategy_change": 50,
+    "strategy_steal_enabled": true,
+    "kelly_fraction_cap": 0.50,
+    "min_edge_floor": 0.03
+  }
+}

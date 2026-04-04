@@ -1,0 +1,67 @@
+{
+  "from_iterations": 402,
+  "from_generations": 54672,
+  "timestamp": "2026-04-04T09:50:00Z",
+  "final_standings": {
+    "grok":       {"bankroll": 3687.51, "roi_pct": 3587.51, "sharpe": 4.672, "rank": 1, "bets": 1228, "record": "523W-705L", "peak": 3816.21, "max_drawdown": 0.5355},
+    "gemini":     {"bankroll": 1731.08, "roi_pct": 1631.08, "sharpe": 2.660, "rank": 2, "bets": 3554, "record": "1753W-1801L", "peak": 1884.99, "max_drawdown": 0.7697},
+    "claude":     {"bankroll": 322.86,  "roi_pct": 222.86,  "sharpe": 4.423, "rank": 3, "bets": 1936, "record": "961W-975L", "peak": 329.87, "max_drawdown": 0.3841},
+    "openrouter": {"bankroll": 164.63,  "roi_pct": 64.63,   "sharpe": 0.560, "rank": 4, "bets": 2125, "record": "1036W-1089L", "peak": 231.44, "max_drawdown": 0.9353},
+    "codex":      {"bankroll": 0.63,    "roi_pct": -99.37,  "sharpe": -0.268, "rank": 5, "bets": 4232, "record": "2177W-2055L", "peak": 665.28, "max_drawdown": 1.0}
+  },
+  "best_strategies": {
+    "grok":       "value_hunter (280 bets, +$2860.96) + underdog_specialist (800 bets, +$728.21)",
+    "gemini":     "half_kelly (1224 bets, +$1530.70) + confidence_scaled (2330 bets, +$100.37)",
+    "claude":     "quarter_kelly (1936 bets, +$222.86) — most consistent, lowest drawdown",
+    "openrouter": "flat_2pct (870 bets, +$53.16) + value_hunter (601 bets, +$21.78)",
+    "codex":      "full_kelly (1145 bets, +$39.54) + streak_momentum (1145 bets, +$14.16) — BUT value_hunter lost $153"
+  },
+  "worst_strategies": [
+    "totals_expert (-72% ROI, ELIMINATED)",
+    "spread_only (-97% ROI, ELIMINATED)",
+    "full_blast (-100% ROI, ELIMINATED)",
+    "SECTOR_ROTATE (-75% ROI, ELIMINATED political)",
+    "DEFENSE_LONG_individual (-65% ROI, ELIMINATED political)",
+    "BILL_PASSES (-64% ROI, ELIMINATED political)",
+    "value_hunter on Codex: -$153.07 (high-volume value hunting with aggressive sizing = death)"
+  ],
+  "key_insights": [
+    "value_hunter with contrarian personality is the #1 strategy (Grok $3,687 from $100)",
+    "half_kelly is the best Kelly variant: 50% fraction balances growth vs survival (Gemini +$1530)",
+    "full_kelly is suicide for most personalities (Codex 100% drawdown) unless paired with high min_edge",
+    "quarter_kelly is ultra-safe but slow — Claude survived everything but only 3.2x",
+    "Alt spreads (home_big + away_big) are the #1 profitable category across ALL traders",
+    "team_total_home_under has 59-64% win rate across all traders — hidden gem",
+    "team_total_home_over has 74-81% win rate but low volume — needs more action",
+    "h1_ml_away has near 100% win rate (tiny sample) — worth exploring as specialist",
+    "ml_home is a trap: looks safe but negative profit for 4 of 5 traders",
+    "spread_home and spread_away are break-even at best — avoid as primary",
+    "Sharpe ratio matters more than raw ROI: Claude (4.423) outperformed Gemini (2.660) risk-adjusted",
+    "Conference matchups have higher edge than division games",
+    "Fewer, higher-conviction bets beat high-volume spray (Grok 1228 bets vs Codex 4232)",
+    "elo_baseline model surprisingly profitable for Grok (+$1996) — simple models + good strategy > complex models + bad strategy",
+    "stacking_meta best model for Gemini (+$909) — ensemble models reward analytical personality",
+    "Max drawdown tolerance: >50% is recoverable (Grok 53.5%), >75% is dangerous (Gemini 77%), >90% is terminal (Codex 100%)"
+  ],
+  "optimal_params": {
+    "kelly_fraction_range": [0.25, 0.50],
+    "min_edge_threshold": 0.03,
+    "max_bet_pct": 0.12,
+    "best_bet_categories": ["alt_spread_home_big", "alt_spread_away_big", "team_total_home_under", "team_total_home_over", "h1_ml_home"],
+    "worst_bet_categories": ["ml_home", "spread_home", "spread_away", "total_under"],
+    "ideal_bet_volume": "1000-2000 per season (not 4000+)",
+    "drawdown_kill_threshold": 0.85
+  },
+  "model_rankings": {
+    "by_profit": ["elo_baseline (Grok +$1996)", "stacking_meta (Gemini +$909)", "consensus_ensemble (Claude +$87)", "extra_trees (OpenRouter +$53)"],
+    "by_brier": ["consensus_ensemble (0.2150)", "tabicl (0.2157)", "stacking_meta (0.2170)"],
+    "insight": "Best Brier does not always mean best profit — strategy matters more than model accuracy"
+  },
+  "personality_lessons": {
+    "contrarian": "Best overall — fewer bets, bigger conviction, willing to take underdogs",
+    "analytical": "Strong #2 — high volume but good strategy selection saves it",
+    "conservative": "Safe but slow — great Sharpe but limited upside",
+    "diversified": "Mediocre — diversification without conviction leads to slow bleed",
+    "aggressive": "Dangerous — high risk tolerance without discipline = ruin"
+  }
+}

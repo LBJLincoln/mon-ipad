@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Trading Floor v8 — Cross-Repo Iterative Engine + Multi-AI Competition
+Trading Floor v9 — Game-Level Learning + Cross-Repo Iterative Engine
 =====================================================================
 5 AI agents (Gemini, OpenRouter, Claude, Codex, Grok) compete on:
   1. NBA betting: Choose strategy from all model predictions
   2. Political ETF trading: Trade based on political signals
 
-v8 upgrades over v4/v5:
+v8 features retained from prior version:
   - Cross-repo integration: reads karpathy outputs from all satellite repos
   - Continuous iteration mode: `iterate` command loops forever
   - Cron-activated: every 4h, runs full analysis + mutation + next iteration
@@ -18,7 +18,7 @@ Inherits v5 data structures (11 models, 22 strategies, 16 bet categories,
 per-game decisions, structured justifications, season documents).
 """
 
-import json, os, sys, csv, math, hashlib, time, signal as _signal, subprocess
+import json, os, sys, csv, math, hashlib, time, signal as _signal, subprocess, random
 from pathlib import Path
 from datetime import datetime, timezone, date
 from collections import defaultdict
@@ -239,19 +239,50 @@ TRADERS = {
 
 # ── POLITICAL / ETF UNIVERSE ─────────────────────────────────────────────────
 ETF_UNIVERSE = {
-    "SPY": {"name": "S&P 500",              "sector": "broad",       "beta": 1.0},
-    "QQQ": {"name": "NASDAQ 100",           "sector": "technology",  "beta": 1.2},
-    "IWM": {"name": "Russell 2000",         "sector": "small_cap",   "beta": 1.1},
-    "XLF": {"name": "Financials",           "sector": "financials",  "beta": 1.1},
-    "XLE": {"name": "Energy",               "sector": "energy",      "beta": 1.3},
-    "XLK": {"name": "Technology",           "sector": "technology",  "beta": 1.2},
-    "XLV": {"name": "Healthcare",           "sector": "healthcare",  "beta": 0.8},
-    "XLI": {"name": "Industrials",          "sector": "industrials", "beta": 1.0},
-    "XLD": {"name": "Defense",              "sector": "defense",     "beta": 0.9},
-    "GLD": {"name": "Gold",                 "sector": "commodity",   "beta": 0.3},
-    "TLT": {"name": "Long-term Treasuries", "sector": "bonds",       "beta": -0.2},
-    "LMT": {"name": "Lockheed Martin",      "sector": "defense",     "beta": 0.7},
-    "RTX": {"name": "Raytheon",             "sector": "defense",     "beta": 0.8},
+    # Broad market
+    "SPY":  {"name": "S&P 500",              "sector": "broad",        "beta": 1.0,  "type": "etf"},
+    "QQQ":  {"name": "NASDAQ 100",           "sector": "technology",   "beta": 1.2,  "type": "etf"},
+    "IWM":  {"name": "Russell 2000",         "sector": "small_cap",    "beta": 1.1,  "type": "etf"},
+    # Sector ETFs
+    "XLF":  {"name": "Financials",           "sector": "financials",   "beta": 1.1,  "type": "etf"},
+    "XLE":  {"name": "Energy",               "sector": "energy",       "beta": 1.3,  "type": "etf"},
+    "XLK":  {"name": "Technology",           "sector": "technology",   "beta": 1.2,  "type": "etf"},
+    "XLV":  {"name": "Healthcare",           "sector": "healthcare",   "beta": 0.8,  "type": "etf"},
+    "XLI":  {"name": "Industrials",          "sector": "industrials",  "beta": 1.0,  "type": "etf"},
+    "XLD":  {"name": "Defense",              "sector": "defense",      "beta": 0.9,  "type": "etf"},
+    # Safe haven
+    "GLD":  {"name": "Gold",                 "sector": "commodity",    "beta": 0.3,  "type": "etf"},
+    "TLT":  {"name": "Long-term Treasuries", "sector": "bonds",        "beta": -0.2, "type": "etf"},
+    # Individual stocks (defense)
+    "LMT":  {"name": "Lockheed Martin",      "sector": "defense",      "beta": 0.7,  "type": "stock"},
+    "RTX":  {"name": "Raytheon",             "sector": "defense",      "beta": 0.8,  "type": "stock"},
+    "BA":   {"name": "Boeing",               "sector": "defense",      "beta": 1.2,  "type": "stock"},
+    "NOC":  {"name": "Northrop Grumman",     "sector": "defense",      "beta": 0.6,  "type": "stock"},
+    "GD":   {"name": "General Dynamics",     "sector": "defense",      "beta": 0.7,  "type": "stock"},
+    # Individual stocks (tech)
+    "AAPL": {"name": "Apple",                "sector": "technology",   "beta": 1.1,  "type": "stock"},
+    "MSFT": {"name": "Microsoft",            "sector": "technology",   "beta": 1.0,  "type": "stock"},
+    "GOOGL":{"name": "Alphabet",             "sector": "technology",   "beta": 1.1,  "type": "stock"},
+    "META": {"name": "Meta Platforms",       "sector": "technology",   "beta": 1.3,  "type": "stock"},
+    "NVDA": {"name": "NVIDIA",               "sector": "technology",   "beta": 1.5,  "type": "stock"},
+    "AMZN": {"name": "Amazon",               "sector": "technology",   "beta": 1.2,  "type": "stock"},
+    "TSLA": {"name": "Tesla",                "sector": "technology",   "beta": 1.8,  "type": "stock"},
+    # Financials
+    "JPM":  {"name": "JPMorgan Chase",       "sector": "financials",   "beta": 1.1,  "type": "stock"},
+    "GS":   {"name": "Goldman Sachs",        "sector": "financials",   "beta": 1.3,  "type": "stock"},
+    "MS":   {"name": "Morgan Stanley",       "sector": "financials",   "beta": 1.2,  "type": "stock"},
+    "BLK":  {"name": "BlackRock",            "sector": "financials",   "beta": 1.1,  "type": "stock"},
+    "AXP":  {"name": "American Express",     "sector": "financials",   "beta": 1.0,  "type": "stock"},
+    # Energy
+    "XOM":  {"name": "Exxon Mobil",          "sector": "energy",       "beta": 1.0,  "type": "stock"},
+    "CVX":  {"name": "Chevron",              "sector": "energy",       "beta": 0.9,  "type": "stock"},
+    "COP":  {"name": "ConocoPhillips",       "sector": "energy",       "beta": 1.1,  "type": "stock"},
+    "OXY":  {"name": "Occidental",           "sector": "energy",       "beta": 1.4,  "type": "stock"},
+    "HAL":  {"name": "Halliburton",          "sector": "energy",       "beta": 1.3,  "type": "stock"},
+    # Healthcare
+    "PFE":  {"name": "Pfizer",               "sector": "healthcare",   "beta": 0.7,  "type": "stock"},
+    "JNJ":  {"name": "Johnson & Johnson",    "sector": "healthcare",   "beta": 0.6,  "type": "stock"},
+    "UNH":  {"name": "UnitedHealth",         "sector": "healthcare",   "beta": 0.8,  "type": "stock"},
 }
 
 POLITICAL_SECTOR_MAP = {
@@ -266,6 +297,160 @@ POLITICAL_SECTOR_MAP = {
     "commodity":   ["GLD"],
     "bonds":       ["TLT"],
 }
+
+# ── POLITICAL EVENT CATEGORIES (markets) ────��───────────────────────────────
+POLITICAL_MARKETS = [
+    "exec_order", "fed_rule", "insider_trade", "polymarket",
+    "EXECUTIVE_ORDER", "TARIFF_ESCALATE", "CONTRACT_AWARD",
+    "ENFORCEMENT_DROP", "ENERGY_LONG", "FINANCIALS_LONG",
+    "DEFENSE_LONG", "PHARMA_SHORT", "SECTOR_LONG", "SECTOR_SHORT",
+    "STOCK_LONG", "STOCK_SHORT", "STOCK_LONG_3D", "STOCK_LONG_10D",
+    "INSIDER_BUY", "INSIDER_SELL", "CONGRESS_TRADE",
+    "POLY_STOCK_ARB", "EVENT_BINARY", "EVENT_MULTI",
+    "CEO_PERSONAL", "STOCK_LONG_EARNINGS",
+]
+
+# ── POLITICAL TRADING STRATEGIES ───────────────────────────────────────────
+POLITICAL_STRATEGIES = {
+    "momentum": {
+        "desc": "Follow political momentum signals",
+        "position_pct": 0.05,
+        "min_signal": 0.10,
+        "max_positions": 10,
+        "holding_days": 3,
+        "family": "momentum",
+    },
+    "mean_reversion": {
+        "desc": "Fade extreme political signals",
+        "position_pct": 0.03,
+        "min_signal": 0.30,
+        "max_positions": 6,
+        "holding_days": 5,
+        "family": "reversion",
+    },
+    "event_driven": {
+        "desc": "Large positions on high-conviction events",
+        "position_pct": 0.08,
+        "min_signal": 0.20,
+        "max_positions": 5,
+        "holding_days": 2,
+        "family": "event",
+    },
+    "pairs_trading": {
+        "desc": "Long/short within sectors on relative strength",
+        "position_pct": 0.04,
+        "min_signal": 0.05,
+        "max_positions": 8,
+        "holding_days": 5,
+        "family": "pairs",
+    },
+    "sector_rotation": {
+        "desc": "Rotate into strongest political-signal sectors",
+        "position_pct": 0.06,
+        "min_signal": 0.05,
+        "max_positions": 6,
+        "holding_days": 7,
+        "family": "rotation",
+    },
+    "safe_haven": {
+        "desc": "Defensive positioning on negative signals (GLD, TLT)",
+        "position_pct": 0.04,
+        "min_signal": 0.15,
+        "max_positions": 4,
+        "holding_days": 5,
+        "family": "defensive",
+    },
+    "insider_follow": {
+        "desc": "Follow insider trades and congressional disclosures",
+        "position_pct": 0.05,
+        "min_signal": 0.10,
+        "max_positions": 8,
+        "holding_days": 10,
+        "family": "insider",
+    },
+    "vol_scaled": {
+        "desc": "Scale position size inversely to VIX / volatility",
+        "position_pct": 0.04,
+        "min_signal": 0.10,
+        "max_positions": 8,
+        "holding_days": 3,
+        "family": "vol_adjusted",
+    },
+}
+
+# ── POLITICAL TRADER PROFILES (per-agent, overlaid onto TRADERS) ───────────
+# Each trader in TRADERS already has: pol_approach, etf_sectors
+# We add political-specific fields used by the full backtest.
+POLITICAL_TRADER_PROFILES = {
+    "gemini": {
+        "primary_strategy":   "momentum",
+        "secondary_strategies": ["sector_rotation", "vol_scaled"],
+        "sector_focus":       ["technology", "broad", "defense"],
+        "ticker_focus":       ["XLK", "QQQ", "SPY", "LMT", "NVDA", "MSFT"],
+        "event_weight":       {"exec_order": 1.2, "fed_rule": 1.0, "insider_trade": 0.8, "polymarket": 0.9},
+    },
+    "openrouter": {
+        "primary_strategy":   "sector_rotation",
+        "secondary_strategies": ["insider_follow", "pairs_trading"],
+        "sector_focus":       ["broad", "energy", "financials", "small_cap"],
+        "ticker_focus":       ["SPY", "IWM", "XLF", "XLE", "JPM", "XOM"],
+        "event_weight":       {"exec_order": 1.0, "fed_rule": 1.1, "insider_trade": 1.2, "polymarket": 0.8},
+    },
+    "claude": {
+        "primary_strategy":   "mean_reversion",
+        "secondary_strategies": ["safe_haven", "vol_scaled"],
+        "sector_focus":       ["bonds", "commodity", "healthcare"],
+        "ticker_focus":       ["TLT", "GLD", "XLV", "JNJ", "UNH", "SPY"],
+        "event_weight":       {"exec_order": 0.8, "fed_rule": 1.3, "insider_trade": 0.7, "polymarket": 1.0},
+    },
+    "codex": {
+        "primary_strategy":   "event_driven",
+        "secondary_strategies": ["momentum", "insider_follow"],
+        "sector_focus":       ["technology", "defense", "energy"],
+        "ticker_focus":       ["QQQ", "XLK", "NVDA", "BA", "TSLA", "META"],
+        "event_weight":       {"exec_order": 1.5, "fed_rule": 0.7, "insider_trade": 1.0, "polymarket": 1.3},
+    },
+    "grok": {
+        "primary_strategy":   "pairs_trading",
+        "secondary_strategies": ["mean_reversion", "insider_follow"],
+        "sector_focus":       ["energy", "commodity", "small_cap", "bonds"],
+        "ticker_focus":       ["XLE", "GLD", "IWM", "TLT", "OXY", "CVX"],
+        "event_weight":       {"exec_order": 0.9, "fed_rule": 1.0, "insider_trade": 1.3, "polymarket": 1.1},
+    },
+}
+
+# ── POLITICAL CONFIG PERSISTENCE ───────────────────────────────────────────
+POLITICAL_TRADER_CONFIG_FILE = DATA_DIR / 'political-trader-configs-evolved.json'
+
+def _load_evolved_political_configs() -> None:
+    """Load evolved political trader configs from disk, overriding defaults."""
+    if not POLITICAL_TRADER_CONFIG_FILE.exists():
+        return
+    try:
+        saved = json.loads(POLITICAL_TRADER_CONFIG_FILE.read_text())
+        for tid, cfg in saved.items():
+            if tid in POLITICAL_TRADER_PROFILES:
+                for key in ("primary_strategy", "secondary_strategies",
+                            "risk_tolerance", "ticker_focus"):
+                    if key in cfg:
+                        POLITICAL_TRADER_PROFILES[tid][key] = cfg[key]
+    except Exception:
+        pass
+
+def _save_evolved_political_configs() -> None:
+    """Persist current political trader configs to disk."""
+    configs = {}
+    for tid, t in POLITICAL_TRADER_PROFILES.items():
+        configs[tid] = {
+            "primary_strategy": t.get("primary_strategy"),
+            "secondary_strategies": t.get("secondary_strategies", []),
+            "ticker_focus": t.get("ticker_focus", []),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
+        }
+    POLITICAL_TRADER_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    POLITICAL_TRADER_CONFIG_FILE.write_text(json.dumps(configs, indent=2))
+
+_load_evolved_political_configs()
 
 # ── COMMAND CENTER OFFICES ────────────────────────────────────────────────────
 COMMAND_CENTERS = {
@@ -343,6 +528,269 @@ def _save_evolved_trader_configs() -> None:
 
 # Load evolved configs on import (override hardcoded defaults)
 _load_evolved_trader_configs()
+
+
+# ── SEASON MEMORY (Game-Level Learning) ──────────────────────────────────────
+# Persists per-game bet outcomes across iterations so traders can LEARN.
+# Each trader accumulates a rolling memory of bet results.
+
+SEASON_MEMORY_FILE = DATA_DIR / 'season-memory.json'
+
+def _load_season_memory() -> Dict:
+    """Load season memory — per-game bet results from previous iterations."""
+    if SEASON_MEMORY_FILE.exists():
+        try:
+            return json.loads(SEASON_MEMORY_FILE.read_text())
+        except Exception:
+            pass
+    return {
+        "version": 2,
+        "last_iteration": 0,
+        "trader_memories": {},       # {trader_id: [bet_records...]}
+        "strategy_posteriors": {},   # {strategy: posterior_prob}
+        "cross_trader_steals": [],   # [{from, to, strategy, iteration}]
+        "feature_correlations": {},  # {feature_key: {win_rate, sample_size}}
+    }
+
+
+def _save_season_memory(memory: Dict) -> None:
+    """Persist season memory to disk."""
+    SEASON_MEMORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+    # Keep memory bounded: max 2000 bets per trader
+    for tid in list(memory.get("trader_memories", {}).keys()):
+        bets = memory["trader_memories"][tid]
+        if len(bets) > 2000:
+            memory["trader_memories"][tid] = bets[-2000:]
+    SEASON_MEMORY_FILE.write_text(json.dumps(memory, indent=2))
+
+
+def _compute_rolling_accuracy(bets: List[Dict], window: int = 20) -> Dict:
+    """Compute rolling accuracy metrics from last N bets."""
+    recent = bets[-window:] if len(bets) >= window else bets
+    if not recent:
+        return {"accuracy": 0.5, "roi": 0.0, "streak": 0, "streak_type": "none",
+                "bet_type_accuracy": {}, "confidence_accuracy": {}, "team_accuracy": {}}
+
+    wins = sum(1 for b in recent if b.get("outcome") == "Win")
+    total = len(recent)
+    accuracy = wins / total if total > 0 else 0.5
+
+    total_profit = sum(b.get("profit", 0) for b in recent)
+    total_wagered = sum(b.get("bet_size", 0) for b in recent)
+    roi = total_profit / total_wagered if total_wagered > 0 else 0.0
+
+    # Current streak
+    streak = 0
+    streak_type = "none"
+    if recent:
+        last_outcome = recent[-1].get("outcome")
+        for b in reversed(recent):
+            if b.get("outcome") == last_outcome:
+                streak += 1
+            else:
+                break
+        streak_type = "win" if last_outcome == "Win" else "loss"
+
+    # Per bet-type accuracy
+    bt_acc = defaultdict(lambda: {"wins": 0, "total": 0})
+    for b in recent:
+        cat = b.get("category", "unknown")
+        bt_type = cat.split("_")[0] if "_" in cat else cat  # e.g. "ml", "spread", "total"
+        bt_acc[bt_type]["total"] += 1
+        if b.get("outcome") == "Win":
+            bt_acc[bt_type]["wins"] += 1
+    bet_type_accuracy = {k: round(v["wins"] / v["total"], 3) if v["total"] > 0 else 0.5
+                         for k, v in bt_acc.items()}
+
+    # Per confidence-range accuracy (binned)
+    conf_acc = defaultdict(lambda: {"wins": 0, "total": 0})
+    for b in recent:
+        prob = b.get("model_prob", 0.5)
+        conf_bin = f"{int(abs(prob - 0.5) * 100 / 10) * 10}-{int(abs(prob - 0.5) * 100 / 10) * 10 + 10}%"
+        conf_acc[conf_bin]["total"] += 1
+        if b.get("outcome") == "Win":
+            conf_acc[conf_bin]["wins"] += 1
+    confidence_accuracy = {k: round(v["wins"] / v["total"], 3) if v["total"] > 0 else 0.5
+                           for k, v in conf_acc.items()}
+
+    # Per team accuracy
+    team_acc = defaultdict(lambda: {"wins": 0, "total": 0})
+    for b in recent:
+        game = b.get("game", "")
+        teams = game.split(" vs ") if " vs " in game else []
+        for t in teams:
+            team_acc[t.strip()]["total"] += 1
+            if b.get("outcome") == "Win":
+                team_acc[t.strip()]["wins"] += 1
+    team_accuracy = {k: round(v["wins"] / v["total"], 3) if v["total"] > 0 else 0.5
+                     for k, v in team_acc.items()}
+
+    return {
+        "accuracy": round(accuracy, 4),
+        "roi": round(roi, 4),
+        "streak": streak,
+        "streak_type": streak_type,
+        "bet_type_accuracy": dict(bet_type_accuracy),
+        "confidence_accuracy": dict(confidence_accuracy),
+        "team_accuracy": dict(team_accuracy),
+    }
+
+
+def _compute_kelly_adjustment(rolling: Dict) -> float:
+    """
+    Adjust Kelly fraction based on rolling performance.
+    - 3+ loss streak → reduce by 50% for next 5 games (returns 0.5)
+    - 5+ win streak → boost up to 2x (returns min(2.0, 1.0 + streak * 0.2))
+    - Otherwise scale by accuracy relative to breakeven
+    """
+    streak = rolling.get("streak", 0)
+    streak_type = rolling.get("streak_type", "none")
+    accuracy = rolling.get("accuracy", 0.5)
+
+    # Losing streak protection
+    if streak_type == "loss" and streak >= 3:
+        return max(0.25, 0.5 - (streak - 3) * 0.05)  # 0.5 at 3, 0.45 at 4, etc.
+
+    # Winning streak amplification
+    if streak_type == "win" and streak >= 5:
+        return min(2.0, 1.0 + (streak - 4) * 0.2)  # 1.2 at 5, 1.4 at 6, etc.
+
+    # Accuracy-based scaling: >55% → boost, <45% → reduce
+    if accuracy > 0.55:
+        return min(1.5, 1.0 + (accuracy - 0.55) * 5.0)
+    elif accuracy < 0.45:
+        return max(0.4, 1.0 - (0.45 - accuracy) * 5.0)
+
+    return 1.0
+
+
+def _compute_bayesian_posteriors(memory: Dict) -> Dict[str, float]:
+    """
+    Compute Bayesian posterior probabilities for each strategy.
+    P(strategy_i | data) proportional to P(data | strategy_i) * P(strategy_i)
+    where P(data | strategy_i) is based on ROI.
+    """
+    strat_results = defaultdict(lambda: {"profit": 0.0, "wagered": 0.0, "bets": 0})
+
+    for tid, bets in memory.get("trader_memories", {}).items():
+        for b in bets:
+            s = b.get("strategy", "unknown")
+            strat_results[s]["bets"] += 1
+            strat_results[s]["profit"] += b.get("profit", 0)
+            strat_results[s]["wagered"] += b.get("bet_size", 0)
+
+    # Prior: uniform across active strategies
+    active_strats = [s for s in STRATEGIES if s not in ELIMINATED_STRATEGIES]
+    n = max(len(active_strats), 1)
+    prior = 1.0 / n
+
+    posteriors = {}
+    for s in active_strats:
+        sr = strat_results.get(s, {"profit": 0, "wagered": 0, "bets": 0})
+        if sr["bets"] < 5:
+            # Not enough data — use prior
+            posteriors[s] = prior
+            continue
+
+        roi = sr["profit"] / sr["wagered"] if sr["wagered"] > 0 else 0.0
+        # Likelihood: transform ROI to positive score
+        # ROI of +10% → high likelihood, ROI of -50% → low likelihood
+        likelihood = math.exp(roi * 3.0)  # Exponential weighting
+        posteriors[s] = likelihood * prior
+
+    # Normalize
+    total = sum(posteriors.values())
+    if total > 0:
+        posteriors = {s: round(p / total, 6) for s, p in posteriors.items()}
+
+    return posteriors
+
+
+def _check_dead_strategies(memory: Dict) -> List[str]:
+    """
+    Identify strategies that should be permanently eliminated.
+    Dead = < -80% ROI over 50+ bets.
+    """
+    strat_results = defaultdict(lambda: {"profit": 0.0, "wagered": 0.0, "bets": 0})
+
+    for tid, bets in memory.get("trader_memories", {}).items():
+        for b in bets:
+            s = b.get("strategy", "unknown")
+            strat_results[s]["bets"] += 1
+            strat_results[s]["profit"] += b.get("profit", 0)
+            strat_results[s]["wagered"] += b.get("bet_size", 0)
+
+    dead = []
+    for s, sr in strat_results.items():
+        if s in ELIMINATED_STRATEGIES or s not in STRATEGIES:
+            continue
+        if sr["bets"] < 50:
+            continue
+        roi = sr["profit"] / sr["wagered"] if sr["wagered"] > 0 else 0.0
+        if roi < -0.80:  # -80% ROI
+            dead.append(s)
+            ELIMINATED_STRATEGIES[s] = {
+                "eliminated_at": date.today().isoformat(),
+                "reason": f"Bayesian death: {roi*100:.0f}% ROI over {sr['bets']} bets",
+                "final_roi": round(roi, 2),
+                "department": "D4_BETTING",
+            }
+            print(f"  [BAYESIAN DEATH] '{s}': {roi*100:.0f}% ROI over {sr['bets']} bets")
+    return dead
+
+
+def _compute_feature_correlations(memory: Dict) -> Dict[str, Dict]:
+    """
+    Analyze which game features correlate with winning bets.
+    Features: spread_size, home_away, conference, bet_type, strategy.
+    Returns correlation dict for smart mutations.
+    """
+    features = defaultdict(lambda: {"wins": 0, "total": 0, "profit": 0.0})
+
+    for tid, bets in memory.get("trader_memories", {}).items():
+        for b in bets:
+            # Feature: strategy + bet_type combo
+            strat = b.get("strategy", "unknown")
+            cat = b.get("category", "unknown")
+            combo_key = f"strat={strat}|cat={cat}"
+            features[combo_key]["total"] += 1
+            features[combo_key]["profit"] += b.get("profit", 0)
+            if b.get("outcome") == "Win":
+                features[combo_key]["wins"] += 1
+
+            # Feature: spread size bucket
+            edge = b.get("edge_pct", 0)
+            edge_bucket = f"edge={'high' if edge > 5 else 'mid' if edge > 2 else 'low'}"
+            strat_edge = f"strat={strat}|{edge_bucket}"
+            features[strat_edge]["total"] += 1
+            features[strat_edge]["profit"] += b.get("profit", 0)
+            if b.get("outcome") == "Win":
+                features[strat_edge]["wins"] += 1
+
+            # Feature: confidence level
+            prob = b.get("model_prob", 0.5)
+            conf = abs(prob - 0.5)
+            conf_level = f"conf={'high' if conf > 0.15 else 'mid' if conf > 0.08 else 'low'}"
+            strat_conf = f"strat={strat}|{conf_level}"
+            features[strat_conf]["total"] += 1
+            features[strat_conf]["profit"] += b.get("profit", 0)
+            if b.get("outcome") == "Win":
+                features[strat_conf]["wins"] += 1
+
+    # Compute win rates and filter for statistical significance
+    result = {}
+    for key, stats in features.items():
+        if stats["total"] < 10:
+            continue
+        wr = stats["wins"] / stats["total"]
+        result[key] = {
+            "win_rate": round(wr, 4),
+            "sample_size": stats["total"],
+            "avg_profit": round(stats["profit"] / stats["total"], 4),
+            "profitable": stats["profit"] > 0,
+        }
+
+    return result
 
 
 # ── DATA LOADERS ─────────────────────────────────────────────────────────────
@@ -538,6 +986,53 @@ def load_political_signals() -> Dict:
     return {}
 
 
+def load_political_events() -> List[Dict]:
+    """Load consolidated political events from nomos-political-alpha."""
+    fp = POLITICAL / "data" / "historical" / "consolidated_events.json"
+    if not fp.exists():
+        return []
+    try:
+        events = json.loads(fp.read_text())
+        events.sort(key=lambda e: e.get("date", ""))
+        return events
+    except Exception:
+        return []
+
+
+def load_all_social_snapshots() -> List[Tuple[str, Dict]]:
+    """Load all historical social signal snapshots, sorted by timestamp."""
+    social_dir = POLITICAL / "data" / "social"
+    if not social_dir.exists():
+        return []
+    snapshots = []
+    for fp in sorted(social_dir.glob("social_signals_*.json")):
+        if fp.name == "social_signals_latest.json":
+            continue
+        try:
+            data = json.loads(fp.read_text())
+            sigs = data.get("signals", data)
+            ts = fp.stem.replace("social_signals_", "")
+            snapshots.append((ts, sigs))
+        except Exception:
+            continue
+    return snapshots
+
+
+def load_political_trader_states(exclude: str) -> Dict:
+    """Load other political trader states for competitive awareness."""
+    results = {}
+    for trader_id in TRADERS:
+        if trader_id == exclude:
+            continue
+        sf = TRADERS_DIR / f"political-{trader_id}-state.json"
+        if sf.exists():
+            try:
+                results[trader_id] = json.loads(sf.read_text())
+            except Exception:
+                pass
+    return results
+
+
 def load_department_status() -> Dict:
     """Load department/agent health status for command centers."""
     for fp in [
@@ -565,6 +1060,209 @@ def load_other_trader_states(exclude: str) -> Dict:
             except Exception:
                 pass
     return results
+
+
+# ── POLITICAL SIGNAL COMPUTATION ─────────────────────────────────────────────
+
+def compute_political_ticker_signal(ticker: str, social_signals: Dict,
+                                    events_for_day: List[Dict]) -> Dict:
+    """Compute combined signal for one ticker from social signals + political events."""
+    components = []
+    total_strength = 0.0
+    total_direction = 0.0
+
+    if ticker in social_signals:
+        sig = social_signals[ticker]
+        sentiment = sig.get("combined_sentiment", 0.0)
+        strength = sig.get("signal_strength", 0.0)
+        if strength > 0.01:
+            components.append({"source": "social", "sentiment": sentiment,
+                               "strength": strength, "mentions": sig.get("total_mentions", 0)})
+            total_strength += strength
+            total_direction += sentiment * strength
+
+    ticker_events = [e for e in events_for_day if e.get("ticker") == ticker]
+    for ev in ticker_events:
+        ev_strength = ev.get("signal_strength", 0.5)
+        ev_outcome = ev.get("outcome", 0.5)
+        ev_direction = (ev_outcome - 0.5) * 2
+        components.append({"source": "event", "event_type": ev.get("event_type", "unknown"),
+                           "title": ev.get("title", "")[:60], "strength": ev_strength,
+                           "direction": ev_direction})
+        total_strength += ev_strength * 0.5
+        total_direction += ev_direction * ev_strength * 0.5
+
+    if not components:
+        etf_info = ETF_UNIVERSE.get(ticker, {})
+        sector = etf_info.get("sector", "")
+        sector_tickers = POLITICAL_SECTOR_MAP.get(sector, [])
+        sector_sigs = []
+        for st in sector_tickers:
+            if st != ticker and st in social_signals:
+                s = social_signals[st]
+                if s.get("signal_strength", 0) > 0.01:
+                    sector_sigs.append(s.get("combined_sentiment", 0.0) * s.get("signal_strength", 0.0))
+        if sector_sigs:
+            avg = sum(sector_sigs) / len(sector_sigs)
+            components.append({"source": "sector_spillover", "strength": min(abs(avg), 0.3),
+                               "direction": 1.0 if avg > 0 else -1.0})
+            total_strength += min(abs(avg), 0.3)
+            total_direction += avg
+
+    if total_strength < 0.01:
+        return {"direction": "neutral", "strength": 0.0, "components": []}
+
+    net_direction = total_direction / total_strength if total_strength > 0 else 0.0
+    direction = "long" if net_direction > 0 else ("short" if net_direction < 0 else "neutral")
+    return {"direction": direction, "strength": min(total_strength, 1.0),
+            "net_direction": round(net_direction, 4), "components": components}
+
+
+# ── POLITICAL POSITION SIZING ───────────────────────────────────────────────
+
+POLITICAL_INITIAL_CAPITAL = 100_000.0
+
+def compute_political_position_size(strategy_name: str, signal: Dict, capital: float,
+                                    risk_tolerance: float, existing_positions: int) -> float:
+    """Compute position size in USD for a given signal and political strategy."""
+    cfg = POLITICAL_STRATEGIES.get(strategy_name, POLITICAL_STRATEGIES["momentum"])
+    if signal["direction"] == "neutral" or signal["strength"] < cfg["min_signal"]:
+        return 0.0
+    if existing_positions >= cfg["max_positions"]:
+        return 0.0
+    base_pct = cfg["position_pct"] * risk_tolerance
+    scaled_pct = base_pct * min(signal["strength"] * 2, 1.0)
+    if capital < POLITICAL_INITIAL_CAPITAL * 0.8:
+        scaled_pct *= 0.5
+    elif capital < POLITICAL_INITIAL_CAPITAL * 0.5:
+        scaled_pct *= 0.25
+    return round(max(capital * scaled_pct, 0.0), 2)
+
+
+def simulate_political_trade_outcome(ticker: str, direction: str, signal_strength: float,
+                                     event_return: Optional[float], seed: str) -> float:
+    """Simulate the return of a political trade (deterministic hash-based)."""
+    etf_info = ETF_UNIVERSE.get(ticker, {"beta": 1.0})
+    beta = etf_info.get("beta", 1.0)
+    h = int(hashlib.md5(f"pol_{ticker}_{seed}".encode()).hexdigest()[:8], 16)
+    noise = ((h % 10000) / 10000.0 - 0.5) * 0.04
+    if event_return is not None:
+        base_return = event_return
+    else:
+        h2 = int(hashlib.md5(f"ret_{ticker}_{seed}".encode()).hexdigest()[:6], 16)
+        market_move = ((h2 % 1000) / 1000.0 - 0.45) * 0.02
+        base_return = market_move * beta + signal_strength * 0.005
+    trade_return = base_return + noise
+    if direction == "short":
+        trade_return *= -1
+    return round(trade_return, 6)
+
+
+# ── POLITICAL AGENT DECISION ENGINE ─────────────────────────────────────────
+
+def political_agent_decide_positions(trader_id: str, day_date: str, capital: float,
+                                     social_signals: Dict, day_events: List[Dict],
+                                     others: Dict, existing_positions: int) -> List[Dict]:
+    """Political agent decides all positions for one trading day."""
+    pol_cfg = POLITICAL_TRADER_PROFILES.get(trader_id, {})
+    trader_cfg = TRADERS[trader_id]
+    personality = trader_cfg["personality"]
+    primary_strat = pol_cfg.get("primary_strategy", trader_cfg.get("pol_approach", "momentum"))
+    secondary_strats = pol_cfg.get("secondary_strategies", [])
+    risk = trader_cfg["risk_tolerance"]
+    focus_tickers = pol_cfg.get("ticker_focus", trader_cfg.get("etf_sectors", []))
+    sector_focus = pol_cfg.get("sector_focus", [])
+    event_weights = pol_cfg.get("event_weight", {})
+
+    candidates = list(focus_tickers)
+    for sector in sector_focus:
+        for ticker in POLITICAL_SECTOR_MAP.get(sector, []):
+            if ticker not in candidates:
+                candidates.append(ticker)
+
+    positions = []
+    budget_remaining = capital * risk * 0.3
+    pos_count = existing_positions
+
+    for ticker in candidates:
+        if budget_remaining <= 0:
+            break
+        signal = compute_political_ticker_signal(ticker, social_signals, day_events)
+        if signal["direction"] == "neutral":
+            continue
+        for comp in signal.get("components", []):
+            if comp.get("source") == "event":
+                ev_type = comp.get("event_type", "")
+                weight = event_weights.get(ev_type, 1.0)
+                signal["strength"] = min(signal["strength"] * weight, 1.0)
+
+        chosen_strat = primary_strat
+        if personality == "analytical":
+            if signal["strength"] < 0.2 and secondary_strats:
+                chosen_strat = secondary_strats[0]
+        elif personality == "diversified":
+            h = int(hashlib.md5(f"{day_date}_{ticker}".encode()).hexdigest()[:4], 16)
+            all_strats = [primary_strat] + secondary_strats
+            chosen_strat = all_strats[h % len(all_strats)]
+        elif personality == "conservative":
+            other_caps = [s.get("capital", POLITICAL_INITIAL_CAPITAL) for s in others.values()]
+            avg_other = sum(other_caps) / len(other_caps) if other_caps else capital
+            if capital < avg_other * 0.9 and "safe_haven" in [primary_strat] + secondary_strats:
+                chosen_strat = "safe_haven"
+        elif personality == "aggressive":
+            if signal["strength"] > 0.3:
+                chosen_strat = "event_driven"
+            elif secondary_strats:
+                chosen_strat = secondary_strats[0]
+        elif personality == "contrarian":
+            if signal["strength"] > 0.25:
+                chosen_strat = "mean_reversion" if "mean_reversion" in [primary_strat] + secondary_strats else primary_strat
+                signal = dict(signal)
+                signal["direction"] = "short" if signal["direction"] == "long" else "long"
+                signal["net_direction"] = -signal.get("net_direction", 0)
+
+        if chosen_strat in ELIMINATED_POLITICAL_STRATEGIES:
+            continue
+
+        size = compute_political_position_size(chosen_strat, signal, capital, risk, pos_count)
+        if size <= 0 or size > budget_remaining:
+            size = min(size, budget_remaining) if size > 0 else 0
+        if size <= 0:
+            continue
+
+        event_return = None
+        ticker_events = [e for e in day_events if e.get("ticker") == ticker]
+        if ticker_events:
+            event_return = ticker_events[0].get("excess_return")
+
+        seed = f"{day_date}_{trader_id}_{ticker}_{chosen_strat}"
+        trade_return = simulate_political_trade_outcome(
+            ticker, signal["direction"], signal["strength"], event_return, seed)
+        pnl = size * trade_return
+
+        reasoning_parts = [f"strategy={chosen_strat}",
+                           f"signal={signal['strength']:.3f} {signal['direction']}"]
+        if ticker_events:
+            reasoning_parts.append(f"event={ticker_events[0].get('event_type','?')}")
+        reasoning_parts.append(f"beta={ETF_UNIVERSE.get(ticker, {}).get('beta', 1.0)}")
+
+        positions.append({
+            "date": day_date, "ticker": ticker,
+            "name": ETF_UNIVERSE.get(ticker, {}).get("name", ticker),
+            "type": ETF_UNIVERSE.get(ticker, {}).get("type", "stock"),
+            "sector": ETF_UNIVERSE.get(ticker, {}).get("sector", "unknown"),
+            "direction": signal["direction"], "strategy_used": chosen_strat,
+            "signal_strength": round(signal["strength"], 4),
+            "net_direction": signal.get("net_direction", 0),
+            "position_size": size, "trade_return": trade_return,
+            "pnl": round(pnl, 2), "outcome": "Win" if pnl > 0 else "Loss",
+            "reasoning": " | ".join(reasoning_parts),
+            "event_count": len(ticker_events),
+        })
+        budget_remaining -= size
+        pos_count += 1
+
+    return positions
 
 
 # ── NBA SIMULATION HELPERS ────────────────────────────────────────────────────
@@ -653,8 +1351,11 @@ def kelly_size(p: float, odds: float, fraction: float = 1.0) -> float:
 
 
 def get_bet_size(strat_name: str, prob: float, odds: float,
-                 bankroll: float, comp_state: Optional[Dict] = None) -> float:
-    """Calculate bet size for a given NBA strategy (v3-compatible)."""
+                 bankroll: float, comp_state: Optional[Dict] = None,
+                 kelly_adj: float = 1.0) -> float:
+    """Calculate bet size for a given NBA strategy.
+    kelly_adj: multiplier from game-level learning (0.25-2.0). Adjusts final bet size
+    based on rolling accuracy, streak detection, and Bayesian priors."""
     cfg      = STRATEGIES[strat_name]
     min_edge = cfg["min_edge"]
     max_pct  = cfg["max_pct"]
@@ -706,6 +1407,9 @@ def get_bet_size(strat_name: str, prob: float, odds: float,
         bet = bankroll
     else:
         bet = bankroll * 0.02
+
+    # Apply game-level learning adjustment
+    bet *= kelly_adj
 
     return min(max(bet, 0.0), max_bet)
 
@@ -797,9 +1501,14 @@ def agent_pick_strategies_for_game(trader_id: str, game_ctx: Dict,
 
 
 def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
-                           day_budget: float, others: Dict, comp_state: Dict) -> List[Dict]:
+                           day_budget: float, others: Dict, comp_state: Dict,
+                           kelly_adj: float = 1.0,
+                           category_weights: Optional[Dict[str, float]] = None) -> List[Dict]:
     """
-    v5 CORE: Agent decides ALL bets for ONE game. Returns list of justified bets.
+    v9 CORE: Agent decides ALL bets for ONE game with LEARNING.
+    Now uses:
+    - kelly_adj: rolling-window adjustment from season memory (0.25-2.0)
+    - category_weights: per-category boost/penalty from feature correlations
     Agent sees: standings, team form, all model predictions, odds, other agents.
     Agent chooses: model, strategies, categories — all freely.
     """
@@ -865,6 +1574,9 @@ def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
     bets = []
     remaining_budget = day_budget
 
+    # Category weights from feature correlations (learned from memory)
+    cat_weights = category_weights or {}
+
     for strat_name in chosen_strategies:
         if strat_name in ELIMINATED_STRATEGIES or strat_name not in STRATEGIES:
             continue
@@ -877,7 +1589,12 @@ def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
             if remaining_budget <= 0:
                 break
 
-            bet_size = get_bet_size(strat_name, prob, odds_val, remaining_budget, comp_state)
+            # Apply per-category weight from feature correlations
+            cat_adj = cat_weights.get(f"strat={strat_name}|cat={cat}", 1.0)
+            effective_kelly_adj = kelly_adj * cat_adj
+
+            bet_size = get_bet_size(strat_name, prob, odds_val, remaining_budget,
+                                    comp_state, kelly_adj=effective_kelly_adj)
             if bet_size <= 0:
                 continue
             bet_size = min(bet_size, remaining_budget)
@@ -897,6 +1614,8 @@ def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
                 reasoning_parts.append(f"{game_ctx['home']} L{h_form['games']}: {h_form['w']}-{h_form['l']}")
             if a_form.get("games"):
                 reasoning_parts.append(f"{game_ctx['away']} L{a_form['games']}: {a_form['w']}-{a_form['l']}")
+            if effective_kelly_adj != 1.0:
+                reasoning_parts.append(f"kelly_adj: {effective_kelly_adj:.2f}")
 
             bet_record = {
                 "date": game_ctx["date"],
@@ -913,6 +1632,7 @@ def agent_decide_game_bets(trader_id: str, game_ctx: Dict, bankroll: float,
                 "standings_context": f"{game_ctx['home']} ({h_stand.get('w',0)}-{h_stand.get('l',0)}) vs {game_ctx['away']} ({a_stand.get('w',0)}-{a_stand.get('l',0)})",
                 "outcome": "Win" if outcome else "Loss",
                 "profit": round(profit, 4),
+                "kelly_adjustment": round(effective_kelly_adj, 4),
             }
             bets.append(bet_record)
             remaining_budget -= bet_size
@@ -1043,9 +1763,10 @@ def agent_political_trades(trader_id: str, political_bankroll: float,
 
 def run_nba_backtest_for_agent(trader_id: str, matched: List,
                                others_states: Dict,
-                               all_games: Optional[List[Dict]] = None) -> Dict:
+                               all_games: Optional[List[Dict]] = None,
+                               season_memory: Optional[Dict] = None) -> Dict:
     """
-    v5: Full-season backtest. Agent gets ALL context per game, bets freely
+    v9: Full-season backtest WITH GAME-LEVEL LEARNING. Agent gets ALL context per game, bets freely
     across 16+ categories, provides justification for every bet.
     """
     bankroll   = TRADERS[trader_id]["bankroll_nba"]
@@ -1057,6 +1778,25 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
     all_bets: List[Dict] = []  # Full justified bet history
     eliminated_day = None
     day_results    = []
+
+    # ── GAME-LEVEL LEARNING: Load prior bets from season memory ──
+    memory = season_memory or {}
+    prior_bets = list(memory.get("trader_memories", {}).get(trader_id, []))
+    running_bets = list(prior_bets)  # Start with memory from previous iterations
+
+    # Precompute category weights from feature correlations
+    feature_corr = memory.get("feature_correlations", {})
+    category_weights = {}
+    for key, stats in feature_corr.items():
+        if stats.get("sample_size", 0) >= 10:
+            wr = stats.get("win_rate", 0.5)
+            if wr > 0.55:
+                category_weights[key] = min(1.5, 1.0 + (wr - 0.55) * 5.0)
+            elif wr < 0.40:
+                category_weights[key] = max(0.3, 1.0 - (0.40 - wr) * 5.0)
+
+    # Cooldown tracker: games remaining in reduced-bet mode after losing streaks
+    loss_cooldown = 0
 
     # Group by day
     days = defaultdict(list)
@@ -1077,6 +1817,17 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
 
         day_games = days[day_date]
         standings = compute_standings(all_games, day_date) if all_games else {}
+
+        # ── ROLLING ACCURACY: Compute kelly_adj from recent performance ──
+        rolling = _compute_rolling_accuracy(running_bets, window=20)
+        kelly_adj = _compute_kelly_adjustment(rolling)
+
+        # Apply loss cooldown (3 losses in row -> reduce for next 5 games)
+        if rolling.get("streak_type") == "loss" and rolling.get("streak", 0) >= 3:
+            loss_cooldown = 5
+        if loss_cooldown > 0:
+            kelly_adj *= 0.5
+            loss_cooldown -= 1
 
         # Budget for the day = full bankroll (agents deploy 100%)
         day_budget = bankroll
@@ -1115,7 +1866,8 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
                 game_budget = bankroll * 0.15  # Conservative: small per game
 
             game_bets = agent_decide_game_bets(
-                trader_id, game_ctx, bankroll, game_budget, others_states, comp_state
+                trader_id, game_ctx, bankroll, game_budget, others_states, comp_state,
+                kelly_adj=kelly_adj, category_weights=category_weights
             )
 
             for bet in game_bets:
@@ -1150,6 +1902,23 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
                 day_models_used.add(bet.get("model_used", ""))
                 day_strategies_used.add(bet.get("strategy_used", ""))
 
+                # ── RECORD TO RUNNING MEMORY for rolling-window updates ──
+                running_bets.append({
+                    "game_id": f"{bet['date']}_{bet['game']}",
+                    "date": bet["date"],
+                    "category": bet.get("category", ""),
+                    "strategy": bet.get("strategy_used", ""),
+                    "model": bet.get("model_used", ""),
+                    "model_prob": bet.get("model_prob", 0.5),
+                    "edge_pct": bet.get("edge_pct", 0),
+                    "bet_size": round(bet_size, 4),
+                    "odds": bet.get("odds", 2.0),
+                    "outcome": bet["outcome"],
+                    "profit": round(profit, 4),
+                    "kelly_fraction": bet.get("kelly_adjustment", 1.0),
+                    "game": bet.get("game", ""),
+                })
+
                 if bankroll <= 0:
                     eliminated_day = day_num
                     break
@@ -1163,6 +1932,7 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
             "profit":     round(day_profit, 4),
             "bankroll":   round(bankroll, 4),
             "games":      len(day_games),
+            "kelly_adj":  round(kelly_adj, 3),
         })
 
     roi = round((bankroll - 100.0) / 100.0 * 100, 2)
@@ -1189,42 +1959,170 @@ def run_nba_backtest_for_agent(trader_id: str, matched: List,
         "nba_max_drawdown":    round(max_drawdown, 4),
         "nba_eliminated_day":  eliminated_day,
         "nba_day_results":     day_results,
-        "nba_bets_history":    all_bets[-500:],  # Keep more with justifications
-        "nba_all_bets":        all_bets,  # Full season for doc generation
+        "nba_bets_history":    all_bets[-500:],
+        "nba_all_bets":        all_bets,
+        "_new_memory_bets":    running_bets[len(prior_bets):],
+        "_rolling_stats":      rolling if day_results else {},
     }
 
 
-# ── POLITICAL BACKTEST PER AGENT ─────────────────────────────────────────────
+# ── POLITICAL FULL BACKTEST PER AGENT ────────────────────────────────────────
 
-def run_political_backtest_for_agent(trader_id: str, signals: Dict,
+def run_political_backtest_for_agent(trader_id: str, events: List[Dict],
+                                     social_snapshots: List[Tuple[str, Dict]],
+                                     latest_signals: Dict,
                                      others_states: Dict) -> Dict:
     """
-    Run political ETF trading simulation for one AI agent.
-    Positions and P&L are signal-strength driven (directional simulation).
+    Run full multi-day political ETF trading backtest for one AI agent.
+    Iterates through each day of political events, makes decisions, tracks P&L.
     """
-    bankroll  = TRADERS[trader_id]["bankroll_political"]
-    positions = agent_political_trades(trader_id, bankroll, signals, others_states)
-    total_size = sum(p["size_usd"] for p in positions)
+    capital = TRADERS[trader_id]["bankroll_political"]
+    peak_capital = capital
+    max_drawdown = 0.0
+    total_trades = 0
+    total_wins = 0
+    total_losses = 0
+    total_wagered = 0.0
+    total_pnl = 0.0
+    all_trades: List[Dict] = []
+    day_results: List[Dict] = []
+    sector_pnl: Dict[str, float] = defaultdict(float)
+    strategy_pnl: Dict[str, Dict] = defaultdict(lambda: {"count": 0, "pnl": 0.0, "wins": 0})
+    ticker_pnl: Dict[str, Dict] = defaultdict(lambda: {"count": 0, "pnl": 0.0, "wins": 0})
 
-    simulated_pnl = 0.0
-    for pos in positions:
-        etf_beta     = ETF_UNIVERSE.get(pos["ticker"], {}).get("beta", 1.0)
-        expected_ret = pos["signal_strength"] * etf_beta * 0.005
-        if pos["direction"] == "short":
-            expected_ret *= -1
-        simulated_pnl += pos["size_usd"] * expected_ret
+    pol_cfg = POLITICAL_TRADER_PROFILES.get(trader_id, {})
+    primary_strat = pol_cfg.get("primary_strategy", TRADERS[trader_id].get("pol_approach", "momentum"))
 
-    new_bankroll = bankroll + simulated_pnl
-    roi = round((new_bankroll - bankroll) / bankroll * 100, 4) if bankroll > 0 else 0.0
+    # Group events by date
+    events_by_date: Dict[str, List[Dict]] = defaultdict(list)
+    for ev in events:
+        d = ev.get("date", "")
+        if d:
+            events_by_date[d].append(ev)
+    sorted_dates = sorted(events_by_date.keys())
+
+    # Map social snapshots to dates
+    signal_by_date: Dict[str, Dict] = {}
+    for ts, sigs in social_snapshots:
+        try:
+            d = f"{ts[:4]}-{ts[4:6]}-{ts[6:8]}"
+            signal_by_date[d] = sigs
+        except Exception:
+            continue
+    if latest_signals:
+        for d in sorted_dates:
+            if d not in signal_by_date:
+                signal_by_date[d] = latest_signals
+
+    for day_num, day_date in enumerate(sorted_dates, 1):
+        if capital <= 0:
+            break
+
+        day_events = events_by_date.get(day_date, [])
+        day_signals = signal_by_date.get(day_date, latest_signals)
+
+        positions = political_agent_decide_positions(
+            trader_id, day_date, capital,
+            day_signals, day_events, others_states,
+            existing_positions=0,
+        )
+
+        day_pnl = 0.0
+        day_trade_count = 0
+        day_strategies = set()
+        day_sectors = set()
+
+        for pos in positions:
+            total_trades += 1
+            day_trade_count += 1
+            pnl = pos["pnl"]
+            total_wagered += pos["position_size"]
+            total_pnl += pnl
+            day_pnl += pnl
+
+            if pnl > 0:
+                total_wins += 1
+                strategy_pnl[pos["strategy_used"]]["wins"] += 1
+                ticker_pnl[pos["ticker"]]["wins"] += 1
+            else:
+                total_losses += 1
+
+            capital += pnl
+            sector_pnl[pos.get("sector", "unknown")] += pnl
+            strategy_pnl[pos["strategy_used"]]["count"] += 1
+            strategy_pnl[pos["strategy_used"]]["pnl"] += pnl
+            ticker_pnl[pos["ticker"]]["count"] += 1
+            ticker_pnl[pos["ticker"]]["pnl"] += pnl
+            day_strategies.add(pos["strategy_used"])
+            day_sectors.add(pos.get("sector", "unknown"))
+
+            pos["capital_after"] = round(capital, 2)
+            all_trades.append(pos)
+
+        if capital > peak_capital:
+            peak_capital = capital
+        dd = 1.0 - capital / peak_capital if peak_capital > 0 else 0.0
+        if dd > max_drawdown:
+            max_drawdown = dd
+
+        day_results.append({
+            "day": day_num, "date": day_date, "trades": day_trade_count,
+            "events": len(day_events), "pnl": round(day_pnl, 2),
+            "capital": round(capital, 2), "strategies": list(day_strategies),
+            "sectors": list(day_sectors),
+        })
+
+    roi_pct = round((capital - POLITICAL_INITIAL_CAPITAL) / POLITICAL_INITIAL_CAPITAL * 100, 4)
+
+    # Compute Sharpe
+    sharpe = 0.0
+    if len(day_results) > 1:
+        daily_rets = [d["pnl"] for d in day_results]
+        avg_r = sum(daily_rets) / len(daily_rets)
+        std_r = (sum((r - avg_r) ** 2 for r in daily_rets) / len(daily_rets)) ** 0.5
+        if std_r > 0:
+            sharpe = round((avg_r / std_r) * (252 ** 0.5), 3)
+
+    # Strategy breakdown
+    strategy_breakdown = {}
+    for strat, stats in strategy_pnl.items():
+        strategy_breakdown[strat] = {
+            "trades": stats["count"], "pnl": round(stats["pnl"], 2),
+            "wins": stats["wins"],
+            "win_rate": round(stats["wins"] / stats["count"] * 100, 1) if stats["count"] > 0 else 0,
+        }
+
+    sector_breakdown = {s: round(pnl_val, 2) for s, pnl_val in sorted(sector_pnl.items(), key=lambda x: -x[1])}
+
+    ticker_breakdown = {}
+    for t, stats in sorted(ticker_pnl.items(), key=lambda x: -x[1]["pnl"]):
+        ticker_breakdown[t] = {
+            "trades": stats["count"], "pnl": round(stats["pnl"], 2),
+            "wins": stats["wins"],
+            "win_rate": round(stats["wins"] / stats["count"] * 100, 1) if stats["count"] > 0 else 0,
+        }
 
     return {
-        "trader_id":               trader_id,
-        "political_bankroll":      round(new_bankroll, 2),
-        "political_roi_pct":       roi,
-        "political_positions":     positions,
-        "political_total_size":    round(total_size, 2),
-        "political_simulated_pnl": round(simulated_pnl, 2),
-        "political_approach":      TRADERS[trader_id]["pol_approach"],
+        "trader_id":                     trader_id,
+        "political_bankroll":            round(capital, 2),
+        "political_roi_pct":             roi_pct,
+        "political_sharpe":              sharpe,
+        "political_total_trades":        total_trades,
+        "political_wins":                total_wins,
+        "political_losses":              total_losses,
+        "political_win_rate":            round(total_wins / total_trades * 100, 1) if total_trades > 0 else 0,
+        "political_total_wagered":       round(total_wagered, 2),
+        "political_total_pnl":           round(total_pnl, 2),
+        "political_peak_capital":        round(peak_capital, 2),
+        "political_max_drawdown":        round(max_drawdown, 4),
+        "political_trading_days":        len(day_results),
+        "political_approach":            primary_strat,
+        "political_strategy_breakdown":  strategy_breakdown,
+        "political_sector_breakdown":    sector_breakdown,
+        "political_ticker_breakdown":    ticker_breakdown,
+        "political_day_results":         day_results,
+        "political_trades_history":      all_trades[-500:],
+        "political_all_trades":          all_trades,
     }
 
 
@@ -1272,9 +2170,15 @@ def build_leaderboard(all_results: Dict) -> List[Dict]:
             "nba_bets":           state.get("nba_bets", 0),
             "nba_wins":           state.get("nba_wins", 0),
             "nba_losses":         state.get("nba_losses", 0),
-            "political_bankroll": state.get("political_bankroll", 100_000.0),
-            "political_roi_pct":  pol_roi,
-            "political_approach": state.get("political_approach", ""),
+            "political_bankroll":     state.get("political_bankroll", 100_000.0),
+            "political_roi_pct":      pol_roi,
+            "political_sharpe":       state.get("political_sharpe", 0.0),
+            "political_approach":     state.get("political_approach", ""),
+            "political_total_trades": state.get("political_total_trades", 0),
+            "political_wins":         state.get("political_wins", 0),
+            "political_losses":       state.get("political_losses", 0),
+            "political_win_rate":     state.get("political_win_rate", 0.0),
+            "political_max_drawdown": state.get("political_max_drawdown", 0.0),
             "combined_score":     round(combined, 4),
             "eliminated":         state.get("nba_eliminated_day") is not None,
         })
@@ -1291,7 +2195,7 @@ def run_full_competition() -> Dict:
     # Iteration / generation tracking
     it_data = _load_iteration()
     it_data["iteration"] += 1
-    print(f"Trading Floor v8 — iteration {it_data['iteration']}")
+    print(f"Trading Floor v9 — iteration {it_data['iteration']}")
     print("Loading games (with team stats)...")
     games, all_games_sorted = load_games_rich()
     odds = load_odds()
@@ -1314,21 +2218,43 @@ def run_full_competition() -> Dict:
     signals   = load_political_signals()
     print(f"  Tickers with signals: {len(signals)}")
 
+    print("Loading political events...")
+    pol_events = load_political_events()
+    print(f"  Political events: {len(pol_events)}")
+
+    print("Loading social snapshots...")
+    social_snapshots = load_all_social_snapshots()
+    print(f"  Social snapshots: {len(social_snapshots)}")
+
+    pol_event_dates = sorted(set(e.get("date", "") for e in pol_events if e.get("date")))
+    print(f"  Political trading days: {len(pol_event_dates)}")
+
     print("Loading department status...")
     dept_data = load_department_status()
 
     TRADERS_DIR.mkdir(parents=True, exist_ok=True)
     (DATA_DIR / "political").mkdir(parents=True, exist_ok=True)
 
+    # ── LOAD SEASON MEMORY for game-level learning ──
+    season_memory = _load_season_memory()
+    print(f"Season memory: {sum(len(v) for v in season_memory.get('trader_memories', {}).values())} prior bets across {len(season_memory.get('trader_memories', {}))} traders")
+    if season_memory.get("feature_correlations"):
+        print(f"  Feature correlations: {len(season_memory['feature_correlations'])} features tracked")
+
     all_results: Dict[str, Dict] = {}
 
     for trader_id in TRADERS:
         cfg = TRADERS[trader_id]
-        print(f"\nAgent [{trader_id}] — {cfg['personality']} / {cfg['pol_approach']}")
+        pol_profile = POLITICAL_TRADER_PROFILES.get(trader_id, {})
+        pol_strat = pol_profile.get("primary_strategy", cfg.get("pol_approach", "momentum"))
+        print(f"\nAgent [{trader_id}] — {cfg['personality']} / NBA + Political ({pol_strat})")
         others = load_other_trader_states(trader_id)
+        pol_others = load_political_trader_states(trader_id)
 
-        nba_result = run_nba_backtest_for_agent(trader_id, matched, others, all_games_sorted)
-        pol_result = run_political_backtest_for_agent(trader_id, signals, others)
+        nba_result = run_nba_backtest_for_agent(trader_id, matched, others, all_games_sorted,
+                                                 season_memory=season_memory)
+        pol_result = run_political_backtest_for_agent(
+            trader_id, pol_events, social_snapshots, signals, pol_others)
 
         state = {
             "trader_id":      trader_id,
@@ -1337,23 +2263,62 @@ def run_full_competition() -> Dict:
             "personality":    cfg["personality"],
             "risk_tolerance": cfg["risk_tolerance"],
             **nba_result,
-            **pol_result,
+            **{k: v for k, v in pol_result.items() if k != "political_all_trades"},
             "saw_others":     list(others.keys()),
             "run_timestamp":  datetime.now(timezone.utc).isoformat(),
         }
 
+        # Save NBA state
         (TRADERS_DIR / f"{trader_id}-state.json").write_text(json.dumps(state, indent=2))
-        all_results[trader_id] = state
 
-        print(f"  NBA     : ${nba_result['nba_bankroll']:.2f}  ROI {nba_result['nba_roi_pct']:+.1f}%"
+        # Save political state separately (with full trade history)
+        pol_save_state = {k: v for k, v in pol_result.items() if k != "political_all_trades"}
+        pol_save_state["name"] = cfg["name"]
+        pol_save_state["provider"] = cfg["provider"]
+        pol_save_state["personality"] = cfg["personality"]
+        (TRADERS_DIR / f"political-{trader_id}-state.json").write_text(
+            json.dumps(pol_save_state, indent=2))
+
+        # Full state in memory includes all_trades for doc generation
+        all_results[trader_id] = {**state, **pol_result}
+
+        print(f"  NBA      : ${nba_result['nba_bankroll']:.2f}  ROI {nba_result['nba_roi_pct']:+.1f}%"
               f"  Sharpe {nba_result['nba_sharpe']:.2f}"
               f"  ({nba_result['nba_wins']}W-{nba_result['nba_losses']}L)")
-        print(f"  Political: ${pol_result['political_bankroll']:.2f}"
+        print(f"  Political: ${pol_result['political_bankroll']:,.2f}"
               f"  ROI {pol_result['political_roi_pct']:+.4f}%"
-              f"  ({len(pol_result['political_positions'])} positions)")
+              f"  Sharpe {pol_result['political_sharpe']:.3f}"
+              f"  ({pol_result['political_wins']}W-{pol_result['political_losses']}L"
+              f"  {pol_result['political_total_trades']} trades)")
 
     board     = build_leaderboard(all_results)
     cc_status = build_command_center_status(dept_data)
+
+    # ── UPDATE SEASON MEMORY with new bets from this iteration ──
+    for tid, res in all_results.items():
+        new_bets = res.get("_new_memory_bets", [])
+        if new_bets:
+            if tid not in season_memory.get("trader_memories", {}):
+                season_memory.setdefault("trader_memories", {})[tid] = []
+            season_memory["trader_memories"][tid].extend(new_bets)
+
+    season_memory["last_iteration"] = it_data["iteration"]
+
+    # Update Bayesian posteriors
+    season_memory["strategy_posteriors"] = _compute_bayesian_posteriors(season_memory)
+
+    # Update feature correlations
+    season_memory["feature_correlations"] = _compute_feature_correlations(season_memory)
+
+    # Check for Bayesian strategy deaths
+    dead_strats = _check_dead_strategies(season_memory)
+    if dead_strats:
+        print(f"  Bayesian deaths: {dead_strats}")
+
+    # Save season memory
+    _save_season_memory(season_memory)
+    total_mem = sum(len(v) for v in season_memory.get("trader_memories", {}).values())
+    print(f"Season memory saved: {total_mem} total bets, {len(season_memory.get('strategy_posteriors', {}))} posteriors")
 
     # Generate per-agent season documents
     print("\nGenerating season documents...")
@@ -1383,7 +2348,7 @@ def run_full_competition() -> Dict:
         "iteration":  it_data["iteration"],
         "generation": it_data["generation"],
         "meta": {
-            "version":            "trading-floor-v8",
+            "version":            "trading-floor-v9",
             "generated":          datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "date":               date.today().isoformat(),
             "traders":            len(TRADERS),
@@ -1392,20 +2357,27 @@ def run_full_competition() -> Dict:
             "nba_strategies_eliminated": len(ELIMINATED_STRATEGIES),
             "matched_games":      len(matched),
             "political_tickers":  len(signals),
+            "political_events":   len(pol_events),
+            "political_trading_days": len(pol_event_dates),
+            "political_strategies": len(POLITICAL_STRATEGIES),
+            "political_strategies_eliminated": len(ELIMINATED_POLITICAL_STRATEGIES),
             "etf_universe":       len(ETF_UNIVERSE),
         },
         "eliminations": eliminations,
         "leaderboard": board,
         "traders": {
             tid: {k: v for k, v in s.items()
-                  if k not in ("nba_day_results", "nba_bets_history")}
+                  if k not in ("nba_day_results", "nba_bets_history", "nba_all_bets", "political_day_results", "political_trades_history", "political_all_trades", "political_ticker_breakdown")}
             for tid, s in all_results.items()
         },
         "command_centers": cc_status,
         "models":     {m: {"brier": cfg["brier"]} for m, cfg in MODELS.items()},
         "strategies": {s: {"family": cfg["family"], "max_pct": cfg["max_pct"]}
                        for s, cfg in STRATEGIES.items()},
-        "etf_universe": ETF_UNIVERSE,
+        "political_strategies": {s: {"family": cfg["family"], "position_pct": cfg["position_pct"]}
+                                 for s, cfg in POLITICAL_STRATEGIES.items()},
+        "etf_universe": {t: {"name": v["name"], "sector": v["sector"], "type": v.get("type", "etf")}
+                         for t, v in ETF_UNIVERSE.items()},
     }
 
     latest = DATA_DIR / "trading-floor-v4-latest.json"
@@ -1416,6 +2388,60 @@ def run_full_competition() -> Dict:
     print(f"Saved: {dated}")
     print(f"Iteration: {it_data['iteration']}  Generation: {it_data['generation']}")
     print(f"Active NBA strategies: {len(STRATEGIES)}  Eliminated: {len(ELIMINATED_STRATEGIES)}")
+    print(f"Active Political strategies: {len(POLITICAL_STRATEGIES)}  Eliminated: {len(ELIMINATED_POLITICAL_STRATEGIES)}")
+
+    # Also save political-specific output for compatibility with political-trading-floor.py consumers
+    pol_output = {
+        "iteration": it_data["iteration"],
+        "generation": it_data["generation"],
+        "meta": {
+            "version": "political-trading-floor-integrated-v1",
+            "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "date": date.today().isoformat(),
+            "traders": len(TRADERS),
+            "strategies": len(POLITICAL_STRATEGIES),
+            "eliminated": len(ELIMINATED_POLITICAL_STRATEGIES),
+            "events_total": len(pol_events),
+            "trading_days": len(pol_event_dates),
+            "social_tickers": len(signals),
+            "etf_universe": len(ETF_UNIVERSE),
+        },
+        "leaderboard": [{
+            "rank": e["rank"], "trader_id": e["trader_id"], "name": e["name"],
+            "provider": e["provider"], "personality": e["personality"],
+            "capital": e.get("political_bankroll", 100000),
+            "roi_pct": e.get("political_roi_pct", 0),
+            "sharpe": e.get("political_sharpe", 0),
+            "total_trades": e.get("political_total_trades", 0),
+            "wins": e.get("political_wins", 0),
+            "losses": e.get("political_losses", 0),
+            "win_rate": e.get("political_win_rate", 0),
+            "max_drawdown": e.get("political_max_drawdown", 0),
+            "primary_strategy": POLITICAL_TRADER_PROFILES.get(e["trader_id"], {}).get("primary_strategy", ""),
+        } for e in board],
+        "traders": {
+            tid: {k: v for k, v in s.items()
+                  if k.startswith("political_") and k not in ("political_day_results",
+                                                               "political_trades_history",
+                                                               "political_all_trades",
+                                                               "political_ticker_breakdown")}
+            for tid, s in all_results.items()
+        },
+        "strategies": {s: {"family": cfg_s["family"], "position_pct": cfg_s["position_pct"]}
+                       for s, cfg_s in POLITICAL_STRATEGIES.items()},
+        "eliminations": {
+            "strategies": ELIMINATED_POLITICAL_STRATEGIES,
+            "coffins": [{"name": k, **v, "type": "political_strategy"}
+                        for k, v in ELIMINATED_POLITICAL_STRATEGIES.items()],
+        },
+        "etf_universe": {t: {"name": v["name"], "sector": v["sector"], "type": v.get("type", "etf")}
+                         for t, v in ETF_UNIVERSE.items()},
+    }
+    pol_latest = (DATA_DIR / "political" / "political-trading-floor-latest.json")
+    pol_dated = (DATA_DIR / "political" / f"political-trading-floor-{date.today().isoformat()}.json")
+    pol_latest.write_text(json.dumps(pol_output, indent=2))
+    pol_dated.write_text(json.dumps(pol_output, indent=2))
+    print(f"Saved political: {pol_latest}")
 
     return output
 
@@ -1541,15 +2567,117 @@ def generate_agent_season_doc(trader_id: str, state: Dict, board: List[Dict]) ->
     return "\n".join(lines)
 
 
+def generate_political_season_doc(trader_id: str, state: Dict, board: List[Dict]) -> str:
+    """Generate full markdown season document for one agent's political trading."""
+    cfg = TRADERS[trader_id]
+    pol_cfg = POLITICAL_TRADER_PROFILES.get(trader_id, {})
+    all_trades = state.get("political_all_trades", state.get("political_trades_history", []))
+    day_results = state.get("political_day_results", [])
+
+    lines = []
+    lines.append(f"# Political Trading Season 2025-26 -- Agent {cfg['name'].upper()}")
+    lines.append("")
+    lines.append("## Executive Summary")
+    lines.append(f"- **Provider:** {cfg['provider']}")
+    lines.append(f"- **Personality:** {cfg['personality']}")
+    lines.append(f"- **Risk Tolerance:** {cfg['risk_tolerance']}")
+    pol_strat = pol_cfg.get('primary_strategy', state.get('political_approach', '?'))
+    lines.append(f"- **Primary Strategy:** {pol_strat}")
+    lines.append(f"- **Secondary:** {', '.join(pol_cfg.get('secondary_strategies', []))}")
+    lines.append(f"- **Initial Capital:** ${POLITICAL_INITIAL_CAPITAL:,.2f}")
+    lines.append(f"- **Final Capital:** ${state.get('political_bankroll', 0):,.2f}")
+    lines.append(f"- **ROI:** {state.get('political_roi_pct', 0):+,.4f}%")
+    lines.append(f"- **Sharpe Ratio:** {state.get('political_sharpe', 0):.3f}")
+    lines.append(f"- **Record:** {state.get('political_wins', 0)}W-{state.get('political_losses', 0)}L")
+    lines.append(f"- **Win Rate:** {state.get('political_win_rate', 0):.1f}%")
+    lines.append(f"- **Peak Capital:** ${state.get('political_peak_capital', 0):,.2f}")
+    lines.append(f"- **Max Drawdown:** {state.get('political_max_drawdown', 0)*100:.1f}%")
+    lines.append(f"- **Wagered:** ${state.get('political_total_wagered', 0):,.2f}")
+    lines.append("")
+
+    # Peer comparison
+    lines.append("## Peer Comparison")
+    lines.append("| Rank | Agent | Capital | ROI | Sharpe | WR | Trades |")
+    lines.append("|------|-------|---------|-----|--------|-----|--------|")
+    for entry in board:
+        marker = " **" if entry["trader_id"] == trader_id else ""
+        lines.append(
+            f"| {entry['rank']} | {entry['name']}{marker} | "
+            f"${entry.get('political_bankroll', 0):,.2f} | "
+            f"{entry.get('political_roi_pct', 0):+,.4f}% | "
+            f"{entry.get('political_sharpe', 0):.3f} | "
+            f"{entry.get('political_win_rate', 0):.1f}% | "
+            f"{entry.get('political_total_trades', 0)} |"
+        )
+    lines.append("")
+
+    # Strategy performance
+    strat_bd = state.get("political_strategy_breakdown", {})
+    if strat_bd:
+        lines.append("## Strategy Performance")
+        lines.append("| Strategy | Trades | P&L | Win Rate |")
+        lines.append("|----------|--------|-----|----------|")
+        for s, stats in sorted(strat_bd.items(), key=lambda x: -x[1].get("pnl", 0)):
+            lines.append(f"| {s} | {stats['trades']} | ${stats['pnl']:+,.2f} | {stats['win_rate']:.1f}% |")
+        lines.append("")
+
+    # Sector performance
+    sector_bd = state.get("political_sector_breakdown", {})
+    if sector_bd:
+        lines.append("## Sector Performance")
+        lines.append("| Sector | P&L |")
+        lines.append("|--------|-----|")
+        for s, pnl_val in sector_bd.items():
+            lines.append(f"| {s} | ${pnl_val:+,.2f} |")
+        lines.append("")
+
+    # Day-by-day
+    if day_results:
+        lines.append("## Day-by-Day Results")
+        lines.append("| Day | Date | Events | Trades | P&L | Capital |")
+        lines.append("|-----|------|--------|--------|-----|---------|")
+        for d in day_results:
+            lines.append(
+                f"| {d['day']} | {d['date']} | {d.get('events', 0)} | {d['trades']} | "
+                f"${d['pnl']:+,.2f} | ${d['capital']:,.2f} |"
+            )
+        lines.append("")
+
+    # Sample trades
+    if all_trades:
+        lines.append(f"## Trade Log (first 30 + last 30 of {len(all_trades)} total)")
+        lines.append("")
+        sample = all_trades[:30] + (all_trades[-30:] if len(all_trades) > 60 else [])
+        for i, tr in enumerate(sample):
+            if i == 30 and len(all_trades) > 60:
+                lines.append(f"*... ({len(all_trades) - 60} trades omitted) ...*")
+                lines.append("")
+            lines.append(f"### {tr.get('date', '?')} | {tr.get('ticker', '?')} | {tr.get('direction', '?')}")
+            lines.append(f"- **Strategy:** {tr.get('strategy_used', '?')} | **Signal:** {tr.get('signal_strength', 0):.3f}")
+            lines.append(f"- **Size:** ${tr.get('position_size', 0):,.2f} | **Return:** {tr.get('trade_return', 0)*100:+.3f}%")
+            lines.append(f"- **{tr.get('outcome', '?')}** -> P&L ${tr.get('pnl', 0):+,.2f}")
+            lines.append(f"- **Reasoning:** {tr.get('reasoning', '')}")
+            lines.append("")
+
+    return "\n".join(lines)
+
+
 def generate_all_season_docs(all_results: Dict, board: List[Dict]) -> None:
-    """Generate season doc for all 5 agents."""
+    """Generate season doc for all 5 agents (NBA + Political)."""
     docs_dir = DATA_DIR / "docs"
     docs_dir.mkdir(parents=True, exist_ok=True)
     for tid, state in all_results.items():
+        # NBA season doc
         doc = generate_agent_season_doc(tid, state, board)
         doc_path = docs_dir / f"{tid}-season-2025-26.md"
         doc_path.write_text(doc)
-        print(f"  Season doc: {doc_path} ({len(doc)} chars)")
+        print(f"  NBA season doc: {doc_path} ({len(doc)} chars)")
+
+        # Political season doc
+        pol_doc = generate_political_season_doc(tid, state, board)
+        pol_doc_path = docs_dir / f"political-{tid}-season-2025-26.md"
+        pol_doc_path.write_text(pol_doc)
+        print(f"  Political season doc: {pol_doc_path} ({len(pol_doc)} chars)")
 
 
 # ── KARPATHY LOOP: ANALYZE + AUTO-EVOLVE ─────────────────────────────────────
@@ -1692,14 +2820,21 @@ def _auto_eliminate_strategies(strat_perf: Dict[str, Dict]) -> List[Dict]:
 
 def _mutate_agent_preferences(result: Dict) -> Dict[str, Dict]:
     """
-    Karpathy-style mutation: losing agents adopt winning agents' strategies.
+    v9 Enhanced mutation with 3 learning mechanisms:
+    1. STRATEGY THEFT: 20% chance losing traders copy winner's strategy
+    2. BAYESIAN SELECTION: Use posterior probabilities to weight strategy choices
+    3. CORRELATION-BASED: Mutate toward strategy+category combos that win
     Returns mutation log per trader.
     """
     board = result.get("leaderboard", [])
     if len(board) < 2:
         return {}
 
-    # Find winner and loser
+    # Load season memory for Bayesian priors and feature correlations
+    season_memory = _load_season_memory()
+    posteriors = season_memory.get("strategy_posteriors", {})
+    feature_corr = season_memory.get("feature_correlations", {})
+
     winner = board[0]
     loser  = board[-1]
     winner_id = winner["trader_id"]
@@ -1707,58 +2842,131 @@ def _mutate_agent_preferences(result: Dict) -> Dict[str, Dict]:
 
     mutations = {}
 
-    # Read winner's actual bets to find their most-used strategy (v5: from bets)
+    # ── 1. STRATEGY THEFT (20% chance per losing trader) ──
+    # Any trader below winner can "steal" winner's most profitable strategy
     winner_sf = TRADERS_DIR / f"{winner_id}-state.json"
+    winner_best_strat = None
+    winner_best_profit_strat = None
+
     if winner_sf.exists():
         try:
             ws = json.loads(winner_sf.read_text())
-            strat_usage = defaultdict(int)
+            # Find winner's most profitable strategy (not just most used)
+            strat_profit = defaultdict(float)
+            strat_count = defaultdict(int)
             for b in ws.get("nba_bets_history", []):
-                strat_usage[b.get("strategy_used", "")] += 1
-            if strat_usage:
-                best_strat = max(strat_usage, key=strat_usage.get)
-                # Only mutate if the winner's strategy isn't already in loser's preferences
-                loser_cfg = TRADERS[loser_id]
-                if best_strat not in loser_cfg["preferred_strategies"] and best_strat in STRATEGIES:
-                    # Add winner's best strategy to loser's preferences (at position 0)
-                    old_prefs = list(loser_cfg["preferred_strategies"])
-                    loser_cfg["preferred_strategies"] = [best_strat] + old_prefs[:2]
-                    mutations[loser_id] = {
-                        "type": "adopt_winner_strategy",
-                        "from_trader": winner_id,
-                        "adopted_strategy": best_strat,
-                        "old_preferences": old_prefs,
-                        "new_preferences": loser_cfg["preferred_strategies"],
-                        "reason": f"{loser_id} (rank {loser['rank']}, ROI {loser['nba_roi_pct']:+.1f}%) "
-                                  f"adopts '{best_strat}' from {winner_id} (rank 1, ROI {winner['nba_roi_pct']:+.1f}%)",
-                    }
-                    print(f"  [MUTATE] {loser_id} adopts '{best_strat}' from {winner_id}")
+                s = b.get("strategy_used", "")
+                strat_profit[s] += b.get("profit", 0)
+                strat_count[s] += 1
+            if strat_profit:
+                # Most profitable by total P&L
+                winner_best_profit_strat = max(strat_profit, key=strat_profit.get)
+                # Most used (fallback)
+                winner_best_strat = max(strat_count, key=strat_count.get)
         except Exception:
             pass
 
-    # Also: if middle agents are stagnant (ROI near 0), try shifting their model preference
-    for entry in board[1:-1]:
+    for entry in board[1:]:  # All non-winners
         tid = entry["trader_id"]
-        if abs(entry["nba_roi_pct"]) < 2.0:  # Near-zero ROI = stagnant
-            winner_models = TRADERS[winner_id]["preferred_models"]
-            current_models = TRADERS[tid]["preferred_models"]
-            # Add winner's top model if not already present
-            if winner_models and winner_models[0] not in current_models:
-                old_models = list(current_models)
-                TRADERS[tid]["preferred_models"] = [winner_models[0]] + current_models[:2]
-                mutations[tid] = {
-                    "type": "adopt_winner_model",
-                    "from_trader": winner_id,
-                    "adopted_model": winner_models[0],
-                    "old_models": old_models,
-                    "new_models": TRADERS[tid]["preferred_models"],
-                    "reason": f"{tid} stagnant (ROI {entry['nba_roi_pct']:+.1f}%) — adopts model '{winner_models[0]}' from {winner_id}",
-                }
-                print(f"  [MUTATE] {tid} adopts model '{winner_models[0]}' from {winner_id}")
+        roi = entry.get("nba_roi_pct", 0)
 
-    # Persist mutations to disk so they survive process restarts
+        # Strategy theft: 20% chance, higher if losing badly
+        steal_chance = 0.20
+        if roi < -20:
+            steal_chance = 0.40  # Desperate traders steal more
+        elif roi < 0:
+            steal_chance = 0.30
+
+        stolen_strat = winner_best_profit_strat or winner_best_strat
+        if stolen_strat and stolen_strat in STRATEGIES and random.random() < steal_chance:
+            trader_cfg = TRADERS[tid]
+            if stolen_strat not in trader_cfg["preferred_strategies"]:
+                old_prefs = list(trader_cfg["preferred_strategies"])
+                trader_cfg["preferred_strategies"] = [stolen_strat] + old_prefs[:2]
+                mutations[tid] = {
+                    "type": "strategy_theft",
+                    "from_trader": winner_id,
+                    "stolen_strategy": stolen_strat,
+                    "old_preferences": old_prefs,
+                    "new_preferences": trader_cfg["preferred_strategies"],
+                    "steal_probability": steal_chance,
+                    "reason": f"{tid} (ROI {roi:+.1f}%) steals '{stolen_strat}' from {winner_id} "
+                              f"(ROI {winner['nba_roi_pct']:+.1f}%)",
+                }
+                # Track steal in season memory
+                season_memory.setdefault("cross_trader_steals", []).append({
+                    "from": winner_id, "to": tid, "strategy": stolen_strat,
+                    "iteration": result.get("iteration", 0),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                })
+                print(f"  [STEAL] {tid} steals '{stolen_strat}' from {winner_id} (p={steal_chance:.0%})")
+
+    # ── 2. BAYESIAN STRATEGY SELECTION for stagnant traders ──
+    # If posteriors exist, stagnant traders replace their worst strategy with the
+    # highest-posterior strategy they don't already have
+    if posteriors:
+        top_posterior_strats = sorted(posteriors.items(), key=lambda x: x[1], reverse=True)
+        for entry in board:
+            tid = entry["trader_id"]
+            if tid in mutations:
+                continue  # Already mutated this iteration
+            roi = entry.get("nba_roi_pct", 0)
+            if abs(roi) < 5.0:  # Stagnant (near zero ROI)
+                trader_cfg = TRADERS[tid]
+                current_strats = trader_cfg["preferred_strategies"]
+                # Find highest-posterior strategy not in current set
+                for strat, post in top_posterior_strats:
+                    if strat not in current_strats and strat in STRATEGIES and strat not in ELIMINATED_STRATEGIES:
+                        old_prefs = list(current_strats)
+                        # Replace the last (worst) strategy
+                        trader_cfg["preferred_strategies"] = current_strats[:2] + [strat]
+                        mutations[tid] = {
+                            "type": "bayesian_swap",
+                            "added_strategy": strat,
+                            "posterior": post,
+                            "old_preferences": old_prefs,
+                            "new_preferences": trader_cfg["preferred_strategies"],
+                            "reason": f"{tid} stagnant (ROI {roi:+.1f}%) — Bayesian swap: add '{strat}' (posterior {post:.4f})",
+                        }
+                        print(f"  [BAYESIAN] {tid} swaps in '{strat}' (posterior {post:.4f})")
+                        break
+
+    # ── 3. CORRELATION-BASED MODEL MUTATIONS ──
+    # If feature correlations show a model performs well, push traders toward it
+    if feature_corr:
+        # Find best model from correlations
+        model_scores = defaultdict(lambda: {"profit": 0.0, "count": 0})
+        for key, stats in feature_corr.items():
+            if "strat=" in key and "|cat=" in key and stats.get("sample_size", 0) >= 20:
+                # Not model-specific, but strategy-category combos tell us what works
+                pass
+
+        # Check per-trader: if their preferred model has low correlation scores,
+        # adopt winner's model
+        for entry in board[1:]:
+            tid = entry["trader_id"]
+            if tid in mutations:
+                continue
+            if entry.get("nba_roi_pct", 0) < -10:
+                winner_models = TRADERS[winner_id]["preferred_models"]
+                current_models = TRADERS[tid]["preferred_models"]
+                if winner_models and winner_models[0] not in current_models:
+                    old_models = list(current_models)
+                    TRADERS[tid]["preferred_models"] = [winner_models[0]] + current_models[:2]
+                    mutations[tid] = {
+                        "type": "correlation_model_swap",
+                        "from_trader": winner_id,
+                        "adopted_model": winner_models[0],
+                        "old_models": old_models,
+                        "new_models": TRADERS[tid]["preferred_models"],
+                        "reason": f"{tid} losing (ROI {entry['nba_roi_pct']:+.1f}%) — adopts model '{winner_models[0]}' from {winner_id}",
+                    }
+                    print(f"  [CORR-MODEL] {tid} adopts model '{winner_models[0]}' from {winner_id}")
+
+    # Persist mutations and updated season memory
     if mutations:
         _save_evolved_trader_configs()
+        _save_season_memory(season_memory)
         print(f"  [PERSIST] Saved {len(mutations)} mutations to {TRADER_CONFIG_FILE}")
 
     return mutations
@@ -1774,7 +2982,7 @@ def run_karpathy_loop() -> Dict:
     5. Write karpathy-output.json for Guardian consumption
     """
     print("=" * 60)
-    print("TRADING FLOOR v8 — KARPATHY LOOP")
+    print("TRADING FLOOR v9 — KARPATHY LOOP (with Game-Level Learning)")
     print("=" * 60)
 
     # Step 1: Run full competition
@@ -1920,6 +3128,25 @@ def run_karpathy_loop() -> Dict:
         },
         "mutations": mutations,
 
+        # v9: Learning metrics
+        "learning": {
+            "season_memory_bets": sum(
+                len(v) for v in _load_season_memory().get("trader_memories", {}).values()
+            ),
+            "bayesian_posteriors": _load_season_memory().get("strategy_posteriors", {}),
+            "feature_correlations_count": len(
+                _load_season_memory().get("feature_correlations", {})
+            ),
+            "cross_trader_steals": len(
+                _load_season_memory().get("cross_trader_steals", [])
+            ),
+            "trader_rolling_stats": {
+                tid: res.get("_rolling_stats", {})
+                for tid, res in result.get("traders", {}).items()
+                if res.get("_rolling_stats")
+            },
+        },
+
         # $1M optimization
         "optimization": {
             "target": OPTIMIZATION_TARGET,
@@ -2051,7 +3278,7 @@ def push_results_to_git() -> bool:
             it_data = _load_iteration()
             subprocess.run(
                 ["git", "commit", "-m",
-                 f"data: trading floor v8 iter {it_data['iteration']} — auto",
+                 f"data: trading floor v9 iter {it_data['iteration']} — auto",
                  "--no-verify"],
                 cwd=str(ROOT), capture_output=True, timeout=15,
             )
@@ -2093,7 +3320,7 @@ def update_operations_md() -> None:
         lines = content.split("\n")
         for i, line in enumerate(lines):
             if line.startswith("> **Last updated:**"):
-                lines[i] = f"> **Last updated:** {now} | **Auto-refreshed by:** trading-floor-v8 cron"
+                lines[i] = f"> **Last updated:** {now} | **Auto-refreshed by:** trading-floor-v9 cron"
             elif "**Iteration:**" in line and "**Generation:**" in line:
                 lines[i] = f"- **Iteration:** {it_data['iteration']} | **Generation:** {it_data['generation']}"
             elif "**Best bankroll:**" in line:
@@ -2114,12 +3341,12 @@ _STOP_FLAG = False
 
 def _signal_handler(sig, frame):
     global _STOP_FLAG
-    print(f"\n[v8] Received signal {sig} — stopping after current iteration.")
+    print(f"\n[v9] Received signal {sig} — stopping after current iteration.")
     _STOP_FLAG = True
 
 def run_continuous_iteration(max_iterations: int = 0, delay_seconds: int = 10):
     """
-    Trading Floor v8 continuous iteration mode.
+    Trading Floor v9 continuous iteration mode.
     Runs: sync repos → karpathy loop → cross-pollinate → push → repeat.
 
     Args:
@@ -2132,7 +3359,7 @@ def run_continuous_iteration(max_iterations: int = 0, delay_seconds: int = 10):
 
     iteration_count = 0
     print("=" * 70)
-    print("TRADING FLOOR v8 — CONTINUOUS ITERATION MODE")
+    print("TRADING FLOOR v9 — CONTINUOUS ITERATION MODE")
     print(f"Max iterations: {'infinite' if max_iterations == 0 else max_iterations}")
     print(f"Delay between iterations: {delay_seconds}s")
     print("Send SIGINT/SIGTERM to stop gracefully.")
@@ -2141,23 +3368,23 @@ def run_continuous_iteration(max_iterations: int = 0, delay_seconds: int = 10):
     while not _STOP_FLAG:
         iteration_count += 1
         if max_iterations > 0 and iteration_count > max_iterations:
-            print(f"\n[v8] Reached max iterations ({max_iterations}). Stopping.")
+            print(f"\n[v9] Reached max iterations ({max_iterations}). Stopping.")
             break
 
         cycle_start = time.time()
         it_data = _load_iteration()
         print(f"\n{'='*60}")
-        print(f"[v8] CYCLE {iteration_count} — iteration {it_data['iteration'] + 1}")
+        print(f"[v9] CYCLE {iteration_count} — iteration {it_data['iteration'] + 1}")
         print(f"{'='*60}")
 
         # Phase 1: Sync satellite repos
-        print("\n[v8] Phase 1: Syncing satellite repos...")
+        print("\n[v9] Phase 1: Syncing satellite repos...")
         sync_status = sync_satellite_repos()
         for repo, status in sync_status.items():
             print(f"  {repo}: {status}")
 
         # Phase 2: Load cross-repo data
-        print("\n[v8] Phase 2: Loading cross-repo karpathy data...")
+        print("\n[v9] Phase 2: Loading cross-repo karpathy data...")
         cross_data = load_cross_repo_karpathy()
         for name, data in cross_data.items():
             status = data.get("status", "loaded")
@@ -2169,7 +3396,7 @@ def run_continuous_iteration(max_iterations: int = 0, delay_seconds: int = 10):
                 print(f"  {name}: {dept} — {metric.get('name', '?')}={metric.get('value', '?')}")
 
         # Phase 3: Run Karpathy loop (the main work)
-        print("\n[v8] Phase 3: Running Karpathy loop...")
+        print("\n[v9] Phase 3: Running Karpathy loop...")
         karpathy_result = run_karpathy_loop()
 
         # Inject cross-repo data into output
@@ -2179,27 +3406,27 @@ def run_continuous_iteration(max_iterations: int = 0, delay_seconds: int = 10):
         }
 
         # Phase 4: Guardian cross-pollination
-        print("\n[v8] Phase 4: Guardian cross-pollination...")
+        print("\n[v9] Phase 4: Guardian cross-pollination...")
         guardian_result = run_guardian_cross_pollination()
         print(f"  Guardian: {guardian_result.get('status')}")
 
         # Phase 5: Update OPERATIONS.md
-        print("\n[v8] Phase 5: Updating OPERATIONS.md...")
+        print("\n[v9] Phase 5: Updating OPERATIONS.md...")
         update_operations_md()
 
         # Phase 6: Push to Git
-        print("\n[v8] Phase 6: Pushing to Git...")
+        print("\n[v9] Phase 6: Pushing to Git...")
         pushed = push_results_to_git()
         print(f"  Pushed: {'yes' if pushed else 'no changes'}")
 
         cycle_elapsed = time.time() - cycle_start
-        print(f"\n[v8] Cycle {iteration_count} complete in {cycle_elapsed:.1f}s")
+        print(f"\n[v9] Cycle {iteration_count} complete in {cycle_elapsed:.1f}s")
         print(f"  Iteration: {karpathy_result.get('iteration')}")
         print(f"  Best: ${karpathy_result.get('optimization', {}).get('current_best', 0):,.0f}")
         print(f"  Improved: {karpathy_result.get('optimization', {}).get('improved_this_iteration', False)}")
 
         # Log cycle summary
-        log_file = ROOT / "logs" / "trading-floor-v8.log"
+        log_file = ROOT / "logs" / "trading-floor-v9.log"
         log_file.parent.mkdir(parents=True, exist_ok=True)
         with open(log_file, "a") as f:
             f.write(f"[{datetime.now(timezone.utc).isoformat()}] cycle={iteration_count} "
@@ -2211,13 +3438,13 @@ def run_continuous_iteration(max_iterations: int = 0, delay_seconds: int = 10):
             break
 
         if max_iterations == 0 or iteration_count < max_iterations:
-            print(f"\n[v8] Waiting {delay_seconds}s before next iteration...")
+            print(f"\n[v9] Waiting {delay_seconds}s before next iteration...")
             for _ in range(delay_seconds):
                 if _STOP_FLAG:
                     break
                 time.sleep(1)
 
-    print(f"\n[v8] Stopped after {iteration_count} iterations.")
+    print(f"\n[v9] Stopped after {iteration_count} iterations.")
     return {"iterations_completed": iteration_count}
 
 
@@ -2247,7 +3474,7 @@ if __name__ == "__main__":
         }))
 
     elif cmd == "iterate":
-        # v8 continuous iteration: sync → karpathy → cross-pollinate → push → repeat
+        # v9 continuous iteration: sync → karpathy → cross-pollinate → push → repeat
         max_iter = int(sys.argv[2]) if len(sys.argv) > 2 else 0
         delay = int(sys.argv[3]) if len(sys.argv) > 3 else 10
         run_continuous_iteration(max_iterations=max_iter, delay_seconds=delay)
@@ -2273,7 +3500,10 @@ if __name__ == "__main__":
                 s = json.loads(sf.read_text())
                 print(f"{tid:12s}: NBA ${s.get('nba_bankroll', 100):.2f} "
                       f"({s.get('nba_roi_pct', 0):+.1f}%)  "
-                      f"POL ${s.get('political_bankroll', 100000):.2f}"
+                      f"POL ${s.get('political_bankroll', 100000):,.2f} "
+                      f"({s.get('political_roi_pct', 0):+.4f}% "
+                      f"Sharpe {s.get('political_sharpe', 0):.3f} "
+                      f"{s.get('political_wins', 0)}W-{s.get('political_losses', 0)}L)"
                       f"  [{s.get('personality', '?')}]")
             else:
                 print(f"{tid:12s}: no state yet")

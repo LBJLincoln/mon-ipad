@@ -1,28 +1,30 @@
 ---
 tags: [legal, finance, holding, BPI, deeptech, nomos42]
-date: 2026-04-03
+date: 2026-04-04
 aliases: [Legal, Finance, Holding Structure, BPI Deeptech]
 ---
 
-# 09 — Legal & Finance
+# 09 -- Legal & Finance
 
-> Holding structure | BPI Deeptech | 150€ greffe | Burn rate tracking
+> Holding SASU | 150 EUR greffe | BPI Deeptech eligible | Burn rate ~20 EUR/mo | Pre-revenue
+
+---
 
 ## Corporate Structure
 
-### Holding Plan
-
+```mermaid
+graph TD
+    H["Holding SAS / SASU<br/>150 EUR greffe"]
+    H --> N42["Nomos42<br/>NBA Quant AI + Trading"]
+    H --> PA["Political Alpha<br/>ETF / Signal Service"]
+    H --> RGWA["RGWA<br/>AI Art Generation"]
+    H --> ND["Nomos Dashboard<br/>SaaS API Platform"]
 ```
-[Holding SAS / SASU]  ← 150€ greffe (immatriculation)
-    ├── Nomos42 (NBA Quant AI + Trading)
-    ├── Political Alpha (ETF / Signal Service)
-    ├── RGWA (AI Art Generation)
-    └── Nomos Dashboard (SaaS API Platform)
-```
 
-**Entity type:** SASU (Société par Actions Simplifiée Unipersonnelle) — recommended for single founder, simplest structure for tech startup in France
-
-**Registration cost:** ~150€ greffe (Tribunal de Commerce)
+**Entity type:** SASU (Societe par Actions Simplifiee Unipersonnelle)
+- Recommended for single founder
+- Simplest structure for tech startup in France
+- **Registration cost:** ~150 EUR greffe (Tribunal de Commerce)
 
 ---
 
@@ -30,14 +32,17 @@ aliases: [Legal, Finance, Holding Structure, BPI Deeptech]
 
 **Target:** BPI Deeptech Innovation grant / loan
 
-Eligibility criteria met:
-- AI/ML technology with measurable performance metrics (Brier score)
-- Walk-forward validated predictions (19 weeks, 934 games)
-- Active R&D loop (18 techniques, 14 papers, 6 HF islands)
-- Quantifiable IP: feature engine v3.1-46cat, 6,253 features, TabICL adaptation
-- International market potential (NBA = US market, $100B+ sports betting)
+### Eligibility (Met)
 
-**Grant range:** €30,000 - €500,000 (seed) + optional loan up to 2×
+| Criterion | Evidence |
+|-----------|----------|
+| AI/ML technology | Brier score 0.21570, measurable performance |
+| Validated predictions | Walk-forward 19 weeks, 934 games |
+| Active R&D loop | 18 techniques, 14 papers, 6 HF islands |
+| Quantifiable IP | Feature engine v3.1-46cat, 6,253 features, TabICL |
+| International market | NBA = US market, $100B+ sports betting |
+
+**Grant range:** 30,000 - 500,000 EUR (seed) + optional loan up to 2x
 **Application requirements:**
 - Detailed technical dossier (Brier 0.21570 documented)
 - Research paper references (Montrucchio SOTA reference)
@@ -48,34 +53,31 @@ Eligibility criteria met:
 
 ## Financial Tracking
 
-### Virtual Bankrolls (for product validation)
-- NBA bankroll: $91.89 / $100 start (real tracking, small amounts)
-- Political virtual: $100,000 virtual (simulation only)
-- Trading Floor season: $3,687.51 (Grok champion, simulation)
-
 ### Infrastructure Costs
-| Item | Cost | Frequency |
-|------|------|-----------|
-| VM (cloud VPS) | ~$5-20/mo | Monthly |
-| HF Spaces | $0 (free tier) | — |
-| Kaggle | $0 (free, P100 9h) | Per session |
-| Colab | $0-$10/session | On demand |
-| Vast.ai GPU | $0.16/hr | On demand |
-| Supabase | $0 (free tier) | — |
-| Vercel (dashboard) | $0 (hobby) | — |
-| Domain / misc | ~$10/yr | Annual |
-| **Total burn** | **~$20-30/mo** | Monthly |
 
-### Revenue
-- Current: $0 (pre-revenue)
-- First paying user: Pierre (test user, pending)
-- Target MRR: $23,310 (Year 1 target, see [[08-API-Vision]])
+| Item | Cost | Frequency | Notes |
+|------|------|-----------|-------|
+| VM (Google Cloud) | ~$5-20/mo | Monthly | Free tier |
+| HF Spaces (10) | $0 | -- | Free tier |
+| Kaggle | $0 | Per session | P100 free |
+| Colab | $0-$10 | On demand | T4 free tier |
+| Vast.ai GPU | $0.16/hr | On demand | Burst only |
+| Supabase | $0 | -- | Free tier |
+| Vercel | $0 | -- | Hobby plan |
+| Domain / misc | ~$10/yr | Annual | -- |
+| **Total burn** | **~$20-30/mo** | Monthly | Sustainable |
+
+### Revenue Status
+
+| Source | Current | Target |
+|--------|---------|--------|
+| SaaS subscriptions | $0 | $23,310/mo (Y1) |
+| First user | Pierre (test, pending) | -- |
+| Stripe | NOT CONNECTED | **USER: connect** |
 
 ---
 
 ## Intellectual Property
-
-### Core IP Assets
 
 | Asset | Description | Status |
 |-------|-------------|--------|
@@ -85,52 +87,46 @@ Eligibility criteria met:
 | Trading Floor v4 | 5-AI competition architecture | RUNNING |
 | Guardian Orchestrator v3 | Cross-dept resource allocation | RUNNING |
 | Political Alpha engine | 22-cat, 743-feature ETF signals | RUNNING |
-
-### Documentation for BPI
-- Technical: `CLAUDE.md`, `docs/obsidian/`
-- Performance: `data/nba-agent/quant-summary.json`
-- Walk-forward: Kaggle 19-week backtest
-- Research: Research Cycle 7 (18 techniques, 14 papers)
+| Bloomberg Terminal TUI | Rich terminal interface | DEPLOYED |
 
 ---
 
-## $100 → $1M Financial Model
-
-See detailed model in [[07-Betting#$100 → $1M Roadmap]]
+## $100 -> $1M Financial Model
 
 | Year | Bankroll | Key Milestone |
 |------|----------|---------------|
-| 2026 | $100→$500 | Fix bugs, beat Brier 0.21 |
-| 2026 | $500→$5K | 20+ bets/week, edge >5% |
-| 2027 | $5K→$50K | Brier 0.20, API launch |
-| 2027 | $50K→$500K | 100 SaaS users, institutional pilot |
-| 2028 | $500K→$1M+ | Full API, international expansion |
+| 2026 | $100 -> $500 | Fix bugs, beat Brier 0.21 |
+| 2026 | $500 -> $5K | 20+ bets/week, edge >5% |
+| 2027 | $5K -> $50K | Brier 0.20, API launch |
+| 2027 | $50K -> $500K | 100 SaaS users, institutional pilot |
+| 2028 | $500K -> $1M+ | Full API, international expansion |
+
+See detailed model: [[07-Betting]] | Business plan: [[15-Business-Plan]]
 
 ---
 
-## Legal Compliance Notes
+## Legal Compliance
 
 ### Sports Betting
 - Virtual bankroll / simulation = no legal issue
-- Live betting (real money) = jurisdiction-specific
-- France: betting via licensed operator (FDJ / Winamax / PMU) = legal
-- US: state-by-state (legal in 30+ states as of 2026)
-- API selling predictions = information service (legal in most jurisdictions)
+- France: licensed operator (FDJ / Winamax / PMU) = legal
+- US: state-by-state (legal in 30+ states)
+- **API selling predictions = information service** (legal in most jurisdictions)
 
 ### Data Sources
-- NBA.com/stats: public API, terms allow non-commercial research
-- Basketball-Reference: public data, attribution required
+- NBA.com/stats: public API, non-commercial research OK
+- Basketball-Reference: public, attribution required
+- FEC: public government data, unrestricted
 - Odds data: purchased or scraped (verify terms per provider)
-- Political data (FEC): public government data, unrestricted
 
 ### Privacy / GDPR
 - No personal user data collected (yet)
-- When SaaS launches: GDPR-compliant data handling required
+- When SaaS launches: GDPR-compliant handling required
 - Telegram bot: no user data stored beyond session
 
 ---
 
-## Key Contacts & Accounts
+## Key Accounts
 
 | Service | Account | Status |
 |---------|---------|--------|
@@ -138,11 +134,13 @@ See detailed model in [[07-Betting#$100 → $1M Roadmap]]
 | HuggingFace | LBJLincoln, LBJLincoln26, Nomos42 | ACTIVE |
 | Kaggle | alexismoret6 | ACTIVE |
 | Supabase | project xivvnr (pooler) | ACTIVE |
-| Vercel | connected to nomos-dashboard | ACTIVE |
-| Google Drive | backup destination | ACTIVE |
+| Vercel | nomos-dashboard | ACTIVE |
+| Google Drive | backup | ACTIVE |
+| Tailscale | mesh network | ACTIVE |
+| Neo4j | knowledge graph | ACTIVE |
 
 ---
 
 ## Links
 
-[[README]] | [[08-API-Vision]] | [[07-Betting]] | [[10-Repos]]
+[[00-Dashboard]] | [[08-API-Vision]] | [[07-Betting]] | [[10-Repos]] | [[15-Business-Plan]]

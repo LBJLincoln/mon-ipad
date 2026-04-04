@@ -1,142 +1,171 @@
 ---
 tags: [trading-floor, traders, PnL, strategies, AI-competition, nomos42]
-date: 2026-04-03
-aliases: [Trading Floor, Traders, Arena, AI Competition]
+date: 2026-04-04
+aliases: [Trading Floor, Traders, Arena, AI Competition, TF v4]
 ---
 
-# 03 — Trading Floor v4
+# 03 -- Trading Floor v4
 
-> Season 2025-26 | 5 NBA traders | 5 Political traders | Iter 287 | Last: 2026-04-03T21:28Z
+> 5 NBA + 5 Political AI traders | Iter 402 | Gen 54,672 | Season 2025-26 | Last: 2026-04-04
 
-## NBA Season Leaderboard (Full Season 2025-26)
+---
 
-| Rank | Agent | Provider | Bankroll | ROI | Sharpe | Record | Peak | Max DD |
-|------|-------|----------|----------|-----|--------|--------|------|--------|
-| 1 | **Grok** | xAI | **$3,687.51** | **+3,587.5%** | 4.672 | 523W-705L | $3,816.21 | 53.5% |
-| 2 | Gemini | Google | $1,731.08 | +1,631.1% | 2.660 | 1753W-1801L | $1,884.99 | 77.0% |
-| 3 | Claude | Anthropic | $322.86 | +222.9% | 4.423 | 961W-975L | $329.87 | 38.4% |
-| 4 | OpenRouter | Multi | $164.63 | +64.6% | 0.560 | 1036W-1089L | $231.45 | 93.5% |
-| 5 | Codex | OpenAI | $0.63 | -99.4% | -0.268 | 2177W-2055L | $665.28 | 100% |
+## NBA Season Leaderboard
 
-All start: **$100.00** virtual | Season start: 2025-10-21
+| Rank | Agent | Provider | Personality | Risk | Bankroll | ROI | Sharpe | Bets | Record | Peak | Max DD |
+|------|-------|----------|-------------|------|----------|-----|--------|------|--------|------|--------|
+| 1 | **Grok** | xAI | contrarian | 0.65 | **$3,687.51** | **+3,587.5%** | **4.672** | 1,228 | 523W-705L | $3,816 | 53.5% |
+| 2 | Gemini | Google | analytical | 0.60 | $1,731.08 | +1,631.1% | 2.660 | 3,554 | 1753W-1801L | $1,885 | 77.0% |
+| 3 | Claude | Anthropic | conservative | 0.40 | $322.86 | +222.9% | 4.423 | 1,936 | 961W-975L | $330 | 38.4% |
+| 4 | OpenRouter | Multi | diversified | 0.50 | $164.63 | +64.6% | 0.560 | 2,125 | 1036W-1089L | $231 | 93.5% |
+| 5 | Codex | OpenAI | aggressive | 0.70 | $0.63 | -99.4% | -0.268 | 4,232 | 2177W-2055L | $665 | 100% |
+
+All started: **$100.00** virtual | Season: 2025-10-21 to present
 
 ---
 
 ## Agent Profiles
 
-### T1 — Grok (CHAMPION)
-- **Provider:** xAI | **Personality:** contrarian | **Risk:** 0.65
-- **Strategy:** value_hunter + underdog_specialist
-- **Top models:** elo_baseline ($+1,996.73), random_forest ($+937.03), extra_trees ($+653.74)
-- **Top strategies:** value_hunter 280 bets ($+2,860.96), underdog_specialist 800 bets ($+728.21)
-- **Key insight:** Contrarian + value_hunter on underdogs = massive edge at high odds
+### T1 -- Grok (CHAMPION)
 
-### T2 — Gemini (#2)
-- **Provider:** Google | **Personality:** analytical | **Risk:** 0.6
-- **Bankroll:** $1,731.08 | **ROI:** +1,631.1% | **Sharpe:** 2.66
-- **Total wagered:** $16,086.64 | **Bets:** 3,554
-- **Strategy:** confidence_scaled + half_kelly
+> [!tip] The winning formula
+> Contrarian personality + value_hunter strategy + simple models (elo_baseline) + low frequency = massive edge
 
-### T3 — Claude (#3)
-- **Provider:** Anthropic | **Personality:** conservative | **Risk:** 0.4
-- **Strategy:** quarter_kelly (all 1,936 bets)
-- **Top categories:** alt_spread_home_big ($+191.49), alt_spread_away_big ($+82.07)
-- **Total wagered:** $1,655.59 | **Best Sharpe among all (tied 4.423 vs Grok 4.672)**
+| Property | Value |
+|----------|-------|
+| Provider | xAI |
+| Strategy | value_hunter + underdog_specialist |
+| Total wagered | $13,698.91 |
+| Key insight | Fewer bets (1,228) but much higher edge per bet |
 
-### T4 — OpenRouter (#4)
-- **Provider:** Multi-model | **Personality:** diversified | **Risk:** 0.5
-- **Bankroll:** $164.63 | **ROI:** +64.6% | **Sharpe:** 0.560
-- **Total wagered:** $2,433.84 | **Bets:** 2,125
-- **Model mix:** lightgbm + extra_trees + consensus_ensemble
+**Top models:** elo_baseline (+$1,996.73), random_forest (+$937.03), extra_trees (+$653.74)
+**Top strategies:** value_hunter 280 bets (+$2,860.96), underdog_specialist 800 bets (+$728.21)
+**Top categories:** alt_spread_home_big (+$2,016.79), alt_spread_away_big (+$1,302.49)
 
-### T5 — Codex (ELIMINATED)
-- **Provider:** OpenAI | **Personality:** aggressive | **Risk:** 0.7
-- **Bankroll:** $0.63 | **ROI:** -99.4% | **Nearly bankrupt**
-- **Peak:** $665.28 (day 4+) then catastrophic drawdown
-- **Lesson:** aggressive + high frequency + max drawdown = ruin
+### T2 -- Gemini (#2)
 
----
+| Property | Value |
+|----------|-------|
+| Provider | Google |
+| Strategy | confidence_scaled + half_kelly |
+| Total wagered | $16,086.64 |
+| Bets | 3,554 (highest volume after Codex) |
 
-## Strategy Rankings (Backtest, All Agents)
+### T3 -- Claude (#3, Best Risk-Adjusted)
 
-| Rank | Strategy | Avg ROI | Verdict |
-|------|----------|---------|---------|
-| 1 | full_kelly | +135,550% | ELITE (but variance extreme) |
-| 2 | anti_martingale | +125,583% | ELITE |
-| 3 | proportional_edge | +73,112% | STRONG |
-| 4 | ev_threshold_110 | +52,320% | STRONG |
-| 5 | half_kelly | +34,739% | STRONG |
+| Property | Value |
+|----------|-------|
+| Provider | Anthropic |
+| Strategy | quarter_kelly (all 1,936 bets) |
+| Total wagered | $1,655.59 |
+| Best categories | alt_spread_home_big (+$191.49), alt_spread_away_big (+$82.07) |
 
-Note: full_kelly elite in theory but Codex disaster shows real-world variance risk.
+> [!info] Claude has Sharpe 4.423 -- nearly matching Grok (4.672) with far less volatility
 
----
+### T4 -- OpenRouter (#4)
 
-## What Wins: Analysis
+| Property | Value |
+|----------|-------|
+| Provider | Multi-model |
+| Strategy | quarter_kelly + flat_2pct + value_hunter |
+| Model mix | lightgbm + consensus_ensemble + extra_trees |
 
-**Grok's recipe:**
-1. Contrarian personality (bet underdogs)
-2. value_hunter strategy (seek positive EV)
-3. Simple models: elo_baseline outperformed all complex ML
-4. Lower bet frequency (1,228 bets vs Codex's 4,232)
+### T5 -- Codex (ELIMINATED)
 
-**Claude's recipe:**
-1. Conservative (quarter_kelly only)
-2. Best risk-adjusted returns (Sharpe 4.423)
-3. Alt-spread categories dominate (+$273.56 combined)
-4. No overexposure
-
-**Codex's failure:**
-1. Aggressive (risk 0.7) + high frequency
-2. Position sizing too large after early peak ($665)
-3. No stop-loss / drawdown protection
-
----
-
-## Trading Floor Architecture
-
-Each trader sees:
-- All predictions + probabilities
-- All strategy results from peers
-- Market odds for all NBA games
-- Peer P&L and current standings
-
-Each decides:
-- Which games to bet
-- What size (Kelly fraction)
-- Which model to use
-- Which category to target
-
-Backend: `scripts/arena/arena-engine.py` (runs daily at 11:00)
-Data: `data/arena/traders/*.json` + `data/arena/docs/*-season-2025-26.md`
+> [!warning] Codex: A cautionary tale
+> Aggressive (risk 0.7) + high frequency (4,232 bets) + no drawdown protection = ruin.
+> Peak: $665.28 (day 4+) then catastrophic 100% drawdown to $0.63.
 
 ---
 
 ## Political Trading Floor
 
-5 AI agents also trade ETFs, index funds, real stocks based on political signals.
+5 AI agents trade ETFs, index funds, and real stocks based on political signals.
+Starting capital: **$100,000** virtual | 12 trading days so far.
 
-- Starting capital: $100,000 virtual
-- Daily rebalancing
-- Political alpha: v3.1, 22 categories, 743 features
-- Categories: insider trading signals, Trump policy, foreign sovereign funds
+| Rank | Agent | Capital | ROI | Sharpe | Trades | Win Rate | Strategy |
+|------|-------|---------|-----|--------|--------|----------|----------|
+| 1 | **Codex** | $101,083 | **+1.08%** | 6.569 | 113 | 52.2% | event_driven + momentum |
+| 2 | Gemini | $100,790 | +0.79% | **12.289** | 118 | **61.0%** | momentum |
+| 3 | OpenRouter | $100,204 | +0.20% | 5.440 | 95 | 49.5% | sector_rotation + insider_follow |
+| 4 | Claude | $100,030 | +0.03% | 2.656 | 35 | 48.6% | mean_reversion |
+| 5 | Grok | $99,708 | -0.29% | -13.441 | 60 | 36.7% | mean_reversion |
 
-→ Details: [[04-Departments#Political]]
+> [!info] Irony alert
+> Codex is #1 in political (best ROI) but LAST in NBA (bankrupt). Different markets, different outcomes.
+> Gemini has the best Sharpe (12.289) in political -- extremely consistent.
+
+---
+
+## Strategy Analysis
+
+### What Wins in NBA
+
+| Factor | Winner | Loser | Lesson |
+|--------|--------|-------|--------|
+| Personality | contrarian (Grok) | aggressive (Codex) | Bet against the crowd |
+| Strategy | value_hunter | overtrading | Seek positive EV only |
+| Model | elo_baseline | complex stacking | Simple beats complex for underdogs |
+| Frequency | 1,228 bets (Grok) | 4,232 bets (Codex) | Quality over quantity |
+| Kelly sizing | half_kelly sweet spot | full_kelly extreme | Manage variance |
+| Category | alt_spread (home/away big) | standard spreads | Alternative lines have more edge |
+
+### Backtest Strategy Rankings
+
+| Rank | Strategy | Avg ROI | Verdict |
+|------|----------|---------|---------|
+| 1 | full_kelly | +135,550% | ELITE (extreme variance) |
+| 2 | anti_martingale | +125,583% | ELITE |
+| 3 | proportional_edge | +73,112% | STRONG |
+| 4 | ev_threshold_110 | +52,320% | STRONG |
+| 5 | half_kelly | +34,739% | STRONG |
+
+---
+
+## Architecture
+
+```mermaid
+graph TD
+    Engine["Prediction Engine<br/>(6 models, Brier 0.2157)"]
+    Odds["Market Odds<br/>(daily fetch)"]
+    
+    Engine --> TF["Trading Floor v4<br/>arena-engine.py"]
+    Odds --> TF
+    
+    TF --> Grok["Grok (contrarian)"]
+    TF --> Gemini["Gemini (analytical)"]
+    TF --> Claude["Claude (conservative)"]
+    TF --> OR["OpenRouter (diversified)"]
+    TF --> Codex["Codex (aggressive)"]
+    
+    Grok --> Results["Season Results<br/>data/arena/traders/*.json"]
+    Gemini --> Results
+    Claude --> Results
+    OR --> Results
+    Codex --> Results
+    
+    Results --> Guardian["Guardian Orchestrator"]
+    Guardian --> Mutations["Strategy Mutations<br/>+ Eliminations"]
+```
+
+Each trader sees: all predictions, all strategies, peer results, market odds.
+Each decides: which games, what size (Kelly), which model, which category.
+
+Backend: `scripts/arena/arena-engine.py` (daily at 11:00)
+Data: `data/arena/traders/*.json` + `data/arena/docs/*-season-2025-26.md`
 
 ---
 
 ## Key Lessons for Live Betting
 
-1. **Grok's value_hunter strategy** is the production target for live agent
+1. **Grok's value_hunter** is the production target for the live agent -- see [[07-Betting]]
 2. **quarter_kelly** (Claude) offers best risk-adjusted returns for conservative mode
 3. **half_kelly** is the sweet spot for balance
 4. **elo_baseline** beats complex ML for underdog hunting
 5. **alt_spread categories** (home/away big) have highest alpha
 
-→ Bankroll management: [[07-Betting]]
-→ Research roadmap to beat 0.20: [[06-Research]]
-
 ---
 
 ## Links
 
-[[README]] | [[00-Dashboard]] | [[07-Betting]] | [[04-Departments]] | [[06-Research]]
+[[00-Dashboard]] | [[07-Betting]] | [[04-Departments]] | [[06-Research]] | [[17-Political-Alpha]] | [[15-Business-Plan]]
