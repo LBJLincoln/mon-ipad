@@ -1,7 +1,7 @@
 {
-  "cycle_timestamp": "2026-04-04T00:00:00Z",
+  "cycle_timestamp": "2026-04-04T04:30:00Z",
   "cycle_type": "4h_brain",
-  "cycle_number": 59,
+  "cycle_number": 60,
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
 
   "nba_fleet": {
@@ -11,14 +11,14 @@
     "checkpoint_threshold": 0.21837,
     "checkpoint_triggered": false,
     "checkpoint_gap": 0.00322,
-    "all_running": false,
+    "all_running": true,
     "stagnation_alerts": [],
     "islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "gen": 215,
-        "cycle": 72,
+        "gen": 311,
+        "cycle": 104,
         "brier": 0.22454,
         "roi": 0.2737,
         "sharpe": 5.9986,
@@ -33,15 +33,15 @@
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "gen": 299,
-        "cycle": 100,
+        "gen": 473,
+        "cycle": 158,
         "brier": 0.22273,
         "roi": 0.2934,
         "sharpe": 8.6004,
         "stagnation": 0,
-        "model": "xgboost_brier",
-        "mutation_rate": 0.0893,
-        "pareto_front_size": null,
+        "model": "xgboost",
+        "mutation_rate": 0.08,
+        "pareto_front_size": 16,
         "features": 63,
         "status": "active",
         "http_status": 200
@@ -49,24 +49,24 @@
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
-        "gen": 593,
-        "cycle": 198,
+        "gen": 745,
+        "cycle": 249,
         "brier": 0.22506,
-        "roi": null,
+        "roi": 0.2669,
         "sharpe": 10.4122,
         "stagnation": 0,
         "model": "catboost",
         "mutation_rate": 0.04,
-        "pareto_front_size": 17,
-        "features": null,
+        "pareto_front_size": 12,
+        "features": 43,
         "status": "active",
         "http_status": 200
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
-        "gen": 383,
-        "cycle": 128,
+        "gen": 492,
+        "cycle": 165,
         "brier": 0.22455,
         "roi": null,
         "sharpe": 11.9811,
@@ -81,14 +81,14 @@
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
-        "gen": 449,
-        "cycle": 150,
+        "gen": 560,
+        "cycle": 187,
         "brier": 0.22666,
         "roi": 0.2512,
         "sharpe": 5.2171,
         "stagnation": 0,
         "model": "xgboost_brier",
-        "mutation_rate": 0.0881,
+        "mutation_rate": 0.0707,
         "pareto_front_size": 13,
         "features": 55,
         "status": "active",
@@ -97,19 +97,19 @@
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "gen": 488,
-        "cycle": 163,
+        "gen": 738,
+        "cycle": 246,
         "brier": 0.22159,
         "roi": 0.3067,
         "sharpe": 7.3688,
         "stagnation": 0,
         "model": "random_forest",
-        "mutation_rate": 0.1089,
-        "pareto_front_size": null,
+        "mutation_rate": 0.0849,
+        "pareto_front_size": 15,
         "features": 79,
         "status": "active",
         "http_status": 200,
-        "note": "FLEET BEST — highest ROI 30.67%, best Brier 0.22159"
+        "note": "FLEET BEST — Brier 0.22159, ROI 30.67%. SHAP interaction analysis candidate."
       }
     }
   },
@@ -121,15 +121,15 @@
     "best_brier": 0.2313,
     "best_island": "political-alpha-2",
     "fleet_average_brier": 0.2366,
-    "data_pipeline_status": "CRITICAL — only 60 real events, 312 synthetic",
+    "data_pipeline_status": "DEGRADED — FEC empty since pre-Apr-2 (fixed), polymarket stale 58h",
     "islands": {
       "political-alpha-1": {
         "status": "ONLINE",
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
-        "cycle": 2972,
-        "generation": 8915,
-        "best_brier": 0.2419,
+        "cycle": 3109,
+        "generation": 9327,
+        "best_brier": 0.24186,
         "best_model": "xgboost_brier",
         "best_features": 53,
         "stagnation": 0,
@@ -144,9 +144,12 @@
         "status": "ONLINE",
         "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
-        "cycle": 1386,
-        "generation": 4157,
-        "best_brier": 0.2313,
+        "cycle": 1673,
+        "generation": 5019,
+        "best_brier": 0.23134,
+        "top_performer_brier": 0.2154,
+        "top_performer_model": "lightgbm",
+        "top_performer_features": 169,
         "best_model": "catboost",
         "best_features": 70,
         "stagnation": 0,
@@ -161,36 +164,55 @@
         "url": "nomos42-political-alpha-3.hf.space",
         "role": "catboost_specialist",
         "http_status": 404,
-        "note": "Space down — needs restart via HuggingFace"
+        "consecutive_down_cycles": 2,
+        "note": "DOWN 2nd cycle — CRITICAL: manual HuggingFace restart needed"
       },
       "political-alpha-4": {
         "status": "OFFLINE",
         "url": "nomos42-political-alpha-4.hf.space",
         "role": "wide_search",
         "http_status": 404,
-        "note": "Space down — needs restart via HuggingFace"
+        "consecutive_down_cycles": 2,
+        "note": "DOWN 2nd cycle — CRITICAL: manual HuggingFace restart needed"
       }
     }
   },
 
   "actions_taken": [
-    "No diversify needed — all active islands stagnation=0",
-    "No NBA checkpoint — best Brier 0.22159 above threshold 0.21837 (gap: 0.00322)",
-    "Research: temperature scaling (GETS ICLR 2025) proposal written",
-    "Political: prediction market insider signal features added to engine (Cat 23)",
-    "Political Alpha 3 & 4 OFFLINE — HuggingFace restart required (no MCP available)"
+    "All 6 NBA islands ACTIVE — no stagnation (all=0), no diversify needed",
+    "No NBA checkpoint — Brier 0.22159 above threshold 0.21837 (gap: 0.00322)",
+    "Research (cycle 60 = even): SHAP interaction value feature pair engineering proposal written — Nature 2025 source",
+    "Pipeline Rotation D: FEC stale (empty pre-Apr-2 fix), polymarket stale 58h — flagged for prod VM action",
+    "Political Alpha 3 & 4 OFFLINE 2nd consecutive cycle — CRITICAL: manual HuggingFace restart needed"
   ],
 
   "alerts": [
-    "WARN: Political Alpha 3 & 4 down (404) — manual restart needed",
-    "WARN: Political data pipeline critical — 60 real / 312 synthetic events only",
-    "INFO: S15 leads fleet with Brier 0.22159, ROI 30.67% — consider seeding other islands",
-    "INFO: Cycle rotation B — political_engine.py feature addition (prediction market insider signals)"
+    "CRITICAL: Political Alpha 3 & 4 DOWN (404) 2nd consecutive cycle — manual HuggingFace restart needed NOW",
+    "WARN: Polymarket data stale 58h (last Apr 1 18:05) — verify polymarket_tracker.py cron on prod VM",
+    "WARN: FEC donor files empty since pre-Apr-2 fix — verify prod VM ran post-fix",
+    "INFO: S15 fleet leader Brier 0.22159, ROI 30.67% — SHAP interaction analysis candidate",
+    "INFO: PA-2 top performer Brier 0.2154 (LightGBM, 169f) — beats NBA fleet best",
+    "INFO: Checkpoint gap 0.00322 — stacked ensemble + SHAP interactions could close it"
+  ],
+
+  "cross_project_insights": [
+    "PA-2 top performer Brier=0.2154 < NBA S15 Brier=0.22159 — political outperforming NBA in calibration",
+    "S15 RF 79f leading NBA — wide search + large feature count beats specialization",
+    "SHAP interaction pairs (Cat52) applicable to political engine as Cat14 after NBA validation"
   ],
 
   "next_cycle_actions": [
-    "Verify political-alpha-3 and political-alpha-4 restart",
-    "Rotation C: Port NBA calibration techniques to political alpha",
-    "Check if temperature scaling proposal has been implemented on S10"
-  ]
+    "URGENT: Restart PA-3 & PA-4 on HuggingFace (manual action required)",
+    "Political rotation A: WebSearch new FEC/SEC/executive-order data sources",
+    "Check stacked ensemble proposal (Apr-2) implementation status on any island",
+    "Verify prod VM polymarket cron is running",
+    "Run SHAP interaction analysis on Kaggle GPU session with S15 RF model"
+  ],
+
+  "research_findings_cycle_60": {
+    "source_1": "https://www.nature.com/articles/s41598-025-97817-3.pdf — Nature 2025: Explaining basketball performance with SHAP interaction values",
+    "source_2": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265715/ — PMC 2025: XGBoost+SHAP feature interactions NBA",
+    "source_3": "https://www.nature.com/articles/s41598-025-13657-1 — Scientific Reports 2025: Stacked ensemble NBA (already proposed Apr-2)",
+    "new_technique": "SHAP interaction values (N×N matrix) reveal top feature PAIRS. Top pairs: home×elo, form×rest_days, fg%×opp_def. Proposed as Cat52 — see research-proposals/shap-interaction-feature-pairs-2026-04-04.json"
+  }
 }
