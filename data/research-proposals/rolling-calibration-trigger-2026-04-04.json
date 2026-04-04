@@ -1,0 +1,49 @@
+{
+  "proposal_id": "NBA-2026-04-04-CALIB-TRIGGER",
+  "title": "Auto-Activate Isotonic Calibration from HF Space OOB Predictions",
+  "status": "proposed",
+  "priority": "HIGH",
+  "created": "2026-04-04T17:30:00Z",
+  "rotation": "D2_engineering",
+  "brier_gap_targeted": "0.22159 → estimated 0.219-0.220 (estimated 0.2-1% improvement)",
+
+  "problem": {
+    "description": "calibration/isotonic_breakpoints.json is an IDENTITY STUB (identity=true). The IsotonicPostCalibrator class is fully implemented with fit_and_export() and from_backtest() methods, but has never been called with real data. predict_today.py reads the stub and applies zero correction to all predictions. This leaves a known calibration gap unaddressed.",
+    "evidence": "isotonic_breakpoints.json metadata: {identity: true, fitted_on: null}. HF spaces have 9551 games of backtest data available. Research shows isotonic regression can reduce Brier by 50-70% on benchmarks; for our 0.22159 baseline, conservative estimate is 0.5-1% gain (~0.001-0.002 Brier points).",
+    "impact": "Every daily prediction uses uncalibrated raw model probabilities. Kelly sizing, ROI, and Sharpe all depend on well-calibrated probs."
+  },
+
+  "proposed_solution": {
+    "approach": "Add /api/fit-calibration endpoint to hf-space/app.py (S10) that: (1) pulls the best model's OOB/holdout predictions from its internal training loop, (2) fits isotonic regression on those (raw_prob, outcome) pairs, (3) returns JSON breakpoints. VM calls this endpoint monthly and commits updated isotonic_breakpoints.json.",
+    "implementation_steps": [
+      "1. hf-space/app.py: add POST /api/fit-calibration endpoint. Uses best_model.predict_proba() on holdout split stored in evolution state.",
+      "2. returns JSON: {x_points: [...], y_points: [...], metadata: {n_samples, fitted_gen, fitted_at, brier_before, brier_after}}",
+      "3. scripts/fit-calibration.sh: curl -X POST https://nomos42-nba-quant.hf.space/api/fit-calibration → saves to calibration/isotonic_breakpoints.json → git commit + push",
+      "4. Add to VM cron: '0 6 1 * * /home/user/nomos-nba-agent/scripts/fit-calibration.sh' (monthly, 6am on 1st)"
+    ],
+    "fallback": "If HF endpoint not available, from_backtest() queries Supabase nba_predictions table. Activate with: python3 -c \"from calibration.isotonic_calibrator import IsotonicPostCalibrator; IsotonicPostCalibrator.from_backtest(Path('calibration/isotonic_breakpoints.json'))\" — run on any machine with sklearn."
+  },
+
+  "research_basis": [
+    "Platt scaling: Brier 0.1775→0.0539 (benchmark, Medium/Eskandar 2026)",
+    "Isotonic regression: Brier 0.1775→0.0518 (benchmark) — better than Platt for tree models",
+    "MDPI 2078-2489/17/1/56: Uncertainty-aware NBA with calibrated probs outperforms uncalibrated by ~8% AUC",
+    "sklearn 1.8: CalibratedClassifierCV with cv='prefit' is safe for post-hoc calibration on independent holdout",
+    "arxiv 2308.01222: Survey confirms isotonic best for tree-based models with sufficient samples (>500)"
+  ],
+
+  "rollout_plan": {
+    "step1": "D2 Engineer adds /api/fit-calibration to hf-space/app.py — 30 min",
+    "step2": "Test on S10: curl POST, validate returned breakpoints are non-identity",
+    "step3": "Save breakpoints, re-run predict_today.py, measure Brier delta on recent games",
+    "step4": "If Brier improves: add monthly cron. If no improvement: investigate OOB sample quality."
+  },
+
+  "related_proposals": [
+    "gets-temperature-scaling-calibration-2026-04-02.json — temperature scaling (GETS ensemble)",
+    "gets-ensemble-temperature-scaling-2026-04-04.json — GETS with temperature scaling (today)",
+    "calibration-brier-loss-2026-03-30.json — Brier loss as training objective"
+  ],
+
+  "notes": "This proposal activates EXISTING code (isotonic_calibrator.py already written, tested). No new ML technique — pure activation of dormant infrastructure. Highest ROI engineering task available right now."
+}
