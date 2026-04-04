@@ -429,6 +429,19 @@ while [[ ${COMPLETED} -lt ${MAX_ITERATIONS} ]]; do
         fi
 
         log_ok "Saved: ${COUNCIL_DIR}/council-iter-${COUNCIL_ITER}.json"
+
+        # ── PHASE 2b: Append to audit trail (incremental) ───────────────
+        AUDIT_SCRIPT="${SCRIPT_DIR}/audit_trail.py"
+        if [[ -f "${AUDIT_SCRIPT}" ]]; then
+            python3 "${AUDIT_SCRIPT}" --append "${COUNCIL_ITER}" 2>&1 | while IFS= read -r line; do
+                echo "  ${line}"
+            done
+            if [[ ${PIPESTATUS[0]} -eq 0 ]]; then
+                log_ok "Audit trail updated for iteration ${COUNCIL_ITER}"
+            else
+                log_warn "Audit trail append failed (non-fatal)"
+            fi
+        fi
     fi
 
     # ── PHASE 3: Git commit + push ───────────────────────────────────────
@@ -436,7 +449,7 @@ while [[ ${COMPLETED} -lt ${MAX_ITERATIONS} ]]; do
 
     cd "${ROOT}"
 
-    # Stage arena data files + council output
+    # Stage arena data files + council output + audit trail
     git add \
         data/arena/trading-floor-karpathy-output.json \
         data/arena/trading-floor-iteration.json \
@@ -444,6 +457,7 @@ while [[ ${COMPLETED} -lt ${MAX_ITERATIONS} ]]; do
         data/arena/traders/ \
         data/arena/proposals/ \
         data/arena/council/ \
+        data/arena/audit/ \
         data/departments/trading_floor/ \
         2>/dev/null || true
 

@@ -1,0 +1,118 @@
+{
+  "description": "Free AI models available via HF Inference API, ZeroGPU, OpenRouter, and local Ollama",
+  "updated": "2026-04-03",
+
+  "hf_inference_api": {
+    "description": "100K free credits/month on HF free tier, 2M on Pro ($9/mo)",
+    "models": {
+      "qwen_3_6_plus": {
+        "model_id": "Qwen/Qwen3.6-Plus",
+        "context": 1000000,
+        "free": true,
+        "use_case": "Agentic coding, repo-level analysis, council agent"
+      },
+      "gemma_4_27b": {
+        "model_id": "google/gemma-4-27b-it",
+        "context": 256000,
+        "free": true,
+        "use_case": "Reasoning, code gen, agent council member"
+      },
+      "mistral_small_3_1": {
+        "model_id": "mistralai/Mistral-Small-3.1-24B-Instruct-2503",
+        "context": 128000,
+        "free": true,
+        "use_case": "Fast inference, tool use, function calling"
+      },
+      "phi_4": {
+        "model_id": "microsoft/phi-4",
+        "context": 16384,
+        "free": true,
+        "use_case": "Lightweight reasoning, fast response"
+      }
+    }
+  },
+
+  "hf_zerogpu": {
+    "description": "Free H200 GPU via ZeroGPU Spaces (Gradio SDK required)",
+    "quota_free": "~5 min/day H200 compute",
+    "quota_pro": "25 min/day H200 ($9/mo)",
+    "accounts": {
+      "LBJLincoln": "HF_TOKEN",
+      "LBJLincoln26": "HF_TOKEN_2",
+      "Nomos42": "HF_TOKEN_3"
+    },
+    "total_free_gpu": "~15 min/day across 3 accounts",
+    "total_pro_gpu": "75 min/day if all 3 accounts Pro ($27/mo)",
+    "use_case": "TabICL/TabPFN inference, neural model evaluation"
+  },
+
+  "openrouter_free": {
+    "description": "Free models available on OpenRouter",
+    "models": {
+      "qwen_3_6_plus_preview": {
+        "model_id": "qwen/qwen3.6-plus-preview:free",
+        "free": true,
+        "rate_limit": "20 req/min"
+      },
+      "gemma_4_27b": {
+        "model_id": "google/gemma-4-27b-it:free",
+        "free": true
+      }
+    }
+  },
+
+  "local_ollama": {
+    "description": "Models to run on Aurélien's laptop via Ollama",
+    "models": {
+      "qwen_3_6": {
+        "command": "ollama pull qwen3.6:latest",
+        "ram_required": "16GB",
+        "use_case": "Local council agent, no API costs"
+      },
+      "gemma_4_2b": {
+        "command": "ollama pull gemma4:2b",
+        "ram_required": "4GB",
+        "use_case": "Edge inference, fast local tasks"
+      },
+      "gemma_4_12b": {
+        "command": "ollama pull gemma4:12b",
+        "ram_required": "12GB",
+        "use_case": "Strong local reasoning"
+      },
+      "mistral_small": {
+        "command": "ollama pull mistral-small3.1",
+        "ram_required": "16GB",
+        "use_case": "Tool use, function calling"
+      }
+    }
+  },
+
+  "experiment_tracking": {
+    "clearml": {
+      "description": "Self-hosted experiment tracking, free for 3 users",
+      "setup": "pip install clearml && clearml-init",
+      "features": ["GPU/CPU/memory auto-tracking", "hyperparameter comparison", "model versioning"]
+    },
+    "dagshub": {
+      "description": "GitHub for ML — wraps DVC + MLflow, free public repos",
+      "setup": "pip install dagshub mlflow",
+      "features": ["Git-based experiment tracking", "DVC data versioning", "MLflow integration"]
+    }
+  },
+
+  "inference_acceleration": {
+    "onnx_runtime": {
+      "install": "pip install onnxruntime-gpu skl2onnx",
+      "speedup": "2-5x for tree model inference on GPU"
+    },
+    "timber": {
+      "install": "pip install timber-ml",
+      "speedup": "336x faster than Python XGBoost inference",
+      "description": "AOT compiler: XGBoost/LightGBM/CatBoost → native C99"
+    },
+    "intel_daal4py": {
+      "install": "pip install scikit-learn-intelex",
+      "speedup": "Up to 36x faster sklearn on Intel CPUs"
+    }
+  }
+}

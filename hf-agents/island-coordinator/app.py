@@ -68,16 +68,7 @@ ISLANDS = {
         "role": "political",
         "domain": "Political",
     },
-    "P3": {
-        "url": "https://nomos42-political-alpha-3.hf.space/api/status",
-        "role": "political",
-        "domain": "Political",
-    },
-    "P4": {
-        "url": "https://nomos42-political-alpha-4.hf.space/api/status",
-        "role": "political",
-        "domain": "Political",
-    },
+    # P3/P4 removed 2026-04-03 — spaces never existed on HF
 }
 
 # ---------------------------------------------------------------------------

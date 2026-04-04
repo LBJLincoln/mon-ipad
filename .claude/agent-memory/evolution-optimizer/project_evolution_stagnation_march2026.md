@@ -1,80 +1,74 @@
 ---
-name: Evolution Fleet Status — March 2026
-description: HF Space fleet health snapshots. Latest: 2026-03-28 post-redeploy. 5/6 islands RUNNING, S14 stuck BUILDING, watchdog data server bug fixed.
+name: Evolution Fleet Status — April 2026
+description: HF Space fleet health. Apr 3: 6/6 UP but 3 islands catboost-locked, S15 true Brier stuck at 0.2456, fleet throughput 219 gen/hr vs target 380 gen/hr.
 type: project
 ---
 
-**Last verified: 2026-03-28 13:40 UTC**
+**Last verified: 2026-04-03 15:00 UTC**
 
-## Current Fleet State (post-redeploy 2026-03-28)
+## Current Fleet State (2026-04-03 post-diagnose)
 
-All 6 islands were redeployed 2026-03-28. Generations are fresh/low.
+| Space | Gen | Status Brier | Real Pop Brier | Model | Gen/hr | Action Taken |
+|-------|-----|-------------|----------------|-------|--------|--------------|
+| S10 nba-quant | 108 | 0.22563 | 0.2351 | catboost-locked | 14.9 | boost_mutation + config mut=0.12 feat=63 |
+| S11 nba-quant-2 | 207 | 0.22799 | 0.2297 | extra_trees | 41.5 | 3 experiments submitted |
+| S12 nba-evo-3 | 196 | 0.22506 | 0.2292 | lightgbm (FAST) | 78.9 | none — optimal, leave alone |
+| S13 nba-evo-4 | 153 | 0.22455 | 0.2317 | catboost | 31.1 | diversify command sent |
+| S14 nba-evo-5 | 174 | 0.22666 | 0.235 | xgboost | 24.7 | diversify + config mut=0.15 feat=63 |
+| S15 nba-evo-6 | 164 | 0.22159 | 0.2456 | catboost-locked | 27.8 | diversify + config mut=0.15 feat=63 |
 
-| Space | Stage | Gen | Brier | Role |
-|-------|-------|-----|-------|------|
-| S10 nba-quant | RUNNING | 9 | 0.22215 | exploitation |
-| S11 nba-quant-2 | RUNNING | 11 | 0.22321 | exploration |
-| S12 nba-evo-3 | RUNNING | 15 | 0.23347 | extra_trees specialist |
-| S13 nba-evo-4 | RUNNING | 6 | 0.22492 | catboost specialist |
-| S14 nba-evo-5 | BUILDING | -- | -- | lightgbm specialist |
-| S15 nba-evo-6 | RUNNING | 30 | 0.22112 | wide search |
+**True fleet best**: S13 at 0.22455 (real evolving population progress)
+**S15 warning**: "best_brier=0.22159" is a gen-1 random_forest seed that was never reproduced. Real population stuck at 0.2456 for 159 consecutive generations.
 
-**S14 issue**: stuck in BUILDING since 11:44 UTC (>2h). HTTP 000. No error in HF API. If still BUILDING at 15:00 UTC, trigger manual restart.
+## Critical Findings (Apr 3 diagnosis)
 
-**Fleet best post-redeploy**: S15, Brier=0.22112, gen 30
+### Finding 1: S15 true Brier is 0.2456, NOT 0.22159
+The status API returns `best_brier` = best individual ever seen, preserved in memory. S15 gen-1 random_forest 79-feat scored 0.22159. But the GA could not reproduce this and the entire evolving population converged to catboost-200-feat at 0.24564. **The fleet best metric is completely misleading.**
 
-## All-Time Bests
-- **ATR**: Brier 0.21570 (Colab TabICL, 110f, iter 15, 2026-03-27)
-- **CPU best**: 0.21976 (experiment #734, extra_trees, 142 features)
-- **Target**: < 0.20
+### Finding 2: CatBoost is 3-5x slower than LightGBM on CPU
+- S12 (lightgbm dominant): 46s/gen = **78.9 gen/hr**
+- S10 (catboost dominant): 242s/gen = **14.9 gen/hr**
+- 5.3x difference. CatBoost not designed for CPU.
 
-## Pre-Redeploy State (2026-03-26 snapshot)
+### Finding 3: NSGA-II composite not pushing Brier
+S15 history shows composite=0.73618 (random_forest Brier=0.2216) was higher than composite=0.66249 (catboost Brier=0.2456) — yet catboost took over. Root cause: elitism is insufficient. Top individual not protected from replacement. Once gen-0 seed's slot was overwritten, GA lost the good configuration permanently.
 
-| Space | Gen | Brier (best) | Gen-Pop Brier | Mut | Feat=200% | Supabase |
-|-------|-----|--------------|----------------|-----|-----------|----------|
-| S10 | 1970 | 0.22278 | 0.2214 (frozen) | 0.09 | 100% | OK |
-| S11 | 898 | 0.22365 | 0.2245 (frozen) | 0.08 | 100% | DEAD |
-| S12 | 56 | 0.22116 | 0.2206 | 0.0715 | 98% | DEAD |
-| S13 | 61 | 0.22367 | 0.2221 (improving) | 0.1126 | 72% | UNKNOWN |
-| S14 | 589 | 0.22093 | 0.2252 (regressed) | 0.1024 | 100% | OK |
-| S15 | 1017 | 0.22625 | 0.2221 (frozen) | 0.08 | 100% | OK |
+### Finding 4: Feat=200 catboost trap
+S15 top5 Pareto: 4/5 individuals at n_features=200. Only 1 (gen-0 seed) at 60 features. Feat=200 catboost wins raw Brier on training set but cannot generalize. The selection pressure never punishes overfitting.
 
-Actions taken 2026-03-26:
-- S10: config push mutation_rate=0.09, target_features=63, crossover_rate=0.80
-- S11: experiments #2533 (et63), #2534 (mut rescue 0.12), #2535 (xgb+sigmoid+63f) submitted
+## Code Fixes Required (in priority order)
 
-## Infrastructure Issues Found & Fixed (2026-03-28)
+1. **Elitism fix** (highest impact): top-2 by Brier + top-2 by composite ALWAYS survive to next gen
+2. **CatBoost CPU cap**: if not gpu → n_estimators=min(n_estimators, 60), early_stopping=15 rounds
+3. **Brier weight**: increase to 40% in composite formula (from ~20-25%)
+4. **Walk-forward n_splits=3** during evolution (not 5+), full CV only for top-5 per cycle
+5. **Feature penalty**: -0.001 * max(0, n_features - 80) in composite for CPU islands
 
-### Watchdog data server bug — FIXED
-- **Bug**: pgrep -f 'nba-data-server' did NOT match running process ('python3 -m http.server 8080')
-- **Effect**: 12 false restarts/hour, each failing with EADDRINUSE
-- **Fix**: `/home/termius/mon-ipad/scripts/watchdog.sh` — changed to: `if ! { pgrep -f "nba-data-server" || pgrep -f "http\.server 8080"; }; then`
-- **Verified**: fix confirmed working
+## Speed Summary
+- Current fleet: **219 gen/hr total**
+- After code fixes: **320-380 gen/hr** (1.5-1.7x)
+- S12 (lightgbm) is the reference: 78.9 gen/hr on identical hardware
 
-### Data server
-- Running as: `python3 -m http.server 8080 -b 0.0.0.0 --directory /home/termius/mon-ipad/data` (PID 507711, since Mar 27)
-- Port 8080, serving /home/termius/mon-ipad/data/
+## Commands Already Sent (Apr 3 15:00 UTC)
+- S10: boost_mutation, config push mut=0.12 feat=63
+- S13: diversify
+- S14: diversify, config push mut=0.15 feat=63
+- S15: diversify, config push mut=0.15 feat=63
+- S11: 3 experiments (ET-63, LightGBM-55, ET-63 high priority)
 
-### Telegram bots
-- @Nomos42Bot: PID 269800, running since Mar 27 17:11
-- @RGWAbot: PID 270201, running since Mar 27 17:18
+## Historical Notes (pre-Apr-3)
 
-### Crons
-- 11 active entries (watchdog, NBA agents, cross-repo, kaggle, political x4, infra, social, political agents)
+### 2026-03-28 post-redeploy
+All 6 islands redeployed fresh. S14 was stuck BUILDING for >2h. Watchdog data server bug fixed (pgrep pattern mismatch causing 12 false restarts/hr).
 
-## Structural Issues (persist across redeploys)
+### 2026-03-26 pre-redeploy
+- S10/S11: 100% Feat=200 takeover. All 5 of 6 islands had Feat=200 in >95% of population.
+- Fix attempted: S10 config push mut=0.09 feat=63 cx=0.80.
+- S11 experiments #2533-2535 submitted.
+- Root cause identified: NSGA-II tournament selection rewards ROI/Sharpe overfitting without feature penalty.
 
-1. **Feat=200 universal takeover** — 5 of 6 islands at 100% Feat=200 in gen logs pre-redeploy. Root cause: NSGA-II tournament selection rewards ROI/Sharpe overfitting. REQUIRES CODE FIX to genetic_loop_v3.py — add Pareto crowding penalty for n_features > 150.
-
-2. **Supabase dead on S11/S12/S13** — "FATAL: Tenant or user not found". Wrong DATABASE_URL pooler credentials. Fix: update env vars in HF Space settings to match S10's working credentials.
-
-3. **Migration spreading Feat=200** — Need feature-count filter on migration candidates (<= 120 features only).
-
-## API Reference (verified correct endpoints)
-- Status: `GET /api/status`
-- Config push: `POST /api/config`
-- Experiment submit: `POST /api/experiment/submit` (NOT /api/submit-experiment)
-- Population reset: `POST /api/reset`
-- Command: `POST /api/command`
-
-**Why tracking this**: Feat=200 bloat is the primary obstacle to breaking Brier 0.22 on CPU islands. Config-only rescues give temporary relief but Feat=200 re-establishes within 20-30 gens. Only a code-level selection penalty fix will solve it permanently.
+## Why tracking this
+The fleet Brier improvements are not coming from CPU evolution alone — CPU islands appear to be plateauing at ~0.225. True Brier gains require:
+1. Code-level elitism + Brier weighting fix
+2. GPU sessions (Kaggle/Colab) seeded from S13's best individuals
+3. The next evolutionary step likely requires the TabICL approach (Brier 0.21570 ATR) which needs GPU.

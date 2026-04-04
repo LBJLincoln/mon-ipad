@@ -46,6 +46,16 @@ import lightgbm as lgbm
 from catboost import CatBoostClassifier
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 
+# ── GPU detection ──
+import subprocess
+HAS_GPU = False
+try:
+    result = subprocess.run(["nvidia-smi"], capture_output=True, text=True, timeout=5)
+    HAS_GPU = result.returncode == 0
+except Exception:
+    pass
+print(f"GPU available: {HAS_GPU}")
+
 # Clone feature engine from HF Space (GitHub private repos don't work on Kaggle)
 REPO_DIR = WORK / "nba-quant-space"
 if not REPO_DIR.exists():
@@ -172,13 +182,13 @@ def make_model(model_type, hp):
         return lgbm.LGBMClassifier(
             max_depth=hp.get("depth", 6), learning_rate=hp.get("lr", 0.1),
             n_estimators=hp.get("n_est", 200), random_state=42,
-            verbose=-1, device="gpu"
+            verbose=-1, device="gpu" if HAS_GPU else "cpu"
         )
     elif model_type == "catboost":
         return CatBoostClassifier(
             depth=min(hp.get("depth", 6), 10), learning_rate=hp.get("lr", 0.1),
             iterations=hp.get("n_est", 200), random_state=42,
-            verbose=0, task_type="GPU"
+            verbose=0, task_type="GPU" if HAS_GPU else "CPU"
         )
     elif model_type == "extra_trees":
         return ExtraTreesClassifier(
@@ -304,45 +314,57 @@ def log_experiment(iteration, best_brier, n_evals, duration, improved):
     with open(LOG_FILE, "a") as f:
         f.write(json.dumps(entry) + "\n")
 
-def fetch_island_seeds():
-    """Seed population from live HF Space evolution islands."""
-    seeds = []
+def fetch_island_seeds(max_retries=3, retry_delay=60):
+    """Seed population from live HF Space evolution islands.
+    Retries if spaces are still rebuilding (gen 0)."""
     spaces = [
-        "https://nomos42-nba-quant.hf.space/api/best",
-        "https://nomos42-nba-quant-2.hf.space/api/best",
-        "https://nomos42-nba-evo-3.hf.space/api/best",
-        "https://nomos42-nba-evo-4.hf.space/api/best",
-        "https://nomos42-nba-evo-5.hf.space/api/best",
-        "https://nomos42-nba-evo-6.hf.space/api/best",
+        ("S10", "https://nomos42-nba-quant.hf.space/api/best"),
+        ("S11", "https://nomos42-nba-quant-2.hf.space/api/best"),
+        ("S12", "https://nomos42-nba-evo-3.hf.space/api/best"),
+        ("S13", "https://nomos42-nba-evo-4.hf.space/api/best"),
+        ("S14", "https://nomos42-nba-evo-5.hf.space/api/best"),
+        ("S15", "https://nomos42-nba-evo-6.hf.space/api/best"),
     ]
     import urllib.request, ssl
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
 
-    for url in spaces:
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": "Nomos42-Kaggle/1.0"})
-            with urllib.request.urlopen(req, timeout=10, context=ctx) as resp:
-                data = json.loads(resp.read())
-                if data.get("brier", 1.0) < 0.99:
-                    # Build mask from feature indices
-                    mask = np.zeros(X.shape[1], dtype=bool)
-                    for idx in data.get("features", []):
-                        if 0 <= idx < X.shape[1]:
-                            mask[idx] = True
-                    seeds.append({
-                        "mask": mask,
-                        "model_type": data.get("model_type", "xgboost"),
-                        "hp": data.get("hp", {"depth": 6, "lr": 0.1, "n_est": 200}),
-                        "brier": float(data.get("brier", 1.0)),
-                    })
-                    name = url.split("/")[-3]
-                    print(f"  {name}: brier={data.get('brier', '?')}")
-        except Exception as e:
-            pass
+    for attempt in range(max_retries):
+        seeds = []
+        for name, url in spaces:
+            try:
+                req = urllib.request.Request(url, headers={"User-Agent": "Nomos42-Kaggle/1.0"})
+                with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
+                    data = json.loads(resp.read())
+                    if data.get("brier", 1.0) < 0.99:
+                        mask = np.zeros(X.shape[1], dtype=bool)
+                        for idx in data.get("features", []):
+                            if 0 <= idx < X.shape[1]:
+                                mask[idx] = True
+                        if np.sum(mask) >= 5:  # Valid seed
+                            seeds.append({
+                                "mask": mask,
+                                "model_type": data.get("model_type", "xgboost"),
+                                "hp": data.get("hp", {"depth": 6, "lr": 0.1, "n_est": 200}),
+                                "brier": float(data.get("brier", 1.0)),
+                            })
+                            print(f"  {name}: brier={data.get('brier', '?')}, features={np.sum(mask)}, model={data.get('model_type', '?')}")
+                        else:
+                            print(f"  {name}: too few features ({np.sum(mask)}), skipping")
+                    else:
+                        print(f"  {name}: gen 0 / no valid best yet")
+            except Exception as e:
+                print(f"  {name}: OFFLINE ({type(e).__name__}: {e})")
 
-    print(f"Seeds fetched: {len(seeds)}")
+        if seeds:
+            print(f"Seeds fetched: {len(seeds)}/6 islands (attempt {attempt+1})")
+            return seeds
+        elif attempt < max_retries - 1:
+            print(f"No seeds yet (attempt {attempt+1}/{max_retries}), retrying in {retry_delay}s...")
+            time.sleep(retry_delay)
+
+    print(f"No seeds after {max_retries} attempts — using random initialization")
     return seeds
 
 # ══════════════════════════════════════════════════════════

@@ -90,12 +90,16 @@ def check_kaggle_kernel(kernel_ref):
 
 
 def check_data_server():
-    """Check if local data server is running."""
+    """Check if local data server is running.
+
+    Data server serves from /home/termius/mon-ipad/data/ on port 8080,
+    so files at data/nba-agent/*.json are at http://localhost:8080/nba-agent/*.json
+    """
     endpoints = ["backtest-results.json", "bankroll-state.json", "quant-summary.json"]
     results = {}
     for ep in endpoints:
         try:
-            req = urllib.request.Request(f"http://localhost:8080/{ep}")
+            req = urllib.request.Request(f"http://localhost:8080/nba-agent/{ep}")
             with urllib.request.urlopen(req, timeout=5) as resp:
                 results[ep] = resp.status
         except:

@@ -75,7 +75,7 @@ HF_POLITICAL_SPACES = {
     # P3/P4 removed 2026-04-03 — spaces never existed on HF, caused phantom 404s
 }
 
-DATA_SERVER_URL = "http://localhost:5555/api/status"
+DATA_SERVER_URL = "http://localhost:8080/nba-agent/quant-summary.json"
 
 # Thresholds for health scoring
 HEALTH_WEIGHTS = {

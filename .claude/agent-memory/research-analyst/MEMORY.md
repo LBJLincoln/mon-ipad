@@ -22,3 +22,7 @@
 
 ## Backtest Audit
 - [project_backtest_audit_march2026.md](project_backtest_audit_march2026.md) — CRITICAL: 3 bugs in nba_season_backtest.py inflated ROI 4470% (circular odds), Sharpe 2.2x (sqrt annualization), DD understated. All 3 fixed 2026-03-28.
+
+## April 2026 Research
+- [research_april2026_cycle9_neural_architectures.md](research_april2026_cycle9_neural_architectures.md) — Apr 3 2026 cycle 9: neural arch sweep — MLP meta-learner (deploy now, -0.003), Brier loss obj (-0.002), TabICLv2 GPU (-0.004), discrete tokenization transformer arXiv:2603.07448 (watch for code, -0.005), GNN/TFT/NODE all SKIP
+- [research_april2026_cycle10_betting_markets.md](research_april2026_cycle10_betting_markets.md) — Apr 3 2026 cycle 10: 64-market NBA taxonomy (US + FR), softest markets (blocks/steals/Q1 props/alt team totals = efficiency 5), The Odds API keys, Pari+20 exclusive (FR), 4-phase expansion roadmap

@@ -165,3 +165,21 @@ Each shows: dept status, active loops, metrics, agent activity
 | 24/7 brain trigger | Sonnet 4.6 | Remote trigger |
 | Batch execution, search | Sonnet 4.6 | Agent(model: "sonnet") |
 | Codebase exploration | Haiku 4.5 | Agent(model: "haiku") |
+
+
+## Forge v19 — 3 Layers × 8 Departments (2026-04-03T20:02:58Z)
+
+```
+L1 STRATEGIC:  Claude Code CLI + User (vision, milestones, decisions)
+L2 APPLICATION: D1 Research | D2 Engineering | D3 Evolution | D4 Product | D5 Business | D6 Evaluation
+L3 LOGISTICS:   D7 Infra | D8 Finance
+```
+
+Each department runs a Karpathy autoresearch loop:
+- SCAN → PROPOSE → EXECUTE (5-min) → EVALUATE → KEEP/REVERT
+- Council state: data/departments/council-<dept>.json
+- Metrics log: data/departments/<dept>/metrics.jsonl
+- Runner: scripts/councils/department-council.sh <dept>
+
+Shared infra: VM (control tower) + Laptop (local models) + HF Spaces (3 accounts) + GPU burst
+

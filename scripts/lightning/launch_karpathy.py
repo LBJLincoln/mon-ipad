@@ -35,7 +35,8 @@ if ENV_FILE.exists():
         line = line.strip()
         if line and not line.startswith("#") and "=" in line:
             k, v = line.split("=", 1)
-            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+            k = k.strip().removeprefix("export").strip()
+            os.environ.setdefault(k, v.strip().strip('"').strip("'"))
 
 # Account configs
 ACCOUNTS = {
