@@ -217,6 +217,30 @@ LIVE_CATS = [
                 "Over/under on largest lead in the game?"),
     BetCategory("momentum_q3", "Q3 Momentum Shift", "live",
                 "Will Q3 feature a significant momentum shift?", sides=1),
+    BetCategory("live_garbage_time", "Garbage Time Impact", "live",
+                "Will garbage time significantly affect the final score vs spread?", sides=1),
+    BetCategory("live_clutch_q4", "Q4 Clutch Factor", "live",
+                "Will Q4 be decided by clutch plays (within 5pts in final 2min)?", sides=1),
+    BetCategory("live_foul_trouble", "Foul Trouble Impact", "live",
+                "Will foul trouble to a key player significantly affect the outcome?", sides=1),
+]
+
+# ============================================================================
+# GROUP 10: ADVANCED / DERIVED (6 categories)
+# ============================================================================
+ADVANCED_CATS = [
+    BetCategory("pace_over_100", "Pace Over 100 Possessions", "advanced",
+                "Will game pace exceed 100 possessions? Analyze team pace ratings.", sides=1),
+    BetCategory("ft_differential", "FT Differential O/U 8.5", "advanced",
+                "Will the free throw attempt differential exceed 8.5?", sides=1),
+    BetCategory("three_pt_total", "Combined 3PM O/U 22.5", "advanced",
+                "Will combined three-pointers made exceed 22.5?"),
+    BetCategory("bench_pts_total", "Combined Bench Points O/U 60.5", "advanced",
+                "Will combined bench scoring exceed 60.5 points?"),
+    BetCategory("turnover_total", "Combined Turnovers O/U 27.5", "advanced",
+                "Will combined turnovers exceed 27.5?"),
+    BetCategory("paint_pts_total", "Combined Paint Points O/U 90.5", "advanced",
+                "Will combined points in the paint exceed 90.5?"),
 ]
 
 # ============================================================================
@@ -224,7 +248,8 @@ LIVE_CATS = [
 # ============================================================================
 ALL_CATEGORIES: List[BetCategory] = (
     MONEYLINE_CATS + SPREAD_CATS + TOTALS_CATS + PLAYER_PROP_CATS +
-    MARGIN_CATS + RACE_CATS + EXOTIC_CATS + PARLAY_CATS + LIVE_CATS
+    MARGIN_CATS + RACE_CATS + EXOTIC_CATS + PARLAY_CATS + LIVE_CATS +
+    ADVANCED_CATS
 )
 
 # Quick lookup
@@ -237,6 +262,53 @@ for cat in ALL_CATEGORIES:
 
 # Total specialist agent count
 TOTAL_SPECIALIST_AGENTS = sum(cat.sides for cat in ALL_CATEGORIES)
+
+
+def _build_ml_section(game_context: dict) -> str:
+    """Build ML model predictions section for agent prompts."""
+    model_prob = game_context.get("model_prob_home")
+    model_n = game_context.get("model_n_models", 0)
+    if not model_prob or model_n == 0:
+        return ""
+
+    home = game_context.get("home_team", game_context.get("home", "HOME"))
+    model_brier = game_context.get("model_avg_brier", 1.0)
+    model_conf = game_context.get("model_confidence", "low")
+
+    section = f"""
+=== ML MODEL PREDICTIONS ({model_n} evolved models, avg Brier={model_brier:.4f}, confidence={model_conf}) ===
+P(home win): {model_prob:.3f}"""
+
+    ci = game_context.get("model_prob_ci")
+    if ci:
+        section += f" [90% CI: {ci[0]:.3f}-{ci[1]:.3f}]"
+
+    model_spread = game_context.get("model_spread")
+    if model_spread is not None:
+        section += f"\nPredicted margin: {home} {model_spread:+.1f}"
+        sp_ci = game_context.get("model_spread_ci")
+        if sp_ci:
+            section += f" [CI: {sp_ci[0]:+.1f} to {sp_ci[1]:+.1f}]"
+
+    model_total = game_context.get("model_total")
+    if model_total is not None:
+        section += f"\nPredicted total: {model_total:.1f}"
+        tot_ci = game_context.get("model_total_ci")
+        if tot_ci:
+            section += f" [CI: {tot_ci[0]:.1f}-{tot_ci[1]:.1f}]"
+
+    ml_edge = game_context.get("model_ml_edge")
+    if ml_edge is not None:
+        section += f"\nEdge vs market: {ml_edge:+.1%}"
+
+    details = game_context.get("model_details", [])
+    if details:
+        section += "\nModels: " + ", ".join(
+            f"{d['source']}({d['model_type']},{d['n_features']}f)" for d in details[:3]
+        )
+
+    section += "\n"
+    return section
 
 
 def get_specialist_prompt(cat: BetCategory, game_context: dict, side: int = 0) -> str:
@@ -254,12 +326,35 @@ def get_specialist_prompt(cat: BetCategory, game_context: dict, side: int = 0) -
     elif cat.sides == 2 and side == 1:
         side_label = f" ({away} / Under / Away)"
 
+    # Inject REAL ML model predictions if available
+    ml_section = ""
+    model_prob = game_context.get("model_prob_home")
+    model_spread = game_context.get("model_spread")
+    model_total = game_context.get("model_total")
+    model_conf = game_context.get("model_confidence", "none")
+    model_n = game_context.get("model_n_models", 0)
+    model_brier = game_context.get("model_avg_brier", 1.0)
+
+    if model_prob and model_n > 0:
+        ml_section = f"""
+=== ML MODEL PREDICTIONS (from {model_n} evolved models, avg Brier={model_brier:.4f}) ===
+P(home win): {model_prob:.3f} | Confidence: {model_conf}
+"""
+        if model_spread is not None:
+            ml_section += f"Predicted margin: {home} {model_spread:+.1f}\n"
+        if model_total is not None:
+            ml_section += f"Predicted total: {model_total:.1f}\n"
+        ml_edge = game_context.get("model_ml_edge")
+        if ml_edge is not None:
+            ml_section += f"Edge vs market: {ml_edge:+.1%}\n"
+        ml_section += "IMPORTANT: Base your analysis on these ML predictions, NOT your intuition.\n"
+
     return f"""NBA Bet Analysis — {cat.name}{side_label}
 
 Game: {away} @ {home}
 Spread: {home} {spread} | Total: {total}
 Moneyline: {home} {odds_home} / {away} {odds_away}
-
+{ml_section}
 Your ONLY job: Analyze category "{cat.name}" for this game.
 {cat.prompt_hint}
 
@@ -275,12 +370,17 @@ def get_tier2_prompt(game_context: dict, focus_groups: List[str]) -> str:
     total = game_context.get("total", "N/A")
 
     groups_str = ", ".join(focus_groups)
+
+    # Real ML model predictions
+    ml_section = _build_ml_section(game_context)
+
     return f"""NBA Betting Analysis — {away} @ {home}
 
 Spread: {home} {spread} | Total: {total}
 Focus areas: {groups_str}
-
-Analyze this game across the focus areas. For each relevant bet type, provide your assessment.
+{ml_section}
+Analyze this game across the focus areas. Use the ML model predictions above as your primary signal.
+For each relevant bet type, provide your assessment.
 
 Respond with EXACTLY this JSON (no other text):
 {{"bets": [{{"category": "ml_fg", "confidence": 0.0-1.0, "direction": "home"/"away", "edge_pct": -10 to 10, "reasoning": "brief"}}, ...]}}"""
@@ -303,13 +403,17 @@ def get_tier1_prompt(game_context: dict, other_predictions: List[dict] = None) -
             peers_section += f"  Analyst #{i+1}: ML={pred.get('ml_pick','?')}, Spread={pred.get('spread_pick','?')}, Total={pred.get('total_pick','?')}, Confidence={pred.get('confidence','?')}\n"
         peers_section += "\nIncorporate peer consensus into your final assessment.\n"
 
+    # Real ML model predictions
+    ml_section = _build_ml_section(game_context)
+
     return f"""COMPREHENSIVE NBA GAME ANALYSIS — {away} @ {home}
 
 === GAME INFO ===
 Spread: {home} {spread} | Total: {total}
 Home Form: {form_home} | Away Form: {form_away}
 Injuries: {injuries}
-{peers_section}
+{ml_section}{peers_section}
+CRITICAL: Use ML model predictions above as your PRIMARY signal. Only bet where model edge > 3%.
 Analyze ALL major bet categories for this game:
 1. Moneyline (full game + halves + quarters)
 2. Spread (full game + alt lines)
