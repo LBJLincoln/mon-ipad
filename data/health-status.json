@@ -1,13 +1,13 @@
 {
-  "cycle_timestamp": "2026-04-04T17:30:00Z",
+  "cycle_timestamp": "2026-04-04T20:30:00Z",
   "cycle_type": "4h_brain",
-  "cycle_number": 61,
+  "cycle_number": 62,
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
 
   "nba_fleet": {
     "fleet_best_brier": 0.22159,
     "fleet_best_island": "S15",
-    "fleet_avg_brier": 0.22419,
+    "fleet_avg_brier": 0.22420,
     "checkpoint_threshold": 0.21837,
     "checkpoint_triggered": false,
     "checkpoint_gap": 0.00322,
@@ -17,105 +17,100 @@
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "gen": 606,
-        "cycle": 202,
+        "gen": 670,
+        "cycle": 224,
         "brier": 0.22454,
         "roi": 0.2737,
         "sharpe": 5.9986,
         "stagnation": 0,
         "model": "xgboost_brier",
         "mutation_rate": 0.05,
-        "pareto_front_size": 16,
+        "pareto_front_size": 8,
         "features": 50,
         "status": "active",
-        "http_status": 200,
-        "delta_gen_vs_last": 295
+        "http_status": 200
       },
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "gen": 1137,
-        "cycle": 379,
+        "gen": 1298,
+        "cycle": 433,
         "brier": 0.22273,
         "roi": 0.2934,
         "sharpe": 8.6004,
         "stagnation": 0,
         "model": "xgboost",
         "mutation_rate": 0.08,
-        "pareto_front_size": 13,
+        "pareto_front_size": 16,
         "features": 63,
         "status": "active",
-        "http_status": 200,
-        "delta_gen_vs_last": 664
+        "http_status": 200
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
-        "gen": 1231,
-        "cycle": 411,
+        "gen": 1301,
+        "cycle": 434,
         "brier": 0.22506,
         "roi": 0.2669,
         "sharpe": 10.4122,
         "stagnation": 0,
         "model": "catboost",
         "mutation_rate": 0.04,
-        "pareto_front_size": 10,
+        "pareto_front_size": 7,
         "features": 43,
         "status": "active",
-        "http_status": 200,
-        "delta_gen_vs_last": 486
+        "http_status": 200
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
-        "gen": 904,
-        "cycle": 302,
+        "gen": 978,
+        "cycle": 326,
         "brier": 0.22455,
         "roi": 0.2722,
         "sharpe": 11.9811,
         "stagnation": 0,
         "model": "extra_trees",
         "mutation_rate": 0.05,
-        "pareto_front_size": 11,
+        "pareto_front_size": 12,
         "features": 69,
         "status": "active",
-        "http_status": 200,
-        "delta_gen_vs_last": 412
+        "http_status": 200
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
-        "gen": 930,
-        "cycle": 310,
+        "gen": 1021,
+        "cycle": 341,
         "brier": 0.22666,
         "roi": 0.2512,
         "sharpe": 5.2171,
         "stagnation": 0,
         "model": "xgboost_brier",
         "mutation_rate": 0.04,
-        "pareto_front_size": 14,
+        "pareto_front_size": 15,
         "features": 55,
         "status": "active",
         "http_status": 200,
-        "delta_gen_vs_last": 370
+        "note": "Top-5 solution: CatBoost 200f Brier=0.22048, ROI=31.89%, Sharpe=6.34"
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "gen": 1542,
-        "cycle": 514,
+        "gen": 1730,
+        "cycle": 577,
         "brier": 0.22159,
         "roi": 0.3067,
         "sharpe": 7.3688,
         "stagnation": 0,
         "model": "random_forest",
         "mutation_rate": 0.08,
-        "pareto_front_size": 17,
+        "pareto_front_size": 7,
         "features": 79,
         "status": "active",
         "http_status": 200,
-        "delta_gen_vs_last": 804,
-        "note": "FLEET BEST — Brier 0.22159, ROI 30.67%. 804 new gens since last cycle. Calibration still identity stub."
+        "note": "FLEET BEST — gen1729: Brier=0.2216 ROI=30.6% Sharpe=8.69 Feat=48"
       }
     }
   },
@@ -125,100 +120,72 @@
     "online": 2,
     "offline": 2,
     "best_brier": 0.23134,
-    "best_island": "PA-2",
-    "fleet_average_brier": 0.24066,
-    "data_pipeline_status": "RECOVERING — FEC fix Apr-2 (verify Apr-4 run), polymarket status unknown",
+    "best_island": "P2",
+    "fleet_avg_brier": 0.24066,
+    "data_pipeline_status": "CRITICAL",
+    "real_events": 60,
+    "synthetic_events": 312,
     "islands": {
-      "political-alpha-1": {
-        "status": "ONLINE",
+      "P1": {
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
-        "cycle": 697,
-        "generation": 2089,
-        "best_brier": 0.24997,
-        "best_model": "xgboost_brier",
-        "best_features": 79,
+        "gen": 2740,
+        "cycle": 914,
+        "brier": 0.24997,
         "stagnation": 0,
-        "mutation_rate": 0.05,
-        "pareto_front_size": 9,
-        "events": 1180,
-        "http_status": 200,
-        "note": "Brier at 0.24997 — if plateau persists 2 more cycles (>0.245 for 3 cycles total), POST /api/command diversify"
-      },
-      "political-alpha-2": {
-        "status": "ONLINE",
-        "url": "nomos42-political-alpha-2.hf.space",
-        "role": "exploration",
-        "cycle": 2648,
-        "generation": 7944,
-        "best_brier": 0.23134,
-        "best_model": "catboost",
-        "best_features": 70,
-        "stagnation": 0,
-        "mutation_rate": 0.05,
-        "pareto_front_size": 18,
-        "events": 372,
-        "roi": 0.2804,
-        "sharpe": 1.0635,
+        "model": "xgboost_brier",
+        "status": "active",
         "http_status": 200
       },
-      "political-alpha-3": {
-        "status": "OFFLINE",
+      "P2": {
+        "url": "nomos42-political-alpha-2.hf.space",
+        "role": "exploration",
+        "gen": 8743,
+        "cycle": 2915,
+        "brier": 0.23134,
+        "roi": 0.2804,
+        "sharpe": 1.0635,
+        "stagnation": 0,
+        "model": "catboost",
+        "status": "active",
+        "http_status": 200
+      },
+      "P3": {
         "url": "nomos42-political-alpha-3.hf.space",
         "role": "catboost_specialist",
+        "status": "offline",
         "http_status": 404,
-        "consecutive_down_cycles": 3,
-        "action": "CRITICAL: manual restart at huggingface.co — LBJLincoln26/nomos-political-alpha-3"
+        "action_needed": "HF Space restart required (3rd+ consecutive cycle down)"
       },
-      "political-alpha-4": {
-        "status": "OFFLINE",
+      "P4": {
         "url": "nomos42-political-alpha-4.hf.space",
         "role": "wide_search",
+        "status": "offline",
         "http_status": 404,
-        "consecutive_down_cycles": 3,
-        "action": "CRITICAL: manual restart at huggingface.co — Nomos42/nomos-political-alpha-4"
+        "action_needed": "HF Space restart required (3rd+ consecutive cycle down)"
       }
     }
   },
 
-  "actions_taken": [
-    "All 6 NBA islands ACTIVE (6/6) — all stagnation=0, no diversify needed",
-    "S15 fleet best unchanged: Brier 0.22159, 804 new gens this cycle (1542 total)",
-    "No NBA checkpoint — gap to threshold: 0.00322 (need 0.21837, have 0.22159)",
-    "NBA calibration: isotonic_breakpoints.json still IDENTITY STUB — proposal written for auto-fit trigger",
-    "Political rotation A (WebSearch data sources): FEC API 2026 data confirmed daily-updated, QuiverQuant congressional trades active",
-    "Political improvement: added _validate_output() to fetch_political_data.py — catches empty files before silent write",
-    "PA-3 & PA-4 DOWN 3rd consecutive cycle — CRITICAL, manual restart urgent"
-  ],
-
-  "alerts": [
-    "CRITICAL: PA-3 DOWN 3rd consecutive cycle (catboost_specialist) — losing 25% evolution diversity",
-    "CRITICAL: PA-4 DOWN 3rd consecutive cycle (wide_search) — losing 25% evolution diversity",
-    "WARN: NBA isotonic calibration is identity stub (never fitted) — could improve Brier up to 0.005",
-    "WARN: PA-1 plateau at Brier 0.24997 — monitor next 2 cycles, diversify if no improvement",
-    "INFO: S15 most active island (+804 gens/cycle), fleet leader at 0.22159",
-    "INFO: Calibration research shows isotonic can reduce Brier significantly — see proposal"
-  ],
-
-  "cross_project_insights": [
-    "PA-2 Brier=0.23134 (70f CatBoost) — political > NBA in calibration at same feature count",
-    "S15 RF 79f most productive island — RF with wide feature search beats specialist models",
-    "NBA calibration stub never activated — political already has political_calibration.py deployed",
-    "Port political Cat23 FEC velocity fetch validation back to NBA odds pipeline validation"
-  ],
-
-  "research_findings_cycle_61": {
-    "cycle_type": "ODD — minimal research (full research on even cycles)",
-    "key_finding_1": "MDPI 2078-2489/17/1/56: Uncertainty-aware NBA forecasting with Monte Carlo dropout + team-level metrics + rolling-form + shot-chart embeddings. RNN+MCDrop Brier=0.187 on CPU-compatible ensemble wrapper.",
-    "key_finding_2": "Calibration literature: isotonic reduced Brier from 0.1775→0.0519 on benchmark. NBA application: with current raw brier 0.22159, post-hoc isotonic could push toward 0.217-0.219 range (estimated 0.3-1% improvement).",
-    "new_proposal": "rolling-calibration-trigger-2026-04-04 — auto-fit isotonic from HF Space OOB predictions, monthly re-fit, eliminates identity stub"
+  "cycle_actions": {
+    "stagnation_diversify": "none — all running islands have stagnation=0",
+    "brier_checkpoint": "not triggered — best 0.22159 vs threshold 0.21837 (gap: 0.00322)",
+    "nba_improvement": "Research proposal: 2026-04-04-ev-filter-fractional-kelly-fusion.json — EV>1.10 selective wagering + Fractional Kelly 0.3x (from MDPI 2026 Brier=0.089 fused model paper)",
+    "political_improvement": "political_engine.py v3.2→v3.3: Liberation Day tariff escalation (Apr 2, 2026) — 10 new features (China 145%, universal 10%, sector LD exposure, LD recency, LD direction). Cat26 now 20 features.",
+    "research_rotation": "NBA — MDPI Jan 2026 uncertainty-aware forecasting paper (Brier 0.089 via market fusion)",
+    "cross_project": "EV filter + Kelly 0.3x applicable to both NBA and Political bankroll_manager.py"
   },
 
-  "next_cycle_actions": [
-    "URGENT: Restart PA-3 and PA-4 manually on HuggingFace",
-    "Activate NBA isotonic calibration: run IsotonicPostCalibrator.from_backtest() on S10 HF Space",
-    "Monitor PA-1 brier — if still >0.245 next cycle, POST diversify",
-    "Check if political FEC data is now populated post Apr-2 fix",
-    "Research cycle 62 (EVEN): search for NBA play-by-play shot-chart features for Cat47-50"
-  ]
+  "alerts": [
+    "CRITICAL: P3 and P4 offline — political fleet at 50% capacity (manual HF restart needed)",
+    "CRITICAL: Political data pipeline only 60 real events vs 312 synthetic (83.8% synthetic)",
+    "INFO: NBA fleet 6/6 operational — all stagnation=0",
+    "INFO: Brier checkpoint gap = 0.00322 — S15 approaching threshold",
+    "INFO: Liberation Day tariff signals added to political engine (Cat26 expanded)"
+  ],
+
+  "next_cycle_targets": {
+    "nba": "Implement EV>1.10 filter + Kelly 0.3x in ops/bankroll_manager.py",
+    "political": "Rotation D — check ops/fetch_political_data.py, ingest April 2-4 Liberation Day trade data"
+  }
 }
