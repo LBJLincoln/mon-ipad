@@ -1,9 +1,9 @@
 {
-  "iteration": 400,
-  "generation": 54400,
+  "iteration": 401,
+  "generation": 54536,
   "meta": {
     "version": "trading-floor-v8",
-    "generated": "2026-04-04T09:18:27Z",
+    "generated": "2026-04-04T09:27:58Z",
     "date": "2026-04-04",
     "traders": 5,
     "nba_models": 11,
@@ -11,7 +11,7 @@
     "nba_strategies_eliminated": 3,
     "matched_games": 994,
     "political_tickers": 26,
-    "etf_universe": 13
+    "etf_universe": 36
   },
   "eliminations": {
     "strategies": {
@@ -60677,7 +60677,7 @@
         "codex",
         "grok"
       ],
-      "run_timestamp": "2026-04-04T09:16:15.162782+00:00"
+      "run_timestamp": "2026-04-04T09:25:51.846069+00:00"
     },
     "openrouter": {
       "trader_id": "openrouter",
@@ -96853,7 +96853,7 @@
         "codex",
         "grok"
       ],
-      "run_timestamp": "2026-04-04T09:17:01.145676+00:00"
+      "run_timestamp": "2026-04-04T09:26:21.116752+00:00"
     },
     "claude": {
       "trader_id": "claude",
@@ -129799,7 +129799,7 @@
         "codex",
         "grok"
       ],
-      "run_timestamp": "2026-04-04T09:17:32.395618+00:00"
+      "run_timestamp": "2026-04-04T09:26:51.115638+00:00"
     },
     "codex": {
       "trader_id": "codex",
@@ -201777,7 +201777,7 @@
         "claude",
         "grok"
       ],
-      "run_timestamp": "2026-04-04T09:17:56.661757+00:00"
+      "run_timestamp": "2026-04-04T09:27:28.117340+00:00"
     },
     "grok": {
       "trader_id": "grok",
@@ -222696,7 +222696,7 @@
         "claude",
         "codex"
       ],
-      "run_timestamp": "2026-04-04T09:18:24.412473+00:00"
+      "run_timestamp": "2026-04-04T09:27:55.363681+00:00"
     }
   },
   "command_centers": {
@@ -222870,67 +222870,218 @@
     "SPY": {
       "name": "S&P 500",
       "sector": "broad",
-      "beta": 1.0
+      "beta": 1.0,
+      "type": "etf"
     },
     "QQQ": {
       "name": "NASDAQ 100",
       "sector": "technology",
-      "beta": 1.2
+      "beta": 1.2,
+      "type": "etf"
     },
     "IWM": {
       "name": "Russell 2000",
       "sector": "small_cap",
-      "beta": 1.1
+      "beta": 1.1,
+      "type": "etf"
     },
     "XLF": {
       "name": "Financials",
       "sector": "financials",
-      "beta": 1.1
+      "beta": 1.1,
+      "type": "etf"
     },
     "XLE": {
       "name": "Energy",
       "sector": "energy",
-      "beta": 1.3
+      "beta": 1.3,
+      "type": "etf"
     },
     "XLK": {
       "name": "Technology",
       "sector": "technology",
-      "beta": 1.2
+      "beta": 1.2,
+      "type": "etf"
     },
     "XLV": {
       "name": "Healthcare",
       "sector": "healthcare",
-      "beta": 0.8
+      "beta": 0.8,
+      "type": "etf"
     },
     "XLI": {
       "name": "Industrials",
       "sector": "industrials",
-      "beta": 1.0
+      "beta": 1.0,
+      "type": "etf"
     },
     "XLD": {
       "name": "Defense",
       "sector": "defense",
-      "beta": 0.9
+      "beta": 0.9,
+      "type": "etf"
     },
     "GLD": {
       "name": "Gold",
       "sector": "commodity",
-      "beta": 0.3
+      "beta": 0.3,
+      "type": "etf"
     },
     "TLT": {
       "name": "Long-term Treasuries",
       "sector": "bonds",
-      "beta": -0.2
+      "beta": -0.2,
+      "type": "etf"
     },
     "LMT": {
       "name": "Lockheed Martin",
       "sector": "defense",
-      "beta": 0.7
+      "beta": 0.7,
+      "type": "stock"
     },
     "RTX": {
       "name": "Raytheon",
       "sector": "defense",
-      "beta": 0.8
+      "beta": 0.8,
+      "type": "stock"
+    },
+    "BA": {
+      "name": "Boeing",
+      "sector": "defense",
+      "beta": 1.2,
+      "type": "stock"
+    },
+    "NOC": {
+      "name": "Northrop Grumman",
+      "sector": "defense",
+      "beta": 0.6,
+      "type": "stock"
+    },
+    "GD": {
+      "name": "General Dynamics",
+      "sector": "defense",
+      "beta": 0.7,
+      "type": "stock"
+    },
+    "AAPL": {
+      "name": "Apple",
+      "sector": "technology",
+      "beta": 1.1,
+      "type": "stock"
+    },
+    "MSFT": {
+      "name": "Microsoft",
+      "sector": "technology",
+      "beta": 1.0,
+      "type": "stock"
+    },
+    "GOOGL": {
+      "name": "Alphabet",
+      "sector": "technology",
+      "beta": 1.1,
+      "type": "stock"
+    },
+    "META": {
+      "name": "Meta Platforms",
+      "sector": "technology",
+      "beta": 1.3,
+      "type": "stock"
+    },
+    "NVDA": {
+      "name": "NVIDIA",
+      "sector": "technology",
+      "beta": 1.5,
+      "type": "stock"
+    },
+    "AMZN": {
+      "name": "Amazon",
+      "sector": "technology",
+      "beta": 1.2,
+      "type": "stock"
+    },
+    "TSLA": {
+      "name": "Tesla",
+      "sector": "technology",
+      "beta": 1.8,
+      "type": "stock"
+    },
+    "JPM": {
+      "name": "JPMorgan Chase",
+      "sector": "financials",
+      "beta": 1.1,
+      "type": "stock"
+    },
+    "GS": {
+      "name": "Goldman Sachs",
+      "sector": "financials",
+      "beta": 1.3,
+      "type": "stock"
+    },
+    "MS": {
+      "name": "Morgan Stanley",
+      "sector": "financials",
+      "beta": 1.2,
+      "type": "stock"
+    },
+    "BLK": {
+      "name": "BlackRock",
+      "sector": "financials",
+      "beta": 1.1,
+      "type": "stock"
+    },
+    "AXP": {
+      "name": "American Express",
+      "sector": "financials",
+      "beta": 1.0,
+      "type": "stock"
+    },
+    "XOM": {
+      "name": "Exxon Mobil",
+      "sector": "energy",
+      "beta": 1.0,
+      "type": "stock"
+    },
+    "CVX": {
+      "name": "Chevron",
+      "sector": "energy",
+      "beta": 0.9,
+      "type": "stock"
+    },
+    "COP": {
+      "name": "ConocoPhillips",
+      "sector": "energy",
+      "beta": 1.1,
+      "type": "stock"
+    },
+    "OXY": {
+      "name": "Occidental",
+      "sector": "energy",
+      "beta": 1.4,
+      "type": "stock"
+    },
+    "HAL": {
+      "name": "Halliburton",
+      "sector": "energy",
+      "beta": 1.3,
+      "type": "stock"
+    },
+    "PFE": {
+      "name": "Pfizer",
+      "sector": "healthcare",
+      "beta": 0.7,
+      "type": "stock"
+    },
+    "JNJ": {
+      "name": "Johnson & Johnson",
+      "sector": "healthcare",
+      "beta": 0.6,
+      "type": "stock"
+    },
+    "UNH": {
+      "name": "UnitedHealth",
+      "sector": "healthcare",
+      "beta": 0.8,
+      "type": "stock"
     }
   }
 }
