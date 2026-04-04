@@ -38,7 +38,7 @@ opencode_available() {
 # Generate temporary .opencode.json config for non-interactive use
 generate_opencode_config() {
     local work_dir="${1:-$REPO_ROOT}"
-    local model="${2:-claude-sonnet-4-20250514}"
+    local model="${2:-claude-sonnet-4}"
     local max_tokens="${3:-4000}"
 
     # Determine provider and model from available keys
@@ -49,7 +49,7 @@ generate_opencode_config() {
         provider="anthropic"
     elif [ -n "$OPENROUTER_API_KEY" ]; then
         provider="openrouter"
-        actual_model="anthropic/claude-sonnet-4-20250514"
+        actual_model="anthropic/claude-sonnet-4"
     elif [ -n "$OPENAI_API_KEY" ]; then
         provider="openai"
         actual_model="gpt-4o"
@@ -120,57 +120,94 @@ run_fallback() {
     local prompt="$1"
     local output_file="$2"
 
-    # Try OpenRouter first (has multiple model keys)
-    local api_key="${OPENROUTER_API_KEY:-}"
-    local api_url="https://openrouter.ai/api/v1/chat/completions"
-    local model="anthropic/claude-sonnet-4-20250514"
+    # Try providers in order: OpenRouter → OpenAI → Gemini
+    local providers=()
+    [ -n "${OPENROUTER_API_KEY:-}" ] && providers+=("openrouter")
+    [ -n "${OPENAI_API_KEY:-}" ] && providers+=("openai")
+    [ -n "${GEMINI_API_KEY:-}${GOOGLE_API_KEY:-}" ] && providers+=("gemini")
 
-    if [ -z "$api_key" ]; then
-        # Try OpenAI
-        api_key="${OPENAI_API_KEY:-}"
-        api_url="https://api.openai.com/v1/chat/completions"
-        model="gpt-4o-mini"
-    fi
-
-    if [ -z "$api_key" ]; then
+    if [ ${#providers[@]} -eq 0 ]; then
         echo '{"error": "No API keys available for fallback", "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' > "$output_file"
         return 1
     fi
 
-    local response
-    response=$(curl -fsSL "$api_url" \
-        -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $api_key" \
-        -d "$(python3 -c "
-import json, sys
-prompt = '''$prompt'''
-payload = {
-    'model': '$model',
-    'max_tokens': 2000,
-    'messages': [{'role': 'user', 'content': prompt}],
-    'response_format': {'type': 'json_object'}
-}
-print(json.dumps(payload))
-")" \
-        --max-time 120 \
-        2>/dev/null)
+    for provider in "${providers[@]}"; do
+        local response=""
+        local success=false
 
-    if [ $? -eq 0 ]; then
-        echo "$response" | python3 -c "
-import json, sys
+        case "$provider" in
+            openrouter)
+                log "fallback" "Trying OpenRouter..."
+                response=$(curl -sSL "https://openrouter.ai/api/v1/chat/completions" \
+                    -H "Content-Type: application/json" \
+                    -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+                    -d "$(python3 -c "
+import json
+prompt = '''$prompt'''
+print(json.dumps({'model': 'anthropic/claude-sonnet-4', 'max_tokens': 2000, 'messages': [{'role': 'user', 'content': prompt}]}))
+")" \
+                    --max-time 120 2>/dev/null) && success=true
+                ;;
+            openai)
+                log "fallback" "Trying OpenAI..."
+                response=$(curl -sSL "https://api.openai.com/v1/chat/completions" \
+                    -H "Content-Type: application/json" \
+                    -H "Authorization: Bearer $OPENAI_API_KEY" \
+                    -d "$(python3 -c "
+import json
+prompt = '''$prompt'''
+print(json.dumps({'model': 'gpt-4o-mini', 'max_tokens': 2000, 'messages': [{'role': 'user', 'content': prompt}]}))
+")" \
+                    --max-time 120 2>/dev/null) && success=true
+                ;;
+            gemini)
+                log "fallback" "Trying Gemini..."
+                local gkey="${GEMINI_API_KEY:-${GOOGLE_API_KEY:-}}"
+                response=$(python3 -c "
+import json, urllib.request, os
+
+prompt = '''$prompt'''
+gkey = '$gkey'
+url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gkey}'
+payload = json.dumps({'contents': [{'parts': [{'text': prompt}]}], 'generationConfig': {'maxOutputTokens': 2000}}).encode()
+req = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'}, method='POST')
+try:
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        data = json.loads(resp.read())
+        text = data['candidates'][0]['content']['parts'][0]['text']
+        # Wrap in OpenAI-compatible format for downstream parsing
+        print(json.dumps({'choices': [{'message': {'content': text}}]}))
+except Exception as e:
+    print(json.dumps({'error': str(e)}))
+" 2>/dev/null) && success=true
+                ;;
+        esac
+
+        if $success && echo "$response" | python3 -c "
+import json, sys, re
 try:
     r = json.load(sys.stdin)
+    if 'error' in r and 'choices' not in r:
+        sys.exit(1)
     content = r.get('choices', [{}])[0].get('message', {}).get('content', '{}')
-    # Validate it's JSON
+    # Strip markdown code fences (common with Gemini)
+    fence = chr(96) * 3
+    content = re.sub(r'^\s*' + fence + r'(?:json)?\s*', '', content)
+    content = re.sub(r'\s*' + fence + r'\s*$', '', content)
+    content = content.strip()
     parsed = json.loads(content)
     print(json.dumps(parsed, indent=2))
-except Exception as e:
-    print(json.dumps({'error': str(e), 'raw': r if 'r' in dir() else 'parse_failed'}))
-" > "$output_file"
-    else
-        echo '{"error": "API call failed", "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' > "$output_file"
-        return 1
-    fi
+except:
+    sys.exit(1)
+" > "$output_file" 2>/dev/null; then
+            log "fallback" "Success via $provider"
+            return 0
+        fi
+        log "fallback" "$provider failed, trying next..."
+    done
+
+    echo '{"error": "All API providers failed", "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' > "$output_file"
+    return 1
 }
 
 # Write structured output with metadata wrapper

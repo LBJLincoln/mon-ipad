@@ -23,7 +23,7 @@ provider_priority:
 departments:
   research:
     description: "Scan arXiv/papers for NBA prediction techniques"
-    model: "claude-sonnet-4-20250514"
+    model: "claude-sonnet-4"
     max_tokens: 4000
     output_file: "research-latest.json"
     schedule: "0 */6 * * *"  # Every 6 hours
@@ -37,7 +37,7 @@ departments:
 
   evaluation:
     description: "Audit prediction quality and calibration"
-    model: "claude-sonnet-4-20250514"
+    model: "claude-sonnet-4"
     max_tokens: 4000
     output_file: "evaluation-latest.json"
     schedule: "30 */6 * * *"  # Every 6 hours, offset 30min
@@ -50,7 +50,7 @@ departments:
 
   infra:
     description: "Check infrastructure health across all systems"
-    model: "claude-sonnet-4-20250514"
+    model: "claude-sonnet-4"
     max_tokens: 4000
     output_file: "infra-latest.json"
     schedule: "15 */4 * * *"  # Every 4 hours, offset 15min
