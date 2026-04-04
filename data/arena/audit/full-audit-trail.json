@@ -1,20 +1,20 @@
 {
   "metadata": {
-    "generated_at": "2026-04-04T10:48:45.309239+00:00",
-    "total_entries": 1849,
-    "council_iterations_processed": 306,
+    "generated_at": "2026-04-04T10:54:26.798713+00:00",
+    "total_entries": 1855,
+    "council_iterations_processed": 307,
     "iteration_range": {
       "first": 1,
-      "last": 318
+      "last": 319
     },
     "generation_range": {
       "first": 6120,
-      "last": 816
+      "last": 952
     },
     "action_type_summary": {
-      "mutation": 612,
-      "experiment": 918,
-      "elimination": 294,
+      "mutation": 614,
+      "experiment": 921,
+      "elimination": 295,
       "rank_change": 5,
       "strategy_shift": 3,
       "bankroll_milestone": 17
@@ -80,13 +80,13 @@
       "provider": "xai",
       "personality": "contrarian",
       "risk_tolerance": 0.65,
-      "nba_bankroll": 1646.5904,
-      "nba_roi_pct": 1546.59,
+      "nba_bankroll": 1646.7834,
+      "nba_roi_pct": 1546.78,
       "nba_sharpe": 4.006,
       "nba_bets": 1224,
       "nba_wins": 519,
       "nba_losses": 705,
-      "nba_peak": 1680.5065,
+      "nba_peak": 1680.7034,
       "nba_max_drawdown": 0.2786
     },
     "openrouter": {
@@ -48742,6 +48742,160 @@
       "timestamp": "2026-04-04T10:48:44.306207+00:00",
       "source_iteration": 6,
       "source_generation": 816,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "confidence_scaled",
+        "roi_pct": -96.2,
+        "bets": 162
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-96.2%) over 162 bets",
+      "performance_at_time": {
+        "best_bankroll": 1653.0,
+        "best_trader": "gemini"
+      }
+    },
+    {
+      "iteration": 319,
+      "timestamp": "2026-04-04T10:54:26.696710+00:00",
+      "source_iteration": 7,
+      "source_generation": 952,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 147.393
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "half_kelly"
+        ],
+        "adopt_models": [
+          "stacking_meta"
+        ],
+        "from_agent": "gemini"
+      },
+      "reason": "openrouter (rank 4) should learn from gemini (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 147.393,
+        "roi_pct": 47.39,
+        "sharpe": 0.731
+      }
+    },
+    {
+      "iteration": 319,
+      "timestamp": "2026-04-04T10:54:26.696710+00:00",
+      "source_iteration": 7,
+      "source_generation": 952,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 1.6294
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "half_kelly"
+        ],
+        "adopt_models": [
+          "stacking_meta"
+        ],
+        "from_agent": "gemini"
+      },
+      "reason": "codex (rank 5) should learn from gemini (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 1.6294,
+        "roi_pct": -98.37,
+        "sharpe": -0.36
+      }
+    },
+    {
+      "iteration": 319,
+      "timestamp": "2026-04-04T10:54:26.696710+00:00",
+      "source_iteration": 7,
+      "source_generation": 952,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "tabicl"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 1653.0,
+        "best_trader": "gemini",
+        "distance_to_1m": 99.8347
+      }
+    },
+    {
+      "iteration": 319,
+      "timestamp": "2026-04-04T10:54:26.696710+00:00",
+      "source_iteration": 7,
+      "source_generation": 952,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 83.0,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 1653.0,
+        "best_trader": "gemini",
+        "distance_to_1m": 99.8347
+      }
+    },
+    {
+      "iteration": 319,
+      "timestamp": "2026-04-04T10:54:26.696710+00:00",
+      "source_iteration": 7,
+      "source_generation": 952,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "random_forest",
+        "avg_daily_pnl": 3.0691,
+        "win_rate_pct": 47.1,
+        "hypothesis": "Prioritize random_forest in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize random_forest in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 1653.0,
+        "best_trader": "gemini",
+        "distance_to_1m": 99.8347
+      }
+    },
+    {
+      "iteration": 319,
+      "timestamp": "2026-04-04T10:54:26.696710+00:00",
+      "source_iteration": 7,
+      "source_generation": 952,
       "trader_id": "_council",
       "action_type": "elimination",
       "action_subtype": "strategy_elimination",
