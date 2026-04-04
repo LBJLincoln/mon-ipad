@@ -170,6 +170,24 @@
         "nomos-pierre": "User acquisition cost, LTV",
         "OddsHarvester": "Proxy costs, API costs"
       }
+    },
+    "cross_repo_agents": {
+    "id": "D9",
+    "name": "Cross-Repo Agents",
+    "layer": "L2_APPLICATION",
+    "metrics": ["repos_monitored", "cross_pollinations", "agent_sync_rate", "parity_checks"],
+    "council_agents": ["monitor", "synchronizer", "pollinator", "auditor"],
+    "karpathy_loop": "scan all repos → detect drift → sync/fix → verify parity",
+    "schedule": "every_2h",
+    "per_repo": "ALL — monitors consistency, feature parity, config sync, health across 8 repos",
+    "responsibilities": [
+      "Feature engine parity (engine.py identical across HF spaces)",
+      "Config drift detection (CLAUDE.md, department-config.json)",
+      "Cross-pollination of best GA individuals between islands",
+      "Agent performance comparison across repos",
+      "Shared skills/processes propagation",
+      "Health aggregation (cross-repo-health.json)"
+    ]
     }
   },
   "shared_infra": {

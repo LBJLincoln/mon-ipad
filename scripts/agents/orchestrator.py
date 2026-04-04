@@ -74,7 +74,7 @@ def check_kaggle_kernel(kernel_ref):
     try:
         result = subprocess.run(
             ["kaggle", "kernels", "status", kernel_ref],
-            capture_output=True, text=True, timeout=15
+            capture_output=True, text=True, timeout=45
         )
         output = result.stdout.strip()
         if "RUNNING" in output:

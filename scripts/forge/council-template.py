@@ -213,6 +213,7 @@ def phase_scan(repo_path, dept, config):
         "evaluation": _scan_evaluation,
         "infra": _scan_infra,
         "finance": _scan_finance,
+        "cross_repo_agents": _scan_cross_repo_agents,
     }
     scanner = scanners.get(dept)
     if scanner:
@@ -391,12 +392,59 @@ def _scan_finance(repo_path):
     return data
 
 
+def _scan_cross_repo_agents(repo_path):
+    """Scan cross-repo consistency: feature parity, config drift, health."""
+    import subprocess
+    data = {}
+    repos = ["mon-ipad", "nomos-nba-agent", "nomos-political-alpha", "nomos-dashboard",
+             "rgwa", "nomos-picks", "nomos-pierre", "OddsHarvester"]
+
+    # Check which repos exist and have councils
+    active = 0
+    drift_issues = []
+    for r in repos:
+        rpath = Path(f"/home/termius/{r}")
+        if rpath.exists():
+            active += 1
+            # Check council state freshness
+            council_dir = rpath / "data" / "departments"
+            if council_dir.exists():
+                councils = list(council_dir.glob("council-*.json"))
+                for cf in councils:
+                    try:
+                        state = _read_json(cf)
+                        last_run = state.get("last_run", "")
+                        if last_run and last_run < (datetime.now(timezone.utc).replace(hour=0)).strftime("%Y-%m-%dT%H:%M:%SZ"):
+                            drift_issues.append(f"{r}:{cf.stem} stale (last: {last_run[:10]})")
+                    except Exception:
+                        pass
+
+    data["repos_active"] = active
+    data["repos_total"] = len(repos)
+    data["drift_issues"] = drift_issues[:10]
+    data["drift_count"] = len(drift_issues)
+
+    # Cross-repo health
+    health = _read_json(MON_IPAD / "data" / "cross-repo-health.json")
+    if health:
+        repo_info = health.get("repos", {})
+        data["uncommitted"] = {k: v.get("uncommitted_changes", 0) for k, v in repo_info.items()}
+
+    # Feature engine parity check
+    engine_hash_file = MON_IPAD / "data" / ".last-engine-hash"
+    if engine_hash_file.exists():
+        data["engine_hash"] = engine_hash_file.read_text().strip()[:12]
+
+    return data
+
+
 # ── PROPOSE: Generate real proposals ───────────────────────────────────
 
 def phase_propose(repo_path, dept, config, scan):
     """Generate REAL improvement proposals based on scan data."""
     proposers = {
         "research": _propose_research,
+        "cross_repo_agents": _propose_cross_repo,
         "engineering": _propose_engineering,
         "evolution": _propose_evolution,
         "product": _propose_product,
@@ -531,6 +579,27 @@ def _propose_finance(repo_path, scan):
             "action": "monitor", "priority": "low"}
 
 
+def _propose_cross_repo(repo_path, scan):
+    drift = scan.get("drift_count", 0)
+    repos = scan.get("repos_active", 0)
+    uncommitted = scan.get("uncommitted", {})
+    heavy_uncommitted = [r for r, n in uncommitted.items() if n > 50]
+
+    issues = []
+    if drift > 5:
+        issues.append(f"{drift} stale councils across repos")
+    if heavy_uncommitted:
+        issues.append(f"{len(heavy_uncommitted)} repos with 50+ uncommitted files: {', '.join(heavy_uncommitted)}")
+    if repos < 8:
+        issues.append(f"Only {repos}/8 repos accessible")
+
+    if issues:
+        return {"summary": " | ".join(issues), "action": "sync_repos", "priority": "high",
+                "cmd": "python3 scripts/cross-repo-monitor.py"}
+    return {"summary": f"All {repos} repos synced, {drift} minor drifts",
+            "action": "monitor", "priority": "low"}
+
+
 # ── EXECUTE: Real actions ──────────────────────────────────────────────
 
 def phase_execute(repo_path, dept, config, proposal):
@@ -580,6 +649,7 @@ def phase_evaluate(repo_path, dept, config, exec_result):
         "evaluation": _scan_evaluation,
         "infra": _scan_infra,
         "finance": _scan_finance,
+        "cross_repo_agents": _scan_cross_repo_agents,
     }
     scanner = scanners.get(dept)
     fresh = scanner(repo_path) if scanner else {}

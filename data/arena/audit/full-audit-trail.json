@@ -1,20 +1,20 @@
 {
   "metadata": {
-    "generated_at": "2026-04-04T03:56:27.168574+00:00",
-    "total_entries": 1470,
-    "council_iterations_processed": 245,
+    "generated_at": "2026-04-04T07:18:17.256955+00:00",
+    "total_entries": 1692,
+    "council_iterations_processed": 282,
     "iteration_range": {
       "first": 1,
-      "last": 257
+      "last": 294
     },
     "generation_range": {
       "first": 6120,
-      "last": 46512
+      "last": 52224
     },
     "action_type_summary": {
-      "mutation": 490,
-      "experiment": 735,
-      "elimination": 233,
+      "mutation": 564,
+      "experiment": 846,
+      "elimination": 270,
       "rank_change": 3,
       "strategy_shift": 1,
       "bankroll_milestone": 8
@@ -38814,6 +38814,5852 @@
       "timestamp": "2026-04-04T03:56:27.080378+00:00",
       "source_iteration": 342,
       "source_generation": 46512,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 258,
+      "timestamp": "2026-04-04T04:03:35.522260+00:00",
+      "source_iteration": 343,
+      "source_generation": 46648,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 258,
+      "timestamp": "2026-04-04T04:03:35.522260+00:00",
+      "source_iteration": 343,
+      "source_generation": 46648,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 258,
+      "timestamp": "2026-04-04T04:03:35.522260+00:00",
+      "source_iteration": 343,
+      "source_generation": 46648,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 258,
+      "timestamp": "2026-04-04T04:03:35.522260+00:00",
+      "source_iteration": 343,
+      "source_generation": 46648,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 258,
+      "timestamp": "2026-04-04T04:03:35.522260+00:00",
+      "source_iteration": 343,
+      "source_generation": 46648,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 258,
+      "timestamp": "2026-04-04T04:03:35.522260+00:00",
+      "source_iteration": 343,
+      "source_generation": 46648,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 259,
+      "timestamp": "2026-04-04T04:10:29.775665+00:00",
+      "source_iteration": 346,
+      "source_generation": 47056,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 259,
+      "timestamp": "2026-04-04T04:10:29.775665+00:00",
+      "source_iteration": 346,
+      "source_generation": 47056,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 259,
+      "timestamp": "2026-04-04T04:10:29.775665+00:00",
+      "source_iteration": 346,
+      "source_generation": 47056,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 259,
+      "timestamp": "2026-04-04T04:10:29.775665+00:00",
+      "source_iteration": 346,
+      "source_generation": 47056,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 259,
+      "timestamp": "2026-04-04T04:10:29.775665+00:00",
+      "source_iteration": 346,
+      "source_generation": 47056,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 259,
+      "timestamp": "2026-04-04T04:10:29.775665+00:00",
+      "source_iteration": 346,
+      "source_generation": 47056,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 260,
+      "timestamp": "2026-04-04T04:18:47.529232+00:00",
+      "source_iteration": 347,
+      "source_generation": 47192,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 260,
+      "timestamp": "2026-04-04T04:18:47.529232+00:00",
+      "source_iteration": 347,
+      "source_generation": 47192,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 260,
+      "timestamp": "2026-04-04T04:18:47.529232+00:00",
+      "source_iteration": 347,
+      "source_generation": 47192,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 260,
+      "timestamp": "2026-04-04T04:18:47.529232+00:00",
+      "source_iteration": 347,
+      "source_generation": 47192,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 260,
+      "timestamp": "2026-04-04T04:18:47.529232+00:00",
+      "source_iteration": 347,
+      "source_generation": 47192,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 260,
+      "timestamp": "2026-04-04T04:18:47.529232+00:00",
+      "source_iteration": 347,
+      "source_generation": 47192,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 261,
+      "timestamp": "2026-04-04T04:26:34.513218+00:00",
+      "source_iteration": 348,
+      "source_generation": 47328,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 261,
+      "timestamp": "2026-04-04T04:26:34.513218+00:00",
+      "source_iteration": 348,
+      "source_generation": 47328,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 261,
+      "timestamp": "2026-04-04T04:26:34.513218+00:00",
+      "source_iteration": 348,
+      "source_generation": 47328,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 261,
+      "timestamp": "2026-04-04T04:26:34.513218+00:00",
+      "source_iteration": 348,
+      "source_generation": 47328,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 261,
+      "timestamp": "2026-04-04T04:26:34.513218+00:00",
+      "source_iteration": 348,
+      "source_generation": 47328,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 261,
+      "timestamp": "2026-04-04T04:26:34.513218+00:00",
+      "source_iteration": 348,
+      "source_generation": 47328,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 262,
+      "timestamp": "2026-04-04T04:33:16.025627+00:00",
+      "source_iteration": 349,
+      "source_generation": 47464,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 262,
+      "timestamp": "2026-04-04T04:33:16.025627+00:00",
+      "source_iteration": 349,
+      "source_generation": 47464,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 262,
+      "timestamp": "2026-04-04T04:33:16.025627+00:00",
+      "source_iteration": 349,
+      "source_generation": 47464,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 262,
+      "timestamp": "2026-04-04T04:33:16.025627+00:00",
+      "source_iteration": 349,
+      "source_generation": 47464,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 262,
+      "timestamp": "2026-04-04T04:33:16.025627+00:00",
+      "source_iteration": 349,
+      "source_generation": 47464,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 262,
+      "timestamp": "2026-04-04T04:33:16.025627+00:00",
+      "source_iteration": 349,
+      "source_generation": 47464,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 263,
+      "timestamp": "2026-04-04T04:40:03.033063+00:00",
+      "source_iteration": 350,
+      "source_generation": 47600,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 263,
+      "timestamp": "2026-04-04T04:40:03.033063+00:00",
+      "source_iteration": 350,
+      "source_generation": 47600,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 263,
+      "timestamp": "2026-04-04T04:40:03.033063+00:00",
+      "source_iteration": 350,
+      "source_generation": 47600,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 263,
+      "timestamp": "2026-04-04T04:40:03.033063+00:00",
+      "source_iteration": 350,
+      "source_generation": 47600,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 263,
+      "timestamp": "2026-04-04T04:40:03.033063+00:00",
+      "source_iteration": 350,
+      "source_generation": 47600,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 263,
+      "timestamp": "2026-04-04T04:40:03.033063+00:00",
+      "source_iteration": 350,
+      "source_generation": 47600,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 264,
+      "timestamp": "2026-04-04T04:45:32.358364+00:00",
+      "source_iteration": 351,
+      "source_generation": 47736,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 264,
+      "timestamp": "2026-04-04T04:45:32.358364+00:00",
+      "source_iteration": 351,
+      "source_generation": 47736,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 264,
+      "timestamp": "2026-04-04T04:45:32.358364+00:00",
+      "source_iteration": 351,
+      "source_generation": 47736,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 264,
+      "timestamp": "2026-04-04T04:45:32.358364+00:00",
+      "source_iteration": 351,
+      "source_generation": 47736,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 264,
+      "timestamp": "2026-04-04T04:45:32.358364+00:00",
+      "source_iteration": 351,
+      "source_generation": 47736,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 264,
+      "timestamp": "2026-04-04T04:45:32.358364+00:00",
+      "source_iteration": 351,
+      "source_generation": 47736,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 265,
+      "timestamp": "2026-04-04T04:50:38.112183+00:00",
+      "source_iteration": 352,
+      "source_generation": 47872,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 265,
+      "timestamp": "2026-04-04T04:50:38.112183+00:00",
+      "source_iteration": 352,
+      "source_generation": 47872,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 265,
+      "timestamp": "2026-04-04T04:50:38.112183+00:00",
+      "source_iteration": 352,
+      "source_generation": 47872,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 265,
+      "timestamp": "2026-04-04T04:50:38.112183+00:00",
+      "source_iteration": 352,
+      "source_generation": 47872,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 265,
+      "timestamp": "2026-04-04T04:50:38.112183+00:00",
+      "source_iteration": 352,
+      "source_generation": 47872,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 265,
+      "timestamp": "2026-04-04T04:50:38.112183+00:00",
+      "source_iteration": 352,
+      "source_generation": 47872,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 266,
+      "timestamp": "2026-04-04T04:55:43.248216+00:00",
+      "source_iteration": 353,
+      "source_generation": 48008,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 266,
+      "timestamp": "2026-04-04T04:55:43.248216+00:00",
+      "source_iteration": 353,
+      "source_generation": 48008,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 266,
+      "timestamp": "2026-04-04T04:55:43.248216+00:00",
+      "source_iteration": 353,
+      "source_generation": 48008,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 266,
+      "timestamp": "2026-04-04T04:55:43.248216+00:00",
+      "source_iteration": 353,
+      "source_generation": 48008,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 266,
+      "timestamp": "2026-04-04T04:55:43.248216+00:00",
+      "source_iteration": 353,
+      "source_generation": 48008,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 266,
+      "timestamp": "2026-04-04T04:55:43.248216+00:00",
+      "source_iteration": 353,
+      "source_generation": 48008,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 267,
+      "timestamp": "2026-04-04T05:00:48.737125+00:00",
+      "source_iteration": 354,
+      "source_generation": 48144,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 267,
+      "timestamp": "2026-04-04T05:00:48.737125+00:00",
+      "source_iteration": 354,
+      "source_generation": 48144,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 267,
+      "timestamp": "2026-04-04T05:00:48.737125+00:00",
+      "source_iteration": 354,
+      "source_generation": 48144,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 267,
+      "timestamp": "2026-04-04T05:00:48.737125+00:00",
+      "source_iteration": 354,
+      "source_generation": 48144,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 267,
+      "timestamp": "2026-04-04T05:00:48.737125+00:00",
+      "source_iteration": 354,
+      "source_generation": 48144,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 267,
+      "timestamp": "2026-04-04T05:00:48.737125+00:00",
+      "source_iteration": 354,
+      "source_generation": 48144,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 268,
+      "timestamp": "2026-04-04T05:05:54.163362+00:00",
+      "source_iteration": 355,
+      "source_generation": 48280,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 268,
+      "timestamp": "2026-04-04T05:05:54.163362+00:00",
+      "source_iteration": 355,
+      "source_generation": 48280,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 268,
+      "timestamp": "2026-04-04T05:05:54.163362+00:00",
+      "source_iteration": 355,
+      "source_generation": 48280,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 268,
+      "timestamp": "2026-04-04T05:05:54.163362+00:00",
+      "source_iteration": 355,
+      "source_generation": 48280,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 268,
+      "timestamp": "2026-04-04T05:05:54.163362+00:00",
+      "source_iteration": 355,
+      "source_generation": 48280,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 268,
+      "timestamp": "2026-04-04T05:05:54.163362+00:00",
+      "source_iteration": 355,
+      "source_generation": 48280,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 269,
+      "timestamp": "2026-04-04T05:10:59.649435+00:00",
+      "source_iteration": 356,
+      "source_generation": 48416,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 269,
+      "timestamp": "2026-04-04T05:10:59.649435+00:00",
+      "source_iteration": 356,
+      "source_generation": 48416,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 269,
+      "timestamp": "2026-04-04T05:10:59.649435+00:00",
+      "source_iteration": 356,
+      "source_generation": 48416,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 269,
+      "timestamp": "2026-04-04T05:10:59.649435+00:00",
+      "source_iteration": 356,
+      "source_generation": 48416,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 269,
+      "timestamp": "2026-04-04T05:10:59.649435+00:00",
+      "source_iteration": 356,
+      "source_generation": 48416,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 269,
+      "timestamp": "2026-04-04T05:10:59.649435+00:00",
+      "source_iteration": 356,
+      "source_generation": 48416,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 270,
+      "timestamp": "2026-04-04T05:16:04.757511+00:00",
+      "source_iteration": 357,
+      "source_generation": 48552,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 270,
+      "timestamp": "2026-04-04T05:16:04.757511+00:00",
+      "source_iteration": 357,
+      "source_generation": 48552,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 270,
+      "timestamp": "2026-04-04T05:16:04.757511+00:00",
+      "source_iteration": 357,
+      "source_generation": 48552,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 270,
+      "timestamp": "2026-04-04T05:16:04.757511+00:00",
+      "source_iteration": 357,
+      "source_generation": 48552,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 270,
+      "timestamp": "2026-04-04T05:16:04.757511+00:00",
+      "source_iteration": 357,
+      "source_generation": 48552,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 270,
+      "timestamp": "2026-04-04T05:16:04.757511+00:00",
+      "source_iteration": 357,
+      "source_generation": 48552,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 271,
+      "timestamp": "2026-04-04T05:21:10.269620+00:00",
+      "source_iteration": 358,
+      "source_generation": 48688,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 271,
+      "timestamp": "2026-04-04T05:21:10.269620+00:00",
+      "source_iteration": 358,
+      "source_generation": 48688,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 271,
+      "timestamp": "2026-04-04T05:21:10.269620+00:00",
+      "source_iteration": 358,
+      "source_generation": 48688,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 271,
+      "timestamp": "2026-04-04T05:21:10.269620+00:00",
+      "source_iteration": 358,
+      "source_generation": 48688,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 271,
+      "timestamp": "2026-04-04T05:21:10.269620+00:00",
+      "source_iteration": 358,
+      "source_generation": 48688,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 271,
+      "timestamp": "2026-04-04T05:21:10.269620+00:00",
+      "source_iteration": 358,
+      "source_generation": 48688,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 272,
+      "timestamp": "2026-04-04T05:26:15.333341+00:00",
+      "source_iteration": 359,
+      "source_generation": 48824,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 272,
+      "timestamp": "2026-04-04T05:26:15.333341+00:00",
+      "source_iteration": 359,
+      "source_generation": 48824,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 272,
+      "timestamp": "2026-04-04T05:26:15.333341+00:00",
+      "source_iteration": 359,
+      "source_generation": 48824,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 272,
+      "timestamp": "2026-04-04T05:26:15.333341+00:00",
+      "source_iteration": 359,
+      "source_generation": 48824,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 272,
+      "timestamp": "2026-04-04T05:26:15.333341+00:00",
+      "source_iteration": 359,
+      "source_generation": 48824,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 272,
+      "timestamp": "2026-04-04T05:26:15.333341+00:00",
+      "source_iteration": 359,
+      "source_generation": 48824,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 273,
+      "timestamp": "2026-04-04T05:31:20.712569+00:00",
+      "source_iteration": 360,
+      "source_generation": 48960,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 273,
+      "timestamp": "2026-04-04T05:31:20.712569+00:00",
+      "source_iteration": 360,
+      "source_generation": 48960,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 273,
+      "timestamp": "2026-04-04T05:31:20.712569+00:00",
+      "source_iteration": 360,
+      "source_generation": 48960,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 273,
+      "timestamp": "2026-04-04T05:31:20.712569+00:00",
+      "source_iteration": 360,
+      "source_generation": 48960,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 273,
+      "timestamp": "2026-04-04T05:31:20.712569+00:00",
+      "source_iteration": 360,
+      "source_generation": 48960,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 273,
+      "timestamp": "2026-04-04T05:31:20.712569+00:00",
+      "source_iteration": 360,
+      "source_generation": 48960,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 274,
+      "timestamp": "2026-04-04T05:36:25.826626+00:00",
+      "source_iteration": 361,
+      "source_generation": 49096,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 274,
+      "timestamp": "2026-04-04T05:36:25.826626+00:00",
+      "source_iteration": 361,
+      "source_generation": 49096,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 274,
+      "timestamp": "2026-04-04T05:36:25.826626+00:00",
+      "source_iteration": 361,
+      "source_generation": 49096,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 274,
+      "timestamp": "2026-04-04T05:36:25.826626+00:00",
+      "source_iteration": 361,
+      "source_generation": 49096,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 274,
+      "timestamp": "2026-04-04T05:36:25.826626+00:00",
+      "source_iteration": 361,
+      "source_generation": 49096,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 274,
+      "timestamp": "2026-04-04T05:36:25.826626+00:00",
+      "source_iteration": 361,
+      "source_generation": 49096,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 275,
+      "timestamp": "2026-04-04T05:41:31.369972+00:00",
+      "source_iteration": 362,
+      "source_generation": 49232,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 275,
+      "timestamp": "2026-04-04T05:41:31.369972+00:00",
+      "source_iteration": 362,
+      "source_generation": 49232,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 275,
+      "timestamp": "2026-04-04T05:41:31.369972+00:00",
+      "source_iteration": 362,
+      "source_generation": 49232,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 275,
+      "timestamp": "2026-04-04T05:41:31.369972+00:00",
+      "source_iteration": 362,
+      "source_generation": 49232,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 275,
+      "timestamp": "2026-04-04T05:41:31.369972+00:00",
+      "source_iteration": 362,
+      "source_generation": 49232,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 275,
+      "timestamp": "2026-04-04T05:41:31.369972+00:00",
+      "source_iteration": 362,
+      "source_generation": 49232,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 276,
+      "timestamp": "2026-04-04T05:46:36.480066+00:00",
+      "source_iteration": 363,
+      "source_generation": 49368,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 276,
+      "timestamp": "2026-04-04T05:46:36.480066+00:00",
+      "source_iteration": 363,
+      "source_generation": 49368,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 276,
+      "timestamp": "2026-04-04T05:46:36.480066+00:00",
+      "source_iteration": 363,
+      "source_generation": 49368,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 276,
+      "timestamp": "2026-04-04T05:46:36.480066+00:00",
+      "source_iteration": 363,
+      "source_generation": 49368,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 276,
+      "timestamp": "2026-04-04T05:46:36.480066+00:00",
+      "source_iteration": 363,
+      "source_generation": 49368,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 276,
+      "timestamp": "2026-04-04T05:46:36.480066+00:00",
+      "source_iteration": 363,
+      "source_generation": 49368,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 277,
+      "timestamp": "2026-04-04T05:51:42.002651+00:00",
+      "source_iteration": 364,
+      "source_generation": 49504,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 277,
+      "timestamp": "2026-04-04T05:51:42.002651+00:00",
+      "source_iteration": 364,
+      "source_generation": 49504,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 277,
+      "timestamp": "2026-04-04T05:51:42.002651+00:00",
+      "source_iteration": 364,
+      "source_generation": 49504,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 277,
+      "timestamp": "2026-04-04T05:51:42.002651+00:00",
+      "source_iteration": 364,
+      "source_generation": 49504,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 277,
+      "timestamp": "2026-04-04T05:51:42.002651+00:00",
+      "source_iteration": 364,
+      "source_generation": 49504,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 277,
+      "timestamp": "2026-04-04T05:51:42.002651+00:00",
+      "source_iteration": 364,
+      "source_generation": 49504,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 278,
+      "timestamp": "2026-04-04T05:56:47.227938+00:00",
+      "source_iteration": 365,
+      "source_generation": 49640,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 278,
+      "timestamp": "2026-04-04T05:56:47.227938+00:00",
+      "source_iteration": 365,
+      "source_generation": 49640,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 278,
+      "timestamp": "2026-04-04T05:56:47.227938+00:00",
+      "source_iteration": 365,
+      "source_generation": 49640,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 278,
+      "timestamp": "2026-04-04T05:56:47.227938+00:00",
+      "source_iteration": 365,
+      "source_generation": 49640,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 278,
+      "timestamp": "2026-04-04T05:56:47.227938+00:00",
+      "source_iteration": 365,
+      "source_generation": 49640,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 278,
+      "timestamp": "2026-04-04T05:56:47.227938+00:00",
+      "source_iteration": 365,
+      "source_generation": 49640,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 279,
+      "timestamp": "2026-04-04T06:01:52.659803+00:00",
+      "source_iteration": 369,
+      "source_generation": 50184,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 279,
+      "timestamp": "2026-04-04T06:01:52.659803+00:00",
+      "source_iteration": 369,
+      "source_generation": 50184,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 279,
+      "timestamp": "2026-04-04T06:01:52.659803+00:00",
+      "source_iteration": 369,
+      "source_generation": 50184,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 279,
+      "timestamp": "2026-04-04T06:01:52.659803+00:00",
+      "source_iteration": 369,
+      "source_generation": 50184,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 279,
+      "timestamp": "2026-04-04T06:01:52.659803+00:00",
+      "source_iteration": 369,
+      "source_generation": 50184,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 279,
+      "timestamp": "2026-04-04T06:01:52.659803+00:00",
+      "source_iteration": 369,
+      "source_generation": 50184,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 280,
+      "timestamp": "2026-04-04T06:06:57.839099+00:00",
+      "source_iteration": 370,
+      "source_generation": 50320,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 280,
+      "timestamp": "2026-04-04T06:06:57.839099+00:00",
+      "source_iteration": 370,
+      "source_generation": 50320,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 280,
+      "timestamp": "2026-04-04T06:06:57.839099+00:00",
+      "source_iteration": 370,
+      "source_generation": 50320,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 280,
+      "timestamp": "2026-04-04T06:06:57.839099+00:00",
+      "source_iteration": 370,
+      "source_generation": 50320,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 280,
+      "timestamp": "2026-04-04T06:06:57.839099+00:00",
+      "source_iteration": 370,
+      "source_generation": 50320,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 280,
+      "timestamp": "2026-04-04T06:06:57.839099+00:00",
+      "source_iteration": 370,
+      "source_generation": 50320,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 281,
+      "timestamp": "2026-04-04T06:12:04.241238+00:00",
+      "source_iteration": 371,
+      "source_generation": 50456,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 281,
+      "timestamp": "2026-04-04T06:12:04.241238+00:00",
+      "source_iteration": 371,
+      "source_generation": 50456,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 281,
+      "timestamp": "2026-04-04T06:12:04.241238+00:00",
+      "source_iteration": 371,
+      "source_generation": 50456,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 281,
+      "timestamp": "2026-04-04T06:12:04.241238+00:00",
+      "source_iteration": 371,
+      "source_generation": 50456,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 281,
+      "timestamp": "2026-04-04T06:12:04.241238+00:00",
+      "source_iteration": 371,
+      "source_generation": 50456,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 281,
+      "timestamp": "2026-04-04T06:12:04.241238+00:00",
+      "source_iteration": 371,
+      "source_generation": 50456,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 282,
+      "timestamp": "2026-04-04T06:17:09.403904+00:00",
+      "source_iteration": 372,
+      "source_generation": 50592,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 282,
+      "timestamp": "2026-04-04T06:17:09.403904+00:00",
+      "source_iteration": 372,
+      "source_generation": 50592,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 282,
+      "timestamp": "2026-04-04T06:17:09.403904+00:00",
+      "source_iteration": 372,
+      "source_generation": 50592,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 282,
+      "timestamp": "2026-04-04T06:17:09.403904+00:00",
+      "source_iteration": 372,
+      "source_generation": 50592,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 282,
+      "timestamp": "2026-04-04T06:17:09.403904+00:00",
+      "source_iteration": 372,
+      "source_generation": 50592,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 282,
+      "timestamp": "2026-04-04T06:17:09.403904+00:00",
+      "source_iteration": 372,
+      "source_generation": 50592,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 283,
+      "timestamp": "2026-04-04T06:22:14.770220+00:00",
+      "source_iteration": 373,
+      "source_generation": 50728,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 283,
+      "timestamp": "2026-04-04T06:22:14.770220+00:00",
+      "source_iteration": 373,
+      "source_generation": 50728,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 283,
+      "timestamp": "2026-04-04T06:22:14.770220+00:00",
+      "source_iteration": 373,
+      "source_generation": 50728,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 283,
+      "timestamp": "2026-04-04T06:22:14.770220+00:00",
+      "source_iteration": 373,
+      "source_generation": 50728,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 283,
+      "timestamp": "2026-04-04T06:22:14.770220+00:00",
+      "source_iteration": 373,
+      "source_generation": 50728,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 283,
+      "timestamp": "2026-04-04T06:22:14.770220+00:00",
+      "source_iteration": 373,
+      "source_generation": 50728,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 284,
+      "timestamp": "2026-04-04T06:27:19.969322+00:00",
+      "source_iteration": 374,
+      "source_generation": 50864,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 284,
+      "timestamp": "2026-04-04T06:27:19.969322+00:00",
+      "source_iteration": 374,
+      "source_generation": 50864,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 284,
+      "timestamp": "2026-04-04T06:27:19.969322+00:00",
+      "source_iteration": 374,
+      "source_generation": 50864,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 284,
+      "timestamp": "2026-04-04T06:27:19.969322+00:00",
+      "source_iteration": 374,
+      "source_generation": 50864,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 284,
+      "timestamp": "2026-04-04T06:27:19.969322+00:00",
+      "source_iteration": 374,
+      "source_generation": 50864,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 284,
+      "timestamp": "2026-04-04T06:27:19.969322+00:00",
+      "source_iteration": 374,
+      "source_generation": 50864,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 285,
+      "timestamp": "2026-04-04T06:32:25.621402+00:00",
+      "source_iteration": 375,
+      "source_generation": 51000,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 285,
+      "timestamp": "2026-04-04T06:32:25.621402+00:00",
+      "source_iteration": 375,
+      "source_generation": 51000,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 285,
+      "timestamp": "2026-04-04T06:32:25.621402+00:00",
+      "source_iteration": 375,
+      "source_generation": 51000,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 285,
+      "timestamp": "2026-04-04T06:32:25.621402+00:00",
+      "source_iteration": 375,
+      "source_generation": 51000,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 285,
+      "timestamp": "2026-04-04T06:32:25.621402+00:00",
+      "source_iteration": 375,
+      "source_generation": 51000,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 285,
+      "timestamp": "2026-04-04T06:32:25.621402+00:00",
+      "source_iteration": 375,
+      "source_generation": 51000,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 286,
+      "timestamp": "2026-04-04T06:37:31.139426+00:00",
+      "source_iteration": 376,
+      "source_generation": 51136,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 286,
+      "timestamp": "2026-04-04T06:37:31.139426+00:00",
+      "source_iteration": 376,
+      "source_generation": 51136,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 286,
+      "timestamp": "2026-04-04T06:37:31.139426+00:00",
+      "source_iteration": 376,
+      "source_generation": 51136,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 286,
+      "timestamp": "2026-04-04T06:37:31.139426+00:00",
+      "source_iteration": 376,
+      "source_generation": 51136,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 286,
+      "timestamp": "2026-04-04T06:37:31.139426+00:00",
+      "source_iteration": 376,
+      "source_generation": 51136,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 286,
+      "timestamp": "2026-04-04T06:37:31.139426+00:00",
+      "source_iteration": 376,
+      "source_generation": 51136,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 287,
+      "timestamp": "2026-04-04T06:42:36.966107+00:00",
+      "source_iteration": 377,
+      "source_generation": 51272,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 287,
+      "timestamp": "2026-04-04T06:42:36.966107+00:00",
+      "source_iteration": 377,
+      "source_generation": 51272,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 287,
+      "timestamp": "2026-04-04T06:42:36.966107+00:00",
+      "source_iteration": 377,
+      "source_generation": 51272,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 287,
+      "timestamp": "2026-04-04T06:42:36.966107+00:00",
+      "source_iteration": 377,
+      "source_generation": 51272,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 287,
+      "timestamp": "2026-04-04T06:42:36.966107+00:00",
+      "source_iteration": 377,
+      "source_generation": 51272,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 287,
+      "timestamp": "2026-04-04T06:42:36.966107+00:00",
+      "source_iteration": 377,
+      "source_generation": 51272,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 288,
+      "timestamp": "2026-04-04T06:47:42.565149+00:00",
+      "source_iteration": 378,
+      "source_generation": 51408,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 288,
+      "timestamp": "2026-04-04T06:47:42.565149+00:00",
+      "source_iteration": 378,
+      "source_generation": 51408,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 288,
+      "timestamp": "2026-04-04T06:47:42.565149+00:00",
+      "source_iteration": 378,
+      "source_generation": 51408,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 288,
+      "timestamp": "2026-04-04T06:47:42.565149+00:00",
+      "source_iteration": 378,
+      "source_generation": 51408,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 288,
+      "timestamp": "2026-04-04T06:47:42.565149+00:00",
+      "source_iteration": 378,
+      "source_generation": 51408,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 288,
+      "timestamp": "2026-04-04T06:47:42.565149+00:00",
+      "source_iteration": 378,
+      "source_generation": 51408,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 289,
+      "timestamp": "2026-04-04T06:52:48.406515+00:00",
+      "source_iteration": 379,
+      "source_generation": 51544,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 289,
+      "timestamp": "2026-04-04T06:52:48.406515+00:00",
+      "source_iteration": 379,
+      "source_generation": 51544,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 289,
+      "timestamp": "2026-04-04T06:52:48.406515+00:00",
+      "source_iteration": 379,
+      "source_generation": 51544,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 289,
+      "timestamp": "2026-04-04T06:52:48.406515+00:00",
+      "source_iteration": 379,
+      "source_generation": 51544,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 289,
+      "timestamp": "2026-04-04T06:52:48.406515+00:00",
+      "source_iteration": 379,
+      "source_generation": 51544,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 289,
+      "timestamp": "2026-04-04T06:52:48.406515+00:00",
+      "source_iteration": 379,
+      "source_generation": 51544,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 290,
+      "timestamp": "2026-04-04T06:57:53.943835+00:00",
+      "source_iteration": 380,
+      "source_generation": 51680,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 290,
+      "timestamp": "2026-04-04T06:57:53.943835+00:00",
+      "source_iteration": 380,
+      "source_generation": 51680,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 290,
+      "timestamp": "2026-04-04T06:57:53.943835+00:00",
+      "source_iteration": 380,
+      "source_generation": 51680,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 290,
+      "timestamp": "2026-04-04T06:57:53.943835+00:00",
+      "source_iteration": 380,
+      "source_generation": 51680,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 290,
+      "timestamp": "2026-04-04T06:57:53.943835+00:00",
+      "source_iteration": 380,
+      "source_generation": 51680,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 290,
+      "timestamp": "2026-04-04T06:57:53.943835+00:00",
+      "source_iteration": 380,
+      "source_generation": 51680,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 291,
+      "timestamp": "2026-04-04T07:02:59.742006+00:00",
+      "source_iteration": 381,
+      "source_generation": 51816,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 291,
+      "timestamp": "2026-04-04T07:02:59.742006+00:00",
+      "source_iteration": 381,
+      "source_generation": 51816,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 291,
+      "timestamp": "2026-04-04T07:02:59.742006+00:00",
+      "source_iteration": 381,
+      "source_generation": 51816,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 291,
+      "timestamp": "2026-04-04T07:02:59.742006+00:00",
+      "source_iteration": 381,
+      "source_generation": 51816,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 291,
+      "timestamp": "2026-04-04T07:02:59.742006+00:00",
+      "source_iteration": 381,
+      "source_generation": 51816,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 291,
+      "timestamp": "2026-04-04T07:02:59.742006+00:00",
+      "source_iteration": 381,
+      "source_generation": 51816,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 292,
+      "timestamp": "2026-04-04T07:08:05.729097+00:00",
+      "source_iteration": 382,
+      "source_generation": 51952,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 292,
+      "timestamp": "2026-04-04T07:08:05.729097+00:00",
+      "source_iteration": 382,
+      "source_generation": 51952,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 292,
+      "timestamp": "2026-04-04T07:08:05.729097+00:00",
+      "source_iteration": 382,
+      "source_generation": 51952,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 292,
+      "timestamp": "2026-04-04T07:08:05.729097+00:00",
+      "source_iteration": 382,
+      "source_generation": 51952,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 292,
+      "timestamp": "2026-04-04T07:08:05.729097+00:00",
+      "source_iteration": 382,
+      "source_generation": 51952,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 292,
+      "timestamp": "2026-04-04T07:08:05.729097+00:00",
+      "source_iteration": 382,
+      "source_generation": 51952,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 293,
+      "timestamp": "2026-04-04T07:13:11.643096+00:00",
+      "source_iteration": 383,
+      "source_generation": 52088,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 293,
+      "timestamp": "2026-04-04T07:13:11.643096+00:00",
+      "source_iteration": 383,
+      "source_generation": 52088,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 293,
+      "timestamp": "2026-04-04T07:13:11.643096+00:00",
+      "source_iteration": 383,
+      "source_generation": 52088,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 293,
+      "timestamp": "2026-04-04T07:13:11.643096+00:00",
+      "source_iteration": 383,
+      "source_generation": 52088,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 293,
+      "timestamp": "2026-04-04T07:13:11.643096+00:00",
+      "source_iteration": 383,
+      "source_generation": 52088,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 293,
+      "timestamp": "2026-04-04T07:13:11.643096+00:00",
+      "source_iteration": 383,
+      "source_generation": 52088,
+      "trader_id": "_council",
+      "action_type": "elimination",
+      "action_subtype": "strategy_elimination",
+      "old_value": {
+        "strategy": "dog_value_plus",
+        "roi_pct": -45.16,
+        "bets": 35
+      },
+      "new_value": {
+        "action": "eliminate_next_iteration"
+      },
+      "reason": "Sustained negative ROI (-45.2%) over 35 bets",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok"
+      }
+    },
+    {
+      "iteration": 294,
+      "timestamp": "2026-04-04T07:18:17.168834+00:00",
+      "source_iteration": 384,
+      "source_generation": 52224,
+      "trader_id": "openrouter",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 4,
+        "bankroll": 164.633
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "openrouter (rank 4) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 4,
+        "bankroll": 164.633,
+        "roi_pct": 64.63,
+        "sharpe": 0.56
+      }
+    },
+    {
+      "iteration": 294,
+      "timestamp": "2026-04-04T07:18:17.168834+00:00",
+      "source_iteration": 384,
+      "source_generation": 52224,
+      "trader_id": "codex",
+      "action_type": "mutation",
+      "action_subtype": "adopt_winner_strategies",
+      "old_value": {
+        "rank": 5,
+        "bankroll": 0.6342
+      },
+      "new_value": {
+        "adopt_strategies": [
+          "value_hunter",
+          "underdog_specialist"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "random_forest"
+        ],
+        "from_agent": "grok"
+      },
+      "reason": "codex (rank 5) should learn from grok (rank 1)",
+      "performance_at_time": {
+        "rank": 5,
+        "bankroll": 0.6342,
+        "roi_pct": -99.37,
+        "sharpe": -0.268
+      }
+    },
+    {
+      "iteration": 294,
+      "timestamp": "2026-04-04T07:18:17.168834+00:00",
+      "source_iteration": 384,
+      "source_generation": 52224,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "cross_pollination",
+      "old_value": null,
+      "new_value": {
+        "strategy": "half_kelly",
+        "test_with_models": [
+          "stacking_meta",
+          "extra_trees",
+          "consensus_ensemble"
+        ],
+        "hypothesis": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      "reason": "Top strategy 'half_kelly' may perform even better with mid-tier models",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 294,
+      "timestamp": "2026-04-04T07:18:17.168834+00:00",
+      "source_iteration": 384,
+      "source_generation": 52224,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "category_focus",
+      "old_value": null,
+      "new_value": {
+        "categories": [
+          "team_total_home_over",
+          "spread_away"
+        ],
+        "expected_win_rate": 82.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      "reason": "Focus bets on top-2 winning categories for higher concentration",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 294,
+      "timestamp": "2026-04-04T07:18:17.168834+00:00",
+      "source_iteration": 384,
+      "source_generation": 52224,
+      "trader_id": "_council",
+      "action_type": "experiment",
+      "action_subtype": "model_promotion",
+      "old_value": null,
+      "new_value": {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 8.8065,
+        "win_rate_pct": 45.8,
+        "hypothesis": "Prioritize elo_baseline in evolution -- top daily PnL",
+        "priority": 1
+      },
+      "reason": "Prioritize elo_baseline in evolution -- top daily PnL",
+      "performance_at_time": {
+        "best_bankroll": 3687.51,
+        "best_trader": "grok",
+        "distance_to_1m": 99.6312
+      }
+    },
+    {
+      "iteration": 294,
+      "timestamp": "2026-04-04T07:18:17.168834+00:00",
+      "source_iteration": 384,
+      "source_generation": 52224,
       "trader_id": "_council",
       "action_type": "elimination",
       "action_subtype": "strategy_elimination",
