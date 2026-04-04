@@ -26,6 +26,27 @@ import subprocess as _sp
 from datetime import datetime, timezone
 from pathlib import Path
 
+# ── HF Inference Client (optional — LLM council voting) ──────────────────
+_HF_AVAILABLE = False
+_hf_council_vote = None
+_hf_query_best = None
+_hf_query_qwen7b = None
+_HF_MODELS = {}
+try:
+    import importlib.util as _ilu
+    _hf_client_path = Path(__file__).resolve().parent.parent / "gpu-burst" / "hf-inference-client.py"
+    if _hf_client_path.exists():
+        _spec = _ilu.spec_from_file_location("hf_inference_client", str(_hf_client_path))
+        _hf_mod = _ilu.module_from_spec(_spec)
+        _spec.loader.exec_module(_hf_mod)
+        _hf_council_vote = _hf_mod.council_vote
+        _hf_query_best = _hf_mod.query_best_available
+        _hf_query_qwen7b = _hf_mod.query_qwen25_7b
+        _HF_MODELS = _hf_mod.MODELS
+        _HF_AVAILABLE = True
+except Exception:
+    pass  # All fallbacks remain None — rule-based approval will be used
+
 # ── Config ──────────────────────────────────────────────────────────────
 
 FORGE_ROOT = Path(__file__).resolve().parent
@@ -45,12 +66,21 @@ SPACE_URLS = {
 # ── Council Advisor (LLM gate for critical actions) ─────────────────────
 
 class CouncilAdvisor:
-    """Lightweight advisor that gates critical autonomous actions.
+    """LLM-backed advisor that gates autonomous actions via HF Inference API.
 
-    Tries to import the full free_models_integration module.  If unavailable
-    (e.g. missing deps), falls back to a simple rule-based approval that
-    blocks only the most dangerous commands (rm -rf /, DROP, force-push).
+    Priority levels:
+        CRITICAL — requires 3/4 LLM models to approve (council_vote)
+        HIGH     — requires LLM consensus via council_vote (majority)
+        MEDIUM   — quick sanity check with 1 fast model (Qwen 2.5 7B)
+        LOW      — auto-approved (no LLM call)
+
+    Falls back to rule-based approval if HF API is unavailable or times out.
+    All LLM calls use a 30s timeout.
     """
+
+    LLM_TIMEOUT = 30  # seconds
+
+    DANGEROUS_PATTERNS = ["rm -rf /", "DROP TABLE", "git push --force", "shutdown", "reboot"]
 
     def __init__(self):
         self._backend = None
@@ -61,19 +91,197 @@ class CouncilAdvisor:
             pass  # fallback to rule-based
 
     def advise(self, dept: str, action: str, cmd: str, priority: str) -> dict:
-        """Return {"approved": bool, "reason": str}."""
-        if self._backend:
-            try:
-                return self._backend.advise(dept=dept, action=action, cmd=cmd, priority=priority)
-            except Exception:
-                pass  # fallback
-
-        # Rule-based fallback: approve high/critical, block obviously dangerous
-        dangerous = ["rm -rf /", "DROP TABLE", "git push --force", "shutdown", "reboot"]
-        for d in dangerous:
+        """Return {"approved": bool, "reason": str, "model_votes": dict|None}."""
+        # Always block dangerous commands regardless of priority
+        for d in self.DANGEROUS_PATTERNS:
             if d in cmd:
-                return {"approved": False, "reason": f"Blocked dangerous pattern: {d}"}
-        return {"approved": True, "reason": "rule-based auto-approve (no LLM advisor available)"}
+                return {"approved": False, "reason": f"Blocked dangerous pattern: {d}",
+                        "model_votes": None}
+
+        # CRITICAL: require 3/4 models to approve
+        if priority == "critical":
+            return self._llm_critical_vote(dept, action, cmd)
+
+        # HIGH: LLM consensus (majority of responding models)
+        if priority == "high":
+            return self._llm_high_vote(dept, action, cmd)
+
+        # MEDIUM: quick sanity check with 1 fast model
+        if priority == "medium":
+            return self._llm_medium_check(dept, action, cmd)
+
+        # LOW: auto-approve
+        return {"approved": True, "reason": "auto-approved (low priority)",
+                "model_votes": None}
+
+    def _llm_critical_vote(self, dept: str, action: str, cmd: str) -> dict:
+        """CRITICAL: require 3/4 models to approve."""
+        if not _HF_AVAILABLE or not _hf_council_vote:
+            return self._rule_based_fallback(cmd, "critical (no LLM)")
+
+        prompt = (
+            f"CRITICAL ACTION REVIEW for department '{dept}'.\n"
+            f"Action: {action}\n"
+            f"Command: {cmd}\n\n"
+            f"Should this command be executed autonomously? "
+            f"Answer APPROVE or REJECT with a one-line reason."
+        )
+        try:
+            import signal
+
+            def _timeout_handler(signum, frame):
+                raise TimeoutError("Council vote timed out")
+
+            old_handler = signal.signal(signal.SIGALRM, _timeout_handler)
+            signal.alarm(self.LLM_TIMEOUT)
+            try:
+                result = _hf_council_vote(prompt, role="risk")
+            finally:
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, old_handler)
+
+            votes = result.get("votes", {})
+            model_decisions = {}
+            approve_count = 0
+            total_responded = 0
+
+            for model_key, response in votes.items():
+                if response is None:
+                    model_decisions[model_key] = "NO_RESPONSE"
+                    continue
+                total_responded += 1
+                response_upper = response.upper()
+                if "APPROVE" in response_upper and "REJECT" not in response_upper:
+                    model_decisions[model_key] = "APPROVE"
+                    approve_count += 1
+                else:
+                    model_decisions[model_key] = "REJECT"
+
+            approved = approve_count >= 3
+            reason = (f"LLM council: {approve_count}/{total_responded} approved "
+                      f"(need 3/4 for critical)")
+            log("advisor", dept,
+                f"CRITICAL vote: {reason} | votes={model_decisions}")
+            return {"approved": approved, "reason": reason,
+                    "model_votes": model_decisions}
+
+        except (TimeoutError, Exception) as e:
+            log("advisor", dept,
+                f"LLM council failed ({type(e).__name__}: {e}), falling back to rules",
+                "WARN")
+            return self._rule_based_fallback(cmd, f"critical (LLM failed: {e})")
+
+    def _llm_high_vote(self, dept: str, action: str, cmd: str) -> dict:
+        """HIGH: LLM consensus — majority of responding models must approve."""
+        if not _HF_AVAILABLE or not _hf_council_vote:
+            return self._rule_based_fallback(cmd, "high (no LLM)")
+
+        prompt = (
+            f"ACTION REVIEW for department '{dept}'.\n"
+            f"Action: {action}\n"
+            f"Command: {cmd}\n\n"
+            f"Should this command be executed? "
+            f"Answer APPROVE or REJECT with a one-line reason."
+        )
+        try:
+            import signal
+
+            def _timeout_handler(signum, frame):
+                raise TimeoutError("Council vote timed out")
+
+            old_handler = signal.signal(signal.SIGALRM, _timeout_handler)
+            signal.alarm(self.LLM_TIMEOUT)
+            try:
+                result = _hf_council_vote(prompt, role="risk")
+            finally:
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, old_handler)
+
+            votes = result.get("votes", {})
+            model_decisions = {}
+            approve_count = 0
+            total_responded = 0
+
+            for model_key, response in votes.items():
+                if response is None:
+                    model_decisions[model_key] = "NO_RESPONSE"
+                    continue
+                total_responded += 1
+                response_upper = response.upper()
+                if "APPROVE" in response_upper and "REJECT" not in response_upper:
+                    model_decisions[model_key] = "APPROVE"
+                    approve_count += 1
+                else:
+                    model_decisions[model_key] = "REJECT"
+
+            approved = total_responded > 0 and approve_count > total_responded / 2
+            reason = (f"LLM council: {approve_count}/{total_responded} approved "
+                      f"(majority needed for high)")
+            log("advisor", dept,
+                f"HIGH vote: {reason} | votes={model_decisions}")
+            return {"approved": approved, "reason": reason,
+                    "model_votes": model_decisions}
+
+        except (TimeoutError, Exception) as e:
+            log("advisor", dept,
+                f"LLM council failed ({type(e).__name__}: {e}), falling back to rules",
+                "WARN")
+            return self._rule_based_fallback(cmd, f"high (LLM failed: {e})")
+
+    def _llm_medium_check(self, dept: str, action: str, cmd: str) -> dict:
+        """MEDIUM: quick sanity check with Qwen 2.5 7B (fastest model)."""
+        if not _HF_AVAILABLE or not _hf_query_qwen7b:
+            return self._rule_based_fallback(cmd, "medium (no LLM)")
+
+        prompt = (
+            f"Quick safety check for department '{dept}'.\n"
+            f"Action: {action}\n"
+            f"Command: {cmd}\n\n"
+            f"Is this safe to run autonomously? Answer APPROVE or REJECT in one line."
+        )
+        try:
+            import signal
+
+            def _timeout_handler(signum, frame):
+                raise TimeoutError("Qwen 7B query timed out")
+
+            old_handler = signal.signal(signal.SIGALRM, _timeout_handler)
+            signal.alarm(self.LLM_TIMEOUT)
+            try:
+                response = _hf_query_qwen7b(prompt, max_tokens=128)
+            finally:
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, old_handler)
+
+            if response is None:
+                return self._rule_based_fallback(cmd, "medium (Qwen 7B no response)")
+
+            response_upper = response.upper()
+            approved = "APPROVE" in response_upper and "REJECT" not in response_upper
+            decision = "APPROVE" if approved else "REJECT"
+
+            log("advisor", dept,
+                f"MEDIUM check (qwen25_7b): {decision} | response={response[:100]}")
+            return {"approved": approved,
+                    "reason": f"Qwen 2.5 7B: {decision} — {response[:150]}",
+                    "model_votes": {"qwen25_7b": decision}}
+
+        except (TimeoutError, Exception) as e:
+            log("advisor", dept,
+                f"Qwen 7B check failed ({type(e).__name__}: {e}), falling back to rules",
+                "WARN")
+            return self._rule_based_fallback(cmd, f"medium (LLM failed: {e})")
+
+    def _rule_based_fallback(self, cmd: str, context: str) -> dict:
+        """Fallback: rule-based approval when LLM is unavailable."""
+        for d in self.DANGEROUS_PATTERNS:
+            if d in cmd:
+                return {"approved": False,
+                        "reason": f"Blocked dangerous pattern: {d} ({context})",
+                        "model_votes": None}
+        return {"approved": True,
+                "reason": f"rule-based auto-approve ({context})",
+                "model_votes": None}
 
 
 _advisor = CouncilAdvisor()
@@ -489,7 +697,7 @@ def _scan_cross_repo_agents(repo_path):
 # ── PROPOSE: Generate real proposals ───────────────────────────────────
 
 def phase_propose(repo_path, dept, config, scan):
-    """Generate REAL improvement proposals based on scan data."""
+    """Generate improvement proposals — LLM-enhanced when available, rule-based fallback."""
     proposers = {
         "research": _propose_research,
         "cross_repo_agents": _propose_cross_repo,
@@ -501,8 +709,91 @@ def phase_propose(repo_path, dept, config, scan):
         "infra": _propose_infra,
         "finance": _propose_finance,
     }
+
+    # Step 1: Get rule-based proposal (always available)
     proposer = proposers.get(dept, _propose_generic)
-    return proposer(repo_path, scan)
+    rule_proposal = proposer(repo_path, scan)
+
+    # Step 2: Try LLM-enhanced proposal for non-trivial priorities
+    if rule_proposal.get("priority") in ("high", "critical", "medium"):
+        llm_proposal = _llm_enhanced_propose(repo_path, dept, scan, rule_proposal)
+        if llm_proposal:
+            return llm_proposal
+
+    return rule_proposal
+
+
+def _llm_enhanced_propose(repo_path, dept, scan, rule_proposal):
+    """Use LLM to generate a more specific proposal. Returns None on failure."""
+    if not _HF_AVAILABLE or not _hf_query_best:
+        return None
+
+    repo_name = Path(repo_path).name
+
+    # Build a concise metrics summary from scan data (exclude verbose fields)
+    metrics_summary = {}
+    skip_keys = {"dept", "repo", "ts", "metrics_history", "recent_decisions",
+                 "proposal_files", "islands", "uncommitted"}
+    for k, v in scan.items():
+        if k not in skip_keys and v is not None:
+            metrics_summary[k] = v
+
+    prompt = (
+        f"You are an AI advisor for the '{dept}' department of an NBA prediction system.\n\n"
+        f"Current metrics: {json.dumps(metrics_summary, default=str)}\n\n"
+        f"Rule-based analysis suggests: {rule_proposal.get('summary', 'unknown')}\n"
+        f"Priority: {rule_proposal.get('priority', 'unknown')}\n\n"
+        f"Propose 1 specific improvement. Be concrete — include exact file paths, "
+        f"commands, or config changes. Format:\n"
+        f"PROPOSAL: <one-line summary>\n"
+        f"ACTION: <specific command or file change>\n"
+        f"REASON: <why this helps>\n"
+    )
+
+    try:
+        import signal
+
+        def _timeout_handler(signum, frame):
+            raise TimeoutError("LLM proposal generation timed out")
+
+        old_handler = signal.signal(signal.SIGALRM, _timeout_handler)
+        signal.alarm(30)
+        try:
+            response = _hf_query_best(prompt, max_tokens=512)
+        finally:
+            signal.alarm(0)
+            signal.signal(signal.SIGALRM, old_handler)
+
+        if not response:
+            return None
+
+        # Parse LLM response to extract proposal
+        llm_summary = rule_proposal.get("summary", "")
+        llm_action = rule_proposal.get("action", "monitor")
+
+        for line in response.split("\n"):
+            line = line.strip()
+            if line.upper().startswith("PROPOSAL:"):
+                llm_summary = line[len("PROPOSAL:"):].strip()
+            elif line.upper().startswith("ACTION:"):
+                parsed_action = line[len("ACTION:"):].strip()
+                if parsed_action:
+                    llm_action = parsed_action
+
+        # Merge: keep rule-based cmd/priority but use LLM summary
+        enhanced = dict(rule_proposal)
+        enhanced["summary"] = f"[LLM] {llm_summary}"
+        enhanced["llm_raw"] = response[:500]
+        enhanced["proposal_source"] = "llm_enhanced"
+
+        log(repo_name, dept, f"LLM proposal: {llm_summary[:120]}")
+        return enhanced
+
+    except (TimeoutError, Exception) as e:
+        log(repo_name, dept,
+            f"LLM proposal failed ({type(e).__name__}: {e}), using rule-based",
+            "WARN")
+        return None
 
 
 def _propose_generic(repo_path, scan):
@@ -772,7 +1063,11 @@ def phase_execute(repo_path, dept, config, proposal):
 
     Safety layers:
     1. Only high/critical proposals with explicit `cmd` are executed
-    2. CouncilAdvisor (LLM or rule-based) gates critical actions
+    2. CouncilAdvisor gates actions via LLM council voting:
+       - CRITICAL: 3/4 models must approve
+       - HIGH: majority of responding models must approve
+       - MEDIUM: Qwen 2.5 7B quick sanity check
+       Falls back to rule-based if HF API unavailable (30s timeout)
     3. Engineering proposals with `diagnostic` field are logged, never executed
     4. 5-minute timeout hard cap on all commands
     """
@@ -794,10 +1089,12 @@ def phase_execute(repo_path, dept, config, proposal):
     # ── Only execute commands for high/critical priority with explicit cmd ──
     cmd = proposal.get("cmd")
     if cmd and priority in ("high", "critical"):
-        # ── Gate critical actions through CouncilAdvisor ──
-        if priority == "critical":
+        # ── Gate high and critical actions through CouncilAdvisor ──
+        if priority in ("high", "critical"):
             advice = _advisor.advise(dept=dept, action=action, cmd=cmd, priority=priority)
             log(repo_name, dept, f"Advisor: approved={advice['approved']} reason={advice['reason']}")
+            if advice.get("model_votes"):
+                log(repo_name, dept, f"Model votes: {json.dumps(advice['model_votes'])}")
             if not advice["approved"]:
                 result["note"] = f"BLOCKED by advisor: {advice['reason']}"
                 result["advisor"] = advice

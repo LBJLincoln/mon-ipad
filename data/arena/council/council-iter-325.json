@@ -1,0 +1,271 @@
+{
+  "council_iteration": 325,
+  "timestamp": "2026-04-04T11:51:26.165853+00:00",
+  "source_iteration": 19,
+  "source_generation": 2584,
+  "analysis": {
+    "top_strategies": [
+      {
+        "strategy": "underdog_specialist",
+        "roi_pct": 509.52,
+        "win_rate_pct": 43.2,
+        "bets": 451,
+        "traders_using": [
+          "grok",
+          "gemini"
+        ]
+      },
+      {
+        "strategy": "value_hunter",
+        "roi_pct": 181.79,
+        "win_rate_pct": 48.6,
+        "bets": 588,
+        "traders_using": [
+          "codex",
+          "grok",
+          "openrouter",
+          "gemini"
+        ]
+      },
+      {
+        "strategy": "half_kelly",
+        "roi_pct": 73.69,
+        "win_rate_pct": 53.3,
+        "bets": 600,
+        "traders_using": [
+          "codex",
+          "openrouter",
+          "gemini"
+        ]
+      }
+    ],
+    "bottom_strategies": [
+      {
+        "strategy": "quarter_kelly",
+        "roi_pct": 66.58,
+        "win_rate_pct": 51.6,
+        "bets": 684,
+        "traders_using": [
+          "claude",
+          "openrouter"
+        ]
+      },
+      {
+        "strategy": "full_kelly",
+        "roi_pct": 1.85,
+        "win_rate_pct": 61.9,
+        "bets": 126,
+        "traders_using": [
+          "codex"
+        ]
+      },
+      {
+        "strategy": "dog_value_plus",
+        "roi_pct": -7.23,
+        "win_rate_pct": 17.6,
+        "bets": 51,
+        "traders_using": [
+          "grok"
+        ]
+      }
+    ],
+    "model_rankings": [
+      {
+        "model": "stacking_meta",
+        "avg_daily_pnl": 2.1439,
+        "win_rate_pct": 52.7,
+        "bets": 165
+      },
+      {
+        "model": "random_forest",
+        "avg_daily_pnl": 2.0047,
+        "win_rate_pct": 44.5,
+        "bets": 164
+      },
+      {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 1.7564,
+        "win_rate_pct": 50.8,
+        "bets": 386
+      },
+      {
+        "model": "extra_trees",
+        "avg_daily_pnl": 1.384,
+        "win_rate_pct": 44.6,
+        "bets": 336
+      },
+      {
+        "model": "tabicl",
+        "avg_daily_pnl": 0.3421,
+        "win_rate_pct": 46.9,
+        "bets": 318
+      },
+      {
+        "model": "catboost",
+        "avg_daily_pnl": 0.2334,
+        "win_rate_pct": 49.0,
+        "bets": 157
+      },
+      {
+        "model": "consensus_ensemble",
+        "avg_daily_pnl": 0.16,
+        "win_rate_pct": 50.3,
+        "bets": 624
+      },
+      {
+        "model": "lightgbm",
+        "avg_daily_pnl": 0.1355,
+        "win_rate_pct": 53.8,
+        "bets": 184
+      },
+      {
+        "model": "xgboost",
+        "avg_daily_pnl": -0.0041,
+        "win_rate_pct": 57.8,
+        "bets": 166
+      }
+    ],
+    "best_categories": [
+      {
+        "category": "h1_ml_away",
+        "win_rate_pct": 75.0,
+        "roi_pct": 88.88,
+        "bets": 12
+      },
+      {
+        "category": "spread_away",
+        "win_rate_pct": 72.9,
+        "roi_pct": 80.12,
+        "bets": 59
+      },
+      {
+        "category": "team_total_home_under",
+        "win_rate_pct": 60.4,
+        "roi_pct": 17.15,
+        "bets": 48
+      },
+      {
+        "category": "alt_spread_away_big",
+        "win_rate_pct": 55.9,
+        "roi_pct": 165.8,
+        "bets": 476
+      },
+      {
+        "category": "alt_spread_home_big",
+        "win_rate_pct": 49.5,
+        "roi_pct": 146.77,
+        "bets": 937
+      }
+    ],
+    "leaderboard_summary": [
+      {
+        "rank": 1,
+        "trader_id": "gemini",
+        "nba_bankroll": 3294.0168,
+        "nba_roi_pct": 3194.02,
+        "nba_sharpe": 3.438
+      },
+      {
+        "rank": 2,
+        "trader_id": "grok",
+        "nba_bankroll": 1721.5847,
+        "nba_roi_pct": 1621.58,
+        "nba_sharpe": 4.378
+      },
+      {
+        "rank": 3,
+        "trader_id": "claude",
+        "nba_bankroll": 236.7468,
+        "nba_roi_pct": 136.75,
+        "nba_sharpe": 3.951
+      },
+      {
+        "rank": 4,
+        "trader_id": "openrouter",
+        "nba_bankroll": 150.8773,
+        "nba_roi_pct": 50.88,
+        "nba_sharpe": 0.783
+      },
+      {
+        "rank": 5,
+        "trader_id": "codex",
+        "nba_bankroll": 5.8198,
+        "nba_roi_pct": -94.18,
+        "nba_sharpe": -0.258
+      }
+    ]
+  },
+  "decisions": {
+    "mutations": [
+      {
+        "agent": "openrouter",
+        "action": "adopt_winner_strategies",
+        "from_agent": "gemini",
+        "adopt_strategies": [
+          "underdog_specialist",
+          "value_hunter"
+        ],
+        "adopt_models": [
+          "stacking_meta"
+        ],
+        "reason": "openrouter (rank 4) should learn from gemini (rank 1)"
+      },
+      {
+        "agent": "codex",
+        "action": "adopt_winner_strategies",
+        "from_agent": "gemini",
+        "adopt_strategies": [
+          "underdog_specialist",
+          "value_hunter"
+        ],
+        "adopt_models": [
+          "stacking_meta"
+        ],
+        "reason": "codex (rank 5) should learn from gemini (rank 1)"
+      }
+    ],
+    "new_experiments": [
+      {
+        "type": "cross_pollination",
+        "strategy": "underdog_specialist",
+        "test_with_models": [
+          "elo_baseline",
+          "extra_trees",
+          "tabicl"
+        ],
+        "hypothesis": "Top strategy 'underdog_specialist' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      {
+        "type": "category_focus",
+        "categories": [
+          "h1_ml_away",
+          "spread_away"
+        ],
+        "expected_win_rate": 74.0,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      {
+        "type": "model_promotion",
+        "model": "stacking_meta",
+        "avg_daily_pnl": 2.1439,
+        "win_rate_pct": 52.7,
+        "hypothesis": "Prioritize stacking_meta in evolution -- top daily PnL",
+        "priority": 1
+      }
+    ],
+    "eliminations": []
+  },
+  "metrics": {
+    "best_bankroll": 3294.02,
+    "best_trader": "gemini",
+    "best_roi_pct": 3194.02,
+    "distance_to_1m": 99.6706,
+    "improvement_since_last": -19.5083,
+    "total_traders": 5,
+    "total_strategies_active": 6,
+    "total_eliminations_all_time": 6,
+    "matched_games": 994
+  }
+}

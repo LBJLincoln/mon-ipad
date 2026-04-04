@@ -1,0 +1,70 @@
+{
+  "scan_date": "2023-10-27",
+  "techniques_found": [
+    {
+      "name": "Super Learner / Stacked Generalization",
+      "source": "Ensemble learning literature (e.g., 'Super Learner' by van der Laan et al., 2007)",
+      "relevance": "high",
+      "effort": "medium",
+      "expected_impact": "Potential Brier score improvement of 0.005-0.010 by combining the strengths of diverse base models (XGBoost, LightGBM, CatBoost, ExtraTrees) and potentially reducing variance. Can outperform individual models.",
+      "implementation_notes": "Train base models on k-folds of the training data. Use their out-of-fold predictions as features for a meta-learner (e.g., Logistic Regression, another simple GBM, or a neural net) trained on the full dataset. Ensure a proper hold-out set for final evaluation. This is inherently CPU-friendly if base and meta-learners are CPU-based."
+    },
+    {
+      "name": "Advanced Hyperparameter Optimization (HPO) with Optuna/Ray Tune",
+      "source": "Optuna: 'Optuna: A Next-generation Hyperparameter Optimization Framework' (Akiba et al., 2019); Ray Tune: 'Ray Tune: A Distributed Hyperparameter Optimization Framework' (Li et al., 2019)",
+      "relevance": "high",
+      "effort": "medium",
+      "expected_impact": "Potential Brier score improvement of 0.002-0.005 by finding significantly better hyperparameters for existing tree-based models, especially when considering interactions between parameters.",
+      "implementation_notes": "Integrate Optuna (or Ray Tune for distributed HPO) with existing model training pipelines. Define search spaces for XGBoost, LightGBM, CatBoost, etc., and optimize directly for Brier score or log-loss using walk-forward validation. Can leverage existing CPU resources efficiently."
+    },
+    {
+      "name": "Post-Hoc Probability Calibration (Platt Scaling, Isotonic Regression)",
+      "source": "Predicting Good Probabilities With Supervised Learning (Platt, 1999); Isotonic Regression for Post-hoc Probability Calibration (Zadrozny & Elkan, 2002)",
+      "relevance": "high",
+      "effort": "low",
+      "expected_impact": "Crucial for Brier score targets. Can improve Brier by 0.003-0.007 if models are currently miscalibrated. Ensures predicted probabilities align with true event frequencies.",
+      "implementation_notes": "Apply `sklearn.calibration.CalibratedClassifierCV` (using Platt Scaling or Isotonic Regression) to the raw probability outputs of the best performing or stacked models. Train the calibrator on a separate validation set or using cross-validation to prevent overfitting. This is a lightweight, CPU-friendly post-processing step."
+    },
+    {
+      "name": "Concept Drift Detection & Adaptive Ensembling",
+      "source": "Machine Learning for Streaming Data with Concept Drift (Gama et al., 2014); ADWIN (Bifet et al., 2007)",
+      "relevance": "medium",
+      "effort": "high",
+      "expected_impact": "Potential Brier score improvement of 0.005-0.010 by ensuring models remain relevant to the current NBA landscape, preventing performance degradation due to changes in team strategies, player rosters, or game rules over time.",
+      "implementation_notes": "Monitor model performance (e.g., Brier score) and feature distributions over rolling time windows. Implement a mechanism (e.g., ADWIN or similar) to detect significant shifts. When drift is detected, trigger partial retraining, re-weighting of ensemble members, or re-run of the genetic algorithm for feature selection. Requires robust monitoring infrastructure and automated retraining pipelines."
+    }
+  ],
+  "feature_ideas": [
+    {
+      "name": "Advanced Player Impact Metrics",
+      "description": "Incorporate modern all-in-one player metrics that estimate individual player contributions to team success beyond traditional box score stats. Examples include RAPTOR (FiveThirtyEight), EPM (Estimated Plus/Minus), LEBRON (Luck-adjusted EPM by BBall-Index). These capture offensive and defensive value more robustly.",
+      "data_source": "Publicly available APIs/datasets (e.g., FiveThirtyEight, Dunks & Threes, BBall-Index) or derive similar metrics from play-by-play data.",
+      "priority": "high"
+    },
+    {
+      "name": "Schedule Congestion & Travel Logistics",
+      "description": "Features quantifying player/team fatigue and advantage/disadvantage due to schedule. Examples: number of games in the last N days, days since last game, back-to-back status, distance traveled for the current game, time zone changes.",
+      "data_source": "NBA official schedule data, team city locations, historical game logs.",
+      "priority": "high"
+    },
+    {
+      "name": "Injury Impact Quantification",
+      "description": "Beyond just a binary 'player injured' flag. Develop a method to estimate the 'value over replacement player' (VORP) loss due to key injuries, potentially by comparing the injured player's net rating/impact to that of their typical replacement.",
+      "data_source": "Injury reports (ESPN, official team reports), individual player advanced metrics, lineup data.",
+      "priority": "medium"
+    },
+    {
+      "name": "Lineup Stability & Rotational Consistency",
+      "description": "Metrics reflecting how consistent a team's starting lineup and primary rotation players are. High turnover could indicate instability or adaptation, while stability often correlates with chemistry and efficiency.",
+      "data_source": "Official box scores, play-by-play data (to track minutes for non-starters).",
+      "priority": "low"
+    }
+  ],
+  "calibration_insights": [
+    "Systematic application of post-hoc calibration methods (Platt Scaling for models that output log-odds, Isotonic Regression for more flexible calibration) is critical. Apply these on the final predicted probabilities from the best single model or the stacked ensemble.",
+    "Monitor calibration regularly using reliability diagrams, Expected Calibration Error (ECE), and Maximum Calibration Error (MCE) on a dedicated hold-out set. This provides a visual and quantitative measure of how well predicted probabilities match true frequencies.",
+    "Ensure the loss function used during training for the tree ensembles (XGBoost, LightGBM, CatBoost) is appropriate for probabilistic prediction (e.g., 'binary:logistic' with logloss/cross-entropy). While Brier is the target, optimizing directly for it in tree models can be complex, and cross-entropy is a good proxy for well-calibrated probabilities.",
+    "For the TabICL neural model, experiment with temperature scaling as a simple and effective post-hoc calibration technique without requiring retraining. Optimize the single 'temperature' parameter on a validation set for Brier score."
+  ],
+  "recommended_next_action": "Implement a robust stacking ensemble strategy combining existing tree models (XGBoost, LightGBM, CatBoost, ExtraTrees) with a simple meta-learner (e.g., Logistic Regression), followed by post-hoc calibration (Platt Scaling or Isotonic Regression) on the final stacked probabilities, using walk-forward validation for all training and calibration steps."
+}

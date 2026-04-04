@@ -1,0 +1,273 @@
+{
+  "council_iteration": 344,
+  "timestamp": "2026-04-04T15:28:52.458303+00:00",
+  "source_iteration": 45,
+  "source_generation": 6120,
+  "analysis": {
+    "top_strategies": [
+      {
+        "strategy": "underdog_specialist",
+        "roi_pct": 990.73,
+        "win_rate_pct": 46.2,
+        "bets": 860,
+        "traders_using": [
+          "gemini",
+          "codex",
+          "grok",
+          "openrouter"
+        ]
+      },
+      {
+        "strategy": "value_hunter",
+        "roi_pct": 577.46,
+        "win_rate_pct": 51.3,
+        "bets": 458,
+        "traders_using": [
+          "gemini",
+          "codex",
+          "openrouter"
+        ]
+      },
+      {
+        "strategy": "half_kelly",
+        "roi_pct": 521.78,
+        "win_rate_pct": 52.8,
+        "bets": 534,
+        "traders_using": [
+          "gemini",
+          "codex",
+          "openrouter"
+        ]
+      }
+    ],
+    "bottom_strategies": [
+      {
+        "strategy": "quarter_kelly",
+        "roi_pct": 107.9,
+        "win_rate_pct": 50.8,
+        "bets": 500,
+        "traders_using": [
+          "claude"
+        ]
+      },
+      {
+        "strategy": "confidence_scaled",
+        "roi_pct": -2.86,
+        "win_rate_pct": 50.7,
+        "bets": 71,
+        "traders_using": [
+          "gemini"
+        ]
+      },
+      {
+        "strategy": "dog_value_plus",
+        "roi_pct": -9.92,
+        "win_rate_pct": 18.2,
+        "bets": 77,
+        "traders_using": [
+          "grok"
+        ]
+      }
+    ],
+    "model_rankings": [
+      {
+        "model": "stacking_meta",
+        "avg_daily_pnl": 8.0697,
+        "win_rate_pct": 52.3,
+        "bets": 149
+      },
+      {
+        "model": "elo_baseline",
+        "avg_daily_pnl": 6.2519,
+        "win_rate_pct": 47.0,
+        "bets": 364
+      },
+      {
+        "model": "consensus_ensemble",
+        "avg_daily_pnl": 2.853,
+        "win_rate_pct": 50.3,
+        "bets": 636
+      },
+      {
+        "model": "xgboost",
+        "avg_daily_pnl": 2.4909,
+        "win_rate_pct": 51.4,
+        "bets": 175
+      },
+      {
+        "model": "random_forest",
+        "avg_daily_pnl": 2.324,
+        "win_rate_pct": 43.9,
+        "bets": 157
+      },
+      {
+        "model": "tabicl",
+        "avg_daily_pnl": 1.9392,
+        "win_rate_pct": 47.3,
+        "bets": 317
+      },
+      {
+        "model": "extra_trees",
+        "avg_daily_pnl": 1.6453,
+        "win_rate_pct": 45.5,
+        "bets": 312
+      },
+      {
+        "model": "lightgbm",
+        "avg_daily_pnl": 0.4199,
+        "win_rate_pct": 51.9,
+        "bets": 233
+      },
+      {
+        "model": "catboost",
+        "avg_daily_pnl": 0.2328,
+        "win_rate_pct": 49.0,
+        "bets": 157
+      }
+    ],
+    "best_categories": [
+      {
+        "category": "spread_away",
+        "win_rate_pct": 72.3,
+        "roi_pct": 208.98,
+        "bets": 65
+      },
+      {
+        "category": "team_total_home_under",
+        "win_rate_pct": 65.3,
+        "roi_pct": 70.8,
+        "bets": 49
+      },
+      {
+        "category": "alt_spread_away_big",
+        "win_rate_pct": 57.5,
+        "roi_pct": 506.25,
+        "bets": 492
+      },
+      {
+        "category": "alt_spread_home_big",
+        "win_rate_pct": 50.1,
+        "roi_pct": 519.92,
+        "bets": 1001
+      },
+      {
+        "category": "h1_ml_home",
+        "win_rate_pct": 48.1,
+        "roi_pct": 310.35,
+        "bets": 162
+      }
+    ],
+    "leaderboard_summary": [
+      {
+        "rank": 1,
+        "trader_id": "codex",
+        "nba_bankroll": 3739.6832,
+        "nba_roi_pct": 3639.68,
+        "nba_sharpe": 2.117
+      },
+      {
+        "rank": 2,
+        "trader_id": "gemini",
+        "nba_bankroll": 3246.6933,
+        "nba_roi_pct": 3146.69,
+        "nba_sharpe": 3.132
+      },
+      {
+        "rank": 3,
+        "trader_id": "grok",
+        "nba_bankroll": 1614.8778,
+        "nba_roi_pct": 1514.88,
+        "nba_sharpe": 5.341
+      },
+      {
+        "rank": 4,
+        "trader_id": "openrouter",
+        "nba_bankroll": 392.1488,
+        "nba_roi_pct": 292.15,
+        "nba_sharpe": 2.02
+      },
+      {
+        "rank": 5,
+        "trader_id": "claude",
+        "nba_bankroll": 236.0926,
+        "nba_roi_pct": 136.09,
+        "nba_sharpe": 3.946
+      }
+    ]
+  },
+  "decisions": {
+    "mutations": [
+      {
+        "agent": "openrouter",
+        "action": "adopt_winner_strategies",
+        "from_agent": "codex",
+        "adopt_strategies": [
+          "underdog_specialist",
+          "value_hunter"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "consensus_ensemble"
+        ],
+        "reason": "openrouter (rank 4) should learn from codex (rank 1)"
+      },
+      {
+        "agent": "claude",
+        "action": "adopt_winner_strategies",
+        "from_agent": "codex",
+        "adopt_strategies": [
+          "underdog_specialist",
+          "value_hunter"
+        ],
+        "adopt_models": [
+          "elo_baseline",
+          "consensus_ensemble"
+        ],
+        "reason": "claude (rank 5) should learn from codex (rank 1)"
+      }
+    ],
+    "new_experiments": [
+      {
+        "type": "cross_pollination",
+        "strategy": "underdog_specialist",
+        "test_with_models": [
+          "consensus_ensemble",
+          "xgboost",
+          "random_forest"
+        ],
+        "hypothesis": "Top strategy 'underdog_specialist' may perform even better with mid-tier models",
+        "priority": 1
+      },
+      {
+        "type": "category_focus",
+        "categories": [
+          "spread_away",
+          "team_total_home_under"
+        ],
+        "expected_win_rate": 68.8,
+        "hypothesis": "Focus bets on top-2 winning categories for higher concentration",
+        "priority": 2
+      },
+      {
+        "type": "model_promotion",
+        "model": "stacking_meta",
+        "avg_daily_pnl": 8.0697,
+        "win_rate_pct": 52.3,
+        "hypothesis": "Prioritize stacking_meta in evolution -- top daily PnL",
+        "priority": 1
+      }
+    ],
+    "eliminations": []
+  },
+  "metrics": {
+    "best_bankroll": 3739.68,
+    "best_trader": "codex",
+    "best_roi_pct": 3639.68,
+    "distance_to_1m": 99.626,
+    "improvement_since_last": 0.0105,
+    "total_traders": 5,
+    "total_strategies_active": 6,
+    "total_eliminations_all_time": 6,
+    "matched_games": 994
+  }
+}

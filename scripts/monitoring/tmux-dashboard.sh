@@ -18,7 +18,7 @@
 # Lightweight: no ML, just file reads and curls. Safe for 1vCPU/969MB.
 # ============================================================================
 
-set -euo pipefail
+set -eo pipefail
 
 SESSION="nomos42-dash"
 BASE="/home/termius/mon-ipad"
