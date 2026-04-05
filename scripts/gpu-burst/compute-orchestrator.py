@@ -94,8 +94,8 @@ PLATFORMS = {
         "daily_budget_min": 15,   # 5 min x 3 accounts
         "burst_duration_sec": 300,
         "priority": 1,
-        "schedule_utc": [6],       # Run at 06:00 UTC
-        "cooldown_hours": 20,      # Min hours between runs
+        "schedule_utc": [6, 14],   # Run 2x/day (more H200 time)
+        "cooldown_hours": 10,
     },
     "kaggle": {
         "gpu": "P100",
@@ -112,8 +112,8 @@ PLATFORMS = {
         "daily_budget_min": 30,    # Conservative from 22h total
         "burst_duration_sec": 1800,
         "priority": 3,
-        "schedule_utc": [12],      # Run at 12:00 UTC
-        "cooldown_hours": 12,
+        "schedule_utc": [8, 12, 20],  # Run 3x/day
+        "cooldown_hours": 6,
     },
     "colab": {
         "gpu": "T4",
@@ -121,8 +121,8 @@ PLATFORMS = {
         "daily_budget_min": 30,
         "burst_duration_sec": 1800,
         "priority": 4,
-        "schedule_utc": [16],      # Run at 16:00 UTC
-        "cooldown_hours": 12,
+        "schedule_utc": [10, 16, 22],  # Run 3x/day
+        "cooldown_hours": 6,
     },
     "modal": {
         "gpu": "A10G",
@@ -457,8 +457,8 @@ def dispatch(platform: str, experiment: dict) -> dict:
                 "--timeout", str(cfg["burst_duration_sec"]),
             ]
         elif platform == "colab":
-            log("Colab bursts must be launched manually via notebook")
-            return {"status": "skipped", "reason": "colab requires manual launch"}
+            # Run colab burst script directly (it handles its own GPU detection)
+            cmd = [sys.executable, str(script)]
         else:
             return {"status": "error", "reason": f"unknown platform: {platform}"}
 
