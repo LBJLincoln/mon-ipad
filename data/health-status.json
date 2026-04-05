@@ -1,30 +1,31 @@
 {
-  "cycle_timestamp": "2026-04-05T04:00:00Z",
+  "cycle_timestamp": "2026-04-05T08:00:00Z",
   "cycle_type": "4h_brain",
-  "cycle_number": 63,
+  "cycle_number": 64,
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
 
   "nba_fleet": {
     "fleet_best_brier": 0.22159,
     "fleet_best_island": "S15",
-    "fleet_avg_brier": 0.22386,
+    "fleet_avg_brier": 0.22370,
     "checkpoint_threshold": 0.21837,
     "checkpoint_triggered": false,
     "checkpoint_gap": 0.00322,
     "all_running": true,
     "stagnation_alerts": [],
+    "engine_parity": "OK — both features/engine.py and hf-space/features/engine.py at v3.1-51cat",
     "islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "gen": 751,
-        "cycle": 251,
+        "gen": 918,
+        "cycle": 306,
         "brier": 0.22454,
         "roi": 0.2737,
         "sharpe": 5.9986,
         "stagnation": 0,
         "model": "xgboost_brier",
-        "mutation_rate": 0.05,
+        "mutation_rate": 0.0774,
         "features": 50,
         "status": "active",
         "http_status": 200
@@ -32,8 +33,8 @@
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "gen": 1537,
-        "cycle": 513,
+        "gen": 2004,
+        "cycle": 668,
         "brier": 0.22273,
         "roi": 0.2934,
         "sharpe": 8.6004,
@@ -42,29 +43,35 @@
         "mutation_rate": 0.08,
         "features": 63,
         "status": "active",
-        "http_status": 200,
-        "note": "Population converging to local optimum — consistent Brier~0.2306 at pop level"
+        "http_status": 200
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
-        "gen": 1415,
-        "cycle": 472,
+        "gen": 1705,
+        "cycle": 569,
         "brier": 0.22506,
         "roi": 0.2669,
         "sharpe": 10.4122,
         "stagnation": 0,
         "model": "catboost",
-        "mutation_rate": 0.04,
+        "mutation_rate": 0.0756,
         "features": 43,
         "status": "active",
-        "http_status": 200
+        "http_status": 200,
+        "top_performer": {
+          "gen": 1702,
+          "brier": 0.21863,
+          "roi": 0.344,
+          "model": "extra_trees",
+          "features": 200
+        }
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
-        "gen": 1086,
-        "cycle": 362,
+        "gen": 1366,
+        "cycle": 456,
         "brier": 0.22455,
         "roi": 0.2722,
         "sharpe": 11.9811,
@@ -73,19 +80,26 @@
         "mutation_rate": 0.05,
         "features": 69,
         "status": "active",
-        "http_status": 200
+        "http_status": 200,
+        "top_performer": {
+          "gen": 1364,
+          "brier": 0.21855,
+          "roi": 0.3433,
+          "model": "extra_trees",
+          "features": 200
+        }
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
-        "gen": 1138,
-        "cycle": 380,
+        "gen": 1363,
+        "cycle": 455,
         "brier": 0.22666,
         "roi": 0.2512,
         "sharpe": 5.2171,
         "stagnation": 0,
         "model": "xgboost_brier",
-        "mutation_rate": 0.04,
+        "mutation_rate": 0.0868,
         "features": 55,
         "status": "active",
         "http_status": 200
@@ -93,8 +107,8 @@
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "gen": 1965,
-        "cycle": 655,
+        "gen": 2393,
+        "cycle": 798,
         "brier": 0.22159,
         "roi": 0.3067,
         "sharpe": 7.3688,
@@ -102,9 +116,10 @@
         "model": "random_forest",
         "mutation_rate": 0.08,
         "features": 79,
+        "pop_size": 50,
         "status": "active",
         "http_status": 200,
-        "note": "FLEET BEST — gen1964: Brier=0.2216 ROI=30.6% Sharpe=8.69"
+        "note": "FLEET BEST — Brier gap 0.00322 from checkpoint"
       }
     }
   },
@@ -114,14 +129,16 @@
     "online": 2,
     "offline": 2,
     "best_brier": 0.23134,
-    "best_island": "P4",
-    "data_pipeline_status": "DEGRADED",
+    "best_island": "P2",
+    "data_pipeline_status": "REFRESHED — April 5 fetch completed this cycle",
+    "real_events": 1120,
+    "consolidated_events_date": "2026-03-26",
     "islands": {
       "P1": {
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
-        "gen": 3547,
-        "cycle": 1183,
+        "gen": 5197,
+        "cycle": 1733,
         "brier": 0.24997,
         "stagnation": 0,
         "model": "xgboost_brier",
@@ -132,22 +149,8 @@
       "P2": {
         "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
-        "status": "offline",
-        "http_status": 404,
-        "action_needed": "Manual HF Space restart required — consecutive cycles down"
-      },
-      "P3": {
-        "url": "nomos42-political-alpha-3.hf.space",
-        "role": "catboost_specialist",
-        "status": "offline",
-        "http_status": 404,
-        "action_needed": "Manual HF Space restart required — consecutive cycles down"
-      },
-      "P4": {
-        "url": "nomos42-political-alpha-4.hf.space",
-        "role": "wide_search",
-        "gen": 9669,
-        "cycle": 3223,
+        "gen": 11572,
+        "cycle": 3858,
         "brier": 0.23134,
         "roi": 0.2804,
         "sharpe": 1.0635,
@@ -156,44 +159,57 @@
         "features": 70,
         "status": "active",
         "http_status": 200,
-        "note": "FLEET BEST — top config: Brier=0.2182 ROI=41.6% Sharpe=1.06"
+        "note": "FLEET BEST"
+      },
+      "P3": {
+        "url": "nomos42-political-alpha-3.hf.space",
+        "role": "catboost_specialist",
+        "status": "offline",
+        "http_status": 404,
+        "consecutive_down_cycles": 5,
+        "action_needed": "Manual HF Space restart required"
+      },
+      "P4": {
+        "url": "nomos42-political-alpha-4.hf.space",
+        "role": "wide_search",
+        "status": "offline",
+        "http_status": 404,
+        "consecutive_down_cycles": 5,
+        "action_needed": "Manual HF Space restart required"
       }
     }
   },
 
   "cycle_actions": {
-    "stagnation_diversify": "none — all running islands have stagnation=0",
-    "brier_checkpoint": "not triggered — best 0.22159 vs threshold 0.21837 (gap: 0.00322)",
-    "nba_improvement": "nomos-nba-agent/models/kelly.py: EV>1.10 filter + FRACTIONAL_KELLY 0.25→0.30 (MDPI 2026: EV>1.10 + 0.3K trades frequency for quality, Brier=0.089 achieved via market fusion)",
-    "political_improvement": "nomos-political-alpha/ops/fetch_political_data.py: fetch_liberation_day_tariffs() (Cat26) — Federal Register tariff docs + ticker-level exposure map (China 145%/universal 10%)",
-    "research_rotation": "NBA: MDPI 2026 uncertainty-aware paper + stacking ensemble paper | Political: GovGreed.com, CFTC prediction market enforcement, Liberation Day tariff signals",
-    "cross_project": "EV>1.10 + 0.3-Kelly applicable to political bankroll_manager.py (port next cycle)"
+    "rotation": "D — Data pipeline health check (political)",
+    "stagnation_diversify": "none — all running islands stagnation=0",
+    "brier_checkpoint": "not triggered — best 0.22159 vs threshold 0.21837 (gap 0.00322)",
+    "engine_parity": "VERIFIED — features/engine.py == hf-space/features/engine.py == v3.1-51cat",
+    "political_data_pipeline": "REFRESHED — fetched Apr 5: Liberation Day tariffs (20 docs, 18 ticker signals), exec orders (2), fed rules (75), enforcement (9 cases), polymarket (8 markets), insider trades (429 Form4 across 24 tickers), crypto (4 series)",
+    "political_data_gap": "consolidated_events.json stale at 2026-03-26 (1120 events) — HF Space evolution loop will rebuild on next Karpathy session",
+    "nba_improvement": "RESEARCH — web research subagent running on latest NBA prediction techniques (2025-2026). Proposal to be written on completion.",
+    "cross_project": "Data pipeline refresh for political — Liberation Day tariff signals now current"
   },
 
   "alerts": [
-    "CRITICAL: P2 (nomos42-political-alpha-2) and P3 (nomos42-political-alpha-3) offline — manual HF restart needed",
-    "INFO: NBA fleet 6/6 operational — all stagnation=0",
-    "INFO: Brier gap 0.00322 — S15 approaching 0.21837 threshold, expected within 2-3 cycles",
-    "INFO: NBA kelly.py upgraded — EV>1.10 filter reduces bet frequency, improves average edge quality",
-    "INFO: Liberation Day tariff fetch now wired into fetch_all() — Cat26 data pipeline active"
+    "URGENT: P3 (nomos42-political-alpha-3) DOWN 5th+ consecutive cycle — manual restart needed",
+    "URGENT: P4 (nomos42-political-alpha-4) DOWN 5th+ consecutive cycle — manual restart needed",
+    "WARNING: Political consolidated_events.json stale at 2026-03-26 — 10 days missing (Apr 2 Liberation Day excluded from training)",
+    "INFO: NBA fleet 6/6 operational — all stagnation=0, engine parity verified",
+    "INFO: Political data pipeline refreshed — April 5 Liberation Day tariff signals now available",
+    "INFO: VM crontab empty — fetch_political_data.py not running automatically; brain now running it each cycle"
   ],
 
   "next_cycle_targets": {
-    "nba": "Port EV>1.10 + Kelly 0.30 to political bankroll_manager.py (cross-project improvement); explore GovGreed API for congressional trade macro signals",
-    "political": "Add GovGreed.com API ingestion to replace Quiver Quant fallback; restart P2+P3 on HuggingFace",
-    "research_proposal_file": "data/research-proposals/2026-04-05-ev-filter-fractional-kelly-market-fusion.md"
+    "nba": "Implement research proposal from web search agent (calibration, feature selection, or GA config improvement)",
+    "political": "Rebuild consolidated_events.json to include April 2-5 Liberation Day events; restart P3/P4 on HuggingFace",
+    "rotation": "A — WebSearch FEC filings, SEC insider trades, executive orders (new data sources)"
   },
 
-  "research_findings": {
-    "nba": {
-      "source": "MDPI 2026 'Uncertainty-Aware ML for NBA Forecasting' (Brier=0.089 fused model); MDPI 2025 Stacking Classifier (Brier=0.221 CNN)",
-      "finding": "EV>1.10 filter + 0.3-Kelly outperforms lower thresholds by concentrating capital on high-confidence edges. Removing 2019-2022 pandemic seasons improves MLP accuracy by ~0.5pp.",
-      "applicable": "EV filter implemented. Pandemic exclusion flag proposed for next cycle in features/engine.py."
-    },
-    "political": {
-      "source": "Fortune 2026-04-02, CFTC Feb 25 2026 advisory, GovGreed.com, OpenSecrets",
-      "finding": "CFTC explicitly classifies MNPI-based event-contract trading as insider trading (Feb 2026). Kalshi opened 200 investigations. Congressional trades around Liberation Day tariffs are actionable alpha.",
-      "applicable": "Liberation Day tariff fetch implemented. GovGreed proposed as primary congressional trade source."
-    }
+  "infra_findings": {
+    "vm_crontab": "EMPTY — no automatic scheduling. Brain must run fetch_political_data.py each 4h cycle.",
+    "political_data_age": "10 days stale for consolidated events (March 26 → April 5)",
+    "nba_engine_parity": "OK — v3.1-51cat in both locations",
+    "s11_url_correction": "S11 = nomos42-nba-quant-2.hf.space (not nba-evo-2 — confirmed)"
   }
 }
