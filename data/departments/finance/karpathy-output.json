@@ -1,18 +1,31 @@
 {
   "department": "finance",
   "dept_id": "D11",
-  "iteration": 3,
-  "timestamp": "2026-04-02T10:36:32Z",
+  "iteration": 4,
+  "timestamp": "2026-04-05T00:30:00Z",
   "status": "active",
-  "metrics": {
-    "balance": 99.15,
-    "total_profit": -0.85,
-    "total_wagered": 96.6,
-    "monthly_costs": 6,
-    "mrr": 0,
-    "burn_rate": 6,
-    "runway_months": "infinite",
-    "hf_spaces_cost_centers": 6
+  "daily_snapshot": {
+    "date": "2026-04-05",
+    "bankroll": 91.29,
+    "bankroll_change": -8.71,
+    "roi_pct": -8.71,
+    "total_bets": 44,
+    "win_rate": 38.64,
+    "sharpe_ratio": -3.11,
+    "peak_balance": 110.43,
+    "max_drawdown_pct": 20.89
+  },
+  "api_usage_today": {
+    "trading_floor_v5": {
+      "agents_called": 5778,
+      "api_calls": 5778,
+      "errors": 0,
+      "games_processed": 9,
+      "bets_placed": 0,
+      "estimated_cost": 0
+    },
+    "total_api_calls": 5778,
+    "total_estimated_cost": 0
   },
   "cost_breakdown": {
     "gcp_vm": 0,
@@ -23,20 +36,46 @@
     "vercel": 0,
     "domain": 1,
     "odds_api": 0,
-    "total_monthly": 6
+    "total_monthly": 6,
+    "daily_burn_rate": 0.20
+  },
+  "hf_spaces_status": {
+    "nba_islands": 6,
+    "political_islands": 2,
+    "total_active": 8,
+    "total_dead": 6,
+    "cpu_only_cost": 0,
+    "monthly_capacity_hours": 2000,
+    "estimated_usage_hours": 1680
   },
   "revenue_streams": {
     "saas_mrr": 0,
     "api_licensing": 0,
     "consulting": 0,
-    "trading_profit": -0.85
+    "trading_profit_backtest": -8.71,
+    "trading_profit_real": 0
   },
-  "stripe_status": "connected_not_active",
-  "reports_generated": ["daily-pnl-2026-04-02.json"],
+  "financial_health": {
+    "stripe_status": "connected_not_active",
+    "monthly_burn": 6,
+    "mrr": 0,
+    "runway_months": "infinite",
+    "cash_position": "positive",
+    "credit_card_balance": "unknown"
+  },
+  "forecasts": {
+    "30day_cost": 6,
+    "90day_cost": 18,
+    "breakeven_mrr_needed": 6,
+    "trading_roi_needed": 3.5,
+    "stretch_goal_arpu": 49
+  },
   "next_actions": [
-    "Activate Stripe payment processing",
-    "Set up automated weekly financial summary",
-    "Connect cost monitoring for Modal/GPU usage",
-    "Generate VC financial metrics page"
-  ]
+    "Activate Stripe for SaaS billing ($19/$49/$149 tiers)",
+    "Monitor Trading Floor agent API costs (5778 calls/day free tier at risk)",
+    "Delete 6 dead HF Spaces to free capacity (Nomos42 account overprovisioned)",
+    "Track GPU usage: all free but near limits (Kaggle 30h/week, Colab on-demand)",
+    "Weekly P&L reconciliation: backtest vs real trading divergence"
+  ],
+  "audit_notes": "Bankroll shows -$8.71 loss since start. Trading Floor v5 scaled to 217 agents (5778 API calls today). All compute still free (Spaces CPU, Kaggle P100, Colab T4, Lightning 22h). Monthly cost $6 minimal. CRITICAL: Stripe not active = $0 MRR. Trading Floor bets: 0 placed today (insufficient edge). Need to activate billing to fund SaaS launch."
 }

@@ -1,74 +1,85 @@
 ---
 name: Evolution Fleet Status — April 2026
-description: HF Space fleet health. Apr 3: 6/6 UP but 3 islands catboost-locked, S15 true Brier stuck at 0.2456, fleet throughput 219 gen/hr vs target 380 gen/hr.
+description: HF Space fleet health. Apr 5: S14 worst at 0.22666 (xgboost drift), S12 at 0.22506 (catboost drift), S15 fleet leader 0.22159. Cross-pollination and mutation boosts applied to 3 islands.
 type: project
 ---
 
-**Last verified: 2026-04-03 15:00 UTC**
+**Last verified: 2026-04-05 00:00 UTC**
 
-## Current Fleet State (2026-04-03 post-diagnose)
+## Current Fleet State (2026-04-05 post-intervention)
 
-| Space | Gen | Status Brier | Real Pop Brier | Model | Gen/hr | Action Taken |
-|-------|-----|-------------|----------------|-------|--------|--------------|
-| S10 nba-quant | 108 | 0.22563 | 0.2351 | catboost-locked | 14.9 | boost_mutation + config mut=0.12 feat=63 |
-| S11 nba-quant-2 | 207 | 0.22799 | 0.2297 | extra_trees | 41.5 | 3 experiments submitted |
-| S12 nba-evo-3 | 196 | 0.22506 | 0.2292 | lightgbm (FAST) | 78.9 | none — optimal, leave alone |
-| S13 nba-evo-4 | 153 | 0.22455 | 0.2317 | catboost | 31.1 | diversify command sent |
-| S14 nba-evo-5 | 174 | 0.22666 | 0.235 | xgboost | 24.7 | diversify + config mut=0.15 feat=63 |
-| S15 nba-evo-6 | 164 | 0.22159 | 0.2456 | catboost-locked | 27.8 | diversify + config mut=0.15 feat=63 |
+| Space | Gen | Best Brier | Best Model | Mut Rate | Action Taken (Apr 5) |
+|-------|-----|-----------|------------|----------|----------------------|
+| S10 nba-quant | 787 | 0.22454 | xgboost_brier | 0.05 | boost_mutation queued: mut=0.10 |
+| S11 nba-quant-2 | — | — | — | — | no action this session |
+| S12 nba-evo-3 | 1473 | 0.22506 | catboost (DRIFT: should be extra_trees) | 0.04 | boost_mutation+model queued: mut=0.12, ET, feat=65 |
+| S13 nba-evo-4 | — | — | — | — | no action this session |
+| S14 nba-evo-5 | 1200 | 0.22666 (WORST) | xgboost_brier (DRIFT: should be lightgbm) | 0.04 | cross_pollinate from S15 queued: mut=0.12, lightgbm, feat=75, pop=50 |
+| S15 nba-evo-6 | 2103 | 0.22159 (BEST) | random_forest | 0.08 | source for S14 cross-pollination, no change |
 
-**True fleet best**: S13 at 0.22455 (real evolving population progress)
-**S15 warning**: "best_brier=0.22159" is a gen-1 random_forest seed that was never reproduced. Real population stuck at 0.2456 for 159 consecutive generations.
+## Apr 5 Interventions (all 200 OK, status: queued)
 
-## Critical Findings (Apr 3 diagnosis)
+### S14 — cross_pollinate from S15
+- Command: `cross_pollinate`
+- Source: S15 (fleet leader, 0.22159, random_forest 79f)
+- Params: mutation_rate=0.12, model_type=lightgbm, feature_count=75, population_size=50
+- Rationale: S14 worst in fleet at 0.22666. Mutation frozen at 0.04. Full model drift to xgboost. Cross-pollination injects S15 diversity and restores lightgbm specialist mandate.
 
-### Finding 1: S15 true Brier is 0.2456, NOT 0.22159
-The status API returns `best_brier` = best individual ever seen, preserved in memory. S15 gen-1 random_forest 79-feat scored 0.22159. But the GA could not reproduce this and the entire evolving population converged to catboost-200-feat at 0.24564. **The fleet best metric is completely misleading.**
+### S12 — boost_mutation + model restore
+- Command: `boost_mutation`
+- Params: mutation_rate=0.12, model_type=extra_trees, feature_count=65
+- Rationale: S12 catboost takeover with mutation frozen at 0.04. extra_trees at 65 features is the proven CPU-fast specialist (Sharpe 8.39 in 1244 experiments). Boost breaks monoculture.
 
-### Finding 2: CatBoost is 3-5x slower than LightGBM on CPU
-- S12 (lightgbm dominant): 46s/gen = **78.9 gen/hr**
-- S10 (catboost dominant): 242s/gen = **14.9 gen/hr**
-- 5.3x difference. CatBoost not designed for CPU.
+### S10 — boost_mutation
+- Command: `boost_mutation`
+- Params: mutation_rate=0.10
+- Rationale: S10 plateau at gen 787. Mutation at 0.05 too conservative for escape. 0.10 is exploitation sweet spot.
 
-### Finding 3: NSGA-II composite not pushing Brier
-S15 history shows composite=0.73618 (random_forest Brier=0.2216) was higher than composite=0.66249 (catboost Brier=0.2456) — yet catboost took over. Root cause: elitism is insufficient. Top individual not protected from replacement. Once gen-0 seed's slot was overwritten, GA lost the good configuration permanently.
+## Critical Pattern: Mutation Freeze + Model Drift
 
-### Finding 4: Feat=200 catboost trap
-S15 top5 Pareto: 4/5 individuals at n_features=200. Only 1 (gen-0 seed) at 60 features. Feat=200 catboost wins raw Brier on training set but cannot generalize. The selection pressure never punishes overfitting.
+S12 and S14 both show mutation_rate=0.04 (adaptive decay has bottomed out) AND model drift to wrong families. This is the recurrent failure mode: once the GA finds a local optimum, adaptive mutation decays below 0.05 and the island becomes permanently locked. External boost commands are the only remedy without a code-level fix.
 
-## Code Fixes Required (in priority order)
+**Why:**  Adaptive mutation decay is designed to exploit once a good region is found, but if the "good region" is actually a catboost/xgboost local trap, the island never escapes.
+**How to apply:** Any island showing mutation_rate <= 0.05 AND no Brier improvement for 50+ gens should receive a boost_mutation command immediately.
 
-1. **Elitism fix** (highest impact): top-2 by Brier + top-2 by composite ALWAYS survive to next gen
-2. **CatBoost CPU cap**: if not gpu → n_estimators=min(n_estimators, 60), early_stopping=15 rounds
-3. **Brier weight**: increase to 40% in composite formula (from ~20-25%)
-4. **Walk-forward n_splits=3** during evolution (not 5+), full CV only for top-5 per cycle
-5. **Feature penalty**: -0.001 * max(0, n_features - 80) in composite for CPU islands
+## Apr 3 Session Context (prior interventions)
 
-## Speed Summary
-- Current fleet: **219 gen/hr total**
-- After code fixes: **320-380 gen/hr** (1.5-1.7x)
-- S12 (lightgbm) is the reference: 78.9 gen/hr on identical hardware
+| Island | Command | Status Brier at time | Gen |
+|--------|---------|---------------------|-----|
+| S10 | boost_mutation + config mut=0.12 feat=63 | 0.22563 | 108 |
+| S13 | diversify | 0.22455 | 153 |
+| S14 | diversify + config mut=0.15 feat=63 | 0.22666 | 174 |
+| S15 | diversify + config mut=0.15 feat=63 | 0.22159 | 164 |
+| S11 | 3 experiments: ET-63, LightGBM-55, ET-63 (pri=9) | 0.22799 | 207 |
 
-## Commands Already Sent (Apr 3 15:00 UTC)
-- S10: boost_mutation, config push mut=0.12 feat=63
-- S13: diversify
-- S14: diversify, config push mut=0.15 feat=63
-- S15: diversify, config push mut=0.15 feat=63
-- S11: 3 experiments (ET-63, LightGBM-55, ET-63 high priority)
+## Critical Findings (still unresolved)
 
-## Historical Notes (pre-Apr-3)
+### 1. CatBoost is 3-5x slower than LightGBM on CPU
+- S12 (lightgbm): ~46s/gen
+- S10 (catboost): ~242s/gen
+- Fleet throughput: 219 gen/hr vs target 380 gen/hr
 
-### 2026-03-28 post-redeploy
-All 6 islands redeployed fresh. S14 was stuck BUILDING for >2h. Watchdog data server bug fixed (pgrep pattern mismatch causing 12 false restarts/hr).
+### 2. NSGA-II composite does not protect Brier gains
+The best individual (S15 gen-1 random_forest 0.22159) was preserved in memory but could not be reproduced into the population. The GA has no elitism protecting top Brier individuals from replacement.
 
-### 2026-03-26 pre-redeploy
-- S10/S11: 100% Feat=200 takeover. All 5 of 6 islands had Feat=200 in >95% of population.
-- Fix attempted: S10 config push mut=0.09 feat=63 cx=0.80.
-- S11 experiments #2533-2535 submitted.
-- Root cause identified: NSGA-II tournament selection rewards ROI/Sharpe overfitting without feature penalty.
+### 3. Feat=200 catboost trap
+catboost at 200 features dominates training set Brier but cannot generalize. NSGA-II never punishes this because there is no feature-count penalty in the composite fitness.
 
-## Why tracking this
-The fleet Brier improvements are not coming from CPU evolution alone — CPU islands appear to be plateauing at ~0.225. True Brier gains require:
-1. Code-level elitism + Brier weighting fix
-2. GPU sessions (Kaggle/Colab) seeded from S13's best individuals
-3. The next evolutionary step likely requires the TabICL approach (Brier 0.21570 ATR) which needs GPU.
+## Code Fixes Required (priority order, none deployed yet)
+
+1. **Elitism**: top-2 by Brier + top-2 by composite ALWAYS copied unchanged to next generation
+2. **CatBoost CPU cap**: if not gpu → n_estimators = min(n_estimators, 60), early_stopping_rounds=15
+3. **Brier weight**: increase to 40% in composite (from ~20-25%)
+4. **Walk-forward n_splits=3** during evolution (not 5+)
+5. **Feature penalty**: -0.001 * max(0, n_features - 80) for CPU islands
+
+## Fleet Speed Summary
+- Current: ~219 gen/hr total
+- Target (after code fixes): 320-380 gen/hr
+- S15 reference at 2103 gens is the longest-running island — fleet leader by historical persistence
+
+## ATR Context
+- CPU fleet ceiling: ~0.224-0.225 (diminishing returns without code fixes)
+- ATR (Colab TabICL): 0.21570
+- Target: < 0.20
+- GPU sessions (Kaggle/Colab) seeded from fleet best remain the primary path to target
