@@ -1,48 +1,181 @@
 {
   "department": "evolution",
-  "timestamp": "2026-04-05T00:00:00Z",
-  "iteration": 2,
+  "timestamp": "2026-04-05T18:15:00Z",
+  "iteration": 3,
   "islands": {
-    "S10": {"brier": 0.22454, "generation": 787, "model": "xgboost_brier", "mutation_rate": 0.10, "features": 50, "stagnation_cycles": 0, "status": "EVOLVING", "action": "boost_mutation_0.10"},
-    "S11": {"brier": 0.22273, "generation": 1668, "model": "xgboost", "mutation_rate": 0.08, "features": 63, "stagnation_cycles": 0, "status": "EVOLVING", "action": "none"},
-    "S12": {"brier": 0.22506, "generation": 1473, "model": "catboost->extra_trees", "mutation_rate": 0.12, "features": 65, "stagnation_cycles": 0, "status": "EVOLVING", "action": "boost_mutation_0.12+restore_extra_trees"},
-    "S13": {"brier": 0.22455, "generation": 1150, "model": "extra_trees", "mutation_rate": 0.05, "features": 69, "stagnation_cycles": 0, "status": "EVOLVING", "action": "none"},
-    "S14": {"brier": 0.22666, "generation": 1200, "model": "xgboost_brier->lightgbm", "mutation_rate": 0.12, "features": 75, "stagnation_cycles": 0, "status": "EVOLVING", "action": "cross_pollinate_S15+restore_lightgbm"},
-    "S15": {"brier": 0.22159, "generation": 2103, "model": "random_forest", "mutation_rate": 0.08, "features": 79, "stagnation_cycles": 0, "status": "EVOLVING", "action": "none"}
+    "S10": {
+      "brier": 0.22862,
+      "generation": 162,
+      "model": "lightgbm",
+      "mutation_rate": 0.0889,
+      "features": 46,
+      "stagnation_cycles": 1,
+      "status": "REGRESSED",
+      "action": "boost_mutation_0.11+target_features_63+crossover_0.80",
+      "post_status": 200,
+      "iter2_brier": 0.22454,
+      "brier_delta": 0.00408,
+      "notes": "Brier regressed +0.00408 vs iter2. Mutation boosted to 0.11, target_features set to 63 (ET sweet spot). Cycles: 54."
+    },
+    "S11": {
+      "brier": 0.22696,
+      "generation": 166,
+      "model": "lightgbm",
+      "mutation_rate": 0.1123,
+      "features": 55,
+      "stagnation_cycles": 1,
+      "status": "REGRESSED",
+      "action": "none",
+      "post_status": null,
+      "iter2_brier": 0.22273,
+      "brier_delta": 0.00423,
+      "notes": "Brier regressed +0.00423 vs iter2. Mutation already at 0.1123 (healthy range). Exploration role — allow natural GA to recover. Watch next iteration."
+    },
+    "S12": {
+      "brier": 0.22276,
+      "generation": 121,
+      "model": "random_forest",
+      "mutation_rate": 0.0832,
+      "features": 48,
+      "stagnation_cycles": 0,
+      "status": "IMPROVED",
+      "action": "boost_mutation_0.10+target_features_63+crossover_0.80+watch_model_drift",
+      "post_status": 200,
+      "iter2_brier": 0.22506,
+      "brier_delta": -0.0023,
+      "notes": "Brier improved -0.00230 vs iter2. SPECIALIST DRIFT: running random_forest instead of extra_trees. Nudged mutation+features to guide back toward ET-63 sweet spot. Config queued."
+    },
+    "S13": {
+      "brier": 0.24595,
+      "generation": 122,
+      "model": "catboost",
+      "mutation_rate": 0.0967,
+      "features": 54,
+      "stagnation_cycles": 3,
+      "status": "CRITICAL",
+      "action": "boost_mutation_0.13+target_features_63+crossover_0.80",
+      "post_status": 200,
+      "iter2_brier": 0.22455,
+      "brier_delta": 0.0214,
+      "notes": "CATASTROPHIC regression +0.02140 vs iter2. CatBoost model is correct specialist role but Brier has collapsed. Gap to fleet best S15=0.02497 >> threshold 0.003. Emergency boost: mut=0.13, feat=63. Likely catboost overfit on small feature set with CPU slowdown."
+    },
+    "S14": {
+      "brier": 0.22494,
+      "generation": 299,
+      "model": "xgboost_brier",
+      "mutation_rate": 0.075,
+      "features": 55,
+      "stagnation_cycles": 0,
+      "status": "IMPROVED",
+      "action": "restore_lightgbm_specialist+mut_0.10+target_features_63",
+      "post_status": 200,
+      "iter2_brier": 0.22666,
+      "brier_delta": -0.00172,
+      "notes": "Brier improved -0.00172 vs iter2. SPECIALIST DRIFT: running xgboost_brier instead of lightgbm. Config nudged: mut=0.10, target_features=63 to guide back to lightgbm territory. Top performer extra_trees 33f at 0.22774 noted — healthy pareto diversity."
+    },
+    "S15": {
+      "brier": 0.22098,
+      "generation": 90,
+      "model": "extra_trees",
+      "mutation_rate": 0.1647,
+      "features": 64,
+      "stagnation_cycles": 0,
+      "status": "FLEET_BEST",
+      "action": "none",
+      "post_status": null,
+      "iter2_brier": 0.22159,
+      "brier_delta": -0.00061,
+      "notes": "NEW FLEET BEST 0.22098. extra_trees 64f — exactly the proven sweet spot (60-66 range). Mutation at 0.1647 within healthy range. Wide search role working. No intervention needed. Monitor for mutation decay below 0.12."
+    }
   },
   "fleet_metrics": {
-    "best_brier": 0.22159,
-    "fleet_avg": 0.22419,
+    "best_brier": 0.22098,
+    "fleet_avg": 0.23170,
     "best_island": "S15",
-    "worst_island": "S14",
-    "total_generations": 8381,
+    "worst_island": "S13",
+    "total_generations": 960,
     "island_count": 6,
-    "prev_best_brier": 0.22182,
-    "fleet_improvement": 0.00023
+    "prev_best_brier": 0.22159,
+    "fleet_improvement": 0.00061
   },
-  "stagnation_detected": ["S12_low_mutation", "S14_low_mutation"],
-  "stagnant_count": 2,
-  "diversity_score": 0.667,
+  "stagnation_detected": ["S10_regressed", "S11_regressed", "S13_critical_collapse"],
+  "stagnant_count": 3,
+  "diversity_score": 0.558,
   "cross_pollinations_executed": [
-    {"source": "S15", "target": "S14", "source_brier": 0.22159, "target_brier": 0.22666, "potential_gain": 0.00507, "http_status": 200, "command": "cross_pollinate+restore_lightgbm+mut_0.12"}
+    {
+      "target": "S13",
+      "source": "S15",
+      "target_brier": 0.24595,
+      "source_brier": 0.22098,
+      "gap": 0.02497,
+      "params_sent": {"mutation_rate": 0.13, "target_features": 63, "crossover_rate": 0.80},
+      "http_status": 200,
+      "rationale": "S13 catastrophic collapse. Gap 0.02497 >> 0.003 threshold. Emergency intervention."
+    }
   ],
   "mutation_boosts_executed": [
-    {"island": "S12", "old_mut": 0.04, "new_mut": 0.12, "model_fix": "extra_trees", "http_status": 200},
-    {"island": "S10", "old_mut": 0.05, "new_mut": 0.10, "http_status": 200}
+    {
+      "island": "S10",
+      "old_mut": 0.0889,
+      "new_mut": 0.11,
+      "target_features": 63,
+      "crossover_rate": 0.80,
+      "http_status": 200,
+      "rationale": "Regressed +0.00408. Boost to escape regression plateau."
+    },
+    {
+      "island": "S12",
+      "old_mut": 0.0832,
+      "new_mut": 0.10,
+      "target_features": 63,
+      "crossover_rate": 0.80,
+      "http_status": 200,
+      "rationale": "Improved Brier but random_forest drift. Mutation nudge toward ET-63 specialist mandate."
+    }
   ],
   "recommendations": [
-    {"type": "watch", "island": "S14", "reason": "Cross-pollinated from S15. Expect Brier 0.224-0.225 in 10-15 gens. If flat after 5 cycles, hard reset from S15 config."},
-    {"type": "watch", "island": "S12", "reason": "Boosted mutation + extra_trees restore. If catboost persists after 20 gens, model_type API passthrough may be broken."},
-    {"type": "code_fix", "islands": ["S12", "S14"], "reason": "Adaptive mutation decay hits 0.04 floor — elitism fix + mutation floor = 0.05 needed in GA code. Requires git subtree push."},
-    {"type": "monitor", "island": "S15", "reason": "Fleet leader at 0.22159 (new best). Gap to ATR: 0.00589. Watch for plateau; if stagnant in 10+ cycles boost mut to 0.10."}
+    {
+      "priority": 1,
+      "type": "watch_critical",
+      "island": "S13",
+      "reason": "CatBoost collapsed to 0.24595 (+0.0214 vs iter2). Emergency boost sent. If no improvement in iter 4, consider diversify or full reset. CatBoost is 3-5x slower on CPU — may be starving GA of evaluations. Consider swapping to extra_trees if not improved by iter 5.",
+      "expected": "Recovery to 0.230-0.235 within 10 gens if boost takes effect"
+    },
+    {
+      "priority": 2,
+      "type": "specialist_drift",
+      "islands": ["S12", "S14"],
+      "reason": "S12 running random_forest (should be extra_trees). S14 running xgboost_brier (should be lightgbm). Specialist mandates violated. Numeric config nudges sent but model selection is GA-driven — may not fully enforce. Code-level fix needed.",
+      "expected": "GA may partially comply over next 20+ gens"
+    },
+    {
+      "priority": 3,
+      "type": "code_fix",
+      "islands": ["all"],
+      "reason": "Elitism still not deployed. Best individuals not protected from crossover destruction. Top-2 Brier elites should be copied unchanged to next gen. This is the single highest-leverage code fix available.",
+      "action": "Deploy elitism to HF Space code via git subtree push"
+    },
+    {
+      "priority": 4,
+      "type": "seed_gpu",
+      "reason": "S15 fleet best 0.22098 (extra_trees, 64f, mut=0.1647). This config should be seeded into next Kaggle/Colab GPU session as the starting population.",
+      "action": "Seed Kaggle Karpathy loop with S15 best genome: extra_trees, 64 features, mut=0.16"
+    },
+    {
+      "priority": 5,
+      "type": "monitor",
+      "island": "S11",
+      "reason": "Regressed +0.00423 but mutation at 0.1123 is healthy. Exploration role — allow natural recovery. If regressed again in iter 4, boost mutation to 0.13."
+    }
   ],
   "islands_checked": 6,
-  "best_brier": 0.22159,
-  "worst_brier": 0.22666,
+  "best_brier": 0.22098,
+  "worst_brier": 0.24595,
   "cross_pollinated": true,
   "stagnation_detected_flag": true,
   "status": "completed",
   "atr_brier": 0.21570,
-  "gap_to_atr": 0.00589,
-  "gap_to_target": 0.02159
+  "gap_to_atr": 0.00528,
+  "gap_to_target": 0.02098,
+  "fleet_notes": "S15 new fleet best 0.22098 with extra_trees 64f — validates proven ET specialist config. S13 in critical collapse (+0.0214). 3 of 6 islands regressed vs iter2. S12 and S14 showing specialist drift. 3 POSTs queued (200 OK): S13 emergency mut=0.13, S12 specialist nudge mut=0.10, S10 regression escape mut=0.11. All target_features=63, crossover_rate=0.80."
 }
