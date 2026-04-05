@@ -92,14 +92,14 @@ class TradingAgent:
 
 
 # ============================================================================
-# TIER 1: PREMIUM TRADERS (4 agents)
+# TIER 1: PREMIUM TRADERS (9 agents — 4 original + 5 Claude Code CLI)
 # ============================================================================
 def _build_tier1() -> List[TradingAgent]:
-    """4 premium traders using paid APIs with full analysis."""
-    return [
+    """9 premium traders: existing paid-API agents + 5 new Claude Code CLI agents."""
+    base = [
         TradingAgent(
             id="t1_claude", name="Claude Prime", tier=AgentTier.PREMIUM,
-            provider="openai",  # Will use subprocess for Anthropic CLI
+            provider="openai",  # GPT-4o proxy (backward compat)
             model="gpt-4o",
             strategy="value_hunter_half_kelly",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
@@ -135,6 +135,58 @@ def _build_tier1() -> List[TradingAgent]:
             description="Gemini Flash for rapid analytical coverage."
         ),
     ]
+
+    # --- Claude Code CLI agents (5 new) ---
+    # provider="anthropic_cli" routes to subprocess `claude` command
+    cli_agents = [
+        TradingAgent(
+            id="t1_claude_code_opus", name="Claude Opus CLI", tier=AgentTier.PREMIUM,
+            provider="anthropic_cli", model="claude-opus-4-6",
+            strategy="value_hunter_half_kelly",
+            focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
+            personality="conservative", min_edge=0.04, risk_tolerance=0.4,
+            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            description="Claude Opus 4.6 via CLI. Deepest reasoning, highest quality."
+        ),
+        TradingAgent(
+            id="t1_claude_code_sonnet", name="Claude Sonnet CLI", tier=AgentTier.PREMIUM,
+            provider="anthropic_cli", model="claude-sonnet-4-6",
+            strategy="half_kelly",
+            focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
+            personality="analytical", min_edge=0.03, risk_tolerance=0.5,
+            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            description="Claude Sonnet 4.6 via CLI. Balanced speed and quality."
+        ),
+        TradingAgent(
+            id="t1_claude_code_haiku", name="Claude Haiku CLI", tier=AgentTier.PREMIUM,
+            provider="anthropic_cli", model="claude-haiku-4-5-20251001",
+            strategy="proportional_edge",
+            focus_groups=["moneyline", "spread", "totals"],
+            personality="analytical", min_edge=0.03, risk_tolerance=0.5,
+            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            description="Claude Haiku 4.5 via CLI. Fast, focused analysis."
+        ),
+        TradingAgent(
+            id="t2_claude_code_research", name="Claude Research CLI", tier=AgentTier.PREMIUM,
+            provider="anthropic_cli", model="claude-sonnet-4-6",
+            strategy="value_hunter_half_kelly",
+            focus_groups=["player_props", "exotic", "margin"],
+            personality="analytical", min_edge=0.04, risk_tolerance=0.4,
+            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            description="Claude Sonnet via CLI. Specialist: research-informed bets."
+        ),
+        TradingAgent(
+            id="t2_claude_code_quant", name="Claude Quant CLI", tier=AgentTier.PREMIUM,
+            provider="anthropic_cli", model="claude-sonnet-4-6",
+            strategy="proportional_edge",
+            focus_groups=["moneyline", "spread", "totals"],
+            personality="analytical", min_edge=0.03, risk_tolerance=0.5,
+            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            description="Claude Sonnet via CLI. Quantitative analysis, ML-guided."
+        ),
+    ]
+
+    return base + cli_agents
 
 
 # ============================================================================
@@ -244,6 +296,56 @@ def _build_tier2() -> List[TradingAgent]:
         personality="analytical", min_edge=0.03,
         description="Cerebras ultra-fast inference, full game analysis"
     ))
+
+    # --- 5x Gemini (additional coverage with Google API) ---
+    gemini_agents = [
+        TradingAgent(
+            id="t1_gemini_pro", name="Gemini 2.5 Pro", tier=AgentTier.FREE_POWER,
+            provider="google", model="gemini-2.5-pro",
+            strategy="confidence_scaled",
+            focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
+            personality="analytical", min_edge=0.03, risk_tolerance=0.5,
+            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            description="Gemini 2.5 Pro. Deepest Gemini model, premium tier."
+        ),
+        TradingAgent(
+            id="t2_gemini_flash", name="Gemini 2.5 Flash", tier=AgentTier.FREE_POWER,
+            provider="google", model="gemini-2.5-flash",
+            strategy="half_kelly",
+            focus_groups=["moneyline", "spread", "totals"],
+            personality="analytical", min_edge=0.03, risk_tolerance=0.5,
+            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            description="Gemini 2.5 Flash. Fast, capable, free tier."
+        ),
+        TradingAgent(
+            id="t2_gemini_flash_lite", name="Gemini 2.0 Flash Lite", tier=AgentTier.FREE_POWER,
+            provider="google", model="gemini-2.0-flash-lite",
+            strategy="flat_2pct",
+            focus_groups=["moneyline", "spread"],
+            personality="analytical", min_edge=0.02, risk_tolerance=0.5,
+            kelly_fraction=0.25, bankroll=10_000.0, peak_bankroll=10_000.0,
+            description="Gemini 2.0 Flash Lite. Bulk fast screening."
+        ),
+        TradingAgent(
+            id="t2_gemini_thinking", name="Gemini Flash Thinking", tier=AgentTier.FREE_POWER,
+            provider="google", model="gemini-2.5-flash-thinking",
+            strategy="value_hunter",
+            focus_groups=["moneyline", "spread", "totals", "exotic"],
+            personality="analytical", min_edge=0.04, risk_tolerance=0.4,
+            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            description="Gemini 2.5 Flash Thinking. Extended reasoning, high edge."
+        ),
+        TradingAgent(
+            id="t2_gemini_spread", name="Gemini Spread Specialist", tier=AgentTier.FREE_POWER,
+            provider="google", model="gemini-2.5-flash",
+            strategy="half_kelly",
+            focus_groups=["spread", "margin"],
+            personality="analytical", min_edge=0.03, risk_tolerance=0.5,
+            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            description="Gemini Flash spread/margin specialist."
+        ),
+    ]
+    agents.extend(gemini_agents)
 
     return agents
 

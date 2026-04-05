@@ -1965,6 +1965,12 @@ Examples:
                         help="Delay between iterations in seconds (default: 300)")
     parser.add_argument("--games", type=int, default=20,
                         help="Max games per iteration (default: 20)")
+    parser.add_argument("--multiphase", action="store_true", default=True,
+                        help="Enable 3-phase thinking (default: ON)")
+    parser.add_argument("--no-multiphase", dest="multiphase", action="store_false",
+                        help="Disable multi-phase thinking")
+    parser.add_argument("--loop", action="store_true",
+                        help="Continuous loop every 5-10 min (like a real trading desk)")
 
     # Also support legacy positional command
     parser.add_argument("command", nargs="?", default=None,
@@ -2000,16 +2006,17 @@ Examples:
         floor = TradingFloorV5(dry_run=False)
         floor.retrolearn(retro_date)
 
-    elif args.iterate:
+    elif args.iterate or args.loop:
+        loop_delay = 300 if args.loop else args.delay  # 5 min for --loop
         run_continuous(
             dry_run=args.dry_run,
-            delay=args.delay,
+            delay=loop_delay,
             games=args.games,
         )
 
     else:
         floor = TradingFloorV5(dry_run=args.dry_run,
-                               multiphase=getattr(args, "multiphase", False))
+                               multiphase=args.multiphase)
         floor.run(target_date, games_per_iter=args.games)
 
 
