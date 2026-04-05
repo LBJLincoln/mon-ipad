@@ -1,80 +1,138 @@
 {
-  "timestamp": "2026-04-05T10:06:30Z",
-  "department": "D7_INFRA",
+  "timestamp": "2026-04-05T18:15:56Z",
+  "iteration": 2,
+  "cycle_duration_sec": 120,
   "summary": {
-    "total_services": 9,
-    "healthy": 9,
-    "restarted": 0,
-    "failed": 0,
-    "uptime_pct": 99.9
+    "total_components": 13,
+    "healthy": 11,
+    "degraded": 2,
+    "down": 0,
+    "uptime_pct": 99.2
   },
-  "services": {
+  "hf_spaces": {
+    "S10_nba_quant": {
+      "status": "UP",
+      "http_code": 200,
+      "generation": "149"
+    },
+    "S11_nba_quant2": {
+      "status": "UP",
+      "http_code": 200,
+      "generation": "152"
+    },
+    "S12_nba_evo3": {
+      "status": "UP",
+      "http_code": 200,
+      "generation": "113"
+    },
+    "S13_nba_evo4": {
+      "status": "UP",
+      "http_code": 200,
+      "generation": "116"
+    },
+    "S14_nba_evo5": {
+      "status": "UP",
+      "http_code": 200,
+      "generation": "279"
+    },
+    "S15_nba_evo6": {
+      "status": "UP",
+      "http_code": 200,
+      "generation": "85"
+    }
+  },
+  "local_services": {
     "data_server_8080": {
       "status": "UP",
-      "response_ms": 50,
-      "last_check": "2026-04-05T10:06:15Z"
+      "http_code": 200,
+      "latency_ms": 15
     },
     "bloomberg_api_8042": {
       "status": "UP",
-      "endpoints": ["/api/odds", "/api/predictions"],
-      "last_check": "2026-04-05T10:06:20Z"
+      "http_code": 200,
+      "latency_ms": 12
     },
     "telegram_bots": {
-      "count": 5,
-      "status": "ALL_ALIVE",
-      "bots": ["nomos42_brain", "forge_bot", "nba_bot", "political_bot", "rgwa_bot"],
-      "last_check": "2026-04-05T10:06:25Z"
+      "status": "UP",
+      "process_count": 5
     }
   },
-  "hf_spaces": {
-    "nba": {
-      "total": 6,
-      "running": 6,
-      "best_brier": 0.22159,
-      "best_space": "S15",
-      "avg_brier": 0.22351
-    }
+  "vm_resources": {
+    "memory_mb": {
+      "total": 969,
+      "used": 838,
+      "free": 64,
+      "available": 131,
+      "used_pct": 86.5
+    },
+    "memory_alert": "MEDIUM - swap active (359MB), approaching 88% threshold",
+    "cpu_load_1m": 5.07,
+    "cpu_load_5m": 3.79,
+    "cpu_load_15m": 8.71,
+    "cpu_alert": "HIGH - load avg 5.07 on 1 vCPU",
+    "disk_used_pct": 77,
+    "disk_alert": "MEDIUM - 77% full, target <85%"
   },
   "gpu_platforms": {
     "kaggle": {
-      "nba": "RUNNING",
-      "political": "RUNNING",
-      "last_launched": "2026-04-05T09:48:42Z"
+      "status": "CONFIGURED",
+      "last_run": "check zerogpu-log.jsonl"
     },
-    "modal": {
-      "nba": "LAUNCHED"
+    "zerogpu": {
+      "status": "IDLE",
+      "last_run": "2026-04-05T07:24:26Z",
+      "hours_idle": 10.8
     },
-    "colab": "standby"
+    "colab": {
+      "status": "CONFIGURED",
+      "notebooks": 1
+    },
+    "lightning": {
+      "status": "NO_SSH_KEY",
+      "alert": "SSH key missing"
+    }
   },
-  "vm_health": {
-    "memory_mb": {
-      "total": 969,
-      "used": 848,
-      "free": 64,
-      "available": 121,
-      "used_pct": 87.5
+  "crons": {
+    "keepalive_spaces": {
+      "status": "ACTIVE",
+      "interval_min": 30
     },
-    "swap_mb": {
-      "used": 799,
-      "active": true
+    "autonomous_cycle": {
+      "status": "ACTIVE",
+      "interval_4h": "on-schedule"
     },
-    "disk_pct": 77,
-    "disk_avail_gb": 6.8
+    "odds_scrape": {
+      "status": "ACTIVE",
+      "interval_min": "12h"
+    }
   },
   "issues": [
     {
-      "severity": "LOW",
+      "severity": "HIGH",
+      "component": "cpu",
+      "description": "CPU load 5.07 on 1 vCPU - monitoring but services stable",
+      "action": "monitor, no immediate restart needed"
+    },
+    {
+      "severity": "MEDIUM",
       "component": "memory",
-      "description": "Memory at 87.5% — normal for 5 running bots + data server + active Kaggle jobs"
+      "description": "Memory 86.5% (838/969 MB), swap active (359MB)",
+      "action": "monitor, not critical yet (threshold: 88%)"
+    },
+    {
+      "severity": "MEDIUM",
+      "component": "lightning",
+      "description": "Lightning SSH key not found - GPU burst disabled",
+      "action": "restore SSH key or reconfigure"
+    },
+    {
+      "severity": "LOW",
+      "component": "zerogpu",
+      "description": "ZeroGPU idle for 10.8h (last run 07:24 UTC)",
+      "action": "check if scheduled job is running"
     }
   ],
-  "last_actions": [
-    "✓ Verified all 6 HF NBA spaces UP",
-    "✓ Data server responding on :8080",
-    "✓ Bloomberg API responding on :8042",
-    "✓ All 5 Telegram bots alive",
-    "✓ Kaggle NBA + Political jobs relaunched",
-    "✓ Disk usage improved (83% → 77%)"
-  ],
-  "status": "HEALTHY"
+  "actions_taken": [],
+  "next_check_sec": 1800,
+  "status": "completed"
 }
