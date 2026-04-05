@@ -1,6 +1,6 @@
 # NOMOS42 — Daily Operations Dashboard
 
-> **Last updated:** 2026-04-04 22:13 UTC | **Auto-refreshed by:** trading-floor-v9 cron
+> **Last updated:** 2026-04-05 00:12 UTC | **Auto-refreshed by:** trading-floor-v9 cron
 > **Read this on your iPad to know exactly where we are and what YOU need to do.**
 
 ---
@@ -45,7 +45,7 @@
 ## TRADING FLOOR — GAME ITERATIONS
 
 ### Current State
-- **Iteration:** 115 | **Generation:** 15640
+- **Iteration:** 129 | **Generation:** 17544
 - **Best bankroll:** $302,155 by codex
 - **$1M target:** 30.2% achieved, need 3.3x more
 - **Best strategy:** full_kelly (+72,615% ROI)
