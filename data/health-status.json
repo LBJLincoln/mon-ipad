@@ -1,222 +1,170 @@
 {
-  "cycle_timestamp": "2026-04-05T08:00:00Z",
+  "cycle_timestamp": "2026-04-05T16:30:00Z",
   "cycle_type": "4h_brain",
-  "cycle_number": 64,
+  "cycle_number": 65,
   "generated_by": "claude-sonnet-4-6 nomos42-brain",
 
   "nba_fleet": {
-    "fleet_best_brier": 0.22159,
-    "fleet_best_island": "S15",
-    "fleet_avg_brier": 0.22370,
+    "overall_best_brier": 0.22098,
+    "best_island": "S15",
     "checkpoint_threshold": 0.21837,
-    "checkpoint_triggered": false,
-    "checkpoint_gap": 0.00322,
-    "all_running": true,
-    "stagnation_alerts": [],
-    "engine_parity": "OK — both features/engine.py and hf-space/features/engine.py at v3.1-51cat",
+    "checkpoint_needed": false,
+    "diversify_needed": false,
     "islands": {
       "S10": {
         "url": "nomos42-nba-quant.hf.space",
         "role": "exploitation",
-        "gen": 918,
-        "cycle": 306,
-        "brier": 0.22454,
-        "roi": 0.2737,
-        "sharpe": 5.9986,
+        "status": "EVOLVING",
+        "cycle": 37,
+        "generation": 110,
+        "best_brier": 0.22862,
+        "best_roi": 0.2282,
+        "best_sharpe": 3.7337,
+        "best_model": "lightgbm",
+        "best_features": 46,
         "stagnation": 0,
-        "model": "xgboost_brier",
-        "mutation_rate": 0.0774,
-        "features": 50,
-        "status": "active",
-        "http_status": 200
+        "mutation_rate": 0.0986,
+        "population_size": 60
       },
       "S11": {
         "url": "nomos42-nba-quant-2.hf.space",
         "role": "exploration",
-        "gen": 2004,
-        "cycle": 668,
-        "brier": 0.22273,
-        "roi": 0.2934,
-        "sharpe": 8.6004,
-        "stagnation": 0,
-        "model": "xgboost",
-        "mutation_rate": 0.08,
-        "features": 63,
-        "status": "active",
-        "http_status": 200
+        "status": "EVOLVING",
+        "cycle": 34,
+        "generation": 101,
+        "best_brier": 0.22696,
+        "best_roi": 0.2477,
+        "best_sharpe": 4.6543,
+        "best_model": "lightgbm",
+        "best_features": 55,
+        "stagnation": 1,
+        "mutation_rate": 0.1199,
+        "population_size": 60
       },
       "S12": {
         "url": "nomos42-nba-evo-3.hf.space",
         "role": "extra_trees_specialist",
-        "gen": 1705,
-        "cycle": 569,
-        "brier": 0.22506,
-        "roi": 0.2669,
-        "sharpe": 10.4122,
+        "status": "EVOLVING",
+        "cycle": 30,
+        "generation": 89,
+        "best_brier": 0.22276,
+        "best_roi": 0.2948,
+        "best_sharpe": 7.2133,
+        "best_model": "random_forest",
+        "best_features": 48,
         "stagnation": 0,
-        "model": "catboost",
-        "mutation_rate": 0.0756,
-        "features": 43,
-        "status": "active",
-        "http_status": 200,
-        "top_performer": {
-          "gen": 1702,
-          "brier": 0.21863,
-          "roi": 0.344,
-          "model": "extra_trees",
-          "features": 200
-        }
+        "mutation_rate": 0.0885,
+        "population_size": 60
       },
       "S13": {
         "url": "nomos42-nba-evo-4.hf.space",
         "role": "catboost_specialist",
-        "gen": 1366,
-        "cycle": 456,
-        "brier": 0.22455,
-        "roi": 0.2722,
-        "sharpe": 11.9811,
+        "status": "EVOLVING",
+        "cycle": 27,
+        "generation": 79,
+        "best_brier": 0.24595,
+        "best_roi": 0.0419,
+        "best_sharpe": 4.1892,
+        "best_model": "catboost",
+        "best_features": 54,
         "stagnation": 0,
-        "model": "extra_trees",
-        "mutation_rate": 0.05,
-        "features": 69,
-        "status": "active",
-        "http_status": 200,
-        "top_performer": {
-          "gen": 1364,
-          "brier": 0.21855,
-          "roi": 0.3433,
-          "model": "extra_trees",
-          "features": 200
-        }
+        "mutation_rate": 0.1051,
+        "population_size": 60,
+        "alert": "POOR_PERFORMANCE — brier 0.24595 is 0.024 above fleet avg, CatBoost specialist underperforming"
       },
       "S14": {
         "url": "nomos42-nba-evo-5.hf.space",
         "role": "lightgbm_specialist",
-        "gen": 1363,
-        "cycle": 455,
-        "brier": 0.22666,
-        "roi": 0.2512,
-        "sharpe": 5.2171,
+        "status": "EVOLVING",
+        "cycle": 65,
+        "generation": 193,
+        "best_brier": 0.22494,
+        "best_roi": 0.2693,
+        "best_sharpe": 5.8204,
+        "best_model": "xgboost_brier",
+        "best_features": 55,
         "stagnation": 0,
-        "model": "xgboost_brier",
-        "mutation_rate": 0.0868,
-        "features": 55,
-        "status": "active",
-        "http_status": 200
+        "mutation_rate": 0.0927,
+        "population_size": 60
       },
       "S15": {
         "url": "nomos42-nba-evo-6.hf.space",
         "role": "wide_search",
-        "gen": 2393,
-        "cycle": 798,
-        "brier": 0.22159,
-        "roi": 0.3067,
-        "sharpe": 7.3688,
+        "status": "EVOLVING",
+        "cycle": 19,
+        "generation": 56,
+        "best_brier": 0.22098,
+        "best_roi": 0.3144,
+        "best_sharpe": 6.6106,
+        "best_model": "extra_trees",
+        "best_features": 64,
         "stagnation": 0,
-        "model": "random_forest",
-        "mutation_rate": 0.08,
-        "features": 79,
-        "pop_size": 50,
-        "status": "active",
-        "http_status": 200,
-        "note": "FLEET BEST — Brier gap 0.00322 from checkpoint"
+        "mutation_rate": 0.1704,
+        "population_size": 50,
+        "note": "FLEET_BEST — extra_trees + wide search leads the fleet again"
       }
     }
   },
 
   "political_fleet": {
-    "total_islands": 4,
-    "online": 4,
-    "offline": 0,
-    "best_brier": 0.23134,
-    "best_island": "P2",
-    "data_pipeline_status": "REFRESHED — April 5 fetch completed this cycle",
-    "real_events": 1120,
-    "consolidated_events_date": "2026-03-26",
     "islands": {
-      "P1": {
+      "PA1": {
         "url": "nomos42-political-alpha.hf.space",
         "role": "exploitation",
-        "gen": 5197,
-        "cycle": 1733,
-        "brier": 0.24997,
-        "stagnation": 0,
-        "model": "xgboost_brier",
-        "features": 79,
-        "status": "active",
-        "http_status": 200
+        "status": "EVOLVING",
+        "cycle": 2315,
+        "generation": 6943,
+        "best_brier": 0.24997,
+        "best_model": "xgboost_brier",
+        "best_features": 79,
+        "stagnation": 0
       },
-      "P2": {
+      "PA2": {
         "url": "nomos42-political-alpha-2.hf.space",
         "role": "exploration",
-        "gen": 11572,
-        "cycle": 3858,
-        "brier": 0.23134,
-        "roi": 0.2804,
-        "sharpe": 1.0635,
-        "stagnation": 0,
-        "model": "catboost",
-        "features": 70,
-        "status": "active",
-        "http_status": 200,
-        "note": "FLEET BEST"
+        "status": "EVOLVING",
+        "cycle": 4463,
+        "generation": 13387,
+        "best_brier": 0.23134,
+        "best_model": "catboost",
+        "best_features": 70,
+        "stagnation": 0
       },
-      "P3": {
-        "url": "lbjlincoln-political-alpha-3.hf.space",
-        "hf_space": "LBJLincoln/political-alpha-3",
-        "role": "catboost_specialist",
-        "gen": 1,
-        "cycle": 1,
-        "brier": 1.0,
-        "status": "restarted",
-        "http_status": 200,
-        "note": "Was sleeping — woke up this cycle. Gen 1, warming up."
+      "PA3": {
+        "url": "nomos42-political-alpha-3.hf.space",
+        "role": "catboost",
+        "status": "DOWN_404",
+        "alert": "NEEDS_RESTART via HuggingFace dashboard — manual action required"
       },
-      "P4": {
-        "url": "lbjlincoln-political-alpha-4.hf.space",
-        "hf_space": "LBJLincoln/political-alpha-4",
+      "PA4": {
+        "url": "nomos42-political-alpha-4.hf.space",
         "role": "wide_search",
-        "gen": 1,
-        "cycle": 1,
-        "brier": 1.0,
-        "status": "restarted",
-        "http_status": 200,
-        "note": "Was sleeping — woke up this cycle. Gen 1, warming up."
+        "status": "DOWN_404",
+        "alert": "NEEDS_RESTART via HuggingFace dashboard — manual action required"
       }
     }
   },
 
-  "cycle_actions": {
-    "rotation": "D — Data pipeline health check (political)",
-    "stagnation_diversify": "none — all running islands stagnation=0",
-    "brier_checkpoint": "not triggered — best 0.22159 vs threshold 0.21837 (gap 0.00322)",
-    "engine_parity": "VERIFIED — features/engine.py == hf-space/features/engine.py == v3.1-51cat",
-    "political_data_pipeline": "REFRESHED — fetched Apr 5: Liberation Day tariffs (20 docs, 18 ticker signals), exec orders (2), fed rules (75), enforcement (9 cases), polymarket (8 markets), insider trades (429 Form4 across 24 tickers), crypto (4 series)",
-    "political_data_gap": "consolidated_events.json stale at 2026-03-26 (1120 events) — HF Space evolution loop will rebuild on next Karpathy session",
-    "nba_improvement": "RESEARCH — web research subagent running on latest NBA prediction techniques (2025-2026). Proposal to be written on completion.",
-    "cross_project": "Data pipeline refresh for political — Liberation Day tariff signals now current"
+  "actions_this_cycle": {
+    "nba": {
+      "diversify_sent": [],
+      "checkpoint_triggered": false,
+      "research_proposal": "2026-04-05-shap-weighted-ga-crossover.md — SHAP-biased crossover protects top-20% importance features (est. -0.002 to -0.005 Brier)"
+    },
+    "political": {
+      "code_fix": "features/political_engine.py v3.3→v3.4 — Fixed Liberation Day date bug (2026→2025), China rate default (145%→34% post May 2025 deal), added tariff_90day_pause_active + tariff_china_deal_active + tariff_electronics_exempt signals",
+      "spaces_down": ["PA3", "PA4"],
+      "restart_required": "Manual restart via HuggingFace dashboard (HF MCP unavailable this session)"
+    }
   },
 
-  "alerts": [
-    "INFO: P3 (lbjlincoln-political-alpha-3) RESTARTED — was sleeping, woke up this cycle, Gen 1 warming up",
-    "INFO: P4 (lbjlincoln-political-alpha-4) RESTARTED — was sleeping, woke up this cycle, Gen 1 warming up",
-    "FIX: P3/P4 URLs corrected — LBJLincoln/political-alpha-3 and LBJLincoln/political-alpha-4 (not Nomos42)",
-    "WARNING: Political consolidated_events.json stale at 2026-03-26 — 10 days missing (Apr 2 Liberation Day excluded from training)",
-    "INFO: NBA fleet 6/6 operational — all stagnation=0, engine parity verified",
-    "INFO: Political data pipeline refreshed — April 5 Liberation Day tariff signals now available",
-    "INFO: VM crontab empty — fetch_political_data.py not running automatically; brain now running it each cycle"
-  ],
-
-  "next_cycle_targets": {
-    "nba": "Implement research proposal from web search agent (calibration, feature selection, or GA config improvement)",
-    "political": "Rebuild consolidated_events.json to include April 2-5 Liberation Day events; restart P3/P4 on HuggingFace",
-    "rotation": "A — WebSearch FEC filings, SEC insider trades, executive orders (new data sources)"
-  },
-
-  "infra_findings": {
-    "vm_crontab": "EMPTY — no automatic scheduling. Brain must run fetch_political_data.py each 4h cycle.",
-    "political_data_age": "10 days stale for consolidated events (March 26 → April 5)",
-    "nba_engine_parity": "OK — v3.1-51cat in both locations",
-    "s11_url_correction": "S11 = nomos42-nba-quant-2.hf.space (not nba-evo-2 — confirmed)"
+  "ecosystem_health": {
+    "nba_fleet_online": "6/6",
+    "political_fleet_online": "2/4",
+    "best_nba_brier": 0.22098,
+    "target_brier": 0.20,
+    "gap_to_target": 0.02098,
+    "best_political_brier": 0.23134,
+    "next_cycle_priority": "Implement SHAP-weighted crossover on S15; restart PA3/PA4 manually"
   }
 }
