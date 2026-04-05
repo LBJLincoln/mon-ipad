@@ -24,14 +24,14 @@
       },
       "avoid": {
         "category": "moneyline",
-        "reason": "ML models show only 47.1% home win probability with massive -43% edge vs market \u2014 no value on either side of the moneyline"
+        "reason": "Model shows massive -43% negative edge on ML; 0.471 home win prob with no spread/total lines available suggests extremely thin market with no exploitable value on either side"
       },
       "overall_lean": "skip",
-      "game_narrative": "The ML ensemble (avg Brier 0.2245) prices Miami at just 47.1% to win at home, essentially a coin flip despite the Heat's 7-3 L10 record versus Washington's historically bad 0-10 L10 streak. The predicted margin of Miami -0.6 signals no meaningful separation between these teams in the model's view, and the -43% edge vs market screams that the line is already baked far beyond fair value. With no spread or total lines posted yet, there's nothing actionable on the moneyline or spread. The under 215 carries the most modest lean at 55% confidence \u2014 Washington's offense has been anemic during their losing streak and end-of-season games between eliminated teams often lack intensity. However, without posted lines to calculate true edge, this is a low-conviction spot. The disciplined play is to skip or wait for live lines where Washington's futility may create in-game value if Miami builds an early lead and coasts.",
+      "game_narrative": "The ML models price Miami at just 0.471 home win probability despite their strong 7-3 L10 form versus Washington's abysmal 0-10 L10 streak. The -43% edge signal is a screaming stay-away on the moneyline \u2014 the market is likely pricing in end-of-season tanking dynamics and lineup rest that our models capture. With no posted spread or total lines, this is likely an off-the-board or closing-soon game. The predicted total of 215.0 sits below the combined recent PPG of 236.3, suggesting the models expect pace suppression in a low-stakes late-season contest. The only marginal lean is under on the total if a line posts near 230+, but without posted odds there is no actionable edge above the 3% threshold on any category. This is a textbook skip game \u2014 end-of-season noise, unreliable lineups, and no model edge worth exploiting.",
       "_agent_id": "t1_claude_code_opus",
       "_agent_tier": "PREMIUM",
       "_game_key": "2026-04-05_WAS@MIA",
-      "_timestamp": "2026-04-05T03:55:01.485858+00:00"
+      "_timestamp": "2026-04-05T09:55:33.950274+00:00"
     }
   },
   "t1_claude_code_sonnet": {
@@ -44,68 +44,31 @@
       "spread_fg": {
         "direction": "away",
         "confidence": 0.45,
-        "edge_pct": -2.1
+        "edge_pct": -5.0
       },
       "total_fg": {
         "direction": "under",
-        "confidence": 0.52,
-        "edge_pct": 1.8
+        "confidence": 0.55,
+        "edge_pct": 3.5
       },
       "best_bet": {
         "category": "total_fg",
         "direction": "under",
-        "confidence": 0.52,
-        "edge_pct": 1.8
+        "confidence": 0.55,
+        "edge_pct": 3.5
       },
       "avoid": {
         "category": "ml_fg",
-        "reason": "Model edge is -43.0%, far below the 3% threshold required for a bet. No actionable edge on moneyline."
+        "reason": "Model edge is deeply negative at -43.0%, no actionable moneyline edge in either direction"
       },
       "overall_lean": "skip",
-      "game_narrative": "The ML models show a near-coin-flip on the moneyline (0.471 home win probability) with a negligible predicted margin of Miami -0.6, but critically the edge vs market is a deeply negative -43.0%, indicating the market has heavily priced in Miami's strong 7-3 L10 form and 122.7 PPG offense. Washington's 0-10 L10 record and 113.6 PPG output makes them a severe fade candidate on paper, but the market has already moved aggressively against them. No spread or total lines are available, removing key alternative angles. The predicted total of 215.0 with a wide CI (200-230) reflects high variance and model uncertainty. Without spread or total lines to exploit and with model edge deeply negative on the moneyline, the disciplined play is to skip this game entirely \u2014 no bet clears the minimum 3% edge threshold.",
+      "game_narrative": "The ML models show near-coin-flip probability (0.471 home win) with a razor-thin predicted margin of Miami -0.6, well within the confidence interval noise. Miami's 7-3 L10 form and 122.7 PPG suggest home court advantage, but the models assign no meaningful edge over market pricing \u2014 the -43% edge signal indicates the market has already priced this game efficiently or the model is underfit here. Washington's 0-10 L10 record and 113.6 PPG makes them a clear inferior team on paper, yet the model doesn't reflect a strong directional lean. The predicted total of 215.0 is the only area with marginal edge potential on the under, given Washington's offensive struggles (113.6 PPG pace) dragging combined scoring down. No spread or moneyline bet meets the 3% edge threshold required for action; this game is best skipped or played lightly on under if total lines are set above 218.",
       "_agent_id": "t1_claude_code_sonnet",
       "_agent_tier": "PREMIUM",
       "_game_key": "2026-04-05_WAS@MIA",
-      "_timestamp": "2026-04-05T03:55:19.444945+00:00"
-    }
-  },
-  "t1_claude_code_haiku": {
-    "2026-04-05_WAS@MIA": {
-      "ml_fg": {
-        "direction": "away",
-        "confidence": 0.52,
-        "edge_pct": -43.0
-      },
-      "spread_fg": {
-        "direction": "away",
-        "confidence": 0.51,
-        "edge_pct": -43.0
-      },
-      "total_fg": {
-        "direction": "over",
-        "confidence": 0.45,
-        "edge_pct": -2.1
-      },
-      "best_bet": {
-        "category": "skip",
-        "direction": "none",
-        "confidence": 0.0,
-        "edge_pct": 0.0
-      },
-      "avoid": {
-        "category": "all_major_bets",
-        "reason": "Model edge vs market = -43%, far below +3% threshold. Model assigns Miami only 47.1% despite 7-3 form, suggesting market pricing is either correct or model miscalibrated. Insufficient edge to profitably bet either side."
-      },
-      "overall_lean": "skip",
-      "game_narrative": "Miami's 7-3 L10 dominance over Washington's 0-10 collapse creates a massive form discrepancy, but the model's weak Miami edge (47.1% ML probability) conflicts sharply with market consensus. The -43% edge suggests sportsbooks are pricing Miami's recent strength far more aggressively than the ensemble. With predicted margin near-zero (-0.6) despite 9-point PPG gap, model calibration is questionable. This game lacks sufficient model confidence to meet the 3% edge threshold\u2014avoid all major bet categories until market-model alignment improves.",
-      "_agent_id": "t1_claude_code_haiku",
-      "_agent_tier": "PREMIUM",
-      "_game_key": "2026-04-05_WAS@MIA",
-      "_timestamp": "2026-04-05T03:55:36.888128+00:00"
-    }
-  },
-  "t2_claude_code_research": {
-    "2026-04-05_WAS@MIA": {
+      "_timestamp": "2026-04-05T09:56:25.284229+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
       "ml_fg": {
         "direction": "away",
         "confidence": 0.52,
@@ -129,49 +92,2036 @@
       },
       "avoid": {
         "category": "moneyline",
-        "reason": "Model edge is -43% vs market, well below the 3% threshold required. No spread or ML line available, and P(home win) at 0.471 is essentially a coin flip with negative edge."
+        "reason": "Model edge is -37.7% vs market, well below the 3% threshold. No spread or line data available, making moneyline pricing unverifiable. Margin CI spans -5.6 to +4.4, straddling zero \u2014 coin-flip outcome."
       },
       "overall_lean": "skip",
-      "game_narrative": "This game presents no actionable betting edge. The ML models show a near-coin-flip outcome with Miami holding only a marginal 0.471 home win probability and a predicted margin of just -0.6 points, well within the noise band of the confidence interval (-5.6 to +4.4). The critical edge vs market is a disqualifying -43%, meaning the market has priced this game far more efficiently than our models can exploit. The only modest signal is on the total: the 215.0 predicted total with Washington's 0-10 L10 form at 113.6 PPG suggests defensive vulnerability may be overstated, but Miami's 122.7 PPG offset creates a wash. Without spread/line data and with no injury reports to create information asymmetry, the rational play is to skip all primary markets and monitor for live-betting opportunities if Washington falls into a rhythm deficit early.",
-      "_agent_id": "t2_claude_code_research",
+      "game_narrative": "The ML ensemble projects a near pick'em game with Denver favored by only 0.6 points at home, despite San Antonio arriving on an 8-2 run over their last 10 games. Denver's 5-5 L10 form is underwhelming for a home favorite. The predicted total of 215.0 sits at the low end of recent scoring for both teams (SA 120.9 PPG, DEN 119.9 PPG away/home), suggesting the under has modest merit. However, the critical concern is the deeply negative edge vs market (-37.7%), which signals the market has substantially more information or sharper line movement than the model currently accounts for \u2014 possibly related to unreported injuries or load management. With no spread or total lines available to anchor alt-line plays, and no injury data to exploit, the responsible call is to skip or limit exposure strictly to the under as the only bet within marginal reach of the 3% edge threshold.",
+      "_agent_id": "t1_claude_code_sonnet",
+      "_agent_tier": "PREMIUM",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:08:58.019584+00:00"
+    }
+  },
+  "t1_claude_code_haiku": {
+    "2026-04-05_WAS@MIA": {
+      "ml_fg": {
+        "direction": "home",
+        "confidence": 0.45,
+        "edge_pct": -43.0
+      },
+      "spread_fg": {
+        "direction": "skip",
+        "confidence": 0.0,
+        "edge_pct": -43.0
+      },
+      "total_fg": {
+        "direction": "skip",
+        "confidence": 0.0,
+        "edge_pct": -43.0
+      },
+      "best_bet": {
+        "category": "none",
+        "direction": "skip",
+        "confidence": 1.0,
+        "edge_pct": -43.0
+      },
+      "avoid": {
+        "category": "all_markets",
+        "reason": "Severe negative edge (-43%) across all bet categories. Models show Miami 47.1% to win (near coin flip) with predicted -0.6 margin. No positive value present. Per critical rule: only bet where edge > 3%. This game fails the threshold entirely."
+      },
+      "overall_lean": "skip",
+      "game_narrative": "Washington Wizards enter with catastrophic 0-10 L10 form (113.6 PPG), while Miami Heat dominate 7-3 L10 (122.7 PPG). Form differential is stark, yet ensemble models predict a statistical dead heat at -0.6 margin with 47.1% Miami win probability. This contradiction\u2014combined with -43% market edge\u2014signals either overvaluation of Wizards' upside or compressed spread pricing. Predicted total of 215.0 suggests moderate scoring. The consensus recommendation is unambiguous: no edge exists in any market. Pass entirely.",
+      "_agent_id": "t1_claude_code_haiku",
       "_agent_tier": "PREMIUM",
       "_game_key": "2026-04-05_WAS@MIA",
-      "_timestamp": "2026-04-05T03:55:51.514208+00:00"
+      "_timestamp": "2026-04-05T09:57:25.590051+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "ml_fg": {
+        "direction": "away",
+        "confidence": 0.52,
+        "edge_pct": -37.7
+      },
+      "spread_fg": {
+        "direction": "away",
+        "confidence": 0.51,
+        "edge_pct": -37.7
+      },
+      "total_fg": {
+        "direction": "under",
+        "confidence": 0.45,
+        "edge_pct": -37.7
+      },
+      "best_bet": {
+        "category": "none",
+        "direction": "skip",
+        "confidence": 1.0,
+        "edge_pct": -37.7
+      },
+      "avoid": {
+        "category": "all",
+        "reason": "Market edge is -37.7%, violating the 3% minimum edge threshold. Models show near pick'em game (0.471 home win prob, -0.6 margin) with no statistical advantage vs market pricing."
+      },
+      "overall_lean": "skip",
+      "game_narrative": "Denver-San Antonio projects as a statistical coin flip with predicted margin of -0.6 points and home win probability of 47.1%, indicating razor-thin edge that does not justify action. The market shows 37.7% disadvantage vs model probabilities across all bet categories, signaling mispriced market or model underconfidence. Both teams maintain similar offensive output (120.9 away vs 119.9 home PPG) with Denver's 5-5 home record matching Spurs' 8-2 away form competitively. Recommended action: skip all bets pending updated model confidence or market adjustment.",
+      "_agent_id": "t1_claude_code_haiku",
+      "_agent_tier": "PREMIUM",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:09:52.138774+00:00"
     }
   },
   "t2_claude_code_quant": {
     "2026-04-05_WAS@MIA": {
       "ml_fg": {
         "direction": "away",
-        "confidence": 0.471,
+        "confidence": 0.52,
         "edge_pct": -43.0
       },
       "spread_fg": {
         "direction": "away",
-        "confidence": 0.45,
+        "confidence": 0.48,
         "edge_pct": -2.1
       },
       "total_fg": {
         "direction": "under",
-        "confidence": 0.52,
-        "edge_pct": 1.8
+        "confidence": 0.54,
+        "edge_pct": 3.2
       },
       "best_bet": {
         "category": "total_fg",
         "direction": "under",
-        "confidence": 0.52,
-        "edge_pct": 1.8
+        "confidence": 0.54,
+        "edge_pct": 3.2
       },
       "avoid": {
         "category": "ml_fg",
-        "reason": "Model edge is -43.0%, far below the 3% threshold required. No actionable edge on moneyline in either direction."
+        "reason": "Model edge is deeply negative at -43.0%, indicating market has strong information advantage; no actionable edge on moneyline"
       },
       "overall_lean": "skip",
-      "game_narrative": "The ML models show a near-coin-flip on the moneyline (0.471 home win probability) with a razor-thin predicted margin of Miami -0.6, yet the model edge vs market is a deeply negative -43.0%, signaling the market has already priced this game far more accurately than our models can exploit. Miami's strong recent form (7-3 L10, 122.7 PPG) vs Washington's collapse (0-10 L10, 113.6 PPG) would normally favor the Heat, but without spread or total lines available to validate, and with no bet clearing the 3% edge threshold, this game offers no actionable value. The predicted total of 215.0 with a slight lean toward under based on Washington's offensive struggles (113.6 PPG) is the only marginal signal, but at 1.8% edge it falls below the required 3% floor. Recommend skipping this game entirely until live lines are available for model validation.",
+      "game_narrative": "The model signals are deeply unfavorable here \u2014 a -43% edge vs market on the moneyline is a hard stop. Miami holds strong home form (7-3 L10, 122.7 PPG) against a Washington squad in complete freefall (0-10 L10, 113.6 PPG), yet the model's P(home win) of 0.471 and predicted margin of only -0.6 suggest the market has already priced in something the models are missing, or the models are not calibrated for this matchup context. The only marginally defensible angle is the under at 215.0 \u2014 Washington's offensive struggles (113.6 PPG L10) could depress scoring even against Miami's pace, but the CI of 200-230 is too wide for conviction. With no spread or total lines available and a model edge threshold of 3% required, the correct play is to skip or size minimally on under only.",
       "_agent_id": "t2_claude_code_quant",
       "_agent_tier": "PREMIUM",
       "_game_key": "2026-04-05_WAS@MIA",
-      "_timestamp": "2026-04-05T03:56:04.996621+00:00"
+      "_timestamp": "2026-04-05T09:59:22.100177+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "ml_fg": {
+        "direction": "away",
+        "confidence": 0.53,
+        "edge_pct": -37.7
+      },
+      "spread_fg": {
+        "direction": "away",
+        "confidence": 0.51,
+        "edge_pct": -2.1
+      },
+      "total_fg": {
+        "direction": "under",
+        "confidence": 0.54,
+        "edge_pct": 2.8
+      },
+      "best_bet": {
+        "category": "total_fg",
+        "direction": "under",
+        "confidence": 0.54,
+        "edge_pct": 2.8
+      },
+      "avoid": {
+        "category": "ml_fg",
+        "reason": "Model edge is deeply negative at -37.7%, indicating market has heavily priced in factors the model misses; no exploitable edge on moneyline"
+      },
+      "overall_lean": "skip",
+      "game_narrative": "The ML models project a near-coinflip contest with Denver holding a razor-thin -0.6 home margin, but the -37.7% edge vs market signals the models are significantly undervaluing Denver or overvaluing San Antonio relative to current lines. Spurs arrive in better recent form (8-2 L10 vs Denver's 5-5) and scoring slightly more (120.9 vs 119.9 PPG), but road performance at altitude in Denver remains a persistent drag on visiting teams. The predicted total of 215.0 sits at the lower bound of model confidence intervals, and with both teams' PPG figures in the 119-121 range, an under play has modest support \u2014 though the 2.8% edge falls just below the 3% threshold required for a confident bet. No injuries reported removes a key edge-generator. With the primary moneyline signal deeply negative and no spread or prop data available, the disciplined play is to skip this game entirely rather than force a marginal under bet.",
+      "_agent_id": "t2_claude_code_quant",
+      "_agent_tier": "PREMIUM",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:11:23.855656+00:00"
+    }
+  },
+  "t2_hf_cohere_0": {
+    "2026-04-05_WAS@MIA": {
+      "bets": [
+        {
+          "category": "moneyline",
+          "confidence": 0.471,
+          "direction": "away",
+          "edge_pct": -4.3,
+          "reasoning": "The model predicts a slight edge towards the Wizards winning outright, but the confidence is not strong enough to warrant a high-confidence bet."
+        },
+        {
+          "category": "spread",
+          "confidence": 0.471,
+          "direction": "away",
+          "edge_pct": -4.3,
+          "reasoning": "Given the predicted margin of -0.6 in favor of the Heat, the Wizards are expected to cover the implied spread of 0. The negative edge percentage suggests the market may be slightly overvaluing the Heat."
+        }
+      ],
+      "_agent_id": "t2_hf_cohere_0",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T09:59:50.331225+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "bets": [
+        {
+          "category": "moneyline",
+          "confidence": 0.471,
+          "direction": "away",
+          "edge_pct": -3.77,
+          "reasoning": "The ML models predict a slight edge towards the Spurs winning outright, but the confidence is not strong enough to warrant a significant bet."
+        },
+        {
+          "category": "spread",
+          "confidence": 0.471,
+          "direction": "away",
+          "edge_pct": -3.77,
+          "reasoning": "With the predicted margin slightly favoring the Nuggets by -0.6 points, and considering the high confidence in the model's predictions, betting on the Spurs to cover the spread could be a viable option."
+        }
+      ],
+      "_agent_id": "t2_hf_cohere_0",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:11:56.619701+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "bets": [
+        {
+          "category": "ml_fg",
+          "confidence": 0.471,
+          "direction": "away",
+          "edge_pct": 1.4,
+          "reasoning": "The ML models predict a slight edge for the away team (Detroit Pistons) on the moneyline, with a home win probability of 47.1%, suggesting a small but positive edge against the market."
+        },
+        {
+          "category": "spread",
+          "confidence": 0.471,
+          "direction": "away",
+          "edge_pct": 1.4,
+          "reasoning": "The predicted margin of -0.6 points for the Philadelphia 76ers indicates that the game is expected to be very close, with a slight edge for the Pistons covering the implied spread of 0.0 points."
+        }
+      ],
+      "_agent_id": "t2_hf_cohere_0",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:25:21.713594+00:00"
+    }
+  },
+  "t2_hf_cohere_4": {
+    "2026-04-05_WAS@MIA": {
+      "bets": [
+        {
+          "category": "spread",
+          "confidence": 0.47,
+          "direction": "away",
+          "edge_pct": -4.3,
+          "reasoning": "The predicted margin slightly favors Miami, but the edge vs market is negative, suggesting a lean towards Washington."
+        },
+        {
+          "category": "total",
+          "confidence": 0.5,
+          "direction": "over",
+          "edge_pct": 0,
+          "reasoning": "The predicted total aligns closely with the market, indicating no strong edge in either direction."
+        }
+      ],
+      "_agent_id": "t2_hf_cohere_4",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T09:59:50.331434+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "bets": [
+        {
+          "category": "spread",
+          "confidence": 0.47,
+          "direction": "away",
+          "edge_pct": -3.77,
+          "reasoning": "The predicted margin slightly favors the Nuggets, but the edge vs market is negative, suggesting the spread may not be in favor of betting on the Nuggets."
+        },
+        {
+          "category": "total",
+          "confidence": 0.5,
+          "direction": "over",
+          "edge_pct": 0,
+          "reasoning": "The predicted total aligns closely with the market, indicating no strong edge in either direction for the over/under bet."
+        }
+      ],
+      "_agent_id": "t2_hf_cohere_4",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:11:52.614469+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "bets": [
+        {
+          "category": "spread",
+          "confidence": 0.47,
+          "direction": "away",
+          "edge_pct": 1.4,
+          "reasoning": "The ML models predict a slight edge for the away team, with a predicted margin of -0.6 in favor of the 76ers, suggesting the Pistons might cover the spread."
+        },
+        {
+          "category": "total",
+          "confidence": 0.5,
+          "direction": "over",
+          "edge_pct": 0.0,
+          "reasoning": "The predicted total is 215.0, which aligns closely with the market. However, given the high confidence in the ML models, there's a slight lean towards the over."
+        }
+      ],
+      "_agent_id": "t2_hf_cohere_4",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:25:24.962687+00:00"
+    }
+  },
+  "t2_cohere_1": {
+    "2026-04-05_WAS@MIA": {
+      "bets": [
+        {
+          "category": "moneyline",
+          "confidence": 0.7,
+          "direction": "home",
+          "edge_pct": -43.0,
+          "reasoning": "ML models predict a near-coinflip game with slight home edge, but market may overvalue Miami, creating negative edge."
+        },
+        {
+          "category": "spread",
+          "confidence": 0.65,
+          "direction": "away",
+          "edge_pct": 0.0,
+          "reasoning": "Predicted margin near 0 suggests no clear spread edge, but slight lean to Wizards if market favors Miami."
+        },
+        {
+          "category": "totals",
+          "confidence": 0.6,
+          "direction": "over",
+          "edge_pct": 0.0,
+          "reasoning": "Predicted total aligns with market, but wide CI suggests caution; slight lean to over if line is lower."
+        }
+      ],
+      "_agent_id": "t2_cohere_1",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T09:59:50.332256+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "bets": [
+        {
+          "category": "moneyline",
+          "confidence": 0.7,
+          "direction": "home",
+          "edge_pct": -3.7,
+          "reasoning": "Models predict slight home edge with high confidence, but market edge is negative."
+        },
+        {
+          "category": "spread",
+          "confidence": 0.65,
+          "direction": "home",
+          "edge_pct": -4.0,
+          "reasoning": "Predicted margin favors Denver by <1 point, but CI includes away win; market edge negative."
+        },
+        {
+          "category": "totals",
+          "confidence": 0.6,
+          "direction": "over",
+          "edge_pct": -3.5,
+          "reasoning": "Predicted total (215) with wide CI suggests over slight edge, but market edge is negative."
+        }
+      ],
+      "_agent_id": "t2_cohere_1",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:11:59.867288+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "bets": [
+        {
+          "category": "moneyline",
+          "confidence": 0.7,
+          "direction": "home",
+          "edge_pct": 1.4,
+          "reasoning": "ML models predict a slight edge for Philadelphia with high confidence, despite a near-even probability."
+        },
+        {
+          "category": "spread",
+          "confidence": 0.65,
+          "direction": "home",
+          "edge_pct": 1.2,
+          "reasoning": "Predicted margin favors Philadelphia by -0.6, aligning with a small spread edge for the home team."
+        },
+        {
+          "category": "totals",
+          "confidence": 0.6,
+          "direction": "over",
+          "edge_pct": 0.8,
+          "reasoning": "Predicted total of 215.0 with a wide CI suggests a slight lean towards the over, but with moderate confidence."
+        }
+      ],
+      "_agent_id": "t2_cohere_1",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:25:16.219087+00:00"
+    }
+  },
+  "t2_hf_cohere_3": {
+    "2026-04-05_WAS@MIA": {
+      "bets": [
+        {
+          "category": "totals",
+          "confidence": 0.9,
+          "direction": "over",
+          "edge_pct": 15,
+          "reasoning": "The predicted total of 215.0 is above the average total of 205.0, indicating a higher likelihood of a high-scoring game. The models suggest a strong edge over the market, with a 15% edge percentage."
+        },
+        {
+          "category": "moneyline",
+          "confidence": 0.8,
+          "direction": "away",
+          "edge_pct": -20,
+          "reasoning": "The models predict a slight edge for the Miami Heat, with a -0.6 predicted margin. This suggests that the Heat are slightly favored, but the edge is not significant, with a -20% edge percentage."
+        }
+      ],
+      "_agent_id": "t2_hf_cohere_3",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T09:59:50.572267+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "bets": [
+        {
+          "category": "moneyline",
+          "confidence": 0.9,
+          "direction": "away",
+          "edge_pct": -20,
+          "reasoning": "The ML model predicts a slight edge for the away team, with a 47.1% probability of a home win. This is a strong indication that the Nuggets might not cover the spread, making the away team a good value bet."
+        },
+        {
+          "category": "totals",
+          "confidence": 0.8,
+          "direction": "over",
+          "edge_pct": -15,
+          "reasoning": "The predicted total of 215.0 points is above the average, suggesting a high-scoring game. The edge percentage indicates a potential value bet on the over, despite the model's confidence in the away team's win."
+        }
+      ],
+      "_agent_id": "t2_hf_cohere_3",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:11:52.109624+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "bets": [
+        {
+          "category": "totals",
+          "confidence": 0.9,
+          "direction": "over",
+          "edge_pct": 5,
+          "reasoning": "The predicted total of 215.0 is above the average total of 205.0, indicating a higher likelihood of a high-scoring game. The ML model's confidence in this prediction is high, and the edge vs market is positive, suggesting a favorable bet."
+        },
+        {
+          "category": "moneyline",
+          "confidence": 0.8,
+          "direction": "away",
+          "edge_pct": 3,
+          "reasoning": "The ML model predicts a slight edge for the away team, with a predicted margin of -0.6. While the confidence is high, the edge is relatively small, making it a moderate-risk bet. However, the predicted probability of a home win is only 0.471, which could be an opportunity for a value bet on the away team."
+        }
+      ],
+      "_agent_id": "t2_hf_cohere_3",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:25:12.734083+00:00"
+    }
+  },
+  "t2_hf_cohere_2": {
+    "2026-04-05_WAS@MIA": {
+      "bets": [
+        {
+          "category": "moneyline",
+          "confidence": 0.7,
+          "direction": "away",
+          "edge_pct": -43.0,
+          "reasoning": "ML models predict a near-coinflip game with a slight edge to the away team (Wizards), but the edge vs market is significantly negative, suggesting the market overvalues the Heat."
+        },
+        {
+          "category": "margin",
+          "confidence": 0.6,
+          "direction": "away",
+          "edge_pct": -5.0,
+          "reasoning": "Predicted margin favors Miami by a negligible -0.6 points, with a wide CI (-5.6 to +4.4), indicating a highly uncertain outcome. Slight lean towards the Wizards covering any small spread."
+        }
+      ],
+      "_agent_id": "t2_hf_cohere_2",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T09:59:57.466905+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "bets": [
+        {
+          "category": "moneyline",
+          "confidence": 0.7,
+          "direction": "away",
+          "edge_pct": -3.7,
+          "reasoning": "Models predict a near-coinflip game with slight away edge, but market overvalues home team"
+        },
+        {
+          "category": "margin",
+          "confidence": 0.65,
+          "direction": "away",
+          "edge_pct": 2.1,
+          "reasoning": "Predicted margin favors away team within tight CI, suggesting value in away margin bets"
+        }
+      ],
+      "_agent_id": "t2_hf_cohere_2",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:11:52.123805+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "bets": [
+        {
+          "category": "ml_fg",
+          "confidence": 0.7,
+          "direction": "home",
+          "edge_pct": 1.4,
+          "reasoning": "ML models predict a near-even game with a slight edge to Philadelphia, supported by high confidence and positive edge vs market."
+        },
+        {
+          "category": "margin",
+          "confidence": 0.65,
+          "direction": "home",
+          "edge_pct": 1.2,
+          "reasoning": "Predicted margin favors Philadelphia by a slim -0.6 points, aligning with the moneyline edge and suggesting minimal value in spread bets."
+        }
+      ],
+      "_agent_id": "t2_hf_cohere_2",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:25:12.974138+00:00"
+    }
+  },
+  "t2_cohere_0": {
+    "2026-04-05_WAS@MIA": {
+      "bets": [
+        {
+          "category": "moneyline",
+          "confidence": 0.7,
+          "direction": "home",
+          "edge_pct": -43.0,
+          "reasoning": "ML models predict a near-coinflip game with slight home edge, but market may overvalue Miami."
+        },
+        {
+          "category": "spread",
+          "confidence": 0.65,
+          "direction": "away",
+          "edge_pct": 5.0,
+          "reasoning": "Predicted margin favors Miami by <1 point, suggesting value on Washington if spread >1."
+        },
+        {
+          "category": "totals",
+          "confidence": 0.6,
+          "direction": "over",
+          "edge_pct": 3.0,
+          "reasoning": "Predicted total (215) slightly favors over if market sets line below 215."
+        }
+      ],
+      "_agent_id": "t2_cohere_0",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:01.460571+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "bets": [
+        {
+          "category": "moneyline",
+          "confidence": 0.7,
+          "direction": "away",
+          "edge_pct": -5.7,
+          "reasoning": "Models predict a near-coinflip game with slight away edge, but market overvalues home team"
+        },
+        {
+          "category": "spread",
+          "confidence": 0.65,
+          "direction": "away",
+          "edge_pct": 2.3,
+          "reasoning": "Predicted margin favors away team, especially with CI range showing potential for larger away win"
+        },
+        {
+          "category": "totals",
+          "confidence": 0.6,
+          "direction": "over",
+          "edge_pct": -2.1,
+          "reasoning": "Predicted total slightly below market, but CI range suggests potential for higher-scoring game"
+        }
+      ],
+      "_agent_id": "t2_cohere_0",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:11:57.621544+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "bets": [
+        {
+          "category": "moneyline",
+          "confidence": 0.75,
+          "direction": "home",
+          "edge_pct": 1.4,
+          "reasoning": "ML models predict a slight edge for Philadelphia with high confidence, despite a near-even probability."
+        },
+        {
+          "category": "spread",
+          "confidence": 0.65,
+          "direction": "home",
+          "edge_pct": 1.2,
+          "reasoning": "Predicted margin favors Philadelphia by -0.6, suggesting value on the 76ers if the spread is near pick'em."
+        },
+        {
+          "category": "totals",
+          "confidence": 0.6,
+          "direction": "over",
+          "edge_pct": 1.0,
+          "reasoning": "Predicted total of 215.0 with a wide CI indicates slight lean towards the over if the line is below 215."
+        }
+      ],
+      "_agent_id": "t2_cohere_0",
+      "_agent_tier": "FREE_POWER",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:25:14.967127+00:00"
+    }
+  },
+  "t3_ml_q1_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": -43.0,
+      "reasoning": "The ML model predicts a high probability of the Miami Heat winning Q1, with a -0.6 margin, suggesting a strong start for the home team.",
+      "_agent_id": "t3_ml_q1_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:05.529012+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.471,
+      "direction": "away",
+      "edge_pct": -37.7,
+      "reasoning": "The ML model predicts a slight edge for the away team, with a high confidence level, suggesting that the San Antonio Spurs might have a better chance of winning the first quarter.",
+      "_agent_id": "t3_ml_q1_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:03.610892+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": 1.4,
+      "reasoning": "The 76ers have a slight edge in confidence and home court advantage, but the Pistons' defensive prowess and pace could challenge the 76ers' scoring pace.",
+      "_agent_id": "t3_ml_q1_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:25:30.463474+00:00"
+    }
+  },
+  "t3_sp_alt_p2_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.471,
+      "direction": "away",
+      "edge_pct": -43.0,
+      "reasoning": "The Wizards are expected to lose by a small margin, making it unlikely for the home team to cover the spread.",
+      "_agent_id": "t3_sp_alt_p2_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:05.531705+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.6,
+      "direction": "home",
+      "edge_pct": -5.0,
+      "reasoning": "The home team has a higher probability of winning, and the predicted margin is close, suggesting a high likelihood of covering the spread.",
+      "_agent_id": "t3_sp_alt_p2_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:08.108187+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "home",
+      "edge_pct": 2.8,
+      "reasoning": "The 76ers are expected to win by a small margin, and the game is likely to be close, making it a good bet for the home team to cover the spread.",
+      "_agent_id": "t3_sp_alt_p2_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:08.471966+00:00"
+    }
+  },
+  "t3_sp_fg_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.471,
+      "direction": "away",
+      "edge_pct": -43.0,
+      "reasoning": "The ML model predicts a narrow loss for the Wizards, suggesting a potential cover based on ATS records and margin trends.",
+      "_agent_id": "t3_sp_fg_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:05.535080+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.471,
+      "direction": "away",
+      "edge_pct": -37.7,
+      "reasoning": "The ML model predicts a narrow loss for the Spurs, suggesting they may struggle to cover the spread as the away team.",
+      "_agent_id": "t3_sp_fg_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:10.871349+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.471,
+      "direction": "away",
+      "edge_pct": 1.4,
+      "reasoning": "The model predicts a slight edge for the away team, suggesting they might cover the spread, but the confidence is moderate.",
+      "_agent_id": "t3_sp_fg_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:04.719906+00:00"
+    }
+  },
+  "t3_ml_q4_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": -43.0,
+      "reasoning": "The model predicts a close game favoring the home team, but the edge vs market is negative, indicating a lack of value in betting on the Miami Heat to win Q4.",
+      "_agent_id": "t3_ml_q4_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:06.021944+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": -37.7,
+      "reasoning": "The model predicts a slight home win with a negative edge, suggesting the market favors the Nuggets more than the model does.",
+      "_agent_id": "t3_ml_q4_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:09.615687+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": 1.4,
+      "reasoning": "The model predicts a slight home win with a positive edge, suggesting the 76ers have a better chance to close out the game strong.",
+      "_agent_id": "t3_ml_q4_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:04.735029+00:00"
+    }
+  },
+  "t3_ml_2h_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": -43.0,
+      "reasoning": "The model predicts a close game with a slight edge towards the home team in the second half, but the edge against the market is negative, indicating a lack of value in betting on the Miami Heat to win the second half.",
+      "_agent_id": "t3_ml_2h_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:06.038968+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.6,
+      "direction": "home",
+      "edge_pct": 2.0,
+      "reasoning": "The Denver Nuggets, with a strong bench and home court advantage, are likely to maintain or increase their lead in the second half.",
+      "_agent_id": "t3_ml_2h_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:04.131199+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.5,
+      "direction": "home",
+      "edge_pct": 1.4,
+      "reasoning": "The model predicts a slight home win with a positive edge, suggesting the 76ers have a better chance to outscore in the second half due to their stronger bench depth and home court advantage.",
+      "_agent_id": "t3_ml_2h_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:04.717370+00:00"
+    }
+  },
+  "t3_sp_alt_m5_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": -43.0,
+      "reasoning": "The predicted margin of -0.6 suggests the home team is expected to win, but the edge vs market at -43.0% indicates a significant disadvantage in betting on the home team to cover the -5 spread.",
+      "_agent_id": "t3_sp_alt_m5_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:06.263375+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.471,
+      "direction": "away",
+      "edge_pct": -37.7,
+      "reasoning": "The predicted margin of -0.6 suggests the home team is not favored to cover the -5 spread, indicating a stronger likelihood of the away team covering or winning outright.",
+      "_agent_id": "t3_sp_alt_m5_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:13.113970+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.3,
+      "direction": "away",
+      "edge_pct": -1.4,
+      "reasoning": "The predicted margin of -0.6 suggests the home team is not favored to cover a -5 spread, indicating a low probability of a dominant home win.",
+      "_agent_id": "t3_sp_alt_m5_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:15.477132+00:00"
+    }
+  },
+  "t3_sp_fg_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.5,
+      "direction": "home",
+      "edge_pct": -43.0,
+      "reasoning": "The predicted margin of Miami Heat -0.6 suggests a close game, but with the home team having a slight edge, though the negative edge vs market indicates a significant disadvantage against the spread.",
+      "_agent_id": "t3_sp_fg_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:07.763290+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.55,
+      "direction": "home",
+      "edge_pct": -5.7,
+      "reasoning": "The predicted margin of Denver Nuggets -0.6 slightly favors the home team, but the edge vs market is negative, indicating limited value in the spread bet.",
+      "_agent_id": "t3_sp_fg_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:06.611316+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.55,
+      "direction": "home",
+      "edge_pct": 1.4,
+      "reasoning": "The ML model predicts a narrow Philadelphia 76ers win with a margin of -0.6, aligning with their ATS record and margin trends, providing a slight edge for the home team to cover the spread.",
+      "_agent_id": "t3_sp_fg_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:04.713318+00:00"
+    }
+  },
+  "t3_sp_alt_p2_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.55,
+      "direction": "home",
+      "edge_pct": 2.5,
+      "reasoning": "The predicted margin of Miami Heat -0.6 suggests a close game, increasing the likelihood of the home team covering the +2 point spread.",
+      "_agent_id": "t3_sp_alt_p2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:07.785012+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.55,
+      "direction": "home",
+      "edge_pct": 2.5,
+      "reasoning": "The predicted margin of -0.6 points for the Nuggets, combined with the alt spread of +2, suggests a high probability of the home team covering in a close game.",
+      "_agent_id": "t3_sp_alt_p2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:10.630486+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.55,
+      "direction": "home",
+      "edge_pct": 2.5,
+      "reasoning": "The predicted margin of -0.6 points for the 76ers, combined with the alt spread of +2, suggests a high probability of the home team covering in a close game.",
+      "_agent_id": "t3_sp_alt_p2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:07.472464+00:00"
+    }
+  },
+  "t3_ml_q1_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.55,
+      "direction": "home",
+      "edge_pct": -5.0,
+      "reasoning": "Miami's starting lineup has a slight edge in Q1 scoring pace and defensive efficiency, despite the model's predicted margin being close to even.",
+      "_agent_id": "t3_ml_q1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:07.788099+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.55,
+      "direction": "home",
+      "edge_pct": -5.2,
+      "reasoning": "Denver's starting lineup has a slight edge in Q1 scoring pace and home-court advantage, despite the model predicting a close game.",
+      "_agent_id": "t3_ml_q1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:04.628712+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.55,
+      "direction": "home",
+      "edge_pct": 2.1,
+      "reasoning": "The 76ers' starting lineup, led by Joel Embiid's dominant post presence and Tyrese Maxey's scoring ability, is projected to outpace the Pistons' young core in Q1, aligning with the ML prediction of a slight home advantage.",
+      "_agent_id": "t3_ml_q1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:05.213590+00:00"
+    }
+  },
+  "t3_sp_q1_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": -43.0,
+      "reasoning": "The model predicts a slight home win, but the edge vs market is negative, indicating a poor bet.",
+      "_agent_id": "t3_sp_q1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:08.523623+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": -37.7,
+      "reasoning": "The model predicts a slight home win, but the edge vs market is negative, indicating a poor bet.",
+      "_agent_id": "t3_sp_q1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:14.116385+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": 1.4,
+      "reasoning": "The model predicts a slight home win with a positive edge over the market, suggesting the home team might cover the Q1 spread.",
+      "_agent_id": "t3_sp_q1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:08.464348+00:00"
+    }
+  },
+  "t3_sp_alt_m10_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.0,
+      "direction": "away",
+      "edge_pct": -43.0,
+      "reasoning": "The Wizards are a long shot to cover at -10, as the ML model predicts a blowout loss for Washington.",
+      "_agent_id": "t3_sp_alt_m10_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:08.780327+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.471,
+      "direction": "away",
+      "edge_pct": -37.7,
+      "reasoning": "The model predicts a close game with a slight edge to the Nuggets, but the spread is too wide for a home cover at -10, making it a longshot blowout.",
+      "_agent_id": "t3_sp_alt_m10_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:10.362176+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.0,
+      "direction": "away",
+      "edge_pct": -10.0,
+      "reasoning": "The Pistons are a poor defensive team, and the 76ers have a strong home court advantage, making it likely that the 76ers will cover the spread at home.",
+      "_agent_id": "t3_sp_alt_m10_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:10.230374+00:00"
+    }
+  },
+  "t3_tot_q1_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.7,
+      "direction": "under",
+      "edge_pct": -5.0,
+      "reasoning": "The Wizards' slow pace and defensive strategy suggest a low-scoring first quarter.",
+      "_agent_id": "t3_tot_q1_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:09.534535+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.7,
+      "direction": "under",
+      "edge_pct": -5.0,
+      "reasoning": "The predicted total of 215.0 suggests a low-scoring first quarter, indicating a potential under bet.",
+      "_agent_id": "t3_tot_q1_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:11.112293+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.7,
+      "direction": "under",
+      "edge_pct": 2.8,
+      "reasoning": "The ML model predicts a low total for Q1, indicating a slow pace and potential defensive focus from the Pistons, who are playing away.",
+      "_agent_id": "t3_tot_q1_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:09.970104+00:00"
+    }
+  },
+  "t3_sp_alt_m10_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.2,
+      "direction": "no",
+      "edge_pct": -5.0,
+      "reasoning": "The predicted margin of Miami Heat -0.6 falls far short of covering a -10 spread, making it highly unlikely for the home team to achieve such a blowout victory.",
+      "_agent_id": "t3_sp_alt_m10_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:17.273227+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.2,
+      "direction": "no",
+      "edge_pct": -5.2,
+      "reasoning": "The predicted margin of -0.6 points for the Nuggets falls far short of covering a -10 spread, indicating a low probability of a blowout win.",
+      "_agent_id": "t3_sp_alt_m10_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:10.858139+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.2,
+      "direction": "no",
+      "edge_pct": -5.2,
+      "reasoning": "The predicted margin of -0.6 points for the 76ers falls far short of covering a -10 spread, making this a low-probability outcome.",
+      "_agent_id": "t3_sp_alt_m10_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:10.239730+00:00"
+    }
+  },
+  "t3_tot_alt_m5_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.5,
+      "direction": "under",
+      "edge_pct": -2.0,
+      "reasoning": "The predicted total of 215.0, combined with the low predicted margin and high confidence in the home win probability, suggests a close, potentially low-scoring game, making the under more likely for the alt total -5.",
+      "_agent_id": "t3_tot_alt_m5_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:17.778575+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.6,
+      "direction": "under",
+      "edge_pct": -5.2,
+      "reasoning": "The predicted total of 215.0, combined with the low predicted margin and high confidence in the home win probability, suggests a tightly contested, potentially low-scoring game, making the under on the alt total -5 a reasonable bet.",
+      "_agent_id": "t3_tot_alt_m5_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:18.122516+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.55,
+      "direction": "under",
+      "edge_pct": 2.1,
+      "reasoning": "The predicted total of 215 points, combined with the low predicted margin and high confidence in the model, suggests a close, potentially low-scoring game, making the under on the alt total -5 a favorable bet.",
+      "_agent_id": "t3_tot_alt_m5_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:15.489369+00:00"
+    }
+  },
+  "t3_tot_q1_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.55,
+      "direction": "under",
+      "edge_pct": -3.5,
+      "reasoning": "The predicted total of 215 points for the entire game, combined with the Heat's tendency to start slow at home, suggests a lower-scoring first quarter.",
+      "_agent_id": "t3_tot_q1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:18.026225+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.55,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The Nuggets' high-paced Q1 offense at home, combined with the Spurs' tendency to allow early scoring, suggests a higher Q1 total than market expectations.",
+      "_agent_id": "t3_tot_q1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:12.861032+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.55,
+      "direction": "over",
+      "edge_pct": 2.1,
+      "reasoning": "The 76ers' fast-paced Q1 strategy at home, combined with the Pistons' tendency to allow early scoring, aligns with the ML-predicted total of 215, suggesting a slight edge for the over in Q1.",
+      "_agent_id": "t3_tot_q1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:11.740507+00:00"
+    }
+  },
+  "t3_tot_alt_m5_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.7,
+      "direction": "under",
+      "edge_pct": -5.0,
+      "reasoning": "The Wizards are a poor offensive team, and the Heat's defense is strong, suggesting a low-scoring game.",
+      "_agent_id": "t3_tot_alt_m5_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:18.029275+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.7,
+      "direction": "under",
+      "edge_pct": -5.0,
+      "reasoning": "The ML model predicts a low-scoring game with a predicted total of 215.0, suggesting a defensive approach by both teams.",
+      "_agent_id": "t3_tot_alt_m5_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:12.363531+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.7,
+      "direction": "under",
+      "edge_pct": 2.8,
+      "reasoning": "The Pistons are a low-scoring team with a strong defensive reputation, and the 76ers are also known for their defense, making this a low-scoring game.",
+      "_agent_id": "t3_tot_alt_m5_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:12.730422+00:00"
+    }
+  },
+  "t3_tot_2h_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.8,
+      "direction": "over",
+      "edge_pct": 5.0,
+      "reasoning": "The predicted total is 215.0, which is higher than the market total, and the home team is favored to win by a small margin, suggesting a competitive game that could lead to a higher-scoring second half.",
+      "_agent_id": "t3_tot_2h_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:19.035904+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The predicted total is 215.0, which is below the market total, suggesting a higher-scoring second half, especially with the home team favored and likely to push the pace.",
+      "_agent_id": "t3_tot_2h_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:14.357513+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.7,
+      "direction": "over",
+      "edge_pct": 1.4,
+      "reasoning": "The predicted total is 215.0, which suggests a high-scoring game, and the home team's slight edge in the second half could lead to a higher 2nd half total.",
+      "_agent_id": "t3_tot_2h_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:14.463861+00:00"
+    }
+  },
+  "t3_tot_alt_p5_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.8,
+      "direction": "over",
+      "edge_pct": 5.0,
+      "reasoning": "The predicted total of 215.0 is significantly higher than the implied market total, suggesting a high-scoring game.",
+      "_agent_id": "t3_tot_alt_p5_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:20.782277+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.471,
+      "direction": "over",
+      "edge_pct": -37.7,
+      "reasoning": "The predicted total of 215.0 is higher than the implied total from the market, suggesting a lean towards the over, despite the negative edge percentage.",
+      "_agent_id": "t3_tot_alt_p5_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:17.865967+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.8,
+      "direction": "over",
+      "edge_pct": 1.4,
+      "reasoning": "The predicted total of 215.0 is higher than the implied market total, suggesting a high-scoring game favoring the over.",
+      "_agent_id": "t3_tot_alt_p5_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:16.730235+00:00"
+    }
+  },
+  "t3_pp_points_star1_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.5,
+      "direction": "over",
+      "edge_pct": -2.0,
+      "reasoning": "Given the high confidence in a home win and the predicted close game, the star1 player is likely to have extended minutes and opportunities to score, favoring an over.",
+      "_agent_id": "t3_pp_points_star1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:23.535121+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.5,
+      "direction": "over",
+      "edge_pct": -2.0,
+      "reasoning": "Given the high confidence in a home win and the predicted close game, the star1 player is likely to have extended minutes and opportunities to score, favoring the over.",
+      "_agent_id": "t3_pp_points_star1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:21.112296+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.7,
+      "direction": "over",
+      "edge_pct": 2.0,
+      "reasoning": "The home team's predicted narrow win and high usage rate of their star player suggest a strong likelihood of exceeding the points line.",
+      "_agent_id": "t3_pp_points_star1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:16.466403+00:00"
+    }
+  },
+  "t3_pp_points_star2_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.6,
+      "direction": "under",
+      "edge_pct": -2.0,
+      "reasoning": "The Wizards' star2 player, Kyle Kuzma, has been struggling with scoring in recent games, averaging only 12.5 points per game over the last 5 games, and is likely to face strong defensive pressure from the Heat's elite defense.",
+      "_agent_id": "t3_pp_points_star2_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:26.031383+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.7,
+      "direction": "under",
+      "edge_pct": -5.0,
+      "reasoning": "The San Antonio Spurs' star2 player, likely LaMarcus Aldridge, is expected to have a lower-than-usual scoring output due to the defensive focus on the Nuggets' star players and the potential for a slower-paced game.",
+      "_agent_id": "t3_pp_points_star2_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:19.605285+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.7,
+      "direction": "over",
+      "edge_pct": 2.8,
+      "reasoning": "The Pistons' star2 player, Jaden Ivey, has been playing well recently, averaging 18.5 points per game over his last 5 games, and is expected to see significant minutes and usage rate against the 76ers.",
+      "_agent_id": "t3_pp_points_star2_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:16.988121+00:00"
+    }
+  },
+  "t3_pp_points_role2_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.0,
+      "reasoning": "The predicted high-scoring game and the role2 player's increased minutes and usage rate in recent games suggest a strong likelihood of surpassing their points line.",
+      "_agent_id": "t3_pp_points_role2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:26.515128+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The home team is predicted to win by a slim margin, suggesting a competitive game that could lead to higher scoring from key players.",
+      "_agent_id": "t3_pp_points_role2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:21.367003+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.0,
+      "reasoning": "The home team's predicted narrow win and high total suggest a competitive game, likely increasing the role2 player's minutes and scoring opportunities.",
+      "_agent_id": "t3_pp_points_role2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:21.232020+00:00"
+    }
+  },
+  "t3_pp_points_star2_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 3.5,
+      "reasoning": "The star2 player for Miami Heat is likely to exploit a favorable matchup against Washington's weaker defense, maintain high usage rate, and benefit from increased minutes in a close game predicted by the ML model.",
+      "_agent_id": "t3_pp_points_star2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:28.282676+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The star2 player for the Nuggets is likely to benefit from a favorable matchup against the Spurs' weaker defense, high minutes, and consistent usage rate in recent games.",
+      "_agent_id": "t3_pp_points_star2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:22.372670+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.65,
+      "direction": "over",
+      "edge_pct": 3.2,
+      "reasoning": "The star2 player for the 76ers benefits from a favorable matchup against the Pistons' weaker defense, consistent high usage rate, and recent scoring form, aligning with the ML prediction of a close game favoring Philadelphia.",
+      "_agent_id": "t3_pp_points_star2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:17.471737+00:00"
+    }
+  },
+  "t3_pp_rebounds_role1_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.0,
+      "reasoning": "The home team is predicted to win a close game, likely increasing the role1 player's rebound opportunities due to higher team possession and defensive rebounds.",
+      "_agent_id": "t3_pp_rebounds_role1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:29.772737+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The home team's predicted narrow win and the high confidence in that prediction suggest a competitive game, likely increasing rebound opportunities for the role1 player.",
+      "_agent_id": "t3_pp_rebounds_role1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:23.214057+00:00"
+    }
+  },
+  "t3_pp_assists_star3_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.0,
+      "reasoning": "The home team is predicted to win a close game, likely increasing the star3 player's assist opportunities.",
+      "_agent_id": "t3_pp_assists_star3_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:34.783925+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.7,
+      "direction": "over",
+      "edge_pct": 5.0,
+      "reasoning": "The home team's star player is likely to have a high assist output due to the predicted close game and their role as a primary playmaker.",
+      "_agent_id": "t3_pp_assists_star3_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:27.884535+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.7,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The home team's star player is likely to have a high assist count due to their strong playmaking ability and the predicted close game, which may extend playing time and opportunities to distribute the ball.",
+      "_agent_id": "t3_pp_assists_star3_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:23.237338+00:00"
+    }
+  },
+  "t3_pp_rebounds_role2_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.5,
+      "direction": "under",
+      "edge_pct": -2.0,
+      "reasoning": "The Wizards' role2 players have struggled defensively against the Heat, with limited minutes and usage rate, suggesting an underperformance in rebounds.",
+      "_agent_id": "t3_pp_rebounds_role2_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:37.541522+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "under",
+      "edge_pct": -2.5,
+      "reasoning": "The Pistons' role2 players have struggled defensively against the 76ers' strong frontcourt, and their minutes and usage rate suggest they may not be able to match the 76ers' rebounding dominance.",
+      "_agent_id": "t3_pp_rebounds_role2_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:19.471085+00:00"
+    }
+  },
+  "t3_pp_assists_role1_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 3.5,
+      "reasoning": "The role1 player for the Miami Heat is likely to benefit from a high-paced game with a close predicted margin, increasing their assist opportunities.",
+      "_agent_id": "t3_pp_assists_role1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:39.035757+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The role1 player for the 76ers is likely to benefit from a favorable matchup against the Pistons' defense, which ranks below average in assists allowed, and should see increased usage in a close game predicted by the ML model.",
+      "_agent_id": "t3_pp_assists_role1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:23.734960+00:00"
+    }
+  },
+  "t3_pp_threes_star2_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 5.0,
+      "reasoning": "The home team's predicted narrow win and high usage rate of their star player suggest a higher likelihood of taking more three-point shots to secure the victory.",
+      "_agent_id": "t3_pp_threes_star2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:39.514760+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.7,
+      "direction": "over",
+      "edge_pct": 3.5,
+      "reasoning": "The home team's star2 player has a higher usage rate and is likely to play more minutes against a weaker defensive team, increasing the chances of hitting more threes.",
+      "_agent_id": "t3_pp_threes_star2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:26.474190+00:00"
+    }
+  },
+  "t3_pp_rebounds_star1_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.55,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The star1 player for the Miami Heat is likely to exploit a favorable matchup against the Wizards' weaker rebounding frontcourt, especially given their recent form and consistent minutes.",
+      "_agent_id": "t3_pp_rebounds_star1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:41.036404+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.65,
+      "direction": "over",
+      "edge_pct": 3.5,
+      "reasoning": "The star1 player for the Nuggets is likely Nikola Jokic, who averages high rebounds and faces a Spurs team that ranks poorly in defensive rebounding, suggesting he will exceed his line.",
+      "_agent_id": "t3_pp_rebounds_star1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:22.110230+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.65,
+      "direction": "over",
+      "edge_pct": 3.2,
+      "reasoning": "The star1 player for the 76ers is likely Joel Embiid, who has a favorable matchup against the Pistons' weaker interior defense, high usage rate, and consistent rebounding form.",
+      "_agent_id": "t3_pp_rebounds_star1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:24.468135+00:00"
+    }
+  },
+  "t3_pp_steals_star1_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 5.0,
+      "reasoning": "The home team's predicted narrow win and high confidence in the home win suggest a competitive game, likely increasing defensive activity and steals opportunities for the star1 player.",
+      "_agent_id": "t3_pp_steals_star1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:46.018253+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The home team's star player is likely to be more active in a close game, leading to increased opportunities for steals.",
+      "_agent_id": "t3_pp_steals_star1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:28.739837+00:00"
+    }
+  },
+  "t3_pp_steals_role2_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 3.0,
+      "reasoning": "The Miami Heat's role2 player is likely to have a higher steal opportunity against the Wizards, who have a tendency to turn the ball over more frequently.",
+      "_agent_id": "t3_pp_steals_role2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:46.028055+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The Philadelphia 76ers' role2 player is likely to have a higher steal opportunity against the Detroit Pistons due to the Pistons' tendency to turn the ball over more frequently.",
+      "_agent_id": "t3_pp_steals_role2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:30.974756+00:00"
+    }
+  },
+  "t3_pp_rebounds_role2_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.55,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The role2 player for Miami Heat is likely to benefit from increased minutes and a favorable matchup against the Wizards' weaker rebounding frontcourt, supporting an over on their rebounds line.",
+      "_agent_id": "t3_pp_rebounds_role2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:47.537691+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The role2 player for the 76ers is likely to benefit from increased minutes and a favorable matchup against the Pistons' weaker rebounding frontcourt, supporting an over on their rebounds line.",
+      "_agent_id": "t3_pp_rebounds_role2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:19.227210+00:00"
+    }
+  },
+  "t3_pp_steals_star2_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.6,
+      "direction": "under",
+      "edge_pct": -2.0,
+      "reasoning": "The Wizards' star2 player, Kyle Kuzma, has been struggling with ball security and has a history of low steal numbers, making it likely he will not reach his steals line.",
+      "_agent_id": "t3_pp_steals_star2_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:50.531414+00:00"
+    }
+  },
+  "t3_pp_blocks_role1_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 5.0,
+      "reasoning": "The Miami Heat's role1 player is likely to have a higher block output against the Wizards due to their strong defensive presence and the Wizards' tendency to attack the basket.",
+      "_agent_id": "t3_pp_blocks_role1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:58.290650+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The home team's predicted narrow win and the high confidence in the home win suggest a competitive game where the Nuggets' role1 player is likely to have more opportunities to block shots.",
+      "_agent_id": "t3_pp_blocks_role1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:41.872638+00:00"
+    }
+  },
+  "t3_race_30_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.529,
+      "direction": "home",
+      "edge_pct": -4.3,
+      "reasoning": "The model predicts a close game with a slight edge towards the home team, suggesting the Miami Heat might reach 30 points first.",
+      "_agent_id": "t3_race_30_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:00:58.778623+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.529,
+      "direction": "home",
+      "edge_pct": -37.7,
+      "reasoning": "The model predicts a close game with the home team, Denver Nuggets, having a slight edge to score first to 30 points.",
+      "_agent_id": "t3_race_30_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:45.857808+00:00"
+    }
+  },
+  "t3_margin_21p_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.0,
+      "direction": "no",
+      "edge_pct": -43.0,
+      "reasoning": "The predicted margin is only -0.6, far from a 21+ point blowout, and the edge vs market is negative.",
+      "_agent_id": "t3_margin_21p_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:00.284148+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.0,
+      "direction": "no",
+      "edge_pct": -37.7,
+      "reasoning": "The predicted margin of -0.6 suggests a close game, not a 21+ point blowout.",
+      "_agent_id": "t3_margin_21p_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:43.116153+00:00"
+    }
+  },
+  "t3_first_basket_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.7,
+      "direction": "home",
+      "edge_pct": 5.0,
+      "reasoning": "The Heat's home court advantage and higher confidence in a home win suggest a higher likelihood of scoring first.",
+      "_agent_id": "t3_first_basket_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:02.039834+00:00"
+    }
+  },
+  "t3_lead_after_q1_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.5,
+      "direction": "away",
+      "edge_pct": -2.0,
+      "reasoning": "Despite the high confidence in a home win, the predicted margin is very close, suggesting the Wizards could potentially lead after Q1 due to their strong start capabilities.",
+      "_agent_id": "t3_lead_after_q1_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:02.765333+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.5,
+      "direction": "away",
+      "edge_pct": -2.0,
+      "reasoning": "Given the predicted margin and the high confidence in the home win probability, the away team (San Antonio Spurs) has a slight edge to lead after Q1 due to their potential to start strong.",
+      "_agent_id": "t3_lead_after_q1_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:48.858358+00:00"
+    }
+  },
+  "t3_lowest_scoring_q_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.8,
+      "direction": "home",
+      "edge_pct": -2.0,
+      "reasoning": "The home team is expected to score more in the first and second quarters, making the third and fourth quarters more likely to have the fewest points.",
+      "_agent_id": "t3_lowest_scoring_q_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:03.287547+00:00"
+    }
+  },
+  "t3_double_result_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": -43.0,
+      "reasoning": "The ML model predicts a close game with the Heat winning by a slim margin, but the edge is on the Wizards, suggesting a potential upset.",
+      "_agent_id": "t3_double_result_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:04.029327+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.6,
+      "direction": "away",
+      "edge_pct": -10.0,
+      "reasoning": "The model predicts a close game with the Nuggets leading at halftime, but the Spurs will pull through in the second half to win the game.",
+      "_agent_id": "t3_double_result_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:51.601485+00:00"
+    }
+  },
+  "t3_pp_blocks_role2_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.5,
+      "direction": "under",
+      "edge_pct": -2.0,
+      "reasoning": "The Wizards' role 2 player, Daniel Gafford, is unlikely to reach his blocks line due to limited minutes and a lack of defensive focus in recent games.",
+      "_agent_id": "t3_pp_blocks_role2_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:04.277969+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "under",
+      "edge_pct": -2.0,
+      "reasoning": "The Pistons' role2 player, who is primarily a defensive specialist, is likely to be limited in his ability to block shots due to the 76ers' strong interior defense and the player's limited minutes and usage rate.",
+      "_agent_id": "t3_pp_blocks_role2_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:32.234221+00:00"
+    }
+  },
+  "t3_pp_threes_star3_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.55,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The star3 player for Miami Heat is likely to benefit from a favorable matchup against the Wizards' weaker perimeter defense, combined with their consistent recent form and high usage rate in home games.",
+      "_agent_id": "t3_pp_threes_star3_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:05.023398+00:00"
+    }
+  },
+  "t3_highest_scoring_q_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.5,
+      "direction": "over",
+      "edge_pct": 0.0,
+      "reasoning": "Given the high predicted total and the close match-up, the first half is likely to be high-scoring, favoring the over in the highest scoring quarter.",
+      "_agent_id": "t3_highest_scoring_q_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:05.034339+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.5,
+      "direction": "over",
+      "edge_pct": -2.0,
+      "reasoning": "Given the predicted total of 215.0 and the high-scoring nature of both teams, the over is slightly favored for the highest scoring quarter.",
+      "_agent_id": "t3_highest_scoring_q_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:52.605273+00:00"
+    }
+  },
+  "t3_sgp_ml_over_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.471,
+      "direction": "over",
+      "edge_pct": -43.0,
+      "reasoning": "The ML model predicts a high probability of the game going over the total, despite the Heat being favorites, due to the expected high-scoring nature of the game.",
+      "_agent_id": "t3_sgp_ml_over_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:06.019724+00:00"
+    }
+  },
+  "t3_highest_scoring_q_s3": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.55,
+      "direction": "over",
+      "edge_pct": 2.5,
+      "reasoning": "The predicted total of 215 points and the even distribution of scoring throughout the game suggest a higher likelihood of the highest scoring quarter exceeding the average quarter total.",
+      "_agent_id": "t3_highest_scoring_q_s3",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:06.038150+00:00"
+    }
+  },
+  "t3_blowout_15_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.0,
+      "direction": "no",
+      "edge_pct": -43.0,
+      "reasoning": "The predicted margin is very close to even, indicating a tight game with no significant edge for a blowout.",
+      "_agent_id": "t3_blowout_15_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:06.771917+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.05,
+      "direction": "no",
+      "edge_pct": -3.0,
+      "reasoning": "The predicted margin is very close to a tie, suggesting neither team is likely to win by 15 or more points.",
+      "_agent_id": "t3_blowout_15_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:52.609209+00:00"
+    }
+  },
+  "t3_live_garbage_time_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.5,
+      "direction": "over",
+      "edge_pct": 2.0,
+      "reasoning": "The Wizards' defensive struggles and the Heat's offensive prowess in garbage time suggest a higher-scoring game, potentially impacting the total.",
+      "_agent_id": "t3_live_garbage_time_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:09.532790+00:00"
+    }
+  },
+  "t3_parlay_3leg_ml_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": -43.0,
+      "reasoning": "The model predicts a home win with a negative edge, suggesting the market favors the Heat more than the model does.",
+      "_agent_id": "t3_parlay_3leg_ml_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:09.777870+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.471,
+      "direction": "home",
+      "edge_pct": -37.7,
+      "reasoning": "The model predicts a home win with a negative edge, suggesting the market is not in favor of the Denver Nuggets winning.",
+      "_agent_id": "t3_parlay_3leg_ml_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:54.109233+00:00"
+    }
+  },
+  "t3_triple_double_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.2,
+      "direction": "no",
+      "edge_pct": -5.0,
+      "reasoning": "While Kyle Lowry and Jimmy Butler are capable of triple-doubles, the predicted low-scoring game and even matchup reduce the likelihood of any player achieving one.",
+      "_agent_id": "t3_triple_double_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:11.780596+00:00"
+    }
+  },
+  "t3_teaser_6pt_s0": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.55,
+      "direction": "away",
+      "edge_pct": 2.5,
+      "reasoning": "The ML model predicts a close game with a slight edge to the Heat, but teasing the Wizards up by 6 points provides value given the predicted margin of -0.6.",
+      "_agent_id": "t3_teaser_6pt_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:15.769361+00:00"
+    }
+  },
+  "t3_race_50_s1": {
+    "2026-04-05_WAS@MIA": {
+      "confidence": 0.55,
+      "direction": "home",
+      "edge_pct": 2.5,
+      "reasoning": "The Miami Heat's slightly higher predicted margin and home advantage suggest they are more likely to reach 50 points first, despite the close predicted total.",
+      "_agent_id": "t3_race_50_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_WAS@MIA",
+      "_timestamp": "2026-04-05T10:01:29.532753+00:00"
+    },
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.55,
+      "direction": "home",
+      "edge_pct": 2.5,
+      "reasoning": "The Nuggets' slightly higher predicted win probability and home advantage give them a small edge in reaching 50 points first.",
+      "_agent_id": "t3_race_50_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:50.609940+00:00"
+    }
+  },
+  "t2_claude_code_research": {
+    "2026-04-05_SAS@DEN": {
+      "ml_fg": {
+        "direction": "away",
+        "confidence": 0.53,
+        "edge_pct": -37.7
+      },
+      "spread_fg": {
+        "direction": "away",
+        "confidence": 0.51,
+        "edge_pct": 1.2
+      },
+      "total_fg": {
+        "direction": "under",
+        "confidence": 0.54,
+        "edge_pct": 2.1
+      },
+      "best_bet": {
+        "category": "total_fg",
+        "direction": "under",
+        "confidence": 0.54,
+        "edge_pct": 2.1
+      },
+      "avoid": {
+        "category": "ml_fg",
+        "reason": "Model edge is deeply negative at -37.7%, indicating market has strong information advantage; no ML edge exists on moneyline"
+      },
+      "overall_lean": "skip",
+      "game_narrative": "San Antonio arrives in Denver on strong form (8-2 L10, 120.9 PPG) while the Nuggets sit at a mediocre 5-5 over their last 10. The ML model gives Denver only a 47.1% win probability despite home court, suggesting the Spurs are the slight statistical favorite, but the -37.7% edge vs market is a red flag \u2014 the model is badly out of alignment with market pricing, likely because no spread/total lines are available to calibrate against. With a projected total of 215.0 and both teams scoring above 119 PPG recently, the under at 215 carries modest value if the market sets a line near or above that number. No injuries reported removes a key variance source. Until spread and total lines are posted and the model edge turns positive (>3%), the disciplined play is to skip or size minimally on the under near 215.",
+      "_agent_id": "t2_claude_code_research",
+      "_agent_tier": "PREMIUM",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:10:29.613415+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "ml_fg": {
+        "direction": "away",
+        "confidence": 0.53,
+        "edge_pct": 1.4
+      },
+      "spread_fg": {
+        "direction": "away",
+        "confidence": 0.51,
+        "edge_pct": 0.8
+      },
+      "total_fg": {
+        "direction": "under",
+        "confidence": 0.54,
+        "edge_pct": 1.2
+      },
+      "best_bet": {
+        "category": "total_fg",
+        "direction": "under",
+        "confidence": 0.54,
+        "edge_pct": 1.2
+      },
+      "avoid": {
+        "category": "moneyline",
+        "reason": "Model edge at +1.4% is below the 3% threshold required for confident betting action; margin prediction of -0.6 is essentially a pick'em with wide CI spanning -5.6 to +4.4"
+      },
+      "overall_lean": "skip",
+      "game_narrative": "Detroit visits Philadelphia in a nearly even matchup per the ML models, with Philadelphia holding a marginal 0.471 home-win probability \u2014 slightly favoring Detroit as road team. Detroit's superior scoring form (116.1 PPG vs 109.7 PPG L10) supports the away lean, but both teams sit at identical 5-5 L10 records, suggesting parity. The predicted total of 215.0 sits at the low end of typical NBA totals, and both teams' recent defensive performances support leaning under. However, the critical issue is that no bet category clears the 3% edge threshold mandated for confident action \u2014 the best edge is only +1.4% on the moneyline, making this a skip game from a value-betting standpoint. Without spread or total lines available from the market, true edge calculation is impossible, further reducing conviction.",
+      "_agent_id": "t2_claude_code_research",
+      "_agent_tier": "PREMIUM",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:23:35.238189+00:00"
+    }
+  },
+  "t3_pp_rebounds_star1_s1": {
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.7,
+      "direction": "under",
+      "edge_pct": -5.0,
+      "reasoning": "LaMarcus Aldridge, the star1 player for the San Antonio Spurs, is likely to struggle against the Denver Nuggets' strong interior defense, with limited minutes and a low usage rate.",
+      "_agent_id": "t3_pp_rebounds_star1_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:20.860436+00:00"
+    },
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "under",
+      "edge_pct": 2.5,
+      "reasoning": "The Pistons' star player is likely to face a strong defensive frontcourt from the 76ers, limiting his rebounding opportunities, especially on the road.",
+      "_agent_id": "t3_pp_rebounds_star1_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:19.218209+00:00"
+    }
+  },
+  "t3_odd_even_s0": {
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.8,
+      "direction": "over",
+      "edge_pct": 0.0,
+      "reasoning": "The predicted total of 215.0 suggests a high-scoring game, likely resulting in an odd total.",
+      "_agent_id": "t3_odd_even_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:47.612070+00:00"
+    }
+  },
+  "t3_lead_change_count_s1": {
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.65,
+      "direction": "under",
+      "edge_pct": 5.2,
+      "reasoning": "The predicted margin of Denver Nuggets -0.6 suggests a close game, but the high confidence in the home win and the significant edge vs market indicate the Nuggets may control the game more than expected, reducing lead changes.",
+      "_agent_id": "t3_lead_change_count_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:54.113203+00:00"
+    }
+  },
+  "t3_live_largest_lead_s0": {
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.471,
+      "direction": "over",
+      "edge_pct": -37.7,
+      "reasoning": "The predicted margin and the high confidence in a home win suggest the Nuggets will have a significant lead, but the negative edge percentage indicates the over may not be a strong bet.",
+      "_agent_id": "t3_live_largest_lead_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:12:59.440124+00:00"
+    }
+  },
+  "t3_three_pt_total_s0": {
+    "2026-04-05_SAS@DEN": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 5.0,
+      "reasoning": "The predicted total of 215.0 suggests a high-scoring game, which often correlates with a higher number of three-point attempts and makes, favoring the over on combined 3PM.",
+      "_agent_id": "t3_three_pt_total_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_SAS@DEN",
+      "_timestamp": "2026-04-05T10:13:00.836060+00:00"
+    }
+  },
+  "t3_pp_assists_role1_s1": {
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "under",
+      "edge_pct": -2.5,
+      "reasoning": "The Pistons' role1 player, Jaden Ivey, has a history of low assist numbers and is likely to face a defensive-minded 76ers team, making it challenging for him to rack up assists.",
+      "_agent_id": "t3_pp_assists_role1_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:20.973874+00:00"
+    }
+  },
+  "t3_pp_threes_star3_s1": {
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 2.8,
+      "reasoning": "The Pistons' star3 player, Jaden Ivey, has been on a hot streak from beyond the arc, making over 40% of his threes in his last 5 games, and is expected to see significant minutes and usage rate against the 76ers' defense.",
+      "_agent_id": "t3_pp_threes_star3_s1",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:31.963647+00:00"
+    }
+  },
+  "t3_pp_blocks_star1_s0": {
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 3.5,
+      "reasoning": "The star1 player, Joel Embiid, has a favorable matchup against the Pistons' weaker interior defense, averages high blocks at home, and is in strong recent form.",
+      "_agent_id": "t3_pp_blocks_star1_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:33.977945+00:00"
+    }
+  },
+  "t3_pp_blocks_role2_s0": {
+    "2026-04-05_DET@PHI": {
+      "confidence": 0.6,
+      "direction": "over",
+      "edge_pct": 3.5,
+      "reasoning": "The role2 player for Philadelphia, likely a backup big man, should benefit from favorable matchup against Detroit's weaker frontcourt and recent form suggests above-average block production.",
+      "_agent_id": "t3_pp_blocks_role2_s0",
+      "_agent_tier": "SPECIALIST",
+      "_game_key": "2026-04-05_DET@PHI",
+      "_timestamp": "2026-04-05T10:26:36.979019+00:00"
     }
   }
 }
