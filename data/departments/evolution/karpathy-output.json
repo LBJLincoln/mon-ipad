@@ -1,22 +1,48 @@
 {
   "department": "evolution",
-  "timestamp": "2026-04-02T10:29:54Z",
-  "iteration": 1,
-  "islands": {"S10": {"brier": 0.22727, "generation": 73, "model": "extra_trees", "stagnation_cycles": 2, "status": "UP"}, "S11": {"brier": 0.22615, "generation": 108, "model": "xgboost_brier", "stagnation_cycles": 0, "status": "UP"}, "S12": {"brier": 0.22262, "generation": 131, "model": "xgboost_brier", "stagnation_cycles": 0, "status": "UP"}, "S13": {"brier": 0.22446, "generation": 97, "model": "random_forest", "stagnation_cycles": 0, "status": "UP"}, "S14": {"brier": 0.22182, "generation": 135, "model": "catboost", "stagnation_cycles": 0, "status": "UP"}, "S15": {"brier": 0.22471, "generation": 108, "model": "xgboost_brier", "stagnation_cycles": 0, "status": "UP"}},
-  "fleet_metrics": {"best_brier": 0.22182, "fleet_avg": 0.2245, "best_island": "S14", "total_generations": 652, "island_count": 6},
-  "stagnation_detected": [],
-  "stagnant_count": 0,
-  "diversity_score": 0.567,
-  "cross_pollination_candidates": [{"source": "S14", "source_brier": 0.22182, "target": "S10", "target_brier": 0.22727, "potential_gain": 0.00545}, {"source": "S12", "source_brier": 0.22262, "target": "S10", "target_brier": 0.22727, "potential_gain": 0.00465}, {"source": "S14", "source_brier": 0.22182, "target": "S11", "target_brier": 0.22615, "potential_gain": 0.00433}],
-  "karpathy_local": {
-    "best_brier": 0.21789688750919076,
-    "model_type": "gradient_boosting"
+  "timestamp": "2026-04-05T00:00:00Z",
+  "iteration": 2,
+  "islands": {
+    "S10": {"brier": 0.22454, "generation": 787, "model": "xgboost_brier", "mutation_rate": 0.10, "features": 50, "stagnation_cycles": 0, "status": "EVOLVING", "action": "boost_mutation_0.10"},
+    "S11": {"brier": 0.22273, "generation": 1668, "model": "xgboost", "mutation_rate": 0.08, "features": 63, "stagnation_cycles": 0, "status": "EVOLVING", "action": "none"},
+    "S12": {"brier": 0.22506, "generation": 1473, "model": "catboost->extra_trees", "mutation_rate": 0.12, "features": 65, "stagnation_cycles": 0, "status": "EVOLVING", "action": "boost_mutation_0.12+restore_extra_trees"},
+    "S13": {"brier": 0.22455, "generation": 1150, "model": "extra_trees", "mutation_rate": 0.05, "features": 69, "stagnation_cycles": 0, "status": "EVOLVING", "action": "none"},
+    "S14": {"brier": 0.22666, "generation": 1200, "model": "xgboost_brier->lightgbm", "mutation_rate": 0.12, "features": 75, "stagnation_cycles": 0, "status": "EVOLVING", "action": "cross_pollinate_S15+restore_lightgbm"},
+    "S15": {"brier": 0.22159, "generation": 2103, "model": "random_forest", "mutation_rate": 0.08, "features": 79, "stagnation_cycles": 0, "status": "EVOLVING", "action": "none"}
   },
-  "recommendations": [{"type": "model_drift", "island": "S13", "expected_model": "catboost", "actual_model": "random_forest", "action": "inject_specialist_config", "reason": "S13 specialist role drift: expected catboost, got random_forest. Restore specialist to improve fleet diversity.", "priority": 2}, {"type": "model_drift", "island": "S14", "expected_model": "lightgbm", "actual_model": "catboost", "action": "inject_specialist_config", "reason": "S14 specialist role drift: expected lightgbm, got catboost. Restore specialist to improve fleet diversity.", "priority": 2}],
-  "improved": false,
-  "best_brier": 0.22182,
-  "fleet_avg_brier": 0.2245,
-  "best_island": "S14",
-  "total_generations": 652,
-  "status": "completed"
+  "fleet_metrics": {
+    "best_brier": 0.22159,
+    "fleet_avg": 0.22419,
+    "best_island": "S15",
+    "worst_island": "S14",
+    "total_generations": 8381,
+    "island_count": 6,
+    "prev_best_brier": 0.22182,
+    "fleet_improvement": 0.00023
+  },
+  "stagnation_detected": ["S12_low_mutation", "S14_low_mutation"],
+  "stagnant_count": 2,
+  "diversity_score": 0.667,
+  "cross_pollinations_executed": [
+    {"source": "S15", "target": "S14", "source_brier": 0.22159, "target_brier": 0.22666, "potential_gain": 0.00507, "http_status": 200, "command": "cross_pollinate+restore_lightgbm+mut_0.12"}
+  ],
+  "mutation_boosts_executed": [
+    {"island": "S12", "old_mut": 0.04, "new_mut": 0.12, "model_fix": "extra_trees", "http_status": 200},
+    {"island": "S10", "old_mut": 0.05, "new_mut": 0.10, "http_status": 200}
+  ],
+  "recommendations": [
+    {"type": "watch", "island": "S14", "reason": "Cross-pollinated from S15. Expect Brier 0.224-0.225 in 10-15 gens. If flat after 5 cycles, hard reset from S15 config."},
+    {"type": "watch", "island": "S12", "reason": "Boosted mutation + extra_trees restore. If catboost persists after 20 gens, model_type API passthrough may be broken."},
+    {"type": "code_fix", "islands": ["S12", "S14"], "reason": "Adaptive mutation decay hits 0.04 floor — elitism fix + mutation floor = 0.05 needed in GA code. Requires git subtree push."},
+    {"type": "monitor", "island": "S15", "reason": "Fleet leader at 0.22159 (new best). Gap to ATR: 0.00589. Watch for plateau; if stagnant in 10+ cycles boost mut to 0.10."}
+  ],
+  "islands_checked": 6,
+  "best_brier": 0.22159,
+  "worst_brier": 0.22666,
+  "cross_pollinated": true,
+  "stagnation_detected_flag": true,
+  "status": "completed",
+  "atr_brier": 0.21570,
+  "gap_to_atr": 0.00589,
+  "gap_to_target": 0.02159
 }
