@@ -84,10 +84,12 @@ _CFG = _load_config()
 
 # Provider base URLs (all OpenAI-compatible /v1/chat/completions)
 PROVIDER_URLS = {
-    "cerebras":    "https://api.cerebras.ai/v1/chat/completions",
-    "groq":        "https://api.groq.com/openai/v1/chat/completions",
-    "openrouter":  "https://openrouter.ai/api/v1/chat/completions",
-    "hf":          "https://api-inference.huggingface.co/v1/chat/completions",
+    "cerebras":       "https://api.cerebras.ai/v1/chat/completions",
+    "groq":           "https://api.groq.com/openai/v1/chat/completions",
+    "openrouter":     "https://openrouter.ai/api/v1/chat/completions",
+    "hf":             "https://api-inference.huggingface.co/v1/chat/completions",
+    "ollama":         "http://100.67.205.125:11434/v1/chat/completions",  # Laptop Tailscale
+    "anthropic_cli":  "",  # subprocess-based, not HTTP
 }
 
 # Model registry: short alias → (provider, model_id)
@@ -107,7 +109,20 @@ MODELS: Dict[str, tuple] = {
     # HF fallback (limited credits — use sparingly)
     "phi":         ("hf",         "microsoft/phi-4"),                   # 16K ctx
     "mistral_hf":  ("hf",         "mistralai/Mistral-Small-3.1-24B-Instruct-2503"),
+    # Claude Code CLI (VM-only, budget-controlled — NOT for HF Spaces)
+    "claude_sonnet": ("anthropic_cli", "claude-sonnet-4-6"),
+    "claude_haiku":  ("anthropic_cli", "claude-haiku-4-5-20251001"),
+    # Ollama local (laptop via Tailscale — offline fallback, Gemma 4 when available)
+    "gemma4_local":  ("ollama", "gemma4:e4b"),                          # Gemma 4 E4B via Ollama
+    "qwen_local":    ("ollama", "qwen3.5:4b"),                          # Lightweight local
 }
+
+# Gemma 4 alias: use best available free Gemma (Gemma 3 for now, upgrade when Gemma 4 free)
+# UPGRADE PATH: When google/gemma-4-31B-it becomes free on OpenRouter or HF Inference:
+#   Change to ("openrouter", "google/gemma-4-31b-it:free")
+# When laptop Ollama comes online:
+#   Change to ("ollama", "gemma4:e4b")
+MODELS["gemma4"] = MODELS["gemma3"]  # Currently maps to Gemma 3 on OpenRouter
 
 # Legacy alias compatibility (old code using "gemma" will now get gemma3 from OpenRouter)
 MODELS["gemma"] = MODELS["gemma3"]
@@ -147,10 +162,12 @@ def get_token(provider: str = "hf", prefer_env: Optional[str] = None) -> str:
             return tok
 
     provider_env_map = {
-        "cerebras":   ["CEREBRAS_API_KEY"],
-        "groq":       ["GROQ_API_KEY"],
-        "openrouter": ["OPENROUTER_API_KEY"],
-        "hf":         TOKEN_ENV_VARS,
+        "cerebras":       ["CEREBRAS_API_KEY"],
+        "groq":           ["GROQ_API_KEY"],
+        "openrouter":     ["OPENROUTER_API_KEY"],
+        "hf":             TOKEN_ENV_VARS,
+        "ollama":         [],  # No auth needed
+        "anthropic_cli":  [],  # Uses CLI auth, not API key
     }
 
     env_vars = provider_env_map.get(provider, TOKEN_ENV_VARS)
@@ -183,6 +200,84 @@ def _ssl_ctx():
     return ctx
 
 
+def _call_claude_cli(
+    model_id: str,
+    prompt: str,
+    max_tokens: int = DEFAULT_MAX_TOKENS,
+) -> str:
+    """Call Claude Code CLI via subprocess. VM-only, budget-controlled.
+
+    NOT available inside HF Spaces — only for hermes-runner and smart-council on VM.
+    """
+    import subprocess
+
+    # Budget check: max $0.50/day across all CLI council calls
+    budget_file = Path("/tmp/claude-council-budget.json")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    try:
+        budget_data = json.loads(budget_file.read_text())
+        if budget_data.get("date") != today:
+            budget_data = {"date": today, "calls": 0}
+    except Exception:
+        budget_data = {"date": today, "calls": 0}
+
+    if budget_data["calls"] >= 50:  # Max 50 CLI calls/day
+        return ""
+
+    try:
+        result = subprocess.run(
+            ["claude", "-p", prompt, "--model", model_id,
+             "--output-format", "text", "--max-turns", "1"],
+            capture_output=True, text=True, timeout=60,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            budget_data["calls"] += 1
+            budget_file.write_text(json.dumps(budget_data))
+            return result.stdout.strip()
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        pass
+
+    return ""
+
+
+def _call_ollama(
+    model_id: str,
+    prompt: str,
+    max_tokens: int = DEFAULT_MAX_TOKENS,
+    temperature: float = DEFAULT_TEMPERATURE,
+) -> str:
+    """Call Ollama local model via OpenAI-compatible API. Short timeout for offline detection."""
+    url = PROVIDER_URLS.get("ollama", "")
+    if not url:
+        return ""
+
+    payload = {
+        "model": model_id,
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+        "stream": False,
+    }
+
+    try:
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            url, data=data, method="POST",
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:  # Short timeout
+            result = json.loads(resp.read())
+            choices = result.get("choices", [])
+            if choices:
+                content = choices[0].get("message", {}).get("content", "")
+                if content:
+                    return content.strip()
+    except Exception:
+        pass  # Laptop probably offline
+
+    return ""
+
+
 def _call_chat_completions(
     provider: str,
     model_id: str,
@@ -194,9 +289,15 @@ def _call_chat_completions(
 ) -> str:
     """Call any OpenAI-compatible /v1/chat/completions endpoint.
 
-    Supports: cerebras, groq, openrouter, hf (all use same wire format).
+    Supports: cerebras, groq, openrouter, hf, ollama, anthropic_cli.
     Returns the generated text string, or "" on failure.
     """
+    # Route special providers to their handlers
+    if provider == "anthropic_cli":
+        return _call_claude_cli(model_id, prompt, max_tokens)
+    if provider == "ollama":
+        return _call_ollama(model_id, prompt, max_tokens, temperature)
+
     _rate_limit(token)
 
     url = PROVIDER_URLS.get(provider)

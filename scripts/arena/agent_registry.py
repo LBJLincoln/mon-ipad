@@ -46,8 +46,8 @@ class TradingAgent:
     min_edge: float = 0.02
     risk_tolerance: float = 0.5
     kelly_fraction: float = 0.5   # what fraction of Kelly to use
-    bankroll: float = 10_000.0
-    peak_bankroll: float = 10_000.0
+    bankroll: float = 100.0
+    peak_bankroll: float = 100.0
     total_bets: int = 0
     total_wins: int = 0
     total_pnl: float = 0.0
@@ -63,7 +63,7 @@ class TradingAgent:
 
     @property
     def roi(self) -> float:
-        return (self.bankroll - 10_000.0) / 10_000.0 * 100
+        return (self.bankroll - 100.0) / 100.0 * 100
 
     @property
     def rolling_accuracy(self) -> float:
@@ -95,44 +95,43 @@ class TradingAgent:
 # TIER 1: PREMIUM TRADERS (9 agents — 4 original + 5 Claude Code CLI)
 # ============================================================================
 def _build_tier1() -> List[TradingAgent]:
-    """9 premium traders: existing paid-API agents + 5 new Claude Code CLI agents."""
+    """9 premium traders: Claude CLI (primary) + HuggingFace top models."""
     base = [
         TradingAgent(
-            id="t1_claude", name="Claude Prime", tier=AgentTier.PREMIUM,
-            provider="openai",  # GPT-4o proxy (backward compat)
-            model="gpt-4o",
+            id="t1_qwen72b", name="Qwen-72B Strategist", tier=AgentTier.PREMIUM,
+            provider="huggingface", model="Qwen/Qwen2.5-72B-Instruct",
             strategy="value_hunter_half_kelly",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
-            personality="conservative", min_edge=0.04, risk_tolerance=0.4,
+            personality="analytical", min_edge=0.04, risk_tolerance=0.4,
             kelly_fraction=0.5,
-            description="Premium Claude via GPT-4o proxy. Conservative value hunter."
+            description="Qwen 72B via HF Router. Deep reasoning, value hunting."
         ),
         TradingAgent(
-            id="t1_gpt4o", name="GPT-4o Strategist", tier=AgentTier.PREMIUM,
-            provider="openai", model="gpt-4o",
+            id="t1_llama70b", name="Llama-70B Analyst", tier=AgentTier.PREMIUM,
+            provider="huggingface", model="meta-llama/Llama-3.3-70B-Instruct",
             strategy="proportional_edge",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.6,
             kelly_fraction=0.5,
-            description="GPT-4o with proportional edge sizing. Analytical precision."
+            description="Llama 3.3 70B via HF. Proportional edge sizing."
         ),
         TradingAgent(
-            id="t1_grok", name="Grok Contrarian", tier=AgentTier.PREMIUM,
-            provider="xai", model="grok-3-mini",
+            id="t1_gemma27b", name="Gemma-27B Contrarian", tier=AgentTier.PREMIUM,
+            provider="huggingface", model="google/gemma-3-27b-it",
             strategy="underdog_specialist",
             focus_groups=["moneyline", "spread", "exotic", "margin"],
             personality="contrarian", min_edge=0.03, risk_tolerance=0.7,
             kelly_fraction=0.5,
-            description="Grok hunting underdog value. Contrarian streak finder."
+            description="Gemma 3 27B via HF. Contrarian underdog specialist."
         ),
         TradingAgent(
-            id="t1_gemini", name="Gemini Analyst", tier=AgentTier.PREMIUM,
-            provider="google", model="gemini-2.0-flash",
+            id="t1_mistral24b", name="Mistral-24B Analyst", tier=AgentTier.PREMIUM,
+            provider="huggingface", model="mistralai/Mistral-Small-24B-Instruct-2501",
             strategy="confidence_scaled",
             focus_groups=["moneyline", "spread", "totals", "player_props"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.5,
             kelly_fraction=0.5,
-            description="Gemini Flash for rapid analytical coverage."
+            description="Mistral Small 24B via HF. Fast analytical coverage."
         ),
     ]
 
@@ -145,7 +144,7 @@ def _build_tier1() -> List[TradingAgent]:
             strategy="value_hunter_half_kelly",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="conservative", min_edge=0.04, risk_tolerance=0.4,
-            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
             description="Claude Opus 4.6 via CLI. Deepest reasoning, highest quality."
         ),
         TradingAgent(
@@ -154,7 +153,7 @@ def _build_tier1() -> List[TradingAgent]:
             strategy="half_kelly",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.5,
-            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
             description="Claude Sonnet 4.6 via CLI. Balanced speed and quality."
         ),
         TradingAgent(
@@ -163,7 +162,7 @@ def _build_tier1() -> List[TradingAgent]:
             strategy="proportional_edge",
             focus_groups=["moneyline", "spread", "totals"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.5,
-            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
             description="Claude Haiku 4.5 via CLI. Fast, focused analysis."
         ),
         TradingAgent(
@@ -172,7 +171,7 @@ def _build_tier1() -> List[TradingAgent]:
             strategy="value_hunter_half_kelly",
             focus_groups=["player_props", "exotic", "margin"],
             personality="analytical", min_edge=0.04, risk_tolerance=0.4,
-            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
             description="Claude Sonnet via CLI. Specialist: research-informed bets."
         ),
         TradingAgent(
@@ -181,7 +180,7 @@ def _build_tier1() -> List[TradingAgent]:
             strategy="proportional_edge",
             focus_groups=["moneyline", "spread", "totals"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.5,
-            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
+            kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
             description="Claude Sonnet via CLI. Quantitative analysis, ML-guided."
         ),
     ]
@@ -196,22 +195,22 @@ def _build_tier2() -> List[TradingAgent]:
     """20 free power traders using best free models, each with a focused angle."""
     agents = []
 
-    # --- 5x OpenRouter diverse (replace restricted Groq) ---
-    or_power_strategies = [
-        ("value_hunter", "OR Value Hunter", "moneyline", 0.04, "conservative", "google/gemma-3-27b-it:free"),
-        ("half_kelly", "OR Momentum", "spread", 0.03, "aggressive", "meta-llama/llama-4-maverick:free"),
-        ("proportional_edge", "OR Totals Master", "totals", 0.03, "analytical", "mistralai/mistral-small-3.1-24b-instruct:free"),
-        ("confidence_scaled", "OR Props Analyst", "player_props", 0.03, "analytical", "deepseek/deepseek-r1-0528:free"),
-        ("quarter_kelly", "OR Exotic Eye", "exotic", 0.05, "contrarian", "qwen/qwen3-235b-a22b:free"),
+    # --- 5x HuggingFace diverse (replaced dead Groq/OpenRouter) ---
+    hf_power_strategies = [
+        ("value_hunter", "HF Value Hunter", "moneyline", 0.04, "conservative", "Qwen/Qwen2.5-72B-Instruct"),
+        ("half_kelly", "HF Momentum", "spread", 0.03, "aggressive", "meta-llama/Llama-3.3-70B-Instruct"),
+        ("proportional_edge", "HF Totals Master", "totals", 0.03, "analytical", "mistralai/Mistral-Small-24B-Instruct-2501"),
+        ("confidence_scaled", "HF Props Analyst", "player_props", 0.03, "analytical", "google/gemma-3-27b-it"),
+        ("quarter_kelly", "HF Exotic Eye", "exotic", 0.05, "contrarian", "Qwen/Qwen3-8B"),
     ]
-    for i, (strat, name, group, min_e, pers, model) in enumerate(or_power_strategies):
+    for i, (strat, name, group, min_e, pers, model) in enumerate(hf_power_strategies):
         agents.append(TradingAgent(
-            id=f"t2_or_power_{i}", name=name, tier=AgentTier.FREE_POWER,
-            provider="openrouter", model=model,
+            id=f"t2_hf_power_{i}", name=name, tier=AgentTier.FREE_POWER,
+            provider="huggingface", model=model,
             strategy=strat, focus_groups=[group, "moneyline"],
             personality=pers, min_edge=min_e, risk_tolerance=0.5,
             kelly_fraction=0.5,
-            description=f"OpenRouter power trader, focus: {group}"
+            description=f"HuggingFace power trader, focus: {group}"
         ))
 
     # --- 5x HuggingFace + Cohere (fast bulk analysis, diverse strategies) ---
@@ -241,7 +240,7 @@ def _build_tier2() -> List[TradingAgent]:
     for i, (strat, name, groups, pers) in enumerate(or_qwen_configs):
         agents.append(TradingAgent(
             id=f"t2_or_qwen_{i}", name=name, tier=AgentTier.FREE_POWER,
-            provider="openrouter", model="qwen/qwen3-235b-a22b:free",
+            provider="huggingface", model="Qwen/Qwen2.5-72B-Instruct",
             strategy=strat, focus_groups=groups,
             personality=pers, min_edge=0.03, risk_tolerance=0.5,
             kelly_fraction=0.5,
@@ -255,7 +254,7 @@ def _build_tier2() -> List[TradingAgent]:
     ]):
         agents.append(TradingAgent(
             id=f"t2_or_gemma_{i}", name=name, tier=AgentTier.FREE_POWER,
-            provider="openrouter", model="google/gemma-3-27b-it:free",
+            provider="huggingface", model="google/gemma-3-27b-it",
             strategy=strat, focus_groups=["moneyline", "spread", "totals"],
             personality="analytical", min_edge=0.03,
             description=f"OpenRouter Gemma-3-27b free #{i}"
@@ -268,7 +267,7 @@ def _build_tier2() -> List[TradingAgent]:
     ]):
         agents.append(TradingAgent(
             id=f"t2_or_maverick_{i}", name=name, tier=AgentTier.FREE_POWER,
-            provider="openrouter", model="meta-llama/llama-4-maverick:free",
+            provider="huggingface", model="meta-llama/Llama-3.3-70B-Instruct",
             strategy=strat, focus_groups=["moneyline", "margin", "exotic"],
             personality="contrarian", min_edge=0.03,
             description=f"OpenRouter Llama-4-Maverick free #{i}"
@@ -297,55 +296,79 @@ def _build_tier2() -> List[TradingAgent]:
         description="Cerebras ultra-fast inference, full game analysis"
     ))
 
-    # --- 5x Gemini (additional coverage with Google API) ---
-    gemini_agents = [
+    # --- 5x Additional HF models (replaced dead Google API) ---
+    hf_extra = [
         TradingAgent(
-            id="t1_gemini_pro", name="Gemini 2.5 Pro", tier=AgentTier.FREE_POWER,
-            provider="google", model="gemini-2.5-pro",
+            id="t2_hf_qwen72b_pro", name="Qwen-72B Pro Analyst", tier=AgentTier.FREE_POWER,
+            provider="huggingface", model="Qwen/Qwen2.5-72B-Instruct",
             strategy="confidence_scaled",
             focus_groups=["moneyline", "spread", "totals", "player_props", "exotic"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.5,
-            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
-            description="Gemini 2.5 Pro. Deepest Gemini model, premium tier."
+            kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
+            description="Qwen 72B full coverage. Deep analysis."
         ),
         TradingAgent(
-            id="t2_gemini_flash", name="Gemini 2.5 Flash", tier=AgentTier.FREE_POWER,
-            provider="google", model="gemini-2.5-flash",
+            id="t2_hf_llama70b", name="Llama-70B Fast", tier=AgentTier.FREE_POWER,
+            provider="huggingface", model="meta-llama/Llama-3.3-70B-Instruct",
             strategy="half_kelly",
             focus_groups=["moneyline", "spread", "totals"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.5,
-            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
-            description="Gemini 2.5 Flash. Fast, capable, free tier."
+            kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
+            description="Llama 70B balanced speed+quality."
         ),
         TradingAgent(
-            id="t2_gemini_flash_lite", name="Gemini 2.0 Flash Lite", tier=AgentTier.FREE_POWER,
-            provider="google", model="gemini-2.0-flash-lite",
+            id="t2_hf_nvidia_nemo", name="NVIDIA Nemotron", tier=AgentTier.FREE_POWER,
+            provider="huggingface", model="nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",
             strategy="flat_2pct",
             focus_groups=["moneyline", "spread"],
             personality="analytical", min_edge=0.02, risk_tolerance=0.5,
-            kelly_fraction=0.25, bankroll=10_000.0, peak_bankroll=10_000.0,
-            description="Gemini 2.0 Flash Lite. Bulk fast screening."
+            kelly_fraction=0.25, bankroll=100.0, peak_bankroll=100.0,
+            description="NVIDIA Nemotron 70B. Bulk fast screening."
         ),
         TradingAgent(
-            id="t2_gemini_thinking", name="Gemini Flash Thinking", tier=AgentTier.FREE_POWER,
-            provider="google", model="gemini-2.5-flash-thinking",
+            id="t2_hf_qwen3_8b", name="Qwen3-8B Thinker", tier=AgentTier.FREE_POWER,
+            provider="huggingface", model="Qwen/Qwen3-8B",
             strategy="value_hunter",
             focus_groups=["moneyline", "spread", "totals", "exotic"],
             personality="analytical", min_edge=0.04, risk_tolerance=0.4,
-            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
-            description="Gemini 2.5 Flash Thinking. Extended reasoning, high edge."
+            kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
+            description="Qwen3 8B with extended reasoning. High edge focus."
         ),
         TradingAgent(
-            id="t2_gemini_spread", name="Gemini Spread Specialist", tier=AgentTier.FREE_POWER,
-            provider="google", model="gemini-2.5-flash",
+            id="t2_hf_gemma_spread", name="Gemma Spread Specialist", tier=AgentTier.FREE_POWER,
+            provider="huggingface", model="google/gemma-3-27b-it",
             strategy="half_kelly",
             focus_groups=["spread", "margin"],
             personality="analytical", min_edge=0.03, risk_tolerance=0.5,
-            kelly_fraction=0.5, bankroll=10_000.0, peak_bankroll=10_000.0,
-            description="Gemini Flash spread/margin specialist."
+            kelly_fraction=0.5, bankroll=100.0, peak_bankroll=100.0,
+            description="Gemma 3 27B spread/margin specialist."
+        ),
+        # GEMMA 4 PLACEHOLDER — using Gemma 3 until Gemma 4 becomes free
+        # UPGRADE PATH (2026-04-05):
+        #   When google/gemma-4-31B-it becomes free on OpenRouter/HF:
+        #     Change model to "google/gemma-4-31B-it"
+        #   When laptop Ollama comes online:
+        #     Add provider="ollama", model="gemma4:e4b" agents
+        TradingAgent(
+            id="t2_gemma4_value", name="Gemma-4 Value Seeker", tier=AgentTier.FREE_POWER,
+            provider="huggingface", model="google/gemma-3-27b-it",
+            strategy="value_hunter",
+            focus_groups=["moneyline", "spread", "totals"],
+            personality="analytical", min_edge=0.03, risk_tolerance=0.4,
+            kelly_fraction=0.25, bankroll=100.0, peak_bankroll=100.0,
+            description="Gemma 4 placeholder (using Gemma-3-27B). Value hunting specialist."
+        ),
+        TradingAgent(
+            id="t2_gemma4_contrarian", name="Gemma-4 Contrarian", tier=AgentTier.FREE_POWER,
+            provider="huggingface", model="google/gemma-3-27b-it",
+            strategy="contrarian",
+            focus_groups=["moneyline", "totals"],
+            personality="contrarian", min_edge=0.04, risk_tolerance=0.6,
+            kelly_fraction=0.15, bankroll=100.0, peak_bankroll=100.0,
+            description="Gemma 4 placeholder (using Gemma-3-27B). Contrarian edge finder."
         ),
     ]
-    agents.extend(gemini_agents)
+    agents.extend(hf_extra)
 
     return agents
 
@@ -359,16 +382,16 @@ def _build_tier3() -> List[TradingAgent]:
     Uses cheapest/fastest APIs: Groq llama-3.1-8b (72,000 RPD across 5 keys).
     """
     agents = []
-    # Distribute across working free providers (Groq restricted Apr 2026)
+    # Distribute across working free providers (2026-04-05: HF primary, others dead)
     cheap_configs = [
-        ("openrouter", "google/gemma-3-27b-it:free"),
-        ("openrouter", "meta-llama/llama-4-maverick:free"),
-        ("openrouter", "mistralai/mistral-small-3.1-24b-instruct:free"),
-        ("openrouter", "deepseek/deepseek-r1-0528:free"),
+        ("huggingface", "Qwen/Qwen3-8B"),
         ("huggingface", "Qwen/Qwen2.5-72B-Instruct"),
+        ("huggingface", "google/gemma-3-27b-it"),
+        ("huggingface", "meta-llama/Llama-3.3-70B-Instruct"),
         ("huggingface", "mistralai/Mistral-Small-24B-Instruct-2501"),
-        ("cohere", "command-a-03-2025"),
-        ("cohere", "command-r7b-12-2024"),
+        ("huggingface", "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF"),
+        ("huggingface", "Qwen/Qwen2.5-Coder-32B-Instruct"),
+        ("huggingface", "microsoft/Phi-3.5-mini-instruct"),
     ]
 
     strategies_rotation = [
@@ -421,11 +444,11 @@ def _build_tier4() -> List[TradingAgent]:
     return [
         TradingAgent(
             id="t4_paperclip", name="Paperclip Allocator", tier=AgentTier.META,
-            provider="openrouter", model="qwen/qwen3-235b-a22b:free",
+            provider="huggingface", model="Qwen/Qwen2.5-72B-Instruct",
             strategy="meta_allocation",
             focus_groups=["all"],
             personality="analytical", min_edge=0.0,
-            bankroll=100_000.0, peak_bankroll=100_000.0,
+            bankroll=100.0, peak_bankroll=100.0,
             description=(
                 "Meta-allocator: distributes capital across top performers. "
                 "Reads all agent results, adjusts weights, kills underperformers."
@@ -433,7 +456,7 @@ def _build_tier4() -> List[TradingAgent]:
         ),
         TradingAgent(
             id="t4_hermes", name="Hermes Router", tier=AgentTier.META,
-            provider="openrouter", model="google/gemma-3-27b-it:free",
+            provider="huggingface", model="google/gemma-3-27b-it",
             strategy="meta_consensus",
             focus_groups=["all"],
             personality="analytical", min_edge=0.0,
@@ -445,7 +468,7 @@ def _build_tier4() -> List[TradingAgent]:
         ),
         TradingAgent(
             id="t4_oracle", name="Oracle Chairman", tier=AgentTier.META,
-            provider="openrouter", model="deepseek/deepseek-r1-0528:free",
+            provider="huggingface", model="nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",
             strategy="meta_synthesis",
             focus_groups=["all"],
             personality="analytical", min_edge=0.03,
