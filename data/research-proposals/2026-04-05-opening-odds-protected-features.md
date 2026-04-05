@@ -95,10 +95,42 @@ The 25,000-game study finding (east→west = 63.5% win, west→east = 55.0%) is 
 
 **Next step for priority 1:** Check which market features from odds_market.py are currently in the 3,285-candidate pool, identify their feature name prefixes, and add them to a `PROTECTED_FEATURES` frozenset in init/mutate/crossover.
 
+### Finding 5: Four Factors Differentials — Bench + Clutch Splits (NBAstuffer / PMC XGBoost+SHAP 2025)
+
+SHAP analyses across 2025-2026 literature consistently surface differential Four Factors over 20-game windows as top features. Two underused high-value splits are **bench net rating differential** and **clutch net rating differential** (last 5 mins within 5 pts).
+
+**Status check needed:** Verify whether `bench_net_rating_diff` and `clutch_net_rating_diff` are in the current 3,285-candidate pool. If not, add them to the engine.
+
+**Implementation:**
+```python
+# In features/engine.py — add to existing team stats categories
+"bench_net_rating_diff",        # Second-unit quality differential (starters excl.)
+"bench_net_rating_diff_r10",    # 10-game rolling
+"clutch_net_rating_diff",       # ±5pts last 5min net rating differential  
+"clutch_net_rating_diff_r10",
+"clutch_fg_pct_diff",           # Clutch FG% differential
+```
+
+Expected Brier impact: −0.0005 to −0.001 (moderate, not transformative — worth adding to pool).
+
+---
+
+## Recommended Actions (Prioritized)
+
+| Priority | Action | Files | Estimated Brier Impact |
+|----------|--------|-------|----------------------|
+| 1 | Protect 5-7 opening-line market features in GA (add `PROTECTED_FEATURES` set, never exclude in crossover/mutation) | hf-space/app.py | −0.001 to −0.003 |
+| 2 | Model-type-specific calibration weights in `init_individual()` | hf-space/app.py | −0.0005 to −0.001 |
+| 3 | Check/add bench_net_rating_diff + clutch_net_rating_diff to feature pool | features/engine.py | −0.0005 to −0.001 |
+| 4 | MLP meta-learner in predict_today.py (requires historical data audit) | predict_today.py | −0.001 to −0.003 |
+
+**Next step for priority 1:** Check which market features from odds_market.py are currently in the 3,285-candidate pool, identify their feature name prefixes, and add them to a `PROTECTED_FEATURES` frozenset in init/mutate/crossover.
+
 ---
 
 ## Notes
 
 - Isotonic calibration: empirically shown to hurt Brier in this system (+0.003 to +0.007) — do NOT add
 - Temperature scaling: not tested, could be tried but likely redundant given lr_platt
-- All circadian/travel features already implemented — no gap there
+- All circadian/directional travel features already implemented — no gap there
+- MLP meta-learner: high potential but requires Supabase historical prediction data audit first

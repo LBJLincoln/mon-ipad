@@ -126,8 +126,8 @@
 
   "political_fleet": {
     "total_islands": 4,
-    "online": 2,
-    "offline": 2,
+    "online": 4,
+    "offline": 0,
     "best_brier": 0.23134,
     "best_island": "P2",
     "data_pipeline_status": "REFRESHED — April 5 fetch completed this cycle",
@@ -162,20 +162,26 @@
         "note": "FLEET BEST"
       },
       "P3": {
-        "url": "nomos42-political-alpha-3.hf.space",
+        "url": "lbjlincoln-political-alpha-3.hf.space",
+        "hf_space": "LBJLincoln/political-alpha-3",
         "role": "catboost_specialist",
-        "status": "offline",
-        "http_status": 404,
-        "consecutive_down_cycles": 5,
-        "action_needed": "Manual HF Space restart required"
+        "gen": 1,
+        "cycle": 1,
+        "brier": 1.0,
+        "status": "restarted",
+        "http_status": 200,
+        "note": "Was sleeping — woke up this cycle. Gen 1, warming up."
       },
       "P4": {
-        "url": "nomos42-political-alpha-4.hf.space",
+        "url": "lbjlincoln-political-alpha-4.hf.space",
+        "hf_space": "LBJLincoln/political-alpha-4",
         "role": "wide_search",
-        "status": "offline",
-        "http_status": 404,
-        "consecutive_down_cycles": 5,
-        "action_needed": "Manual HF Space restart required"
+        "gen": 1,
+        "cycle": 1,
+        "brier": 1.0,
+        "status": "restarted",
+        "http_status": 200,
+        "note": "Was sleeping — woke up this cycle. Gen 1, warming up."
       }
     }
   },
@@ -192,8 +198,9 @@
   },
 
   "alerts": [
-    "URGENT: P3 (nomos42-political-alpha-3) DOWN 5th+ consecutive cycle — manual restart needed",
-    "URGENT: P4 (nomos42-political-alpha-4) DOWN 5th+ consecutive cycle — manual restart needed",
+    "INFO: P3 (lbjlincoln-political-alpha-3) RESTARTED — was sleeping, woke up this cycle, Gen 1 warming up",
+    "INFO: P4 (lbjlincoln-political-alpha-4) RESTARTED — was sleeping, woke up this cycle, Gen 1 warming up",
+    "FIX: P3/P4 URLs corrected — LBJLincoln/political-alpha-3 and LBJLincoln/political-alpha-4 (not Nomos42)",
     "WARNING: Political consolidated_events.json stale at 2026-03-26 — 10 days missing (Apr 2 Liberation Day excluded from training)",
     "INFO: NBA fleet 6/6 operational — all stagnation=0, engine parity verified",
     "INFO: Political data pipeline refreshed — April 5 Liberation Day tariff signals now available",
