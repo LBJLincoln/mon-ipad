@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Trading Floor v5 — 200+ AI Agent Swarm with Karpathy Council Pattern
-=====================================================================
+Trading Floor v5.1 -- 217+ AI Agent Swarm with Multi-Phase Thinking
+===================================================================
 The most ambitious NBA betting AI system ever built.
 
 Architecture (4 Tiers):
@@ -516,16 +516,144 @@ def build_game_context(game: Dict, odds_entry: Optional[Dict],
     return ctx
 
 
+
+
+# ===============================================================================
+# MULTI-PHASE THINKING ARCHITECTURE (v5.1)
+# ===============================================================================
+class ThinkingPhase:
+    # Phase 1: Game Analysis (1 shared call per game, cached for all agents)
+    # Phase 2: Category Screening (agents screen which categories offer VALUE)
+    # Phase 3: Bet Decision (1 call per screened category, full Kelly sizing)
+
+    PHASE_1_SYSTEM = (
+        "You are an elite NBA betting analyst. Analyze this NBA matchup comprehensively. "
+        "Output ONLY valid JSON with keys: team_strengths (object), key_factors (list of str), "
+        "injury_impact (object), model_agreement (str: high/medium/low), "
+        "edge_opportunities (list of str), predicted_score (object with home/away), "
+        "confidence (float 0-1)."
+    )
+
+    PHASE_2_SYSTEM = (
+        "You are an NBA betting value screener. Given game analysis and a list of bet categories, "
+        "identify which categories offer betting VALUE. "
+        "Output ONLY valid JSON: a list of objects, each with: "
+        "category_id (str), has_edge (bool), estimated_edge (float 0-0.15), "
+        "confidence (float 0-1), reasoning (str, max 30 words). "
+        "Only include categories where has_edge=true."
+    )
+
+    PHASE_3_SYSTEM = (
+        "You are an elite NBA bet decision engine. Make a final bet decision on ONE specific "
+        "category given all available data. "
+        "Output ONLY valid JSON with: bet (bool), side (str), edge (float 0-0.15), "
+        "confidence (float 0-1), kelly_fraction (float 0-0.15), "
+        "reasoning (str, max 50 words), key_factor (str)."
+    )
+
+    @staticmethod
+    def build_phase1_prompt(ctx):
+        # type: (dict) -> str
+        home = ctx.get("home_team", ctx.get("home", ""))
+        away = ctx.get("away_team", ctx.get("away", ""))
+        lines = [
+            "Analyze this NBA matchup: " + away + " @ " + home,
+            "Date: " + str(ctx.get("date", "today")),
+            "Home form: " + str(ctx.get("home_form", "N/A")),
+            "Away form: " + str(ctx.get("away_form", "N/A")),
+            "Home odds: " + str(ctx.get("odds_home", "N/A"))
+            + " | Away odds: " + str(ctx.get("odds_away", "N/A")),
+            "Spread: " + str(ctx.get("spread_home", "N/A"))
+            + " | Total: " + str(ctx.get("total", "N/A")),
+            "Implied home prob: {:.3f}".format(ctx.get("impl_home", 0.5)),
+            "ML model P(home): " + str(ctx.get("model_prob_home", "N/A")),
+            "Model spread: " + str(ctx.get("model_spread", "N/A")),
+            "Model total: " + str(ctx.get("model_total", "N/A")),
+            "Model confidence: " + str(ctx.get("model_confidence", "low")),
+            "Models contributing: " + str(ctx.get("model_n_models", 0)),
+            "Avg model Brier: " + str(ctx.get("model_avg_brier", 1.0)),
+            "",
+            "Provide comprehensive game analysis to guide all downstream bet decisions.",
+        ]
+        return "\n".join(lines)
+
+    @staticmethod
+    def build_phase2_prompt(game_analysis, categories, ctx):
+        # type: (dict, list, dict) -> str
+        home = ctx.get("home_team", ctx.get("home", ""))
+        away = ctx.get("away_team", ctx.get("away", ""))
+        cat_list = "\n".join(
+            "- " + c["id"] + ": " + c["name"] + " (" + c["group"] + ")"
+            for c in categories
+        )
+        import json as _json
+        analysis_str = _json.dumps(game_analysis, indent=2, default=str)[:1200]
+        return (
+            "Game: " + away + " @ " + home + "\n\n"
+            "GAME ANALYSIS:\n" + analysis_str + "\n\n"
+            "CATEGORIES TO SCREEN:\n" + cat_list + "\n\n"
+            "Which of these categories have exploitable edge? "
+            "Consider model predictions vs market odds. "
+            "Return JSON list with category_id, has_edge, estimated_edge, confidence, reasoning."
+        )
+
+    @staticmethod
+    def build_phase3_prompt(category, game_analysis, ctx):
+        # type: (dict, dict, dict) -> str
+        home = ctx.get("home_team", ctx.get("home", ""))
+        away = ctx.get("away_team", ctx.get("away", ""))
+        key_factors = ", ".join(game_analysis.get("key_factors", [])[:4])
+        edge_opps = ", ".join(game_analysis.get("edge_opportunities", [])[:3])
+        return (
+            "FINAL BET DECISION\n"
+            "Game: " + away + " @ " + home + "\n"
+            "Category: " + category.get("id", "") + " -- " + category.get("name", "") + "\n"
+            "Group: " + category.get("group", "") + "\n"
+            "Estimated edge from screening: {:.3f}\n\n".format(
+                category.get("estimated_edge", 0)) +
+            "GAME ANALYSIS (condensed):\n"
+            "  Key factors: " + key_factors + "\n"
+            "  Edge opportunities: " + edge_opps + "\n"
+            "  Model agreement: " + str(game_analysis.get("model_agreement", "low")) + "\n\n"
+            "MARKET DATA:\n"
+            "  Home odds: " + str(ctx.get("odds_home", "N/A"))
+            + " | Away: " + str(ctx.get("odds_away", "N/A")) + "\n"
+            "  Spread: " + str(ctx.get("spread_home", "N/A"))
+            + " | Total: " + str(ctx.get("total", "N/A")) + "\n"
+            "  ML P(home): {:.3f} (mkt={:.3f})\n".format(
+                ctx.get("model_prob_home", 0.5), ctx.get("impl_home", 0.5)) +
+            "  Model spread: " + str(ctx.get("model_spread", "N/A"))
+            + " | Model total: " + str(ctx.get("model_total", "N/A")) + "\n\n"
+            "Make final bet/no-bet decision with Kelly fraction. Be specific about which side."
+        )
+
+
+# ===============================================================================
+# CLAUDE CODE CLI HANDLER
+# ===============================================================================
+def _call_claude_cli(pool, agent, prompt, system=""):
+    # type: (Any, Any, str, str) -> Optional[dict]
+    """Call Claude Code CLI for anthropic_cli provider agents via pool.call_llm_cli()."""
+    return pool.call_llm_cli(
+        model=agent.model,
+        prompt=prompt,
+        system=system or "You are an elite NBA betting analyst. Respond only with valid JSON.",
+        max_tokens=1024,
+        temperature=0.3,
+    )
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # CORE: TRADING FLOOR V5 ORCHESTRATOR
 # ═══════════════════════════════════════════════════════════════════════════════
 class TradingFloorV5:
-    """Orchestrator for 200+ AI agents across 4 tiers."""
+    """Orchestrator for 217+ AI agents across 4 tiers with multi-phase thinking."""
 
-    def __init__(self, dry_run: bool = False):
+    def __init__(self, dry_run: bool = False, multiphase: bool = False):
         self.pool = get_pool()
         self.registry = AgentRegistry()
         self.dry_run = dry_run
+        self.multiphase = multiphase    # Enable 3-phase thinking architecture
         self.predictions: Dict[str, Dict[str, Any]] = {}
         self.consensus: Dict[str, dict] = {}
         self.bets: List[dict] = []
@@ -539,7 +667,13 @@ class TradingFloorV5:
             "api_errors": 0,
             "total_bets": 0,
             "tier_calls": {1: 0, 2: 0, 3: 0, 4: 0},
+            "multiphase_calls": 0,
+            "phase1_hits": 0,
+            "phase2_screenings": 0,
+            "phase3_decisions": 0,
         }
+        # Phase 1 cache: game_key -> game_analysis dict (shared across agents)
+        self._game_analysis_cache: Dict[str, dict] = {}
 
         # Load saved agent states
         if AGENT_STATE_FILE.exists():
@@ -554,11 +688,14 @@ class TradingFloorV5:
         self.iteration["iteration"] += 1
 
         print("=" * 80)
-        print("TRADING FLOOR v5 — 200+ AI AGENT SWARM")
+        print("TRADING FLOOR v5.1 -- 217+ AI AGENT SWARM + MULTI-PHASE THINKING")
         print(f"Date: {target_date} | Iteration: {self.iteration['iteration']}")
         print(f"Agents: {len(self.registry.active_agents)} active "
               f"({len(self.registry.agents)} total)")
-        print(f"Mode: {'DRY-RUN (synthetic)' if self.dry_run else 'LIVE (real API calls)'}")
+        mode_parts = ["DRY-RUN (synthetic)" if self.dry_run else "LIVE (real API calls)"]
+        if self.multiphase:
+            mode_parts.append("3-PHASE THINKING ON")
+        print(f"Mode: {' | '.join(mode_parts)}")
         print("=" * 80)
 
         # Load data
@@ -587,6 +724,53 @@ class TradingFloorV5:
                         "model_prob_home": p.get("prob_home", p.get("home_win_prob", 0.5)),
                     })
 
+        # Fallback: load from odds-latest.json (today's live odds feed)
+        if not date_games:
+            odds_latest = ROOT / "data" / "nba-agent" / "odds-latest.json"
+            if odds_latest.exists():
+                try:
+                    live_games = json.loads(odds_latest.read_text())
+                    if isinstance(live_games, dict):
+                        live_games = live_games.get("games", live_games.get("predictions", []))
+                    for g in live_games:
+                        home_full = g.get("home_team", g.get("home", ""))
+                        away_full = g.get("away_team", g.get("away", ""))
+                        home = TEAM_MAP.get(home_full, home_full[:3].upper() if home_full else "UNK")
+                        away = TEAM_MAP.get(away_full, away_full[:3].upper() if away_full else "UNK")
+                        # Extract bookmaker odds directly from game object
+                        live_odds_entry = None
+                        for bk in g.get("bookmakers", []):
+                            for mkt in bk.get("markets", []):
+                                if mkt["key"] == "h2h":
+                                    outcomes = {o["name"]: o["price"] for o in mkt.get("outcomes", [])}
+                                    ml_h = outcomes.get(home_full, 1.91)
+                                    ml_a = outcomes.get(away_full, 1.91)
+                                    live_odds_entry = {
+                                        "ml_home_dec": ml_h, "ml_away_dec": ml_a,
+                                        "impl_home": 1.0 / ml_h, "impl_away": 1.0 / ml_a,
+                                        "ml_home_raw": str(ml_h), "ml_away_raw": str(ml_a),
+                                        "spread_home": None, "total": None,
+                                    }
+                                    break
+                            if live_odds_entry:
+                                break
+                        ml_preds = _inject_ml_predictions(home, away, target_date)
+                        ml_prob = ml_preds.get("model_prob_home", 0.5)
+                        date_games.append({
+                            "date": target_date, "home": home, "away": away,
+                            "home_full": home_full, "away_full": away_full,
+                            "home_score": 0, "away_score": 0, "home_won": None,
+                            "total_pts": 0, "margin": 0,
+                            "home_stats": {}, "away_stats": {},
+                            "_live_odds": True,
+                            "_live_odds_entry": live_odds_entry,
+                            "model_prob_home": ml_prob,
+                        })
+                    if date_games:
+                        print(f"  Using odds-latest.json: {len(date_games)} live games")
+                except Exception as e:
+                    print(f"  odds-latest.json load failed: {e}")
+
         if not date_games:
             print(f"\nNo games found for {target_date}. Try: --date YYYY-MM-DD")
             return
@@ -613,9 +797,9 @@ class TradingFloorV5:
                       f"({'HOME' if game['home_won'] else 'AWAY'} wins)")
             print(f"{'─' * 75}")
 
-            # Build context
+            # Build context — prefer historical odds CSV, fall back to embedded live odds
             odds_key = (game["date"], home, away)
-            odds_entry = all_odds.get(odds_key)
+            odds_entry = all_odds.get(odds_key) or game.get("_live_odds_entry")
             ctx = build_game_context(game, odds_entry, standings, all_games)
 
             # Inject REAL ML model predictions from 6 evolution islands
@@ -623,8 +807,16 @@ class TradingFloorV5:
                 ctx["model_prob_home"] = game["model_prob_home"]
             ctx.update(_inject_ml_predictions(home, away, game.get("date", target_date)))
 
+            # === PHASE 1 (Multi-phase): Shared Game Analysis ===
+            if self.multiphase:
+                game_analysis = self._phase1_game_analysis(ctx, game_key)
+                ctx["_game_analysis"] = game_analysis
+                self.run_stats["phase1_hits"] += 1
+            else:
+                game_analysis = None
+
             # === STAGE 1: All agents predict in parallel ===
-            print(f"\n  [Stage 1] Parallel prediction — {len(self.registry.active_agents)} agents...")
+            print(f"\n  [Stage 1] Parallel prediction -- {len(self.registry.active_agents)} agents...")
             game_predictions = self._stage1_parallel_predict(ctx, game_key)
 
             # === STAGE 2: Anonymized peer review (Hermes) ===
@@ -638,8 +830,29 @@ class TradingFloorV5:
             )
             self.consensus[game_key] = synthesis
 
+            # === PHASE 2+3 (Multi-phase): Category Screening + Deep Decisions ===
+            multiphase_bets: List[dict] = []
+            if self.multiphase and game_analysis:
+                print(f"  [Phase 2] Category screening (T1/T2 agents)...")
+                screened_cats = self._phase2_category_screening(
+                    game_analysis, ctx, game_key
+                )
+                print(f"  [Phase 3] Deep bet decisions ({len(screened_cats)} categories)...")
+                multiphase_bets = self._phase3_bet_decisions(
+                    screened_cats, game_analysis, ctx, game_key, game, odds_entry
+                )
+                print(f"    Multi-phase: {len(screened_cats)} screened -> "
+                      f"{len(multiphase_bets)} bets")
+
             # === Generate bets from synthesis ===
             game_bets = self._generate_bets(synthesis, ctx, odds_entry, game_key, game)
+            # Merge multi-phase bets (deduplicate by category)
+            if multiphase_bets:
+                existing_cats = {b["category"] for b in game_bets}
+                for mb in multiphase_bets:
+                    if mb.get("category") not in existing_cats:
+                        game_bets.append(mb)
+                        existing_cats.add(mb["category"])
             self.bets.extend(game_bets)
             self.run_stats["games_processed"] += 1
 
@@ -647,8 +860,9 @@ class TradingFloorV5:
             if game.get("home_won") is not None:
                 self._settle_bets(game_bets, game)
 
+            extra = f" ({len(multiphase_bets)} from multi-phase)" if multiphase_bets else ""
             print(f"\n  Summary: {len(game_predictions)} predictions -> "
-                  f"{len(game_bets)} bets generated")
+                  f"{len(game_bets)} bets generated{extra}")
 
         # Save everything
         self.run_stats["end_time"] = datetime.now(timezone.utc).isoformat()
@@ -685,13 +899,14 @@ class TradingFloorV5:
         # --- Tier 3: Specialist Swarm (parallel, batch by provider) ---
         # Only activate specialists relevant to available odds
         t3_agents = [a for a in self.registry.tier3 if a.active]
-        # If no odds, skip spread/total specialists
+        # If no odds, skip spread/total specialists (fixed operator precedence)
         if not ctx.get("odds") or ctx.get("spread_home") == "N/A":
-            t3_agents = [a for a in t3_agents
-                         if a.focus_category and
-                         not CATEGORY_BY_ID.get(a.focus_category, None) or
-                         CATEGORY_BY_ID.get(a.focus_category).group in
-                         ["moneyline", "margin", "race", "exotic"]]
+            def _ml_only(a):
+                cat = CATEGORY_BY_ID.get(a.focus_category)
+                if cat is None:
+                    return False  # unknown category — skip
+                return cat.group in ["moneyline", "margin", "race", "exotic"]
+            t3_agents = [a for a in t3_agents if _ml_only(a)]
 
         # Sample specialists (don't call all 176+ every game — call ~40%)
         if len(t3_agents) > 80:
@@ -762,13 +977,18 @@ class TradingFloorV5:
         else:
             return None  # Meta agents handled separately
 
-        # Call LLM via API pool
-        result = self.pool.call_llm(
-            provider=agent.provider,
-            prompt=prompt,
-            model=agent.model,
-            temperature=0.3 + (0.2 if agent.personality == "contrarian" else 0.0),
-        )
+        # Route to correct backend
+        if agent.provider == "anthropic_cli":
+            # Claude Code CLI via subprocess
+            result = _call_claude_cli(self.pool, agent, prompt)
+        else:
+            # Standard OpenAI-compat API pool
+            result = self.pool.call_llm(
+                provider=agent.provider,
+                prompt=prompt,
+                model=agent.model,
+                temperature=0.3 + (0.2 if agent.personality == "contrarian" else 0.0),
+            )
 
         if result:
             result["_agent_id"] = agent.id
@@ -810,6 +1030,238 @@ class TradingFloorV5:
             "_agent_id": agent.id,
             "_agent_tier": agent.tier.name,
         }
+
+    # ===================================================================
+    # MULTI-PHASE THINKING METHODS (v5.1)
+    # ===================================================================
+    def _phase1_game_analysis(self, ctx, game_key):
+        # type: (dict, str) -> dict
+        """Phase 1: Shared game analysis, cached per game_key."""
+        if game_key in self._game_analysis_cache:
+            return self._game_analysis_cache[game_key]
+
+        if self.dry_run:
+            analysis = {
+                "team_strengths": {
+                    "home": ctx.get("home_form", "5-5 L10"),
+                    "away": ctx.get("away_form", "5-5 L10"),
+                },
+                "key_factors": ["home advantage", "recent form", "ML model edge"],
+                "injury_impact": {"home": "none known", "away": "none known"},
+                "model_agreement": ctx.get("model_confidence", "medium"),
+                "edge_opportunities": ["moneyline", "total"],
+                "predicted_score": {
+                    "home": round(ctx.get("predicted_total", 224) * 0.52),
+                    "away": round(ctx.get("predicted_total", 224) * 0.48),
+                },
+                "confidence": 0.6,
+                "_source": "synthetic",
+            }
+            self._game_analysis_cache[game_key] = analysis
+            return analysis
+
+        prompt = ThinkingPhase.build_phase1_prompt(ctx)
+        result = None
+
+        # Try Claude Opus CLI first (best reasoning)
+        opus_agent = self.registry.get("t1_claude_code_opus")
+        if opus_agent and opus_agent.active:
+            result = _call_claude_cli(
+                self.pool, opus_agent, prompt, ThinkingPhase.PHASE_1_SYSTEM
+            )
+            self.run_stats["multiphase_calls"] += 1
+
+        # Fallback: Gemini 2.5 Pro
+        if not result:
+            result = self.pool.call_llm(
+                provider="google", prompt=prompt, model="gemini-2.5-pro",
+                system=ThinkingPhase.PHASE_1_SYSTEM, max_tokens=800, temperature=0.2,
+            )
+            self.run_stats["multiphase_calls"] += 1
+
+        # Fallback: Gemini 2.5 Flash
+        if not result:
+            result = self.pool.call_llm(
+                provider="google", prompt=prompt, model="gemini-2.5-flash",
+                system=ThinkingPhase.PHASE_1_SYSTEM, max_tokens=600, temperature=0.2,
+            )
+            self.run_stats["multiphase_calls"] += 1
+
+        if not result:
+            result = {
+                "team_strengths": {},
+                "key_factors": ["model predictions available"],
+                "injury_impact": {},
+                "model_agreement": ctx.get("model_confidence", "low"),
+                "edge_opportunities": [],
+                "predicted_score": {},
+                "confidence": 0.3,
+                "_source": "fallback",
+            }
+        else:
+            result["_source"] = result.get("_source", "phase1_llm")
+            result["_game_key"] = game_key
+
+        self._game_analysis_cache[game_key] = result
+        return result
+
+    def _phase2_category_screening(self, game_analysis, ctx, game_key):
+        # type: (dict, dict, str) -> List[dict]
+        """Phase 2: Screen all bet categories for value. Returns top 20."""
+        if self.dry_run:
+            return [
+                {"id": "ml_fg", "name": "Moneyline Full Game", "group": "moneyline",
+                 "estimated_edge": 0.04, "confidence": 0.7},
+                {"id": "sp_fg", "name": "Spread Full Game", "group": "spread",
+                 "estimated_edge": 0.03, "confidence": 0.6},
+                {"id": "tot_fg", "name": "Total Full Game", "group": "totals",
+                 "estimated_edge": 0.025, "confidence": 0.55},
+            ]
+
+        screened = {}   # category_id -> best result dict
+
+        all_cat_dicts = [
+            {"id": c.id, "name": c.name, "group": c.group}
+            for c in ALL_CATEGORIES
+        ]
+        chunk_size = 30
+        for chunk_start in range(0, len(all_cat_dicts), chunk_size):
+            chunk = all_cat_dicts[chunk_start:chunk_start + chunk_size]
+            prompt = ThinkingPhase.build_phase2_prompt(game_analysis, chunk, ctx)
+
+            result = None
+            sonnet_agent = self.registry.get("t1_claude_code_sonnet")
+            if sonnet_agent and sonnet_agent.active:
+                result = _call_claude_cli(
+                    self.pool, sonnet_agent, prompt, ThinkingPhase.PHASE_2_SYSTEM
+                )
+                self.run_stats["multiphase_calls"] += 1
+
+            if not result:
+                result = self.pool.call_llm(
+                    provider="google", prompt=prompt, model="gemini-2.5-flash",
+                    system=ThinkingPhase.PHASE_2_SYSTEM, max_tokens=800, temperature=0.2,
+                )
+                self.run_stats["multiphase_calls"] += 1
+
+            if result:
+                items = result if isinstance(result, list) else result.get("categories", [])
+                for item in items:
+                    if not isinstance(item, dict):
+                        continue
+                    if not item.get("has_edge") or not item.get("category_id"):
+                        continue
+                    cid = item["category_id"]
+                    item_conf = float(item.get("confidence", 0.5))
+                    if cid in screened and item_conf <= screened[cid].get("confidence", 0):
+                        continue
+                    cat_obj = CATEGORY_BY_ID.get(cid)
+                    if cat_obj:
+                        screened[cid] = {
+                            "id": cid,
+                            "name": cat_obj.name,
+                            "group": cat_obj.group,
+                            "estimated_edge": float(item.get("estimated_edge", 0.03)),
+                            "confidence": item_conf,
+                            "reasoning": item.get("reasoning", ""),
+                        }
+
+        self.run_stats["phase2_screenings"] += len(screened)
+        result_list = sorted(screened.values(),
+                             key=lambda x: x["estimated_edge"], reverse=True)
+        return result_list[:20]
+
+    def _phase3_bet_decisions(self, screened_cats, game_analysis, ctx,
+                              game_key, game, odds_entry):
+        # type: (List[dict], dict, dict, str, dict, Optional[dict]) -> List[dict]
+        """Phase 3: Deep bet decision for each screened category. Returns final bets."""
+        if not screened_cats:
+            return []
+
+        bets = []
+
+        def _decide_one(cat_info):
+            prompt = ThinkingPhase.build_phase3_prompt(cat_info, game_analysis, ctx)
+            result = None
+            group = cat_info.get("group", "moneyline")
+
+            if group in ("moneyline", "spread"):
+                haiku_agent = self.registry.get("t1_claude_code_haiku")
+                if haiku_agent and haiku_agent.active:
+                    result = _call_claude_cli(
+                        self.pool, haiku_agent, prompt, ThinkingPhase.PHASE_3_SYSTEM
+                    )
+            elif group in ("player_props", "exotic"):
+                research_agent = self.registry.get("t2_claude_code_research")
+                if research_agent and research_agent.active:
+                    result = _call_claude_cli(
+                        self.pool, research_agent, prompt, ThinkingPhase.PHASE_3_SYSTEM
+                    )
+
+            if not result:
+                result = self.pool.call_llm(
+                    provider="google", prompt=prompt, model="gemini-2.5-flash-thinking",
+                    system=ThinkingPhase.PHASE_3_SYSTEM, max_tokens=512, temperature=0.2,
+                )
+            if not result:
+                result = self.pool.call_llm(
+                    provider="google", prompt=prompt, model="gemini-2.5-flash",
+                    system=ThinkingPhase.PHASE_3_SYSTEM, max_tokens=400, temperature=0.2,
+                )
+
+            self.run_stats["multiphase_calls"] += 1
+            return result, cat_info
+
+        max_workers = min(10, len(screened_cats))
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {executor.submit(_decide_one, cat): cat for cat in screened_cats}
+            for future in as_completed(futures, timeout=120):
+                try:
+                    outcome = future.result()
+                    if not outcome:
+                        continue
+                    result, cat_info = outcome
+                    if not result or not isinstance(result, dict):
+                        continue
+                    if not result.get("bet"):
+                        continue
+
+                    edge = float(result.get("edge", 0.03))
+                    confidence = float(result.get("confidence", 0.5))
+                    kelly_frac = float(result.get("kelly_fraction", 0.25))
+                    side = str(result.get("side", "home"))
+
+                    bet_odds = 1.909
+                    if odds_entry and cat_info["group"] == "moneyline":
+                        if "home" in side:
+                            bet_odds = odds_entry.get("ml_home_dec", 1.91)
+                        else:
+                            bet_odds = odds_entry.get("ml_away_dec", 1.91)
+
+                    paperclip = self.registry.get("t4_paperclip")
+                    bankroll = paperclip.bankroll if paperclip else 10_000.0
+                    stake = bankroll * kelly_criterion(0.5 + edge, bet_odds, kelly_frac)
+                    stake = min(stake, bankroll * 0.10)
+
+                    bets.append({
+                        "game_key": game_key,
+                        "category": cat_info["id"],
+                        "direction": side,
+                        "confidence": round(confidence, 4),
+                        "edge_pct": round(edge * 100, 2),
+                        "odds": round(bet_odds, 3),
+                        "stake": round(max(stake, 0), 2),
+                        "source": "multiphase_p3",
+                        "reasoning": result.get("reasoning", ""),
+                        "key_factor": result.get("key_factor", ""),
+                        "_phase": 3,
+                    })
+                    self.run_stats["phase3_decisions"] += 1
+
+                except Exception:
+                    pass
+
+        return bets
 
     # ===================================================================
     # STAGE 2: Anonymized Peer Review (Hermes)
@@ -971,22 +1423,33 @@ class TradingFloorV5:
 
     def _statistical_synthesis(self, predictions: Dict[str, dict],
                                 peer_review: dict, ctx: dict) -> dict:
-        """Pure statistical synthesis (fallback when Oracle is unavailable)."""
+        """Pure statistical synthesis (fallback when Oracle is unavailable).
+        Uses vote agreement as primary confidence signal (more reliable than
+        avg LLM-reported confidence, which is near-zero in synthetic mode).
+        """
+        ml_agree = peer_review.get("ml_agreement", 0.5)
+        sp_agree = peer_review.get("spread_agreement", 0.5)
+        tt_agree = peer_review.get("total_agreement", 0.5)
+        avg_conf = peer_review.get("avg_confidence", 0.0)
+        # Blend: vote agreement (80%) + LLM avg confidence (20%)
+        ml_conf = ml_agree * 0.8 + min(avg_conf, 1.0) * 0.2
+        sp_conf = sp_agree * 0.8 + min(avg_conf, 1.0) * 0.2
+        tt_conf = tt_agree * 0.8 + min(avg_conf, 1.0) * 0.2
         return {
             "consensus_ml": {
                 "direction": peer_review.get("ml_consensus", "home"),
-                "confidence": peer_review.get("avg_confidence", 0.5),
-                "agreement_pct": peer_review.get("ml_agreement", 0.5),
+                "confidence": round(ml_conf, 4),
+                "agreement_pct": ml_agree,
             },
             "consensus_spread": {
                 "direction": peer_review.get("spread_consensus", "home"),
-                "confidence": peer_review.get("spread_agreement", 0.5),
-                "agreement_pct": peer_review.get("spread_agreement", 0.5),
+                "confidence": round(sp_conf, 4),
+                "agreement_pct": sp_agree,
             },
             "consensus_total": {
                 "direction": peer_review.get("total_consensus", "over"),
-                "confidence": peer_review.get("total_agreement", 0.5),
-                "agreement_pct": peer_review.get("total_agreement", 0.5),
+                "confidence": round(tt_conf, 4),
+                "agreement_pct": tt_agree,
             },
             "top_3_bets": [],
             "avg_edge_pct": peer_review.get("avg_edge_pct", 0),
@@ -1556,7 +2019,8 @@ Examples:
         )
 
     else:
-        floor = TradingFloorV5(dry_run=args.dry_run)
+        floor = TradingFloorV5(dry_run=args.dry_run,
+                               multiphase=getattr(args, "multiphase", False))
         floor.run(target_date, games_per_iter=args.games)
 
 

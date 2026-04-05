@@ -20,6 +20,7 @@ import os
 import json
 import time
 import threading
+import subprocess
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Any
 from datetime import datetime, timezone
@@ -70,8 +71,17 @@ PROVIDERS = {
     "google": ProviderConfig(
         name="google",
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-        models=["gemini-2.0-flash", "gemini-2.5-flash"],
-        rpm=60, rpd=10000, is_free=False, timeout=30.0
+        models=["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro",
+                "gemini-2.5-flash-thinking", "gemini-2.0-flash-lite"],
+        rpm=60, rpd=10000, is_free=False, timeout=60.0
+    ),
+
+    # --- Claude Code CLI (subprocess-based, not OpenAI-compat) ---
+    "anthropic_cli": ProviderConfig(
+        name="anthropic_cli",
+        base_url="",   # unused — handled via subprocess
+        models=["claude-opus-4-6", "claude-sonnet-4-6", "claude-haiku-4-5-20251001"],
+        rpm=10, rpd=500, is_free=False, timeout=60.0, max_tokens=1024
     ),
 
     # --- FREE: GROQ ---
@@ -237,7 +247,11 @@ class APIPool:
         # Also check pipeline keys
         for var in ["OPENROUTER_PIPELINE_KEY_1", "OPENROUTER_PIPELINE_KEY_2",
                      "OPENROUTER_PIPELINE_KEY_3", "OPENROUTER_PIPELINE_KEY_4",
-                     "OPENROUTER_PIPELINE_KEY_5", "OPENROUTER_PIPELINE_KEY_6"]:
+                     "OPENROUTER_PIPELINE_KEY_5", "OPENROUTER_PIPELINE_KEY_6",
+                     # Alternative naming used in .env.local
+                     "OPENROUTER_KEY_STANDARD", "OPENROUTER_KEY_GRAPH",
+                     "OPENROUTER_KEY_QUANTITATIVE", "OPENROUTER_KEY_ORCHESTRATOR",
+                     "OPENROUTER_KEY_PME", "OPENROUTER_KEY_SPARE"]:
             val = os.environ.get(var, "")
             if val and val not in or_keys:
                 or_keys.append(val)
@@ -279,14 +293,20 @@ class APIPool:
         if val:
             self.add_key("google", val, 0)
 
+        # --- Claude Code CLI (subprocess, no key needed — uses local claude CLI) ---
+        self.add_key("anthropic_cli", "cli", 0)
+
     def _load_env_file(self, path: str):
-        """Load environment variables from a file (KEY=VALUE format)."""
+        """Load environment variables from a file (KEY=VALUE or export KEY=VALUE format)."""
         try:
             with open(path) as f:
                 for line in f:
                     line = line.strip()
                     if not line or line.startswith("#") or "=" not in line:
                         continue
+                    # Strip 'export ' prefix (bash-style env files use this)
+                    if line.startswith("export "):
+                        line = line[7:].strip()
                     key, _, val = line.partition("=")
                     key = key.strip()
                     val = val.strip().strip('"').strip("'")
@@ -423,6 +443,65 @@ class APIPool:
             return text
         except Exception as e:
             self.record_usage(slot, error=True)
+            return None
+
+    def call_llm_cli(self, model: str, prompt: str,
+                     system: str = "You are an NBA betting analyst. Respond only with valid JSON.",
+                     max_tokens: int = 1024,
+                     temperature: float = 0.3) -> "Optional[dict]":
+        """
+        Call Claude Code CLI via subprocess (anthropic_cli provider).
+        Uses: claude -p PROMPT --model MODEL --output-format json
+        Falls back to raw text parse if JSON mode fails.
+        """
+        config = PROVIDERS.get("anthropic_cli")
+        slots = self.slots.get("anthropic_cli", [])
+        if not slots:
+            return None
+        slot = slots[0]
+        if not slot.can_call(config):
+            return None
+
+        full_prompt = f"{system}\n\n{prompt}" if system else prompt
+
+        try:
+            result = subprocess.run(
+                ["claude", "-p", full_prompt, "--model", model,
+                 "--output-format", "json"],
+                capture_output=True, text=True,
+                timeout=config.timeout,
+            )
+            slot.record_call()
+            with self._lock:
+                self.stats["total_calls"] += 1
+                self.stats["calls_by_provider"]["anthropic_cli"] += 1
+
+            if result.returncode != 0:
+                slot.record_call(error=True)
+                return None
+
+            # claude --output-format json wraps output in {"result": "..."}
+            raw = result.stdout.strip()
+            try:
+                outer = json.loads(raw)
+                if isinstance(outer, dict) and "result" in outer:
+                    inner_text = outer["result"]
+                    parsed = self._parse_json(inner_text)
+                    return parsed if parsed else outer
+                return outer
+            except json.JSONDecodeError:
+                return self._parse_json(raw)
+
+        except subprocess.TimeoutExpired:
+            slot.record_call(error=True)
+            with self._lock:
+                self.stats["total_errors"] += 1
+            return None
+        except FileNotFoundError:
+            # claude CLI not installed
+            return None
+        except Exception:
+            slot.record_call(error=True)
             return None
 
     def record_usage(self, slot: APIKeySlot, tokens_used: int = 0, error: bool = False):
