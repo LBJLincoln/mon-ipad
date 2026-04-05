@@ -1,0 +1,129 @@
+{
+  "timestamp": "2026-04-05T05:29:05Z",
+  "agent": "D9-cross-repo-hermes",
+  "iteration": 1,
+  "repos_checked": [
+    {
+      "repo": "mon-ipad",
+      "path": "/home/termius/mon-ipad",
+      "status": "DIRTY",
+      "uncommitted_modified": 20,
+      "uncommitted_untracked": "many (truncated at 20)",
+      "notes": "Arena data, agent-memory, OPERATIONS.md, nba-agent data all modified"
+    },
+    {
+      "repo": "nomos-dashboard",
+      "path": "/home/termius/nomos-dashboard",
+      "status": "CLEAN",
+      "uncommitted_modified": 0,
+      "uncommitted_untracked": 0,
+      "latest_commit": "feat: upgrade Pixel World to 207+ agent v5 with zones, swarm floor, and leaderboard"
+    },
+    {
+      "repo": "nomos-nba-agent",
+      "path": "/home/termius/nomos-nba-agent",
+      "status": "DIRTY",
+      "uncommitted_modified": 3,
+      "uncommitted_untracked": 17,
+      "notes": "CLAUDE.md modified; predictions-today.json, value-bets.json updated; untracked council/department files (9 depts)"
+    },
+    {
+      "repo": "nomos-political-alpha",
+      "path": "/home/termius/nomos-political-alpha",
+      "status": "DIRTY",
+      "uncommitted_modified": 10,
+      "uncommitted_untracked": 4,
+      "notes": "CLAUDE.md modified; daily data files for Apr4-5; political_karpathy_loop.py modified"
+    },
+    {
+      "repo": "rgwa",
+      "path": "/home/termius/rgwa",
+      "status": "DIRTY",
+      "uncommitted_modified": 1,
+      "uncommitted_untracked": 11,
+      "notes": "CLAUDE.md modified; untracked council/dept files and scripts/councils, scripts/forge"
+    }
+  ],
+  "stale_docs_found": [],
+  "stale_docs_count": 0,
+  "stale_docs_summary": "No markdown files older than 30 days found across any repo",
+  "parity_issues": [
+    {
+      "severity": "CRITICAL",
+      "type": "feature_engine_version_mismatch",
+      "description": "mon-ipad/features/engine.py is v3.1-46cat (6695 lines) but nomos-nba-agent has v3.1-51cat (6840 lines). HF-space engine also on 51cat. mon-ipad is 5 categories behind.",
+      "files": [
+        {
+          "path": "mon-ipad/features/engine.py",
+          "version": "v3.1-46cat",
+          "lines": 6695,
+          "md5": "80319035f827188209437df4acf9bda7"
+        },
+        {
+          "path": "nomos-nba-agent/features/engine.py",
+          "version": "v3.1-51cat",
+          "lines": 6840,
+          "md5": "2ac9c235eac886d6a56a2daec89dd813"
+        },
+        {
+          "path": "nomos-nba-agent/hf-space/features/engine.py",
+          "version": "v3.1-51cat",
+          "lines": 6840,
+          "md5": "2ac9c235eac886d6a56a2daec89dd813"
+        }
+      ],
+      "fix": "Copy nomos-nba-agent/features/engine.py to mon-ipad/features/engine.py (Rule #2: feature engine parity required)"
+    }
+  ],
+  "broken_refs": [
+    {
+      "severity": "WARNING",
+      "type": "stale_version_reference",
+      "description": "CLAUDE.md (mon-ipad) references 'v3.1-46cat = 46 categories' but live engine is v3.1-51cat with 51 categories",
+      "file": "mon-ipad/CLAUDE.md",
+      "fix": "Update CLAUDE.md feature engine section to reflect v3.1-51cat"
+    },
+    {
+      "severity": "INFO",
+      "type": "untracked_council_files",
+      "description": "nomos-nba-agent and rgwa have 9 untracked council JSON files + scripts/councils/. These appear to be new D9 Hermes dept council outputs not yet committed.",
+      "repos_affected": ["nomos-nba-agent", "rgwa"],
+      "fix": "Commit new council files in both repos"
+    }
+  ],
+  "cleanup_needed": [
+    {
+      "priority": "CRITICAL",
+      "action": "Sync engine.py: copy v3.1-51cat from nomos-nba-agent to mon-ipad",
+      "command": "cp /home/termius/nomos-nba-agent/features/engine.py /home/termius/mon-ipad/features/engine.py"
+    },
+    {
+      "priority": "HIGH",
+      "action": "Update CLAUDE.md in mon-ipad to reflect v3.1-51cat (51 categories, not 46)",
+      "file": "mon-ipad/CLAUDE.md"
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "Commit accumulated data files in mon-ipad (arena, nba-agent, trading floor data)",
+      "repo": "mon-ipad"
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "Commit new council files in nomos-nba-agent (9 dept council JSONs + 3 dept dirs)",
+      "repo": "nomos-nba-agent"
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "Commit new council files in rgwa (9 dept council JSONs + scripts)",
+      "repo": "rgwa"
+    },
+    {
+      "priority": "LOW",
+      "action": "Commit daily data files in nomos-political-alpha (Apr 4-5 congressional/donors/crypto/prices)",
+      "repo": "nomos-political-alpha"
+    }
+  ],
+  "status": "ISSUES_FOUND",
+  "health_score": 62,
+  "summary": "1 critical parity issue (engine v46 vs v51), nomos-dashboard is clean, 4/5 repos have uncommitted changes (mostly data files). No stale docs. Immediate action needed: sync engine.py and update CLAUDE.md version reference."
+}
