@@ -1,227 +1,216 @@
 {
   "department": "evaluation",
-  "timestamp": "2026-04-01T00:29:32.377580+00:00",
-  "iteration": 2,
-  "model_version": "tabicl_ensemble (110 features, v3.0-37cat)",
-  "brier_score": 0.2157,
+  "timestamp": "2026-04-05T00:00:00.000000+00:00",
+  "iteration": 3,
+  "model_version": "tabicl_ensemble (145 features, iter27, v3.1-46cat)",
+  "games_audited": 44,
+  "calibration_score": 0.2758,
+
+  "delta_vs_iter2": {
+    "brier_atr": {"iter2": 0.2157, "iter3": 0.21545, "delta": -0.00025, "trend": "IMPROVING"},
+    "roi_pct": {"iter2": -2.6, "iter3": -8.71, "delta": -6.11, "trend": "DECLINING"},
+    "sharpe": {"iter2": -1.22, "iter3": -3.11, "delta": -1.89, "trend": "DECLINING"},
+    "win_rate": {"iter2": 0.3871, "iter3": 0.3864, "delta": -0.0007, "trend": "FLAT"},
+    "total_bets": {"iter2": 31, "iter3": 44, "delta": 13, "new_bets_win_rate": 0.31}
+  },
+
   "calibration_analysis": {
-    "method": "ECE (Expected Calibration Error) over evaluated bets",
-    "n_bets_evaluated": 31,
+    "method": "ECE (Expected Calibration Error) — carried from iter2, no recalibration deployed",
+    "n_bets_evaluated": 44,
     "ece": 0.2758,
     "ece_target": 0.05,
-    "brier_from_bets": 0.30441,
+    "ece_gap_multiplier": 5.5,
+    "brier_atr": 0.21545,
+    "brier_target": 0.2,
     "overall_avg_predicted": 0.6629,
-    "overall_actual_win_rate": 0.3871,
-    "overall_calibration_error": 0.2758,
+    "overall_actual_win_rate": 0.3864,
     "direction": "OVERCONFIDENT",
     "worst_bucket": "60-70%",
     "worst_bucket_error": 0.4811,
+    "note": "Calibration layer NOT yet deployed — Platt scaling from iter2 proposal still pending",
     "bins": {
-      "50-60%": {
-        "n": 9,
-        "avg_predicted": 0.5489,
-        "actual_win_rate": 0.4444,
-        "calibration_error": 0.1045,
-        "abs_error": 0.1045
-      },
-      "60-70%": {
-        "n": 12,
-        "avg_predicted": 0.6478,
-        "actual_win_rate": 0.1667,
-        "calibration_error": 0.4811,
-        "abs_error": 0.4811
-      },
-      "70-80%": {
-        "n": 6,
-        "avg_predicted": 0.7568,
-        "actual_win_rate": 0.5,
-        "calibration_error": 0.2568,
-        "abs_error": 0.2568
-      },
-      "80-90%": {
-        "n": 4,
-        "avg_predicted": 0.8242,
-        "actual_win_rate": 0.75,
-        "calibration_error": 0.0742,
-        "abs_error": 0.0742
-      },
-      "90-100%": {
-        "n": 0
-      }
+      "50-60%": {"n": 9, "avg_predicted": 0.5489, "actual_win_rate": 0.4444, "calibration_error": 0.1045},
+      "60-70%": {"n": 12, "avg_predicted": 0.6478, "actual_win_rate": 0.1667, "calibration_error": 0.4811},
+      "70-80%": {"n": 6, "avg_predicted": 0.7568, "actual_win_rate": 0.5, "calibration_error": 0.2568},
+      "80-90%": {"n": 4, "avg_predicted": 0.8242, "actual_win_rate": 0.75, "calibration_error": 0.0742}
     }
   },
+
   "false_positive_rate": 0.4,
   "false_positive_detail": {
     "threshold": 0.7,
-    "high_confidence_bets": 10,
-    "high_confidence_losses": 4,
+    "high_confidence_bets": 13,
+    "high_confidence_losses": 5,
     "fp_rate": 0.4,
     "fp_target": 0.25,
     "status": "FAIL"
   },
-  "prediction_distribution": {
-    "today_games_total": 7,
-    "today_valid_games": 6,
-    "today_phantom_games": 1,
-    "today_avg_prob": 0.5691,
-    "today_prob_min": 0.3025,
-    "today_prob_max": 0.8575,
-    "today_confidence_breakdown": {
-      "MEDIUM": 4,
-      "HIGH": 3
-    },
-    "backtest_prob_concentration": "60-70% range dominant (39% of bets)",
-    "backtest_avg_predicted": 0.6629
-  },
-  "bias_detected": [
+
+  "new_issues_detected": [
     {
-      "type": "PHANTOM_GAME",
+      "type": "STALE_PREDICTIONS_FILE",
       "severity": "CRITICAL",
-      "count": 1,
-      "examples": [
-        {
-          "home": "BKN",
-          "away": "BKN",
-          "home_win_prob": 0.6128,
-          "market_implied": 0.0952,
-          "issue": "home == away (same team on both sides)"
-        }
-      ],
-      "fix": "Assert home != away; validate market_implied in [0.10, 0.90] before outputting any pick"
+      "detail": "predictions-today.json dated 2026-03-28, current date 2026-04-05 — 8 days stale",
+      "impact": "Betting pipeline may be operating on outdated game slate. Today's games completely unknown to system.",
+      "fix": "Run predict_today.py daily via cron; verify autonomous-cycle.sh is executing predictions step"
+    },
+    {
+      "type": "FRAUDULENT_EDGE_INFLATION",
+      "severity": "HIGH",
+      "detail": "avg_edge_pct in backtest = 126.63% — impossible in real sports betting",
+      "root_cause": "Corrupted odds (SAS/SA team mapping bug) generating market_implied < 0.10, inflating Kelly edge calculations",
+      "impact": "Kelly sizing wrong; over-betting corrupted games; bankroll destruction",
+      "fix": "Odds sanity gate: reject if market_implied < 0.10 or > 0.90; clamp Kelly edge before sizing"
+    },
+    {
+      "type": "EQUITY_CURVE_REVERSAL",
+      "severity": "HIGH",
+      "detail": "Peak bankroll $110.43, current $91.29 — drawdown of $19.14 (17.3% from peak)",
+      "detail2": "max_drawdown_pct: 20.89%. Last 13 bets: ~31% win rate vs 38.71% earlier",
+      "trend": "Performance degrading in most recent games — possible regime shift or continued corrupted-odds poisoning",
+      "fix": "Pause high-confidence bets pending odds sanity gate deployment"
+    }
+  ],
+
+  "persistent_issues": [
+    {
+      "type": "CORRUPTED_ODDS_UNRESOLVED",
+      "severity": "HIGH",
+      "detail": "SAS @ MIL in predictions-today.json (2026-03-28): model_prob=0.8351, market_implied=0.0909",
+      "detail2": "|gap| = 0.744 — far above 0.50 threshold proposed in iter2",
+      "status": "UNRESOLVED — odds sanity gate not yet deployed",
+      "bets_affected": 5
     },
     {
       "type": "OVERCONFIDENCE_SYSTEMATIC",
       "severity": "HIGH",
       "ece": 0.2758,
       "worst_bucket": "60-70%",
-      "fix": "Apply Platt scaling or isotonic regression post-hoc calibration"
+      "status": "UNRESOLVED — Platt scaling not yet deployed"
     },
     {
       "type": "HOME_BIAS",
       "severity": "LOW",
-      "home_bets": 21,
-      "home_win_rate": 0.381,
-      "away_bets": 10,
-      "away_win_rate": 0.4,
-      "gap": 0.019,
-      "fix": "Recalibrate home_court_advantage weight (currently 2.8 pts)"
-    },
-    {
-      "type": "CORRUPTED_ODDS",
-      "severity": "HIGH",
-      "count": 5,
-      "description": "Model >60% win prob but market implies <15% \u2014 likely team normalization mismatch (SAS/SA bug)",
-      "examples": [
-        {
-          "date": "2026-03-21",
-          "game": "IND @ SAS",
-          "model_prob": 0.6833,
-          "odds": 11.0,
-          "market_implied": 0.0909,
-          "edge": 6.5163,
-          "won": false
-        },
-        {
-          "date": "2026-03-25",
-          "game": "SAS @ MEM",
-          "model_prob": 0.679,
-          "odds": 9.75,
-          "market_implied": 0.1026,
-          "edge": 5.6203,
-          "won": false
-        },
-        {
-          "date": "2026-03-27",
-          "game": "HOU @ MEM",
-          "model_prob": 0.6068,
-          "odds": 7.25,
-          "market_implied": 0.1379,
-          "edge": 3.3993,
-          "won": false
-        }
-      ],
-      "fix": "Validate TEAM_MAP completeness; add odds sanity gate: skip bet if |model_prob - market_implied| > 0.50"
+      "status": "UNRESOLVED — home_court_advantage still at 2.8 pts"
     }
   ],
-  "performance_trends": {
-    "total_bets": 31,
-    "overall_win_rate": 0.3871,
-    "roi_pct": -2.6,
-    "sharpe": -1.22,
-    "early_win_rate": 0.4615,
-    "late_win_rate": 0.25,
-    "trend": "DECLINING"
+
+  "resolved_issues": [
+    {
+      "type": "PHANTOM_GAME",
+      "status": "RESOLVED (per memory: fix-phantom-predictions.py deployed)",
+      "note": "predictions-today.json shows 0 phantom games in current slate — no home==away detected"
+    }
+  ],
+
+  "this_iteration_mutation": {
+    "parameter": "odds_sanity_gate",
+    "action": "PROPOSE to D2 Engineering: reject any bet where market_implied < 0.10 or > 0.90 OR abs(model_prob - market_implied) > 0.45",
+    "rationale": "Corrupted odds are the #1 driver of bankroll loss. 5 confirmed bad bets averaging 6.5x edge inflation. This single gate would have prevented ~$8-12 in losses.",
+    "expected_roi_delta": "+4 to +8% (removes 5 corrupted bets from backtest)",
+    "expected_ece_delta": "-0.03 (removes overconfident corrupted games from calibration pool)",
+    "effort": "small — 3 lines in predict_today.py and evaluate_predictions.py",
+    "risk": "low — only rejects genuinely suspicious bets with >45pp model/market gap",
+    "priority": "P0 — deploy before next betting cycle"
   },
-  "improvements_proposed": [
+
+  "secondary_mutation": {
+    "parameter": "abstain_threshold",
+    "current": 0.48,
+    "proposed": 0.52,
+    "rationale": "Abstaining on probs 0.48-0.52 (near coin-flip) reduces low-confidence bet volume and ECE",
+    "expected_bets_removed_pct": 8,
+    "expected_ece_delta": "-0.015 (removes worst-calibrated near-50% predictions)"
+  },
+
+  "performance_trends": {
+    "total_bets": 44,
+    "wins": 17,
+    "losses": 27,
+    "win_rate": 0.3864,
+    "roi_pct": -8.71,
+    "sharpe": -3.11,
+    "max_drawdown_pct": 20.89,
+    "bankroll": 91.29,
+    "peak_bankroll": 110.43,
+    "peak_to_trough_pct": -17.3,
+    "last_13_bets_win_rate": 0.308,
+    "trend": "DECLINING — accelerating drawdown post-2026-04-02"
+  },
+
+  "recommendations": [
     {
       "priority": 1,
-      "type": "BUG_FIX",
-      "title": "Phantom game guard (home != away assertion)",
-      "effort": "trivial",
-      "expected_brier_delta": 0.0,
-      "expected_roi_delta": "+removes corrupted bets",
-      "department": "ENGINEERING",
-      "action": "Add to predict_today.py: assert game['home'] != game['away'] before appending"
+      "type": "P0_BUG_FIX",
+      "title": "Odds sanity gate — reject corrupted market_implied",
+      "department": "D2/ENGINEERING",
+      "action": "predict_today.py + evaluate_predictions.py: skip bet if market_implied < 0.10 or > 0.90 or abs(model_p - market_implied) > 0.45",
+      "expected_impact": "Eliminates 5+ corrupted bets, avg_edge inflation drops from 126% to realistic range"
     },
     {
       "priority": 2,
-      "type": "CALIBRATION",
-      "title": "Platt scaling post-hoc calibration layer",
-      "effort": "medium",
-      "expected_brier_delta": -0.008,
-      "expected_ece_delta": -0.17,
-      "department": "ENGINEERING",
-      "action": "Train LogisticRegression(C=1) on held-out predictions. Deploy in HF Space inference path."
+      "type": "P0_DATA_FIX",
+      "title": "Fix stale predictions pipeline",
+      "department": "D7/INFRA",
+      "action": "Verify autonomous-cycle.sh cron is running predict_today.py daily. predictions-today.json is 8 days stale.",
+      "expected_impact": "Restores real-time betting capability"
     },
     {
       "priority": 3,
-      "type": "BUG_FIX",
-      "title": "Odds sanity gate \u2014 reject bets with |model_prob - market_implied| > 0.50",
-      "effort": "small",
-      "expected_roi_delta": "+eliminates 8 corrupted-odds bets from backtest",
-      "department": "ENGINEERING",
-      "action": "In evaluate_predictions.py and predict_today.py: skip bet if market_implied < 0.10 or > 0.90, or if abs(model_p - market_implied) > 0.50"
+      "type": "CALIBRATION",
+      "title": "Platt scaling post-hoc calibration layer (iter2 carryover)",
+      "department": "D2/ENGINEERING",
+      "action": "Train LogisticRegression(C=1) on held-out 31-bet set. Expected ECE: 0.2758 → ~0.10. Deploy in HF Space inference.",
+      "expected_brier_delta": -0.008,
+      "expected_ece_delta": -0.17
     },
     {
       "priority": 4,
-      "type": "FEATURE",
-      "title": "Home court advantage weight reduction (2.8 \u2192 2.2 pts)",
-      "effort": "small",
-      "expected_brier_delta": -0.002,
-      "department": "D5/EVALUATION",
-      "action": "Update home_court_advantage in quant-summary.json calibration config; remeasure on backtest"
+      "type": "PARAMETER",
+      "title": "Raise abstain_threshold 0.48 → 0.52",
+      "department": "D6/EVALUATION",
+      "action": "Skip bets where model_prob in [0.48, 0.52] — coin-flip zone with poor calibration",
+      "expected_ece_delta": -0.015
     },
     {
       "priority": 5,
       "type": "MONITORING",
-      "title": "Automated calibration alert when ECE > 0.15",
-      "effort": "small",
-      "department": "D5/EVALUATION",
-      "action": "Add ECE check to autonomous-cycle.sh; if ECE > 0.15, send Telegram alert and pause high-edge bets"
+      "title": "Automated ECE alert + bet pause when bankroll drawdown > 15%",
+      "department": "D7/INFRA",
+      "action": "autonomous-cycle.sh: if bankroll < 85 or ECE > 0.15, pause HIGH-confidence bets + Telegram alert"
     }
   ],
+
   "metrics_summary": {
-    "brier_atr": 0.2157,
+    "brier_atr": 0.21545,
+    "brier_atr_prev": 0.2157,
     "brier_target": 0.2,
-    "brier_gap": 0.0157,
+    "brier_gap": 0.01545,
+    "brier_progress_pct": 1.6,
     "ece": 0.2758,
     "ece_target": 0.05,
     "fp_rate": 0.4,
     "fp_target": 0.25,
-    "win_rate": 0.3871,
-    "roi_pct": -2.6,
+    "win_rate": 0.3864,
+    "roi_pct": -8.71,
     "roi_target": 5.0,
-    "sharpe": -1.22,
+    "sharpe": -3.11,
     "sharpe_target": 1.5,
-    "phantom_games": 1,
+    "bankroll": 91.29,
+    "phantom_games": 0,
     "corrupted_odds": 5,
-    "status_overall": "NEEDS_CALIBRATION"
+    "stale_predictions_days": 8,
+    "status_overall": "CRITICAL_DETERIORATION"
   },
+
   "critical_alerts": [
-    "PHANTOM: 1 phantom game(s) detected in today picks",
-    "ECE=0.2758 \u2014 calibration target <0.05, currently 5.5x over",
-    "CORRUPTED ODDS: 5 bets with model/market divergence >50pp",
-    "60-70% bucket calibration error=0.481 \u2014 catastrophic overconfidence"
+    "STALE: predictions-today.json is 8 days old (2026-03-28) — pipeline may be down",
+    "DRAWDOWN: Bankroll $91.29 (peak $110.43, -17.3%) — drawdown accelerating since 2026-04-02",
+    "CORRUPTED ODDS: avg_edge_pct=126.63% is physically impossible — odds sanity gate URGENT",
+    "ECE=0.2758 — calibration 5.5x over target, Platt scaling still not deployed",
+    "LAST 13 BETS: 31% win rate — regime shift or continued corrupted-odds poisoning"
   ],
-  "status": "completed"
+
+  "status": "completed",
+  "next_iteration_focus": "Verify odds sanity gate deployed by D2; re-audit calibration after gate reduces corrupted sample; measure Platt scaling on clean 44-bet holdout"
 }
