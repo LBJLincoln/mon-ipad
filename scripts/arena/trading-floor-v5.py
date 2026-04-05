@@ -897,21 +897,10 @@ class TradingFloorV5:
         print(f"    T2 Free Power: {len(t2_preds)} predictions")
 
         # --- Tier 3: Specialist Swarm (parallel, batch by provider) ---
-        # Only activate specialists relevant to available odds
+        # ALL specialists get a chance — 120+ categories per game
         t3_agents = [a for a in self.registry.tier3 if a.active]
-        # If no odds, skip spread/total specialists (fixed operator precedence)
-        if not ctx.get("odds") or ctx.get("spread_home") == "N/A":
-            def _ml_only(a):
-                cat = CATEGORY_BY_ID.get(a.focus_category)
-                if cat is None:
-                    return False  # unknown category — skip
-                return cat.group in ["moneyline", "margin", "race", "exotic"]
-            t3_agents = [a for a in t3_agents if _ml_only(a)]
-
-        # Sample specialists (don't call all 176+ every game — call ~40%)
-        if len(t3_agents) > 80:
-            random.shuffle(t3_agents)
-            t3_agents = t3_agents[:int(len(t3_agents) * 0.4)]
+        # Filter out agents with unknown categories only
+        t3_agents = [a for a in t3_agents if CATEGORY_BY_ID.get(a.focus_category) is not None]
 
         t3_preds = self._parallel_call(t3_agents, ctx, game_key)
         predictions.update(t3_preds)
