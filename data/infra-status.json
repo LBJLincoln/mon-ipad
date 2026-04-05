@@ -1,19 +1,80 @@
 {
-  "timestamp": "2026-04-05T05:47:40Z",
+  "timestamp": "2026-04-05T10:06:30Z",
+  "department": "D7_INFRA",
   "summary": {
-    "total": 9,
-    "healthy": 8,
-    "restarted": 1,
-    "failed": 0
+    "total_services": 9,
+    "healthy": 9,
+    "restarted": 0,
+    "failed": 0,
+    "uptime_pct": 99.9
   },
-  "hf_spaces": {"P1_pol":{"status":"running","brier":"0.24997","gen":"4725"},"P2_pol":{"status":"running","brier":"0.23134","gen":"10989"},"S10_nba":{"status":"running","brier":"0.22454","gen":"867"},"S11_nba":{"status":"running","brier":"0.22273","gen":"1849"},"S12_nba":{"status":"running","brier":"0.22506","gen":"1606"},"S13_nba":{"status":"running","brier":"0.22455","gen":"1278"},"S14_nba":{"status":"running","brier":"0.22666","gen":"1291"},"S15_nba":{"status":"running","brier":"0.22159","gen":"2281"}},
-  "kaggle": {
-    "nba": "[2026-04-05T05:46:33Z]   ↻ Kaggle NBA: COMPLETE — relaunching...
-relaunched",
-    "political": "[2026-04-05T05:46:58Z]   ↻ Kaggle Political: COMPLETE — relaunching...
-relaunched"
+  "services": {
+    "data_server_8080": {
+      "status": "UP",
+      "response_ms": 50,
+      "last_check": "2026-04-05T10:06:15Z"
+    },
+    "bloomberg_api_8042": {
+      "status": "UP",
+      "endpoints": ["/api/odds", "/api/predictions"],
+      "last_check": "2026-04-05T10:06:20Z"
+    },
+    "telegram_bots": {
+      "count": 5,
+      "status": "ALL_ALIVE",
+      "bots": ["nomos42_brain", "forge_bot", "nba_bot", "political_bot", "rgwa_bot"],
+      "last_check": "2026-04-05T10:06:25Z"
+    }
   },
-  "modal": {
-    "nba": "launched"
-  }
+  "hf_spaces": {
+    "nba": {
+      "total": 6,
+      "running": 6,
+      "best_brier": 0.22159,
+      "best_space": "S15",
+      "avg_brier": 0.22351
+    }
+  },
+  "gpu_platforms": {
+    "kaggle": {
+      "nba": "RUNNING",
+      "political": "RUNNING",
+      "last_launched": "2026-04-05T09:48:42Z"
+    },
+    "modal": {
+      "nba": "LAUNCHED"
+    },
+    "colab": "standby"
+  },
+  "vm_health": {
+    "memory_mb": {
+      "total": 969,
+      "used": 848,
+      "free": 64,
+      "available": 121,
+      "used_pct": 87.5
+    },
+    "swap_mb": {
+      "used": 799,
+      "active": true
+    },
+    "disk_pct": 77,
+    "disk_avail_gb": 6.8
+  },
+  "issues": [
+    {
+      "severity": "LOW",
+      "component": "memory",
+      "description": "Memory at 87.5% — normal for 5 running bots + data server + active Kaggle jobs"
+    }
+  ],
+  "last_actions": [
+    "✓ Verified all 6 HF NBA spaces UP",
+    "✓ Data server responding on :8080",
+    "✓ Bloomberg API responding on :8042",
+    "✓ All 5 Telegram bots alive",
+    "✓ Kaggle NBA + Political jobs relaunched",
+    "✓ Disk usage improved (83% → 77%)"
+  ],
+  "status": "HEALTHY"
 }
