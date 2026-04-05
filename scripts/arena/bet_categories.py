@@ -11,6 +11,7 @@ Each category defines:
   - group: grouping for portfolio diversification
 """
 
+import json
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional, Callable
 
@@ -444,7 +445,6 @@ def get_meta_prompt(all_predictions: Dict[str, dict], game_context: dict) -> str
     for agent_id, pred in all_predictions.items():
         preds_text += f"\n  {agent_id}: {json.dumps(pred, default=str)[:300]}"
 
-    import json
     return f"""CHAIRMAN SYNTHESIS — {away} @ {home}
 
 You are the Oracle. Below are predictions from {len(all_predictions)} AI agents.
