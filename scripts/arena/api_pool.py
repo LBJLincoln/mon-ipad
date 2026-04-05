@@ -97,11 +97,11 @@ PROVIDERS = {
     "openrouter": ProviderConfig(
         name="openrouter",
         base_url="https://openrouter.ai/api/v1",
-        models=["qwen/qwen3-30b-a3b:free",
-                "google/gemma-3-27b-it:free",
+        models=["google/gemma-3-27b-it:free",
                 "meta-llama/llama-4-maverick:free",
                 "mistralai/mistral-small-3.1-24b-instruct:free",
-                "deepseek/deepseek-r1-0528:free"],
+                "deepseek/deepseek-r1-0528:free",
+                "qwen/qwen3-235b-a22b:free"],
         rpm=20, rpd=200, is_free=True, timeout=45.0, max_tokens=512
     ),
 
@@ -109,7 +109,7 @@ PROVIDERS = {
     "cohere": ProviderConfig(
         name="cohere",
         base_url="https://api.cohere.com/compatibility/v1",
-        models=["command-r-plus"],
+        models=["command-a-03-2025", "command-r7b-12-2024"],
         rpm=20, rpd=1000, is_free=True, timeout=30.0, max_tokens=512
     ),
 
@@ -125,7 +125,7 @@ PROVIDERS = {
     "huggingface": ProviderConfig(
         name="huggingface",
         base_url="https://router.huggingface.co/v1",
-        models=["microsoft/phi-4", "mistralai/Mistral-7B-Instruct-v0.3"],
+        models=["Qwen/Qwen2.5-72B-Instruct", "mistralai/Mistral-Small-24B-Instruct-2501"],
         rpm=10, rpd=500, is_free=True, timeout=60.0, max_tokens=512
     ),
 }
@@ -406,9 +406,17 @@ class APIPool:
 
             except Exception as e:
                 self.record_usage(slot, error=True)
+                err_msg = str(e)[:120]
+                # Mark key as exhausted if restricted/banned
+                if any(x in err_msg.lower() for x in ['restricted', 'banned', 'suspended', 'deactivated']):
+                    slot.is_exhausted = True
                 if attempt < attempts - 1:
                     time.sleep(0.5)
                     continue
+                # Log the error for debugging (but don't spam)
+                if not hasattr(self, '_error_log'):
+                    self._error_log = {}
+                self._error_log[provider] = err_msg
                 return None
 
     def call_llm_raw(self, provider: str, prompt: str,

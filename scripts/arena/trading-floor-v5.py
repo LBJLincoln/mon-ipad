@@ -1461,10 +1461,10 @@ class TradingFloorV5:
         sp_c = synthesis.get("consensus_spread", {})
         tt_c = synthesis.get("consensus_total", {})
 
-        # --- ML BET ---
+        # --- ML BET --- (lower thresholds: 0.35 conf, 0.40 agree)
         ml_conf = ml_c.get("confidence", 0)
         ml_agree = ml_c.get("agreement_pct", 0)
-        if ml_conf > 0.50 and ml_agree > 0.55:
+        if ml_conf > 0.35 and ml_agree > 0.40:
             direction = ml_c.get("direction", "home")
             edge_pct = synthesis.get("avg_edge_pct", 0)
             edge = abs(float(edge_pct)) / 100.0 if edge_pct else 0.02
@@ -1494,7 +1494,7 @@ class TradingFloorV5:
         # --- SPREAD BET ---
         sp_conf = sp_c.get("confidence", 0)
         sp_agree = sp_c.get("agreement_pct", 0)
-        if (sp_conf > 0.50 and sp_agree > 0.55 and odds_entry and
+        if (sp_conf > 0.35 and sp_agree > 0.40 and odds_entry and
                 odds_entry.get("spread_home") is not None):
             direction = sp_c.get("direction", "home")
             stake = _sz_confidence_scaled(0.03, 1.909, 10_000)
@@ -1513,8 +1513,7 @@ class TradingFloorV5:
         # --- TOTAL BET ---
         tt_conf = tt_c.get("confidence", 0)
         tt_agree = tt_c.get("agreement_pct", 0)
-        if (tt_conf > 0.50 and tt_agree > 0.55 and odds_entry and
-                odds_entry.get("total") is not None):
+        if (tt_conf > 0.35 and tt_agree > 0.40):
             direction = tt_c.get("direction", "over")
             stake = _sz_confidence_scaled(0.02, 1.909, 10_000)
             bets.append({

@@ -196,40 +196,40 @@ def _build_tier2() -> List[TradingAgent]:
     """20 free power traders using best free models, each with a focused angle."""
     agents = []
 
-    # --- 5x Groq Llama-4-Scout (different strategies) ---
-    groq_scout_strategies = [
-        ("value_hunter", "Scout Value Hunter", "moneyline", 0.04, "conservative"),
-        ("half_kelly", "Scout Momentum", "spread", 0.03, "aggressive"),
-        ("proportional_edge", "Scout Totals Master", "totals", 0.03, "analytical"),
-        ("confidence_scaled", "Scout Props Analyst", "player_props", 0.03, "analytical"),
-        ("quarter_kelly", "Scout Exotic Eye", "exotic", 0.05, "contrarian"),
+    # --- 5x OpenRouter diverse (replace restricted Groq) ---
+    or_power_strategies = [
+        ("value_hunter", "OR Value Hunter", "moneyline", 0.04, "conservative", "google/gemma-3-27b-it:free"),
+        ("half_kelly", "OR Momentum", "spread", 0.03, "aggressive", "meta-llama/llama-4-maverick:free"),
+        ("proportional_edge", "OR Totals Master", "totals", 0.03, "analytical", "mistralai/mistral-small-3.1-24b-instruct:free"),
+        ("confidence_scaled", "OR Props Analyst", "player_props", 0.03, "analytical", "deepseek/deepseek-r1-0528:free"),
+        ("quarter_kelly", "OR Exotic Eye", "exotic", 0.05, "contrarian", "qwen/qwen3-235b-a22b:free"),
     ]
-    for i, (strat, name, group, min_e, pers) in enumerate(groq_scout_strategies):
+    for i, (strat, name, group, min_e, pers, model) in enumerate(or_power_strategies):
         agents.append(TradingAgent(
-            id=f"t2_groq_scout_{i}", name=name, tier=AgentTier.FREE_POWER,
-            provider="groq", model="llama-4-scout-17b-16e-instruct",
+            id=f"t2_or_power_{i}", name=name, tier=AgentTier.FREE_POWER,
+            provider="openrouter", model=model,
             strategy=strat, focus_groups=[group, "moneyline"],
             personality=pers, min_edge=min_e, risk_tolerance=0.5,
             kelly_fraction=0.5,
-            description=f"Groq Llama-4-Scout key rotation, focus: {group}"
+            description=f"OpenRouter power trader, focus: {group}"
         ))
 
-    # --- 5x Groq Llama-3.1-8b (fast bulk analysis, diverse strategies) ---
-    groq_llama_strategies = [
-        ("flat_2pct", "Llama Flat Diversifier", ["moneyline", "spread"]),
-        ("half_kelly", "Llama Sharp Shooter", ["spread", "totals"]),
-        ("value_hunter", "Llama Value Seeker", ["moneyline", "margin"]),
-        ("eighth_kelly", "Llama Safety Net", ["totals", "moneyline"]),
-        ("proportional_edge", "Llama Edge Scaler", ["spread", "player_props"]),
+    # --- 5x HuggingFace + Cohere (fast bulk analysis, diverse strategies) ---
+    hf_cohere_strategies = [
+        ("flat_2pct", "HF Flat Diversifier", ["moneyline", "spread"], "huggingface", "Qwen/Qwen2.5-72B-Instruct"),
+        ("half_kelly", "HF Sharp Shooter", ["spread", "totals"], "huggingface", "mistralai/Mistral-Small-24B-Instruct-2501"),
+        ("value_hunter", "Cohere Value Seeker", ["moneyline", "margin"], "cohere", "command-a-03-2025"),
+        ("eighth_kelly", "Cohere Safety Net", ["totals", "moneyline"], "cohere", "command-r7b-12-2024"),
+        ("proportional_edge", "HF Edge Scaler", ["spread", "player_props"], "huggingface", "Qwen/Qwen2.5-72B-Instruct"),
     ]
-    for i, (strat, name, groups) in enumerate(groq_llama_strategies):
+    for i, (strat, name, groups, provider, model) in enumerate(hf_cohere_strategies):
         agents.append(TradingAgent(
-            id=f"t2_groq_llama_{i}", name=name, tier=AgentTier.FREE_POWER,
-            provider="groq", model="llama-3.1-8b-instant",
+            id=f"t2_hf_cohere_{i}", name=name, tier=AgentTier.FREE_POWER,
+            provider=provider, model=model,
             strategy=strat, focus_groups=groups,
             personality="analytical", min_edge=0.02, risk_tolerance=0.5,
             kelly_fraction=0.25,
-            description=f"Groq Llama-3.1-8b fast trader #{i}"
+            description=f"{provider} fast trader #{i}"
         ))
 
     # --- 3x OpenRouter Qwen (different angles) ---
@@ -241,7 +241,7 @@ def _build_tier2() -> List[TradingAgent]:
     for i, (strat, name, groups, pers) in enumerate(or_qwen_configs):
         agents.append(TradingAgent(
             id=f"t2_or_qwen_{i}", name=name, tier=AgentTier.FREE_POWER,
-            provider="openrouter", model="qwen/qwen3-30b-a3b:free",
+            provider="openrouter", model="qwen/qwen3-235b-a22b:free",
             strategy=strat, focus_groups=groups,
             personality=pers, min_edge=0.03, risk_tolerance=0.5,
             kelly_fraction=0.5,
@@ -281,7 +281,7 @@ def _build_tier2() -> List[TradingAgent]:
     ]):
         agents.append(TradingAgent(
             id=f"t2_cohere_{i}", name=name, tier=AgentTier.FREE_POWER,
-            provider="cohere", model="command-r-plus",
+            provider="cohere", model="command-a-03-2025",
             strategy=strat, focus_groups=["moneyline", "spread", "totals"],
             personality="analytical", min_edge=0.03,
             description=f"Cohere Command-R+ free #{i}"
@@ -359,10 +359,16 @@ def _build_tier3() -> List[TradingAgent]:
     Uses cheapest/fastest APIs: Groq llama-3.1-8b (72,000 RPD across 5 keys).
     """
     agents = []
-    # Distribute across Groq models for load balancing
+    # Distribute across working free providers (Groq restricted Apr 2026)
     cheap_configs = [
-        ("groq", "llama-3.1-8b-instant"),
-        ("groq", "gemma2-9b-it"),
+        ("openrouter", "google/gemma-3-27b-it:free"),
+        ("openrouter", "meta-llama/llama-4-maverick:free"),
+        ("openrouter", "mistralai/mistral-small-3.1-24b-instruct:free"),
+        ("openrouter", "deepseek/deepseek-r1-0528:free"),
+        ("huggingface", "Qwen/Qwen2.5-72B-Instruct"),
+        ("huggingface", "mistralai/Mistral-Small-24B-Instruct-2501"),
+        ("cohere", "command-a-03-2025"),
+        ("cohere", "command-r7b-12-2024"),
     ]
 
     strategies_rotation = [
@@ -415,7 +421,7 @@ def _build_tier4() -> List[TradingAgent]:
     return [
         TradingAgent(
             id="t4_paperclip", name="Paperclip Allocator", tier=AgentTier.META,
-            provider="groq", model="llama-3.3-70b-versatile",
+            provider="openrouter", model="qwen/qwen3-235b-a22b:free",
             strategy="meta_allocation",
             focus_groups=["all"],
             personality="analytical", min_edge=0.0,
@@ -427,7 +433,7 @@ def _build_tier4() -> List[TradingAgent]:
         ),
         TradingAgent(
             id="t4_hermes", name="Hermes Router", tier=AgentTier.META,
-            provider="groq", model="llama-3.3-70b-versatile",
+            provider="openrouter", model="google/gemma-3-27b-it:free",
             strategy="meta_consensus",
             focus_groups=["all"],
             personality="analytical", min_edge=0.0,
@@ -439,7 +445,7 @@ def _build_tier4() -> List[TradingAgent]:
         ),
         TradingAgent(
             id="t4_oracle", name="Oracle Chairman", tier=AgentTier.META,
-            provider="google", model="gemini-2.0-flash",
+            provider="openrouter", model="deepseek/deepseek-r1-0528:free",
             strategy="meta_synthesis",
             focus_groups=["all"],
             personality="analytical", min_edge=0.03,
