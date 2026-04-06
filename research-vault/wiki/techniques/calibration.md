@@ -1,10 +1,10 @@
 # Calibration & Probability Scoring
 
-> Auto-compiled from 41 raw sources on 2026-04-06
+> Auto-compiled from 33 raw sources on 2026-04-06
 
 ## Overview
 
-This topic covers 41 research files spanning calibration & probability scoring.
+This topic covers 33 research files spanning calibration & probability scoring.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -26,23 +26,15 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **16 -- Karpathy Autoresearch Pattern** (800 words) -- `raw/obsidian-docs/16-Karpathy-Pattern.md`
 - **research_march2026_cycle3** (775 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle3.md`
 - **research_march2026_cycle3** (775 words) -- `raw/research-analyst/research_march2026_cycle3.md`
-- **Research Proposal: ELO Injection + Probability Clipping** (765 words) -- `raw/data-proposals/elo-injection-prob-clipping-2026-03-27.md`
 - **research_march2026_cycle4** (764 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle4.md`
 - **research_march2026_cycle4** (764 words) -- `raw/research-analyst/research_march2026_cycle4.md`
-- **Research Proposal: Stacked Ensemble Meta-Learner + Probability Clipping** (718 words) -- `raw/data-proposals/ensemble-stacking-2026-03-27.md`
 - **project_nba_research_state** (660 words) -- `raw/agent-memory/research-analyst_project_nba_research_state.md`
 - **project_nba_research_state** (660 words) -- `raw/research-analyst/project_nba_research_state.md`
-- **Research Proposal: Shot-Chart Zone Features + SHAP-Driven Feature Selection** (637 words) -- `raw/data-proposals/shot-chart-shap-2026-03-27.md`
-- **Research Proposal: Stacked Ensemble Meta-Learner** (601 words) -- `raw/data-proposals/stacked-ensemble-2026-03-27.md`
-- **Research Proposal: Logistic Regression as 7th Model Type + Probability Clipping** (570 words) -- `raw/data-proposals/lr-meta-learner-2026-03-27.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle6.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/research-analyst/research_march2026_cycle6.md`
-- **Research Proposal: Post-hoc Calibration Layer** (516 words) -- `raw/data-proposals/calibration-improvement-2026-03-27.md`
-- **Research Proposal: Calibrated Logistic Regression + Shot-Zone Features** (507 words) -- `raw/data-proposals/lr-calibration-shot-features-2026-03-28.md`
 - **NBA Prediction Improvement Proposals — 2026-04-03** (464 words) -- `raw/data-proposals/2026-04-03-nba-techniques.md`
 - **Backtesting & Multi-Agent Portfolio Research — April 2026 Cycle 11** (414 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle11_backtesting.md`
 - **Backtesting & Multi-Agent Portfolio Research — April 2026 Cycle 11** (414 words) -- `raw/research-analyst/research_april2026_cycle11_backtesting.md`
-- **Research Proposal: Probability Clipping for Brier Score Improvement** (349 words) -- `raw/data-proposals/probability-clipping-brier-2026-03-28.md`
 - **Research Proposal: Shot-Chart Spatial Embeddings + Isotonic Calibration** (335 words) -- `raw/data-proposals/2026-04-01-shot-chart-embeddings-calibration.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/data-research/research-cycle-2026-03-26.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`

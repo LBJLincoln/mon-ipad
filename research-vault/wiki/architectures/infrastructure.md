@@ -1,10 +1,10 @@
 # Infrastructure & Compute
 
-> Auto-compiled from 95 raw sources on 2026-04-06
+> Auto-compiled from 89 raw sources on 2026-04-06
 
 ## Overview
 
-This topic covers 95 research files spanning infrastructure & compute.
+This topic covers 89 research files spanning infrastructure & compute.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -57,7 +57,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **research_march2026_cycle3** (775 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle3.md`
 - **research_march2026_cycle3** (775 words) -- `raw/research-analyst/research_march2026_cycle3.md`
 - **01 -- Architecture (Forge v19)** (770 words) -- `raw/obsidian-docs/01-Architecture.md`
-- **Research Proposal: ELO Injection + Probability Clipping** (765 words) -- `raw/data-proposals/elo-injection-prob-clipping-2026-03-27.md`
 - **research_march2026_cycle4** (764 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle4.md`
 - **research_march2026_cycle4** (764 words) -- `raw/research-analyst/research_march2026_cycle4.md`
 - **09 -- Legal & Finance** (759 words) -- `raw/obsidian-docs/09-Legal-Finance.md`
@@ -66,7 +65,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **13 -- Tools** (724 words) -- `raw/obsidian-docs/13-Tools.md`
 - **19 -- Cross-Repo (D9)** (724 words) -- `raw/obsidian-docs/19-Cross-Repo.md`
 - **Gemini CLI Research March 2026** (718 words) -- `raw/agent-memory/research-analyst_research_gemini_cli_march2026.md`
-- **Research Proposal: Stacked Ensemble Meta-Learner + Probability Clipping** (718 words) -- `raw/data-proposals/ensemble-stacking-2026-03-27.md`
 - **Gemini CLI Research March 2026** (718 words) -- `raw/research-analyst/research_gemini_cli_march2026.md`
 - **17 -- Political Alpha** (701 words) -- `raw/obsidian-docs/17-Political-Alpha.md`
 - **08 -- API Vision & Marketplace** (689 words) -- `raw/obsidian-docs/08-API-Vision.md`
@@ -81,19 +79,15 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **NBA Feature Engine current state** (649 words) -- `raw/feature-engineer/project_engine_v38cat.md`
 - **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/agent-memory/karpathy-researcher_research_bloomberg_opencode_pi.md`
 - **Browser Automation for HF Spaces — March 2026 Research** (601 words) -- `raw/agent-memory/research-analyst_research_browser_automation_march2026.md`
-- **Research Proposal: Stacked Ensemble Meta-Learner** (601 words) -- `raw/data-proposals/stacked-ensemble-2026-03-27.md`
 - **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/karpathy-researcher/research_bloomberg_opencode_pi.md`
 - **Browser Automation for HF Spaces — March 2026 Research** (601 words) -- `raw/research-analyst/research_browser_automation_march2026.md`
-- **Research Proposal: Logistic Regression as 7th Model Type + Probability Clipping** (570 words) -- `raw/data-proposals/lr-meta-learner-2026-03-27.md`
 - **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle9_neural_architectures.md`
 - **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/research-analyst/research_april2026_cycle9_neural_architectures.md`
-- **Research Proposal: Calibrated Logistic Regression + Shot-Zone Features** (507 words) -- `raw/data-proposals/lr-calibration-shot-features-2026-03-28.md`
 - **NBA Prediction Improvement Proposals — 2026-04-03** (464 words) -- `raw/data-proposals/2026-04-03-nba-techniques.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/agent-memory/repo-scout_project_nba_data_sources.md`
 - **NBA Free Data Sources Inventory** (397 words) -- `raw/repo-scout/project_nba_data_sources.md`
 - **Political Alpha Deployment** (363 words) -- `raw/agent-memory/feature-engineer_project_political_alpha_deploy.md`
 - **Political Alpha Deployment** (363 words) -- `raw/feature-engineer/project_political_alpha_deploy.md`
-- **Research Proposal: Probability Clipping for Brier Score Improvement** (349 words) -- `raw/data-proposals/probability-clipping-brier-2026-03-28.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/agent-memory/repo-scout_project_historical_odds_sources.md`
 - **Historical NBA Odds Sources** (313 words) -- `raw/repo-scout/project_historical_odds_sources.md`
 - **project_hf_spaces_inventory** (297 words) -- `raw/agent-memory/repo-scout_project_hf_spaces_inventory.md`

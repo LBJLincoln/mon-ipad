@@ -1,10 +1,10 @@
 # Genetic Algorithm & Evolution
 
-> Auto-compiled from 75 raw sources on 2026-04-06
+> Auto-compiled from 70 raw sources on 2026-04-06
 
 ## Overview
 
-This topic covers 75 research files spanning genetic algorithm & evolution.
+This topic covers 70 research files spanning genetic algorithm & evolution.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -50,14 +50,12 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **research_march2026_cycle3** (775 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle3.md`
 - **research_march2026_cycle3** (775 words) -- `raw/research-analyst/research_march2026_cycle3.md`
 - **01 -- Architecture (Forge v19)** (770 words) -- `raw/obsidian-docs/01-Architecture.md`
-- **Research Proposal: ELO Injection + Probability Clipping** (765 words) -- `raw/data-proposals/elo-injection-prob-clipping-2026-03-27.md`
 - **research_march2026_cycle4** (764 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle4.md`
 - **research_march2026_cycle4** (764 words) -- `raw/research-analyst/research_march2026_cycle4.md`
 - **hf_march2026_scan** (733 words) -- `raw/agent-memory/research-analyst_project_hf_march2026_scan.md`
 - **hf_march2026_scan** (733 words) -- `raw/research-analyst/project_hf_march2026_scan.md`
 - **13 -- Tools** (724 words) -- `raw/obsidian-docs/13-Tools.md`
 - **19 -- Cross-Repo (D9)** (724 words) -- `raw/obsidian-docs/19-Cross-Repo.md`
-- **Research Proposal: Stacked Ensemble Meta-Learner + Probability Clipping** (718 words) -- `raw/data-proposals/ensemble-stacking-2026-03-27.md`
 - **08 -- API Vision & Marketplace** (689 words) -- `raw/obsidian-docs/08-API-Vision.md`
 - **24 -- GPU Autoresearch System** (689 words) -- `raw/obsidian-docs/24-GPU-Autoresearch.md`
 - **Cycle 8 ONNX + ClearML Research (Apr 3, 2026)** (679 words) -- `raw/agent-memory/karpathy-researcher_research_cycle8_onnx_clearml.md`
@@ -65,11 +63,8 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **14 -- Communication** (665 words) -- `raw/obsidian-docs/14-Communication.md`
 - **project_nba_research_state** (660 words) -- `raw/agent-memory/research-analyst_project_nba_research_state.md`
 - **project_nba_research_state** (660 words) -- `raw/research-analyst/project_nba_research_state.md`
-- **Research Proposal: Shot-Chart Zone Features + SHAP-Driven Feature Selection** (637 words) -- `raw/data-proposals/shot-chart-shap-2026-03-27.md`
 - **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/agent-memory/karpathy-researcher_research_bloomberg_opencode_pi.md`
-- **Research Proposal: Stacked Ensemble Meta-Learner** (601 words) -- `raw/data-proposals/stacked-ensemble-2026-03-27.md`
 - **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/karpathy-researcher/research_bloomberg_opencode_pi.md`
-- **Research Proposal: Logistic Regression as 7th Model Type + Probability Clipping** (570 words) -- `raw/data-proposals/lr-meta-learner-2026-03-27.md`
 - **Research Scan: self-improvement-harness-2026-03-31** (530 words) -- `raw/research/self-improvement-harness-2026-03-31.md`
 - **NBA Prediction Improvement Proposals — 2026-04-03** (464 words) -- `raw/data-proposals/2026-04-03-nba-techniques.md`
 - **18 -- Creative (RGWA)** (379 words) -- `raw/obsidian-docs/18-Creative-RGWA.md`

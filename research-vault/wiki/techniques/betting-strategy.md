@@ -1,10 +1,10 @@
 # Betting Strategy & Bankroll
 
-> Auto-compiled from 95 raw sources on 2026-04-06
+> Auto-compiled from 94 raw sources on 2026-04-06
 
 ## Overview
 
-This topic covers 95 research files spanning betting strategy & bankroll.
+This topic covers 94 research files spanning betting strategy & bankroll.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -63,7 +63,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **research_april2026_cycle10_betting_markets** (562 words) -- `raw/research-analyst/research_april2026_cycle10_betting_markets.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle6.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/research-analyst/research_march2026_cycle6.md`
-- **Research Proposal: Calibrated Logistic Regression + Shot-Zone Features** (507 words) -- `raw/data-proposals/lr-calibration-shot-features-2026-03-28.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/agent-memory/research-analyst_project_backtest_audit_march2026.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/research-analyst/project_backtest_audit_march2026.md`
 - **research_march2026_cycle8_data_sources** (424 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle8_data_sources.md`

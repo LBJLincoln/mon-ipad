@@ -1,10 +1,10 @@
 # NBA Prediction & ML Models
 
-> Auto-compiled from 154 raw sources on 2026-04-06
+> Auto-compiled from 145 raw sources on 2026-04-06
 
 ## Overview
 
-This topic covers 154 research files spanning nba prediction & ml models.
+This topic covers 145 research files spanning nba prediction & ml models.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, LLM Council, Multi-Island Evolution.
 
 ## Sources
@@ -67,7 +67,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **research_march2026_cycle3** (775 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle3.md`
 - **research_march2026_cycle3** (775 words) -- `raw/research-analyst/research_march2026_cycle3.md`
 - **01 -- Architecture (Forge v19)** (770 words) -- `raw/obsidian-docs/01-Architecture.md`
-- **Research Proposal: ELO Injection + Probability Clipping** (765 words) -- `raw/data-proposals/elo-injection-prob-clipping-2026-03-27.md`
 - **research_march2026_cycle4** (764 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle4.md`
 - **research_march2026_cycle4** (764 words) -- `raw/research-analyst/research_march2026_cycle4.md`
 - **09 -- Legal & Finance** (759 words) -- `raw/obsidian-docs/09-Legal-Finance.md`
@@ -75,33 +74,26 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **hf_march2026_scan** (733 words) -- `raw/research-analyst/project_hf_march2026_scan.md`
 - **13 -- Tools** (724 words) -- `raw/obsidian-docs/13-Tools.md`
 - **19 -- Cross-Repo (D9)** (724 words) -- `raw/obsidian-docs/19-Cross-Repo.md`
-- **Research Proposal: Stacked Ensemble Meta-Learner + Probability Clipping** (718 words) -- `raw/data-proposals/ensemble-stacking-2026-03-27.md`
 - **17 -- Political Alpha** (701 words) -- `raw/obsidian-docs/17-Political-Alpha.md`
 - **08 -- API Vision & Marketplace** (689 words) -- `raw/obsidian-docs/08-API-Vision.md`
 - **24 -- GPU Autoresearch System** (689 words) -- `raw/obsidian-docs/24-GPU-Autoresearch.md`
 - **Cycle 8 ONNX + ClearML Research (Apr 3, 2026)** (679 words) -- `raw/agent-memory/karpathy-researcher_research_cycle8_onnx_clearml.md`
 - **Cycle 8 ONNX + ClearML Research (Apr 3, 2026)** (679 words) -- `raw/karpathy-researcher/research_cycle8_onnx_clearml.md`
-- **Research Proposal: Schedule-Aware Fatigue & Rest-Day Features** (677 words) -- `raw/data-proposals/schedule-fatigue-rest-days-2026-03-28.md`
 - **14 -- Communication** (665 words) -- `raw/obsidian-docs/14-Communication.md`
 - **project_nba_research_state** (660 words) -- `raw/agent-memory/research-analyst_project_nba_research_state.md`
 - **project_nba_research_state** (660 words) -- `raw/research-analyst/project_nba_research_state.md`
 - **NBA Feature Engine current state** (649 words) -- `raw/agent-memory/feature-engineer_project_engine_v38cat.md`
 - **NBA Feature Engine current state** (649 words) -- `raw/feature-engineer/project_engine_v38cat.md`
-- **Research Proposal: Shot-Chart Zone Features + SHAP-Driven Feature Selection** (637 words) -- `raw/data-proposals/shot-chart-shap-2026-03-27.md`
 - **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/agent-memory/karpathy-researcher_research_bloomberg_opencode_pi.md`
 - **Browser Automation for HF Spaces — March 2026 Research** (601 words) -- `raw/agent-memory/research-analyst_research_browser_automation_march2026.md`
-- **Research Proposal: Stacked Ensemble Meta-Learner** (601 words) -- `raw/data-proposals/stacked-ensemble-2026-03-27.md`
 - **Bloomberg Terminal + OpenCode + Pi Agent Research (Apr 3, 2026)** (601 words) -- `raw/karpathy-researcher/research_bloomberg_opencode_pi.md`
 - **Browser Automation for HF Spaces — March 2026 Research** (601 words) -- `raw/research-analyst/research_browser_automation_march2026.md`
-- **Research Proposal: Logistic Regression as 7th Model Type + Probability Clipping** (570 words) -- `raw/data-proposals/lr-meta-learner-2026-03-27.md`
 - **research_april2026_cycle10_betting_markets** (562 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle10_betting_markets.md`
 - **research_april2026_cycle10_betting_markets** (562 words) -- `raw/research-analyst/research_april2026_cycle10_betting_markets.md`
 - **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle9_neural_architectures.md`
 - **Research Cycle 9 — Neural Architectures Deep Sweep April 2026** (541 words) -- `raw/research-analyst/research_april2026_cycle9_neural_architectures.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/agent-memory/research-analyst_research_march2026_cycle6.md`
 - **Research Cycle 6 — State-of-Art NBA Prediction Deep Sweep** (537 words) -- `raw/research-analyst/research_march2026_cycle6.md`
-- **Research Proposal: Post-hoc Calibration Layer** (516 words) -- `raw/data-proposals/calibration-improvement-2026-03-27.md`
-- **Research Proposal: Calibrated Logistic Regression + Shot-Zone Features** (507 words) -- `raw/data-proposals/lr-calibration-shot-features-2026-03-28.md`
 - **NBA Prediction Improvement Proposals — 2026-04-03** (464 words) -- `raw/data-proposals/2026-04-03-nba-techniques.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/agent-memory/research-analyst_project_backtest_audit_march2026.md`
 - **Backtest Audit March 2026** (460 words) -- `raw/research-analyst/project_backtest_audit_march2026.md`
@@ -118,7 +110,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Multi-Market NBA Betting Research March 2026** (377 words) -- `raw/research-analyst/research_march2026_multi_market.md`
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/agent-memory/karpathy-researcher_feedback_karpathy_patterns_validated.md`
 - **Karpathy Patterns Validated (April 2026)** (353 words) -- `raw/karpathy-researcher/feedback_karpathy_patterns_validated.md`
-- **Research Proposal: Probability Clipping for Brier Score Improvement** (349 words) -- `raw/data-proposals/probability-clipping-brier-2026-03-28.md`
 - **Research Proposal: Shot-Chart Spatial Embeddings + Isotonic Calibration** (335 words) -- `raw/data-proposals/2026-04-01-shot-chart-embeddings-calibration.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/data-research/research-cycle-2026-03-26.md`
 - **Research Cycle — March 26, 2026** (331 words) -- `raw/research/research-cycle-2026-03-26.md`

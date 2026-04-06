@@ -1,11 +1,11 @@
 # Data Sources & APIs
 
-> Auto-compiled from 69 raw sources on 2026-04-06
+> Auto-compiled from 67 raw sources on 2026-04-06
 
 ## Overview
 
-This topic covers 69 research files spanning data sources & apis.
-Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rating, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators.
+This topic covers 67 research files spanning data sources & apis.
+Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Multi-Island Evolution, Mutation Operators, Platt Scaling.
 
 ## Sources
 
@@ -34,10 +34,8 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **09 -- Legal & Finance** (759 words) -- `raw/obsidian-docs/09-Legal-Finance.md`
 - **hf_march2026_scan** (733 words) -- `raw/agent-memory/research-analyst_project_hf_march2026_scan.md`
 - **hf_march2026_scan** (733 words) -- `raw/research-analyst/project_hf_march2026_scan.md`
-- **Research Proposal: Schedule-Aware Fatigue & Rest-Day Features** (677 words) -- `raw/data-proposals/schedule-fatigue-rest-days-2026-03-28.md`
 - **project_nba_research_state** (660 words) -- `raw/agent-memory/research-analyst_project_nba_research_state.md`
 - **project_nba_research_state** (660 words) -- `raw/research-analyst/project_nba_research_state.md`
-- **Research Proposal: Shot-Chart Zone Features + SHAP-Driven Feature Selection** (637 words) -- `raw/data-proposals/shot-chart-shap-2026-03-27.md`
 - **Browser Automation for HF Spaces — March 2026 Research** (601 words) -- `raw/agent-memory/research-analyst_research_browser_automation_march2026.md`
 - **Browser Automation for HF Spaces — March 2026 Research** (601 words) -- `raw/research-analyst/research_browser_automation_march2026.md`
 - **research_april2026_cycle10_betting_markets** (562 words) -- `raw/agent-memory/research-analyst_research_april2026_cycle10_betting_markets.md`
@@ -120,7 +118,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - [[Brier Score]]
 - [[Calibration]]
 - [[Crossover]]
-- [[Elo Rating]]
 - [[Ensemble Methods]]
 - [[Feature Engineering]]
 - [[Feature Selection]]

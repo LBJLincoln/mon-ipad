@@ -1,10 +1,10 @@
 # Political Alpha & Prediction Markets
 
-> Auto-compiled from 45 raw sources on 2026-04-06
+> Auto-compiled from 44 raw sources on 2026-04-06
 
 ## Overview
 
-This topic covers 45 research files spanning political alpha & prediction markets.
+This topic covers 44 research files spanning political alpha & prediction markets.
 Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble Methods, Feature Engineering, Feature Selection, Genetic Algorithm, HF Spaces, Isotonic Regression, Karpathy Loop, Kelly Criterion, Mutation Operators, Platt Scaling, Political Alpha.
 
 ## Sources
@@ -40,7 +40,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **19 -- Cross-Repo (D9)** (724 words) -- `raw/obsidian-docs/19-Cross-Repo.md`
 - **17 -- Political Alpha** (701 words) -- `raw/obsidian-docs/17-Political-Alpha.md`
 - **14 -- Communication** (665 words) -- `raw/obsidian-docs/14-Communication.md`
-- **Research Proposal: Logistic Regression as 7th Model Type + Probability Clipping** (570 words) -- `raw/data-proposals/lr-meta-learner-2026-03-27.md`
 - **Political Alpha Research — March 2026** (527 words) -- `raw/agent-memory/research-analyst_research_political_alpha_march2026.md`
 - **Political Alpha Research — March 2026** (527 words) -- `raw/research-analyst/research_political_alpha_march2026.md`
 - **NBA Prediction Improvement Proposals — 2026-04-03** (464 words) -- `raw/data-proposals/2026-04-03-nba-techniques.md`
