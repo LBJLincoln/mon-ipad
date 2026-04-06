@@ -1,10 +1,57 @@
 ---
 name: Evolution Fleet Status — April 2026
-description: HF Space fleet health. Apr 6 iter4: S13 MAJOR RECOVERY 0.22283 (-0.02312). S15 fleet best 0.2222. S14 mutation freeze risk (0.0625). 3 POSTs queued.
+description: HF Space fleet health. Apr 6 iter6: ROOT CAUSE CONFIRMED — adaptive mutation annealing overrides API POSTs. S15 fleet best 0.2222. S10 XPOLL executed. S12+S14 diversity resets. CODE FIX REQUIRED: MUTATION_FLOOR=0.07.
 type: project
 ---
 
-**Last verified: 2026-04-06 10:15 UTC (iteration 4)**
+**Last verified: 2026-04-06 16:15 UTC (iteration 6)**
+
+## Current Fleet State (iter 6, 2026-04-06 16:15 UTC)
+
+| Space | Gen | Best Brier | Best Model | Mut Rate | Trend | Action (iter6) |
+|-------|-----|-----------|------------|----------|-------|----------------|
+| S10 nba-quant | 439 | 0.23149 | random_forest | 0.0809 | FLAT 3RD ITER | XPOLL from S15: mut=0.13, feat=61, cx=0.85 |
+| S11 nba-quant-2 | 480 | 0.22372 | catboost | 0.0800 | FLAT STABLE | none |
+| S12 nba-evo-3 | 743 | 0.22533 | lightgbm | 0.0488 | FLAT 3RD ITER | DIVERSITY RESET: mut=0.18, feat=70, extra_trees |
+| S13 nba-evo-4 | 347 | 0.22283 | random_forest | 0.0609 | FLAT NUDGE | nudge: mut=0.09, feat=55, cx=0.82 |
+| S14 nba-evo-5 | 610 | 0.22622 | random_forest | 0.0450 | FLAT 3RD ITER | FULL RESET: mut=0.15, feat=60 + CODE FIX FLAGGED |
+| S15 nba-evo-6 | 197 | **0.2222 (FLEET BEST)** | random_forest | 0.1145 | STABLE | XPOLL source for S10 |
+
+## ROOT CAUSE CONFIRMED (iter 6)
+
+**Issue:** Adaptive mutation annealing overrides all API config POSTs.
+- S14: mut decayed 0.0625→0.053→0.045 despite 3 POSTs setting 0.10
+- S12: mut decayed 0.07→0.0488 despite 2 nudges
+- S10: mut decayed 0.13→0.0939→0.0809 despite 3 escalations
+
+**Code Fix Required (Priority 0 — D2 Engineering):**
+```python
+MUTATION_FLOOR = 0.07  # in hf-space/app.py adaptive_mutation()
+new_mutation = max(MUTATION_FLOOR, computed_mutation)
+```
+Deploy via git subtree push to all 6 spaces. Estimated -0.001 to -0.003 Brier.
+
+**Why S15 is healthy:** pop=50 (wide search) maintains diversity, resisting annealing.
+
+## Iter 6 Interventions (all 200 OK, queued)
+
+### S10 — Cross-pollination from S15
+- Params: mutation_rate=0.13, target_features=61, crossover_rate=0.85, model_type=random_forest
+- Trigger: features < 55 for 3rd consecutive iteration (iter5 pre-planned trigger)
+
+### S12 — Diversity Reset
+- Params: mutation_rate=0.18, target_features=70, crossover_rate=0.70, population_size=30, diversity_reset=true, model_type=extra_trees
+- Trigger: brier=0.22533 FLAT 3 iters, features=40 (<50), gen=743 (oldest)
+
+### S14 — Full Reset
+- Params: mutation_rate=0.15, target_features=60, crossover_rate=0.80, diversity_reset=true
+- Trigger: API commands confirmed overridden 3x. Escalated to D2 for code fix.
+
+### S13 — Preemptive Nudge
+- Params: mutation_rate=0.09, target_features=55, crossover_rate=0.82
+- Rationale: Preemptive before mut drops below 0.06 critical threshold
+
+**Last verified: 2026-04-06 10:15 UTC (iteration 4 — preserved below for reference)**
 
 ## Current Fleet State (iter 4, 2026-04-06 10:15 UTC)
 

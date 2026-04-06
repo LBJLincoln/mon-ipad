@@ -99,7 +99,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Research Scan: github-betting-scan-2026-04-03** (145 words) -- `raw/research/github-betting-scan-2026-04-03.md`
 - **Research Scan: github-betting-scan-2026-04-04** (145 words) -- `raw/research/github-betting-scan-2026-04-04.md`
 - **Research Scan: github-betting-scan-2026-04-05** (145 words) -- `raw/research/github-betting-scan-2026-04-05.md`
-- **Research Scan: github-betting-scan-2026-04-06** (145 words) -- `raw/research/github-betting-scan-2026-04-06.md`
+- **Research Scan: github-betting-scan-2026-04-06** (136 words) -- `raw/research/github-betting-scan-2026-04-06.md`
 - **Model Game ID Mismatch Check** (107 words) -- `raw/agent-memory/market-analyst_feedback_model_game_mismatch.md`
 - **Model Game ID Mismatch Check** (107 words) -- `raw/market-analyst/feedback_model_game_mismatch.md`
 - **Political Alpha Arena Results** (100 words) -- `raw/political/arena-results-summary.md`

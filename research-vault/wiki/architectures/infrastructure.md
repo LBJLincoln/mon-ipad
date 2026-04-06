@@ -28,6 +28,8 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/data-research/self-improvement-harness-sources-2026-03-31.md`
 - **Self-Improvement Harness Research — Complete Sources (2026-03-31)** (1244 words) -- `raw/research/self-improvement-harness-sources-2026-03-31.md`
 - **04 -- Departments (9 Karpathy Loops + Trading Floor)** (1204 words) -- `raw/obsidian-docs/04-Departments.md`
+- **Evolution Fleet Status — April 2026** (1194 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
+- **Evolution Fleet Status — April 2026** (1194 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **23 -- Councils v2 (Smart Councils with Real Execution)** (1181 words) -- `raw/obsidian-docs/23-Councils-v2.md`
 - **Nomos42 — Map of Content** (1175 words) -- `raw/obsidian-docs/00-Index.md`
 - **project_march2026_findings** (1102 words) -- `raw/agent-memory/repo-scout_project_march2026_findings.md`
@@ -47,8 +49,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - **06 -- Research** (901 words) -- `raw/obsidian-docs/06-Research.md`
 - **02 -- Evolution (6 HF Islands)** (894 words) -- `raw/obsidian-docs/02-Evolution.md`
 - **Nomos42 -- Knowledge Vault** (892 words) -- `raw/obsidian-docs/README.md`
-- **Evolution Fleet Status — April 2026** (832 words) -- `raw/agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`
-- **Evolution Fleet Status — April 2026** (832 words) -- `raw/evolution-optimizer/project_evolution_stagnation_march2026.md`
 - **20 -- Session Log** (804 words) -- `raw/obsidian-docs/20-Session-Log.md`
 - **16 -- Karpathy Autoresearch Pattern** (800 words) -- `raw/obsidian-docs/16-Karpathy-Pattern.md`
 - **11 -- GPU Compute** (799 words) -- `raw/obsidian-docs/11-GPU-Compute.md`
@@ -101,6 +101,13 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 
 ## Key Findings
 
+- Current Fleet State (iter 6, 2026-04-06 16:15 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- ROOT CAUSE CONFIRMED (iter 6) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- Iter 6 Interventions (all 200 OK, queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S10 — Cross-pollination from S15 (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S12 — Diversity Reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S14 — Full Reset (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
+- S13 — Preemptive Nudge (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - Current Fleet State (iter 4, 2026-04-06 10:15 UTC) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - Iter 4 Interventions (all 200 OK, status: queued) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - S10 — regression escape boost (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
@@ -114,13 +121,6 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Elo Rati
 - S12 — mutation nudge (iter3 sent) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - S10 — regression escape boost (iter3 sent) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
 - Critical Pattern: Model Drift Across All Islands (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Fleet Best Config History (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- GPU Seed Configs (for Kaggle Karpathy) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Code Fixes Required (priority order, none deployed yet) (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- ATR Context (from `agent-memory/evolution-optimizer_project_evolution_stagnation_march2026.md`)
-- Current Category List (v3.1-54cat) (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
-- Cat 52-54 Implementation Details (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
-- Key architecture facts (from `agent-memory/feature-engineer_project_engine_v38cat.md`)
 
 ## Related Topics
 

@@ -52,7 +52,7 @@ Key concepts: Bankroll Management, Brier Score, Calibration, Crossover, Ensemble
 - **Research Scan: github-betting-scan-2026-04-03** (145 words) -- `raw/research/github-betting-scan-2026-04-03.md`
 - **Research Scan: github-betting-scan-2026-04-04** (145 words) -- `raw/research/github-betting-scan-2026-04-04.md`
 - **Research Scan: github-betting-scan-2026-04-05** (145 words) -- `raw/research/github-betting-scan-2026-04-05.md`
-- **Research Scan: github-betting-scan-2026-04-06** (145 words) -- `raw/research/github-betting-scan-2026-04-06.md`
+- **Research Scan: github-betting-scan-2026-04-06** (136 words) -- `raw/research/github-betting-scan-2026-04-06.md`
 
 ## Key Findings
 
