@@ -34,15 +34,15 @@ PREFERRED_MODEL = os.environ.get("PREFERRED_MODEL", "")
 # Per-department optimal model assignments
 # Format: {dept_id: (provider_key, model_id, display_name)}
 DEPT_MODEL_MAP = {
-    "d1": ("openrouter", "qwen/qwen3.6-plus:free",                "openrouter/qwen3.6-plus"),    # 1M ctx for papers
-    "d2": ("cerebras",   "qwen-3-235b-a22b-instruct-2507",        "cerebras/qwen3-235b"),        # Code analysis
-    "d3": ("cerebras",   "qwen-3-235b-a22b-instruct-2507",        "cerebras/qwen3-235b"),        # Analytical GA
-    "d4": ("openrouter", "qwen/qwen3.6-plus:free",                "openrouter/qwen3.6-plus"),    # Product reasoning
-    "d5": ("openrouter", "deepseek/deepseek-r1:free",             "openrouter/deepseek-r1"),     # Strategic reasoning
-    "d6": ("groq",       "llama-3.3-70b-versatile",               "groq/llama3.3-70b"),          # Statistical validation
-    "d7": ("groq",       "llama-3.1-8b-instant",                  "groq/llama3.1-8b"),           # Fast yes/no
-    "d8": ("cerebras",   "qwen-3-235b-a22b-instruct-2507",        "cerebras/qwen3-235b"),        # Financial analysis
-    "d9": ("openrouter", "qwen/qwen3.6-plus:free",                "openrouter/qwen3.6-plus"),    # Long ctx comparison
+    "d1": ("hf",         "Qwen/Qwen3.5-397B-A17B",               "hf/qwen3.5-397b"),            # 397B MoE for deep research
+    "d2": ("hf",         "Qwen/Qwen3.5-27B",                     "hf/qwen3.5-27b"),             # Code analysis
+    "d3": ("hf",         "google/gemma-4-31B-it",                 "hf/gemma4-31b"),              # Evolution decisions
+    "d4": ("hf",         "google/gemma-4-26B-A4B-it",             "hf/gemma4-26b-a4b"),          # Product reasoning
+    "d5": ("hf",         "deepseek-ai/DeepSeek-R1",               "hf/deepseek-r1"),             # Strategic reasoning
+    "d6": ("hf",         "Qwen/Qwen3.5-35B-A3B",                 "hf/qwen3.5-35b"),             # Statistical validation
+    "d7": ("hf",         "meta-llama/Llama-4-Scout-17B-16E-Instruct", "hf/llama4-scout"),        # Fast infra checks
+    "d8": ("hf",         "Qwen/Qwen3-235B-A22B-Instruct-2507",   "hf/qwen3-235b"),              # Financial analysis
+    "d9": ("hf",         "Qwen/Qwen3.5-397B-A17B",               "hf/qwen3.5-397b"),            # Cross-repo (big context)
 }
 
 # HF token -- automatically available in HF Spaces, or set as secret
@@ -111,11 +111,16 @@ def _call_llm(prompt: str, max_tokens: int = 500, temperature: float = 0.3) -> t
     all_providers = {}
 
     if HF_TOKEN:
+        # Use dept-preferred model on HF Router if available, else fallback to Qwen3.5
+        hf_model = "Qwen/Qwen3.5-27B"
+        dept_pref_check = DEPT_MODEL_MAP.get(DEPT_ID)
+        if dept_pref_check and dept_pref_check[0] == "hf":
+            hf_model = dept_pref_check[1]
         all_providers["hf"] = _build_provider(
-            "hf-router/qwen2.5-72b",
+            f"hf-router/{hf_model.split('/')[-1]}",
             "https://router.huggingface.co/v1/chat/completions",
             f"Bearer {HF_TOKEN}",
-            "Qwen/Qwen2.5-72B-Instruct",
+            hf_model,
             prompt, max_tokens, temperature,
         )
 
