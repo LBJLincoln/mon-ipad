@@ -1,9 +1,9 @@
 {
   "department": "finance",
   "dept_id": "D11",
-  "iteration": 6,
-  "timestamp": "2026-04-06T06:03:00Z",
-  "status": "active",
+  "iteration": 7,
+  "timestamp": "2026-04-06T14:15:00Z",
+  "status": "critical_alert",
   "daily_snapshot": {
     "date": "2026-04-06",
     "bankroll": 91.29,
@@ -25,6 +25,12 @@
       "games_processed": 0,
       "bets_placed": 0,
       "estimated_cost": 0
+    },
+    "zerogpu_burst": {
+      "attempts_today": 4,
+      "status": "all_eval_failed",
+      "cost": 0,
+      "note": "H200 free tier (15min/day limit)"
     },
     "total_api_calls": 0,
     "total_estimated_cost": 0
@@ -86,11 +92,11 @@
     "stretch_goal_arpu": 49
   },
   "next_actions": [
-    "DEBUG: Why trading Floor v5 placed 0 bets (sufficient models but insufficient edge detection)",
-    "Activate Stripe SaaS billing immediately ($19/$49/$149 tiers — prerequisite for revenue)",
-    "Delete 6 dead HF Spaces to free capacity (Nomos42 account overprovisioned)",
-    "Reconcile Brier calibration: Trading Floor agents see 0.22 Brier but don't place bets",
-    "Weekly reconciliation: backtest bankroll (-$8.71) vs real trading ($0)"
+    "URGENT: Debug TF v5 calibration — 5778 agents but 0 bets placed since Apr 3 (edge_threshold/kelly/agreement check)",
+    "URGENT: Activate Stripe SaaS ($19/$49/$149 tiers) to unlock revenue — currently $0 MRR",
+    "Stabilize win_rate: 38.64% → 50%+ (model drift or data validation issue)",
+    "Reconcile avg_edge (126.63%) vs actual Sharpe (-3.11) — severe overconfidence or data leakage",
+    "Delete 6 dead HF Spaces (S13bis, S14bis, P3-P8) to free Nomos42 capacity"
   ],
-  "audit_notes": "Apr 6 snapshot: Bankroll stable $91.29 (no new bets since Apr 3). All 8 HF Spaces running (6 NBA + 2 Political). Kaggle/Modal relaunched. Monthly cost $6 minimal. CRITICAL: TF v5 has 5778 agents but placed 0 bets (insufficient calibration = -8.71 loss). Stripe inactive = $0 MRR. SaaS revenue tier not launched. Compute all free tier. Runway infinite on $6/mo burn."
+  "audit_notes": "Apr 6 14:15 UTC: Bankroll $91.29 (3 days no bets). CRITICAL: TF v5 placed 0 bets since Apr 3 despite 5778 agents. Calibration issue: avg_edge 126.63% vs actual Sharpe -3.11 indicates severe overconfidence. ZeroGPU: 12 eval_failed (Apr 5-6). Win rate 38.64% below 50% breakeven. Stripe connected but SaaS inactive ($0 MRR). All compute free tier ($6/mo burn). Max drawdown 20.89%. Need urgent: TF v5 debug + Stripe activation + model validation + win_rate recovery."
 }
