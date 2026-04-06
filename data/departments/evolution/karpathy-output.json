@@ -1,85 +1,85 @@
 {
   "department": "evolution",
-  "timestamp": "2026-04-06T12:10:00Z",
-  "iteration": 5,
+  "timestamp": "2026-04-06T16:15:00Z",
+  "iteration": 6,
   "islands": {
     "S10": {
       "brier": 0.23149,
-      "generation": 197,
+      "generation": 439,
       "model": "random_forest",
-      "mutation_rate": 0.0939,
+      "mutation_rate": 0.0809,
       "features": 46,
       "stagnation_cycles": 0,
-      "status": "FLAT_2ND_ITER",
-      "action": "strong_escalation: mut=0.13, target_features=66, cx=0.80 (POST 200 OK queued)",
-      "iter4_brier": 0.23149,
+      "status": "XPOLL_EXECUTED",
+      "action": "CROSS-POLLINATION from S15: mut=0.13, target_features=61, cx=0.85, model=random_forest (POST 200 OK queued)",
+      "iter5_brier": 0.23149,
       "brier_delta": 0.00000,
-      "notes": "FLAT for 2nd consecutive iteration — worst in fleet at 0.23149. Iter4 boost (0.11→0.0939) reverted, features still locked at 46. Gen 197 logs show extra_trees at gen196 Brier=0.2351 feat=42 — population trapped in low-feature region. 3rd escalation: mut=0.13 (strongest yet), target_features=66. If iter6 still flat at <55 features, cross-pollinate with S15 config."
+      "notes": "3RD CONSECUTIVE ITER FLAT at 0.23149. Features STILL trapped at 46 despite 3 escalation POSTs (0.11->0.0939->0.13->0.0809 observed). Iter5 trigger condition met: best_features < 55. CROSS-POLLINATION EXECUTED: seeding S15 config (random_forest, 61 features, mut=0.13, cx=0.85). Pattern confirmed: adaptive mutation override is resetting API commands — code-level MUTATION_FLOOR fix mandatory. If iter7 still shows feat < 55, escalate to code fix (add PROTECTED_SEED=S15_best to GA init)."
     },
     "S11": {
       "brier": 0.22372,
-      "generation": 228,
+      "generation": 480,
       "model": "catboost",
-      "mutation_rate": 0.0960,
+      "mutation_rate": 0.0800,
       "features": 64,
       "stagnation_cycles": 0,
       "status": "FLAT_STABLE",
-      "action": "none — exploration role stable, no intervention",
-      "iter4_brier": 0.22372,
+      "action": "none — stable exploration, monitoring",
+      "iter5_brier": 0.22372,
       "brier_delta": 0.00000,
-      "notes": "FLAT but stable. Catboost at 64 features — in the proven sweet spot. Sharpe 9.39 highest alongside S13. Exploration island functioning correctly. Cycle 76 logged OK. Pareto front 13. No intervention — awaiting natural improvement cycle."
+      "notes": "Stable at 0.22372. Gen 480, features 64 (sweet spot). Mutation decayed from 0.096->0.08 — minor, still healthy. Catboost model consistent. No intervention — natural exploration continuing."
     },
     "S12": {
       "brier": 0.22533,
-      "generation": 380,
+      "generation": 743,
       "model": "lightgbm",
-      "mutation_rate": 0.0700,
+      "mutation_rate": 0.0488,
       "features": 40,
       "stagnation_cycles": 0,
-      "status": "FLAT_NUDGE_REVERTED",
-      "action": "re_nudge: mut=0.10, target_features=60, cx=0.80 (POST 200 OK queued)",
-      "iter4_brier": 0.22533,
+      "status": "DIVERSITY_RESET_EXECUTED",
+      "action": "DIVERSITY RESET: mut=0.18, target_features=70, cx=0.70, pop_size=30, model=extra_trees, diversity_reset=true (POST 200 OK queued)",
+      "iter5_brier": 0.22533,
       "brier_delta": 0.00000,
-      "notes": "FLAT. Iter4 nudge (0.0844→0.10) fully reverted to 0.07 — lowest non-critical mut in fleet. Gen 380 is oldest island, convergence confirmed. Recent gen 379: xgboost at feat=34, Brier=0.2459 — population exploring very narrow low-feature subspace. features=40 persistent trap. Re-nudged mut=0.10, target_features=60. Specialist mandate (extra_trees) abandoned — model has fully drifted to lightgbm/xgboost. Consider reset if iter6 flat."
+      "notes": "ISLAND RESET TRIGGERED. Iter5 criteria met: brier=0.22533 (FLAT 3 iters), features=40 (<50). Gen 743 = OLDEST ISLAND IN FLEET. Mutation decayed FURTHER: 0.07->0.0488 (lowest ever) despite iter4+iter5 nudges (both reverted). Island irrecoverably converged via adaptive mutation override. DIVERSITY RESET posted: mut=0.18 (maximum), target_features=70, cx=0.70, restore specialist mandate (extra_trees). If iter7 mut still < 0.07, code fix required."
     },
     "S13": {
       "brier": 0.22283,
-      "generation": 164,
+      "generation": 347,
       "model": "random_forest",
-      "mutation_rate": 0.0878,
+      "mutation_rate": 0.0609,
       "features": 52,
       "stagnation_cycles": 0,
-      "status": "FLAT_CONSOLIDATING",
-      "action": "none — recovery consolidating, monitor",
-      "iter4_brier": 0.22283,
+      "status": "NUDGE_EXECUTED",
+      "action": "Mutation nudge: mut=0.09, target_features=55, cx=0.82 (POST 200 OK queued)",
+      "iter5_brier": 0.22283,
       "brier_delta": 0.00000,
-      "notes": "FLAT — consolidating iter4 recovery. Highest Sharpe in fleet at 10.12. Best individual still 0.22283 random_forest feat=52. Recent gen 163: catboost at 0.2889 feat=49 — slow CPU catboost still diluting population. Mutation 0.0878 healthy. 2nd best in fleet. No intervention — let recovery consolidate into new best."
+      "notes": "2nd best in fleet at 0.22283. Mutation decayed 0.0878->0.0609 — significant drop, risk of entering convergence zone. Nudged to 0.09 to restore exploration before dropping below critical threshold. Features stable at 52. If mut holds at 0.09+, expect new best within 2 iters."
     },
     "S14": {
       "brier": 0.22622,
-      "generation": 207,
+      "generation": 610,
       "model": "random_forest",
-      "mutation_rate": 0.0530,
+      "mutation_rate": 0.0450,
       "features": 55,
       "stagnation_cycles": 0,
-      "status": "CRITICAL_MUTATION_FREEZE",
-      "action": "CRITICAL_escalation: mut=0.10, target_features=58, cx=0.80 (POST 200 OK queued)",
-      "iter4_brier": 0.22622,
+      "status": "FULL_RESET_EXECUTED_CODE_FIX_REQUIRED",
+      "action": "FULL RESET: mut=0.15, target_features=60, cx=0.80, diversity_reset=true (POST 200 OK queued). CODE FIX FLAGGED to D2.",
+      "iter5_brier": 0.22622,
       "brier_delta": 0.00000,
-      "notes": "CRITICAL: mutation dropped from 0.0625 (iter4) to 0.053 (iter5) — FURTHER DECLINE. At 0.053 the GA is nearly frozen, unable to explore. Flat brier for 2 iterations. Gen 206 log: lightgbm feat=40 at 0.2378 — current pop still exploring wrong models and features. POSTed mut=0.10 (nearly doubling current rate) — this is the per-iter4-protocol escalation that was flagged as mandatory. If iter6 still shows mut<0.07, island needs full reset."
+      "notes": "CONFIRMED: API commands not taking effect. Mut trajectory: 0.0625(iter4)->0.053(iter5)->0.045(iter6) — DECAY DESPITE 3 POSTS of 0.10. Adaptive annealing overriding all API commands. CODE FIX MANDATORY: add MUTATION_FLOOR=0.07 to hf-space/app.py. Full reset posted with 0.15 + diversity_reset=true. If iter7 mut still < 0.07, code fix must be deployed via git subtree push."
     },
     "S15": {
-      "brier": 0.2222,
-      "generation": 100,
+      "brier": 0.22220,
+      "generation": 197,
       "model": "random_forest",
-      "mutation_rate": 0.1262,
+      "mutation_rate": 0.1145,
       "features": 61,
       "stagnation_cycles": 0,
       "status": "FLEET_BEST_STABLE",
-      "action": "none — fleet best holding, healthy mutation",
-      "iter4_brier": 0.22220,
+      "action": "none — fleet best, used as S10 cross-pollination source",
+      "iter5_brier": 0.22220,
       "brier_delta": 0.00000,
-      "notes": "FLEET BEST stable at 0.2222. Gen 100 milestone. Mutation 0.1262 — iter4 boost (0.13) partially absorbed, healthy. Pop=50 (wide search). Pareto front 8 — smallest in fleet but wide diversity. Cycle 34 log shows 3 gens/cycle — healthy cadence. No intervention. Primary seed island for Kaggle GPU sessions."
+      "notes": "FLEET BEST stable at 0.2222 for 3+ iterations. Gen 197 (was 100 at iter5 — fastest growing). Mutation 0.1145 — healthy (pop=50 wide search resists adaptive annealing due to diversity). Served as cross-pollination source for S10 this iteration. Primary Kaggle GPU seed."
     }
   },
   "fleet_metrics": {
@@ -87,100 +87,111 @@
     "fleet_avg": 0.22530,
     "best_island": "S15",
     "worst_island": "S10",
-    "total_generations": 1276,
+    "total_generations": 2816,
     "island_count": 6,
     "prev_best_brier": 0.22220,
-    "prev_fleet_avg": 0.22863,
-    "fleet_avg_improvement_iter4_to_iter5": -0.00333
+    "prev_fleet_avg": 0.22530,
+    "fleet_avg_improvement_iter5_to_iter6": 0.00000,
+    "spread": 0.00929
   },
-  "stagnation_detected": [],
-  "diversity_score": 0.46,
-  "cross_pollinations_executed": [],
-  "mutation_boosts_executed": [
+  "stagnation_detected": ["S10", "S12", "S14"],
+  "diversity_score": 0.44,
+  "cross_pollinations_executed": [
     {
-      "island": "S14",
-      "trigger": "CRITICAL_mutation_freeze_iter4_protocol",
-      "old_mut": 0.0530,
-      "new_mut": 0.10,
-      "params": {"mutation_rate": 0.10, "target_features": 58, "crossover_rate": 0.80},
+      "source": "S15",
+      "target": "S10",
+      "trigger": "features_lt_55_3rd_consecutive_iter",
+      "params": {"mutation_rate": 0.13, "target_features": 61, "crossover_rate": 0.85, "model_type": "random_forest"},
       "http_status": 200,
       "response": "queued",
-      "rationale": "Mutation dropped to 0.053 (CRITICAL floor). Mandatory iter4 escalation protocol. Doubled mutation rate to restore exploration."
-    },
-    {
-      "island": "S10",
-      "trigger": "flat_2nd_iter+persistent_low_feature_trap",
-      "old_mut": 0.0939,
-      "new_mut": 0.13,
-      "params": {"mutation_rate": 0.13, "target_features": 66, "crossover_rate": 0.80},
-      "http_status": 200,
-      "response": "queued",
-      "rationale": "3rd escalation attempt. Iter4 boost (0.11) reverted. Features locked at 46 for 2 iters. Strongest boost yet: 0.13 + feat=66."
-    },
-    {
-      "island": "S12",
-      "trigger": "nudge_reverted+mut_decay+oldest_island",
-      "old_mut": 0.0700,
-      "new_mut": 0.10,
-      "params": {"mutation_rate": 0.10, "target_features": 60, "crossover_rate": 0.80},
-      "http_status": 200,
-      "response": "queued",
-      "rationale": "Iter4 nudge (0.10) fully reverted to 0.07. Gen 380 convergence. Re-nudge with target_features=60 to push out of 40-feature local minimum."
+      "rationale": "S10 trapped at feat=46 for 3 iterations despite 3 mutation escalations. S15 is fleet best (0.2222, feat=61, random_forest). Cross-pollinate to break local optimum."
     }
   ],
+  "mutation_boosts_executed": [
+    {
+      "island": "S12",
+      "trigger": "diversity_reset_oldest_island_irrecoverable_convergence",
+      "old_mut": 0.0488,
+      "new_mut": 0.18,
+      "params": {"mutation_rate": 0.18, "target_features": 70, "crossover_rate": 0.70, "population_size": 30, "diversity_reset": true, "model_type": "extra_trees"},
+      "http_status": 200,
+      "response": "queued",
+      "rationale": "Gen 743, mut decayed to 0.0488 despite 2 prior nudges. Brier flat 3 iters. Features trapped at 40. Full diversity reset with max params."
+    },
+    {
+      "island": "S14",
+      "trigger": "full_reset_api_override_confirmed_3x",
+      "old_mut": 0.0450,
+      "new_mut": 0.15,
+      "params": {"mutation_rate": 0.15, "target_features": 60, "crossover_rate": 0.80, "diversity_reset": true},
+      "http_status": 200,
+      "response": "queued",
+      "rationale": "Mut decayed 0.0625->0.053->0.045 despite 3 POSTs of 0.10. Adaptive annealing confirmed overriding API. Full reset attempt before code fix escalation."
+    },
+    {
+      "island": "S13",
+      "trigger": "mutation_decay_prevention",
+      "old_mut": 0.0609,
+      "new_mut": 0.09,
+      "params": {"mutation_rate": 0.09, "target_features": 55, "crossover_rate": 0.82},
+      "http_status": 200,
+      "response": "queued",
+      "rationale": "Preemptive nudge before mut drops below 0.06 critical threshold. 2nd best island — protect exploration."
+    }
+  ],
+  "root_cause_finding": {
+    "confirmed": true,
+    "issue": "ADAPTIVE_MUTATION_OVERRIDE",
+    "description": "HF Space GA's internal adaptive mutation annealing is overriding all API config POSTs. Evidence: S14 decayed 0.0625->0.053->0.045 despite 3 POSTs setting 0.10. S12 decayed 0.07->0.0488 despite 2 nudges. S10 decayed 0.13->0.0939->0.0809 despite 3 escalations. All islands show monotonic mut decay regardless of API intervention.",
+    "code_fix_required": "Add MUTATION_FLOOR = 0.07 constant to hf-space/app.py adaptive_mutation() function. Line: `new_mutation = max(MUTATION_FLOOR, computed_mutation)`. Deploy via git subtree push to all 6 spaces.",
+    "estimated_impact": "Prevents convergence freeze. Expect 0.001-0.003 Brier improvement within 5 generations post-fix.",
+    "priority": 0,
+    "escalate_to": "D2_ENGINEERING"
+  },
   "recommendations": [
     {
+      "priority": 0,
+      "type": "CODE_FIX_MUTATION_FLOOR",
+      "islands": ["all"],
+      "reason": "CONFIRMED ROOT CAUSE: Adaptive mutation override blocking all API POSTs. 6 iterations of evidence across 3 islands. S12+S14 in convergence freeze.",
+      "action": "D2 Engineering URGENT: add MUTATION_FLOOR=0.07 to hf-space/app.py adaptive_mutation(). Bundle with elitism fix. Deploy to all 6 spaces via git subtree push.",
+      "urgency": "IMMEDIATE"
+    },
+    {
       "priority": 1,
-      "type": "S10_cross_pollination_trigger",
+      "type": "S10_XPOLL_VERIFY",
       "island": "S10",
-      "reason": "If iter6 still shows best_features < 55 despite mut=0.13 boost, population is in a deep local optimum that mutation alone cannot escape. Cross-pollination from S15 (feat=61, 0.2222) is the next intervention.",
-      "action": "Iter6: if S10 best_features < 55, POST cross-pollination seed: random_forest, 61 features from S15 config."
+      "reason": "Cross-pollination executed. If iter7 still feat < 55, escalate to PROTECTED_SEED injection in GA init code.",
+      "action": "Iter7: verify S10 feat > 55. If not, D2: add PROTECTED_SEED config to GA init.",
+      "urgency": "MONITOR"
     },
     {
       "priority": 2,
-      "type": "S12_island_reset_evaluation",
-      "island": "S12",
-      "reason": "Gen 380 is the oldest island in fleet. If iter6 shows no improvement after re-nudge, population is irrecoverably converged. Consider full population reset via /api/reset (if available) or subtree push of fresh config.",
-      "action": "Iter6: if S12 still at 0.22533 with features < 50, evaluate island reset or redeploy."
-    },
-    {
-      "priority": 3,
-      "type": "elitism_code_fix",
-      "islands": ["all"],
-      "reason": "Elitism still not deployed. Iter5 flat across all islands — this is partially expected as iter4 POSTs propagate, but elitism would floor-protect best scores. Estimated -0.002 to -0.004 Brier reduction.",
-      "action": "Deploy top-2 elitism to all HF Spaces via git subtree push. Highest-leverage code fix available."
-    },
-    {
-      "priority": 4,
-      "type": "S14_mutation_monitor",
-      "island": "S14",
-      "reason": "If iter6 mut still below 0.07 despite POST, the space's internal adaptive mutation is overriding API commands. May need code-level fix to enforce minimum mutation floor.",
-      "action": "Iter6: check S14 mutation_rate. If < 0.07, escalate to code fix: add MUTATION_FLOOR = 0.07 to evolution engine."
-    },
-    {
-      "priority": 5,
-      "type": "gpu_seed_kaggle",
-      "reason": "S15 (0.2222, feat=61) and S13 (0.22283, feat=52, Sharpe=10.12) remain best CPU configs. CPU ceiling ~0.221 confirmed. Primary path to <0.20 is Kaggle GPU with TabICL.",
-      "action": "Seed next Kaggle session with: (1) S15: random_forest 61f mut=0.13. (2) S13: random_forest 52f mut=0.10 Sharpe=10.12."
+      "type": "S15_KAGGLE_SEED",
+      "reason": "CPU ceiling confirmed at ~0.221-0.222 by 6 iterations. Primary path to <0.20 is Kaggle GPU TabICL.",
+      "action": "Seed next Kaggle GPU session: S15 (random_forest, 61 features, mut=0.11) + S13 (random_forest, 52 features, Sharpe=10.12).",
+      "urgency": "HIGH"
     }
   ],
   "experiments_submitted": [],
   "islands_checked": 6,
   "best_brier": 0.22220,
   "worst_brier": 0.23149,
-  "cross_pollinated": false,
-  "stagnation_detected_flag": false,
+  "spread": 0.00929,
+  "cross_pollination_needed": true,
+  "cross_pollinated": true,
+  "stagnation_detected_flag": true,
   "status": "completed",
-  "atr_brier": 0.21570,
-  "gap_to_atr": 0.00650,
+  "atr_brier": 0.21520,
+  "gap_to_atr": 0.00700,
   "gap_to_target": 0.02220,
-  "iter4_comparison": {
-    "S10": {"iter4": 0.23149, "iter5": 0.23149, "delta": 0.00000, "trend": "FLAT"},
-    "S11": {"iter4": 0.22372, "iter5": 0.22372, "delta": 0.00000, "trend": "FLAT"},
-    "S12": {"iter4": 0.22533, "iter5": 0.22533, "delta": 0.00000, "trend": "FLAT"},
-    "S13": {"iter4": 0.22283, "iter5": 0.22283, "delta": 0.00000, "trend": "FLAT"},
-    "S14": {"iter4": 0.22622, "iter5": 0.22622, "delta": 0.00000, "trend": "FLAT_CRITICAL"},
-    "S15": {"iter4": 0.22220, "iter5": 0.22220, "delta": 0.00000, "trend": "FLAT"}
+  "iter5_comparison": {
+    "S10": {"iter5": 0.23149, "iter6": 0.23149, "delta": 0.00000, "trend": "FLAT_3RD_ITER_XPOLL"},
+    "S11": {"iter5": 0.22372, "iter6": 0.22372, "delta": 0.00000, "trend": "FLAT_STABLE"},
+    "S12": {"iter5": 0.22533, "iter6": 0.22533, "delta": 0.00000, "trend": "FLAT_3RD_ITER_RESET"},
+    "S13": {"iter5": 0.22283, "iter6": 0.22283, "delta": 0.00000, "trend": "FLAT_NUDGE"},
+    "S14": {"iter5": 0.22622, "iter6": 0.22622, "delta": 0.00000, "trend": "FLAT_3RD_ITER_RESET_CODE_FIX"},
+    "S15": {"iter5": 0.22220, "iter6": 0.22220, "delta": 0.00000, "trend": "FLAT_BEST_STABLE"}
   },
-  "fleet_notes": "Iter5 headline: universal flat — all 6 islands unchanged from iter4. This is expected: iter4 POSTs (S10/S12/S15 boosts) are still propagating through populations. Fleet avg 0.22530 vs iter4 0.22863 — structural improvement from S13 recovery carrying forward. Critical finding: S14 mutation decayed FURTHER to 0.053 (iter4 was 0.0625), mandatory escalation posted (0.10). S10 remains worst at 0.23149 for 2 consecutive iters — 3rd escalation (0.13/feat=66) queued. S12 iter4 nudge reverted — re-nudged. S15 fleet best 0.2222 stable. CPU ceiling ~0.221-0.222 confirmed by 5 iterations of data. Path to <0.20 requires GPU (Kaggle/Colab TabICL). Next inflection point expected iter6 as S14+S10+S12 boosts activate."
+  "fleet_notes": "Iter6 headline: ROOT CAUSE CONFIRMED — adaptive mutation annealing overrides all API POSTs. All 6 islands flat 3+ consecutive iters. Executed: S10 cross-pollination (S15 seed, feat=61), S12 diversity reset (mut=0.18, feat=70, extra_trees), S14 full reset (mut=0.15), S13 nudge (mut=0.09). Fleet best S15=0.2222 stable — wide search (pop=50) resists annealing via diversity. CPU ceiling ~0.221-0.222 confirmed. CODE FIX REQUIRED: MUTATION_FLOOR=0.07 in app.py — escalated to D2 Engineering as Priority 0. GPU path (Kaggle/Colab TabICL) is primary route to <0.20."
 }
