@@ -1,20 +1,25 @@
 {
-  "last_updated": "2026-04-06T12:40:00Z",
+  "last_updated": "2026-04-06T13:00:00Z",
+  "cycle": 70,
   "nba_best_brier": 0.2222,
   "political_best_brier": 0.23134,
-  "nba_islands_online": 4,
+  "nba_islands_online": 6,
   "nba_islands_total": 6,
   "political_islands_online": 2,
   "political_islands_total": 4,
+  "fleet_brier_avg_nba": 0.22437,
   "cross_pollination_candidates": [
-    "calibration_method: isotonic_regression (NBA->Political)",
-    "ga_config: mutation_rate_adaptive (NBA->Political)",
-    "feature_pattern: rolling_window_elo (NBA->Political)"
+    "calibration: isotonic CalibratedClassifierCV (NBA Phase1 → Political next cycle)",
+    "ga_config: adaptive mutation_rate cap 0.15 (NBA → Political)",
+    "feature: rolling_window_elo patterns (NBA → Political engine)"
   ],
   "alerts": [
-    "NBA island 2 (nomos42-nba-evo-2) is DOWN",
-    "NBA island 3 (nomos42-nba-evo-3) certificate not yet valid",
-    "Political island 3 (nomos42-political-alpha-3) is DOWN",
-    "Political island 4 (nomos42-political-alpha-4) is DOWN"
-  ]
+    "PA3 DOWN_404 x6 cycles — private space, user must restart on HF dashboard",
+    "PA4 DOWN_404 x6 cycles — private space, user must restart on HF dashboard",
+    "Political island 1: 94% synthetic data — real event collection critical"
+  ],
+  "data_pipeline_health": {
+    "polymarket_validation_bug": "FIXED in cycle-70 (Brain D rotation) — was silently failing every cycle",
+    "fetch_political_data_version": "post-fix-2026-04-06"
+  }
 }
