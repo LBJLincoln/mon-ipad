@@ -186,19 +186,16 @@ cat > "$STATUS_FILE" << STATUSEOF
 STATUSEOF
 
 # ══════════════════════════════════════════════════════════════
-# 5. TRADING FLOOR COUNCIL LOOP — Auto-relaunch if dead
+# 5. TRADING FLOOR COUNCIL LOOP — KILLED (2026-04-06)
+#    Replaced by: Hermes dept councils (hermes-runner.sh, cron every 4h)
+#    + HF Space councils (9 spaces with Gemma4/Qwen3.5/DeepSeek)
 # ══════════════════════════════════════════════════════════════
 
-TF_RUNNING=$(pgrep -f "trading-floor-council-loop" 2>/dev/null | wc -l)
-if [ "$TF_RUNNING" -eq 0 ]; then
-  log "Trading Floor council loop NOT running — relaunching..."
-  mkdir -p /home/termius/mon-ipad/logs/arena
-  nohup bash /home/termius/mon-ipad/scripts/arena/trading-floor-council-loop.sh 1000 300 \
-    >> /home/termius/mon-ipad/logs/arena/council-loop.log 2>&1 &
-  log "Trading Floor relaunched (PID=$!)"
-  RESTARTED=$((RESTARTED + 1))
-else
-  log "Trading Floor council loop running ($TF_RUNNING processes)"
+# Kill any lingering old loop processes
+OLD_TF=$(pgrep -f "trading-floor-council-loop" 2>/dev/null | wc -l)
+if [ "$OLD_TF" -gt 0 ]; then
+  log "KILLING old trading-floor-council-loop ($OLD_TF processes)"
+  pkill -f "trading-floor-council-loop" 2>/dev/null || true
 fi
 TOTAL=$((TOTAL + 1))
 
